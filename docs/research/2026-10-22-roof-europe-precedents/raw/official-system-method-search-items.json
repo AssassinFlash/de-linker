@@ -1,0 +1,153 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:samrepo.nrelcloud.org/help battery sizing dispatch limits power capacity",
+      "url": "http://www.google.com/search?q=site%3Asamrepo.nrelcloud.org%2Fhelp+battery+sizing+dispatch+limits+power+capacity&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asamrepo.nrelcloud.org%2Fhelp+battery+sizing+dispatch+limits+power+capacity&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Battery Storage: Front of Meter",
+        "websiteTitle": "nrelcloud.org",
+        "url": "https://samrepo.nrelcloud.org/help/battery_storage_fom.html",
+        "displayedUrl": "https://samrepo.nrelcloud.org › help › battery_storage_f...",
+        "description": "The limits on minimum and maximum state of charge affect both the amount of energy available for battery dispatch calculations,",
+        "emphasizedKeywords": [
+          "limits",
+          "maximum",
+          "energy",
+          "battery dispatch"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "System Control",
+        "websiteTitle": "nrelcloud.org",
+        "url": "https://samrepo.nrelcloud.org/help/iph_mspt_system_control.html",
+        "displayedUrl": "https://samrepo.nrelcloud.org › iph_mspt_system_control",
+        "description": "The Grid Limits page is not available for all performance models. For the PV Battery model, battery dispatch is affected by the system availability losses.Read more",
+        "emphasizedKeywords": [
+          "Limits",
+          "Battery",
+          "battery dispatch"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/v6Y1FPvTw2ybqkR2K/records/W005iftiHXWk8Jc-0.html?signature=1hamHB29do4vkdjNvxQ6l"
+  },
+  {
+    "searchQuery": {
+      "term": "site:manuals.sma.de/SDesign/en-US \"battery\" \"load profile\" \"design\"",
+      "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign%2Fen-US+%22battery%22+%22load+profile%22+%22design%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign%2Fen-US+%22battery%22+%22load+profile%22+%22design%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "A",
+    "relatedQueries": [
+      {
+        "title": "Battery load profile design template",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvYpaBWuimHU7Fb_llIM-38h2v44w:1792661383028&q=Battery+load+profile+design+template&sa=X&ved=2ahUKEwjckcCHqM2XAxUJfqQEHTnsK6YQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "Battery load profile design excel",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvYpaBWuimHU7Fb_llIM-38h2v44w:1792661383028&q=Battery+load+profile+design+excel&sa=X&ved=2ahUKEwjckcCHqM2XAxUJfqQEHTnsK6YQ1QJ6BAg6EAE"
+      },
+      {
+        "title": "Battery load profile design template",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvYpaBWuimHU7Fb_llIM-38h2v44w:1792661383028&q=Battery+load+profile+design+template&sa=X&ved=2ahUKEwjckcCHqM2XAxUJfqQEHTnsK6YQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "Battery load profile design excel",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&hl=en&sxsrf=APpeQnvYpaBWuimHU7Fb_llIM-38h2v44w:1792661383028&q=Battery+load+profile+design+excel&sa=X&ved=2ahUKEwjckcCHqM2XAxUJfqQEHTnsK6YQ1QJ6BAg6EAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/v6Y1FPvTw2ybqkR2K/records/O5Cf3KfCiCycslQ-3.html?signature=JYDrJyTUexqad4UzP8Qf"
+  },
+  {
+    "searchQuery": {
+      "term": "site:manuals.sma.de/SDesign/en-US \"existing PV\"",
+      "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign%2Fen-US+%22existing+PV%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign%2Fen-US+%22existing+PV%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/v6Y1FPvTw2ybqkR2K/records/HKF9Nlspylma1zk-3.html?signature=RtfUAs04vQxxzFI8nZF6"
+  },
+  {
+    "searchQuery": {
+      "term": "site:manuals.sma.de/SDesign/en-US \"peak load shaving\"",
+      "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign%2Fen-US+%22peak+load+shaving%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign%2Fen-US+%22peak+load+shaving%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/v6Y1FPvTw2ybqkR2K/records/EAtc5MwdT3kqJtG-3.html?signature=1GXnWoH6r28argdrmY7nV"
+  }
+]

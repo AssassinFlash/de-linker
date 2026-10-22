@@ -1,0 +1,10 @@
+{
+  "id": "yOn0ibt8uI2Xhf3f7",
+  "actId": "nFJndFXA5zjCTuudP",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-22T09:18:54.490Z",
+  "finishedAt": "2026-10-22T09:19:54.085Z",
+  "defaultDatasetId": "ygP7STJZ9gmynujZ3",
+  "usageTotalUsd": 0.054049999999999994,
+  "statusMessage": "Processed 13 queries on 13 pages. Extracted: 73 organicResults, 6 relatedQueries, 13 itemsPushed"
+}

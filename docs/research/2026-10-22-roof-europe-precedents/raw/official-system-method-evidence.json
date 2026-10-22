@@ -1,0 +1,1072 @@
+[
+  {
+    "url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1",
+    "crawl": {
+      "loadedUrl": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1",
+      "loadedTime": "2026-10-22T09:34:07.716Z",
+      "referrerUrl": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 18332,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "34a3081cf7a2ed0f961a54a65f70980bf129e5a32ee5d4a4a2c3333066eb41d8",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://creativecommons.org/licenses/by/4.0/deed.nl",
+        "text": "CC BY 4.0",
+        "ancestors": [
+          "div:col-md-8",
+          "table:table table-borderless table-sm w-100",
+          "tbody:",
+          "tr:",
+          "td:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/335a62b6-ee20-405a-8dca-45995bee2615",
+        "text": "View at Nationaal Georegister",
+        "ancestors": [
+          "div:col-md-8",
+          "table:table table-borderless table-sm w-100",
+          "tbody:",
+          "tr:",
+          "td:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/364ade50-5aae-4420-9d9b-ad4ebca2d032",
+        "text": "View at Nationaal Georegister",
+        "ancestors": [
+          "div:col-md-8",
+          "table:table table-borderless table-sm w-100",
+          "tbody:",
+          "tr:",
+          "td:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://nationaalgeoregister.nl/geonetwork/srv/dut/catalog.search#/metadata/2fdeecd0-3d28-43f9-894e-e8444fdffeb3",
+        "text": "View at Nationaal Georegister",
+        "ancestors": [
+          "div:col-md-8",
+          "table:table table-borderless table-sm w-100",
+          "tbody:",
+          "tr:",
+          "td:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "3D Basisvoorziening (OGC API)"
+      },
+      {
+        "tag": "h2",
+        "text": "OpenAPI specification"
+      },
+      {
+        "tag": "h2",
+        "text": "Conformance"
+      },
+      {
+        "tag": "h2",
+        "text": "Collections"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://manuals.sma.de/SDesign/en-US/index.html",
+    "crawl": {
+      "loadedUrl": "https://manuals.sma.de/SDesign/en-US/index.html",
+      "loadedTime": "2026-10-22T09:34:08.360Z",
+      "referrerUrl": "https://manuals.sma.de/SDesign/en-US/index.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 44657,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "9376c7c7ca3172eb997a136c0f25c305b75efd1bd676e9d01fe5cd191c6f84eb",
+    "navigationAndCtaLinks": [
+      {
+        "href": "14318220683.html",
+        "text": "Creation and administration of own load profiles",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14318467851.html",
+        "text": "Administration of own load profiles",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14319536779.html",
+        "text": "Deleting a load profile",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14567113867.html",
+        "text": "Sunny Design Pro: Using tools for configuring SMA components",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14567914251.html",
+        "text": "Procedure when designing a large-scale energy system",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14567922699.html",
+        "text": "Procedure when designing an energy system",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14336683275.html",
+        "text": "Special Battery Applications",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14336688395.html",
+        "text": "Activating Peak Load Shaving",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14336690571.html",
+        "text": "Defining the battery charge time window",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14444634251.html",
+        "text": "Enabling peak shaving with increased self-consumption with three-phase battery storage systems",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14446049931.html",
+        "text": "Enabling peak shaving with increased self-consumption with single-phase battery storage systems",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14446052107.html",
+        "text": "With quick planning: entering load profile details",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14362187659.html",
+        "text": "Visual roof planning",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14362191627.html",
+        "text": "Operating the visual roof planning tool",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14398233483.html",
+        "text": "Defining load profiles",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400584331.html",
+        "text": "Entering load profile details",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14561191819.html",
+        "text": "With off-grid systems: Defining the peak load",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400871819.html",
+        "text": "For energy systems: Entering building details",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400874251.html",
+        "text": "For energy systems: Defining thermal energy requirements",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400876427.html",
+        "text": "Energy System",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14401020171.html",
+        "text": "Structure of Energy System Page",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14401024523.html",
+        "text": "Configuring energy system components",
+        "ancestors": [
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14402468107.html",
+        "text": "Configuring the battery system",
+        "ancestors": [
+          "li:",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14449899275.html",
+        "text": "Configuring the battery system",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14451065355.html",
+        "text": "Definition of the requirements on the energy system",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488605963.html",
+        "text": "With energy systems: Overview of the results",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488608139.html",
+        "text": "With energy systems: \"Summary\" project page",
+        "ancestors": [
+          "section:contentsection",
+          "ul:",
+          "li:contentsection_mainchapter",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14318220683.html",
+        "text": "Creation and administration of own load profiles",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14318467851.html",
+        "text": "Administration of own load profiles",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14319536779.html",
+        "text": "Deleting a load profile",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14567113867.html",
+        "text": "Sunny Design Pro: Using tools for configuring SMA components",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14567914251.html",
+        "text": "Procedure when designing a large-scale energy system",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14567922699.html",
+        "text": "Procedure when designing an energy system",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14336683275.html",
+        "text": "Special Battery Applications",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14336688395.html",
+        "text": "Activating Peak Load Shaving",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14336690571.html",
+        "text": "Defining the battery charge time window",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14444634251.html",
+        "text": "Enabling peak shaving with increased self-consumption with three-phase battery storage systems",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14446049931.html",
+        "text": "Enabling peak shaving with increased self-consumption with single-phase battery storage systems",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14446052107.html",
+        "text": "With quick planning: entering load profile details",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14362187659.html",
+        "text": "Visual roof planning",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14362191627.html",
+        "text": "Operating the visual roof planning tool",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14398233483.html",
+        "text": "Defining load profiles",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400584331.html",
+        "text": "Entering load profile details",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14561191819.html",
+        "text": "With off-grid systems: Defining the peak load",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400871819.html",
+        "text": "For energy systems: Entering building details",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400874251.html",
+        "text": "For energy systems: Defining thermal energy requirements",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14400876427.html",
+        "text": "Energy System",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14401020171.html",
+        "text": "Structure of Energy System Page",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14401024523.html",
+        "text": "Configuring energy system components",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14402468107.html",
+        "text": "Configuring the battery system",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14449899275.html",
+        "text": "Configuring the battery system",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14451065355.html",
+        "text": "Definition of the requirements on the energy system",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488605963.html",
+        "text": "With energy systems: Overview of the results",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488608139.html",
+        "text": "With energy systems: \"Summary\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "User Manual"
+      },
+      {
+        "tag": "h2",
+        "text": "SUNNY DESIGN"
+      },
+      {
+        "tag": "h4",
+        "text": "Information on this Document"
+      },
+      {
+        "tag": "h4",
+        "text": "Product overview"
+      },
+      {
+        "tag": "h4",
+        "text": "Signing up and starting off"
+      },
+      {
+        "tag": "h4",
+        "text": "User Interface"
+      },
+      {
+        "tag": "h4",
+        "text": "General Operation"
+      },
+      {
+        "tag": "h4",
+        "text": "\"My Sunny Design\" menu"
+      },
+      {
+        "tag": "h4",
+        "text": "Sunny Design Pro"
+      },
+      {
+        "tag": "h4",
+        "text": "Managing project data"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating and managing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Procedure for designing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Project design"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating a harmonics calculation"
+      },
+      {
+        "tag": "h4",
+        "text": "Glossary"
+      },
+      {
+        "tag": "h4",
+        "text": "Contact"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://basemap.at/",
+    "crawl": {
+      "loadedUrl": "https://basemap.at/",
+      "loadedTime": "2026-10-22T09:34:25.110Z",
+      "referrerUrl": "https://basemap.at/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 352179,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    "htmlSha256": "be040c1a227299e54481f5999b38482e28a5550481ee4d26244686a38caed0f5",
+    "navigationAndCtaLinks": [
+      {
+        "href": "http://www.adressregister.at/",
+        "text": "BEV",
+        "ancestors": [
+          "section:av_toggle_section av-1mb0d-bd14746d53bd378a0b82b360e1a6c777",
+          "div:single_toggle",
+          "div:toggle_wrap  av-title-above",
+          "div:toggle_content invers-color ",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://basemap.at/wp-content/uploads/sites/56/2019/06/cc-by.png",
+        "text": "",
+        "ancestors": [
+          "div:post-entry post-entry-type-page post-entry-17",
+          "div:entry-content-wrapper clearfix",
+          "section:av_textblock_section av-itbt-45c4a2604ed1924def26f109acafbac5 ",
+          "div:avia_textblock",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://creativecommons.org/licenses/by/4.0/deed.de",
+        "text": "Open Government Data Österreich Lizenz CC-BY 4.0",
+        "ancestors": [
+          "div:post-entry post-entry-type-page post-entry-17",
+          "div:entry-content-wrapper clearfix",
+          "section:av_textblock_section av-itbt-45c4a2604ed1924def26f109acafbac5 ",
+          "div:avia_textblock",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.adressregister.gv.at/",
+        "text": "",
+        "ancestors": [
+          "div:entry-content-wrapper clearfix",
+          "div:avia-logo-element-container av-kh0d4rho-f6f40b08c2edc5ce0be25baa8cbe9b65 avia-logo-grid avia-content-slider avia-smallar",
+          "div:avia-content-slider-inner",
+          "div:slide-entry-wrap",
+          "div:slide-entry av-1l1ep-f9369d05733c59cdb75be5a52cc17234 flex_column no_margin av_one_seventh real-thumbnail post-entry sli",
+          "a:slide-image"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "basemap.at Home"
+      },
+      {
+        "tag": "h2",
+        "text": "Produkte"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at RASTER"
+      },
+      {
+        "tag": "h3",
+        "text": "STANDARD"
+      },
+      {
+        "tag": "h3",
+        "text": "GRAU"
+      },
+      {
+        "tag": "h3",
+        "text": "OVERLAY"
+      },
+      {
+        "tag": "h3",
+        "text": "HIGHDPI"
+      },
+      {
+        "tag": "h3",
+        "text": "STUMM 31256"
+      },
+      {
+        "tag": "h3",
+        "text": "STUMM GRAU 31256"
+      },
+      {
+        "tag": "h3",
+        "text": "OVERLAY 31256"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at RASTER Offline"
+      },
+      {
+        "tag": "h3",
+        "text": "STANDARD"
+      },
+      {
+        "tag": "h3",
+        "text": "GRAU"
+      },
+      {
+        "tag": "h3",
+        "text": "OVERLAY"
+      },
+      {
+        "tag": "h3",
+        "text": "HIGHDPI"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at VEKTOR"
+      },
+      {
+        "tag": "h3",
+        "text": "BMAPV"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at VEKTOR Offline"
+      },
+      {
+        "tag": "h3",
+        "text": "BMAPV"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at Höhenlinien Vektor (Derzeit keine Produktaktualisierung)"
+      },
+      {
+        "tag": "h3",
+        "text": "BMAPVHL"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at Höhenlinien Vektor Offline (derzeit keine Produktaktualisierung)"
+      },
+      {
+        "tag": "h3",
+        "text": "BMAPVHL"
+      },
+      {
+        "tag": "h3",
+        "text": "Schummerung"
+      },
+      {
+        "tag": "h3",
+        "text": "OBERFLAECHE"
+      },
+      {
+        "tag": "h3",
+        "text": "GELAENDE"
+      },
+      {
+        "tag": "h3",
+        "text": "Schummerung Offline"
+      },
+      {
+        "tag": "h3",
+        "text": "GELAENDE"
+      },
+      {
+        "tag": "h3",
+        "text": "OBERFLAECHE"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at Orthofoto"
+      },
+      {
+        "tag": "h3",
+        "text": "ORTHOFOTO"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at Orthofoto Offline"
+      },
+      {
+        "tag": "h3",
+        "text": "ORTHOFOTO"
+      },
+      {
+        "tag": "h3",
+        "text": "basemap.at Verdichtungspolygone"
+      },
+      {
+        "tag": "h3",
+        "text": "BASEMAPVERDOGD"
+      },
+      {
+        "tag": "h2",
+        "text": "Hilfe"
+      },
+      {
+        "tag": "h3",
+        "text": "Dokumentationen / Tools"
+      },
+      {
+        "tag": "h4",
+        "text": "basemap.at RASTER:"
+      },
+      {
+        "tag": "h4",
+        "text": "basemap.at VEKTOR:"
+      },
+      {
+        "tag": "h3",
+        "text": "FAQ"
+      },
+      {
+        "tag": "h2",
+        "text": "Nutzungsbedingungen"
+      },
+      {
+        "tag": "h2",
+        "text": "Anwendungen"
+      },
+      {
+        "tag": "h2",
+        "text": "News"
+      },
+      {
+        "tag": "h3",
+        "text": "Changelog"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Infos"
+      },
+      {
+        "tag": "h3",
+        "text": "Fragen oder Anmerkungen zu basemap.at?"
+      },
+      {
+        "tag": "h3",
+        "text": "Hinweis zur DSGVO"
+      },
+      {
+        "tag": "h3",
+        "text": "Impressum"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  }
+]

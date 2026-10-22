@@ -1,0 +1,520 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:pnoa.ign.es \"licencia\"",
+      "url": "http://www.google.com/search?q=site%3Apnoa.ign.es+%22licencia%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Apnoa.ign.es+%22licencia%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/lVhrmVVtQrMVtrcRX/records/IGiCbXS9K44sEZ4-0.html?signature=1t9J8CzEtIsdjzCSNcRBM"
+  },
+  {
+    "searchQuery": {
+      "term": "site:kartverket.no hoydedata \"CC BY\"",
+      "url": "http://www.google.com/search?q=site%3Akartverket.no+hoydedata+%22CC+BY%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Akartverket.no+hoydedata+%22CC+BY%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/lVhrmVVtQrMVtrcRX/records/sVs252L10rmjQvg-0.html?signature=1CAVKAW0ygW0XOtfKTNxV"
+  },
+  {
+    "searchQuery": {
+      "term": "site:gov.uk \"LIDAR Composite Digital Surface\" \"Open Government\"",
+      "url": "http://www.google.com/search?q=site%3Agov.uk+%22LIDAR+Composite+Digital+Surface%22+%22Open+Government%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Agov.uk+%22LIDAR+Composite+Digital+Surface%22+%22Open+Government%22&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "LIDAR Composite Digital Surface Model (DSM) - 2m",
+        "websiteTitle": "UK Gov Data",
+        "url": "https://environment.data.gov.uk/dataset/f083c5dc-504f-4428-9811-a1b2519fa279",
+        "displayedUrl": "https://environment.data.gov.uk › dataset",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 2m. Summary ... All content is available under the Open Government Licence v3.0, except where otherwise stated.",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "LIDAR Composite Digital Surface Model (DSM) - 1m",
+        "websiteTitle": "Data.gov.uk",
+        "url": "https://www.data.gov.uk/dataset/cf3f1137-c12b-44a1-a835-e80fe4a60b92/lidar-composite-digital-surface-model-dsm-1m",
+        "displayedUrl": "https://www.data.gov.uk › dataset › lidar-composite-dig...",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 1m. Publisher: Environment ... All content is available under the Open Government Licence v3.0, except ...",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "LIDAR Composite First Return Digital Surface Model ...",
+        "websiteTitle": "Data.gov.uk",
+        "url": "https://environment.data.gov.uk/dataset/54167602-36c8-4b2b-80ec-ebb6267b6b1e",
+        "displayedUrl": "https://environment.data.gov.uk › dataset",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 2m · LIDAR Composite Digital ... All content is available under the Open Government Licence v3.0, except where ...",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "LIDAR Composite Digital",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Search directory - National Data Library",
+        "websiteTitle": "UK Gov Data",
+        "url": "https://www.data.gov.uk/search?page=2&q=composite+handle&query=composite+handle",
+        "displayedUrl": "https://www.data.gov.uk › search",
+        "description": "Open Government ... LIDAR Composite Digital Surface Model (DSM) - 1m ... All content is available under the Open Government Licence v3.",
+        "emphasizedKeywords": [
+          "Open Government",
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Search directory - National Data Library",
+        "websiteTitle": "Data.gov.uk",
+        "url": "https://www.data.gov.uk/search?q=composite+lidar+dsm",
+        "displayedUrl": "https://www.data.gov.uk › search",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 1m. Publisher. Environment ... All content is available under the Open Government Licence v3.0, except ...",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Defra Data Services Platform",
+        "websiteTitle": "Data.gov.uk",
+        "url": "https://environment.data.gov.uk/defra/results?tags=LIDAR",
+        "displayedUrl": "https://environment.data.gov.uk › defra › results",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 1m. Environment Agency. The ... All content is available under the Open Government Licence v3.0, except where ...",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Search directory - National Data Library",
+        "websiteTitle": "UK Gov Data",
+        "url": "https://www.data.gov.uk/search?page=4&q=hidden+digital",
+        "displayedUrl": "https://www.data.gov.uk › search",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 1m. Publisher ... All content is available under the Open Government Licence v3.0 ...",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Search directory - National Data Library",
+        "websiteTitle": "Data.gov.uk",
+        "url": "https://www.data.gov.uk/search?filters%5Bformat%5D=&filters%5Bpublisher%5D=&filters%5Btopic%5D=&page=12&q=basic+vehicle&sort=recent",
+        "displayedUrl": "https://www.data.gov.uk › search",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 2m. Publisher ... All content is available under the Open Government Licence v3.0 ...",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Search directory - National Data Library",
+        "websiteTitle": "UK Gov Data",
+        "url": "https://www.data.gov.uk/search?page=8&q=also%27m+attempting",
+        "displayedUrl": "https://www.data.gov.uk › search",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 1m. Publisher ... All content is available under the Open Government Licence v3.",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "LIDAR Vegetation Object Model (VOM)",
+        "websiteTitle": "Data.gov.uk",
+        "url": "https://environment.data.gov.uk/dataset/ecae3bef-1e1d-4051-887b-9dc613c928ec",
+        "displayedUrl": "https://environment.data.gov.uk › dataset",
+        "description": "LIDAR Composite Digital Surface Model (DSM) - 2m · LIDAR Composite Digital ... All content is available under the Open Government Licence v3.0, except where ...",
+        "emphasizedKeywords": [
+          "LIDAR Composite Digital Surface",
+          "LIDAR Composite Digital",
+          "Open Government"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/lVhrmVVtQrMVtrcRX/records/ng6vWFy0ThYnRA2-0.html?signature=1eJAYvYcoVuWOXRc7nnFE"
+  },
+  {
+    "searchQuery": {
+      "term": "site:pdok.nl \"3D Basisvoorziening\" \"CC\"",
+      "url": "http://www.google.com/search?q=site%3Apdok.nl+%223D+Basisvoorziening%22+%22CC%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Apdok.nl+%223D+Basisvoorziening%22+%22CC%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [
+      {
+        "title": "3d basisvoorziening cc pdok",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&sxsrf=APpeQnviXIwXwa27X6R7YyMdih0C6FBGNQ:1792661200073&q=3d+basisvoorziening+cc+pdok&sa=X&ved=2ahUKEwi1qKGwp82XAxWuFzQIHXBtHsQQ1QJ6BAgUEAE"
+      },
+      {
+        "title": "3d basisvoorziening cc download",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&sxsrf=APpeQnviXIwXwa27X6R7YyMdih0C6FBGNQ:1792661200073&q=3d+basisvoorziening+cc+download&sa=X&ved=2ahUKEwi1qKGwp82XAxWuFzQIHXBtHsQQ1QJ6BAgVEAE"
+      },
+      {
+        "title": "3d basisvoorziening cc pdok",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&sxsrf=APpeQnviXIwXwa27X6R7YyMdih0C6FBGNQ:1792661200073&q=3d+basisvoorziening+cc+pdok&sa=X&ved=2ahUKEwi1qKGwp82XAxWuFzQIHXBtHsQQ1QJ6BAgUEAE"
+      },
+      {
+        "title": "3d basisvoorziening cc download",
+        "url": "https://www.google.com/search?sca_esv=9e44a9c1964ca618&gl=us&sxsrf=APpeQnviXIwXwa27X6R7YyMdih0C6FBGNQ:1792661200073&q=3d+basisvoorziening+cc+download&sa=X&ved=2ahUKEwi1qKGwp82XAxWuFzQIHXBtHsQQ1QJ6BAgVEAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "3D Basisvoorziening (OGC API)",
+        "websiteTitle": "PDOK",
+        "url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1",
+        "displayedUrl": "https://api.pdok.nl › kadaster › ogc",
+        "description": "3D Basisvoorziening (OGC API). De 3D Basisvoorziening is een verzameling ... CC BY 4.0. Support, PDOK Support. Metadata voor OGC API 3D Geovolumes, Bekijk ...Read more",
+        "emphasizedKeywords": [
+          "3D Basisvoorziening",
+          "3D Basisvoorziening",
+          "CC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/lVhrmVVtQrMVtrcRX/records/W6CVhjLMOAu2GVR-1.html?signature=jh8UfCAWKU85GUn60Usc"
+  },
+  {
+    "searchQuery": {
+      "term": "site:basemap.at \"Nutzungsbedingungen\" \"CC\"",
+      "url": "http://www.google.com/search?q=site%3Abasemap.at+%22Nutzungsbedingungen%22+%22CC%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Abasemap.at+%22Nutzungsbedingungen%22+%22CC%22&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "basemap.at",
+        "websiteTitle": "basemap.at",
+        "url": "https://basemap.at/",
+        "displayedUrl": "https://basemap.at",
+        "description": "Nutzungsbedingungen. basemap.at ist gemäß der Open Government Data Österreich Lizenz CC-BY 4.0 sowohl für private als auch kommerzielle Zwecke frei sowie ...Read more",
+        "emphasizedKeywords": [
+          "Nutzungsbedingungen",
+          "CC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/lVhrmVVtQrMVtrcRX/records/ZJ9SUiDbtEmzHjx-0.html?signature=bbOCG2qW4ncPDzuWxKpJ"
+  },
+  {
+    "searchQuery": {
+      "term": "site:ign.fr \"BD ORTHO\" \"licence\"",
+      "url": "http://www.google.com/search?q=site%3Aign.fr+%22BD+ORTHO%22+%22licence%22&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aign.fr+%22BD+ORTHO%22+%22licence%22&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Mises à jour Mars 2026 | IGN | Aide",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/actualites/2026-03-mises-a-jour",
+        "displayedUrl": "https://geoservices.ign.fr › actualites",
+        "description": "BD ORTHO® RVB, D972, 2025. BD TOPO® EXPRESS, FXX + DROM, hebdomadaire ... licence etalab-2.0. Fermer. Paramètres d'affichage. Choisissez un ...Read more",
+        "date": "2026-03-02T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD ORTHO",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Mises à jour Février 2026 | IGN | Aide",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/actualites/2026-02-mises-a-jour",
+        "displayedUrl": "https://geoservices.ign.fr › actualites",
+        "description": "BD Ortho RVB 20cm, HR ORTHOIMAGERY.ORTHOPHOTOS, WMS-Raster et WMTS ... licence etalab-2.0. Fermer. Paramètres d'affichage. Choisissez un ...Read more",
+        "date": "2026-02-03T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD Ortho",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "GRAND ANGLE SUR L'ORTHOPHOTO",
+        "websiteTitle": "Cartes IGN",
+        "url": "https://www.ign.fr/publications-de-l-ign/institut/Conferences-ligne/201013_orthophoto/201013_webinaire_ortho.pdf",
+        "displayedUrl": "https://www.ign.fr › 201013_webinaire_ortho",
+        "description": "Open data – Licence ouverte Etalab 2,0. ​Donnée « socle »… et ... ​BD Ortho disponible en moyenne après 6 mois. ​IRC suit de quelques ...Read more",
+        "date": "2020-10-14T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Licence",
+          "BD Ortho"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Des données et logiciels ouverts au service de la Nation",
+        "websiteTitle": "Cartes IGN",
+        "url": "https://www.ign.fr/institut/des-donnees-et-logiciels-ouverts-au-service-de-la-nation",
+        "displayedUrl": "https://www.ign.fr › institut › des-d...",
+        "description": "L'IGN diffuse depuis plusieurs années la quasi-totalité de ses données géographiques sous licence ouverte (Etalab 2.0). ... BD ORTHO : images aériennes haute ...Read more",
+        "emphasizedKeywords": [
+          "licence",
+          "BD ORTHO"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Mises à jour Novembre 2025 | IGN | Aide",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/actualites/2025-11-mises-a-jour",
+        "displayedUrl": "https://geoservices.ign.fr › actualites",
+        "description": "dition. BD ORTHO® IRC, D042, D046, D082, 2025. BD ORTHO® RVB, D042, D046 ... licence etalab-2.0. Fermer. Paramètres d'affichage. Choisissez un ...Read more",
+        "date": "2025-11-03T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD ORTHO",
+          "BD ORTHO",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Mises à jour Janvier 2026 | IGN | Aide",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/actualites/2026-01-mises-a-jour",
+        "displayedUrl": "https://geoservices.ign.fr › actualites",
+        "description": "BD ORTHO® IRC, D003, D005, D009, D010, 2025. BD ORTHO® RVB, D003, D005 ... licence etalab-2.0. Fermer. Paramètres d'affichage. Choisissez un ...Read more",
+        "date": "2026-01-05T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD ORTHO",
+          "BD ORTHO",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "BD France - Thème Végétation | IGN | Aide",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/actualites/2026-01-bdfrance-vegetation",
+        "displayedUrl": "https://geoservices.ign.fr › actualites",
+        "description": "BD ORTHO® · Ortho-Express · ORTHO-SAT® Néo · BD ORTHO® Historique ... licence etalab-2.0. Fermer. Paramètres d'affichage. Choisissez un thème ...Read more",
+        "date": "2026-01-26T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD ORTHO",
+          "BD ORTHO",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Mises à jour Septembre 2025 | IGN | Aide",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/actualites/2025-09-mises-a-jour",
+        "displayedUrl": "https://geoservices.ign.fr › actualites",
+        "description": "IGN-F - Admin Express et BD Ortho - Crocq (23). Nouveaux plans ... licence etalab-2.0. Fermer. Paramètres d'affichage. Choisissez un thème ...Read more",
+        "date": "2025-09-02T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD Ortho",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Les vignes et les vergers ont été mis à jour dans le thème ...",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/actualites/2026-01-vignes-et-vergers",
+        "displayedUrl": "https://geoservices.ign.fr › actualites",
+        "description": "Les travaux se sont appuyés sur plusieurs sources de données complémentaires, notamment la BD ORTHO ... licence etalab-2.0. Fermer ...Read more",
+        "date": "2026-01-26T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD ORTHO",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "Institut national de l'information géographique et forestière",
+        "websiteTitle": "ign.fr",
+        "url": "https://geoservices.ign.fr/documentation/donnees",
+        "displayedUrl": "https://geoservices.ign.fr › donnees",
+        "description": "BD ORTHO® · Ortho-Express · ORTHO-SAT® Néo · BD ORTHO® Historique ... licence etalab-2.0. Fermer. Paramètres d'affichage. Choisissez un thème ...Read more",
+        "date": "2026-04-30T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BD ORTHO",
+          "BD ORTHO",
+          "licence"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/lVhrmVVtQrMVtrcRX/records/CFPW5spM5Vwv1dx-1.html?signature=1ocMuL2massGcPJWojNr6"
+  }
+]

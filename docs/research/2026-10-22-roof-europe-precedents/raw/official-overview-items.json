@@ -1,0 +1,1062 @@
+[
+  {
+    "url": "https://k2-systems.com/en/digital-services/k2-base/",
+    "crawl": {
+      "loadedUrl": "https://k2-systems.com/en/digital-services/k2-base/",
+      "loadedTime": "2026-10-22T09:19:45.409Z",
+      "referrerUrl": "https://k2-systems.com/en/digital-services/k2-base/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 175988,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://k2-systems.com/en/digital-services/k2-base/",
+      "title": "K2 Base - K2 Systems",
+      "description": "Future-oriented PV planning with satellite images, graphic drawing tools, detailed load and ballast planning and PDF reports.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-GB",
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://k2-systems.com/en/digital-services/k2-base/",
+              "url": "https://k2-systems.com/en/digital-services/k2-base/",
+              "name": "K2 Base - K2 Systems",
+              "isPartOf": {
+                "@id": "https://k2-systems.com/en/#website"
+              },
+              "datePublished": "2022-04-20T09:30:12+00:00",
+              "dateModified": "2026-07-29T12:01:50+00:00",
+              "description": "Future-oriented PV planning with satellite images, graphic drawing tools, detailed load and ballast planning and PDF reports.",
+              "breadcrumb": {
+                "@id": "https://k2-systems.com/en/digital-services/k2-base/#breadcrumb"
+              },
+              "inLanguage": "en-GB",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://k2-systems.com/en/digital-services/k2-base/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://k2-systems.com/en/digital-services/k2-base/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://k2-systems.com/en/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Digital Services",
+                  "item": "https://k2-systems.com/en/digital-services/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "K2 Base"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://k2-systems.com/en/#website",
+              "url": "https://k2-systems.com/en/",
+              "name": "K2 Systems",
+              "description": "K2 Systems WP",
+              "publisher": {
+                "@id": "https://k2-systems.com/en/#organization"
+              },
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://k2-systems.com/en/?s={search_term_string}"
+                  },
+                  "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "search_term_string"
+                  }
+                }
+              ],
+              "inLanguage": "en-GB"
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://k2-systems.com/en/#organization",
+              "name": "K2 Systems",
+              "url": "https://k2-systems.com/en/",
+              "logo": {
+                "@type": "ImageObject",
+                "inLanguage": "en-GB",
+                "@id": "https://k2-systems.com/en/#/schema/logo/image/",
+                "url": "https://k2-systems.com/wp-content/uploads/2022/02/logo_512x512.png",
+                "contentUrl": "https://k2-systems.com/wp-content/uploads/2022/02/logo_512x512.png",
+                "width": 512,
+                "height": 512,
+                "caption": "K2 Systems"
+              },
+              "image": {
+                "@id": "https://k2-systems.com/en/#/schema/logo/image/"
+              },
+              "sameAs": [
+                "https://www.facebook.com/K2SystemsGmbH/"
+              ]
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "max-age=600, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a4e76c114a0e0012-ORD",
+        "content-encoding": "br",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:19:45 GMT",
+        "expires": "Thu, 19 Nov 1981 08:52:00 GMT",
+        "last-modified": "Wed, 29 Jul 2026 14:01:50 GMT",
+        "link": "<https://k2-systems.com/en/wp-json/>; rel=\"https://api.w.org/\", <https://k2-systems.com/en/wp-json/wp/v2/pages/7774>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://k2-systems.com/en/?p=7774>; rel=shortlink",
+        "pragma": "no-cache",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+        "vary": "Accept-Encoding, Accept-Encoding,Cookie",
+        "x-cache": "HIT: 3",
+        "x-cache-group": "normal",
+        "x-cacheable": "YES:600.000",
+        "x-frame-options": "\"SAMEORIGIN\" always",
+        "x-powered-by": "WP Engine",
+        "set-cookie": "__cf_bm=._bhuoFVxggVdz56dnYXIjb9oeN07C6XAEuEW6xZ1h4-1792660784.8422756-1.0.1.1-R7nbBv3PeACHh5ojegUVSlCMvQramE8xfX6XLHc96CqQywhaY3_eKjCGPcO3RwW2Uk4nfjhqpkfaThUKKN2wyWbBoaSFIdxRPwhouJAP1FzQkBhCwAO7nLdXqmobBuax; HttpOnly; SameSite=None; Secure; Path=/; Domain=k2-systems.com; Expires=Thu, 22 Oct 2026 09:49:45 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "K2 Base - K2 Systems\nOur innovative planning tool K2 Base enables fast, safe and accurate planning of PV projects. In just five steps, you can determine the optimal design of your K2 mounting system and the configuration of your PV project. And all of this is free of charge! No wonder K2 Base has become one of the most popular planning tools in the industry. \nYour browser does not support the video tag. \nThe optimum K2 mounting system in 5 steps\nGoogle Maps integration and graphic drawing tools facilitate your planning\nAutomatic determination of wind and snow loads\nIntuitive editor for drawing roofs and module arrays\nAutomatic calculation and depiction of roof fasteners and ballasting\nResult report including assembly plan and bill of materials\nData directly transferable into planning tools from SolarEdge, SMA, Fronius, Kostal, GoodWe, PV*SOL premium and archelios™ Pro!\nPlan using our intuitive software\nYou can use K2 Base via the Web through any PC or Mac without any additional software installation. This way you always have all of your projects in view – clear, in overview form and well structured. Project lists offer you useful filtering options and show you all the important parameters. Satellite images can be used as a basis for planning. Graphical work functions optimally with easy drawing tools.\nInnovative planning tool\nCreation of multiple roofs and module fields in one project\nWorking with satellite images and uploaded images (such as drone images, drawings, etc.)\nAutomatic determination of wind and snow loads\nComplete result report: everything documented precisely\nDetailed information on verification system utilisation\nAutomatic calculation and display of roof fastenings and ballasting\nEditable bill of materials with module distribution per roof\nShare projects with other people – even outside your own organisation\nStructural analysis report, assembly plans and ballasting in the form of PDF reports\nSend items directly to the shopping carts of your distributor’s webshops\nK2 Base has added an interface to the webshop of many PV and electrical wholesalers. This feature simplifies and speeds up the planning and ordering process because K2 Base sends the item list directly to the shopping cart of various webshops.\nMore videos\nStay updated: New features, updates & more\nNew product updates, webinars & industry insights – straight to your inbox.\nSubscribe now!",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# K2 Base - K2 Systems\n\nOur innovative planning tool K2 Base enables fast, safe and accurate planning of PV projects. In just five steps, you can determine the optimal design of your K2 mounting system and the configuration of your PV project. And all of this is free of charge! No wonder K2 Base has become one of the most popular planning tools in the industry.\n\n Your browser does not support the video tag.\n\n### The optimum K2 mounting system in 5 steps\n\n*   Google Maps integration and graphic drawing tools facilitate your planning\n*   Automatic determination of wind and snow loads\n*   Intuitive editor for drawing roofs and module arrays\n*   Automatic calculation and depiction of roof fasteners and ballasting\n*   Result report including assembly plan and bill of materials\n\nData directly transferable into planning tools from SolarEdge, SMA, Fronius, Kostal, GoodWe, PV\\*SOL premium and archelios™ Pro!\n\n![](https://k2-systems.com/wp-content/uploads/2022/04/K2-Base-work.jpg)![](https://k2-systems.com/wp-content/uploads/2022/04/K2-Base-work.jpg)\n\n### Plan using our intuitive software\n\nYou can use K2 Base via the Web through any PC or Mac without any additional software installation. This way you always have all of your projects in view – clear, in overview form and well structured. Project lists offer you useful filtering options and show you all the important parameters. Satellite images can be used as a basis for planning. Graphical work functions optimally with easy drawing tools.\n\n![](https://k2-systems.com/wp-content/uploads/2022/04/K2-Base-info-01.jpg)\n\n### Innovative planning tool\n\n*   Creation of multiple roofs and module fields in one project\n*   Working with satellite images and uploaded images (such as drone images, drawings, etc.)\n*   Automatic determination of wind and snow loads\n\n![](https://k2-systems.com/wp-content/uploads/2022/04/K2-Base-info-02.jpg)\n\n### Complete result report: everything documented precisely\n\n*   Detailed information on verification system utilisation\n*   Automatic calculation and display of roof fastenings and ballasting\n*   Editable bill of materials with module distribution per roof\n*   Share projects with other people – even outside your own organisation\n*   Structural analysis report, assembly plans and ballasting in the form of PDF reports\n\n![](https://k2-systems.com/wp-content/uploads/2022/04/K2-Base-info-03.jpg)\n\n### Send items directly to the shopping carts of your distributor’s webshops\n\nK2 Base has added an interface to the webshop of many PV and electrical wholesalers. This feature simplifies and speeds up the planning and ordering process because K2 Base sends the item list directly to the shopping cart of various webshops**.**\n\n![](https://k2-systems.com/wp-content/uploads/2024/04/K2-Base-info-webshop-en-3.gif)\n\n![Explained in brief: K2 Base demo](https://k2-systems.com/wp-content/uploads/2022/04/video-bg.jpg)![Explained in brief: K2 Base demo](https://k2-systems.com/wp-content/uploads/2022/04/video-bg-sm.jpg)\n\n### More videos\n\n ![](https://k2-systems.com/wp-content/themes/k2-systems-wordpress-website-theme/assets/img/right.png)![](https://k2-systems.com/wp-content/themes/k2-systems-wordpress-website-theme/assets/img/right.png)\n\n### Stay updated: New features, updates & more\n\nNew product updates, webinars & industry insights – straight to your inbox.\n\n[Subscribe now!](https://share-eu1.hsforms.com/2_vsbtd3dRjmcWAzLIOTzEQ2ebmho)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://easy-pv.co.uk/",
+    "crawl": {
+      "loadedUrl": "https://easy-pv.co.uk/",
+      "loadedTime": "2026-10-22T09:19:46.311Z",
+      "referrerUrl": "https://easy-pv.co.uk/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 7780,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://easy-pv.co.uk/",
+      "title": "Easy PV",
+      "description": "Easy PV - solar PV and battery storage system design made easy peasy.",
+      "author": null,
+      "keywords": null,
+      "languageCode": null,
+      "jsonLd": null,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-length": "7780",
+        "content-security-policy": "script-src 'self' 'wasm-unsafe-eval' *.midsummer.uk static.easy-pv.co.uk https://js.stripe.com https://pay.gocardless.com/billing/static/dropin/v2/initialise.js khms.googleapis.com maps.googleapis.com; worker-src blob:; frame-ancestors 'self' midsummerwholesale.co.uk https://*.midsummerwholesale.co.uk/ midsummer.ie midsummerenergy.co.uk admin.midsummerenergy.co.uk solfit.bimblesolar.com;",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:19:46 GMT",
+        "referrer-policy": "same-origin",
+        "server": "Apache/2.4.68 (Debian)",
+        "strict-transport-security": "max-age=63072000; includeSubdomains",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Easy PV\nPowerful solutions at every step of the design, sales and installation process \nMidsummer’s Easy PV software has been developed to help installers master the complex process of project design and optimisation of solar energy set-up. It effortlessly creates solar array systems, generates comprehensive system specifications, manages documentation and incorporates a seamless one-stop system purchase.\nComprehensive PV system design\nEliminate project uncertainty with Easy PV’s best-in-class software solutions. Engage your customers with detailed project quotes and interactive 3D models.\nSeamless project management\nOptimise and evaluate near-shading challenges, calculate array weight and wind loading, and share project data with your entire team.\nSimple one-stop purchasing from your trade account\nLink your Midsummer account to access trade prices, live product availability, specialist sales support and next-day delivery.\nEasy PV is free to use, or upgrade to Easy PV Pro for access to specialist features \nBasic\nEverything you need to design and sell solar PV systems to your customers.\nFree\n2D & 3D roof design\nPV system design\nPerformance calculations\nSelf consumption estimation\nStructural analysis\nAutomatic schematic\nFinancial projections\nAutomatic project pricing calculator\nCustomer proposal\nPayment options\nAutomated DNO forms\nPro\nExtra features to help your team collaborate and manage projects efficiently.\n£35 / month\nAll basic features, plus:\nUnlimited use of Magic design mode\nProject sharing & team management\nCRM integration\nProject file management\nEmail templates & sending\nProject status\nPre-installation survey\nPost install photographic record\nE-signing\nCustomer proposal branding and customisation\nAdditional forms and reports\nAutomatic DNO application\nPriority technical support\nEnterprise\nA bespoke, customised version of Easy PV configured to meet your needs.\nCall to discuss\nUnlimited users\nCustom branding\nCustom forms and reports\nUser roles\nCustom CRM integration\nDedicated server\nTwo-factor-authentication\nDedicated support & training\nJoin the Easy PV community! \nWhether you're a seasoned solar professional or a newcomer to the world of PV, we've got you covered. Simply register for Easy PV and start to explore all the latest features!\n2,000+\nCompanies using Easy PV\n33,000+\nProjects created each month\n20+\nBespoke enterprise solutions\nEasy PV is developed by the team at Midsummer \nWe’re one of the UK’s largest and longest established distributors of renewable energy systems. We’ve used our decades of experience selling and installing PV systems to build cutting-edge software that will help your business grow.\nEasy PV is developed by the team at Midsummer \nAs one of the UK’s leading distributors of renewable energy systems, products and cutting-edge solar design software, Midsummer champion green energy for positive change. \nOur dedicated support team is here to address your questions, provide guidance to enable as many people as possible to harness, store and intelligently use renewable energy. \nStreamlining the solar system design process \nWhether you're expanding your current projects, enhancing customer engagement, or just starting out, Easy PV supports you with the data, detail and features you need to make informed decisions. \nEasy PV benefits everyone under the sun!\n“ The user-friendly interface and Easy-PV platform have simplified our procurement processes significantly, streamlining the journey from product selection to finalising the order. ” \n“ Love working with Midsummer! They have a good range of products and Easy PV is so useful in not only designing systems but also managing the recurring paperwork that's required. ” \n“ Easy PV has streamlined our process and allowed us to present a high-level offering to the client. The easy integration from building a material list to ordering has ensured we get the correct materials to site. ” \n“ Midsummer is a remarkable company that has consistently provided exceptional service and top-notch products in the renewable energy sector. Their services have exceeded all my expectations. ” \nFrequently asked questions\nIs Easy PV easy to use?\nCan I purchase the components needed for my design from my trade account?\nDoes Easy PV generate MCS-compliant reports?\nWhat are the key advantages of upgrading to Easy PV Pro?\nDoes the customer report include my trade prices or do I need to edit the quote?\nStart your solar success with Easy PV\nWhether you're a solo installer or part of a larger team, Easy PV scales with you. It's as valuable for a single installation as it is for managing multiple complex projects.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Easy PV\n\n**Powerful solutions at every step of the design, sales and installation process**\n\nMidsummer’s Easy PV software has been developed to help installers master the complex process of project design and optimisation of solar energy set-up. It effortlessly creates solar array systems, generates comprehensive system specifications, manages documentation and incorporates a seamless one-stop system purchase.\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/panel-kneader.webp)\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/1a.png) ![](https://easy-pv.co.uk/static/graphics/landing-page/accordion-1b.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/1a.png) ![](https://easy-pv.co.uk/static/graphics/landing-page/accordion-1b.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/2a.svg) ![](https://easy-pv.co.uk/static/site/landing-page/accordion/2b.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/3a.svg) ![](https://easy-pv.co.uk/static/site/landing-page/accordion/3b.svg)\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nComprehensive PV system design\n\nEliminate project uncertainty with Easy PV’s best-in-class software solutions. Engage your customers with detailed project quotes and interactive 3D models.\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nSeamless project management\n\nOptimise and evaluate near-shading challenges, calculate array weight and wind loading, and share project data with your entire team.\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nSimple one-stop purchasing from your trade account\n\nLink your Midsummer account to access trade prices, live product availability, specialist sales support and next-day delivery.\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/1a.png) ![](https://easy-pv.co.uk/static/graphics/landing-page/accordion-1b.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/1a.png) ![](https://easy-pv.co.uk/static/graphics/landing-page/accordion-1b.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/2a.svg) ![](https://easy-pv.co.uk/static/site/landing-page/accordion/2b.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/accordion/3a.svg) ![](https://easy-pv.co.uk/static/site/landing-page/accordion/3b.svg)\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/panel-kneader.webp)\n\nEasy PV is free to use, or upgrade to **Easy PV Pro** for access to specialist features\n\nBasic\n\nEverything you need to design and sell solar PV systems to your customers.\n\nFree\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\n2D & 3D roof design\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nPV system design\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nPerformance calculations\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nSelf consumption estimation\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nStructural analysis\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nAutomatic schematic\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nFinancial projections\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nAutomatic project pricing calculator\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nCustomer proposal\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nPayment options\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nAutomated DNO forms\n\nPro\n\nExtra features to help your team collaborate and manage projects efficiently.\n\n£35 / month\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nAll basic features, plus:\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nUnlimited use of Magic design mode\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nProject sharing & team management\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nCRM integration\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nProject file management\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nEmail templates & sending\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nProject status\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nPre-installation survey\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nPost install photographic record\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nE-signing\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nCustomer proposal branding and customisation\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nAdditional forms and reports\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nAutomatic DNO application\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nPriority technical support\n\nEnterprise\n\nA bespoke, customised version of Easy PV configured to meet your needs.\n\nCall to discuss\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nUnlimited users\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nCustom branding\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nCustom forms and reports\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nUser roles\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nCustom CRM integration\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nDedicated server\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nTwo-factor-authentication\n\n![](https://easy-pv.co.uk/static/graphics/landing-page/right-arrow.svg)\n\nDedicated support & training\n\n**Join the Easy PV community!**\n\nWhether you're a seasoned solar professional or a newcomer to the world of PV, we've got you covered. Simply register for Easy PV and start to explore all the latest features!\n\n2,000+\n\nCompanies using Easy PV\n\n33,000+\n\nProjects created each month\n\n20+\n\nBespoke enterprise solutions\n\n![](https://easy-pv.co.uk/static/site/landing-page/scroll/2-back.svg) ![](https://easy-pv.co.uk/static/site/landing-page/scroll/2-front.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/scroll/3-back.svg) ![](https://easy-pv.co.uk/static/site/landing-page/scroll/3-front.svg)\n\n**Easy PV is developed by the team at Midsummer**\n\n![](https://easy-pv.co.uk/static/graphics/logos/midsummer-white-no-strapline.svg)\n\nWe’re one of the UK’s largest and longest established distributors of renewable energy systems. We’ve used our decades of experience selling and installing PV systems to build cutting-edge software that will help your business grow.\n\n**Easy PV is developed by the team at Midsummer**\n\n![](https://easy-pv.co.uk/static/graphics/logos/midsummer-white-no-strapline.svg)\n\nAs one of the UK’s leading distributors of renewable energy systems, products and cutting-edge solar design software, Midsummer champion green energy for positive change.\n\nOur dedicated support team is here to address your questions, provide guidance to enable as many people as possible to harness, store and intelligently use renewable energy.\n\n**Streamlining the solar system design process**\n\nWhether you're expanding your current projects, enhancing customer engagement, or just starting out, Easy PV supports you with the data, detail and features you need to make informed decisions.  \n\nEasy PV benefits everyone under the sun!\n\n**“** The user-friendly interface and Easy-PV platform have simplified our procurement processes significantly, streamlining the journey from product selection to finalising the order. **”**\n\n**“** Love working with Midsummer! They have a good range of products and Easy PV is so useful in not only designing systems but also managing the recurring paperwork that's required. **”**\n\n**“** Easy PV has streamlined our process and allowed us to present a high-level offering to the client. The easy integration from building a material list to ordering has ensured we get the correct materials to site. **”**\n\n**“** Midsummer is a remarkable company that has consistently provided exceptional service and top-notch products in the renewable energy sector. Their services have exceeded all my expectations. **”**\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/glowgreen.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/fresh.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/greenscape.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/westech.png)\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/bosch.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/warmauk.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/so-energy.svg)\n\n![](https://easy-pv.co.uk/static/site/landing-page/companies/ovo.svg)\n\nFrequently asked questions\n\nIs Easy PV easy to use?\n\n![](https://easy-pv.co.uk/static/site/landing-page/down-arrow.svg)\n\nCan I purchase the components needed for my design from my trade account?\n\n![](https://easy-pv.co.uk/static/site/landing-page/down-arrow.svg)\n\nDoes Easy PV generate MCS-compliant reports?\n\n![](https://easy-pv.co.uk/static/site/landing-page/down-arrow.svg)\n\nWhat are the key advantages of upgrading to Easy PV Pro?\n\n![](https://easy-pv.co.uk/static/site/landing-page/down-arrow.svg)\n\nDoes the customer report include my trade prices or do I need to edit the quote?\n\n![](https://easy-pv.co.uk/static/site/landing-page/down-arrow.svg)\n\nStart your solar success with Easy PV\n\nWhether you're a solo installer or part of a larger team, Easy PV scales with you. It's as valuable for a single installation as it is for managing multiple complex projects.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.opensolar.com/pro/",
+    "crawl": {
+      "loadedUrl": "https://www.opensolar.com/pro/",
+      "loadedTime": "2026-10-22T09:19:47.815Z",
+      "referrerUrl": "https://www.opensolar.com/pro/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 227691,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.opensolar.com/pro/",
+      "title": "Pro | Free AI-Powered Solar Software by OpenSolar",
+      "description": "Design, sell, and manage solar projects faster with OpenSolar — the free AI-powered solar software trusted by 28,000+ professionals worldwide.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_US"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "Pro"
+        },
+        {
+          "property": "og:description",
+          "content": "Design, sell, and manage solar projects faster with OpenSolar — the free AI-powered solar software trusted by 28,000+ professionals worldwide."
+        },
+        {
+          "property": "og:url",
+          "content": "https://www.opensolar.com/pro/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "OpenSolar"
+        },
+        {
+          "property": "article:publisher",
+          "content": "https://www.facebook.com/OpenSolarGlobal/"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-06-01T20:36:23+00:00"
+        },
+        {
+          "property": "og:image",
+          "content": "https://i0.wp.com/www.opensolar.com/wp-content/uploads/2024/07/OpenSolar-logo-for-WP.png?fit=1200%2C675&quality=80&ssl=1"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "675"
+        },
+        {
+          "property": "og:image:type",
+          "content": "image/png"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://www.opensolar.com/pro/",
+              "url": "https://www.opensolar.com/pro/",
+              "name": "Pro | Free AI-Powered Solar Software by OpenSolar",
+              "isPartOf": {
+                "@id": "https://www.opensolar.com/#website"
+              },
+              "datePublished": "2025-01-02T06:20:56+00:00",
+              "dateModified": "2026-06-01T20:36:23+00:00",
+              "description": "Design, sell, and manage solar projects faster with OpenSolar — the free AI-powered solar software trusted by 28,000+ professionals worldwide.",
+              "breadcrumb": {
+                "@id": "https://www.opensolar.com/pro/#breadcrumb"
+              },
+              "inLanguage": "en-US",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://www.opensolar.com/pro/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.opensolar.com/pro/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.opensolar.com/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Pro"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.opensolar.com/#website",
+              "url": "https://www.opensolar.com/",
+              "name": "OpenSolar",
+              "description": "Solar Design And Proposal Software",
+              "publisher": {
+                "@id": "https://www.opensolar.com/#organization"
+              },
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://www.opensolar.com/?s={search_term_string}"
+                  },
+                  "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "search_term_string"
+                  }
+                }
+              ],
+              "inLanguage": "en-US"
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.opensolar.com/#organization",
+              "name": "OpenSolar",
+              "url": "https://www.opensolar.com/",
+              "logo": {
+                "@type": "ImageObject",
+                "inLanguage": "en-US",
+                "@id": "https://www.opensolar.com/#/schema/logo/image/",
+                "url": "https://www.opensolar.com/wp-content/uploads/2026/04/OpenSolar-Horizontal-Color.svg",
+                "contentUrl": "https://www.opensolar.com/wp-content/uploads/2026/04/OpenSolar-Horizontal-Color.svg",
+                "caption": "OpenSolar"
+              },
+              "image": {
+                "@id": "https://www.opensolar.com/#/schema/logo/image/"
+              },
+              "sameAs": [
+                "https://www.facebook.com/OpenSolarGlobal/",
+                "https://x.com/opensolar",
+                "https://www.instagram.com/open.solar/",
+                "https://www.linkedin.com/company/14522819",
+                "https://www.youtube.com/channel/UCw3mdQ_ilIq9ZrPpCa_VOnA/videos"
+              ],
+              "description": "The world's leading solar design and proposal software. Free of charge so you're free to grow."
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "max-age=600, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e76c220aa678de-LAX",
+        "content-encoding": "br",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:19:47 GMT",
+        "last-modified": "Thu, 22 Oct 2026 09:19:47 GMT",
+        "link": "<https://www.opensolar.com/wp-json/>; rel=\"https://api.w.org/\", <https://www.opensolar.com/wp-json/wp/v2/pages/8355>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.opensolar.com/?p=8355>; rel=shortlink",
+        "server": "cloudflare",
+        "vary": "Accept-Encoding, Accept-Encoding,Cookie",
+        "x-cache": "MISS",
+        "x-cache-group": "normal",
+        "x-cacheable": "SHORT",
+        "x-powered-by": "WP Engine",
+        "set-cookie": "__cf_bm=b05IpBpDRP44cHh5SmgXtNQlBP3irHLMViryaElAD2o-1792660787.5277677-1.0.1.1-oHut9mvUdyhP4du4P0M2v.acmTje2hpOECdHBCsQb8jaJOOLBF7khCWeMw0PrxoZ4fD7wBc5AbW2nSWJ2P1WH8gtZ5wNYiDsujI.s8L0VMriIg5SwxFZwjoJDvFIHklZ; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.opensolar.com; Expires=Thu, 22 Oct 2026 09:49:47 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Free AI-Powered Solar Software by OpenSolar\nJoin OpenSolar’s worldwide community of 28,000+ solar electrification professionals\nUse our free, class-leading, AI-powered software to design, sell and manage projects.\nThe world’s fastest, most accurate solar design tool, now with Ada\nAda, our AI intelligence will auto design multiple systems, according to your design preferences in seconds, for free.\nSell more often with dynamic, customizable proposals\nCreate beautiful, fully customizable customer proposals on any device with flexible payments, real-time updates, and integrated communication tools – branded to your business for a competitive edge.\nPresent a powerful view of your customer’s home, before and after solar electrification, including solar, batteries, battery retrofits, EVs and heat pumps.\nImprove your cash flow with a built in solar payments system\nEasily generated, branded invoices with easy ways for your customer to pay, plus flexible payment milestones and automated payment reminders.\nShop Hardware\nEasily order and manage equipment purchases directly within your design experience. Get an instantly calculated, accurate bill of materials, with a comprehensive hardware catalogue and trade and bulk discounts.\nCollaborate closely with your distributor account manager, in your project on OpenSolar, for reliable, predictable hardware ordering.\nMore world-class features\nImagery Marketplace\nBuy premium imagery inside OpenSolar when a project needs it. Use the imagery option that fits the job, with clearer setup, purchase controls, and provider choice by market.\nMore \nBuilt-in CRM\nGreat designs and proposals work better when there’s a fully featured lead capture and customer relationship management (CRM) system to manage your customers.\nMore \nRoles & permissions\nManage your projects and workflows easily with custom roles, teams, and collaboration tools\nMore \nE-signature & payments\nTime kills deals, which is why with OpenSolar you get a fully integrated e-signature and online payment processing system. Straight from the proposal, your customers can sign your contracts and pay online.\nMore \nExpo\nThe world’s first online solar expo, available 24/7, 365 days a year.\nMore \nOn-demand permitting\nShop and purchase made-to-order solar permitting and engineering packages right from within OpenSolar at the click of a button.\nMore \nMulti-device support\nGrow your business with one platform – on any device, from anywhere. Tablet or smartphone, iOS or Android, PC or Mac, we’ve got you covered.\nMore \nOpenSolar API\nOur enterprise-grade API lets you connect OpenSolar to your CRM, accounting, ops, incentive tools, and other business systems.\nMore \nIntegrated Finance\nOffer flexible financing options from leading providers, fully integrated into your customer proposals.\nMore",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Free AI-Powered Solar Software by OpenSolar\n\n## \n\nJoin OpenSolar’s worldwide community of **28,000+** solar electrification professionals\n\nUse our free, class-leading, AI-powered software to design, sell and manage projects.\n\n![A screenshot of the OpenSolar interface after the 'Ada' AI assistant has generated solar designs. The 'Ada' chat window on the left shows it has 'Complete'd a 'Max Offset' system and is now creating a 'Max Fit' system. The main panel on the right displays the completed AI design's details, breaking the system down into four different panel arrays on various roof faces (South East, South West, etc.).](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/09/1-9.jpg?fit=1200%2C1000&quality=89&ssl=1) \n\n## \n\nThe world’s fastest, most accurate solar design tool, now with Ada\n\nAda, our AI intelligence will auto design multiple systems, according to your design preferences in seconds, for [free](https://www.opensolar.com/free/).\n\n![A screenshot of an interactive OpenSolar customer proposal, showing both a 3D model and a satellite view of a home. The 3D model illustrates the energy flow from the rooftop solar panels to the home, batteries, and two electric vehicles. A statistics card on the left highlights key benefits like \"29% Self-powered\" and \"56 hrs Essential Backup,\" while an interactive \"Your System\" card on the right allows the customer to select different system sizes and components.](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/09/2-7.jpg?fit=1200%2C1000&quality=89&ssl=1) \n\n## \n\nSell more often with dynamic, customizable proposals\n\nCreate beautiful, fully customizable customer proposals on any device with flexible payments, real-time updates, and integrated communication tools – branded to your business for a competitive edge.\n\nPresent a powerful view of your customer’s home, before and after solar electrification, including solar, batteries, battery retrofits, EVs and heat pumps.\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/customer-financing.jpg?fit=1256%2C1000&quality=89&ssl=1) \n\n## \n\nImprove your cash flow with a built in solar payments system\n\nEasily generated, branded invoices with easy ways for your customer to pay, plus flexible payment milestones and automated payment reminders.\n\n![Screenshot of the OpenSolar shopping cart interface, displaying a list of selected solar products and quantities on the left, alongside an order summary on the right that itemizes subtotals by different distributors before a final checkout button.](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2026/03/OpenSolar-Multi-Supplier-Cart.png?fit=1200%2C1000&quality=80&ssl=1) \n\n## \n\nShop Hardware\n\nEasily order and manage equipment purchases directly within your design experience. Get an instantly calculated, accurate bill of materials, with a comprehensive hardware catalogue and trade and bulk discounts.\n\nCollaborate closely with your distributor account manager, in your project on OpenSolar, for reliable, predictable hardware ordering.\n\n## \n\nMore world-class features\n\n[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-photo_library.png?fit=97%2C96&quality=80&ssl=1)\n\nImagery Marketplace\n\nBuy premium imagery inside OpenSolar when a project needs it. Use the imagery option that fits the job, with clearer setup, purchase controls, and provider choice by market.\n\nMore\n\n\n\n](https://www.opensolar.com/premium-imagery/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-call_log.png?fit=97%2C96&quality=80&ssl=1)\n\nBuilt-in CRM\n\nGreat designs and proposals work better when there’s a fully featured lead capture and customer relationship management (CRM) system to manage your customers.\n\nMore\n\n\n\n](https://www.opensolar.com/crm/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-admin_panel_settings.png?fit=97%2C96&quality=80&ssl=1)\n\nRoles & permissions\n\nManage your projects and workflows easily with custom roles, teams, and collaboration tools\n\nMore\n\n\n\n](https://www.opensolar.com/rolesandpermissions/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-signature.png?fit=97%2C96&quality=80&ssl=1)\n\nE-signature & payments\n\nTime kills deals, which is why with OpenSolar you get a fully integrated e-signature and online payment processing system. Straight from the proposal, your customers can sign your contracts and pay online.\n\nMore\n\n\n\n](https://www.opensolar.com/e-signature-payments/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-public.png?fit=96%2C96&quality=80&ssl=1)\n\nExpo\n\nThe world’s first online solar expo, available 24/7, 365 days a year.\n\nMore\n\n\n\n](https://www.opensolar.com/expo/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-license.png?fit=97%2C96&quality=80&ssl=1)\n\nOn-demand permitting\n\nShop and purchase made-to-order solar permitting and engineering packages right from within OpenSolar at the click of a button.\n\nMore\n\n\n\n](https://www.opensolar.com/permitting/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-devices.png?fit=97%2C96&quality=80&ssl=1)\n\nMulti-device support\n\nGrow your business with one platform – on any device, from anywhere. Tablet or smartphone, iOS or Android, PC or Mac, we’ve got you covered.\n\nMore\n\n\n\n](https://www.opensolar.com/salesmode/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-deployed_code.png?fit=97%2C96&quality=80&ssl=1)\n\nOpenSolar API\n\nOur enterprise-grade API lets you connect OpenSolar to your CRM, accounting, ops, incentive tools, and other business systems.\n\nMore\n\n\n\n](https://www.opensolar.com/api/)[\n\n![](https://i0.wp.com/www.opensolar.com/wp-content/uploads/2025/01/icon-currency_pound-1.png?fit=96%2C96&quality=80&ssl=1)\n\nIntegrated Finance\n\nOffer flexible financing options from leading providers, fully integrated into your customer proposals.\n\nMore\n\n\n\n](https://www.opensolar.com/integrated-finance/)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.memodo.de/m/werkzeuge/",
+    "crawl": {
+      "loadedUrl": "https://www.memodo.de/m/werkzeuge/",
+      "loadedTime": "2026-10-22T09:19:49.366Z",
+      "referrerUrl": "https://www.memodo.de/m/werkzeuge/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 17769,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.memodo.de/m/werkzeuge/",
+      "title": "Dein digitaler Werkzeugkasten - Memodo GmbH",
+      "description": "Speicherkatalog, Wallbox- & Ladesäulen Leitfaden, Auslegungstool & Förderübersicht: Alle Tools & Infos für deinen Arbeitsalltag. ",
+      "author": null,
+      "keywords": null,
+      "languageCode": "de",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Werkzeuge"
+        },
+        {
+          "property": "og:description",
+          "content": "Speicherkatalog, Wallbox- & Ladesäulen Leitfaden, Auslegungstool & Förderübersicht: Alle Tools & Infos für deinen Arbeitsalltag."
+        },
+        {
+          "property": "og:image",
+          "content": "https://www.memodo.de/m/fileadmin/dach/werkzeuge/werkzeuge.png"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=0, no-transform",
+        "content-encoding": "br",
+        "content-language": "de-DE",
+        "content-length": "17769",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:19:49 GMT",
+        "expires": "Thu, 22 Oct 2026 09:19:49 GMT",
+        "referrer-policy": "same-origin",
+        "server": "openresty",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff, nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-sfc-state": "StaticFileCache - via Fallback Middleware",
+        "x-sfc-tags": "pageId_6412, sfc_domain_www_memodo_de",
+        "x-ua-compatible": "IE=edge",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Dein digitaler Werkzeugkasten - Memodo GmbH\nDein digitaler Werkzeugkasten immer dabei: Vom Speicherkatalog zum Wallbox- & Ladesäulen Leitfaden bis zum Auslegungstool. Hier findest du alles, was du für deinen Arbeitsalltag als Installateur*in, Solarteur*in und Heizungsbauer brauchst. Auch unsere Förderübersicht und hilfreiche Tools, wie den Autarkiegrad-Rechner findest du auf dieser Seite.\nUnabhängigkeitsrechner \nBerechne mit dem Unabhängigkeitsrechner den Eigenverbrauchsanteil und Autarkiegrad.\nZum Unabhängigkeitsrechner\nPV-Auslegungstools \nOptimiere dein PV-Projekt mit den kostenlosen Auslegungstools unserer Hersteller. Sie helfen dir dabei, dein Projekt schnell und genau zu planen.\nJetzt entdecken\nErfassungsbögen \nHier findest du unsere Erfassungsbögen für Unterkonstruktionen Gewerbespeicher und Heizsysteme. Vertraue bei der Planung auf unsere Experten.\nZu den Erfassungsbögen",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Dein digitaler Werkzeugkasten - Memodo GmbH\n\n![Memodo Werkzeuge](https://www.memodo.de/m/fileadmin/dach/werkzeuge/werkzeuge.png \"Werkzeuge\")\n\nDein digitaler Werkzeugkasten immer dabei: Vom Speicherkatalog zum Wallbox- & Ladesäulen Leitfaden bis zum Auslegungstool. Hier findest du alles, was du für deinen Arbeitsalltag als Installateur\\*in, Solarteur\\*in und Heizungsbauer brauchst. Auch unsere Förderübersicht und hilfreiche Tools, wie den Autarkiegrad-Rechner findest du auf dieser Seite.\n\n## Unabhängigkeitsrechner\n\nBerechne mit dem Unabhängigkeitsrechner den Eigenverbrauchsanteil und Autarkiegrad.\n\n[Zum Unabhängigkeitsrechner](https://www.memodo.de/m/werkzeuge/unabhaengigkeitsrechner/)\n\n## PV-Auslegungstools\n\nOptimiere dein PV-Projekt mit den kostenlosen Auslegungstools unserer Hersteller. Sie helfen dir dabei, dein Projekt schnell und genau zu planen.\n\n[Jetzt entdecken](https://www.memodo.de/m/werkzeuge/pv-auslegungstools/)\n\n## Erfassungsbögen\n\nHier findest du unsere Erfassungsbögen für Unterkonstruktionen Gewerbespeicher und Heizsysteme. Vertraue bei der Planung auf unsere Experten.\n\n[Zu den Erfassungsbögen](https://www.memodo.de/m/werkzeuge/erfassungsboegen/)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.google.com/maps/documentation/solar/coverage",
+    "crawl": {
+      "loadedUrl": "https://developers.google.com/maps/documentation/solar/coverage",
+      "loadedTime": "2026-10-22T09:19:50.630Z",
+      "referrerUrl": "https://developers.google.com/maps/documentation/solar/coverage",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 28112,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.google.com/maps/documentation/solar/coverage",
+      "title": "Solar API coverage  |  Google for Developers",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "Google for Developers"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "Solar API coverage  |  Google for Developers"
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.google.com/maps/documentation/solar/coverage"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.google.com/static/maps/images/google-maps-platform-1200x675.png"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "675"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Solar API coverage"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Google Maps Platform",
+              "item": "https://developers.google.com/maps"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Environment",
+              "item": "https://developers.google.com/maps/environment"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Solar API",
+              "item": "https://developers.google.com/maps/documentation/solar"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Solar API coverage",
+              "item": "https://developers.google.com/maps/documentation/solar/coverage"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "cache-control": "no-cache, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "28112",
+        "content-security-policy": "base-uri 'self'; object-src 'none'; script-src 'strict-dynamic' 'unsafe-inline' https: http: 'nonce-pdHoAZn6pxGiXx1dnw1rMP3/ZiSDF4' 'unsafe-eval'; frame-ancestors 'self' https://codeassist.google.com https://code-assist-free-tier.corp.google.com; report-uri https://csp.withgoogle.com/csp/devsite/v2",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:19:50 GMT",
+        "expires": "0",
+        "last-modified": "Wed, 21 Oct 2026 20:55:04 GMT",
+        "pragma": "no-cache",
+        "server": "Google Frontend",
+        "strict-transport-security": "max-age=63072000; includeSubdomains; preload",
+        "vary": "Accept-Encoding",
+        "x-cloud-trace-context": "ff9cbdc80d9230e16e3782098bca27c8",
+        "x-content-type-options": "nosniff",
+        "x-xss-protection": "0"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Solar API coverage | Google for Developers\nEuropean Economic Area (EEA) developers \nThe Solar API provides solar data for hundreds of millions of buildings across the world. Imagery quality can be HIGH, MEDIUM, BASE.\nHIGH: Solar data is derived from aerial imagery captured at low-altitude and processed at 0.1 m/pixel.\nMEDIUM: Solar data is derived from enhanced aerial imagery captured at high-altitude and processed at 0.25 m/pixel.\nBASE: Solar data is derived from enhanced satellite imagery processed at 0.25 m/pixel.\nThe Google Maps Platform team is constantly working to improve coverage for our API services. This interactive map shows where HIGH, MEDIUM, and BASE quality solar data is available.\nThe coverage map also shows where detected arrays data is available.\nLatitude and longitude coordinates can be obtained using other Google Maps Platform APIs, such as the Geocoding API or the Places API (New). Coordinates can also be extracted from maps created using the Maps Javascript API. For example, see Getting Lat/Lng from a Click Event.\nDrag the map to show a specific area, then zoom in for a detailed view.\nDownload the latest coverage maps:\nHIGH imagery quality GeoJSON \nMEDIUM imagery quality GeoJSON \nBASE imagery quality GeoJSON \nDetected Arrays coverage GeoJSON",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Solar API coverage | Google for Developers\n\n**European Economic Area (EEA) developers**\n\nThe Solar API provides solar data for hundreds of millions of buildings across the world. [Imagery quality](https://developers.google.com/maps/documentation/solar/reference/rest/v1/dataLayers#imageryquality) can be `HIGH`, `MEDIUM`, `BASE`.\n\n*   **`HIGH`:** Solar data is derived from aerial imagery captured at low-altitude and processed at 0.1 m/pixel.\n*   **`MEDIUM`:** Solar data is derived from enhanced aerial imagery captured at high-altitude and processed at 0.25 m/pixel.\n*   **`BASE`:** Solar data is derived from enhanced satellite imagery processed at 0.25 m/pixel.\n\nThe Google Maps Platform team is constantly working to improve coverage for our API services. This interactive map shows where `HIGH`, `MEDIUM`, and `BASE` quality solar data is available.\n\nThe coverage map also shows where [detected arrays](https://developers.google.com/maps/documentation/solar/reference/rest/v1/buildingInsights/findClosest#detectedarrays) data is available.\n\nLatitude and longitude coordinates can be obtained using other Google Maps Platform APIs, such as the [Geocoding API](https://developers.google.com/maps/documentation/geocoding) or the [Places API (New)](https://developers.google.com/maps/documentation/places/web-service). Coordinates can also be extracted from maps created using the [Maps Javascript API](https://developers.google.com/maps/documentation/javascript). For example, see [Getting Lat/Lng from a Click Event](https://developers.google.com/maps/documentation/javascript/examples/event-click-latlng).\n\nDrag the map to show a specific area, then zoom in for a detailed view.\n\nDownload the latest coverage maps:\n\n*   [HIGH imagery quality GeoJSON](https://developers.google.com/maps/documentation/solar/coverage/20260506_HIGH.geojson)\n*   [MEDIUM imagery quality GeoJSON](https://developers.google.com/maps/documentation/solar/coverage/20260506_MEDIUM.geojson)\n*   [BASE imagery quality GeoJSON](https://developers.google.com/maps/documentation/solar/coverage/20260506_BASE.geojson)\n*   [Detected Arrays coverage GeoJSON](https://developers.google.com/maps/documentation/solar/coverage/20260506_DA.geojson)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools",
+    "crawl": {
+      "loadedUrl": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools",
+      "loadedTime": "2026-10-22T09:19:50.690Z",
+      "referrerUrl": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 512046,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools",
+      "title": "Auslegungstools für Profis | Krannich Solar",
+      "description": "Auslegungstools für Profis: Sofort verfügbar & bereit für Ihr Projekt. Palettenpreise & Projektkonditionen für Fachpartner. Schnelle Lieferung direkt ab Lager.",
+      "author": "",
+      "keywords": "",
+      "languageCode": "de-DE",
+      "openGraph": [
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Krannich"
+        },
+        {
+          "property": "og:url",
+          "content": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools"
+        },
+        {
+          "property": "og:title",
+          "content": "Auslegungstools für Profis | Krannich Solar"
+        },
+        {
+          "property": "og:description",
+          "content": "Auslegungstools für Profis: Sofort verfügbar & bereit für Ihr Projekt. Palettenpreise & Projektkonditionen für Fachpartner. Schnelle Lieferung direkt ab Lager."
+        },
+        {
+          "property": "og:image",
+          "content": "https://cdn.shop.krannich-solar.com/media/2e/18/f1/1728628798/logo-krannich-black.svg?ts=1728628798"
+        },
+        {
+          "property": "twitter:title",
+          "content": "Auslegungstools für Profis | Krannich Solar"
+        },
+        {
+          "property": "twitter:description",
+          "content": "Auslegungstools für Profis: Sofort verfügbar & bereit für Ihr Projekt. Palettenpreise & Projektkonditionen für Fachpartner. Schnelle Lieferung direkt ab Lager."
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://cdn.shop.krannich-solar.com/media/2e/18/f1/1728628798/logo-krannich-black.svg?ts=1728628798"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Services",
+              "item": "https://shop.krannich-solar.com/de-de/navigation/0196c43167ce7eefb90a230dee418aa0"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Auslegungstools",
+              "item": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools"
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization"
+        }
+      ],
+      "headers": {
+        "age": "53",
+        "cache-control": "no-cache, private",
+        "content-encoding": "gzip",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:19:50 GMT",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "server": "Apache/2.4.68 (Debian)",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "sw-currency-id": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
+        "sw-language-id": "2fbb5fe2e29a4d70aa5854ce7ce3e20b",
+        "vary": "sw-language-id,Accept-Encoding,sw-currency-id,sw-cache-hash",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "deny",
+        "x-request-id": "01a162e8dabc70488c78d0059fadd07d",
+        "set-cookie": "session-=07313fd55ebc9aa49af9b0abccfd4edc; expires=Thu, 29 Oct 2026 09:19:50 GMT; Max-Age=604800; path=/; secure; httponly; samesite=lax"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Auslegungstools für Profis | Krannich Solar\nBei der Planung einer PV-Anlage sind die kostenlosen Auslegungstools unserer Hersteller ausgesprochen hilfreich. Mit einem entspannten Klick werden die optimalen Komponenten zusammengestellt, bei mehr Beratungsbedarf hilft Ihr persönlicher Ansprechpartner oder auch der Hersteller. \nAuslegungstools für die Wechselrichterauswahl\nMithilfe der Software SOLIVIA PV PLANNER kann die von Ihnen angestrebte PV-Anlage mit allen Komponenten schnell geplant werden. \nBerechnen Sie mit dem PV-Anlagen-Rechner die optimale Enphase-Lösung für Ihr Projekt. Mit dem Kompatibilitätsrechner lässt sich blitzschnell die elektrische Kompatibilität von PV-Modulen mit der Enphase Mikro-Wechselrichter-Familie bestimmen. Mit dem Solargraf Design-Tool ist eine 3D-Visualisierung von PV-Anlagen und Batteriespeichern möglich. Des weitere kann eine Stückliste erstellt werden.\nDie Dimensionierung Ihrer PV-Anlage kann mit dem SOLAR CONFIGURATOR.4.0 einfach angegangen werden. \nMit der GoodWe Designer Software können Sie webbasierte 3D-Planung und Simulationen von PV-Projekten mithilfe von zuverlässigen Standort- und Wetterdaten durchführen. Mehrere Berichtsoptionen und eine einfache Anmeldung über ein bestehendes SEMS-Konto sind weitere Hauptmerkmale der Simulationssoftware.\nFinden Sie mithilfe von SmartDesign 2.0 die passenden Komponenten und erhalten Sie eine Simulation Ihres Energieertrags.\nBerechnen Sie mit dem KACO String Sizing Tool die passende Starngkonfiguration Ihrer Anlage, die Sie mit eine KACO new energy Wechselrichter planen.\nKOSTAL Solar Plan: Kostenfreies Auslegungstool für Installateure\nPlanen Sie Ihr nächstes Projekt, oder erhalten Sie eine Empfehlung für einen KOSTAL-Wechselrichter, der auf die geplante Solaranlage abgestimmt ist. Zudem wird der Stromverbrauch betrachtet und mit Hilfe von Standard-Lastprofilen die möglichen Eigenverbrauchs- und Autarkiepotenziale aufgezeigt.\nKOSTAL Solar Plan \nErfahren Sie alles über den neuen webbasierten KOSTAL Solar Plan. Jetzt anmelden über das KOSTAL Solar Terminal! Für den neuen KOSTAL Solar Plan benötigen Sie im KOSTAL Solar Terminal die Rolle \"Planung\" oder \"Admin\".\nZum KOSTAL Solar Terminal\nEinfach und flexibel planen mit dem SigenStack Calculator für C&I Energy Storage Design.\nMithilfe des SUNNY DESIGN PRO können Sie Ihre Anlage mit jeglichen Komponenten auslegen. \nMit der Auslegungs-Excel \"Sofar String Sizer\" können Sie Ihre Anlage planen und realisieren. Bitte laden Sie die Excel-Datei zuerst herunter. \nMit der Software \"SolarEdge Designer\" können Sie Ihre Anlage mit allen Komponeneten planen und realisieren. \nDer SolarLog Configurator hilft Ihnen bei der Auswahl des richtigen SolarLogs mit passendem Zubehör und Lizenz. \nSolaX Design ist eine leistungsstarke PV-Auslegungs- und Simulationssoftware für die Systemauslegung, Leistungssimulation und Optimierung von Photovoltaikanlagen. \nMit iSolarDesign blitzschnell Auslegungen planen und einfach nutzen. \nAuslegungstools für die Unterkonstruktion\nMithilfe von K2 BASE können Sie gemütlich die Motagesysteme Ihrer PV-Anlage auslegen und optimieren.\nLegen Sie mithilfe des PV-Configurator 3.0 die Unterkonstruktion Ihre PV-Anlage schnell und einfach aus.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Auslegungstools für Profis | Krannich Solar\n\nBei der Planung einer PV-Anlage sind die kostenlosen Auslegungstools unserer Hersteller ausgesprochen hilfreich. Mit einem entspannten Klick werden die optimalen Komponenten zusammengestellt, bei mehr Beratungsbedarf hilft Ihr persönlicher Ansprechpartner oder auch der [Hersteller](https://shop.krannich-solar.com/de-de/Services/Hersteller-Servicehotlines).\n\n### Auslegungstools für die Wechselrichterauswahl\n\nMithilfe der Software SOLIVIA PV PLANNER kann die von Ihnen angestrebte PV-Anlage mit allen Komponenten schnell geplant werden. \n\nBerechnen Sie mit dem PV-Anlagen-Rechner die optimale Enphase-Lösung für Ihr Projekt. Mit dem Kompatibilitätsrechner lässt sich blitzschnell die elektrische Kompatibilität von PV-Modulen mit der Enphase Mikro-Wechselrichter-Familie bestimmen. Mit dem Solargraf Design-Tool ist eine 3D-Visualisierung von PV-Anlagen und Batteriespeichern möglich. Des weitere kann eine Stückliste erstellt werden.\n\nDie Dimensionierung Ihrer PV-Anlage kann mit dem SOLAR CONFIGURATOR.4.0 einfach angegangen werden. \n\nMit der GoodWe Designer Software können Sie webbasierte 3D-Planung und Simulationen von PV-Projekten mithilfe von zuverlässigen Standort- und Wetterdaten durchführen. Mehrere Berichtsoptionen und eine einfache Anmeldung über ein bestehendes SEMS-Konto sind weitere Hauptmerkmale der Simulationssoftware.\n\nFinden Sie mithilfe von SmartDesign 2.0 die passenden Komponenten und erhalten Sie eine Simulation Ihres Energieertrags.\n\nBerechnen Sie mit dem KACO String Sizing Tool die passende Starngkonfiguration Ihrer Anlage, die Sie mit eine KACO new energy Wechselrichter planen.\n\n**KOSTAL Solar Plan: Kostenfreies Auslegungstool für Installateure**\n\nPlanen Sie Ihr nächstes Projekt, oder erhalten Sie eine Empfehlung für einen KOSTAL-Wechselrichter, der auf die geplante Solaranlage abgestimmt ist. Zudem wird der Stromverbrauch betrachtet und mit Hilfe von Standard-Lastprofilen die möglichen Eigenverbrauchs- und Autarkiepotenziale aufgezeigt.\n\n[KOSTAL Solar Plan](https://www.kostal-solar-electric.com/de/produkte/tools-und-anwendungen/solar-plan/) \n\nErfahren Sie alles über den neuen webbasierten KOSTAL Solar Plan. Jetzt anmelden über das KOSTAL Solar Terminal! Für den neuen KOSTAL Solar Plan benötigen Sie im KOSTAL Solar Terminal die Rolle \"Planung\" oder \"Admin\".\n\n[Zum KOSTAL Solar Terminal](https://b2ckostal.b2clogin.com/b2ckostal.onmicrosoft.com/b2c_1a_signin/oauth2/v2.0/authorize?client_id=6d565de4-a457-4e35-ac0a-408eb1d9aa5c&scope=openid%20profile%20offline_access&redirect_uri=https%3A%2F%2Fterminal.kostal-solar-electric.com&client-request-id=019f3baf-f474-7deb-bc0c-a391b9c72604&response_mode=fragment&client_info=1&nonce=019f3baf-f475-7b4e-bfa2-b6dc33aa3719&state=eyJpZCI6IjAxOWYzYmFmLWY0NzUtN2MzMS05MzljLWQ0NTQ2ZjM1ZjNkYyIsIm1ldGEiOnsiaW50ZXJhY3Rpb25UeXBlIjoicmVkaXJlY3QifX0%3D&x-client-SKU=msal.js.browser&x-client-VER=4.28.1&response_type=code&code_challenge=rRfl6ReKgb8r3FcTBy7UdnLO_BJgMaE7IPI4qYM3FYg&code_challenge_method=S256)\n\nEinfach und flexibel planen mit dem SigenStack Calculator für C&I Energy Storage Design.\n\nMithilfe des SUNNY DESIGN PRO können Sie Ihre Anlage mit jeglichen Komponenten auslegen. \n\nMit der Auslegungs-Excel \"Sofar String Sizer\" können Sie Ihre Anlage planen und realisieren. Bitte laden Sie die Excel-Datei zuerst herunter. \n\nMit der Software \"SolarEdge Designer\" können Sie Ihre Anlage mit allen Komponeneten planen und realisieren. \n\nDer SolarLog Configurator hilft Ihnen bei der Auswahl des richtigen SolarLogs mit passendem Zubehör und Lizenz. \n\nSolaX Design ist eine leistungsstarke PV-Auslegungs- und Simulationssoftware für die Systemauslegung, Leistungssimulation und Optimierung von Photovoltaikanlagen. \n\nMit iSolarDesign blitzschnell Auslegungen planen und einfach nutzen. \n\n### Auslegungstools für die Unterkonstruktion\n\nMithilfe von K2 BASE können Sie gemütlich die Motagesysteme Ihrer PV-Anlage auslegen und optimieren.\n\nLegen Sie mithilfe des PV-Configurator 3.0 die Unterkonstruktion Ihre PV-Anlage schnell und einfach aus.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.google.com/maps/documentation/solar/usage-and-billing",
+    "crawl": {
+      "loadedUrl": "https://developers.google.com/maps/documentation/solar/usage-and-billing",
+      "loadedTime": "2026-10-22T09:19:51.362Z",
+      "referrerUrl": "https://developers.google.com/maps/documentation/solar/usage-and-billing",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 28736,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.google.com/maps/documentation/solar/usage-and-billing",
+      "title": "Solar API Usage and Billing  |  Google for Developers",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "Google for Developers"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "Solar API Usage and Billing  |  Google for Developers"
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.google.com/maps/documentation/solar/usage-and-billing"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.google.com/static/maps/images/google-maps-platform-1200x675.png"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "675"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Solar API Usage and Billing"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Google Maps Platform",
+              "item": "https://developers.google.com/maps"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Environment",
+              "item": "https://developers.google.com/maps/environment"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Solar API",
+              "item": "https://developers.google.com/maps/documentation/solar"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Solar API Usage and Billing",
+              "item": "https://developers.google.com/maps/documentation/solar/usage-and-billing"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "cache-control": "no-cache, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "28736",
+        "content-security-policy": "base-uri 'self'; object-src 'none'; script-src 'strict-dynamic' 'unsafe-inline' https: http: 'nonce-yCTdG49KU4DnjYRZ7NYB5ztDHzgJt+' 'unsafe-eval'; frame-ancestors 'self' https://codeassist.google.com https://code-assist-free-tier.corp.google.com; report-uri https://csp.withgoogle.com/csp/devsite/v2",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:19:51 GMT",
+        "expires": "0",
+        "last-modified": "Wed, 21 Oct 2026 20:55:04 GMT",
+        "pragma": "no-cache",
+        "server": "Google Frontend",
+        "strict-transport-security": "max-age=63072000; includeSubdomains; preload",
+        "vary": "Accept-Encoding",
+        "x-cloud-trace-context": "04d87e3171c36b06b4de15f394a8ecc2",
+        "x-content-type-options": "nosniff",
+        "x-xss-protection": "0"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Solar API Usage and Billing | Google for Developers\nThe Solar API utilizes pay-as-you-go pricing based on SKU usage, with separate SKUs for Building Insights and Data Layers.\nYou must enable billing and include an API key or OAuth token with all API requests to use the Solar API.\nUsage limits apply, including a maximum of 600 queries per minute for both Building Insights and Data Layers APIs.\nManage your costs by setting daily quota limits in the Google Cloud console to avoid exceeding your budget.\nGoogle offers a $200 monthly credit for qualifying SKUs until February 28, 2025, after which it will be replaced by a free usage threshold.\nSKU details and pricing for the Solar API\nThe following table shows the pay-as-you-go SKU details and pricing for the Solar API.\nCategorySKU DetailsSKU Pricing\nEssentials\tSKU: Solar API Building Insights\tGlobal pricing list\nIndia pricing list\t\nEnterprise\tSKU: Solar API Data Layers\tGlobal pricing list\nIndia pricing list\t\nAdjust quota\nQuota limits define the maximum number of requests allowed for a specific API or service within a given timeframe. When the number of requests in your project reaches the quota limit, your service stops responding to requests. \nTo modify a quota value for your API, follow these steps:\nIn the Cloud console, go to Google Maps Platform > Quotas.\nSelect the API for which you want to modify the quota.\nIdentify the quota value that you want to change, and select it using the checkbox.\nClick Edit, enter a new quota value, and click Submit request.\nView quota increase requests\nTo view all quota increase requests, including past and pending requests, follow these steps:\nIn the Cloud console, go to Google Maps Platform > Quotas.\nSelect the API for which you want to view the quota increase request.\nClick Increase Requests.\nTerms of Use restrictions\nFor more information about terms of use, see policies for the Solar API and the License Restrictions section of the Google Maps Platform Terms of Service.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Solar API Usage and Billing | Google for Developers\n\n*   The Solar API utilizes pay-as-you-go pricing based on SKU usage, with separate SKUs for Building Insights and Data Layers.\n    \n*   You must enable billing and include an API key or OAuth token with all API requests to use the Solar API.\n    \n*   Usage limits apply, including a maximum of 600 queries per minute for both Building Insights and Data Layers APIs.\n    \n*   Manage your costs by setting daily quota limits in the Google Cloud console to avoid exceeding your budget.\n    \n*   Google offers a $200 monthly credit for qualifying SKUs until February 28, 2025, after which it will be replaced by a free usage threshold.\n    \n\n## SKU details and pricing for the Solar API\n\nThe following table shows the pay-as-you-go SKU details and pricing for the Solar API.\n\n| Category | SKU Details | SKU Pricing |\n| --- | --- | --- |\n| **Essentials** | [SKU: Solar API Building Insights](https://developers.google.com/maps/billing-and-pricing/sku-details#solar-building-insights-ess-sku) | [Global pricing list](https://developers.google.com/maps/billing-and-pricing/pricing#environment-pricing)  <br>[India pricing list](https://developers.google.com/maps/billing-and-pricing/pricing-india#environment-pricing) |\n| **Enterprise** | [SKU: Solar API Data Layers](https://developers.google.com/maps/billing-and-pricing/sku-details#solar-data-layers-ent-sku) | [Global pricing list](https://developers.google.com/maps/billing-and-pricing/pricing#environment-pricing)  <br>[India pricing list](https://developers.google.com/maps/billing-and-pricing/pricing-india#environment-pricing) |\n\n## Adjust quota\n\nQuota limits define the maximum number of requests allowed for a specific API or service within a given timeframe. When the number of requests in your project reaches the quota limit, your service stops responding to requests.\n\nTo modify a quota value for your API, follow these steps:\n\n1.  In the Cloud console, go to **Google Maps Platform > Quotas**.\n2.  Select the API for which you want to modify the quota.\n3.  Identify the quota value that you want to change, and select it using the checkbox.\n4.  Click **Edit**, enter a new quota value, and click **Submit request**.\n\n### View quota increase requests\n\nTo view all quota increase requests, including past and pending requests, follow these steps:\n\n1.  In the Cloud console, go to **Google Maps Platform > Quotas**.\n2.  Select the API for which you want to view the quota increase request.\n3.  Click **Increase Requests**.\n\n## Terms of Use restrictions\n\nFor more information about terms of use, see [policies for the Solar API](https://developers.google.com/maps/documentation/solar/policies) and the [License Restrictions section](https://cloud.google.com/maps-platform/terms/#3.-license.) of the Google Maps Platform Terms of Service.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections",
+    "crawl": {
+      "loadedUrl": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections",
+      "loadedTime": "2026-10-22T09:19:52.560Z",
+      "referrerUrl": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 37760,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections",
+      "title": "3D Basisvoorziening (OGC API)",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "nl",
+      "openGraph": [
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1"
+        },
+        {
+          "property": "og:title",
+          "content": "3D Basisvoorziening (OGC API)"
+        },
+        {
+          "property": "og:description",
+          "content": "De 3D Basisvoorziening is een verzameling van ruimtelijke bestanden die hoogte informatie bevatten. Deze bestanden (collecties) worden op verschillende manieren gegenereerd. Er zijn acht collecties beschikbaar.  De 3D Basisvoorziening kan gebruikt worden op schaalniveaus tussen 1:500 en 1:10.000. De bestanden zijn o.a. gebaseerd op topografie uit de Basisregistratie Grootschalige Topografie (BGT), de gebouwen uit de Basisregistratie Adressen en Gebouwen (BAG), en hoogtes uit luchtfotobeelden en het Actueel Hoogtebestand Nederland (AHN).  Meer informatie over deze dataset en overige producten zoals het downloaden van deze dataset voor analysedoeleinden of een 3D Viewer zijn te vinden op de website van PDOK en in de productbeschrijving."
+        },
+        {
+          "property": "og:logo",
+          "content": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/theme/logo-opengraph.png"
+        },
+        {
+          "property": "og:image",
+          "content": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/theme/logo-opengraph.png"
+        },
+        {
+          "property": "og:image:type",
+          "content": "image/png"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "PDOK Logo: Go to landing page"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "Content-Crs,Link",
+        "api-version": "1.0.0",
+        "cache-control": "public, max-age=3600, no-transform",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'self'; frame-ancestors 'none'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; script-src 'self' 'unsafe-inline' https://*.piwik.pro; connect-src 'self' https://*.pdok.nl https://*.piwik.pro; img-src 'self' data: https://*.pdok.nl; font-src 'self' https://cdn.jsdelivr.net;",
+        "content-type": "text/html",
+        "date": "Thu, 22 Oct 2026 09:19:52 GMT",
+        "referrer-policy": "origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "transfer-encoding": "chunked",
+        "vary": "Cookie, Accept, Accept-Encoding, Accept-Language",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "3D Basisvoorziening (OGC API)\n3D Basisvoorziening - Collections\nDe 3D Tiles Gebouwen worden gegenereerd door met behulp van de BAG-geometrie de gebouwen te modelleren in LoD 2.2. Waar geen AHN gegevens beschikbaar zijn, worden de gebouwen weergegeven in LoD 1.3. De hoogte van deze LoD 1.3 gebouwen is gebaseerd op puntenwolken gegenereerd uit luchtfotobeelden. De 3D Tiles Gebouwen zijn beschikbaar in het (OGC) 3D Tiles formaat ten behoeve van visualisatie doeleinden. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de…\nView collection as JSON \nKeywords: glTF, glb, cesium, 3D, basisvoorziening, gebouwen (bagpandid), panden, bag, 3Dtiles \nLast updated: 2026-07-01 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nDe 3D Tiles Terreinen (inclusief wegen en water) worden gegenereerd op basis van BGT-geometrieën op maaiveld niveau. De hoogte wordt sinds 2025 bepaald uit AHN-gegevens. Daarvoor werd dit gedaan op basis van puntenwolken gegenereerd uit luchtfotobeelden. De 3D Tiles Terreinen zijn beschikbaar in het (OGC) 3D Tiles formaat ten behoeve van visualisatie doeleinden. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de…\nView collection as JSON \nKeywords: glTF, glb, cesium, 3D, basisvoorziening, gebouwen (bagpandid), terreinen (bgt_fysiekvoorkomen, bronhouder), bgt, 3Dtiles \nLast updated: 2026-09-22 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nDeze collectie bevat 3D objecten voor gebouwen in LoD 2.2. Waar geen AHN gegevens beschikbaar zijn, worden de gebouwen weergegeven in LoD 1.3. De hoogte van deze LoD 1.3 gebouwen is gebaseerd op puntenwolken gegenereerd uit luchtfotobeelden. Het geleverde formaat (CityJSON) is geschikt voor analyse doeleinden in GIS programmatuur. Voor BIM software is een IFC converter beschikbaar. Deze bestanden worden jaarlijks…\nView collection as JSON \nKeywords: Attributen gebouwen: bagpandid, bouwjaar, objectid \nSchema: View schema \nLast updated: 2026-09-23 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nTemporal extent (ISO-8601): 2018-01-01 / 2025-12-31 \nDeze collectie bevat 3D objecten voor gebouwen (met attribuut informatie), terreinen, water en wegen. Het geleverde formaat (CityJSON) is geschikt voor analyse doeleinden in GIS programmatuur. Voor BIM software is een IFC converter beschikbaar. Deze bestanden worden jaarlijks geactualiseerd.\nView collection as JSON \nKeywords: Attributen gebouwen: bagpandid, bouwjaar, objectid, Attributen terreinen: bgt_fysiekvoorkomen, bronhouder, objectid \nSchema: View schema \nLast updated: 2026-09-23 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nTemporal extent (ISO-8601): 2018-01-01 / 2025-12-31 \nDeze collectie bevat 2D geometrieën van gebouwen met uitgebreide attribuut gegevens over pandhoogte in GeoPackage formaat, via bagpandid te koppelen met 3D Objecten Gebouwen. Deze bestanden worden jaarlijks geactualiseerd.\nView collection as JSON \nDownloads\nFull download 2018 (2.3GB)\nFull download 2019 (1.9GB)\nFull download 2020 (2.5GB)\nFull download 2021 (1.83GB)\nFull download 2022 (2.23GB)\nFull download 2023 (2.25GB)\nFull download 2024 (2.3GB)\nFull download 2025 (2.3GB)\nKeywords: 2D, gebouwen, geopackage, Attributen o.a: bagpandid, pandstatus, bouwjaar, lod, hoogte maaiveld, dakhoogten, daktype \nSchema: View schema \nLast updated: 2026-09-23 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nTemporal extent (ISO-8601): 2018-01-01 / 2025-12-31 \nHet DTM wordt gegenereerd op basis van AHN. Dit is een terreinmodel van heel Nederland, waarbij de maaiveld terreinhoogte ter plaatse van gebouwen en water wordt geïnterpoleerd. Het 3D DTM is beschikbaar in het Quantized Mesh formaat voor gebruik in Cesium clients. Het bevat geen attribuut informatie. . Deze wordt alleen aangeboden in de meest recent beschikbare…\nView collection as JSON \nDownloads\nFull download (12.23GB)\nKeywords: 3D, 3D Basisvoorziening, terreinen, DTM, quantized mesh, cesium \nLast updated: 2026-02-09 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nHet Digital Surface Model (DSM) representeert het aardoppervlak van Nederland inclusief objecten en vegetatie, gemaakt op basis van regelmatige puntenwolken aan de hand van luchtfoto’s, in LASZip formaat. Dit DSM bevat een afstand tussen punten van minimaal 20 cm. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de productbeschrijving.\nView collection as JSON \nKeywords: 3D, 3D Basisvoorziening, DSM, laszip, puntenwolk \nSchema: View schema \nLast updated: 2026-09-23 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nTemporal extent (ISO-8601): 2025-01-01 / 2025-12-31 \nHet Digital Surface Model (DSM) representeert het aardoppervlak van Nederland inclusief objecten en vegetatie, gemaakt op basis van regelmatige puntenwolken aan de hand van luchtfoto’s, in LASZip formaat. Dit DSM bevat een afstand tussen punten van minimaal 8 cm. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de productbeschrijving.\nView collection as JSON \nKeywords: 3D, 3D Basisvoorziening, DSM, laszip, puntenwolk \nSchema: View schema \nLast updated: 2026-09-23 \nGeographic extent (CRS84): -1.657292, 48.040502, 12.431727, 56.110590 \nTemporal extent (ISO-8601): 2025-01-01 / 2025-12-31",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# 3D Basisvoorziening (OGC API)\n\n## 3D Basisvoorziening - Collections\n\nDe 3D Tiles Gebouwen worden gegenereerd door met behulp van de BAG-geometrie de gebouwen te modelleren in LoD 2.2. Waar geen AHN gegevens beschikbaar zijn, worden de gebouwen weergegeven in LoD 1.3. De hoogte van deze LoD 1.3 gebouwen is gebaseerd op puntenwolken gegenereerd uit luchtfotobeelden. De 3D Tiles Gebouwen zijn beschikbaar in het (OGC) 3D Tiles formaat ten behoeve van visualisatie doeleinden. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de…\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/gebouwen?f=json)\n\n*   **Keywords**: glTF, glb, cesium, 3D, basisvoorziening, gebouwen (bagpandid), panden, bag, 3Dtiles\n*   **Last updated**: 2026-07-01\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n\n![gebouwen Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_gebouwen.png)\n\nDe 3D Tiles Terreinen (inclusief wegen en water) worden gegenereerd op basis van BGT-geometrieën op maaiveld niveau. De hoogte wordt sinds 2025 bepaald uit AHN-gegevens. Daarvoor werd dit gedaan op basis van puntenwolken gegenereerd uit luchtfotobeelden. De 3D Tiles Terreinen zijn beschikbaar in het (OGC) 3D Tiles formaat ten behoeve van visualisatie doeleinden. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de…\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/terreinen?f=json)\n\n*   **Keywords**: glTF, glb, cesium, 3D, basisvoorziening, gebouwen (bagpandid), terreinen (bgt\\_fysiekvoorkomen, bronhouder), bgt, 3Dtiles\n*   **Last updated**: 2026-09-22\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n\n![terreinen Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_terreinen.png)\n\nDeze collectie bevat 3D objecten voor gebouwen in LoD 2.2. Waar geen AHN gegevens beschikbaar zijn, worden de gebouwen weergegeven in LoD 1.3. De hoogte van deze LoD 1.3 gebouwen is gebaseerd op puntenwolken gegenereerd uit luchtfotobeelden. Het geleverde formaat ([CityJSON](https://www.cityjson.org/)) is geschikt voor analyse doeleinden in GIS programmatuur. Voor BIM software is een [IFC converter](https://github.com/3DGI/cityjson2ifc) beschikbaar. Deze bestanden worden jaarlijks…\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/basisbestand_gebouwen?f=json)\n\n*   **Keywords**: Attributen gebouwen: bagpandid, bouwjaar, objectid\n*   **Schema**: [View schema](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/basisbestand_gebouwen/schema)\n*   **Last updated**: 2026-09-23\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n*   **Temporal extent** ([ISO-8601](http://www.opengis.net/def/uom/ISO-8601/0/Gregorian)): 2018-01-01 / 2025-12-31\n\n![basisbestand\\_gebouwen Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_kaartbladen_geb_voll.png)\n\nDeze collectie bevat 3D objecten voor gebouwen (met attribuut informatie), terreinen, water en wegen. Het geleverde formaat ([CityJSON](https://www.cityjson.org/)) is geschikt voor analyse doeleinden in GIS programmatuur. Voor BIM software is een [IFC converter](https://github.com/3DGI/cityjson2ifc) beschikbaar. Deze bestanden worden jaarlijks geactualiseerd.\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/basisbestand_gebouwen_terreinen?f=json)\n\n*   **Keywords**: Attributen gebouwen: bagpandid, bouwjaar, objectid, Attributen terreinen: bgt\\_fysiekvoorkomen, bronhouder, objectid\n*   **Schema**: [View schema](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/basisbestand_gebouwen_terreinen/schema)\n*   **Last updated**: 2026-09-23\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n*   **Temporal extent** ([ISO-8601](http://www.opengis.net/def/uom/ISO-8601/0/Gregorian)): 2018-01-01 / 2025-12-31\n\n![basisbestand\\_gebouwen\\_terreinen Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_kaartbladen_geb_voll.png)\n\nDeze collectie bevat 2D geometrieën van gebouwen met uitgebreide attribuut gegevens over pandhoogte in [GeoPackage](https://docs.geostandaarden.nl/3dbv/basis-al-prod-20211222/#geopackage) formaat, via bagpandid te koppelen met 3D Objecten Gebouwen. Deze bestanden worden jaarlijks geactualiseerd.\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/hoogtestatistieken_gebouwen?f=json)\n\n*   ### Downloads\n    \n    *   [Full download 2018 (2.3GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2018/hoogtestatistieken/2018_3d_hoogtestatistieken_gebouwen.zip)\n    *   [Full download 2019 (1.9GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2019/hoogtestatistieken/2019_3d_hoogtestatistieken_gebouwen.zip)\n    *   [Full download 2020 (2.5GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2020/hoogtestatistieken/2020_3d_hoogtestatistieken_gebouwen.zip)\n    *   [Full download 2021 (1.83GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2021/hoogtestatistieken/2021_3d_hoogtestatistieken_gebouwen.zip)\n    *   [Full download 2022 (2.23GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2022/hoogtestatistieken/2022_3d_hoogtestatistieken_gebouwen.zip)\n    *   [Full download 2023 (2.25GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2023/hoogtestatistieken/2023_3d_hoogtestatistieken_gebouwen.zip)\n    *   [Full download 2024 (2.3GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2024/hoogtestatistieken/2024_3d_hoogtestatistieken_gebouwen.zip)\n    *   [Full download 2025 (2.3GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/2025/hoogtestatistieken/2025_3d_hoogtestatistieken_gebouwen.zip)\n*   **Keywords**: 2D, gebouwen, geopackage, Attributen o.a: bagpandid, pandstatus, bouwjaar, lod, hoogte maaiveld, dakhoogten, daktype\n*   **Schema**: [View schema](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/hoogtestatistieken_gebouwen/schema)\n*   **Last updated**: 2026-09-23\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n*   **Temporal extent** ([ISO-8601](http://www.opengis.net/def/uom/ISO-8601/0/Gregorian)): 2018-01-01 / 2025-12-31\n\n![hoogtestatistieken\\_gebouwen Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_kaartbladen_geb_voll.png)\n\nHet DTM wordt gegenereerd op basis van [AHN](https://www.pdok.nl/introductie/-/article/actueel-hoogtebestand-nederland-ahn). Dit is een terreinmodel van heel Nederland, waarbij de maaiveld terreinhoogte ter plaatse van gebouwen en water wordt geïnterpoleerd. Het 3D DTM is beschikbaar in het [Quantized Mesh](https://github.com/CesiumGS/quantized-mesh/) formaat voor gebruik in Cesium clients. Het bevat geen attribuut informatie. . Deze wordt alleen aangeboden in de meest recent beschikbare…\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/digitaalterreinmodel?f=json)\n\n*   ### Downloads\n    \n    *   [Full download (12.23GB)](https://download.pdok.nl/kadaster/basisvoorziening-3d/v1_0/dtm/ahn6/ahn6.zip)\n*   **Keywords**: 3D, 3D Basisvoorziening, terreinen, DTM, quantized mesh, cesium\n*   **Last updated**: 2026-02-09\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n\n![digitaalterreinmodel Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_dtm.png)\n\nHet Digital Surface Model (DSM) representeert het aardoppervlak van Nederland inclusief objecten en vegetatie, gemaakt op basis van regelmatige puntenwolken aan de hand van luchtfoto’s, in [LASZip](https://laszip.org/) formaat. Dit DSM bevat een afstand tussen punten van minimaal 20 cm. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de [productbeschrijving](https://3d.kadaster.nl/productbeschrijving/#3d-basisvoorziening).\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/digitaaloppervlaktemodel_20cm?f=json)\n\n*   **Keywords**: 3D, 3D Basisvoorziening, DSM, laszip, puntenwolk\n*   **Schema**: [View schema](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/digitaaloppervlaktemodel_20cm/schema)\n*   **Last updated**: 2026-09-23\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n*   **Temporal extent** ([ISO-8601](http://www.opengis.net/def/uom/ISO-8601/0/Gregorian)): 2025-01-01 / 2025-12-31\n\n![digitaaloppervlaktemodel\\_20cm Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_kaartbladen_dsm.png)\n\nHet Digital Surface Model (DSM) representeert het aardoppervlak van Nederland inclusief objecten en vegetatie, gemaakt op basis van regelmatige puntenwolken aan de hand van luchtfoto’s, in [LASZip](https://laszip.org/) formaat. Dit DSM bevat een afstand tussen punten van minimaal 8 cm. Deze wordt alleen aangeboden in de meest recent beschikbare jaargang, zie tabel 1 in de [productbeschrijving](https://3d.kadaster.nl/productbeschrijving/#3d-basisvoorziening).\n\nView collection as [JSON](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/digitaaloppervlaktemodel_8cm?f=json)\n\n*   **Keywords**: 3D, 3D Basisvoorziening, DSM, laszip, puntenwolk\n*   **Schema**: [View schema](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/digitaaloppervlaktemodel_8cm/schema)\n*   **Last updated**: 2026-09-23\n*   **Geographic extent** ([CRS84](http://www.opengis.net/def/crs/OGC/1.3/CRS84)): -1.657292, 48.040502, 12.431727, 56.110590\n*   **Temporal extent** ([ISO-8601](http://www.opengis.net/def/uom/ISO-8601/0/Gregorian)): 2025-01-01 / 2025-12-31\n\n![digitaaloppervlaktemodel\\_8cm Thumbnail](https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/resources/3d_kaartbladen_dsm.png)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-3-0-beta",
+    "crawl": {
+      "loadedUrl": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-3-0-beta",
+      "loadedTime": "2026-10-22T09:19:52.833Z",
+      "referrerUrl": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-3-0-beta",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 300158,
+      "contentType": "text/html;charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-3-0-beta",
+      "title": "swissBUILDINGS3D 3.0 Beta",
+      "description": "swissBUILDINGS3D 3.0 beta is a dataset containing buildings as 3D-models including roof geometries and roof overhangs. Two sets are available: a model depicting closed buildings and a model showing separate elements (roofs, facades and footprints). swissBUILDINGS3D 3.0 beta is an improved version of swissBUILDINGS3D 2.0.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:description",
+          "content": "swissBUILDINGS3D 3.0 beta is a dataset containing buildings as 3D-models including roof geometries and roof overhangs. Two sets are available: a model depicting closed buildings and a model showing separate elements (roofs, facades and footprints). swissBUILDINGS3D 3.0 beta is an improved version of swissBUILDINGS3D 2.0."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "public, max-age=0, s-maxage=20, stale-while-revalidate=60",
+        "content-encoding": "gzip",
+        "content-security-policy": "upgrade-insecure-requests; default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.ws-old.parlament.ch *.admin.ch *.alexandria.ch *.baspomedia.ch *.cloudflare.com *.codepen.io *.dwcdn.net *.everviz.com *.fliphtml5.com *.googleapis.com *.infogram.com *.issuu.com *.media.dma.swiss *.media.zem.ch/ *.polyfill.io *.youtube.com analytics.sefri.ch api.mailxpert.ch cdn.syndication.twimg.com ch-bar.bubble-chat.ch connect.facebook.net embed-cdn.surveyhero.com embed.ticketpark.ch embed.typeform.com estv.jaxforms.dev fliphtml5.com issuu.com livingdocs-assets.s3-eu-west-1.amazonaws.com media.dma.swiss platform.twitter.com platform.x.com player.vimeo.com snap.licdn.com webstats.ch.ch webstat.2edaadmin.ch siteimproveanalytics.com plugin.passolution.eu 360.swiss360-media.ch ; style-src-elem 'self' 'unsafe-inline' * ; style-src 'self' 'unsafe-inline' ; object-src 'self' poc.energieforschung-schweiz.ch ; base-uri 'self' ; connect-src 'self' data: *.geo.admin.ch *.scs-sdweb.ch *.admin.ch analytics.bit.admin.ch analytics.sefri.ch backend.berufsbildung-schweiz.ch backend.cadastre.ch backend.cstenero.ch backend.defensio-vtg.ch backend.erwachsenen-sport.ch backend.geoinformation.ch backend.info.geocat.ch backend.jugendundsport.ch backend.mont-terri.ch backend.npoc.ch backend.sdc-cde.ch backend.sdc-cva.ch backend.sdc-economy-education.ch backend.sdc-foodsystems.ch backend.sdc-health.ch backend.sdc-migration.ch backend.sdc-multilateral.ch backend.sdc-pge.ch backend.sdc-regions.ch backend.svs-rns.ch backend.sdc-water.ch backend.shk.ch backend.tbbk-ctfp.ch estv.jaxforms.dev iframe.ly px.ads.linkedin.com webstats.ch.ch webstat.2edaadmin.ch plugin.passolution.eu wss://ws-eu.pusher.com ; font-src 'self' data: *.digitaloceanspaces.com *.scs.scs-sdweb.ch *.ch cdnjs.cloudflare.com estv.jaxforms.dev fonts.gstatic.com plugin.passolution.eu ; frame-src 'self' *.ws-old.parlament.ch *.admin.ch *.adminevents.ch *.admintravel.ch *.agroscope.info *.alexandria.ch *.bagapps.ch *.baspomedia.ch *.cloudfront.net *.dwcdn.net *.ehsm.ch *.everviz.com *.fliphtml5.com *.googleapis.com *.quicksight.aws.amazon.com *.infogram.com *.issuu.com *.jaxforms.com *.media.dma.swiss *.media.zem.ch/ *.media-flow.ch *.seco.amboss.liip.cloud *.secowe-microsite.ch *.share.connect.posit.cloud *.soziale-sicherheit-chss.ch *.vollprecht.com *.youtube.com *.webflow.io alexhub28.github.io api.ticketpark.ch app.digital.swiss app.everviz.com app.fabric.microsoft.com app.powerbi.com app.jobportal.abaservices.ch appmedia.zem.ch are.gines.ch are-npvm-grafik-2.netlify.app are-npvm-grafik-3.netlify.app are.frappant.ch assets.website-files.com avenue.argusdatainsights.ch bafu.meteotest.ch bafu.meteotest.review bakom-media-transparency-dashboard.vercel.app bav.azurewebsites.net bern-einfach.podigee.io c.go-mpulse.net calendar.google.com cc-1000050.prospective.ch cercle-indicateurs-grafik.netlify.app cdn.amcharts.com cdn.prod.website-files.com cdnpg.ilcdn.net ch-bar.bubble-chat.ch chatbotarmee.ch chatbot-blw-web.azurewebsites.net database.prod.bwo.clients.liip.ch digital.swiss digitalswiss-ida.visions.page display.contentfry.com dma.swiss ebgb-self-assessment.amboss.liip.ch ee3f176b.sibforms.com embed.ticketpark.ch engage.cloud.microsoft estv.jaxforms.dev esv.deimos.ch fafwpgovch.sharepoint.com fedro.maps.arcgis.com fliphtml5.com forms.cloud.microsoft form.typeform.com forms.office.com fragesi.ch frb.novu.ch fwpgovch.sharepoint.com hazu.swiss holzdatenbank.chili.ch infogram.com innosuisse.founders-hive.ch innosuisse.guide innosuisse-impact.github.io ira.agroscope.ch issuu.com live.solique.ch login.microsoftonline.com mail.bafu.ch map.geo.admin.ch media.dma.swiss media.zem.ch mw.weaver.ch mx824.clients.liip.ch my.visme.co ndp-explained.ch newsroom.consilium.europa.eu ofas.shinyapps.io ohws.prospective.ch open.spotify.com platform.twitter.com player.podigee-cdn.net/ player.vimeo.com player.vod2.infomaniak.com/ playout.3qsdn.com plugin.passolution.eu/ po.dma.swiss poc.energieforschung-schweiz.ch podcasters.spotify.com preview.shorthand.com prod.mpseuropa.ch sasdb.clients.liip.ch scnem.com scnem2.com sitereview.bluecoat.com status.uptrends.com streaming.interlake.net spa.energieforschung-schweiz.ch swisscom-onmicrosoft-com.access.mcas.ms syndication.twitter.com s71zo.mjt.lu test.akisnet.ch tools.regiosuisse.ch user.ticketpark.ch video.zem.ch view.genially.com view.genial.ly vimeo.com vod.dma.swiss vp2050.netlify.app w.soundcloud.com web.swissnewsletter.ch webform.statslive.info webstats.ch.ch www.agroscope.ch www.agrarforschungschweiz.ch www.armee.ch www.bafu-daten.ch www.bfe-anw.admin.ch www.canva.com www.cmsp-t2.admin.ch www.data.finance.admin.ch www.datalakes-eawag.ch www.db-agroscope.ch www.event.blackpearlproduction.com www.facebook.com/ www.fragesi.ch www.gottfried-keller-stiftung.ch/ www.linkedin.com/ www.microsoft.com www.menti.com www.privasphere.com/ www.rsi.ch www.rts.ch www.srf.ch www.ticketpark.ch www.twogo.com www.umfrageonline.com www.umfrageonline.ch www.youtube-nocookie.com zivildienst-quiz.typeform.com 74uit.infras.ch 360.swiss360-media.ch ; img-src 'self' blob: data: *.dwcdn.net *.googleapis.com *.ws-old.parlament.ch *.admin.ch *.alexandria.ch *.baspomedia.ch *.everviz.com *.fliphtml5.com *.imgix.net *.issuu.com *.media.dma.swiss *.media.zem.ch/ *.scs-sdweb.ch *.siteimproveanalytics.io *.twimg.com ch-bar.bubble-chat.ch estv.jaxforms.dev fliphtml5.com issuu.com livingdocs-assets.s3-eu-west-1.amazonaws.com livingdocsio.github.io media.dma.swiss platform.twitter.com px.ads.linkedin.com syndication.twitter.com webstats.ch.ch www.facebook.com ; manifest-src 'self' ; media-src * blob: 'self' ; worker-src 'self' ;",
+        "content-type": "text/html;charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:19:52 GMT",
+        "referrer-policy": "origin",
+        "strict-transport-security": "max-age=16070400; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "set-cookie": "TS7d34885f027=08cec45a84ab20001b2b42fbe518c9cb4df056d61515e9163fc6ed78de88f8e027d4592f9dbcf55808a539c3ad113000fef22e54a00dc4421d7e345f5f39621545480ab48166a47894b1f2131c70cb25704dd6148ff7fd1f9bc7a1ec817febbf; Secure; Path=/"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "swissBUILDINGS3D 3.0 Beta\nPublished on 4 June 2026\nswissBUILDINGS3D 3.0 beta is a dataset containing buildings as 3D-models including roof geometries and roof overhangs. Two sets are available: a model depicting closed buildings and a model showing separate elements (roofs, facades and footprints). swissBUILDINGS3D 3.0 beta is an improved version of swissBUILDINGS3D 2.0. \nNEW: Building models with EGID in 19 cantons\nWith the current release of swissBUILDINGS3D 3.0 Beta, swisstopo provides building models structured according to the federal building identifier (EGID) and containing the EGID as additional information. The data are available in the cantons AG, AI, AR, BE, BL, BS, FR, GL, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, UR and the the city of Zurich.\n3D building models of Switzerland\nProduction methode \nThe digital ADS aerial photo-strips serve as the base data for the extraction and modelling of the buildings. Based on these images, the roofs are manually extracted in 3D, using the photogrammetric method of digital image (stereo) correlation, enhanced with additional information. The corresponding footprints and facades are then derived in an automated process.\nApplications\nswissBUILDINGS3D 3.0 Beta offers an ideal 3D basis, particularly for the use in architecture, planning and engineering offices, as well as software developers or governmental authorities. The depiction of buildings are paramount within a digital landscape model, hence swissBUILDINGS3D is frequently used for:\n3D visualizations and 3D web platforms \nBasis for urban and spatial planning, residential development projects, mobility, telecommunications or energy \nVisibility and shadow analyses \nVarious distribution analyses (e.g. of noise, air pollutants, electromagnetic radiation) \nCalculation of solar potential \nSimulation of natural disasters \nEcology and urban climatology \nTerms of use\nAdditional information\nswissBUILDINGS3D 3.0 Beta - Download\nIndex",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# swissBUILDINGS3D 3.0 Beta\n\nPublished on 4 June 2026\n\nswissBUILDINGS3D 3.0 beta is a dataset containing buildings as 3D-models including roof geometries and roof overhangs. Two sets are available: a model depicting closed buildings and a model showing separate elements (roofs, facades and footprints). swissBUILDINGS3D 3.0 beta is an improved version of swissBUILDINGS3D 2.0. \n\n![swissBUILDINGS3D 3.0 Beta: 3D building models of Switzerland](https://prod-swisstopoch-hcms-sdweb.imgix.net/dam/en/sd-web/7BHRQ9PxHWM5/Header-build3D3.jpg?auto=format)\n\n## NEW: Building models with EGID in 19 cantons\n\nWith the current release of swissBUILDINGS3D 3.0 Beta, swisstopo provides building models structured according to the federal building identifier (EGID) and containing the EGID as additional information. The data are available in the cantons AG, AI, AR, BE, BL, BS, FR, GL, JU, LU, NE, NW, OW, SG, SH, SO, SZ, TG, UR and the the city of Zurich.\n\n## 3D building models of Switzerland\n\n### Production methode\n\nThe digital ADS aerial photo-strips serve as the base data for the extraction and modelling of the buildings. Based on these images, the roofs are manually extracted in 3D, using the photogrammetric method of digital image (stereo) correlation, enhanced with additional information. The corresponding footprints and facades are then derived in an automated process.  \n\n### Applications\n\nswissBUILDINGS3D 3.0 Beta offers an ideal 3D basis, particularly for the use in architecture, planning and engineering offices, as well as software developers or governmental authorities. The depiction of buildings are paramount within a digital landscape model, hence swissBUILDINGS3D is frequently used for:  \n\n*   3D visualizations and 3D web platforms\n*   Basis for urban and spatial planning, residential development projects, mobility, telecommunications or energy\n*   Visibility and shadow analyses\n*   Various distribution analyses (e.g. of noise, air pollutants, electromagnetic radiation)\n*   Calculation of solar potential\n*   Simulation of natural disasters\n*   Ecology and urban climatology\n\n[Terms of use](https://www.swisstopo.admin.ch/en/terms-of-use-free-geodata-and-geoservices)\n\n## Additional information\n\n## swissBUILDINGS3D 3.0 Beta - Download\n\n## Index",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.kartverket.no/en/api-and-data/terrain-data",
+    "crawl": {
+      "loadedUrl": "https://www.kartverket.no/en/api-and-data/terrain-data",
+      "loadedTime": "2026-10-22T09:19:54.136Z",
+      "referrerUrl": "https://www.kartverket.no/en/api-and-data/terrain-data",
+      "httpStatusCode": 404,
+      "depth": 0,
+      "contentLengthBytes": 137260,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.kartverket.no/en/api-and-data/terrain-data",
+      "title": "404 | Kartverket.no",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "nb-NO",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "404"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://kartverket.no/404?404;http://www.kartverket.no:80/en/api-and-data/terrain-data"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Kartverket.no"
+        },
+        {
+          "property": "og:locale",
+          "content": "nb_NO"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "cache-control": "public, no-cache=\"Set-Cookie\", max-age=43200",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:19:53 GMT",
+        "env": "ProductionConfig",
+        "expires": "Thu, 22 Oct 2026 21:19:53 GMT",
+        "last-modified": "Thu, 22 Oct 2026 09:19:53 GMT",
+        "server": "nginx",
+        "transfer-encoding": "chunked",
+        "vary": "*",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-ua-compatible": "IE=Edge",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": "KartverketPublicSite=3nldki01xzgvpapoqjkigish; path=/; HttpOnly; SameSite=None"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "404 | Kartverket.no\nOi! Her gikk det visst galt ...\nVi fant åpenbart ikke fram til den siden du søkte. Beklager!\nDu kan gå til forsiden, bruke søkefeltet eller åpne menyen for å komme videre. Send oss en e-post hvis du likevel ikke finner det du trenger, så hjelper vi deg.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# 404 | Kartverket.no\n\n  ![Illustrasjon av kart og posisjonssymbol med spørsmålstegn](https://www.kartverket.no/contentassets/bccd66af2c284235b9eba081d2f8cd66/404-kartillustrasjon3.jpg?width=420&mode=crop&quality=75)\n\nOi! Her gikk det visst galt ...\n\nVi fant åpenbart ikke fram til den siden du søkte. Beklager!\n\nDu kan gå til [forsiden](https://www.kartverket.no/), bruke søkefeltet eller åpne menyen for å komme videre. Send oss en [e-post](mailto:info@kartverket.no) hvis du likevel ikke finner det du trenger, så hjelper vi deg.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.sma.de/en/products/apps-software/sunny-design",
+    "crawl": {
+      "loadedUrl": "https://www.sma.de/en/products/apps-software/sunny-design",
+      "loadedTime": "2026-10-22T09:20:05.158Z",
+      "referrerUrl": "https://www.sma.de/en/products/apps-software/sunny-design",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 32612,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.sma.de/en/products/apps-software/sunny-design",
+      "title": "Sunny Design - planning of complete energy systems | SMA Solar",
+      "description": "The planning tool for PV systems and comprehensive energy systems.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "jsonLd": [
+        {
+          "@context": "https://schema.org/",
+          "@type": "WebPage"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "@id": "https://www.sma.de/unternehmen/ueber-sma/#organization",
+          "name": "SMA Solar Technology AG",
+          "url": "https://www.sma.de/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.sma.de/logo.png"
+          }
+        }
+      ],
+      "headers": {
+        "cache-control": "max-age=11878",
+        "content-encoding": "br",
+        "content-language": "en",
+        "content-length": "32612",
+        "content-security-policy": "frame-ancestors 'self'",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:20:04 GMT",
+        "expires": "Thu, 22 Oct 2026 12:38:02 GMT",
+        "link": "</t3assets/frontend/v1/runtime.0bfa26d3.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/4677.9d24df48.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/7449.aecf339e.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/LottiePlayer.c99b4a9f.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/5890.539f9713.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/340.b7b38d92.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/6686.cd6dd15b.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/8836.78ecad7a.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/TabNavigationJs.825038ec.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/header.a148c963.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/M1064Js.5a759252.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/6142.e0a0c77b.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/SearchSuggest.2a29bec6.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/4164.ecfbe474.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/9454.4d30e702.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/217.fa68f3cc.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/footer.aec1c129.js?1792585066>; rel=\"preload\"; as=\"script\",</t3assets/frontend/v1/TabNavigationCss.81d39de6.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/H5050products1Css.894d5ce7.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1003Css.48c46b62.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1003v1Css.74737e6e.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1000Css.fb488d54.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C5050icotxt01Css.bdc7360e.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1003v4Css.2f19ce05.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1001Css.ff5eceff.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1001v1Css.49e644f5.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1037Css.9020d838.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/DownloadCenter.0f5c5ab0.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1005Css.fa33a133.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/C1005v5Css.c9865656.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/F1077Css.f402bc28.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/SearchSuggest.1cc3f43b.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/critical.1c026eb2.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/non-critical.f7384ab7.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/M1061Css.aad47ce9.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/M1062Css.64bc6c07.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/M1063Css.2bc3288d.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/M1064Css.cd3c60ba.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/M1065Css.30ac5439.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/M1066Css.25cf0e05.css?1792585066>; rel=\"preload\"; as=\"style\",</t3assets/frontend/v1/H1035Css.c41f5fc2.css?1792585066>; rel=\"preload\"; as=\"style\"",
+        "pragma": "public",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "server": "Apache",
+        "strict-transport-security": "max-age=15768000",
+        "vary": "Accept-Encoding, Origin",
+        "via": "1.1 150d8ebb6ce5cd48952286456c1c45fe.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "-7Se_7GbMhud-eNP2AYxCWYhxsCbem1MOtNzRgDWhulzXM5S4YA2PQ==",
+        "x-amz-cf-pop": "JFK50-P11",
+        "x-cache": "Miss from cloudfront",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-ua-compatible": "IE=edge",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Sunny Design - planning of complete energy systems\nThe planning tool for PV systems and comprehensive energy systems\nDesign PV systems quickly and conveniently\nSunny Design\nWith Sunny Design software, you can plan tailor-made PV systems for your customers. It could be a grid-connected PV system with or without a battery-storage system, smart energy management or e-mobility, an off-grid island or hybrid system - Sunny Design takes all technical specifications for the various components into account and provides you with relevant data for a cost-effective assessment of the system. That means that you can match your PV systems to suit the circumstances on-site.\nIt couldn't be easier. Simply open Sunny Design in your web browser or on your iPad or Android tablet and enter the necessary data in the user-friendly interface. In just a few minutes, Sunny Design will configure the ideal PV system for your customers on your behalf.\nYou can use Sunny Design free of charge.\nGood to know\nNew\nMake your planning even more efficient with our integrated Renusol planning tool\nComprehensive\nPlan grid-connected and off-grid PV systems\nReceive customized design recommendations\nShow potential for optimization\nVisual roof planning including shading analysis\nGood for customers\nAll common PV modules available\nIncorporate high-resolution meteorological data\nEnergy-related and financial system assessment\nSelf-consumption forecast\nFlexible\nChoice of location worldwide\nImport your own meteorological data and load profiles\nAccess via web browser, iPad or Android tablet\nIntegrate e-mobility for private homes\nComprehensive energy system planning and simulation\nSunny Design PRO\nIn addition to the PV system, Sunny Design PRO takes battery-storage systems and thermal components, such as combined heat and power plants and heat pumps, into account in system planning. That means that you can plan and simulate comprehensive sector-linked energy systems. Using customized purchase and feed-in tariffs as well as detailed project and capital costing, you can create reliable efficiency forecasts for the entire system. The extensive project documentation helps with field sales meetings and simplifies subsequent energy system implementation.\nIt's easy: you can give Sunny Design PRO a try with a month-long free trial. Enter your data to receive a comprehensive and professional visualization of the energy system in no time at all.\nYou can read more about what Sunny Design PRO has to offer in \"Cross-Sector Energy System Planning\".\nComprehensive\nAll sectors in a single application\nSimulation of the entire system\nIntegrated energy management for PV, battery-storage and thermal systems\nPlanning of electric vehicles and charging stations, including for commercial applications\nImpressive\nAll important energy and efficiency key figures presented\nDetailed consumption and load profile analysis\nAdvanced project documentation\nProject templates for commercial energy systems and private homes\nPractical\nData export for fast SMA Data Manager commissioning\nFlexible management of purchase and feed-in tariffs\nBattery-storage system simulation for peak load shaving applications\nOverview of Sunny Design functions\nFeature\nSunny Design (anonymous)\n\t\nSunny Design (registered)\n\t\nSunny Design PRO\n\t\nDesign of on-grid PV systems\t\t\t\nVisual roof planning including shading analysis\t\t\t\nDesign of off-grid & PV hybrid systems\t\t\t\nSaving and managing projects\t\t\t\nOwn PV modules, locations and load profiles\t\t\t\nPlanning of energy systems with integrated energy\t\t\t\nImport & export of 3D models\t\t\t\nTariff management\t\t\t\nConsumption data and load profile analysis\t\t\t\nExtended project documentation\t\t\t\nExport of time series\t\t\t\nPrice per year (net)\t\t600 € \t\nRelease Notes Sunny Design 6.10\nNew features\nFurther optimization for planning teams in Sunny Design: Teams can now be granted permissions for selected projects instead of the entire project list.\nYou can set a custom cover page for the project documentation or project exposé in the user settings.\nGrouped buildings are displayed as a single object in the roof and string layout.\nFor CORE2 and STP125, a notification appears when the voltage difference between MPPTs exceeds 80 V.\nThe algorithm for generating inverter design proposals has been revised.\nSunny Design now uses the language settings from the SMA ID.\nNumerous additional improvements and optimizations.\nRelease Notes Sunny Design 6.00\nNew features\nTeams of multiple system planners can now collaborate in Sunny Design to jointly access and work on projects. This update includes an administration area for creating teams and inviting members, roles and permissions, dedicated team workspaces, and project access management.\nOne of the project images can now be selected to appear on the cover page of the project documentation. This feature enhances the ability to customize documentation for both customers and the company.\nThe results now also display the delivered reactive work.\nRoof planning\nImage overlays in visual roof planning allow you to use your own high-resolution 2D drone images, aerial photographs, or site plans as the basis for planning. Imported images can be freely measured, scaled, and rotated.\nObjects such as chimneys, skylights, and more can now be freely rotated on flat roofs.\nSunny Design PRO\nImported 3D models can now be tilted and rotated as needed.\nFor dynamic rates, time series with 366 days can now be imported.\nRelease Notes Sunny Design 5.90\nNew functions\nFor SMA Chargers PV optimized charging can be simulated. When possible, the electric vehicle is charged exclusively with surplus PV energy. If this is not sufficient, the simulation automatically switches to “Charging with target” to ensure that the vehicle is sufficiently charged.\nImport of incomplete consumption profiles is now possible as a 2-column csv file (auto detection). This must contain a date column and a value column.\nThe price list has been extended for the device types communication products and charging stations.\nThe Project documentation page has been optimized to ensure a quick and easy access to all downloads.\nVisual roof planning\nGoogle Solar API data can now be used in 3D roof planning (Solar potential, Altitude profiles).\nBuildings and Objects can be combined and be rotated, shifted etc. as one unit.\nDifferent color schemes can now be selected for strings to improve distinctiveness.\nSunny Design PRO\nTime Series for PV production can be uploaded and used for calculation (instead of PV system setup and simulation).\nIn Energy System projects, a tariff module type “Dynamic tariff (time series)” is available. It enables the import of time series for energy demand prices. These can be used to simulate energy costs.\nImported 3D models may contain objects that are removed before PV installation (as antennas or vents). By selecting the checkbox \"Disable collision detection\", these can be ignored when assigning modules.\nRelease Notes Sunny Design 5.80\nNew functions\nLoad profiles import from the Sunny Portal powered by ennexOS has been implemented.\nIn the profitability section individual product information can be set for offers.\nThe import dialog has been optimized for use with Drag-n-Drop.\nIn off-grid projects pre-selection of the power grid isn’t required anymore.\nNew grids for SHP100-JP-21 added.\nThe yield calculation for STP-60 and STP-70 inverters has been optimized.\nThe design suggestions have been improved.\nVisual roof planning\nBuildings and objects may now penetrate eachother, which increases the design possibilities especially for complex buildings.\nRoof overhangs can be defined for a more realistic buildings.\nPV arrays on facades are now shown in the roof plan.\nMore realistic light sources are used for the sun position indicator.\nSunny Design PRO\nHeat pumps con now be configured for heating and cooling applications (HVAC).\nA detailed project exposé to demonstrate the benefits of the system and alternatives can be set up and exported as a Powerpoint document.\nThe project documentation of energy systems has been extended by an energy balance diagram.\nWhen using the demo version, a watermark is shown in the project documentation of energy system projects.\nRelease Notes Sunny Design 5.70\nNew functions\nA schematic circuit diagram for the planned PV system can now be downloaded, which includes all essential system components from the PV modules to the grid connection.\nMultiple different Sunny Boy Smart Energy hybrid inverters are now available in one design.\nHybrid inverters with batteries, but without PV modules, are now also supported in systems.\nThere is a new tab \"More Project Files\" in the output. There, the available documents and files can be conveniently downloaded. Among other things, the device list is now also available there as a CSV file.\nIn the area of heat pumps, it is now also possible to specify half floors for the building.\nIn the settings, you can choose between different azimuth definitions.\nThe link to the Sunny Design product page is now language-dependent.\nImproved alert when the session has expired and you are in the roof planning.\nA video on the tools for parameterization according to VDE AR-N 4110 has been integrated.\nThe system validation according to RGIE, Art. 48 (750 V DC) in Belgium has been revised.\nVisual roof planning\nCalculation of the annual shading of the surfaces and the PV modules can be done manually on the server or, if possible, simultaneously with a new method in the browser (automatic mode). For simple scenes, this is much faster.\nIndividual modules or module groups can now be rotated in a module field.\nFlat roofs can be drawn with any floor plan.\nIn the case of trailing dormers and trapezoidal dormers, the angle of inclination of the main surface can be changed.\nIn the case of the building, various roof coverings and wall materials for the facade can now be visualized.\nVarious objects can now be placed on facades (doors, windows, ventilation grilles and balconies).\nWhen changing modules, the design is retained if the modules have the same width and length.\nThe map size can be adjusted manually using a slider.\nRoof plans can now be saved more easily.\nThe hiding of shaded PV modules has been improved.\nA warning appears when the maximum number of subsystems is exceeded.\nThe sun position indicator is now enabled by default and can be turned off via the menu at the bottom left.\nSunny Design PRO\nThe import of 3D models has been improved. The model files can be imported via drag and drop, with up to 10 files per model supported.\nIn the case of energy system projects, the function \"Open overview of electricity purchase costs\" is now available on the Results/Profitability page, which can be used to view a detailed analysis of the electricity purchase costs.\nRelease Notes Sunny Design 5.61\nNew Functions\nOn the personal start page, the peak power and a roof planning symbol are displayed for the projects.\nIt is now possible to choose between a uniform charging tariff for all charging stations or different charging tariffs for each type of charging station.\nThe simulation of energy system projects with only PV and batteries is now carried out with the same calculation components as for the PV projects and is therefore significantly faster.\nDeleting of own locations has been improved.\nThe project documentation page displays a note about the SMA certification service (for Germany only).\nRoof Planning\nIn roof planning, the scene can be exported as a 3D model (Sunny Design Pro only)\nModules can be placed across two adjacent and equally inclined surfaces.\nThe string design now has the option to automatically determine the optimal string alignment and starting point.\nWhen roof objects are moved, existing PV modules are automatically removed or added.\nIf the length of a hipped roof changes, the inclination of the hip roof is maintained. The inclination of the hip can be adjusted by means of an angle input.\nCollision detection for large module fields has been optimized.\nRelease Notes Sunny Design 5.60\nNew Features (General)\nNew project type for large-scale systems incl. DC Combiner design\nTools for system parameterization according to VDE AR-N 4110 (Sunny Design Pro)\nAlternative map data from Bing\nBifacial gain factor for bifacial PV modules\nWarning if the maximum grid connection load is exceeded\nExtension of location settings for Australia to overdimensioning of DC inputs (AS/NZS 5033)\nExtended database of low-voltage batteries for Sunny Island\nNumerous new electric vehicles and manufacturers\nVisual roof planning\nSupport of façade systems\nRoof areas with the same orientation and inclination can be grouped\nA preferred string length can be set in the string settings\nImproved selection of the position of the sun\nIn step 3, all roof areas can now be deselected\nIn the event of changes to the building, the PV modules will be retained if possible\nRelease Notes Sunny Design 5.50\nNew Features (General)\nThe Multi-Use operating mode of the STPS X has been integrated.\nA device list of the planned SMA system components can now be downloaded.\nThe optimal row spacing of elevated PV modules can now be calculated.\nOn saddle, monopitch and hipped roofs, elevated PV modules are now possible.\nDimensions are now displayed on dormers and other objects.\nThe maximum system voltage of the PV modules is now taken into account per MPP tracker.\nAdditional hints in roof planning if user inputs cannot be used.\nThe filters in the \"Add communication product\" dialog have been optimized.\n\nSunny Design PRO\nImported 3D models can now also be scaled by measuring.\nThe display of the category of key figures has been optimized in the user interface as well as in the project documentation.\nRelease Notes Sunny Design 5.40\nNew Features (General)\nNew, improved project documentation\nElectromobility also possible in quick planning mode\nFor charging stations and electric vehicles, differentiation between AC and DC charging\nBattery systems now as separate items in the detailed project costs\nSubsequent editing of own cost items possible\nManagement of a price list for battery systems\nRoof plan as vector graphic in project documentation\nSimplified deletion of load profiles and projects\nPV arrays are not deleted when the visual roof plan is removed\nFunction for optimising PV module design in case of shading\nDisplay of the ground coverage ratio (GCR)\nOptimized dialogs for the selection of buildings & objects\nOptimization of the naming of inverter inputs\nAutomatic polystring design for inverter selection\nNew result value for active power limitation\nStart of roof planning in 2D possible\nProgress indicator for visual string design\nConfigurable joint for east-west rack systems\nAlignment of objects with dialog\nAdjustable visibility and transparency of PV modules\n\nSunny Design PRO\nImport of 3D models\nRelease Notes Sunny Design 5.30\nNew Features (General)\nThe visual roof planning was extended by the electrical design including string planning.\nString assembly plans can be created.\nBattery systems can now be configured for combined operation of peak load shaving and self-consumption optimization (Multi-Use).\nA demand charge can be used in PV projects.\nSunny Design now also supports the energy cost calculation according to the capacity tariff for Belgium.\nThe energy management design has been optimized for inverters with integrated system manager.\nIn visual roof planning, the modules with east/west-oriented mounting can no longer be arranged only in pairs, but independently of each other.\nExisting buildings can be copied.\nModules and roof objects are preserved when the building height is changed.\nThe loss of yield due to shading is now calculated at the string level, taking ShadeFix into account.\nSwedish and Hungarian are available as new languages in the user interface.\nNumerous other improvements.\n\nSunny Design PRO\nIn energy system projects, the hybrid inverters can now be simulated with battery system.\nThe export of the load profiles of heating rods is now possible.\nThe previous energy consumption of mobility can now be specified by a mileage.\nRelease Notes Sunny Design 5.22\nNew features (general)\nIn PV projects with self-consumption, up to 3 charging stations and electric vehicles can now be configured.\nIn the electromobility section of the detailed planning mode, a warning is now displayed if the energy consumption of the electric vehicles is not covered.\nThe calculation to prove compliance with the THD currents can now also be carried out for medium voltage in accordance with VDE-AR-N 4110.\nFor flat roofs, an attic can be added.\nThe display and information about our charging solutions have been optimized.\nIn the project data, the possibility was created to make specifications for the desired nominal power ratio or DC/AC ratio, respectively.\nIn the area of profitability, up to 10 special tariffs can now be defined.\nThe influence of shading is now also taken into account in the energy yield calculation.\nWhen moving modules in the roof planning, they are aligned to a grid (snap-to-grid function).\nAdditional dimensions are now displayed in the roof planning.\n\nSunny Design PRO\nIn energy system projects, heating rods can now be taken into account to increase self-consumption.\nThe heat pumps now have the \"SG-Ready\" option for PV-optimized operation.\nRelease Notes Sunny Design 5.20\nNew features (general)\nShading analysis: Calculation of the annual shading of roofs\nDisplay of the percentage of module shading\nDisplay of the shadow course for a selected point in time\nAny number of buildings possible in one roof plan\nExtension of the roof planning to include external objects (trees, walls, chimneys)\nUp to 6 PV generators in a sub-project\nImproved design suggestions\nCompatibility list of battery inverters and batteries\nKey figures on self-consumption and self-sufficiency in a comparison of alternatives\nEasier creation of own PV modules\nOptimized net metering for PV projects\nExtended calculation of maximum PV system voltage and circuit currents according to NEC 2017\nPrepared for SMA JOIN\n\nSunny Design PRO\nNew key figure for self-consumption levy\nDisplay of additional information on tariffs\nCO2 credit also for direct marketing\nRelease Notes Sunny Design 5.10\nNew features (general)\nPV module placement on dormers\nDefinition of maintenance walks/thermal separations in module arrays\nProject documentation extended by a Roof plan\nCreation of detailed offers\nUse of Heat Pump tariffs\nAssignment of a project status and life cycle\nOptimized system design for inverters with many MPPT\nDisplay of Sunny Design News\nExtended customer management\nNet-Metering for standard PV projects\nConsideration of self-consumption deduction in projects with direct selling\n\nSunny Design PRO\nSuggestion of Peak Load Shaving threshold\nCO2 credits for PV energy export\nExtended time series export\nSelectable visibility of charging stations\nOptimized usage of alternatives\nRelease Notes Sunny Design 5.00\nMore options for system planners: In the new version Sunny Design 5.0, the SMA planning software is now more application-oriented. Installers benefit from professional system planning that requires very little time and effort. All innovations at a glance:\nVisual 2D/3D Roof Planning\nMap based creation of building models\nNumerous predefined building types and roof shapes\nSimple insertion of obstacles (dormers, windows, chimneys, …)\nMultiple PV arrays per building\nSnapshot function\nUndo/Redo\nEasy to use\n\nOptimized Workflows\nQuick planning mode with system design in just a few steps\nJust the most important inputs and results\nSimple switchover between quick mode and detailed planning\n\nExtended project data\nFree text address entry and automated selection of the nearest meteorological data set\nMap view (Google Maps)\nUpload of multiple object photos\nCustomer management tool\n\nInterfaces to SMA 360° App\nCreation of Sunny Design Projects by the app\nManagement of PDF documents accessible within the app\n\nOther Enhancements\nNew fact sheet for residential energy systems\nDetailed calculation of project costs\nIntegrated P-Q analysis tool of Sunny Central Storage systems\nSupport of Sunny Boy Storage with multiple batteries\nExport of load and generation time series (Sunny Design Pro)\nRussian User interface\nSunny Design\nDownloads\nOperating manual\nNow the operating manual is also available as\neManual\nSunny Design\nRelease Notes\nFor homeowners & business owners\nIf you have any questions, please contact SMA.\nContact us now\nPlanning tool Sunny Design\nWith Sunny Design, you can plan your tailor-made PV system in just a few clicks.\nPlan your system now",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Sunny Design - planning of complete energy systems\n\n![](https://www.sma.de/fileadmin/_processed_/0/a/csm_Sunny_Design_-_EN_62e235c9da.png)\n\nThe planning tool for PV systems and comprehensive energy systems\n\nDesign PV systems quickly and conveniently\n\n## Sunny Design\n\nWith Sunny Design software, you can plan tailor-made PV systems for your customers. It could be a grid-connected PV system with or without a battery-storage system, smart energy management or e-mobility, an off-grid island or hybrid system - Sunny Design takes all technical specifications for the various components into account and provides you with relevant data for a cost-effective assessment of the system. That means that you can match your PV systems to suit the circumstances on-site.\n\nIt couldn't be easier. Simply open Sunny Design in your web browser or on your iPad or Android tablet and enter the necessary data in the user-friendly interface. In just a few minutes, Sunny Design will configure the ideal PV system for your customers on your behalf.\n\nYou can use Sunny Design free of charge.\n\nGood to know\n\n![Make your planning even more efficient with our integrated Renusol planning tool.](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/26/project-plan-pen-house.svg?v=1645801619)\n\n### New\n\nMake your planning even more efficient with our integrated Renusol planning tool\n\n![](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/50/Rotate__Done.svg?v=1645801871)\n\n### Comprehensive\n\n*   Plan grid-connected and off-grid PV systems\n    \n*   Receive customized design recommendations\n    \n*   Show potential for optimization\n    \n*   Visual roof planning including shading analysis\n    \n\n![](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/50/single-user-checkmark-circle.svg?v=1645801871)\n\n### Good for customers\n\n*   All common PV modules available\n    \n*   Incorporate high-resolution meteorological data\n    \n*   Energy-related and financial system assessment\n    \n*   Self-consumption forecast\n    \n\n![](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/50/Arrow__Location__Direction.svg?v=1645801871)\n\n### Flexible\n\n*   Choice of location worldwide\n    \n*   Import your own meteorological data and load profiles\n    \n*   Access via web browser, iPad or Android tablet\n    \n*   Integrate e-mobility for private homes\n    \n\nComprehensive energy system planning and simulation\n\n## Sunny Design PRO\n\nIn addition to the PV system, Sunny Design PRO takes battery-storage systems and thermal components, such as combined heat and power plants and heat pumps, into account in system planning. That means that you can plan and simulate comprehensive sector-linked energy systems. Using customized purchase and feed-in tariffs as well as detailed project and capital costing, you can create reliable efficiency forecasts for the entire system. The extensive project documentation helps with field sales meetings and simplifies subsequent energy system implementation.\n\nIt's easy: you can give Sunny Design PRO a try with a month-long free trial. Enter your data to receive a comprehensive and professional visualization of the energy system in no time at all.\n\nYou can read more about what Sunny Design PRO has to offer in \"[Cross-Sector Energy System Planning](https://www.sma-sunny.com/en/sunny-design-pro-cross-sector-energy-system-planning/)\".\n\n![](https://www.sma.de/fileadmin/content/global/products/apps-software/sunny_design/SunnyDesignPro_470px2116.png?v=1650365214)\n\n![](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/50/Rotate__Done.svg?v=1645801871)\n\n### Comprehensive\n\n*   All sectors in a single application\n    \n*   Simulation of the entire system\n    \n*   Integrated energy management for PV, battery-storage and thermal systems\n    \n*   Planning of electric vehicles and charging stations, including for commercial applications\n    \n\n![](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/50/blackboard-business-chart-1.svg?v=1645801871)\n\n### Impressive\n\n*   All important energy and efficiency key figures presented\n    \n*   Detailed consumption and load profile analysis\n    \n*   Advanced project documentation\n    \n*   Project templates for commercial energy systems and private homes\n    \n\n![](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/50/thumbs-up-like-checkmark.svg?v=1645801871)\n\n### Practical\n\n*   Data export for fast SMA Data Manager commissioning\n    \n*   Flexible management of purchase and feed-in tariffs\n    \n*   Battery-storage system simulation for peak load shaving applications\n    \n\n## Overview of Sunny Design functions\n\n|     |     |     |     |\n| --- | --- | --- | --- |\n| Feature | Sunny Design (anonymous) | Sunny Design (registered) | Sunny Design PRO |\n| Design of on-grid PV systems |     |     |     |\n| Visual roof planning including shading analysis |     |     |     |\n| Design of off-grid & PV hybrid systems |     |     |     |\n| Saving and managing projects |     |     |     |\n| Own PV modules, locations and load profiles |     |     |     |\n| Planning of energy systems with integrated energy |     |     |     |\n| Import & export of 3D models |     |     |     |\n| Tariff management |     |     |     |\n| Consumption data and load profile analysis |     |     |     |\n| Extended project documentation |     |     |     |\n| Export of time series |     |     |     |\n| Price per year (net) |     |     | 600 € |\n\n### Release Notes Sunny Design 6.10\n\n**New features**\n\n*   Further optimization for planning teams in Sunny Design: Teams can now be granted permissions for selected projects instead of the entire project list.\n*   You can set a custom cover page for the project documentation or project exposé in the user settings.\n*   Grouped buildings are displayed as a single object in the roof and string layout.\n*   For CORE2 and STP125, a notification appears when the voltage difference between MPPTs exceeds 80 V.\n*   The algorithm for generating inverter design proposals has been revised.\n*   Sunny Design now uses the language settings from the SMA ID.\n*   Numerous additional improvements and optimizations.\n\n* * *\n\n### Release Notes Sunny Design 6.00\n\n**New features**\n\n*   Teams of multiple system planners can now collaborate in Sunny Design to jointly access and work on projects. This update includes an administration area for creating teams and inviting members, roles and permissions, dedicated team workspaces, and project access management.\n*   One of the project images can now be selected to appear on the cover page of the project documentation. This feature enhances the ability to customize documentation for both customers and the company.\n*   The results now also display the delivered reactive work.\n\n**Roof planning**\n\n*   Image overlays in visual roof planning allow you to use your own high-resolution 2D drone images, aerial photographs, or site plans as the basis for planning. Imported images can be freely measured, scaled, and rotated.\n*   Objects such as chimneys, skylights, and more can now be freely rotated on flat roofs.\n\n**Sunny Design PRO**\n\n*   Imported 3D models can now be tilted and rotated as needed.\n*   For dynamic rates, time series with 366 days can now be imported.\n\n* * *\n\n### Release Notes Sunny Design 5.90\n\n**New functions**\n\n*   For SMA Chargers PV optimized charging can be simulated. When possible, the electric vehicle is charged exclusively with surplus PV energy. If this is not sufficient, the simulation automatically switches to “Charging with target” to ensure that the vehicle is sufficiently charged.\n*   Import of incomplete consumption profiles is now possible as a 2-column csv file (auto detection). This must contain a date column and a value column.\n*   The price list has been extended for the device types communication products and charging stations.\n*   The Project documentation page has been optimized to ensure a quick and easy access to all downloads.\n\n**Visual roof planning**\n\n*   Google Solar API data can now be used in 3D roof planning (Solar potential, Altitude profiles).\n*   Buildings and Objects can be combined and be rotated, shifted etc. as one unit.\n*   Different color schemes can now be selected for strings to improve distinctiveness.\n\n**Sunny Design PRO**\n\n*   Time Series for PV production can be uploaded and used for calculation (instead of PV system setup and simulation).\n*   In Energy System projects, a tariff module type “Dynamic tariff (time series)” is available. It enables the import of time series for energy demand prices. These can be used to simulate energy costs.\n*   Imported 3D models may contain objects that are removed before PV installation (as antennas or vents). By selecting the checkbox \"Disable collision detection\", these can be ignored when assigning modules.\n\n* * *\n\n### Release Notes Sunny Design 5.80\n\n**New functions**\n\n*   Load profiles import from the Sunny Portal powered by ennexOS has been implemented.\n*   In the profitability section individual product information can be set for offers.\n*   The import dialog has been optimized for use with Drag-n-Drop.\n*   In off-grid projects pre-selection of the power grid isn’t required anymore.\n*   New grids for SHP100-JP-21 added.\n*   The yield calculation for STP-60 and STP-70 inverters has been optimized.\n*   The design suggestions have been improved.\n\n**Visual roof planning**\n\n*   Buildings and objects may now penetrate eachother, which increases the design possibilities especially for complex buildings.\n*   Roof overhangs can be defined for a more realistic buildings.\n*   PV arrays on facades are now shown in the roof plan.\n*   More realistic light sources are used for the sun position indicator.\n\n**Sunny Design PRO**\n\n*   Heat pumps con now be configured for heating and cooling applications (HVAC).\n*   A detailed project exposé to demonstrate the benefits of the system and alternatives can be set up and exported as a Powerpoint document.\n*   The project documentation of energy systems has been extended by an energy balance diagram.\n*   When using the demo version, a watermark is shown in the project documentation of energy system projects.\n\n* * *\n\n### Release Notes Sunny Design 5.70\n\n**New functions**\n\n*   A schematic circuit diagram for the planned PV system can now be downloaded, which includes all essential system components from the PV modules to the grid connection.\n*   Multiple different Sunny Boy Smart Energy hybrid inverters are now available in one design.\n*   Hybrid inverters with batteries, but without PV modules, are now also supported in systems.\n*   There is a new tab \"More Project Files\" in the output. There, the available documents and files can be conveniently downloaded. Among other things, the device list is now also available there as a CSV file.\n*   In the area of heat pumps, it is now also possible to specify half floors for the building.\n*   In the settings, you can choose between different azimuth definitions.\n*   The link to the Sunny Design product page is now language-dependent.\n*   Improved alert when the session has expired and you are in the roof planning.\n*   A video on the tools for parameterization according to VDE AR-N 4110 has been integrated.\n*   The system validation according to RGIE, Art. 48 (750 V DC) in Belgium has been revised.\n\n**Visual roof planning**\n\n*   Calculation of the annual shading of the surfaces and the PV modules can be done manually on the server or, if possible, simultaneously with a new method in the browser (automatic mode). For simple scenes, this is much faster.\n*   Individual modules or module groups can now be rotated in a module field.\n*   Flat roofs can be drawn with any floor plan.\n*   In the case of trailing dormers and trapezoidal dormers, the angle of inclination of the main surface can be changed.\n*   In the case of the building, various roof coverings and wall materials for the facade can now be visualized.\n*   Various objects can now be placed on facades (doors, windows, ventilation grilles and balconies).\n*   When changing modules, the design is retained if the modules have the same width and length.\n*   The map size can be adjusted manually using a slider.\n*   Roof plans can now be saved more easily.\n*   The hiding of shaded PV modules has been improved.\n*   A warning appears when the maximum number of subsystems is exceeded.\n*   The sun position indicator is now enabled by default and can be turned off via the menu at the bottom left.\n\n**Sunny Design PRO**\n\n*   The import of 3D models has been improved. The model files can be imported via drag and drop, with up to 10 files per model supported.\n*   In the case of energy system projects, the function \"Open overview of electricity purchase costs\" is now available on the Results/Profitability page, which can be used to view a detailed analysis of the electricity purchase costs.\n\n* * *\n\n### Release Notes Sunny Design 5.61\n\n**New Functions**\n\n*   On the personal start page, the peak power and a roof planning symbol are displayed for the projects.\n*   It is now possible to choose between a uniform charging tariff for all charging stations or different charging tariffs for each type of charging station.\n*   The simulation of energy system projects with only PV and batteries is now carried out with the same calculation components as for the PV projects and is therefore significantly faster.\n*   Deleting of own locations has been improved.\n*   The project documentation page displays a note about the SMA certification service (for Germany only).\n\n**Roof Planning**\n\n*   In roof planning, the scene can be exported as a 3D model (Sunny Design Pro only)\n*   Modules can be placed across two adjacent and equally inclined surfaces.\n*   The string design now has the option to automatically determine the optimal string alignment and starting point.\n*   When roof objects are moved, existing PV modules are automatically removed or added.\n*   If the length of a hipped roof changes, the inclination of the hip roof is maintained. The inclination of the hip can be adjusted by means of an angle input.\n*   Collision detection for large module fields has been optimized.\n\n* * *\n\n### Release Notes Sunny Design 5.60\n\n**New Features (General)**\n\n*   New project type for large-scale systems incl. DC Combiner design\n*   Tools for system parameterization according to VDE AR-N 4110 (Sunny Design Pro)\n*   Alternative map data from Bing\n*   Bifacial gain factor for bifacial PV modules\n*   Warning if the maximum grid connection load is exceeded\n*   Extension of location settings for Australia to overdimensioning of DC inputs (AS/NZS 5033)\n*   Extended database of low-voltage batteries for Sunny Island\n*   Numerous new electric vehicles and manufacturers\n\n**Visual roof planning**\n\n*   Support of façade systems\n*   Roof areas with the same orientation and inclination can be grouped\n*   A preferred string length can be set in the string settings\n*   Improved selection of the position of the sun\n*   In step 3, all roof areas can now be deselected\n*   In the event of changes to the building, the PV modules will be retained if possible\n\n* * *\n\n### Release Notes Sunny Design 5.50\n\n**New Features (General)**\n\n*   The Multi-Use operating mode of the STPS X has been integrated.\n*   A device list of the planned SMA system components can now be downloaded.\n*   The optimal row spacing of elevated PV modules can now be calculated.\n*   On saddle, monopitch and hipped roofs, elevated PV modules are now possible.\n*   Dimensions are now displayed on dormers and other objects.\n*   The maximum system voltage of the PV modules is now taken into account per MPP tracker.\n*   Additional hints in roof planning if user inputs cannot be used.\n*   The filters in the \"Add communication product\" dialog have been optimized.\n\n  \n**Sunny Design PRO**\n\n*   Imported 3D models can now also be scaled by measuring.\n*   The display of the category of key figures has been optimized in the user interface as well as in the project documentation.\n\n* * *\n\n### Release Notes Sunny Design 5.40\n\n**New Features (General)**\n\n*   New, improved project documentation\n*   Electromobility also possible in quick planning mode\n*   For charging stations and electric vehicles, differentiation between AC and DC charging\n*   Battery systems now as separate items in the detailed project costs\n*   Subsequent editing of own cost items possible\n*   Management of a price list for battery systems\n*   Roof plan as vector graphic in project documentation\n*   Simplified deletion of load profiles and projects\n*   PV arrays are not deleted when the visual roof plan is removed\n*   Function for optimising PV module design in case of shading\n*   Display of the ground coverage ratio (GCR)\n*   Optimized dialogs for the selection of buildings & objects\n*   Optimization of the naming of inverter inputs\n*   Automatic polystring design for inverter selection\n*   New result value for active power limitation\n*   Start of roof planning in 2D possible\n*   Progress indicator for visual string design\n*   Configurable joint for east-west rack systems\n*   Alignment of objects with dialog\n*   Adjustable visibility and transparency of PV modules\n\n  \n**Sunny Design PRO**\n\n*   Import of 3D models\n\n* * *\n\n### Release Notes Sunny Design 5.30\n\n**New Features (General)**\n\n*   The visual roof planning was extended by the electrical design including string planning.\n*   String assembly plans can be created.\n*   Battery systems can now be configured for combined operation of peak load shaving and self-consumption optimization (Multi-Use).\n*   A demand charge can be used in PV projects.\n*   Sunny Design now also supports the energy cost calculation according to the capacity tariff for Belgium.\n*   The energy management design has been optimized for inverters with integrated system manager.\n*   In visual roof planning, the modules with east/west-oriented mounting can no longer be arranged only in pairs, but independently of each other.\n*   Existing buildings can be copied.\n*   Modules and roof objects are preserved when the building height is changed.\n*   The loss of yield due to shading is now calculated at the string level, taking ShadeFix into account.\n*   Swedish and Hungarian are available as new languages in the user interface.\n*   Numerous other improvements.\n\n  \n**Sunny Design PRO**\n\n*   In energy system projects, the hybrid inverters can now be simulated with battery system.\n*   The export of the load profiles of heating rods is now possible.\n*   The previous energy consumption of mobility can now be specified by a mileage.\n\n* * *\n\n### Release Notes Sunny Design 5.22\n\n**New features (general)**\n\n*   In PV projects with self-consumption, up to 3 charging stations and electric vehicles can now be configured.\n*   In the electromobility section of the detailed planning mode, a warning is now displayed if the energy consumption of the electric vehicles is not covered.\n*   The calculation to prove compliance with the THD currents can now also be carried out for medium voltage in accordance with VDE-AR-N 4110.\n*   For flat roofs, an attic can be added.\n*   The display and information about our charging solutions have been optimized.\n*   In the project data, the possibility was created to make specifications for the desired nominal power ratio or DC/AC ratio, respectively.\n*   In the area of profitability, up to 10 special tariffs can now be defined.\n*   The influence of shading is now also taken into account in the energy yield calculation.\n*   When moving modules in the roof planning, they are aligned to a grid (snap-to-grid function).\n*   Additional dimensions are now displayed in the roof planning.\n\n  \n**Sunny Design PRO**\n\n*   In energy system projects, heating rods can now be taken into account to increase self-consumption.\n*   The heat pumps now have the \"SG-Ready\" option for PV-optimized operation.\n\n* * *\n\n### Release Notes Sunny Design 5.20\n\n**New features (general)**\n\n*   Shading analysis: Calculation of the annual shading of roofs\n*   Display of the percentage of module shading\n*   Display of the shadow course for a selected point in time\n*   Any number of buildings possible in one roof plan\n*   Extension of the roof planning to include external objects (trees, walls, chimneys)\n*   Up to 6 PV generators in a sub-project\n*   Improved design suggestions\n*   Compatibility list of battery inverters and batteries\n*   Key figures on self-consumption and self-sufficiency in a comparison of alternatives\n*   Easier creation of own PV modules\n*   Optimized net metering for PV projects\n*   Extended calculation of maximum PV system voltage and circuit currents according to NEC 2017\n*   Prepared for SMA JOIN\n\n  \n**Sunny Design PRO**\n\n*   New key figure for self-consumption levy\n*   Display of additional information on tariffs\n*   CO2 credit also for direct marketing\n\n* * *\n\n### Release Notes Sunny Design 5.10\n\n**New features (general)**\n\n*   PV module placement on dormers\n*   Definition of maintenance walks/thermal separations in module arrays\n*   Project documentation extended by a Roof plan\n*   Creation of detailed offers\n*   Use of Heat Pump tariffs\n*   Assignment of a project status and life cycle\n*   Optimized system design for inverters with many MPPT\n*   Display of Sunny Design News\n*   Extended customer management\n*   Net-Metering for standard PV projects\n*   Consideration of self-consumption deduction in projects with direct selling\n\n  \n**Sunny Design PRO**\n\n*   Suggestion of Peak Load Shaving threshold\n*   CO2 credits for PV energy export\n*   Extended time series export\n*   Selectable visibility of charging stations\n*   Optimized usage of alternatives\n\n* * *\n\n### Release Notes Sunny Design 5.00\n\nMore options for system planners: In the new version Sunny Design 5.0, the SMA planning software is now more application-oriented. Installers benefit from professional system planning that requires very little time and effort. All innovations at a glance:\n\n**Visual 2D/3D Roof Planning**\n\n*   Map based creation of building models\n*   Numerous predefined building types and roof shapes\n*   Simple insertion of obstacles (dormers, windows, chimneys, …)\n*   Multiple PV arrays per building\n*   Snapshot function\n*   Undo/Redo\n*   Easy to use\n\n  \n**Optimized Workflows**\n\n*   Quick planning mode with system design in just a few steps\n*   Just the most important inputs and results\n*   Simple switchover between quick mode and detailed planning\n\n  \n**Extended project data**\n\n*   Free text address entry and automated selection of the nearest meteorological data set\n*   Map view (Google Maps)\n*   Upload of multiple object photos\n*   Customer management tool\n\n  \n**Interfaces to SMA 360° App**\n\n*   Creation of Sunny Design Projects by the app\n*   Management of PDF documents accessible within the app\n\n  \n**Other Enhancements**\n\n*   New fact sheet for residential energy systems\n*   Detailed calculation of project costs\n*   Integrated P-Q analysis tool of Sunny Central Storage systems\n*   Support of Sunny Boy Storage with multiple batteries\n*   Export of load and generation time series (Sunny Design Pro)\n*   Russian User interface\n\nSunny Design\n\n## Downloads\n\n![Operating manual](https://www.sma.de/fileadmin/content/website-meta/icons/svg/blue/50/screen-monitor.svg?v=1645801872)\n\n### Operating manual\n\nNow the operating manual is also available as\n\n[eManual](https://manuals.sma.de/SDesign/en-US/index.html)\n\nSunny Design\n\n## Release Notes\n\n![](https://www.sma.de/fileadmin/content/website-meta/icons/svg/white/50/Home__House__Line.svg?v=1646218823)\n\n### For homeowners & business owners\n\nIf you have any questions, please contact SMA.\n\n[Contact us now](https://www.sma.de/en/company/sma-subsidiaries-worldwide)\n\n[![With Sunny Design, you can plan your tailor-made PV system in just a few clicks.](https://www.sma.de/fileadmin/content/website-meta/icons/svg/white/50/icon-graphic-tablet-draw-pen.svg?v=1781943196)](https://www.sunnydesignweb.com/sdweb/#/)\n\n### Planning tool Sunny Design\n\nWith Sunny Design, you can plan your tailor-made PV system in just a few clicks.\n\n[Plan your system now](https://www.sunnydesignweb.com/sdweb/#/)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

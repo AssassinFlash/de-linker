@@ -1,0 +1,26 @@
+{
+  "startUrls": [
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14318222475.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14444632075.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14402468107.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14449203083.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14402470283.html"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 5,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 4
+}

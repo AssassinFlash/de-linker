@@ -1,0 +1,44 @@
+{
+  "startUrls": [
+    {
+      "url": "https://k2-systems.com/en/digital-services/k2-base/"
+    },
+    {
+      "url": "https://easy-pv.co.uk/"
+    },
+    {
+      "url": "https://www.sma.de/en/products/apps-software/sunny-design"
+    },
+    {
+      "url": "https://www.opensolar.com/pro/"
+    },
+    {
+      "url": "https://www.memodo.de/m/werkzeuge/"
+    },
+    {
+      "url": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools"
+    },
+    {
+      "url": "https://developers.google.com/maps/documentation/solar/coverage"
+    },
+    {
+      "url": "https://developers.google.com/maps/documentation/solar/usage-and-billing"
+    },
+    {
+      "url": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-3-0-beta"
+    },
+    {
+      "url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections"
+    },
+    {
+      "url": "https://www.kartverket.no/en/api-and-data/terrain-data"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 11,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 4
+}

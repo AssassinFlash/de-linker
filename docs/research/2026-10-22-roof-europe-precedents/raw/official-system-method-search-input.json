@@ -1,0 +1,6 @@
+{
+  "queries": "site:manuals.sma.de/SDesign/en-US \"peak load shaving\"\nsite:manuals.sma.de/SDesign/en-US \"battery\" \"load profile\" \"design\"\nsite:manuals.sma.de/SDesign/en-US \"existing PV\"\nsite:samrepo.nrelcloud.org/help battery sizing dispatch limits power capacity",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "languageCode": "en"
+}

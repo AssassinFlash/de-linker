@@ -1,0 +1,44 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.swisstopo.admin.ch/en/terms-of-use-free-geodata-and-geoservices"
+    },
+    {
+      "url": "https://www.swisstopo.admin.ch/en/landscape-model-swissbuildings3d-2-0"
+    },
+    {
+      "url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/basisbestand_gebouwen"
+    },
+    {
+      "url": "https://3d.kadaster.nl/productbeschrijving/"
+    },
+    {
+      "url": "https://docs.overturemaps.org/guides/buildings/"
+    },
+    {
+      "url": "https://operations.osmfoundation.org/policies/nominatim/"
+    },
+    {
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-user-manual_en"
+    },
+    {
+      "url": "https://developers.google.com/maps/documentation/solar/policies"
+    },
+    {
+      "url": "https://geoservices.ign.fr/services-web-experts-ortho"
+    },
+    {
+      "url": "https://help.easy-pv.co.uk/books/getting-started"
+    },
+    {
+      "url": "https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=TU+Delft&rows=1"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 11,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 4
+}

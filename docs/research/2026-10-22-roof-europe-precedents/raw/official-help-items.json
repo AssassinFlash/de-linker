@@ -1,0 +1,1349 @@
+[
+  {
+    "url": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-quick-roof-design-mode",
+    "crawl": {
+      "loadedUrl": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-quick-roof-design-mode",
+      "loadedTime": "2026-10-22T09:20:42.410Z",
+      "referrerUrl": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-quick-roof-design-mode",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 14704,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-quick-roof-design-mode",
+      "title": "Introduction to Quick ... | Easy PV Help",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-GB",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Introduction to Quick ... | Easy PV Help"
+        },
+        {
+          "property": "og:url",
+          "content": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-quick-roof-design-mode"
+        },
+        {
+          "property": "og:description",
+          "content": "With Easy PV's Quick Roof design mode you can model a roof without using satellite imagery, making i..."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-cache, no-store, private",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "14704",
+        "content-security-policy": "frame-ancestors 'self'; frame-src 'self' https://*.draw.io https://*.youtube.com https://*.youtube-nocookie.com https://*.vimeo.com https://embed.diagrams.net; script-src http: https: 'nonce-87AUqpiAouaai1JsoixgIueF' 'strict-dynamic'; object-src 'self'; base-uri 'self'",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:20:42 GMT",
+        "expires": "Sun, 12 Jul 2015 19:01:00 GMT",
+        "server": "nginx/1.18.0 (Ubuntu)",
+        "vary": "Accept-Encoding",
+        "set-cookie": [
+          "XSRF-TOKEN=eyJpdiI6ImcwMnd6bmxaOE42KzlSZlMzb3dlaWc9PSIsInZhbHVlIjoiRUtLc1NMRFNiVVQyc0ZIWmVKOWpzMWFrRTROUGFBMmY1enlZeTRCeGh0SjY1bGlrVG9xRlVqSEVMQTlDenVTaFJZSW9PZnA1NEErQkhmSEU2VTFXd09kMmQrTzZoaTNCcFlhSUkvdXlYaW9sYXlHZUN1VGxPSmlHWU1mT1lMT1IiLCJtYWMiOiI2Yzk3YmYxYzlkYWZiMTAzNGJhY2VjZDFjNGMwYzU5OGMwOWJlODhmM2I1ZTgwYTdkNzk4ZWRjNzM1OTk0NGJiIiwidGFnIjoiIn0%3D; expires=Thu, 22 Oct 2026 11:20:42 GMT; Max-Age=7200; path=/; secure; samesite=lax",
+          "bookstack_session=eyJpdiI6IjExemo5WklJK0Y4MXRLTWF3TVZ3WUE9PSIsInZhbHVlIjoiYURRMVJsb1Qwa3JhaTB6Q1NBelpjMkMvNXdBb2hmSlYrQzZEa0xSeW9OcHFVeDc1RWJNMDF3SUF3M0d2VjQ3TjBLbVJKSWpUOHRMVndNRG9LV0ovZGE0dWpWM2l6VTBySWpRVXZKbFgzNXJZUVIzd2s1QS9UMnZEdDVSdVVpcjYiLCJtYWMiOiJmODEwY2NhMDU5MmRkZmQ0YmY5MzMzMmUwMWFjNWY2NTk3M2Y5N2Y2NGZjYzQ5NTQ1MmI3MTViN2M0YmIxZmJjIiwidGFnIjoiIn0%3D; expires=Thu, 22 Oct 2026 11:20:42 GMT; Max-Age=7200; path=/; secure; httponly; samesite=lax"
+        ]
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Introduction to Quick ... | Easy PV Help\nIntroduction to Quick Roof design mode\nWith Easy PV's Quick Roof design mode you can model a roof without using satellite imagery, making it a good option if the satellite data isn't available. Simply model the roof using the dimensions, pitch and roof covering and add any obstructions. \nCreating a Quick Roof design\nQuick Roof is selected when you first create a project, input project details and under Design Mode select Quick Roof. Then click Create in the bottom right. \nThis will then take you to the Roof task where you can model the roof. \nRoof task overview \nIn the Roof task you can create and edit your 2D roof model:\nIn the Roof Manager in the bottom right, clicking the ⋯ three dots on the individual roofs will show the following options:\nEdit details: Edit the roof type and dimensions\nClone roof: Copy the roof. This option will prompt you to input the name for the clone\nDelete: Delete the roof from the project. This cannot be undone\nCreating roof model\nInitial roof details \nWhen you first open a Quick Roof project, you will be prompted to fill in some initial roof details:\nSelect the roof type and roof covering: this determines what mounting options are available to select\nInput roof dimensions: width, height, pitch and orientation \nOrientation is taken in degrees from south going clockwise. Read more about setting the right orientation. \nThese details can be adjusted by clicking the ⋯ three dots in the Roof Manager and selecting Edit Details. The dimensions can also be adjusted directly from the model by clicking on the corners and inputting the length. \nAdjusting roof shape \nWhen creating a roof in the Roof task, there are a variety of different handles you can use to accurately adjust the shape:\n1. White corner handles\nClick the white corner handles to show dimensions of the associated roof sides. You can then click on the values to manually change these.\nClick on the white corner handles to view the following options:\n2. Yellow circle handles \nClick and drag the yellow circle handles to allow you to split a roof edge and create irregular shapes. These will then convert to white handles which you can delete if needed.\n​Read more about the snapping guide (transparent rectangle) used here in the next section.\n3. White rectangular handles\nClick on the white rectangular handles to toggle between a square and curved cornered handles:\nSquare cornered handle: Use to extend a roof side out\nCurved cornered handle: Use to extend the adjoining rood side independently of the others. This will create new corners and sides which can be deleted by clicking on the corners and then the bin icon\nAdding obstructions \nOnce you have your overall roof shape, you can add obstructions. Including obstructions will help when planning where to place panels in the Panels task. Drag and drop any obstructions and use the snapping guide to ensure the obstruction positioning is correct. \nSnapping guide\nThe snapping guide is a rectangle guide that you can set the dimensions of to help position obstructions correctly on a roof and to size your roof. Obstructions and roof sides will align with the sides and corners of the snapping guide. \nHere is an example of using the snapping guide to position a roof light. Use the same white handles described above to resize the snapping guide and obstructions.\nIf you are modelling an irregularly shaped obstruction, you can use the polygon obstruction. This uses the same white and yellow handles as the roof. You can also use the snapping guide to ensure the dimensions are correct when creating irregular shapes. \n​Still Need Help?\nContact Support: If you've got further questions, get in touch with our support team at help@easy-pv.co.uk (UK) or help@easy-pv.ie (IE). If you are experiencing a bug, to help us look into your issue faster, please include the email address of your account, the name of the project and screenshots of any unexpected behaviour.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Introduction to Quick ... | Easy PV Help\n\n## Introduction to Quick Roof design mode\n\nWith Easy PV's Quick Roof design mode you can model a roof without using satellite imagery, making it a good option if the satellite data isn't available. Simply model the roof using the dimensions, pitch and roof covering and add any obstructions. \n\n* * *\n\n## Creating a Quick Roof design\n\nQuick Roof is selected when you first create a project, input project details and under **Design Mode** select **Quick Roof**. Then click **Create** in the bottom right. \n\n[![image.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/scaled-1680-/FyL1nMcBqTrizoWu-image.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/FyL1nMcBqTrizoWu-image.png)\n\nThis will then take you to the Roof task where you can model the roof. \n\n* * *\n\n## Roof task overview \n\nIn the Roof task you can create and edit your 2D roof model:\n\n#### [![Drag and drop obstructions.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/scaled-1680-/ecHbUomJgN7JYMG9-drag-and-drop-obstructions.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/ecHbUomJgN7JYMG9-drag-and-drop-obstructions.png)\n\nIn the **Roof** **Manager** in the bottom right, clicking the **⋯ three dots** on the individual roofs will show the following options:\n\n*     **[![6M6gz1NJneGPPmZb-edit.jpg](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/scaled-1680-/8gb7pLeezNV2Vyih-6m6gz1njnegppmzb-edit.jpg)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/8gb7pLeezNV2Vyih-6m6gz1njnegppmzb-edit.jpg)  Edit details:** Edit the roof type and dimensions\n*     **[![image.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-09/scaled-1680-/jMO6FxliPQuscMfZ-image.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-09/jMO6FxliPQuscMfZ-image.png)  Clone roof:** Copy the roof. This option will prompt you to input the name for the clone\n*     **[![image.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-09/scaled-1680-/UcWzpF4HY8xhSg91-image.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-09/UcWzpF4HY8xhSg91-image.png)  Delete:** Delete the roof from the project. This cannot be undone\n\n* * *\n\n## Creating roof model\n\n### Initial roof details \n\nWhen you first open a Quick Roof project, you will be prompted to fill in some initial roof details:\n\n1.  **Select the roof type and roof covering**: this determines what mounting options are available to select\n2.  **Input roof dimensions**: width, height, pitch and orientation\n    \n    Orientation is taken in degrees from south going clockwise. Read more about [setting the right orientation](https://help.easy-pv.co.uk/books/faqs/page/what-do-i-set-as-the-orientation-in-quick-roof). \n    \n\n[![simplescreenrecorder-2025-11-24\\_09.52.54-ezgif.com-speed.gif](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/bI37Ilimn4tVJ2EU-simplescreenrecorder-2025-11-24-09-52-54-ezgif-com-speed.gif)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/bI37Ilimn4tVJ2EU-simplescreenrecorder-2025-11-24-09-52-54-ezgif-com-speed.gif)\n\nThese details can be adjusted by clicking the **⋯ three dots** in the **Roof Manager** and selecting `Edit Details`. The dimensions can also be adjusted directly from the model by clicking on the corners and inputting the length. \n\n### Adjusting roof shape \n\nWhen creating a roof in the Roof task, there are a variety of different handles you can use to accurately adjust the shape:\n\n[![image.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/scaled-1680-/egD5IZJCFYfurfsT-image.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/egD5IZJCFYfurfsT-image.png)\n\n#### 1\\. White corner handles\n\nClick the **white corner handles** to show dimensions of the associated roof sides. You can then click on the values to manually change these.\n\n[![simplescreenrecorder-2025-11-24\\_11.47.48-ezgif.com-video-to-gif-converter.gif](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/vRWQfe5p7rseDGtW-simplescreenrecorder-2025-11-24-11-47-48-ezgif-com-video-to-gif-converter.gif)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/vRWQfe5p7rseDGtW-simplescreenrecorder-2025-11-24-11-47-48-ezgif-com-video-to-gif-converter.gif)\n\nClick on the white corner handles to view the following options:\n\n[![simplescreenrecorder-2025-11-24\\_14.27.07-ezgif.com-video-to-gif-converter.gif](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/c6p3JaWfCvMbGfBB-simplescreenrecorder-2025-11-24-14-27-07-ezgif-com-video-to-gif-converter.gif)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/c6p3JaWfCvMbGfBB-simplescreenrecorder-2025-11-24-14-27-07-ezgif-com-video-to-gif-converter.gif)\n\n#### 2\\. Yellow circle handles \n\nClick and drag the **yellow circle handles** to allow you to split a roof edge and create irregular shapes. These will then convert to white handles which you can delete if needed.\n\n[![simplescreenrecorder-2025-11-24\\_13.53.18-ezgif.com-video-to-gif-converter.gif](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/s9nPSH5louOSE0lJ-simplescreenrecorder-2025-11-24-13-53-18-ezgif-com-video-to-gif-converter.gif)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/s9nPSH5louOSE0lJ-simplescreenrecorder-2025-11-24-13-53-18-ezgif-com-video-to-gif-converter.gif)\n\n​Read more about the **snapping guide** (transparent rectangle) used here in the [next section](https://help.easy-pv.co.uk/books/buildings-and-roofs/page/quick-roof#bkmrk-adding-obstructions%C2%A0).\n\n#### 3\\. White rectangular handles\n\nClick on the **white rectangular handles** to toggle between a square and curved cornered handles:\n\n*    **[![1.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/scaled-1680-/ypT4M4g3JqFjSRQl-1.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/ypT4M4g3JqFjSRQl-1.png) Square cornered handle:** Use to extend a roof side out\n*    **[![2.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/scaled-1680-/2eZDZgM9Q3FepZqy-2.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/2eZDZgM9Q3FepZqy-2.png) Curved cornered handle:** Use to extend the adjoining rood side independently of the others. This will create new corners and sides which can be deleted by clicking on the corners and then the bin icon\n\n[![simplescreenrecorder-2025-11-24\\_14.20.10-ezgif.com-video-to-gif-converter.gif](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/WMEIqkw6X0gC8Vio-simplescreenrecorder-2025-11-24-14-20-10-ezgif-com-video-to-gif-converter.gif)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/WMEIqkw6X0gC8Vio-simplescreenrecorder-2025-11-24-14-20-10-ezgif-com-video-to-gif-converter.gif)\n\n### Adding obstructions \n\nOnce you have your overall roof shape, you can add obstructions. Including obstructions will help when planning where to place panels in the Panels task. **Drag and drop** any obstructions and use the **snapping guide** to ensure the obstruction positioning is correct. \n\n#### Snapping guide\n\n  [![image.png](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/scaled-1680-/dfImzb2J3UMkqXiU-image.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/dfImzb2J3UMkqXiU-image.png)\n\nThe **snapping guide** is a rectangle guide that you can set the dimensions of to help position obstructions correctly on a roof and to size your roof. Obstructions and roof sides will align with the sides and corners of the snapping guide.  \n\nHere is an example of using the snapping guide to position a roof light. Use the same white handles described above to resize the snapping guide and obstructions.\n\n[![simplescreenrecorder-2025-11-24\\_11.28.48-ezgif.com-video-to-gif-converter.gif](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/RVYQeHh66M61IvCd-simplescreenrecorder-2025-11-24-11-28-48-ezgif-com-video-to-gif-converter.gif)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/RVYQeHh66M61IvCd-simplescreenrecorder-2025-11-24-11-28-48-ezgif-com-video-to-gif-converter.gif)\n\nIf you are modelling an irregularly shaped obstruction, you can use the polygon obstruction. This uses the same white and yellow handles as the roof. You can also use the snapping guide to ensure the dimensions are correct when creating irregular shapes. \n\n [![simplescreenrecorder-2025-11-24\\_11.38.16-ezgif.com-video-to-gif-converter.gif](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/K2jRYpjYKOsoGDqV-simplescreenrecorder-2025-11-24-11-38-16-ezgif-com-video-to-gif-converter.gif)](https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/K2jRYpjYKOsoGDqV-simplescreenrecorder-2025-11-24-11-38-16-ezgif-com-video-to-gif-converter.gif)\n\n* * *\n\n## ​Still Need Help?\n\n**Contact Support:** If you've got further questions, get in touch with our support team at **help@easy-pv.co.uk** (UK) or **help@easy-pv.ie** (IE). _If you are experiencing a bug, to help us look into your issue faster, please include the email address of your account, the name of the project and screenshots of any unexpected behaviour._",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/choosing-a-design-mode",
+    "crawl": {
+      "loadedUrl": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/choosing-a-design-mode",
+      "loadedTime": "2026-10-22T09:20:42.848Z",
+      "referrerUrl": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/choosing-a-design-mode",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 12628,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/choosing-a-design-mode",
+      "title": "Choosing a design mode | Easy PV Help",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-GB",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Choosing a design mode | Easy PV Help"
+        },
+        {
+          "property": "og:url",
+          "content": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/choosing-a-design-mode"
+        },
+        {
+          "property": "og:description",
+          "content": "When you first create a project you will get the choice of the which design mode you would like to u..."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-cache, no-store, private",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "12628",
+        "content-security-policy": "frame-ancestors 'self'; frame-src 'self' https://*.draw.io https://*.youtube.com https://*.youtube-nocookie.com https://*.vimeo.com https://embed.diagrams.net; script-src http: https: 'nonce-VfbwTj9ntT6OGUqfZhrTHqQY' 'strict-dynamic'; object-src 'self'; base-uri 'self'",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:20:42 GMT",
+        "expires": "Sun, 12 Jul 2015 19:01:00 GMT",
+        "server": "nginx/1.18.0 (Ubuntu)",
+        "vary": "Accept-Encoding",
+        "set-cookie": [
+          "XSRF-TOKEN=eyJpdiI6IkRFL3NzdmZrQkpteFZpTkNzbEp5d0E9PSIsInZhbHVlIjoiVThyRk5rYmREWXRwdjdYTnAwK2lEZ0lDZXRTVU5kWElwT3NaNlV6cUtOSHQxWHdRUTBTK3hoSmxOMlUxU0lTMS96V202bGN3cW9TWldaVkZibVFPNTgrbzQ2ZWlKVWsvekU2bnE2ZVlZY0xCK1djWGNqY0NheGYvbEdFUEpWVUoiLCJtYWMiOiI3NzUzYWEzNzIwMmM0ZTM2ZmE1MjhkMWM4MDU1MjdhM2U2MGVjYWI1Y2U5NWM3NmY2YjIwZmY4MDhiZDYyZGFhIiwidGFnIjoiIn0%3D; expires=Thu, 22 Oct 2026 11:20:42 GMT; Max-Age=7200; path=/; secure; samesite=lax",
+          "bookstack_session=eyJpdiI6ImhzTXBkcVk5aHR0R1BjQjFpKzExN1E9PSIsInZhbHVlIjoiMnBmV05TR08ybWZqelN2ajkxVUdwSmxaMUZnOHluWWc3cjhyQ3l1OE5jTlZKT0FWK3BhWnBRTGZrRjhFck1aTmhQbFBJbUpzRkhucEpmY2xKUlBZMzc4TGw1ajZmOWswNEVvZlVoZlJqUGZWVFBKSFNIUTVPMjBIdmZNMFFuOWUiLCJtYWMiOiI2ZjA2MDI1MjI4Y2IwNjEwODg5MTZiMDdiNDUxN2VhOGY5M2FjOTlhMjJiMjBiZmY4MzU3NzFjZGM0OTgyMDliIiwidGFnIjoiIn0%3D; expires=Thu, 22 Oct 2026 11:20:42 GMT; Max-Age=7200; path=/; secure; httponly; samesite=lax"
+        ]
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Choosing a design mode | Easy PV Help\nWhen you first create a project you will get the choice of the which design mode you would like to use. The design mode affects how you model the roofs you plan to put panels on. \n​Demo\nWatch the same property be designed in each design mode to see each of them in action.\nDesign modes\nIn Easy PV there are four options:\n3D\nCreate 3D property model by designing the roof from a satellite image and dimensions\nModel obstructions and nearby buildings or trees that may cast shade on the roofs you're working on to get automatic shade analysis and improve the accuracy of the performance calculations\nAutomatically calculate scaffolding costs if using automatic pricing calculator\n​Learn more: \nIntro to 3D design mode\nIrregular buildings in 3D mode\nJoin our 3D designing training session\nMagic \nCreate an automatic 3D design - works out the height and pitch of buildings and identifies any obstructions\nThree free magic designs per day for standard users and unlimited for pro\nWill require some adjustments for accuracy\nRoof outline \nCreate roof model by outlining the roof from a satellite image and adjust the dimensions in the roofs task\n2D model so requires manual sunpath diagrams\nQuick Roof \nCreate 2D roof using dimensions, pitch, orientation and tile type, can also spec ground mount systems \nDoes not use satellite imagery so a good option if the satellite imagery isn't usable\n​Learn more: Intro to Quick Roof. \n​Want to know more?\nContact Support: If you've got further questions, get in touch with our support team at help@easy-pv.co.uk (UK) or help@easy-pv.ie (IE). If you are experiencing a bug, to help us look into your issue faster, please include the email address of your account, the name of the project and screenshots of any unexpected behaviour.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Choosing a design mode | Easy PV Help\n\nWhen you first create a project you will get the choice of the which design mode you would like to use. The design mode affects how you model the roofs you plan to put panels on. \n\n* * *\n\n## ​Demo\n\nWatch the same property be designed in each design mode to see each of them in action.  \n\n### \n\n* * *\n\n## Design modes\n\nIn Easy PV there are four options:\n\n[![image.png](https://help.easy-pv.co.uk/uploads/images/gallery/2024-11/scaled-1680-/gCyNUjOlDsMNerxW-image.png)](https://help.easy-pv.co.uk/uploads/images/gallery/2024-11/gCyNUjOlDsMNerxW-image.png)\n\n### 3D\n\n*   Create **3D** property model by designing the roof from a **satellite** image and **dimensions**\n*   Model obstructions and nearby buildings or trees that may cast shade on the roofs you're working on to get **automatic shade analysis** and improve the accuracy of the performance calculations\n*   Automatically calculate **scaffolding costs** if using [automatic pricing calculator](https://help.easy-pv.co.uk/books/getting-started-f2k/page/setting-up-your-automatic-pricing-calculator \"Setting up your Automatic Pricing Calculator\")\n\n​**Learn more**: \n\n*   [Intro to 3D design mode](https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-3d-design-mode \"3D design mode\")\n*   [Irregular buildings in 3D mode](https://help.easy-pv.co.uk/books/buildings-and-roofs/page/irregular-buildings-in-3d-design-mode \"Irregular Buildings in 3D design mode\")\n*   Join our [3D designing training session](https://cal.com/easy-pv/introduction-to-3d-design-in-easy-pv)\n\n### Magic \n\n*   Create an **automatic 3D design** - works out the height and pitch of buildings and identifies any obstructions\n*   Three free magic designs per day for standard users and unlimited for pro\n*   Will require some adjustments for accuracy\n\n### Roof outline \n\n*   Create roof model by outlining the roof from a **satellite** image and adjust the **dimensions** in the roofs task\n*   2D model so requires manual **sunpath diagrams**\n\n### Quick Roof \n\n*   Create **2D** roof using dimensions, pitch, orientation and tile type, can also spec ground mount systems \n*   Does not use satellite imagery so a good option if the **satellite imagery isn't usable**\n\n**​Learn more:** [Intro to Quick Roof](https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-quick-roof-design-mode \"Quick Roof\"). \n\n* * *\n\n## ​Want to know more?\n\n**Contact Support:** If you've got further questions, get in touch with our support team at **help@easy-pv.co.uk** (UK) or **help@easy-pv.ie** (IE). _If you are experiencing a bug, to help us look into your issue faster, please include the email address of your account, the name of the project and screenshots of any unexpected behaviour._",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://manuals.sma.de/SDesign/en-US/14333266827.html",
+    "crawl": {
+      "loadedUrl": "https://manuals.sma.de/SDesign/en-US/14333266827.html",
+      "loadedTime": "2026-10-22T09:20:45.102Z",
+      "referrerUrl": "https://manuals.sma.de/SDesign/en-US/14333266827.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 27658,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://manuals.sma.de/SDesign/en-US/14333266827.html",
+      "title": "Sunny Design Pro: Exporting Polysun projects",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": null,
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "content-length": "27658",
+        "content-type": "text/html",
+        "date": "Thu, 22 Oct 2026 09:20:45 GMT",
+        "etag": "\"3c3301ab77a9eed6d91d5559985015c5\"",
+        "last-modified": "Wed, 09 Sep 2026 13:57:28 GMT",
+        "server": "AmazonS3",
+        "via": "1.1 60b571ecac1934ebb297a6ecf58669c4.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "1QL3qe8yM415RmeKXD38UfDQJ1BMjfsw6C0BpPWT8EMhrN0k5p9eaQ==",
+        "x-amz-cf-pop": "LAX54-P6",
+        "x-amz-server-side-encryption": "AES256",
+        "x-cache": "Miss from cloudfront"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Sunny Design Pro: Exporting Polysun projects\n\t\t\t\t\t\t\nWith energy-system projects, you also have the option of exporting Polysun project files. These files can be used to continue your design of thermal projects with Polysun of the company Vela Solaris AG.\nInformation: This function is only available if the project includes thermal components and a simulation has already been performed.\nOpen the desired project, select in the main navigation area and, in the drop-down list, select the option Export Polysun project file.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Sunny Design Pro: Exporting Polysun projects\n\n|     |     |     |     |     |     |\n| --- | --- | --- | --- | --- | --- |\n| ![](https://manuals.sma.de/SDesign/Images/png/9007202822962955__Web.png) |     |     |     |     |     |\n\nWith energy-system projects, you also have the option of exporting Polysun project files. These files can be used to continue your design of thermal projects with Polysun of the company Vela Solaris AG.  \n**Information:** This function is only available if the project includes thermal components and a simulation has already been performed.\n\n*   Open the desired project, select ![](https://manuals.sma.de/SDesign/Images/png/4650948363__Web.png) in the main navigation area and, in the drop-down list, select the option **Export Polysun project file**.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.data.gov.uk/dataset/cf3f1137-c12b-44a1-a835-e80fe4a60b92/lidar-composite-digital-surface-model-dsm-1m",
+    "crawl": {
+      "loadedUrl": "https://www.data.gov.uk/dataset/cf3f1137-c12b-44a1-a835-e80fe4a60b92/lidar-composite-digital-surface-model-dsm-1m",
+      "loadedTime": "2026-10-22T09:20:46.534Z",
+      "referrerUrl": "https://www.data.gov.uk/dataset/cf3f1137-c12b-44a1-a835-e80fe4a60b92/lidar-composite-digital-surface-model-dsm-1m",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 35937,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.data.gov.uk/dataset/cf3f1137-c12b-44a1-a835-e80fe4a60b92/lidar-composite-digital-surface-model-dsm-1m",
+      "title": "LIDAR Composite Digital Surface Model (DSM) - 1m - National Data Library",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "age": "0",
+        "cache-control": "max-age=1800, public",
+        "content-language": "en-GB",
+        "content-length": "35937",
+        "content-security-policy": "default-src 'self'; connect-src 'self' *.google-analytics.com *.googletagmanager.com *.analytics.google.com s3-eu-west-1.amazonaws.com ckan.publishing.service.gov.uk; font-src 'self'; frame-ancestors 'self'; form-action 'self'; img-src 'self' *.google-analytics.com *.googletagmanager.com; manifest-src 'self'; media-src 'self'; object-src 'self'; script-src 'self' 'unsafe-inline' *.google-analytics.com *.googletagmanager.com; style-src 'self' 'unsafe-inline'",
+        "content-type": "text/html; charset=utf-8",
+        "cross-origin-opener-policy": "same-origin",
+        "date": "Thu, 22 Oct 2026 09:20:46 GMT",
+        "fastly-backend-name": "origin",
+        "referrer-policy": "same-origin",
+        "server": "gunicorn",
+        "strict-transport-security": "max-age=60; includeSubDomains; preload",
+        "vary": "Accept-Language",
+        "via": "1.1 varnish",
+        "x-cache": "MISS",
+        "x-cache-hits": "0",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-served-by": "cache-dfw-kdal2120096-DFW"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "LIDAR Composite Digital Surface Model (DSM) - 1m\nThe LIDAR Composite DSM (Digital Surface Model) is a raster elevation model covering ~99% of England at 1m spatial resolution. The DSM (Digital Surface Model) is produced from the last or only laser pulse returned to the sensor and includes heights of objects, such as vehicles, buildings and vegetation, as well as the terrain surface\nProduced by the Environment Agency in 2022, the DSM is derived from a combination of our Time Stamped archive and National LIDAR Programme surveys, which have been merged and re-sampled to give the best possible coverage. Where repeat surveys have been undertaken the newest, best resolution data is used. Where data was resampled a bilinear interpolation was used before being merged.\nThe 2022 LIDAR Composite contains surveys undertaken between 6th June 2000 and 2nd April 2022. Please refer to the metadata index catalogue which show for any location which survey was used in the production of the LIDAR composite.\nThe data is available to download as GeoTiff rasters in 5km tiles aligned to the OS National grid. The data is presented in metres, referenced to Ordinance Survey Newlyn and using the OSTN’15 transformation method. All individual LIDAR surveys going into the production of the composite had a vertical accuracy of +/-15cm RMSE. Attribution statement: © Environment Agency copyright and/or database right 2022. All rights reserved.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# LIDAR Composite Digital Surface Model (DSM) - 1m\n\nThe LIDAR Composite DSM (Digital Surface Model) is a raster elevation model covering ~99% of England at 1m spatial resolution. The DSM (Digital Surface Model) is produced from the last or only laser pulse returned to the sensor and includes heights of objects, such as vehicles, buildings and vegetation, as well as the terrain surface\n\nProduced by the Environment Agency in 2022, the DSM is derived from a combination of our Time Stamped archive and National LIDAR Programme surveys, which have been merged and re-sampled to give the best possible coverage. Where repeat surveys have been undertaken the newest, best resolution data is used. Where data was resampled a bilinear interpolation was used before being merged.\n\nThe 2022 LIDAR Composite contains surveys undertaken between 6th June 2000 and 2nd April 2022. Please refer to the metadata index catalogue which show for any location which survey was used in the production of the LIDAR composite.\n\nThe data is available to download as GeoTiff rasters in 5km tiles aligned to the OS National grid. The data is presented in metres, referenced to Ordinance Survey Newlyn and using the OSTN’15 transformation method. All individual LIDAR surveys going into the production of the composite had a vertical accuracy of +/-15cm RMSE. Attribution statement: © Environment Agency copyright and/or database right 2022. All rights reserved.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.kartverket.no/api-og-data/terrengdata",
+    "crawl": {
+      "loadedUrl": "https://www.kartverket.no/api-og-data/terrengdata",
+      "loadedTime": "2026-10-22T09:20:48.223Z",
+      "referrerUrl": "https://www.kartverket.no/api-og-data/terrengdata",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 42445,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.kartverket.no/api-og-data/terrengdata",
+      "title": "Høydedata og dybdedata | Kartverket.no",
+      "description": "Kartverkets høydedata og dybdedata, eller terrengdata, er gratis og tilgjengelig både for nedlasting og gjennom API. De kan blant annet brukes til flom- og rasanalyser, beregning av vegtraseer, masseberegning og arealplanlegging i 3D.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "nn-NO",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Høydedata og dybdedata"
+        },
+        {
+          "property": "og:description",
+          "content": "Kartverkets høydedata og dybdedata, eller terrengdata, er gratis og tilgjengelig både for nedlasting og gjennom API. De kan blant annet brukes til flom- og rasanalyser, beregning av vegtraseer, masseberegning og arealplanlegging i 3D."
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:url",
+          "content": "https://kartverket.no/api-og-data/terrengdata"
+        },
+        {
+          "property": "og:image",
+          "content": "https://kartverket.no/globalassets/bilder/api-er-og-data-foto/terrengmodell-fosnavaag.jpg"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Kartverket.no"
+        },
+        {
+          "property": "og:locale",
+          "content": "nn_NO"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "access-control-allow-origin": "*",
+        "cache-control": "public, max-age=42176",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "42445",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:20:47 GMT",
+        "env": "ProductionConfig",
+        "expires": "Thu, 22 Oct 2026 21:03:44 GMT",
+        "last-modified": "Thu, 22 Oct 2026 09:03:44 GMT",
+        "server": "nginx",
+        "vary": "*",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-ua-compatible": "IE=Edge",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Høydedata og dybdedata | Kartverket.no\nSiste oppdatering 04.09.24 \nHøgdedata og djupnedata\nKartverkets høgde- og djupnedata, eller terrengdata, er gratis og tilgjengeleg både for nedlasting og gjennom API. Dei kan mellom anna nyttast til flaum- og rasanalyser, berekning av vegtrasear, masseberekning og arealplanlegging i 3D.\nFinn data Her får du tak i terrengdata \nHøydedata.no\nMerk at det på høydedata.no også ligg nokre datasett og kartlag/WMS-tenester som berre er tilgjengelege for Noreg digitalt-partar (krev innlogging). Desse kan du bestille gjennom ein av forhandlarane til Kartverket.\nMeir detaljerte djupnedata enn det som er tilgjengeleg på geonorge.no, må bestillast direkte via Kartverket. Kartverket søker Forsvaret om å få frigitt data på vegner av bestillar. Dataa i seg sjølve er gratis, men bestillar må betale timepris for arbeidet med å klargjere data og søknad til Forsvaret om å få avgradert datasettet.\nBestill djupnedata\nAlle høgdedataa er tilgjengelege på høydedata.no. Dei er samla inn gjennom prosjektet nasjonal detaljert høgdemodell. Høgdemodellen for heile landet har éin meters oppløysing. I tillegg til laserdata som er samla inn gjennom prosjektet, ligg det på høydedata.no data frå andre Noreg digitalt-partar. Vi har også lagt ut både djupnedata frå ferskvatn og elver og skanning frå bilar.\nDjupnedata elles finn du på geonorge.no. På høydedata.no finn du oversiktskart som viser djupnedata som er samla inn med multistråle-ekkolodd frå Kartverkets djupnekartlegging frå rundt år 2000 og fram til i dag, samt data frå mellom anna Mareano-programmet.\nMeir detaljerte djupnedata enn dei som er tilgjengeleg på geonorge.no, må søkast særskilt om å få tilgang til.\nInformasjon om botnforhold grunnare enn 30 meter er ugradert – med nokre unntak. Djupnedata mellom territorialgrensa og strandlinja frå 30 meters djup, er gradert etter sikkerheitslova.\nBruksområde\nHøgde- og djupnedata er eigna som grunnlag for detaljerte terrengmodellar og ulike former for terrengvisualisering.\nDei kan mellom anna nyttast til å berekne flaumsoner og skredfare, plassere vindmøller og havbruk, detaljplanlegge infrastruktur som veg, jarnbane, kaianlegg og sjømerke. Dei eignar seg også – blant mykje anna – til å kartlegge gjengroing av kulturlandskapet og avdekke skjulte kulturminne, som skipsvrak og gravhaugar.\nProdukteigenskapar\nHøgde- og djupnedata syner terreng og overflate svært detaljert. Datasetta er etablert som punktskyer basert på laserskanning frå fly, flyfoto (bildematching) eller sjømåling med multistråle-ekkolodd. Punktskyene har varierande tettleik (punkt/m2) tilpassa ulike føremål. Frå punktskyene er det generert terrengmodellar av terreng, med ei oppløysing på 1, 10 og 50 meter for land og 5, 25 og 50 meter for sjø.\nFormat\nTerrengdata kan du laste ned på følgjande format:\nOriginale punktskyer: LAZ-format eller ZLAS.format\nTerrengmodellar (DTM): Grid-format (Geotiff)\nOverflatemodellar (DOM): Grid-format (Geotiff)\nDjupnedata kan lastast ned i formata ENH (East North Height), NED (North East Depth) og XYZ\nKartlaga er også tilgjengelege som API: WCS, WFS og WMS. Vi har også rest-tenester for maskinelt å laste ned data og gjere metadatasøk frå høydedata.no. Oversikt over alle API-a finn du på Geonorge (ekstern lenke).\nTips\nNår du på høydedata.no har valt område / prosjekt, vil standard visning vere eit delvis gjennomsiktig skuggerelieff av terrenget, med topografisk gråtonekart i bakgrunnen. Du kan skru av og på ulike kartlag og kombinere desse. Det er i tillegg mogleg å endre bakgrunnskart og legge til vegar, stadnamn, høgdekurver og administrative grenser.\nI høydedata.no er det verktøy for å teikne høgdeprofilar over terreng eller overflate. Det er også eit eige 3D-vindauge som du aktiverer ved å klikke på lenka «punktsky» bak kvart prosjektnamn.\nHer er høydedata.no\n(Dersom innhald ikkje blir vist, gjenoppfrisk side eller opne høydedata i nytt vindauge.)",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Høydedata og dybdedata | Kartverket.no\n\nSiste oppdatering 04.09.24\n\n## Høgdedata og djupnedata\n\nKartverkets høgde- og djupnedata, eller terrengdata, er gratis og tilgjengeleg både for nedlasting og gjennom API. Dei kan mellom anna nyttast til flaum- og rasanalyser, berekning av vegtrasear, masseberekning og arealplanlegging i 3D.\n\n#### Finn data Her får du tak i terrengdata\n\n[Høydedata.no](https://hoydedata.no/LaserInnsyn2/)\n\nMerk at det på høydedata.no også ligg nokre datasett og kartlag/WMS-tenester som berre er tilgjengelege for Noreg digitalt-partar (krev innlogging). Desse kan du bestille gjennom ein av [forhandlarane til Kartverket](https://www.kartverket.no/api-og-data/kjope-kartdata).\n\nMeir detaljerte djupnedata enn det som er tilgjengeleg på [geonorge.no](https://geonorge.no/ \"Gå til geonorge.no\"), må bestillast direkte via Kartverket. Kartverket søker Forsvaret om å få frigitt data på vegner av bestillar. Dataa i seg sjølve er gratis, men bestillar må betale timepris for arbeidet med å klargjere data og søknad til Forsvaret om å få avgradert datasettet.\n\n[Bestill djupnedata](https://www.kartverket.no/api-og-data/bestille-dybdedata \"Bestill hødoppløselege djupnesata\")\n\nAlle **høgdedataa** er tilgjengelege på [høydedata.no](https://hoydedata.no/LaserInnsyn2/). Dei er samla inn gjennom [prosjektet nasjonal detaljert høgdemodell](https://www.kartverket.no/geodataarbeid/nasjonal-detaljert-hoydemodell). Høgdemodellen for heile landet har éin meters oppløysing. I tillegg til laserdata som er samla inn gjennom prosjektet, ligg det på høydedata.no data frå andre Noreg digitalt-partar. Vi har også lagt ut både djupnedata frå ferskvatn og elver og skanning frå bilar.\n\n**Djupnedata** elles finn du på [geonorge.no](https://geonorge.no/ \"Gå til geonorge.no\"). På høydedata.no finn du oversiktskart som viser djupnedata som er samla inn med multistråle-ekkolodd frå Kartverkets djupnekartlegging frå rundt år 2000 og fram til i dag, samt data frå mellom anna [Mareano-programmet](https://www.mareano.no/).\n\nMeir detaljerte djupnedata enn dei som er tilgjengeleg på geonorge.no, må [søkast særskilt om å få tilgang til](https://www.kartverket.no/api-og-data/bestille-dybdedata \"Bestille detaljerte djupnedata\").\n\nInformasjon om botnforhold grunnare enn 30 meter er ugradert – med nokre unntak. Djupnedata mellom territorialgrensa og strandlinja frå 30 meters djup, er gradert etter sikkerheitslova.\n\n## Bruksområde\n\nHøgde- og djupnedata er eigna som grunnlag for detaljerte terrengmodellar og ulike former for terrengvisualisering.\n\nDei kan mellom anna nyttast til å berekne flaumsoner og skredfare, plassere vindmøller og havbruk, detaljplanlegge infrastruktur som veg, jarnbane, kaianlegg og sjømerke. Dei eignar seg også – blant mykje anna – til å kartlegge gjengroing av kulturlandskapet og avdekke skjulte kulturminne, som skipsvrak og gravhaugar.\n\n## Produkteigenskapar\n\nHøgde- og djupnedata syner terreng og overflate svært detaljert. Datasetta er etablert som punktskyer basert på laserskanning frå fly, flyfoto (bildematching) eller sjømåling med multistråle-ekkolodd. Punktskyene har varierande tettleik (punkt/m2) tilpassa ulike føremål. Frå punktskyene er det generert terrengmodellar av terreng, med ei oppløysing på 1, 10 og 50 meter for land og 5, 25 og 50 meter for sjø.\n\n## Format\n\nTerrengdata kan du laste ned på følgjande format:\n\n*   Originale punktskyer: LAZ-format eller ZLAS.format\n*   Terrengmodellar (DTM): Grid-format (Geotiff)\n*   Overflatemodellar (DOM): Grid-format (Geotiff)\n*   Djupnedata kan lastast ned i formata ENH (East North Height),  NED (North East Depth) og XYZ\n    \n\nKartlaga er også tilgjengelege som API: WCS, WFS og WMS. Vi har også rest-tenester for maskinelt å laste ned data og gjere metadatasøk frå høydedata.no. [Oversikt over alle API-a finn du på Geonorge](https://kartkatalog.geonorge.no/metadata/kartverket/hoydedata-laser/f297e948-8a34-4e6c-9740-54b3a657f8d5) (ekstern lenke).\n\n## Tips\n\nNår du på høydedata.no har valt område / prosjekt, vil standard visning vere eit delvis gjennomsiktig skuggerelieff av terrenget, med topografisk gråtonekart i bakgrunnen. Du kan skru av og på ulike kartlag og kombinere desse. Det er i tillegg mogleg å endre bakgrunnskart og legge til vegar, stadnamn, høgdekurver og administrative grenser.\n\nI høydedata.no er det verktøy for å teikne høgdeprofilar over terreng eller overflate. Det er også eit eige 3D-vindauge som du aktiverer ved å klikke på lenka «punktsky» bak kvart prosjektnamn.\n\n## Her er høydedata.no\n\n(Dersom innhald ikkje blir vist, gjenoppfrisk side eller [opne høydedata i nytt vindauge](https://hoydedata.no/LaserInnsyn2/ \"Høydedata.no\").)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://developers.google.com/maps/documentation/solar/methodology",
+    "crawl": {
+      "loadedUrl": "https://developers.google.com/maps/documentation/solar/methodology",
+      "loadedTime": "2026-10-22T09:20:49.142Z",
+      "referrerUrl": "https://developers.google.com/maps/documentation/solar/methodology",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 30244,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://developers.google.com/maps/documentation/solar/methodology",
+      "title": "Methodology  |  Solar API  |  Google for Developers",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "Google for Developers"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "Methodology  |  Solar API  |  Google for Developers"
+        },
+        {
+          "property": "og:url",
+          "content": "https://developers.google.com/maps/documentation/solar/methodology"
+        },
+        {
+          "property": "og:image",
+          "content": "https://developers.google.com/static/maps/images/google-maps-platform-1200x675.png"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "675"
+        },
+        {
+          "property": "og:locale",
+          "content": "en"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "Methodology"
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Google Maps Platform",
+              "item": "https://developers.google.com/maps"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Environment",
+              "item": "https://developers.google.com/maps/environment"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Solar API",
+              "item": "https://developers.google.com/maps/documentation/solar"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Methodology",
+              "item": "https://developers.google.com/maps/documentation/solar/methodology"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+        "cache-control": "no-cache, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "30244",
+        "content-security-policy": "base-uri 'self'; object-src 'none'; script-src 'strict-dynamic' 'unsafe-inline' https: http: 'nonce-UEcugmguHkA3CmQuKXQWQLWs6v/ojr' 'unsafe-eval'; frame-ancestors 'self' https://codeassist.google.com https://code-assist-free-tier.corp.google.com; report-uri https://csp.withgoogle.com/csp/devsite/v2",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:20:49 GMT",
+        "expires": "0",
+        "last-modified": "Wed, 21 Oct 2026 20:55:04 GMT",
+        "pragma": "no-cache",
+        "server": "Google Frontend",
+        "strict-transport-security": "max-age=63072000; includeSubdomains; preload",
+        "vary": "Accept-Encoding",
+        "x-cloud-trace-context": "77269d6005f56f28d66a59bb56ba244a",
+        "x-content-type-options": "nosniff",
+        "x-xss-protection": "0"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Methodology | Solar API | Google for Developers\nThe Solar API calculates the annual sunlight exposure on a rooftop using Google's imagery, 3D modeling, and historical weather patterns.\nIt estimates potential savings on utility costs and the percentage of electricity exported to the grid based on solar energy production and household consumption.\nActual savings can differ from projections due to factors like tree growth, utility rate changes, and policy adjustments.\nSolar energy production estimates are influenced by shading, weather conditions, and equipment specifics, relying on diverse data sources like Google, NREL, and Meteonorm.\nThe Solar API's technical potential calculations consider sunlight exposure, installation size, and space availability with specific criteria and assumptions for panel efficiency and placement.\nEuropean Economic Area (EEA) developers \nThe Solar API computes how much sunlight hits your roof in a year. It takes into account:\nGoogle's database of imagery and maps\n3D modeling of a given roof\nShadows cast by nearby structures and trees\nThe sun's position over the course of a year\nHistorical cloud and temperature patterns that might affect solar energy production\nThe Solar API estimates values for the percent of electricity exported to the grid using data from the National Renewable Energy Laboratory (NREL). The estimates are based on the relationship between the total solar electricity production and the total amount of electricity consumed by the household. The larger the solar installation is relative to the household electricity consumption, the higher the estimate of solar electricity exported to the grid.\nThe Solar API also calculates potential savings in utility costs as a result of installing rooftop solar. Actual savings can vary from projected savings for a variety of reasons:\nFast-growing trees can shade solar installations, reducing production over time.\nUtilities can change how much they charge their customers for electricity, affecting savings from solar.\nPolicies that are beneficial to solar installations may change (for example, net metering).\nFor states without net metering, savings may also vary by the amount of solar electricity consumed in the household compared to the amount exported to the grid.\nData sources\nBuilding insights\nTo calculate solar energy production and projected savings, the Solar API uses the following data sources:\nImagery, 3D modeling, and shade calculations using Google's machine learning algorithms.\nWeather data from NREL and Meteonorm. Sometimes sharp transitions between nearby stations are reflected in the map.\nUtility electricity rates information from Clean Power Research.\nAggregated and anonymized solar pricing data from EnergySage and OpenSolar.\nSolar incentives data from the following:\nClean Power Research\nRelevant federal, state and local authorities\nRelevant utility data\nSolar Renewable Energy Credit (SREC) data from Bloomberg New Energy Finance, SRECTrade, and relevant state authorities.\nSolar energy production estimates depend on many factors, such as shading, typical weather in a given area and equipment used. Additionally, Solar API mapping data may be from a different period in time than other estimates, and thus may not show recent growth or removal of trees.\nData layers\nGeoTIFFs returned by the dataLayers endpoint are generated using weather data, satellite imagery, and aerial imagery from a variety of sources. Data layers GeoTIFFs are orthorectified to remove perspective distortions. For more information about available layers, see About GeoTIFF files.\nSolar potential estimates\nTechnical potential includes electricity generated by the rooftop area suitable for solar panels, assuming supply chain disruptions and grid integration are not constraints.\nThere are many definitions of technical potential; other definitions may affect results by 25% or more. Based on the Solar API's definition of technical potential, installations meet the following criteria:\nSunlight: Every included panel receives at least 75% of the maximum annual sun in the county.\nInstallation size: Every included roof has a total potential installation size of at least 1.6 kW.\nSpace and obstacles: Any segment that has at least 4 square meters of space is considered.\nThe Solar API's model makes the following assumptions:\nEach panel is assumed to be 400 W with an efficiency of 20.4%, a DC to AC derate factor of 85%, and industry-standard assumptions about other factors.\nPanels are assumed to be mounted flush with the roof, including on flat surfaces.\nArrays are between 2 kW and 1000 kW. Only arrays on buildings are considered, not other spaces such as parking lots or fields.\nBecause we are continuously improving the model, estimates are subject to change.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Methodology | Solar API | Google for Developers\n\n*   The Solar API calculates the annual sunlight exposure on a rooftop using Google's imagery, 3D modeling, and historical weather patterns.\n    \n*   It estimates potential savings on utility costs and the percentage of electricity exported to the grid based on solar energy production and household consumption.\n    \n*   Actual savings can differ from projections due to factors like tree growth, utility rate changes, and policy adjustments.\n    \n*   Solar energy production estimates are influenced by shading, weather conditions, and equipment specifics, relying on diverse data sources like Google, NREL, and Meteonorm.\n    \n*   The Solar API's technical potential calculations consider sunlight exposure, installation size, and space availability with specific criteria and assumptions for panel efficiency and placement.\n    \n\n**European Economic Area (EEA) developers**\n\nThe Solar API computes how much sunlight hits your roof in a year. It takes into account:\n\n*   Google's database of imagery and maps\n*   3D modeling of a given roof\n*   Shadows cast by nearby structures and trees\n*   The sun's position over the course of a year\n*   Historical cloud and temperature patterns that might affect solar energy production\n\nThe Solar API estimates values for the percent of electricity exported to the grid using data from the [National Renewable Energy Laboratory (NREL)](https://www.nrel.gov/solar/). The estimates are based on the relationship between the total solar electricity production and the total amount of electricity consumed by the household. The larger the solar installation is relative to the household electricity consumption, the higher the estimate of solar electricity exported to the grid.\n\nThe Solar API also calculates potential savings in utility costs as a result of installing rooftop solar. Actual savings can vary from projected savings for a variety of reasons:\n\n*   Fast-growing trees can shade solar installations, reducing production over time.\n*   Utilities can change how much they charge their customers for electricity, affecting savings from solar.\n*   Policies that are beneficial to solar installations may change (for example, net metering).\n*   For states without net metering, savings may also vary by the amount of solar electricity consumed in the household compared to the amount exported to the grid.\n\n## Data sources\n\n### Building insights\n\nTo calculate solar energy production and projected savings, the Solar API uses the following data sources:\n\n*   Imagery, 3D modeling, and shade calculations using Google's machine learning algorithms.\n    \n*   Weather data from NREL and Meteonorm. Sometimes sharp transitions between nearby stations are reflected in the map.\n    \n*   Utility electricity rates information from [Clean Power Research](http://www.cleanpower.com/products/powerbill/).\n    \n*   Aggregated and anonymized solar pricing data from EnergySage and OpenSolar.\n    \n*   Solar incentives data from the following:\n    \n    *   [Clean Power Research](http://www.cleanpower.com/products/powerbill/)\n    *   Relevant federal, state and local authorities\n    *   Relevant utility data\n*   Solar Renewable Energy Credit (SREC) data from [Bloomberg New Energy Finance](http://about.bnef.com/), [SRECTrade](http://srectrade.com/), and relevant state authorities.\n    \n\nSolar energy production estimates depend on many factors, such as shading, typical weather in a given area and equipment used. Additionally, Solar API mapping data may be from a different period in time than other estimates, and thus may not show recent growth or removal of trees.\n\n### Data layers\n\nGeoTIFFs returned by the [dataLayers](https://developers.google.com/maps/documentation/solar/data-layers) endpoint are generated using weather data, satellite imagery, and aerial imagery from a variety of sources. Data layers GeoTIFFs are orthorectified to remove perspective distortions. For more information about available layers, see [About GeoTIFF files](https://developers.google.com/maps/documentation/solar/geotiff).\n\n## Solar potential estimates\n\nTechnical potential includes electricity generated by the rooftop area suitable for solar panels, assuming supply chain disruptions and grid integration are not constraints.\n\nThere are many definitions of technical potential; other definitions may affect results by 25% or more. Based on the Solar API's definition of technical potential, installations meet the following criteria:\n\n*   **Sunlight:** Every included panel receives at least 75% of the maximum annual sun in the county.\n*   **Installation size:** Every included roof has a total potential installation size of at least 1.6 kW.\n*   **Space and obstacles:** Any segment that has at least 4 square meters of space is considered.\n\nThe Solar API's model makes the following assumptions:\n\n*   Each panel is assumed to be 400 W with an efficiency of 20.4%, a DC to AC derate factor of 85%, and industry-standard assumptions about other factors.\n*   Panels are assumed to be mounted flush with the roof, including on flat surfaces.\n*   Arrays are between 2 kW and 1000 kW. Only arrays on buildings are considered, not other spaces such as parking lots or fields.\n\nBecause we are continuously improving the model, estimates are subject to change.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://shop.krannich-solar.com/de-de/Montagesysteme",
+    "crawl": {
+      "loadedUrl": "https://shop.krannich-solar.com/de-de/Montagesysteme",
+      "loadedTime": "2026-10-22T09:20:51.808Z",
+      "referrerUrl": "https://shop.krannich-solar.com/de-de/Montagesysteme",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 789172,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://shop.krannich-solar.com/de-de/Montagesysteme",
+      "title": "Montagesysteme",
+      "description": "",
+      "author": "",
+      "keywords": "",
+      "languageCode": "de-DE",
+      "openGraph": [
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Krannich"
+        },
+        {
+          "property": "og:url",
+          "content": "https://shop.krannich-solar.com/de-de/Montagesysteme"
+        },
+        {
+          "property": "og:title",
+          "content": "Montagesysteme"
+        },
+        {
+          "property": "og:image",
+          "content": "https://cdn.shop.krannich-solar.com/media/2e/18/f1/1728628798/logo-krannich-black.svg?ts=1728628798"
+        },
+        {
+          "property": "twitter:title",
+          "content": "Montagesysteme"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://cdn.shop.krannich-solar.com/media/2e/18/f1/1728628798/logo-krannich-black.svg?ts=1728628798"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Montagesysteme",
+              "item": "https://shop.krannich-solar.com/de-de/Montagesysteme"
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "Organization"
+        }
+      ],
+      "headers": {
+        "age": "31",
+        "cache-control": "no-cache, private",
+        "content-encoding": "gzip",
+        "content-type": "text/html; charset=UTF-8",
+        "datadiscovery-navigation-product": "ElioDataDiscovery",
+        "date": "Thu, 22 Oct 2026 09:20:50 GMT",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "server": "Apache/2.4.68 (Debian)",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "sw-currency-id": "b7d2554b0ce847cd82f3ac9bd1c0dfca",
+        "sw-language-id": "2fbb5fe2e29a4d70aa5854ce7ce3e20b",
+        "vary": "sw-language-id,Accept-Encoding,sw-currency-id,sw-cache-hash",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "deny",
+        "x-request-id": "01a162e9c4de7061b28222a83a1f7062",
+        "set-cookie": "session-=44a4faf81ff943260eb756ffdff8790c; expires=Thu, 29 Oct 2026 09:20:50 GMT; Max-Age=604800; path=/; secure; httponly; samesite=lax"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Montagesysteme\nSchrägdachsysteme\nSolidRail: Für fast alle Dacheindeckungen außer Bitumen.\nSingleRail: Mit Splice Foot auch für Bitumendächer geeignet.\nEinlegesystem von K2: Geschlossene Modulfläche, ästhetisch und schnell montiert.\nSpeziallösungen für Metall- & Trapezblechdächer\nBasicRail: Für Trapez- und Sandwichdächer, hohe Lastaufnahme, thermisch entkoppelt.\nMiniRail: Kurze Schienen, minimaler Materialeinsatz, optional Aufständerung mit MiniFive.\nMultiRail: Dachanbindung & Montageschiene in einem, auch Grundschiene für Dome 6; MultiRail CSM für Wellblechdächer.\nFassadensysteme\nWallPV FacadeRail: Für Mauerwerk, Beton, Porenbeton, Wärmedämmverbundsysteme & hinterlüftete Fassaden.\nWallPV PerfoRail: Direkte Montage auf gedämmten Massivbauten, ohne Durchdringung der Dämmung.\nWallPC CarrierRail: Für Sandwichpaneele, verschraubt mit bauaufsichtlich zugelassenen Dünnblechschrauben.\nWallPV MultiRail: Für Trapez- und Wellblechfassaden, besonders im landwirtschaftlichen Bereich.\nFreiflächen & Carports\nN-Rack: Flexibel anpassbar, Fundament aus Beton oder Rammung, individuelle Planung erforderlich.\nCarport: Direkt über K2 planbar (nicht im Krannich Portfolio).\nDachplatten\nVon Marzari und Otto Lehmann bieten wir farblich abgestimmte Metalldachplatten mit Schaumkeilen oder Bohrlöchern. Vorteile: Lastabfang, kein Ziegelbruch. Otto Lehmann-Platten auch mit vormontierten Dachhaken erhältlich, Integration ohne Bohren oder Zuschneiden.\nZubehör für Montagesysteme\nKabelmanagement (Drahtkorbkanäle, Cable-Manager von K2/Conduct)\nBlitzschutz & Potentialausgleich\nMess-Sets für Reibungskoeffizienten\nMontagewannen und Schienenverlängerungen von Renusol\nUnd vieles mehr\nPV-Unterkonstruktionen planen mit K2 Base\nMit dem digitalen Tool K2 Base lassen sich PV-Montagesysteme einfach planen. Über Google Maps werden Dachflächen definiert und mit Modulen bestückt. Die Software berechnet Wind- und Schneelasten, erstellt Montagepläne und Artikellisten sowie thermische und wartungsbedingte Trennungen.\nProjektdaten können direkt in den Krannich Solar Webshop übertragen werden. Voraussetzung ist ein kostenloses K2-Konto in MyK2.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Montagesysteme\n\n### Schrägdachsysteme\n\n*   **SolidRail:** Für fast alle Dacheindeckungen außer Bitumen.\n*   **SingleRail:** Mit Splice Foot auch für Bitumendächer geeignet.\n*   **Einlegesystem von K2:** Geschlossene Modulfläche, ästhetisch und schnell montiert.\n\n#### Speziallösungen für Metall- & Trapezblechdächer\n\n*   **BasicRail:** Für Trapez- und Sandwichdächer, hohe Lastaufnahme, thermisch entkoppelt.\n*   **MiniRail:** Kurze Schienen, minimaler Materialeinsatz, optional Aufständerung mit MiniFive.\n*   **MultiRail:** Dachanbindung & Montageschiene in einem, auch Grundschiene für Dome 6; MultiRail CSM für Wellblechdächer.\n\n### Fassadensysteme\n\n*   **WallPV FacadeRail:** Für Mauerwerk, Beton, Porenbeton, Wärmedämmverbundsysteme & hinterlüftete Fassaden.\n*   **WallPV PerfoRail:** Direkte Montage auf gedämmten Massivbauten, ohne Durchdringung der Dämmung.\n*   **WallPC CarrierRail:** Für Sandwichpaneele, verschraubt mit bauaufsichtlich zugelassenen Dünnblechschrauben.\n*   **WallPV MultiRail:** Für Trapez- und Wellblechfassaden, besonders im landwirtschaftlichen Bereich.\n\n### Freiflächen & Carports\n\n*   **N-Rack:** Flexibel anpassbar, Fundament aus Beton oder Rammung, individuelle Planung erforderlich.\n*   **Carport:** Direkt über K2 planbar (nicht im Krannich Portfolio).\n\n### Dachplatten\n\nVon Marzari und Otto Lehmann bieten wir farblich abgestimmte Metalldachplatten mit Schaumkeilen oder Bohrlöchern. Vorteile: Lastabfang, kein Ziegelbruch. Otto Lehmann-Platten auch mit vormontierten Dachhaken erhältlich, Integration ohne Bohren oder Zuschneiden.\n\n### Zubehör für Montagesysteme\n\n*   Kabelmanagement (Drahtkorbkanäle, Cable-Manager von K2/Conduct)\n*   Blitzschutz & Potentialausgleich\n*   Mess-Sets für Reibungskoeffizienten\n*   Montagewannen und Schienenverlängerungen von Renusol\n*   Und vieles mehr\n\n### PV-Unterkonstruktionen planen mit K2 Base\n\nMit dem digitalen Tool [K2 Base](https://base.k2-systems.com/#/dashboard) lassen sich PV-Montagesysteme einfach planen. Über Google Maps werden Dachflächen definiert und mit Modulen bestückt. Die Software berechnet Wind- und Schneelasten, erstellt Montagepläne und Artikellisten sowie thermische und wartungsbedingte Trennungen.\n\nProjektdaten können direkt in den Krannich Solar Webshop übertragen werden. Voraussetzung ist ein kostenloses K2-Konto in MyK2.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.solar-planit.com/en/",
+    "crawl": {
+      "loadedUrl": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/",
+      "loadedTime": "2026-10-22T09:20:53.719Z",
+      "referrerUrl": "https://www.solar-planit.com/en/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 310466,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/",
+      "title": "System configuration for free | Solar-Planit",
+      "description": "Quick and easy planning of your photovoltaic system: Mounting system ✓ Module configuration ✓ Inverter",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-GB",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_GB"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "de_DE"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "fr_FR"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "System configuration for free | Solar-Planit"
+        },
+        {
+          "property": "og:description",
+          "content": "Quick and easy planning of your photovoltaic system: Mounting system ✓ Module configuration ✓ Inverter"
+        },
+        {
+          "property": "og:url",
+          "content": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Solar-Planit"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-10-07T08:45:48+00:00"
+        },
+        {
+          "property": "og:image",
+          "content": "https://app-solar-planit-landing-page.azurewebsites.net/wp-content/uploads/2025/05/header-mobile-1.jpg"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1080"
+        },
+        {
+          "property": "og:image:height",
+          "content": "1080"
+        },
+        {
+          "property": "og:image:type",
+          "content": "image/jpeg"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/",
+              "url": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/",
+              "name": "System configuration for free | Solar-Planit",
+              "isPartOf": {
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#website"
+              },
+              "about": {
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#organization"
+              },
+              "primaryImageOfPage": {
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#primaryimage"
+              },
+              "image": {
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#primaryimage"
+              },
+              "thumbnailUrl": "/wp-content/uploads/2025/05/header-mobile-1.jpg",
+              "datePublished": "2024-05-15T14:44:27+00:00",
+              "dateModified": "2026-10-07T08:45:48+00:00",
+              "description": "Quick and easy planning of your photovoltaic system: Mounting system ✓ Module configuration ✓ Inverter",
+              "breadcrumb": {
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#breadcrumb"
+              },
+              "inLanguage": "en-GB",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "ImageObject",
+              "inLanguage": "en-GB",
+              "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#primaryimage",
+              "url": "/wp-content/uploads/2025/05/header-mobile-1.jpg",
+              "contentUrl": "/wp-content/uploads/2025/05/header-mobile-1.jpg",
+              "width": 1080,
+              "height": 1080,
+              "caption": "pc on desk"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#website",
+              "url": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/",
+              "name": "Solar-Planit",
+              "description": "",
+              "publisher": {
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#organization"
+              },
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/?s={search_term_string}"
+                  },
+                  "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "search_term_string"
+                  }
+                }
+              ],
+              "inLanguage": "en-GB"
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#organization",
+              "name": "Solar-Planit Software GmbH",
+              "url": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/",
+              "logo": {
+                "@type": "ImageObject",
+                "inLanguage": "en-GB",
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#/schema/logo/image/",
+                "url": "/wp-content/uploads/2024/04/solar-planit-logo.png",
+                "contentUrl": "/wp-content/uploads/2024/04/solar-planit-logo.png",
+                "width": 298,
+                "height": 113,
+                "caption": "Solar-Planit Software GmbH"
+              },
+              "image": {
+                "@id": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/#/schema/logo/image/"
+              },
+              "sameAs": [
+                "https://www.youtube.com/@SolarPlanitSoftwareGmbH",
+                "https://www.linkedin.com/company/solar-planit-software-gmbh"
+              ]
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "content-encoding": "br",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:20:53 GMT",
+        "link": "<https://app-solar-planit-landing-page.azurewebsites.net/wp-json/>; rel=\"https://api.w.org/\", <https://app-solar-planit-landing-page.azurewebsites.net/wp-json/wp/v2/pages/247>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://app-solar-planit-landing-page.azurewebsites.net/>; rel=shortlink",
+        "permissions-policy": "geolocation=(),midi=(),sync-xhr=(),microphone=(),camera=(),magnetometer=(),gyroscope=(),fullscreen=(self)",
+        "referrer-policy": "strict-origin",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "transfer-encoding": "chunked",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-ms-middleware-request-id": "00000000-0000-0000-0000-000000000000",
+        "x-powered-by": "PHP/8.2.35",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": "pll_language=en; expires=Fri, 22 Oct 2027 09:20:53 GMT; Max-Age=31536000; path=/; secure; SameSite=Lax"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "System configuration for free | Solar-Planit\nComprehensive planning \nin only 5 minutes. \nPV system \nconfiguration\nfor free\nStep by step to a statically reliable and safe photovoltaic system. Solar-Planit guides you intuitively through the whole planning process and provides valuable data for the final project planning and the cost-effectiveness of your PV system.\nFeatures in detail\nTake advantage of a wide range of planning options\nBuilding detection\n3D roof design\nImage upload\n(drawing, satellite, drone)\nMultiple buildings per planning\nWind- and snow loads\nPlanning process\nMounting system + ballast & static design\nModule design \n& restricted area\nElecrical design\nInverter configuration\nCAD-Exports\nEconomic efficiency\nConsumption profiles\nEconomic efficiency\nEfficiency assessment\nCO₂ footprint\nProject completion\nProject status tracking\nOffer creation\nDocumentation\nSupplementary articles\nParts list\nWebshop connection\nProjects from all over Europe\nThroughout Europe, experts support you in the planning of your PV project and contribute to the continuous improvement of our software through local expertise.\nUser experiences with Solar-Planit\nAlso fits to your project!\nSolar-Planit supports you intuitively in the planning process – thanks to customised planning parameters, you receive a perfectly tailored planning result.\nIf required, your BayWa r.e. sales contact will support you during the planning process, with you can simply share your planning.\nNo licence or subscription fees are required.\nTake your business to the next level!\nYour planning project - our expertise\nWith the Solar-Planit software, you get the all-round carefree package – plan your photovoltaic system comprehensively and in no time at all! On site, software experts work closely with photovoltaic experts and our exclusive mounting system partner novotegra to ensure structurally reliable and safe planning for you. Thanks to the personal contact option with your sales partner, we are always at your side and support you with questions or specific planning projects. Personal contact also enables us to respond quickly to user and market requirements and implement them directly in Solar-Planit.\nThe Solar-Planit planning software is available to you free of charge and without hidden additional costs in 15 countries across Europe. The expertise of our local PV experts enables us to implement country-specific requirements immediately in Solar-Planit.\nNews: Software & Company\nStay up to date – new features and latest events\n06.10.2026\nGreen roof in landscape\nIncrease your flexibility when planning in east-west or north-south orientation and make the most of your roof space in green roof projects.\n09.09.2026\nDeactivating single modules\nIndividual modules can now be disabled on Flat Roof II East-West. A wind deflector is automatically added, and the structural analysis is adjusted accordingly.\n06.07.2026\nNew project dashboard\nHave you noticed yet? Our start page has a brand-new design—and now you can plan projects even more clearly and intuitively.\nSystem configuration - easier than ever!\nStart with the calculation of your novotegra mounting system system by selecting the location (with individual wind and snow load zones). Then enter specific parameters such as the roof type, the building dimensions (via 3D view or image upload), the type of roof covering and other roof characteristics in order to then select the matching mounting system with the appropriate alignment.\nIn the next step, you can customise the roof surface, taking into account restricted areas and recesses. Then you configure the electrical connection by selecting the matching inverter and corresponding storage system. Finally, you can create a customised profitability and yield profile that takes into account factors such as your personal consumption profile. Solar-Planit also calculates, based on costs and yield, when the system will pay off financially and how much CO2 can be saved.\nIn the last step, add optional supplementary items (e.g. charging stations) and finally, as a registered webshop user of BayWa r.e, transfer the complete parts list of your planning to the webshop. You will receive all planning details summarised in your personal project report.\nStart planning your first project today!",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# System configuration for free | Solar-Planit\n\nComprehensive planning  \nin only 5 minutes.\n\n## PV system  \nconfiguration  \nfor free\n\nStep by step to a statically reliable and safe photovoltaic system. Solar-Planit guides you intuitively through the whole planning process and provides valuable data for the final project planning and the cost-effectiveness of your PV system.\n\n## Features in detail\n\n## Take advantage of a wide range of planning options\n\n### Building detection\n\n*   3D roof design\n*   Image upload  \n    (drawing, satellite, drone)\n*   Multiple buildings per planning\n*   Wind- and snow loads\n\n### Planning process\n\n*   Mounting system + ballast & static design\n*   Module design  \n    & restricted area\n*   Elecrical design\n*   Inverter configuration\n*   CAD-Exports\n\n### Economic efficiency\n\n*   Consumption profiles\n*   Economic efficiency\n*   Efficiency assessment\n*   CO₂ footprint\n\n### Project completion\n\n*   Project status tracking\n*   Offer creation\n*   Documentation\n*   Supplementary articles\n*   Parts list\n*   Webshop connection\n\n## Projects from all over Europe\n\nThroughout Europe, experts support you in the planning of your PV project and contribute to the continuous improvement of our software through local expertise.\n\n## User experiences with Solar-Planit\n\n## Also fits to your project!\n\nSolar-Planit supports you intuitively in the planning process – thanks to customised planning parameters, you receive a perfectly tailored planning result.\n\nIf required, your BayWa r.e. sales contact will support you during the planning process, with you can simply share your planning.\n\n**No licence or subscription fees are required.**\n\n## Take your business to the next level!\n\n## Your planning project - our expertise\n\nWith the Solar-Planit software, you get the all-round carefree package – plan your photovoltaic system comprehensively and in no time at all! On site, software experts work closely with photovoltaic experts and our exclusive mounting system partner novotegra to ensure structurally reliable and safe planning for you. Thanks to the personal contact option with your sales partner, we are always at your side and support you with questions or specific planning projects. Personal contact also enables us to respond quickly to user and market requirements and implement them directly in Solar-Planit.\n\nThe Solar-Planit planning software is available to you **free** of charge and without hidden additional costs in 15 countries across Europe. The expertise of our local PV experts enables us to implement country-specific requirements immediately in Solar-Planit.\n\n## News: Software & Company\n\nStay up to date – new features and latest events\n\n![green roof landscape](https://www.solar-planit.com/wp-content/uploads/2026/10/green-roof-landscape-1024x576.png)\n\n## 06.10.2026\n\n### Green roof in landscape\n\nIncrease your flexibility when planning in east-west or north-south orientation and make the most of your roof space in green roof projects.\n\n![flat roof 2 east-west](https://www.solar-planit.com/wp-content/uploads/2026/09/flat-roof-2-east-west-1024x576.png)\n\n## 09.09.2026\n\n### Deactivating single modules\n\nIndividual modules can now be disabled on Flat Roof II East-West. A wind deflector is automatically added, and the structural analysis is adjusted accordingly.\n\n![Projektverwaltung](https://www.solar-planit.com/wp-content/uploads/2026/06/projektverwaltung-mit-status-1024x576.png)\n\n## 06.07.2026\n\n### New project dashboard\n\nHave you noticed yet? Our start page has a brand-new design—and now you can plan projects even more clearly and intuitively.\n\n## System configuration - easier than ever!\n\nStart with the calculation of your [novotegra mounting system](https://www.novotegra.com/en/) system by selecting the location (with individual wind and snow load zones). Then enter specific parameters such as the roof type, the building dimensions (via 3D view or image upload), the type of roof covering and other roof characteristics in order to then select the matching mounting system with the appropriate alignment.\n\nIn the next step, you can customise the roof surface, taking into account restricted areas and recesses. Then you configure the electrical connection by selecting the matching inverter and corresponding storage system. Finally, you can create a customised profitability and yield profile that takes into account factors such as your personal consumption profile. Solar-Planit also calculates, based on costs and yield, when the system will pay off financially and how much CO2 can be saved.\n\nIn the last step, add optional supplementary items (e.g. charging stations) and finally, as a registered webshop user of BayWa r.e, transfer the complete parts list of your planning to the webshop. You will receive all planning details summarised in your personal project report.  \n\n## Start planning your first project today!\n\n![user satisfaction](https://www.solar-planit.com/wp-content/uploads/2026/03/user-satisfaction.png)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://k2-systems.com/en/knowledge-training/tutorials/",
+    "crawl": {
+      "loadedUrl": "https://k2-systems.com/en/knowledge-training/tutorials/",
+      "loadedTime": "2026-10-22T09:21:20.691Z",
+      "referrerUrl": "https://k2-systems.com/en/knowledge-training/tutorials/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 151638,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://k2-systems.com/en/knowledge-training/tutorials/",
+      "title": "Tutorials | K2 Systems",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-GB",
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "CollectionPage",
+              "@id": "https://k2-systems.com/en/knowledge-training/tutorials/",
+              "url": "https://k2-systems.com/en/knowledge-training/tutorials/",
+              "name": "Tutorials Archiv - K2 Systems",
+              "isPartOf": {
+                "@id": "https://k2-systems.com/en/#website"
+              },
+              "breadcrumb": {
+                "@id": "https://k2-systems.com/en/knowledge-training/tutorials/#breadcrumb"
+              },
+              "inLanguage": "en-GB"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://k2-systems.com/en/knowledge-training/tutorials/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://k2-systems.com/en/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Tutorials"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://k2-systems.com/en/#website",
+              "url": "https://k2-systems.com/en/",
+              "name": "K2 Systems",
+              "description": "K2 Systems WP",
+              "publisher": {
+                "@id": "https://k2-systems.com/en/#organization"
+              },
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://k2-systems.com/en/?s={search_term_string}"
+                  },
+                  "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "search_term_string"
+                  }
+                }
+              ],
+              "inLanguage": "en-GB"
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://k2-systems.com/en/#organization",
+              "name": "K2 Systems",
+              "url": "https://k2-systems.com/en/",
+              "logo": {
+                "@type": "ImageObject",
+                "inLanguage": "en-GB",
+                "@id": "https://k2-systems.com/en/#/schema/logo/image/",
+                "url": "https://k2-systems.com/wp-content/uploads/2022/02/logo_512x512.png",
+                "contentUrl": "https://k2-systems.com/wp-content/uploads/2022/02/logo_512x512.png",
+                "width": 512,
+                "height": 512,
+                "caption": "K2 Systems"
+              },
+              "image": {
+                "@id": "https://k2-systems.com/en/#/schema/logo/image/"
+              },
+              "sameAs": [
+                "https://www.facebook.com/K2SystemsGmbH/"
+              ]
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "max-age=600, must-revalidate",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a4e76d838dedf81c-DFW",
+        "content-encoding": "br",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 09:21:20 GMT",
+        "expires": "Thu, 19 Nov 1981 08:52:00 GMT",
+        "link": "<https://k2-systems.com/en/wp-json/>; rel=\"https://api.w.org/\"",
+        "pragma": "no-cache",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+        "vary": "Accept-Encoding, Accept-Encoding,Cookie",
+        "x-cache": "MISS",
+        "x-cache-group": "normal",
+        "x-cacheable": "SHORT",
+        "x-frame-options": "\"SAMEORIGIN\" always",
+        "x-powered-by": "WP Engine",
+        "set-cookie": "__cf_bm=YS3jCa1Kri1hOaRHAUOKVsESD6KZmalBaiWtLfmArLY-1792660844.0903192-1.0.1.1-nodQ.wvjHPrL6T5MpQ1_uokgG5UvoGlBvVhwFKQyqLQbYayoty7fkcQydTp1B1AtJKGUtIuKfjqhmGFHA6FSIRcyfuwWcjtfwVSURYv0uhthfu09roDRCXaUxGCyQ_ZO; HttpOnly; SameSite=None; Secure; Path=/; Domain=k2-systems.com; Expires=Thu, 22 Oct 2026 09:51:20 GMT"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Tutorials | K2 Systems\nAny questions?\nHere you will find useful information and assistance on all aspects of our K2 mounting systems - from general questions to special topics such as K2 Base and K2 DocuApp.\nStart now \nSUBSCRIBE TO OUR NEWSLETTER\nStay updated: New features, updates & more\nSubscribe now!",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Tutorials | K2 Systems\n\n### Any questions?\n\nHere you will find useful information and assistance on all aspects of our K2 mounting systems - from general questions to special topics such as K2 Base and K2 DocuApp.\n\n[Start now](https://k2-systems.com/en/training-support/faqs/)\n\nSUBSCRIBE TO OUR NEWSLETTER\n\n#### Stay updated: New features, updates & more\n\n[Subscribe now!](https://share-eu1.hsforms.com/2_vsbtd3dRjmcWAzLIOTzEQ2ebmho)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems",
+    "crawl": {
+      "loadedUrl": "https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems",
+      "loadedTime": "2026-10-22T09:21:25.450Z",
+      "referrerUrl": "https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 38601,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems",
+      "title": "How to Design Dual tilt (East-West) Systems – OpenSolar",
+      "description": "SummaryOpenSolar’s dual-tilt (east-west) array design feature enables solar professionals to maximize daily energy production by...",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://support.opensolar.com/hc/theming_assets/01M0ZRG0PAHF8XKE2GGHBT6PZZ"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "OpenSolar"
+        },
+        {
+          "property": "og:title",
+          "content": "How to Design Dual tilt (East-West) Systems"
+        },
+        {
+          "property": "og:description",
+          "content": "SummaryOpenSolar’s dual-tilt (east-west) array design feature enables solar professionals to maximize daily energy production by capturing both morning and afternoon sunlight. This setup is ideal f..."
+        },
+        {
+          "property": "og:url",
+          "content": "https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=0, public",
+        "cf-cache-status": "MISS",
+        "cf-ray": "a4e76e7f7d5f58fe-LAX",
+        "connection": "keep-alive",
+        "content-language": "en-us",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:21:25 GMT",
+        "keep-alive": "timeout=5",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+        "protocol": "HTTP/1.1 always",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=Gkn1hf4Dms8XYuFUcDi0%2FTlDm3s0nCYLX0SGOhuzNE%2FEsnk4abxkhbcBlbbtPQGP7pke1Rzm%2B%2BEFbzsPk6zP2wkTGgSXmijtDTyRG2YQ1zmvSTw%2FXDtSQ7IYa0Ijl9X3w3euvmxlhw%3D%3D\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "via": "zorg",
+        "x-apify-unblocker-final-url": "https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems",
+        "x-apify-unblocker-route": "GANYMEDE",
+        "x-envoy-decorator-operation": "/hc",
+        "x-envoy-upstream-service-time": "247",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "a4e76e7f7d5f58fe-SJC",
+        "x-runtime": "0.242698",
+        "x-ua-compatible": "IE=edge",
+        "x-zendesk-origin-server": "app-server-6c7948d859-pv8c4",
+        "x-zendesk-zorg": "yes",
+        "zendesk-service": "help-center",
+        "set-cookie": "_cfuvid=PUUBWOuU_HUxwNsN.CSEJjvzcOXjskGCKyFjMAdN22w-1792660884.4012039-1.0.1.1-RFeHQVXQ.ZxoH2RX3FXBclK7drRUH7TBQ4yFOt9PGNg; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.opensolar.com"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "How to Design Dual tilt (East-West) Systems – OpenSolar\nFollow \nSummary\nOpenSolar’s dual-tilt (east-west) array design feature enables solar professionals to maximize daily energy production by capturing both morning and afternoon sunlight. This setup is ideal for flat roofs and space-constrained sites, such as urban buildings or ground-mounted systems, where traditional south- or north-facing arrays may not be feasible.\nBy using the east-west configuration, you can:\nIncrease panel density\nAchieve a flatter energy yield curve\nOptimize the use of limited horizontal space\nThis guide walks you through how to configure a dual-tilt system in OpenSolar, using customizable settings to refine layout, spacing, and shading considerations.\nWhy Choose Dual-Tilt Design?\nUnlike conventional single-azimuth systems, east-west (dual-tilt) configurations:\nProvide even energy distribution throughout the day\nRequire lower tilt angles, reducing inter-row shading\nAllow denser module placement on flat surfaces, improving system yield per square meter\nHow to Configure a Dual-Tilt System in OpenSolar\nFollow these steps to implement a dual-tilt design:\nAccess the Design Page\nOpen your desired project and navigate to the Design tab.\nAdd Panels\nSelect the appropriate panel from your hardware library.\nClick the “+” button to place panels on the selected surface.\nChange Racking Mode\nIn the left-hand settings menu, change the Racking Mode from:\nFlush ➝ Dual-Tilt\nSet Ridge Direction\nEnter the Ridge Direction to define panel azimuth:\nFor standard east-west orientation, input: 180°\nAdjust Tilt\nModify the Relative Tilt angle to define the angle at which each side of the array faces the sun\nAdvanced Settings for Dual-Tilt\nNavigate to the Advanced Settings tab to fine-tune your layout:\nSettingDescription\nRidge Spacing\tDistance between the peaks (ridges) of adjacent dual-tilt rows.\t\nValley Spacing\tWidth of the walkway or flat section between dual-tilt bases.\t\nModule Spacing\tGaps between individual panels within a row.\t\nFrame Spacing\tNorth-South gap between panel frames or modular blocks.\t\nFrame Width\tWidth of the entire frame structure.\t\nFrame Height\tHeight of the array’s structural frame from the surface.\t\nAfter entering your values, adjust panel quantities as needed to fill the available space efficiently.\nShading Analysis\nGo to the Shading tab in the panel settings.\nOpenSolar displays shading performance per azimuth:\nAzimuth 1 (East-facing)\nAzimuth 2 (West-facing)\nUse this view to:\nCompare solar exposure between both sides of the tilt\nIdentify any obstructions or self-shading impacts\nOptimize tilt angle and spacing accordingly\nExample Configuration\nVisual references in the OpenSolar interface include:\nBasic Settings Menu\nSet panel tilt, azimuth, and racking mode.\nAdvanced Settings Menu\nCustomize spacing, dimensions, and frame parameters.\nShading Tab\nView per-azimuth shading impacts and adjust the design as needed.\nFinal Tips:\nEast-west systems work best on flat roofs or open ground spaces.\nMaintain enough valley spacing for service access and shading reduction.\nUse shading analysis to balance production between the east and west-facing sides.\nConsider regional sun path data when determining azimuth and tilt settings.\nVideo Walkthrough:\nRelated articles\nHow to include hot water heat pumps in your proposals \nHow to apply reverse tilt to solar panels in OpenSolar \nSun-path Diagram \nHow OpenSolar Models Battery Energy Storage \n🇬🇧 Design",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# How to Design Dual tilt (East-West) Systems – OpenSolar\n\n![](https://secure.gravatar.com/avatar/3e1d355512636ef2752e22dc44832575?default=https%3A%2F%2Fassets.zendesk.com%2Fhc%2Fassets%2Fdefault_avatar.png&r=g)\n\n[Follow](https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems/subscription.html \"Opens a sign-in dialog\")\n\n## Summary\n\nOpenSolar’s **dual-tilt (east-west)** array design feature enables solar professionals to **maximize daily energy production** by capturing both **morning and afternoon sunlight**. This setup is ideal for **flat roofs** and **space-constrained sites**, such as urban buildings or ground-mounted systems, where traditional south- or north-facing arrays may not be feasible.\n\nBy using the **east-west configuration**, you can:\n\n*   Increase **panel density**\n    \n*   Achieve a **flatter energy yield curve**\n    \n*   Optimize the use of **limited horizontal space**\n    \n\nThis guide walks you through how to configure a dual-tilt system in OpenSolar, using customizable settings to refine layout, spacing, and shading considerations.\n\n## Why Choose Dual-Tilt Design?\n\nUnlike conventional single-azimuth systems, **east-west (dual-tilt)** configurations:\n\n*   Provide **even energy distribution** throughout the day\n    \n*   Require **lower tilt angles**, reducing inter-row shading\n    \n*   Allow **denser module placement** on flat surfaces, improving system yield per square meter\n    \n\n## How to Configure a Dual-Tilt System in OpenSolar\n\nFollow these steps to implement a dual-tilt design:\n\n#### Access the Design Page\n\n*   Open your desired project and navigate to the **Design** tab.\n    \n\n####  Add Panels\n\n*   Select the appropriate panel from your hardware library.\n    \n*   Click the **“+” button** to place panels on the selected surface.\n    \n\n#### Change Racking Mode\n\n*   In the **left-hand settings menu**, change the **Racking Mode** from:\n    \n    *   `Flush` ➝ `**Dual-Tilt**`\n        \n\n#### Set Ridge Direction\n\n*   Enter the **Ridge Direction** to define panel azimuth:\n    \n    *   For standard **east-west orientation**, input: `180°`\n        \n\n#### Adjust Tilt\n\n*   Modify the **Relative Tilt** angle to define the angle at which each side of the array faces the sun\n    \n\n## Advanced Settings for Dual-Tilt\n\nNavigate to the **Advanced Settings** tab to fine-tune your layout:\n\n| Setting | Description |\n| --- | --- |\n| **Ridge Spacing** | Distance between the peaks (ridges) of adjacent dual-tilt rows. |\n| **Valley Spacing** | Width of the walkway or flat section between dual-tilt bases. |\n| **Module Spacing** | Gaps between individual panels within a row. |\n| **Frame Spacing** | North-South gap between panel frames or modular blocks. |\n| **Frame Width** | Width of the entire frame structure. |\n| **Frame Height** | Height of the array’s structural frame from the surface. |\n\nAfter entering your values, **adjust panel quantities** as needed to fill the available space efficiently.\n\n## Shading Analysis\n\n*   Go to the **Shading** tab in the panel settings.\n    \n*   OpenSolar displays shading performance per azimuth:\n    \n    *   **Azimuth 1** (East-facing)\n        \n    *   **Azimuth 2** (West-facing)\n        \n\nUse this view to:\n\n*   Compare solar exposure between both sides of the tilt\n    \n*   Identify any obstructions or self-shading impacts\n    \n*   Optimize tilt angle and spacing accordingly\n    \n\n## Example Configuration\n\nVisual references in the OpenSolar interface include:\n\n#### **Basic Settings Menu**\n\n*   Set panel tilt, azimuth, and racking mode.\n    \n\n![](https://support.opensolar.com/hc/article_attachments/12382467401231)\n\n#### **Advanced Settings Menu**\n\n*   Customize spacing, dimensions, and frame parameters.\n    \n\n![](https://support.opensolar.com/hc/article_attachments/12382467401743)\n\n#### **Shading Tab**\n\n*   View per-azimuth shading impacts and adjust the design as needed.\n    \n\n![](https://support.opensolar.com/hc/article_attachments/12382458532623)\n\n## Final Tips:\n\n*   East-west systems work best on **flat roofs or open ground spaces**.\n    \n*   Maintain enough **valley spacing** for service access and shading reduction.\n    \n*   Use shading analysis to **balance production** between the east and west-facing sides.\n    \n*   Consider **regional sun path data** when determining azimuth and tilt settings.\n    \n\n## Video Walkthrough:\n\n### Related articles\n\n*   [How to include hot water heat pumps in your proposals](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCI%2BHOANDCzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCI%2FTCgRDCzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJcL2hjL2VuLXVzL2FydGljbGVzLzEyMzgyNDQ0NzUwNzM1LUhvdy10by1pbmNsdWRlLWhvdC13YXRlci1oZWF0LXB1bXBzLWluLXlvdXItcHJvcG9zYWxzBjsIVDoJcmFua2kG--37ed9678bc90f72af33099f88f08e33136ec2ec3)\n*   [How to apply reverse tilt to solar panels in OpenSolar](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCA84dKiBCzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCI%2FTCgRDCzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJdL2hjL2VuLXVzL2FydGljbGVzLzEyNjUxNTA0ODc1NTM1LUhvdy10by1hcHBseS1yZXZlcnNlLXRpbHQtdG8tc29sYXItcGFuZWxzLWluLU9wZW5Tb2xhcgY7CFQ6CXJhbmtpBw%3D%3D--6470ad09611081519fe3ba0f98554e0cce440b86)\n*   [Sun-path Diagram](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCA9K2yMJBToYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCI%2FTCgRDCzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI2L2hjL2VuLXVzL2FydGljbGVzLzU1MzY4MTQ0MTg0NDctU3VuLXBhdGgtRGlhZ3JhbQY7CFQ6CXJhbmtpCA%3D%3D--656d3b3794cc0043648eb5c319c282168f8379ac)\n*   [How OpenSolar Models Battery Energy Storage](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCI%2BsKwRDCzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCI%2FTCgRDCzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJSL2hjL2VuLXVzL2FydGljbGVzLzEyMzgyNDYwNjg1NDU1LUhvdy1PcGVuU29sYXItTW9kZWxzLUJhdHRlcnktRW5lcmd5LVN0b3JhZ2UGOwhUOglyYW5raQk%3D--4e9f67aa9a0693580893dd2a35e6f38ce1328cfa)\n*   [🇬🇧 Design](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCA9RG%2FbjBjoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCI%2FTCgRDCzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSItL2hjL2VuLXVzL2FydGljbGVzLzc1NzYxNTYzMjgyMDctLURlc2lnbgY7CFQ6CXJhbmtpCg%3D%3D--521d3fce432158e16170ea95e3a5ed947e402620)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary",
+    "crawl": {
+      "loadedUrl": "https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary",
+      "loadedTime": "2026-10-22T09:21:26.225Z",
+      "referrerUrl": "https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 34455,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary",
+      "title": "Report Editor Widget Glossary – HelioScope",
+      "description": "This article will provide a glossary with additional information on each of the widgets available in the Report editor. Three different...",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://help-center.helioscope.com/hc/theming_assets/01HZKV1BB9SHD2A0W5AK6PTSEQ"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "HelioScope"
+        },
+        {
+          "property": "og:title",
+          "content": "Report Editor Widget Glossary"
+        },
+        {
+          "property": "og:description",
+          "content": "This article will provide a glossary with additional information on each of the widgets available in the Report editor. Three different types of the widgets will be described in detail:\n1. Text and..."
+        },
+        {
+          "property": "og:url",
+          "content": "https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=0, public",
+        "cf-cache-status": "REVALIDATED",
+        "cf-ray": "a4e76e892afe13a3-LAX",
+        "connection": "keep-alive",
+        "content-language": "en-us",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:21:26 GMT",
+        "keep-alive": "timeout=5",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+        "protocol": "HTTP/1.1 always",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=cUEKPEiAOQ6B9Hw8YzfaQ%2FpMTerb%2FYn23%2F1ZP6AbHGRY6d5NtzVK%2FO0ayry0Dkt%2BRzUUuQocBlwXIKUZUDuZEMWYAAkRvrDV9QfZajpLm7zeV3NaHDEJzBlSEGsMqLsVYebGyh7Y0rRISwzA\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "via": "zorg",
+        "x-apify-unblocker-final-url": "https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary",
+        "x-apify-unblocker-route": "GANYMEDE",
+        "x-envoy-decorator-operation": "/hc",
+        "x-envoy-upstream-service-time": "271",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "a4db156f6f334e81-DFW",
+        "x-runtime": "0.265613",
+        "x-ua-compatible": "IE=edge",
+        "x-zendesk-origin-server": "app-server-58fcc4799f-hkr4b",
+        "x-zendesk-zorg": "yes",
+        "zendesk-service": "help-center",
+        "set-cookie": "_cfuvid=9jc5rJuQHdCbVjIlGY1esI_WQ5biIkA2LaRcLrKgKfg-1792660885.9435377-1.0.1.1-Och355zBr0E2N3ZWaHaIwaoWqemHyqTbLgvvuHWvBXs; HttpOnly; SameSite=None; Secure; Path=/; Domain=help-center.helioscope.com"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Report Editor Widget Glossary – HelioScope\nMike Pulumbarit \nThis article will provide a glossary with additional information on each of the widgets available in the Report editor. Three different types of the widgets will be described in detail:\n1. Text and Drawing Components\n2. Project and Design Components\n3. Financial Components\n1. Text and Drawing Components\nWidget\t\tDefinition\t\n\t\t\nInserts a text box. Once the text box has been added, a formatting menu will open, providing text font, size, and color options, as well as, alignment, numbering, and bullets. \t\n\t\t\nInserts an image box where images can be dropped. Right-click on the image to Send to Back or Bring it to Front. \t\n\t\t\nInserts a horizontal line. Edit the color, line thickness, or orientation of the line from the formatting menu.\t\n\t\t\nInserts a rectangular shape. Edit the fill and border color, border width, or rotate the shape. \t\n2. Project and Design Components\nWidget\t\tDefinition\t\n\t\t\nInserts the Annual Production table for the Design. The Production table will be the same found on the Production Report.\nMore information about the content of the table can be found here. \t\n\t\t\nInserts the Conditions Set table applicable to the Design. The Condition Set table will be the same found in the Production Report. \nMore information about the content of the table can be found here.\t\n\t\t\nInserts a table with the description of each Field Segment of the Design.\nThe table includes racking type, module orientation, tilt, module azimuth, nitraros spacing, frame size, number of frames, number of modules and total Power.\t\n\t\t\nInserts the Logo from the previously selected Current Theme. To change the Logo select a different Theme from the drop-down menu at the top of the Editor menu.\nTo create a new Theme with a new logo follow the steps described in this article.\t\n\t\t\nInserts a table with the total monthly values for the following parameters: GHI, POA, shaded irradiance, Nameplate capacity, and energy to the Grid.\t\n\t\t\nInserts a graph showing the P50, P90, P95, and P99 values.\nTo learn more about P90, visit this article.\n\t\n\t\t\nInsert a table with the Weather Variability and System Variability defined in the Production Probability. \nTo learn more about P90, visit this article.\n\t\n\t\t\nInserts a table with the following Project information: address, Project creator, last modified date, and location in coordinates.\t\n\t\t\nInserts an image with the map view of the Project location.\t\n\t\t\nInserts a table containing the Weather Sources and the Transposition Model used in the simulations. \t\n\t\t\nInserts a detailed layout image of the Design. To customize what is displayed on the layout image, for example, inverters, trees, and overlays, follow the steps described on this help article.\t\n\t\t\nInserts a table with a mini bill of materials indicating the different components used in the Design and their quantity.\t\n\t\t\nInserts a table with a detailed description of the Wiring Zones created in the Design, including the number of combiner poles, string size, and stringing strategy for each Wiring Zone.\t\n\t\t\nInserts the Sources of System Loss chart that can be found on the Production Report. The chart provides a great insight as to where the losses are coming from.\nFor example: shading, temperature, mismatch, clipping, or inverters amongst others.\t\n\t\t\nInserts a table containing shading parameters calculated per Field Segment.\nThe parameters include: shaded irradiance, TOF, solar access, and TSRF, similarly to the parameters included in the Shade Report. \t\n\t\t\nInserts a table with a summary of the different Design metrics also found on the Production Report. \nSuch metrics include: DC and AC Nameplate, Annual Production, Performance Ratio, and kWk/kWp.\t\n\t\t\nInserts a 2D top-down close-up view image of the Design.\t\n3. Financial Components\nWidget\t\tDefinition \t\n\t\t\nInserts a table containing the calculated cash flow for every year of the Project's lifetime.\nThe table displays the total Annual Energy, the annual Cash Flow, and the Cumulative Cash Flow over the lifetime of the Project. \t\n\t\t\nInserts a table with a financial summary. The values displayed can be customized by clicking on the top right corner of each column.\nThe options available are: Levelized Cost of Energy, Lifetime Value, or Payback Period.\t\n\t\t\nInserts a graph displaying the total annual Production and Consumption.\nThe graph can be customized to show only one or two of the values, and can be displayed in vertical columns or horizontal bars, lines and markers or markers and area. \t\n\t\t\nInserts a graph displaying the estimated total annual utility bill with and without solar. \nThe graph can be customized to show only one or two of the values, and can be displayed in vertical columns or horizontal bars, lines and markers or markers and area. \t\n\t\t\nInserts a table with the main financial parameters estimated from the input of the Financial Model selected.\nThe metrics displayed are: Total Value of Energy, Lifetime Value, IRR, ROI, Payback Period and Levelized Cost of Energy.\t\n\t\t\nInserts a graph displaying the Cumulative Cash Flow and the annual Cash Flow for the lifetime of the Project. \t\n\t\t\nInserts a pie chart displaying how much of the of the total consumption will be covered by the utility and how much will be covered by solar over the lifetime of the Project. \t\nRelated articles\nGlossary of Auto-Complete Smart Tokens \nCustomizing a HelioScope Report \nHow to change the Currency and Locale of a Report \nCondition Sets in Classic \nFinancial Modeling Glossary",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Report Editor Widget Glossary – HelioScope\n\n![Avatar](https://help.aurorasolar.com/system/photos/361916122274/profile_image_425341496054_995124.png)\n\nMike Pulumbarit\n\nThis article will provide a glossary with additional information on each of the widgets available in the Report editor. Three different types of the widgets will be described in detail:\n\n1. [Text and Drawing Components](https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary##text)\n\n2\\. [Project and Design Components](https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary#project)\n\n3\\. [Financial Components](https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary#financial)\n\n### 1\\. Text and Drawing Components\n\n|     |     |     |\n| --- | --- | --- |\n| **Widget** |     | **Definition** |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658416740627) |     | Inserts a text box. Once the text box has been added, a formatting menu will open, providing text font, size, and color options, as well as, alignment, numbering, and bullets. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658392480915) |     | Inserts an image box where images can be dropped. Right-click on the image to Send to Back or Bring it to Front. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658416897427) |     | Inserts a horizontal line. Edit the color, line thickness, or orientation of the line from the formatting menu. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658392664851) |     | Inserts a rectangular shape. Edit the fill and border color, border width, or rotate the shape. |\n\n### 2\\. Project and Design Components\n\n|     |     |     |\n| --- | --- | --- |\n| **Widget** |     | **Definition** |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658417149971) |     | Inserts the Annual Production table for the Design. The Production table will be the same found on the Production Report.  <br>More information about the content of the table can be found [here](https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary). |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658392891923) |     | Inserts the Conditions Set table applicable to the Design. The Condition Set table will be the same found in the Production Report.   <br>More information about the content of the table can be found [here](https://help-center.helioscope.com/hc/en-us/articles/8316894129555-Condition-Sets). |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658417360531) |     | Inserts a table with the description of each Field Segment of the Design.  <br>The table includes racking type, module orientation, tilt, module azimuth, nitraros spacing, frame size, number of frames, number of modules and total Power. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658393132435) |     | Inserts the Logo from the previously selected **Current Theme**. To change the Logo select a different Theme from the drop-down menu at the top of the Editor menu.  <br>To create a new Theme with a new logo follow the steps described in this [article](https://help-center.helioscope.com/hc/en-us/articles/8548997263635-How-to-upload-a-Logo-and-change-the-color-scheme-). |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658417597459) |     | Inserts a table with the total monthly values for the following parameters: GHI, POA, shaded irradiance, Nameplate capacity, and energy to the Grid. |\n| ![Screenshot 2025-04-23 at 11.57.39 AM.png](https://help-center.helioscope.com/hc/article_attachments/40596984928275) |     | Inserts a graph showing the P50, P90, P95, and P99 values.<br><br>To learn more about P90, visit this [article](https://help-center.helioscope.com/hc/en-us/articles/8307116250003). |\n| ![Screenshot 2025-04-23 at 11.57.39 AM copy.png](https://help-center.helioscope.com/hc/article_attachments/40597017379475) |     | Insert a table with the Weather Variability and System Variability defined in the Production Probability. <br><br>To learn more about P90, visit this [article](https://help-center.helioscope.com/hc/en-us/articles/8307116250003). |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658393363475) |     | Inserts a table with the following Project information: address, Project creator, last modified date, and location in coordinates. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658417821331) |     | Inserts an image with the map view of the Project location. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658393576723) |     | Inserts a table containing the [Weather](https://help-center.helioscope.com/hc/en-us/articles/8316938442259-Choosing-a-Weather-File) Sources and the [Transposition Model](https://help-center.helioscope.com/hc/en-us/articles/8316894129555-Condition-Sets) used in the simulations. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658418025747) |     | Inserts a detailed layout image of the Design. To customize what is displayed on the layout image, for example, inverters, trees, and overlays, follow the steps described on this [help article](https://help-center.helioscope.com/hc/en-us/articles/8198882540051-Customize-the-design-layout). |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658393805587) |     | Inserts a table with a mini bill of materials indicating the different components used in the Design and their quantity. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658393958419) |     | Inserts a table with a detailed description of the [Wiring Zones](https://help-center.helioscope.com/hc/en-us/articles/8198405358227-Create-multiple-Wiring-Zones-and-inverter-topologies) created in the Design, including the number of combiner poles, string size, and stringing strategy for each Wiring Zone. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658394096915) |     | Inserts the Sources of System Loss chart that can be found on the [Production Report](https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary). The chart provides a great insight as to where the losses are coming from.  <br>For example: shading, temperature, mismatch, clipping, or inverters amongst others. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658418536851) |     | Inserts a table containing shading parameters calculated per Field Segment.  <br>The parameters include: shaded irradiance, TOF, solar access, and TSRF, similarly to the parameters included in the [Shade Report](https://help-center.helioscope.com/hc/en-us/articles/8198878093971-Shade-Reports). |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658418640275) |     | Inserts a table with a summary of the different Design metrics also found on the Production Report.   <br>Such metrics include: DC and AC Nameplate, Annual Production, Performance Ratio, and kWk/kWp. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658418737811) |     | Inserts a 2D top-down close-up view image of the Design. |\n\n### 3\\. Financial Components\n\n|     |     |     |\n| --- | --- | --- |\n| Widget |     | Definition |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658418819475) |     | Inserts a table containing the calculated cash flow for every year of the Project's lifetime.  <br>The table displays the total Annual Energy, the annual Cash Flow, and the Cumulative Cash Flow over the lifetime of the Project. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658418912531) |     | Inserts a table with a financial summary. The values displayed can be customized by clicking on the top right corner of each column.  <br>The options available are: Levelized Cost of Energy, Lifetime Value, or Payback Period. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658418984595) |     | Inserts a graph displaying the total annual Production and Consumption.  <br>The graph can be customized to show only one or two of the values, and can be displayed in vertical columns or horizontal bars, lines and markers or markers and area. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658394735891) |     | Inserts a graph displaying the estimated total annual utility bill with and without solar.   <br>The graph can be customized to show only one or two of the values, and can be displayed in vertical columns or horizontal bars, lines and markers or markers and area. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658394813843) |     | Inserts a table with the main financial parameters estimated from the input of the Financial Model selected.  <br>The metrics displayed are: Total Value of Energy, Lifetime Value, IRR, ROI, Payback Period and Levelized Cost of Energy. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658419361043) |     | Inserts a graph displaying the Cumulative Cash Flow and the annual Cash Flow for the lifetime of the Project. |\n| ![](https://help-center.helioscope.com/hc/article_attachments/16658395149587) |     | Inserts a pie chart displaying how much of the of the total consumption will be covered by the utility and how much will be covered by solar over the lifetime of the Project. |\n\n### Related articles\n\n*   [Glossary of Auto-Complete Smart Tokens](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJMDwXbGBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBOmD3rGBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJML2hjL2VuLXVzL2FydGljbGVzLzg1NDg5NzcyNzk4OTEtR2xvc3Nhcnktb2YtQXV0by1Db21wbGV0ZS1TbWFydC1Ub2tlbnMGOwhUOglyYW5raQY%3D--0a54076d2e9713f66391fe187631b219ceeffd61)\n*   [Customizing a HelioScope Report](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJPqO3rGBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBOmD3rGBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJFL2hjL2VuLXVzL2FydGljbGVzLzg1NDkwMzU2NjYwNjctQ3VzdG9taXppbmctYS1IZWxpb1Njb3BlLVJlcG9ydAY7CFQ6CXJhbmtpBw%3D%3D--f21a31e2a12c9c2dc97b6c8e8f7111a38e3b15ed)\n*   [How to change the Currency and Locale of a Report](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBPFW73cBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBOmD3rGBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJXL2hjL2VuLXVzL2FydGljbGVzLzg2NDQ2NTExMDc2MDMtSG93LXRvLWNoYW5nZS10aGUtQ3VycmVuY3ktYW5kLUxvY2FsZS1vZi1hLVJlcG9ydAY7CFQ6CXJhbmtpCA%3D%3D--609738690ba01c6de70e7fc9bc2568b27b93fad3)\n*   [Condition Sets in Classic](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJMthW2QBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBOmD3rGBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI%2FL2hjL2VuLXVzL2FydGljbGVzLzgzMTY4OTQxMjk1NTUtQ29uZGl0aW9uLVNldHMtaW4tQ2xhc3NpYwY7CFQ6CXJhbmtpCQ%3D%3D--d1a2f4c55a89b0e6fff295c98c75753534a5d98c)\n*   [Financial Modeling Glossary](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJMqWLjcBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBOmD3rGBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJBL2hjL2VuLXVzL2FydGljbGVzLzg2NDQ1NjY5ODUzNjMtRmluYW5jaWFsLU1vZGVsaW5nLUdsb3NzYXJ5BjsIVDoJcmFua2kK--54f4de8c8b322ee33de593c5555624a44a696fa3)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling",
+    "crawl": {
+      "loadedUrl": "https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling",
+      "loadedTime": "2026-10-22T09:21:26.677Z",
+      "referrerUrl": "https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 26863,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling",
+      "title": "Shade Modeling – HelioScope",
+      "description": "One of HelioScope's unique benefits is its world-class ability to model energy losses due to shading for a solar array. Here are the...",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://help-center.helioscope.com/hc/theming_assets/01HZKV1BB9SHD2A0W5AK6PTSEQ"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "HelioScope"
+        },
+        {
+          "property": "og:title",
+          "content": "Shade Modeling"
+        },
+        {
+          "property": "og:description",
+          "content": "One of HelioScope's unique benefits is its world-class ability to model energy losses due to shading for a solar array. Here are the multiple ways to model shade in HelioScope and the calculations ..."
+        },
+        {
+          "property": "og:url",
+          "content": "https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=0, public",
+        "cf-cache-status": "REVALIDATED",
+        "cf-ray": "a4e76e8a3d9adc66-ORD",
+        "connection": "keep-alive",
+        "content-language": "en-us",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:21:26 GMT",
+        "keep-alive": "timeout=5",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+        "protocol": "HTTP/1.1 always",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=wZAgfs6kpxEeoLnTtzVTV%2BrEpYBEuLvXHqE7jv2tffApjmpQmlN9iBqHzz%2BjWH5R5fvCoKJlEp2Fbz6n8HqdUbCSKyxxHcvzA1AlwOZCHtsCjrgcCjES7julu9ucxU84cRkMMYfevhYlINIs\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "vary": "Accept",
+        "via": "zorg",
+        "x-apify-unblocker-final-url": "https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling",
+        "x-apify-unblocker-route": "GANYMEDE",
+        "x-envoy-decorator-operation": "/hc",
+        "x-envoy-upstream-service-time": "267",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "a4da20c95dd31150-IAD",
+        "x-runtime": "0.262536",
+        "x-ua-compatible": "IE=edge",
+        "x-zendesk-origin-server": "app-server-58fcc4799f-gcq6f",
+        "x-zendesk-zorg": "yes",
+        "zendesk-service": "help-center",
+        "set-cookie": "_cfuvid=twHtnt.nz8wFngeTu7.QKDlrP9XoiBAv2I7Oj1TflOQ-1792660886.118981-1.0.1.1-q.n0I1r_HIUxv5jXbvHun9QEqDi5lWo5DpJSvoDjl1w; HttpOnly; SameSite=None; Secure; Path=/; Domain=help-center.helioscope.com"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Shade Modeling – HelioScope\nShade Reports \nShade Modeling \nTotal Solar Resource Factor (TSRF) \nMike Pulumbarit \nOne of HelioScope's unique benefits is its world-class ability to model energy losses due to shading for a solar array. Here are the multiple ways to model shade in HelioScope and the calculations used for each.\nA) Sources of Shading loss in HelioScope\nThere are three best practices for modeling shading in HelioScope:\nRow-to-row shading: For fixed-tilt arrays (i.e. where the modules are tilted up along a flat surface), it is possible that the modules shade each other, especially if the row spacing is narrow or if the tilt is high. These shading losses are calculated automatically (and there is no other way for the user to modify the losses, other than reducing tilt or increasing spacing).\nObstruction Shading: All objects in the designer can be shade obstructions in the Designer, then the shadows from that Keepout will be calculated and applied on each module in the array, for each hour of the year. Shading losses are automatically applied in the simulation based on the height (and proximity) of the Keepout relative to the modules.\nHorizon file: Shade can be applied using a Horizon File. Horizon files are collections of azimuth/elevation points that define the horizon around the array. These are uploaded to HelioScope under the Shading tab in a project, and must be attached to a Condition Set under the “Shading” section. Note that only one Horizon file can be applied to a Condition Set at a time.\nB) Mathematics of Shading\nRow-to-row shading is calculated based on exactly where the shadow is on the module, based on sun-angle and the geometry of the module. Direct irradiances are calculated based on the exact location of the shadow on the module, factoring in the cell-structure of the module and the bypass diodes. HelioScope checks for shading on each cell string. For landscape-oriented silicon modules, the module will lose 1/3 of its direct irradiance when the first 1/6 of the module is shaded. This is why the orientation of the module can matter (in general, portrait-mounted modules will have higher shading losses than landscape-oriented modules). Diffuse irradiances also adjusted with row-to-row shading, based on the proportion of the sky that is blocked from the front row of modules. \nObstruction shading losses are calculated by mapping the path of each shadow to determine the impacted modules, each hour throughout the year. When a module is shaded, it loses its direct irradiance, though it still receives diffuse irradiance. Unless the array has optimizers or microinverters, shading from row-to-row shading or obstructions will also lead to mismatch losses. These losses are typically 0.5x to 2.0x the shading losses – so, for example, a 3% shading loss could have additional mismatch losses of between 2-6%.\nHorizon shading when the sun is below the horizon line, the entire array loses its direct irradiance (though it still receives diffuse light). Note that because this is applied to all modules in the array, there is no additional mismatch caused by horizon shading losses. Examples of Horizon files can be found here (HOR file) and here (Obstruction Elevations file). Note that files from Solar Pathfinder may have to be edited, removing the header and excess data, in order to make them match the .HOR example above. \nC) Designing around Obstruction Shading\nThere are a number of options for dealing with obstruction shading:\n1) When a Keepout with a height is defined as an obstruction, HelioScope will calculate the shadows from the obstruction (from 10am to 2pm local time on the winter solstice), and remove modules that are shaded in that window. This can be modified under the Keepout > Shading menu: the window can be changed, or the behavior can be stopped entirely by un-checking the Keepout from shade checkbox.\n2) Alternatively, a Shade Optimization can be used for Keepouts:\nb. From the Advanced > Shading menu click Calculate Shading. This calculates the shading losses for each module (based on when they are shaded, and the direct irradiance during those hours), and presents the results as a heatmap\nc. Use the threshold selection slider to select the shading threshold for removing modules – the lower the threshold, the more modules will be removed. Removed modules will be visibly greyed out in the array map, and the details on the new system size & energy yield will be available in the menu\nd. Select “Remove Modules” to remove the modules from the array\nD) Viewing Shade Results\nSimulate your results and view your production report to see a summary of annual mismatch and shading results.\nTo see monthly Solar Access, Total Solar Resource Fraction, and Tilt and Orientation Factor by Field Segment; view the Shade Report for your design\nE) Troubleshooting\nIf the shading losses seem off, there are troubleshooting steps that can be done to verify the calculations:\nCreate a separate simulation without shading losses (either by cloning the Design and setting the Keepout heights to zero, or creating a new Condition Set).\nDownload the hourly CSV results from each of the simulations (shaded and unshaded)\nUse the Comparison Spreadsheet from our Sample Excel Model to line up the results of the two simulations. Use the Monthly chart to select a month, and spot-check the results against the shade patterns during those hours (see screenshot below).\nScreenshot of Comparison Spreadsheet showing hourly/monthly energy for two different simulations\nRelated articles\nProduction Report Summary \nHow to Use LIDAR \nCreate Tree Keepouts \nHow to Create a Parapet Wall \nKeyboard Shortcuts",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Shade Modeling – HelioScope\n\n*   [Shade Reports](https://help-center.helioscope.com/hc/en-us/articles/8198878093971-Shade-Reports)\n*   [Shade Modeling](https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling)\n*   [Total Solar Resource Factor (TSRF)](https://help-center.helioscope.com/hc/en-us/articles/8198877052435-Total-Solar-Resource-Factor-TSRF)\n\n![Avatar](https://help.aurorasolar.com/system/photos/361916122274/profile_image_425341496054_995124.png)\n\nMike Pulumbarit\n\nOne of HelioScope's unique benefits is its world-class ability to model energy losses due to shading for a solar array. Here are the multiple ways to model shade in HelioScope and the calculations used for each.\n\n### A) Sources of Shading loss in HelioScope\n\nThere are three best practices for modeling shading in HelioScope:\n\n1.  **Row-to-row shading**: For fixed-tilt arrays (i.e. where the modules are tilted up along a flat surface), it is possible that the modules shade each other, especially if the [row spacing](https://help-center.helioscope.com/hc/en-us/articles/7835396280723-Row-Spacing) is narrow or if the tilt is high. These shading losses are calculated automatically (and there is no other way for the user to modify the losses, other than reducing tilt or increasing spacing).\n2.  **Obstruction Shading**: All objects in the designer can be shade obstructions in the Designer, then the shadows from that [Keepout](https://help-center.helioscope.com/hc/en-us/articles/7900025079187-Create-Keepout-Zones) will be calculated and applied on each module in the array, for each hour of the year. Shading losses are automatically applied in the simulation based on the height (and proximity) of the Keepout relative to the modules.\n3.  **Horizon file**: Shade can be applied using a Horizon File. Horizon files are collections of azimuth/elevation points that define the horizon around the array. These are uploaded to HelioScope under the Shading tab in a project, and must be attached to a Condition Set under the “Shading” section. Note that only one Horizon file can be applied to a Condition Set at a time.\n\n### B) Mathematics of Shading\n\n1.  **Row-to-row shading** is calculated based on exactly where the shadow is on the module, based on sun-angle and the geometry of the module. _Direct irradiances_ are calculated based on the exact location of the shadow on the module, factoring in the cell-structure of the module and the bypass diodes. HelioScope checks for shading on each cell string. For landscape-oriented silicon modules, the module will lose 1/3 of its direct irradiance when the first 1/6 of the module is shaded. This is why the orientation of the module can matter (in general, portrait-mounted modules will have higher shading losses than landscape-oriented modules). _Diffuse irradiances_ also adjusted with row-to-row shading, based on the proportion of the sky that is blocked from the front row of modules. ![](https://help-center.helioscope.com/hc/article_attachments/16658919509139)\n2.  **Obstruction shading** losses are calculated by mapping the path of each shadow to determine the impacted modules, each hour throughout the year. When a module is shaded, it loses its _direct irradiance_, though it still receives _diffuse irradiance_. Unless the array has optimizers or microinverters, shading from row-to-row shading or obstructions will also lead to [mismatch losses](https://help-center.helioscope.com/hc/en-us/articles/8316870740371-Mismatch-Calculations). These losses are typically 0.5x to 2.0x the shading losses – so, for example, a 3% shading loss could have additional mismatch losses of between 2-6%.\n3.  **Horizon shading** when the sun is below the horizon line, the entire array loses its direct irradiance (though it still receives diffuse light). Note that because this is applied to all modules in the array, there is no additional mismatch caused by horizon shading losses. Examples of Horizon files can be found here ([HOR file](https://help-center.helioscope.com/hc/article_attachments/16466316568467)) and here ([Obstruction Elevations file](https://help-center.helioscope.com/hc/article_attachments/16466324898067)). Note that files from Solar Pathfinder may have to be edited, removing the header and excess data, in order to make them match the .HOR example above. \n\n![](https://help-center.helioscope.com/hc/article_attachments/16658944601875)\n\n### C) Designing around Obstruction Shading\n\nThere are a number of options for dealing with obstruction shading:\n\n1) When a Keepout with a height is defined as an obstruction, HelioScope will calculate the shadows from the obstruction (from 10am to 2pm local time on the winter solstice), and remove modules that are shaded in that window. This can be modified under the Keepout > Shading menu: the window can be changed, or the behavior can be stopped entirely by un-checking the Keepout from shade checkbox.\n\n2) Alternatively, a [Shade Optimization](https://help-center.helioscope.com/hc/en-us/articles/7835499970707-Optimize-shaded-modules) can be used for Keepouts:\n\n   b.  From the Advanced > Shading menu click _Calculate Shading_. This calculates the shading losses for each module (based on when they are shaded, and the direct irradiance during those hours), and presents the results as a heatmap\n\n   c.  Use the threshold selection slider to select the shading threshold for removing modules – the lower the threshold, the more modules will be removed. Removed modules will be visibly greyed out in the array map, and the details on the new system size & energy yield will be available in the menu\n\n   d.  Select “Remove Modules” to remove the modules from the array\n\n![](https://help-center.helioscope.com/hc/article_attachments/16658919792787)\n\n### D) Viewing Shade Results\n\n1.  [Simulate your results](https://help-center.helioscope.com/hc/en-us/articles/4419967126931-5-Simulation-and-Report) and view your production report to see a summary of annual mismatch and shading results.\n2.  To see monthly Solar Access, [Total Solar Resource Fraction](https://help-center.helioscope.com/hc/en-us/articles/8198877052435-Total-Solar-Resource-Factor-TSRF-), and Tilt and Orientation Factor by Field Segment; view the [Shade Report](https://help-center.helioscope.com/hc/en-us/articles/8198878093971-Shade-Reports) for your design\n\n### E) Troubleshooting\n\nIf the shading losses seem off, there are troubleshooting steps that can be done to verify the calculations:\n\n1.  Create a separate simulation without shading losses (either by [cloning the Design](https://help-center.helioscope.com/hc/en-us/articles/8537593187219-Clone-designs) and setting the Keepout heights to zero, or creating a new Condition Set).\n2.  Download the [hourly CSV](https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV) results from each of the simulations (shaded and unshaded)\n3.  Use the Comparison Spreadsheet from our [Sample Excel Model](https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV) to line up the results of the two simulations. Use the Monthly chart to select a month, and spot-check the results against the shade patterns during those hours (see screenshot below).\n\n![](https://help-center.helioscope.com/hc/article_attachments/16658970307347)_Screenshot of Comparison Spreadsheet showing hourly/monthly energy for two different simulations_\n\n### Related articles\n\n*   [Production Report Summary](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBNC9%2B50BzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJPT%2BFgvBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI%2FL2hjL2VuLXVzL2FydGljbGVzLzgxOTg4MDY3ODI0ODMtUHJvZHVjdGlvbi1SZXBvcnQtU3VtbWFyeQY7CFQ6CXJhbmtpBg%3D%3D--1111af182ba33287ea9731018071b0f4ca7bfd7b)\n*   [How to Use LIDAR](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBNIBNzDBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJPT%2BFgvBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI2L2hjL2VuLXVzL2FydGljbGVzLzg1Mzc3OTEyODUyNjctSG93LXRvLVVzZS1MSURBUgY7CFQ6CXJhbmtpBw%3D%3D--128190b1cb86a0aad99a9bd58404eaad09dab977)\n*   [Create Tree Keepouts](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJNt3GsvBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJPT%2BFgvBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI6L2hjL2VuLXVzL2FydGljbGVzLzc5MDAyNTQ0NjU0MjctQ3JlYXRlLVRyZWUtS2VlcG91dHMGOwhUOglyYW5raQg%3D--89b81e248471013702847be5a8a9c625aef865a3)\n*   [How to Create a Parapet Wall](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBMfBHAvBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJPT%2BFgvBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJCL2hjL2VuLXVzL2FydGljbGVzLzc5MDAzMjQxNzU2MzUtSG93LXRvLUNyZWF0ZS1hLVBhcmFwZXQtV2FsbAY7CFQ6CXJhbmtpCQ%3D%3D--6e270643928d379ea966115a0bdb4882ec277ea5)\n*   [Keyboard Shortcuts](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJPijxsFBDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCJPT%2BFgvBzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI4L2hjL2VuLXVzL2FydGljbGVzLzQ0MTk5ODM3NjIwNjctS2V5Ym9hcmQtU2hvcnRjdXRzBjsIVDoJcmFua2kK--c828ad60b1ce2301e0024fe8675b2cefb91f83fd)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode",
+    "crawl": {
+      "loadedUrl": "https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode",
+      "loadedTime": "2026-10-22T09:21:26.750Z",
+      "referrerUrl": "https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 36736,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode",
+      "title": "How to design in Manual mode – OpenSolar",
+      "description": "Summary:This guide walks you through designing a solar project in Manual mode using 3D visualization in OpenSolar. By the end, you’ll be...",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://support.opensolar.com/hc/theming_assets/01M0ZRG0PAHF8XKE2GGHBT6PZZ"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "OpenSolar"
+        },
+        {
+          "property": "og:title",
+          "content": "How to design in Manual mode"
+        },
+        {
+          "property": "og:description",
+          "content": "Summary:This guide walks you through designing a solar project in Manual mode using 3D visualization in OpenSolar. By the end, you’ll be able to:\nSelect the right imagery models and imagery source\n..."
+        },
+        {
+          "property": "og:url",
+          "content": "https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=0, public",
+        "cf-cache-status": "MISS",
+        "cf-ray": "a4e76e895ee5c4cf-SEA",
+        "connection": "keep-alive",
+        "content-language": "en-us",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:21:26 GMT",
+        "keep-alive": "timeout=5",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+        "protocol": "HTTP/1.1 always",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=WsG12twQSwI8adCqXZbZ%2BdG2b2Yul3yz%2FgD6PcRUwx2zp0RfHqEtFUFO7W3TnCUnPvrNgyJ4x0wIYd%2FEAVU2Bv%2FNugnlg9dh5lbc4%2BFvbeWem7U3Z%2Fvq3%2F07hPZE%2Bp22PvY4NPGe6Q%3D%3D\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "via": "zorg",
+        "x-apify-unblocker-final-url": "https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode",
+        "x-apify-unblocker-route": "GANYMEDE",
+        "x-envoy-decorator-operation": "/hc",
+        "x-envoy-upstream-service-time": "300",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "a4e76e895ee5c4cf-SJC",
+        "x-runtime": "0.295567",
+        "x-ua-compatible": "IE=edge",
+        "x-zendesk-origin-server": "app-server-6c7948d859-7tdrp",
+        "x-zendesk-zorg": "yes",
+        "zendesk-service": "help-center",
+        "set-cookie": "_cfuvid=afuNdsvcr.8TF.lF762O5AuGLrKif2h5uK0SnkeYqV4-1792660885.972654-1.0.1.1-Lgd3G5ZdUi.N0QArzbX.SzJeKX0grJxIjNxfnUwbP1c; HttpOnly; SameSite=None; Secure; Path=/; Domain=support.opensolar.com"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "How to design in Manual mode – OpenSolar\nFollow \nSummary:\nThis guide walks you through designing a solar project in Manual mode using 3D visualization in OpenSolar. By the end, you’ll be able to:\nSelect the right imagery models and imagery source\nImport and accurately scale/align a drone photo or roof plan\nBuild a 3D roof model with the Quick Roof tool\nApply pricing, incentives, and payment options\nManual mode is ideal when you want to design from your own imagery (drone photos, roof plans, CAD exports, etc.)—even when satellite imagery is outdated or unavailable.\nBefore you start (recommended)\nHave at least one of the following ready to make scaling accurate:\nA known measurement (e.g., total roof length, ridge length, eave length), or\nA roof plan with dimensions, or\nA measurement you can verify on-site (tape)\nSupported images: common formats like JPG/PNG work best.\nSwitch to Manual mode:\nIn the top-right of the design window, open the Imagery dropdown.\nSelect Manual \nFor imagery provider, choose No Ground Imagery.\nClick Select to confirm and enter Manual mode.\nImport your image (drone photo/roof plan):\nDrag and drop your own image file into the white design canvas.\nClick on the \"Upload\" button once the custom imagery upload comes up:\nScale and align the imagery:\nAccurate scaling ensures your panel layout, setbacks, and production results reflect reality.\nScaling options\nYou can resize imagery in a few ways:\nResize (recommended): draw a line between two points and add the distance between the two to scale.\nWidth / Length / Azimuth: manually adjust size and rotation using fields on the left-hand side menu.\nArrow controls: Scale up and down the image using the buttons next to the image. \nRecommended: Use Resize\nClick Resize.\nYour cursor will show a pin\nLeft click to place the first point on the image.\nLeft click to place the second point at the other end of the known measurement.\nEnter the real-world distance between those two points (e.g., feet).\nConfirm to apply resizing.\nFinish alignment\nWhen you’re satisfied:\nClick Close in the left-hand menu to exit the imagery alignment tools.\nVideo Walkthrough:\nBuild the 3D roof model (Quick Roof)\nReopen Tools Settings (if closed).\nSelect the Quick Roof tool.\nPlace pins on each corner of the roof area (each click drops a corner point).\nComplete the roof shape to generate the structure.\nUse the arrow handles to fine-tune roof dimensions and angles.\nIf the slopes are inconsistent, use Edit Slope Individually to adjust them manually.\nTip: If you prefer using satellite imagery, select Google Solar API Ground Imagery or Google Ground Imagery instead of \"No Ground Imagery,\" and follow the same steps above.\nAdd shading objects (obstructions and trees)\nTo improve the accuracy of shade and production modeling:\nUse Obstruction to place chimneys, vents, nearby structures, etc.\nUse Tree to place trees and approximate their height/canopy.\nPlace objects where they exist relative to the roof and adjust properties as needed.\nRelated articles\nDifferent Edge Types \n🇬🇧 Design \nAdd custom cost and price Adders per system \nActivating Mounting Systems components \nHow to create adders in your organization",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# How to design in Manual mode – OpenSolar\n\n![](https://support.opensolar.com/system/photos/8966678827023/OS_logo.png)\n\n[Follow](https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode/subscription.html \"Opens a sign-in dialog\")\n\n## Summary:\n\nThis guide walks you through designing a solar project in **Manual mode** using **3D visualization** in OpenSolar. By the end, you’ll be able to:\n\n*   Select the right **imagery models** and **imagery source**\n    \n*   Import and accurately **scale/align** a drone photo or roof plan\n    \n*   Build a **3D roof model** with the Quick Roof tool\n    \n*   Apply **pricing, incentives, and payment options**\n    \n\nManual mode is ideal when you want to design from **your own imagery** (drone photos, roof plans, CAD exports, etc.)—even when satellite imagery is outdated or unavailable.\n\n## Before you start (recommended)\n\nHave at least one of the following ready to make scaling accurate:\n\n*   A known measurement (e.g., total roof length, ridge length, eave length), **or**\n    \n*   A roof plan with dimensions, **or**\n    \n*   A measurement you can verify on-site (tape)\n    \n\nSupported images: common formats like **JPG/PNG** work best.\n\n## Switch to Manual mode:\n\n1.  In the **top-right** of the design window, open the **Imagery** dropdown.\n    \n2.  Select **Manual** \n    \n3.  For imagery provider, choose **No Ground Imagery**.\n    \n4.  Click **Select** to confirm and enter Manual mode.\n    \n\n![Screenshot 2025-09-17 at 11.05.00 am.png](https://support.opensolar.com/hc/article_attachments/13791590410895)\n\n## Import your image (drone photo/roof plan):\n\nDrag and drop your own image file into the white design canvas.\n\nClick on the \"**Upload**\" button once the custom imagery upload comes up:\n\n![](https://support.opensolar.com/hc/article_attachments/14502306889999)\n\n## Scale and align the imagery:\n\nAccurate scaling ensures your panel layout, setbacks, and production results reflect reality.\n\n#### Scaling options\n\nYou can resize imagery in a few ways:\n\n*   **Resize (recommended):** draw a line between two points and add the distance between the two to scale.\n    \n*   **Width / Length / Azimuth:** manually adjust size and rotation using fields on the left-hand side menu.\n    \n*   **Arrow controls:** Scale up and down the image using the buttons next to the image. \n    \n\n![](https://support.opensolar.com/hc/article_attachments/14502318186767)\n\n### Recommended: Use **Resize**\n\n1.  Click **Resize**.\n    \n2.  Your cursor will show a pin\n    \n3.  Left click to place the **first point** on the image.\n    \n4.  Left click to place the **second point** at the other end of the known measurement.\n    \n5.  Enter the real-world distance between those two points (e.g., **feet**).\n    \n6.  Confirm to apply resizing.\n    \n\n![](https://support.opensolar.com/hc/article_attachments/14502306890767)\n\n#### Finish alignment\n\nWhen you’re satisfied:\n\n*   Click **Close** in the left-hand menu to exit the imagery alignment tools.\n    \n\n![](https://support.opensolar.com/hc/article_attachments/14502318187535)\n\n#### Video Walkthrough:\n\n![](https://support.opensolar.com/hc/article_attachments/14502318187919)\n\n## Build the 3D roof model (Quick Roof)\n\n*   Reopen **Tools Settings** (if closed).\n    \n*   Select the **Quick Roof** tool.\n    \n\n![](https://support.opensolar.com/hc/article_attachments/17204456101519)\n\n*   Place pins on each corner of the roof area (each click drops a corner point).\n    \n*   Complete the roof shape to generate the structure.\n    \n\n![](https://support.opensolar.com/hc/article_attachments/14502318200847)\n\nUse the arrow handles to fine-tune roof dimensions and angles.\n\nIf the slopes are inconsistent, use **Edit Slope Individually** to adjust them manually.\n\n![](https://support.opensolar.com/hc/article_attachments/13436931001871)\n\n> **Tip**: If you prefer using satellite imagery, select **Google Solar API Ground Imagery** or **Google Ground Imagery** instead of \"No Ground Imagery,\" and follow the same steps above.\n\n## Add shading objects (obstructions and trees)\n\nTo improve the accuracy of shade and production modeling:\n\n1.  Use **Obstruction** to place chimneys, vents, nearby structures, etc.\n    \n2.  Use **Tree** to place trees and approximate their height/canopy.\n    \n\nPlace objects where they exist relative to the roof and adjust properties as needed.\n\n![](https://support.opensolar.com/hc/article_attachments/17204484991375)\n\n### Related articles\n\n*   [Different Edge Types](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBkqBxICBDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCA9SYlANDDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSI6L2hjL2VuLXVzL2FydGljbGVzLzQ0MDY5Mzg5MDUxMTMtRGlmZmVyZW50LUVkZ2UtVHlwZXMGOwhUOglyYW5raQY%3D--23de7637f900b9f63d54d16c00568fad1c5c8cc8)\n*   [🇬🇧 Design](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCA9RG%2FbjBjoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCA9SYlANDDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSItL2hjL2VuLXVzL2FydGljbGVzLzc1NzYxNTYzMjgyMDctLURlc2lnbgY7CFQ6CXJhbmtpBw%3D%3D--ca3f61c7aec3e57d206d89ad6783a0ab93d43b43)\n*   [Add custom cost and price Adders per system](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCBn45FoEBDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCA9SYlANDDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJRL2hjL2VuLXVzL2FydGljbGVzLzQ0MTY3NTEzMzU0NDktQWRkLWN1c3RvbS1jb3N0LWFuZC1wcmljZS1BZGRlcnMtcGVyLXN5c3RlbQY7CFQ6CXJhbmtpCA%3D%3D--6fc76720a33edf4e06a5becc790ea53638a29a52)\n*   [Activating Mounting Systems components](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCI%2FFjRyKCDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCA9SYlANDDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJML2hjL2VuLXVzL2FydGljbGVzLzkzODkyNzc1NjIyNTUtQWN0aXZhdGluZy1Nb3VudGluZy1TeXN0ZW1zLWNvbXBvbmVudHMGOwhUOglyYW5raQk%3D--12df1cc92215738cf4d4eebbd1597ceb7bb23af3)\n*   [How to create adders in your organization](https://support.opensolar.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCI%2F9NXYXDDoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCA9SYlANDDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJQL2hjL2VuLXVzL2FydGljbGVzLzEzMjk0OTA3MDMwOTI3LUhvdy10by1jcmVhdGUtYWRkZXJzLWluLXlvdXItb3JnYW5pemF0aW9uBjsIVDoJcmFua2kK--d1eb960ca356e27de3147207220dcb791429b55e)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV",
+    "crawl": {
+      "loadedUrl": "https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV",
+      "loadedTime": "2026-10-22T09:21:26.874Z",
+      "referrerUrl": "https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 43565,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV",
+      "title": "Hourly Production Report CSV – HelioScope",
+      "description": "In this article: CSV Overview Sample Excel Models International CSV Exports (Comma vs. Decimal Points) CSV Column Explanations CSV...",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://help-center.helioscope.com/hc/theming_assets/01HZKV1BB9SHD2A0W5AK6PTSEQ"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "HelioScope"
+        },
+        {
+          "property": "og:title",
+          "content": "Hourly Production Report CSV"
+        },
+        {
+          "property": "og:description",
+          "content": "In this article:\nCSV Overview\nSample Excel Models\nInternational CSV Exports (Comma vs. Decimal Points)\nCSV Column Explanations\nCSV OverviewHelioScope models the performance of the array for every h..."
+        },
+        {
+          "property": "og:url",
+          "content": "https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=0, public",
+        "cf-cache-status": "REVALIDATED",
+        "cf-ray": "a4e76e8dfca1e894-ORD",
+        "connection": "keep-alive",
+        "content-language": "en-us",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:21:26 GMT",
+        "keep-alive": "timeout=5",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+        "protocol": "HTTP/1.1 always",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=wW%2F3m%2BHuQWlVPHNKPywLb2%2BF3tb%2FW9hrepYc4cDQP%2Bz9j2fna5ZYXB%2Bh%2B%2Bor8piec5vSp5KC237vPtA0%2BY1yHSgkcTQqkmaPcvwYjU7Mes46y4DHkfxiJTTUtk5ikZY1f49R7Y2NibIPYUOs\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "via": "zorg",
+        "x-apify-unblocker-final-url": "https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV",
+        "x-apify-unblocker-route": "GANYMEDE",
+        "x-envoy-decorator-operation": "/hc",
+        "x-envoy-upstream-service-time": "219",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "a4d961a2e9761279-IAD",
+        "x-runtime": "0.214934",
+        "x-ua-compatible": "IE=edge",
+        "x-zendesk-origin-server": "app-server-58fcc4799f-9qbqs",
+        "x-zendesk-zorg": "yes",
+        "zendesk-service": "help-center",
+        "set-cookie": "_cfuvid=fBbVAF0KgjTP8qE96J806pSUFxv3i8tGC9M_0nVdQJw-1792660886.7145894-1.0.1.1-13ajmigOR7Yg3x7ApKQ.0cwDKsbsp.ifeE_euLl4csw; HttpOnly; SameSite=None; Secure; Path=/; Domain=help-center.helioscope.com"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Hourly Production Report CSV – HelioScope\nWeather Values hour_index The hour of the year. Between 1 and 8760 Integers timestamp Date and time of the simulation MM/DD/YYYY global_horizontal_irradiance The total amount of sunlight available at a given moment, based on a collector that is oriented perfectly flat on the ground. This includes both the direct and diffuse components of the sunlight. W/m2 direct_normal_irradiance Direct Normal Irradiance (DNI) is the amount of solar radiation received per unit area by a surface that is always held perpendicular (or normal) to the rays that come in a straight line from the direction of the sun at its current position in the sky. W/m2 diffuse_horizontal_irradiance The indirect sunlight that is available to a collector that is oriented flat on the ground. This includes the general brightness of the sky, as well as reflected light. The best way to visualize this irradiance is to picture a person’s shadow on a sunny day. The ground under the shadow is not totally dark, even though the direct component has been removed. The remaining sunlight is the diffuse irradiance. W/m2 dry_bulb_temperature The air temperature at a given point in time. Note that this is not the same as the cell temperature – that is calculated separately based on a few inputs. ºC windspeed The speed of the wind. This is used in the cell temperature calculations. m/s albedo Reflected irradiance represents sunlight that is reflected off the ground around an array. It is calculated based on an albedo coefficient (which is the portion of the incident irradiance that is reflected), and the share of the ground that is visible from the module. The albedo coefficient is typically 0.2, though it can be higher during snowy periods in cold climates. Irradiance Values solar_altitude_angle Solar Altitude Angle Degrees solar_azimuth_angle Solar Azimuth Angle (0º is true North) Degrees solar_incident_angle Average solar incident angle relative to module orientation (0º is normal to module orientation) Degrees horizon_elevation_angle Elevation of horizon at solar azimuth angle (derived from Horizon file; if there is no Horizon file in the Condition Set, this will be 0) Degrees adjusted_ghi GHI value after accounting for spectral analysis(if using thin film modeling). W/m2 poa_direct_irradiance Average Direct (Beam) Irradiance Incident on the Plane of Array of the Modules W/m2 poa_diffuse_irradiance Average Diffuse Irradiance Incident on the Plane of Array of the Modules W/m2 poa_reflected_irradiance Average Reflected (Albedo) Irradiance Incident on the Plane of Array of the Modules W/m2 shaded_direct_irradiance Average Direct (Beam) Irradiance Incident on the Plane of Array after Shading effects W/m2 shaded_diffuse_irradiance Average Diffuse Irradiance Incident on the Plane of Array of the Modules after Shading effects W/m2 shaded_reflected_irradiance Average Reflected (Albedo) Irradiance Incident on the Plane of Array of the Modules after Shading effects W/m2 effective_direct_irradiance Average Direct (Beam) Irradiance Incident on the Plane of Array after Shading and IAM effects of the Modules W/m2 effective_diffuse_irradiance Average Diffuse Irradiance Incident on the Plane of Array of the Modules after Shading and IAM effects W/m2 effective_reflected_irradiance Average Reflected (Albedo) Irradiance Incident on the Plane of Array of the Modules after Shading and IAM effects W/m2 soiled_irradiance Average Irradiance available to Modules after all effects and soiling factor W/m2 total_irradiance Average Irradiance available to Modules after all effects, soiling factor, and any defined irradiance variation W/m2 Power Values nameplate_power Total nameplate power of system, Irradiance * Module Nameplate W avg_cell_temp Average Module Cell Temperature ºC module_irradiance_derated_power Total Module Power after derating for Irradiance W module_mpp_power Total Module Power after derating for Irradiance and Temperature W module_power Total Module Power under array operating conditions, e.g. including any losses due to mismatch or operation away from module MPP W optimizer_input_power Total power input into power optimizers in the array W optimizer_output_power Total power output from power optimizers in the array, i.e. including optimizer operational efficiency W optimal_dc_power Total DC power of the array, including DC wire losses W optimal_dc_voltage Optimal system voltage unconstrained by inverter voltage range V inverter_overpower_loss Power loss due to constraining power down to inverter max power rating W inverter_underpower_loss Power loss due to insufficient power for inverter minimum power rating W inverter_overvoltage_loss Power loss due to constraining voltage down to inverter max voltage rating W inverter_undervoltage_loss Power loss due to insufficient voltage for inverter minimum voltage rating W actual_dc_power Total DC system power after accounting for inverter operating range W actual_dc_voltage Operating system voltage after accounting for inverter operating range V ac_power Total AC System Power, after accounting for inverter efficiency, excluding AC transmission losses to interconnect W grid_power Total AC System Power, including AC transmission losses to interconnect W Bifacial Metrics Only available with Bifacial Modeling. irradiance_on_surface The irradiance that reaches the Field Segment surface in the surface area close to the module array (within 1 row width of each module). W/m2 surface_reflected_irradiance The irradiance reflected off the surface area close to the module array. W/m2 collector_normalized_irradiance The surface-reflected irradiance normalized to the collector area. (The surface-reflected irradiance is multiplied by the ratio between the surface area and the collector area). This is what the irradiance would be if all surface reflected light was concentrated on the rear side of the modules. W/m2 rear_surface_irradiance The amount of surface reflected light captured by the rear side of the modules. W/m2 rear_diffuse_irradiance The amount of diffuse irradiance incident on the rear side of the modules, including horizon brightening and reflected irradiance from the modules in the row behind. W/m2 rear_beam_irradiance The amount of direct irradiance incident on the rear side of the modules, including beam and circumsolar components. W/m2 unshaded_rear_irradiance The amount of irradiance incident on the rear side of the modules before Rear Shading Factor is applied. This sums Surface Irradiance in the Collector Plane, Sky Diffuse, and Beam Effective components. W/m2 total_rear_irradiance The amount of irradiance incident on the rear side of the modules after Rear Shading Factor is applied. W/m2 total_front_irradiance Total irradiance available to the modules in the array (averaged across all modules and Field Segments). W/m2 effective_rear_irradiance The amount of irradiance incident on the rear side of the modules after Rear Shading Factor and Bifaciality Factor are applied. This is the effective amount of irradiance available to the rear cells. W/m2 module_power_after_rear_mismatch Energy output by the modules, including stringing, mismatch from the electrical simulation, and rear mismatch effects (specified in the Condition Set. W",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Hourly Production Report CSV – HelioScope\n\n**Weather Values**   hour\\_index The hour of the year. Between 1 and 8760 Integers timestamp Date and time of the simulation MM/DD/YYYY global\\_horizontal\\_irradiance The total amount of sunlight available at a given moment, based on a collector that is oriented perfectly flat on the ground. This includes both the direct and diffuse components of the sunlight. W/m2 direct\\_normal\\_irradiance Direct Normal Irradiance (DNI) is the amount of solar radiation received per unit area by a surface that is always held perpendicular (or normal) to the rays that come in a straight line from the direction of the sun at its current position in the sky.  W/m2 diffuse\\_horizontal\\_irradiance The indirect sunlight that is available to a collector that is oriented flat on the ground. This includes the general brightness of the sky, as well as reflected light. The best way to visualize this irradiance is to picture a person’s shadow on a sunny day. The ground under the shadow is not totally dark, even though the direct component has been removed. The remaining sunlight is the diffuse irradiance. W/m2 dry\\_bulb\\_temperature The air temperature at a given point in time. Note that this is not the same as the cell temperature – that is calculated separately based on a few inputs. ºC windspeed The speed of the wind. This is used in the cell temperature calculations. m/s albedo Reflected irradiance represents sunlight that is reflected off the ground around an array. It is calculated based on an albedo coefficient (which is the portion of the incident irradiance that is reflected), and the share of the ground that is visible from the module. The albedo coefficient is typically 0.2, though it can be higher during snowy periods in cold climates.   **Irradiance Values**   solar\\_altitude\\_angle Solar Altitude Angle Degrees solar\\_azimuth\\_angle Solar Azimuth Angle (0º is true North) Degrees solar\\_incident\\_angle Average solar incident angle relative to module orientation (0º is normal to module orientation) Degrees horizon\\_elevation\\_angle Elevation of horizon at solar azimuth angle (derived from [Horizon file](https://help-center.helioscope.com/hc/en-us/articles/7900126926227-Horizon-Shading); if there is no Horizon file in the Condition Set, this will be 0) Degrees adjusted\\_ghi GHI value after accounting for [spectral analysis](https://help-center.helioscope.com/hc/en-us/articles/8317072526355-Spectral-Analysis)(if using thin film modeling).  W/m2 poa\\_direct\\_irradiance Average Direct (Beam) Irradiance Incident on the Plane of Array of the Modules W/m2 poa\\_diffuse\\_irradiance Average Diffuse Irradiance Incident on the Plane of Array of the Modules W/m2 poa\\_reflected\\_irradiance Average Reflected (Albedo) Irradiance Incident on the Plane of Array of the Modules W/m2 shaded\\_direct\\_irradiance Average Direct (Beam) Irradiance Incident on the Plane of Array after Shading effects W/m2 shaded\\_diffuse\\_irradiance Average Diffuse Irradiance Incident on the Plane of Array of the Modules after Shading effects W/m2 shaded\\_reflected\\_irradiance Average Reflected (Albedo) Irradiance Incident on the Plane of Array of the Modules after Shading effects W/m2 effective\\_direct\\_irradiance Average Direct (Beam) Irradiance Incident on the Plane of Array after Shading and IAM effects of the Modules W/m2 effective\\_diffuse\\_irradiance Average Diffuse Irradiance Incident on the Plane of Array of the Modules after Shading and IAM effects W/m2 effective\\_reflected\\_irradiance Average Reflected (Albedo) Irradiance Incident on the Plane of Array of the Modules after Shading and IAM effects W/m2 soiled\\_irradiance Average Irradiance available to Modules after all effects and soiling factor W/m2 total\\_irradiance Average Irradiance available to Modules after all effects, soiling factor, and any defined irradiance variation W/m2 **Power Values**   nameplate\\_power Total nameplate power of system, Irradiance \\* Module Nameplate W avg\\_cell\\_temp Average Module Cell Temperature ºC module\\_irradiance\\_derated\\_power Total Module Power after derating for Irradiance W module\\_mpp\\_power Total Module Power after derating for Irradiance and Temperature W module\\_power Total Module Power under array operating conditions, e.g. including any losses due to mismatch or operation away from module MPP W optimizer\\_input\\_power Total power input into power optimizers in the array W optimizer\\_output\\_power Total power output from power optimizers in the array, i.e. including optimizer operational efficiency W optimal\\_dc\\_power Total DC power of the array, including DC wire losses W optimal\\_dc\\_voltage Optimal system voltage unconstrained by inverter voltage range V inverter\\_overpower\\_loss Power loss due to constraining power down to inverter max power rating W inverter\\_underpower\\_loss Power loss due to insufficient power for inverter minimum power rating W inverter\\_overvoltage\\_loss Power loss due to constraining voltage down to inverter max voltage rating W inverter\\_undervoltage\\_loss Power loss due to insufficient voltage for inverter minimum voltage rating W actual\\_dc\\_power Total DC system power after accounting for inverter operating range W actual\\_dc\\_voltage Operating system voltage after accounting for inverter operating range V ac\\_power Total AC System Power, after accounting for inverter efficiency, excluding AC transmission losses to interconnect W grid\\_power Total AC System Power, including AC transmission losses to interconnect W **Bifacial Metrics** Only available with [Bifacial Modeling](https://help-center.helioscope.com/hc/en-us/articles/41739863126163-Bifacial-Modules). irradiance\\_on\\_surface The irradiance that reaches the Field Segment surface in the surface area close to the module array (within 1 row width of each module). W/m2 surface\\_reflected\\_irradiance The irradiance reflected off the surface area close to the module array. W/m2 collector\\_normalized\\_irradiance The surface-reflected irradiance normalized to the collector area. (The surface-reflected irradiance is multiplied by the ratio between the surface area and the collector area). This is what the irradiance would be if all surface reflected light was concentrated on the rear side of the modules. W/m2 rear\\_surface\\_irradiance The amount of surface reflected light captured by the rear side of the modules. W/m2 rear\\_diffuse\\_irradiance The amount of diffuse irradiance incident on the rear side of the modules, including horizon brightening and reflected irradiance from the modules in the row behind. W/m2 rear\\_beam\\_irradiance The amount of direct irradiance incident on the rear side of the modules, including beam and circumsolar components. W/m2 unshaded\\_rear\\_irradiance The amount of irradiance incident on the rear side of the modules before Rear Shading Factor is applied. This sums Surface Irradiance in the Collector Plane, Sky Diffuse, and Beam Effective components. W/m2 total\\_rear\\_irradiance The amount of irradiance incident on the rear side of the modules after Rear Shading Factor is applied. W/m2 total\\_front\\_irradiance Total irradiance available to the modules in the array (averaged across all modules and Field Segments). W/m2 effective\\_rear\\_irradiance The amount of irradiance incident on the rear side of the modules after Rear Shading Factor and Bifaciality Factor are applied. This is the effective amount of irradiance available to the rear cells. W/m2 module\\_power\\_after\\_rear\\_mismatch Energy output by the modules, including stringing, mismatch from the electrical simulation, and rear mismatch effects (specified in the Condition Set.  W",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary",
+    "crawl": {
+      "loadedUrl": "https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary",
+      "loadedTime": "2026-10-22T09:21:29.652Z",
+      "referrerUrl": "https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 35127,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary",
+      "title": "Production Report Summary – HelioScope",
+      "description": "In This Article: Overview of Production Report Layout Glossary of Terms Overview of Production Report LayoutA detailed Report is...",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-US",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://help-center.helioscope.com/hc/theming_assets/01HZKV1BB9SHD2A0W5AK6PTSEQ"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:site_name",
+          "content": "HelioScope"
+        },
+        {
+          "property": "og:title",
+          "content": "Production Report Summary"
+        },
+        {
+          "property": "og:description",
+          "content": "In This Article:\nOverview of Production Report Layout\nGlossary of Terms\nOverview of Production Report LayoutA detailed Report is available for each completed Simulation:A. Click the orange PDF butt..."
+        },
+        {
+          "property": "og:url",
+          "content": "https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=0, public",
+        "cf-cache-status": "REVALIDATED",
+        "cf-ray": "a4e76e93594ef5f6-EWR",
+        "connection": "keep-alive",
+        "content-language": "en-us",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 09:21:27 GMT",
+        "keep-alive": "timeout=5",
+        "nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.01,\"max_age\":604800}",
+        "protocol": "HTTP/1.1 always",
+        "report-to": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=MafOo2tO0ZHB4Cr9pbNvWQME1nDOBinFMjREUOwWenj69juvHkI9OIsRDQD0s%2FzOkAWF6wPzknR63LXf4hn7GZmBhLs7ygkadPkT%2FXLhrVO3hFI%2FwcFhllEEO1CEO24LnU1k8Kt82Ec7Lx6Z\"}]}",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "via": "zorg",
+        "x-apify-unblocker-final-url": "https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary",
+        "x-apify-unblocker-route": "GANYMEDE",
+        "x-envoy-decorator-operation": "/hc",
+        "x-envoy-upstream-service-time": "217",
+        "x-frame-options": "SAMEORIGIN",
+        "x-request-id": "a4d9291e6d40840d-IAD",
+        "x-runtime": "0.211350",
+        "x-ua-compatible": "IE=edge",
+        "x-zendesk-origin-server": "app-server-58fcc4799f-rvj7p",
+        "x-zendesk-zorg": "yes",
+        "zendesk-service": "help-center",
+        "set-cookie": "_cfuvid=mZChmVVQ8fmxQO12eOlhWgbPjMiniZRNuH6WrerApzs-1792660887.577645-1.0.1.1-1yKNp1ckyNZghG15MmvsD5rfmZfKYPKoNR4sdWIj4ps; HttpOnly; SameSite=None; Secure; Path=/; Domain=help-center.helioscope.com"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Production Report Summary – HelioScope\nMike Pulumbarit \nIn This Article:\nOverview of Production Report Layout\nGlossary of Terms\nOverview of Production Report Layout\nA detailed Report is available for each completed Simulation:\nA. Click the orange PDF button to download a printable PDF report\nB. Hourly results can be downloaded in CSV format \nC. Summary metrics, including energy production, performance ratio, and kWh/kWp\nD. Project location is shown overhead\nE. Monthly production values\nF. Chart shows loss factors graphically\nG. Shows total losses at each step of the irradiance for the front of the modules\nH. Shows total losses at each step of the irradiance for the rear of the modules (Bifacial Only)\nI. Shows total losses at each step of the energy calculations\nJ. Records of the Condition Set assumptions\nK. Production probability graph (Pro & Enterprise Plan Only)\nL. Production probability table derived from Condition Set assumptions (Pro & Enterprise Plan Only)\nM. Details on electrical design assumptions\nN. Details on mechanical layout and module orientation\nO. Bill of materials for the design, including module, wire, and inverter quantities\nGlossary of Terms\nSummary Metrics:\nProduction\tThe total energy generated during the simulation, in MWh or GWh\t\nPerformance Ratio\t\nPerformance Ratio (PR) shows the percentage of total potential energy for the array that is converted to AC energy. \nMathematically, the PR is defined in the following formula:\n\nIn the report above we find the following values:\nEnergy to Grid: 98,619.3 kWh\nDC Nameplate: 57.5 kW\nPOA Irradiance: 2,069.3 kWh/m2\nWe can calculate the performance ratio as 98,619.3 / (2069.3 * 57.5) = 82.9% \nNote: rounding in POA Irradiance and DC nameplate can cause slight rounding errors in the calculation. To get the full POA irradiance value, you would need to use the hourly CSV export. To get full DC nameplate multiply module count by module wattage. \nShading will reduce the PR, since it reduces the AC power, but does not reduce the POA irradiance. However, differences in orientation angle will have very little effect on PR, since the POA irradiance will change with the module orientation. \n* STC stands for Standard Test Conditions. These are measured under lab conditions of 1000W per sq meter of irradiance and 25 degree C.\n\t\nkWh/kWp\tThe total simulation energy generation divided by the system DC nameplate power.\t\nProduction Metrics\nAnnual Global Horizontal Irradiance\tThe total irradiance that will fall on a flat plane at the location of the array. This is aggregated directly from the weather file.\t\nPOA Irradiance\tThe total irradiance in the plane of the modules, accounting for tilt and azimuth angles. This is averaged across all modules in the array.\t\nShaded Irradiance\tThe total irradiance accounting for all shading (from horizon, row-to-row, and obstruction)\t\nIrradiance after Reflection\tThe total irradiance after accounting for reflection off the surface of the module (i.e. IAM reflection). \t\nIrradiance after Soiling\tIrradiance after module soiling is accounted for. Note that soiling assumptions are made in the Condition Set.\t\nTotal Collector Irradiance\tThe total annual irradiance available to the modules in the array. This is averaged across all modules.\t\nNameplate\tThe maximum potential power of the array, defined as the total collector irradiance multiplied by the system nameplate power.\t\nOutput at Irradiance Levels\tThe total energy output by the modules, after accounting for low-light effects and module IV curve distortions. More details on Output at Irradiance available here. \t\nOutput at Cell Temperature\tThe total output of the modules, factoring in the temperature effects on the IV curves. This is the sum of the modules at their maximum power points.\t\nOutput After Mismatch\tThe total energy output of the modules, factoring in all system constraints (e.g. series & parallel mismatch, voltage drop, etc.). \t\nOptimizer Output\tIf DC optimizers are present, this shows the total output of the optimizers, factoring in their efficiency curves and principles of operation. \t\nOptimal DC Output\tThe total energy available energy of the DC system, accounting for all wire resistive losses.\t\nConstrained DC Output\tThe total DC energy after accounting for inverter voltage and power limits. More details about clipping and Constrained DC Output available here \t\nInverter Output\tThe total AC energy output from the inverters, taking into account inverter performance losses.\t\nEnergy to Grid\tThe total AC energy output after accounting for AC wire losses to the point of interconnection\t\nBifacial Metrics (only available with Bifacial Modeling)\nGlobal Incident Irradiance on Surface\tThe irradiance that reaches the Field Segment surface in the surface area close to the module array (within 1 row width of each module).\t\nSurface Reflected Irradiance after Albedo\tThe irradiance reflected off the surface area close to the module array.\t\nConversion from Surface Area to Collector Area\tThe surface-reflected irradiance normalized to the collector area. (The surface-reflected irradiance is multiplied by the ratio between the surface area and the collector area). This is what the irradiance would be if all surface reflected light was concentrated on the rear side of the modules.\t\nSurface Irradiance in Collector Plane\tThe amount of surface-reflected light captured by the rear side of the modules.\t\nSky Diffuse\tThe amount of diffuse irradiance incident on the rear side of the modules, including horizon brightening and reflected irradiance from the modules in the row behind.\t\nBeam Effective\tThe amount of direct irradiance incident on the rear side of the modules, including beam and circumsolar components.\t\nTotal Unshaded Irradiance on Rear Side\tThe amount of irradiance incident on the rear side of the modules before Rear Shading Factor is applied. This sums Surface Irradiance in the Collector Plane, Sky Diffuse, and Beam Effective components.\t\nShaded Irradiance on Rear Side\tThe amount of irradiance incident on the rear side of the modules after Rear Shading Factor is applied.\t\nTotal Rear Collector Irradiance\tThe amount of irradiance incident on the rear side of the modules after Rear Shading Factor is applied (identical to Shaded Irradiance on Rear Side).\t\nEffective Rear Collector Irradiance\tThe amount of irradiance incident on the rear side of the modules after Rear Shading Factor and Bifaciality Factor are applied. This is the effective amount of irradiance available to the rear cells.\t\nTotal Collector Irradiance\tTotal annual irradiance available to the module in the array (averaged across all module and Field Segments).\t\nOutput after Rear Mismatch\tEnergy output by the modules, including stringing, mismatch from the electrical simulation, and rear mismatch effects (specified in the Condition Set).\t\nRelated articles\nHourly Production Report CSV \nDaily Average Production Table in Production Report \nShade Reports \nStep-by-Step Guide: Create a Report Template \nMaximum Allowable Design Size",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Production Report Summary – HelioScope\n\n![Avatar](https://help.aurorasolar.com/system/photos/361916122274/profile_image_425341496054_995124.png)\n\nMike Pulumbarit\n\n### **In This Article:**\n\n*   [Overview of Production Report Layout](https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary#overview)\n*   [Glossary of Terms](https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary#h_01GYX9559AAJZWV1ACKZASX7XE)\n\n## Overview of Production Report Layout\n\nA detailed Report is available for each completed Simulation:\n\nA. Click the orange PDF button to download a printable PDF report\n\nB. Hourly results can be downloaded in CSV format \n\nC. Summary metrics, including energy production, performance ratio, and kWh/kWp\n\nD. Project location is shown overhead\n\nE. Monthly production values\n\nF. Chart shows loss factors graphically\n\nG. Shows total losses at each step of the irradiance for the front of the modules\n\nH. Shows total losses at each step of the irradiance for the rear of the modules (**Bifacial Only**)\n\nI. Shows total losses at each step of the energy calculations\n\nJ. Records of the Condition Set assumptions\n\nK. Production probability graph (**Pro & Enterprise Plan Only**)\n\nL. Production probability table derived from Condition Set assumptions (**Pro & Enterprise Plan Only**)\n\nM. Details on electrical design assumptions\n\nN. Details on mechanical layout and module orientation\n\nO. Bill of materials for the design, including module, wire, and inverter quantities\n\n![](https://help-center.helioscope.com/hc/article_attachments/42625134351507)\n\n## Glossary of Terms\n\n**Summary Metrics:**\n\n|     |     |\n| --- | --- |\n| Production | The total energy generated during the simulation, in MWh or GWh |\n| Performance Ratio | Performance Ratio (PR) shows the percentage of total potential energy for the array that is converted to AC energy. <br><br>Mathematically, the PR is defined in the following formula:<br><br>![](https://help-center.helioscope.com/hc/article_attachments/16658825187987)  <br>In the report above we find the following values:<br><br>*   Energy to Grid: 98,619.3 kWh<br>*   DC Nameplate: 57.5 kW<br>*   POA Irradiance: 2,069.3 kWh/m2<br><br>We can calculate the performance ratio as 98,619.3 / (2069.3 \\* 57.5) = 82.9% <br><br>_Note: rounding in POA Irradiance and DC nameplate can cause slight rounding errors in the calculation. To get the full POA irradiance value, you would need to use the_ [_hourly CSV export_](https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV)_. To get full DC nameplate multiply module count by module wattage._   <br>Shading will reduce the PR, since it reduces the AC power, but does not reduce the POA irradiance.  However, differences in orientation angle will have very little effect on PR, since the POA irradiance will change with the module orientation.  <br><br>\\* STC stands for Standard Test Conditions. These are measured under lab conditions of 1000W per sq meter of irradiance and 25 degree C. |\n| kWh/kWp | The total simulation energy generation divided by the system DC nameplate power. |\n\n**Production Metrics**\n\n|     |     |\n| --- | --- |\n| Annual Global Horizontal Irradiance | The total irradiance that will fall on a flat plane at the location of the array.  This is aggregated directly from the weather file. |\n| POA Irradiance | The total irradiance in the plane of the modules, accounting for tilt and azimuth angles.  This is averaged across all modules in the array. |\n| Shaded Irradiance | The total irradiance accounting for all shading (from horizon, row-to-row, and obstruction) |\n| Irradiance after Reflection | The total irradiance after accounting for reflection off the surface of the module (i.e. IAM reflection). |\n| Irradiance after Soiling | Irradiance after module soiling is accounted for.  Note that soiling assumptions are made in the Condition Set. |\n| Total Collector Irradiance | The total annual irradiance available to the modules in the array.  This is averaged across all modules. |\n| Nameplate | The maximum potential power of the array, defined as the total collector irradiance multiplied by the system nameplate power. |\n| Output at Irradiance Levels | The total energy output by the modules, after accounting for low-light effects and module IV curve distortions. More details on [Output at Irradiance available here.](https://help-center.helioscope.com/hc/en-us/articles/8198927760147-Output-at-Irradiance) |\n| Output at Cell Temperature | The total output of the modules, factoring in the temperature effects on the IV curves.  This is the sum of the modules at their maximum power points. |\n| Output After Mismatch | The total energy output of the modules, factoring in all system constraints (e.g. series & parallel mismatch, voltage drop, etc.). |\n| Optimizer Output | If DC optimizers are present, this shows the total output of the optimizers, factoring in their efficiency curves and principles of operation. |\n| Optimal DC Output | The total energy available energy of the DC system, accounting for all wire resistive losses. |\n| Constrained DC Output | The total DC energy after accounting for inverter voltage and power limits. More details about [clipping and Constrained DC Output available here](https://help-center.helioscope.com/hc/en-us/articles/8536855533075-Troubleshoot-Clipping-Losses) |\n| Inverter Output | The total AC energy output from the inverters, taking into account inverter performance losses. |\n| Energy to Grid | The total AC energy output after accounting for AC wire losses to the point of interconnection |\n\n**Bifacial Metrics (only available with** [**Bifacial Modeling**](https://help-center.helioscope.com/hc/en-us/articles/41739863126163-Bifacial-Modules)**)**\n\n|     |     |\n| --- | --- |\n| Global Incident Irradiance on Surface | The irradiance that reaches the Field Segment surface in the surface area close to the module array (within 1 row width of each module). |\n| Surface Reflected Irradiance after Albedo | The irradiance reflected off the surface area close to the module array. |\n| Conversion from Surface Area to Collector Area | The surface-reflected irradiance normalized to the collector area. (The surface-reflected irradiance is multiplied by the ratio between the surface area and the collector area). This is what the irradiance would be if all surface reflected light was concentrated on the rear side of the modules. |\n| Surface Irradiance in Collector Plane | The amount of surface-reflected light captured by the rear side of the modules. |\n| Sky Diffuse | The amount of diffuse irradiance incident on the rear side of the modules, including horizon brightening and reflected irradiance from the modules in the row behind. |\n| Beam Effective | The amount of direct irradiance incident on the rear side of the modules, including beam and circumsolar components. |\n| Total Unshaded Irradiance on Rear Side | The amount of irradiance incident on the rear side of the modules before Rear Shading Factor is applied. This sums Surface Irradiance in the Collector Plane, Sky Diffuse, and Beam Effective components. |\n| Shaded Irradiance on Rear Side | The amount of irradiance incident on the rear side of the modules after Rear Shading Factor is applied. |\n| Total Rear Collector Irradiance | The amount of irradiance incident on the rear side of the modules after Rear Shading Factor is applied (identical to Shaded Irradiance on Rear Side). |\n| Effective Rear Collector Irradiance | The amount of irradiance incident on the rear side of the modules after Rear Shading Factor and Bifaciality Factor are applied. This is the effective amount of irradiance available to the rear cells. |\n| Total Collector Irradiance | Total annual irradiance available to the module in the array (averaged across all module and Field Segments). |\n| Output after Rear Mismatch | Energy output by the modules, including stringing, mismatch from the electrical simulation, and rear mismatch effects (specified in the Condition Set). |\n\n### Related articles\n\n*   [Hourly Production Report CSV](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJPP46DDBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBNC9%2B50BzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJCL2hjL2VuLXVzL2FydGljbGVzLzg1MzY3OTkzMDE1MjMtSG91cmx5LVByb2R1Y3Rpb24tUmVwb3J0LUNTVgY7CFQ6CXJhbmtpBg%3D%3D--ecada196d190afa16470cf1abb26fe5382017e76)\n*   [Daily Average Production Table in Production Report](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJOvtSmOBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBNC9%2B50BzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJZL2hjL2VuLXVzL2FydGljbGVzLzgzMDcxNjY1MjMyODMtRGFpbHktQXZlcmFnZS1Qcm9kdWN0aW9uLVRhYmxlLWluLVByb2R1Y3Rpb24tUmVwb3J0BjsIVDoJcmFua2kH--1e552792d1e8f46c94f2767d31fc690b6c9dc141)\n*   [Shade Reports](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJNiN%2FN0BzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBNC9%2B50BzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSIzL2hjL2VuLXVzL2FydGljbGVzLzgxOTg4NzgwOTM5NzEtU2hhZGUtUmVwb3J0cwY7CFQ6CXJhbmtpCA%3D%3D--081f1114e3a58de367367a07631962b61ac727ce)\n*   [Step-by-Step Guide: Create a Report Template](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJO%2FGBrGBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBNC9%2B50BzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJRL2hjL2VuLXVzL2FydGljbGVzLzg1NDc0MjI3NDg1NjMtU3RlcC1ieS1TdGVwLUd1aWRlLUNyZWF0ZS1hLVJlcG9ydC1UZW1wbGF0ZQY7CFQ6CXJhbmtpCQ%3D%3D--5f70e9c347527ceddfe634d308a0833ebeb2d7e2)\n*   [Maximum Allowable Design Size](https://help-center.helioscope.com/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCJP7TtjDBzoYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCBNC9%2B50BzoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJDL2hjL2VuLXVzL2FydGljbGVzLzg1Mzc3MjkwNzIwMTktTWF4aW11bS1BbGxvd2FibGUtRGVzaWduLVNpemUGOwhUOglyYW5raQo%3D--dad2cde2e9d2497fedd782ba7dd78ff2d5a7467d)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

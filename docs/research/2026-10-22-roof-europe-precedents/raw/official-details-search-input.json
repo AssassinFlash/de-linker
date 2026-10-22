@@ -1,0 +1,6 @@
+{
+  "queries": "site:pnoa.ign.es LiDAR tercera cobertura licencia\nsite:geoportal.gov.pl budynki 3D LoD2 pobieranie\nsite:basemap.at orthofoto Nutzungsbedingungen Open Data\nsite:help.easy-pv.co.uk row spacing flat roof east west\nsite:support.opensolar.com shading accuracy flat roof design report\nsite:manuals.sma.de SDesign visual roof planning flat roof shading load profile",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 6,
+  "languageCode": "en"
+}

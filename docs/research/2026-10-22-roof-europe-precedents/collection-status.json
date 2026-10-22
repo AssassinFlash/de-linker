@@ -1,0 +1,151 @@
+[
+  {
+    "collection": "official-details-search",
+    "id": "Wao4tdqfFbS8Audf3",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:22:10.046Z",
+    "finishedAt": "2026-10-22T09:22:15.869Z",
+    "defaultDatasetId": "DUqKxldJ1r4A0f9tg",
+    "usageTotalUsd": 5e-05,
+    "statusMessage": "Processed 6 queries on 6 pages. Extracted: 16 organicResults, 10 relatedQueries, 6 itemsPushed",
+    "returnedItems": 6,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-final",
+    "id": "tgo7ltkiuAUVG8LiD",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:23:50.177Z",
+    "finishedAt": "2026-10-22T09:24:38.077Z",
+    "defaultDatasetId": "nYgyb86mTKcm3POmX",
+    "usageTotalUsd": 0.004374387935452992,
+    "statusMessage": "Finished! Total 9 requests: 9 succeeded, 0 failed.",
+    "returnedItems": 9,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-geo",
+    "id": "w939akEsOLMazBWMs",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:21:41.750Z",
+    "finishedAt": "2026-10-22T09:21:53.624Z",
+    "defaultDatasetId": "fIWOSxRwJ0sVhgUVk",
+    "usageTotalUsd": 0.00598095176239974,
+    "statusMessage": "Finished! Total 10 requests: 10 succeeded, 0 failed.",
+    "returnedItems": 10,
+    "missingRequestedUrls": [
+      "https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=TU+Delft&rows=1"
+    ]
+  },
+  {
+    "collection": "official-help",
+    "id": "C5Ix1ePDngS20wERs",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:20:37.154Z",
+    "finishedAt": "2026-10-22T09:21:31.485Z",
+    "defaultDatasetId": "vqYMsbJj9jKQaS2ea",
+    "usageTotalUsd": 0.022926697193826236,
+    "statusMessage": "Finished! Total 15 requests: 15 succeeded, 0 failed.",
+    "returnedItems": 15,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-licenses-search",
+    "id": "mX3FTAxNql7Xd8Txs",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:25:58.308Z",
+    "finishedAt": "2026-10-22T09:27:33.310Z",
+    "defaultDatasetId": "tjh5WiLlFRDpk21We",
+    "usageTotalUsd": 0.02255,
+    "statusMessage": "Processed 6 queries on 6 pages. Extracted: 22 organicResults, 4 relatedQueries, 6 itemsPushed",
+    "returnedItems": 6,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-navigation",
+    "id": "cNht3pMKTikrtCOk3",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:23:49.018Z",
+    "finishedAt": "2026-10-22T09:24:03.775Z",
+    "defaultDatasetId": "La2V0PSXEBnDl3gXE",
+    "usageTotalUsd": 0.006761735691789124,
+    "statusMessage": "Finished! Total 5 requests: 5 succeeded, 0 failed.",
+    "returnedItems": 5,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-overview",
+    "id": "KB8fdQF5QTcPNubQf",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:19:41.041Z",
+    "finishedAt": "2026-10-22T09:20:07.470Z",
+    "defaultDatasetId": "fleyTTU3s7t4yCnVs",
+    "usageTotalUsd": 0.0022306576698687343,
+    "statusMessage": "Finished! Total 11 requests: 11 succeeded, 0 failed.",
+    "returnedItems": 11,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-search",
+    "id": "yOn0ibt8uI2Xhf3f7",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:18:54.490Z",
+    "finishedAt": "2026-10-22T09:19:54.085Z",
+    "defaultDatasetId": "ygP7STJZ9gmynujZ3",
+    "usageTotalUsd": 0.054049999999999994,
+    "statusMessage": "Processed 13 queries on 13 pages. Extracted: 73 organicResults, 6 relatedQueries, 13 itemsPushed",
+    "returnedItems": 13,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-system-detail",
+    "id": "dgJXTTKbgB6fWLT5T",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:35:47.671Z",
+    "finishedAt": "2026-10-22T09:35:54.360Z",
+    "defaultDatasetId": "h9mEOTpJc4PUiEpE6",
+    "usageTotalUsd": 0.003112471534475684,
+    "statusMessage": "Finished! Total 5 requests: 5 succeeded, 0 failed.",
+    "returnedItems": 5,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "official-system-method",
+    "id": "oOm29iMITSWT9b5M6",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:34:00.632Z",
+    "finishedAt": "2026-10-22T09:34:27.048Z",
+    "defaultDatasetId": "Y8SRNBmuRA4rJFDL4",
+    "usageTotalUsd": 0.004316827040900788,
+    "statusMessage": "Finished! Total 6 requests: 3 succeeded, 3 failed.",
+    "returnedItems": 3,
+    "missingRequestedUrls": [
+      "https://samrepo.nrelcloud.org/help/battery_storage.html",
+      "https://samrepo.nrelcloud.org/help/battery_dispatch.html",
+      "https://samrepo.nrelcloud.org/help/battery_dispatch_btm.html"
+    ]
+  },
+  {
+    "collection": "official-system-method-search",
+    "id": "cdKs2Q4W5deAUDgmr",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T09:28:22.304Z",
+    "finishedAt": "2026-10-22T09:30:42.290Z",
+    "defaultDatasetId": "g4qYJ3xLAxVPMxBeV",
+    "usageTotalUsd": 0.013549999999999998,
+    "statusMessage": "Processed 4 queries on 4 pages. Extracted: 2 organicResults, 4 relatedQueries, 4 itemsPushed",
+    "returnedItems": 4,
+    "missingRequestedUrls": []
+  }
+]

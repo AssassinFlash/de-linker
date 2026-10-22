@@ -1,0 +1,56 @@
+{
+  "startUrls": [
+    {
+      "url": "https://support.opensolar.com/hc/en-us/articles/12382458532751-How-to-Design-Dual-tilt-East-West-Systems"
+    },
+    {
+      "url": "https://support.opensolar.com/hc/en-us/articles/13251322728975-How-to-design-in-Manual-mode"
+    },
+    {
+      "url": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/introduction-to-quick-roof-design-mode"
+    },
+    {
+      "url": "https://help.easy-pv.co.uk/books/buildings-and-roofs/page/choosing-a-design-mode"
+    },
+    {
+      "url": "https://help-center.helioscope.com/hc/en-us/articles/7899937559443-Shade-Modeling"
+    },
+    {
+      "url": "https://help-center.helioscope.com/hc/en-us/articles/8549032764947-Report-Editor-Widget-Glossary"
+    },
+    {
+      "url": "https://help-center.helioscope.com/hc/en-us/articles/8536799301523-Hourly-Production-Report-CSV"
+    },
+    {
+      "url": "https://help-center.helioscope.com/hc/en-us/articles/8198806782483-Production-Report-Summary"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14333266827.html"
+    },
+    {
+      "url": "https://k2-systems.com/en/knowledge-training/tutorials/"
+    },
+    {
+      "url": "https://www.data.gov.uk/dataset/cf3f1137-c12b-44a1-a835-e80fe4a60b92/lidar-composite-digital-surface-model-dsm-1m"
+    },
+    {
+      "url": "https://www.kartverket.no/api-og-data/terrengdata"
+    },
+    {
+      "url": "https://developers.google.com/maps/documentation/solar/methodology"
+    },
+    {
+      "url": "https://shop.krannich-solar.com/de-de/Montagesysteme"
+    },
+    {
+      "url": "https://www.solar-planit.com/en/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 15,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 4
+}

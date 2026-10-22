@@ -1,0 +1,32 @@
+{
+  "startUrls": [
+    {
+      "url": "https://samrepo.nrelcloud.org/help/battery_storage.html"
+    },
+    {
+      "url": "https://samrepo.nrelcloud.org/help/battery_dispatch.html"
+    },
+    {
+      "url": "https://samrepo.nrelcloud.org/help/battery_dispatch_btm.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/index.html"
+    },
+    {
+      "url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1"
+    },
+    {
+      "url": "https://basemap.at/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 6,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "script,style,noscript",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 4
+}

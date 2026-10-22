@@ -1,0 +1,5 @@
+{
+  "queries": "site:pdok.nl \"3D Basisvoorziening\" \"CC\"\nsite:basemap.at \"Nutzungsbedingungen\" \"CC\"\nsite:pnoa.ign.es \"licencia\"\nsite:ign.fr \"BD ORTHO\" \"licence\"\nsite:gov.uk \"LIDAR Composite Digital Surface\" \"Open Government\"\nsite:kartverket.no hoydedata \"CC BY\"",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 4
+}

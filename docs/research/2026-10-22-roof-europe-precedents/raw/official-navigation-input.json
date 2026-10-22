@@ -1,0 +1,29 @@
+{
+  "startUrls": [
+    {
+      "url": "https://easy-pv.co.uk/"
+    },
+    {
+      "url": "https://k2-systems.com/en/"
+    },
+    {
+      "url": "https://shop.krannich-solar.com/de-de/Montagesysteme"
+    },
+    {
+      "url": "https://www.solar-planit.com/en/"
+    },
+    {
+      "url": "https://www.memodo.de/m/werkzeuge/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 5,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "script,style,noscript",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 3
+}

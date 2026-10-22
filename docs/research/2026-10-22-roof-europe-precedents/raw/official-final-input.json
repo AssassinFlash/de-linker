@@ -1,0 +1,38 @@
+{
+  "startUrls": [
+    {
+      "url": "https://help.easy-pv.co.uk/books/faqs/page/how-can-i-model-an-east-west-panel-layout"
+    },
+    {
+      "url": "https://help.easy-pv.co.uk/books/getting-started/page/embedding-speedy-pv-into-your-website"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14363989771.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14363985419.html"
+    },
+    {
+      "url": "https://pnoa.ign.es/"
+    },
+    {
+      "url": "https://www.geoportal.gov.pl/pl/dane/inne-dane/modele-3d-budynkow/"
+    },
+    {
+      "url": "https://basemap.at/orthofoto/"
+    },
+    {
+      "url": "https://support.opensolar.com/hc/en-us/articles/12382460685455-How-OpenSolar-Models-Battery-Energy-Storage"
+    },
+    {
+      "url": "https://api.pdok.nl/kadaster/3d-basisvoorziening/ogc/v1/collections/basisbestand_gebouwen/items?bbox=4.37,51.99,4.38,52.00&limit=1"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 9,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 4
+}

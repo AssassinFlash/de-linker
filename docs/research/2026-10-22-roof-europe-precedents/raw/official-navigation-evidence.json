@@ -1,0 +1,1816 @@
+[
+  {
+    "url": "https://k2-systems.com/en/",
+    "crawl": {
+      "loadedUrl": "https://k2-systems.com/en/",
+      "loadedTime": "2026-10-22T09:23:53.489Z",
+      "referrerUrl": "https://k2-systems.com/en/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 164907,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "0f839ab9d0e5ea6631b37bc250375b44a0bfcb1b588f5ae9f4676f3005a4fb44",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://base.k2-systems.com/",
+        "text": "K2 Base",
+        "ancestors": [
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "a:text-xs text-darkGrey mr-6 hover:text-red"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "div:inline-flex items-center",
+          "a:text-red hover:text-red items-center mr-6"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions-category/flat-roof-systems/",
+        "text": "Flat Roof Systems",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/bitumen-roofing-flat-roof/",
+        "text": "Bitumen roofing",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-106879",
+          "a:withSubSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/bitumen-roofing-flat-roof/",
+        "text": "Bitumen roofing",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden sm:hidden lvl-3 child-66425",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/membrane-roofing/",
+        "text": "Membrane roofing",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-106879",
+          "a:withSubSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/membrane-roofing/",
+        "text": "Membrane roofing",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden sm:hidden lvl-3 child-66422",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/concrete-roofs/",
+        "text": "Concrete roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-106879",
+          "a:withSubSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/concrete-roofs/",
+        "text": "Concrete roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden sm:hidden lvl-3 child-66423",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/k2-greenroof-vento/",
+        "text": "K2 GreenRoof Vento System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-3 child-66423",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/green-roofs-gravel-roofs/",
+        "text": "Green roofs/gravel roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-106879",
+          "a:withSubSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/green-roofs-gravel-roofs/",
+        "text": "Green roofs/gravel roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden sm:hidden lvl-3 child-66421",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/k2-greenroof-vento/",
+        "text": "K2 GreenRoof Vento System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-3 child-66421",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/k2-greenroof-2-0/",
+        "text": "K2 GreenRoof 2.0 System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-3 child-66421",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions-category/pitched-roof-systems/",
+        "text": "Pitched Roof Systems",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/tiled-roof/",
+        "text": "Tiled roof",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-10104",
+          "a:withSubSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/tiled-roof/",
+        "text": "Tiled roof",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden sm:hidden lvl-3 child-66420",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/bitumen-roofing-pitched-roofs/",
+        "text": "Bitumen roofing",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-10104",
+          "a:withSubSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/bitumen-roofing-pitched-roofs/",
+        "text": "Bitumen roofing",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden sm:hidden lvl-3 child-66426",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/foil-roof/",
+        "text": "Foil roof",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-10104",
+          "a:withSubSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/foil-roof/",
+        "text": "Foil roof",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden sm:hidden lvl-3 child-100520",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/fall-protection-flat-roof/",
+        "text": "Fall protection flat roof",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2 hidden lvl-2 child-97401",
+          "a:withSubSubMenu  hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/k2-greenroof-2-0/",
+        "text": "More",
+        "ancestors": [
+          "div:flex",
+          "div:basis-6/12",
+          "div:relative group",
+          "img:w-full",
+          "div:absolute w-full h-full left-0 top-0 flex items-center justify-center opacity-0 transition-opacity duration-300 hover:opa",
+          "a:bttn bttn-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/k2-greenroof-2-0/",
+        "text": "More",
+        "ancestors": [
+          "div:basis-4/12 border-l border-silverGrey pl-8 hidden lg:block extraMenuElement",
+          "div:flex",
+          "div:basis-6/12",
+          "p:ml-6 mr-6 align-top",
+          "br:",
+          "a:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/digital-services/k2-base/",
+        "text": "K2 Base",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/commercial-industry/",
+        "text": "Commercial-/Industry Roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://base.k2-systems.com",
+        "text": "K2 Base",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:items-center mb-2 flex",
+          "a:text-xs text-darkGrey ml-3"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:flex items-center mb-2",
+          "a:text-xs text-red ml-3"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions-category/flat-roof-systems/",
+        "text": "Flat roofs",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "main:mt-20 page lg:mt-40",
+          "section:mt-12 lg:mt-32 -mx-4 lg:-mx-8 grid grid-cols-2 gap-y-8 lg:grid-cols-3 xl:flex xl:items-start page--section-icon-links",
+          "a:block xl:flex-1 border-l border-silverGrey ml-4 xl:ml-8 px-4 xl:px-8 group"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions-category/pitched-roof-systems/",
+        "text": "Pitched roofs",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "main:mt-20 page lg:mt-40",
+          "section:mt-12 lg:mt-32 -mx-4 lg:-mx-8 grid grid-cols-2 gap-y-8 lg:grid-cols-3 xl:flex xl:items-start page--section-icon-links",
+          "a:block xl:flex-1 border-l border-silverGrey ml-4 xl:ml-8 px-4 xl:px-8 group"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/digital-services/k2-base/",
+        "text": "",
+        "ancestors": [
+          "main:mt-20 page lg:mt-40",
+          "div:dynamic-content-article page--section-wysiwyg",
+          "div:",
+          "div:",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/company/news/new-interface-between-k2-base-and-aurora-solar-design-mode/",
+        "text": "New Interface Between K2 Base and Aurora Solar Design Mode",
+        "ancestors": [
+          "main:mt-20 page lg:mt-40",
+          "section:mt-28 -mx-4 lg:-mx-8 lg:mt-56 overflow-hidden page--section-news relative",
+          "div:flex mt-10 items-start lg:mt-20 overflow-x-scroll no-scrollbar drag-scroll",
+          "div:basis-10/12 lg:basis-[31%] min-h-[290px] lg:min-h-[320px] inline-flex flex-col justify-between flex-shrink-0 border-l bo",
+          "div:w-8/12",
+          "a:mt-3 block group-hover:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/company/news/tool-free-rail-connectors-for-dome-6-xpress-and-singlerail-systems/",
+        "text": "Tool-free rail connectors for Dome 6 Xpress and SingleRail Systems",
+        "ancestors": [
+          "main:mt-20 page lg:mt-40",
+          "section:mt-28 -mx-4 lg:-mx-8 lg:mt-56 overflow-hidden page--section-news relative",
+          "div:flex mt-10 items-start lg:mt-20 overflow-x-scroll no-scrollbar drag-scroll",
+          "div:basis-10/12 lg:basis-[31%] min-h-[290px] lg:min-h-[320px] inline-flex flex-col justify-between flex-shrink-0 border-l bo",
+          "div:w-8/12",
+          "a:mt-3 block group-hover:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/company/news/k2-greenroof-2-0-faster-pv-installation-on-green-roofs/",
+        "text": "K2 GreenRoof 2.0: Faster PV Installation on Green Roofs",
+        "ancestors": [
+          "main:mt-20 page lg:mt-40",
+          "section:mt-28 -mx-4 lg:-mx-8 lg:mt-56 overflow-hidden page--section-news relative",
+          "div:flex mt-10 items-start lg:mt-20 overflow-x-scroll no-scrollbar drag-scroll",
+          "div:basis-10/12 lg:basis-[31%] min-h-[290px] lg:min-h-[320px] inline-flex flex-col justify-between flex-shrink-0 border-l bo",
+          "div:w-8/12",
+          "a:mt-3 block group-hover:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/product-solutions/",
+        "text": "Find a mounting system: The right system for roofs, façades, open spaces and carports",
+        "ancestors": [
+          "main:mt-20 page lg:mt-40",
+          "section:pt-28 lg:pt-44 page--section-image-links",
+          "div:-mx-4 lg:mx-0 overflow-x-scroll lg:overflow-x-visible no-scrollbar mt-8 lg:mt-20",
+          "div:flex items-start gap-x-0 lg:gap-x-8 pl-4 lg:pl-0",
+          "div:group basis-11/12 flex-shrink-0 lg:flex-shrink pr-4 lg:pr-0",
+          "a:flex items-center justify-between border-l border-silverGrey pl-4 lg:pl-8 mt-8"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/register?utm_referrer=https%3A%2F%2Fk2-systems.com%2F",
+        "text": "",
+        "ancestors": [
+          "main:mt-20 page lg:mt-40",
+          "section:pt-28 lg:pt-44 page--section-image-links",
+          "div:-mx-4 lg:mx-0 overflow-x-scroll lg:overflow-x-visible no-scrollbar mt-8 lg:mt-20",
+          "div:flex items-start gap-x-0 lg:gap-x-8 pl-4 lg:pl-0",
+          "div:group basis-11/12 flex-shrink-0 lg:flex-shrink pr-4 lg:pr-0",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/register?utm_referrer=https%3A%2F%2Fk2-systems.com%2F",
+        "text": "Get started straight away: planning, training and services in MyK2",
+        "ancestors": [
+          "main:mt-20 page lg:mt-40",
+          "section:pt-28 lg:pt-44 page--section-image-links",
+          "div:-mx-4 lg:mx-0 overflow-x-scroll lg:overflow-x-visible no-scrollbar mt-8 lg:mt-20",
+          "div:flex items-start gap-x-0 lg:gap-x-8 pl-4 lg:pl-0",
+          "div:group basis-11/12 flex-shrink-0 lg:flex-shrink pr-4 lg:pr-0",
+          "a:flex items-center justify-between border-l border-silverGrey pl-4 lg:pl-8 mt-8"
+        ]
+      },
+      {
+        "href": "https://outlook.office365.com/mail/",
+        "text": "Employee login",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:flex flex-col lg:flex-row",
+          "div:basis-1/6 mr-4",
+          "ul:border-l border-silverGrey lg:border-none pl-6 lg:pl-0 ml-3 lg:ml-0 my-4 lg:my-0 hidden lg:block",
+          "li:mb-2 lg:mb-1",
+          "a:text-darkGrey"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": ""
+      },
+      {
+        "tag": "h4",
+        "text": ""
+      },
+      {
+        "tag": "h1",
+        "text": "Connecting Strength"
+      },
+      {
+        "tag": "h3",
+        "text": "We are your strong connection for the energy transition!"
+      },
+      {
+        "tag": "h3",
+        "text": "Brilliant digital."
+      },
+      {
+        "tag": "h5",
+        "text": "K2 Base"
+      },
+      {
+        "tag": "h5",
+        "text": "K2 Kai"
+      },
+      {
+        "tag": "h5",
+        "text": "MyK2 Projects"
+      },
+      {
+        "tag": "h5",
+        "text": "K2 DocuApp"
+      },
+      {
+        "tag": "h5",
+        "text": "MyK2RoofHook"
+      },
+      {
+        "tag": "h3",
+        "text": "Our distribution partners and locations"
+      },
+      {
+        "tag": "h3",
+        "text": "Our Vision"
+      },
+      {
+        "tag": "h2",
+        "text": "News"
+      },
+      {
+        "tag": "h3",
+        "text": "Sustainability in Numbers​"
+      },
+      {
+        "tag": "h3",
+        "text": "What's next?"
+      },
+      {
+        "tag": "h3",
+        "text": "Stay updated: New features, updates & more"
+      }
+    ],
+    "note": "Public HTML parsed locally; not a rendered or logged-in interactive test. Full source retained in original Apify dataset."
+  },
+  {
+    "url": "https://easy-pv.co.uk/",
+    "crawl": {
+      "loadedUrl": "https://easy-pv.co.uk/",
+      "loadedTime": "2026-10-22T09:23:53.583Z",
+      "referrerUrl": "https://easy-pv.co.uk/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 7780,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "650220a3b3ff958899faf965346406b40bd82b99534a66fee70b2e372fe09ba9",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://cal.com/easy-pv/",
+        "text": "sign up for training sessions",
+        "ancestors": [
+          "div:div-block-21",
+          "div:",
+          "div:faq-question w-dropdown",
+          "nav:dropdown-list w-dropdown-list",
+          "div:faq-answer",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h3",
+        "text": "Say hello to"
+      },
+      {
+        "tag": "h1",
+        "text": "Speedy PV"
+      },
+      {
+        "tag": "h3",
+        "text": "Your industrious lead generation tool for solar"
+      }
+    ],
+    "note": "Public HTML parsed locally; not a rendered or logged-in interactive test. Full source retained in original Apify dataset."
+  },
+  {
+    "url": "https://shop.krannich-solar.com/de-de/Montagesysteme",
+    "crawl": {
+      "loadedUrl": "https://shop.krannich-solar.com/de-de/Montagesysteme",
+      "loadedTime": "2026-10-22T09:23:56.511Z",
+      "referrerUrl": "https://shop.krannich-solar.com/de-de/Montagesysteme",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 789172,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "032267c1cd8dee138da91777b7962f75079b326f4193a62c674bc53a7ade16c1",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://shop.krannich-solar.com/de-de/Services/Auslegungstools",
+        "text": "Auslegungstools",
+        "ancestors": [
+          "div:row g-0 align-items-center justify-content-end",
+          "div:col-auto d-none d-lg-block",
+          "div:dropdown",
+          "ul:dropdown-menu list-unstyled",
+          "li:header-service-menu-item",
+          "a:header-service-menu-link"
+        ]
+      },
+      {
+        "href": "https://shop.krannich-solar.com/de-de/Zubehoer/Werkzeug",
+        "text": "Werkzeug",
+        "ancestors": [
+          "div:dropdown-menu container full-width-bg",
+          "div:row",
+          "div:col-3 e-navigation-flyout-col",
+          "div:col foodle",
+          "div:navigation-flyout-categories flex-column is-level-0",
+          "a:nav-item nav-item-325f9daeeef0ba7d8f27d396b41bd881 nav-link nav-item-325f9daeeef0ba7d8f27d396b41bd881-link navigation-fl"
+        ]
+      },
+      {
+        "href": "https://base.k2-systems.com/#/dashboard",
+        "text": "K2 Base",
+        "ancestors": [
+          "div:cms-block-container ",
+          "div:cms-block-container-row row cms-row ",
+          "div:col-12",
+          "div:cms-element-text",
+          "p:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Montagesysteme"
+      },
+      {
+        "tag": "h3",
+        "text": "Neu im Portfolio!"
+      },
+      {
+        "tag": "h2",
+        "text": "Filter"
+      },
+      {
+        "tag": "h3",
+        "text": "Veranstaltungen"
+      },
+      {
+        "tag": "h2",
+        "text": "4Tile Concrete Galvanized"
+      },
+      {
+        "tag": "h2",
+        "text": "4Tile Concrete Grey"
+      },
+      {
+        "tag": "h2",
+        "text": "4Tile Concrete Red"
+      },
+      {
+        "tag": "h2",
+        "text": "Adapter plate aluminium M10"
+      },
+      {
+        "tag": "h2",
+        "text": "Adapter plate aluminium M12"
+      },
+      {
+        "tag": "h2",
+        "text": "AddOn 22/25"
+      },
+      {
+        "tag": "h2",
+        "text": "AddOn 30"
+      },
+      {
+        "tag": "h2",
+        "text": "AddOn XS"
+      },
+      {
+        "tag": "h2",
+        "text": "Alpha PV-Clip"
+      },
+      {
+        "tag": "h2",
+        "text": "BasicClip CSM Adapter"
+      },
+      {
+        "tag": "h2",
+        "text": "BasicClip für BasicRail"
+      },
+      {
+        "tag": "h2",
+        "text": "BasicRail 36; 4,80 m"
+      },
+      {
+        "tag": "h2",
+        "text": "BlackCover SingleRail 36"
+      },
+      {
+        "tag": "h2",
+        "text": "BlackCover SingleRail 50"
+      },
+      {
+        "tag": "h2",
+        "text": "Blitzschutzklemme 8 mm Set"
+      },
+      {
+        "tag": "h2",
+        "text": "Bohrschablone für das PerfoRail M-System"
+      },
+      {
+        "tag": "h2",
+        "text": "BRCLAMP"
+      },
+      {
+        "tag": "h2",
+        "text": "Climber 36/50 M10 für Dachanbindung"
+      },
+      {
+        "tag": "h2",
+        "text": "Sunny Deals - Exklusive Angebote"
+      },
+      {
+        "tag": "h2",
+        "text": "Sunny Deals - Exklusive Angebote"
+      },
+      {
+        "tag": "h2",
+        "text": "Über PV-Montagesysteme"
+      },
+      {
+        "tag": "h3",
+        "text": "Flachdachsysteme"
+      },
+      {
+        "tag": "h3",
+        "text": "Bei Fragen, fragen"
+      },
+      {
+        "tag": "h3",
+        "text": "Schrägdachsysteme"
+      },
+      {
+        "tag": "h4",
+        "text": "Speziallösungen für Metall- & Trapezblechdächer"
+      },
+      {
+        "tag": "h3",
+        "text": "Fassadensysteme"
+      },
+      {
+        "tag": "h3",
+        "text": "Freiflächen & Carports"
+      },
+      {
+        "tag": "h3",
+        "text": "Dachplatten"
+      },
+      {
+        "tag": "h3",
+        "text": "Zubehör für Montagesysteme"
+      },
+      {
+        "tag": "h3",
+        "text": "PV-Unterkonstruktionen planen mit K2 Base"
+      },
+      {
+        "tag": "h5",
+        "text": "Versandtermin ermitteln"
+      }
+    ],
+    "note": "Public HTML parsed locally; not a rendered or logged-in interactive test. Full source retained in original Apify dataset."
+  },
+  {
+    "url": "https://www.memodo.de/m/werkzeuge/",
+    "crawl": {
+      "loadedUrl": "https://www.memodo.de/m/werkzeuge/",
+      "loadedTime": "2026-10-22T09:23:58.242Z",
+      "referrerUrl": "https://www.memodo.de/m/werkzeuge/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 17769,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "htmlSha256": "b82634e990b2f4a8fdacda444b8d1db6fd67e1e1bd23fab9f1f78b1793fdbef9",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://www.memodo.de/account/login/",
+        "text": "",
+        "ancestors": [
+          "div:header__inner",
+          "div:header__tools",
+          "ul:header-tools",
+          "li:header-tools__item header-tool header-tool__logged-out",
+          "div:header-tool__icon",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/account/login/",
+        "text": "",
+        "ancestors": [
+          "li:header-navigation__tools",
+          "div:header-navigation-tools",
+          "ul:header-tools",
+          "li:header-tools__item header-tool header-tool__logged-out",
+          "div:header-tool__icon",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Werkzeuge",
+        "ancestors": [
+          "li:header-navigation__item navigation-item  navigation-item--has-subpages",
+          "div:navigation-item__panel navigation-panel",
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "a:navigation-navigation-panel-group-list--922"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Übersicht",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:navigation-panel-group__self",
+          "a:navigation-Werkzeuge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Produkt-Kataloge",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Produkt-Kataloge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/",
+        "text": "Vergleiche & Freigabelisten",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Vergleiche & Freigabelisten"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/uebersicht-foerderungen/",
+        "text": "Förderübersicht",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Förderübersicht"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Alle Werkzeuge entdecken",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Alle Werkzeuge entdecken"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/unabhaengigkeitsrechner/",
+        "text": "Unabhängigkeitsrechner",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Unabhängigkeitsrechner"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Werkzeuge",
+        "ancestors": [
+          "li:header-navigation__item navigation-item  navigation-item--has-subpages",
+          "div:navigation-item__panel navigation-panel",
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "a:navigation-navigation-panel-group-list--11892"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Übersicht",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:navigation-panel-group__self",
+          "a:navigation-Werkzeuge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/#c41249",
+        "text": "Gewerbespeicher-Vergleich",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Gewerbespeicher-Vergleich"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/#c41257",
+        "text": "Gewerbewechselrichter-Vergleich",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Gewerbewechselrichter-Vergleich"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Alle Werkzeuge entdecken",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Alle Werkzeuge entdecken"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Werkzeuge",
+        "ancestors": [
+          "li:header-navigation__item navigation-item  navigation-item--has-subpages",
+          "div:navigation-item__panel navigation-panel",
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "a:navigation-navigation-panel-group-list--2242"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Übersicht",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:navigation-panel-group__self",
+          "a:navigation-Werkzeuge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c42494",
+        "text": "Produkt-Kataloge",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Produkt-Kataloge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/#c41295",
+        "text": "Vergleiche & Freigabelisten",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Vergleiche & Freigabelisten"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/uebersicht-foerderungen/#c45968",
+        "text": "Förderübersicht",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Förderübersicht"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Alle Werkzeuge entdecken",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Alle Werkzeuge entdecken"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Werkzeuge",
+        "ancestors": [
+          "li:header-navigation__item navigation-item  navigation-item--has-subpages",
+          "div:navigation-item__panel navigation-panel",
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "a:navigation-navigation-panel-group-list--2258"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Übersicht",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:navigation-panel-group__self",
+          "a:navigation-Werkzeuge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c42497",
+        "text": "Produkt-Kataloge",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Produkt-Kataloge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/wallbox-ladesaeulen-vergleich/",
+        "text": "Wallbox- / Ladesäulen-Vergleich",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Wallbox- / Ladesäulen-Vergleich"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/uebersicht-foerderungen/#c45966",
+        "text": "E-Mobilität Förderung",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-E-Mobilität Förderung"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Alle Werkzeuge entdecken",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Alle Werkzeuge entdecken"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Werkzeuge",
+        "ancestors": [
+          "body:",
+          "header:header",
+          "nav:header__navigation",
+          "ul:header-navigation",
+          "li:header-navigation__item navigation-item navigation-item--active navigation-item--has-subpages",
+          "a:navigation-navigation-panel__6412"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/",
+        "text": "Übersicht",
+        "ancestors": [
+          "ul:header-navigation",
+          "li:header-navigation__item navigation-item navigation-item--active navigation-item--has-subpages",
+          "div:navigation-item__panel navigation-panel",
+          "ul:navigation-panel__groups",
+          "li:navigation-panel__self",
+          "a:navigation-Werkzeuge"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/uebersicht-foerderungen/",
+        "text": "Übersicht Förderungen",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Übersicht Förderungen"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/",
+        "text": "Memodo-Vergleiche & Freigabelisten",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Memodo-Vergleiche & Freigabelisten"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/erfassungsboegen/",
+        "text": "Erfassungsbögen",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Erfassungsbögen"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/ev-leitfaden/",
+        "text": "Wallbox- / Ladesäulen-Leitfaden",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Wallbox- / Ladesäulen-Leitfaden"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/pv-auslegungstools/",
+        "text": "PV-Auslegungstools",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-PV-Auslegungstools"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/unabhaengigkeitsrechner/",
+        "text": "Unabhängigkeitsrechner",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Unabhängigkeitsrechner"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/marktstammdatenregister/",
+        "text": "Marktstammdatenregister",
+        "ancestors": [
+          "ul:navigation-panel__groups",
+          "li:",
+          "div:navigation-panel-group  navigation-panel-group--has-subpages",
+          "ul:navigation-panel-group__list",
+          "li:",
+          "a:navigation-Marktstammdatenregister"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c57647",
+        "text": "1. Memodo Vergleiche & Freigabelisten",
+        "ancestors": [
+          "div:sectionmenu sectionmenu--layout-default",
+          "div:sectionmenu__inner",
+          "div:sectionmenu__links",
+          "ol:sectionmenu__links-list sectionmenu__links-list--unordered",
+          "li:sectionmenu__links-list-item",
+          "a:sectionmenu-item sectionmenu-item--layout-default"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c57660",
+        "text": "2. Wallbox- & Ladesäulen Leitfaden",
+        "ancestors": [
+          "div:sectionmenu sectionmenu--layout-default",
+          "div:sectionmenu__inner",
+          "div:sectionmenu__links",
+          "ol:sectionmenu__links-list sectionmenu__links-list--unordered",
+          "li:sectionmenu__links-list-item",
+          "a:sectionmenu-item sectionmenu-item--layout-default"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c57651",
+        "text": "4. Unabhängigkeitsrechner",
+        "ancestors": [
+          "div:sectionmenu sectionmenu--layout-default",
+          "div:sectionmenu__inner",
+          "div:sectionmenu__links",
+          "ol:sectionmenu__links-list sectionmenu__links-list--unordered",
+          "li:sectionmenu__links-list-item",
+          "a:sectionmenu-item sectionmenu-item--layout-default"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c57656",
+        "text": "6. PV-Auslegungstools",
+        "ancestors": [
+          "div:sectionmenu sectionmenu--layout-default",
+          "div:sectionmenu__inner",
+          "div:sectionmenu__links",
+          "ol:sectionmenu__links-list sectionmenu__links-list--unordered",
+          "li:sectionmenu__links-list-item",
+          "a:sectionmenu-item sectionmenu-item--layout-default"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c57658",
+        "text": "8. Erfassungsbögen",
+        "ancestors": [
+          "div:sectionmenu sectionmenu--layout-default",
+          "div:sectionmenu__inner",
+          "div:sectionmenu__links",
+          "ol:sectionmenu__links-list sectionmenu__links-list--unordered",
+          "li:sectionmenu__links-list-item",
+          "a:sectionmenu-item sectionmenu-item--layout-default"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/#c57659",
+        "text": "9. Übersicht Förderungen",
+        "ancestors": [
+          "div:sectionmenu sectionmenu--layout-default",
+          "div:sectionmenu__inner",
+          "div:sectionmenu__links",
+          "ol:sectionmenu__links-list sectionmenu__links-list--unordered",
+          "li:sectionmenu__links-list-item",
+          "a:sectionmenu-item sectionmenu-item--layout-default"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/",
+        "text": "Memodo Vergleiche & Freigabelisten",
+        "ancestors": [
+          "div:frame frame-default frame-type-mask_card_content frame-layout-0 frame-space-before-none frame-space-after-none frame--di",
+          "div:card-content card-content--size-small card-content--has-image card-content--has-bodytext card-content--has-link card-con",
+          "div:card-content__inner",
+          "div:card-content__text",
+          "div:card-content__header",
+          "a:card-content__header-link"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/",
+        "text": "Zur Übersicht",
+        "ancestors": [
+          "div:frame frame-default frame-type-mask_card_content frame-layout-0 frame-space-before-none frame-space-after-none frame--di",
+          "div:card-content card-content--size-small card-content--has-image card-content--has-bodytext card-content--has-link card-con",
+          "div:card-content__inner",
+          "div:card-content__text",
+          "div:card-content__button",
+          "a:card-content__button-a button-primary-sm-arrow"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/ev-leitfaden/",
+        "text": "Wallbox- & Ladesäulen Leitfaden",
+        "ancestors": [
+          "div:frame frame-default frame-type-mask_card_content frame-layout-0 frame-space-before-none frame-space-after-none frame--di",
+          "div:card-content card-content--size-small card-content--has-image card-content--has-bodytext card-content--has-link card-con",
+          "div:card-content__inner",
+          "div:card-content__text",
+          "div:card-content__header",
+          "a:card-content__header-link"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/ev-leitfaden/",
+        "text": "Zum Leitfaden",
+        "ancestors": [
+          "div:frame frame-default frame-type-mask_card_content frame-layout-0 frame-space-before-none frame-space-after-none frame--di",
+          "div:card-content card-content--size-small card-content--has-image card-content--has-bodytext card-content--has-link card-con",
+          "div:card-content__inner",
+          "div:card-content__text",
+          "div:card-content__button",
+          "a:card-content__button-a button-primary-sm-arrow"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/unabhaengigkeitsrechner/",
+        "text": "Zum Unabhängigkeitsrechner",
+        "ancestors": [
+          "div:col col-xl-4 col-12 background background--grey",
+          "div:background__inner",
+          "div:frame frame-default frame-type-text frame-layout-0 frame-space-before-none frame-space-after-default frame--displaycondi",
+          "div:ce-bodytext",
+          "p:text-center",
+          "a:button-secondary-sm-arrow"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/pv-auslegungstools/",
+        "text": "Jetzt entdecken",
+        "ancestors": [
+          "div:col col-xl-4 col-12 background background--grey",
+          "div:background__inner",
+          "div:frame frame-default frame-type-text frame-layout-0 frame-space-before-none frame-space-after-default frame--displaycondi",
+          "div:ce-bodytext",
+          "p:text-center",
+          "a:button-secondary-sm-arrow"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/erfassungsboegen/",
+        "text": "Zu den Erfassungsbögen",
+        "ancestors": [
+          "div:col col-xl-4 col-12 background background--grey",
+          "div:background__inner",
+          "div:frame frame-default frame-type-text frame-layout-0 frame-space-before-none frame-space-after-default frame--displaycondi",
+          "div:ce-bodytext",
+          "p:text-center",
+          "a:button-secondary-sm-arrow"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/uebersicht-foerderungen/",
+        "text": "Übersicht Förderungen",
+        "ancestors": [
+          "div:frame frame-default frame-type-mask_card_content frame-layout-0 frame-space-before-none frame-space-after-none frame--di",
+          "div:card-content card-content--size-small card-content--has-image card-content--has-bodytext card-content--has-link card-con",
+          "div:card-content__inner",
+          "div:card-content__text",
+          "div:card-content__header",
+          "a:card-content__header-link"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/uebersicht-foerderungen/",
+        "text": "Zur Übersicht",
+        "ancestors": [
+          "div:frame frame-default frame-type-mask_card_content frame-layout-0 frame-space-before-none frame-space-after-none frame--di",
+          "div:card-content card-content--size-small card-content--has-image card-content--has-bodytext card-content--has-link card-con",
+          "div:card-content__inner",
+          "div:card-content__text",
+          "div:card-content__button",
+          "a:card-content__button-a button-primary-sm-arrow"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/memodo-vergleiche-freigabelisten/",
+        "text": "Memodo Vergleiche & Freigabelisten",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/stromspeicher-vergleich/",
+        "text": "Stromspeicher-Vergleich",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/stromspeicher-freigabeliste/",
+        "text": "Stromspeicher-Freigabeliste",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/wallbox-ladesaeulen-vergleich/",
+        "text": "Wallbox- / Ladesäulen-Vergleich",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/ev-leitfaden/",
+        "text": "Wallbox- / Ladesäulen-Leitfaden",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/energiemanagementsysteme/",
+        "text": "Energiemanagementsysteme",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/uebersicht-foerderungen/",
+        "text": "Übersicht Förderungen",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/erfassungsboegen/",
+        "text": "Erfassungsbögen",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/pv-auslegungstools/",
+        "text": "PV-Auslegungstools",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      },
+      {
+        "href": "https://www.memodo.de/m/werkzeuge/unabhaengigkeitsrechner/",
+        "text": "Unabhängigkeitsrechner",
+        "ancestors": [
+          "div:footer__columns-inner",
+          "div:footer__columns-column-4",
+          "div:frame frame-default frame-type-menu_subpages frame-layout-0 frame-space-before-default frame-space-after-default frame--",
+          "ul:pages-list",
+          "li:pages-list__item",
+          "a:pages-list__item-a"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Werkzeuge"
+      },
+      {
+        "tag": "h2",
+        "text": "Memodo Vergleiche & Freigabelisten"
+      },
+      {
+        "tag": "h2",
+        "text": "Wallbox- & Ladesäulen Leitfaden"
+      },
+      {
+        "tag": "h2",
+        "text": "Unabhängigkeitsrechner"
+      },
+      {
+        "tag": "h2",
+        "text": "PV-Auslegungstools"
+      },
+      {
+        "tag": "h2",
+        "text": "Erfassungsbögen"
+      },
+      {
+        "tag": "h2",
+        "text": "Übersicht Förderungen"
+      }
+    ],
+    "note": "Public HTML parsed locally; not a rendered or logged-in interactive test. Full source retained in original Apify dataset."
+  },
+  {
+    "url": "https://www.solar-planit.com/en/",
+    "crawl": {
+      "loadedUrl": "https://app-solar-planit-landing-page.azurewebsites.net/en/solar-planit/",
+      "loadedTime": "2026-10-22T09:24:02.037Z",
+      "referrerUrl": "https://www.solar-planit.com/en/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 310466,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "bc7e16ce8fb89575a1dd03597af2fc83ea1dbfcfed9a55dc50b8540d42d8646a",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://solar-planit.de/solarplanit/html/home",
+        "text": "Login",
+        "ancestors": [
+          "div:elementor-element elementor-element-539120a e-con-full e-flex e-con e-parent",
+          "div:elementor-element elementor-element-2f10d7b e-con-full e-flex e-con e-child",
+          "div:elementor-element elementor-element-d8b4dea e-grid e-con-boxed e-con e-child",
+          "div:e-con-inner",
+          "div:elementor-element elementor-element-729a782 elementor-align-left elementor-hidden-mobile_extra elementor-hidden-mobile e",
+          "a:elementor-button elementor-button-link elementor-size-md elementor-animation-grow"
+        ]
+      },
+      {
+        "href": "https://solar-planit.de/solarplanit/do/registration",
+        "text": "Register",
+        "ancestors": [
+          "div:elementor-element elementor-element-539120a e-con-full e-flex e-con e-parent",
+          "div:elementor-element elementor-element-2f10d7b e-con-full e-flex e-con e-child",
+          "div:elementor-element elementor-element-d8b4dea e-grid e-con-boxed e-con e-child",
+          "div:e-con-inner",
+          "div:elementor-element elementor-element-6546ad9 elementor-align-left elementor-widget elementor-widget-button",
+          "a:elementor-button elementor-button-link elementor-size-md elementor-animation-grow"
+        ]
+      },
+      {
+        "href": null,
+        "text": "Start planning using your PC",
+        "ancestors": [
+          "body:",
+          "div:elementor elementor-247",
+          "div:elementor-element elementor-element-539120a e-con-full e-flex e-con e-parent",
+          "div:elementor-element elementor-element-2f10d7b e-con-full e-flex e-con e-child",
+          "div:elementor-element elementor-element-9fbf6d1 elementor-align-left elementor-hidden-widescreen elementor-hidden-desktop el",
+          "a:elementor-button elementor-size-lg elementor-animation-grow"
+        ]
+      },
+      {
+        "href": "https://solar-planit.de/solarplanit/html/home",
+        "text": "Start planning!",
+        "ancestors": [
+          "body:",
+          "div:elementor elementor-247",
+          "div:elementor-element elementor-element-80f7f60 e-con-full e-flex e-con e-parent",
+          "div:elementor-element elementor-element-e5caaf6 e-con-full elementor-hidden-mobile_extra elementor-hidden-mobile e-flex e-co",
+          "div:elementor-element elementor-element-9852ad0 elementor-fixed elementor-hidden-tablet_extra elementor-hidden-tablet elemen",
+          "a:elementor-button elementor-button-link elementor-size-sm"
+        ]
+      },
+      {
+        "href": "https://www.novotegra.com/en/references/tile-roof/outstanding-design-for-a-residential-building",
+        "text": "More information",
+        "ancestors": [
+          "div:elementor-slides-wrapper elementor-main-swiper swiper",
+          "div:swiper-wrapper elementor-slides",
+          "div:elementor-repeater-item-55773f0 swiper-slide",
+          "div:swiper-slide-inner",
+          "div:swiper-slide-contents",
+          "a:elementor-button elementor-slide-button elementor-size-sm"
+        ]
+      },
+      {
+        "href": "https://www.novotegra.com/en/references/seamed-metal-roof/self-supply-day-care-centre",
+        "text": "More information",
+        "ancestors": [
+          "div:elementor-slides-wrapper elementor-main-swiper swiper",
+          "div:swiper-wrapper elementor-slides",
+          "div:elementor-repeater-item-c84dcd0 swiper-slide",
+          "div:swiper-slide-inner",
+          "div:swiper-slide-contents",
+          "a:elementor-button elementor-slide-button elementor-size-sm"
+        ]
+      },
+      {
+        "href": "https://www.novotegra.com/en/references/flat-roof/solar-power-works-out-for-a-gym",
+        "text": "More information",
+        "ancestors": [
+          "div:elementor-slides-wrapper elementor-main-swiper swiper",
+          "div:swiper-wrapper elementor-slides",
+          "div:elementor-repeater-item-803f0f7 swiper-slide",
+          "div:swiper-slide-inner",
+          "div:swiper-slide-contents",
+          "a:elementor-button elementor-slide-button elementor-size-sm"
+        ]
+      },
+      {
+        "href": "https://www.novotegra.com/en/references/flat-roof/making-light-work-of-rooftop-solar",
+        "text": "More information",
+        "ancestors": [
+          "div:elementor-slides-wrapper elementor-main-swiper swiper",
+          "div:swiper-wrapper elementor-slides",
+          "div:elementor-repeater-item-523c10b swiper-slide",
+          "div:swiper-slide-inner",
+          "div:swiper-slide-contents",
+          "a:elementor-button elementor-slide-button elementor-size-sm"
+        ]
+      },
+      {
+        "href": "https://www.novotegra.com/en/references/trapezoidal-metal-roof/decarbonising-agriculture",
+        "text": "More information",
+        "ancestors": [
+          "div:elementor-slides-wrapper elementor-main-swiper swiper",
+          "div:swiper-wrapper elementor-slides",
+          "div:elementor-repeater-item-5e6dac4 swiper-slide",
+          "div:swiper-slide-inner",
+          "div:swiper-slide-contents",
+          "a:elementor-button elementor-slide-button elementor-size-sm"
+        ]
+      },
+      {
+        "href": "https://www.solar-planit.com/en/news/green-roof-in-landscap/",
+        "text": "Read more",
+        "ancestors": [
+          "div:elementor elementor-247",
+          "div:elementor-element elementor-element-0d89550 e-con-full e-flex e-con e-parent",
+          "div:elementor-element elementor-element-e2c3a1f e-grid e-con-full e-con e-child",
+          "div:elementor-element elementor-element-6c23b81 e-con-full e-flex e-con e-child",
+          "div:elementor-element elementor-element-8671275 elementor-widget elementor-widget-button",
+          "a:elementor-button elementor-button-link elementor-size-sm"
+        ]
+      },
+      {
+        "href": "https://solar-planit.de/solarplanit/",
+        "text": "Start planning",
+        "ancestors": [
+          "body:",
+          "div:elementor elementor-247",
+          "div:elementor-element elementor-element-3cbf159 e-flex e-con-boxed e-con e-parent",
+          "div:e-con-inner",
+          "div:elementor-element elementor-element-8c32875 elementor-align-center elementor-hidden-tablet_extra elementor-hidden-tablet",
+          "a:elementor-button elementor-button-link elementor-size-sm"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "PV system configurationfor free"
+      },
+      {
+        "tag": "h2",
+        "text": "In 5 steps to the result"
+      },
+      {
+        "tag": "h2",
+        "text": "Intuitively through the entire planning process"
+      },
+      {
+        "tag": "h3",
+        "text": "1. Mounting System"
+      },
+      {
+        "tag": "h3",
+        "text": "2. Modules"
+      },
+      {
+        "tag": "h3",
+        "text": "3. Inverter Design"
+      },
+      {
+        "tag": "h3",
+        "text": "4. Documentation"
+      },
+      {
+        "tag": "h3",
+        "text": "5. Webshop"
+      },
+      {
+        "tag": "h2",
+        "text": "Features in detail"
+      },
+      {
+        "tag": "h2",
+        "text": "Take advantage of a wide range of planning options"
+      },
+      {
+        "tag": "h3",
+        "text": "Building detection"
+      },
+      {
+        "tag": "h3",
+        "text": "Planning process"
+      },
+      {
+        "tag": "h3",
+        "text": "Economic efficiency"
+      },
+      {
+        "tag": "h3",
+        "text": "Project completion"
+      },
+      {
+        "tag": "h2",
+        "text": "Projects from all over Europe"
+      },
+      {
+        "tag": "h2",
+        "text": "User experiences with Solar-Planit"
+      },
+      {
+        "tag": "h2",
+        "text": "Also fits to your project!"
+      },
+      {
+        "tag": "h2",
+        "text": "Take your business to the next level!"
+      },
+      {
+        "tag": "h3",
+        "text": "Economic efficiency"
+      },
+      {
+        "tag": "h3",
+        "text": "Safety & reliability"
+      },
+      {
+        "tag": "h3",
+        "text": "Plan individually"
+      },
+      {
+        "tag": "h2",
+        "text": "Your planning project - our expertise"
+      },
+      {
+        "tag": "h2",
+        "text": "News: Software & Company"
+      },
+      {
+        "tag": "h2",
+        "text": "06.10.2026"
+      },
+      {
+        "tag": "h3",
+        "text": "Green roof in landscape"
+      },
+      {
+        "tag": "h2",
+        "text": "09.09.2026"
+      },
+      {
+        "tag": "h3",
+        "text": "Deactivating single modules"
+      },
+      {
+        "tag": "h2",
+        "text": "06.07.2026"
+      },
+      {
+        "tag": "h3",
+        "text": "New project dashboard"
+      },
+      {
+        "tag": "h2",
+        "text": "System configuration - easier than ever!"
+      },
+      {
+        "tag": "h2",
+        "text": "Start planning your first project today!"
+      }
+    ],
+    "note": "Public HTML parsed locally; not a rendered or logged-in interactive test. Full source retained in original Apify dataset."
+  }
+]

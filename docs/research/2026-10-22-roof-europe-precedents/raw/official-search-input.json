@@ -1,0 +1,6 @@
+{
+  "queries": "site:support.opensolar.com flat roof design setbacks row spacing shading\nsite:help.easy-pv.co.uk roof design draw flat roof obstacles\nsite:k2-systems.com K2 Base roof image drawing report flat roof planning\nsite:manuals.sma.de SDesign visual roof planning load profile energy system simulation\nsite:easy-pv.co.uk Speedy PV design modes roof\nsite:help-center.helioscope.com condition sets design field segments shading report\nsite:pdok.nl 3d basisvoorziening CityJSON LoD 2.2 licentie\nsite:swisstopo.admin.ch swissBUILDINGS3D 3.0 roof licence\nsite:gov.uk lidar composite digital surface model England open government licence\nsite:kartverket.no hoydedata laser data license open data\nsite:developers.google.com maps solar data coverage Europe API pricing building insights\nsite:memodo.de werkzeuge auslegungstools K2\nsite:shop.krannich-solar.com Auslegungstools K2 Base",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 7,
+  "languageCode": "en"
+}
