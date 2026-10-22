@@ -14,6 +14,8 @@ use Linker\Commerce\Inquiry\Assessment\Result;
 use Linker\Commerce\Inquiry\Assessment\StructuredMeta;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\NativeTransaction;
+use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\NotificationHold;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
@@ -50,9 +52,9 @@ final class IntakeRelease {
 				if ( ! $registered || ! $email instanceof NewInquiryEmail || ! $order->get_meta( Intake::META ) || ! NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
 					return self::failed();
 				}
-				$job  = 0;
-				$note = 0;
-				wc_transaction_query( 'start' );
+				$job         = 0;
+				$note        = 0;
+				$transaction = new NativeTransaction();
 				try {
 					$now  = microtime( true );
 					$data = array(
@@ -65,13 +67,27 @@ final class IntakeRelease {
 					);
 					StructuredMeta::update( $order, Queue::META, $data );
 					$message = $email->capture( $order );
-					$job     = null === $message ? 0 : ( new JobStore() )->create( $message, $order->get_id() );
+					if ( $message instanceof Message ) {
+						$message = new Message( $message->to, $message->subject, $message->body, $message->headers, $message->attachments, true, $message->category );
+					}
+					$job = null === $message ? 0 : ( new JobStore() )->create( $message, $order->get_id() );
 					if ( $job <= 0 || null === ( new JobStore() )->load( $job ) ) {
 						throw new \RuntimeException( 'intake_notification_capture_failed' );
 					}
 					( new JobStore() )->promote( $job );
-					$action = as_schedule_single_action( max( time() + 2, ( new Throttle() )->next_message_slot( time(), $message, true ) ), Outbox::HOOK, array( $job ), Outbox::GROUP, true );
-					$event  = array(
+					( new JobStore() )->reschedule( $job, max( time() + 2, ( new Throttle() )->next_message_slot( time(), $message, true ) ) );
+					$actions = as_get_scheduled_actions(
+						array(
+							'hook'     => Outbox::HOOK,
+							'args'     => array( $job ),
+							'group'    => Outbox::GROUP,
+							'status'   => 'pending',
+							'per_page' => 1,
+						),
+						'ids'
+					);
+					$action  = 1 === count( $actions ) ? (int) $actions[0] : 0;
+					$event   = array(
 						'at'            => time(),
 						'user'          => get_current_user_id(),
 						'job'           => $job,
@@ -79,7 +95,7 @@ final class IntakeRelease {
 						'previous_hold' => $order->get_meta( NotificationHold::META ),
 						'action'        => $action,
 					);
-					$note   = $order->add_order_note( __( 'Review completed by staff; one internal notification queued.', 'linker-commerce' ), 0, true );
+					$note    = $order->add_order_note( __( 'Review completed by staff; one internal notification queued.', 'linker-commerce' ), 0, true );
 					if ( $action <= 0 || $note <= 0 || ! add_comment_meta( $note, NotificationHold::EVENT, wp_slash( $event ), true ) ) {
 						throw new \RuntimeException( 'intake_notification_schedule_failed' );
 					}
@@ -100,10 +116,10 @@ final class IntakeRelease {
 						}
 					}
 					IntakeStore::save( $state );
-					wc_transaction_query( 'commit' );
+					$transaction->commit();
 					return $event;
 				} catch ( \Throwable $error ) {
-					wc_transaction_query( 'rollback' );
+					$transaction->rollback();
 					wp_cache_delete( IntakeStore::OPTION, 'options' );
 					wp_cache_delete( $job, 'post_meta' );
 					wp_cache_delete( $job, 'posts' );

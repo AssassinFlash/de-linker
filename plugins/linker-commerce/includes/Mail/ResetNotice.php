@@ -14,6 +14,27 @@ use WP_User;
 
 /** Core and Woo retain their key generation, templates and delivery callbacks. */
 final class ResetNotice {
+	/** Native key writers, retained only until their exact original job is accepted.
+	 *
+	 * @var array<int,NativeTransaction>
+	 */
+	private static array $writers = array();
+	/** Definite failed reset producers in this request, never reset keys or message bodies.
+	 *
+	 * @var array<int,true>
+	 */
+	private static array $failed = array();
+	/** Current browser input for a same-request native form re-render.
+	 *
+	 * @var string
+	 */
+	private static string $retry_login = '';
+	/** Whether the native Woo form is being decorated with its retained input.
+	 *
+	 * @var bool
+	 */
+	private static bool $rendering = false;
+
 	/** Current server-native reset operations.
 	 *
 	 * @var array<int,array<string,mixed>>
@@ -24,6 +45,124 @@ final class ResetNotice {
 	 * @var array<string,string>
 	 */
 	private static array $core = array();
+
+	/**
+	 * Native key generation has finished; its database mutation has not started.
+	 *
+	 * @param string $login Actual native resolved login.
+	 * @param string $key Native generated secret, deliberately ignored.
+	 */
+	public static function begin( string $login, #[\SensitiveParameter] string $key ): void {
+		unset( $key );
+		$user = get_user_by( 'login', $login );
+		if ( ! $user instanceof WP_User || ! isset( self::$scopes[ $user->ID ] ) ) {
+			return;
+		}
+		self::$writers[ $user->ID ] = new NativeTransaction();
+		register_shutdown_function(
+			static function (): void {
+				foreach ( array_reverse( self::$writers, true ) as $id => $writer ) {
+					self::finish( (string) ( self::$scopes[ $id ]['key'] ?? '' ), false );
+				}
+			}
+		);
+	}
+
+	/**
+	 * Only an exact server reservation can acknowledge key plus original job.
+	 *
+	 * @param string $scope Opaque server reset reservation.
+	 * @param bool   $accepted Original durable job and AS were accepted.
+	 */
+	public static function finish( string $scope, bool $accepted ): bool {
+		if ( '' === $scope ) {
+			return $accepted;
+		}
+		foreach ( self::$writers as $id => $writer ) {
+			if ( ( self::$scopes[ $id ]['key'] ?? '' ) !== $scope ) {
+				continue;
+			}
+			unset( self::$writers[ $id ] );
+			try {
+				if ( $accepted ) {
+					$writer->commit();
+					unset( self::$failed[ $id ] );
+					return true;
+				}
+				$writer->rollback();
+				// Only a proven live rollback with no job cancels unused mail space.
+				Capacity::cancel_before_side_effect( $scope );
+			} catch ( \Throwable $error ) {
+				try {
+					$writer->rollback();
+				} catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Unknown native commit is never compensated or refunded on a new connection.
+				}
+			}
+			self::$failed[ $id ] = true;
+			unset( self::$scopes[ $id ] );
+			clean_user_cache( $id );
+			return false;
+		}
+		return $accepted;
+	}
+
+	/**
+	 * Woo's reset action otherwise unconditionally reports success after a false mail result.
+	 *
+	 * @param bool      $sent Native mail handoff result.
+	 * @param string    $id Native email ID.
+	 * @param \WC_Email $email Actual native producer.
+	 */
+	public static function woocommerce_result( bool $sent, string $id, \WC_Email $email ): void {
+		unset( $id );
+		if ( $sent || Prepared::is_preview() || ! $email instanceof \WC_Email_Customer_Reset_Password || ! isset( self::$failed[ (int) $email->user_id ] ) ) {
+			return;
+		}
+		self::remember( '' !== self::$retry_login ? self::$retry_login : (string) $email->user_login );
+		wc_add_notice( __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ), 'error' );
+		wp_safe_redirect( wc_lostpassword_url(), 303 );
+		exit;
+	}
+
+	/**
+	 * Preserve only the existing editable username/email field, never keys/passwords.
+	 *
+	 * @param string $login Original native form input.
+	 */
+	public static function remember( string $login ): void {
+		self::$retry_login = sanitize_text_field( $login );
+		\Linker\Commerce\Protection\FormRecovery::save( 'password_reset', array( 'user_login' => self::$retry_login ) );
+	}
+
+	/** Native Woo's existing form markup has no value argument for this one input. */
+	public static function render_begin(): void {
+		$fields = \Linker\Commerce\Protection\FormRecovery::consume( 'password_reset' );
+		$login  = '' !== self::$retry_login ? self::$retry_login : ( $fields['user_login'] ?? '' );
+		if ( '' === $login ) {
+			return;
+		}
+		self::$retry_login = $login;
+		self::$rendering   = true;
+		ob_start();
+	}
+
+	/** Add only native input value; the existing template owns every visual/layout choice. */
+	public static function render_end(): void {
+		if ( ! self::$rendering ) {
+			return;
+		}
+		self::$rendering = false;
+		$html            = (string) ob_get_clean();
+		$processor       = new \WP_HTML_Tag_Processor( $html );
+		while ( $processor->next_tag( array( 'tag_name' => 'INPUT' ) ) ) {
+			if ( 'user_login' === $processor->get_attribute( 'name' ) ) {
+				$processor->set_attribute( 'value', self::$retry_login );
+				break;
+			}
+		}
+		self::$retry_login = '';
+		echo $processor->get_updated_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Existing native Woo template; WordPress's HTML processor escapes the single restored attribute.
+	}
 
 	/**
 	 * Preview the configured templates with a native-length alphanumeric key.
@@ -100,6 +239,10 @@ final class ResetNotice {
 	 * @param int $user Native account.
 	 */
 	private static function cancel( int $user ): void {
+		if ( isset( self::$writers[ $user ] ) ) {
+			self::finish( (string) self::$scopes[ $user ]['key'], false );
+			return;
+		}
 		if ( isset( self::$scopes[ $user ] ) && Capacity::cancel_before_side_effect( self::$scopes[ $user ] ) ) {
 			unset( self::$scopes[ $user ] );
 		}

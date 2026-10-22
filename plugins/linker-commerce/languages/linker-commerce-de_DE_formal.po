@@ -6130,3 +6130,11 @@ msgstr "Verwendungszweck"
 #~ msgstr ""
 #~ "Es wurde keine Bestätigungs-E-Mail versendet. Das Linker-Team antwortet an "
 #~ "die angegebene E-Mail-Adresse."
+
+#: includes/Protection/BusinessCapacity.php
+msgid "Your request has not been saved. We cannot accept new requests on this website right now. Your entries and solution draft are still here. Please try again later or email sales@de-linker.com."
+msgstr "Ihre Anfrage wurde nicht gespeichert. Über diese Website können wir derzeit keine weiteren Anfragen annehmen. Ihre Eingaben und Ihr Lösungsentwurf sind weiterhin vorhanden. Bitte versuchen Sie es später erneut oder schreiben Sie an sales@de-linker.com."
+
+#: includes/Protection/Accounts.php
+msgid "Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com."
+msgstr "Das Zurücksetzen des Passworts ist derzeit nicht möglich. Bitte versuchen Sie es später erneut oder schreiben Sie an sales@de-linker.com."

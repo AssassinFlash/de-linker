@@ -58,7 +58,7 @@ final class ModuleTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$vat          = new VatProfile( new ViesClient() );
+		$vat          = new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() );
 		$this->parts  = array( new Fields( $vat ), new BillingVatField( $vat ), new AddressForm() );
 		$this->module = new Module( '/plugin/linker-commerce.php', new Options(), $this->parts[0], $this->parts[1], $this->parts[2] );
 	}

@@ -21,6 +21,9 @@ use Linker\Commerce\Mail\NotificationHold;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Protection\Allowance;
+use Linker\Commerce\Protection\Business;
+use Linker\Commerce\Contact\Submission;
+use Linker\Commerce\Inquiry\Sender;
 use Linker\Commerce\Protection\BusinessRecord;
 use Linker\Commerce\Protection\Campaign;
 use Linker\Commerce\Protection\Identity;
@@ -584,19 +587,26 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 	/** A crash after the first native save recovers the same full record. */
 	public function test_interrupted_native_save_recovers_original_without_second_debit(): void {
-		$post = $this->post( false, 'contact' );
-		$fail = static function ( WC_Order $order ) use ( $post ): void {
-			if ( $order->get_billing_email() === $post['email'] ) {
-				throw new \Error( 'fixture_interrupted_save' );
+		$post       = $this->post( false, 'contact' );
+		$submission = Submission::from_post( $post );
+		self::assertInstanceOf( Submission::class, $submission );
+		// Failure after Sender confirms its atomic native phase, before Intake
+		// binds that committed record. Before-commit failures have their own
+		// real KILL/rollback cases and cannot pretend to leave a saved record.
+		$result = Business::run(
+			'contact',
+			$post,
+			get_object_vars( $submission ),
+			static function () use ( $submission ): WP_Error {
+				$saved = ( new Sender() )->message( $submission );
+				if ( ! $saved instanceof WC_Order ) {
+					return $saved;
+				}
+				throw new \Error( 'fixture_interrupted_after_confirmed_native_save' );
 			}
-		};
-		add_action( 'woocommerce_after_order_object_save', $fail );
-		try {
-			$result = ( new ContactHandler() )->process( $post );
-		} finally {
-			remove_action( 'woocommerce_after_order_object_save', $fail );
-		}
-		self::assertSame( 'pending', $result );
+		);
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'linker_intake_pending', $result->get_error_code() );
 		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
 		self::assertIsArray( $orders );
 		self::assertCount( 1, $orders );

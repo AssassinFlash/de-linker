@@ -13,6 +13,10 @@ use DateTimeImmutable;
 use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\CustomerOrderEmail;
+use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Mail\Prepared;
+use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Proforma\Document;
 use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Vocabulary\LocaleFormat;
@@ -29,7 +33,10 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 	/**
 	 * Email id.
 	 */
-	public const ID = 'linker_proforma_issued';
+	public const ID       = 'linker_proforma_issued';
+	public const PENDING  = '_linker_proforma_notice_pending';
+	public const ACCEPTED = '_linker_proforma_notice_number';
+	public const JOB      = '_linker_proforma_notice_job';
 
 	/**
 	 * Sets up the email.
@@ -73,7 +80,75 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 			return;
 		}
 		$this->placeholders['{proforma_number}'] = $number;
-		parent::trigger( $order_id, $order );
+		if ( $number === $order->get_meta( self::ACCEPTED ) ) {
+			return;
+		}
+		// The native order and issued PDF are the durable rebuild source.
+		$order->update_meta_data( self::PENDING, 'yes' );
+		$order->save_meta_data();
+		Lock::run(
+			'release-' . $order->get_id(),
+			function () use ( $order_id, $order, $number ): void {
+				$order->read_meta_data( true );
+				if ( $number === $order->get_meta( self::ACCEPTED ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
+					return;
+				}
+				$message = Prepared::capture( fn () => parent::trigger( $order_id, $order ) );
+				if ( null === $message ) {
+					// Native disabled/no-recipient policy explicitly skipped this notice.
+					$order->update_meta_data( self::PENDING, 'no' );
+					$order->update_meta_data( self::ACCEPTED, $number );
+					$order->save_meta_data();
+					return;
+				}
+				$job = ( new JobStore() )->create(
+					$message,
+					0,
+					static function ( int $id ) use ( $order, $number ): void {
+						$order->update_meta_data( self::PENDING, 'no' );
+						$order->update_meta_data( self::ACCEPTED, $number );
+						$order->update_meta_data( self::JOB, (string) $id );
+						$order->save_meta_data();
+						$order->read_meta_data( true );
+						if ( $number !== $order->get_meta( self::ACCEPTED ) || $id !== (int) $order->get_meta( self::JOB ) || 'no' !== $order->get_meta( self::PENDING ) ) {
+							throw new \RuntimeException( 'proforma_notice_readback_failed' );
+						}
+					}
+				);
+				if ( $job > 0 ) {
+					/** This action is documented in Mail\Module::register(). */
+					do_action( Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Existing native Outbox consumer, same original job.
+				}
+			}
+		);
+	}
+
+	/** Rebuild only explicitly pending new notices, never historical held jobs. */
+	public static function recover(): void {
+		$emails = WC()->mailer()->get_emails();
+		$email  = $emails[ self::class ] ?? null;
+		if ( ! $email instanceof self ) {
+			return;
+		}
+		// One critical-pool-sized batch per existing minute recovery heartbeat.
+		$orders = wc_get_orders(
+			array(
+				'limit'      => 64,
+				'orderby'    => 'ID',
+				'order'      => 'ASC',
+				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Bounded native pending-only source query.
+					array(
+						'key'   => self::PENDING,
+						'value' => 'yes',
+					),
+				),
+			)
+		); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Native pending source query supports HPOS and classic storage.
+		foreach ( is_array( $orders ) ? $orders : array() as $order ) {
+			if ( $order->has_status( Statuses::PROFORMA ) ) {
+				$email->trigger( $order->get_id(), $order );
+			}
+		}
 	}
 
 	/**

@@ -46,6 +46,17 @@ final class ProformaIssuedEmailTest extends TestCase {
 		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'en_US' );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( 'PI-2026-0001' );
 		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->andReturn( '1760000000' );
+		$order->allows( 'get_meta' )->with( ProformaIssuedEmail::ACCEPTED )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED )->andReturn( '' );
+		$order->allows( 'update_meta_data' );
+		$order->allows( 'save_meta_data' );
+		$order->allows( 'read_meta_data' );
+		$GLOBALS['wpdb']         = Mockery::mock( \wpdb::class );
+		$GLOBALS['wpdb']->prefix = 'wp_';
+		$GLOBALS['wpdb']->allows( 'prepare' )->andReturn( 'lock' );
+		$GLOBALS['wpdb']->allows( 'get_var' )->andReturn( '1' );
+		WP_Mock::expectFilterAdded( 'pre_wp_mail', static fn (): bool => false, 9, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_log_enabled', static fn (): bool => false );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
 		$this->allow_locale_switch( 'en_US' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_proforma_issued', 'maria@example.test' );

@@ -85,6 +85,7 @@ final class Handler {
 		if ( $order instanceof WP_Error ) {
 			$code = $order->get_error_code();
 			return match ( $code ) {
+				'linker_business_capacity' => 'reception_full',
 				'linker_intake_size' => 'review_size',
 				'linker_intake_full' => 'review_full',
 				'linker_intake_grouped' => 'grouped',

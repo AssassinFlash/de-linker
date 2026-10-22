@@ -82,8 +82,12 @@ final class Business {
 			}
 			$lane = $campaign ? ( $individual ? 'individual' : 'campaign' ) : ( $config->ready() && Intake::verified( $proof, $action, $identity, $id ) ? '' : 'verification' );
 			if ( '' !== $lane ) {
-				return Intake::run( $lane, $action, $id, $fp, $identity, $payload, $limits, $carry, $owners, $work );
+				return Intake::run( $lane, $action, $id, $fp, $identity, $payload, BusinessPolicy::review_limits( $limits ), $carry, $owners, $work );
 			}
+		}
+		$capacity = BusinessCapacity::preflight();
+		if ( $capacity instanceof WP_Error ) {
+			return $capacity;
 		}
 		$permit = $gate->reserve( $action, $proof, $id, $payload, $limits, 120, true, $carry, $owners );
 		if ( is_wp_error( $permit ) ) {

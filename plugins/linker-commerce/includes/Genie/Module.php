@@ -110,7 +110,7 @@ final class Module {
 	 * @param mixed $handoff The hand-off (Linker\Tools\Genie\ContactRequest::handoff()).
 	 * @return array{order: int, receipt: bool}|null The record and whether the receipt went; null when the hand-off is not one.
 	 */
-	public function contact( mixed $sent, mixed $handoff ): ?array {
+	public function contact( mixed $sent, mixed $handoff ): array|WP_Error|null {
 		if ( is_array( $sent ) && isset( $sent['order'] ) ) {
 			return array(
 				'order'   => (int) $sent['order'],
@@ -134,6 +134,9 @@ final class Module {
 			return null;
 		}
 		$order = ( new Sender() )->message( $details, array( self::HANDOFF_META => $handoff ) );
+		if ( $order instanceof WP_Error ) {
+			return $order;
+		}
 		return array(
 			'order'   => $order->get_id(),
 			'receipt' => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
@@ -249,7 +252,36 @@ final class Module {
 			return false;
 		}
 		WC()->mailer();
-		return ( new ConversationEmail( $this->plugin_file ) )->notify( $conversation );
+		$producer = new ConversationEmail( $this->plugin_file );
+		if ( is_array( $email ) && is_callable( $email['accepted'] ?? null ) && is_callable( $email['defer'] ?? null ) ) {
+			$message = \Linker\Commerce\Mail\Prepared::capture( fn () => $producer->notify( $conversation ) );
+			if ( ! $message instanceof \Linker\Commerce\Mail\Message ) {
+				return false; }
+			$job = ( new \Linker\Commerce\Mail\JobStore() )->create(
+				$message,
+				0,
+				static function ( int $id ) use ( $email ): void {
+					$email['accepted']( $id );
+					// The same existing Action Scheduler row survives a crash after
+					// commit but before the immediate outside-lock attempt.
+					$action = as_schedule_single_action( time() + 1, \Linker\Commerce\Mail\Outbox::HOOK, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP, true );
+					if ( $action < 1 && ! as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP ) ) {
+						throw new \RuntimeException( 'conversation_confirmation_schedule_failed' );
+					}
+				}
+			);
+			if ( $job < 1 ) {
+				\Linker\Commerce\Mail\CapacityHealth::failed();
+				return false; }
+			$email['defer'](
+				static function () use ( $job ): void {
+					/** This action is documented in Mail\Module::register(). */
+					do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Existing original-job consumer after source lock release.
+				}
+			);
+			return true;
+		}
+		return $producer->notify( $conversation );
 	}
 
 	/**

@@ -46,7 +46,7 @@ final class BillingVatFieldTest extends TestCase {
 	 * The field follows the company field on the request page and the company page.
 	 */
 	public function test_billing_fields(): void {
-		$fields = ( new BillingVatField( new VatProfile( new ViesClient() ) ) )->billing_fields( array( 'billing_company' => array( 'priority' => 30 ) ) );
+		$fields = ( new BillingVatField( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->billing_fields( array( 'billing_company' => array( 'priority' => 30 ) ) );
 
 		$this->assertSame( 31, $fields[ VatProfile::VAT_META ]['priority'] );
 		$this->assertFalse( $fields[ VatProfile::VAT_META ]['required'] );
@@ -56,7 +56,7 @@ final class BillingVatFieldTest extends TestCase {
 	 * Staff see and edit the VAT ID on the inquiry, and the verdict under the address.
 	 */
 	public function test_admin(): void {
-		$field = new BillingVatField( new VatProfile( new ViesClient() ) );
+		$field = new BillingVatField( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) );
 		$this->assertTrue( $field->admin_billing_fields( array() )['vat_id']['show'] );
 
 		$order = Mockery::mock( WC_Order::class );
@@ -70,7 +70,7 @@ final class BillingVatFieldTest extends TestCase {
 	 * The user profile shows the VAT ID with the billing fields and the business type and verdict in a section of their own.
 	 */
 	public function test_profile_fields(): void {
-		$sections = ( new BillingVatField( new VatProfile( new ViesClient() ) ) )->profile_fields( array( 'billing' => array( 'fields' => array() ) ) );
+		$sections = ( new BillingVatField( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->profile_fields( array( 'billing' => array( 'fields' => array() ) ) );
 
 		$this->assertArrayHasKey( VatProfile::VAT_META, $sections['billing']['fields'] );
 		$this->assertSame( array( CustomerRole::META, VatProfile::STATUS_META ), array_keys( $sections['linker']['fields'] ) );
@@ -88,7 +88,7 @@ final class BillingVatFieldTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'update_user_meta', array( 'times' => 4 ) );
 		WP_Mock::expectAction( VatProfile::CHANGED_ACTION, 5, VatProfile::VALID, VatProfile::NONE );
-		$field = new BillingVatField( new VatProfile( new ViesClient() ) );
+		$field = new BillingVatField( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) );
 
 		$field->after_address_saved( 5, 'shipping' );
 		$field->after_address_saved( 5, 'billing' );
@@ -110,7 +110,7 @@ final class BillingVatFieldTest extends TestCase {
 		$order->allows( 'get_meta' )->with( '_' . VatProfile::VAT_META )->andReturn( 'DE 143454214' );
 		$order->expects( 'update_meta_data' )->with( VatProfile::ORDER_STATUS, VatProfile::VALID );
 
-		( new BillingVatField( new VatProfile( new ViesClient() ) ) )->on_inquiry( $order );
+		( new BillingVatField( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->on_inquiry( $order );
 
 		$this->assertConditionsMet();
 	}
@@ -123,7 +123,7 @@ final class BillingVatFieldTest extends TestCase {
 		$customer->allows( 'get_meta' )->with( VatProfile::VAT_META )->andReturn( 'de 143.454-214' );
 		$customer->expects( 'update_meta_data' )->with( VatProfile::VAT_META, 'DE143454214' );
 
-		( new BillingVatField( new VatProfile( new ViesClient() ) ) )->normalize( $customer );
+		( new BillingVatField( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->normalize( $customer );
 
 		$this->assertConditionsMet();
 	}

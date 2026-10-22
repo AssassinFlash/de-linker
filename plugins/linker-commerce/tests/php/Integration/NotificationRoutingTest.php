@@ -60,7 +60,7 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		// The email classes extend WC_Email, which WooCommerce loads with its mailer.
 		WC()->mailer();
 		$saved = array();
-		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION ) as $name ) {
+		foreach ( array( Options::TEAM_TO, Options::NOTIFY_TO, Options::NOTIFY_FROM, Options::NOTIFY_BCC, Options::PROFORMA_PREFIX, 'woocommerce_email_from_name', 'woocommerce_email_from_address', Monitor::GENIE_URL_OPTION, Monitor::ENGINE_URL_OPTION, \Linker\Commerce\Inquiry\Assessment\Queue::ENABLED, 'linker_commerce_team_locale' ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		foreach ( array( NewCustomerEmail::ID, VatReviewEmail::ID, NewInquiryEmail::ID, 'linker_digest' ) as $id ) {
@@ -77,6 +77,8 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 				}
 			}
 		);
+		update_option( \Linker\Commerce\Inquiry\Assessment\Queue::ENABLED, 'no' );
+		update_option( 'linker_commerce_team_locale', 'en_US' );
 		// Both team settings unset, as on live; the blind copy stands in for
 		// the copy address the owner keeps once it is shown to arrive.
 		delete_option( Options::TEAM_TO );
@@ -148,6 +150,19 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$email    = WC()->mailer()->get_emails()[ VatReviewEmail::class ];
 		$this->assertInstanceOf( VatReviewEmail::class, $email );
 		$marker = self::newest_mail_job();
+		update_user_meta( $customer->get_id(), VatProfile::STATUS_META, VatProfile::UNVERIFIED );
+		$notices = new \Linker\Commerce\Registration\VatNotice();
+		$source  = $notices->persist(
+			$customer->get_id(),
+			'DE123456789',
+			array(
+				'status' => VatProfile::INVALID,
+				'detail' => '',
+			),
+			true,
+			$notices->version( $customer->get_id() )
+		);
+		$this->assertIsArray( $source );
 		$email->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
 		$row = $this->internal_message( $marker, 'VAT check changed: Linker Integration Test GmbH', $from );
 		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $row['headers'], VatReviewEmail::ID );
