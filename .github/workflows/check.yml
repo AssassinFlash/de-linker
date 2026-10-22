@@ -265,6 +265,7 @@ jobs:
           uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
           uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
           uv run --locked --project tools/local mypy --strict tools/checks/admin-mfa.py
+          uv run --locked --project tools/local pytest -q tools/local/tests/test_admin_mfa.py
           php plugins/linker-commerce/vendor/bin/phpcs --standard=plugins/linker-commerce/phpcs.xml.dist tests/e2e/fixtures/admin-mfa.php tests/e2e/fixtures/admin-mfa-public.php
           just admin-mfa smoke --prepare
 

@@ -50,6 +50,14 @@ Two-Factor provider methods. It refuses a non-native/unisolated target or a
 Commerce checkout it does not own. Secrets, cookies, reset tokens and bodies are
 never included in the public result.
 
+Every execution path now reads/asserts actual Two-Factor0.17.0 and active status,
+then verifies official strict checksums before fixture writes. This also applies
+without `--prepare`; that flag controls only installation and language writes.
+Cleanup ownership is persisted/read back immediately after each user/page is
+created, before provider or language work. Failed persistence compensates only
+the just-created object and verifies deletion. Failed deletion reports that
+specific local ID and stops rather than claiming clean completion.
+
 The enforce run passed **36/36** checks, including actual same-origin reset
 prepare/verify and signed proof consumption:
 [raw sanitized result](evidence/native-enforce-final.json). The final ordinary
@@ -165,3 +173,14 @@ format compilation pass. The native suite is wired into the existing isolated
 this live-snapshot UI acceptance. Independent full-diff Spec/Standards review
 and CI are coordinator gates after the review-ready commit/PR; this record does
 not mark them passed in advance. No merge/deploy is performed by this branch.
+
+The Standards corrections have separate focused evidence in
+[fixture safety](evidence/fixture-safety.json): eight offline runner cases cover
+both flag paths with valid dependency, wrong version, inactive plugin and failed
+official checksums; nine offline PHP injected failures execute the actual fixture
+and its finally cleanup. Eight restore the pre-existing state exactly; the ninth
+deliberately fails compensating deletion and must identify the new local object
+for manual cleanup, preserving every pre-existing object. A final native m565
+setup/cleanup checks real immediate ownership, dependency provenance and restored
+state. These safety-only checks do not replace or recount the earlier36-check
+native runs or82 browser captures.

@@ -159,7 +159,6 @@ def prepare(wp: WpCli) -> dict[str, str]:
         )
     elif current["status"] != "active":
         wp.run("plugin", "activate", "two-factor")
-    verified = wp.run("plugin", "verify-checksums", "two-factor", "--strict")
     # Same native translation-download mechanism as linker-local's Woo packs.
     language = fetch(
         f"https://downloads.wordpress.org/translation/plugin/two-factor/{VERSION}/de_DE_formal.zip",
@@ -205,12 +204,33 @@ def prepare(wp: WpCli) -> dict[str, str]:
         "eval", "wp_cache_delete(md5(WP_LANG_DIR . '/plugins/'), 'translation_files');"
     )
     return {
-        "version": VERSION,
         "archive_sha256": digest,
-        "official_checksums": verified,
         "de_pack_sha256": hashlib.sha256(language.read_bytes()).hexdigest(),
         "de_supplement_sha256": hashlib.sha256(supplement.read_bytes()).hexdigest(),
     }
+
+
+def verify_dependency(wp: WpCli) -> dict[str, str]:
+    """Every run verifies the actual dependency before any fixture can write."""
+    current = json.loads(
+        wp.run(
+            "plugin",
+            "get",
+            "two-factor",
+            "--fields=name,status,version",
+            "--format=json",
+        )
+    )
+    if not isinstance(current, dict):
+        raise RuntimeError("Native Two-Factor dependency metadata is invalid.")
+    version = current.get("version")
+    status = current.get("status")
+    if version != VERSION or status != "active":
+        raise RuntimeError(
+            f"Require Two-Factor {VERSION} active; found {version} ({status})."
+        )
+    verified = wp.run("plugin", "verify-checksums", "two-factor", "--strict")
+    return {"version": version, "status": status, "official_checksums": verified}
 
 
 class Acceptance:
@@ -510,10 +530,10 @@ def main() -> int:
         "instance": args.instance,
         "captured_utc": datetime.now(UTC).isoformat(),
     }
-    if args.prepare:
-        report["dependency"] = prepare(wp)
     test = Acceptance(wp)
     try:
+        prepared = prepare(wp) if args.prepare else {}
+        report["dependency"] = {**prepared, **verify_dependency(wp)}
         test.run()
         report["passed"] = True
     except (RuntimeError, OSError, ValueError) as error:

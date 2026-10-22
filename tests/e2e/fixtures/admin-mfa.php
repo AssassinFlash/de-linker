@@ -15,9 +15,37 @@ use Linker\Commerce\Mail\TestMode;
 	if ( ! class_exists( 'Two_Factor_Core' ) ) {
 		throw new RuntimeException( 'Install the official Two-Factor 0.17.0 dependency first.' );
 	}
-	$key   = 'linker_admin_mfa_fixture';
-	$mode  = $args[0] ?? '';
-	$state = get_option( $key );
+	$key      = 'linker_admin_mfa_fixture';
+	$mode     = $args[0] ?? '';
+	$state    = get_option( $key );
+	$save     = static function ( array $next ) use ( $key ): void {
+		update_option( $key, $next, false );
+		wp_cache_delete( $key, 'options' );
+		if ( get_option( $key ) !== $next ) {
+			throw new RuntimeException( 'MFA fixture ownership could not be persisted.' );
+		}
+	};
+	$remember = static function ( array $next, string $kind, int $id ) use ( $save ): void {
+		try {
+			$save( $next );
+		} catch ( Throwable $error ) {
+			// Only this just-created object is compensating cleanup. Previously
+			// persisted ownership is left for the caller's normal finally cleanup.
+			if ( 'user' === $kind ) {
+				require_once ABSPATH . 'wp-admin/includes/user.php';
+				wp_delete_user( $id );
+				clean_user_cache( $id );
+				$exists = (bool) get_user_by( 'id', $id );
+			} else {
+				wp_delete_post( $id, true );
+				$exists = (bool) get_post( $id );
+			}
+			if ( $exists ) {
+				throw new RuntimeException( sprintf( 'MFA fixture compensation failed for new %s ID %d; manual local cleanup required.', $kind, $id ), 0, $error );
+			}
+			throw $error;
+		}
+	};
 	if ( 'exists' === $mode ) {
 		echo wp_json_encode( false !== $state );
 		return;
@@ -35,20 +63,27 @@ use Linker\Commerce\Mail\TestMode;
 			'created_pages'  => array(),
 			'account_option' => get_option( 'woocommerce_myaccount_page_id' ),
 		);
-		( new TestMode() )->enable( 'tester565@example.test' );
-		update_option( $key, $state, false );
+		$save( $state );
+		if ( ! ( new TestMode() )->enable( 'tester565@example.test' ) ) {
+			throw new RuntimeException( 'Local tester mail routing could not be enabled.' );
+		}
 		$account = (int) get_option( 'woocommerce_myaccount_page_id' );
 		if ( ! get_post( $account ) ) {
-			$account                  = wp_insert_post(
+			$account = wp_insert_post(
 				array(
 					'post_type'    => 'page',
 					'post_status'  => 'publish',
 					'post_title'   => 'My account',
 					'post_name'    => 'my-account',
 					'post_content' => '[woocommerce_my_account]',
-				)
+				),
+				true
 			);
+			if ( is_wp_error( $account ) || $account <= 0 ) {
+				throw new RuntimeException( 'Synthetic account page creation failed.' );
+			}
 			$state['created_pages'][] = $account;
+			$remember( $state, 'page', $account );
 			update_option( 'woocommerce_myaccount_page_id', $account );
 			if ( function_exists( 'pll_set_post_language' ) ) {
 				pll_set_post_language( $account, 'en' ); }
@@ -65,9 +100,14 @@ use Linker\Commerce\Mail\TestMode;
 					'post_title'   => 'Mein Konto',
 					'post_name'    => 'mein-konto',
 					'post_content' => '[woocommerce_my_account]',
-				)
+				),
+				true
 			);
-			$state['created_pages'][]      = $german;
+			if ( is_wp_error( $german ) || $german <= 0 ) {
+				throw new RuntimeException( 'Synthetic German account page creation failed.' );
+			}
+			$state['created_pages'][] = $german;
+			$remember( $state, 'page', $german );
 			pll_set_post_language( $german, 'de' );
 			pll_save_post_translations(
 				array(
@@ -80,7 +120,7 @@ use Linker\Commerce\Mail\TestMode;
 			'en' => wp_parse_url( get_permalink( $account ), PHP_URL_PATH ),
 			'de' => wp_parse_url( get_permalink( $german ), PHP_URL_PATH ),
 		);
-		update_option( $key, $state, false );
+		$save( $state );
 		foreach ( array(
 			'admin'     => 'administrator',
 			'woo_admin' => 'administrator',
@@ -98,15 +138,16 @@ use Linker\Commerce\Mail\TestMode;
 					'display_name' => 'MFA local ' . $label,
 				)
 			);
-			if ( is_wp_error( $id ) ) {
+			if ( is_wp_error( $id ) || $id <= 0 ) {
 				throw new RuntimeException( 'Synthetic user creation failed.' );
 			}
-			update_user_meta( $id, Approval::STATUS_META, 'pending' === $label ? 'pending' : 'approved' );
 			$state['users'][ $label ] = array(
 				'id'       => $id,
 				'login'    => $login,
 				'password' => $password,
 			);
+			$remember( $state, 'user', $id );
+			update_user_meta( $id, Approval::STATUS_META, 'pending' === $label ? 'pending' : 'approved' );
 			if ( 'administrator' === $role ) {
 				$totp    = Two_Factor_Totp::get_instance();
 				$seed    = Two_Factor_Totp::generate_key();
@@ -131,10 +172,13 @@ use Linker\Commerce\Mail\TestMode;
 					throw new RuntimeException( 'Synthetic application password setup failed.' ); }
 				$state['users'][ $label ]['application_password'] = $app[0];
 			}
-			update_option( $key, $state, false );
+			$save( $state );
 		}
 		echo wp_json_encode( $state );
 		return;
+	}
+	if ( 'cleanup' === $mode && false === $state ) {
+		return; // Initial ownership write may fail before any object exists.
 	}
 	if ( ! is_array( $state ) ) {
 		throw new RuntimeException( 'MFA fixture is not set up.' );
@@ -146,7 +190,7 @@ use Linker\Commerce\Mail\TestMode;
 		$state['external_emails'] = array_unique( array_merge( $state['external_emails'] ?? array(), array( $email ) ) );
 		global $wpdb;
 		$state['job_marker'] = $state['job_marker'] ?? (int) $wpdb->get_var( "SELECT MAX(ID) FROM {$wpdb->posts} WHERE post_type='linker_mail_job'" );
-		update_option( $key, $state, false );
+		$save( $state );
 		$user   = get_user_by( 'email', $email );
 		$orders = wc_get_orders(
 			array(

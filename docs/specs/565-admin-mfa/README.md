@@ -34,6 +34,11 @@ archive and installed plugin checksums, installs the official formal German pack
 merges the site supplement, compiles native language artifacts and invalidates
 only WordPress's translation-directory index. It then uses disposable local
 users, factors and application passwords. No remote target argument exists.
+Every run, including without `--prepare`, asserts the actual exact version,
+active status and official strict checksums before fixture writes. Created
+user/page ownership is persisted and read back before subsequent setup work;
+ownership-write failure compensates only the newly created object and verifies
+its deletion. Offline injected failures cover partial setup/finally cleanup.
 
 The opt-in public-provider fixture requires an exact owned docroot, local
 environment and local mail capture. Only the challenge SDK and canonical
