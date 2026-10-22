@@ -34,6 +34,10 @@ import {
 	type FailureDraft,
 } from './shared/failure';
 import { useFailure } from './shared/useFailure';
+import {
+	completedRequest,
+	type RequestWitness,
+} from './shared/completedRequest';
 import { startDictation, type DictationSession } from './shared/dictation';
 import {
 	assistantMessage,
@@ -261,6 +265,11 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ dictating, setDictating ] = useState( false );
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
+	// Only this mounted app's actual send can witness a retry recovery. A
+	// matching question in history, another conversation or a reload cannot.
+	const requestWitness = useRef<
+		( RequestWitness & { epoch: number } ) | null
+	>( null );
 	const {
 		failureState,
 		omitted,
@@ -532,6 +541,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			// Before the request leaves: a reload while it is in flight can
 			// still put the question back.
 			commitFailure( { type: 'send', draft } );
+			requestWitness.current = null;
 			setOpen( true );
 			setDockHistory( false );
 			setPhase( 'waiting' );
@@ -576,19 +586,35 @@ export function App( { config }: { config: GenieConfig } ) {
 					];
 					currentThread.current = next;
 					setThread( next );
+					const postedPage = pageRef.current;
+					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
 						turnUrl: config.turnUrl,
 						restUrl: config.restUrl,
 						nonce: config.restNonce,
 						locale: config.locale,
 						messages: next,
-						page: pageRef.current,
+						page: postedPage,
 						uploads,
+						onOperation: ( operationId ) => {
+							requestWitness.current = stored.conversationId
+								? {
+										conversationId: stored.conversationId,
+										operationId,
+										epoch: historyEpoch,
+										messages: next,
+										uploads,
+										locale: config.locale,
+										page: pageWitness,
+									}
+								: null;
+						},
 					} );
 					if ( ! entryId ) {
 						filesRef.current.clear();
 					}
 					commitFailure( { type: 'answered' } );
+					requestWitness.current = null;
 					const assistant = assistantMessage( answer );
 					currentThread.current = next.concat( assistant );
 					setThread( currentThread.current );
@@ -668,20 +694,61 @@ export function App( { config }: { config: GenieConfig } ) {
 					setInput( 'upstream' === kind ? draft.text : '' );
 					return;
 				}
+				const witness = requestWitness.current;
+				if (
+					witness &&
+					witness.epoch === historyEpoch &&
+					completedRequest(
+						witness,
+						stored,
+						payload.question,
+						payload.uploads,
+						config.locale,
+						pageRef.current
+					)
+				) {
+					// readThread appends an assistant only after parseStream saw
+					// done. Restore that result instead of paying for a new turn.
+					currentThread.current = stored.messages;
+					setThread( stored.messages );
+					filesRef.current.clear();
+					commitFailure( { type: 'answered' } );
+					requestWitness.current = null;
+					setPhase( 'ask' );
+					void refreshHistory();
+					return;
+				}
 				const next = payload.messages;
 				currentThread.current = next;
 				setThread( next );
+				requestWitness.current = null;
+				const postedPage = pageRef.current;
+				const pageWitness = JSON.stringify( postedPage );
 				const answer = await sendTurn( {
 					turnUrl: config.turnUrl,
 					restUrl: config.restUrl,
 					nonce: config.restNonce,
 					locale: config.locale,
 					messages: next,
-					page: pageRef.current,
+					page: postedPage,
 					uploads: payload.uploads,
+					onOperation: ( operationId ) => {
+						requestWitness.current = stored.conversationId
+							? {
+									conversationId: stored.conversationId,
+									operationId,
+									epoch: historyEpoch,
+									messages: next,
+									uploads: payload!.uploads,
+									locale: config.locale,
+									page: pageWitness,
+								}
+							: null;
+					},
 				} );
 				filesRef.current.clear();
 				commitFailure( { type: 'answered' } );
+				requestWitness.current = null;
 				const assistant = assistantMessage( answer );
 				currentThread.current = next.concat( assistant );
 				setThread( currentThread.current );

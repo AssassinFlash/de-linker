@@ -347,6 +347,8 @@ export interface TurnRequest {
 	page: PageContext;
 	/** The files of this turn, apart from the messages (#236). */
 	uploads?: Upload[];
+	/** Actual resource UUID of this send, before the network request leaves. */
+	onOperation?: ( id: string ) => void;
 	/** Fetch for tests. */
 	fetcher?: Fetch;
 	/**
@@ -391,24 +393,31 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 	// failure. Promise.resolve(fetcher()) would let that throw escape first.
 	const attempt = Promise.resolve()
 		.then( () =>
-			resourceFetch( fetcher, turnUrl, {
-				method: 'POST',
-				credentials: 'same-origin',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': nonce,
+			resourceFetch(
+				fetcher,
+				turnUrl,
+				{
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-WP-Nonce': nonce,
+					},
+					body: JSON.stringify( {
+						locale,
+						messages: messages.map( ( { role, content } ) => ( {
+							role,
+							content,
+						} ) ),
+						page,
+						...( uploads.length > 0
+							? { attachments: uploads }
+							: {} ),
+					} ),
+					signal: controller.signal,
 				},
-				body: JSON.stringify( {
-					locale,
-					messages: messages.map( ( { role, content } ) => ( {
-						role,
-						content,
-					} ) ),
-					page,
-					...( uploads.length > 0 ? { attachments: uploads } : {} ),
-				} ),
-				signal: controller.signal,
-			} )
+				request.onOperation
+			)
 		)
 		.then(
 			( response ) => response,
@@ -511,6 +520,10 @@ export async function readThread(
 ): Promise< {
 	messages: TurnMessage[];
 	turn: Turn | null;
+	/** The existing proxy identity, when the read returned a real conversation. */
+	conversationId?: number;
+	/** Trusted completed operation returned by the owned Thread, never inferred. */
+	operationId?: string;
 	/** Always set here; optional for the callers' own stand-ins. */
 	contacts?: SentContact[];
 	/** Always set here; optional for the callers' own stand-ins. */
@@ -528,6 +541,8 @@ export async function readThread(
 			return empty;
 		}
 		const stored = ( await response.json() ) as {
+			conversation_id?: number;
+			operation_id?: string;
 			messages?: TurnMessage[];
 			stream?: string;
 			contacts?: Array< Partial< SentContact > >;
@@ -545,8 +560,13 @@ export async function readThread(
 				role: message.role,
 				content: message.content,
 			} ) );
+		const identity =
+			Number.isInteger( stored.conversation_id ) &&
+			( stored.conversation_id ?? 0 ) > 0
+				? { conversationId: stored.conversation_id }
+				: {};
 		if ( messages.length === 0 ) {
-			return empty;
+			return { ...empty, ...identity };
 		}
 		let turn: Turn | null = null;
 		if ( stored.stream ) {
@@ -562,6 +582,13 @@ export async function readThread(
 			turn = await restoreArtifacts( turn, artifacts, nonce, fetcher );
 		}
 		return {
+			...identity,
+			...( typeof stored.operation_id === 'string' &&
+			/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+				stored.operation_id
+			)
+				? { operationId: stored.operation_id }
+				: {} ),
 			messages: turn
 				? [ ...messages, assistantMessage( turn ) ]
 				: messages,

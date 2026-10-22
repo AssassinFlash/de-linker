@@ -522,21 +522,9 @@ export function reconcile(
 		uploads: stored.uploads,
 		omitted: stored.omitted,
 	};
-	let lastAsk = -1;
-	for ( let index = 0; index < messages.length; index++ ) {
-		const message = messages[ index ];
-		if ( 'user' === message.role && message.content === stored.question ) {
-			lastAsk = index;
-		}
-	}
-	if (
-		lastAsk >= 0 &&
-		messages
-			.slice( lastAsk + 1 )
-			.some( ( message ) => 'assistant' === message.role )
-	) {
-		return CLEAR;
-	}
+	// The record has no conversation identity or posted-message prefix. An
+	// answered question with the same text may be historical or belong to a
+	// different conversation. Only the live sender can witness completion.
 	const last = messages[ messages.length - 1 ];
 	if ( last && 'user' === last.role && last.content === stored.question ) {
 		return { phase: 'failed', draft, kind: 'truncated' };

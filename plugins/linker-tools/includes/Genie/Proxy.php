@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Tools\Genie;
 
+use Linker\Tools\Protection\Resources;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -364,6 +365,7 @@ class Proxy {
 				'conversation_id' => $id,
 				'messages'        => $store['messages'],
 				'stream'          => $store['stream'],
+				...( isset( $store['operation_id'] ) && Resources::completed_genie_operation( $store['operation_id'], $store['operation_fingerprint'] ?? '' ) ? array( 'operation_id' => $store['operation_id'] ) : array() ),
 				// The sent contact cards, each after the answer that showed
 				// it: history keeps them on a reload (#243).
 				'contacts'        => ContactRequest::cards( $id ),
@@ -530,7 +532,7 @@ class Proxy {
 		if ( $left < 0 ) {
 			$left = 0;
 		}
-		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left ) ) {
+		if ( ! $this->thread->record( $conversation, $messages, $split['stream'], $split['readings'], $left, Resources::genie_operation(), Resources::genie_fingerprint() ) ) {
 			// The answer was produced and is not stored. The other turn
 			// stays. The shell re-reads the thread, puts the question back
 			// in the field, and keeps the uploads so the customer can send

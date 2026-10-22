@@ -44,3 +44,14 @@ Combination testing on a fresh snapshot exposed a fixture precondition: the orig
 Removed the manually seeded token from the owned a543 configuration after a private backup. With no configured token, the original native dispatch test reproduced RED (`dispatches=0`). The fixture correction generates a synthetic token only inside a local PHPUnit/HTTP/worker PHP process when the constant is absent. It does not write WordPress configuration, replace an existing token, change the production configured guard, or contact a provider. Each temporary HTTP loader has a distinct filename and is removed on teardown. A separate unconfigured-service test verifies `uncertain/service_unavailable`, ordinary notification handoff and zero wake-ups.
 
 On this token-free snapshot, all **8 Async tests / 150 assertions** pass, including independent PHP/database workers, disconnected customer HTTP and actual two/eight-second classification simulation. Representative customer responses: **0.352/0.637 seconds**; queue starts **0.139/0.269 seconds**; assessment completion **2.285/8.291 seconds**. An independent `wp` process afterwards reads `token_defined=false`, while the native callback remains registered. Combined release-tree results are attached to the follow-up PR/issue; no production setting was changed.
+
+Combined release-code verification used `9463a829db54c5d3fc773db5d796380dfdd593ca` (final intake + transport-capacity integration) plus this fixture correction in the separate `codex/543-fixture-integration` worktree. On the same token-free production snapshot, the following passed **127 tests / 1464 assertions** in 55.9 seconds:
+
+```sh
+LINKER_WP_ROOT="$HOME/de-linker-local/a543/wordpress" \
+  /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit \
+  -c phpunit.integration.xml.dist \
+  --filter 'SafeIntakeTest|BusinessAdmissionTest|NotificationHoldTest|PublicLedgerTest|PublicControllerTest|AssessmentAsyncTest|InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|MailBudgetTest|MailBudgetRollbackTest|ReviewReminderTest'
+```
+
+This includes the original public-intake/hold, classification, review, mail-budget/rollback/reminder consumers together. The real two/eight-second HTTP fixture returned customer responses at **0.208/0.200 seconds**, began classification at **0.099/0.111 seconds** and finished at **2.105/8.121 seconds**. Combined-tree PHPStan and changed-file WPCS pass. Independent post-test WordPress readback: `token_defined_after=false`, `temporary_http_loaders=0`, native async library loaded and callback registered. There were no real model calls, real mail, production writes or changes to the original `configured()` guard.

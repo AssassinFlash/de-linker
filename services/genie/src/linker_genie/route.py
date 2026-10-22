@@ -252,6 +252,54 @@ DOCUMENTS_HINT = (
     "documents as document blocks. It is not a question for the team."
 )
 
+
+def _show_product_with_documents(message: str) -> bool:
+    """An explicit request to show a product beside its documents (#563).
+
+    The route already knows this is a document question. A product mentioned
+    as the owner of a datasheet is not a second requested object. Keep this
+    conservative: unquoted, affirmative display wording and two coordinated
+    objects, one product and one document. No inference from a model hit.
+    """
+    message = re.sub(
+        r"""„[^“”]*[“”]|“[^”]*”|"[^"\n]*"|‘[^’]*’|»[^«]*«|«[^»]*»|'[^'\n]*'|`[^`\n]*`""",
+        " ",
+        message,
+    )
+    if re.search(
+        r"\b(?:not|no|don't|do\s+not|nicht|kein\w*|ohne)\b",
+        message,
+        re.IGNORECASE,
+    ):
+        return False
+    display = re.compile(r"\b(?:show|display|zeige[n]?|anzeigen)\b", re.IGNORECASE)
+    if not display.search(message):
+        return False
+    parts = re.split(r"\b(?:and|und|sowie|plus)\b", message, flags=re.IGNORECASE)
+    document = re.compile(
+        r"\b(?:data\s?sheets?|manuals?|handbooks?|datenblatt|datenblätter|datenblaetter|"
+        r"handbuch|handbücher|handbuecher|anleitungen?)\b",
+        re.IGNORECASE,
+    )
+    product = re.compile(r"\b(?:products?|models?|produkte?|modelle?)\b", re.IGNORECASE)
+    if not any(document.search(part) for part in parts):
+        return False
+    for index, part in enumerate(parts):
+        if not product.search(part) or document.search(part):
+            continue
+        # "datasheets for A and B products" coordinates document owners,
+        # not a separately requested product. A fresh display verb can
+        # explicitly start a second request after that ownership phrase.
+        owners = any(
+            document.search(earlier)
+            and re.search(r"\b(?:for|of|für|fuer|von)\b", earlier, re.IGNORECASE)
+            for earlier in parts[:index]
+        )
+        if display.search(part) or not owners:
+            return True
+    return False
+
+
 # The three obligations for a message that names models (#363, #364, #367).
 # prompts/en/system.md carries this paragraph unchanged. The German prompt
 # states the same three obligations in its own words. The per-turn reminder
@@ -897,6 +945,7 @@ def _plan_turn(
         return Route(
             "documents",
             doc_calls,
+            show_products=_show_product_with_documents(message),
             no_handoff=True,
             hint=DOCUMENTS_HINT + family + _model_hint(notes),
             reasons=tuple(reasons),
@@ -963,6 +1012,7 @@ def _plan_turn(
         return Route(
             "documents",
             doc_calls,
+            show_products=_show_product_with_documents(message),
             no_handoff=True,
             hint=DOCUMENTS_HINT + family + _model_hint(notes),
             reasons=tuple(reasons),
