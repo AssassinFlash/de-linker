@@ -2,7 +2,6 @@
 /**
  * Durable observation and one logical team notification per inquiry.
  *
- *
  * @package Linker\Commerce
  */
 
@@ -25,13 +24,13 @@ final class Queue {
 	public const EXPIRE    = 'linker_inquiry_assessment_expire';
 	public const FINISH    = 'linker_inquiry_assessment_finish';
 	public const HEARTBEAT = 'linker_inquiry_assessment_recovery';
-	// Owner confirmed 2026-10-22, issue 511: queue delay consumes this budget.
+	// Owner policy 2026-10-23: each claimed model attempt gets ten seconds; queue delay is excluded.
 	public const WAIT_SECONDS = 10;
 	// Recovery is a real once-per-minute CLI cron, not traffic-driven WP-Cron.
-	// Two missed minute ticks make readiness fail open for new submissions.
+	// Two missed minute ticks make readiness stale; sending still requires a normal permit.
 	public const RECOVERY_STALE = 120;
 
-	/** Feature stays dormant until the deployment runbook enables it. */
+	/** Legacy observation display switch; it never bypasses mandatory sending authorization. */
 	public static function enabled(): bool {
 		return 'yes' === get_option( self::ENABLED, 'no' );
 	}
@@ -39,10 +38,8 @@ final class Queue {
 	/**
 	 * Add an immutable snapshot to the inquiry's ordinary save; no network I/O.
 	 *
-	 *
- * @param WC_Order             $order Inquiry before received status.
-	 *
- * @param array<string, mixed> $context Trusted current source link.
+	 * @param WC_Order             $order Inquiry before received status.
+	 * @param array<string, mixed> $context Trusted current source link.
 	 */
 	public static function prepare( WC_Order $order, array $context = array() ): void {
 		if ( $order->get_meta( Reviews::ERASED ) || is_array( $order->get_meta( self::META ) ) ) {
@@ -68,6 +65,7 @@ final class Queue {
 			self::META,
 			array(
 				'accepted_at'      => $now,
+				// Existing one-use wake capability expiry; the worker claims its own model deadline.
 				'deadline'         => $now + self::WAIT_SECONDS,
 				'snapshot'         => $snapshot,
 				'result'           => Result::unknown( 'pending' ),
@@ -77,11 +75,9 @@ final class Queue {
 		$order->update_meta_data( self::PENDING, 'yes' );
 	}
 
-	/**
-	 * Intercept only the team listener; customer receipts/status stay independent.
+	/** Persist deferred content mail without delaying the native submission.
 	 *
-	 *
- * @param WC_Order $order Received inquiry.
+	 * @param WC_Order $order Received inquiry.
 	 */
 	public static function defer( WC_Order $order ): bool {
 		return SendAuthorization::defer( $order );
@@ -90,10 +86,8 @@ final class Queue {
 	/**
 	 * Fresh data, including after another worker committed a deadline result.
 	 *
-	 *
- * @param WC_Order $order Record.
-	 *
- * @return array<string, mixed>
+	 * @param WC_Order $order Record.
+	 * @return array<string, mixed>
 	 */
 	public static function data( WC_Order $order ): array {
 		$value = $order->get_meta( self::META );
@@ -103,28 +97,41 @@ final class Queue {
 	/**
 	 * Background only. A second worker cannot spend twice on the same job.
 	 *
-	 *
- * @param int $id Inquiry id.
+	 * @param int $id Inquiry id.
 	 */
-	public function process( int $id ): void { SendAuthorization::process( $id ); }
+	public function process( int $id ): void {
+		SendAuthorization::process( $id ); }
 
 	/** Old delayed observation results cannot grant sending permission.
 	 *
- * @param int $id Inquiry.
-	 *
- * @param array<string,mixed> $result Historical observation, not a permit.
+	 * @param int                 $id Inquiry.
+	 * @param array<string,mixed> $result Historical observation, not a permit.
 	 */
-	public function finish( int $id, array $result ): void { SendAuthorization::recover( $id ); }
+	public function finish( int $id, array $result ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Historical AS callback signature; old observations never grant permits.
+		SendAuthorization::recover( $id ); }
 
-	/**
- * @param int $id Inquiry. */
-	public function expire( int $id ): void { SendAuthorization::recover( $id ); }
+	/** Inquiry.
+	 *
+	 * @param int $id Inquiry.
+	 */
+	public function expire( int $id ): void {
+		SendAuthorization::recover( $id ); }
 
 	/** Native independent minute heartbeat; no visitor or synchronous provider is needed. */
 	public function recover(): int {
 		update_option( self::HEARTBEAT, microtime( true ), false );
-		$orders = wc_get_orders( array( 'limit' => -1, 'meta_query' => array( array( 'key' => self::PENDING, 'value' => 'yes' ) ) ) );
-		$count = 0;
+		$orders = wc_get_orders(
+			array(
+				'limit'      => -1,
+				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Native Woo private pending-work lookup, shared with its recovery lifecycle.
+					array(
+						'key'   => self::PENDING,
+						'value' => 'yes',
+					),
+				),
+			)
+		);
+		$count  = 0;
 		foreach ( is_array( $orders ) ? $orders : array() as $order ) {
 			SendAuthorization::recover( $order->get_id() );
 			++$count;

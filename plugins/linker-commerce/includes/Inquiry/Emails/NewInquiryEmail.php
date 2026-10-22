@@ -84,7 +84,12 @@ final class NewInquiryEmail extends TeamEmail {
 	 * @param WC_Order $order The locked inquiry, including initial_result.
 	 */
 	public function capture( WC_Order $order ): ?Message {
-		return \Linker\Commerce\Mail\Capture::run( $this, function () use ( $order ): void { $this->notify_received( $order ); } );
+		return \Linker\Commerce\Mail\Capture::run(
+			$this,
+			function () use ( $order ): void {
+				$this->notify_received( $order );
+			}
+		);
 	}
 
 	/**

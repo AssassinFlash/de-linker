@@ -48,9 +48,17 @@ final class ConversationEmail extends GenieEmail {
 		return $this->send_to( $conversation->to, $conversation->locale );
 	}
 
-	/** @param Conversation $conversation Native validated full transcript. */
+	/** Native validated full transcript.
+	 *
+	 * @param Conversation $conversation Native validated full transcript.
+	 */
 	public function capture( Conversation $conversation ): ?\Linker\Commerce\Mail\Message {
-		return \Linker\Commerce\Mail\Capture::run( $this, function () use ( $conversation ): void { $this->notify( $conversation ); } );
+		return \Linker\Commerce\Mail\Capture::run(
+			$this,
+			function () use ( $conversation ): void {
+				$this->notify( $conversation );
+			}
+		);
 	}
 
 	/**
