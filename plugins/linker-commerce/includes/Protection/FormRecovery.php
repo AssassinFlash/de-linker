@@ -20,7 +20,7 @@ final class FormRecovery {
 	public static function save( string $action, array $post ): void {
 		wc_load_cart();
 		$fields = array();
-		$keys = 'password_reset' === $action ? array( 'user_login' ) : array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD );
+		$keys   = 'password_reset' === $action ? array( 'user_login' ) : array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD );
 		foreach ( $keys as $key ) {
 			$value = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? $post[ $key ] : '';
 			if ( \Linker\Commerce\Contact\SelectionContext::FIELD === $key && '' !== $value ) {
