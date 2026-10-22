@@ -577,3 +577,71 @@ def test_small_energy_delivery_is_not_recomputed_from_large_total_difference() -
     assert verification.passed, [
         item.document() for item in verification.checks if not item.passed
     ]
+
+
+@pytest.mark.parametrize("forge_internal_withdrawal", [False, True])
+def test_absolute_kwh_tolerance_cannot_power_an_empty_battery(
+    forge_internal_withdrawal: bool,
+) -> None:
+    model = battery(1, 10)
+    item = frame(0, load=10, outage=True, pv_enabled=False)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flow = run((item,), model, EnergyOrigins(0, 0, 0))[0]
+    alleged_energy = 10 * item.interval.hours
+    forged = replace(
+        flow,
+        command=Command(0, 10),
+        discharge_kw=10,
+        discharged_internal=EnergyOrigins(
+            0, 0, alleged_energy if forge_internal_withdrawal else 0
+        ),
+        discharged_to_load_ac=EnergyOrigins(0, 0, alleged_energy),
+        unserved_load_kw=0,
+    )
+    failures = {
+        check.code for check in checks((forged,), model).checks if not check.passed
+    }
+    if forge_internal_withdrawal:
+        assert "origin_available_kw_initial_unknown_kwh" in failures
+        assert "discharge_available_above_reserve_kw" in failures
+    else:
+        assert "discharge_conversion_kw" in failures
+        assert "load_origin_kw_initial_unknown_kwh" in failures
+
+
+def test_short_interval_cannot_create_future_inventory_under_energy_tolerance() -> None:
+    model = battery(1, 10)
+    item = frame(0, load=0)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flow = run((item,), model, EnergyOrigins(0, 0, 0))[0]
+    forged = replace(flow, after=EnergyOrigins(10 * item.interval.hours, 0, 0))
+    failures = {
+        check.code for check in checks((forged,), model).checks if not check.passed
+    }
+    assert "origin_transition_kw_pv_kwh" in failures
+
+
+def test_internal_auxiliary_shortage_retains_its_power_meaning() -> None:
+    model = battery(1, 10, internal_aux=10)
+    item = frame(0, load=0)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flow = run((item,), model, EnergyOrigins(0, 0, 0))[0]
+    failures = {
+        check.code for check in checks((flow,), model).checks if not check.passed
+    }
+    assert "internal_aux_supplied_kw" in failures

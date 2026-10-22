@@ -90,6 +90,14 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
     energy/power/reserve/source/command checks, including PV and
     battery load/auxiliary order, grid load/auxiliary/charge order, and PV
     charge/export/curtail order. Energy balance alone cannot certify this model.
+    Short-interval delivery is checked in kW as well as kWh: actual discharge
+    must correspond to removed source energy, source withdrawal must fit local
+    post-loss stock above reserve, per-source transitions must not manufacture
+    future inventory, and internal auxiliary shortage retains its power meaning.
+    Absolute kWh tolerance cannot authorize a high-power supply from zero stock.
+    Local float64 ULP budgets are propagated through those comparisons, exposed
+    separately in each check's arithmetic allowance, and never added as a
+    physical capacity/power margin or a minimum time interval.
 15. Numerical tolerances are explicit, serialized software parameters. They do
     not represent field precision or engineering safety margins. Task execution,
     replay constraint satisfaction, equipment evidence and model applicability

@@ -74,6 +74,14 @@ delivery instead of duplicating the actuator's energy-to-power truncation.
 The original simple 1000 kWh / 1 ms / 1 kW internal auxiliary case is retained
 as a regression; no minimum interval, hidden tolerance or engineering margin
 was added. Planning now has 91 passes, strict mypy/ruff/format passes.
+Standards then found a second short-interval issue on `8f253d9b`: over 1 µs,
+10 kW is only 2.78e-9 kWh, so a forged empty-battery supply could fit inside
+the original absolute energy tolerance. Power/source availability checks now
+retain that meaning independently, including a forged internal withdrawal,
+future-inventory creation and actual internal auxiliary shortage. Their local
+roundoff budgets derive from ULPs of the paired-withdrawal/transition operands;
+each check exposes its arithmetic allowance separately. The 1 ms / 1000 kWh
+valid case remains. Four additional cases bring planning to 95 passing tests.
 Both independent axes will recheck this fixed increment. The full
 physical configuration/Genie/Woo/UI integration and live acceptance remain
 active, not delivered by this component review.
