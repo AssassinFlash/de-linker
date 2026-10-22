@@ -299,6 +299,9 @@ final class SendAuthorization {
 			true
 		);
 		if ( ! $written ) {
+			// Native Woo caches can contain values written before the owned transaction rolled back.
+			// Evict this source only before native history or recovery reads the retained record.
+			CurrentSource::order( $id );
 			// No caller transaction is committed or rolled back; native recovery retains approval.
 			AuthorizationStore::edit(
 				$id,
@@ -371,6 +374,12 @@ final class SendAuthorization {
 	}
 	/** Current configuration affects native sender, real recipient and blind-copy route. */
 	private static function routing(): string {
+		// A long-running provider or SMTP request must observe another process's route edit.
+		foreach ( array( \Linker\Commerce\Settings\Options::NOTIFY_TO, \Linker\Commerce\Settings\Options::NOTIFY_BCC, \Linker\Commerce\Settings\Options::NOTIFY_FROM, 'woocommerce_email_from_name', 'woocommerce_email_from_address' ) as $name ) {
+			wp_cache_delete( $name, 'options' );
+		}
+		wp_cache_delete( 'alloptions', 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
 		$options = new \Linker\Commerce\Settings\Options();
 		return self::hash( array( $options->notify_to(), $options->notify_bcc(), $options->notify_sender(), get_option( 'woocommerce_email_from_name' ), get_option( 'woocommerce_email_from_address' ) ) );
 	}
