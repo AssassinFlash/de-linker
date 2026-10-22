@@ -241,7 +241,30 @@ use Linker\Commerce\Mail\TestMode;
 		}
 		foreach ( glob( LINKER_LOCAL_MAIL_DIR . '/*.eml' ) as $file ) {
 			if ( filemtime( $file ) >= $state['started'] ) {
-				$bodies[] = quoted_printable_decode( file_get_contents( $file ) );
+				$capture = file_get_contents( $file );
+				if ( false === $capture ) {
+					continue;
+				}
+				$parts = preg_split( '/\r?\n\r?\n/', $capture, 2 );
+				if ( false === $parts || 2 !== count( $parts ) ) {
+					continue;
+				}
+				$body = $parts[1];
+				// The local native mailer captures single-part MIME. Decoding an
+				// 8bit URL as quoted-printable corrupts native key=ab... or id=42.
+				preg_match( '/^Content-Transfer-Encoding:\s*([^\r\n]+)/mi', $parts[0], $encoding );
+				$encoding = strtolower( trim( $encoding[1] ?? '7bit' ) );
+				if ( 'quoted-printable' === $encoding ) {
+					$body = quoted_printable_decode( $body );
+				} elseif ( 'base64' === $encoding ) {
+					$body = base64_decode( $body, true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decode declared local MIME data, never executable code.
+					if ( false === $body ) {
+						continue;
+					}
+				} elseif ( ! in_array( $encoding, array( '7bit', '8bit', 'binary' ), true ) ) {
+					continue;
+				}
+				$bodies[] = $body;
 			}
 		}
 		foreach ( $bodies as $body ) {
