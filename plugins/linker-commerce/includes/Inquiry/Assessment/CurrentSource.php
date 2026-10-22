@@ -51,6 +51,11 @@ final class CurrentSource {
 					foreach ( array( $item->get_product_id(), $item->get_variation_id() ) as $product ) {
 						if ( $product > 0 ) {
 							clean_post_cache( $product );
+							// Woo's enabled product-instance cache is separate from native post/meta caches.
+							if ( ! class_exists( 'Automattic\\WooCommerce\\Internal\\Caches\\ProductCache' ) ) {
+								return null; }
+							$cache = wc_get_container()->get( \Automattic\WooCommerce\Internal\Caches\ProductCache::class );
+							$cache->remove( $product );
 						}
 					}
 				}

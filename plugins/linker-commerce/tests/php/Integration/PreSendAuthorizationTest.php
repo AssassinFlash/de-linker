@@ -1056,9 +1056,22 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 *           ["quantity"]
 	 *           ["account"]
 	 *           ["sku"]
+	 *           ["sku_cached"]
 	 * @param string $field Source field changed during the actual service callback.
 	 */
 	public function test_peer_source_changes_during_provider_io_cannot_receive_normal_permission( string $field ): void {
+		if ( 'sku_cached' === $field ) {
+			$name = 'woocommerce_feature_product_instance_caching_enabled';
+			$old  = get_option( $name );
+			$this->later(
+				static function () use ( $name, $old ): void {
+					false === $old ? delete_option( $name ) : update_option( $name, $old );
+				}
+			);
+			update_option( $name, 'yes' );
+			self::assertTrue( \Automattic\WooCommerce\Utilities\FeaturesUtil::feature_is_enabled( 'product_instance_caching' ) );
+			$field = 'sku';
+		}
 		$this->provider( 'normal' );
 		$order    = $this->submit();
 		$customer = $this->customer();
@@ -1074,6 +1087,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$order->save_meta_data();
 		delete_option( \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . $order->get_id() );
 		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::defer( $order );
+		$frozen = Queue::data( $order );
+		self::assertSame( 'pre-send-frozen-' . $product->get_id(), $frozen['snapshot']['products'][0]['sku'] );
 		$peer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
 		$peer->set_prefix( $GLOBALS['wpdb']->prefix );
 		$hits   = 0;
@@ -1081,11 +1096,15 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			if ( ! str_ends_with( $url, '/inquiries/assess' ) ) {
 				return $pre; }
 			global $wpdb;
+			$before = null;
 			if ( 'quantity' === $field ) {
 				$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}woocommerce_order_itemmeta SET meta_value='9' WHERE order_item_id=%d AND meta_key='_qty'", $item );
 			} elseif ( 'account' === $field ) {
 				$sql = $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET meta_value='rejected' WHERE user_id=%d AND meta_key=%s", $customer->get_id(), \Linker\Commerce\Registration\Approval::STATUS_META );
 			} elseif ( 'sku' === $field ) {
+				$before = $wpdb->prepare( "SELECT meta_value FROM {$wpdb->postmeta} WHERE post_id=%d AND meta_key='_sku'", $product->get_id() );
+				self::assertIsString( $before );
+				self::assertSame( 'pre-send-frozen-' . $product->get_id(), $peer->get_var( $before ) );
 				$sql = $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value='changed-peer-sku' WHERE post_id=%d AND meta_key='_sku'", $product->get_id() );
 			} elseif ( \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
 				$sql = 'billing' === $field ? $wpdb->prepare( "UPDATE {$wpdb->prefix}wc_order_addresses SET first_name='Changed peer' WHERE order_id=%d AND address_type='billing'", $order->get_id() ) : $wpdb->prepare( "UPDATE {$wpdb->prefix}wc_orders SET customer_note='Changed peer' WHERE id=%d", $order->get_id() );
@@ -1094,6 +1113,10 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			}
 			self::assertIsString( $sql );
 			$hits = $peer->query( $sql );
+			self::assertSame( 1, $hits );
+			if ( 'sku' === $field ) {
+				self::assertIsString( $before );
+				self::assertSame( 'changed-peer-sku', $peer->get_var( $before ) ); }
 			return $pre;
 		};
 		$marker = self::newest_mail_job();
@@ -1107,6 +1130,37 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			self::assertIsArray( $state );
 			self::assertSame( 'invalidated', $state['status'] );
 			self::assertSame( array(), self::mail_jobs_after( $marker ) );
+	}
+	/** An unchanged cached native product is still allowed through the full normal handoff. */
+	public function test_unchanged_cached_product_keeps_normal_two_message_permission(): void {
+		$name = 'woocommerce_feature_product_instance_caching_enabled';
+		$old  = get_option( $name );
+		$this->later(
+			static function () use ( $name, $old ): void {
+				false === $old ? delete_option( $name ) : update_option( $name, $old );
+			}
+		);
+		update_option( $name, 'yes' );
+		$this->provider( 'normal' );
+		$order   = $this->submit();
+		$product = $this->product( '100' );
+		$product->set_sku( 'stable-cached-' . $product->get_id() );
+		$product->save();
+		$order->add_product( $product, 1 );
+		$order->save();
+		$order->delete_meta_data( Queue::META );
+		$order->save_meta_data();
+		delete_option( \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . $order->get_id() );
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::defer( $order );
+		$marker = self::newest_mail_job();
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
+		$jobs = self::mail_jobs_after( $marker );
+		self::assertCount( 2, $jobs );
+		foreach ( $jobs as $job ) {
+			$loaded = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
+			self::assertNotNull( $loaded );
+			self::assertTrue( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $loaded['message'], $job ) );
+		}
 	}
 	/** A handoff published before the erasure mutex is acquired is included in copy removal. */
 	public function test_erasure_reads_the_job_set_inside_its_authoritative_record_lock(): void {
