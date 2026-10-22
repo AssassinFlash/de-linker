@@ -184,3 +184,34 @@ for manual cleanup, preserving every pre-existing object. A final native m565
 setup/cleanup checks real immediate ownership, dependency provenance and restored
 state. These safety-only checks do not replace or recount the earlier36-check
 native runs or82 browser captures.
+
+### Bare CI account-page regression
+
+Real CI run39793730597 failed after12 passing native authentication checks:
+the first Woo login page had no `woocommerce-login-nonce` form. A new isolated
+bare `m565ci` reproduced the exact command/failure without the earlier CI test
+groups. Woo's pre-existing account page contained the correct shortcode but
+had no Polylang language. Its EN URL returned404/zero login forms; the DE page
+returned200/one form. A rewrite-only flush did not fix EN. A single-variable
+local probe assigned EN to the existing page:200/one form; removing that
+temporary assignment restored404/zero forms. The raw HTML stays private.
+
+The fixture now preserves any pre-existing page that lacks the expected EN
+language and instead creates/persists its own EN/DE account pages, temporarily
+selecting the EN page as the native Woo account page. Cleanup deletes only those
+owned pages and restores the original account selection. Translation mappings
+are restored only for borrowed pre-existing pages. No parser/assertion was
+relaxed, no template/locale production code changed, and no MFA check was skipped.
+
+The new unassigned-account offline regression was red before this fix and is
+green after it. There are now10 offline PHP cases in the same9-pytest suite.
+The original bare native run is **36/36 PASS** after the fix; targeted native
+setup/cleanup additionally proves both account forms and exact restoration of
+the original unassigned page's content, language, translations, page selection,
+users/pages/options and ledger. The original m565 snapshot guard also passes
+with zero account pages created and unchanged pre-existing state. See
+[diagnosis/cleanup evidence](evidence/ci-bare-regression.json),
+[bare failure](evidence/native-bare-before.json),
+[bare pass](evidence/native-bare-after.json) and
+[snapshot guard](evidence/native-snapshot-ci-guard.json).
+These local results do not mark the next hosted CI run passed in advance.

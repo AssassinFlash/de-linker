@@ -118,7 +118,7 @@ def test_partial_php_setup_failure_finally_cleans_only_owned_objects(
         check=True,
     )
     cases = json.loads(result.stdout)
-    assert len(cases) == 9
+    assert len(cases) == 10
     assert all(case["passed"] and case["preexisting_preserved"] for case in cases)
-    assert sum(case["baseline_restored"] for case in cases) == 8
+    assert sum(case["baseline_restored"] for case in cases) == 9
     assert cases[-1]["manual_cleanup_required_reported"] is True

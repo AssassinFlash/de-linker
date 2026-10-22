@@ -27,7 +27,7 @@ class Two_Factor_Totp {
 	public static function calc_totp( string $seed ): string { return '123456'; }
 	public function is_available_for_user( mixed $user ): bool { return false; }
 	public function rest_setup_totp( WP_REST_Request $request ): WP_Error|true {
-		if ( 'invalid' === $request->params['code'] || 'totp' === $GLOBALS['fault'] ) { return new WP_Error(); }
+		if ( 'invalid' === $request->params['code'] || in_array( $GLOBALS['fault'], array( 'totp', 'unassigned-account' ), true ) ) { return new WP_Error(); }
 		$GLOBALS['factors'][ $request->params['user_id'] ] = true;
 		return true;
 	}
@@ -91,7 +91,8 @@ function wp_insert_post( array $data, bool $wp_error = false ): int {
 }
 function get_post( int $id ): mixed { return $GLOBALS['posts'][ $id ] ?? null; }
 function wp_delete_post( int $id, bool $force = false ): void { $GLOBALS['deleted_pages'][] = $id; unset( $GLOBALS['posts'][ $id ] ); }
-function pll_get_post( int $id, string $lang ): int { return in_array( $GLOBALS['fault'], array( 'page-language', 'page-state-write', 'german-language' ), true ) ? 0 : 11; }
+function pll_get_post_language( int $id ): string|false { return 10 === $id && 'unassigned-account' === $GLOBALS['fault'] ? false : 'en'; }
+function pll_get_post( int $id, string $lang ): int { return $id >= 1000 || in_array( $GLOBALS['fault'], array( 'page-language', 'page-state-write', 'german-language' ), true ) ? 0 : 11; }
 function pll_languages_list(): array { return 'page-language' === $GLOBALS['fault'] ? array( 'en' ) : array( 'en', 'de' ); }
 function pll_get_post_translations( int $id ): array { return array( 'en' => $id ); }
 function pll_save_post_translations( array $translations ): void {}
@@ -110,7 +111,7 @@ $wpdb = new class {
 	public function get_col( string $sql ): array { return array(); }
 };
 $results = array();
-foreach ( array( 'initial-state-write', 'totp', 'application-password', 'page-language', 'german-language', 'user-state-write', 'page-state-write', 'late-state-write', 'failed-user-compensation' ) as $fault ) {
+foreach ( array( 'initial-state-write', 'totp', 'application-password', 'page-language', 'german-language', 'user-state-write', 'page-state-write', 'late-state-write', 'unassigned-account', 'failed-user-compensation' ) as $fault ) {
 	$GLOBALS['fault'] = $fault;
 	$options = array( 'woocommerce_myaccount_page_id' => in_array( $fault, array( 'page-language', 'page-state-write' ), true ) ? 0 : 10, 'linker_commerce_test_mail_to' => 'original@example.test' );
 	$users = array( 1 => (object) array( 'ID' => 1 ) );
@@ -132,6 +133,7 @@ foreach ( array( 'initial-state-write', 'totp', 'application-password', 'page-la
 	$passed = '' !== $failure && array_keys( $users ) === $expected_users && array_keys( $posts ) === array( 10, 11 ) && $options === $before_options
 		&& ! in_array( 1, $deleted_users, true ) && array() === array_intersect( array( 10, 11 ), $deleted_pages ) && array() === $factors && array() === $apps;
 	if ( 'failed-user-compensation' === $fault ) { $passed = $passed && $loud_compensation_failure; }
+	if ( 'unassigned-account' === $fault ) { $passed = $passed && 2 === count( $created_pages ); }
 	$results[] = array( 'case' => $fault, 'passed' => $passed, 'created_users' => count( $created_users ), 'created_pages' => count( $created_pages ), 'preexisting_preserved' => isset( $users[1], $posts[10], $posts[11] ), 'baseline_restored' => ! $loud_compensation_failure, 'manual_cleanup_required_reported' => $loud_compensation_failure );
 	if ( ! $passed ) { throw new RuntimeException( 'Offline fixture cleanup failed: ' . $fault . ' / ' . $failure ); }
 }

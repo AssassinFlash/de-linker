@@ -68,7 +68,9 @@ use Linker\Commerce\Mail\TestMode;
 			throw new RuntimeException( 'Local tester mail routing could not be enabled.' );
 		}
 		$account = (int) get_option( 'woocommerce_myaccount_page_id' );
-		if ( ! get_post( $account ) ) {
+		// Woo may create its page before Polylang is configured on a bare CI
+		// instance. Preserve that page; use owned EN/DE pages for the test.
+		if ( ! get_post( $account ) || ( function_exists( 'pll_get_post_language' ) && 'en' !== pll_get_post_language( $account ) ) ) {
 			$account = wp_insert_post(
 				array(
 					'post_type'    => 'page',
@@ -92,8 +94,10 @@ use Linker\Commerce\Mail\TestMode;
 		if ( ! $german ) {
 			if ( ! function_exists( 'pll_save_post_translations' ) || ! in_array( 'de', pll_languages_list(), true ) ) {
 				throw new RuntimeException( 'Configure the native EN/DE languages before the MFA test.' ); }
-			$state['account_translations'] = pll_get_post_translations( $account );
-			$german                        = wp_insert_post(
+			if ( ! in_array( $account, $state['created_pages'], true ) ) {
+				$state['account_translations'] = pll_get_post_translations( $account );
+			}
+			$german = wp_insert_post(
 				array(
 					'post_type'    => 'page',
 					'post_status'  => 'publish',
