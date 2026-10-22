@@ -224,6 +224,7 @@
 
 /* ── The guest chain: the frame ────────────────────────────────────────── */
 .linker-auth {
+	font-family: var(--proto-font-sans);
 	display: grid;
 	place-items: center;
 	padding: clamp(20px, 4vw, 48px) 0;
@@ -608,6 +609,16 @@
 	line-height: 1.2;
 	text-align: center;
 	cursor: pointer;
+}
+
+/* Woo's option label shares the component library's radio class. Its
+ * generated disc becomes an extra flex item and pushes the label text aside;
+ * the native input below already owns the complete choice hit area. */
+.linker-auth .form-row label.radio::before { content: none; }
+
+.linker-auth .form-row label.radio:hover {
+	border-color: var(--proto-teal-600);
+	background: var(--acct-fill-hover);
 }
 
 /* The pill's whole area is the input's own box: focusable, clickable, and
