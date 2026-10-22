@@ -12,7 +12,7 @@ namespace Linker\Commerce\Protection;
 /** A whole-message match never generalizes language, email or shared hosting. */
 final class Campaign {
 
-	public const VERSION  = 'transfer-fredmer-20261022-v1';
+	public const VERSION  = 'transfer-confirmed-20261022-v2';
 	public const DISABLED = 'linker_confirmed_campaign_disabled';
 
 	/**
@@ -28,6 +28,7 @@ final class Campaign {
 			return false;
 		}
 		$host = wp_parse_url( $match[1], PHP_URL_HOST );
-		return is_string( $host ) && 'fredmer.buzz' === strtolower( $host );
+		// Exact hosts independently confirmed from the saved incident messages; see docs/acceptance/2026-10-22/542-campaign-extension/README.md.
+		return is_string( $host ) && in_array( strtolower( $host ), array( 'fredmer.buzz', 'xtimex.buzz' ), true );
 	}
 }
