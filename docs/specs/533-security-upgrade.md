@@ -42,12 +42,12 @@
 | P1 分类时效 | 独立有界后台消费，排队和推理分开计量 | [独立后台派发](https://github.com/AssassinFlash/de-linker/pull/546) 已双评审/CI，并随 `003cedd3` 上线；正常客户线上时效待验收 | 原生 2s/8s 隔离 HTTP 夹具客户返回约 0.24–0.42s，排队约 0.10–0.27s；线上 LiteSpeed 和首次标签覆盖仍待组合验证；守原 10 秒绝对期限 |
 | P1 通知容量 | 原子节流、关键业务预留、攻击摘要、真实队列年龄与退信监测 | [原子预算与关键容量](https://github.com/AssassinFlash/de-linker/issues/545) 已双评审/精确 CI，并随 `003cedd3` 上线；旧 80 条历史保留并完成原生 pause/resume 账桥读回 | SMTP 主账号套餐 1000/24h 已在面板核实，app 预算另留裕量；并发不超额、旧账不重置、跨运输失败和回滚账桥；队列/SMTP/收件分开取证 |
 | P1 旧转发 | 移除已弃用 SunRiver Electric 的转发依赖 | 已获业主临场确认并删除唯一旧转发；面板为空 | 主邮箱套餐有效至 2028-03-09、历史邮件保留；规则前后截图本机保存；旧下游重试是否终止与下一封业务收件尚未验证 |
-| P1 VPS | 私有 POST 早鉴权、工程 loopback、专用代理 6MiB/30MiB 正常信封 | [VPS 边界](https://github.com/AssassinFlash/de-linker/issues/539) 已上线，运行保护门及 WordPress TLS 读回通过 | 70b2845d 精确 CI、配置本机备份；6 文件 SHA 相同；4 服务 active；28 匿名 POST 401；严格 TLS/固定 CA 的 WordPress 原生读取成功；完整工具 UI 待组合复验 |
+| P1 VPS | 私有 POST 早鉴权、工程 loopback、专用代理 6MiB/30MiB 正常信封 | [VPS 边界](https://github.com/AssassinFlash/de-linker/issues/539) 已上线，运行保护门及 WordPress TLS 读回通过 | 70b2845d 精确 CI、配置本机备份；6 文件 SHA 相同；4 服务 active；28 匿名 POST 401；严格 TLS/固定 CA 的 WordPress 原生读取成功；英文 Genie 正常返回卡和手册；德文兜底/失败恢复发现已可复现缺陷，[正常路径验收](https://github.com/AssassinFlash/de-linker/issues/563)处理中；完整工具 UI 待组合复验 |
 | P2 边缘与源站 | 当前权威 DNS/邮件记录导出、可信代理 IP、源站绕过封堵后再代理 | 业主明确无法获取阿里云账号并要求停止此线；暂不接入边缘代理 | 真实 NS dns23/24.hichina.com、腾讯 MX 已留存；无完整区导出/DS，不改 DNS，不声称边缘 WAF 已启用 |
 | P2 账号 | 高权限最小化、独立身份、MFA、应用密码和会话使用审计 | 原生后台代码编辑已关闭，管理 Woo 权限保留；MFA/使用审计未完成 | DISALLOW_FILE_EDIT 私密配置先备份后读回，edit_plugins/edit_themes false；设备持有人完成认证登记；不虚构 MFA 已启用 |
 | P2 共享 VPS 管理入口 | 先核对密钥/共享服务，再收窄 root 密码登录和必要网络面 | root 已设 prohibit-password，原密钥保留 | 两轮独立审查后的单指令原子更改；候选 sshd -t/-T、先武装定向回退、reload 后独立新连接、回退静止后再次新连接/策略/SHA 通过，五服务 active；其他认证策略未改 |
 | P2 入口与成本 | 注册/登录/重置、Woo 别名、Genie/附件/工程各真实写边界清点 | 已有入口/资源守卫；全站最终复验未完成 | 逐动作权限/proof/幂等/预算/隐私/直达消费者证据；不以组件出现在页面上代替生效 |
-| P2 日志、告警与恢复 | 失败前的尝试漏斗、容量/队列/服务告警、恢复演练 | 现有诊断是局部数据 | 尝试→准入→保存→分类→队列→SMTP→收件各自口径；有界保留；恢复不覆盖新真询盘 |
+| P2 日志、告警与恢复 | 失败前的尝试漏斗、容量/队列/服务告警、恢复演练 | 主机日志已补取；[WordPress/VPS恢复演练](../acceptance/2026-10-22/533/recovery-check.md)已完成数据/文件读取，完整启动与告警仍未验收 | 尝试→准入→保存→分类→队列→SMTP→收件各自口径；有界保留；恢复不覆盖新真询盘 |
 
 PHP 依据是 [运行时与厂商回补核实](https://github.com/AssassinFlash/de-linker/blob/5268d99c/docs/research/2026-10-22-incident-defense/RUNTIME-538.md)，以 [Hostinger 06:44 UTC 托管部署完成事件](https://statuspage.hostinger.com/incidents/pj2zs1lx3n9d) 为供应商确认。8.3.35 这个上游显示号不能独自证明有无 CloudLinux 回补。VPS 未安装 PHP；不在其上用 apt 去修另一台托管主机。
 
