@@ -1,2 +1,36 @@
-{"preflight": {"valid_verifications": 1, "heartbeat_age": 5.275547981262207, "assessment_enabled": true, "configuration": {"mode": "observe", "configured": true, "ready": true, "test_keys": false}}}
-{"before": {"valid_verifications": 1, "heartbeat_age": 5.275547981262207, "assessment_enabled": true, "configuration": {"mode": "observe", "configured": true, "ready": true, "test_keys": false}}, "after": {"mode": "enforce", "configured": true, "ready": true, "test_keys": false}}
+{
+  "readbacks": [
+    {
+      "preflight": {
+        "valid_verifications": 1,
+        "heartbeat_age": 5.275547981262207,
+        "assessment_enabled": true,
+        "configuration": {
+          "mode": "observe",
+          "configured": true,
+          "ready": true,
+          "test_keys": false
+        }
+      }
+    },
+    {
+      "before": {
+        "valid_verifications": 1,
+        "heartbeat_age": 5.275547981262207,
+        "assessment_enabled": true,
+        "configuration": {
+          "mode": "observe",
+          "configured": true,
+          "ready": true,
+          "test_keys": false
+        }
+      },
+      "after": {
+        "mode": "enforce",
+        "configured": true,
+        "ready": true,
+        "test_keys": false
+      }
+    }
+  ]
+}
