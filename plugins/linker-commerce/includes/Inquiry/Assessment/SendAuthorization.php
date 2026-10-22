@@ -52,7 +52,7 @@ final class SendAuthorization {
 					'policy'          => SendVerdict::POLICY,
 					'status'          => 'pending',
 					'snapshot_sha256' => self::hash( $data['snapshot'] ),
-					'source_sha256'   => self::source( $order ),
+					'source_sha256'   => self::snapshot_source( $data['snapshot'] ),
 					'review'          => self::review( $order ),
 					'routing'         => self::routing(),
 					'attempts'        => 0,
@@ -74,7 +74,7 @@ final class SendAuthorization {
 	 * @param int $id Source. Only schedules native durable work.
 	 */
 	public static function recover( int $id ): void {
-		$order = wc_get_order( $id );
+		$order = CurrentSource::order( $id );
 		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
@@ -162,7 +162,7 @@ final class SendAuthorization {
 	 * @param int $id Only one native background worker spends on a source at once.
 	 */
 	public static function process( int $id ): void {
-		$preflight = wc_get_order( $id );
+		$preflight = CurrentSource::order( $id );
 		if ( ! $preflight instanceof WC_Order ) {
 			return;
 		}
@@ -182,7 +182,7 @@ final class SendAuthorization {
 				$claimed = AuthorizationStore::edit(
 					$id,
 					static function ( array &$state ) use ( $id, &$input ): void {
-						$order = wc_get_order( $id );
+						$order = CurrentSource::order( $id );
 						if ( ! $order instanceof WC_Order ) {
 								return;
 						}
@@ -232,7 +232,7 @@ final class SendAuthorization {
 						if ( 'processing' !== ( $state['status'] ?? '' ) || ( $state['operation'] ?? '' ) !== $input['operation'] ) {
 							return;
 						}
-						$order = wc_get_order( $id );
+						$order = CurrentSource::order( $id );
 						if ( ! $order instanceof WC_Order ) {
 							$state['status'] = 'invalidated';
 							return;
@@ -283,7 +283,7 @@ final class SendAuthorization {
 				if ( 'approved' !== ( $state['status'] ?? '' ) ) {
 					return;
 				}
-				$order = wc_get_order( $id );
+				$order = CurrentSource::order( $id );
 				if ( ! $order instanceof WC_Order ) {
 					$state['status'] = 'invalidated';
 						return;
@@ -350,7 +350,15 @@ final class SendAuthorization {
 	 * @param WC_Order $order Native business facts without unrelated browser history.
 	 */
 	private static function source( WC_Order $order ): string {
-		$snapshot = Snapshot::make( $order, array(), false );
+		$current = CurrentSource::order( $order->get_id() );
+		return $current instanceof WC_Order ? self::snapshot_source( Snapshot::make( $current, array(), false ) ) : '';
+	}
+
+	/** Compare exactly the classified business source; unrelated live browser context is excluded.
+	 *
+	 * @param array<string,mixed> $snapshot Frozen or freshly read native facts.
+	 */
+	private static function snapshot_source( array $snapshot ): string {
 		unset( $snapshot['context'] );
 		return self::hash( $snapshot );
 	}
@@ -517,7 +525,7 @@ final class SendAuthorization {
 		if ( ! is_int( $id ) || $id < 1 || ! in_array( $purpose, array( 'team', 'receipt' ), true ) || NotificationHold::inquiry( $job ) !== $id ) {
 			return false;
 		}
-		$order = wc_get_order( $id );
+		$order = CurrentSource::order( $id );
 		if ( ! $order instanceof WC_Order ) {
 			return false;
 		}
@@ -538,7 +546,7 @@ final class SendAuthorization {
 			AuthorizationStore::edit(
 				'conversation-' . $job,
 				static function ( array &$state ) use ( $message ): void {
-					if ( ( $state['message_sha256'] ?? '' ) === self::message_hash( $message ) ) {
+					if ( 'normal' === ( $state['status'] ?? '' ) && ( $state['message_sha256'] ?? '' ) === self::message_hash( $message ) ) {
 						$state['status']       = 'delivered';
 						$state['delivered_at'] = time();
 					} }
@@ -580,7 +588,7 @@ final class SendAuthorization {
 		AuthorizationStore::edit(
 			$id,
 			static function ( array &$state ) use ( $id, $operation, $label ): void {
-				$order = wc_get_order( $id );
+				$order = CurrentSource::order( $id );
 				if ( ! $order instanceof WC_Order ) {
 					return;
 				}
@@ -623,13 +631,15 @@ final class SendAuthorization {
 		if ( ! is_array( $state ) ) {
 			throw new \RuntimeException( 'authorization_erasure_unavailable' );
 		}
-		if ( array() === $state ) {
+		$order->read_meta_data( true );
+		if ( array() === $state && SendVerdict::POLICY !== $order->get_meta( self::MARKER ) ) {
 			return;
 		}
-		$jobs    = $state['jobs'] ?? array();
+		$jobs    = array();
 		$revoked = AuthorizationStore::edit(
 			$id,
-			static function ( array &$state ): void {
+			static function ( array &$state ) use ( &$jobs ): void {
+				$jobs             = $state['jobs'] ?? array();
 				$state['status']  = 'erased';
 				$state['verdict'] = SendVerdict::unknown( 'erased' );
 			}
@@ -640,12 +650,7 @@ final class SendAuthorization {
 		foreach ( $jobs as $entry ) {
 			$job = (int) ( $entry['id'] ?? 0 );
 			if ( $job > 0 ) {
-				delete_post_meta( $job, '_linker_mail_message' );
-				wp_cache_delete( $job, 'post_meta' );
-				if ( metadata_exists( 'post', $job, '_linker_mail_message' ) ) {
-					throw new \RuntimeException( 'authorization_mail_erasure_unavailable' );
-				}
-			}
+				( new JobStore() )->erase_message( $job ); }
 		}
 		$order->read_meta_data( true );
 		$data = Queue::data( $order );
@@ -732,6 +737,22 @@ final class SendAuthorization {
 				$order->read_meta_data( true );
 				if ( $order->get_meta( NotificationHold::META ) || $order->get_meta( NotificationHold::RELEASED ) !== $event ) {
 					throw new \RuntimeException( 'authorization_release_unconfirmed' );
+				}
+				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) ) {
+					$released = \Linker\Commerce\Protection\IntakeStore::edit(
+						static function ( array &$registry ) use ( $order ): array {
+							$request = $order->get_meta( \Linker\Commerce\Protection\BusinessRecord::REQUEST );
+							foreach ( $registry['entries'] as $key => $entry ) {
+								if ( $order->get_id() === (int) ( $entry['order'] ?? 0 ) || ( $key === $request && in_array( (int) ( $entry['order'] ?? 0 ), array( 0, $order->get_id() ), true ) ) ) {
+									unset( $registry['entries'][ $key ] );
+								}
+							}
+							\Linker\Commerce\Protection\IntakeStore::save( $registry );
+							return array();
+						}
+					);
+					if ( is_wp_error( $released ) ) {
+						throw new \RuntimeException( 'authorization_intake_release_unconfirmed' ); }
 				}
 				$state['staff_release'] = $event;
 				$state['producer']      = 'human_override';

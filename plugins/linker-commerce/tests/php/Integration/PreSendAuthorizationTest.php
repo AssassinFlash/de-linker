@@ -336,10 +336,11 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 * @testWith ["normal"]
 	 * ["malicious"]
 	 * ["erase"]
+	 * ["changed"]
 	 * @param string $decision Independent conversation classification.
 	 */
 	public function test_conversation_content_is_persisted_pending_and_cannot_borrow_an_inquiry_permit( string $decision ): void {
-		$this->provider( 'erase' === $decision ? 'normal' : $decision );
+		$this->provider( in_array( $decision, array( 'erase', 'changed' ), true ) ? 'normal' : $decision );
 		$messages = array(
 			array(
 				'role'     => 'user',
@@ -360,7 +361,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 				wp_delete_post( $id, true );
 			}
 		);
-		$source = static fn( $current, int $candidate, array $frozen ): bool=>$candidate === $id && $frozen === $messages;
+		update_post_meta( $id, '_pre_send_fixture_transcript', $messages );
+		$source = static fn( $current, int $candidate, array $frozen ): bool=>$candidate === $id && get_post_meta( $id, '_pre_send_fixture_transcript', true ) === $frozen;
 		add_filter( 'linker_commerce_conversation_mail_source_current', $source, 10, 3 );
 		$this->later(
 			static function () use ( $source ): void {
@@ -390,20 +392,68 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 				delete_option( \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . 'conversation-' . $job );
 			}
 		);
+		if ( 'changed' === $decision ) {
+			$peer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+			$peer->set_prefix( $GLOBALS['wpdb']->prefix );
+			$hits   = 0;
+			$change = static function ( $pre, $args, $url ) use ( $peer, $id, $messages, &$hits ) {
+				if ( str_ends_with( $url, '/inquiries/assess' ) ) {
+					global $wpdb;
+					$changed               = $messages;
+					$changed[0]['content'] = 'Changed native transcript from another connection.';
+					$sql                   = $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value=%s WHERE post_id=%d AND meta_key='_pre_send_fixture_transcript'", maybe_serialize( $changed ), $id );
+					self::assertIsString( $sql );
+					$hits = $peer->query( $sql );
+				}
+				return $pre;
+			};
+			add_filter( 'pre_http_request', $change, 20, 3 );
+			try {
+				( new \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization() )->process( $job ); } finally {
+				remove_filter( 'pre_http_request', $change, 20 );
+				$peer->close(); }
+				self::assertSame( 1, $hits );
+				$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( 'conversation-' . $job );
+				self::assertIsArray( $state );
+				self::assertSame( 'invalidated', $state['status'] );
+				self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+				return;
+		}
 		( new \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization() )->process( $job );
 		$loaded = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
 		self::assertNotNull( $loaded );
 		if ( 'erase' === $decision ) {
-			wp_delete_post( $id, true );
-			\Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::recover_job( $job );
-			$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( 'conversation-' . $job );
-			self::assertIsArray( $state );
-			self::assertSame( 'erased', $state['status'] );
-			self::assertFalse( \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::allows( $loaded['message'], $job ) );
-			self::assertSame( '', get_post_meta( $job, \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::SOURCE, true ) );
-			self::assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
-			self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
-			return;
+			$late         = null;
+			$late_enqueue = static function ( int $deleted ) use ( $id, $messages, &$late ): void {
+				if ( $deleted === $id ) {
+					$late = apply_filters(
+						\Linker\Commerce\Genie\Module::SEND_FILTER,
+						false,
+						array(
+							'conversation_id' => $id,
+							'to'              => self::TESTER,
+							'locale'          => 'de',
+							'messages'        => $messages,
+						)
+					);
+				}
+			};
+			add_action( 'before_delete_post', $late_enqueue, 20 );
+			try {
+				wp_delete_post( $id, true ); } finally {
+				remove_action( 'before_delete_post', $late_enqueue, 20 ); }
+				self::assertFalse( $late );
+				self::assertCount( 1, self::mail_jobs_after( $marker ) );
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $loaded['message'], $job );
+				\Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::recover_job( $job );
+				$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( 'conversation-' . $job );
+				self::assertIsArray( $state );
+				self::assertSame( 'erased', $state['status'] );
+				self::assertFalse( \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::allows( $loaded['message'], $job ) );
+				self::assertSame( '', get_post_meta( $job, \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::SOURCE, true ) );
+				self::assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
+				self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+				return;
 		}
 		self::assertSame( 'normal' === $decision, \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::allows( $loaded['message'], $job ) );
 		if ( 'malicious' === $decision ) {
@@ -898,7 +948,96 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			self::assertSame( 'yes', $order->get_meta( '_linker_fixed_receipt' ) );
 		}
 	}
-	/** Service-wire confidence and escalation eligibility remain conservative. */
+	/** A second connection cannot change business facts behind the request's native caches.
+	 *
+	 * @testWith ["note"]
+	 *           ["billing"]
+	 *           ["quantity"]
+	 *           ["account"]
+	 *           ["sku"]
+	 * @param string $field Source field changed during the actual service callback.
+	 */
+	public function test_peer_source_changes_during_provider_io_cannot_receive_normal_permission( string $field ): void {
+		$this->provider( 'normal' );
+		$order    = $this->submit();
+		$customer = $this->customer();
+		$product  = $this->product( '100' );
+		$product->set_sku( 'pre-send-frozen-' . $product->get_id() );
+		$product->save();
+		$order->set_customer_id( $customer->get_id() );
+		$item = $order->add_product( $product, 1 );
+		self::assertGreaterThan( 0, $item );
+		$order->save();
+		// Re-freeze this native fixture before classification, never through a public input.
+		$order->delete_meta_data( Queue::META );
+		$order->save_meta_data();
+		delete_option( \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . $order->get_id() );
+		\Linker\Commerce\Inquiry\Assessment\SendAuthorization::defer( $order );
+		$peer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$peer->set_prefix( $GLOBALS['wpdb']->prefix );
+		$hits   = 0;
+		$change = static function ( $pre, $args, $url ) use ( $peer, $order, $customer, $product, $item, $field, &$hits ) {
+			if ( ! str_ends_with( $url, '/inquiries/assess' ) ) {
+				return $pre; }
+			global $wpdb;
+			if ( 'quantity' === $field ) {
+				$sql = $wpdb->prepare( "UPDATE {$wpdb->prefix}woocommerce_order_itemmeta SET meta_value='9' WHERE order_item_id=%d AND meta_key='_qty'", $item );
+			} elseif ( 'account' === $field ) {
+				$sql = $wpdb->prepare( "UPDATE {$wpdb->usermeta} SET meta_value='rejected' WHERE user_id=%d AND meta_key=%s", $customer->get_id(), \Linker\Commerce\Registration\Approval::STATUS_META );
+			} elseif ( 'sku' === $field ) {
+				$sql = $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value='changed-peer-sku' WHERE post_id=%d AND meta_key='_sku'", $product->get_id() );
+			} elseif ( \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ) {
+				$sql = 'billing' === $field ? $wpdb->prepare( "UPDATE {$wpdb->prefix}wc_order_addresses SET first_name='Changed peer' WHERE order_id=%d AND address_type='billing'", $order->get_id() ) : $wpdb->prepare( "UPDATE {$wpdb->prefix}wc_orders SET customer_note='Changed peer' WHERE id=%d", $order->get_id() );
+			} else {
+				$sql = 'billing' === $field ? $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_value='Changed peer' WHERE post_id=%d AND meta_key='_billing_first_name'", $order->get_id() ) : $wpdb->prepare( "UPDATE {$wpdb->posts} SET post_excerpt='Changed peer' WHERE ID=%d", $order->get_id() );
+			}
+			self::assertIsString( $sql );
+			$hits = $peer->query( $sql );
+			return $pre;
+		};
+		$marker = self::newest_mail_job();
+		add_filter( 'pre_http_request', $change, 20, 3 );
+		try {
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() ); } finally {
+			remove_filter( 'pre_http_request', $change, 20 );
+			$peer->close(); }
+			self::assertSame( 1, $hits );
+			$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+			self::assertIsArray( $state );
+			self::assertSame( 'invalidated', $state['status'] );
+			self::assertSame( array(), self::mail_jobs_after( $marker ) );
+	}
+	/** A handoff published before the erasure mutex is acquired is included in copy removal. */
+	public function test_erasure_reads_the_job_set_inside_its_authoritative_record_lock(): void {
+		$this->provider( 'normal' );
+		$order = $this->submit();
+		global $wpdb;
+		$lock    = 'linker-send-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $order->get_id() );
+		$hits    = 0;
+		$publish = static function ( string $sql ) use ( $lock, $order, &$hits ): string {
+			if ( 0 === $hits && str_contains( $sql, 'SELECT GET_LOCK(' ) && str_contains( $sql, $lock ) ) {
+				++$hits;
+				\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
+			}
+			return $sql;
+		};
+		$marker  = self::newest_mail_job();
+		add_filter( 'query', $publish, 998 );
+		try {
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::erase( $order ); } finally {
+			remove_filter( 'query', $publish, 998 ); }
+			self::assertSame( 1, $hits );
+			$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+			self::assertIsArray( $state );
+			self::assertSame( 'erased', $state['status'] );
+			$jobs = self::mail_jobs_after( $marker );
+			self::assertCount( 2, $jobs );
+			foreach ( $jobs as $job ) {
+				wp_cache_delete( $job, 'post_meta' );
+				self::assertSame( '', get_post_meta( $job, '_linker_mail_message', true ) );
+				self::assertSame( 'erased', get_post_field( 'post_title', $job, 'raw' ) ); }
+	}
+	/** Golden responses enforce conservative probability mass and escalation eligibility. */
 	public function test_probability_mass_never_increases_the_selected_confidence(): void {
 		foreach ( array( 'normal-under-mass', 'normal-excess-mass-escalated' )as$name ) {
 			$wire = json_decode( (string) file_get_contents( dirname( __DIR__, 2 ) . '/fixtures/pre-send/' . $name . '.json' ), true );
@@ -918,7 +1057,10 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$escalated['raw']['primary'] = $primary['raw']['primary'];
 		// A coherent high-confidence primary must never go through escalation, even when both say normal.
 		self::assertSame( 'unknown', \Linker\Commerce\Inquiry\Assessment\SendVerdict::validate( $escalated, $escalated['binding'] )['decision'] );
-		$a                                    = &$escalated['raw']['primary']['answers'];
+		$binding = $escalated['binding'];
+		self::assertIsArray( $binding );
+		$malicious                            = $escalated;
+		$a                                    = $malicious['raw']['primary']['answers'];
 		$a['classification']['choice']        = 'malicious';
 		$a['classification']['probabilities'] = array(
 			'normal'    => 0.02,
@@ -928,6 +1070,8 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		$a['basis']['choice']                 = 'fraud_or_phishing';
 		foreach ( $a['basis']['probabilities'] as $key => $number ) {
 			$a['basis']['probabilities'][ $key ] = 'fraud_or_phishing' === $key ? 0.96 : 0.0; }
-		self::assertSame( 'unknown', \Linker\Commerce\Inquiry\Assessment\SendVerdict::validate( $escalated, $escalated['binding'] )['decision'] );
+		$malicious['raw']['primary']['answers'] = $a;
+		$malicious['binding']                   = $binding;
+		self::assertSame( 'unknown', \Linker\Commerce\Inquiry\Assessment\SendVerdict::validate( $malicious, $malicious['binding'] )['decision'] );
 	}
 }
