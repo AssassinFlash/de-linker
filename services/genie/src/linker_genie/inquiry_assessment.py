@@ -109,11 +109,11 @@ def _confidence(answer: dict[str, Any]) -> float | None:
     probabilities = answer["probabilities"]
     if not probabilities:
         return declared if isinstance(declared, (int, float)) else None
-    selected = probabilities[answer["choice"]]
+    selected = float(probabilities[answer["choice"]])
     # Spec 533: observed provider mass .99 has no precision guarantee. Never
     # raise confidence for missing mass; excess mass can only lower it.
     conservative = min(selected, selected / max(1.0, math.fsum(probabilities.values())))
-    return min(declared, conservative) if declared is not None else conservative
+    return min(float(declared), conservative) if declared is not None else conservative
 
 
 def _parse_answers(raw: Any) -> dict[str, Any]:

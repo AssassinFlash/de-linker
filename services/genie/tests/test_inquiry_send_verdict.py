@@ -9,6 +9,7 @@ import pytest
 from pydantic import ValidationError
 
 from linker_genie import inquiry_assessment as assessment
+from linker_genie.jev import MODEL
 
 
 @pytest.fixture(autouse=True)
@@ -162,7 +163,7 @@ def test_valid_primary_shortfall_uses_only_official_escalation(
         assessment.ESCALATION_ENDPOINT,
     ]
     assert [json.loads(request.content)["model"] for request in seen] == [
-        assessment.MODEL,
+        MODEL,
         assessment.ESCALATION_MODEL,
     ]
     assert (result["decision"], result["reason"]) == ("malicious", "escalated")

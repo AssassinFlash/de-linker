@@ -12,6 +12,7 @@ import httpx
 import pytest
 
 from linker_genie import inquiry_assessment as assessment
+from linker_genie.inquiry_rubric import QUESTIONS
 from linker_genie.jev import MODEL
 
 
@@ -151,7 +152,7 @@ def test_full_business_snapshot_and_native_channel_are_preserved() -> None:
     body = json.loads(request.content)
     assert body == {
         "model": MODEL,
-        "questions": assessment.QUESTIONS,
+        "questions": QUESTIONS,
         "state": state,
     }
     assert result["raw"]["primary"]["answers"]["classification"]["choice"] == "normal"
