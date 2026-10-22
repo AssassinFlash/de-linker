@@ -627,9 +627,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		);
 		self::assertInstanceOf( WP_Error::class, $released );
 		self::assertSame( array(), self::mail_jobs_after( $marker ) );
-		$order->read_meta_data( true );
-		self::assertSame( 'yes', $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) );
-		self::assertSame( '', $order->get_meta( Intake::META ) );
+		$persisted = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() );
+		self::assertInstanceOf( WC_Order::class, $persisted );
+		self::assertSame( 'yes', $persisted->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) );
+		self::assertSame( '', $persisted->get_meta( Intake::META ) );
 		wp_cache_delete( IntakeStore::OPTION, 'options' );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
 	}

@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Inquiry\Assessment\AsyncRunner;
+use Linker\Commerce\Inquiry\Assessment\CurrentSource;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Assessment\Result;
@@ -310,10 +311,14 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 	 *
 	 * @param WC_Order $order Local record.
 	 * @return array<string, mixed> Current persisted assessment.
+	 * @throws \RuntimeException An unavailable native record is never treated as completed.
 	 */
 	private function fresh_data( WC_Order $order ): array {
-		$order->read_meta_data( true );
-		return Queue::data( $order );
+		$current = CurrentSource::order( $order->get_id() );
+		if ( ! $current instanceof WC_Order ) {
+			throw new \RuntimeException( 'The native peer result could not be read authoritatively.' );
+		}
+		return Queue::data( $current );
 	}
 
 	/**
