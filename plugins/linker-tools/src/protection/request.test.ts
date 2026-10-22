@@ -25,6 +25,66 @@ afterEach( () => {
 	vi.unstubAllGlobals();
 } );
 
+test( 'PDF verification stays by its visible download control before the long report', async () => {
+	document.body.innerHTML =
+		'<main><form><textarea>Retained project</textarea></form>' +
+		'<section><div data-linker-resource-anchor="report_pdf"><button>Download PDF</button></div>' +
+		'<article id="long-report">Full design report</article></section></main>';
+	const anchor = document.querySelector< HTMLElement >(
+		'[data-linker-resource-anchor="report_pdf"]'
+	)!;
+	vi.spyOn( anchor, 'getClientRects' ).mockReturnValue( [
+		{},
+	] as unknown as DOMRectList );
+	const fetcher = vi.fn< typeof fetch >( async () => new Response( 'PDF' ) );
+	await resourceFetch(
+		fetcher,
+		'https://site.test/wp-json/linker-ai/v1/engine/report/pdf',
+		{ method: 'POST', body: '{"anchor":"long-report"}' }
+	);
+	const widget = document.querySelector(
+		'[data-linker-resource-verification="report_pdf"]'
+	);
+	expect( widget?.parentElement ).toBe( anchor );
+	expect( anchor.querySelector( '[role="status"]' ) ).not.toBeNull();
+	expect( anchor.querySelector( 'button' )?.textContent ).toBe(
+		'Download PDF'
+	);
+	expect( document.querySelector( 'textarea' )?.value ).toBe(
+		'Retained project'
+	);
+} );
+
+test( 'a hidden PDF anchor falls back to the native visible form', async () => {
+	document.body.innerHTML =
+		'<main><form><textarea>Retained project</textarea></form>' +
+		'<div data-linker-resource-anchor="report_pdf"><button>Download PDF</button></div></main>';
+	const anchor = document.querySelector< HTMLElement >(
+		'[data-linker-resource-anchor="report_pdf"]'
+	)!;
+	const rects = vi
+		.spyOn( anchor, 'getClientRects' )
+		.mockReturnValue( [ {} ] as unknown as DOMRectList );
+	const form = document.querySelector( 'form' )!;
+	vi.spyOn( form, 'getClientRects' ).mockReturnValue( [
+		{},
+	] as unknown as DOMRectList );
+	const fetcher = vi.fn< typeof fetch >( async () => new Response( 'PDF' ) );
+	const url = 'https://site.test/wp-json/linker-ai/v1/engine/report/pdf';
+	const init = { method: 'POST', body: '{"anchor":"hidden-fallback"}' };
+	await resourceFetch( fetcher, url, init );
+	const old = anchor.querySelector( '[data-linker-resource-verification]' )!;
+	expect( old ).not.toBeNull();
+	rects.mockReturnValue( [] as unknown as DOMRectList );
+	await resourceFetch( fetcher, url, init );
+	expect( old.isConnected ).toBe( false );
+	expect( form.previousElementSibling ).toHaveAttribute(
+		'data-linker-resource-verification',
+		'report_pdf'
+	);
+	expect( anchor.querySelector( '[role="status"]' ) ).toBeNull();
+} );
+
 test( 'reads never create proof/model work; selecting history uses a write scope', async () => {
 	const fetcher = vi.fn< typeof fetch >( async () => new Response( '{}' ) );
 	await resourceFetch(

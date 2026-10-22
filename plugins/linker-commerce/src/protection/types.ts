@@ -13,6 +13,7 @@ export interface TurnstileOptions {
 	action: string;
 	language: 'en' | 'de';
 	appearance: 'interaction-only';
+	'before-interactive-callback': () => void;
 	callback: ( token: string ) => void;
 	'error-callback': () => void;
 	'expired-callback': () => void;

@@ -95,6 +95,15 @@ if ( typeof document !== 'undefined' ) {
 
 function containerFor( action: string ): HTMLElement {
 	const visible = ( element: Element ) => element.getClientRects().length > 0;
+	const anchor = Array.from(
+		document.querySelectorAll< HTMLElement >(
+			'[data-linker-resource-anchor]'
+		)
+	).find(
+		( candidate ) =>
+			candidate.dataset.linkerResourceAnchor === action &&
+			visible( candidate )
+	);
 	const forms = Array.from(
 		document.querySelectorAll< HTMLFormElement >(
 			'form.linker-genie-app__composer, form'
@@ -111,7 +120,10 @@ function containerFor( action: string ): HTMLElement {
 	const old = containers.get( action );
 	if (
 		old?.isConnected &&
-		( ! form || old.parentElement === form.parentElement )
+		( anchor
+			? old.parentElement === anchor
+			: ! old.closest( '[data-linker-resource-anchor]' ) &&
+				( ! form || old.parentElement === form.parentElement ) )
 	) {
 		return old;
 	}
@@ -129,7 +141,7 @@ function containerFor( action: string ): HTMLElement {
 			.state;
 		if ( state === 'checking' ) {
 			status.textContent = __( 'Checking verification…', 'linker-tools' );
-		} else if ( state === 'ready' ) {
+		} else if ( state === 'ready' || state === 'expired' ) {
 			status.textContent = '';
 		} else {
 			status.textContent = __(
@@ -138,7 +150,9 @@ function containerFor( action: string ): HTMLElement {
 			);
 		}
 	} );
-	if ( form?.parentElement ) {
+	if ( anchor ) {
+		anchor.append( status, container );
+	} else if ( form?.parentElement ) {
 		form.before( status, container );
 	} else {
 		( document.querySelector( 'main' ) ?? document.body ).append(

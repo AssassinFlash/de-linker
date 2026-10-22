@@ -186,6 +186,19 @@ export class ProtectionClient implements PublicProtection {
 					action,
 					language: this.config.language,
 					appearance: 'interaction-only',
+					'before-interactive-callback': () => {
+						if (
+							this.attempts.get( action ) === attempt &&
+							! attempt.token &&
+							attempt.expires !== 0 &&
+							attempt.container.isConnected
+						) {
+							attempt.container.scrollIntoView( {
+								block: 'center',
+								inline: 'nearest',
+							} );
+						}
+					},
 					callback: ( value ) => {
 						clearTimeout( timer );
 						resolve( value );

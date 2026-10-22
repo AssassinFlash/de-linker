@@ -9,6 +9,8 @@
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig( {
+	// The resource integration fixture executes the sibling Commerce client.
+	server: { fs: { allow: [ '..' ] } },
 	test: {
 		environment: 'jsdom',
 		globals: false,

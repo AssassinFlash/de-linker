@@ -60,6 +60,24 @@ async function calculate() {
 	} );
 }
 
+test( 'the native report offers its PDF verification anchor at the download control', async () => {
+	const { engine } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const download = await screen.findByRole( 'button', {
+		name: 'Download PDF',
+	} );
+	expect(
+		download.closest( '[data-linker-resource-anchor="report_pdf"]' )
+	).not.toBeNull();
+} );
+
 afterEach( () => {
 	resetLocaleData( {}, 'linker-tools' );
 } );

@@ -126,7 +126,10 @@ export function ReportView( {
 						alt={ __( 'Your logo', 'linker-tools' ) }
 					/>
 				) : null }
-				<div className="linker-report__download">
+				<div
+					className="linker-report__download"
+					data-linker-resource-anchor="report_pdf"
+				>
 					<button
 						type="button"
 						className="linker-button linker-button--primary"

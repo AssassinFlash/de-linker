@@ -9,7 +9,10 @@ afterEach( () => {
 	document.body.replaceChildren();
 } );
 
-function fixture( api = 'https://example.test/wp-json/linker/v1/protection' ) {
+function fixture(
+	api = 'https://example.test/wp-json/linker/v1/protection',
+	autoResolve = true
+) {
 	const container = document.createElement( 'div' );
 	document.body.append( container );
 	const client = new ProtectionClient( {
@@ -21,7 +24,9 @@ function fixture( api = 'https://example.test/wp-json/linker/v1/protection' ) {
 	let options: TurnstileOptions;
 	const render = vi.fn( ( _container, received: TurnstileOptions ) => {
 		options = received;
-		queueMicrotask( () => received.callback( 'synthetic-token' ) );
+		if ( autoResolve ) {
+			queueMicrotask( () => received.callback( 'synthetic-token' ) );
+		}
 		return 'widget-id';
 	} );
 	window.turnstile = { render, remove: vi.fn() };
@@ -79,6 +84,65 @@ test.each( [
 		token: 'synthetic-token',
 	} );
 	f.client.reset( 'inquiry' );
+} );
+
+test( 'only an interactive current challenge scrolls into view', async () => {
+	const f = fixture( undefined, false );
+	const scroll = vi.fn();
+	f.container.scrollIntoView = scroll;
+	const pending = f.client.proof( 'report_pdf', f.container );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	expect( scroll ).not.toHaveBeenCalled();
+	expect( f.options() ).toHaveProperty(
+		'before-interactive-callback',
+		expect.any( Function )
+	);
+	const interactive = Reflect.get(
+		f.options(),
+		'before-interactive-callback'
+	) as () => void;
+	// A wall-clock jump is not a provider expiry or the running challenge timer.
+	vi.spyOn( Date, 'now' ).mockReturnValue( Date.now() + 120001 );
+	interactive();
+	f.options().callback( 'synthetic-token' );
+	await expect( pending ).resolves.toBe( 'server-proof' );
+	interactive();
+	expect( scroll ).toHaveBeenCalledExactlyOnceWith( {
+		block: 'center',
+		inline: 'nearest',
+	} );
+	f.client.reset( 'report_pdf' );
+} );
+
+test( 'cancelled, replaced and disconnected challenges cannot scroll the visitor', async () => {
+	const f = fixture( undefined, false );
+	const scroll = vi.fn();
+	f.container.scrollIntoView = scroll;
+	const first = f.client.proof( 'report_pdf', f.container );
+	const cancelled = first.catch( ( error: unknown ) => error );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledOnce() );
+	const staleInteractive = Reflect.get(
+		f.options(),
+		'before-interactive-callback'
+	) as () => void;
+	f.client.reset( 'report_pdf' );
+	expect( await cancelled ).toEqual( new Error( 'verification_cancelled' ) );
+	const next = f.client.proof( 'report_pdf', f.container );
+	const nextCancelled = next.catch( ( error: unknown ) => error );
+	await vi.waitFor( () => expect( f.render ).toHaveBeenCalledTimes( 2 ) );
+	expect( staleInteractive ).toBeTypeOf( 'function' );
+	staleInteractive();
+	f.container.remove();
+	const interactive = Reflect.get(
+		f.options(),
+		'before-interactive-callback'
+	) as () => void;
+	interactive();
+	expect( scroll ).not.toHaveBeenCalled();
+	f.client.reset( 'report_pdf' );
+	expect( await nextCancelled ).toEqual(
+		new Error( 'verification_cancelled' )
+	);
 } );
 
 test( 'failed validation leaves form input intact and a fresh attempt can recover', async () => {
