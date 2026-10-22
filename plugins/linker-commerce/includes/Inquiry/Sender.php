@@ -175,7 +175,8 @@ final class Sender {
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
 		\Linker\Commerce\Protection\Intake::prepare( $order );
 		Assessment\Queue::prepare( $order, $context );
-		if ( 0 === $order->get_id() ) { $order->update_meta_data( Assessment\SendAuthorization::MARKER, Assessment\SendVerdict::POLICY ); }
+		if ( 0 === $order->get_id() ) {
+			$order->update_meta_data( Assessment\SendAuthorization::MARKER, Assessment\SendVerdict::POLICY ); }
 	}
 
 	/**

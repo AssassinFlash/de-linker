@@ -179,7 +179,8 @@ final class Reviews {
 				}
 			}
 		);
-		if ( is_array( $result ) ) { SendAuthorization::reviewed( $id, $operation, (string) ( $input['label'] ?? '' ) ); }
+		if ( is_array( $result ) ) {
+			SendAuthorization::reviewed( $id, $operation, (string) ( $input['label'] ?? '' ) ); }
 		return $result;
 	}
 

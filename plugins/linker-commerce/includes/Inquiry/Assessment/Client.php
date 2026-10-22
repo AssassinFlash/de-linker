@@ -2,7 +2,6 @@
 /**
  * Authenticated background call to the existing Genie service.
  *
- *
  * @package Linker\Commerce
  */
 
@@ -19,15 +18,12 @@ final class Client {
 		return '' !== (string) get_option( 'linker_genie_url', '' ) && defined( 'LINKER_GENIE_SERVICE_TOKEN' ) && '' !== (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' );
 	}
 
-	/**
-	 * One service request bounded by the original acceptance deadline.
+	/** One service request bounded by the current background model-attempt deadline.
 	 *
-	 *
- * @param array<string, mixed> $state Frozen current submission.
-	 *
- * @param float                $deadline Absolute acceptance deadline.
-	 *
- * @return array<string, mixed>
+	 * @param array<string, mixed> $state Frozen current submission.
+	 * @param float                $deadline Absolute claimed model-attempt deadline.
+	 * @param array<string,mixed>  $binding Exact server source binding.
+	 * @return array<string, mixed>
 	 */
 	public function assess( array $state, float $deadline, array $binding = array() ): array {
 		$remaining = $deadline - microtime( true );
@@ -62,7 +58,8 @@ final class Client {
 		if ( is_wp_error( $response ) ) {
 			return SendVerdict::unknown( microtime( true ) >= $deadline ? 'deadline' : 'service_unavailable' );
 		}
-		if ( microtime( true ) >= $deadline ) { return SendVerdict::unknown( 'deadline' ); }
+		if ( microtime( true ) >= $deadline ) {
+			return SendVerdict::unknown( 'deadline' ); }
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
 			return SendVerdict::unknown( 'service_unavailable' );
 		}

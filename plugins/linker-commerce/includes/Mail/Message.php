@@ -2,7 +2,6 @@
 /**
  * A message as wp_mail() would send it.
  *
- *
  * @package Linker\Commerce
  */
 
@@ -30,10 +29,8 @@ final class Message {
 	/**
 	 * Marks either native wp_mail header form as an internal notification.
 	 *
-	 *
- * @param  string|string[] $headers Original headers.
-	 *
- * @return ($headers is string ? string : string[])
+	 * @param  string|string[] $headers Original headers.
+	 * @return ($headers is string ? string : string[])
 	 */
 	public static function mark_internal( array|string $headers ): array|string {
 		if ( is_string( $headers ) ) {
@@ -43,23 +40,16 @@ final class Message {
 		return $headers;
 	}
 
-	/**
-	 * Sets up the message.
+	/** Sets up the message.
 	 *
-	 *
- * @param string[] $to          Recipients.
-	 *
- * @param string   $subject     Subject.
-	 *
- * @param string   $body        Body.
-	 *
- * @param string[] $headers     Header lines, "Name: value".
-	 *
- * @param string[] $attachments Paths of attached files.
-	 *
- * @param bool     $critical    Server-owned producer priority.
-	 *
- * @param string   $category    Trusted native producer category.
+	 * @param string[]            $to          Recipients.
+	 * @param string              $subject     Subject.
+	 * @param string              $body        Body.
+	 * @param string[]            $headers     Header lines, "Name: value".
+	 * @param string[]            $attachments Paths of attached files.
+	 * @param bool                $critical    Server-owned producer priority.
+	 * @param string              $category    Trusted native producer category.
+	 * @param array<string,mixed> $origin Native producer/source witness.
 	 */
 	public function __construct(
 		public readonly array $to,
@@ -88,8 +78,7 @@ final class Message {
 	/**
 	 * The message of a wp_mail() call, read on pre_wp_mail.
 	 *
-	 *
- * @param array<string, mixed> $atts The call's to, subject, message, headers and attachments.
+	 * @param array<string, mixed> $atts The call's to, subject, message, headers and attachments.
 	 */
 	public static function from_wp_mail( array $atts ): self {
 		$headers      = array();
@@ -146,7 +135,7 @@ final class Message {
 		$headers[] = sprintf( 'From: %s <%s>', $from_name, $from_email );
 		$headers[] = sprintf( 'Content-Type: %s; charset=%s', $content_type, $charset );
 
-		$origin = Producer::origin( $atts );
+		$origin  = Producer::origin( $atts );
 		$subject = $atts['subject'] ?? '';
 		$body    = $atts['message'] ?? '';
 		$message = new self(
@@ -162,11 +151,9 @@ final class Message {
 		return NativeOrigin::seal( $message );
 	}
 
-	/**
-	 * The message as a JSON-ready array, for the queue.
+	/** The message as a JSON-ready array, for the queue.
 	 *
-	 *
- * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[], critical: bool, category: string}
+	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[], critical: bool, category: string, origin: array<string,mixed>}
 	 */
 	public function to_array(): array {
 		return array(
@@ -184,8 +171,7 @@ final class Message {
 	/**
 	 * A message stored with to_array().
 	 *
-	 *
- * @param array<string, mixed> $data Stored message.
+	 * @param array<string, mixed> $data Stored message.
 	 */
 	public static function from_array( array $data ): self {
 		$subject = $data['subject'] ?? '';
@@ -205,12 +191,9 @@ final class Message {
 	/**
 	 * A string or list of strings as a list of non-empty strings.
 	 *
-	 *
- * @param  mixed            $value     Value.
-	 *
- * @param  non-empty-string $separator Separator of a string value ("\n" for headers, "," for recipients).
-	 *
- * @return list<string>
+	 * @param  mixed            $value     Value.
+	 * @param  non-empty-string $separator Separator of a string value ("\n" for headers, "," for recipients).
+	 * @return list<string>
 	 */
 	private static function lines( $value, string $separator = "\n" ): array {
 		$items = is_array( $value ) ? $value : explode( $separator, is_string( $value ) ? str_replace( "\r\n", "\n", $value ) : '' );

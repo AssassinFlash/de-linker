@@ -197,7 +197,8 @@ final class Outbox {
 			return false;
 		}
 		if ( ! \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ) {
-			if ( $job_id < 1 ) { $this->jobs->create( $message ); }
+			if ( $job_id < 1 ) {
+				$this->jobs->create( $message ); }
 			return false;
 		}
 		$now       = time();

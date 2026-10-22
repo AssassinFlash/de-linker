@@ -59,10 +59,16 @@ final class InquiryReceivedEmail extends CustomerOrderEmail {
 	}
 
 	/** Capture the native receipt without sending or spending a mail allowance.
+	 *
 	 * @param WC_Order $order Native inquiry.
 	 */
 	public function capture( WC_Order $order ): ?\Linker\Commerce\Mail\Message {
-		return \Linker\Commerce\Mail\Capture::run( $this, function () use ( $order ): void { parent::trigger( $order->get_id(), $order ); } );
+		return \Linker\Commerce\Mail\Capture::run(
+			$this,
+			function () use ( $order ): void {
+				parent::trigger( $order->get_id(), $order );
+			}
+		);
 	}
 
 	/**
