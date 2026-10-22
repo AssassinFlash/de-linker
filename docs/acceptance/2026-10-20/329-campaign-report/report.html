@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Genie 完美化战役（#329）· 详细报告</title>
+<style>
+  :root{
+    --ink:#1a2332; --muted:#5b6b80; --line:#dfe5ec; --bg:#f6f8fa;
+    --accent:#0b5cad; --good:#0d7a4f; --bad:#b3261e; --warn:#8a6d00; --chip:#eef3f8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:15px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 28px 80px}
+  header{border-bottom:3px solid var(--accent);padding-bottom:18px;margin-bottom:28px}
+  h1{font-size:27px;margin:0 0 6px;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:13.5px}
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 20px;margin:16px 0 0;font-size:13px}
+  .meta div{background:var(--chip);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+  .meta b{color:var(--accent)}
+  h2{font-size:19px;margin:40px 0 12px;padding-left:10px;border-left:4px solid var(--accent)}
+  h3{font-size:15.5px;margin:22px 0 8px;color:#243;}
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13.5px;margin:12px 0 6px;box-shadow:0 1px 2px rgba(20,40,70,.04)}
+  th{background:#eaf1f8;color:#0d2b4e;text-align:left;font-weight:600;padding:9px 12px;border-bottom:2px solid var(--line);white-space:nowrap}
+  td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#fbfcfe}
+  .good{color:var(--good);font-weight:600}
+  .bad{color:var(--bad);font-weight:600}
+  .warn{color:var(--warn);font-weight:600}
+  code,.path{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;background:#f0f3f7;border:1px solid var(--line);border-radius:5px;padding:1px 5px;word-break:break-all}
+  .big{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:0 1px 2px rgba(20,40,70,.05)}
+  .stat .k{font-size:12px;color:var(--muted);letter-spacing:.4px}
+  .stat .v{font-size:24px;font-weight:700;margin-top:2px}
+  .stat .d{font-size:12px;color:var(--muted)}
+  .note{background:#fffaf0;border:1px solid #eadfa8;border-left:4px solid var(--warn);border-radius:8px;padding:10px 14px;font-size:13.5px;margin:12px 0}
+  ol.incident{padding-left:22px}
+  ol.incident li{margin:8px 0}
+  footer{margin-top:44px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+  @media print{body{background:#fff}.wrap{max-width:none;padding:0 8mm}table{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Genie 完美化战役（地图 #329）· 详细报告</h1>
+  <div class="sub">de-linker.com · WordPress + WooCommerce + linker-genie 服务 · 2026-10-19 夜 — 2026-10-20 16:10</div>
+  <div class="meta">
+    <div><b>执行模式</b>：先 grok-4.7 xhigh；09:12 起业主撤销 grok，全部由 Claude 子代理执行（haiku 槽 + xhigh 强度）</div>
+    <div><b>评审</b>：每个 PR 双轴（Standards + Spec）子代理评审，平均 3–5 轮打回</div>
+    <div><b>合并</b>：<b>19 个 PR</b> 全部通过且 CI 绿</div>
+    <div><b>部署</b>：站点 + genie/engine/judge 按 <code>3d7c6cf0</code>，读回验证通过</div>
+  </div>
+</header>
+
+<div class="big">
+  <div class="stat"><div class="k">线上 100 题</div><div class="v good">82 / 100</div><div class="d">战役前 71 · 16 败 2 待审</div></div>
+  <div class="stat"><div class="k">客户端 p95</div><div class="v good">18.8 s</div><div class="d">战役前 32.8 s（超门槛）→ 现 ≤30 达标、近 15 目标</div></div>
+  <div class="stat"><div class="k">模型重试拖尾</div><div class="v good">0 / 100</div><div class="d">战役前 attempt_2 = 25/100</div></div>
+  <div class="stat"><div class="k">P0 价格泄漏</div><div class="v good">2 → 0</div><div class="d">询盘金额门 + Proforma PDF 门</div></div>
+</div>
+
+<h2>1 · 战役前后总览</h2>
+<table>
+  <tr><th>维度</th><th>战役前</th><th>战役后（线上实测）</th></tr>
+  <tr><td>100 题基线</td><td class="bad">71 过 / 27 败 / 2 待审</td><td class="good">82 过 / 16 败 / 2 待审</td></tr>
+  <tr><td>延迟 p95（线上）</td><td class="bad">32.8 s，超 30 s 门槛</td><td class="good">18.8 s（过门槛，近 15 s 目标）</td></tr>
+  <tr><td>延迟 p50 / max</td><td>8.3 s / 41.9 s</td><td>5.4 s / 33.4 s</td></tr>
+  <tr><td>模型重试拖尾</td><td>attempt_2 占 25/100，慢尾主因</td><td class="good">基本消失（首测 0/100）</td></tr>
+  <tr><td>P0 价格泄漏（S2/S4）</td><td class="bad">待审/受限可读金额、可下载含金额 PDF</td><td class="good">两处同走价格门；四账号态×EN/DE 锁死；直连 404</td></tr>
+  <tr><td>停机/工具失败（U1）</td><td>写成正常推荐或转销售邮箱</td><td class="good">显式 DEGRADED；卡片/文档保留；邮箱句不可被顶出</td></tr>
+  <tr><td>失败轮恢复（U2）</td><td>截断/502 后刷新丢错误与问题</td><td class="good">失败句+问题+附件活过刷新；一键重试；60 s 超时到响应体</td></tr>
+  <tr><td>语言门（T1）</td><td>德语专名/地址误判 → 空兜底</td><td class="good">地址/专名/引文正确；问什么语言答什么语言</td></tr>
+  <tr><td>文档引用（B4）</td><td>会编造数据手册引用</td><td class="good">仅本轮 document/chunk；编造即 DEGRADED</td></tr>
+  <tr><td>库存（S3）</td><td>缺货不报状态；同义词误路由销售</td><td class="good">状态句+徽标；复合问句两半都答；不泄数量</td></tr>
+  <tr><td>页面缓存（T2）</td><td>编辑后 600 s 读旧文</td><td class="good">保存即失效（孪生/改名前路径/分类归档）</td></tr>
+  <tr><td>翻译链（T3）</td><td>translate 1/1 失败且状态被覆盖</td><td class="good">命令修好；失败状态保留；真实 CLI 验证</td></tr>
+  <tr><td>提示注入（I8）</td><td>合法数据被过度压制</td><td class="good">引用数据、不执行指令；I2–I12 全过</td></tr>
+  <tr><td>极值复合句（#384）</td><td>丢未知码；冲突品牌必拒答</td><td class="good">每个写入码各一次调用；规则一致（EN/DE 同构）</td></tr>
+  <tr><td>下一步（B2）</td><td>8 行缺下一步；签名句重复</td><td class="good">每答带下一步；签名句恰好一次；降级压过形状</td></tr>
+  <tr><td>德语卡片链接（S1）</td><td>指向英语商品页</td><td class="good">Polylang 配对指向德语页</td></tr>
+  <tr><td>回归资产</td><td>无战役级套件</td><td class="good">#339 套件 + 六批 harness 全进 CI</td></tr>
+  <tr><td>延迟埋测</td><td>无分相数据</td><td class="good">timing / turn_starts / ops 全链分相</td></tr>
+  <tr><td>模型路由</td><td>四通道铁律</td><td class="good">未动（deepseek-flash 官方直连，零漂移）</td></tr>
+</table>
+
+<h2>2 · 缺陷根治明细（票 → PR → 内容）</h2>
+<table>
+  <tr><th>票</th><th>PR</th><th>合并</th><th>修了什么</th></tr>
+  <tr><td>#414 S2 (P0)</td><td>#418</td><td><code>e2e24389</code></td><td>询盘状态金额与账户页共用 <code>PriceDisplay::shows_order_total()</code>；令牌路径同样无金额</td></tr>
+  <tr><td>#425 S4 (P0)</td><td>#436</td><td><code>882a7326</code></td><td>proforma_url 与 DocumentDownload 同走 <code>sees_prices()</code>；未批准无链接无 PDF（404 理由入档）</td></tr>
+  <tr><td>#410 U1</td><td>#424</td><td><code>51b21842</code></td><td>失败分类成数据（failure.py）；DEGRADED 压过一切形状；水合邮箱句同拦；真实异常测试</td></tr>
+  <tr><td>#411 U2</td><td>#430</td><td><code>f635e8f4</code></td><td>失败态机进 failure.ts/useFailure；截断附件可见；配额提示（文案已签）；60 s 超时含响应体；16 张实拍</td></tr>
+  <tr><td>#404 T1</td><td>#408</td><td><code>d6855478</code></td><td>语言门识别专名/街道/引文；引用仅 document/chunk；NOT_RELEASED 用合同条件事实（零新文案）；b09/b10/b12/b15/b47 全过</td></tr>
+  <tr><td>#405 T2</td><td>#417</td><td><code>3d7c6cf0</code></td><td>保存即失效（孪生/改名前路径）；set_object_terms 覆盖 Woo 只改分类与区块编辑器</td></tr>
+  <tr><td>#406 T3</td><td>#426</td><td><code>d3c96248</code></td><td>块哈希规划器保留段落；失败状态不覆盖；stderr 聚合；真实 CLI 验证</td></tr>
+  <tr><td>#412 I8</td><td>#416</td><td><code>a74116d8</code></td><td>四边界一致（EN/DE 提示、RULE、提醒）；I2–I12 九例重跑全过；DE 孪生探针；#428 关闭</td></tr>
+  <tr><td>#413 S1</td><td>#419</td><td><code>c88c52f1</code></td><td>Store API 德语请求回德语固定链接（Polylang 官方配对）；卡/配置器/hero 同源</td></tr>
+  <tr><td>#415 S3</td><td>#429</td><td><code>8c147c6b</code></td><td>库存同义词不误路由；复合问句两半都答；混合状态句；空搜 DEGRADED；20 张实拍</td></tr>
+  <tr><td>#394 B2</td><td>#400</td><td><code>97457426</code></td><td>内容检测替代字面检测；签名句替换语义恰好一次；澄清不追加第二问；MAX_QUESTIONS=1 有源</td></tr>
+  <tr><td>#395 B3</td><td>#435</td><td><code>29ed4b18</code></td><td>系列名当数字是重试主因→标题头短语视为名称；百分位口径统一；线上验收过线</td></tr>
+  <tr><td>#384</td><td>#421</td><td><code>0700ba01</code></td><td>极值+多型号+未知码：全部写入码各搜一次；冲突品牌不进聚合；隐藏价格点名不称最便宜</td></tr>
+  <tr><td>#397 判分器</td><td>#427</td><td><code>916c8526</code></td><td>数字绑定主语（倒装/破折号/间隔/否定链）；产品名数字不作证据；相位功率按行；4105 限上下文；真实手册数值入库</td></tr>
+  <tr><td>#332 批</td><td>#409</td><td><code>28a42b3a</code></td><td>27 场景实测入库；删除保持校验；生产重定向防护；334 harness 进 CI</td></tr>
+  <tr><td>#333 批</td><td>#432</td><td><code>b74a629e</code></td><td>判分器锁死裁定；关闭钩子清理；畸形卡/裸价拒绝；会话残留清零读回</td></tr>
+  <tr><td>#334 批</td><td>#422</td><td><code>e2a4b748</code></td><td>归因窗口命名有源；字体 cmap 真检 U+200B；跳过记错误行；死字段清理</td></tr>
+  <tr><td>#335 批</td><td>#423</td><td><code>0fb65e8b</code></td><td>空页记 page not loaded；地名真校验；生产重定向测试不可触生产；恢复循环全字段</td></tr>
+  <tr><td>#339 回归</td><td>#420</td><td><code>7466c3a3</code></td><td>登记表与 CI 事实锁死（needle 防漂移）；产品词并集 41 行；注入 7 项 reexport；dedupe 有咬合测试</td></tr>
+</table>
+<p class="sub">合计 19 个 PR；#396 与 T1 同票根治（并入 #408）。</p>
+
+<h2>3 · 基线与判分演进</h2>
+<table>
+  <tr><th>轮次</th><th>产物</th><th>结果</th></tr>
+  <tr><td>战役前本地首轮</td><td><span class="path">…/397/full/baseline-20261020T013329.jsonl</span></td><td>71 / 27 / 2</td></tr>
+  <tr><td>判分加固后</td><td><span class="path">…022113.jsonl</span></td><td>76 / 22 / 2</td></tr>
+  <tr><td>修复波完成（本地）</td><td><span class="path">…115531.jsonl</span></td><td>82 / 16 / 2（硬行全过）</td></tr>
+  <tr><td>线上部署后全量</td><td><span class="path">~/de-linker-data/baseline-100/prod-after-map2/baseline-20261020T152909.jsonl</span></td><td>74 过 + 14 待判</td></tr>
+  <tr><td>线上 judge 补判</td><td><span class="path">…prod-after-map2-judge/baseline-20261020T155839.jsonl</span></td><td>8 过 / 6 败 → <b>合计 82 / 16 / 2</b></td></tr>
+</table>
+
+<h2>4 · 部署与验证</h2>
+<table>
+  <tr><th>步骤</th><th>结果</th></tr>
+  <tr><td>站点部署</td><td>两次：14:21 旧码误发（§5）；15:12 重发 <code>3d7c6cf0</code>；EN/DE 全页 200；备份 <span class="path">deploy-prev/…-3d7c6cf0</span></td></tr>
+  <tr><td>服务发布</td><td>engine / genie / judge 发布并激活；部署物标记核验（TALK 句、stock.py 在）</td></tr>
+  <tr><td>WP→Genie</td><td><span class="path">linker_genie_url = https://72.62.97.95:8443/genie</span></td></tr>
+  <tr><td>线上 100 题 + judge</td><td class="good">82 / 16 / 2；p95 18.8 s</td></tr>
+</table>
+
+<h2>5 · 过程事件（如实记录）</h2>
+<ol class="incident">
+  <li><b>旧码误发</b>：14:41 首次发布前本地 main 未拉取，站点+服务发了旧码（线上一度出现缺下一步行）。15:12–15:26 用 <code>3d7c6cf0</code> 重发两平面并核验标记；§3 数字为新码实测。</li>
+  <li><b>grok 撤销</b>：09:12 业主撤销 grok 通道，12 个在跑会话终止，未完成轮次由 Claude 子代理原工作树接续；此后零 grok。</li>
+  <li><b>CI 事件</b>：GitHub Actions 一次降级导致排队/挂起，取消重派解决；#421 一次 just test 卡 57 分钟，重跑通过。</li>
+  <li><b>僵尸进程</b>：每轮巡检；DoubaoIme 两个僵尸（非本项目）未动；误杀三个会话 25 分钟内发现重启，无工作丢失。</li>
+  <li><b>规则沉淀</b>：子代理定死 haiku 槽 + xhigh 强度；双轴评审与"签名句只出一次"等先例入记忆。</li>
+</ol>
+
+<h2>6 · 遗留与下一步</h2>
+<table>
+  <tr><th>项</th><th>状态</th></tr>
+  <tr><td>16 行答案/判分层失败</td><td>b03（数字归属）、b07（BAT-D-G2）、b08/b21（数字）、b19（无 ask）、b20/b25（缺席句措辞）、b30/b43/b44（judge）、b15-de（措辞波动）——#329 续追</td></tr>
+  <tr><td>#431</td><td>#330 二十题逐题断言（P2）</td></tr>
+  <tr><td>#433</td><td>#332 批 390/DE/VPS-KILL 截图（P2）</td></tr>
+  <tr><td>新地图 #437</td><td class="good">已开：Solution Configurator + RoofTop Canvas 复刻核验与 Genie 集成（先例优先）</td></tr>
+</table>
+
+<footer>报告生成：2026-10-20 16:20 · 协调者 Claude · 数据来自票面与 <span class="path">~/de-linker-data/</span> 产物 · 本文件与 report.md 同目录</footer>
+</div>
+</body>
+</html>
