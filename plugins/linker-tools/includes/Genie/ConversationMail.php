@@ -41,6 +41,7 @@ class ConversationMail {
 	 */
 	public const SENT        = 'sent';
 	public const CONFIRM     = 'confirm';
+	public const AWAITING    = 'pending';
 	public const INVALID     = 'invalid';
 	public const UNKNOWN     = 'unknown';
 	public const EMPTY       = 'empty';
@@ -55,6 +56,7 @@ class ConversationMail {
 	public const HTTP = array(
 		self::SENT        => 200,
 		self::CONFIRM     => 202,
+		self::AWAITING    => 202,
 		self::INVALID     => 400,
 		self::UNKNOWN     => 404,
 		self::EMPTY       => 409,
@@ -65,7 +67,7 @@ class ConversationMail {
 
 	/**
 	 * The filter linker-commerce answers with the conversation email:
-	 * `( false, array{to, locale, messages} ) → bool`.
+	 * `( false, array{conversation_id, to, locale, messages} ) → bool|array{status: string}`.
 	 */
 	public const SEND_FILTER = 'linker_tools_genie_send_conversation';
 
@@ -142,6 +144,26 @@ class ConversationMail {
 	public function register(): void {
 		add_action( 'admin_post_nopriv_' . self::CONFIRM_ACTION, array( $this, 'handle_link' ) );
 		add_action( 'admin_post_' . self::CONFIRM_ACTION, array( $this, 'handle_link' ) );
+		add_filter( 'linker_commerce_conversation_mail_source_current', array( $this, 'source_current' ), 10, 3 );
+	}
+
+	/**
+	 * Rechecks a queued copy against the native stored source, without a browser session.
+	 *
+	 * This is source continuity only: Commerce separately owns recipient, immutable
+	 * Message and classification authorization. A guest confirmation token can be
+	 * opened from a different browser and is not replaced by session ownership.
+	 *
+	 * @param mixed                      $current Earlier result, not an authorization.
+	 * @param int                        $id Native conversation post ID.
+	 * @param list<array<string, mixed>> $messages Frozen complete transcript.
+	 */
+	public function source_current( mixed $current, int $id, array $messages ): bool {
+		unset( $current );
+		$post = get_post( $id );
+		return $post instanceof \WP_Post && Conversations::POST_TYPE === $post->post_type &&
+			'private' === $post->post_status && ! ( new Retention( dirname( __DIR__, 2 ) . '/linker-tools.php' ) )->is_deletable( $id ) &&
+			array() !== $messages && $messages === $this->thread->transcript( $id );
 	}
 
 	/**
@@ -279,19 +301,23 @@ class ConversationMail {
 		 * The commerce plugin answers with its customer email; without it
 		 * nothing answers and the conversation is not sent.
 		 *
-		 * @param bool                 $sent  False until an email took it.
-		 * @param array<string, mixed> $email to, locale (a WordPress locale), messages.
+			 * @param bool|array<string, string> $sent False until accepted; pending means saved for automatic checks.
+			 * @param array<string, mixed>       $email Native conversation ID, to, locale and messages.
 		 * @since 0.2.0
 		 */
 		$sent = apply_filters(
 			'linker_tools_genie_send_conversation',
 			false,
 			array(
-				'to'       => $to,
-				'locale'   => self::wp_locale( $locale ),
-				'messages' => $messages,
+				'conversation_id' => $id,
+				'to'              => $to,
+				'locale'          => self::wp_locale( $locale ),
+				'messages'        => $messages,
 			)
 		);
+		if ( is_array( $sent ) && self::AWAITING === ( $sent['status'] ?? '' ) ) {
+			return self::outcome( self::AWAITING, $to );
+		}
 		return true === $sent ? self::outcome( self::SENT, $to ) : self::outcome( self::UNAVAILABLE );
 	}
 
