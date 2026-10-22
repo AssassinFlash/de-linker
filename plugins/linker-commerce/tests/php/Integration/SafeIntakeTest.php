@@ -312,6 +312,88 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertTrue( NotificationHold::held( $order ) );
 	}
 
+	/** Native erasure cannot pass an employee holding the record's release lock. */
+	public function test_native_erasure_and_staff_release_serialize_across_connections(): void {
+		$order = ( new Handler() )->process( $this->post() );
+		self::assertInstanceOf( WC_Order::class, $order );
+		$reference = NotificationHold::reference( $order );
+		$erasure   = array();
+		$released  = null;
+		self::assertTrue(
+			\Linker\Commerce\Inquiry\Assessment\Lock::run(
+				'release-' . $order->get_id(),
+				function () use ( $order, $reference, &$erasure, &$released ): void {
+					// A retains its pre-erasure object; B attempts the entire native eraser.
+					$erasure  = $this->erase_in_other_connection( $order->get_id() );
+					$released = \Linker\Commerce\Protection\IntakeRelease::run( $order, $reference );
+				}
+			)
+		);
+		self::assertSame( 'intake_erasure_busy', $erasure['status'] );
+		self::assertIsArray( $released );
+		self::assertGreaterThan( 0, $released['job'] );
+		$order->read_meta_data( true );
+		self::assertSame( '', $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) );
+	}
+
+	/** A completed erase wins even when staff retained a complete stale Woo object. */
+	public function test_completed_native_erasure_cannot_be_resurrected_from_stale_object(): void {
+		$post  = $this->post();
+		$order = ( new Handler() )->process( $post );
+		self::assertInstanceOf( WC_Order::class, $order );
+		$reference = NotificationHold::reference( $order );
+		$marker    = self::newest_mail_job();
+		self::assertSame( 'erased', $this->erase_in_other_connection( $order->get_id() )['status'] );
+		self::assertSame( $post['email'], $order->get_billing_email() );
+		self::assertNotEmpty( $order->get_meta( Intake::META ) );
+		$released = null;
+		self::assertTrue(
+			\Linker\Commerce\Inquiry\Assessment\Lock::run(
+				'release-' . $order->get_id(),
+				static function () use ( $order, $reference, &$released ): void {
+					$released = \Linker\Commerce\Protection\IntakeRelease::run( $order, $reference );
+				}
+			)
+		);
+		self::assertInstanceOf( WP_Error::class, $released );
+		self::assertSame( array(), self::mail_jobs_after( $marker ) );
+		$order->read_meta_data( true );
+		self::assertSame( 'yes', $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) );
+		self::assertSame( '', $order->get_meta( Intake::META ) );
+		wp_cache_delete( IntakeStore::OPTION, 'options' );
+		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
+	}
+
+	/**
+	 * Run Woo's real eraser while the caller keeps its own DB connection and cache.
+	 *
+	 * @param int $id Synthetic native inquiry.
+	 * @return array<string,mixed>
+	 */
+	private function erase_in_other_connection( int $id ): array {
+		$pipes = array();
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Independent local WordPress/DB erasure, no external calls.
+		$process = proc_open(
+			array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/intake_privacy_worker.php', (string) $id ),
+			array(
+				0 => array( 'pipe', 'r' ),
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
+			),
+			$pipes
+		);
+		self::assertIsResource( $process );
+		fclose( $pipes[0] );
+		$out = stream_get_contents( $pipes[1] );
+		$err = stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		self::assertSame( 0, proc_close( $process ), (string) $err );
+		$result = json_decode( (string) $out, true );
+		self::assertIsArray( $result, (string) $out );
+		return $result;
+	}
+
 	/** A failed durable staff audit rolls back its job and preserves both budgets. */
 	public function test_staff_release_rollback_preserves_existing_transport_history(): void {
 		$order = ( new Handler() )->process( $this->post() );

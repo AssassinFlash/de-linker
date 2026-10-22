@@ -79,21 +79,41 @@ final class IntakeStore {
 	 * @param WC_Order $order Anonymized native order.
 	 */
 	public static function forget( WC_Order $order ): void {
-		$order->delete_meta_data( Intake::META );
-		$order->delete_meta_data( Intake::LANE_META );
-		$order->save_meta_data();
-		$result = self::edit(
-			static function ( array &$state ) use ( $order ): array {
-				foreach ( $state['entries'] as $id => $entry ) {
-					if ( $order->get_id() === (int) ( $entry['order'] ?? 0 ) || $id === $order->get_meta( BusinessRecord::REQUEST ) ) {
-						unset( $state['entries'][ $id ] );
+		$done = Lock::run(
+			'release-' . $order->get_id(),
+			static function () use ( $order ): void {
+				// Same order as staff release: record mutex, then capacity mutex.
+				$result = self::edit(
+					static function ( array &$state ) use ( $order ): array {
+						$order->read_meta_data( true );
+						$request = $order->get_meta( BusinessRecord::REQUEST );
+						wc_transaction_query( 'start' );
+						$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' );
+						$order->delete_meta_data( Intake::META );
+						$order->delete_meta_data( Intake::LANE_META );
+						$order->save_meta_data();
+						$order->read_meta_data( true );
+						if ( 'yes' !== $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $order->get_meta( Intake::META ) || $order->get_meta( Intake::LANE_META ) ) {
+							throw new \RuntimeException( 'intake_erasure_readback_failed' );
+						}
+						foreach ( $state['entries'] as $id => $entry ) {
+							if ( $order->get_id() === (int) ( $entry['order'] ?? 0 ) || $id === $request ) {
+								unset( $state['entries'][ $id ] );
+							}
+						}
+						self::save( $state );
+						// Native erasure continues outside these locks. Its durable
+						// tombstone already prevents any later notification capture.
+						wc_transaction_query( 'commit' );
+						return array();
 					}
+				);
+				if ( is_wp_error( $result ) ) {
+					throw new \RuntimeException( 'intake_erasure_busy' );
 				}
-				self::save( $state );
-				return array();
 			}
 		);
-		if ( is_wp_error( $result ) ) {
+		if ( ! $done ) {
 			throw new \RuntimeException( 'intake_erasure_busy' );
 		}
 	}

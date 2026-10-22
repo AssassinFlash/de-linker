@@ -48,6 +48,16 @@ PII and retry associations, with no raw content in the capacity registry. All
 pre-existing browser/account/connection limits and global mail/model budgets remain.
 The verified path never consults the review capacity.
 
+Native erasure and staff restoration acquire locks in the same order:
+`release-{inquiry_id}` then `intake-capacity`. The earliest native erasure
+listener persists the `Reviews::ERASED` tombstone and removes the intake marker
+and registry association in one transaction before Woo continues its PII erase.
+A busy record makes erasure explicitly retryable before any erasure listener
+writes. The tombstone stays durable after these locks are released. Restoration
+loads a new Woo object and forces protected-meta readback after acquiring both
+locks; it requires a live matching registry entry and refuses erased or missing
+associations. An object loaded before erasure cannot recreate a notification.
+
 ## Recovery and privacy
 
 Server-only context stamps the hold before the first Woo save, before receipt

@@ -32,14 +32,22 @@ final class IntakeRelease {
 	public static function run( WC_Order $order, string $reference ): array|WP_Error {
 		$result = IntakeStore::edit(
 			static function ( array &$state ) use ( $order, $reference ): array|WP_Error {
+				// The caller's object predates this mutex and may predate native erasure.
+				// Load a new native object and force its protected metadata from storage.
+				$order = new WC_Order( $order->get_id() );
+				$order->read_meta_data( true );
+				$registered = false;
 				foreach ( $state['entries'] as $id => $entry ) {
-					if ( ( $order->get_id() === (int) $entry['order'] || $id === $order->get_meta( BusinessRecord::REQUEST ) ) && ! empty( $entry['erased'] ) ) {
-						return self::failed();
+					if ( $id === $order->get_meta( BusinessRecord::REQUEST ) && in_array( (int) $entry['order'], array( 0, $order->get_id() ), true ) ) {
+						if ( ! empty( $entry['erased'] ) ) {
+							return self::failed();
+						}
+						$registered = true;
 					}
 				}
 				$emails = WC()->mailer()->get_emails();
 				$email  = $emails[ NewInquiryEmail::class ] ?? null;
-				if ( ! $email instanceof NewInquiryEmail || ! NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
+				if ( ! $registered || ! $email instanceof NewInquiryEmail || ! $order->get_meta( Intake::META ) || ! NotificationHold::held( $order ) || ! hash_equals( NotificationHold::reference( $order ), $reference ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) ) {
 					return self::failed();
 				}
 				$job  = 0;
