@@ -2,7 +2,7 @@
 
 本票工作树 `codex/569-registration-capacity`；本地 `r569` 使用完整线上主题/uploads/内容快照，WordPress9338、engine9339、Genie9340。此次验收没有部署、合并、生产写入、真实模型调用或外部邮件投递。四模型路由和原生权限边界未改。完整全量 diff 的 Spec / Standards 评审由协调者在固定 head 上安排。
 
-实现合同见 [spec](../../../../specs/569-registration-capacity.md)，客户及员工文案的初稿→对抗意见→定稿见 [copy review](copy-review.md)。原始 Message、邮箱路由、nonce、operation/receipt、trace、SQL故障输出和本地HTTP fixture 均仅保留在本机私密 `incident-20261022/registration-capacity-569`，不进仓库。
+实现合同见 [spec](../../../specs/569-registration-capacity.md)，客户及员工文案的初稿→对抗意见→定稿见 [copy review](copy-review.md)。原始 Message、邮箱路由、nonce、operation/receipt、trace、SQL故障输出和本地HTTP fixture 均仅保留在本机私密 `incident-20261022/registration-capacity-569`，不进仓库。
 
 ## 故障的红绿证据
 
@@ -90,6 +90,8 @@ npm run build
 npm run build:check
 npm run lint:types
 ```
+
+功能固定提交：`ca1b46901dc57e26ff4e0eacb3cebe59c961ac48`。下列检查与此功能版本对应，后续本段链接修正仅文档变更。
 
 最终检查：
 
