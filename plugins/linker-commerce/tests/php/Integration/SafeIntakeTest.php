@@ -232,6 +232,23 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertFalse( get_option( IntakeStore::OPTION ) );
 	}
 
+	/** Confirmed activity cannot use the failed-input recovery storage either. */
+	public function test_campaign_is_not_stored_in_failed_contact_recovery(): void {
+		$post = $this->post();
+		$key  = 'linker_form_recovery_contact';
+		$old  = WC()->session->get( $key );
+		$this->later( static fn () => WC()->session->set( $key, $old ) );
+		$post['name'] = 'Вам перевод 100 руб. забрать тут https://fredmer.buzz/path';
+		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+		self::assertSame( $old, WC()->session->get( $key ) );
+		$post['name'] = 'Installer recovery fixture';
+		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+		$saved = WC()->session->get( $key );
+		self::assertIsArray( $saved );
+		self::assertSame( $post['name'], $saved['fields']['name'] );
+		self::assertSame( $post['message'], $saved['fields']['message'] );
+	}
+
 	/** Missing proof saves complete data, no snapshot, mail, model or receipt budget. */
 	public function test_failed_verification_saves_native_record_and_idempotent_retry_without_side_effects(): void {
 		$post   = $this->post();

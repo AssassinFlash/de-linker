@@ -18,7 +18,6 @@ final class FormRecovery {
 	 * @param array<string,mixed> $post Unslashed posted fields.
 	 */
 	public static function save( string $action, array $post ): void {
-		wc_load_cart();
 		$fields = array();
 		foreach ( array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD ) as $key ) {
 			$value = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? $post[ $key ] : '';
@@ -38,6 +37,11 @@ final class FormRecovery {
 			}
 			$fields[ $key ] = mb_substr( sanitize_textarea_field( $value ), 0, 5000 );
 		}
+		$content = array_intersect_key( $fields, array_fill_keys( array( 'name', 'email', 'company', 'message', 'intent' ), true ) );
+		if ( 'enforce' === Configuration::active_mode() && Campaign::submitted( $content ) ) {
+			return;
+		}
+		wc_load_cart();
 		// Five-minute retry lifetime follows the shared proof window (#519).
 		WC()->session->set(
 			'linker_form_recovery_' . $action,
