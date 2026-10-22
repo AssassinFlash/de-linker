@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+from .assets import Asset
 from .canonical import Object
 from .energy_inputs import EnergyInputs
 from .errors import VersionUnavailable
+from .profile_assets import profile_dependencies
 from .records import Lease
 from .workspace import Workspace
 
@@ -36,15 +38,6 @@ def bind_energy_assets(
     workspace: Workspace, manifest: Object, scenario: EnergyInputs, pinned: Object
 ) -> None:
     expected = {"runtime_bundle", "battery.raw", "battery.metadata"}
-    expected.update(
-        f"{role}.{part}"
-        for role in scenario.profiles()
-        for part in ("raw", "metadata", "timezone")
-    )
-    if set(pinned) != expected:
-        raise VersionUnavailable(
-            "energy dependency roles differ from the frozen inputs"
-        )
     references = {
         **scenario.profiles(),
         "battery": scenario.battery_parameters_asset_id,
@@ -52,16 +45,39 @@ def bind_energy_assets(
     with workspace.database.read() as connection:
         for role, asset_id in references.items():
             row = connection.execute(
-                "SELECT content_sha256, metadata_sha256, purpose FROM project_assets WHERE project_id=? AND id=?",
+                "SELECT content_sha256, metadata_sha256, purpose, media_type FROM project_assets WHERE project_id=? AND id=?",
                 (manifest["project_id"], asset_id),
             ).fetchone()
-            purpose = "battery_parameters_v1" if role == "battery" else "csv_profile_v1"
             if (
                 row is None
-                or row["purpose"] != purpose
-                or pinned[f"{role}.raw"] != row["content_sha256"]
-                or pinned[f"{role}.metadata"] != row["metadata_sha256"]
+                or pinned.get(f"{role}.raw") != row["content_sha256"]
+                or pinned.get(f"{role}.metadata") != row["metadata_sha256"]
+                or (role == "battery" and row["purpose"] != "battery_parameters_v1")
             ):
                 raise VersionUnavailable(
                     "dependency does not match the frozen project asset"
                 )
+            if role != "battery":
+                # The durable manifest is already bound to the run and project.
+                # Use only the owned rows selected above, with no latest lookup.
+                asset = Asset(
+                    asset_id,
+                    str(manifest["project_id"]),
+                    row["content_sha256"],
+                    row["media_type"],
+                    row["purpose"],
+                    row["metadata_sha256"],
+                    workspace.blobs.object(row["metadata_sha256"]),
+                )
+                dependencies = profile_dependencies(asset, role)
+                if any(
+                    pinned.get(name) != value for name, value in dependencies.items()
+                ):
+                    raise VersionUnavailable(
+                        "profile dependency differs from its frozen asset"
+                    )
+                expected.update(dependencies)
+    if set(pinned) != expected:
+        raise VersionUnavailable(
+            "energy dependency roles differ from the frozen inputs"
+        )

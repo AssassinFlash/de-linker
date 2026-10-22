@@ -1,0 +1,50 @@
+[
+  {
+    "name": "era5-berlin-2020",
+    "providerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-ERA5&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "parameters": {
+      "lat": 52.52,
+      "lon": 13.405,
+      "raddatabase": "PVGIS-ERA5",
+      "startyear": 2020,
+      "endyear": 2020,
+      "pvcalculation": 1,
+      "peakpower": 1,
+      "loss": 14,
+      "pvtechchoice": "crystSi",
+      "mountingplace": "free",
+      "angle": 10,
+      "aspect": 0,
+      "trackingtype": 0,
+      "usehorizon": 1,
+      "components": 1,
+      "optimalinclination": 0,
+      "optimalangles": 0,
+      "outputformat": "json"
+    }
+  },
+  {
+    "name": "sarah3-berlin-2020",
+    "providerUrl": "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=52.52&lon=13.405&raddatabase=PVGIS-SARAH3&startyear=2020&endyear=2020&pvcalculation=1&peakpower=1&loss=14&pvtechchoice=crystSi&mountingplace=free&angle=10&aspect=0&trackingtype=0&usehorizon=1&components=1&optimalinclination=0&optimalangles=0&outputformat=json",
+    "parameters": {
+      "lat": 52.52,
+      "lon": 13.405,
+      "raddatabase": "PVGIS-SARAH3",
+      "startyear": 2020,
+      "endyear": 2020,
+      "pvcalculation": 1,
+      "peakpower": 1,
+      "loss": 14,
+      "pvtechchoice": "crystSi",
+      "mountingplace": "free",
+      "angle": 10,
+      "aspect": 0,
+      "trackingtype": 0,
+      "usehorizon": 1,
+      "components": 1,
+      "optimalinclination": 0,
+      "optimalangles": 0,
+      "outputformat": "json"
+    }
+  }
+]

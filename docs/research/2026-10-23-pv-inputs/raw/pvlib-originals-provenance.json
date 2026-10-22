@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/tests/iotools/test_pvgis.py",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/abDgyp8lTfKR9j3l0/records/file-95c2de6-test_pvgis.py",
+    "file": "pvlib-test_pvgis.py",
+    "bytes": 29822,
+    "sha256": "7cb6dd0f5f218dfb3e0b1460f5a793d6a8aed581e8c1a11c67ec1b4afe08f310",
+    "run": "lKsXFcOgWBdNett22",
+    "dataset": "ok1OASYOkvTHzMlhm",
+    "body": "exact downloaded Apify file record bytes"
+  },
+  {
+    "url": "https://api.github.com/repos/pvlib/pvlib-python/git/trees/v0.16.1?recursive=1",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/abDgyp8lTfKR9j3l0/records/file-a520eb5-v0.16.1",
+    "file": "pvlib-tree.json",
+    "bytes": 157592,
+    "sha256": "8cb14ba4f5a0e9009f08ee73d376d766b153b56b2bf2205a2673f7a0e395135f",
+    "run": "lKsXFcOgWBdNett22",
+    "dataset": "ok1OASYOkvTHzMlhm",
+    "body": "exact downloaded Apify file record bytes"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/iotools/pvgis.py",
+    "apifyRecord": "https://api.apify.com/v2/key-value-stores/abDgyp8lTfKR9j3l0/records/file-6db2541-pvgis.py",
+    "file": "pvlib-pvgis.py",
+    "bytes": 32305,
+    "sha256": "c00a047d2d2b16a100f7f0403260a4aeeb9feef9c33ca153c652553c3e689a0e",
+    "run": "lKsXFcOgWBdNett22",
+    "dataset": "ok1OASYOkvTHzMlhm",
+    "body": "exact downloaded Apify file record bytes"
+  }
+]

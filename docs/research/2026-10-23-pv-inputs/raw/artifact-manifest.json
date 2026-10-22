@@ -1,0 +1,305 @@
+{
+  "note": "All other research artifacts; Apify metadata signed retrieval queries removed; original provider JSON bytes unchanged.",
+  "files": [
+    {
+      "file": "PVGIS-SERIES.md",
+      "bytes": 26594,
+      "sha256": "34117412faf89adc81aad04cdefd254937f8048fd60bbfeeb2a999b8cc810e99"
+    },
+    {
+      "file": "raw/browser-observation.json",
+      "bytes": 1369,
+      "sha256": "4e75d69e64cb4a507d35700323aaba6cf08c10e2ee8c8fa65f0c9238fbd9a820"
+    },
+    {
+      "file": "raw/era5-berlin-2020.seriescalc.json",
+      "bytes": 1057449,
+      "sha256": "9c0b24cf9828cac4c118c4695922fcbbb7aa7213ae80350019f67e00e5eaf6ca"
+    },
+    {
+      "file": "raw/license-provenance.json",
+      "bytes": 1564,
+      "sha256": "6b257aef188d8a1c32a91083b597d6034ee7ef71ea1762aee0caaa396d238da7"
+    },
+    {
+      "file": "raw/north-nohorizon-probe.json",
+      "bytes": 5561,
+      "sha256": "2c62b6f60fe68d3f182c74e25a573620a972714c2b250d5e7fa6533e2633e188"
+    },
+    {
+      "file": "raw/official-api-doc.md",
+      "bytes": 30335,
+      "sha256": "bad9781329a5b8534d112df7c6fd258f3d4a8d918fb41992be4498899682b561"
+    },
+    {
+      "file": "raw/official-commission-legal.md",
+      "bytes": 5697,
+      "sha256": "889ce104d0f36ca205ebf857067d86a9000021e6a93cd798a0445a59ce82ca5a"
+    },
+    {
+      "file": "raw/official-doc-provenance.json",
+      "bytes": 1344,
+      "sha256": "f5c9faac49e88ac6fda152c0f919fa96188b9b403e975eb295529065bb791b2d"
+    },
+    {
+      "file": "raw/official-pvgis-faq.md",
+      "bytes": 3593,
+      "sha256": "9a472171ba360214988f83ac308e769cd2eb0b09584499fa6405df43dd05efdd"
+    },
+    {
+      "file": "raw/official-pvgis-home.md",
+      "bytes": 6052,
+      "sha256": "64b163fcce1e23fbd2e62d4dd4d0d6b983a15372032614c689184d1a6bb0beb0"
+    },
+    {
+      "file": "raw/official-pvgis-methods.md",
+      "bytes": 43828,
+      "sha256": "38d77c2ccccdd969b0508a7c1d4769a175d61a0896d61f09e365d107bff50331"
+    },
+    {
+      "file": "raw/official-pvgis-usage-conditions.md",
+      "bytes": 1674,
+      "sha256": "067585a8c5f8460db25ff9d5277d8ba0beac4dc3dad2d6ca61e34b2ded90a408"
+    },
+    {
+      "file": "raw/official-user-manual.md",
+      "bytes": 38099,
+      "sha256": "30e1e48b6459b820d5e1bd93f65ddbf3e6f24734c694de4b59fd0b8e069e5d31"
+    },
+    {
+      "file": "raw/pvgis-license-input.json",
+      "bytes": 683,
+      "sha256": "085b48440e7d7bd28311842c769ecd859cd425152fdb74530d29447286032890"
+    },
+    {
+      "file": "raw/pvgis-license-items.json",
+      "bytes": 241597,
+      "sha256": "bd8e3d8d18dee6a5e744e2f8c8112ab7d04feecab52af66040d0206d5d449e66"
+    },
+    {
+      "file": "raw/pvgis-license-run.json",
+      "bytes": 3345,
+      "sha256": "7f0ae6d89a7ace7b29d003eb1004a4c93e4fd617ed1681b90378da26c78dd585"
+    },
+    {
+      "file": "raw/pvgis-mapping-input.json",
+      "bytes": 1834,
+      "sha256": "9beac910a8860bb7c15b305d35f04bec4107372b14bd39678c20e09630750848"
+    },
+    {
+      "file": "raw/pvgis-mapping-items.json",
+      "bytes": 8643,
+      "sha256": "e0a29692bec61253b36c559bec03ba52e82941f4707789b766149f51c681c0f4"
+    },
+    {
+      "file": "raw/pvgis-mapping-run.json",
+      "bytes": 3331,
+      "sha256": "00e918ffed263cab9e731afb91b1e4c01e4ef6ba4e1073171ba5f7d4a2cd47d0"
+    },
+    {
+      "file": "raw/pvgis-north-nohorizon-input.json",
+      "bytes": 822,
+      "sha256": "d5b34593aef6aebafd58b84cda5513d19aed49e3a4d8f8d5db0a958fdaed3cf6"
+    },
+    {
+      "file": "raw/pvgis-north-nohorizon-items.json",
+      "bytes": 2177,
+      "sha256": "2ed536e5edf1a207d754658c6a6cc9c94bdd7db6601708383d1ae25666353b80"
+    },
+    {
+      "file": "raw/pvgis-north-nohorizon-run.json",
+      "bytes": 881,
+      "sha256": "382095cd35b7e656909c654a6e9492c0033dfb957a91e1e5e8b406b23e7eebf9"
+    },
+    {
+      "file": "raw/pvgis-terms-input.json",
+      "bytes": 649,
+      "sha256": "1e8c0bdd321156f8b7645bf7414006faaedf5b3ec965030ed5fb230cbd70c772"
+    },
+    {
+      "file": "raw/pvgis-terms-items.json",
+      "bytes": 48128,
+      "sha256": "ff2599a52a6665ebaabff85a8418370fa0224a27863929d5e50981244bfc5de2"
+    },
+    {
+      "file": "raw/pvgis-terms-run.json",
+      "bytes": 3307,
+      "sha256": "4d85fbac90b6c1d5fcd7cd1834896c66350bdd93b089959fed98354a617f4ab1"
+    },
+    {
+      "file": "raw/pvlib-originals-input.json",
+      "bytes": 693,
+      "sha256": "57c3a8fa34bfc433b3605b629fcf588c91c8de974856d238bfe9e92379a716ba"
+    },
+    {
+      "file": "raw/pvlib-originals-items.json",
+      "bytes": 2976,
+      "sha256": "59a9860a20a8cb72a11e415aa99184f33c16f62d5be2e0608ae8dd2db14f3738"
+    },
+    {
+      "file": "raw/pvlib-originals-provenance.json",
+      "bytes": 1435,
+      "sha256": "d0f47097bc0ebf8813d3198bb52b4edd1bc75da0ad5afa6c1582908104925907"
+    },
+    {
+      "file": "raw/pvlib-originals-run.json",
+      "bytes": 3349,
+      "sha256": "710e38ef2c6d068963b04a9e98a22b8d816463b8c4ca20f4670db90bdf26b7b1"
+    },
+    {
+      "file": "raw/pvlib-pvgis.py",
+      "bytes": 32305,
+      "sha256": "c00a047d2d2b16a100f7f0403260a4aeeb9feef9c33ca153c652553c3e689a0e"
+    },
+    {
+      "file": "raw/pvlib-test_pvgis.py",
+      "bytes": 29822,
+      "sha256": "7cb6dd0f5f218dfb3e0b1460f5a793d6a8aed581e8c1a11c67ec1b4afe08f310"
+    },
+    {
+      "file": "raw/pvlib-tree.json",
+      "bytes": 157592,
+      "sha256": "8cb14ba4f5a0e9009f08ee73d376d766b153b56b2bf2205a2673f7a0e395135f"
+    },
+    {
+      "file": "raw/request-manifest.json",
+      "bytes": 1705,
+      "sha256": "2b91df9370e65e563f2693df397ec0aef22090b3f8d75579ab6a71f65334498a"
+    },
+    {
+      "file": "raw/sample-provenance.json",
+      "bytes": 2459,
+      "sha256": "3dddf8329a392a68053e9f8f19adc2ff680c8c385f37bb2be5505ddc1abcc85c"
+    },
+    {
+      "file": "raw/sample-validation.json",
+      "bytes": 4903,
+      "sha256": "949ddcd3dd74bb156ea928a35c7d18e5cd3a8feac49d260d8bcc8c2198b386c0"
+    },
+    {
+      "file": "raw/sarah3-berlin-2020.seriescalc.json",
+      "bytes": 1054883,
+      "sha256": "bfaeeebf8257067e90e9571551d8b31063ce8d5e6277f1ab81e6ab953369af39"
+    },
+    {
+      "file": "raw/seriescalc-api-crawl-input.json",
+      "bytes": 1116,
+      "sha256": "92843f940f53c569c88c84efd08761b098142886715463cd30f3625ff9d7c26f"
+    },
+    {
+      "file": "raw/seriescalc-api-crawl-items.json",
+      "bytes": 5077,
+      "sha256": "348a3904a74d08305d184b2f234228fa7b2ef59d609f63f465a7b33b03733695"
+    },
+    {
+      "file": "raw/seriescalc-api-crawl-run.json",
+      "bytes": 334,
+      "sha256": "7873ff510b63fb4bbfdf3043daaae269d708b40e65672524ac86b5ca5868a6eb"
+    },
+    {
+      "file": "raw/seriescalc-cheerio-error.json",
+      "bytes": 139,
+      "sha256": "cea4a4458ef6fb3bda83573142499ff0b9647cdeb59cf920d0cb4da46cef4ca9"
+    },
+    {
+      "file": "raw/seriescalc-cheerio-input.json",
+      "bytes": 2323,
+      "sha256": "6220dd39c09d4c09b05af9175baf5651c6fa7ac0144cdd6a241d228ff967fbf2"
+    },
+    {
+      "file": "raw/seriescalc-client-ua-input.json",
+      "bytes": 1448,
+      "sha256": "041895bbccb4e5f0084b59598d48ad114721d6de61d4e22723e801998290e838"
+    },
+    {
+      "file": "raw/seriescalc-client-ua-items.json",
+      "bytes": 6706,
+      "sha256": "18722bebbb0ab11819e781fbc22e60d14b06ae4af9a4de8d8fe9bfa5529b3e16"
+    },
+    {
+      "file": "raw/seriescalc-client-ua-run.json",
+      "bytes": 3313,
+      "sha256": "7430401a86062752152eedca69cb6b9925c45e33e425a434e5d97029a654d5cb"
+    },
+    {
+      "file": "raw/seriescalc-crawl-input.json",
+      "bytes": 1019,
+      "sha256": "15ad10eb63dcb54b8ca5e20ecf21f951480cdb6f67fc60241bc939d23c7b9618"
+    },
+    {
+      "file": "raw/seriescalc-crawl-items.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "file": "raw/seriescalc-crawl-log.txt",
+      "bytes": 3035,
+      "sha256": "602499a659475b6c74683f51ef7168827a931404cb227e52eb7234a23f8ca5fe"
+    },
+    {
+      "file": "raw/seriescalc-crawl-run.json",
+      "bytes": 334,
+      "sha256": "98f52e3e0ff17eabb7f32f46b7c06bf4b60b86ce1c9d27a3e6a9ec5222bbc34c"
+    },
+    {
+      "file": "raw/seriescalc-de-proxy-input.json",
+      "bytes": 1364,
+      "sha256": "187e92043e5117b477f520900233e267560db4480d171286c955d17caece90c4"
+    },
+    {
+      "file": "raw/seriescalc-de-proxy-items.json",
+      "bytes": 188472,
+      "sha256": "86457c987e372b721c70b3e9aee9b25b520cf1745a99d2df75e7f138e12e747a"
+    },
+    {
+      "file": "raw/seriescalc-de-proxy-run.json",
+      "bytes": 3385,
+      "sha256": "80baac5e4a8073bf0093942740a3184b0688e5fdfdccf504ab7902ef5620e451"
+    },
+    {
+      "file": "raw/seriescalc-direct-crawl-error.json",
+      "bytes": 162,
+      "sha256": "5e045bd8565811a8837bba6f60b656cfaaa1da1b3a84006f534b33221a065d1c"
+    },
+    {
+      "file": "raw/seriescalc-direct-crawl-input.json",
+      "bytes": 1416,
+      "sha256": "35c88f56c749eaf203b7f2d65f89c84c2350444e7e6068beab6c4f2702a5e699"
+    },
+    {
+      "file": "raw/seriescalc-negative-input.json",
+      "bytes": 1495,
+      "sha256": "0b6ce813ed7b6388e38de4e33267d10db1dfefc5a64c06e049e0d1322d9e17d6"
+    },
+    {
+      "file": "raw/seriescalc-negative-items.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "file": "raw/seriescalc-negative-log.txt",
+      "bytes": 5921,
+      "sha256": "2e12cf9ffb84eecf0f2e9877d58aa944124d7d99e28a57f445f8d7f75bf9160c"
+    },
+    {
+      "file": "raw/seriescalc-negative-run.json",
+      "bytes": 3322,
+      "sha256": "17cc8868fc2bbcd415190269259bad2e1e26a6907058548faff4d3088d8e3024"
+    },
+    {
+      "file": "raw/technology-mapping-probes.json",
+      "bytes": 30771,
+      "sha256": "35b4cbda2d94edc5951f8ecc49462fd8a29eea2736d7a73c78e543a71eed984c"
+    },
+    {
+      "file": "raw/terms-provenance.json",
+      "bytes": 1186,
+      "sha256": "c73668ec2bce3985fccd28512f3d17355069d530835e6a540828d925e18939fd"
+    },
+    {
+      "file": "raw/unknown-output-capability.json",
+      "bytes": 6198,
+      "sha256": "cd2ebdbe592de10ea101b17339e0ac2575b6de3b0b3d760ed98d1ac3890f6cb0"
+    }
+  ]
+}

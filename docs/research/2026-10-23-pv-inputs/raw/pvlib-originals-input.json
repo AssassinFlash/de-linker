@@ -1,0 +1,25 @@
+{
+  "startUrls": [
+    {
+      "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/tests/iotools/test_pvgis.py"
+    },
+    {
+      "url": "https://api.github.com/repos/pvlib/pvlib-python/git/trees/v0.16.1?recursive=1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/iotools/pvgis.py"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "respectRobotsTxtFile": false,
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 3,
+  "maxConcurrency": 1,
+  "maxRequestRetries": 1,
+  "saveContentTypes": "application/json, text/plain",
+  "minFileDownloadSpeedKBps": 1,
+  "saveHtml": true,
+  "saveMarkdown": true,
+  "saveText": true,
+  "htmlTransformer": "none"
+}

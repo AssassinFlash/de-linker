@@ -1,0 +1,5 @@
+{
+  "status": 400,
+  "type": "invalid-input",
+  "message": "Actor requires Apify Proxy or custom proxy URLs; useApifyProxy false not permitted; no run started"
+}

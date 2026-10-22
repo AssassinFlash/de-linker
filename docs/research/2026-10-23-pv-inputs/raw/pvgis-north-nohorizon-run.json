@@ -1,0 +1,30 @@
+{
+  "id": "CegW8eplqlh9xVMEf",
+  "actId": "aYG0l9s7dbB7j3gbS",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-22T17:58:29.912Z",
+  "finishedAt": "2026-10-22T17:58:39.862Z",
+  "buildId": "bsZdc9Cal4wAwV0VW",
+  "defaultDatasetId": "4cCfnhhlEuEnbwhVC",
+  "defaultKeyValueStoreId": "hW4hIa8NerEv1F2hw",
+  "stats": {
+    "inputBodyLen": 1878,
+    "migrationCount": 0,
+    "rebootCount": 0,
+    "restartCount": 0,
+    "durationMillis": 9754,
+    "resurrectCount": 0,
+    "runTimeSecs": 9.754,
+    "metamorph": 0,
+    "computeUnits": 0.0027094444444444444,
+    "memAvgBytes": 225939543.261459,
+    "memMaxBytes": 295874560,
+    "memCurrentBytes": 0,
+    "cpuAvgUsage": 27.743802366351847,
+    "cpuMaxUsage": 103.53984810126582,
+    "cpuCurrentUsage": 0,
+    "netRxBytes": 2276763,
+    "netTxBytes": 1129551
+  },
+  "statusMessage": "Finished! Total 1 requests: 0 succeeded, 1 failed."
+}

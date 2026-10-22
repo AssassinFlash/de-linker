@@ -1,0 +1,21 @@
+{
+  "startUrls": [
+    {
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/usage-conditions-data-protection_en"
+    },
+    {
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/frequently-asked-questions_en"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 2,
+  "respectRobotsTxtFile": false,
+  "maxConcurrency": 1,
+  "maxRequestRetries": 1,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "requestTimeoutSecs": 90
+}

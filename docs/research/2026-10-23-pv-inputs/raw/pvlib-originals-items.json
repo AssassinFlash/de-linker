@@ -1,0 +1,79 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/tests/iotools/test_pvgis.py",
+    "crawl": {
+      "loadedUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/tests/iotools/test_pvgis.py",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/tests/iotools/test_pvgis.py",
+      "loadedTime": "2026-10-22T17:35:36.958Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 6500,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/tests/iotools/test_pvgis.py",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "test_pvgis.py"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/abDgyp8lTfKR9j3l0/records/file-95c2de6-test_pvgis.py"
+  },
+  {
+    "url": "https://api.github.com/repos/pvlib/pvlib-python/git/trees/v0.16.1?recursive=1",
+    "crawl": {
+      "loadedUrl": "https://api.github.com/repos/pvlib/pvlib-python/git/trees/v0.16.1?recursive=1",
+      "depth": 0,
+      "referrerUrl": "https://api.github.com/repos/pvlib/pvlib-python/git/trees/v0.16.1?recursive=1",
+      "loadedTime": "2026-10-22T17:35:37.777Z",
+      "httpStatusCode": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://api.github.com/repos/pvlib/pvlib-python/git/trees/v0.16.1?recursive=1",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "v0.16.1?recursive=1"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/abDgyp8lTfKR9j3l0/records/file-a520eb5-v0.16.1"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/iotools/pvgis.py",
+    "crawl": {
+      "loadedUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/iotools/pvgis.py",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/iotools/pvgis.py",
+      "loadedTime": "2026-10-22T17:35:38.028Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 8085,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/v0.16.1/pvlib/iotools/pvgis.py",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "pvgis.py"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/abDgyp8lTfKR9j3l0/records/file-6db2541-pvgis.py"
+  }
+]

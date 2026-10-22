@@ -22,6 +22,7 @@ from .flow_document import flow_document
 from .frozen_profiles import frozen_profile
 from .frozen_run import bind_energy_assets, frozen_manifest
 from .numerical_tolerance import Tolerance
+from .profile_assets import profile_dependencies
 from .records import Actor, Context, Lease
 from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
@@ -33,7 +34,7 @@ class EnergyKernel:
     models = {
         "replay": kind,
         "battery": BatteryModel.version,
-        "profiles": "csv_interval_means_v1",
+        "profiles": "csv_and_explicit_pvgis_interval_means_v1",
         "controller": "self_consumption_with_reserve_v1",
         "source_accounting": "proportional_mixing_v1",
     }
@@ -53,14 +54,7 @@ class EnergyKernel:
         pinned: dict[str, str] = {"runtime_bundle": self.runtime.sha256}
         for role, asset_id in scenario.profiles().items():
             asset = assets.get(actor, project_id, asset_id)
-            if asset.purpose != "csv_profile_v1":
-                raise InvalidInput(f"{role}: an imported profile asset is required")
-            timezone_hash = asset.metadata.get("timezone_rules_sha256")
-            if not isinstance(timezone_hash, str):
-                raise VersionUnavailable("profile has no pinned timezone rules")
-            pinned[f"{role}.raw"] = asset.content_sha256
-            pinned[f"{role}.metadata"] = asset.metadata_sha256
-            pinned[f"{role}.timezone"] = timezone_hash
+            pinned.update(profile_dependencies(asset, role))
         battery = assets.get(actor, project_id, scenario.battery_parameters_asset_id)
         if battery.purpose != "battery_parameters_v1":
             raise InvalidInput("explicit battery-parameter asset is required")
@@ -126,7 +120,9 @@ class EnergyKernel:
                 self.workspace.blobs,
                 dependency(f"{role}.raw"),
                 dependency(f"{role}.metadata"),
-                dependency(f"{role}.timezone"),
+                dependency(f"{role}.timezone")
+                if f"{role}.timezone" in pinned
+                else None,
             )
             for role in scenario.profiles()
         }

@@ -1,0 +1,22 @@
+[
+  {
+    "kind": "user-manual",
+    "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/using-pvgis-5/pvgis-5-user-manual_en",
+    "existingRawFile": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-europe-precedents-551/docs/research/2026-10-22-roof-europe-precedents/raw/official-geo-items.json",
+    "dataset": "fIWOSxRwJ0sVhgUVk",
+    "itemIndex": 5,
+    "bodyFile": "official-user-manual.md",
+    "sha256": "30e1e48b6459b820d5e1bd93f65ddbf3e6f24734c694de4b59fd0b8e069e5d31",
+    "retrieval": "reuse of already captured Apify item; markdown extraction not original provider bytes"
+  },
+  {
+    "kind": "api-doc",
+    "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/getting-started-pvgis/api-non-interactive-service_en",
+    "existingRawFile": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-europe-precedents-551/docs/research/2026-10-22-roof-europe-precedents/engineering-study/raw/engineering-physics-items.json",
+    "dataset": "Z44vSQlt8cWdoUnW5",
+    "itemIndex": 4,
+    "bodyFile": "official-api-doc.md",
+    "sha256": "bad9781329a5b8534d112df7c6fd258f3d4a8d918fb41992be4498899682b561",
+    "retrieval": "reuse of already captured Apify item; markdown extraction not original provider bytes"
+  }
+]
