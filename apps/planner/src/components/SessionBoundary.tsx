@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { Session } from "../data/protocol.ts";
@@ -24,11 +24,13 @@ export function SessionBoundary({
 		[],
 	);
 	const [session, setSession] = useState<Session | null>(null);
+	const confirmed = useRef<Session | null>(null);
+	const [verifying, setVerifying] = useState(true);
 	const [failed, setFailed] = useState(false);
 	const [check, setCheck] = useState(0);
 	const recheck = useCallback(() => {
 		client.invalidate();
-		setSession(null);
+		setVerifying(true);
 		setCheck((value) => value + 1);
 	}, [client]);
 
@@ -37,13 +39,20 @@ export function SessionBoundary({
 		let active = true;
 		client.invalidate();
 		void cache.cancelQueries();
-		cache.clear();
-		setSession(null);
+		setVerifying(true);
 		setFailed(false);
 		void client
 			.bootstrap(controller.signal)
 			.then((value) => {
-				if (active) setSession(value);
+				if (!active) return;
+				if (
+					confirmed.current &&
+					confirmed.current.query_scope !== value.query_scope
+				)
+					cache.clear();
+				confirmed.current = value;
+				setSession(value);
+				setVerifying(false);
 			})
 			.catch(() => {
 				if (active && !controller.signal.aborted) setFailed(true);
@@ -53,9 +62,9 @@ export function SessionBoundary({
 			controller.abort();
 			client.invalidate();
 			void cache.cancelQueries();
-			cache.clear();
 		};
 	}, [cache, client, check]);
+	useEffect(() => () => cache.clear(), [cache]);
 
 	useEffect(() => {
 		const visible = () => {
@@ -76,32 +85,39 @@ export function SessionBoundary({
 		};
 	}, [recheck]);
 
-	if (!session)
-		return (
-			<div className="lp-session-state">
-				<span className="lp-eyebrow">
-					{__("Solution Configurator", "linker-tools")}
-				</span>
-				{failed ? (
-					<Notice error>
-						<p>
-							{__(
-								"Your workspace could not be opened. Your saved projects are unchanged.",
-								"linker-tools",
-							)}
-						</p>
-						<button className="lp-button" onClick={recheck}>
-							{__("Try again", "linker-tools")}
-						</button>
-					</Notice>
-				) : (
-					<p role="status">{__("Opening your workspace…", "linker-tools")}</p>
-				)}
-			</div>
-		);
 	return (
-		<QueryClientProvider client={cache}>
-			{children(session, recheck)}
-		</QueryClientProvider>
+		<>
+			{verifying && (
+				<div className="lp-session-state">
+					<span className="lp-eyebrow">
+						{__("Solution Configurator", "linker-tools")}
+					</span>
+					{failed ? (
+						<Notice error>
+							<p>
+								{__(
+									"Your workspace could not be opened. Your saved projects are unchanged.",
+									"linker-tools",
+								)}
+							</p>
+							<button className="lp-button" onClick={recheck}>
+								{__("Try again", "linker-tools")}
+							</button>
+						</Notice>
+					) : (
+						<p role="status">{__("Opening your workspace…", "linker-tools")}</p>
+					)}
+				</div>
+			)}
+			{session && (
+				<QueryClientProvider client={cache}>
+					{/* Hide private content during verification, while retaining local
+					 * editor/raw-input state until the confirmed identity actually changes. */}
+					<div hidden={verifying} inert={verifying}>
+						{children(session, recheck)}
+					</div>
+				</QueryClientProvider>
+			)}
+		</>
 	);
 }

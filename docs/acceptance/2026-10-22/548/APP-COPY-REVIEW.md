@@ -30,6 +30,19 @@ invalid raw numeric edit blocks leaving silently, and Escape restores its
 last valid value. A failed local recovery write blocks leaving with unsaved
 data while still allowing an actual server save.
 
+An independent Spec/copy reviewer read all 98 current EN messages and their
+native DE script catalogue at ee161. It confirmed the seven missing script
+bindings and found that “Changes remain open here…” was false during the
+focus/recovery failure; these are implementation blockers, not wording fixes.
+The same review rejected calling every annual total an “estimate”, because
+the selected source may be actual electricity bills. The final EN says:
+“Annual consumption provides an initial overview. Interval data is needed to
+assess peaks and battery operation.” The independently written DE “Der
+Jahresverbrauch dient der ersten Einordnung…” already expresses that fact
+and is retained. No new manufacturer/performance/standards/ROI/service promise
+issue was found in the reviewed copy. A new fixed review and runtime pass
+must close the implementation blockers before this record is a release gate.
+
 New DE recovery/comparison messages use Version, Entwurf, Eingabe and Sie,
 consistent with the existing native catalogue. Free-text project facts are
 not translated as enum labels or country names. Saved timestamps shown for

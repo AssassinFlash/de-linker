@@ -59,6 +59,7 @@ msgstr "Wo steht meine Proforma?"
 msgid "Genie could not load."
 msgstr "Genie konnte nicht geladen werden."
 
+#: build/planner/assets/planner.js
 #: includes/Genie/Entries.php build/genie.js:19 build/hero.js
 #: src/configurator/residential/ResidentialPanel.tsx:308 src/genie/App.tsx:1351
 #: build/configurator.js
@@ -615,6 +616,7 @@ msgstr "Ihre E-Mail-Adresse"
 msgid "Send email"
 msgstr "E-Mail senden"
 
+#: build/planner/assets/planner.js
 #: build/genie.js:10 build/genie.js:19 build/hero.js
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -657,6 +659,7 @@ msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
 msgid "Not everything was added. Try again."
 msgstr "Nicht alles wurde hinzugefügt. Bitte erneut versuchen."
 
+#: build/planner/assets/planner.js
 #: build/genie.js:13 src/configurator/solution/Solution.tsx:333 build/hero.js
 #: src/genie/shared/cardActions.ts src/configurator/solution/Solution.tsx
 #: build/configurator.js build/genie.js
@@ -781,6 +784,7 @@ msgstr "Löschen"
 msgid "Delete conversation: %s"
 msgstr "Gespräch löschen: %s"
 
+#: build/planner/assets/planner.js
 #: src/configurator/App.tsx:56 build/configurator.js
 msgid "Residential"
 msgstr "Wohngebäude"
@@ -805,6 +809,7 @@ msgstr "Standortlast, Spitzenlast und Betriebsprofil"
 msgid "Storage blocks, grid connection and project stage"
 msgstr "Speicherblöcke, Netzanschluss und Projektphase"
 
+#: build/planner/assets/planner.js
 #: src/configurator/App.tsx:97 build/configurator.js
 msgid "Solution Configurator"
 msgstr "Lösungskonfigurator"
@@ -867,6 +872,7 @@ msgstr "Schritt 3 · Ausgelegter Speicher oder Richtwerte"
 msgid "Step 2 · The project we quote"
 msgstr "Schritt 2 · Das Projekt, das wir anbieten"
 
+#: build/planner/assets/planner.js
 #: src/configurator/utility/UtilityForm.tsx:79 build/configurator.js
 msgid "Project"
 msgstr "Projekt"
@@ -912,6 +918,7 @@ msgstr "Postleitzahl des Standorts"
 msgid "Grid connection capacity"
 msgstr "Netzanschlussleistung"
 
+#: build/planner/assets/planner.js
 #: src/configurator/commercial/CommercialPanel.tsx:258 build/configurator.js
 msgid "Annual consumption"
 msgstr "Jahresverbrauch"
@@ -2384,9 +2391,7 @@ msgid "Address or location reference"
 msgstr "Adresse oder Standortbezeichnung"
 
 #: build/planner/assets/planner.js:1
-msgid ""
-"Annual consumption is a starting estimate. Interval data is needed to check "
-"peaks and battery operation."
+msgid "Annual consumption provides an initial overview. Interval data is needed to assess peaks and battery operation."
 msgstr ""
 "Der Jahresverbrauch dient der ersten Einordnung. Für Lastspitzen und den "
 "Speicherbetrieb wird ein Lastprofil benötigt."

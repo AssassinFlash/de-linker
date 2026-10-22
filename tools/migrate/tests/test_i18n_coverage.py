@@ -137,6 +137,41 @@ def test_gate_accepts_native_json_without_purging_po(
     assert generated_json.exists()
 
 
+def test_reused_native_message_must_also_be_bound_to_the_planner_script(
+    generated_json: Path, plugin: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    source = plugin.parents[1] / "apps/planner/src/Screen.tsx"
+    source.parent.mkdir(parents=True)
+    source.write_text("__('Save solution', 'linker-tools');")
+    manifest = plugin / "build/planner/vite-manifest.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text(json.dumps({"src/main.tsx": {"file": "assets/planner.js"}}))
+    assert gate.main() == 1
+    assert "planner script JSON" in capsys.readouterr().out
+
+    catalog = plugin / "languages/linker-tools-de_DE_formal.po"
+    catalog.write_text(
+        catalog.read_text().replace(
+            "#: build/screen.js", "#: build/screen.js build/planner/assets/planner.js"
+        )
+    )
+    wp = shutil.which("wp")
+    assert wp is not None
+    subprocess.run(
+        [
+            os.environ.get("PHP", "php"),
+            wp,
+            "i18n",
+            "make-json",
+            str(catalog),
+            "--no-purge",
+        ],
+        check=True,
+        capture_output=True,
+    )
+    assert gate.main() == 0
+
+
 def test_gate_accepts_native_json_across_generation_clock_ticks(
     generated_json: Path,
 ) -> None:

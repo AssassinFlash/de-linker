@@ -21,28 +21,19 @@ export function projectLanguageUrl(
 }
 
 /** Native site chrome stays owned by LC; this app adapts to its live geometry. */
-export function useSiteIntegration(
-	projectId: string | null,
-	editorReady: boolean,
-): void {
+export function useSiteIntegration(projectId: string | null): void {
 	useEffect(() => {
 		const root = document.querySelector<HTMLElement>("[data-linker-planner]");
 		if (!root) return;
 		const header = document.getElementById("lc-header");
-		const bar = root.querySelector<HTMLElement>(".lp-project-bar");
 		const measure = () => {
 			root.style.setProperty(
 				"--lp-site-header-height",
 				`${header?.offsetHeight ?? 0}px`,
 			);
-			root.style.setProperty(
-				"--lp-project-bar-height",
-				`${bar?.offsetHeight ?? 0}px`,
-			);
 		};
 		const observer = new ResizeObserver(measure);
 		if (header) observer.observe(header);
-		if (bar) observer.observe(bar);
 		measure();
 		const originals = new Map<HTMLAnchorElement, string>();
 		for (const link of document.querySelectorAll<HTMLAnchorElement>(
@@ -56,8 +47,7 @@ export function useSiteIntegration(
 		return () => {
 			observer.disconnect();
 			root.style.removeProperty("--lp-site-header-height");
-			root.style.removeProperty("--lp-project-bar-height");
 			for (const [link, href] of originals) link.setAttribute("href", href);
 		};
-	}, [projectId, editorReady]);
+	}, [projectId]);
 }

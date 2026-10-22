@@ -4,6 +4,7 @@ import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import type { Project, Session } from "../data/protocol.ts";
 import { useProjectDraft } from "../data/useProjectDraft.ts";
+import { useProjectBar } from "../data/useProjectBar.ts";
 import {
 	editDraft,
 	isDirty,
@@ -49,8 +50,11 @@ export function ProjectEditor({
 		restore,
 	} = useProjectDraft(project, session, client, store, recheck);
 	const [valid, setValid] = useState(true);
+	const bar = useProjectBar();
 	const [closing, setClosing] = useState(false);
-	const [closeBlocked, setCloseBlocked] = useState(false);
+	const [closeBlocked, setCloseBlocked] = useState<
+		"invalid" | "recovery" | null
+	>(null);
 	useEffect(() => {
 		if (valid) return;
 		const preventLoss = (event: BeforeUnloadEvent) => {
@@ -63,7 +67,7 @@ export function ProjectEditor({
 	async function leave() {
 		if (closing) return;
 		if (!valid) {
-			setCloseBlocked(true);
+			setCloseBlocked("invalid");
 			document
 				.querySelector<HTMLElement>(
 					'[data-linker-planner] [aria-invalid="true"]',
@@ -75,7 +79,7 @@ export function ProjectEditor({
 		if (!draft || (!isDirty(draft) && !draft.pending) || (await flush()))
 			close();
 		else {
-			setCloseBlocked(true);
+			setCloseBlocked("recovery");
 			setClosing(false);
 		}
 	}
@@ -100,7 +104,7 @@ export function ProjectEditor({
 	}
 	return (
 		<div className="lp-project">
-			<header className="lp-project-bar">
+			<header className="lp-project-bar" ref={bar}>
 				<div className="lp-breadcrumb">
 					<button
 						className="lp-text-button"
@@ -227,7 +231,10 @@ export function ProjectEditor({
 							</div>
 						</Notice>
 					)}
-					{closeBlocked && (
+					{((closeBlocked === "invalid" && !valid) ||
+						(closeBlocked === "recovery" &&
+							recoveryFailed &&
+							(dirty || draft.pending))) && (
 						<Notice error>
 							{!valid
 								? __(

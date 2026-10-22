@@ -14,7 +14,7 @@
 		"lint:types": "tsc --noEmit",
 		"lint:js": "node --check bin/build-manifest.mjs",
 		"lint:format": "prettier --check .",
-		"test": "node --test src/domain/*.test.ts src/data/*.test.ts"
+		"test": "node --test src/domain/*.test.ts src/data/*.test.ts && node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/*.test.mjs"
 	},
 	"dependencies": {
 		"@react-three/drei": "10.7.9",
@@ -32,6 +32,7 @@
 		"@types/react-dom": "19.3.0",
 		"@types/three": "0.186.0",
 		"@vitejs/plugin-react": "6.1.2",
+		"jsdom": "26.1.0",
 		"prettier": "3.9.6",
 		"typescript": "6.0.3",
 		"vite": "8.3.5"

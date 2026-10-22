@@ -267,7 +267,7 @@ export function BriefForm({
 						</h2>
 						<p>
 							{__(
-								"Annual consumption is a starting estimate. Interval data is needed to check peaks and battery operation.",
+								"Annual consumption provides an initial overview. Interval data is needed to assess peaks and battery operation.",
 								"linker-tools",
 							)}
 						</p>

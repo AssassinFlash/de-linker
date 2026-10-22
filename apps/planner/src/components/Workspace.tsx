@@ -73,7 +73,7 @@ export function Workspace({
 		enabled: selected !== null,
 		staleTime: Infinity,
 	});
-	useSiteIntegration(selected, project.data !== undefined);
+	useSiteIntegration(selected);
 	const projects = useMemo(() => {
 		const seen = new Set<string>();
 		return (index.data?.pages.flatMap((page) => page.items) ?? []).filter(
@@ -172,6 +172,7 @@ export function Workspace({
 						client={client}
 						store={store}
 						created={created}
+						recheck={recheck}
 					/>
 				</header>
 				{session.claim_pending && (

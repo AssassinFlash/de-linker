@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { Project, Session } from "../data/protocol.ts";
+import { ApiError } from "../data/protocol.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import { readObject, readProject, wire } from "../data/readProtocol.ts";
 import { emptyBrief } from "../domain/brief.ts";
@@ -13,11 +14,13 @@ export function NewProject({
 	client,
 	store,
 	created,
+	recheck,
 }: {
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
 	created: (project: Project) => void;
+	recheck: () => void;
 }) {
 	const [open, setOpen] = useState(false);
 	const [title, setTitle] = useState("");
@@ -76,8 +79,15 @@ export function NewProject({
 			setOpen(false);
 			setTitle("");
 			created(project);
-		} catch {
+		} catch (error) {
 			setFailed(true);
+			if (
+				error instanceof ApiError &&
+				(error.status === 401 ||
+					error.status === 403 ||
+					error.code === "session_changed")
+			)
+				recheck();
 		} finally {
 			setBusy(false);
 		}
