@@ -103,6 +103,18 @@ no idle or exact-cycle prefix earns a stock-error budget. A separate conserved
 terminal comparison has a final representation ULP independent of padding.
 Both idle-prefix and exact-cycle-prefix regressions preserve the same deficit
 and reject it; planning has 106 tests. No smaller task horizon or physical
-margin was introduced. Both axes will recheck this fixed increment. The full
+margin was introduced. The next fixed review showed two remaining causes:
+source-bucket rounding could falsely reject equal-AC noninteger cycles, and
+tracked deviation could include real sub-ULP auxiliary consumption or tolerated
+stock creation. The witness now independently reconstructs bounded command
+power and integrates exact time/efficiency ratios. It does not consume the
+rounded source-withdrawal buckets, and its hard limits never borrow tracked
+deviation. Source transitions accept only local arithmetic roundoff (zero-flow
+assignment is exact). Four regressions cover 1.3 kW/54-step and .9 kW/2000-step
+lossless cycles, sub-ULP auxiliary consumption at reserve, and creating stock
+under a generic power tolerance for a later outage. The fixed energy/component
+planning suite is 110 tests; the concurrently developed real CSV/worker adapter
+adds 11 more, 121 passing together before its separate review.
+Both axes will recheck this fixed increment. The full
 physical configuration/Genie/Woo/UI integration and live acceptance remain
 active, not delivered by this component review.

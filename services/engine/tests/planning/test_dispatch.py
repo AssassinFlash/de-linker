@@ -854,3 +854,67 @@ def test_padding_cannot_create_a_budget_for_a_real_terminal_deficit(
     )
     assert not terminal.passed
     assert terminal.allowance == math.ulp(1000)
+
+
+@pytest.mark.parametrize("count,power", [(54, 1.3), (2000, 0.9)])
+def test_lossless_noninteger_cycles_restore_inventory_without_bucket_rounding(
+    count: int,
+    power: float,
+) -> None:
+    model = battery(10, 10)
+    frames = tuple(
+        frame(index, load=power if index % 2 == 0 else 0, pv=power if index % 2 else 0)
+        for index in range(count)
+    )
+    flows = run(frames, model, EnergyOrigins(1.5, 2, 1.5))
+    verification = checks(flows, model, terminal=5)
+    assert verification.passed, [
+        check.document() for check in verification.checks if not check.passed
+    ]
+
+
+def test_sub_ulp_internal_loss_does_not_waive_the_conserved_reserve() -> None:
+    model = battery(1000, 10, internal_aux=0.0001)
+    start = frame(0, load=0).interval.start
+    frames = tuple(
+        replace(
+            frame(0, load=0, reserve=1000),
+            interval=Interval(
+                start + timedelta(microseconds=index),
+                start + timedelta(microseconds=index + 1),
+            ),
+        )
+        for index in range(10)
+    )
+    flows = run(frames, model, EnergyOrigins(0, 0, 1000))
+    assert all(flow.after.total == 1000 for flow in flows)
+    verification = checks(flows, model)
+    conserved = next(
+        check
+        for check in verification.checks
+        if check.code == "reserve_conserved_inventory"
+    )
+    assert not conserved.passed
+    assert conserved.arithmetic_allowance == math.ulp(1000)
+
+
+def test_generic_power_tolerance_cannot_create_stock_for_a_later_event() -> None:
+    model = battery(1, 10)
+    empty = EnergyOrigins(0, 0, 0)
+    first = run((frame(0, load=0),), model, empty)[0]
+    injected = EnergyOrigins(0, 0, 1e-8)
+    first = replace(first, after=injected)
+    event = frame(1, load=10, outage=True, pv_enabled=False)
+    event = replace(
+        event,
+        interval=Interval(
+            event.interval.start, event.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    second = run((event,), model, injected)[0]
+    verification = verify(
+        (first, second), model, TOLERANCE, initial=empty, terminal_min_kwh=None
+    )
+    failures = {check.code for check in verification.checks if not check.passed}
+    assert "origin_transition_kw_initial_unknown_kwh" in failures
+    assert "reference_discharge_delivery" in failures

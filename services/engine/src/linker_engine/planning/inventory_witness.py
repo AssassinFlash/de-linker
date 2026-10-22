@@ -1,13 +1,15 @@
 """Exact rational net-flow witness for hard inventory/task boundaries.
 
-Fraction represents each recorded binary float exactly. Its net-flow sum does
-not accumulate a fresh inventory ULP for an idle frame or an exact cycle.
-Source/power/model checks separately validate the recorded transfer amounts.
+Fraction represents each declared binary float exactly. It independently
+bounds commanded power by inventory/ports and integrates it on the exact time
+axis, rather than adding already rounded proportional-source withdrawals.
+No stock ULP is earned by an idle frame or an exact cycle.
 This is a verifier witness, never the actuator or a replacement battery model.
 """
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from fractions import Fraction
 
@@ -31,6 +33,8 @@ class InventoryBoundary:
     capacity_violation_kwh: float
     reserve_violation_kwh: float
     tracked_deviation_kwh: float
+    charge_kw: float
+    discharge_kw: float
 
 
 class InventoryWitness:
@@ -39,14 +43,59 @@ class InventoryWitness:
 
     def advance(self, flow: Flows, model: BatteryModel) -> InventoryBoundary:
         before = self.energy
-        after_losses = before - _energy(flow.standing_loss) - _energy(flow.internal_aux)
-        # Match the explicitly recorded internal charge-energy terms. The
-        # exact witness then adds/subtracts those floats without large-stock
-        # cancellation or an interval-count-dependent numerical budget.
-        incoming = Fraction(
-            flow.pv_charge_kw * model.eta_charge * flow.frame.interval.hours
-        ) + Fraction(flow.grid_charge_kw * model.eta_charge * flow.frame.interval.hours)
-        self.energy = after_losses + incoming - _energy(flow.discharged_internal)
+        frame, limits = flow.frame, flow.frame.limits
+        dt = Fraction(frame.interval.duration_us, 3_600_000_000)
+        eta_c, eta_d = Fraction(model.eta_charge), Fraction(model.eta_discharge)
+        # The named loss fraction is evaluated once in float64, as in the
+        # declared model. Only the small loss transfer is rounded; the large
+        # stock is not repeatedly rounded or used as an error allowance.
+        loss_fraction = -math.expm1(
+            -model.standing_loss_rate_per_hour * frame.interval.hours
+        )
+        standing = Fraction(float(before) * loss_fraction)
+        post_standing = max(before - standing, Fraction())
+        internal_aux = min(Fraction(model.internal_aux_kw) * dt, post_standing)
+        after_losses = post_standing - internal_aux
+        pv = Fraction(frame.pv_potential_kw) if limits.pv_enabled else Fraction()
+        load, aux = Fraction(frame.load_kw), Fraction(frame.aux_ac_kw)
+        direct_load = min(pv, load)
+        direct_aux = min(pv - direct_load, aux)
+        deficit = load + aux - direct_load - direct_aux
+        discharge = min(
+            Fraction(flow.command.discharge_kw),
+            Fraction(model.discharge_ac_kw),
+            max(after_losses - Fraction(limits.reserve_kwh), Fraction()) * eta_d / dt,
+            deficit,
+        )
+        after_discharge = after_losses - discharge * dt / eta_d
+        remaining_demand = max(deficit - discharge, Fraction())
+        import_cap = (
+            Fraction()
+            if limits.mode == "outage"
+            else Fraction(limits.import_cap_kw)
+            if limits.import_cap_kw is not None
+            else None
+        )
+        grid_load = (
+            remaining_demand
+            if import_cap is None
+            else min(remaining_demand, import_cap)
+        )
+        headroom = max(Fraction(model.usable_window_kwh) - after_discharge, Fraction())
+        charge_bound = min(
+            Fraction(flow.command.charge_kw),
+            Fraction(model.charge_ac_kw),
+            headroom / (eta_c * dt),
+        )
+        surplus = max(pv - direct_load - direct_aux, Fraction())
+        pv_charge = min(charge_bound, surplus)
+        grid_charge = Fraction()
+        if limits.mode == "connected" and limits.allow_grid_charge:
+            grid_charge = charge_bound - pv_charge
+            if import_cap is not None:
+                grid_charge = min(grid_charge, max(import_cap - grid_load, Fraction()))
+        charge = pv_charge + grid_charge
+        self.energy = after_discharge + charge * dt * eta_c
         tracked_before = _energy(flow.before)
         tracked_after_losses = (
             tracked_before - _energy(flow.standing_loss) - _energy(flow.internal_aux)
@@ -64,6 +113,8 @@ class InventoryWitness:
                 - min(before, after_losses, self.energy)
             ),
             float(deviation),
+            float(charge),
+            float(discharge),
         )
 
     def terminal_violation(self, minimum_kwh: float) -> float:

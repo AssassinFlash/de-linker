@@ -109,11 +109,16 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
     The verifier independently rejects an over-capacity frozen initial input.
     Capacity, reserve and terminal inventory are hard physical/task boundaries;
     a generic absolute kWh or relative-times-capacity allowance is not usable
-    there. An exact rational net-flow witness tracks recorded transfers without
-    accumulating stock ULPs from idle frames or exact cycles. Tracked-state
-    checks expose their actual deviation from this witness. The conserved
-    terminal witness has a final representation ULP, independent of prefix
-    length; no estimated roundoff pool can restore an uncharged cycle. A small
+    there. An independent rational witness reconstructs bounded command power
+    from frame/model limits and its own continuous state, integrating on exact
+    integer-microsecond durations with the declared directional efficiencies.
+    It does not add already rounded proportional-source bucket withdrawals.
+    Standing loss retains the named float64 loss-fraction primitive; only that
+    small transfer is rounded. Tracked-state checks expose their actual
+    deviation, which never exempts the independent witness's capacity/reserve/
+    terminal boundary. Those comparisons have one final representation ULP,
+    independent of prefix length. Source-transition equations use their local
+    arithmetic budget only, and a zero-transfer assignment is exact. A small
     real energy deficit cannot be called restored reserve or a repeatable cycle.
 15. Numerical tolerances are explicit, serialized software parameters. They do
     not represent field precision or engineering safety margins. Task execution,

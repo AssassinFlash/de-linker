@@ -161,19 +161,30 @@ def verify(
                 index,
                 power_scale,
                 check.arithmetic_allowance_kw,
+                inventory_boundary=check.code.startswith("origin_transition_kw_"),
+                exact=check.code.startswith("origin_transition_kw_")
+                and not any(
+                    (
+                        flow.charge_kw,
+                        flow.discharge_kw,
+                        flow.standing_loss.total,
+                        flow.internal_aux.total,
+                    )
+                ),
             )
         inventory = inventory_witness.advance(flow, model)
         inventory_roundoff = inventory.tracked_deviation_kwh + math.fsum(
             math.ulp(value) if value else 0.0
             for value in (flow.before.total, flow.after.total)
         )
-        # The conserved witness is an exact sum of recorded transfers. Its
-        # comparison receives one final float representation ULP, independent
-        # of idle padding, exact cycles or prior rounding-budget estimates.
-        capacity_ulp = inventory.tracked_deviation_kwh + (
+        # The independent witness integrates bounded command powers using
+        # rational time/efficiencies. Hard comparisons receive one final float
+        # representation ULP, independent of reported source-bucket drift,
+        # idle padding, exact cycles or prior roundoff-budget estimates.
+        capacity_ulp = (
             math.ulp(model.usable_window_kwh) if model.usable_window_kwh else 0.0
         )
-        reserve_ulp = inventory.tracked_deviation_kwh + (
+        reserve_ulp = (
             math.ulp(frame.limits.reserve_kwh) if frame.limits.reserve_kwh else 0.0
         )
         record(
@@ -193,6 +204,27 @@ def verify(
             energy_scale,
             reserve_ulp,
             inventory_boundary=True,
+        )
+        local_energy_roundoff = math.fsum(
+            check.arithmetic_allowance_kw * dt
+            for check in local_checks
+            if check.code.startswith("origin_transition_kw_")
+        )
+        record(
+            "reference_charge_delivery",
+            abs(flow.charge_kw - inventory.charge_kw),
+            "kW",
+            index,
+            power_scale,
+            local_energy_roundoff / (model.eta_charge * dt),
+        )
+        record(
+            "reference_discharge_delivery",
+            abs(flow.discharge_kw - inventory.discharge_kw),
+            "kW",
+            index,
+            power_scale,
+            local_energy_roundoff * model.eta_discharge / dt,
         )
         ac_left = math.fsum((flow.pv_available_kw, flow.import_kw, flow.discharge_kw))
         ac_right = math.fsum(
