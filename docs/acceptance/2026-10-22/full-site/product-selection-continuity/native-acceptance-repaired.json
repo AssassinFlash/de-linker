@@ -1,0 +1,45 @@
+{
+  "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/contact-native-repair-20261022T045003109502Z",
+  "command": [
+    "/opt/homebrew/opt/php@8.3/bin/php",
+    "vendor/phpunit/phpunit/phpunit",
+    "-c",
+    "phpunit.integration.xml.dist",
+    "--filter",
+    "ContactSelectionTest|ContactNavigationTest"
+  ],
+  "exit": 0,
+  "comparisons": {
+    "options": true,
+    "queue": true,
+    "privacy": true,
+    "counts": true
+  },
+  "countsBefore": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "countsAfter": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "privacy": [
+    {
+      "ID": "1673",
+      "sha256": "8e00054bac129baa25deb66d81fd33f4028fdf0d09b69014eb392285c9e539c4",
+      "backslashes": 0
+    },
+    {
+      "ID": "6827",
+      "sha256": "4a7e625341d90629c98677f60bf95521d5f32359e1f73fb6e14c8f2aa81720d2",
+      "backslashes": 0
+    }
+  ],
+  "queueBefore": 0,
+  "queueAfter": 0,
+  "testSummary": "8 tests, 458 assertions, PASS",
+  "native_log_sha256": "cdbe2934c89e97d68f194656023b7fd614c6861b977ad15dd5318817a9d9c596",
+  "boundary": "Six actual local HTTP archive/contact/language/return chains plus two isolated Woo order/Outbox/UUID/recovery consumers. No real transport; before/after option, queue, privacy and counts match. Local privacy snapshots are stale content preservation checks only, not current production legal acceptance."
+}

@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-22T06:25:13.153Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [
+        "none"
+      ],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/contact/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 448.109375,
+            "height": 48,
+            "right": 308.1484375,
+            "width": 208.1484375,
+            "x": 100,
+            "y": 400.109375
+          },
+          "text": "Open Support Request →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "1px solid rgb(160, 177, 164)",
+          "color": "rgb(23, 39, 33)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/my-account/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 448.109375,
+            "height": 48,
+            "right": 503.65625,
+            "width": 183.5078125,
+            "x": 320.1484375,
+            "y": 400.109375
+          },
+          "text": "Access Partner Portal"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "26.4px",
+        "rect": {
+          "bottom": 368.109375,
+          "height": 52.796875,
+          "right": 690,
+          "width": 590,
+          "x": 100,
+          "y": 315.3125
+        },
+        "tag": "P",
+        "text": "Our team in Germany handles quotes, product documents, and engineering support. Registered trade partners order through the partner portal."
+      },
+      "rect": {
+        "bottom": 448.109375,
+        "height": 48,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 400.109375
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/services-support/",
+  "width": 1440
+}

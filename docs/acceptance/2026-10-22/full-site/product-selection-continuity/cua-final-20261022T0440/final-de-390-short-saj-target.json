@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-22T05:06:55.752Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "height": 1000,
+  "intent": "product",
+  "lang": "de-DE",
+  "message": "",
+  "overflow": false,
+  "selection": {
+    "checked": true,
+    "excludedDisplay": "none",
+    "label": {
+      "bottom": 524.015625,
+      "height": 47.59375,
+      "left": 56,
+      "right": 334,
+      "top": 476.421875,
+      "width": 278,
+      "x": 56,
+      "y": 476.421875
+    },
+    "nativeControls": [
+      {
+        "checked": true,
+        "disabled": false,
+        "formAssociated": true,
+        "name": "linker_contact_selection",
+        "type": "checkbox"
+      }
+    ],
+    "rect": {
+      "bottom": 664.609375,
+      "height": 228.6875,
+      "left": 39,
+      "right": 351,
+      "top": 435.921875,
+      "width": 312,
+      "x": 39,
+      "y": 435.921875
+    },
+    "summaryDisplay": "block",
+    "text": "ProduktauswahlDiese Auswahl meiner Nachricht beifügenSAJSuchenSAJProdukte sortierenName A-ZDiese Auswahl wird nicht mitgesendet.",
+    "value": "{\"source\":\"http:\\/\\/127.0.0.1:9290\\/de\\/brand\\/saj\\/\",\"selection\":{\"q\":\"SAJ\",\"sort\":\"name\"}}"
+  },
+  "source": {
+    "color": "rgb(10, 102, 92)",
+    "focus": true,
+    "hover": false,
+    "href": "http://127.0.0.1:9290/de/brand/saj/?q=SAJ&sort=name",
+    "outline": {
+      "color": "rgb(12, 127, 115)",
+      "style": "solid",
+      "width": "2px"
+    },
+    "rect": {
+      "bottom": 580.015625,
+      "height": 44,
+      "left": 56,
+      "right": 100,
+      "top": 536.015625,
+      "width": 44,
+      "x": 56,
+      "y": 536.015625
+    },
+    "text": "SAJ"
+  },
+  "url": "http://127.0.0.1:9290/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fde%5C%2Fbrand%5C%2Fsaj%5C%2F%22%2C%22selection%22%3A%7B%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+  "width": 390
+}

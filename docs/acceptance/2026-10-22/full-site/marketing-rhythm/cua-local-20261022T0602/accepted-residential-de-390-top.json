@@ -1,0 +1,106 @@
+{
+  "at": "2026-10-22T07:08:56.255Z",
+  "body": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6923 page-child parent-pageid-6871 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas rs-at-cover",
+  "controls": [
+    {
+      "background": "rgba(255, 255, 255, 0.08)",
+      "color": "rgb(255, 255, 255)",
+      "label": "Produkte suchen",
+      "rect": {
+        "bottom": 63,
+        "height": 46,
+        "width": 46,
+        "x": 172,
+        "y": 17
+      }
+    },
+    {
+      "background": "rgba(255, 255, 255, 0.08)",
+      "color": "rgb(255, 255, 255)",
+      "label": "Menü öffnen",
+      "rect": {
+        "bottom": 62,
+        "height": 44,
+        "width": 44,
+        "x": 330,
+        "y": 18
+      }
+    }
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792652406"
+  ],
+  "expanded": [],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgba(0, 0, 0, 0)",
+    "filter": "none",
+    "rect": {
+      "bottom": 81,
+      "height": 81,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "height": 844,
+  "lang": "de-DE",
+  "language": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/solution/residential-storage/",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgb(21, 53, 47)",
+      "rect": {
+        "bottom": 62,
+        "height": 44,
+        "width": 44,
+        "x": 230,
+        "y": 18
+      },
+      "text": "EN",
+      "underline": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/de/loesung/heimspeicher/",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgb(21, 53, 47)",
+      "rect": {
+        "bottom": 62,
+        "height": 44,
+        "width": 44,
+        "x": 274,
+        "y": 18
+      },
+      "text": "DE",
+      "underline": "rgb(255, 255, 255)"
+    }
+  ],
+  "logoFilter": "brightness(0) invert(1)",
+  "overflow": false,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/de/loesung/heimspeicher/",
+  "width": 390,
+  "sourceAggregate": "d1b740ea801a440ba3a05ab60026a000ebfb06cd64484d53cb3467ee9fcd34e4",
+  "surface": {
+    "background": "rgba(21, 53, 47, 0.8)",
+    "headerImages": [
+      {
+        "complete": true,
+        "naturalWidth": 712,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+      }
+    ],
+    "visibleNavigation": []
+  }
+}

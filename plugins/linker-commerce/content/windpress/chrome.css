@@ -22,7 +22,8 @@
 @media (min-width:1280px){:root{--lk-header-h:88px}}
 :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 24px)}
 body.admin-bar :where([id]){scroll-margin-top:calc(var(--lk-header-h) + 56px)}
-header#lc-header{position:sticky;top:0;z-index:1000;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--proto-neutral-200)}
+/* Keep scrolled titles behind an opaque navigation surface. */
+header#lc-header{position:sticky;top:0;z-index:1000;background:#fff;border-bottom:1px solid var(--proto-neutral-200)}
 body.admin-bar header#lc-header{top:32px}
 @media (max-width:782px){body.admin-bar header#lc-header{top:46px}}
 #tv-header-v2{font-family:var(--proto-font-sans);position:relative;background:transparent;padding-top:0!important;padding-bottom:0!important;color:var(--proto-ink)}
@@ -65,18 +66,23 @@ body.admin-bar header#lc-header{top:32px}
  * sweep and +1px-per-side pressure test guard the rendered behavior.
  * Source, safety calculation, and unresolved boundary table:
  * docs/acceptance/2026-10-18/229/round2/. */
-@media (min-width:1280px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(4.546875px,round(down,calc((min(100vw - 32px,1360px) - 1156.5625px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
-@media (min-width:1288px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,calc((min(100vw - 32px,1360px) - 1170px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
+/* The actual header excludes a classic scrollbar, unlike 100vw. Native
+ * 1366px readback: header 1351px, frame content 1319px, old budget 1334px.
+ * Use its inline container width with the same gutters and safety budget;
+ * fits() continues to decide disclosure from actual native geometry. */
+@media (min-width:1280px){#tv-header-v2{container-type:inline-size;container-name:linker-header}}
+@media (min-width:1280px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(4.546875px,round(down,calc((min(100cqw - 32px,1360px) - 1156.5625px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
+@container linker-header (min-width:1288px){html[lang^="de"] #tv-header-v2 .tv-nav-link{padding-inline:clamp(0px,round(down,calc((min(100cqw - 32px,1360px) - 1170px - 3 * clamp(8px,1vw,16px)) / 12),.015625px),14px)}}
 #tv-header-v2 .tv-nav-item{position:relative}
 #tv-header-v2 .tv-nav-link{display:inline-flex;align-items:center;gap:4px;height:44px;min-height:44px;padding:0 14px;font-family:inherit;color:var(--proto-ink);text-decoration:none;background:none;border:0;border-radius:8px;cursor:pointer;transition:color 200ms cubic-bezier(.2,0,0,1),background 200ms cubic-bezier(.2,0,0,1);white-space:nowrap;touch-action:manipulation}
 #tv-header-v2 .tv-nav-link:hover{color:var(--proto-teal-600);background:var(--proto-teal-50)}
 #tv-header-v2 .tv-nav-link:active{transform:translateY(1px)}
 #tv-header-v2 .tv-nav-chevron{width:14px;height:14px;transition:transform 200ms cubic-bezier(.2,0,0,1);flex-shrink:0}
 #tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-nav-chevron{transform:rotate(180deg)}
-#tv-header-v2 .tv-mega-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-6px);opacity:0;visibility:hidden;transition:opacity 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),visibility 200ms;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:20px;box-shadow:var(--proto-shadow-3);padding:22px;width:860px;max-width:calc(100vw - 40px);z-index:50;pointer-events:none}
+#tv-header-v2 .tv-mega-menu{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-6px);opacity:0;visibility:hidden;transition:opacity 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),visibility 200ms;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:20px;box-shadow:var(--proto-shadow-3);padding:22px;width:860px;max-width:calc(100vw - 40px);z-index:50;pointer-events:none}
 #tv-header-v2 .tv-mega-menu--compact{width:400px;padding:12px}
 #tv-header-v2 .tv-mega-menu::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
-#tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{display:block;opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
 #tv-header-v2 .tv-mega-grid{display:grid;grid-template-columns:260px 1fr;gap:24px}
 #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-menu{left:0;box-sizing:border-box;width:min(1120px,calc(100vw - 180px));transform:translateY(-6px)}
 #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"]:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{transform:translateY(0)}
@@ -234,7 +240,7 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all{border-color:rgba(12,127,115,.35);background:var(--proto-teal-50)}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-text{min-height:0;padding:9px 12px}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-title{color:var(--proto-teal-600);font-weight:700}
-#tv-header-v2 .tv-mobile-cta{margin-top:10px;width:100%}
+#tv-header-v2 .tv-mobile-cta{box-sizing:border-box;margin-top:10px;width:100%}
 #tv-header-v2 .tv-mobile-utility-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 #tv-header-v2 .tv-mobile-utility{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;min-height:44px;border-radius:8px;border:1px solid var(--proto-neutral-200);background:#ffffff;color:var(--proto-ink);font-family:inherit;font-size:13px;font-weight:700;text-decoration:none;touch-action:manipulation}
 #tv-header-v2 .tv-mobile-utility:hover{border-color:var(--proto-teal-600);color:var(--proto-teal-600)}

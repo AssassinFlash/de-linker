@@ -21,6 +21,25 @@ use WP_Mock;
  */
 final class ProductFiltersTest extends TestCase {
 
+	/** Nonscalar public query values cannot reach string casts or sort arithmetic. */
+	public function test_array_values_are_not_selection_values(): void {
+		$_GET    = array(
+			'application' => array( 'commercial' ),
+			'brand'       => array( 'goodwe' ),
+			'phase'       => array( '3' ),
+			'power'       => array( 'mid' ),
+			'kw_min'      => array( '5' ),
+			'kw_max'      => array( '20' ),
+			'kwh_min'     => array( '5' ),
+			'kwh_max'     => array( '30' ),
+			'q'           => array( 'SAJ' ),
+			'sort'        => array( 'name' ),
+		);
+		$filters = new ProductFilters();
+		self::assertSame( array(), $filters->requested() );
+		self::assertSame( 'recommended', $filters->requested_sort() );
+	}
+
 	/**
 	 * The search term rides with the other facets.
 	 */

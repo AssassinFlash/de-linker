@@ -235,6 +235,105 @@ final class FormTest extends TestCase {
 		$_GET = array();
 	}
 
+	/** Read-only selection arrives visibly, and a failed native POST retains the removal choice and message. */
+	public function test_selection_is_visible_and_native_recovery_preserves_the_original_message_and_exclusion(): void {
+		$this->plain_text();
+		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn ( string $url, int $component = -1 ) => parse_url( $url, $component ) ) );
+		WP_Mock::userFunction( 'url_to_postid', array( 'return' => 12 ) );
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'return' => new \WP_Post(
+					(object) array(
+						'ID'            => 12,
+						'post_type'     => 'page',
+						'post_title'    => 'Products',
+						'post_password' => '',
+					)
+				),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_permalink',
+			array(
+				'return' => static function ( $post = null ): string {
+					$id = $post instanceof \WP_Post ? (int) $post->ID : (int) $post;
+					return 12 === $id ? 'http://site/products/%c3%a4/' : ( 60 === $id ? 'http://site/genie/' : 'http://site/contact/' );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'get_the_title', array( 'return' => 'Products' ) );
+		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn ( string $value ): string => $value ) );
+		WP_Mock::userFunction( 'sanitize_textarea_field', array( 'return' => static fn ( string $value ): string => preg_replace( '/%[a-f0-9]{2}/i', '', $value ) ?? '' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ) => json_encode( $value ) ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => static fn ( array $query, string $url ): string => $url . '?' . http_build_query( $query ) ) );
+		WP_Mock::passthruFunction( 'esc_textarea' );
+		$this->form_environment();
+		$this->english_site();
+		$raw  = json_encode(
+			array(
+				'source'    => 'http://site/products/%c3%a4/',
+				'selection' => array(
+					'q'    => 'SAJ with no match',
+					'sort' => 'name',
+				),
+			)
+		);
+		$_GET = array( \Linker\Commerce\Contact\SelectionContext::FIELD => $raw );
+		$html = ( new Form() )->render();
+		$this->assertStringContainsString( 'Include this selection with my message', $html );
+		$this->assertStringContainsString( 'SAJ with no match', $html );
+		$this->assertStringContainsString( ' checked /><span>', $html );
+		$this->assertStringContainsString( 'required></textarea>', $html, 'Context never pre-fills the message.' );
+
+		$store   = array();
+		$session = \Mockery::mock( \WC_Session_Handler::class );
+		$session->shouldReceive( 'set' )->andReturnUsing(
+			static function ( string $key, $value ) use ( &$store ): void {
+				$store[ $key ] = $value;
+			}
+		);
+		$session->shouldReceive( 'get' )->andReturnUsing(
+			static function ( string $key ) use ( &$store ) {
+				return $store[ $key ] ?? null;
+			}
+		);
+		$session->shouldReceive( 'set_customer_session_cookie' )->twice()->with( true );
+		WP_Mock::userFunction( 'WC', array( 'return' => (object) array( 'session' => $session ) ) );
+		WP_Mock::userFunction( 'wc_load_cart' );
+		$old_cookies                               = $_COOKIE;
+		$_COOKIE['wp_woocommerce_session_fixture'] = 'native-presence';
+		try {
+			$post = array(
+				'message'           => 'My unchanged question.',
+				'intent'            => 'product',
+				'linker_request_id' => 'original-logical-request',
+				\Linker\Commerce\Contact\SelectionContext::FIELD => $raw,
+				\Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD => '0',
+				'linker_proof'      => 'not-recovered',
+			);
+			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+			$this->assertSame( 'original-logical-request', $store['linker_form_recovery_contact']['fields']['linker_request_id'] );
+			$this->assertArrayNotHasKey( 'linker_proof', $store['linker_form_recovery_contact']['fields'] );
+			$html = ( new Form() )->render();
+			$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
+			$this->assertStringContainsString( 'http://site/products/%c3%a4/', $html, 'Native percent-encoded canonical paths survive recovery.' );
+			$this->assertStringContainsString( ' checked /><span>', $html );
+			unset( $post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] );
+			\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+			$html = ( new Form() )->render();
+			$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
+			$this->assertStringContainsString( 'This selection will not be sent.', $html );
+			$this->assertStringNotContainsString( 'SAJ with no match', $html );
+			$this->assertStringNotContainsString( 'name="' . \Linker\Commerce\Contact\SelectionContext::FIELD . '"', $html );
+			$this->assertNull( $store['linker_form_recovery_contact'] );
+
+		} finally {
+			$_COOKIE = $old_cookies;
+			$_GET    = array();
+		}
+	}
+
 	/**
 	 * The WordPress reads every render makes. The locale is registered first:
 	 * WP_Mock answers with the first matching registration.

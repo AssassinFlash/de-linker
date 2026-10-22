@@ -1,0 +1,184 @@
+# Marketing photo-header visual review — d1b740ea
+
+Status: **bounded visual PASS for the five photo-header families actually exercised (90 frames); Utility photo state PENDING (18 diagnostic frames).** No new actionable defect was found in the visible navigation, open menu, language hover/focus combination, or closed/scrolled header of those five families. This is a saved-image review of local runtime captures, not a production acceptance or a complete page/body accessibility review.
+
+## Fixed source and capture provenance
+
+Reviewed source aggregate: `d1b740ea801a440ba3a05ab60026a000ebfb06cd64484d53cb3467ee9fcd34e4`, independently recalculated from the current two files using the manifest's `path + NUL + sha256 + LF` algorithm and array order.
+
+| File | Bytes | SHA256 |
+| --- | ---: | --- |
+| `plugins/linker-commerce/content/windpress/chrome.css` | 34623 | `a43202bb828ad63b0d7d49881af91be9bc42cd88c7bdd4aedb338d939aa905f9` |
+| `plugins/linker-commerce/content/windpress/marketing-rhythm.css` | 4549 | `710fb37175f4b157816880e151fd9796b0e5e68ae5c3408f71a75aa0ecc80139` |
+
+Parent/root executed the local CUA capture. I did not run or interact with the browser, compile, change the instance, or deploy. I independently opened **every one of the 108 supplied JPEGs** through `view_image` at its actual desktop/phone aspect ratio; the visual conclusions below do not come solely from computed-style JSON. I then checked all 108 paired JSON records and rehashed both files of every pair.
+
+Original capture directory: `docs/acceptance/2026-10-22/full-site/marketing-rhythm/cua-local-20261022T0602/`.
+
+Before parent renaming/replacing any diagnostic frame, I retained the exact 108 JPEG/JSON pairs at:
+
+`/Users/chesterjohn/de-linker-data/privacy-visual-20261021/marketing-d1-standards-visual-20261022T071129196086Z/`
+
+Each paired JSON declares the d1 source aggregate and loads local WindPress `tailwind.css?ver=1792652406`. Root identifies this as compile8c, cache 1792652406 / 709392 bytes; my read-only check independently verifies the saved CSS URI/version and source bytes, not a browser response-body hash or a new live fetch. All paired records report `fonts=loaded`, no horizontal overflow, and no incomplete/zero-width header image. Exact file hashes are listed below, including diagnostics; a filename beginning `accepted-utility` does not override the diagnostic exclusion.
+
+## Actual coverage and observations
+
+Each family has EN and DE at 1440×1000 and 390×844. Desktop has top, product menu, language hover+focus, and scrolled states; phone has those four plus closed-after-menu. Thus the actual inventory is 6 × (2 × 4 + 2 × 5) = **108**, not a manually estimated count.
+
+| Family | Individually opened | Header visual result | Evidence boundary |
+| --- | ---: | --- | --- |
+| About | 18 | PASS | `about-at-scene` actually present in the cover-state records |
+| Application | 18 | PASS for visible header controls; capture-stability observation resolved by the supplemental frame below | `sol-at-cover` actually present; white scrolled state separately observed |
+| Commercial | 18 | PASS | `cs-at-cover` actually present, including the previously weak small navigation over the bright building/photo |
+| EPC | 18 | PASS for header | `epc-at-cover` actually present; existing body headline contrast is not included |
+| Residential | 18 | PASS | `rs-at-cover` actually present |
+| Utility | 18 | DIAGNOSTIC / photo-state PENDING | No `us-at-cover` in any supplied Utility record; ordinary white header throughout |
+
+For each exercised family, all 18 records are internally consistent with the native states: 14 have the family cover class and 4 scrolled records do not. Twelve have an actual `rgba(21, 53, 47, 0.8)` inner surface; the other six comprise phone-open-menu and scrolled frames with transparent inner surface over a white outer header. The photo dark layer does not replace the open mobile menu's white surface.
+
+The actual visible results are:
+
+- At the top, the dark strip is confined to the header (89 px desktop, 81 px phone in the supplied geometry). White small navigation and logo remain legible against the lighter commercial building, sky, crane, and product photographs. The photograph is still visible through the strip and beneath it; no full-hero dark rectangle was introduced by the header rule.
+- Desktop product menus are readable white panels with loaded images and dark labels. Their intended overlay covers hero content while open; no panel or navigation clipping is visible in the provided viewport.
+- Phone-open-menu frames show the colored Linker logo, dark search/menu controls, readable dark navigation and long German labels, visible account/cart row, and teal Contact Linker/Linker kontaktieren CTA. The earlier white-on-white logo/icon failure is not present. The closed frames return to the photo treatment and retain a visible menu-button focus indication.
+- In hover+focus frames, the DE half has a light hover surface, dark label, and visible dark inset outline (`currentColor`, offset −3 px). The active-language underline and the adjacent unselected language remain identifiable. The earlier white inset outline disappearing against the light hover surface is not present.
+- Scrolled frames use colored logos and dark navigation over white. Long German desktop navigation remains on one row and fits; phone navigation stays inside its 390 px viewport. Manual scrolling naturally leaves some body content above the viewport; these frames do not establish section-anchor positioning or body carousel acceptance.
+
+The source-level white-over-lightest-possible-composite estimate is approximately 7.08:1 for the new dark layer. The visual review also checked the actual pictures: this estimate is supporting evidence, not a substitute for looking at text over each photograph. It is not a claim that every body title or every pixel on the site has passed a contrast audit.
+
+## Explicit remaining evidence and body observations
+
+1. **Utility photo state remains unverified.** All 18 original Utility pictures were actually opened and show the ordinary white header, and their JSON has no `us-at-cover`; the inner surface remains transparent. Parent/Spec subsequently compared the native LC/template metadata of 50 local/live pages and found it identical: Utility and Service are empty/native-false on production too. The earlier missing-metadata explanation was incorrect and is withdrawn. Their current diagnosis is older local `post_content` whose inline-script blank lines allow wpautop paragraph insertion and prevent the rendered script from executing; minimal content alignment remains to be verified. These are parent/Spec-reported native findings, not an instance write or a runtime probe by this reviewer. These 18 pictures prove neither entry into nor exit from the d1 Utility photo rule. They must be replaced/supplemented after the local mirror is corrected; they are excluded from the five-family PASS.
+2. **Application EN 390 scrolled frame is not used as an opaque-background steadiness proof; settled replacement reviewed below.** In `accepted-application-en-390-scrolled.jpg`, a faint vertical trace behind the language area resembles the product image below, while the paired JSON already reports the outer background as fully opaque white. Navigation remains readable. I raised a possible screenshot-during-transition discrepancy to parent and requested a settled replacement, rather than declaring a product defect from mismatched frame/timing evidence. The other visible Application header states, and DE 390 scrolled, remain readable. A later settled frame closes this capture-stability query (see supplement).
+3. **EPC body headline needs its own contrast verification.** In the EN 390 top/closed frames, the final “storage systems.” line sits over bright equipment; desktop EN/DE titles also cross bright sky/equipment. I flagged the visually weak portions to parent for actual text-background measurement and the broader body audit. This is existing body styling outside the new header rule, not a d1 header regression. No whole-hero readability PASS is given here.
+
+This review does not close navigation destinations, keyboard tab order, actual language navigation, mobile submenu expansion beyond the supplied states, header search/account flows, a pixel-parity comparison, or production deployment/readback. Root's actual interactions and the remaining Utility/steady-frame evidence remain separate gates. Earlier 8e/894 reviews and rejected compile frames have not been overwritten or reclassified as d1 evidence.
+
+## Exact individually viewed file list
+
+All rows below were opened individually. Image and paired JSON hashes refer to the retained private copy above, which was checked again after inspection. Utility is marked diagnostic regardless of its original filename. The full machine-readable manifest also records the per-frame source tag, capture time, CSS URI, and visual note.
+
+Private review manifest SHA256: `8a9a7d17d12d1cdaa5ca8448359e3fe69858a70bc6d317b1218ff815ae9fbd75`.
+
+Private JSON summary SHA256: `0ba16b3017501d79a5831a04e897e5435983a59f76fe3d4616c15e00d46681bb`.
+
+| Image file | Disposition | JPEG SHA256 | Paired JSON SHA256 |
+| --- | --- | --- | --- |
+| `accepted-about-de-1440-hover-focus.jpg` | Viewed — bounded header PASS | `0e59d7e2701a947f5721b423383db4f4968cd0064656bc6e87cc8df3c4fbb338` | `5747320c2dedb781ee835ad0482efd18482baf4799b606fabddf4f56fed107d2` |
+| `accepted-about-de-1440-menu.jpg` | Viewed — bounded header PASS | `249a360aea623559decbe934b474f495861826a3661156ddbb75a97de9467570` | `82b4dbbc4d4c71709b2016befc3ba1ed2f594a118852b218cb59cdfa04f6202c` |
+| `accepted-about-de-1440-scrolled.jpg` | Viewed — bounded header PASS | `793050e291e5cf8d0592d048ff2dc8aa5bacbe75c541c487c7eda8116bbe6e99` | `d6f31408ded5a7a1f280f481a62c47e64c5be0c5fd7dadf9f5ca1a860cd7dee4` |
+| `accepted-about-de-1440-top.jpg` | Viewed — bounded header PASS | `9a00846b345070590966ebb9744cc00fb50d699502d77298261d16d5bd3cc351` | `412bd5c73ac692c0e6e517a0d8162569d7cb1a29ad684e28f90607851ef58179` |
+| `accepted-about-de-390-closed.jpg` | Viewed — bounded header PASS | `6395590e454652c558e7e3d9d6bc2f9264cab5519bdd778e5c150afd3f7b9bdd` | `11f1ffa29533d184378e579a606ddc35cc23d91e2bfc0a12772af59f305e0201` |
+| `accepted-about-de-390-hover-focus.jpg` | Viewed — bounded header PASS | `f632e676354fe0dfd6c7b8daf18bfccc4dd746eac6abb4b580fa78f703285ae5` | `2c6242d0fb22337e59361b945799cbe6309e33393dab5f284578c46a7135726e` |
+| `accepted-about-de-390-menu.jpg` | Viewed — bounded header PASS | `e460766842274afc41244ac64cc148b5f5fd1097fc177a825e1b31043a22c1d7` | `83c21185257b0656b0a8a676092d3b8df014ffeb2deaf9c43a22a0e612478a11` |
+| `accepted-about-de-390-scrolled.jpg` | Viewed — bounded header PASS | `ac1e3a6d68ba17c4476d99c6dc46f13c084f7b211ece46e9649a36d22408c4a9` | `93c121bbe248c9b4407e79003e8b1de89fdfb257ea69e1cd25bbfdb4a96b9534` |
+| `accepted-about-de-390-top.jpg` | Viewed — bounded header PASS | `a84b453da103121e470549da751347e4876116ca78efc872e65bfe8dc6f87397` | `baf4225f7f96053da62a8d01df2b8a452f792a6a22f90021646c4193534d1e2a` |
+| `accepted-about-en-1440-hover-focus.jpg` | Viewed — bounded header PASS | `249beb28492cc66af1259873167ee885c85e5692045165cf652f732368937583` | `77bb3bca5712124398cf6f66e737d5b1586d85b51699b640458734f029f2bd98` |
+| `accepted-about-en-1440-menu.jpg` | Viewed — bounded header PASS | `16632480a1f094e92cb457ef54760fc0eaeadd29aecf35e712a1f3e9c4199b2a` | `c1110db83e52151c92593582704aa6b526f1b95b019ef27046b15efa063ff54a` |
+| `accepted-about-en-1440-scrolled.jpg` | Viewed — bounded header PASS | `1abdea6ce7f00b5e118e64fd203191d4e952d1244e0b9e2f855b38ff146d9978` | `f7fb6fbf025b641b169a33c54d98b117f6fc7a7d412a13e01754edc77252772a` |
+| `accepted-about-en-1440-top.jpg` | Viewed — bounded header PASS | `32de30ebf92601d5445b4683932ff29ad85e8122628e001203bf3540e57c8ed8` | `c34e92cf7b41a7b81f1257e468a419925e126a5e28187342d2b32ce769c7cae4` |
+| `accepted-about-en-390-closed.jpg` | Viewed — bounded header PASS | `7c900d41a4eabb08bad90047bb29e2358f9d714dc122c9f6acacd9f2dac6d6ea` | `f6359ce07a5fb12efc49f5ce14ea0d08d308d434e2818829af8c8923ee6f8f9e` |
+| `accepted-about-en-390-hover-focus.jpg` | Viewed — bounded header PASS | `a9708081f8deee40ab2c1d7e6cef84113d2935131f8acea0835b271458b1d6d2` | `73e251b1bcdabd8cfd9cdd21308d673dcdfad86e980bbe8f6858e54657e476af` |
+| `accepted-about-en-390-menu.jpg` | Viewed — bounded header PASS | `a7b1374626ab44c5d8bb2bcf635f92a89057b4ff91f40702521654675462241d` | `39039269a4c242f3097c568c15a2049ccf99e23b02c0f3db141623f06853c9b9` |
+| `accepted-about-en-390-scrolled.jpg` | Viewed — bounded header PASS | `063aa5fd7ebeb308e2744631f8a9e6750fefc973888a79ec701b6f66d22960db` | `5a25de38fb6a7f6da98f21e52e58b2931549b6152504112832fb6b7207b1da3c` |
+| `accepted-about-en-390-top.jpg` | Viewed — bounded header PASS | `82f4875bf973f0b0cf34a6f25efad3069b5a653ec925b838e9358adcab1ad741` | `bb4b9fd1dbcd9a4f4ef098ab1d53754f72a93808f3b827a856f0dc0a9d3d027e` |
+| `accepted-application-de-1440-hover-focus.jpg` | Viewed — bounded header PASS | `0e2c2de08a1bfb87bcd535e7e999242420263d72e63647fd0b0edd7d27a8288c` | `3ca9936bcc47fdd2b8eae3ac0992760b61778fef477d1e57cf9a7f16e5357716` |
+| `accepted-application-de-1440-menu.jpg` | Viewed — bounded header PASS | `b3cdf0c31663e05a9fec15abfb1f9f9f9d6e6006e69bfbabfa0074261d50f727` | `384a7cf3c93a245c9292be643a242d20650355e932b52ea35f5962d95a96b492` |
+| `accepted-application-de-1440-scrolled.jpg` | Viewed — bounded header PASS | `d3badb4a40fb0e30221288e5cad1202b48755b1fa29351e7a3cbf7b449ec84c5` | `9d7eaaecb149999c61a7090178a788d48a0604c1fab54f629f91559c9cbeca53` |
+| `accepted-application-de-1440-top.jpg` | Viewed — bounded header PASS | `791d1f7b87f23f5004a5aa6d81385b3b5a03383d0f84e42691e431ca4bc23c40` | `b1f14ddfc2b53db3ec18ca20f8ac2e0261974cfc47d32d5ec0e9535114988db1` |
+| `accepted-application-de-390-closed.jpg` | Viewed — bounded header PASS | `7b4e70606dfb95003c4b8843923daee5b23dad5014796897c797bb74446c4c63` | `b214568204397ed03440c407a2311d81870d68327cb8167464999c72e8c5fa4c` |
+| `accepted-application-de-390-hover-focus.jpg` | Viewed — bounded header PASS | `cb995aaddef93348900653653880265ea0c5408133fac961864f91d52d98d6bb` | `f6232ff423826fc5dc130993d7468ba4cf5f9b2ee05490d40ba52dafd0f3b8ee` |
+| `accepted-application-de-390-menu.jpg` | Viewed — bounded header PASS | `9b49898f6d6a3ccf63c5d91dfcc8eb740a5199ff856b12c648b2a669cb29fb8b` | `8b2aa5631b9624ae584b6fa41499a43e4e73f5296cded6108d2921cb3032a267` |
+| `accepted-application-de-390-scrolled.jpg` | Viewed — bounded header PASS | `0233b94fd4d3919e916fc32cc9670e8d4dcee72c7b79fa1ee76ee0331cdf741f` | `98f68bcf551c00cb884ba3a721fe00d8a1461094a7a551f895b25faa41df3db4` |
+| `accepted-application-de-390-top.jpg` | Viewed — bounded header PASS | `7a5b0a8011804938190bec868a1b28f4b4f8c9b343dcd546f009042394430621` | `9240f7ff32218886b8a33e07991f5479e35d3a1036485f8870a696bba989f743` |
+| `accepted-application-en-1440-hover-focus.jpg` | Viewed — bounded header PASS | `240cff3bbf9daa9b83c69d4320d97460d386fc51604fee3ec94eced09bbe2948` | `aa3cc4a14898c2246f8d5404c0aac71b83d9409abc8f99833894021bcd23b48a` |
+| `accepted-application-en-1440-menu.jpg` | Viewed — bounded header PASS | `72cd071d90c138e080c6d072a1e66145d917427f7a6d606755e04966e68533ea` | `abcc5e454c858ccb3f3f9203fef91acb141347293ddca37bdaae1ec910d1e78d` |
+| `accepted-application-en-1440-scrolled.jpg` | Viewed — bounded header PASS | `86db15a297e98992907cee5a4ad86594c9b644d8600ec49216a42752c09f897e` | `b2e40a9d8279e9fb21004d7a3962bde0425ffa5e6f046f9f0e7c74726a56c64e` |
+| `accepted-application-en-1440-top.jpg` | Viewed — bounded header PASS | `ab22c7ee0583e36fbd00842a9a7e27305d335a41913822607a200a684cf003f0` | `cfbd1b07bfb58752412b5842487f730f75bf6f07bd4da53787bc1faf8956d937` |
+| `accepted-application-en-390-closed.jpg` | Viewed — bounded header PASS | `db495b6bccf753668ce1e5fb675a3773c67d75bd3180882cb3fd2deb81e45b07` | `33ed281fc277190d9416f2e60452275f2c80190960e9bc0d2da3018a6a869eba` |
+| `accepted-application-en-390-hover-focus.jpg` | Viewed — bounded header PASS | `b852bad2540ac08bc6efa6fb9eb0e12b7b044f0198ab5faa89b9c85a898c31f2` | `84d6aa9f95f8d9aa63968299edbeb82403700d284cf2ee694b6ef4c77ec5ade2` |
+| `accepted-application-en-390-menu.jpg` | Viewed — bounded header PASS | `8aa37174b22e195a77c9fd86eafd7ea2831fa0246665ccec68fa981afc0966b3` | `bd26159f9567017571a3562f2fd5d6522d0c7eeb1c67ee6932477ac180bfd899` |
+| `accepted-application-en-390-scrolled.jpg` | Viewed — steady-frame query | `50e64d8836ad639dd227ab211662b238859855bd477c91c3e948b0c3f7cdcfbc` | `679478bc7c5cb83d0047b60b77a3f44da0a41ce9d93511a410f218f805958dd1` |
+| `accepted-application-en-390-top.jpg` | Viewed — bounded header PASS | `67bc93a348964740de4c75aedf6840da1ee0ce17e8bf8232553547435ff08eaf` | `dc8218e03ac00a978a41b1b0419090cc5a3159e1dc7ddfc5e9f66200cf69e973` |
+| `accepted-commercial-de-1440-hover-focus.jpg` | Viewed — bounded header PASS | `ad4f6b61d76a47c8f28b6d16db011657ff314fa366486dbc75e1c67bee633a87` | `f7cd121f76ceeb755f25c7f1ca3a83398367be9575ccd14ddd5c6bf463d9a0ac` |
+| `accepted-commercial-de-1440-menu.jpg` | Viewed — bounded header PASS | `10da1d09d9cc08302e82de21601845450899add716dedfb7e652783144b22e5a` | `991f9b64b7a808820d45ec4139ba7d341f30eb2129351d02ee77ab86b9f2cf6e` |
+| `accepted-commercial-de-1440-scrolled.jpg` | Viewed — bounded header PASS | `f478dc032e68977145010c0ea37a2bfd92b989bc2321f27926bc5d3798160570` | `aeaadb0b6b5e91ce034d7e85c4b4809efb7873f066e961149e51d864a1111bd6` |
+| `accepted-commercial-de-1440-top.jpg` | Viewed — bounded header PASS | `b92ad2ce581a77795bcb049036793bff0afe7b88cb05c03bb4e6765c5aaa1cc1` | `7b5e53bbad283d98232399dd07f987328cc9406e712b96c2ce5432645d87cc25` |
+| `accepted-commercial-de-390-closed.jpg` | Viewed — bounded header PASS | `ff2f81d2651cc463425cc89d51ac4136acdbab24689acfe0246961bde2768267` | `6ab1add1b923b7909a48ae0db1c2b4691aa872b276578c8edd4c90aa3bda6f37` |
+| `accepted-commercial-de-390-hover-focus.jpg` | Viewed — bounded header PASS | `caaa73a532a8c9e2222f14fa512b5c7398c9d4901d7281db9a3bb70d9417f82a` | `5ab95dba7475505f606bcdef2062479d025f11ee6e95c6bf221b760a7eea804b` |
+| `accepted-commercial-de-390-menu.jpg` | Viewed — bounded header PASS | `85b93261301f88df5aef04ecc937bbd329df9df1886d2b83b40669b11006b724` | `d8af13d1f1d224dc90d06c56d0dd9b048ce9793cee0387d52d01e0fbac6b9200` |
+| `accepted-commercial-de-390-scrolled.jpg` | Viewed — bounded header PASS | `c122307be982168628e87b73919956b7beb9775b64185b13732df35d21e91873` | `c20f08f285099113d81686714dbe6065bb2a8245a27cbc8e8937c144562533d3` |
+| `accepted-commercial-de-390-top.jpg` | Viewed — bounded header PASS | `212963328fc21fd3657f043b920d2d05723517cef28535494a64fe592ecdafc5` | `a9e43c8b59df40e94a5ecfea231dc2f91cd4e1f56d2056f934a1cdc83ff72229` |
+| `accepted-commercial-en-1440-hover-focus.jpg` | Viewed — bounded header PASS | `770386547e6e436f6a5a795a2c990be1e250ff6287b991260273151c7ab1a237` | `5975b20d5988e32176ebdeea1eb862a427448c3212fe4e1cb39077fc81477990` |
+| `accepted-commercial-en-1440-menu.jpg` | Viewed — bounded header PASS | `a31a339a98daa57734be7a6f52695db077b25d406313300eb3c9d8677dd0f694` | `a6265c02b0b3e7783e7ff561999b138b673031c766759125e3c07622c401d414` |
+| `accepted-commercial-en-1440-scrolled.jpg` | Viewed — bounded header PASS | `41043b77d47636923717c2fcf4eee80bed794fe217fb900e38bc8da36028348e` | `d0fa2cf0a2938699889e8536b6f1e7db1549bac3eefe7594e2cbe8f2e91a1f28` |
+| `accepted-commercial-en-1440-top.jpg` | Viewed — bounded header PASS | `d7ac0760d779875ed6c05fd4e28e9ef9666984340c1447efbe4dcf8d2dc81f52` | `c0f6c72b43da2f8a47fb449bba400783726382ec11afd67bdac5560c1789ed7a` |
+| `accepted-commercial-en-390-closed.jpg` | Viewed — bounded header PASS | `19a4de1e8f0f67757f287469f8d9ab38e95772341f2470f34facd286efe60370` | `f8b4e143ed3a009dd254b01a1da08e8064e035e1e01eadedec1c595516e85db8` |
+| `accepted-commercial-en-390-hover-focus.jpg` | Viewed — bounded header PASS | `8462c7f1da52ed4c863aa37fda43ca3f94d94b1f285a2f6cb2455ca540b800a7` | `7cff0d4306d8114a68272c84815f44e0243a5abab27b32abed6603e1be5e9b28` |
+| `accepted-commercial-en-390-menu.jpg` | Viewed — bounded header PASS | `fbb845a9dd874b7be4e9c7bcd0e26cc3d77b1049a1a8744ff8d2e92f6de5e1c7` | `2666808e27a85882ae9268c3cd3bdd60a301891b4d89513540bdf69a516ac3f7` |
+| `accepted-commercial-en-390-scrolled.jpg` | Viewed — bounded header PASS | `790897687b0987d693a69072ecbb81467b5e84e811c00570031f3f99025a506e` | `a33cf65cd57dcbfdb8628a9d4ac9ed963978f1d2e6a30c23ff66395d6c2b3168` |
+| `accepted-commercial-en-390-top.jpg` | Viewed — bounded header PASS | `9471123923d65957481192844151b278d04b0d78ecbec2fdc970c01b46181521` | `47bcbcee326f052ac860f10938952a3334f6cf8e26b0a816866188ef23ad589c` |
+| `accepted-epc-de-1440-hover-focus.jpg` | Viewed — bounded header PASS | `6a9c6e8723f6c258f8cc9b5fee7323f0871b2b1e19185f4706263727f25bb38b` | `46eb3f3f5bc9186dc7fa5bd8d6f6b2f167e0624a2349587e750b52f791dfe29b` |
+| `accepted-epc-de-1440-menu.jpg` | Viewed — bounded header PASS | `9c17115b2291c9f6b78582b755ddd57630a340402e50b519c35b0a2ebf300b8c` | `dba41f3ab43a90d1860cf6a1c1ec5c8f9388aafbd2bbc0b7f5ed9bfa38d1a3b3` |
+| `accepted-epc-de-1440-scrolled.jpg` | Viewed — bounded header PASS | `8ff62533d091b091a654c518fcb9c918a83634c2eccb895d3062e165d2bb59b0` | `19833b6bd9f86f73493278bb35fd160a7cfd70f409ab85f2a4d788ea3bfbd404` |
+| `accepted-epc-de-1440-top.jpg` | Viewed — bounded header PASS | `fb6f837709834b9713c4a16d97acd6221dc613eb0932c06045d53619b4b8e225` | `af1be30f540cdbb75c3264455ce1e70f90b720d8a5d46f95012b52168e82af86` |
+| `accepted-epc-de-390-closed.jpg` | Viewed — bounded header PASS | `c68db3bcb171545f2f985843b71f33e326404985c6e1cc95d0447160ecb97b74` | `76244cc509daa61fc5ee1e016baa73a5813fccf508c6344816286e272b8a9c96` |
+| `accepted-epc-de-390-hover-focus.jpg` | Viewed — bounded header PASS | `e0a575a495f60fbfa642955802e6872b327e7a4fff257f52582a970885fd8b45` | `82702f6904c910d86353e2930faefef1b62db62def8037e497901cf12fcc1ba7` |
+| `accepted-epc-de-390-menu.jpg` | Viewed — bounded header PASS | `a809e7c8e8c95e1188480bc90deb33007de245dad212c6bb016174e166e2dd87` | `a9a8b29a03637f4f0e9679c8a3403ae9a3502df3a8c0c0e390c65be1b20f4561` |
+| `accepted-epc-de-390-scrolled.jpg` | Viewed — bounded header PASS | `10e3f8e3ef25a4f08a189e233c3179ed7565744c4e04a09248a07bd1d062cb53` | `2d6c3a09664145f8cc59e902899b1927dff9ae7549d4832ffe4407187a74fc29` |
+| `accepted-epc-de-390-top.jpg` | Viewed — bounded header PASS | `d78fb683b2f60e37d70446d22d8d5bf92708cb3399c6247d64cc36e11b8bcfb5` | `3e0ff2ceaa326194644ef9fa82005545dda76e659878b4e1efb39e049781ac23` |
+| `accepted-epc-en-1440-hover-focus.jpg` | Viewed — bounded header PASS | `b06429aa0a1c6c8c8dc70a80095a41233199f623050ffc8b3fc67f556bc69bc9` | `228504a38ac21753dbc40855fdb41e9674412938ffe0e5f0f1ffa3d703db9d08` |
+| `accepted-epc-en-1440-menu.jpg` | Viewed — bounded header PASS | `a815b5075310ea78b8b3f0f6ddd47746e2c871a4e34ef14bca82df15e22d4ad7` | `d1b511106523436da16c0cf71149d63a2266e1dfa9a8c4a7c2477a42d5f93ee5` |
+| `accepted-epc-en-1440-scrolled.jpg` | Viewed — bounded header PASS | `95b19db8bd195c0eba865a8c602eaae8dbcca3584486433b2a97cda9de988f8e` | `2fd24df29a85045bd066f02af9e5552bc8adf732a444dd7b8dd19b5999ce2f1c` |
+| `accepted-epc-en-1440-top.jpg` | Viewed — bounded header PASS | `64bbf96ec0bb0385d59ad579690c6c1ba0eabcf10ea0dd9c49a50ec3b0c7e89e` | `e05a06edb062810ee67fca6bedae281a997b0ba081518c874473ae26f64d1d19` |
+| `accepted-epc-en-390-closed.jpg` | Viewed — bounded header PASS | `98237f86d22684c00381f95d2de24955c5e630510c66d549018f2f6e6c99f774` | `d781cf7974b2c3d2364a77693ba1cfbc5fc1fae73b6523d7d9f3acc1c5d5612b` |
+| `accepted-epc-en-390-hover-focus.jpg` | Viewed — bounded header PASS | `e6bb9d6079699c9d7d6297479ad1e5301814d54cd5e5bec39443f4081c086ee9` | `028dfcb4df5f1ecd7ff94b4cf7f725134cb13761e5c4dc1b3ce4d47191e62aa8` |
+| `accepted-epc-en-390-menu.jpg` | Viewed — bounded header PASS | `150c4f701f3e38ffb45ef339c1939a493d28baec0cf4d9008a3ad250bfc50214` | `561ae637e5b65135a04438e074fc771fdee6c9171c2e5e3af634c3f20548324b` |
+| `accepted-epc-en-390-scrolled.jpg` | Viewed — bounded header PASS | `cb461937a75319667c6d062bea36fec5cdce664550fd94a4f26b110afcc34c8f` | `05d9e3428dac78d4898811d353e6b3c2cf4d8a4a77714075feef92339e2d0181` |
+| `accepted-epc-en-390-top.jpg` | Viewed — bounded header PASS | `e3b17602eba9b77ad1a40507df504d7846caf492a9957c7ea0f95353295cb52a` | `bbab6caf2b95c6f8a9d62d363781123fa398896bfbda0893f3e1b82f6019e2b7` |
+| `accepted-residential-de-1440-hover-focus.jpg` | Viewed — bounded header PASS | `2587975f801c5538cac8728f3ecc2e868058782f9e40da8b7da80c5590f6d87f` | `484bc3e9028b64b4a3adf1ea3494569861045ff08ce3837f9554762fb1ebc79e` |
+| `accepted-residential-de-1440-menu.jpg` | Viewed — bounded header PASS | `b2cd6204e5b92becfd1128c2f1b1a10e9c44f6cf47db3bb336dcd492641fba81` | `2b8150ecdf22467baf4528491ce5a64d9ef452f683fc4160bbdfa56f00fc8fa4` |
+| `accepted-residential-de-1440-scrolled.jpg` | Viewed — bounded header PASS | `d4e0970d022371c4968242b93bd3fd3926f7fac05fa183845f33f3b5aba636c0` | `117c1b8f851e32142a14b44d05e1e0bd2641fed238b8789f05efb9df2dc5e193` |
+| `accepted-residential-de-1440-top.jpg` | Viewed — bounded header PASS | `f9d34beb89cd5258ab40fd0b96f47c15ccd8813eb208f41d55b8b29148d481a0` | `ec39abc5aef6584535356762b38f57dea8df4aa8963b2b0f91c9c88e42480338` |
+| `accepted-residential-de-390-closed.jpg` | Viewed — bounded header PASS | `eee2a517fcee4c7e521be1ca110ea3e2f6225828a5f9d3963f33f262020d7d76` | `67408574bd07980e05a559da98f24cce590f4ce9560ff0295941342705201c20` |
+| `accepted-residential-de-390-hover-focus.jpg` | Viewed — bounded header PASS | `1365ffea3265bd9d869b81a2cab036dc186af7904c0d55d80a7adfce50b2c12a` | `eb2bad954da0e5bc1bb0b633abd0d2ddefffae9c992a4b8fc28dd33ee59de900` |
+| `accepted-residential-de-390-menu.jpg` | Viewed — bounded header PASS | `601154257b9eed94fb1886ce058e0b8c0c7c59ccae18ff842ccfe4a5669aaaeb` | `d27cecb5cd0306c4f3efe8eac9b4e5b50c9aadc59bdbb11e6b2260756c3bef6a` |
+| `accepted-residential-de-390-scrolled.jpg` | Viewed — bounded header PASS | `ae7c595fa5bb15a6cade3d12e80ed10260dad7133cd31cede500feff95b5e86c` | `4cb164931cd61ed63e4f355893452aa841ee779bd2a4119e80d403a586719ce7` |
+| `accepted-residential-de-390-top.jpg` | Viewed — bounded header PASS | `80b3aadb049d168fd9350580f0ec65a7bede4c57efb5cb75371eacd3f132ee4b` | `b2d4fed7d94b64693387cc3f656a4471813ffbe891567e76bffb9fdd0795bbc3` |
+| `accepted-residential-en-1440-hover-focus.jpg` | Viewed — bounded header PASS | `307f683c2b1f27cb8335f7c706509b986df8f33a8ab6881640ab9c74f684d6f5` | `e9154499e70fa7510f92759d378284c2e172b99f4961c81722bc8596fe9bd9aa` |
+| `accepted-residential-en-1440-menu.jpg` | Viewed — bounded header PASS | `70653f27bf1187056fb333a24b42995f85d16a6c070dd31a7a43aec58a43040b` | `7cf54a70026fd66739822f11057b0054dd92164dc57e4e96520ce55c20eb7853` |
+| `accepted-residential-en-1440-scrolled.jpg` | Viewed — bounded header PASS | `15129fcb76db0b3bac07ff11a4567f8e52a81b98e4857bf8dd731f2c762f2791` | `0c91d65f24267f85583f749c2797d39cb489d59ed702cddda7c8a865bae9b2a1` |
+| `accepted-residential-en-1440-top.jpg` | Viewed — bounded header PASS | `d7888962661bd8f75a5ab8081b9fa21e7025118c303dec65b94ee51f76010331` | `1ab8e1a892050a444b6040a473d17cf550d69e6465c35d6776f835a3e3ce2f39` |
+| `accepted-residential-en-390-closed.jpg` | Viewed — bounded header PASS | `ab8047475371a1d5a87385a082872a024f679e80c64a467311b654e64e28a383` | `201b87366641c3369d8b190c0507ce3d52ab44c1f449962093eff7e3ac5af81a` |
+| `accepted-residential-en-390-hover-focus.jpg` | Viewed — bounded header PASS | `799ae5e899477c8ec719a8a2e53ca9dff6c68d628e3a0b76dab26160e8d58fa9` | `645f6d6c5f6fabf968100e296e782e40004a9e4b66b72c0c81c4014f19e8735b` |
+| `accepted-residential-en-390-menu.jpg` | Viewed — bounded header PASS | `c6bbd5c41d6a39636f969d0e599e70131cf4107b3e18edf2654ae41b57f3d0e7` | `9266cc3654656f33b4b7c8f1b165b01b17b8969e4eef2e4d2bc42a2ff090c2c2` |
+| `accepted-residential-en-390-scrolled.jpg` | Viewed — bounded header PASS | `7f30c58e4c434a8d1e34ccc40bb07816bde8dd991172bf2f2667119e9c113e3d` | `a4ec352f530ee8fa246e5143d4dd7bad609f3b036fd4a34c96ae138b1b070609` |
+| `accepted-residential-en-390-top.jpg` | Viewed — bounded header PASS | `b286390c8ffa8568c4cce1189edcf29edd98f9763c1ce61b9d8b99957aad528e` | `30ad636df56d3ddf44a433bcab180ba1415560c31dc7eca8cbdf2138b0f6fbe2` |
+| `accepted-utility-de-1440-hover-focus.jpg` | DIAGNOSTIC — Utility pending | `0c871c09f7f32fdc80ff3492ab5dfc014d55ab5326d7ea3b50e31f382828a0ba` | `6b642dacdf9cb3c786bfc9ed8d1b5ac294af03b8110dd4656334751437f094a6` |
+| `accepted-utility-de-1440-menu.jpg` | DIAGNOSTIC — Utility pending | `2b1d8148813be47c5a2ccae0cd34925d47ac0477bc455999c06d2fce9da191ac` | `3bdcbabb9e2efe312a5c1397b27b30da434c6428817cee5cf76010ba670e1460` |
+| `accepted-utility-de-1440-scrolled.jpg` | DIAGNOSTIC — Utility pending | `462ae322be80ce066e3b7a43cd4fdb04a5c30961b6df9ec5d47acb12a268d1eb` | `27e4a1207ebd0c8b1070fdb47eebed691d628a12f52d1b02a13cc8d75b6d8ff8` |
+| `accepted-utility-de-1440-top.jpg` | DIAGNOSTIC — Utility pending | `568c153de56f5b40add165a19633f29b220b9cfa9df762ecb6bda2d6964a067a` | `d9d0dacb15938ff61f165d5af0a40e235df85f6a0246ef1894f22b7eeefe5445` |
+| `accepted-utility-de-390-closed.jpg` | DIAGNOSTIC — Utility pending | `746c7ed99ee1651ee7b4f9ec4aee0155f655615ac029da5a02f7db2ef167d894` | `cf84536b6e93ad84d507d7badfd1930863544f30e2a3c91017483e183748ac1f` |
+| `accepted-utility-de-390-hover-focus.jpg` | DIAGNOSTIC — Utility pending | `f8d69ca4fe92295702f83add7655bebf7c552fee0cc8e6105bb97dac230f47e2` | `06b2cc297749700fa441ff6f5fe9cb5ed39a89e484c8b16c080a254c7928f2f7` |
+| `accepted-utility-de-390-menu.jpg` | DIAGNOSTIC — Utility pending | `46c773b7818fb5a67294cfa76d81131276f8dd162eb644b5dc2e6f3c1eefe351` | `a4acc4c69504e7a639de8066b2c83a6664bd1189a15c87037e4a6feb5c72228c` |
+| `accepted-utility-de-390-scrolled.jpg` | DIAGNOSTIC — Utility pending | `a53ed17bbb7b44dacda6b984439db88c0c7da9c12f43e8ca6b3fd11979319e46` | `1f41b7a9c861f873ef4f234e574f0a1e7dfb5a81d37e9c1888466cb97c095581` |
+| `accepted-utility-de-390-top.jpg` | DIAGNOSTIC — Utility pending | `9b8b04b69499f1af23691fe741ee44585d1a601f28a6ec4592093fa57a966e16` | `17de798c7d367b7bcec48c9788c59858d4a4f2ef08db34576aac0721d870cbe1` |
+| `accepted-utility-en-1440-hover-focus.jpg` | DIAGNOSTIC — Utility pending | `79cd906822b1e21f6e976a2297dda0c6693eabc65f76b4668f206cde761df813` | `f7b86986ac814974c615ca194470c28f61e0f0a5d9f50e36a1346bbf6d15576c` |
+| `accepted-utility-en-1440-menu.jpg` | DIAGNOSTIC — Utility pending | `9f66f611376bd91b8f0f9359c49d94fc7a20bc7cb3acd4aa02605cdaeb23712b` | `044edba62b0e1b75f2f5e330e72d913212fbe324f14652258c26cdd30063594e` |
+| `accepted-utility-en-1440-scrolled.jpg` | DIAGNOSTIC — Utility pending | `e5690f6a43c1cfca322ca5657471f669542213368a2edfd453c8d5177af7000f` | `390805fd4260ae54ee247c4cf903199b0248e74bde3821a46d783182dc60b2a8` |
+| `accepted-utility-en-1440-top.jpg` | DIAGNOSTIC — Utility pending | `83be4fbd661511dbecb1bfdee632feee1f785dfc66a214e025e69af1dca6c471` | `6257136273be62a943229bed49c46ea33bf7667fd18e401dad69b099995e7045` |
+| `accepted-utility-en-390-closed.jpg` | DIAGNOSTIC — Utility pending | `03221224105568f21e185cb20a42a511be9d9e245776b33deebacae60e13496e` | `bb3ed59aac71db42cacd8548f68b59d8a955cc06ef894d5aafbaae329def3dab` |
+| `accepted-utility-en-390-hover-focus.jpg` | DIAGNOSTIC — Utility pending | `b24754c1670235957003ee5709d39f1546bf6209b896b56e7812fc7c85b59d4c` | `20f0bf421bf6bb75c14f58dc84bb43b20b871a1edbffa9a27b8286e8f466578e` |
+| `accepted-utility-en-390-menu.jpg` | DIAGNOSTIC — Utility pending | `f96e56125d9839c357d8494f285f261dab242380fac15da07df284e31034bb56` | `92085f2a801007e82a9e6dae3175737284cca5b78c8b63f9b0999153adbcc787` |
+| `accepted-utility-en-390-scrolled.jpg` | DIAGNOSTIC — Utility pending | `060ae2299841f4c1a55e4cad09876e28c915e162e83e81c69be1bdfb383bd7dc` | `201c35d840cc5fc851b3badc3172b13bcd53824e321eef7e72a5d4e2cfe64542` |
+| `accepted-utility-en-390-top.jpg` | DIAGNOSTIC — Utility pending | `7c1a340c0459c3db92ace71df52992c5076ef4b8e99064b7cbde3d8224696e06` | `f916e88bbd165a0340d45f5cf513ecad0680c89fa3d9a26ece8484bac0ca15d1` |
+
+## Supplemental settled Application frame — reviewed 2026-10-22
+
+Parent captured `settled-application-en-390-scrolled.jpg/json` at the same URL and scrollY=1055 without refreshing, with the same d1 source tag and `tailwind.css?ver=1792652406`. I independently copied, hashed, opened and visually inspected this additional frame. The header is visibly opaque white across the language region; the earlier faint product trace is absent. Search, language text/underline, colored logo and menu focus remain readable, matching the saved `rgb(255,255,255)` outer background and transparent inner surface. **Capture-stability query closed; no product defect established by the earlier frame.** The original 108-frame evidence and hashes remain unchanged.
+
+| Additional individually viewed file | JPEG SHA256 | Paired JSON SHA256 |
+| --- | --- | --- |
+| `settled-application-en-390-scrolled.jpg` | `1218636f3f82310b7526b7b3d17eb26d67e2f882f7cbf51ea07a59d67d0e7cba` | `cf24d9623e64a2c33fa64d6b25d5c9068cb24eb7e4495d5bb107619d232dccb7` |
+
+Total actual viewing: 108 original frames plus this one settled supplement = **109**. The same private fixed-evidence directory contains the pair and a separate `supplemental-review-manifest.json`; it does not replace an original record. Utility's 18 diagnostic frames remain excluded from photo-state acceptance. EPC body headline contrast remains a separate current-round observation, acknowledged by parent for the body readability repair.

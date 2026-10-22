@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-22T08:23:35.477Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "column",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "className": "lk-btn-teal",
+          "color": "rgb(255, 255, 255)",
+          "focusVisible": false,
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/solution-configurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 385.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 337.84375
+          },
+          "text": "Plan a Project Solution →",
+          "transitionDuration": "0.18s, 0.18s, 0.18s",
+          "transitionProperty": "border-color, box-shadow"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "className": "lk-btn-outline",
+          "color": "rgb(12, 127, 115)",
+          "focusVisible": true,
+          "focused": true,
+          "font": "14px",
+          "hovered": true,
+          "href": "http://127.0.0.1:9290/my-account/",
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 445.84375,
+            "height": 48,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 397.84375
+          },
+          "text": "Open Partner Account",
+          "transitionDuration": "0.18s, 0.18s, 0.18s",
+          "transitionProperty": "border-color, box-shadow"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "25.28px",
+        "rect": {
+          "bottom": 305.84375,
+          "height": 291.46875,
+          "right": 372,
+          "width": 354,
+          "x": 18,
+          "y": 14.375
+        },
+        "tag": "DIV",
+        "text": "\n\n     Solar & Storage Solutions\n    \n\n     Ready to design and source your next installation?\n    \n\n     Linker supplies residential hybrid packages and commercial outdoor cabinets, with Solution Configurator sizing and technical support behind the installation.\n    \n"
+      },
+      "rect": {
+        "bottom": 445.84375,
+        "height": 108,
+        "right": 372,
+        "width": 354,
+        "x": 18,
+        "y": 337.84375
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "en-US",
+  "overflow": false,
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792656909"
+  ],
+  "url": "http://127.0.0.1:9290/for-installer/",
+  "width": 390,
+  "sourceAggregate": "00ae7fc26d8df2d5bc63c9e4ab99e7c82da7caf8e2e4fb8d261ad3e892e742ff"
+}

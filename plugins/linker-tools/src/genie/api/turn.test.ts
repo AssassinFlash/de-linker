@@ -259,6 +259,7 @@ test( 'a reload reads the stored thread back and re-adds the last answer', async
 		'Two of them fit.',
 	] );
 	expect( thread.turn?.blocks ).toHaveLength( 2 );
+	expect( thread.conversationId ).toBe( 12 );
 	expect( thread.messages[ 1 ].turnId ).toBe( 9 );
 } );
 

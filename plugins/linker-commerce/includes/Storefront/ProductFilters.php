@@ -90,18 +90,18 @@ final class ProductFilters {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the filter rail is a plain GET navigation, like the addresses it keeps.
 		$get = wp_unslash( $_GET );
 		foreach ( array( 'application', 'brand', 'phase', 'power' ) as $facet ) {
-			$value = isset( $get[ $facet ] ) ? sanitize_key( (string) $get[ $facet ] ) : '';
+			$value = isset( $get[ $facet ] ) && \is_scalar( $get[ $facet ] ) ? sanitize_key( (string) $get[ $facet ] ) : '';
 			if ( '' !== $value ) {
 				$selected[ $facet ] = $value;
 			}
 		}
 		foreach ( array( 'kw_min', 'kw_max', 'kwh_min', 'kwh_max' ) as $bound ) {
-			$value = isset( $get[ $bound ] ) ? (float) str_replace( ',', '.', (string) $get[ $bound ] ) : 0.0;
-			if ( $value > 0.0 ) {
+			$value = isset( $get[ $bound ] ) && \is_scalar( $get[ $bound ] ) ? (float) str_replace( ',', '.', (string) $get[ $bound ] ) : 0.0;
+			if ( \is_finite( $value ) && $value > 0.0 ) {
 				$selected[ $bound ] = $value;
 			}
 		}
-		$q = isset( $get['q'] ) ? sanitize_text_field( (string) $get['q'] ) : '';
+		$q = isset( $get['q'] ) && \is_scalar( $get['q'] ) ? sanitize_text_field( (string) $get['q'] ) : '';
 		if ( '' !== $q ) {
 			$selected['q'] = $q;
 		}
@@ -115,7 +115,7 @@ final class ProductFilters {
 	 */
 	public function requested_sort(): string {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- the sort select is a plain GET navigation.
-		$sort = isset( $_GET['sort'] ) ? sanitize_key( (string) wp_unslash( $_GET['sort'] ) ) : 'recommended';
+		$sort = isset( $_GET['sort'] ) && \is_scalar( $_GET['sort'] ) ? sanitize_key( (string) wp_unslash( $_GET['sort'] ) ) : 'recommended';
 		return \in_array( $sort, self::SORTS, true ) ? $sort : 'recommended';
 	}
 

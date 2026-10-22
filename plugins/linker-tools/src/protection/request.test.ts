@@ -212,3 +212,49 @@ test( 'observe preserves native fetch when shadow UUID hashing is unavailable', 
 	expect( fetcher ).toHaveBeenCalledOnce();
 	expect( window.linkerPublicProtection?.proof ).not.toHaveBeenCalled();
 } );
+
+test.each( [ 'enforce', 'observe', 'off' ] )(
+	'send witness follows actual transport in %s',
+	async ( mode ) => {
+		window.linkerPublicProtectionConfig!.mode = mode;
+		const sent = vi.fn();
+		const fetcher = vi.fn< typeof fetch >( async ( _input, init ) => {
+			expect( sent.mock.calls ).toEqual(
+				mode === 'enforce'
+					? [
+							[
+								new Headers( init?.headers ).get(
+									'X-Linker-Operation'
+								),
+							],
+						]
+					: []
+			);
+			return new Response( '{}' );
+		} );
+		await resourceFetch(
+			fetcher,
+			'/wp-json/linker-ai/v1/genie/turn',
+			{ method: 'POST', body: JSON.stringify( { mode } ) },
+			sent
+		);
+	}
+);
+
+test( 'failed verification never creates a live send witness', async () => {
+	window.linkerPublicProtection!.proof = vi.fn( async () => {
+		throw new Error( 'proof unavailable' );
+	} );
+	const sent = vi.fn();
+	const fetcher = vi.fn< typeof fetch >();
+	await expect(
+		resourceFetch(
+			fetcher,
+			'/wp-json/linker-ai/v1/genie/turn',
+			{ method: 'POST', body: '{}' },
+			sent
+		)
+	).rejects.toThrow( 'proof unavailable' );
+	expect( sent ).not.toHaveBeenCalled();
+	expect( fetcher ).not.toHaveBeenCalled();
+} );

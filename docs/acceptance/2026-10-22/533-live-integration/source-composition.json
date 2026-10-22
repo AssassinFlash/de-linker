@@ -1,0 +1,446 @@
+{
+  "merge_head": "fb5da4b3e20658e70171e27624fc538b7fbe3cdc",
+  "comparison_base": "1f0547574a1a2582cf3ded2f6bf807dfc7284ea4",
+  "parents": {
+    "production": "3bb955569eecc972b71df7cf4d5df69eb6aac41c",
+    "security": "033b74a6bb407e49c6bc7c934a60d972ea355b64"
+  },
+  "overlap": [],
+  "changed_runtime_or_test_files_preserved": 72,
+  "files": [
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/assets/header-menu.js",
+      "exists": true,
+      "sha256": "a1a920cb5573c2b4c085b1629dce52809e6072a42f55f7adf95f93a3b5daccc5"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/livecanvas/partials/de/header.html",
+      "exists": true,
+      "sha256": "dc49e17311ab7c1be00774fb58fdff1423588b3aebbaca417e00e824b644eb5a"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/livecanvas/partials/header.html",
+      "exists": true,
+      "sha256": "8dd7890fe3a08f3e4fe7c13b576cda3bc3c1b2aae04d8ed3115817895fc9641a"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/windpress/chrome.css",
+      "exists": true,
+      "sha256": "afc0986dbb137581b5838322c5b9654a6588038ec20d8d2fd9dddf376ac88a3a"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/windpress/contact-card.css",
+      "exists": true,
+      "sha256": "2357b84cb55556af15407f48a668660444128074eabd62b81d44517f1cc50c65"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/windpress/hero-readability.css",
+      "exists": true,
+      "sha256": "034942b7178f8bc986b90441baa61cc738cb6bd1a80646b0f01510f47d312654"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/windpress/marketing-rhythm.css",
+      "exists": true,
+      "sha256": "619fb5479df09038de581db648a4d7e168c203b60c546baa6b5588e8d1841dc7"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/windpress/products.css",
+      "exists": true,
+      "sha256": "a9bfe0748fe1ee9fd57d85c3257fce26ae62a2e73c19f62afafb1b879af40367"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/windpress/site-base.css",
+      "exists": true,
+      "sha256": "3089373560fcd168c946539e08ab49ff7b5c8af9647471b3478651d206f5d560"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Contact/Form.php",
+      "exists": true,
+      "sha256": "7f1c825d7e33f4dc8c0f44318b81fd4e7b02d0d00f45d7d3259e9c9a6a425b13"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Contact/Handler.php",
+      "exists": true,
+      "sha256": "578ec86afcd8cbedd6663c5cdec0e3ec19f69d0290918967dc54b7df39a979b4"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Contact/Module.php",
+      "exists": true,
+      "sha256": "0cf1f856ee293ebf414723963883a4111551b075895e03be968960f54e6946d1"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Contact/SelectionContext.php",
+      "exists": true,
+      "sha256": "66d0897ff9a636c65956d176c5f648c09f596c9f77255855cb4869c7bb3f7a47"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Contact/SelectionView.php",
+      "exists": true,
+      "sha256": "d0b3a88d2b82409f0570f0f00123ff0b8108aac91c733196c8073b2ae19878e6"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Contact/Submission.php",
+      "exists": true,
+      "sha256": "500a780d691cd329879799b6ced791b622f7096df485da37d4076ad618c2eeb3"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Presentation/FamilyNavigation.php",
+      "exists": true,
+      "sha256": "b56ffddea507b0fd5889e6cebdbdfdcc0732596a95c491342ab9444b6f722c3e"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Presentation/FamilyPage.php",
+      "exists": true,
+      "sha256": "6e78ee4c0d53ffc21502019ba3db6e1abd28a2c6bfeab31b806e97289c1215c8"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Presentation/LanguageLinks.php",
+      "exists": true,
+      "sha256": "9e3f83dee694bc6ae04c2b9d7109a322ed590bd9ceedc23877971a4aba19e58d"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php",
+      "exists": true,
+      "sha256": "76c01acd5c74fc9b4d03d50a61e6d84011fca847ef998c951ef1557fdbd9b6f7"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Protection/FormRecovery.php",
+      "exists": true,
+      "sha256": "271664cb0ffcc640e3d7a5c3641c9069b3b8f21c84e96c8614e4135af15c284b"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/includes/Storefront/ProductFilters.php",
+      "exists": true,
+      "sha256": "881446da25aed48a931596cc50af2d1972a363f73447ce8ce5c0352c6c6b8b3b"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo",
+      "exists": true,
+      "sha256": "56bbb60a2c41629aae09d603aa0f89c45dea443298d219f3e02cfecfde5c6b7d"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po",
+      "exists": true,
+      "sha256": "b83f8ca69f6d22f0c7476aa51581826b9c6f6c6bead898feda05165bfcb6285c"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/languages/linker-commerce.pot",
+      "exists": true,
+      "sha256": "1981a51b7dbf64cbbb17f65643f9a1b400520a9a93cafdb566452051b34eae6c"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/js/header-images.test.mjs",
+      "exists": true,
+      "sha256": "56b070ede0541b7491ea4a7945b513837f5eeee040d5981cc9387165a5d1507b"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/js/header-menu.test.mjs",
+      "exists": true,
+      "sha256": "bb206d232cc0d15292c989a0b9ac5b4a361548c6e4d5f88b1de4c6cbbde3c9c2"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Doubles/wordpress.php",
+      "exists": true,
+      "sha256": "c938a91155517d217b60ce1d725eebe0803add1e9c7e0c3e1893599a9bf927af"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Integration/ContactNavigationTest.php",
+      "exists": true,
+      "sha256": "b0c9d533cde866f64eccddbab5684f1a39dbe0de58678f72c5ca9765c51e1ecd"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Integration/ContactSelectionTest.php",
+      "exists": true,
+      "sha256": "3bdd8ac5a98f40b56eed969a971758cd45c7941f56dffc729a474f3c63bce8cd"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Contact/FormTest.php",
+      "exists": true,
+      "sha256": "aaa55e9d2178120e6b13b547f5996eb0c50fce69c4cfde44008fe2668955aac7"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Contact/SelectionContextTest.php",
+      "exists": true,
+      "sha256": "d0c7ac465b09e1fa47ed4b89efa58f3a3048b241855714d330656b077450ced9"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Contact/SelectionLinkTest.php",
+      "exists": true,
+      "sha256": "524886194e0d3ce51c40f998ed14bba44539ff19d5a0542755554d66f60a9c9e"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Contact/SelectionViewTest.php",
+      "exists": true,
+      "sha256": "1d84a78037d2350dbfa8430602bc4b7c226a2dc7366bd0f0909ec734984ced5a"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/PluginTest.php",
+      "exists": true,
+      "sha256": "0c32c15fb115ee0d9680100430656a6d0390b397436ff18c9d7856d30615424b"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Presentation/FamilyNavigationTest.php",
+      "exists": true,
+      "sha256": "9c6fe63577ef22f88323a3b5959194972324d9a85f1866a6902a51a70099fae9"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Presentation/FamilyPageTest.php",
+      "exists": true,
+      "sha256": "e6f653cac4ac476f09ed8a9e5c9fd08e961ac55733ef33518849cc6756d76f0b"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Presentation/ModuleTest.php",
+      "exists": true,
+      "sha256": "433a4a148ed8a5c214cd3ebaafb260a4a566610e51bc72f90b7638696f983d40"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Presentation/ProductShortcodesTest.php",
+      "exists": true,
+      "sha256": "c54bfa1a7f2fb64afdf72f8187da5984fcbfc1143da00645bf8caa265964f86b"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/php/Unit/Storefront/ProductFiltersTest.php",
+      "exists": true,
+      "sha256": "c740c122fc3fb38fe4df11ade0c8c088d361d719f0182808be6f2863e136bd2e"
+    },
+    {
+      "origin": "production",
+      "path": "tests/e2e/specs/contact-selection-continuity.spec.ts",
+      "exists": true,
+      "sha256": "738acb32a896e617a5958e62f76dad9f036a4a51708104384e61e2637a252320"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/build/configurator.asset.php",
+      "exists": true,
+      "sha256": "05fc0fb598e4603be7ec95792cab56b50b81e3a2699529769a68114067563189"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/build/configurator.js",
+      "exists": true,
+      "sha256": "abb68d62d02c45a1dbf6e3c217a7cd71afd6ec1486c5449528a4112657098b19"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/build/genie.asset.php",
+      "exists": true,
+      "sha256": "5522a8f829d6b2a4201927d825caf45cf098f732f51cf2ede6f30c1439cd5269"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/build/genie.js",
+      "exists": true,
+      "sha256": "cae1656a8211b6603078692c43a6cfb77022c7e3c6a37c26441a06a6791dd9c5"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/build/hero.asset.php",
+      "exists": true,
+      "sha256": "0834af6efa18970d928e6f559bad69c4a4f1b6114038e63b1d74b8f9937e9a53"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/build/hero.js",
+      "exists": true,
+      "sha256": "1f9eb208e47bf38b960410e7da3b4edc20e8a98eef80cd7f5c86250de90869c8"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/build/manifest.json",
+      "exists": true,
+      "sha256": "c7861af66f2df54aa05f765f24b3a3e2c5fb0f3a9f3dd52b09bb5c774444c20b"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/includes/Genie/Proxy.php",
+      "exists": true,
+      "sha256": "5c44fd7088ed33aeddc337a58a48ec6f930b09d2c839c6b0ed3f2ca19bc945f6"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/includes/Genie/Thread.php",
+      "exists": true,
+      "sha256": "def107f8cb24dfce2eba5f85180fba5094427fe8421279abc85eddb7403c80e2"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/includes/Protection/Resources.php",
+      "exists": true,
+      "sha256": "f312868efe002ce40475c19c08f17f82fa7bcde82c5cc749b93a36150e72b8e4"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/genie/App.test.tsx",
+      "exists": true,
+      "sha256": "e618ec17772d917675915dac778aec358b0c7136bb08f200d3c812a0db7f955e"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/genie/App.tsx",
+      "exists": true,
+      "sha256": "953fb3af06523ad48bac985440f1a6574e022189a00d2101ef76299b5a5176e1"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/genie/api/turn.test.ts",
+      "exists": true,
+      "sha256": "c17d678de8ff92d6dc0ca6ff9123198d4b7c771789961882b882f1ceb9977a97"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/genie/api/turn.ts",
+      "exists": true,
+      "sha256": "761cd6a787153b443c968622c4d638419806bb143675fe42149d94bf725b8f44"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/genie/shared/completedRequest.ts",
+      "exists": true,
+      "sha256": "0f0d046a5a1d769d9907cb3cfe2b367fe56fde0654efbc81e7889e5d38aa168f"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/genie/shared/failure.test.ts",
+      "exists": true,
+      "sha256": "066c7a77305c77a601ab3ca4bea5eb9eb8308dd8cc740f6a91e5c9261ddfe2e3"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/genie/shared/failure.ts",
+      "exists": true,
+      "sha256": "a1876fce5684e077aef398917fe1a55f7990e4150d35ae09a374c1866c8700cf"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/hero/Hero.test.tsx",
+      "exists": true,
+      "sha256": "8c466287999dae9f664c4da3bf97a0c66cfb734524ce367e4619d4c38098b37a"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/hero/session.ts",
+      "exists": true,
+      "sha256": "49a28fbc3f0ea3a2b3aa1d022d3245d7ab2794c49bd5965f41630d788253b3ff"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/protection/request.test.ts",
+      "exists": true,
+      "sha256": "87660d0125ab55a09f1273dc0eaeac1ea46cc5d005aab08cecf82576ec6bc412"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/src/protection/request.ts",
+      "exists": true,
+      "sha256": "7eb734ab533d404d10c54c0dc2951bf4600f0d70a073883c0cfd3f0e91be5a05"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/tests/php/Integration/ResourceAdmissionTest.php",
+      "exists": true,
+      "sha256": "ef984cfbe07b242e419c42882beeee45f27e7c1eeda2203c2fc0968d79d22323"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/tests/php/Unit/RecordingThread.php",
+      "exists": true,
+      "sha256": "4267562de55f85fbcecb6ac2c5ec282e38bc076c33db23a3888e41392a40063c"
+    },
+    {
+      "origin": "security",
+      "path": "plugins/linker-tools/tests/php/Unit/ThreadTest.php",
+      "exists": true,
+      "sha256": "050306b673500d996ef73765c5ce935ae95f1b547dcd97d349fdc5e286da264c"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/src/linker_genie/language.py",
+      "exists": true,
+      "sha256": "54f89f65cbdd4e5d83c546998e8414ce84bd82a02525422c26c287c463176666"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/src/linker_genie/route.py",
+      "exists": true,
+      "sha256": "db81112fbb42a864677776fc2e5aa550320bd041e88e193be8b635f34abdd319"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/src/linker_genie/template.py",
+      "exists": true,
+      "sha256": "1584c3f6c924ace7b5370030c45a6847012a6661052ef8d1398042cdc9f53860"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/tests/test_degradation.py",
+      "exists": true,
+      "sha256": "50848cb31147f4d9d2353b440c4ec15fcaa13591477b29cb82d5e506a0335b49"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/tests/test_ground_understanding.py",
+      "exists": true,
+      "sha256": "935be46d335a590e8296965127f720379f20aed6a9d42b72063fa0bc3f8ada7e"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/tests/test_language.py",
+      "exists": true,
+      "sha256": "93e4f699f3794e526b9ca08c5ef9062199b7dda07a8a8b4348665a69982c91a5"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/tests/test_normal_documents.py",
+      "exists": true,
+      "sha256": "d093fc0e8952869254c1faf87a6a63623f318d00b9097da28966e2137e155196"
+    },
+    {
+      "origin": "security",
+      "path": "services/genie/tests/test_route.py",
+      "exists": true,
+      "sha256": "60963f54b36ff3c174d3a94c045301e0fead3c3d74c9e1bdedc3d7e2928c8594"
+    }
+  ],
+  "additional_tool_paths": [],
+  "scope": "Git source composition proof, not combined local/native/UI/CI or production acceptance."
+}

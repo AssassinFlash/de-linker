@@ -1,0 +1,86 @@
+{
+  "scope": "Only recorded opaque computed foreground/background pairs. Transparent backgrounds excluded; no black-background substitution. These intermediate colors require settled-state recapture before final hover acceptance.",
+  "observations": [
+    {
+      "stem": "release-installer-en-390-action1-hover-focus",
+      "action": 1,
+      "fg": "rgb(70, 157, 148)",
+      "bg": "rgb(197, 225, 222)",
+      "contrast": 2.334407988681635,
+      "focused": true,
+      "hovered": true
+    },
+    {
+      "stem": "release-installer-en-390-action2-hover-focus",
+      "action": 1,
+      "fg": "rgb(247, 251, 250)",
+      "bg": "rgb(17, 130, 118)",
+      "contrast": 4.4957425369288595,
+      "focused": false,
+      "hovered": false
+    },
+    {
+      "stem": "release-installer-de-1440-action1-hover-focus",
+      "action": 1,
+      "fg": "rgb(48, 146, 136)",
+      "bg": "rgb(219, 236, 234)",
+      "contrast": 3.075108952698653,
+      "focused": true,
+      "hovered": true
+    },
+    {
+      "stem": "release-services-en-1440-action2-hover-focus",
+      "action": 1,
+      "fg": "rgb(245, 250, 249)",
+      "bg": "rgb(22, 132, 121)",
+      "contrast": 4.3213789592951395,
+      "focused": false,
+      "hovered": false
+    },
+    {
+      "stem": "release-services-de-390-action1-hover-focus",
+      "action": 1,
+      "fg": "rgb(30, 137, 126)",
+      "bg": "rgb(237, 245, 244)",
+      "contrast": 3.8438094760097345,
+      "focused": true,
+      "hovered": true
+    },
+    {
+      "stem": "release-application-en-1440-action1-hover-focus",
+      "action": 1,
+      "fg": "rgb(32, 138, 127)",
+      "bg": "rgb(235, 244, 243)",
+      "contrast": 3.7509323752740276,
+      "focused": true,
+      "hovered": true
+    },
+    {
+      "stem": "release-application-en-1440-action2-hover-focus",
+      "action": 1,
+      "fg": "rgb(234, 244, 243)",
+      "bg": "rgb(27, 135, 124)",
+      "contrast": 3.900070864952189,
+      "focused": false,
+      "hovered": false
+    },
+    {
+      "stem": "release-application-de-1440-action1-hover-focus",
+      "action": 1,
+      "fg": "rgb(69, 157, 148)",
+      "bg": "rgb(198, 225, 222)",
+      "contrast": 2.3412212301577124,
+      "focused": true,
+      "hovered": true
+    },
+    {
+      "stem": "release-application-de-390-action1-hover-focus",
+      "action": 1,
+      "fg": "rgb(40, 142, 131)",
+      "bg": "rgb(227, 240, 239)",
+      "contrast": 3.400049356634829,
+      "focused": true,
+      "hovered": true
+    }
+  ]
+}

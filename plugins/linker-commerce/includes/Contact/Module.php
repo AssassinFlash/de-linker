@@ -32,6 +32,7 @@ final class Module {
 	public function register(): void {
 		( new Form() )->register();
 		( new Handler() )->register();
+		( new SelectionView() )->register();
 		// Before do_shortcode (priority 11 on the_content, WordPress default):
 		// the replacement has to be a shortcode by the time that filter runs.
 		add_filter( 'the_content', array( $this, 'mount_form' ), 9 );

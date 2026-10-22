@@ -32,11 +32,10 @@ HEADER_PARTIALS = {
     / "plugins/linker-commerce/content/livecanvas/partials/de/header.html",
 }
 
-# The image tags of one partial, as the live checkpoint has them (spec 12
-# item 8 records the source: .scratch/t16-lc-port/live/archive.html,
-# captured from the live site 2026-10-12): the seven desktop menu images
-# carry src plus loading="lazy", the five drawer rail images carry src
-# alone, and the brand logo is the eager one.
+# Keep the original seven desktop and five drawer photos, resolving through
+# their own src. The full-site loading repair makes both sets native lazy;
+# the visible brand logo remains eager. See navigation-image-loading/spec.md
+# under docs/acceptance/2026-10-22/full-site for the measured request evidence.
 LAZY_CLASSES = (
     "tv-mega-featured-img",
     "tv-mega-link-thumb",
@@ -145,24 +144,27 @@ def test_the_verify_guard_refuses_the_deferred_empty_box_form() -> None:
 
 
 @pytest.mark.parametrize("step_key", sorted(HEADER_PARTIALS))
-def test_the_shipped_partials_keep_the_live_lazy_distribution(step_key: str) -> None:
-    """The fix restores the live form: every image resolves through its own
-    src and the browser's own loading attribute does the deferring — the
-    desktop menu cards as the live checkpoint carries them, the drawer rail
-    without one. Dropping loading="lazy" (eager) moves away from the live
-    checkpoint and from spec 12 item 8."""
-    html = HEADER_PARTIALS[step_key].read_text()
+def test_a_re_run_keeps_both_closed_menu_photo_sets_native_lazy(step_key: str) -> None:
+    """A migration re-run must keep actual photos resolvable without
+    restoring eager drawer downloads or the retired data-src hydration."""
+    reports: list[str] = []
+    html = header_step(step_key).apply(
+        HEADER_PARTIALS[step_key].read_text(), reports.append
+    )
     tags = image_tags(html)
     lazy = [tag for tag in tags if 'loading="lazy"' in tag]
     eager = [tag for tag in tags if 'loading="eager"' in tag]
-    bare = [tag for tag in tags if "loading=" not in tag]
+    desktop = [
+        tag for tag in tags if any(f'class="{name}"' in tag for name in LAZY_CLASSES)
+    ]
     rails = re.findall(
         r'<a[^>]*class="tv-mobile-rail-card"[^>]*>(<img\b[^>]*>)', html, re.S
     )
 
     assert all('src="' in tag for tag in tags)
-    assert len(lazy) == DESKTOP_IMAGES
-    assert all(any(f'class="{name}"' in tag for name in LAZY_CLASSES) for tag in lazy)
+    assert len(desktop) == DESKTOP_IMAGES
     assert len(rails) == RAIL_IMAGES
-    assert set(rails) == set(bare)
+    assert len(lazy) == DESKTOP_IMAGES + RAIL_IMAGES
+    assert set(lazy) == set(desktop) | set(rails)
+    assert len(tags) == len(lazy) + len(eager)
     assert len(eager) == 1 and "tv-brand-logo" in eager[0]

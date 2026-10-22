@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-22T06:45:38.854Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/solution-configurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 464.4296875,
+            "height": 48,
+            "right": 302.6015625,
+            "width": 202.6015625,
+            "x": 100,
+            "y": 416.4296875
+          },
+          "text": "Plan a Project Solution →"
+        },
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(158, 178, 163)",
+          "color": "rgb(23, 39, 33)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/my-account/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 464.4296875,
+            "height": 48,
+            "right": 504.4609375,
+            "width": 189.859375,
+            "x": 314.6015625,
+            "y": 416.4296875
+          },
+          "text": "Open Partner Account"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "25.28px",
+        "rect": {
+          "bottom": 384.4296875,
+          "height": 303.453125,
+          "right": 1340,
+          "width": 1240,
+          "x": 100,
+          "y": 80.9765625
+        },
+        "tag": "DIV",
+        "text": "\n\n     Solar & Storage Solutions\n    \n\n     Ready to design and source your next installation?\n    \n\n     Linker supplies residential hybrid packages and commercial outdoor cabinets, with Solution Configurator sizing and technical support behind the installation.\n    \n"
+      },
+      "rect": {
+        "bottom": 464.4296875,
+        "height": 48,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 416.4296875
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/for-installer/",
+  "width": 1440
+}

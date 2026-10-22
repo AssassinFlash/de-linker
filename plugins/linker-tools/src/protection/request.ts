@@ -158,11 +158,13 @@ function containerFor( action: string ): HTMLElement {
  * @param fetcher
  * @param input
  * @param init
+ * @param onOperation Receives the actual enforced operation just before sending.
  */
 export async function resourceFetch(
 	fetcher: typeof fetch,
 	input: RequestInfo | URL,
-	init?: RequestInit
+	init?: RequestInit,
+	onOperation?: ( id: string ) => void
 ): Promise< Response > {
 	if ( typeof window === 'undefined' ) {
 		return fetcher( input, init );
@@ -223,6 +225,9 @@ export async function resourceFetch(
 		headers.set( 'X-Linker-Proof', proof );
 	}
 	init?.signal?.throwIfAborted();
+	if ( id && ! observe ) {
+		onOperation?.( id );
+	}
 	const response = await fetcher( input, {
 		...init,
 		headers,

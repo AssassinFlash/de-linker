@@ -1,0 +1,343 @@
+{
+  "source_head": "cf7c84718afa6f0c02a4774b5eea49771b8f7e62",
+  "snapshot": "20261022-2159",
+  "local_native_tests": {
+    "commerce": {
+      "tests": 18,
+      "assertions": 588
+    },
+    "completed_genie_permit": {
+      "tests": 4,
+      "assertions": 135
+    }
+  },
+  "rows": [
+    {
+      "surface": "workspace",
+      "language": "en",
+      "width": 1440,
+      "before": {
+        "posts": 3,
+        "providers": 3
+      },
+      "after": {
+        "posts": 3,
+        "providers": 3
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 1000,
+        "scrollWidth": 1425,
+        "width": 1440
+      }
+    },
+    {
+      "surface": "workspace",
+      "language": "en",
+      "width": 390,
+      "before": {
+        "posts": 4,
+        "providers": 4
+      },
+      "after": {
+        "posts": 4,
+        "providers": 4
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 844,
+        "scrollWidth": 375,
+        "width": 390
+      }
+    },
+    {
+      "surface": "workspace",
+      "language": "de",
+      "width": 390,
+      "before": {
+        "posts": 5,
+        "providers": 5
+      },
+      "after": {
+        "posts": 5,
+        "providers": 5
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 844,
+        "scrollWidth": 375,
+        "width": 390
+      }
+    },
+    {
+      "surface": "workspace",
+      "language": "de",
+      "width": 1440,
+      "before": {
+        "posts": 6,
+        "providers": 6
+      },
+      "after": {
+        "posts": 6,
+        "providers": 6
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf#page=2",
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 1000,
+        "scrollWidth": 1425,
+        "width": 1440
+      }
+    },
+    {
+      "surface": "hero",
+      "language": "de",
+      "width": 1440,
+      "before": {
+        "posts": 7,
+        "providers": 7
+      },
+      "after": {
+        "posts": 7,
+        "providers": 7
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf#page=2",
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 1000,
+        "scrollWidth": 1425,
+        "width": 1440
+      }
+    },
+    {
+      "surface": "hero",
+      "language": "de",
+      "width": 390,
+      "before": {
+        "posts": 8,
+        "providers": 8
+      },
+      "after": {
+        "posts": 8,
+        "providers": 8
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/10/SAJ_B2_5-25kWh_HV1-HV5_Datasheet_DE.pdf#page=2",
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 844,
+        "scrollWidth": 375,
+        "width": 390
+      }
+    },
+    {
+      "surface": "hero",
+      "language": "en",
+      "width": 390,
+      "before": {
+        "posts": 9,
+        "providers": 9
+      },
+      "after": {
+        "posts": 9,
+        "providers": 9
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 844,
+        "scrollWidth": 375,
+        "width": 390
+      }
+    },
+    {
+      "surface": "hero",
+      "language": "en",
+      "width": 1440,
+      "before": {
+        "posts": 10,
+        "providers": 10
+      },
+      "after": {
+        "posts": 10,
+        "providers": 10
+      },
+      "dom": {
+        "docs": [
+          "http://127.0.0.1:9341/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf#page=1"
+        ],
+        "height": 1000,
+        "scrollWidth": 1425,
+        "width": 1440
+      }
+    }
+  ],
+  "total_turn_posts": 10,
+  "total_provider_stubs": 10,
+  "unique_operations": 10,
+  "seed_turns": 1,
+  "preflight_completed_turns": 1,
+  "final_matrix_completed_turns": 8,
+  "final_retries_additional_post_or_provider": 0,
+  "real_provider_calls": 0,
+  "production_mail_attempts": 0,
+  "images": [
+    {
+      "name": "hero-de-1440-failed.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "85c8d1c28b136c3dcd12d1d337e44a41e8126b05bdef9161064515d2d7e7e8a4",
+      "bytes": 101409,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "hero-de-1440-recovered.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "66df3ffac1564b8523c3473f5040d450c5bbb0a3f3ddc8518e5b7812a3266edf",
+      "bytes": 92594,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "hero-de-390-failed.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "b10e837db70a2473630b1b678cacfad57f48db53c532072d32563e69a6475632",
+      "bytes": 33019,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "hero-de-390-recovered.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "d4c31d6f8b10ade55adc5c95e06ab48afbbb0070c9cf63df860691081db89944",
+      "bytes": 27400,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "hero-en-1440-failed.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "915478180c6b053bbbcd1589beba1a5bc6c4556938787a6b45ca9bbfa9d0cbab",
+      "bytes": 97367,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "hero-en-1440-recovered.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "56c7804a18b74c2c554903630e5f85bfc582e2f04e0695a63484db48ce073fca",
+      "bytes": 91588,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "hero-en-390-failed.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "9206bb7379bf2f726ee41aaf15bae2f0fcb84fd6e4a71b19266162e58b31a026",
+      "bytes": 36784,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "hero-en-390-recovered.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "f402c0eab30c0df111b4e6dd6e71b0c460bb6d57b39f811d2483a7cdfb7e5788",
+      "bytes": 27442,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-de-1440-failed.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "61671f7b125c3ab133c50bd6fca75b56f884d6e08cbba8295f6eede06dbdbc56",
+      "bytes": 67657,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-de-1440-recovered.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "e8bf343f8b1cae60b699803cc96344090c8f71e6a0e8cf598f80346321292e35",
+      "bytes": 62477,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-de-390-failed.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "88999e61e52c9daf3a1e59604ddad46fb07ad3240dcbd4388394ea9e6c992bbb",
+      "bytes": 32536,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-de-390-recovered.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "b78cff027439e2ff29ecec7047ee76be027b904f2af139da0c19f99b37df77a2",
+      "bytes": 25851,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-en-1440-failed.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "cac2d9be0568fa103ed8c6624286c290906a66116808e31e1a170309768729d9",
+      "bytes": 63259,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-en-1440-recovered.jpg",
+      "width": 1425,
+      "height": 990,
+      "sha256": "f07528a13b0898d175aa5316d676ade578c4e7321f6e5f2c4597aebfa70be595",
+      "bytes": 63562,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-en-390-failed.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "eb90c2478f1b6cfb26db8a81fa41fcb95f3541a90faa2019f1bf00ce3cbfb0ce",
+      "bytes": 30054,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "workspace-en-390-recovered.jpg",
+      "width": 375,
+      "height": 812,
+      "sha256": "65fb02a52fc8b7735c6cf3568bd0a7cd904179c39f817609f2ce771761d890bc",
+      "bytes": 23515,
+      "mime_type": "image/jpeg"
+    }
+  ],
+  "limits": [
+    "Synthetic provider/siteverify/SDK only; actual native Resources/Proxy/Thread/Ledger/Replies and owned GET execute.",
+    "Initial preflight used the prior fixture document URL; it is retained separately. Final eight rows use si533 document URLs.",
+    "One rapid Playwright mobile Send action after viewport resize produced no POST; input remained. A subsequent native AX Send worked. Cause not established; no source change or silent resend.",
+    "Does not prove live models, real customer conversion or inbox delivery."
+  ],
+  "local_cleanup": {
+    "fixture_removed": true,
+    "mode": "off",
+    "service_token_constant_present": false,
+    "genie_url": "http://127.0.0.1:9343",
+    "engine_url": "http://127.0.0.1:9342",
+    "mail_capture_files": 0,
+    "quota_reset": false,
+    "journal_reset": false,
+    "browser_viewport_override_reset": true
+  }
+}

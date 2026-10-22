@@ -1,0 +1,1556 @@
+{
+  "at": "2026-10-22T05:10:03.077099+00:00",
+  "scope": "Local native readonly HTTP renderer/redirect/parsed HTML evidence only. Excludes CUA, browser visuals, production and manufacturer/product title accuracy.",
+  "source_aggregate": "14cb7f7438fd677721106aa37d0f6ae569e60b469240ec4fb9929feff67395e6",
+  "source_manifest": "../product-selection-continuity/source-integrated-files.json",
+  "source_hashes_match_before_after": true,
+  "compiled_css": {
+    "path": "/Users/chesterjohn/de-linker-local/sharedarchives/wordpress/wp-content/uploads/windpress/cache/tailwind.css",
+    "mtime": 1792645324,
+    "bytes": 705664,
+    "sha256": "4233d7f100198ca7a03baf9b23639cf126a962d7a6c573b6e41e7997d4ccc897"
+  },
+  "driver": {
+    "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/family-native-render-probe.py",
+    "sha256": "d5fbb7001d1eab0708a23829f1a9f82d3418b32046c78fa3652c53df372192de",
+    "unchanged": true,
+    "exit": 0,
+    "requests": 36,
+    "method": "GET only; redirect hops are also GET",
+    "expectations": "Driver unchanged and has no assertions. This post-read summary compares the original raw measured rows against the parent-requested contracts; no raw response or expectation was changed."
+  },
+  "runtime": {
+    "PHPRC": "/Users/chesterjohn/de-linker-local/sharedarchives/php.ini",
+    "php_bin": "/opt/homebrew/opt/php@8.3/bin/php",
+    "php_cli_version_verified": "8.3.35"
+  },
+  "runtime_note": "The unchanged driver is Python urllib HTTP GET and HTMLParser. PHP83/PHPRC is the selected environment and CLI check, not a claim that the Python process executes PHP or reconfigures the existing HTTP server.",
+  "raw": {
+    "path": "native-render-20261022T050829Z.json",
+    "sha256": "c1e70f53a2b139a9d0e28eb27969f745ed2b75641d67c38d2724ac39bd50f829",
+    "private_driver_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/family-readonly-native-20261022T050754850915Z/driver.log",
+    "private_provenance": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/family-readonly-native-20261022T050754850915Z/provenance.json"
+  },
+  "final_statuses": {
+    "200": 36
+  },
+  "redirect_hops": 26,
+  "languages": {
+    "en": {
+      "page_counts": [
+        24,
+        24,
+        17
+      ],
+      "lead_union": [
+        1178,
+        1954,
+        1955,
+        1958,
+        1961,
+        1973,
+        2003,
+        2070,
+        2090,
+        2092,
+        2093,
+        2199,
+        2281,
+        2394,
+        2397,
+        2403,
+        2409,
+        2415,
+        3573,
+        3576,
+        3580,
+        3582,
+        3585,
+        3587,
+        3595,
+        3612,
+        3618,
+        4106,
+        4108,
+        4109,
+        6321,
+        6480,
+        6481,
+        6482,
+        6483,
+        6484,
+        6485,
+        6486,
+        6487,
+        6488,
+        6506,
+        6507,
+        6508,
+        6509,
+        6510,
+        6511,
+        6512,
+        6513,
+        6514,
+        6515,
+        6516,
+        6517,
+        6518,
+        6519,
+        6520,
+        6521,
+        6522,
+        6523,
+        6524,
+        6525,
+        6526,
+        6527,
+        6528,
+        6529,
+        6530
+      ],
+      "distinct_families_by_lead": 65,
+      "base_count_text": "1-24 / 65 product families",
+      "name_page2_leads": [
+        6526,
+        6513,
+        6527,
+        6514,
+        2415,
+        2394,
+        2397,
+        1948,
+        6509,
+        6510,
+        1955,
+        6511,
+        3595,
+        2403,
+        1956,
+        6529,
+        6519,
+        6521,
+        3611,
+        6530,
+        1954,
+        6520,
+        6522,
+        6507
+      ]
+    },
+    "de": {
+      "page_counts": [
+        24,
+        24,
+        17
+      ],
+      "lead_union": [
+        6565,
+        6566,
+        6567,
+        6568,
+        6569,
+        6570,
+        6571,
+        6572,
+        6573,
+        6574,
+        6575,
+        6576,
+        6577,
+        6578,
+        6579,
+        6580,
+        6581,
+        6582,
+        6583,
+        6584,
+        6585,
+        6586,
+        6587,
+        6588,
+        6589,
+        6590,
+        6591,
+        6592,
+        6593,
+        6594,
+        6595,
+        6596,
+        6597,
+        6598,
+        6599,
+        6626,
+        6627,
+        6629,
+        6643,
+        6649,
+        6654,
+        6662,
+        6664,
+        6667,
+        6669,
+        6673,
+        6676,
+        6710,
+        6712,
+        6714,
+        6716,
+        6717,
+        6720,
+        6729,
+        6735,
+        6736,
+        6738,
+        6747,
+        6769,
+        6784,
+        6796,
+        6799,
+        6802,
+        6803,
+        6839
+      ],
+      "distinct_families_by_lead": 65,
+      "base_count_text": "1-24 / 65 Produktfamilien",
+      "name_page2_leads": [
+        6569,
+        6582,
+        6568,
+        6581,
+        6710,
+        6717,
+        6716,
+        6809,
+        6586,
+        6585,
+        6802,
+        6584,
+        6654,
+        6714,
+        6801,
+        6566,
+        6576,
+        6574,
+        6650,
+        6565,
+        6803,
+        6575,
+        6573,
+        6588
+      ]
+    }
+  },
+  "checks": [
+    {
+      "name": "36 original paths",
+      "actual": 36,
+      "expected": 36,
+      "pass": true
+    },
+    {
+      "name": "final HTTP200",
+      "actual": 36,
+      "expected": 36,
+      "pass": true
+    },
+    {
+      "name": "en visible counts",
+      "actual": [
+        24,
+        24,
+        17
+      ],
+      "expected": [
+        24,
+        24,
+        17
+      ],
+      "pass": true
+    },
+    {
+      "name": "en 65 distinct leads",
+      "actual": 65,
+      "expected": 65,
+      "pass": true
+    },
+    {
+      "name": "en no duplicate lead",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "en native alias same page2",
+      "actual": [
+        6506,
+        6488,
+        6487,
+        6486,
+        6485,
+        6484,
+        6483,
+        6482,
+        6481,
+        6480,
+        6321,
+        4109,
+        4108,
+        4106,
+        3618,
+        3612,
+        3595,
+        3587,
+        3585,
+        3582,
+        3580,
+        3576,
+        3573,
+        2415
+      ],
+      "expected": [
+        6506,
+        6488,
+        6487,
+        6486,
+        6485,
+        6484,
+        6483,
+        6482,
+        6481,
+        6480,
+        6321,
+        4109,
+        4108,
+        4106,
+        3618,
+        3612,
+        3595,
+        3587,
+        3585,
+        3582,
+        3580,
+        3576,
+        3573,
+        2415
+      ],
+      "pass": true
+    },
+    {
+      "name": "en query wins conflicting alias",
+      "actual": [
+        2409,
+        2403,
+        2397,
+        2394,
+        2281,
+        2199,
+        2093,
+        2092,
+        2090,
+        2070,
+        2003,
+        1973,
+        1961,
+        1958,
+        1955,
+        1954,
+        1178
+      ],
+      "expected": [
+        2409,
+        2403,
+        2397,
+        2394,
+        2281,
+        2199,
+        2093,
+        2092,
+        2090,
+        2070,
+        2003,
+        1973,
+        1961,
+        1958,
+        1955,
+        1954,
+        1178
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row5 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row6 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row7 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row8 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row9 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row10 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row11 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row12 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row13 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row15 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row16 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row17 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en normalized row3 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "en row7 canonical page1 path",
+      "actual": "/products/",
+      "expected": "/products/",
+      "pass": true
+    },
+    {
+      "name": "en row7 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "en row8 canonical page1 path",
+      "actual": "/products/",
+      "expected": "/products/",
+      "pass": true
+    },
+    {
+      "name": "en row8 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "en row9 canonical page1 path",
+      "actual": "/products/",
+      "expected": "/products/",
+      "pass": true
+    },
+    {
+      "name": "en row9 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "en row10 canonical page1 path",
+      "actual": "/products/",
+      "expected": "/products/",
+      "pass": true
+    },
+    {
+      "name": "en row10 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "en row11 canonical page1 path",
+      "actual": "/products/",
+      "expected": "/products/",
+      "pass": true
+    },
+    {
+      "name": "en row11 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "en row12 clamps/page3 precedence",
+      "actual": [
+        "3"
+      ],
+      "expected": [
+        "3"
+      ],
+      "pass": true
+    },
+    {
+      "name": "en row13 clamps/page3 precedence",
+      "actual": [
+        "3"
+      ],
+      "expected": [
+        "3"
+      ],
+      "pass": true
+    },
+    {
+      "name": "en row16 clamps/page3 precedence",
+      "actual": [
+        "3"
+      ],
+      "expected": [
+        "3"
+      ],
+      "pass": true
+    },
+    {
+      "name": "en row1 noindex",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "en row1 no canonical",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "en row1 no hreflang",
+      "actual": {},
+      "expected": {},
+      "pass": true
+    },
+    {
+      "name": "en row1 targetlanguage page retained",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "en row2 noindex",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "en row2 no canonical",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "en row2 no hreflang",
+      "actual": {},
+      "expected": {},
+      "pass": true
+    },
+    {
+      "name": "en row2 targetlanguage page retained",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "en row14 noindex",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "en row14 no canonical",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "en row14 no hreflang",
+      "actual": {},
+      "expected": {},
+      "pass": true
+    },
+    {
+      "name": "en row14 targetlanguage page retained",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "en base selfcanonical",
+      "actual": [
+        "http://127.0.0.1:9290/products/"
+      ],
+      "expected": [
+        "http://127.0.0.1:9290/products/"
+      ],
+      "pass": true
+    },
+    {
+      "name": "en base native ENDE hreflang",
+      "actual": [
+        "de",
+        "en",
+        "x-default"
+      ],
+      "expected": [
+        "de",
+        "en",
+        "x-default"
+      ],
+      "pass": true
+    },
+    {
+      "name": "en positive SAJ query13",
+      "actual": 13,
+      "expected": 13,
+      "pass": true
+    },
+    {
+      "name": "en no-match empty",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "en sort keeps name",
+      "actual": [
+        "name"
+      ],
+      "expected": [
+        "name"
+      ],
+      "pass": true
+    },
+    {
+      "name": "en search+sort retained",
+      "actual": {
+        "q": [
+          "SAJ"
+        ],
+        "sort": [
+          "name"
+        ]
+      },
+      "expected": {
+        "q": [
+          "SAJ"
+        ],
+        "sort": [
+          "name"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "name": "de visible counts",
+      "actual": [
+        24,
+        24,
+        17
+      ],
+      "expected": [
+        24,
+        24,
+        17
+      ],
+      "pass": true
+    },
+    {
+      "name": "de 65 distinct leads",
+      "actual": 65,
+      "expected": 65,
+      "pass": true
+    },
+    {
+      "name": "de no duplicate lead",
+      "actual": 0,
+      "expected": 0,
+      "pass": true
+    },
+    {
+      "name": "de native alias same page2",
+      "actual": [
+        6589,
+        6590,
+        6591,
+        6592,
+        6593,
+        6594,
+        6595,
+        6596,
+        6597,
+        6598,
+        6599,
+        6626,
+        6627,
+        6629,
+        6643,
+        6649,
+        6654,
+        6662,
+        6664,
+        6667,
+        6669,
+        6673,
+        6676,
+        6710
+      ],
+      "expected": [
+        6589,
+        6590,
+        6591,
+        6592,
+        6593,
+        6594,
+        6595,
+        6596,
+        6597,
+        6598,
+        6599,
+        6626,
+        6627,
+        6629,
+        6643,
+        6649,
+        6654,
+        6662,
+        6664,
+        6667,
+        6669,
+        6673,
+        6676,
+        6710
+      ],
+      "pass": true
+    },
+    {
+      "name": "de query wins conflicting alias",
+      "actual": [
+        6712,
+        6714,
+        6716,
+        6717,
+        6720,
+        6729,
+        6735,
+        6736,
+        6738,
+        6747,
+        6769,
+        6784,
+        6796,
+        6799,
+        6802,
+        6803,
+        6839
+      ],
+      "expected": [
+        6712,
+        6714,
+        6716,
+        6717,
+        6720,
+        6729,
+        6735,
+        6736,
+        6738,
+        6747,
+        6769,
+        6784,
+        6796,
+        6799,
+        6802,
+        6803,
+        6839
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row5 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row6 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row7 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row8 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row9 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row10 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row11 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row12 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row13 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row15 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row16 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row17 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de normalized row3 one native301 hop",
+      "actual": [
+        301
+      ],
+      "expected": [
+        301
+      ],
+      "pass": true
+    },
+    {
+      "name": "de row7 canonical page1 path",
+      "actual": "/de/produkte/",
+      "expected": "/de/produkte/",
+      "pass": true
+    },
+    {
+      "name": "de row7 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "de row8 canonical page1 path",
+      "actual": "/de/produkte/",
+      "expected": "/de/produkte/",
+      "pass": true
+    },
+    {
+      "name": "de row8 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "de row9 canonical page1 path",
+      "actual": "/de/produkte/",
+      "expected": "/de/produkte/",
+      "pass": true
+    },
+    {
+      "name": "de row9 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "de row10 canonical page1 path",
+      "actual": "/de/produkte/",
+      "expected": "/de/produkte/",
+      "pass": true
+    },
+    {
+      "name": "de row10 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "de row11 canonical page1 path",
+      "actual": "/de/produkte/",
+      "expected": "/de/produkte/",
+      "pass": true
+    },
+    {
+      "name": "de row11 no pagequery",
+      "actual": false,
+      "expected": false,
+      "pass": true
+    },
+    {
+      "name": "de row12 clamps/page3 precedence",
+      "actual": [
+        "3"
+      ],
+      "expected": [
+        "3"
+      ],
+      "pass": true
+    },
+    {
+      "name": "de row13 clamps/page3 precedence",
+      "actual": [
+        "3"
+      ],
+      "expected": [
+        "3"
+      ],
+      "pass": true
+    },
+    {
+      "name": "de row16 clamps/page3 precedence",
+      "actual": [
+        "3"
+      ],
+      "expected": [
+        "3"
+      ],
+      "pass": true
+    },
+    {
+      "name": "de row1 noindex",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "de row1 no canonical",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "de row1 no hreflang",
+      "actual": {},
+      "expected": {},
+      "pass": true
+    },
+    {
+      "name": "de row1 targetlanguage page retained",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "de row2 noindex",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "de row2 no canonical",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "de row2 no hreflang",
+      "actual": {},
+      "expected": {},
+      "pass": true
+    },
+    {
+      "name": "de row2 targetlanguage page retained",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "de row14 noindex",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "de row14 no canonical",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "de row14 no hreflang",
+      "actual": {},
+      "expected": {},
+      "pass": true
+    },
+    {
+      "name": "de row14 targetlanguage page retained",
+      "actual": true,
+      "expected": true,
+      "pass": true
+    },
+    {
+      "name": "de base selfcanonical",
+      "actual": [
+        "http://127.0.0.1:9290/de/produkte/"
+      ],
+      "expected": [
+        "http://127.0.0.1:9290/de/produkte/"
+      ],
+      "pass": true
+    },
+    {
+      "name": "de base native ENDE hreflang",
+      "actual": [
+        "de",
+        "en",
+        "x-default"
+      ],
+      "expected": [
+        "de",
+        "en",
+        "x-default"
+      ],
+      "pass": true
+    },
+    {
+      "name": "de positive SAJ query13",
+      "actual": 13,
+      "expected": 13,
+      "pass": true
+    },
+    {
+      "name": "de no-match empty",
+      "actual": [],
+      "expected": [],
+      "pass": true
+    },
+    {
+      "name": "de sort keeps name",
+      "actual": [
+        "name"
+      ],
+      "expected": [
+        "name"
+      ],
+      "pass": true
+    },
+    {
+      "name": "de search+sort retained",
+      "actual": {
+        "q": [
+          "SAJ"
+        ],
+        "sort": [
+          "name"
+        ]
+      },
+      "expected": {
+        "q": [
+          "SAJ"
+        ],
+        "sort": [
+          "name"
+        ]
+      },
+      "pass": true
+    },
+    {
+      "name": "en default-brand and name-sorted SAJ search contain the same 13 actual member sets",
+      "actual": [
+        [
+          1178
+        ],
+        [
+          1179,
+          1181,
+          2063,
+          2064,
+          4107,
+          4108
+        ],
+        [
+          1182,
+          1183,
+          1184,
+          4109
+        ],
+        [
+          1185,
+          1186,
+          1187,
+          2198,
+          2199
+        ],
+        [
+          1832,
+          2067,
+          2068,
+          2069,
+          2070
+        ],
+        [
+          1959,
+          1960,
+          1961
+        ],
+        [
+          1973
+        ],
+        [
+          2090
+        ],
+        [
+          2092
+        ],
+        [
+          2093
+        ],
+        [
+          3573
+        ],
+        [
+          3618
+        ],
+        [
+          4103,
+          4104,
+          4105,
+          4106
+        ]
+      ],
+      "expected": [
+        [
+          1178
+        ],
+        [
+          1179,
+          1181,
+          2063,
+          2064,
+          4107,
+          4108
+        ],
+        [
+          1182,
+          1183,
+          1184,
+          4109
+        ],
+        [
+          1185,
+          1186,
+          1187,
+          2198,
+          2199
+        ],
+        [
+          1832,
+          2067,
+          2068,
+          2069,
+          2070
+        ],
+        [
+          1959,
+          1960,
+          1961
+        ],
+        [
+          1973
+        ],
+        [
+          2090
+        ],
+        [
+          2092
+        ],
+        [
+          2093
+        ],
+        [
+          3573
+        ],
+        [
+          3618
+        ],
+        [
+          4103,
+          4104,
+          4105,
+          4106
+        ]
+      ],
+      "pass": true
+    },
+    {
+      "name": "de default-brand and name-sorted SAJ search contain the same 13 actual member sets",
+      "actual": [
+        [
+          6626,
+          6834,
+          6835,
+          6836
+        ],
+        [
+          6627,
+          6628,
+          6751,
+          6752,
+          6837,
+          6838
+        ],
+        [
+          6629,
+          6630,
+          6631,
+          6632
+        ],
+        [
+          6643
+        ],
+        [
+          6676
+        ],
+        [
+          6729,
+          6730,
+          6831,
+          6832,
+          6833
+        ],
+        [
+          6735
+        ],
+        [
+          6736
+        ],
+        [
+          6738
+        ],
+        [
+          6747,
+          6748,
+          6749,
+          6750,
+          6818
+        ],
+        [
+          6784
+        ],
+        [
+          6796,
+          6797,
+          6798
+        ],
+        [
+          6839
+        ]
+      ],
+      "expected": [
+        [
+          6626,
+          6834,
+          6835,
+          6836
+        ],
+        [
+          6627,
+          6628,
+          6751,
+          6752,
+          6837,
+          6838
+        ],
+        [
+          6629,
+          6630,
+          6631,
+          6632
+        ],
+        [
+          6643
+        ],
+        [
+          6676
+        ],
+        [
+          6729,
+          6730,
+          6831,
+          6832,
+          6833
+        ],
+        [
+          6735
+        ],
+        [
+          6736
+        ],
+        [
+          6738
+        ],
+        [
+          6747,
+          6748,
+          6749,
+          6750,
+          6818
+        ],
+        [
+          6784
+        ],
+        [
+          6796,
+          6797,
+          6798
+        ],
+        [
+          6839
+        ]
+      ],
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "passed_checks": 102,
+  "total_checks": 102,
+  "uncovered": "No live model, business POST, actual language-click rendering after edit, browser family-picker click, actual PDF verification, global SEO optimization, or product-copy accuracy is asserted. New GoodWe title/phase discrepancy is investigated separately.",
+  "analysis_correction": {
+    "preliminary_checks": [
+      {
+        "name": "en SAJ query same family set as brand",
+        "actual": [
+          1178,
+          1182,
+          1959,
+          1973,
+          2067,
+          2090,
+          2092,
+          2093,
+          2199,
+          3573,
+          3618,
+          4106,
+          4107
+        ],
+        "expected": [
+          1178,
+          1961,
+          1973,
+          2070,
+          2090,
+          2092,
+          2093,
+          2199,
+          3573,
+          3618,
+          4106,
+          4108,
+          4109
+        ],
+        "pass": false
+      },
+      {
+        "name": "de SAJ query same family set as brand",
+        "actual": [
+          6628,
+          6629,
+          6643,
+          6676,
+          6729,
+          6735,
+          6736,
+          6738,
+          6750,
+          6784,
+          6798,
+          6836,
+          6839
+        ],
+        "expected": [
+          6626,
+          6627,
+          6629,
+          6643,
+          6676,
+          6729,
+          6735,
+          6736,
+          6738,
+          6747,
+          6784,
+          6796,
+          6839
+        ],
+        "pass": false
+      }
+    ],
+    "preliminary_bytes_sha256": "1dbe4cd783f9c83f01e35c8316b37c963b0fc5f6dbab3da78654b3ac107e0bdd",
+    "explanation": "A preliminary post-read comparator incorrectly equated lead product IDs between default-ranked brand results and name-sorted search results. Family grouping uses the first ranked member as lead, so that is not a contractual invariant. The unchanged raw responses show the same full 13 member sets for each language. The original comparator and exact preliminary bytes are retained; neither driver nor raw HTML/result was changed."
+  }
+}

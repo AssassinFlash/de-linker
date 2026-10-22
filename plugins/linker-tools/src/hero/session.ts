@@ -24,6 +24,10 @@ import {
 import type { Upload } from '../genie/attachments/prepare';
 import { assertEntryScope } from '../genie/shared/entryFailure';
 import { retryMessages } from '../genie/shared/failure';
+import {
+	completedRequest,
+	type RequestWitness,
+} from '../genie/shared/completedRequest';
 
 /** What the hero's mount point gives the session (config.ts). */
 export interface HeroSessionConfig {
@@ -56,6 +60,9 @@ export class HeroSession {
 	private contactsValue: SentContact[] = [];
 	private inquiriesValue: SentInquiryCard[] = [];
 	private loading: Promise< void > | null = null;
+	private conversationId: number | undefined;
+	private requestWitness: RequestWitness | null = null;
+	private operationId?: string;
 
 	/**
 	 * @param config The mount's routes, nonce, language and page context.
@@ -115,6 +122,8 @@ export class HeroSession {
 			undefined,
 			{ restUrl: this.config.restUrl, locale: this.config.locale }
 		).then( ( stored ) => {
+			this.conversationId = stored.conversationId;
+			this.operationId = stored.operationId;
 			this.messagesValue = stored.messages;
 			this.turnValue = stored.turn;
 			this.contactsValue = stored.contacts ?? [];
@@ -152,6 +161,7 @@ export class HeroSession {
 		contacts?: SentContact[];
 		inquiries?: SentInquiryCard[];
 	} > {
+		this.requestWitness = null;
 		// Every send, not only the first: the dock may have written a turn
 		// while this view was folded (or both surfaces are open).
 		await this.refresh();
@@ -181,6 +191,28 @@ export class HeroSession {
 		inquiries?: SentInquiryCard[];
 	} > {
 		await this.refresh();
+		if (
+			this.turnValue &&
+			completedRequest(
+				this.requestWitness,
+				{
+					...this.snapshot(),
+					conversationId: this.conversationId,
+					operationId: this.operationId,
+				},
+				text,
+				uploads,
+				this.config.locale,
+				this.config.page
+			)
+		) {
+			await assertEntryScope(
+				{ restUrl: this.config.restUrl, restNonce: this.config.nonce },
+				entryScope
+			);
+			this.requestWitness = null;
+			return { ...this.snapshot(), answer: this.turnValue };
+		}
 		return this.deliver(
 			retryMessages( this.messagesValue, text ),
 			uploads,
@@ -210,16 +242,31 @@ export class HeroSession {
 			{ restUrl: this.config.restUrl, restNonce: this.config.nonce },
 			entryScope
 		);
+		this.requestWitness = null;
+		const page = this.config.page;
 		const answer = await this.send( {
 			turnUrl: this.config.turnUrl,
 			restUrl: this.config.restUrl,
 			nonce: this.config.nonce,
 			locale: this.config.locale,
 			messages: next,
-			page: this.config.page,
+			page,
 			uploads,
+			onOperation: ( operationId ) => {
+				this.requestWitness = this.conversationId
+					? {
+							conversationId: this.conversationId,
+							operationId,
+							messages: next,
+							uploads,
+							locale: this.config.locale,
+							page: JSON.stringify( page ),
+						}
+					: null;
+			},
 		} );
 		this.messagesValue = next.concat( assistantMessage( answer ) );
+		this.requestWitness = null;
 		this.turnValue = answer;
 		return {
 			...this.snapshot(),

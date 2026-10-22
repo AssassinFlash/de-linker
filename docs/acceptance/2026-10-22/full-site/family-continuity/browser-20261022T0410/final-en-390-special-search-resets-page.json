@@ -1,0 +1,35 @@
+{
+  "at": "2026-10-22T05:14:44.417Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "en-US",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name&q=SAJ+%26+GoodWe+%22quoted%22+%5C+R%C3%BCckfrage+%2B+100%25",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?q=SAJ%20%26%20GoodWe%20%22quoted%22%20%5C%20R%C3%BCckfrage%20%2B%20100%25&sort=name",
+      "language": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name&q=SAJ+%26+GoodWe+%22quoted%22+%5C+R%C3%BCckfrage+%2B+100%25",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?q=SAJ%20%26%20GoodWe%20%22quoted%22%20%5C%20R%C3%BCckfrage%20%2B%20100%25&sort=name",
+      "language": "de"
+    }
+  ],
+  "leads": [],
+  "overflow": false,
+  "pager": [],
+  "search": "SAJ & GoodWe \"quoted\" \\ Rückfrage + 100%",
+  "selected": [],
+  "url": "http://127.0.0.1:9290/products/?sort=name&q=SAJ+%26+GoodWe+%22quoted%22+%5C+R%C3%BCckfrage+%2B+100%25",
+  "width": 390,
+  "y": 0
+}

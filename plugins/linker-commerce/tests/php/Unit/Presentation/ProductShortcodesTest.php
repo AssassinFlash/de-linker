@@ -107,12 +107,13 @@ final class ProductShortcodesTest extends TestCase {
 					$query    = array();
 					if ( is_array( $parts ) && isset( $parts['query'] ) ) {
 						parse_str( $parts['query'], $query );
+						$query = array_map( self::encode_query_value( ... ), $query );
 					}
 					foreach ( $args as $key => $value ) {
 						$query[ $key ] = $value;
 					}
 					$base = strtok( $base_url, '?' );
-					return array() === $query ? (string) $base : $base . '?' . http_build_query( $query );
+					return array() === $query ? (string) $base : $base . '?' . implode( '&', array_map( static fn( $key, $value ): string => $key . '=' . $value, array_keys( $query ), $query ) );
 				},
 			)
 		);
@@ -140,6 +141,8 @@ final class ProductShortcodesTest extends TestCase {
 		WP_Mock::userFunction( 'user_trailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) . '/' ) );
 		WP_Mock::userFunction( 'untrailingslashit', array( 'return' => static fn( string $url ): string => rtrim( $url, '/' ) ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn( $thing ): bool => $thing instanceof \WP_Error ) );
+		WP_Mock::userFunction( 'get_query_var', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'is_shop', array( 'return' => false ) );
 	}
 
 	/**
@@ -193,6 +196,26 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringContainsString( 'lang="en" aria-current="true"', $html );
 		$this->assertStringNotContainsString( 'lang="de" aria-current="true"', $html );
 		$this->assertStringContainsString( 'data-linker-language-choice="en"', $html );
+	}
+
+	/** Family selection and its actual page survive the shared language consumer. */
+	public function test_language_switch_keeps_family_selection_search_and_order(): void {
+		$this->page( 1038, 'http://linker.test/products/', array( 'de' => 6870 ) );
+		$this->permalink( 6870, 'http://linker.test/de/produkte/' );
+		$_GET                   = array(
+			'q'            => 'ESA',
+			'sort'         => 'name',
+			'brand'        => 'goodwe',
+			'kw_min'       => '5.5',
+			'product-page' => '2',
+			'ignored'      => 'unrelated',
+		);
+		$_SERVER['REQUEST_URI'] = '/products/?q=ESA&sort=name&brand=goodwe&kw_min=5.5&product-page=2';
+		WP_Mock::userFunction( 'pll_the_languages', array( 'return' => false ) );
+		WP_Mock::userFunction( 'pll_home_url', array( 'return' => 'http://linker.test/' ) );
+		$expected = 'http://linker.test/de/produkte/?q=ESA&sort=name&brand=goodwe&kw_min=5.5&product-page=2';
+		$this->filter_returns( 'pll_translation_url', $expected, array( $expected, 'de' ) );
+		self::assertSame( $expected, $this->url( 'de' ) );
 	}
 
 	/** The German footer marks German, while keeping both translated targets. */
@@ -1068,6 +1091,29 @@ final class ProductShortcodesTest extends TestCase {
 		$this->assertStringNotContainsString( 'Nameplate photo', $bar );
 	}
 
+	/** Native Woo ordering and search forms retain selection, never the old page. */
+	public function test_native_ordering_and_search_keep_selection_and_reset_paging(): void {
+		$this->mock_catalog_query( null );
+		WP_Mock::userFunction( 'selected', array( 'return' => static fn( string $actual, string $value ): string => $actual === $value ? ' selected="selected"' : '' ) );
+		$_GET       = array(
+			'q'            => 'ESA',
+			'brand'        => 'goodwe',
+			'sort'         => 'name',
+			'product-page' => '3',
+		);
+		$shortcodes = new ProductShortcodes( new ProductFilters(), new ProductView() );
+		$sort       = $shortcodes->products_sort();
+		self::assertStringContainsString( 'class="wbsort woocommerce-ordering" method="get" action="http://linker.test/products/"', $sort );
+		self::assertStringContainsString( 'class="select-dropdown orderby"', $sort );
+		self::assertStringContainsString( 'name="q" value="ESA"', $sort );
+		self::assertStringContainsString( 'name="brand" value="goodwe"', $sort );
+		self::assertStringNotContainsString( 'name="product-page"', $sort );
+		$search = $shortcodes->products_head();
+		self::assertStringContainsString( 'name="sort" value="name"', $search );
+		self::assertStringContainsString( 'name="brand" value="goodwe"', $search );
+		self::assertStringNotContainsString( 'name="product-page"', $search );
+	}
+
 	/**
 	 * The applied-filter chips: one pill per selected facet that removes it,
 	 * one per set range bound, and the "Clear all" link; no selection, no
@@ -1118,9 +1164,9 @@ final class ProductShortcodesTest extends TestCase {
 
 		// The chips keep the live page's relative addresses (the one-argument
 		// query helpers read the request) and drop the facet they remove.
-		$this->assertStringContainsString( 'href="/product-category/inverters/?kw_min=5', $chips );
+		$this->assertStringContainsString( 'href="http://linker.test/product-category/inverters/?kw_min=5', $chips );
 		$this->assertStringContainsString( '>GoodWe <span aria-hidden="true">&times;</span></a>', $chips );
-		$this->assertStringContainsString( 'href="/product-category/inverters/?brand=goodwe', $chips );
+		$this->assertStringContainsString( 'href="http://linker.test/product-category/inverters/?brand=goodwe', $chips );
 		$this->assertStringContainsString( 'AC power 5&ndash;20 kW <span aria-hidden="true">&times;</span></a>', $chips );
 		$this->assertStringContainsString( 'class="wbclear" href="http://linker.test/product-category/inverters/" rel="nofollow">Clear all</a>', $chips );
 		$this->assertStringNotContainsString( 'product-page', $chips );
@@ -1418,5 +1464,18 @@ final class ProductShortcodesTest extends TestCase {
 		// and the block stays one column.
 		$this->pdp_gallery = '';
 		$this->assertSame( '', $this->pdp( true )->pdp_faq_side() );
+	}
+
+	/**
+	 * Encode existing native query leaves without collapsing nested arrays.
+	 *
+	 * @param array<mixed>|string $value Parsed native query value.
+	 * @return array<mixed>|string
+	 */
+	private static function encode_query_value( array|string $value ): array|string {
+		if ( is_array( $value ) ) {
+			return array_map( self::encode_query_value( ... ), $value );
+		}
+		return rawurlencode( $value );
 	}
 }
