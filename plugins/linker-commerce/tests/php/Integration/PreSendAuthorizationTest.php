@@ -337,10 +337,12 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 	 * ["malicious"]
 	 * ["erase"]
 	 * ["changed"]
+	 * ["tombstone"]
+	 * ["tombstone_error"]
 	 * @param string $decision Independent conversation classification.
 	 */
 	public function test_conversation_content_is_persisted_pending_and_cannot_borrow_an_inquiry_permit( string $decision ): void {
-		$this->provider( in_array( $decision, array( 'erase', 'changed' ), true ) ? 'normal' : $decision );
+		$this->provider( in_array( $decision, array( 'erase', 'changed', 'tombstone', 'tombstone_error' ), true ) ? 'normal' : $decision );
 		$messages = array(
 			array(
 				'role'     => 'user',
@@ -422,6 +424,46 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		( new \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization() )->process( $job );
 		$loaded = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
 		self::assertNotNull( $loaded );
+		if ( in_array( $decision, array( 'tombstone', 'tombstone_error' ), true ) ) {
+			$key   = 'conversation-erased-' . $id;
+			$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( 'conversation-' . $job );
+			self::assertIsArray( $state );
+			self::assertSame( 'normal', $state['status'] );
+			$hits  = 0;
+			$fault = static function ( string $sql ) use ( $key, &$hits ): string {
+				if ( str_starts_with( ltrim( $sql ), 'SELECT option_value' ) && str_contains( $sql, \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::PREFIX . $key ) ) {
+					++$hits;
+					return 'SELECT option_value FROM linker_missing_tombstone_fixture';
+				}
+				return $sql;
+			};
+			if ( 'tombstone' === $decision ) {
+				self::assertTrue(
+					\Linker\Commerce\Inquiry\Assessment\AuthorizationStore::edit(
+						$key,
+						static function ( array &$state ): void {
+							$state['status'] = 'erased';
+						}
+					)
+				);
+			} else {
+				add_filter( 'query', $fault, 998 );
+			}
+			global $wpdb;
+			$previous = $wpdb->suppress_errors( true );
+			try {
+				self::assertFalse( \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::allows( $loaded['message'], $job ) );
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+			} finally {
+				remove_filter( 'query', $fault, 998 );
+				$wpdb->suppress_errors( $previous );
+			}
+			if ( 'tombstone_error' === $decision ) {
+				self::assertGreaterThan( 0, $hits ); }
+			self::assertNotNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
+			self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+			return;
+		}
 		if ( 'erase' === $decision ) {
 			$late         = null;
 			$late_enqueue = static function ( int $deleted ) use ( $id, $messages, &$late ): void {
@@ -947,6 +989,65 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 			self::assertSame( $old, $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name=%s", \Linker\Commerce\Protection\Ledger::OPTION ) ) );
 			self::assertSame( 'yes', $order->get_meta( '_linker_fixed_receipt' ) );
 		}
+	}
+	/** A peer route change invalidates permission at both classification and retry boundaries.
+	 *
+	 * @testWith ["provider"]
+	 * ["retry"]
+	 * @param string $phase Native permission boundary after the exact routing option was cached.
+	 */
+	public function test_peer_route_changes_cannot_use_a_cached_recipient_grant( string $phase ): void {
+		$name = \Linker\Commerce\Settings\Options::NOTIFY_BCC;
+		$old  = get_option( $name );
+		$this->later(
+			static function () use ( $name, $old ): void {
+				false === $old ? delete_option( $name ) : update_option( $name, $old );
+			}
+		);
+		update_option( $name, 'before-route@example.test' );
+		$this->provider( 'normal' );
+		$order    = $this->submit();
+		$marker   = self::newest_mail_job();
+		$budget   = get_option( OptionBudgetLedger::OPTION );
+		$peer     = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$hits     = 0;
+		$change   = static function () use ( $name, $peer, &$hits ): void {
+			global $wpdb;
+			$sql = $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value=%s WHERE option_name=%s", 'after-route@example.test', $name );
+			self::assertIsString( $sql );
+			$hits = $peer->query( $sql );
+		};
+		$callback = static function ( $pre, $args, $url ) use ( $change ) {
+			if ( str_ends_with( $url, '/inquiries/assess' ) ) {
+				$change();
+			} return $pre;
+		};
+		try {
+			if ( 'provider' === $phase ) {
+				add_filter( 'pre_http_request', $callback, 20, 3 ); }
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::process( $order->get_id() );
+			$jobs = self::mail_jobs_after( $marker );
+			if ( 'retry' === $phase ) {
+				self::assertCount( 2, $jobs );
+				get_option( $name );
+				$change();
+				foreach ( $jobs as $job ) {
+					do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+					self::assertNotNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) ); }
+			} else {
+				self::assertSame( array(), $jobs );
+				$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+				self::assertIsArray( $state );
+				self::assertSame( 'invalidated', $state['status'] );
+			}
+		} finally {
+			remove_filter( 'pre_http_request', $callback, 20 );
+			$peer->close();
+			wp_cache_delete( $name, 'options' );
+			wp_cache_delete( 'alloptions', 'options' );
+		}
+		self::assertSame( 1, $hits );
+		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
 	}
 	/** A second connection cannot change business facts behind the request's native caches.
 	 *

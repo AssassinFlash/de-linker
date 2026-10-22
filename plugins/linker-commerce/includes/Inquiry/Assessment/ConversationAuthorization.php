@@ -122,7 +122,12 @@ final class ConversationAuthorization {
 	 * @param array<string,mixed> $source Frozen native source.
 	 */
 	private static function current( array $source ): bool {
-		clean_post_cache( (int) ( $source['conversation_id'] ?? 0 ) );
+		$id     = (int) ( $source['conversation_id'] ?? 0 );
+		$erased = AuthorizationStore::read( 'conversation-erased-' . $id );
+		if ( $id < 1 || ! is_array( $erased ) || array() !== $erased ) {
+			return false;
+		}
+		clean_post_cache( $id );
 		/** Default-deny authoritative native thread check.
  *
  * @since 0.1.0
