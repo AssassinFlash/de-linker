@@ -11,6 +11,7 @@ from types import ModuleType, SimpleNamespace
 from typing import Any
 
 import pytest
+
 from linker_local.cli import require_php
 
 REPO = Path(__file__).resolve().parents[3]
