@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
-import type { DraftStore } from "../data/DraftStore.ts";
-import { readObject, readProject, wire } from "../data/readProtocol.ts";
+import type { CreationIntent, DraftStore } from "../data/DraftStore.ts";
+import { readProject, wire } from "../data/readProtocol.ts";
 import { emptyBrief } from "../domain/brief.ts";
 import { __ } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
@@ -28,18 +28,19 @@ export function NewProject({
 	const [failed, setFailed] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [checking, setChecking] = useState(true);
+	const [requests, setRequests] = useState<readonly CreationIntent[]>([]);
 	const intent = useRef<string | null>(null);
 	const lifetime = useRef(0);
 	useEffect(() => {
 		lifetime.current++;
 		let active = true;
 		void store
-			.readCreation(session.query_scope)
-			.then((body) => {
-				if (!active || !body) return;
-				const command = readObject(JSON.parse(body));
-				intent.current = body;
-				setTitle(String(command.title));
+			.readCreations(session.query_scope)
+			.then((records) => {
+				if (!active || !records.length) return;
+				setRequests(records);
+				intent.current = records[0]!.body;
+				setTitle(records[0]!.title);
 				setOpen(true);
 				setFailed(true);
 			})
@@ -133,6 +134,33 @@ export function NewProject({
 				void submit();
 			}}
 		>
+			{requests.length > 1 && (
+				<label className="lp-field">
+					<span>{__("Unconfirmed project creations", "linker-tools")}</span>
+					<select
+						disabled={busy}
+						value={
+							requests.find((request) => request.body === intent.current)
+								?.key ?? ""
+						}
+						onChange={(event) => {
+							const request = requests.find(
+								(candidate) => candidate.key === event.currentTarget.value,
+							);
+							if (!request) return;
+							intent.current = request.body;
+							setTitle(request.title);
+							setFailed(true);
+						}}
+					>
+						{requests.map((request, index) => (
+							<option key={request.key} value={request.key}>
+								{index + 1}. {request.title}
+							</option>
+						))}
+					</select>
+				</label>
+			)}
 			<label className="lp-field">
 				<span>{__("Project name", "linker-tools")}</span>
 				<input

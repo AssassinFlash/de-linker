@@ -110,7 +110,7 @@ export function Workspace({
 				session={session}
 				recheck={recheck}
 				close={() => {
-					if (!client.isCurrentScope(session.query_scope)) return;
+					if (!client.isCurrentScope(session.query_scope)) return false;
 					void cache.invalidateQueries({
 						queryKey: [session.query_scope, "projects"],
 					});
@@ -118,6 +118,7 @@ export function Workspace({
 						queryKey: [session.query_scope, "project", selected],
 					});
 					select(null);
+					return true;
 				}}
 			/>
 		) : (

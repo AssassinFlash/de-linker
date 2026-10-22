@@ -35,7 +35,7 @@ export function ProjectEditor({
 	store: DraftStore;
 	config: Configuration;
 	recheck: () => void;
-	close: () => void;
+	close: () => boolean;
 }) {
 	const {
 		draft,
@@ -76,9 +76,9 @@ export function ProjectEditor({
 			return;
 		}
 		setClosing(true);
-		if (!draft || (!isDirty(draft) && !draft.pending) || (await flush()))
-			close();
-		else {
+		if (!draft || (!isDirty(draft) && !draft.pending) || (await flush())) {
+			if (!close()) setClosing(false);
+		} else {
 			setCloseBlocked("recovery");
 			setClosing(false);
 		}

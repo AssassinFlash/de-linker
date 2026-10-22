@@ -2773,3 +2773,7 @@ msgstr ""
 #: build/planner/assets/planner.js:1
 msgid "The project brief matches the saved revision."
 msgstr "Die Projektangaben stimmen mit der gespeicherten Version überein."
+
+#: build/planner/assets/planner.js:1
+msgid "Unconfirmed project creations"
+msgstr "Unbestätigte Projekterstellungen"

@@ -16,53 +16,124 @@ export interface RecoveryCandidate {
 	readonly draft: Draft;
 	readonly updatedAt: number;
 }
+export interface CreationIntent {
+	readonly key: string;
+	readonly title: string;
+	readonly body: string;
+	readonly createdAt: number;
+}
 // Local recovery policy, never authority for an account/project or a saved run.
 const DATABASE = "linker-planner-recovery-v1";
 const STORE = "drafts";
 const CREATIONS = "creations";
+const CREATION_INTENTS = "creation_intents";
 const MAX_RECOVERY_BYTES = 8 * 1024 * 1024;
 const MAX_RECOVERY_HISTORY = 20;
+// Browser recovery resource policy, not a project/account capacity limit.
+const MAX_CREATION_INTENTS = 128;
 
 export class DraftStore {
 	private connection: Promise<IDBDatabase> | null = null;
 
-	async readCreation(scope: string): Promise<string | null> {
+	async readCreations(scope: string): Promise<readonly CreationIntent[]> {
 		storageKey(scope, "0".repeat(32));
 		const db = await this.open();
-		const value = await request<unknown>(
-			db.transaction(CREATIONS, "readonly").objectStore(CREATIONS).get(scope),
+		const transaction = db.transaction(
+			[CREATIONS, CREATION_INTENTS],
+			"readonly",
 		);
-		if (value === undefined) return null;
-		const record = readObject(value);
-		if (record.scope !== scope || typeof record.body !== "string")
-			throw new Error("invalid_creation_recovery");
-		validateCreation(record.body);
-		return record.body;
+		const legacy = request<unknown>(
+			transaction.objectStore(CREATIONS).get(scope),
+		);
+		const queued = new Promise<CreationIntent[]>((resolve, reject) =>
+			scanCreations(
+				transaction.objectStore(CREATION_INTENTS),
+				scope,
+				resolve,
+				reject,
+			),
+		);
+		const [value, records] = await Promise.all([legacy, queued]);
+		if (value !== undefined) {
+			// A malformed old record is retained and reported, never silently
+			// discarded by an upgrade. Valid records were atomically migrated.
+			const old = legacyCreation(value, scope);
+			const queued = records.find((record) => record.key === old.key);
+			if (queued && queued.body !== old.body)
+				throw new Error("creation_intent_conflict");
+			if (!queued) records.push(old);
+		}
+		return records.sort(
+			(a, b) => a.createdAt - b.createdAt || a.key.localeCompare(b.key),
+		);
 	}
 
 	async writeCreation(scope: string, body: string): Promise<void> {
 		storageKey(scope, "0".repeat(32));
-		validateCreation(body);
+		const command = validateCreation(body);
 		const db = await this.open();
-		const transaction = db.transaction(CREATIONS, "readwrite");
+		const transaction = db.transaction(CREATION_INTENTS, "readwrite");
 		const committed = complete(transaction);
-		transaction.objectStore(CREATIONS).put({ scope, body });
-		await committed;
+		const store = transaction.objectStore(CREATION_INTENTS);
+		let refusal: Error | null = null;
+		const refuse = (error: Error) => {
+			refusal = error;
+			transaction.abort();
+		};
+		scanCreations(
+			store,
+			scope,
+			(records) => {
+				const existing = records.find((record) => record.key === command.key);
+				if (existing) {
+					if (existing.body !== body)
+						refuse(new Error("creation_intent_conflict"));
+					return;
+				}
+				const bytes = records.reduce(
+					(sum, record) => sum + new TextEncoder().encode(record.body).length,
+					0,
+				);
+				if (
+					records.length >= MAX_CREATION_INTENTS ||
+					bytes + new TextEncoder().encode(body).length > MAX_RECOVERY_BYTES
+				) {
+					refuse(new Error("recovery_storage_limit"));
+					return;
+				}
+				store.put({
+					id: scope + ":" + command.key,
+					scope,
+					body,
+					created_at: Date.now(),
+				});
+			},
+			refuse,
+		);
+		await committed.catch((error: unknown) => {
+			throw refusal ?? error;
+		});
 	}
 
 	async clearCreation(scope: string, body: string): Promise<void> {
 		storageKey(scope, "0".repeat(32));
-		validateCreation(body);
+		const command = validateCreation(body);
 		const db = await this.open();
-		const transaction = db.transaction(CREATIONS, "readwrite");
+		const transaction = db.transaction(
+			[CREATIONS, CREATION_INTENTS],
+			"readwrite",
+		);
 		const committed = complete(transaction);
-		const store = transaction.objectStore(CREATIONS);
-		const read = store.get(scope);
-		read.onsuccess = () => {
-			// A late acknowledgement must not erase a newer pending intent
-			// written by another view in the same verified browser scope.
-			if (read.result?.body === body) store.delete(scope);
-		};
+		for (const [name, id] of [
+			[CREATIONS, scope],
+			[CREATION_INTENTS, scope + ":" + command.key],
+		] as const) {
+			const store = transaction.objectStore(name);
+			const read = store.get(id);
+			read.onsuccess = () => {
+				if (read.result?.body === body) store.delete(id);
+			};
+		}
 		await committed;
 	}
 
@@ -144,7 +215,7 @@ export class DraftStore {
 		if (this.connection) return this.connection;
 		const opening = new Promise<IDBDatabase>((resolve, reject) => {
 			let refused = false;
-			const opened = indexedDB.open(DATABASE, 3);
+			const opened = indexedDB.open(DATABASE, 4);
 			opened.onupgradeneeded = () => {
 				if (!opened.result.objectStoreNames.contains(STORE))
 					opened.result.createObjectStore(STORE, { keyPath: "key" });
@@ -153,6 +224,35 @@ export class DraftStore {
 					drafts.createIndex("project_id", "project_id", { unique: false });
 				if (!opened.result.objectStoreNames.contains(CREATIONS))
 					opened.result.createObjectStore(CREATIONS, { keyPath: "scope" });
+				if (!opened.result.objectStoreNames.contains(CREATION_INTENTS)) {
+					const intents = opened.result.createObjectStore(CREATION_INTENTS, {
+						keyPath: "id",
+					});
+					intents.createIndex("scope", "scope", { unique: false });
+					const legacy = opened.transaction
+						?.objectStore(CREATIONS)
+						.openCursor();
+					if (legacy)
+						legacy.onsuccess = () => {
+							const cursor = legacy.result;
+							if (!cursor) return;
+							try {
+								const record = legacyCreation(
+									cursor.value,
+									String(cursor.primaryKey),
+								);
+								intents.put({
+									id: String(cursor.primaryKey) + ":" + record.key,
+									scope: cursor.primaryKey,
+									body: record.body,
+									created_at: 0,
+								});
+							} catch {
+								// Preserve invalid legacy bytes for the visible recovery error.
+							}
+							cursor.continue();
+						};
+				}
 			};
 			opened.onsuccess = () => {
 				const db = opened.result;
@@ -183,7 +283,7 @@ export class DraftStore {
 	}
 }
 
-function validateCreation(body: string): void {
+function validateCreation(body: string): { key: string; title: string } {
 	if (new TextEncoder().encode(body).length > MAX_RECOVERY_BYTES)
 		throw new Error("recovery_storage_limit");
 	const command = readObject(JSON.parse(body));
@@ -200,6 +300,61 @@ function validateCreation(body: string): void {
 	)
 		throw new Error("invalid_creation_recovery");
 	readObject(command.inputs);
+	return { key: command.key.toLowerCase(), title: command.title };
+}
+
+function legacyCreation(value: unknown, scope: string): CreationIntent {
+	storageKey(scope, "0".repeat(32));
+	const record = readObject(value);
+	if (record.scope !== scope || typeof record.body !== "string")
+		throw new Error("invalid_creation_recovery");
+	return { ...validateCreation(record.body), body: record.body, createdAt: 0 };
+}
+
+function scanCreations(
+	store: IDBObjectStore,
+	scope: string,
+	done: (records: CreationIntent[]) => void,
+	fail: (error: Error) => void,
+): void {
+	const records: CreationIntent[] = [];
+	let bytes = 0;
+	const cursor = store.index("scope").openCursor(scope);
+	cursor.onerror = () => fail(new Error("recovery_unavailable"));
+	cursor.onsuccess = () => {
+		try {
+			const row = cursor.result;
+			if (!row) {
+				done(records);
+				return;
+			}
+			const value = readObject(row.value);
+			if (
+				value.scope !== scope ||
+				typeof value.body !== "string" ||
+				typeof value.created_at !== "number" ||
+				!Number.isSafeInteger(value.created_at) ||
+				value.created_at < 0
+			)
+				throw new Error("invalid_creation_recovery");
+			const command = validateCreation(value.body);
+			if (value.id !== scope + ":" + command.key)
+				throw new Error("invalid_creation_recovery");
+			bytes += new TextEncoder().encode(value.body).length;
+			if (records.length >= MAX_CREATION_INTENTS || bytes > MAX_RECOVERY_BYTES)
+				throw new Error("recovery_storage_limit");
+			records.push({
+				...command,
+				body: value.body,
+				createdAt: value.created_at,
+			});
+			row.continue();
+		} catch (error) {
+			fail(
+				error instanceof Error ? error : new Error("invalid_creation_recovery"),
+			);
+		}
+	};
 }
 
 function storageKey(scope: string, projectId: string): string {

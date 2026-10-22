@@ -11,13 +11,13 @@
 - 研究资产继续保留原研究分支，整体架构/范围/全站同步修复合同基于研究固定提交e1bfc71801e2a4a6f89fb95a5141264f348dd068。
 - 本实施基线为origin/main 3bb955569eecc972b71df7cf4d5df69eb6aac41c。主工作树及其他任务未修改。
 - 实施工作树：/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548；分支codex/unified-planner-548。
-- 已完成just up p548，独立实例http://127.0.0.1:9347，邮件截获隔离。现已装入线上只读快照20261022-2309；212件已发布商品、2756个附件对齐，附件文件缺失0，线上地址残留0，主题/uploads/LC/WindPress及既有许可已带入。尚未进行新应用的UI验收。
+- 已完成just up p548，独立实例http://127.0.0.1:9347，邮件截获隔离。现已装入线上只读快照20261022-2309；212件已发布商品、2756个附件对齐，附件文件缺失0，线上地址残留0，主题/uploads/LC/WindPress及既有许可已带入。新应用的项目/brief页面已进行下文所述浏览器验收，完整路径仍在实施。
 - [数值实施合同](../../../research/2026-10-22-planning-implementation/NUMERICAL-MODELS.md)由独立研究代理完成；Apify新核6个官方页面，继承17条数值与4项物理参考，不重复研究。
 - Apify三组现有凭证均HTTP200认证；已备份原配置并提供APIFY_TOKEN/ALT/PREV环境变量别名，受限配置在用户目录，Token未入库。真实Google-search-scraper已SUCCEEDED，dataset有1项且含SQLite官方结果，原始公共搜索证据在external目录。所有后续外部研究继续强制Apify，失败修复，不普通搜索fallback。
 
 ## 当前正在承担的工作
 
-站点入口决定由本线认领；整体实施尚未完成。正式产品代码已开始写入services/engine/src/linker_engine/planning，现有工具入口仍由既有实现承接，新模块尚未公开挂载或部署。
+站点入口决定由本线认领；整体实施尚未完成。正式产品代码已写入services/engine/src/linker_engine/planning及apps/planner。新应用仅在p548的独立英德审查页挂载；正式工具入口仍由既有实现承接，生产尚未更新。
 
 已实现并验证独立项目/修订/运行权威、幂等回执、每次读写归属检查、访客认领、不可变内容hash、持久租约队列、代次fencing、取消/重试/重启恢复、注册handler的独立worker与heartbeat、SQLite在线备份及完整资产恢复。合同在docs/specs/548-project-workspace.md，架构决定在docs/adr/0001-unified-project-authority.md。
 
@@ -38,6 +38,8 @@
 业主补充：允许现代架构与新库，先正确使用，再采用当前稳定现代技术；并明确不能只考虑3D。新局部前端决定见docs/adr/0002-isolated-planner-runtime.md，整套应用合同见docs/specs/548-workbench-application.md。能力映射2026-10-23-modern-workbench/CAPABILITY-MAP.md覆盖W01–W22及A–D真实路径，区分实操、源码、官方描述与本站推导。React19/Fiber9/Drei10/Three/Vite与Query/ECharts/Ajv官方证据均经Apify取得；旧站wp.element保持隔离，WindPress仍是唯一样式编译管线。
 
 apps/planner已进入真实本地应用实现：独立React19构建、原生WP module/gettext挂载、同一WindPress编译管线、项目列表/创建、brief编辑、不可变保存意图、修订确认与IndexedDB恢复。24项前端/协议/几何/历史/恢复夹具与严格类型通过。p548的独立EN/DE审查页已建立，未替换正式工具入口；真实浏览器已完成挪威工商业项目输入、保存到修订3、刷新恢复、未保存内容离开再重开及撤销到已存版本。实测页头遮挡保存栏和语言切换丢项目引用已修；新版恢复、冲突比较和手机/德语仍继续验收。实际地图/3D renderer、CSV intake UI、计算/设备资格与全站交接尚在同次实施中。8794原型保持独立。
+
+项目/brief增量的逐轮独立问题与修复见APP-REVIEW.md，文案见APP-COPY-REVIEW.md。当前25项Node与15项React/DOM夹具通过，原生IndexedDB的七条升级/并发/隔离/保留夹具已在浏览器执行。英德1440/390项目编辑、索引、手机保存到修订4并刷新读回、德语非法数字、锚点与原生Genie共存已实测。两标签页在可控本地服务失败后，各自的创建意图均保留并能明确选择重试；原页面再次重试取得相同项目ID，没有重复创建。临时故障夹具已移除。最新关闭恢复和创建队列增量仍待独立固定提交复核；完整A、访客登录浏览器路径与跨身份未知创建恢复、CSV和后续路径继续实施。
 
 原生网关、永久回执与brief输入边界最终ca4918ef通过两轮独立评审，planning294项通过。前序失败、修复及限制见NATIVE-GATEWAY-REVIEW.md。WP/Woo原生会话、登录hook、耐久认领outbox、Origin/nonce与实际服务已接通；原生夹具与浏览器工作分别记录，不能把后端组件通过当完整工具或生产验收。
 

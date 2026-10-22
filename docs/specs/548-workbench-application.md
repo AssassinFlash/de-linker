@@ -50,6 +50,12 @@ competitor's screenshot is not evidence that this application works.
    login/logout/account switching cannot expose another identity's draft.
    Native project files preserve effective inputs and declared source rights;
    import rejects unsupported versions and never silently applies new defaults.
+   Unknown creation intents use separate immutable scope/UUID records; two
+   tabs cannot overwrite one another. Recovery lists the verified scope's
+   pending creations for explicit selection/retry of the original bytes.
+   Local storage upgrades preserve existing drafts and report invalid data;
+   resource ceilings never silently evict an uncertain intent. Login cannot
+   automatically resubmit an old guest intent as a new account mutation.
 
 ## Tasks, scenarios and results
 

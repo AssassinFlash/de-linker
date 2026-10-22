@@ -115,3 +115,60 @@ or mail was sent. Its coexistence screenshot is en-desktop-genie-1440.png.
 The inspected browser error log was empty. Viewport override was reset.
 Real guest/account UI claim, creation recovery across tabs, source intake
 and the remaining engineering/site paths are still inside the active goal.
+
+## c165f6dc review and the next recovery increment
+
+Spec independently passed c165f6dc, including its own actual-Client native
+focus probe and a direct old-scope request that performed no fetch. Standards
+confirmed that scope issue was closed but found another P2: a deferred close
+refused while the same native identity was being verified left ProjectEditor's
+closing flag true. The original data stayed intact, but Projects remained
+disabled. The current close callback returns whether navigation occurred;
+the editor resets closing after a refusal. An actual-Client/React fixture
+holds both local flush and native bootstrap, verifies recovery with the
+original note and URL, and then actually retries the close successfully.
+
+The current local creation store also uses an immutable per-scope/UUID queue.
+The former one-row-per-scope record could lose one unknown creation when two
+tabs submitted concurrently. Schema 4 adds the indexed queue and atomically
+migrates valid schema-3 creation bytes while preserving existing project
+drafts and invalid legacy records. Reads stay inside the confirmed scope;
+there is no enumeration of another identity's unknown creation. A UUID with
+different bytes conflicts locally. Acknowledgement deletes only its exact
+body, and a full queue is reported rather than evicted. The initial browser
+resource policy is 128 intents and 8 MiB total creation bodies per scope;
+these are recovery storage policies, not account or engineering capacities.
+Several unknown creations are selectable and require explicit replay.
+
+Implementer checks now pass 25 Node tests and 15 real React/DOM tests, strict
+types, formatting, build and native gettext coverage/validity/copy gates.
+Seven native IndexedDB fixtures ran through CUA on the isolated Vite test
+origin at port 9345: blocked-upgrade retry, v3 draft/creation migration, two
+connections/concurrent creations, byte conflicts/late deletion, scope
+isolation/legacy acknowledgement, bounded queue and preserved invalid legacy
+bytes. The fixture page has no planner API calls or production entry.
+The final status and seven PASS rows were observed in the browser and saved
+to artifacts/548/workbench/native-storage.png; its synthetic database was
+removed by the fixture and the temporary tab closed.
+
+Real p548 pages were also used in two tabs. A short-lived MU transport fixture
+refused only loopback p548 project-creation calls, under local PHP-server,
+host, port and expiry guards. Both pages preserved different unknown intents.
+After refresh both appeared in the real DE selector, then in EN. The fixture
+was removed before retries and its absence verified. B was explicitly retried
+first, yielding project 9dd8cfe9fed1452ebc9a20fa40d1a9b3 revision 1; A still
+remained and yielded 2db4d16f1e06407aa79e7daf3464d74a revision 1. A still-open
+old page retried B's frozen request and received the identical B project ID
+and revision 1, without another project. The index showed exactly A, B and
+the earlier Oslo fixture. Queue confirmation restored the New project button.
+No account or mail was created. The native WindPress cache was compiled at
+1792708364; the new form spacing and selector were checked in EN/DE at 390px,
+document width exactly 390. Browser screenshots are
+de-mobile-creation-recovery-390.png, en-mobile-creation-recovery-390.png,
+en-mobile-recovered-projects-390.png and stale-creation-same-project.png.
+Temporary viewport overrides and auxiliary tabs were cleared afterward.
+
+This correction and queue increment still require both independent axes at
+the new fixed source. Guest/account browser claim, cross-identity unknown
+creation reconciliation, CSV intake, maps/2D/3D, calculations, equipment and
+all site/release consumers remain required within the active overall goal.

@@ -342,8 +342,8 @@ test("creation authentication failure rechecks once and explicitly retries the e
 		},
 	});
 	const store = {
-		async readCreation() {
-			return null;
+		async readCreations() {
+			return [];
 		},
 		async writeCreation() {},
 		async clearCreation() {},
@@ -430,8 +430,8 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 				inputs: { brief: emptyBrief() },
 			};
 			const store = {
-				async readCreation() {
-					return null;
+				async readCreations() {
+					return [];
 				},
 				async writeCreation() {
 					if (stage === "write") {
@@ -608,8 +608,8 @@ test("native confirmation fences pending creation, revision and navigation befor
 						await gate.promise;
 					} else editStored = true;
 				},
-				async readCreation() {
-					return null;
+				async readCreations() {
+					return [];
 				},
 				async writeCreation() {
 					if (stage === "write") {

@@ -53,7 +53,7 @@ with Sie-compatible customer wording; existing native German terms are retained.
 Project/revision labels use the native term in the existing catalogue where
 present. Save status distinguishes local edits, in-flight work, unknown
 acknowledgement and confirmed server revision. “Saved” is never a fetch toast.
-Annual consumption is labelled an initial estimate, with interval data required
+Annual consumption is labelled an initial overview, with interval data required
 for peak and battery analysis; no annual number is presented as a measured profile.
 
 ## Pre-delivery checks
@@ -73,3 +73,17 @@ Standards review of the complete app diff, EN/DE browser rendering and actual
 state transitions remain mandatory before release. Roof/layout and system
 planning copy describes the approved complete workbench; the current local
 intake increment is not claimed to have delivered those remaining capabilities.
+
+## Creation queue increment
+
+The new selector draft was “Unconfirmed project requests” / “Unbestätigte
+Projektanfragen”. The implementer's review rejected Anfrage here because
+the site's commercial inquiry is a distinct action. The current draft is
+“Unconfirmed project creations” / “Unbestätigte Projekterstellungen”. It
+labels unknown creation acknowledgements, not account approval or an inquiry.
+The existing notice explains that an explicit retry uses the same request.
+The read-only name and selector preserve that exact intent rather than
+allowing a changed request under the old UUID. One new native script message
+was generated and checked; EN/DE 390px rendered evidence is retained.
+Independent editorial review of this increment remains pending alongside
+the new fixed code review.
