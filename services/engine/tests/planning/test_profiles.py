@@ -367,13 +367,16 @@ def test_csv_interval_end_error_names_the_end_role_and_preserves_physical_line(
     assert "PRIVATE-END" not in str(captured.value)
 
 
+@pytest.mark.parametrize("second_value", [b"1e308", b"-1e308"])
 def test_csv_energy_accumulation_overflow_is_a_typed_import_error(
-    mapping: CsvMapping, rules: TimezoneRules
+    mapping: CsvMapping, rules: TimezoneRules, second_value: bytes
 ) -> None:
     with pytest.raises(CsvIssue) as captured:
         read_profile(
-            b"time;value\n2024-01-01T00:00Z;1e308\n2024-01-01T01:00Z;1e308\n",
-            replace(mapping, interval_seconds=3600),
+            b"time;value\n2024-01-01T00:00Z;1e308\n2024-01-01T02:00Z;"
+            + second_value
+            + b"\n",
+            replace(mapping, interval_seconds=7200, measurement="net_import"),
             rules,
         )
     assert captured.value.document() == {

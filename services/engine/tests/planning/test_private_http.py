@@ -1066,6 +1066,35 @@ def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_da
     assert set(rig.workspace.blobs.directory.rglob("*")) == before
 
 
+@pytest.mark.parametrize("second_value", [b"1e308", b"-1e308"])
+def test_csv_integral_overflow_returns_typed_refusal_without_publishing(
+    rig: Rig, second_value: bytes
+) -> None:
+    project_id = rig.create("csv-overflow")
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    command = csv_preview_command(
+        project_id,
+        b"time;power\n2024-01-01T00:00Z;1e308\n2024-01-01T02:00Z;"
+        + second_value
+        + b"\n",
+        "overflow",
+    )
+    command["mapping"] = {
+        **cast(Object, command["mapping"]),
+        "measurement": "net_import",
+        "interval_seconds": 7200,
+    }
+    response = rig.client.post("/profiles/csv", json=command, headers=headers())
+    assert response.status_code == 422
+    assert response.json() == {
+        "error": {
+            "code": "invalid_input",
+            "profile_issue": {"issue": "energy_range", "line": None, "field": "value"},
+        }
+    }
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+
+
 def test_profile_preview_uses_full_pinned_interpretation_and_pages_without_filling_gaps(
     rig: Rig, monkeypatch: pytest.MonkeyPatch
 ) -> None:

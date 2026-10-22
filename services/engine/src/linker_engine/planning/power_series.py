@@ -94,7 +94,7 @@ class PowerSeries:
                 power * interval.hours
                 for power, interval in zip(self.values_kw, self.intervals, strict=True)
             )
-        except OverflowError as error:
+        except (OverflowError, ValueError) as error:
             raise InvalidInput("integrated energy is not finite") from error
         if not math.isfinite(total):
             raise InvalidInput("integrated energy is not finite")

@@ -1,6 +1,6 @@
 # Profile interpretation increment review
 
-2026-10-23. Independent fixed-source Spec and Standards review pending.
+2026-10-23. Independent fixed-source Spec and Standards re-review pending.
 This is the private/native data-interpretation service, not complete path A
 or a completed upload UI or engineering qualification.
 
@@ -41,3 +41,14 @@ The native local service was restarted from the owned checkout for this HTTP
 fixture. Production was not changed. Frontend upload/column preview/mapping,
 localized errors and unknown upload recovery remain current implementation
 obligations in the same delivery, alongside the other workbench paths.
+
+Both independent axes rejected fixed `807149a2` for one reproducible P2:
+finite signed net-import powers `1e308` and `-1e308` over two-hour intervals
+produce mixed infinite integral terms; `math.fsum` raises `ValueError`, which
+was not covered by the initial `OverflowError` conversion. Actual ASGI returned
+500 rather than the contracted typed 422. Neither source nor TZif was published.
+The correction maps both arithmetic failure forms to the same safe refusal,
+without clipping powers or removing negatives. Regression exercises the parser
+and actual ASGI for positive and mixed-sign overflow and asserts no new blobs.
+Targeted tests: 116 passed; full planning tests: 317 passed in 15.08s; ruff and
+format passed. These checks do not replace independent re-review.
