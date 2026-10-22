@@ -556,8 +556,8 @@ msgstr "Die E-Mail an %s ist unterwegs."
 
 #. translators: %s is the email address the confirmation link went to.
 #: build/genie.js:7 build/hero.js
-msgid "A confirmation link is on its way to %s. The conversation follows once the link is opened."
-msgstr "Ein Bestätigungslink an %s ist unterwegs. Das Gespräch folgt, sobald der Link geöffnet wird."
+msgid "A confirmation link is on its way to %s."
+msgstr "Ein Bestätigungslink an %s ist unterwegs."
 
 #: build/genie.js:7 build/hero.js
 msgid "Please enter a valid email address."
