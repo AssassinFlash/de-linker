@@ -158,6 +158,11 @@ final class Outbox {
 	 * @param int $job_id Job id.
 	 */
 	public function retry( int $job_id ): void {
+		// A definite native hold also excludes recovery scheduling in an outer
+		// transaction. Staff release owns the first future action for that job.
+		if ( NotificationHold::job_held( $job_id ) ) {
+			return;
+		}
 		if ( $this->jobs->transaction_active() ) {
 			NativeTransaction::after_commit(
 				function () use ( $job_id ): void {

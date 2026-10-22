@@ -23,7 +23,9 @@ final class NativeJobCapacity implements JobCapacity {
 			$message,
 			static function () use ( $write ): int {
 				$id = $write();
-				if ( $id > 0 ) {
+				// A definite native hold retains this charged original job. Only a
+				// verified staff release may establish its future delivery action.
+				if ( $id > 0 && ! NotificationHold::job_held( $id ) ) {
 					if ( ! as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) ) {
 						as_schedule_single_action( time() + 1, Outbox::HOOK, array( $id ), Outbox::GROUP, true );
 					}

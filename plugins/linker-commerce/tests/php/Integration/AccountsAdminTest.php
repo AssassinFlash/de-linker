@@ -428,7 +428,28 @@ final class AccountsAdminTest extends IntegrationTestCase {
 			update_user_meta( $customer->get_id(), 'locale', 'en_US' === $locale ? 'de_DE_formal' : 'en_US' );
 			$marker = self::newest_mail_job();
 			$new_customer->trigger( $customer->get_id() );
-			$vat_review->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
+			// The current native verdict/version is the durable notification source;
+			// callback arguments alone cannot manufacture a past review event.
+			update_user_meta( $customer->get_id(), VatProfile::STATUS_META, VatProfile::UNVERIFIED );
+			$notices = new \Linker\Commerce\Registration\VatNotice();
+			$source  = $notices->persist(
+				$customer->get_id(),
+				'DE123456789',
+				array(
+					'status' => VatProfile::INVALID,
+					'detail' => '',
+				),
+				true,
+				$notices->version( $customer->get_id() )
+			);
+			self::assertIsArray( $source );
+			self::assertSame( VatProfile::INVALID, get_user_meta( $customer->get_id(), VatProfile::STATUS_META, true ) );
+			self::assertSame( 0, $source['job'] );
+			$vat_review->trigger( $customer->get_id() );
+			$accepted = get_user_meta( $customer->get_id(), \Linker\Commerce\Registration\VatNotice::SOURCE, true );
+			self::assertSame( $source['version'], $accepted['version'] );
+			self::assertGreaterThan( 0, $accepted['job'] );
+			self::assertSame( 'no', get_user_meta( $customer->get_id(), \Linker\Commerce\Registration\VatNotice::PENDING, true ) );
 			$ids = self::mail_jobs_after( $marker );
 			$this->assertCount( 2, $ids );
 			$focus_url = '';
@@ -482,6 +503,7 @@ final class AccountsAdminTest extends IntegrationTestCase {
 		$this->assertCount( $baseline + 2, $pending_rows, 'Cron does not need employee capabilities to count pending customers.' );
 		foreach ( array( 'en_US', 'de_DE_formal' ) as $locale ) {
 			update_option( 'WPLANG', $locale );
+			update_option( 'linker_commerce_team_locale', $locale );
 			$marker = self::newest_mail_job();
 			( new DigestEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->send_report( ( new Blocks( new JobStore() ) )->all() );
 			$ids = self::mail_jobs_after( $marker );
@@ -528,7 +550,7 @@ final class AccountsAdminTest extends IntegrationTestCase {
 	/** Settings used by queued internal mail, restored even after a failed assertion. */
 	private function internal_mail_options(): void {
 		$saved = array();
-		foreach ( array( 'WPLANG', Options::NOTIFY_TO, Options::NOTIFY_BCC ) as $name ) {
+		foreach ( array( 'WPLANG', 'linker_commerce_team_locale', Options::NOTIFY_TO, Options::NOTIFY_BCC ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		$this->later(
