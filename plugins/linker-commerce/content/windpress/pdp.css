@@ -1782,16 +1782,13 @@
 	}
 
 	#tv-storefront-pdp .pdp-mobile-action .pdp-price {
-		display: -webkit-box;
+		display: block;
 		flex: 1 1 auto;
 		min-width: 0;
 		margin: 0;
-		overflow: hidden;
 		font-size: 13px;
 		font-weight: 600;
 		line-height: 1.25;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 2;
 	}
 
 	#tv-storefront-pdp .pdp-mobile-action .pdp-price :is(a, span) {
@@ -1811,6 +1808,52 @@
 		font-size: 14px;
 		line-height: 1.15;
 		white-space: normal;
+	}
+
+	/* Account destinations must remain visible and have their own touch area;
+	   the former two-line price clamp hid the registration link. */
+	#tv-storefront-pdp .pdp-mobile-action:has(.linker-create-account) {
+		display: grid;
+		gap: 8px;
+		padding: 10px;
+		border-radius: var(--proto-radius-panel);
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action .pdp-price:has(.linker-create-account) {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px;
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action .pdp-price:has(.linker-create-account) > a {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 0;
+		min-height: 44px;
+		margin: 0;
+		padding: 6px 8px;
+		border: 1px solid var(--pdp-line);
+		border-radius: var(--proto-radius-lg);
+		background: var(--pdp-paper);
+		color: var(--pdp-teal-dark);
+		line-height: 1.4;
+		text-align: center;
+		overflow-wrap: anywhere;
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action .pdp-price:has(.linker-create-account) > a:is(:hover, :focus-visible) {
+		background: var(--pdp-soft);
+		color: var(--pdp-teal);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action:has(.linker-create-account) .pdp-btn-dark {
+		width: 100%;
+		max-width: none;
+		min-height: 48px;
+		border-radius: var(--proto-radius-lg);
 	}
 
 	/* The comparison chip and the assistant launcher clear the action bar. The
