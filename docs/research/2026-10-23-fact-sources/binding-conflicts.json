@@ -1,0 +1,18 @@
+[
+  {
+    "claim_index": 503,
+    "alias": "GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+    "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+    "relationship": "same_field_ref_and_citation_url",
+    "product_id": 6530,
+    "figure_key": "inverter_side_rated_power_kw",
+    "source_pointer": "Woo[6530].figures.inverter_side_rated_power_kw",
+    "pages": [
+      339,
+      340
+    ],
+    "status": "declared_association_not_verified_identity",
+    "identity_conflict": "alias locator pages exceed target physical PDF length",
+    "target_physical_pages": 2
+  }
+]

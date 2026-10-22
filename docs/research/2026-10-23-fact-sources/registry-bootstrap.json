@@ -1,0 +1,3761 @@
+{
+  "schema": "research-source-registry-candidate-v1",
+  "purpose": "Concrete input design and real public records for new versioned fact snapshot/compiler; not a running product schema or equipment release",
+  "source_documents": [
+    {
+      "document_version_id": "sha256:ae1351bb51c1bd6e598ca3a9a802101ce54fbdf57efd893e10e45ce9157678d4",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/05/EcoFlow-OCEAN-2-Plus-Single-Phase_Installation-Guide.pdf",
+      "content_sha256": "ae1351bb51c1bd6e598ca3a9a802101ce54fbdf57efd893e10e45ce9157678d4",
+      "bytes": 14957377,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 44,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/05/EcoFlow-OCEAN-2-Plus-Single-Phase_Installation-Guide.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:15e28e9db71c1071441acf521c91dc3eb8b8ed597a55a2b02718db06054a9488",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf",
+      "content_sha256": "15e28e9db71c1071441acf521c91dc3eb8b8ed597a55a2b02718db06054a9488",
+      "bytes": 505644,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:4cc6c9d37afa6f50bd300c152aa759408dce34403b38e6c610c1ba693263c592",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf",
+      "content_sha256": "4cc6c9d37afa6f50bd300c152aa759408dce34403b38e6c610c1ba693263c592",
+      "bytes": 1208796,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 20,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf",
+      "content_sha256": "710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08",
+      "bytes": 532308,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+      "content_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+      "bytes": 680989,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "X02",
+          "exact_models": [
+            "GW61.4-BAT-AC-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "X03",
+          "exact_models": [
+            "GW61.4-BAT-AC-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S03",
+        "reviewed_sha256": "845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+        "physical_pdf_pages": [
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:bd64908d87dd1dab007f3b0bbbff0b817cd4390212bfc0ebcd2a28b600907fa7",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_chs2-datasheet.pdf",
+      "content_sha256": "bd64908d87dd1dab007f3b0bbbff0b817cd4390212bfc0ebcd2a28b600907fa7",
+      "bytes": 465688,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 4,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/delinker-saj_chs2-datasheet.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:f9e736af39f7b50f7760d6369cab6c95ff38882b49ac42496ce5e3751c4b1436",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf",
+      "content_sha256": "f9e736af39f7b50f7760d6369cab6c95ff38882b49ac42496ce5e3751c4b1436",
+      "bytes": 408562,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:9ab5bb80ad39bd69eca4e0d54d383447fe76f002fb771e0944fbcffcbb0dec3e",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf",
+      "content_sha256": "9ab5bb80ad39bd69eca4e0d54d383447fe76f002fb771e0944fbcffcbb0dec3e",
+      "bytes": 103242,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 1,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:a36d7a6c45663da323b605b707c144c187304fa5090907e70a280713e5883d12",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gmk330_datasheet_en-1.pdf",
+      "content_sha256": "a36d7a6c45663da323b605b707c144c187304fa5090907e70a280713e5883d12",
+      "bytes": 102424,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 1,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/goodwe_gmk330_datasheet_en-1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:348497c21d2f3ba532a9c1c3fa0d3e010355467b5cfbd9f9bff3a57de294f3df",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf",
+      "content_sha256": "348497c21d2f3ba532a9c1c3fa0d3e010355467b5cfbd9f9bff3a57de294f3df",
+      "bytes": 721308,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:0abea746ac338562cfa63d7e4976ca1d8204271f6d7c2f1d08a8dc4a1ca04465",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+      "content_sha256": "0abea746ac338562cfa63d7e4976ca1d8204271f6d7c2f1d08a8dc4a1ca04465",
+      "bytes": 417810,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/saj_hs2-10k-t2-x_datasheet.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:35eff65e4358a35a5a6df4128d7eee1488bdbca13f14f14bcdac80edc3c530d1",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+      "content_sha256": "35eff65e4358a35a5a6df4128d7eee1488bdbca13f14f14bcdac80edc3c530d1",
+      "bytes": 2560328,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 6,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/ecoflow_battery-stack-bridge_install-guide_en_v1.0.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:332e46411a4b7aa926b2dfd5e44fbc7075f8360b8362316441dee780e4cc3b9d",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-lfp-battery-5kwh_manual_en_v1.0.pdf",
+      "content_sha256": "332e46411a4b7aa926b2dfd5e44fbc7075f8360b8362316441dee780e4cc3b9d",
+      "bytes": 2252765,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 13,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/ecoflow_ocean2-lfp-battery-5kwh_manual_en_v1.0.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:f49ddd7c553c3db60096824a23b869e8304c91eed39b74bb1ab7411369364e9e",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+      "content_sha256": "f49ddd7c553c3db60096824a23b869e8304c91eed39b74bb1ab7411369364e9e",
+      "bytes": 8112587,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 4,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:831117f4510dce9b3b54d18493c350c48219c4a4f54416b246c49ed48208c941",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+      "content_sha256": "831117f4510dce9b3b54d18493c350c48219c4a4f54416b246c49ed48208c941",
+      "bytes": 632820,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 3,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:d623d58abfb819bf98aabc92f4c05c22804208ecde8a3d92ec2ee448cbf8dd33",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_datasheet_en_beu.pdf",
+      "content_sha256": "d623d58abfb819bf98aabc92f4c05c22804208ecde8a3d92ec2ee448cbf8dd33",
+      "bytes": 392849,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/saj_emanager_datasheet_en_beu.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:688557bc10f941b1b9182ee2f4b72ebe6bb331be0391175bf7d450ac967a6a52",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_manual_en_v3.pdf",
+      "content_sha256": "688557bc10f941b1b9182ee2f4b72ebe6bb331be0391175bf7d450ac967a6a52",
+      "bytes": 6154914,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 87,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/saj_emanager_manual_en_v3.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:1833312ad717e11d5fea900948ef7ac84446065af17d50565c9c2b42e4494ab1",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf",
+      "content_sha256": "1833312ad717e11d5fea900948ef7ac84446065af17d50565c9c2b42e4494ab1",
+      "bytes": 1140362,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 1,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/saj_esolar-aio3_datasheet_en.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:af395be79aee46f30b2beb9938f9b454c5080bd179fcb9f8404cf75a345ce038",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/saj_esolar-aio3_quick-install-guide_en.pdf",
+      "content_sha256": "af395be79aee46f30b2beb9938f9b454c5080bd179fcb9f8404cf75a345ce038",
+      "bytes": 435405,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/saj_esolar-aio3_quick-install-guide_en.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+      "content_sha256": "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3",
+      "bytes": 422111,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/08/saj_hs3-5-12k-t2_datasheet_en_2025-06.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+      "content_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+      "bytes": 406527,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "R01",
+          "exact_models": [
+            "BU2-5.0-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R02",
+          "exact_models": [
+            "B2-5.0-HV1",
+            "B2-10.0-HV1",
+            "B2-15.0-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "conflicting_document_variant_to_resolve"
+        },
+        {
+          "fact_id": "R03",
+          "exact_models": [
+            "BU2-5.0-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R04",
+          "exact_models": [
+            "BU2-5.0-HV1",
+            "BC2-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R05",
+          "exact_models": [
+            "BU2-5.0-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R06",
+          "exact_models": [
+            "B2-5.0-HV1",
+            "B2-10.0-HV1",
+            "B2-15.0-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R07",
+          "exact_models": [
+            "H2-10K-T3",
+            "BU2-5.0-HV1",
+            "BC2-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R13",
+          "exact_models": [
+            "BU2-5.0-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S15",
+        "reviewed_sha256": "74d86778ee033622d64deeb3bc2f0017e814f1cecd3a484c491c939be9529a2a",
+        "physical_pdf_pages": [
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:99c1d10fae6486e314e4aa6a3767b664aa5637ce88eb2bfddbf8e11cbb85367b",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+      "content_sha256": "99c1d10fae6486e314e4aa6a3767b664aa5637ce88eb2bfddbf8e11cbb85367b",
+      "bytes": 1043212,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "R02",
+          "exact_models": [
+            "B2-5.0-HV1",
+            "B2-10.0-HV1",
+            "B2-15.0-HV1"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "conflicting_document_variant_to_resolve"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S18",
+        "reviewed_sha256": "99c1d10fae6486e314e4aa6a3767b664aa5637ce88eb2bfddbf8e11cbb85367b",
+        "physical_pdf_pages": [
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:c68e43b669c1dad71c56a25455613036eca2991ea8f3a67ca9a5867843613603",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+      "content_sha256": "c68e43b669c1dad71c56a25455613036eca2991ea8f3a67ca9a5867843613603",
+      "bytes": 308589,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf",
+      "content_sha256": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+      "bytes": 531133,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+      "content_sha256": "ef85dd1a58fc06e52f2dff79dda228884b412d17db7035aa45d41c57840f3f10",
+      "bytes": 3972868,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 79,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_BAT-C-208-261kWh_User-Manual-EN.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "content_sha256": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+      "bytes": 1257524,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 3,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S07",
+        "reviewed_sha256": "b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+        "physical_pdf_pages": [
+          2,
+          3
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:894ef3bd6daca659dfb5b605d7fe52fc13f89262144d80be3387a8cd2efd0a75",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf",
+      "content_sha256": "894ef3bd6daca659dfb5b605d7fe52fc13f89262144d80be3387a8cd2efd0a75",
+      "bytes": 30846248,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 355,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:f66efb70d0d8927a92355980e0a0bd09359f580664976e082c4e510320e6d5a0",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+      "content_sha256": "f66efb70d0d8927a92355980e0a0bd09359f580664976e082c4e510320e6d5a0",
+      "bytes": 24656520,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 65,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "X04",
+          "exact_models": [
+            "GW80K-ET-G10",
+            "GW61.4-BAT-AC-G10"
+          ],
+          "physical_pdf_pages": [
+            12,
+            17
+          ],
+          "statement_status": "verified_pair_with_application_evidence_gap"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S02",
+        "reviewed_sha256": "f66efb70d0d8927a92355980e0a0bd09359f580664976e082c4e510320e6d5a0",
+        "physical_pdf_pages": [
+          1,
+          10,
+          11,
+          12,
+          16,
+          17,
+          18
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+      "content_sha256": "4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d",
+      "bytes": 684740,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "X01",
+          "exact_models": [
+            "GW80K-ET-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S01",
+        "reviewed_sha256": "4f7178042e8faf03bd926dc33a5ff0b85ffcd4f46e12f1dcf86d6db10befee4d",
+        "physical_pdf_pages": [
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:363be3f64d741a02f435aeba2ba680b98e3edc73c3a92d61b6b4637def38326b",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf",
+      "content_sha256": "363be3f64d741a02f435aeba2ba680b98e3edc73c3a92d61b6b4637def38326b",
+      "bytes": 8083194,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 237,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_ETR-50-125kW_User-Manual-DE.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+      "content_sha256": "76df70ea8474531fb1f1d168b6faf3262cf2242358be9ba9d17b5f2fb5e75afd",
+      "bytes": 664782,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 3,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:91ceb16b37a9f18ed435e4fa8d8612c08ab7edd276a6d467896b4d5cc6ef9823",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_EzManager3000_User-Manual-EN_V1.3.pdf",
+      "content_sha256": "91ceb16b37a9f18ed435e4fa8d8612c08ab7edd276a6d467896b4d5cc6ef9823",
+      "bytes": 6583638,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 77,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_EzManager3000_User-Manual-EN_V1.3.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:6a8d11d5afde6aa1840c6c8591a5c4dc379efc1c0953ef144a90d65f5a36e6a9",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
+      "content_sha256": "6a8d11d5afde6aa1840c6c8591a5c4dc379efc1c0953ef144a90d65f5a36e6a9",
+      "bytes": 14567365,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 95,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_HCA-G2_User-Manual-EN.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:143fb6026284ffdb499ceb2efc5f46023a3bc84de4c215460fbe0d466b19ba54",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+      "content_sha256": "143fb6026284ffdb499ceb2efc5f46023a3bc84de4c215460fbe0d466b19ba54",
+      "bytes": 111473,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 1,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:98bbe6f74e4d4d0e2437c3917e1fb2365c352ad01b5c46d26ad82876cb18850d",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+      "content_sha256": "98bbe6f74e4d4d0e2437c3917e1fb2365c352ad01b5c46d26ad82876cb18850d",
+      "bytes": 18559307,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 173,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_SEC3000C_User-Manual-EN.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:0983eb46bcecb0e7c2bcec81abb66b7da948b2f0e9c4e69c322437dc6be4bf4f",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_STS-125kW_Quick-Installation-Guide-Multilingual_V1.0.pdf",
+      "content_sha256": "0983eb46bcecb0e7c2bcec81abb66b7da948b2f0e9c4e69c322437dc6be4bf4f",
+      "bytes": 11194122,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_STS-125kW_Quick-Installation-Guide-Multilingual_V1.0.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+      "content_sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+      "bytes": 430739,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "R08",
+          "exact_models": [
+            "H2-10K-T3"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R09",
+          "exact_models": [
+            "H2-10K-T3"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R10",
+          "exact_models": [
+            "H2-10K-T3"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R11",
+          "exact_models": [
+            "H2-10K-T3"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R12",
+          "exact_models": [
+            "H2-10K-T3"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "R14",
+          "exact_models": [
+            "H2-10K-T3"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S13",
+        "reviewed_sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+        "physical_pdf_pages": [
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+      "content_sha256": "bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+      "bytes": 808044,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:a67ee7e865009c58b4a9ede5c6616555ff6643a6e36dae4403f477aac0f32e87",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+      "content_sha256": "a67ee7e865009c58b4a9ede5c6616555ff6643a6e36dae4403f477aac0f32e87",
+      "bytes": 66968130,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 160,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:d1962f3141d1259ccfa5b9cf71d3eb964f51836f1a966cf4ac1aacdd43a6f2c2",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-installation-guide-v1-5.pdf",
+      "content_sha256": "d1962f3141d1259ccfa5b9cf71d3eb964f51836f1a966cf4ac1aacdd43a6f2c2",
+      "bytes": 107689594,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 314,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-installation-guide-v1-5.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:0523d7e752974d49393d7694bc5333071bab826f5b7e8ec7c03304a499cce084",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-user-manual-v1-1.pdf",
+      "content_sha256": "0523d7e752974d49393d7694bc5333071bab826f5b7e8ec7c03304a499cce084",
+      "bytes": 6127937,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 104,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/ecoflow-ocean2-p3-s2-user-manual-v1-1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:0f9824279f3f4934044fb09f0023de9475e7dd21480fe84851130541e793137e",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-plus-p1-s2-user-manual-v1-0.pdf",
+      "content_sha256": "0f9824279f3f4934044fb09f0023de9475e7dd21480fe84851130541e793137e",
+      "bytes": 1219605,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 27,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/ecoflow-ocean2-plus-p1-s2-user-manual-v1-0.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:fb371d15b1ea80d8f0288e447a19451075787c22bbf8fa1de0951587cb00c854",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+      "content_sha256": "fb371d15b1ea80d8f0288e447a19451075787c22bbf8fa1de0951587cb00c854",
+      "bytes": 422739,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/hs3-series.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:259793c56a762754b21030b24bcdec2ecdc89ab044880e95767ec98f4411d8de",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+      "content_sha256": "259793c56a762754b21030b24bcdec2ecdc89ab044880e95767ec98f4411d8de",
+      "bytes": 1770225,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:45d246e23648fd4591a1bac1f41867ba9ee9115dbdc4b8fa9626ff15af8124d7",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+      "content_sha256": "45d246e23648fd4591a1bac1f41867ba9ee9115dbdc4b8fa9626ff15af8124d7",
+      "bytes": 4272462,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 26,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S16",
+        "reviewed_sha256": "45d246e23648fd4591a1bac1f41867ba9ee9115dbdc4b8fa9626ff15af8124d7",
+        "physical_pdf_pages": [
+          1,
+          5,
+          10,
+          11,
+          19,
+          20,
+          21
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "content_sha256": "627e5444f47bc7db3afd0b1aeeb27099fcbf8eedfbe15fe7302015743a96bcd2",
+      "bytes": 16471485,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+      "content_sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+      "bytes": 412307,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "C01",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C02",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C03",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C04",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C05",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C06",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C07",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S09",
+        "reviewed_sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+        "physical_pdf_pages": [
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:0adfb3d5e6df42e6dd465c0f6170a7c21fd82452acd64e00956fbd9aba099e43",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+      "content_sha256": "0adfb3d5e6df42e6dd465c0f6170a7c21fd82452acd64e00956fbd9aba099e43",
+      "bytes": 7322861,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 99,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S10",
+        "reviewed_sha256": "0adfb3d5e6df42e6dd465c0f6170a7c21fd82452acd64e00956fbd9aba099e43",
+        "physical_pdf_pages": [
+          1,
+          3,
+          14,
+          46,
+          48,
+          49,
+          94
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:fea12735d2e6038977675eb85d69506cd9a2650cff5e7afc0eea69ebd6bf470d",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+      "content_sha256": "fea12735d2e6038977675eb85d69506cd9a2650cff5e7afc0eea69ebd6bf470d",
+      "bytes": 333725,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 3,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:5cd104b9e006bd3b8265d0518dabdaaec01058f44ac065544da1d00d8cb4b619",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+      "content_sha256": "5cd104b9e006bd3b8265d0518dabdaaec01058f44ac065544da1d00d8cb4b619",
+      "bytes": 37488579,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 324,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-3-10kW_User-Manual-EN_V1.8.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+      "content_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+      "bytes": 31127797,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 351,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S08",
+        "reviewed_sha256": "67a7f715ca9db734edba1b4f15b50d1a29c866b172ffd1909759e0abc66c8d2a",
+        "physical_pdf_pages": [
+          1,
+          27,
+          60,
+          107,
+          280,
+          281,
+          282,
+          283,
+          311
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
+      "content_sha256": "0ef4b1ccdcc418e3ca8de31194b3d9e2969be39aa739ffa0ca1f038fcfac6615",
+      "bytes": 41900846,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 307,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ET-100kW_User-Manual-EN_V1.2.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:50bdd49b7be0ef036cafec286994f33af79dab5fc54dfcebbf4549f7e429acf9",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+      "content_sha256": "50bdd49b7be0ef036cafec286994f33af79dab5fc54dfcebbf4549f7e429acf9",
+      "bytes": 7105997,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 215,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ETR-50-125kW_User-Manual-EN_V1.0.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:e381476b618cbb87436899207364d94ca66ed318c8cd354c90a3ba4d049c722c",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_EzManager3000_Datasheet_EMEA-EN_V1.1.pdf",
+      "content_sha256": "e381476b618cbb87436899207364d94ca66ed318c8cd354c90a3ba4d049c722c",
+      "bytes": 124212,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 1,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_EzManager3000_Datasheet_EMEA-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:5ee96a3b343b92f9de4dc74dfc4801759af76082b29347fd8e5cf1423f43ca5c",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_GMK330_Datasheet_EMEA-EN_V1.0.pdf",
+      "content_sha256": "5ee96a3b343b92f9de4dc74dfc4801759af76082b29347fd8e5cf1423f43ca5c",
+      "bytes": 105429,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 1,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_GMK330_Datasheet_EMEA-EN_V1.0.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf",
+      "content_sha256": "0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178",
+      "bytes": 426500,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_HCA-G2_Datasheet_EMEA-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:a786dcf5aeef1f4ed6b2299a445ef01d489001b6963cf0758193f9f379fa06bf",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+      "content_sha256": "a786dcf5aeef1f4ed6b2299a445ef01d489001b6963cf0758193f9f379fa06bf",
+      "bytes": 544031,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 5,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:aad79ef9ca8ee18b42b80d260e945116809578902f58c44f71485a3c4f52c791",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_LX-D-G2-Battery_EU.pdf",
+      "content_sha256": "aad79ef9ca8ee18b42b80d260e945116809578902f58c44f71485a3c4f52c791",
+      "bytes": 544295,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 4,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_Limited-Warranty_LX-D-G2-Battery_EU.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:1b7e18cd26ff29b57f8cc5cc827249d56624a6c1a048588d5ec5c80080538663",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+      "content_sha256": "1b7e18cd26ff29b57f8cc5cc827249d56624a6c1a048588d5ec5c80080538663",
+      "bytes": 496335,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:6fbecc0583033f303bfe27c992401d017b2549d09ab668090559db10fb72bffb",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Smart-Meter_User-Manual-EN_V1.5.pdf",
+      "content_sha256": "6fbecc0583033f303bfe27c992401d017b2549d09ab668090559db10fb72bffb",
+      "bytes": 1313685,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 23,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_Smart-Meter_User-Manual-EN_V1.5.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:154aa993f207fc32e3d883d90cfeefdfa168fb617b443f1c11d3af4997da3577",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+      "content_sha256": "154aa993f207fc32e3d883d90cfeefdfa168fb617b443f1c11d3af4997da3577",
+      "bytes": 275500,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/SAJ_ATS1_Datasheet_EN-BEU.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+      "content_sha256": "2e4e566cf46d3ed094a59335386827348bec79ae10d71116fde8d1deb8b3c9d3",
+      "bytes": 465683,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 4,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/SAJ_CHS2_30-50K_Datasheet_EN-BEU.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+      "content_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+      "bytes": 9782323,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 59,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "R09",
+          "exact_models": [
+            "H2-10K-T3"
+          ],
+          "physical_pdf_pages": [
+            37,
+            43
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S14",
+        "reviewed_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+        "physical_pdf_pages": [
+          1,
+          37,
+          43
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:2c1dd5c1e2f7efd96eba4f24aa3804ee135936ac90bcccfd1a681f2188868f46",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
+      "content_sha256": "2c1dd5c1e2f7efd96eba4f24aa3804ee135936ac90bcccfd1a681f2188868f46",
+      "bytes": 11804387,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 125,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/SAJ_HS3_3-12K-T2_User-Manual_EN_V4.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:47441e0e08661149c5a566221136f88372bcf3bf35b6d6017f7023924d208629",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+      "content_sha256": "47441e0e08661149c5a566221136f88372bcf3bf35b6d6017f7023924d208629",
+      "bytes": 14598152,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 76,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/ecoflow-ocean2-lfp-battery-5kwh-user-manual-multilingual-v1-0.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:b296b6142e93eedb93fd4595a42be69da999fdeb1ab394d4c64307ca879beaed",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-datasheet-en.pdf",
+      "content_sha256": "b296b6142e93eedb93fd4595a42be69da999fdeb1ab394d4c64307ca879beaed",
+      "bytes": 3476420,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 3,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-datasheet-en.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:3f7220a44856f55f29633d3e8a21dcaa25a00bef8a7fcb25db525d939192b7b7",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-user-manual-de-v1-3.pdf",
+      "content_sha256": "3f7220a44856f55f29633d3e8a21dcaa25a00bef8a7fcb25db525d939192b7b7",
+      "bytes": 888353,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 12,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/ecoflow-ocean2-single-phase-user-manual-de-v1-3.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:f118952b7b669340b997d3b15f10428d4eb57ca3290ec4accb3213ed80f9463f",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+      "content_sha256": "f118952b7b669340b997d3b15f10428d4eb57ca3290ec4accb3213ed80f9463f",
+      "bytes": 2100466,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 5,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/ecoflow-ocean2-three-phase-datasheet-de.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:270d7e015db51b233920640cac612bdff1c461743c896124581c462709f7a083",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf",
+      "content_sha256": "270d7e015db51b233920640cac612bdff1c461743c896124581c462709f7a083",
+      "bytes": 1610345,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:f9c9129aa05e1951d34c2e64eacdc95e2756336829461762ce3816fbb82fc096",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-pp20-21.pdf",
+      "content_sha256": "f9c9129aa05e1951d34c2e64eacdc95e2756336829461762ce3816fbb82fc096",
+      "bytes": 694854,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/pylontech-l260-pp20-21.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:fd58ff91d790920e22ab49f547f9e944e361e1220d3fd85ea41d63b41f89df3f",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/pylontech-utility-ci-ess-product-portfolio-py2412en-sd.pdf",
+      "content_sha256": "fd58ff91d790920e22ab49f547f9e944e361e1220d3fd85ea41d63b41f89df3f",
+      "bytes": 3163134,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 44,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/pylontech-utility-ci-ess-product-portfolio-py2412en-sd.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:4326828242f2a72bba05c90bc49096d7458f5d00a2846ccd88b076f786583e9d",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/ATS1-Datasheet-ES.pdf",
+      "content_sha256": "4326828242f2a72bba05c90bc49096d7458f5d00a2846ccd88b076f786583e9d",
+      "bytes": 369777,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/ATS1-Datasheet-ES.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:aeb1d7abaca0833efbbffdb3d6e86a1ffd25e73f6c363cdad40f7fc517ca177d",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_ezmanager3000_datasheet_en-1.pdf",
+      "content_sha256": "aeb1d7abaca0833efbbffdb3d6e86a1ffd25e73f6c363cdad40f7fc517ca177d",
+      "bytes": 123768,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 1,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/07/goodwe_ezmanager3000_datasheet_en-1.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:fba3a03ae50f5fbda2f8583c7a44a578a2e439c5fbcd2099ad3307a8fe550532",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf",
+      "content_sha256": "fba3a03ae50f5fbda2f8583c7a44a578a2e439c5fbcd2099ad3307a8fe550532",
+      "bytes": 23979719,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 286,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf",
+      "prior_selected_statement_reviews": [],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": null
+    },
+    {
+      "document_version_id": "sha256:225c2995448789455b859687748f51d05555ecdfa621eacb073a8b0271e19319",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Datasheet-EN_V2.1.pdf",
+      "content_sha256": "225c2995448789455b859687748f51d05555ecdfa621eacb073a8b0271e19319",
+      "bytes": 691412,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Datasheet-EN_V2.1.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "X02",
+          "exact_models": [
+            "GW61.4-BAT-AC-G10"
+          ],
+          "physical_pdf_pages": [
+            2
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S04",
+        "reviewed_sha256": "225c2995448789455b859687748f51d05555ecdfa621eacb073a8b0271e19319",
+        "physical_pdf_pages": [
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+      "content_sha256": "8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+      "bytes": 357763,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 6,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "X04",
+          "exact_models": [
+            "GW80K-ET-G10",
+            "GW61.4-BAT-AC-G10"
+          ],
+          "physical_pdf_pages": [
+            6
+          ],
+          "statement_status": "verified_pair_with_application_evidence_gap"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S05",
+        "reviewed_sha256": "8951dd1d8a640ea133d38bcc7f457000560d9ce9e10263aecfbb1037f24cb661",
+        "physical_pdf_pages": [
+          6
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:5e40da8282b1a4513d2ae40849317ea154584a182e48c3860e0dfb895b159d8d",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+      "content_sha256": "5e40da8282b1a4513d2ae40849317ea154584a182e48c3860e0dfb895b159d8d",
+      "bytes": 185220,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 2,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "X04",
+          "exact_models": [
+            "GW80K-ET-G10",
+            "GW61.4-BAT-AC-G10"
+          ],
+          "physical_pdf_pages": [
+            1,
+            2
+          ],
+          "statement_status": "verified_pair_with_application_evidence_gap"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S06",
+        "reviewed_sha256": "5e40da8282b1a4513d2ae40849317ea154584a182e48c3860e0dfb895b159d8d",
+        "physical_pdf_pages": [
+          1,
+          2
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf",
+      "content_sha256": "6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+      "bytes": 2287995,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 46,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-261kWh_On-grid_User-Manual-EN_V1.0.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "C08",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            25,
+            29
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C09",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            20
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S11",
+        "reviewed_sha256": "6bdd27e577fc5eafa47db8fa0a9bbc8dd6a60aa1013e182350a35f305338a7a7",
+        "physical_pdf_pages": [
+          1,
+          20,
+          24,
+          25,
+          27,
+          28,
+          29,
+          31
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf",
+      "content_sha256": "d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+      "bytes": 5060357,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 67,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/10/GW_ESA-261kWh_Microgrid-User-Manual-EN_V1.1.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "C10",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            24,
+            58
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        },
+        {
+          "fact_id": "C11",
+          "exact_models": [
+            "GW125/261-ESA-LCN-G10"
+          ],
+          "physical_pdf_pages": [
+            21
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S12",
+        "reviewed_sha256": "d5167d27d5e47d8d61d059862c6812963e0bb65d055dfb65aaecdbd32b87cbd1",
+        "physical_pdf_pages": [
+          1,
+          21,
+          24,
+          25,
+          30,
+          58
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    },
+    {
+      "document_version_id": "sha256:a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
+      "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+      "content_sha256": "a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
+      "bytes": 5055501,
+      "media_type": "application/pdf",
+      "physical_pdf_page_count": 91,
+      "artifact_status": "current_p548_bytes_hash_observed",
+      "local_observation_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/2026/09/H2_HS2_HS3_AS2_AS3_Configuration_Instructions_V1.0_en.pdf",
+      "prior_selected_statement_reviews": [
+        {
+          "fact_id": "R07",
+          "exact_models": [
+            "H2-10K-T3",
+            "BU2-5.0-HV1",
+            "BC2-HV1"
+          ],
+          "physical_pdf_pages": [
+            8
+          ],
+          "statement_status": "verified_document_statement_with_explicit_conditions"
+        }
+      ],
+      "whole_document_or_product_release": false,
+      "prior_document_page_review": {
+        "source_id": "S17",
+        "reviewed_sha256": "a470d6e1be68e843b42a11a2f4ba05c67b9a8d01bdb6abc1f58bce9762701ea6",
+        "physical_pdf_pages": [
+          1,
+          7,
+          8
+        ],
+        "current_sha_matches": true,
+        "scope": "prior selected-page study; exact model/statement scope only as explicitly given in prior_selected_statement_reviews"
+      }
+    }
+  ],
+  "alias_bindings": [
+    {
+      "alias_exact": "saj_ats1_datasheet_es.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:4326828242f2a72bba05c90bc49096d7458f5d00a2846ccd88b076f786583e9d",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/ATS1-Datasheet-ES.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_c98e5b26751d"
+          ]
+        }
+      ],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "saj_h2_10_30k_datasheet_eu_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_fbaf08e12542"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+      ],
+      "reviewed_target_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf"
+      ],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:259793c56a762754b21030b24bcdec2ecdc89ab044880e95767ec98f4411d8de",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_51d6f5dabf5f"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/saj_hs2_5_10k_t2_x_datasheet_en.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "saj_hs3_three_phase_datasheet_uk_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:fb371d15b1ea80d8f0288e447a19451075787c22bbf8fa1de0951587cb00c854",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "1acf761fc026ef0f",
+            "ev_222694080de8"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/hs3-series.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "saj_b2_hv1_hv5_datasheet_au_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:99c1d10fae6486e314e4aa6a3767b664aa5637ce88eb2bfddbf8e11cbb85367b",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_e8d90fb9f075"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf"
+      ],
+      "reviewed_target_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5.0-25.0-HV1HV5_datasheet_en_AU.pdf"
+      ],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_target_has_prior_selected_model_page_review",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf"
+      ],
+      "reviewed_target_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf"
+      ],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "unresolved_with_exact_name_locator_lead_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "goodwe_bat_c_60_112kwh_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:845e51ffb2801f48971c8b53941629dde1e8bc114b9b45dbc4f08c49c5ef815c",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_4c590166e041"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf"
+      ],
+      "reviewed_target_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf"
+      ],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_BAT-C-208-261_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "goodwe_bat_c_208_261kwh_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:710d6f3d82664613f56bb72fd5898b5a1f9e5f7315cfc870a48822b1f3729e08",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_a587c50ec7b8"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc208-datasheet.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "saj_chs2_datasheet_eu_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:bd64908d87dd1dab007f3b0bbbff0b817cd4390212bfc0ebcd2a28b600907fa7",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_chs2-datasheet.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_74cb730ce3d3"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_chs2-datasheet.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "saj_emanager_c1_pro_datasheet_eu_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:f9e736af39f7b50f7760d6369cab6c95ff38882b49ac42496ce5e3751c4b1436",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-saj_emanager-datasheet.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_536192559630"
+          ]
+        }
+      ],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "pylontech_optim_us_l260_omni_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:bb6712735d77af454a30605abc5b93542f723efe3206d73eee5d73bb086a1699",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_0f76164f8e54"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/OPTIMUSL260-OMNI_20240926105739A032.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/pylontech-l260-omni-125kw-260kwh-datasheet-270d7e015db5.pdf",
+        "https://de-linker.com/wp-content/uploads/2026/10/pylontech-utility-ci-ess-product-portfolio-py2412en-sd.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "B2-(5-25K)-(HV1,HV5)-datasheet-EN-BEU.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_target_has_prior_selected_model_page_review",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+      ],
+      "reviewed_target_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf"
+      ],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:c68e43b669c1dad71c56a25455613036eca2991ea8f3a67ca9a5867843613603",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_9c0042ce1d34"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/DLK-SAJ-BU350TV2PRO_datasheet.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "chint_dtsu666_catalog_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:15e28e9db71c1071441acf521c91dc3eb8b8ed597a55a2b02718db06054a9488",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_7e5eb3bdfd0d"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_catalog_en.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "chint_dtsu666_dssu666_user_manual_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:4cc6c9d37afa6f50bd300c152aa759408dce34403b38e6c610c1ba693263c592",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_39492bc49bff"
+          ]
+        }
+      ],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/chint_dtsu666_dssu666_user_manual_en.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "goodwe_gm330_datasheet_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:9ab5bb80ad39bd69eca4e0d54d383447fe76f002fb771e0944fbcffcbb0dec3e",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_58d4eddfa12f"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gm330_datasheet_en-1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "goodwe_et12_30kw_user_manual_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:fba3a03ae50f5fbda2f8583c7a44a578a2e439c5fbcd2099ad3307a8fe550532",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/goodwe_et12_30kw_user_manual_en.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_531b37a18905"
+          ]
+        }
+      ],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "goodwe_gmk330_datasheet_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:a36d7a6c45663da323b605b707c144c187304fa5090907e70a280713e5883d12",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gmk330_datasheet_en-1.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_7f2058df18d4"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_gmk330_datasheet_en-1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "goodwe_sts_125kw_datasheet_emea_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:348497c21d2f3ba532a9c1c3fa0d3e010355467b5cfbd9f9bff3a57de294f3df",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_24747adbf023"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/07/goodwe_sts_125kw_datasheet_emea_en-1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_SEC3000C_Datasheet_EMEA-EN.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "unresolved_with_exact_name_locator_lead_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_SEC3000C_Datasheet_EMEA-EN.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "goodwe_ezmanager3000_datasheet_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:aeb1d7abaca0833efbbffdb3d6e86a1ffd25e73f6c363cdad40f7fc517ca177d",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/07/goodwe_ezmanager3000_datasheet_en-1.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "ev_93a73562d459"
+          ]
+        }
+      ],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "OCEAN 2 Three-Phase_Datasheet_EN_260522.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:831117f4510dce9b3b54d18493c350c48219c4a4f54416b246c49ed48208c941",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "9025397d4b0d6ccf"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-three-phase_datasheet_en_20260310.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ESA-5-30kW_Datasheet-EN.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:b681fbb51b1688476883c7f2c23599f12a1e51020b6980c9d61da952cc80543f",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "2de7670e1d2a4efe",
+            "rec_0d10cf6dde41"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+      ],
+      "reviewed_target_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+      ],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ESA-5-30kW_User-Manual-EN.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:894ef3bd6daca659dfb5b605d7fe52fc13f89262144d80be3387a8cd2efd0a75",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "rec_de01391cb5ba"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_User-Manual-EN.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "OCEAN 2 Plus Single-Phase_Brochure_EN_View_20260601.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:f49ddd7c553c3db60096824a23b869e8304c91eed39b74bb1ab7411369364e9e",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "5bd340bd0c269d64"
+          ]
+        }
+      ],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-plus-single-phase_brochure-spec_en_20260601.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "EcoFlow OCEAN 2 LFP Battery 5kWh User Manual_EN_V1.0.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/08/ecoflow_ocean2-lfp-battery-5kwh_manual_en_v1.0.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "Matrix Table for Batteries and Inverters 20260713.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/ecoflow-ocean2-bd-8-s2-user-manual-v1-1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ETR_Datasheet_EMEA-EN_V1.1.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/09/GW_ETR_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "saj_emanager_datasheet_en.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "recorded_alias_identity_sha_matched",
+      "bound_document_versions": [
+        {
+          "document_version_id": "sha256:d623d58abfb819bf98aabc92f4c05c22804208ecde8a3d92ec2ee448cbf8dd33",
+          "hosted_url": "https://de-linker.com/wp-content/uploads/2026/08/saj_emanager_datasheet_en_beu.pdf",
+          "binding_basis": "exact alias in recorded evidence index + host-map SHA + current p548 SHA",
+          "evidence_records": [
+            "rec_164f4a858a6a"
+          ]
+        }
+      ],
+      "association_candidate_urls": [],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_target_has_prior_selected_model_page_review",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "reviewed_target_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "invalid_co_support_as_identity_has_reviewed_locator_lead",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf"
+      ],
+      "invalid_identity_associations": [
+        {
+          "claim_index": 503,
+          "alias": "GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+          "relationship": "same_field_ref_and_citation_url",
+          "product_id": 6530,
+          "figure_key": "inverter_side_rated_power_kw",
+          "source_pointer": "Woo[6530].figures.inverter_side_rated_power_kw",
+          "pages": [
+            339,
+            340
+          ],
+          "status": "declared_association_not_verified_identity",
+          "identity_conflict": "alias locator pages exceed target physical PDF length",
+          "target_physical_pages": 2
+        }
+      ],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-3-10kW_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    },
+    {
+      "alias_exact": "GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf",
+      "namespace": "this recorded public source identity snapshot; not a global filename namespace",
+      "status": "declared_association_candidate_only",
+      "bound_document_versions": [],
+      "association_candidate_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "reviewed_target_urls": [],
+      "locator_lead_urls": [
+        "https://de-linker.com/wp-content/uploads/2026/10/GW_STS-30-60kW_Datasheet_EMEA-EN_V1.1.pdf"
+      ],
+      "invalid_identity_associations": [],
+      "missing_binding_policy": "retain raw alias and source locators as unresolved; never fill with a similar name, co-support URL, or other region document"
+    }
+  ],
+  "products": [
+    {
+      "canonical_product_id": 1178,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1178,
+        "de": 6839
+      },
+      "raw_figures_utf8_sha256": "ba46f4175853d33a74fe348c84fd346f5a94babc771fa01d5b5df3ed28baa925",
+      "raw_documents_utf8_sha256": "e379b61834d970623437086dc5e8970c7b966ab936383c0c04176b851720ca22",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/0",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1179,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1179,
+        "de": 6838
+      },
+      "raw_figures_utf8_sha256": "9b464a47c2195e69e89adb3e964103274a9553acfdc22ac3531a4800ac1d3078",
+      "raw_documents_utf8_sha256": "92d31e633f0e06b1fc9e07f87b77a592ba94d269f1cd31e0f1a7b041c1ab03cb",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/1",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1181,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1181,
+        "de": 6837
+      },
+      "raw_figures_utf8_sha256": "2a6d3486bafe6d34590a9badff7e7588e908fac17090c709073a87c734b2773e",
+      "raw_documents_utf8_sha256": "92d31e633f0e06b1fc9e07f87b77a592ba94d269f1cd31e0f1a7b041c1ab03cb",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/2",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1182,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1182,
+        "de": 6836
+      },
+      "raw_figures_utf8_sha256": "ab6d64f799f1756eca523c509b59e8e48aece8c93c495411724af16473adfbeb",
+      "raw_documents_utf8_sha256": "642a2830fd3a76bcb016c0ee8215dcd8c405a31e551f5e58d82f019f2ca8484b",
+      "figure_count": 48,
+      "source_record_pointer": "p548-source-public.json#/records/3",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1183,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1183,
+        "de": 6835
+      },
+      "raw_figures_utf8_sha256": "1801e5de25584cdf2905b35c7bf293718d87542a1845df3accc0612478965439",
+      "raw_documents_utf8_sha256": "642a2830fd3a76bcb016c0ee8215dcd8c405a31e551f5e58d82f019f2ca8484b",
+      "figure_count": 48,
+      "source_record_pointer": "p548-source-public.json#/records/4",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1184,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1184,
+        "de": 6834
+      },
+      "raw_figures_utf8_sha256": "8fa97830ca88472067b6c53a5948ffc478a1806592c2e8e61e073279a8c705f7",
+      "raw_documents_utf8_sha256": "642a2830fd3a76bcb016c0ee8215dcd8c405a31e551f5e58d82f019f2ca8484b",
+      "figure_count": 48,
+      "source_record_pointer": "p548-source-public.json#/records/5",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1185,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1185,
+        "de": 6833
+      },
+      "raw_figures_utf8_sha256": "3046efb562130779dd1680e8f7b4c55bd97e98dc29572d44769034602c0c446f",
+      "raw_documents_utf8_sha256": "df1e26f5465fc164dde11df851ef44d0cd86cc024f0783aac7001b3930578629",
+      "figure_count": 29,
+      "source_record_pointer": "p548-source-public.json#/records/6",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1186,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1186,
+        "de": 6832
+      },
+      "raw_figures_utf8_sha256": "55b8cb943fab380b2c332bfbe3952779a34089e976bfc636ecee8a74404d84dc",
+      "raw_documents_utf8_sha256": "df1e26f5465fc164dde11df851ef44d0cd86cc024f0783aac7001b3930578629",
+      "figure_count": 29,
+      "source_record_pointer": "p548-source-public.json#/records/7",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1187,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1187,
+        "de": 6831
+      },
+      "raw_figures_utf8_sha256": "bff72fef7f4f29b1cdbe2054943c7bea6c8150c21c93c5d31f8c9c1d0af4acda",
+      "raw_documents_utf8_sha256": "df1e26f5465fc164dde11df851ef44d0cd86cc024f0783aac7001b3930578629",
+      "figure_count": 29,
+      "source_record_pointer": "p548-source-public.json#/records/8",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1832,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1832,
+        "de": 6818
+      },
+      "raw_figures_utf8_sha256": "6555f3e8ea8398824ffc7e1de8c9ad86dec87d1b8378bfc3aadfbe481f8d7969",
+      "raw_documents_utf8_sha256": "e96d3ad01a9e9fb5c136e65427a04f12d0b0e0f62f02fc0312e0edf4bae362a3",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/9",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1946,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1946,
+        "de": 6811
+      },
+      "raw_figures_utf8_sha256": "f82555b1d68466bd0a1e9126f662e6d6cc8f8d4d02bb0b64dfbce4fc56a95459",
+      "raw_documents_utf8_sha256": "10cdecf9c84b3f170a3669356b9fae52cd0f9494cd1085fd9833ba824cc4a592",
+      "figure_count": 31,
+      "source_record_pointer": "p548-source-public.json#/records/10",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1947,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1947,
+        "de": 6810
+      },
+      "raw_figures_utf8_sha256": "32e3ed8db961f5c95a7ec85861e398e2ee77018c515dbbec44126a6c801bf92c",
+      "raw_documents_utf8_sha256": "10cdecf9c84b3f170a3669356b9fae52cd0f9494cd1085fd9833ba824cc4a592",
+      "figure_count": 31,
+      "source_record_pointer": "p548-source-public.json#/records/11",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1948,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1948,
+        "de": 6809
+      },
+      "raw_figures_utf8_sha256": "93e2f62506d01ba5559f71f7edf7e35a9c7291fe9f1220f454d3bbb16597073c",
+      "raw_documents_utf8_sha256": "10cdecf9c84b3f170a3669356b9fae52cd0f9494cd1085fd9833ba824cc4a592",
+      "figure_count": 31,
+      "source_record_pointer": "p548-source-public.json#/records/12",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1954,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1954,
+        "de": 6803
+      },
+      "raw_figures_utf8_sha256": "1867a5920d674f5ba2bfbe44be939d68532f2c852db42793031c167776bd1558",
+      "raw_documents_utf8_sha256": "920d76de69c496252a901b9829acdbdd0f8a9aad170334e98e1c41dd29e7bd8a",
+      "figure_count": 27,
+      "source_record_pointer": "p548-source-public.json#/records/13",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1955,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1955,
+        "de": 6802
+      },
+      "raw_figures_utf8_sha256": "7fbed3eeefd7ce14140173ab20b56583ea5ca7bfe3662e3e9e27abcf113b4078",
+      "raw_documents_utf8_sha256": "920d76de69c496252a901b9829acdbdd0f8a9aad170334e98e1c41dd29e7bd8a",
+      "figure_count": 27,
+      "source_record_pointer": "p548-source-public.json#/records/14",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1956,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1956,
+        "de": 6801
+      },
+      "raw_figures_utf8_sha256": "eab9551bfe74a891b939862e475e9e9ad3aa17cd3d509121d13b54f49b6cd17d",
+      "raw_documents_utf8_sha256": "59e56d4cffa569711d55633e0dc45a70f85d99ca1a419b15338129fb8a17a0cd",
+      "figure_count": 26,
+      "source_record_pointer": "p548-source-public.json#/records/15",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1957,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1957,
+        "de": 6800
+      },
+      "raw_figures_utf8_sha256": "7380bc0d9040933b214220256b7c39ce4a0cd31fd73bf4c2e43f7babac675b75",
+      "raw_documents_utf8_sha256": "08facc067f314e8e8a0f0281f0226d3ac54e5b915de946bb64e27735a0a5dfb7",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/16",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1958,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1958,
+        "de": 6799
+      },
+      "raw_figures_utf8_sha256": "795ac59f742e53d82e5af5e7b098876153114a80bd35bf821f3ad98c37f9a1ae",
+      "raw_documents_utf8_sha256": "37019160c92fd83343b923fd8126aea6f8592fe14daf447b2290b7eb6dd9d204",
+      "figure_count": 26,
+      "source_record_pointer": "p548-source-public.json#/records/17",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1959,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1959,
+        "de": 6798
+      },
+      "raw_figures_utf8_sha256": "6c8749906e9b277cbd58a472c8b81157c624c49f826409b9eedaa5d5a6ddaaf2",
+      "raw_documents_utf8_sha256": "1db3c66efac42b5bce21de7a3f6724cb2a23a87e67fa8a7e856e3a5ba1c1d45e",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/18",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1960,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1960,
+        "de": 6797
+      },
+      "raw_figures_utf8_sha256": "c84e825e86a5d5c76e5c6c06be0ae6ff75360b7578228f8c238d63fe20ea81e7",
+      "raw_documents_utf8_sha256": "1db3c66efac42b5bce21de7a3f6724cb2a23a87e67fa8a7e856e3a5ba1c1d45e",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/19",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1961,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1961,
+        "de": 6796
+      },
+      "raw_figures_utf8_sha256": "bd528385264f63795c578f8001268b28bf138d1279fa461b40e94eebdab435a2",
+      "raw_documents_utf8_sha256": "1db3c66efac42b5bce21de7a3f6724cb2a23a87e67fa8a7e856e3a5ba1c1d45e",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/20",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 1973,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 1973,
+        "de": 6784
+      },
+      "raw_figures_utf8_sha256": "48fe82ba2325bc992ff45c78376a0114a966d87076366d204128e671310fd871",
+      "raw_documents_utf8_sha256": "97c788592194f71eba72df3b26110b3f49e74f18779eb0df7a2690b475a78d3c",
+      "figure_count": 17,
+      "source_record_pointer": "p548-source-public.json#/records/21",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2003,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2003,
+        "de": 6769
+      },
+      "raw_figures_utf8_sha256": "3a7b8c48f3c09aa27b1787a785c0e89b2d33b2e8cc81410a403be61480e9ea70",
+      "raw_documents_utf8_sha256": "4df2cc3a1df0012a802e46b95e7fe4e3ab61211a6ba6fcd73e8a3d89f337206a",
+      "figure_count": 28,
+      "source_record_pointer": "p548-source-public.json#/records/22",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2063,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2063,
+        "de": 6752
+      },
+      "raw_figures_utf8_sha256": "a966981df707caeb4ff15a1c2d7cd20c530e00bc71c24879acf6898d2f3d5b1b",
+      "raw_documents_utf8_sha256": "92d31e633f0e06b1fc9e07f87b77a592ba94d269f1cd31e0f1a7b041c1ab03cb",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/23",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2064,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2064,
+        "de": 6751
+      },
+      "raw_figures_utf8_sha256": "4b928e9b3d053ccc30117b35accc650ee9384448f689be217d89dd220c01e7d5",
+      "raw_documents_utf8_sha256": "92d31e633f0e06b1fc9e07f87b77a592ba94d269f1cd31e0f1a7b041c1ab03cb",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/24",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2067,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2067,
+        "de": 6750
+      },
+      "raw_figures_utf8_sha256": "3015df27514ca7345c5b61e3096c02c73cf9b10a27e9a70e88775e246b7aa8b6",
+      "raw_documents_utf8_sha256": "e96d3ad01a9e9fb5c136e65427a04f12d0b0e0f62f02fc0312e0edf4bae362a3",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/25",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2068,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2068,
+        "de": 6749
+      },
+      "raw_figures_utf8_sha256": "053b5bfbc5cdc09226f83a23951af10e7e35e43ba86648a6842dae233f0197c1",
+      "raw_documents_utf8_sha256": "e96d3ad01a9e9fb5c136e65427a04f12d0b0e0f62f02fc0312e0edf4bae362a3",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/26",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2069,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2069,
+        "de": 6748
+      },
+      "raw_figures_utf8_sha256": "8eb3e8bff2478e8afe186ec606201debaf33d83071d45a8fdab82c53f5a0913c",
+      "raw_documents_utf8_sha256": "e96d3ad01a9e9fb5c136e65427a04f12d0b0e0f62f02fc0312e0edf4bae362a3",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/27",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2070,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2070,
+        "de": 6747
+      },
+      "raw_figures_utf8_sha256": "e9184115a20cd6c7a17b8f2ebc8ab0c8d7e76718d572343b5d1691ef2b93ea7a",
+      "raw_documents_utf8_sha256": "e96d3ad01a9e9fb5c136e65427a04f12d0b0e0f62f02fc0312e0edf4bae362a3",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/28",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2090,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2090,
+        "de": 6738
+      },
+      "raw_figures_utf8_sha256": "e97f6b1a404239e8927320d9416b97a45a1afbe052cfd6543fb5b4242d2269cb",
+      "raw_documents_utf8_sha256": "e96d3ad01a9e9fb5c136e65427a04f12d0b0e0f62f02fc0312e0edf4bae362a3",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/29",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2092,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2092,
+        "de": 6736
+      },
+      "raw_figures_utf8_sha256": "f31fb8b47411f4675088d02c76041bce4a2907d91a371731fec90af8639f6306",
+      "raw_documents_utf8_sha256": "e96d3ad01a9e9fb5c136e65427a04f12d0b0e0f62f02fc0312e0edf4bae362a3",
+      "figure_count": 11,
+      "source_record_pointer": "p548-source-public.json#/records/30",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2093,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2093,
+        "de": 6735
+      },
+      "raw_figures_utf8_sha256": "6eb59ce4954bdc1b7eb07fd7bda469382c7f1e7e886d67706dcfe4e0e046c786",
+      "raw_documents_utf8_sha256": "1f16b3901ea55ff3a9c10274efac1263313a1cb5bf1cd8f19594f043af9adeb1",
+      "figure_count": 17,
+      "source_record_pointer": "p548-source-public.json#/records/31",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2198,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2198,
+        "de": 6730
+      },
+      "raw_figures_utf8_sha256": "43ddd2ee5ada5845c9df9baa90150d5f4fc647e613bf7656b9e71d0c19ee9b18",
+      "raw_documents_utf8_sha256": "df1e26f5465fc164dde11df851ef44d0cd86cc024f0783aac7001b3930578629",
+      "figure_count": 29,
+      "source_record_pointer": "p548-source-public.json#/records/32",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2199,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2199,
+        "de": 6729
+      },
+      "raw_figures_utf8_sha256": "e62df92dac81116f840e348a225e12bf148d5794a7fe54e5011e8a85f3c1a414",
+      "raw_documents_utf8_sha256": "df1e26f5465fc164dde11df851ef44d0cd86cc024f0783aac7001b3930578629",
+      "figure_count": 29,
+      "source_record_pointer": "p548-source-public.json#/records/33",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2281,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2281,
+        "de": 6720
+      },
+      "raw_figures_utf8_sha256": "72e53aa9324361ba11778c73e0e609221dc285fa4ce9dddaaab5c6f88a5057fb",
+      "raw_documents_utf8_sha256": "348e894fe540bba3cccbba8a61b64a4453031a36ab50fbfe028c0695785ce5f7",
+      "figure_count": 21,
+      "source_record_pointer": "p548-source-public.json#/records/34",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2394,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2394,
+        "de": 6717
+      },
+      "raw_figures_utf8_sha256": "6f99d0486d88ea7eaad20bb407ffaa98efdeb8549badc36aae68a747df1610a1",
+      "raw_documents_utf8_sha256": "3155a9d82d7991304e5507d1b504ecfaa0148ed120006782993e2ad4cc540f29",
+      "figure_count": 13,
+      "source_record_pointer": "p548-source-public.json#/records/35",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2397,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2397,
+        "de": 6716
+      },
+      "raw_figures_utf8_sha256": "e8fdf976822d534797c823ec154c305b73c0c2e57ef0106e84b4751fb279fb67",
+      "raw_documents_utf8_sha256": "bf22ef09f43efaaf9cd9e7f16248ebb42c5c6891993abdd219ec63f6af9b3296",
+      "figure_count": 14,
+      "source_record_pointer": "p548-source-public.json#/records/36",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2403,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2403,
+        "de": 6714
+      },
+      "raw_figures_utf8_sha256": "0daae95431366fd0815af34c0c32a0b5a2f9c95bb8dacfc7001ce8453f895cab",
+      "raw_documents_utf8_sha256": "45fa97242e50876137384126ef63880048bd7df325fb31f884ffcccd3e36f82d",
+      "figure_count": 21,
+      "source_record_pointer": "p548-source-public.json#/records/37",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2409,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2409,
+        "de": 6712
+      },
+      "raw_figures_utf8_sha256": "3cdc57265ea7dfa819db86c3646441125006ce4b891a6879579c2ae34693359b",
+      "raw_documents_utf8_sha256": "dc591acd5dd15ac4591745b68aa5c735ff59f0439fccc192337132c609aa8918",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/38",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 2415,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 2415,
+        "de": 6710
+      },
+      "raw_figures_utf8_sha256": "725f9ff7606a9e4fd2f363b6d41ead56949d2d5da67157af58a47dcf8436695f",
+      "raw_documents_utf8_sha256": "41556e262d87952183b5b6ff8bf1c2d24d00a826464254f0342055e54583e958",
+      "figure_count": 11,
+      "source_record_pointer": "p548-source-public.json#/records/39",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3555,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3555,
+        "de": 6691
+      },
+      "raw_figures_utf8_sha256": "cc16e67c96a0a1f0af18be67a129d9119789cc7b731176799b1e2cde3d0ecd02",
+      "raw_documents_utf8_sha256": "429c7edd1324b98252c194ed79859a29b0924b7819b7f0ffee81a8a9246e6f31",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/40",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3556,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3556,
+        "de": 6690
+      },
+      "raw_figures_utf8_sha256": "383c0f962c4c00ed9a0e076c7468acb0eeeeec96884b5ddb1fa66c2cd2517451",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/41",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3557,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3557,
+        "de": 6689
+      },
+      "raw_figures_utf8_sha256": "db7489fa24ced84a70e79cd8f592e8f263d0ba2930c452de069f749270416e31",
+      "raw_documents_utf8_sha256": "4382a527f561c3325decd303f9ac1e088dd5c61745ebd7d6bd10c68f9ca4a546",
+      "figure_count": 2,
+      "source_record_pointer": "p548-source-public.json#/records/42",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3573,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3573,
+        "de": 6676
+      },
+      "raw_figures_utf8_sha256": "0ce003304f29aba0e819cd24a3eb137f0ed373982a1cec75eac45b569c01b947",
+      "raw_documents_utf8_sha256": "fd213167bf76f6802572bfeb5072863ffe4a0b0019ee98459fb46264c5cbf1ff",
+      "figure_count": 1,
+      "source_record_pointer": "p548-source-public.json#/records/43",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3574,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3574,
+        "de": 6675
+      },
+      "raw_figures_utf8_sha256": "99e833d769cb301e23b1203a47a0e250105e7c8f446fd350ba49849a581becee",
+      "raw_documents_utf8_sha256": "429c7edd1324b98252c194ed79859a29b0924b7819b7f0ffee81a8a9246e6f31",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/44",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3575,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3575,
+        "de": 6674
+      },
+      "raw_figures_utf8_sha256": "720c6d925f347ca874a0664801e49366c2e3ca2a6b787902300629b572ec5c46",
+      "raw_documents_utf8_sha256": "429c7edd1324b98252c194ed79859a29b0924b7819b7f0ffee81a8a9246e6f31",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/45",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3576,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3576,
+        "de": 6673
+      },
+      "raw_figures_utf8_sha256": "a78cebcca70b3bc1a5f6e4c29cba9ac7acd375e7a92665542b3a9539dd5ebea2",
+      "raw_documents_utf8_sha256": "429c7edd1324b98252c194ed79859a29b0924b7819b7f0ffee81a8a9246e6f31",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/46",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3577,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3577,
+        "de": 6672
+      },
+      "raw_figures_utf8_sha256": "2e378671649525815bee81cc779262f9517cc27be5c350119053a67b9f5640ce",
+      "raw_documents_utf8_sha256": "7bf0941947bf56229cf6bdd9aab8d6aad636e3c8024122b11cf9d67e46daeb68",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/47",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3578,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3578,
+        "de": 6671
+      },
+      "raw_figures_utf8_sha256": "bd225f56e908e5a70084c718f89435c3adbae0e7d1d694324cf37b6407c3bb2c",
+      "raw_documents_utf8_sha256": "7bf0941947bf56229cf6bdd9aab8d6aad636e3c8024122b11cf9d67e46daeb68",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/48",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3579,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3579,
+        "de": 6670
+      },
+      "raw_figures_utf8_sha256": "240262bac770bd89b5a9bb4ff9c2357fbc98c50be8f60de5dcc06c342e4298f9",
+      "raw_documents_utf8_sha256": "7bf0941947bf56229cf6bdd9aab8d6aad636e3c8024122b11cf9d67e46daeb68",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/49",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3580,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3580,
+        "de": 6669
+      },
+      "raw_figures_utf8_sha256": "7e732744a4b55dd104a78ae9d91a578d56a9750ebd72f10f2403d56042ed18d9",
+      "raw_documents_utf8_sha256": "7bf0941947bf56229cf6bdd9aab8d6aad636e3c8024122b11cf9d67e46daeb68",
+      "figure_count": 23,
+      "source_record_pointer": "p548-source-public.json#/records/50",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3581,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3581,
+        "de": 6668
+      },
+      "raw_figures_utf8_sha256": "b4472d2248a5bb6ec78aa9ec2bda1049a4bd00ae7376ec262bce7578af6e55a4",
+      "raw_documents_utf8_sha256": "0036f6e8793daa5c4108449719d78a12202649e1183ed6ca0b6ba18cec6afae8",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/51",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3582,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3582,
+        "de": 6667
+      },
+      "raw_figures_utf8_sha256": "63b4eeba2c01a9a7b69b9c95e1bb843013638fa726b1cf6dcc34a130ed867244",
+      "raw_documents_utf8_sha256": "9f01e88ce2cd2dad649e4abd8d5f8f910d89f57663d50302a6fa225e960ee59e",
+      "figure_count": 7,
+      "source_record_pointer": "p548-source-public.json#/records/52",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3583,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3583,
+        "de": 6666
+      },
+      "raw_figures_utf8_sha256": "58c0ef41bae56aa818d1c7aba59718d60a8491eb938815573802002160c7588d",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/53",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3584,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3584,
+        "de": 6665
+      },
+      "raw_figures_utf8_sha256": "d77a55deb053b5f4a7b83d476c97178d00c4fef0f15f35e2618ad583ea8907ef",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/54",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3585,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3585,
+        "de": 6664
+      },
+      "raw_figures_utf8_sha256": "90c2a0608a5fd3af876540da31ab7090e5f3f5e0647b044d5d3076972548a8b9",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/55",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3586,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3586,
+        "de": 6663
+      },
+      "raw_figures_utf8_sha256": "053fc7f5ae85234f9f34f386c26b5b6854a1406178982e920060e83dfb00ba92",
+      "raw_documents_utf8_sha256": "4382a527f561c3325decd303f9ac1e088dd5c61745ebd7d6bd10c68f9ca4a546",
+      "figure_count": 2,
+      "source_record_pointer": "p548-source-public.json#/records/56",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3587,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3587,
+        "de": 6662
+      },
+      "raw_figures_utf8_sha256": "346b98299a7edc1dc7d697f5b885efd58236072eeee9ac7dbf223139d75e1209",
+      "raw_documents_utf8_sha256": "4382a527f561c3325decd303f9ac1e088dd5c61745ebd7d6bd10c68f9ca4a546",
+      "figure_count": 2,
+      "source_record_pointer": "p548-source-public.json#/records/57",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3595,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3595,
+        "de": 6654
+      },
+      "raw_figures_utf8_sha256": "e1ac0b9a1da92d94b48da99a7755f7dcc0c06d596790bf55550625332dc261c5",
+      "raw_documents_utf8_sha256": "29e76138e9c77ba296e1c0e0a4d061cb5e22b452a0f00aebf1230a1fd969b590",
+      "figure_count": 51,
+      "source_record_pointer": "p548-source-public.json#/records/58",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3608,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3608,
+        "de": 6653
+      },
+      "raw_figures_utf8_sha256": "76adb651a311ceb8e8be9c0428ad7a8aec9426ef720670fa7527011396583601",
+      "raw_documents_utf8_sha256": "69ad92fc35f1e28fb642e0f747704dac70bc0b55ac1e8018157f2b10f867ad16",
+      "figure_count": 1,
+      "source_record_pointer": "p548-source-public.json#/records/59",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3609,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3609,
+        "de": 6652
+      },
+      "raw_figures_utf8_sha256": "678564bfad8339da607d62f94fd53b52d7719b517b83eeb1268791477bc5c633",
+      "raw_documents_utf8_sha256": "b1019f1508848d12a85d03a5655f2f732afcda93c52032777081dffd4ab73a30",
+      "figure_count": 1,
+      "source_record_pointer": "p548-source-public.json#/records/60",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3611,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3611,
+        "de": 6650
+      },
+      "raw_figures_utf8_sha256": "19ddda742cdace7900b32b64ccd9ec180393c821744bf16426c9ab3894d1c64e",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/61",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3612,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3612,
+        "de": 6649
+      },
+      "raw_figures_utf8_sha256": "0ed28f94c72aef39849057a428f578392defe1c9c432f6e2ad48b0c8dc71fa8a",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/62",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 3618,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 3618,
+        "de": 6643
+      },
+      "raw_figures_utf8_sha256": "bcdae83e63500e3c47466d4cb6b3ac59ff0e0d5f9bed78f43332283b252f9a24",
+      "raw_documents_utf8_sha256": "2602ce746bd9076e31601b735fbb3dbf643decb5171cefb1c9a60244cd55035c",
+      "figure_count": 3,
+      "source_record_pointer": "p548-source-public.json#/records/63",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 4103,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 4103,
+        "de": 6632
+      },
+      "raw_figures_utf8_sha256": "d97415ba749bd73f832db0bc337d638ef772caf54caee91c41075d5a6ce9100b",
+      "raw_documents_utf8_sha256": "1db3c66efac42b5bce21de7a3f6724cb2a23a87e67fa8a7e856e3a5ba1c1d45e",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/64",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 4104,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 4104,
+        "de": 6631
+      },
+      "raw_figures_utf8_sha256": "7d15989673bacffc26046645acdad11f8255e5dd3de02382230d568447202ab9",
+      "raw_documents_utf8_sha256": "1db3c66efac42b5bce21de7a3f6724cb2a23a87e67fa8a7e856e3a5ba1c1d45e",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/65",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 4105,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 4105,
+        "de": 6630
+      },
+      "raw_figures_utf8_sha256": "eed3b832186a5e2d70eb0ae291f28ebb68cd31b50679c910e5cb5db581b724dc",
+      "raw_documents_utf8_sha256": "1db3c66efac42b5bce21de7a3f6724cb2a23a87e67fa8a7e856e3a5ba1c1d45e",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/66",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 4106,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 4106,
+        "de": 6629
+      },
+      "raw_figures_utf8_sha256": "b4ad7d9c3db101c0e5be72dc8f379c4f3f86e7b8f5cdcb4d6887c37cdcbd5fdb",
+      "raw_documents_utf8_sha256": "1db3c66efac42b5bce21de7a3f6724cb2a23a87e67fa8a7e856e3a5ba1c1d45e",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/67",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 4107,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 4107,
+        "de": 6628
+      },
+      "raw_figures_utf8_sha256": "316fd35dd171c0c3e6e0a2ce21dbced98cf2c79ad5abfe56c6a5ea15b9df0072",
+      "raw_documents_utf8_sha256": "92d31e633f0e06b1fc9e07f87b77a592ba94d269f1cd31e0f1a7b041c1ab03cb",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/68",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 4108,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 4108,
+        "de": 6627
+      },
+      "raw_figures_utf8_sha256": "2ddfcda135669d927be3a684b157dbaac0489ddd78b7f9dad696c8aa815b7dd1",
+      "raw_documents_utf8_sha256": "92d31e633f0e06b1fc9e07f87b77a592ba94d269f1cd31e0f1a7b041c1ab03cb",
+      "figure_count": 39,
+      "source_record_pointer": "p548-source-public.json#/records/69",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 4109,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 4109,
+        "de": 6626
+      },
+      "raw_figures_utf8_sha256": "49e025cac734a60b8a96b4c87a2cc83422a759987817384f7ebd86b559b1bbbe",
+      "raw_documents_utf8_sha256": "642a2830fd3a76bcb016c0ee8215dcd8c405a31e551f5e58d82f019f2ca8484b",
+      "figure_count": 48,
+      "source_record_pointer": "p548-source-public.json#/records/70",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6321,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6321,
+        "de": 6599
+      },
+      "raw_figures_utf8_sha256": "c36fe8b021c0b8a73c61c215d1775628eba097746301ee46b05cd17b1f07b3bd",
+      "raw_documents_utf8_sha256": "70ef6c5d624b880ef078532e7574c7bc77250a50c6ea7049aaa359b823c1188e",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/71",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6480,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6480,
+        "de": 6598
+      },
+      "raw_figures_utf8_sha256": "8ca17e34ad20aea60e9aee2c7219a30f4fb7dc89e9554d716f0178ef859f1fdd",
+      "raw_documents_utf8_sha256": "527e0bad25973836316bb178edd86be4a3a2d40a1b205950b4a1cd2e14729dfb",
+      "figure_count": 18,
+      "source_record_pointer": "p548-source-public.json#/records/72",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6481,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6481,
+        "de": 6597
+      },
+      "raw_figures_utf8_sha256": "a688ffe0cab299130f0885e3c161cc11d327b87b3c9516f751549f9a5d40e352",
+      "raw_documents_utf8_sha256": "1b252278262718ee483bec789c7669250a76a090c1d70d4f7c2fae916e79ed28",
+      "figure_count": 9,
+      "source_record_pointer": "p548-source-public.json#/records/73",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6482,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6482,
+        "de": 6596
+      },
+      "raw_figures_utf8_sha256": "30ddb5f057f089c757ac70da815d2096f700dcbdbd904f6caa8d15384aa7173b",
+      "raw_documents_utf8_sha256": "1b252278262718ee483bec789c7669250a76a090c1d70d4f7c2fae916e79ed28",
+      "figure_count": 6,
+      "source_record_pointer": "p548-source-public.json#/records/74",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6483,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6483,
+        "de": 6595
+      },
+      "raw_figures_utf8_sha256": "19e43710105937600f9b2a2c05ea33d02c13d28b062b13f39b4d1d71d9fce893",
+      "raw_documents_utf8_sha256": "a081784451a41d42da6457b582becade8512a67f4ee174b5546b38b85cf6f06c",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/75",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6484,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6484,
+        "de": 6594
+      },
+      "raw_figures_utf8_sha256": "9fb054d814a359125593c88e075e7fe04db384b54eff7b9bc3eab68b3501d639",
+      "raw_documents_utf8_sha256": "a081784451a41d42da6457b582becade8512a67f4ee174b5546b38b85cf6f06c",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/76",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6485,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6485,
+        "de": 6593
+      },
+      "raw_figures_utf8_sha256": "70a9fdc8ee7c9f18c61f7caac70c2b6ba6ac46e505d2c5f6cb6fa4ba4a4d4f7a",
+      "raw_documents_utf8_sha256": "a081784451a41d42da6457b582becade8512a67f4ee174b5546b38b85cf6f06c",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/77",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6486,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6486,
+        "de": 6592
+      },
+      "raw_figures_utf8_sha256": "00eedd0c7560f4428167c8624d99705df32d7e7fa3ddf8f9f5ab787b7138dca6",
+      "raw_documents_utf8_sha256": "a081784451a41d42da6457b582becade8512a67f4ee174b5546b38b85cf6f06c",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/78",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6487,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6487,
+        "de": 6591
+      },
+      "raw_figures_utf8_sha256": "0b902c96d0a293a6cae2d933dfb1f983043b5fd0126d27a617e50615e8ad1ba3",
+      "raw_documents_utf8_sha256": "a081784451a41d42da6457b582becade8512a67f4ee174b5546b38b85cf6f06c",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/79",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6488,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6488,
+        "de": 6590
+      },
+      "raw_figures_utf8_sha256": "0d8f6a3466db36541fbc9427ed93b53c0b9c1de17c04028608029f67965fea5f",
+      "raw_documents_utf8_sha256": "a081784451a41d42da6457b582becade8512a67f4ee174b5546b38b85cf6f06c",
+      "figure_count": 15,
+      "source_record_pointer": "p548-source-public.json#/records/80",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6506,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6506,
+        "de": 6589
+      },
+      "raw_figures_utf8_sha256": "1ffa582443ee3cd6c927d122b732c74395d412a8ef94b109c132c1a25b46df82",
+      "raw_documents_utf8_sha256": "10f2e2cacd51b2d5fb29e9d554be5dbb139345e15c3cf87c9ffbf0802bc36e88",
+      "figure_count": 20,
+      "source_record_pointer": "p548-source-public.json#/records/81",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6507,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6507,
+        "de": 6588
+      },
+      "raw_figures_utf8_sha256": "82051b73a2abe80c217870f20173c8751cde9c6eeda2eb11b8ed251ebf72cf75",
+      "raw_documents_utf8_sha256": "daae131482850a2031d974e344e166497aad76ff399751cbe298e1b0c740ec09",
+      "figure_count": 47,
+      "source_record_pointer": "p548-source-public.json#/records/82",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6508,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6508,
+        "de": 6587
+      },
+      "raw_figures_utf8_sha256": "d6999686edd564d9faae4d8f00925efdb650f699ca3391141f1ddec08f5f9355",
+      "raw_documents_utf8_sha256": "daae131482850a2031d974e344e166497aad76ff399751cbe298e1b0c740ec09",
+      "figure_count": 47,
+      "source_record_pointer": "p548-source-public.json#/records/83",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6509,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6509,
+        "de": 6586
+      },
+      "raw_figures_utf8_sha256": "4f4eeed471cda80eea2eebd848f560a4e38d26620b04c3b8936955254761e1a5",
+      "raw_documents_utf8_sha256": "daae131482850a2031d974e344e166497aad76ff399751cbe298e1b0c740ec09",
+      "figure_count": 47,
+      "source_record_pointer": "p548-source-public.json#/records/84",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6510,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6510,
+        "de": 6585
+      },
+      "raw_figures_utf8_sha256": "414c00245db5ac2d29bb92993f9df8e047108409eea3151d70a089e6344f95a1",
+      "raw_documents_utf8_sha256": "daae131482850a2031d974e344e166497aad76ff399751cbe298e1b0c740ec09",
+      "figure_count": 47,
+      "source_record_pointer": "p548-source-public.json#/records/85",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6511,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6511,
+        "de": 6584
+      },
+      "raw_figures_utf8_sha256": "0ad1e1c7e412eb31396328646addf56ae1273aca0b26715969472cf29e4653d1",
+      "raw_documents_utf8_sha256": "daae131482850a2031d974e344e166497aad76ff399751cbe298e1b0c740ec09",
+      "figure_count": 47,
+      "source_record_pointer": "p548-source-public.json#/records/86",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6512,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6512,
+        "de": 6583
+      },
+      "raw_figures_utf8_sha256": "1ceffcbda89c093d74b68a45b01c75731538c2f8b40673b32330c16d08b06b69",
+      "raw_documents_utf8_sha256": "7014de022736d9b8de20b2620a0d8db6bf908f4ef40ccc21046c9620d9f50dd5",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/87",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6513,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6513,
+        "de": 6582
+      },
+      "raw_figures_utf8_sha256": "4ac6ac227915a1997af7f3d7e99f0817a3702b36ef144e5658fdcd59d74571b9",
+      "raw_documents_utf8_sha256": "7014de022736d9b8de20b2620a0d8db6bf908f4ef40ccc21046c9620d9f50dd5",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/88",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6514,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6514,
+        "de": 6581
+      },
+      "raw_figures_utf8_sha256": "e28b79799e8e74227f3371261e9ed644ab8ec098cf156ff47d17212ad3390261",
+      "raw_documents_utf8_sha256": "7014de022736d9b8de20b2620a0d8db6bf908f4ef40ccc21046c9620d9f50dd5",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/89",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6515,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6515,
+        "de": 6580
+      },
+      "raw_figures_utf8_sha256": "cb510f197190fab9cad0e1b0b73c6e9572700805a93a09fc210e711ede76a43e",
+      "raw_documents_utf8_sha256": "7014de022736d9b8de20b2620a0d8db6bf908f4ef40ccc21046c9620d9f50dd5",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/90",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6516,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6516,
+        "de": 6579
+      },
+      "raw_figures_utf8_sha256": "f06743060ce08226b710b6ec83c3720a3ad414107d3e336c36efd811e904daf6",
+      "raw_documents_utf8_sha256": "7014de022736d9b8de20b2620a0d8db6bf908f4ef40ccc21046c9620d9f50dd5",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/91",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6517,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6517,
+        "de": 6578
+      },
+      "raw_figures_utf8_sha256": "8faa149b25b20cc1f9385f2b207fcca6c4595e97b79c9e3878006b1272a57ed5",
+      "raw_documents_utf8_sha256": "7014de022736d9b8de20b2620a0d8db6bf908f4ef40ccc21046c9620d9f50dd5",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/92",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6518,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6518,
+        "de": 6577
+      },
+      "raw_figures_utf8_sha256": "19d5303d59d08d77f8f4e545a11f2edb50e79d4f511d24ab76a7e595207d38cb",
+      "raw_documents_utf8_sha256": "7014de022736d9b8de20b2620a0d8db6bf908f4ef40ccc21046c9620d9f50dd5",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/93",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6519,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6519,
+        "de": 6576
+      },
+      "raw_figures_utf8_sha256": "da31ea31888ac95fce80dee0379e44a4ce82432b64e62ecae8c804fac780ff71",
+      "raw_documents_utf8_sha256": "ee3d5a5d7dab7bb6349f12cf7b633a64bb2b7c937c701a771e2d150361c4ff20",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/94",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6520,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6520,
+        "de": 6575
+      },
+      "raw_figures_utf8_sha256": "b320a14b49fa285749e789281339c61939f8109d8e9157363880f5db6954bc70",
+      "raw_documents_utf8_sha256": "ee3d5a5d7dab7bb6349f12cf7b633a64bb2b7c937c701a771e2d150361c4ff20",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/95",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6521,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6521,
+        "de": 6574
+      },
+      "raw_figures_utf8_sha256": "cbd7f787cfe92e456e7f78f12ee80089bbce983c434fca8371e43d1c4536852b",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/96",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6522,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6522,
+        "de": 6573
+      },
+      "raw_figures_utf8_sha256": "4cc3eb086088646f39d10f9899486d29c8b26d5d5543addb5ef236334c02d2a5",
+      "raw_documents_utf8_sha256": "fb18ae3b35cdc43d8b4ce82a5e13592ab1b9e7e58303042d0dcf7836d7733907",
+      "figure_count": 16,
+      "source_record_pointer": "p548-source-public.json#/records/97",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6523,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6523,
+        "de": 6572
+      },
+      "raw_figures_utf8_sha256": "83fe5991d5feba0c0119e22c626afcd0b86b75aa1d93c673dee586414d22e554",
+      "raw_documents_utf8_sha256": "ba0278e2e565a373a3dbd6b2ec8fa89d0048acf2c7a3c2b810a231f1a75bc4b1",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/98",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6524,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6524,
+        "de": 6571
+      },
+      "raw_figures_utf8_sha256": "c36b6e064ff6992232e70613b980f8c790472245d91b70a173719446f9da1e2f",
+      "raw_documents_utf8_sha256": "ba0278e2e565a373a3dbd6b2ec8fa89d0048acf2c7a3c2b810a231f1a75bc4b1",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/99",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6525,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6525,
+        "de": 6570
+      },
+      "raw_figures_utf8_sha256": "745b787cb53e0f839339cf41233f3841b2061bf4cfbcd527b4a850c8ef79abeb",
+      "raw_documents_utf8_sha256": "ba0278e2e565a373a3dbd6b2ec8fa89d0048acf2c7a3c2b810a231f1a75bc4b1",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/100",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6526,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6526,
+        "de": 6569
+      },
+      "raw_figures_utf8_sha256": "ee56161c426893764c5f78385d9fc8a2e2ca13a10ca9bda59ddd9c8a67b5e702",
+      "raw_documents_utf8_sha256": "ba0278e2e565a373a3dbd6b2ec8fa89d0048acf2c7a3c2b810a231f1a75bc4b1",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/101",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6527,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6527,
+        "de": 6568
+      },
+      "raw_figures_utf8_sha256": "3c653fb2133afbf73a9ed930d67b0dda8979a567ecfc065e6d77891f4eb25e10",
+      "raw_documents_utf8_sha256": "ba0278e2e565a373a3dbd6b2ec8fa89d0048acf2c7a3c2b810a231f1a75bc4b1",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/102",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6528,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6528,
+        "de": 6567
+      },
+      "raw_figures_utf8_sha256": "4883b2825c6ec3265f402a80368a873974e9200833c0b56fdd4b269e1a5e8b54",
+      "raw_documents_utf8_sha256": "ba0278e2e565a373a3dbd6b2ec8fa89d0048acf2c7a3c2b810a231f1a75bc4b1",
+      "figure_count": 25,
+      "source_record_pointer": "p548-source-public.json#/records/103",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6529,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6529,
+        "de": 6566
+      },
+      "raw_figures_utf8_sha256": "17fc217317481644479b1f75b3058ea82dea82b42e9b89c8c976c7d130416911",
+      "raw_documents_utf8_sha256": "f35edb403f6aaa4b202ce9b4a8c6b34f9d72fe9c6571b79cb0e867dc013fc54f",
+      "figure_count": 9,
+      "source_record_pointer": "p548-source-public.json#/records/104",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    },
+    {
+      "canonical_product_id": 6530,
+      "canonical_language": "en",
+      "translation_ids": {
+        "en": 6530,
+        "de": 6565
+      },
+      "raw_figures_utf8_sha256": "4a9bdc9a6b3a93128116e9f4936aa85ebc8337fb1ba7e06f9a23fa3dc15f5e16",
+      "raw_documents_utf8_sha256": "f35edb403f6aaa4b202ce9b4a8c6b34f9d72fe9c6571b79cb0e867dc013fc54f",
+      "figure_count": 10,
+      "source_record_pointer": "p548-source-public.json#/records/105",
+      "raw_entry_contract": "Preserve original value/unit/value_de/citation/evidence_refs/qualifier/note including missing-versus-present; do not infer typed physical semantics from key names."
+    }
+  ],
+  "opaque_source_refs": {
+    "goodwe_hca_etr_docs_2026_07_28": 6,
+    "ecoflow_powerocean_component_docs_2026_07_28": 1,
+    "saj_accessory_docs_2026_07_28": 1
+  },
+  "inventory_content_sha256": "2962ccf863bbb18fe89716ed51c928e9051f38a02a4c90cd8d61ebe1a0399087"
+}

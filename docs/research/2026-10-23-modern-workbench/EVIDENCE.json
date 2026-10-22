@@ -1,0 +1,1292 @@
+{
+  "date": "2026-10-23",
+  "baseline_head": "6544c23bc0fc2b7f31ec420e130aa069a2af3564",
+  "tiers": {
+    "O": "Inherited actual browser operation evidence, not rerun here",
+    "S": "Static fixed source inspected in this investigation",
+    "P": "Primary official descriptions/docs, not product execution",
+    "I": "Our proposed design or acceptance contract, not implemented capability"
+  },
+  "archive": {
+    "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-calculation-550/docs/research/2026-10-22-trace-software-access/reusable/raw/aladdin-7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa.zip",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "sha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "executed": false,
+    "secrets_or_service_configuration_read_or_copied": false
+  },
+  "zip_sources": [
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/localFileManager.tsx",
+      "sha256": "8070a59869b227729581be58dcf8f958ef37ec6718f775f4d3997a635a21fc5d",
+      "bytes": 9069,
+      "lines": 272,
+      "read_ranges": [
+        [
+          128,
+          162
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/localFileManager.tsx"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/stores/common.ts",
+      "sha256": "643876d22b5be499479372216c0413a0efff699facfafe87da94f72f379db428",
+      "bytes": 239576,
+      "lines": 5486,
+      "read_ranges": [
+        [
+          772,
+          779
+        ],
+        [
+          798,
+          905
+        ],
+        [
+          5424,
+          5482
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/stores/common.ts"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/undo/UndoManager.ts",
+      "sha256": "d628e03ae8a49431e1f9ef22b66367abe050a65bb9b885b64ce8c547c3ee92b0",
+      "bytes": 2478,
+      "lines": 103,
+      "read_ranges": [
+        [
+          21,
+          59
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/undo/UndoManager.ts"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/keyboardListener.tsx",
+      "sha256": "7baaa8482032b93e5a907b70f0fa506b6877252f4120d531b29b6d2bf4124091",
+      "bytes": 57876,
+      "lines": 1521,
+      "read_ranges": [
+        [
+          63,
+          105
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/keyboardListener.tsx"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/components/contextMenu/elementMenu/solarPanelMenu/solarPanelTiltAngleInput.tsx",
+      "sha256": "abda01701ad812223bb37c66f1de05722e9f7e9adfef8a5723624fc23001d6dc",
+      "bytes": 20991,
+      "lines": 550,
+      "read_ranges": [
+        [
+          59,
+          140
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/components/contextMenu/elementMenu/solarPanelMenu/solarPanelTiltAngleInput.tsx"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/modeltree/modelTree.tsx",
+      "sha256": "b02427d44d23c4563d1a04430649a9f0ede576dba268d324d11b9fbe3a85fe39",
+      "bytes": 11804,
+      "lines": 323,
+      "read_ranges": [
+        [
+          62,
+          82
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/modeltree/modelTree.tsx"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/panels/simulationControlPanel.tsx",
+      "sha256": "5da7b919aa764c04d5b2f869b3831925284a27156266fb4169dbddad111ec3cd",
+      "bytes": 7498,
+      "lines": 225,
+      "read_ranges": [
+        [
+          34,
+          199
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/panels/simulationControlPanel.tsx"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/stores/commonData.ts",
+      "sha256": "38c2505e9b4c8f242b156e9d3e4178c55fcf9835207bbb8e0f4370b5aea15c50",
+      "bytes": 18878,
+      "lines": 576,
+      "read_ranges": [
+        [
+          22,
+          34
+        ],
+        [
+          221,
+          233
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/stores/commonData.ts"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/panels/projectGallery.tsx",
+      "sha256": "1b0dcf5a416d3232f344727e12a6a9463f50c89cec72eb2ce870d2e7ad6ef526",
+      "bytes": 121122,
+      "lines": 2898,
+      "read_ranges": [
+        [
+          193,
+          207
+        ],
+        [
+          402,
+          435
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/panels/projectGallery.tsx"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/panels/ProjectUtil.ts",
+      "sha256": "b1f6605a58967371458f439dc261072fb6f3bc87690f869bdd7d8d51af3737f5",
+      "bytes": 21927,
+      "lines": 467,
+      "read_ranges": [
+        [
+          25,
+          43
+        ],
+        [
+          338,
+          403
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/panels/ProjectUtil.ts"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/components/parallelCoordinates.tsx",
+      "sha256": "fa8e87235a4866916bdab73244d9673c18430712a11febdbb0b486a6ee9eb557",
+      "bytes": 5365,
+      "lines": 204,
+      "read_ranges": [
+        [
+          29,
+          47
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/components/parallelCoordinates.tsx"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/stores/SolarPanelArrayLayoutConstraints.ts",
+      "sha256": "c13bfd2311e3a13d2a122245e884d8d4072cdb6eef7688aded33a94520aa6422",
+      "bytes": 496,
+      "lines": 20,
+      "read_ranges": [
+        [
+          7,
+          19
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/stores/SolarPanelArrayLayoutConstraints.ts"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/models/BatteryStorageModel.ts",
+      "sha256": "acbd3778b6030c856d77b2f2efbc1dffff062dd4c7e662fe4067485e7296216e",
+      "bytes": 368,
+      "lines": 13,
+      "read_ranges": [
+        [
+          7,
+          12
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/models/BatteryStorageModel.ts"
+    },
+    {
+      "evidence_tier": "S",
+      "path_in_zip": "src/models/SolarPanelModel.ts",
+      "sha256": "33376214bef6ae48c34bced1ab071987c168cb84ab083223cbb2cf08c4fd7582",
+      "bytes": 737,
+      "lines": 23,
+      "read_ranges": [
+        [
+          9,
+          22
+        ]
+      ],
+      "fixed_source_url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/models/SolarPanelModel.ts"
+    }
+  ],
+  "existing_evidence": [
+    {
+      "evidence_tier": "O",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-trace-software-access/docs/research/2026-10-22-trace-software-access/README.md",
+      "sha256": "9855897469fe5da33535376b70faffd9deb4a4e9980ad22da5d9c8bb54725d02",
+      "note": "Actual Aladdin open/analyse/export/reopen and PV*SOL configuration; exact limits retained"
+    },
+    {
+      "evidence_tier": "S+P",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-calculation-550/docs/research/2026-10-22-trace-software-access/reusable/README.md",
+      "sha256": "02f4ce698efc679a55bff6abcb7c4ce93d34d5f9f820b1dc5da4e1ef826cdc2e",
+      "note": "Fixed archive, native files/default migration, sampling and SDK boundaries"
+    },
+    {
+      "evidence_tier": "P",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-experience-549/docs/research/2026-10-22-trace-software-access/trace/README.md",
+      "sha256": "5ca74fab1c7c171ba0ca974b3c4d89e151771f31233871a95b15bb35db973ba4",
+      "note": "Official product/engineering handoff documents; no designer access"
+    },
+    {
+      "evidence_tier": "I",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-system-route-548/docs/research/2026-10-22-roof-system-rebuild/ARCHITECTURE.md",
+      "sha256": "0d3c8ed6c626949a81e745e465f69a21f4289cba8ee63c512bb796833795db98",
+      "note": "Unified authority and module design"
+    },
+    {
+      "evidence_tier": "I",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-system-route-548/docs/research/2026-10-22-roof-system-rebuild/SITE-IMPACT.md",
+      "sha256": "eb7620ef062f633c24f2adc8d4b8c36a3bae5aa2002180720727777311d2e786",
+      "note": "Whole-site consumer integration contract"
+    },
+    {
+      "evidence_tier": "S+I",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-experience-549/docs/research/2026-10-22-planning-site-impact/entry-content/README.md",
+      "sha256": "36761d85ec959ff28ad86bb990b56ef109f63b37cd11e3cc80f691c01a07a3a9",
+      "note": "Prior fixed static/HTTP/browser consumers, future acceptance separated"
+    },
+    {
+      "evidence_tier": "P+I",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-experience-549/docs/research/2026-10-22-roof-experience/hardware-study/README.md",
+      "sha256": "051d29334ca735d1196e573772d6db6e487268593da11ce786ab11052002c938",
+      "note": "Hardware original pages/conditions, typed capability graph"
+    },
+    {
+      "evidence_tier": "P+I",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/research/2026-10-22-planning-implementation/NUMERICAL-MODELS.md",
+      "sha256": "cf15749ac04cc59d12930c37316b0b3ca2781d9e37190449c3415de6e96dc006",
+      "note": "Numerical models/limits and verification contract"
+    },
+    {
+      "evidence_tier": "P+I",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/research/2026-10-22-planning-implementation/MAP-ADAPTER.md",
+      "sha256": "f38b27d837ea607cc9eafa88eb65b657b7c7c67e8f7589b9cea89d2296f0310d",
+      "note": "Resolved map/source retention and geometry boundaries; old runtime recommendation superseded"
+    },
+    {
+      "evidence_tier": "P+I",
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/research/2026-10-23-3d-workspace/STACK-EVIDENCE.md",
+      "sha256": "672c4ad84266ae0634783b3b4f621246c92b525c858bd7eb40a5110898916a97",
+      "note": "Existing current modern stack evidence; not re-researched"
+    }
+  ],
+  "scope_limits": [
+    "No downloaded source execution",
+    "No business/configuration changes or commits",
+    "Current uncommitted root work excluded from implementation assessment",
+    "No new competitor browser interaction",
+    "All future work packages in CAPABILITY-MAP are design, not release claims"
+  ],
+  "new_collection_runs": [
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://registry.npmjs.org/@tanstack%2freact-query/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/echarts/latest"
+          },
+          {
+            "url": "https://registry.npmjs.org/ajv/latest"
+          },
+          {
+            "url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation"
+          },
+          {
+            "url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations"
+          },
+          {
+            "url": "https://echarts.apache.org/handbook/en/best-practices/aria/"
+          },
+          {
+            "url": "https://echarts.apache.org/handbook/en/concepts/data-transform/"
+          },
+          {
+            "url": "https://echarts.apache.org/en/option.html#dataZoom"
+          },
+          {
+            "url": "https://ajv.js.org/json-schema.html"
+          },
+          {
+            "url": "https://ajv.js.org/guide/typescript.html"
+          },
+          {
+            "url": "https://ajv.js.org/license.html"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 11,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "saveContentTypes": "application/json",
+        "removeCookieWarnings": true,
+        "respectRobotsTxtFile": false,
+        "customHttpHeaders": {
+          "User-Agent": "python-requests/2.32.5"
+        }
+      },
+      "id": "WFuOhrrXb7SleNVqD",
+      "defaultDatasetId": "mcT7d03NPcJhGzTLx",
+      "defaultKeyValueStoreId": "l2dOQZd9biUsQBsNw",
+      "status": "SUCCEEDED",
+      "options": {
+        "memory": 1024,
+        "maxConcurrency": 2
+      },
+      "startedAt": "2026-10-22T18:50:24.783Z",
+      "finishedAt": "2026-10-22T18:50:33.396Z",
+      "usageTotalUsd": 6.087687049971687e-05,
+      "statusMessage": "Finished! Total 11 requests: 8 succeeded, 3 failed."
+    },
+    {
+      "actor": "apify/website-content-crawler",
+      "input": {
+        "startUrls": [
+          {
+            "url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/tutorial/data-zoom.md"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/option/component/aria.md"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/apache/echarts/6.1.0/src/component/aria/AriaModel.ts"
+          },
+          {
+            "url": "https://raw.githubusercontent.com/apache/echarts/6.1.0/LICENSE"
+          }
+        ],
+        "crawlerType": "cheerio",
+        "maxCrawlDepth": 0,
+        "maxCrawlPages": 4,
+        "maxConcurrency": 2,
+        "initialConcurrency": 2,
+        "saveMarkdown": true,
+        "saveHtml": false,
+        "saveContentTypes": "text/plain",
+        "respectRobotsTxtFile": false
+      },
+      "id": "cAJPI80njVeY1FeMF",
+      "defaultDatasetId": "PAtC5OLSpVC3RCafe",
+      "defaultKeyValueStoreId": "thB3235Tsy1FwBeGK",
+      "status": "SUCCEEDED",
+      "options": {
+        "memory": 1024,
+        "maxConcurrency": 2
+      },
+      "startedAt": "2026-10-22T18:56:56.798Z",
+      "finishedAt": "2026-10-22T18:57:04.710Z",
+      "usageTotalUsd": 0.0020906542602082095,
+      "statusMessage": "Finished! Total 4 requests: 0 succeeded, 4 failed."
+    }
+  ],
+  "new_library_metadata": [
+    {
+      "source_url": "https://registry.npmjs.org/@tanstack%2freact-query/latest",
+      "retrieved_at": "2026-10-22T18:50:27.529Z",
+      "apify_record": "/v2/key-value-stores/l2dOQZd9biUsQBsNw/records/file-48e88e0-latest",
+      "sha256": "ab91127ddbadcd6a52f2cdcfaff40afbacf8f11a3527a29fb06ca45c3eef246c",
+      "bytes": 4458,
+      "original_metadata": {
+        "dist": {
+          "shasum": "a7c4d9317fbbdab79a1cb0c6191d3fe689a823f8",
+          "tarball": "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.104.5.tgz",
+          "fileCount": 410,
+          "integrity": "sha512-RORgFe052U+93weaNuqg7qHq7vNVNzXN/VrXqD4bbAuQCWUqOl2lV5Ui9flWk5CVvMyL/Bh27QWhzwH0aaOx9g==",
+          "signatures": [
+            {
+              "sig": "MEQCIFUzXfYi+LRopVRT4ZoWlILaV+npdq8hIUc6MSdq0dQnAiA9CfD96EX1GwKpKbMI9GqPrsecBTzP8nrMwQzmRkpFDQ==",
+              "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+            },
+            {
+              "sig": "MEYCIQCZLe6iz27ibwcmBgJvjFutMTW3+bLeJiVsgjYMp69CTgIhANU8WStHGpSS3S6fEg/0SksASBT0KF+SOBeUP3YywN1/",
+              "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+            }
+          ],
+          "attestations": {
+            "url": "https://registry.npmjs.org/-/npm/v1/attestations/@tanstack%2freact-query@5.104.5",
+            "provenance": {
+              "predicateType": "https://slsa.dev/provenance/v1"
+            }
+          },
+          "unpackedSize": 1796659
+        },
+        "main": "build/legacy/index.cjs",
+        "name": "@tanstack/react-query",
+        "type": "module",
+        "types": "build/legacy/index.d.ts",
+        "author": "tannerlinsley",
+        "module": "build/legacy/index.js",
+        "exports": {
+          ".": {
+            "import": {
+              "types": "./build/modern/index.d.ts",
+              "default": "./build/modern/index.js"
+            },
+            "require": {
+              "types": "./build/modern/index.d.cts",
+              "default": "./build/modern/index.cjs"
+            },
+            "@tanstack/custom-condition": "./src/index.ts"
+          },
+          "./package.json": "./package.json"
+        },
+        "funding": {
+          "url": "https://github.com/sponsors/tannerlinsley",
+          "type": "github"
+        },
+        "license": "MIT",
+        "scripts": {
+          "build": "pnpm build:tsdown && pnpm build:codemods",
+          "clean": "premove ./build ./coverage ./dist-ts ./.cache/test-types",
+          "compile": "tsc --project tsconfig.json",
+          "test:lib": "vitest",
+          "test:build": "publint --strict && attw --pack",
+          "test:types": "npm-run-all --serial test:types:*",
+          "test:oxlint": "oxlint ./src",
+          "build:tsdown": "tsdown --tsconfig tsconfig.prod.json",
+          "test:lib:dev": "pnpm run test:lib --watch",
+          "build:codemods": "rm -rf ./build/codemods && mkdir ./build/codemods && cp -r ../query-codemods/src/* ./build/codemods",
+          "test:types:ts57": "node ../../node_modules/typescript57/lib/tsc.js --project tsconfig.legacy.json --outDir .cache/test-types/ts57 --tsBuildInfoFile .cache/test-types/ts57.tsbuildinfo",
+          "test:types:ts58": "node ../../node_modules/typescript58/lib/tsc.js --project tsconfig.legacy.json --outDir .cache/test-types/ts58 --tsBuildInfoFile .cache/test-types/ts58.tsbuildinfo",
+          "test:types:ts59": "node ../../node_modules/typescript59/lib/tsc.js --project tsconfig.legacy.json --outDir .cache/test-types/ts59 --tsBuildInfoFile .cache/test-types/ts59.tsbuildinfo",
+          "test:types:ts70": "node ../../node_modules/typescript70/lib/tsc.js --project tsconfig.legacy.json --outDir .cache/test-types/ts70 --tsBuildInfoFile .cache/test-types/ts70.tsbuildinfo",
+          "test:types:ts71": "node ../../node_modules/typescript71/lib/tsc.js --project tsconfig.legacy.json --outDir .cache/test-types/ts71 --tsBuildInfoFile .cache/test-types/ts71.tsbuildinfo",
+          "test:types:tscurrent": "tsc --project tsconfig.json --outDir .cache/test-types/tscurrent --tsBuildInfoFile .cache/test-types/tscurrent.tsbuildinfo"
+        },
+        "_npmUser": {
+          "name": "GitHub Actions",
+          "email": "npm-oidc-no-reply@github.com",
+          "trustedPublisher": {
+            "id": "github",
+            "oidcConfigId": "723a6f52-dd1e-45dd-997e-011d5c0b77a0"
+          }
+        },
+        "homepage": "https://tanstack.com/query",
+        "repository": {
+          "url": "git+https://github.com/TanStack/query.git",
+          "type": "git",
+          "directory": "packages/react-query"
+        },
+        "description": "Hooks for managing, caching and syncing asynchronous and remote data in React",
+        "directories": {},
+        "maintainers": [
+          {
+            "name": "tannerlinsley",
+            "email": "tannerlinsley@gmail.com"
+          },
+          {
+            "name": "alemtuzlak",
+            "email": "t.zlak97@gmail.com"
+          },
+          {
+            "name": "kevinvandy",
+            "email": "kevinvandy656@gmail.com"
+          }
+        ],
+        "sideEffects": false,
+        "dependencies": {
+          "@tanstack/query-core": "5.104.5"
+        },
+        "react-native": "src/index.ts",
+        "_hasShrinkwrap": false,
+        "devDependencies": {
+          "react": "^19.2.1",
+          "react-dom": "^19.2.1",
+          "typescript": "6.0.3",
+          "@types/react": "^19.2.7",
+          "@types/react-dom": "^19.2.3",
+          "@vitejs/plugin-react": "^6.1.1",
+          "react-error-boundary": "^4.1.2",
+          "@testing-library/react": "^16.1.0",
+          "eslint-plugin-react-hooks": "^7.1.1",
+          "@tanstack/query-test-utils": "0.0.0",
+          "@eslint-react/eslint-plugin": "^5.23.3",
+          "@tanstack/query-persist-client-core": "5.104.5",
+          "@testing-library/react-render-stream": "^2.0.2"
+        },
+        "peerDependencies": {
+          "react": "^18 || ^19",
+          "@types/react": "^18 || ^19"
+        },
+        "peerDependenciesMeta": {
+          "@types/react": {
+            "optional": true
+          }
+        },
+        "_npmOperationalInternal": {
+          "tmp": "tmp/react-query_5.104.5_1792429070331_0.5951986596771848",
+          "host": "s3://npm-registry-packages-npm-production"
+        },
+        "_id": "@tanstack/react-query@5.104.5",
+        "version": "5.104.5"
+      }
+    },
+    {
+      "source_url": "https://registry.npmjs.org/echarts/latest",
+      "retrieved_at": "2026-10-22T18:50:27.537Z",
+      "apify_record": "/v2/key-value-stores/l2dOQZd9biUsQBsNw/records/file-4797ffa-latest",
+      "sha256": "640d71661f0694b6e6c9be81782f3fe46a942f01821b523153a9a431adfce47d",
+      "bytes": 11001,
+      "original_metadata": {
+        "bugs": {
+          "url": "https://github.com/apache/echarts/issues",
+          "email": "dev@echarts.apache.org"
+        },
+        "dist": {
+          "shasum": "ae0f68590f5ebbd728d900907c27acde7c5456d1",
+          "tarball": "https://registry.npmjs.org/echarts/-/echarts-6.1.0.tgz",
+          "fileCount": 1347,
+          "integrity": "sha512-q0yaFPggC9FUdsWH4blavRWFmxdrIodbkoKNAjJudAI6CA9gNPxHtV2RcZNEepZVlk4yvBYkOkbk6HIVpIyHZA==",
+          "signatures": [
+            {
+              "sig": "MEUCIQClkjyWPam4Oc7iOmoM2dEGH/WElm1p7G8bfZ5h/3QA8QIgD95Mn15yKiWJAINbzPvrHIRi3TBOj3xjaAnIom6ZdEo=",
+              "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+            }
+          ],
+          "unpackedSize": 60297703
+        },
+        "main": "dist/echarts.js",
+        "name": "echarts",
+        "type": "module",
+        "types": "types/dist/echarts.d.cts",
+        "unpkg": "dist/echarts.min.js",
+        "module": "index.js",
+        "exports": {
+          ".": {
+            "types": {
+              "import": "./types/dist/all.d.ts",
+              "default": "./types/dist/all.d.ts",
+              "require": "./types/dist/echarts.d.cts"
+            },
+            "import": "./index.js",
+            "default": "./index.js",
+            "require": "./dist/echarts.js"
+          },
+          "./*": "./*",
+          "./core": "./core.js",
+          "./index": "./index.js",
+          "./charts": "./charts.js",
+          "./i18n/*": "./i18n/*",
+          "./core.js": "./core.js",
+          "./theme/*": "./theme/*",
+          "./features": "./features.js",
+          "./index.js": "./index.js",
+          "./charts.js": "./charts.js",
+          "./renderers": "./renderers.js",
+          "./components": "./components.js",
+          "./features.js": "./features.js",
+          "./index.blank": "./index.blank.js",
+          "./lib/echarts": "./lib/echarts.js",
+          "./dist/echarts": "./dist/echarts.js",
+          "./index.common": "./index.common.js",
+          "./index.simple": "./index.simple.js",
+          "./renderers.js": "./renderers.js",
+          "./components.js": "./components.js",
+          "./lib/chart/bar": "./lib/chart/bar.js",
+          "./lib/chart/map": "./lib/chart/map.js",
+          "./lib/chart/pie": "./lib/chart/pie.js",
+          "./lib/extension": "./lib/extension.js",
+          "./index.blank.js": "./index.blank.js",
+          "./lib/chart/line": "./lib/chart/line.js",
+          "./lib/chart/tree": "./lib/chart/tree.js",
+          "./lib/echarts.js": "./lib/echarts.js",
+          "./types/dist/all": "./types/dist/all.d.ts",
+          "./index.common.js": "./index.common.js",
+          "./index.simple.js": "./index.simple.js",
+          "./lib/chart/chord": "./lib/chart/chord.js",
+          "./lib/chart/gauge": "./lib/chart/gauge.js",
+          "./lib/chart/graph": "./lib/chart/graph.js",
+          "./lib/chart/lines": "./lib/chart/lines.js",
+          "./lib/chart/radar": "./lib/chart/radar.js",
+          "./types/dist/core": "./types/dist/core.d.ts",
+          "./dist/echarts.esm": "./dist/echarts.esm.mjs",
+          "./dist/echarts.min": "./dist/echarts.min.js",
+          "./lib/chart/custom": "./lib/chart/custom.js",
+          "./lib/chart/funnel": "./lib/chart/funnel.js",
+          "./lib/chart/sankey": "./lib/chart/sankey.js",
+          "./lib/extension.js": "./lib/extension.js",
+          "./ssr/client/index": {
+            "types": "./ssr/client/index.d.ts",
+            "import": "./ssr/client/index.js",
+            "require": "./ssr/client/dist/index.js"
+          },
+          "./lib/chart/boxplot": "./lib/chart/boxplot.js",
+          "./lib/chart/heatmap": "./lib/chart/heatmap.js",
+          "./lib/chart/scatter": "./lib/chart/scatter.js",
+          "./lib/chart/treemap": "./lib/chart/treemap.js",
+          "./lib/component/geo": "./lib/component/geo.js",
+          "./types/dist/charts": "./types/dist/charts.d.ts",
+          "./types/dist/option": "./types/dist/option.d.ts",
+          "./types/dist/shared": "./types/dist/shared.d.ts",
+          "./extension/dataTool": "./extension/dataTool/index.js",
+          "./lib/chart/parallel": "./lib/chart/parallel.js",
+          "./lib/chart/sunburst": "./lib/chart/sunburst.js",
+          "./lib/component/aria": "./lib/component/aria.js",
+          "./lib/component/grid": "./lib/component/grid.js",
+          "./types/dist/echarts": "./types/dist/echarts.d.ts",
+          "./dist/echarts.common": "./dist/echarts.common.js",
+          "./dist/echarts.simple": "./dist/echarts.simple.js",
+          "./dist/extension/bmap": "./dist/extension/bmap.js",
+          "./extension/bmap/bmap": "./extension/bmap/bmap.js",
+          "./lib/component/brush": "./lib/component/brush.js",
+          "./lib/component/polar": "./lib/component/polar.js",
+          "./lib/component/radar": "./lib/component/radar.js",
+          "./lib/component/title": "./lib/component/title.js",
+          "./types/dist/features": "./types/dist/features.d.ts",
+          "./dist/echarts.esm.min": "./dist/echarts.esm.min.mjs",
+          "./lib/chart/themeRiver": "./lib/chart/themeRiver.js",
+          "./lib/component/legend": "./lib/component/legend.js",
+          "./lib/component/matrix": "./lib/component/matrix.js",
+          "./types/dist/renderers": "./types/dist/renderers.d.ts",
+          "./lib/chart/candlestick": "./lib/chart/candlestick.js",
+          "./lib/component/dataset": "./lib/component/dataset.js",
+          "./lib/component/graphic": "./lib/component/graphic.js",
+          "./lib/component/toolbox": "./lib/component/toolbox.js",
+          "./lib/component/tooltip": "./lib/component/tooltip.js",
+          "./types/dist/components": "./types/dist/components.d.ts",
+          "./extension/bmap/bmap.js": "./extension/bmap/bmap.js",
+          "./lib/chart/pictorialBar": "./lib/chart/pictorialBar.js",
+          "./lib/component/calendar": "./lib/component/calendar.js",
+          "./lib/component/dataZoom": "./lib/component/dataZoom.js",
+          "./lib/component/markArea": "./lib/component/markArea.js",
+          "./lib/component/markLine": "./lib/component/markLine.js",
+          "./lib/component/parallel": "./lib/component/parallel.js",
+          "./lib/component/timeline": "./lib/component/timeline.js",
+          "./dist/echarts.common.min": "./dist/echarts.common.min.js",
+          "./dist/echarts.simple.min": "./dist/echarts.simple.min.js",
+          "./dist/extension/bmap.min": "./dist/extension/bmap.min.js",
+          "./dist/extension/dataTool": "./dist/extension/dataTool.js",
+          "./extension/dataTool/gexf": "./extension/dataTool/gexf.js",
+          "./lib/chart/effectScatter": "./lib/chart/effectScatter.js",
+          "./lib/component/markPoint": "./lib/component/markPoint.js",
+          "./lib/component/thumbnail": "./lib/component/thumbnail.js",
+          "./lib/component/transform": "./lib/component/transform.js",
+          "./lib/component/visualMap": "./lib/component/visualMap.js",
+          "./extension/dataTool/index": "./extension/dataTool/index.js",
+          "./lib/component/gridSimple": "./lib/component/gridSimple.js",
+          "./lib/component/singleAxis": "./lib/component/singleAxis.js",
+          "./lib/component/axisPointer": "./lib/component/axisPointer.js",
+          "./lib/component/legendPlain": "./lib/component/legendPlain.js",
+          "./extension/dataTool/gexf.js": "./extension/dataTool/gexf.js",
+          "./lib/component/legendScroll": "./lib/component/legendScroll.js",
+          "./dist/extension/dataTool.min": "./dist/extension/dataTool.min.js",
+          "./extension/dataTool/index.js": "./extension/dataTool/index.js",
+          "./lib/component/dataZoomInside": "./lib/component/dataZoomInside.js",
+          "./lib/component/dataZoomSelect": "./lib/component/dataZoomSelect.js",
+          "./lib/component/dataZoomSlider": "./lib/component/dataZoomSlider.js",
+          "./lib/component/visualMapPiecewise": "./lib/component/visualMapPiecewise.js",
+          "./lib/component/visualMapContinuous": "./lib/component/visualMapContinuous.js",
+          "./extension/dataTool/prepareBoxplotData": "./extension/dataTool/prepareBoxplotData.js",
+          "./extension/dataTool/prepareBoxplotData.js": "./extension/dataTool/prepareBoxplotData.js"
+        },
+        "gitHead": "c5a48f5f97d23e5379720870b8444cd05b50ffb4",
+        "license": "Apache-2.0",
+        "scripts": {
+          "dev": "npx -y concurrently -n build,server \"npm run dev:fast\" \"npx -y http-server -c-1 -s -o test\"",
+          "help": "node build/build.js --help",
+          "lint": "npx eslint --cache --cache-location node_modules/.cache/eslint \"src/**/*.ts\" \"ssr/client/src/**/*.ts\" \"extension-src/**/*.ts\"",
+          "test": "npx jest --config test/ut/jest.config.cjs",
+          "build": "node build/build.js --type all,common,simple --min",
+          "mktest": "node test/build/mktest.js",
+          "mktest2": "node test/build/mktest.js --with-inputs-common",
+          "mktest3": "node test/build/mktest.js --with-inputs-all",
+          "prepare": "npm run build:lib && husky install",
+          "release": "npm run build:lib && npm run build:i18n && npm run build && npm run build:esm && npm run build:extension && npm run build:ssr",
+          "dev:fast": "node build/build-i18n.js && node build/dev-fast.js",
+          "lint:fix": "npx eslint --fix \"src/**/*.ts\" \"ssr/client/src/**/*.ts\" \"extension-src/**/*.ts\"",
+          "test:dts": "npm install --prefix ./test/types && node build/testDts.js",
+          "build:esm": "node build/build.js --type all --min --format esm",
+          "build:lib": "node build/build-lib.js",
+          "build:ssr": "node build/build.js --type ssr",
+          "checktype": "npx tsc --noEmit && npx tsc -p ./extension-src/bmap/tsconfig.json --noEmit",
+          "lint:dist": "echo 'It might take a while. Please wait ...' && npx jshint --config .jshintrc-dist dist/echarts.js",
+          "build:i18n": "node build/build-i18n.js",
+          "checkheader": "node build/checkHeader.js",
+          "mktest:help": "node test/build/mktest.js -h",
+          "test:single": "npx jest --config test/ut/jest.config.cjs --coverage=false -t",
+          "test:visual": "node test/runTest/server.js",
+          "lint:nocache": "npx eslint \"src/**/*.ts\" \"ssr/client/src/**/*.ts\" \"extension-src/**/*.ts\"",
+          "test:dts:fast": "node build/testDts.js",
+          "build:extension": "node build/build.js --type extension --min",
+          "lint:nocache:list": "npm run lint:nocache -- --debug 2>&1 | grep \"filePath\"",
+          "test:single:debug": "npx --node-arg=--inspect-brk jest --runInBand --config test/ut/jest.config.cjs --coverage=false -t",
+          "mktest:canvas:debug": "node test/build/mktest.js --with-canvas-debug",
+          "test:visual:copy:examples": "node test/runTest/visual-test-copy-from-examples.js"
+        },
+        "_npmUser": {
+          "name": "100pah",
+          "email": "sushuang0322@gmail.com"
+        },
+        "homepage": "https://echarts.apache.org",
+        "jsdelivr": "dist/echarts.min.js",
+        "keywords": [
+          "echarts",
+          "data-visualization",
+          "charts",
+          "charting-library",
+          "visualization",
+          "apache",
+          "data-viz",
+          "canvas",
+          "svg"
+        ],
+        "repository": {
+          "url": "git+https://github.com/apache/echarts.git",
+          "type": "git"
+        },
+        "_npmVersion": "10.5.0",
+        "description": "Apache ECharts is a powerful, interactive charting and data visualization library for browser",
+        "directories": {},
+        "maintainers": [
+          {
+            "name": "lang",
+            "email": "shenyi.914@gmail.com"
+          },
+          {
+            "name": "errorrik",
+            "email": "errorrik@gmail.com"
+          },
+          {
+            "name": "wfsheep",
+            "email": "123537200@qq.com"
+          },
+          {
+            "name": "ovilia",
+            "email": "me@zhangwenli.com"
+          },
+          {
+            "name": "plainheart",
+            "email": "yhen@all-my-life.cn"
+          },
+          {
+            "name": "susiwen8",
+            "email": "susiwen8@gmail.com"
+          },
+          {
+            "name": "100pah",
+            "email": "sushuang0322@gmail.com"
+          },
+          {
+            "name": "apache-echarts",
+            "email": "apacheechartsteam@gmail.com"
+          },
+          {
+            "name": "jiawulin",
+            "email": "jiawulin@vip.qq.com"
+          }
+        ],
+        "sideEffects": [
+          "index.js",
+          "index.blank.js",
+          "index.common.js",
+          "index.simple.js",
+          "lib/echarts.js",
+          "lib/chart/*.js",
+          "lib/component/*.js",
+          "extension/**/*.js",
+          "theme/*.js",
+          "i18n/*.js"
+        ],
+        "_nodeVersion": "18.20.2",
+        "dependencies": {
+          "tslib": "2.3.0",
+          "zrender": "6.1.0"
+        },
+        "_hasShrinkwrap": false,
+        "devDependencies": {
+          "jest": "^26.6.1",
+          "open": "6.4.0",
+          "chalk": "^3.0.0",
+          "husky": "^8.0.3",
+          "eslint": "^7.15.0",
+          "globby": "11.0.0",
+          "jshint": "2.13.5",
+          "rollup": "2.34.2",
+          "semver": "6.3.0",
+          "terser": "^5.16.1",
+          "dtslint": "^4.0.5",
+          "esbuild": "^0.8.39",
+          "ts-jest": "^26.4.3",
+          "fs-extra": "^10.0.0",
+          "commander": "2.11.0",
+          "seedrandom": "3.0.3",
+          "typescript": "4.4.3",
+          "@babel/core": "7.3.4",
+          "@types/jest": "^26.0.14",
+          "@babel/types": "7.10.5",
+          "magic-string": "^0.25.7",
+          "jest-canvas-mock": "^2.5.0",
+          "@babel/code-frame": "7.10.4",
+          "@rollup/plugin-terser": "0.4.2",
+          "@definitelytyped/utils": "0.0.188",
+          "@rollup/plugin-replace": "^2.3.4",
+          "@lang/rollup-plugin-dts": "2.0.3",
+          "@rollup/plugin-commonjs": "^17.0.0",
+          "@microsoft/api-extractor": "7.31.2",
+          "@typescript-eslint/parser": "^4.33.0",
+          "@echarts-x/eslint-plugin-ec": "^1.0.0",
+          "@rollup/plugin-node-resolve": "^11.0.0",
+          "@typescript-eslint/eslint-plugin": "^4.33.0",
+          "@definitelytyped/typescript-versions": "^0.1.9"
+        },
+        "_npmOperationalInternal": {
+          "tmp": "tmp/echarts_6.1.0_1779213130709_0.7012302214890973",
+          "host": "s3://npm-registry-packages-npm-production"
+        },
+        "_id": "echarts@6.1.0",
+        "version": "6.1.0"
+      }
+    },
+    {
+      "source_url": "https://registry.npmjs.org/ajv/latest",
+      "retrieved_at": "2026-10-22T18:50:28.398Z",
+      "apify_record": "/v2/key-value-stores/l2dOQZd9biUsQBsNw/records/file-6f4f217-latest",
+      "sha256": "da1e811c437dcaed32870e5023e0a1fc6e672027023a0648fddfbc122fb84c58",
+      "bytes": 4682,
+      "original_metadata": {
+        "nyc": {
+          "exclude": [
+            "**/spec/**",
+            "node_modules"
+          ],
+          "reporter": [
+            "lcov",
+            "text-summary"
+          ]
+        },
+        "bugs": {
+          "url": "https://github.com/ajv-validator/ajv/issues"
+        },
+        "dist": {
+          "shasum": "304b3636add88ba7d936760dd50ece006dea95f9",
+          "tarball": "https://registry.npmjs.org/ajv/-/ajv-8.20.0.tgz",
+          "fileCount": 466,
+          "integrity": "sha512-Thbli+OlOj+iMPYFBVBfJ3OmCAnaSyNn4M1vz9T6Gka5Jt9ba/HIR56joy65tY6kx/FCF5VXNB819Y7/GUrBGA==",
+          "signatures": [
+            {
+              "sig": "MEUCIBfrVdhp5WGXcUASldcdcwqMi+toiB4jnfvInba3JZgCAiEA+gqJmfPQOJlXKjVEQlsjXbBKFxga9bRsHx5m9lSgRyM=",
+              "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+            }
+          ],
+          "unpackedSize": 1033496
+        },
+        "main": "dist/ajv.js",
+        "name": "ajv",
+        "husky": {
+          "hooks": {
+            "pre-commit": "lint-staged && npm test"
+          }
+        },
+        "types": "dist/ajv.d.ts",
+        "author": {
+          "name": "Evgeny Poberezkin"
+        },
+        "funding": {
+          "url": "https://github.com/sponsors/epoberezkin",
+          "type": "github"
+        },
+        "gitHead": "0fba0b8e649909613cfce0999b149cd08f4a4987",
+        "license": "MIT",
+        "scripts": {
+          "test": "npm run json-tests && npm run prettier:check && npm run eslint && npm link && npm link --legacy-peer-deps ajv && npm run test-cov",
+          "build": "rm -rf dist && tsc && cp -r lib/refs dist && rm dist/refs/json-schema-2019-09/index.ts && rm dist/refs/json-schema-2020-12/index.ts && rm dist/refs/jtd-schema.ts",
+          "bundle": "rm -rf bundle && node ./scripts/bundle.js ajv ajv7 ajv7 && node ./scripts/bundle.js 2019 ajv2019 ajv2019 && node ./scripts/bundle.js 2020 ajv2020 ajv2020 && node ./scripts/bundle.js jtd ajvJTD ajvJTD",
+          "eslint": "eslint \"lib/**/*.ts\" \"spec/**/*.*s\" --ignore-pattern spec/JSON-Schema-Test-Suite",
+          "rollup": "rm -rf bundle && rollup -c",
+          "test-ci": "AJV_FULL_TEST=true npm test",
+          "docs:dev": "./scripts/prepare-site && vuepress dev docs",
+          "test-all": "npm run test-cov",
+          "test-cov": "nyc npm run test-spec",
+          "benchmark": "npm i && npm run build && npm link && cd ./benchmark && npm link --legacy-peer-deps ajv && npm i && node ./jtd",
+          "test-spec": "cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register \"spec/**/*.spec.{ts,js}\" -R dot",
+          "docs:build": "./scripts/prepare-site && vuepress build docs",
+          "json-tests": "rm -rf spec/_json/*.js && node scripts/jsontests",
+          "prepublish": "npm run build",
+          "test-debug": "npm run test-spec -- --inspect-brk",
+          "test-karma": "karma start",
+          "test-browser": "rm -rf .browser && npm run bundle && scripts/prepare-tests && karma start",
+          "test-codegen": "nyc cross-env TS_NODE_PROJECT=spec/tsconfig.json mocha -r ts-node/register 'spec/codegen.spec.ts' -R spec",
+          "prettier:check": "prettier --list-different \"./**/*.{json,yaml,js,ts}\"",
+          "prettier:write": "prettier --write \"./**/*.{json,yaml,js,ts}\""
+        },
+        "_npmUser": {
+          "name": "esp",
+          "email": "e.poberezkin@me.com"
+        },
+        "homepage": "https://ajv.js.org",
+        "keywords": [
+          "JSON",
+          "schema",
+          "validator",
+          "validation",
+          "jsonschema",
+          "json-schema",
+          "json-schema-validator",
+          "json-schema-validation"
+        ],
+        "prettier": "@ajv-validator/config/prettierrc.json",
+        "collective": {
+          "url": "https://opencollective.com/ajv",
+          "type": "opencollective"
+        },
+        "repository": {
+          "url": "git+https://github.com/ajv-validator/ajv.git",
+          "type": "git"
+        },
+        "_npmVersion": "11.5.2",
+        "description": "Another JSON Schema Validator",
+        "directories": {},
+        "lint-staged": {
+          "*.{json,yaml,js,ts}": "prettier --write"
+        },
+        "maintainers": [
+          {
+            "name": "blakeembrey",
+            "email": "hello@blakeembrey.com"
+          },
+          {
+            "name": "esp",
+            "email": "e.poberezkin@me.com"
+          }
+        ],
+        "sideEffects": false,
+        "_nodeVersion": "22.18.0",
+        "dependencies": {
+          "fast-uri": "^3.0.1",
+          "fast-deep-equal": "^3.1.3",
+          "require-from-string": "^2.0.2",
+          "json-schema-traverse": "^1.0.0"
+        },
+        "_hasShrinkwrap": false,
+        "devDependencies": {
+          "nyc": "^15.1.0",
+          "re2": "^1.20.9",
+          "chai": "^4.4.1",
+          "glob": "^10.3.10",
+          "jimp": "^0.22.10",
+          "dayjs": "^1.11.10",
+          "husky": "^9.0.11",
+          "karma": "^6.4.2",
+          "mocha": "^10.3.0",
+          "tsify": "^5.0.4",
+          "eslint": "^8.57.0",
+          "rollup": "^2.79.1",
+          "uri-js": "^4.4.1",
+          "ts-node": "^10.9.2",
+          "prettier": "3.0.3",
+          "cross-env": "^7.0.3",
+          "browserify": "^17.0.0",
+          "node-fetch": "^3.3.2",
+          "typescript": "5.3.3",
+          "@types/chai": "^4.3.11",
+          "@types/node": "^20.11.30",
+          "ajv-formats": "^3.0.1",
+          "js-beautify": "^1.15.1",
+          "karma-mocha": "^2.0.1",
+          "lint-staged": "^15.2.2",
+          "@types/mocha": "^10.0.6",
+          "dayjs-plugin-utc": "^0.1.2",
+          "json-schema-test": "^2.0.0",
+          "module-from-string": "^3.3.0",
+          "@rollup/plugin-json": "^6.1.0",
+          "rollup-plugin-terser": "^7.0.2",
+          "@ajv-validator/config": "^0.5.0",
+          "karma-chrome-launcher": "^3.2.0",
+          "eslint-config-prettier": "^9.1.0",
+          "@rollup/plugin-commonjs": "^25.0.7",
+          "@rollup/plugin-typescript": "^11.1.6",
+          "@typescript-eslint/parser": "^7.3.1",
+          "@types/require-from-string": "^1.2.3",
+          "@rollup/plugin-node-resolve": "^15.2.3",
+          "@typescript-eslint/eslint-plugin": "^7.3.1"
+        },
+        "runkitExampleFilename": ".runkit_example.js",
+        "_npmOperationalInternal": {
+          "tmp": "tmp/ajv_8.20.0_1777044136383_0.3498001725632829",
+          "host": "s3://npm-registry-packages-npm-production"
+        },
+        "_id": "ajv@8.20.0",
+        "version": "8.20.0"
+      }
+    }
+  ],
+  "new_official_documents": [
+    {
+      "source_url": "https://registry.npmjs.org/@tanstack%2freact-query/latest",
+      "loaded_at_utc": "2026-10-22T18:50:27.529Z",
+      "http_status": 200,
+      "loaded_url": "https://registry.npmjs.org/@tanstack%2freact-query/latest",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/l2dOQZd9biUsQBsNw/records/file-48e88e0-latest"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/echarts/latest",
+      "loaded_at_utc": "2026-10-22T18:50:27.537Z",
+      "http_status": 200,
+      "loaded_url": "https://registry.npmjs.org/echarts/latest",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/l2dOQZd9biUsQBsNw/records/file-4797ffa-latest"
+    },
+    {
+      "source_url": "https://registry.npmjs.org/ajv/latest",
+      "loaded_at_utc": "2026-10-22T18:50:28.398Z",
+      "http_status": 200,
+      "loaded_url": "https://registry.npmjs.org/ajv/latest",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/l2dOQZd9biUsQBsNw/records/file-6f4f217-latest"
+    },
+    {
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations",
+      "loaded_at_utc": "2026-10-22T18:50:28.860Z",
+      "http_status": 200,
+      "loaded_url": "https://tanstack.com/query/latest/docs/framework/react/guides/mutations",
+      "captured_text_sha256": "ec79927917acdac015032b0014eec1deb92a6ce4b2937fe6e39a1688d1cfaaad",
+      "captured_text_bytes": 5612,
+      "used": true,
+      "excerpts": [
+        {
+          "start": 3790,
+          "end": 4718,
+          "text": "on success or throw on an error. This can for example be used to compose side effects.\n\nBy default, TanStack Query will not retry a mutation on error, but it is possible with the retry option:\n\nIf mutations fail because the device is offline, they will be retried in the same order when the device reconnects.\n\nMutations can be persisted to storage if needed and resumed at a later point. This can be done with the hydration functions:\n\n### Persisting Offline mutations\n\nIf you persist offline mutations with the [persistQueryClient plugin](https://tanstack.com/query/latest/docs/framework/react/plugins/persistQueryClient), mutations cannot be resumed when the page is reloaded unless you provide a default mutation function.\n\nThis is a technical limitation. When persisting to an external storage, only the state of mutations is persisted, as functions cannot be serialized. After hydration, the component that triggers the mu"
+        },
+        {
+          "start": 4896,
+          "end": 5612,
+          "text": "atest/docs/framework/react/examples/offline) that covers both queries and mutations.\n\nPer default, all mutations run in parallel - even if you invoke .mutate() of the same mutation multiple times. Mutations can be given a scope with an id to avoid that. All mutations with the same scope.id will run in serial, which means when they are triggered, they will start in isPaused: true state if there is already a mutation for that scope in progress. They will be put into a queue and will automatically resume once their time in the queue has come.\n\nFor more information about mutations, have a look at [TkDodo's article on Mastering Mutations in React Query](https://tkdodo.eu/blog/mastering-mutations-in-react-query)."
+        }
+      ]
+    },
+    {
+      "source_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation",
+      "loaded_at_utc": "2026-10-22T18:50:29.014Z",
+      "http_status": 200,
+      "loaded_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-cancellation",
+      "captured_text_sha256": "72931e23d9d277ec82de79812dee90c2040679a03e0acb2fa3cbe4f9c67c9e53",
+      "captured_text_bytes": 2862,
+      "used": true,
+      "excerpts": [
+        {
+          "start": 0,
+          "end": 703,
+          "text": "# Query Cancellation | TanStack Query React Docs\n\nTanStack Query provides each query function with an [AbortSignal instance](https://developer.mozilla.org/docs/Web/API/AbortSignal). When a query becomes out-of-date or inactive, this signal will become aborted. This means that all queries are cancellable, and you can respond to the cancellation inside your query function if desired. The best part about this is that it allows you to continue to use normal async/await syntax while getting all the benefits of automatic cancellation.\n\nThe AbortController API is available in [most runtime environments](https://developer.mozilla.org/docs/Web/API/AbortController#browser_compatibility), but if your runt"
+        }
+      ]
+    },
+    {
+      "source_url": "https://echarts.apache.org/handbook/en/best-practices/aria/",
+      "loaded_at_utc": "2026-10-22T18:50:29.823Z",
+      "http_status": 200,
+      "loaded_url": "https://echarts.apache.org/handbook/en/best-practices/aria/",
+      "captured_text_sha256": "8ac2b5ad645d7287d912cfa9fd66a33bfef7d4ca87b6b02e3dbe75b668a38e5d",
+      "captured_text_bytes": 4621,
+      "used": true,
+      "excerpts": [
+        {
+          "start": 219,
+          "end": 1478,
+          "text": "ations more accessible to people with disabilities.\n\nECharts 4.0 complied with the specification, supports generating a description based on the chart configuration intelligently to allow people with visual disabilities to understand the content of the chart with the help of reading devices. Apache ECharts 5 supports decal patterns that allow chart data to be distinguished by decal patterns in addition to color providing a better experience to those with color-blindness.\n\nThis accessibility function is turned off by default. It can be turned on by setting the value of [aria.show](https://echarts.apache.org/option.html#aria.show) to `true`.\n\n## Import AriaComponent\n\nStarting with ECharts 5, `aria` components are no longer imported by default. You must manually import the AriaComponent before using accessibility features:\n\n```\nimport { AriaComponent } from 'echarts/components';\necharts.use(AriaComponent);\n```\n\nOr using CommonJS:\n\n```\nrequire('echarts/lib/component/aria');\n```\n\nWithout this import, setting `aria.show: true` will not work properly.\n\n## Chart Labels\n\nAfter importing the AriaComponent and setting [aria.show](https://echarts.apache.org/option.html#aria.show) to `true`, ECharts will automatically generate a description of the char"
+        },
+        {
+          "start": 4123,
+          "end": 4621,
+          "text": "e ECharts 5 adds support for decal patterns as a secondary representation of color to further differentiate data. With `aria.enabled` set to `true` and `aria.decal.show` set to `true`, the default decal style will be applied.\n\nIf you need to customize the decal pattern, you can use [aria.decal.decals](https://echarts.apache.org/option.html#aria.decal.decals) to configure a flexible decal pattern.\n\nPlease refer to [ARIA option](https://echarts.apache.org/option.html#aria.decal) for more detail."
+        }
+      ]
+    },
+    {
+      "source_url": "https://echarts.apache.org/handbook/en/concepts/data-transform/",
+      "loaded_at_utc": "2026-10-22T18:50:29.778Z",
+      "http_status": 200,
+      "loaded_url": "https://echarts.apache.org/handbook/en/concepts/data-transform/",
+      "captured_text_sha256": "8cf3c2190b38a3a63ad955a4f825b9c0d424303af669e7267950c48542dc5d66",
+      "captured_text_bytes": 1762,
+      "used": true,
+      "excerpts": [
+        {
+          "start": 0,
+          "end": 800,
+          "text": "# Data Transform - Concepts - Handbook\n\nvar option \\= {\n  dataset: \\[\n    {\n      \n      source: \\[\n        \\['Product', 'Sales', 'Price', 'Year'\\],\n        \\['Cake', 123, 32, 2011\\],\n        \\['Cereal', 231, 14, 2011\\],\n        \\['Tofu', 235, 5, 2011\\],\n        \\['Dumpling', 341, 25, 2011\\],\n        \\['Biscuit', 122, 29, 2011\\],\n        \\['Cake', 143, 30, 2012\\],\n        \\['Cereal', 201, 19, 2012\\],\n        \\['Tofu', 255, 7, 2012\\],\n        \\['Dumpling', 241, 27, 2012\\],\n        \\['Biscuit', 102, 34, 2012\\],\n        \\['Cake', 153, 28, 2013\\],\n        \\['Cereal', 181, 21, 2013\\],\n        \\['Tofu', 395, 4, 2013\\],\n        \\['Dumpling', 281, 31, 2013\\],\n        \\['Biscuit', 92, 39, 2013\\],\n        \\['Cake', 223, 29, 2014\\],\n        \\['Cereal', 211, 17, 2014\\],\n        \\['Tofu', 345, 3, 2014\\"
+        }
+      ]
+    },
+    {
+      "source_url": "https://echarts.apache.org/en/option.html",
+      "loaded_at_utc": "2026-10-22T18:50:30.244Z",
+      "http_status": 200,
+      "loaded_url": "https://echarts.apache.org/en/option.html",
+      "captured_text_sha256": "82f40c0b6268be41f3a69d695a232feb751f1386fe11ada797343541cd67e085",
+      "captured_text_bytes": 157,
+      "used": false,
+      "reason": "SPA shell only; repaired with official raw documentation through Apify",
+      "excerpts": [
+        {
+          "start": 0,
+          "end": 157,
+          "text": "# Documentation - Apache ECharts\n\nPlease visit the official Apache ECharts Website at\n\n[https://echarts.apache.org](https://echarts.apache.org/en/index.html)"
+        }
+      ]
+    },
+    {
+      "source_url": "https://ajv.js.org/json-schema.html",
+      "loaded_at_utc": "2026-10-22T18:50:30.437Z",
+      "http_status": 200,
+      "loaded_url": "https://ajv.js.org/json-schema.html",
+      "captured_text_sha256": "647ad84660f48c26d771752b81d24da9106e76095189db49888a75a4c026e0ac",
+      "captured_text_bytes": 36960,
+      "used": true,
+      "excerpts": [
+        {
+          "start": 5520,
+          "end": 6336,
+          "text": "a to Ajv instance:\n\n### [#](https://ajv.js.org/json-schema.html#draft-2020-12) draft-2020-12 BREAKING\n\ndraft-2020-12 is not backwards compatible\n\nYou cannot use draft-2020-12 and previous JSON Schema versions in the same Ajv instance.\n\nAjv supports all keywords of JSON Schema draft-2020-12:\n\n*   [prefixItems](https://ajv.js.org/json-schema.html#prefixItems) that replaced array form of items keyword\n*   changed [items](https://ajv.js.org/json-schema.html#items-in-draft-2020-12) keyword that combined parts of functionality of items and additionalItems\n*   [$dynamicAnchor/$dynamicRef](https://ajv.js.org/guide/combining-schemas.html#extending-recursive-schemas)\n\nTo use draft-2020-12 schemas you need to import a different Ajv class:\n\n### [#](https://ajv.js.org/json-schema.html#draft-06) draft-06\n\nYou can use J"
+        },
+        {
+          "start": 35686,
+          "end": 36406,
+          "text": " defines several metadata keywords that describe the schema itself but do not perform any validation.\n\n*   `title` and `description`: information about the data represented by that schema\n*   `$comment`: information for developers. With option `$comment` Ajv logs or passes the comment string to the user-supplied function. See [Options](https://ajv.js.org/api.html#options).\n*   `default`: a default value of the data instance, see [Assigning defaults](https://ajv.js.org/guide/modifying-data.html#assigning-defaults).\n*   `examples`: an array of data instances. Ajv does not check the validity of these instances against the schema.\n*   `readOnly` and `writeOnly`: marks data-instance as read-only or write-only in rel"
+        }
+      ]
+    },
+    {
+      "source_url": "https://ajv.js.org/guide/typescript.html",
+      "loaded_at_utc": "2026-10-22T18:50:30.868Z",
+      "http_status": 200,
+      "loaded_url": "https://ajv.js.org/guide/typescript.html",
+      "captured_text_sha256": "c303d5f21418d7fd9bad01e6b6f457e7793bd84577459a01190adc64503242e1",
+      "captured_text_bytes": 4266,
+      "used": true,
+      "excerpts": [
+        {
+          "start": 776,
+          "end": 1496,
+          "text": "e of TypeScript type system to provide additional functionality that is not possible in JavaScript:\n\n*   utility types `JSONSchemaType` and `JTDSchemaType` to convert data type into the schema type to simplify writing schemas, both for [JSON Schema](https://ajv.js.org/json-schema.html) (but without union support) and for [JSON Type Definition](https://ajv.js.org/json-type-definition) (with tagged unions support).\n*   utility type `JTDDataType` to convert JSON Type Definition schema into the type of data that it defines.\n*   compiled validation functions are type guards that narrow the type after successful validation.\n*   validation errors for JSON Schema are defined as tagged unions, for type-safe error handli"
+        },
+        {
+          "start": 2135,
+          "end": 2855,
+          "text": " Utility type for JTD data type\n\nYou can use JTD schema to construct the type of data using utility type `JTDDataType`\n\nTypeScript limitation\n\nNote that it's currently not possible for `JTDDataType` to know whether the compiler is inferring timestamps as strings or Dates, and so it conservatively types any timestamp as `string | Date`. This is accurate, but often requires extra validation on the part of the user to confirm they're getting the appropriate data type.\n\n## [#](https://ajv.js.org/guide/typescript.html#type-safe-error-handling) Type-safe error handling\n\nWith both [JSON Schema](https://ajv.js.org/json-schema.html) and [JSON Type Definition](https://ajv.js.org/json-type-definition.html), the validation"
+        }
+      ]
+    },
+    {
+      "source_url": "https://ajv.js.org/license.html",
+      "loaded_at_utc": "2026-10-22T18:50:31.408Z",
+      "http_status": 200,
+      "loaded_url": "https://ajv.js.org/license.html",
+      "captured_text_sha256": "63eddecafad0c795c2323674b17c2b9738a0fdd759a27a2001514762f96dc557",
+      "captured_text_bytes": 1117,
+      "used": true,
+      "excerpts": [
+        {
+          "start": 0,
+          "end": 633,
+          "text": "# Ajv JSON schema validator\n\nThe MIT License (MIT)\n\nCopyright (c) 2015-2021 Evgeny Poberezkin\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial por"
+        }
+      ]
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/tutorial/data-zoom.md",
+      "loaded_at_utc": "2026-10-22T18:57:00.919Z",
+      "http_status": 200,
+      "loaded_url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/tutorial/data-zoom.md",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/thB3235Tsy1FwBeGK/records/file-7f17a95-data-zoom.md"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/option/component/aria.md",
+      "loaded_at_utc": "2026-10-22T18:57:00.992Z",
+      "http_status": 200,
+      "loaded_url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/option/component/aria.md",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/thB3235Tsy1FwBeGK/records/file-43809be-aria.md"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/apache/echarts/6.1.0/LICENSE",
+      "loaded_at_utc": "2026-10-22T18:57:01.660Z",
+      "http_status": 200,
+      "loaded_url": "https://raw.githubusercontent.com/apache/echarts/6.1.0/LICENSE",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/thB3235Tsy1FwBeGK/records/file-4e55fe9-LICENSE"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/apache/echarts/6.1.0/src/component/aria/AriaModel.ts",
+      "loaded_at_utc": "2026-10-22T18:57:01.680Z",
+      "http_status": 404,
+      "loaded_url": "https://raw.githubusercontent.com/apache/echarts/6.1.0/src/component/aria/AriaModel.ts",
+      "apify_file_url": "https://api.apify.com/v2/key-value-stores/thB3235Tsy1FwBeGK/records/file-4da0617-AriaModel.ts",
+      "used": false,
+      "reason": "Non-200 origin; never treated as successful source"
+    }
+  ],
+  "new_official_raw_documents": [
+    {
+      "source_url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/tutorial/data-zoom.md",
+      "retrieved_at": "2026-10-22T18:57:00.919Z",
+      "apify_record": "/v2/key-value-stores/thB3235Tsy1FwBeGK/records/file-7f17a95-data-zoom.md",
+      "sha256": "cdb5a44f6fa0c9c98741fd0fabc0c4b9df312ab817eb0ac083b2aa8ed65fb8bf",
+      "bytes": 5679,
+      "used": true,
+      "excerpt": "\r\n{{target: data-zoom}}\r\n\r\n# Add interaction to the chart component\r\n\r\nApache ECharts<sup>TM</sup> provides many interaction components besides chart. For example:\r\n\r\n`legend component` [legend](option.html#legend)、`title component` [title](option.html#title)、`visualmap component` [visualMap](option.html#visualMap)、`datazoom component` [dataZoom](option.html#dataZoom)、`dataline component` [timeline](option.html#timeline)\r\n\r\nFollowing is an example of `datazoom component` [dataZoom](option.html#dataZoom) as an introduction of how to add this kind of component.\r\n\r\n\r\n\r\n## Introduction of data zoom component (dataZoom)\r\n\r\nData overview by default, and detail by requirement is a basic interaction need of data visualization. `dataZoom` component can implement this function in rectangular coordinate ([grid](option.html#grid)) and polar coordinate ([polar](option.html#polar).\r\n\r\n\r\n**For example: **\r\n~[600x400](${galleryViewPath}doc-example/scatter-dataZoom-all&edit=1&reset=1)\r\n\r\n<br>\r\n\r\n+ `dataZoom` component operates *data window zoom* and *data window translation* on `axis`.\r\n\r\n> Use [dataZoom.xAxisIndex](option.html#dataZoom.xAxisIndex), [dataZoom.yAxisIndex](option.html#dataZoom.yAxisIndex) to specify which axis `dataZoom` controls.\r\n\r\n+ Multiple `dataZoom` components can exist at the same time to control function together. Components controlling the same axis will be connected automatically. The example below explains in detail.\r\n\r\n+ Operation principle of `dataZoom` achieves *data window zooming* through *data filtering*.\r\n\r\n    Different settings of data filtering modes lead to different data window zooming effects, please see: [dataZoom.filterMode](option.html#dataZoom.filterMode).\r\n\r\n+ Setting of `dataZoom` data window range supports two formats currently:\r\n\r\n    + Percentage: see [dataZoom.start](option.html#dataZoom.start) and [dataZoom.end](option.html#dataZoom.end).\r\n\r\n    + Absolute value: see [dataZoom.startValue](option.html#dataZoom.startValue) and [dataZoom.endValue](option.html#dataZoom.endValue).\r\n\r\n\r\n\r\n**dataZoom component supports several child components: **\r\n\r\n+ [Inside data zoom component (dataZoomInside)](option.html#dataZoom-inside): inside coordinates.\r\n\r\n+ [Slider data zoom component (dataZoomSlider)](option.html#dataZoom-slider): has separate slide option.\r\n\r\n+ [Select data zoom component (dataZoomSelect)](option.html#toolbox.feature.da"
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/apache/echarts-doc/master/en/option/component/aria.md",
+      "retrieved_at": "2026-10-22T18:57:00.992Z",
+      "apify_record": "/v2/key-value-stores/thB3235Tsy1FwBeGK/records/file-43809be-aria.md",
+      "sha256": "a1b9d2684c4bf2d0c8e8c898832999841f82c0f8624dd46443e90b60d15a592d",
+      "bytes": 10614,
+      "used": true,
+      "excerpt": "\n{{ target: component-aria }}\n\n# aria(*)\n\nThe W3C has developed the [WAI-ARIA](https://www.w3.org/WAI/intro/aria), the Accessible Rich Internet Applications Suite, which is dedicated to making web content and web applications accessible. Apache ECharts 4 complies with this specification by supporting the automatic generation of intelligent descriptions based on chart configuration items, allowing blind people to understand the chart content with the help of a reading device, making the chart accessible to a wider audience. In addition, Apache ECharts 5 adds support for applique textures as an auxiliary expression of color to further differentiate the data.\n\nIt is turned off by default and needs to be turned on by setting [aria.enabled](~aria.enabled) to `true`.\n\n## enabled(boolean) = false\n\nWhether or not aria is turned on. If not, the `label` or `decal` effect is not applied.\n\n## label(Object)\n\nIf [aria.enabled](~aria.enabled) is set to `true`, `label` is enabled by default. When enabled, the description of the chart will be automatically and intelligently generated based on the chart, data, title, etc. Users can also modify the description through the configuration item.\n\n**Example:**\n\n```ts\noption = {\n    aria: {\n        // The following lines can be omitted because label.enabled defaults to true.\n        // label: {\n        // enabled: true\n        // },\n        enabled: true\n    },\n    title: {\n        text: 'User access sources for a site',\n        x: 'center'\n    },\n    series: [\n        {\n            name: 'access source',\n            type: 'pie',\n            data: [\n                { value: 335, name: 'Direct Access' },\n                { value: 310, name: 'Email Marketing' },\n                { value: 234, name: 'Affiliate Ads' },\n                { value: 135, name: 'Video Ads' },\n                { value: 1548, name: 'Search Engine' }\n            ]\n        }\n    ]\n};\n```\n\n~[700x300](${galleryViewPath}doc-example/aria-pie&edit=1&reset=1)\n\nOn the generated chart DOM, there is an `aria-label` attribute that allows the blind to understand the chart with the help of a reading device. Its value is:\n\n> This is a chart of \"Source of user access to a site.\" The chart type is a pie chart that indicates the source of the visit. The data is - direct access data is 335, mail marketing data is 310, union ad data is 234, video ad data is 135, search engine data is "
+    },
+    {
+      "source_url": "https://raw.githubusercontent.com/apache/echarts/6.1.0/LICENSE",
+      "retrieved_at": "2026-10-22T18:57:01.660Z",
+      "apify_record": "/v2/key-value-stores/thB3235Tsy1FwBeGK/records/file-4e55fe9-LICENSE",
+      "sha256": "634293835b43a6dd2094fa39182a3d9a6b9ca43b7fdb9ac354e8037af2a3093a",
+      "bytes": 11990,
+      "used": true,
+      "excerpt": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity"
+    }
+  ],
+  "context7_supplement": {
+    "library_ids": [
+      "/tanstack/query",
+      "/apache/echarts-doc",
+      "/ajv-validator/ajv"
+    ],
+    "role": "Official-source cross-check after Apify attempts; not authority for latest versions",
+    "topics": [
+      "query cancellation and mutation scope/retry",
+      "dataZoom and aria",
+      "JSON Schema draft separation and TypeScript union limitation"
+    ]
+  },
+  "validation_notes": [
+    "Origin AriaModel.ts path returned404 and is not source evidence",
+    "ContentCrawler file-download failed counters do not replace actual HTTP200 and readable original bytes",
+    "No promise of8760/mobile chart performance withoutPOC",
+    "No TanStack Router or React chart wrapper required by these declared modules"
+  ]
+}
