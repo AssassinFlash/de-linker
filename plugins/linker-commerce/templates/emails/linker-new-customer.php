@@ -27,7 +27,7 @@ $linker_rows = array();
 foreach ( $registration_rows as $linker_row ) {
 	$linker_rows[ $linker_row['label'] ] = $linker_row['value'];
 }
-$linker_rows[ __( 'VAT check', 'linker-commerce' ) ] = VatProfile::label( (string) get_user_meta( $customer->ID, VatProfile::STATUS_META, true ) );
+$linker_rows[ __( 'VAT check', 'linker-commerce' ) ] = $vat_label ?? VatProfile::label( (string) get_user_meta( $customer->ID, VatProfile::STATUS_META, true ) );
 $linker_rows[ __( 'Approval', 'linker-commerce' ) ]  = Approval::label( Approval::PENDING );
 
 /** This action is documented in woocommerce/templates/emails/customer-on-hold-order.php */
@@ -41,7 +41,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 		</tr>
 	<?php endforeach; ?>
 </table>
-<p><a href="<?php echo esc_url( AccountsAdmin::url( $customer->ID ) ); ?>"><?php esc_html_e( 'Open the customer', 'linker-commerce' ); ?></a></p>
+<p><a href="<?php echo esc_url( $account_url ?? AccountsAdmin::url( $customer->ID ) ); ?>"><?php esc_html_e( 'Open the customer', 'linker-commerce' ); ?></a></p>
 <?php
 if ( $additional_content ) {
 	echo wp_kses_post( wpautop( wptexturize( $additional_content ) ) );

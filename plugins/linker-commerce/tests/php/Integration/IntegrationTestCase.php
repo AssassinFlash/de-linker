@@ -78,14 +78,20 @@ abstract class IntegrationTestCase extends TestCase {
 		$this->isolate_public_connection();
 		// In-process fixtures drive their own consumer. Do not let a separate HTTP
 		// request consume them before that test installs its simulated provider.
-		$wake = static function ( $pre, $args, $url ) {
+		$queue_runner = static fn (): bool => false;
+		add_filter( 'action_scheduler_allow_async_request_runner', $queue_runner, 999 );
+		$wake         = static function ( $pre, $args, $url ) {
+			if ( str_contains( $url, 'action=as_async_request_queue_runner' ) ) {
+				return new \WP_Error( 'fixture_native_queue_wake_blocked' );
+			}
 			return false === $pre && str_contains( $url, 'action=linker_inquiry_assessment_wake' )
 				? new \WP_Error( 'fixture_async_blocked' ) : $pre;
 		};
 		add_filter( 'pre_http_request', $wake, 999, 3 );
 		$this->later(
-			static function () use ( $wake ): void {
+			static function () use ( $wake, $queue_runner ): void {
 				remove_filter( 'pre_http_request', $wake, 999 );
+				remove_filter( 'action_scheduler_allow_async_request_runner', $queue_runner, 999 );
 			}
 		);
 	}

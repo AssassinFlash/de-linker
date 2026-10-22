@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-22T10:58:13+00:00\n"
+"POT-Creation-Date: 2026-10-22T17:34:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -2168,7 +2168,7 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr ""
 
-#: includes/Mail/JobStore.php:76
+#: includes/Mail/JobStore.php:102
 msgid "Queued emails"
 msgstr ""
 
@@ -3643,11 +3643,38 @@ msgstr ""
 msgid "No Proforma number could be reserved; please try again."
 msgstr ""
 
-#: includes/Protection/Accounts.php:119
+#: includes/Protection/Accounts.php:142
 msgid "Please verify your registration and try again."
 msgstr ""
 
-#: includes/Protection/Accounts.php:162
+#: includes/Protection/Accounts.php:156
+msgid ""
+"Please use no more than 250 characters for your first and last name "
+"together. Your account has not been created; your entries are still here."
+msgstr ""
+
+#: includes/Protection/Accounts.php:170 includes/Protection/Accounts.php:195
+#: includes/Protection/Accounts.php:201
+#: includes/Protection/RegistrationSlots.php:613
+#: includes/Registration/RegistrationMessage.php:197
+#: includes/Registration/RegistrationNotices.php:452
+msgid ""
+"Registration is currently unavailable. Your account has not been created. "
+"Please try again later or email sales@de-linker.com."
+msgstr ""
+
+#: includes/Protection/Accounts.php:224
+msgid "Please re-enter your password."
+msgstr ""
+
+#: includes/Protection/Accounts.php:260 includes/Protection/Accounts.php:271
+msgid ""
+"The registration status could not be confirmed. Please try signing in before "
+"registering again, or email sales@de-linker.com. You can send inquiries "
+"without an account."
+msgstr ""
+
+#: includes/Protection/Accounts.php:397
 msgid "Please verify your request and try again."
 msgstr ""
 
@@ -3839,8 +3866,9 @@ msgid ""
 msgstr ""
 
 #: includes/Protection/Intake.php:180 includes/Protection/Intake.php:231
-#: includes/Protection/IntakeStore.php:46
-#: includes/Protection/IntakeStore.php:67
+#: includes/Protection/IntakeStore.php:56
+#: includes/Protection/IntakeStore.php:71
+#: includes/Protection/IntakeStore.php:93
 msgid ""
 "The request status could not be confirmed. Your entries are still here. "
 "Please check before sending a new request."
@@ -3922,7 +3950,8 @@ msgstr ""
 msgid "This verification request is too large. Please try again."
 msgstr ""
 
-#: includes/Protection/Operation.php:61
+#: includes/Protection/Operation.php:67
+#: includes/Protection/RegistrationSlots.php:46
 msgid ""
 "This request has already been processed. Please check the result before "
 "sending it again."
@@ -4006,6 +4035,7 @@ msgid "Search accounts"
 msgstr ""
 
 #: includes/Registration/AccountsController.php:84
+#: includes/Registration/RegistrationCapacityAdmin.php:128
 msgid "You are not allowed to review accounts."
 msgstr ""
 
@@ -4033,7 +4063,7 @@ msgid "Reason"
 msgstr ""
 
 #: includes/Registration/AccountsTable.php:47
-#: includes/Registration/RegistrationInformation.php:69
+#: includes/Registration/RegistrationInformation.php:99
 msgid "Registered"
 msgstr ""
 
@@ -4153,34 +4183,34 @@ msgstr ""
 msgid "Partner account approved"
 msgstr ""
 
-#: includes/Registration/Emails/NewCustomerEmail.php:39
-#: includes/Registration/Emails/NewCustomerEmail.php:73
+#: includes/Registration/Emails/NewCustomerEmail.php:54
+#: includes/Registration/Emails/NewCustomerEmail.php:111
 msgid "New customer"
 msgstr ""
 
-#: includes/Registration/Emails/NewCustomerEmail.php:40
+#: includes/Registration/Emails/NewCustomerEmail.php:55
 msgid ""
 "Sent to the internal notification address, with blind copies, when a "
 "customer registers."
 msgstr ""
 
 #. translators: {company}: the customer's company.
-#: includes/Registration/Emails/NewCustomerEmail.php:66
+#: includes/Registration/Emails/NewCustomerEmail.php:104
 msgid "New customer: {company}"
 msgstr ""
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:35
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:86
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:94
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:55
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:110
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:118
 msgid "Registration received"
 msgstr ""
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:36
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:56
 msgid ""
 "Sent to the customer when the account is registered and waiting for review."
 msgstr ""
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:87
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:111
 msgid "We received your partner registration"
 msgstr ""
 
@@ -4299,8 +4329,126 @@ msgstr ""
 msgid "Registered on %s"
 msgstr ""
 
-#: includes/Registration/RegistrationInformation.php:63
+#: includes/Registration/PendingProfileCapacity.php:430
+msgid ""
+"The status of your changes could not be confirmed. Please check your account "
+"before saving again, or email sales@de-linker.com."
+msgstr ""
+
+#: includes/Registration/PendingProfileCapacity.php:430
+msgid ""
+"Your changes could not be saved. Your entries are still here. Please try "
+"again later or email sales@de-linker.com."
+msgstr ""
+
+#: includes/Registration/PendingProfileCapacity.php:433
+msgid "Please re-enter your passwords."
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:35
+#: includes/Registration/RegistrationCapacityAdmin.php:45
+msgid "Registration capacity"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:52
+msgid "Pending accounts"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:53
+#: includes/Registration/RegistrationCapacityAdmin.php:77
+#: includes/Registration/RegistrationPrivacy.php:100
+msgid "Interrupted registrations"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:54
+msgid "Account capacity"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:55
+msgid "Business profile bytes"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:56
+msgid "Reserved profile bytes"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:57
+msgid "Profile byte capacity"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:63
+msgid "Recover notifications"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:64
+#: includes/Registration/RegistrationPrivacy.php:38
+#: includes/Registration/RegistrationPrivacy.php:52
+#: includes/Registration/RegistrationPrivacy.php:78
+#: includes/Registration/RegistrationPrivacy.php:82
+#: includes/Registration/RegistrationPrivacy.php:96
+msgid "Registration notifications"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:82
+msgid "Mark as resolved"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:85
+msgid "Recent staff decisions"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:109
+msgid "Accepted by the notification queue"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:110
+msgid "Notification skipped by policy"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:111
+msgid "Notification data erased"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:112
+msgid "Account created; notification pending"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:114
+msgid "Registration receipt"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:114
+msgid "Team notification"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:118
+msgid "Approve account"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:119
+msgid "Reject account"
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:146
+msgid ""
+"The registration state could not be confirmed. Please check the account and "
+"capacity before trying again."
+msgstr ""
+
+#: includes/Registration/RegistrationCapacityAdmin.php:164
+msgid "Reason for this decision"
+msgstr ""
+
+#: includes/Registration/RegistrationInformation.php:93
 msgid "Login email"
+msgstr ""
+
+#: includes/Registration/RegistrationPrivacy.php:141
+msgid "Registration notification data is busy. Please retry the erasure."
+msgstr ""
+
+#: includes/Registration/RegistrationPrivacy.php:194
+msgid "Registration notification data could not be read. Please try again."
 msgstr ""
 
 #: includes/Registration/VatProfile.php:128

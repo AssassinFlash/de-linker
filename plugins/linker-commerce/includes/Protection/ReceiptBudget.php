@@ -27,24 +27,48 @@ final class ReceiptBudget {
 	/**
 	 * Empty reason admits the optional receipt; faults are distinct from quota.
 	 *
-	 * @param string     $email Validated recipient.
-	 * @param int|string $order_id Native source reference.
-	 * @param string     $kind Native source kind.
+	 * @param string|string[] $email Validated native recipient or frozen To list.
+	 * @param int|string      $order_id Native source reference.
+	 * @param string          $kind Native source kind.
 	 */
-	public static function reason( string $email, int|string $order_id, string $kind = 'inquiry' ): string {
-		$subject = Identity::recipient( $email );
-		$hex     = hash_hmac( 'sha256', 'public-receipt|' . $kind . '|' . $order_id, wp_salt( 'nonce' ) );
-		$id      = substr( $hex, 0, 8 ) . '-' . substr( $hex, 8, 4 ) . '-4' . substr( $hex, 13, 3 ) . '-a' . substr( $hex, 17, 3 ) . '-' . substr( $hex, 20, 12 );
-		$fp      = hash_hmac( 'sha256', $subject . '|' . $kind . '|' . $order_id, wp_salt( 'nonce' ) );
-		$ledger  = new Ledger();
-		$permit  = $ledger->reserve(
+	public static function reason( string|array $email, int|string $order_id, string $kind = 'inquiry' ): string {
+		$subjects = array();
+		if ( is_string( $email ) ) {
+			// Existing callers keep their exact single-target identity/fingerprint.
+			$subjects[] = Identity::recipient( $email );
+		} else {
+			$recipients = array();
+			foreach ( $email as $recipient ) {
+				// wp_mail parses the actual address from the same native Name <address> form.
+				$address = preg_match( '/(.*)<(.+)>/', $recipient, $parts ) ? $parts[2] : $recipient;
+				$address = strtolower( trim( $address ) );
+				if ( ! is_email( $address ) ) {
+					return 'unavailable';
+				}
+				$recipients[ $address ] = true;
+			}
+			$recipients = array_keys( $recipients );
+			sort( $recipients, SORT_STRING );
+			$subjects = array_map( array( Identity::class, 'recipient' ), $recipients );
+		}
+		if ( array() === $subjects ) {
+			return 'unavailable';
+		}
+		$subject    = 1 === count( $subjects ) ? $subjects[0] : hash_hmac( 'sha256', 'public-recipients|' . (string) wp_json_encode( $subjects ), wp_salt( 'nonce' ) );
+		$allowances = array();
+		foreach ( $subjects as $target ) {
+			$allowances[] = new Allowance( 'receipt_target_hour', $target, 2, HOUR_IN_SECONDS );
+			$allowances[] = new Allowance( 'receipt_target_day', $target, 5, DAY_IN_SECONDS );
+		}
+		$allowances[] = new Allowance( 'receipt_site_day', 'site', 10, DAY_IN_SECONDS );
+		$hex          = hash_hmac( 'sha256', 'public-receipt|' . $kind . '|' . $order_id, wp_salt( 'nonce' ) );
+		$id           = substr( $hex, 0, 8 ) . '-' . substr( $hex, 8, 4 ) . '-4' . substr( $hex, 13, 3 ) . '-a' . substr( $hex, 17, 3 ) . '-' . substr( $hex, 20, 12 );
+		$fp           = hash_hmac( 'sha256', $subject . '|' . $kind . '|' . $order_id, wp_salt( 'nonce' ) );
+		$ledger       = new Ledger();
+		$permit       = $ledger->reserve(
 			$id,
 			$fp,
-			array(
-				new Allowance( 'receipt_target_hour', $subject, 2, HOUR_IN_SECONDS ),
-				new Allowance( 'receipt_target_day', $subject, 5, DAY_IN_SECONDS ),
-				new Allowance( 'receipt_site_day', 'site', 10, DAY_IN_SECONDS ),
-			),
+			$allowances,
 			60,
 			array(),
 			'customer_receipt'

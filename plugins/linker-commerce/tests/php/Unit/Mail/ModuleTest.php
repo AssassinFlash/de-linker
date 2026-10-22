@@ -33,7 +33,10 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( 'rest_api_init', \Linker\Commerce\Mail\SmtpHealth::class, 'register_routes' );
 			$producer = new \Linker\Commerce\Mail\Producer();
 		WP_Mock::expectFilterAdded( 'woocommerce_mail_callback', array( $producer, 'woocommerce' ), 10, 2 );
-		WP_Mock::expectFilterAdded( 'retrieve_password_notification_email', array( $producer, 'password_reset' ), PHP_INT_MAX );
+		WP_Mock::expectFilterAdded( 'retrieve_password_notification_email', array( $producer, 'password_reset' ), PHP_INT_MAX, 4 );
+		WP_Mock::expectActionAdded( 'deleted_post', array( \Linker\Commerce\Mail\Capacity::class, 'deleted' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'woocommerce_email_disabled', array( \Linker\Commerce\Mail\ResetNotice::class, 'disabled' ), 10, 2 );
+		WP_Mock::expectFilterAdded( 'send_retrieve_password_email', array( \Linker\Commerce\Mail\ResetNotice::class, 'allowed' ), PHP_INT_MAX, 3 );
 		$jobs       = new JobStore();
 			$outbox = new Outbox( $jobs, new Throttle() );
 			$locale = new EmailLocale();

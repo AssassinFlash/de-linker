@@ -56,6 +56,13 @@ final class Producer {
 	 */
 	public function woocommerce( callable $callback, WC_Email $email ): callable {
 		$critical = $email instanceof CustomerApprovalEmail || $email instanceof ProformaIssuedEmail || $email instanceof \WC_Email_Customer_Reset_Password || $email instanceof \WC_Email_Admin_Payment_Gateway_Enabled;
+		if ( $email instanceof \WC_Email_Customer_Reset_Password ) {
+			return static function ( ...$args ) use ( $email, $callback ): mixed {
+				$scope = ResetNotice::scope( (int) $email->user_id );
+				$send  = static fn () => self::critical( static fn () => $callback( ...$args ) );
+				return null !== $scope ? Capacity::within( $scope, $send ) : $send();
+			};
+		}
 		return $critical ? static fn ( ...$args ) => self::critical( static fn () => $callback( ...$args ) ) : $callback;
 	}
 
@@ -63,9 +70,16 @@ final class Producer {
 	 * Remember one native WordPress reset message.
 	 *
 	 * @param  array<string, mixed> $email Native retrieve_password() notification.
+	 * @param string               $key Native reset key, deliberately ignored.
+	 * @param string               $login Native login, deliberately ignored.
+	 * @param \WP_User|null        $user Native resolved account for its pre-reservation.
 	 * @return array<string, mixed> Unchanged notification.
 	 */
-	public function password_reset( array $email ): array {
+	public function password_reset( array $email, string $key = '', string $login = '', ?\WP_User $user = null ): array {
+		unset( $key, $login );
+		if ( $user instanceof \WP_User ) {
+			ResetNotice::bind( $email, $user );
+		}
 		self::$resets[ self::signature( $email ) ] = true;
 		return $email;
 	}
@@ -77,12 +91,12 @@ final class Producer {
 	 */
 	public static function priority( array $atts ): bool {
 		if ( array() === self::$resets ) {
-			return self::$critical;
+			return self::$critical || '' !== Capacity::current();
 		}
 		$key   = self::signature( $atts );
 		$reset = isset( self::$resets[ $key ] );
 		unset( self::$resets[ $key ] );
-		return self::$critical || $reset;
+		return self::$critical || $reset || '' !== Capacity::current();
 	}
 
 	/**

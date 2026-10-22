@@ -42,9 +42,12 @@ final class Module {
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this->health, 'register_routes' ) );
 		add_action( 'init', array( $this->jobs, 'register_post_type' ) );
+		add_action( 'deleted_post', array( Capacity::class, 'deleted' ), 10, 2 );
 		add_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, array( new \Linker\Commerce\Health\ReviewReminder(), 'tick' ), 20 );
 				add_filter( 'woocommerce_mail_callback', array( $this->producer, 'woocommerce' ), 10, 2 );
-		add_filter( 'retrieve_password_notification_email', array( $this->producer, 'password_reset' ), PHP_INT_MAX );
+		add_filter( 'retrieve_password_notification_email', array( $this->producer, 'password_reset' ), PHP_INT_MAX, 4 );
+		add_action( 'woocommerce_email_disabled', array( ResetNotice::class, 'disabled' ), 10, 2 );
+		add_filter( 'send_retrieve_password_email', array( ResetNotice::class, 'allowed' ), PHP_INT_MAX, 3 );
 		add_filter( 'pre_wp_mail', array( $this->outbox, 'intercept' ), 10, 2 );
 		add_action( 'wp_mail_failed', array( $this->outbox, 'remember_error' ) );
 		add_action( 'phpmailer_init', array( $this->outbox, 'configure_mailer' ) );
