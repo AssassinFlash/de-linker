@@ -84,6 +84,9 @@ strings, and over-limit input returns `json_too_deep`. Validation diagnostics
 contain at most 16 fields, 16 path segments per field and 64 characters per
 segment, with `truncated: true` when clipped. These are bounded diagnostic
 policy, not scientific limits. Invalid syntax remains a framework parse error.
+The wire encoding is UTF-8. Invalid UTF-8 and literal NUL bytes are rejected
+before the JSON parser; UTF-16/32 auto-detection must not bypass the depth gate.
+An escaped `\u0000` is an ordinary JSON string value, not a literal wire NUL.
 
 ## Actual acceptance required
 

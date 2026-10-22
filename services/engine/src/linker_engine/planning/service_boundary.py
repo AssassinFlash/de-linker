@@ -140,6 +140,17 @@ class ServiceBoundary:
             await answer(private_send, 400, "incomplete_request")
             return
         body = b"".join(chunks)
+        try:
+            body.decode("utf-8")
+        except UnicodeError:
+            await answer(private_send, 400, "invalid_input")
+            return
+        # json.loads(bytes) also detects UTF-16/32. Reject literal NULs so a
+        # non-BOM encoding cannot bypass the UTF-8 depth scanner. JSON's
+        # escaped NUL remains valid and contains no literal wire NUL.
+        if b"\x00" in body:
+            await answer(private_send, 400, "invalid_input")
+            return
         if _too_deep(body, self.max_json_depth):
             await answer(private_send, 422, "json_too_deep")
             return

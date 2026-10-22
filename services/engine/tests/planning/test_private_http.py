@@ -183,6 +183,29 @@ def test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings(
     assert project["inputs"] == {"text": value}
 
 
+@pytest.mark.parametrize(
+    "encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-32-le", "utf-32-be"]
+)
+def test_other_json_encodings_cannot_bypass_utf8_nesting_gate(
+    rig: Rig, encoding: str
+) -> None:
+    text = (
+        '{"schema_version":1,"title":"x","inputs":{"text":"\\"","tree":'
+        + "[" * 1200
+        + "0"
+        + "]" * 1200
+        + '},"key":"deep"}'
+    )
+    response = rig.client.post(
+        "/projects/create",
+        content=text.encode(encoding),
+        headers={**headers(), "Content-Type": "application/json"},
+    )
+    assert response.status_code == 400
+    assert response.json() == {"error": {"code": "invalid_input"}}
+    assert len(response.content) < 100
+
+
 def test_validation_diagnostics_are_bounded_and_explicitly_truncated(rig: Rig) -> None:
     response = rig.client.post(
         "/projects/create",
