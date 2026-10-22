@@ -13,6 +13,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\FormGuard;
 use Linker\Tools\Genie\RateLimit;
+use Linker\Tools\Genie\Retention;
 use Linker\Tools\Genie\Thread;
 use PHPUnit\Framework\TestCase;
 use WP_REST_Request;
@@ -322,6 +323,120 @@ final class ConversationRoutesTest extends TestCase {
 		$this->assertCount( 1, $this->mail );
 		$this->assertSame( array( 'linker-it-account@example.test' ), (array) $this->mail[0]['to'] );
 		$this->assertSame( 'Your conversation with Genie', $this->mail[0]['subject'] );
+	}
+
+	/** A saved automatic check is acknowledged without claiming the email is on its way. */
+	public function test_a_pending_copy_uses_the_native_conversation_and_account_address(): void {
+		$user = wp_insert_user(
+			array(
+				'user_login' => 'linker-it-pending-' . wp_generate_password( 8, false ),
+				'user_email' => 'tester@example.test',
+				'user_pass'  => wp_generate_password( 24 ),
+				'role'       => 'customer',
+			)
+		);
+		$this->assertIsInt( $user );
+		$this->created['users'][] = $user;
+		wp_set_current_user( $user );
+		$id       = $this->answered( 'Please keep the complete answer for our engineer.' );
+		$captured = array();
+		global $wp_filter;
+		$held = $wp_filter[ ConversationMail::SEND_FILTER ] ?? null;
+		remove_all_filters( ConversationMail::SEND_FILTER );
+		add_filter(
+			ConversationMail::SEND_FILTER,
+			static function ( mixed $sent, array $email ) use ( &$captured ): array {
+				unset( $sent );
+				$captured = $email;
+				return array( 'status' => 'pending' );
+			},
+			10,
+			2
+		);
+		try {
+			$response = $this->call(
+				'POST',
+				$id,
+				'/email',
+				array(
+					'email'           => 'someone-else@example.test',
+					'conversation_id' => $id + 1000,
+				)
+			);
+			$this->assertSame( 202, $response->get_status() );
+			$this->assertSame( array( 'status' => 'pending', 'to' => 'tester@example.test' ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete native response.
+			$this->assertSame( $id, $captured['conversation_id'] );
+			$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
+			$this->assertSame( array(), $this->mail, 'The provider saved the request; this route must not send an extra email.' );
+		} finally {
+			if ( null === $held ) {
+				unset( $wp_filter[ ConversationMail::SEND_FILTER ] );
+			} else {
+				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the isolated fixture.
+			}
+		}
+	}
+
+	/** A confirmed guest link may save a pending copy from a different browser, once. */
+	public function test_a_guest_confirmation_preserves_pending_in_another_browser(): void {
+		$id = $this->answered( 'Please email this complete conversation.' );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+		$this->assertCount( 1, $this->mail, 'Only the fixed address confirmation may go first.' );
+		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
+		$_COOKIE  = array();
+		$captured = array();
+		global $wp_filter;
+		$held = $wp_filter[ ConversationMail::SEND_FILTER ] ?? null;
+		remove_all_filters( ConversationMail::SEND_FILTER );
+		add_filter(
+			ConversationMail::SEND_FILTER,
+			static function ( mixed $sent, array $email ) use ( &$captured ): array {
+				unset( $sent );
+				$captured = $email;
+				return array( 'status' => 'pending' );
+			},
+			10,
+			2
+		);
+		try {
+			$mail = new ConversationMail( new Conversations(), new Thread() );
+			$this->assertSame( array( 'status' => 'pending', 'locale' => 'en' ), $mail->confirm( (string) ( $token[1] ?? '' ) ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete confirmation result.
+			$this->assertSame( $id, $captured['conversation_id'] );
+			$this->assertSame( 'tester@example.test', $captured['to'] );
+			$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
+			$this->assertSame( '', get_post_meta( $id, ConversationMail::PENDING, true ) );
+			$this->assertSame( 'expired', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
+			$this->assertCount( 1, $this->mail );
+		} finally {
+			if ( null === $held ) {
+				unset( $wp_filter[ ConversationMail::SEND_FILTER ] );
+			} else {
+				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the isolated fixture.
+			}
+		}
+	}
+
+	/** Background sends can verify an unchanged source, but never a changed, expired or removed one. */
+	public function test_the_source_check_needs_the_complete_current_private_transcript(): void {
+		$id       = $this->answered( 'Can I keep this conversation?' );
+		$messages = ( new Thread() )->transcript( $id );
+		$_COOKIE  = array();
+		$mail     = new ConversationMail( new Conversations(), new Thread() );
+		/**
+		 * Native source-continuity hook owned by Commerce; this verifies Tools registered its answer.
+		 *
+		 * @since 0.2.0
+		 */
+		$this->assertTrue( apply_filters( 'linker_commerce_conversation_mail_source_current', false, $id, $messages ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns the cross-plugin contract.
+		$changed               = $messages;
+		$changed[0]['content'] = 'A different message was not authorized.';
+		$this->assertFalse( $mail->source_current( true, $id, $changed ) );
+		$this->assertFalse( $mail->source_current( true, $id, array() ) );
+		$old = gmdate( 'Y-m-d H:i:s', time() - ( Retention::RETENTION_DAYS + 1 ) * DAY_IN_SECONDS );
+		wp_update_post( array( 'ID' => $id, 'post_date' => $old, 'post_date_gmt' => $old ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- one native fixture update.
+		$this->assertFalse( $mail->source_current( true, $id, $messages ) );
+		wp_delete_post( $id, true );
+		$this->assertFalse( $mail->source_current( true, $id, $messages ) );
 	}
 
 	/**

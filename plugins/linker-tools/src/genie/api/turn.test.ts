@@ -338,6 +338,17 @@ test( 'an email answer reads the outcome from the route, refusals from their cod
 		)
 	).toEqual( { outcome: 'confirm', to: 'a@example.test', limit: 0 } );
 	expect(
+		await emailConversation(
+			'/c',
+			'n',
+			9,
+			'en',
+			undefined,
+			undefined,
+			answer( 202, { status: 'pending', to: 'a@example.test' } )
+		)
+	).toEqual( { outcome: 'pending', to: 'a@example.test', limit: 0 } );
+	expect(
 		JSON.parse( String( confirm.mock.calls[ 0 ]?.[ 1 ]?.body ) )
 	).toEqual( {
 		locale: 'de',
