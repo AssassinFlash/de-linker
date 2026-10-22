@@ -130,6 +130,11 @@ final class Outbox {
 			return false;
 		}
 		if ( $joined ) {
+			NativeTransaction::after_commit(
+				function () use ( $job ): void {
+					$this->retry( $job );
+				}
+			);
 			// Job and action join the caller's transaction. No external mail can
 			// escape before commit; rollback removes both native pending rows.
 			$this->schedule( $job, time() + 1 );
@@ -152,6 +157,11 @@ final class Outbox {
 	 */
 	public function retry( int $job_id ): void {
 		if ( $this->jobs->transaction_active() ) {
+			NativeTransaction::after_commit(
+				function () use ( $job_id ): void {
+					$this->retry( $job_id );
+				}
+			);
 			$this->schedule( $job_id, time() + 1 );
 			return;
 		}
@@ -328,16 +338,7 @@ final class Outbox {
 	 */
 	private function schedule( int $job_id, int $time ): void {
 		if ( $job_id > 0 ) {
-			NativeTransaction::run(
-				static function () use ( $job_id, $time ): void {
-					// Replace only this original job's pending recovery, atomically.
-					as_unschedule_all_actions( self::HOOK, array( $job_id ), self::GROUP );
-					$action = as_schedule_single_action( $time, self::HOOK, array( $job_id ), self::GROUP, true );
-					if ( $action < 1 || ! as_has_scheduled_action( self::HOOK, array( $job_id ), self::GROUP ) ) {
-						throw new \RuntimeException( 'notification_retry_not_persisted' );
-					}
-				}
-			);
+			$this->jobs->reschedule( $job_id, $time );
 		}
 	}
 

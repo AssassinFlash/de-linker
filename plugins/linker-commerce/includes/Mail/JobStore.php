@@ -31,6 +31,16 @@ final class JobStore {
 
 
 	/**
+	 * Native retries retain the same durable job; the memory port only drives units.
+	 *
+	 * @param int $id Original job.
+	 * @param int $time Next attempt.
+	 */
+	public function reschedule( int $id, int $time ): void {
+		$this->capacity->reschedule( $id, $time );
+	}
+
+	/**
 	 * Post type of the queued messages.
 	 */
 	public const POST_TYPE = 'linker_mail_job';

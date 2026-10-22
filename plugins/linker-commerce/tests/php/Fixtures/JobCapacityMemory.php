@@ -42,6 +42,16 @@ final class JobCapacityMemory implements JobCapacity {
 	 */
 	public function deleted( int $id ): void {}
 
+	/**
+	 * Record the unit's next attempt without pretending to prove SQL atomicity.
+	 *
+	 * @param int $id In-memory job.
+	 * @param int $time Next fixture attempt.
+	 */
+	public function reschedule( int $id, int $time ): void {
+		as_schedule_single_action( $time, \Linker\Commerce\Mail\Outbox::HOOK, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP );
+	}
+
 	/** The unit transport runs outside DB transactions; native tests cover joins. */
 	public function transaction_active(): bool {
 		return false;
