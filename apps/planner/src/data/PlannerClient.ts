@@ -67,6 +67,7 @@ export class PlannerClient {
 	async query(
 		path: JsonRpcPath,
 		command: JsonObject,
+		expectedScope: string,
 		signal?: AbortSignal,
 	): Promise<unknown> {
 		const session = this.requireSession();
@@ -77,6 +78,7 @@ export class PlannerClient {
 				session.runtime.limits.max_json_depth,
 				session.runtime.limits.max_body_bytes,
 			),
+			expectedScope,
 			signal,
 		);
 	}
@@ -85,9 +87,12 @@ export class PlannerClient {
 	async send(
 		path: JsonRpcPath,
 		serializedBody: string,
+		expectedScope: string,
 		signal?: AbortSignal,
 	): Promise<unknown> {
 		const session = this.requireSession();
+		if (session.query_scope !== expectedScope)
+			throw new ApiError(401, "session_changed");
 		if (
 			!(RPC_PATHS as readonly string[]).includes(path) ||
 			path === ("assets/content" as string)
@@ -116,6 +121,17 @@ export class PlannerClient {
 		this.generation++;
 		this.session = null;
 		this.restNonce = "";
+	}
+
+	/** Synchronous admission fence for callbacks that outlive an awaited local
+	 * operation. React cleanup may occur after a different native scope is
+	 * confirmed; an old component's props or lifetime are not current admission.
+	 * The server still checks ownership on every request.
+	 */
+	isCurrentScope(scope: string): boolean {
+		return Boolean(
+			this.session?.cookie_confirmed && this.session.query_scope === scope,
+		);
 	}
 
 	private requireSession(): Session {

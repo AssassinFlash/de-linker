@@ -146,9 +146,14 @@ export function useProjectDraft(
 			// server unavailable. The in-memory intent remains frozen for retry.
 			await persist(prepared).catch(() => undefined);
 			const result = readProject(
-				await client.send("projects/revise", intent.body),
+				await client.send("projects/revise", intent.body, session.query_scope),
 			);
-			if (!active.current || !latest.current) return;
+			if (
+				!active.current ||
+				!latest.current ||
+				!client.isCurrentScope(session.query_scope)
+			)
+				return;
 			const next = acknowledgeSave(latest.current, intent, result);
 			latest.current = next;
 			setDraft(next);
@@ -171,12 +176,18 @@ export function useProjectDraft(
 			if (error instanceof ApiError && error.status === 409) {
 				try {
 					const remote = readProject(
-						await client.query("projects/read", {
-							schema_version: 1,
-							project_id: intent.projectId,
-							revision: null,
-						}),
+						await client.query(
+							"projects/read",
+							{
+								schema_version: 1,
+								project_id: intent.projectId,
+								revision: null,
+							},
+							session.query_scope,
+						),
 					);
+					if (!active.current || !client.isCurrentScope(session.query_scope))
+						return;
 					update((previous) => markConflict(previous, remote));
 				} catch {
 					/* Local input and exact uncertain intent remain available. */

@@ -1,6 +1,6 @@
 import { JSDOM } from "jsdom";
 import { act } from "react";
-import { timeoutManager } from "@tanstack/react-query";
+import { notifyManager, timeoutManager } from "@tanstack/react-query";
 
 // Browser timers disappear with their page. Node's test DOM has no page-owned
 // timers, so Query's cache expiry must not keep a disposed fixture alive.
@@ -28,6 +28,10 @@ export function setupDom() {
 		'<!doctype html><header id="lc-header"></header><section data-linker-planner></section>',
 		{ url: "https://fixture.invalid/workspace/?project=" + "1".repeat(32) },
 	);
+	// Query's notification scheduler is separate from its cache timers. Bind
+	// notifications to this page so close() disposes pending native-event work
+	// rather than calling a React subscriber after its global DOM is removed.
+	notifyManager.setScheduler((callback) => dom.window.setTimeout(callback, 0));
 	const names = [
 		"window",
 		"document",
@@ -69,6 +73,7 @@ export function setupDom() {
 		async dispose(root) {
 			await act(async () => root.unmount());
 			dom.window.close();
+			notifyManager.setScheduler((callback) => setTimeout(callback, 0));
 			for (const name of names) {
 				if (previous[name])
 					Object.defineProperty(globalThis, name, previous[name]);

@@ -59,7 +59,11 @@ engineering reports, and does not replace any model channel.
    replaced through the native Woo session mechanism and must confirm its
    new cookie. A foreign-project 404 does not trigger this rotation. Browser
    query caches are scoped to a server-derived native session hash and must
-   be discarded when that scope changes.
+   be discarded when that scope changes. Every application RPC pins its
+   opening confirmed scope; a later asynchronous caller cannot dispatch
+   through a newly confirmed identity. Cache and navigation callbacks also
+   check the client's current confirmation synchronously: native identity
+   confirmation can precede React's next render and component cleanup.
 7. Public resource admission uses the existing native ledger for quota only,
    independent of ownership. New project creation, revisions, uploads and
    calculation requests carry durable idempotency keys; replay cannot spend

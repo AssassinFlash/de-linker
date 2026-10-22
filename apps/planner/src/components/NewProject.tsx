@@ -19,7 +19,7 @@ export function NewProject({
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
-	created: (project: Project) => void;
+	created: (project: Project) => boolean;
 	recheck: () => void;
 }) {
 	const [open, setOpen] = useState(false);
@@ -76,8 +76,16 @@ export function NewProject({
 					if (lifetime.current === instance) setRecoveryFailed(true);
 				});
 			if (lifetime.current !== instance) return;
+			if (!client.isCurrentScope(session.query_scope)) {
+				setFailed(true);
+				return;
+			}
 			const project = readProject(
-				await client.send("projects/create", intent.current),
+				await client.send(
+					"projects/create",
+					intent.current,
+					session.query_scope,
+				),
 			);
 			await store
 				.clearCreation(session.query_scope, intent.current)
@@ -85,10 +93,13 @@ export function NewProject({
 					if (lifetime.current === instance) setRecoveryFailed(true);
 				});
 			if (lifetime.current !== instance) return;
+			if (!created(project)) {
+				setFailed(true);
+				return;
+			}
 			intent.current = null;
 			setOpen(false);
 			setTitle("");
-			created(project);
 		} catch (error) {
 			if (lifetime.current !== instance) return;
 			setFailed(true);

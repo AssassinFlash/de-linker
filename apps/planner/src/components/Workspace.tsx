@@ -36,14 +36,18 @@ export function Workspace({
 }) {
 	const [selected, setSelected] = useState<string | null>(currentProject);
 	const cache = useQueryClient();
-	const select = useCallback((id: string | null) => {
-		const url = new URL(location.href);
-		if (id) url.searchParams.set("project", id);
-		else url.searchParams.delete("project");
-		url.hash = "";
-		history.replaceState(null, "", url);
-		setSelected(id);
-	}, []);
+	const select = useCallback(
+		(id: string | null) => {
+			if (!client.isCurrentScope(session.query_scope)) return;
+			const url = new URL(location.href);
+			if (id) url.searchParams.set("project", id);
+			else url.searchParams.delete("project");
+			url.hash = "";
+			history.replaceState(null, "", url);
+			setSelected(id);
+		},
+		[client, session.query_scope],
+	);
 	const pageSize = Math.min(30, session.runtime.limits.max_page_size); // UI page policy, not total project capacity.
 	const index = useInfiniteQuery({
 		queryKey: [session.query_scope, "projects"],
@@ -53,6 +57,7 @@ export function Workspace({
 				await client.query(
 					"projects/list",
 					{ schema_version: 1, page_size: pageSize, after: pageParam },
+					session.query_scope,
 					signal,
 				),
 				pageSize,
@@ -67,6 +72,7 @@ export function Workspace({
 				await client.query(
 					"projects/read",
 					{ schema_version: 1, project_id: selected, revision: null },
+					session.query_scope,
 					signal,
 				),
 			),
@@ -85,11 +91,13 @@ export function Workspace({
 		);
 	}, [index.data]);
 	function created(project: Project) {
+		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData([session.query_scope, "project", project.id], project);
 		void cache.invalidateQueries({
 			queryKey: [session.query_scope, "projects"],
 		});
 		select(project.id);
+		return true;
 	}
 	if (selected)
 		return project.data ? (
@@ -102,6 +110,7 @@ export function Workspace({
 				session={session}
 				recheck={recheck}
 				close={() => {
+					if (!client.isCurrentScope(session.query_scope)) return;
 					void cache.invalidateQueries({
 						queryKey: [session.query_scope, "projects"],
 					});

@@ -48,7 +48,8 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		gate = null,
 		nextSession = session,
 		bootstraps = 0,
-		reads = 0;
+		reads = 0,
+		admittedScope = session.query_scope;
 	const store = {
 		async read() {
 			reads++;
@@ -72,10 +73,17 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		},
 	};
 	const client = {
-		invalidate() {},
+		invalidate() {
+			admittedScope = null;
+		},
 		async bootstrap() {
 			bootstraps++;
-			return gate ? gate.promise : nextSession;
+			const value = gate ? await gate.promise : nextSession;
+			admittedScope = value.query_scope;
+			return value;
+		},
+		isCurrentScope(scope) {
+			return scope === admittedScope;
 		},
 		async query() {
 			if (nextSession.query_scope !== session.query_scope)
@@ -355,6 +363,7 @@ test("creation authentication failure rechecks once and explicitly retries the e
 						recheck,
 						created: (project) => {
 							created = project;
+							return true;
 						},
 					}),
 				),
@@ -408,6 +417,7 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 			const oldSession = { ...session, kind: "user" };
 			const newSession = { ...oldSession, query_scope: "9".repeat(64) };
 			let nextSession = oldSession,
+				admittedScope = oldSession.query_scope,
 				reached = false,
 				calls = 0,
 				cache,
@@ -437,9 +447,15 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 				},
 			};
 			const client = {
-				invalidate() {},
+				invalidate() {
+					admittedScope = null;
+				},
 				async bootstrap() {
+					admittedScope = nextSession.query_scope;
 					return nextSession;
+				},
+				isCurrentScope(scope) {
+					return scope === admittedScope;
 				},
 				async query() {
 					return { items: [], next: null };
@@ -517,5 +533,224 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 			);
 			assert.ok(!document.body.textContent.includes(oldAck.title));
 			assert.equal(calls, stage === "write" ? 0 : 1);
+		});
+});
+
+test("native confirmation fences pending creation, revision and navigation before React commits", async (t) => {
+	for (const stage of ["write", "clear", "revise", "close"])
+		await t.test(stage, async (t) => {
+			const fixture = setupDom();
+			history.replaceState(null, "", "/workspace/");
+			const { createRoot } = await import("react-dom/client");
+			const { SessionBoundary } =
+				await import("../src/components/SessionBoundary.tsx");
+			const { Workspace } = await import("../src/components/Workspace.tsx");
+			const { PlannerClient } = await import("../src/data/PlannerClient.ts");
+			const { emptyBrief } = await import("../src/domain/brief.ts");
+			const oldSession = { ...session, kind: "user" };
+			const newSession = { ...oldSession, query_scope: "9".repeat(64) };
+			const gate = deferred();
+			const events = [];
+			let nextSession = oldSession,
+				currentScope,
+				cache,
+				reached = false,
+				calls = 0,
+				closing = false,
+				editStored = false;
+			const oldAck = {
+				id: "1".repeat(32),
+				title: "OLD OWNER SYNTHETIC PROJECT",
+				revision: 1,
+				input_sha256: "2".repeat(64),
+				inputs: { brief: emptyBrief() },
+			};
+			const opening = stage === "revise" || stage === "close";
+			if (opening)
+				history.replaceState(null, "", "/workspace/?project=" + oldAck.id);
+			const expectedSearch = location.search;
+			const response = (value, status = 200) =>
+				new Response(JSON.stringify(value), {
+					status,
+					headers: { "Content-Type": "application/json" },
+				});
+			const client = new PlannerClient({
+				origin: location.origin,
+				baseUrl: location.origin + "/rpc/",
+				nonceUrl: location.origin + "/nonce",
+				fetch: async (url) => {
+					if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
+					if (String(url).endsWith("/bootstrap")) return response(nextSession);
+					if (String(url).endsWith("/projects/list"))
+						return response({ items: [], next: null });
+					if (String(url).endsWith("/projects/read"))
+						return nextSession === oldSession
+							? response(oldAck)
+							: response({ code: "not_found" }, 404);
+					assert.ok(/\/projects\/(create|revise)$/.test(String(url)));
+					calls++;
+					return response(oldAck);
+				},
+			});
+			const store = {
+				async read() {
+					return null;
+				},
+				async candidates() {
+					return [];
+				},
+				async write(_scope, draft) {
+					if (
+						(stage === "revise" && draft.pending) ||
+						(stage === "close" && closing)
+					) {
+						reached = true;
+						await gate.promise;
+					} else editStored = true;
+				},
+				async readCreation() {
+					return null;
+				},
+				async writeCreation() {
+					if (stage === "write") {
+						reached = true;
+						await gate.promise;
+					}
+				},
+				async clearCreation() {
+					if (stage === "clear") {
+						reached = true;
+						await gate.promise;
+					}
+				},
+			};
+			const config = {
+				locale: "en-GB",
+				countries: { NO: "Norway" },
+				baseUrl: location.origin + "/rpc/",
+				nonceUrl: location.origin + "/nonce",
+			};
+			function Track(props) {
+				cache = useQueryClient();
+				currentScope = props.session.query_scope;
+				if (currentScope === newSession.query_scope)
+					events.push("new_scope_render");
+				return React.createElement(Workspace, props);
+			}
+			const root = createRoot(fixture.element);
+			t.after(() => {
+				globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+				return fixture.dispose(root);
+			});
+			await act(async () =>
+				root.render(
+					React.createElement(
+						React.StrictMode,
+						null,
+						React.createElement(SessionBoundary, { client }, (value, recheck) =>
+							React.createElement(Track, {
+								key: value.query_scope,
+								session: value,
+								client,
+								store,
+								config,
+								recheck,
+							}),
+						),
+					),
+				),
+			);
+			if (opening) {
+				await until(() => document.querySelector("textarea"));
+				await enter(
+					[...document.querySelectorAll("textarea")].at(-1),
+					"Synthetic local edit",
+				);
+				await until(() => editStored);
+				closing = stage === "close";
+				await act(async () =>
+					[...document.querySelectorAll("button")]
+						.find(
+							(button) =>
+								button.textContent === (closing ? "Projects" : "Save project"),
+						)
+						.click(),
+				);
+			} else {
+				await until(() =>
+					[...document.querySelectorAll("button")].some(
+						(button) =>
+							button.textContent.includes("New project") && !button.disabled,
+					),
+				);
+				await act(async () =>
+					[...document.querySelectorAll("button")]
+						.find((button) => button.textContent.includes("New project"))
+						.click(),
+				);
+				await enter(document.querySelector("input"), oldAck.title);
+				await act(async () =>
+					document
+						.querySelector("form")
+						.dispatchEvent(
+							new window.Event("submit", { bubbles: true, cancelable: true }),
+						),
+				);
+			}
+			await until(() => reached);
+			const clear = cache.clear.bind(cache);
+			cache.clear = (...args) => {
+				assert.equal(client.isCurrentScope(newSession.query_scope), true);
+				events.push("new_scope_confirmed");
+				const result = clear(...args);
+				queueMicrotask(() => {
+					events.push("release_old_completion");
+					gate.resolve();
+				});
+				return result;
+			};
+			const set = cache.setQueryData.bind(cache);
+			cache.setQueryData = (key, ...args) => {
+				if (key[0] === oldSession.query_scope)
+					events.push("old_scope_cache_write");
+				return set(key, ...args);
+			};
+			nextSession = newSession;
+			// act would flush React's commit/cleanup before releasing the local
+			// promise and hide the real browser-event pre-commit window.
+			globalThis.IS_REACT_ACT_ENVIRONMENT = false;
+			window.dispatchEvent(new window.Event("focus"));
+			for (
+				let attempt = 0;
+				attempt < 100 && currentScope !== newSession.query_scope;
+				attempt++
+			)
+				await new Promise((resolve) => setTimeout(resolve, 1));
+			globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+			assert.equal(currentScope, newSession.query_scope);
+			assert.ok(
+				events.indexOf("new_scope_confirmed") <
+					events.indexOf("release_old_completion"),
+			);
+			assert.ok(
+				events.indexOf("release_old_completion") <
+					events.indexOf("new_scope_render"),
+				JSON.stringify(events),
+			);
+			assert.ok(!events.includes("old_scope_cache_write"));
+			assert.equal(location.search, expectedSearch);
+			assert.equal(
+				cache.getQueryData([oldSession.query_scope, "project", oldAck.id]),
+				undefined,
+			);
+			assert.ok(!document.body.textContent.includes(oldAck.title));
+			assert.equal(calls, stage === "clear" ? 1 : 0);
+			cache.clear = clear;
+			cache.setQueryData = set;
+			// The race assertions above run before any act flush. Drain the
+			// native-event render's remaining effects before disposing its DOM.
+			await act(async () => {
+				await new Promise((resolve) => setImmediate(resolve));
+			});
 		});
 });

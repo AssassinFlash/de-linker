@@ -50,6 +50,32 @@ function fixture(replies: Response[]) {
 }
 const guest = () => new Response("0", { status: 400 });
 
+test("scope admission follows native confirmation immediately, independently of React cleanup", async () => {
+	const other = { ...context, query_scope: "c".repeat(64) };
+	const { client } = fixture([guest(), json(context), guest(), json(other)]);
+	assert.equal(client.isCurrentScope(context.query_scope), false);
+	await client.bootstrap();
+	assert.equal(client.isCurrentScope(context.query_scope), true);
+	client.invalidate();
+	assert.equal(client.isCurrentScope(context.query_scope), false);
+	const confirming = client.bootstrap();
+	assert.equal(client.isCurrentScope(other.query_scope), false);
+	await confirming;
+	assert.equal(client.isCurrentScope(context.query_scope), false);
+	assert.equal(client.isCurrentScope(other.query_scope), true);
+	await assert.rejects(
+		client.send("projects/create", "{}", context.query_scope),
+		{ code: "session_changed" },
+	);
+	await assert.rejects(
+		client.send("projects/revise", "{}", context.query_scope),
+		{ code: "session_changed" },
+	);
+	await assert.rejects(client.query("projects/read", {}, context.query_scope), {
+		code: "session_changed",
+	});
+});
+
 test("native bootstrap confirms the presented cookie before any private RPC", async () => {
 	const { client, calls } = fixture([
 		guest(),
@@ -57,15 +83,19 @@ test("native bootstrap confirms the presented cookie before any private RPC", as
 		json(context),
 		json({ items: [] }),
 	]);
-	await assert.rejects(client.query("projects/list", {}), {
+	await assert.rejects(client.query("projects/list", {}, context.query_scope), {
 		code: "session_confirmation_required",
 	});
 	assert.deepEqual(await client.bootstrap(), context);
-	await client.query("projects/list", {
-		schema_version: 1,
-		page_size: 10,
-		after: null,
-	});
+	await client.query(
+		"projects/list",
+		{
+			schema_version: 1,
+			page_size: 10,
+			after: null,
+		},
+		context.query_scope,
+	);
 	assert.equal(calls.length, 4);
 	assert.ok(calls[0]?.url.includes("action=rest-nonce"));
 	for (const call of calls) {
@@ -100,7 +130,7 @@ test("account nonce failure blocks bootstrap and cannot silently downgrade to gu
 		json({ items: [] }),
 	]);
 	await account.client.bootstrap();
-	await account.client.query("projects/list", {});
+	await account.client.query("projects/list", {}, context.query_scope);
 	assert.equal(
 		new Headers(account.calls[2]?.init.headers).get("X-WP-Nonce"),
 		"1234567890",
@@ -120,15 +150,25 @@ test("a failed save has no automatic retry; an explicit retry sends the frozen b
 	]);
 	await client.bootstrap();
 	const body = '{ "schema_version":1, "key":"same-key", "inputs":{"one":1.0} }';
-	await assert.rejects(client.send("projects/create", body), {
-		code: "upstream",
-	});
+	await assert.rejects(
+		client.send("projects/create", body, context.query_scope),
+		{
+			code: "upstream",
+		},
+	);
 	assert.equal(calls.length, 3);
-	assert.deepEqual(await client.send("projects/create", body), { saved: true });
+	assert.deepEqual(
+		await client.send("projects/create", body, context.query_scope),
+		{ saved: true },
+	);
 	assert.equal(calls[2]?.init.body, body);
 	assert.equal(calls[3]?.init.body, body);
 	await assert.rejects(
-		client.send("../identity/claim-session" as JsonRpcPath, "{}"),
+		client.send(
+			"../identity/claim-session" as JsonRpcPath,
+			"{}",
+			context.query_scope,
+		),
 		{ code: "invalid_rpc_path" },
 	);
 	assert.equal(calls.length, 4);
@@ -141,8 +181,8 @@ test("authentication refusal clears private admission even when its reply is mal
 		new Response("<html>expired</html>", { status: 401 }),
 	]);
 	await client.bootstrap();
-	await assert.rejects(client.query("projects/list", {}));
-	await assert.rejects(client.query("projects/list", {}), {
+	await assert.rejects(client.query("projects/list", {}, context.query_scope));
+	await assert.rejects(client.query("projects/list", {}, context.query_scope), {
 		code: "session_confirmation_required",
 	});
 	assert.equal(calls.length, 3);
