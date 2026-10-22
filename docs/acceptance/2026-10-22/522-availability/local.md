@@ -8,14 +8,14 @@ staff diagnostic and unchanged Jev/model/mail policy.
 
 ## Executed checks
 
-- Native WordPress `BusinessAdmissionTest`: 25 tests,383 assertions PASS on g522.
+- Native WordPress `BusinessAdmissionTest`: 25 tests,388 assertions PASS on g522.
   Includes proof/keyless guest contact and inquiry saves, stable retry, native
   invalid-input guards and atomic quota refusal; all other action proofs remain
   strict. Native tests ran before the temporary browser-only opt-in fixture.
 - Protection forms JavaScript:11 tests PASS, including both business actions
   avoiding focus/pointer challenge prewarming and submit interception, while
   draft writes still require verification.
-- Changed PHP:PHPStan and PHPCS PASS. Protection JavaScript lint/format,
+- Production PHP and the complete Commerce PHPStan scan, including the new native tests, PASS; changed PHP PHPCS PASS. Protection JavaScript lint/format,
   TypeScript and generated build PASS. `git diff --check` PASS.
 - Actual live-snapshot browser: guest EN/DE contact and inquiry submits all
   reached their native confirmation without a third-party challenge, with
@@ -43,3 +43,5 @@ Production remains on the previous version at this record. Required next gate:
 green CI, merge, backed-up atomic deployment/private opt-in/cache readback,
 then the authorized single-recipient synthetic submission and actual inbox
 receipt. A saved inquiry or successful mail() alone will not satisfy that gate.
+
+CI initially found cleanup callbacks returning bool where the native fixture contract requires void, plus unchecked Woo query union types. These were corrected in test code with void callbacks and real array assertions; the unchanged production implementation was not relaxed. Native suite rerun:25 tests/388 assertions PASS.

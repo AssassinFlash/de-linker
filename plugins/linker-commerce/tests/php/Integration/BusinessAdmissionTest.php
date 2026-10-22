@@ -112,7 +112,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	private function optional_business_verification(): void {
 		$old = getenv( 'LINKER_BUSINESS_VERIFICATION' );
 		putenv( 'LINKER_BUSINESS_VERIFICATION=optional' );
-		$this->later( static fn () => putenv( false === $old ? 'LINKER_BUSINESS_VERIFICATION' : 'LINKER_BUSINESS_VERIFICATION=' . $old ) );
+		$this->later(
+			static function () use ( $old ): void {
+				putenv( false === $old ? 'LINKER_BUSINESS_VERIFICATION' : 'LINKER_BUSINESS_VERIFICATION=' . $old );
+			}
+		);
 	}
 
 	/** Both actual business writers remain idempotent without any widget/key. */
@@ -122,7 +126,11 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		foreach ( $keys as $key ) {
 			$old = getenv( $key );
 			putenv( $key );
-			$this->later( static fn () => putenv( false === $old ? $key : $key . '=' . $old ) );
+			$this->later(
+				static function () use ( $old, $key ): void {
+					putenv( false === $old ? $key : $key . '=' . $old );
+				}
+			);
 		}
 		foreach ( array( 'contact', 'inquiry' ) as $action ) {
 			$post                 = $this->post( $action );
@@ -131,14 +139,21 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			$first                = $send->process( $post );
 			$this->assertFalse( is_wp_error( $first ) );
 			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+			$this->assertIsArray( $orders );
 			$this->assertCount( 1, $orders );
 			$order = $orders[0];
-			$this->later( static fn () => $order->delete( true ) );
+			$this->later(
+				static function () use ( $order ): void {
+					$order->delete( true );
+				}
+			);
 			$this->assertSame( Statuses::RECEIVED, $order->get_status() );
 			$this->assertSame( 0, $order->get_customer_id() );
 			$this->assertSame( $post['linker_request_id'], $order->get_meta( BusinessRecord::REQUEST ) );
 			$this->assertFalse( is_wp_error( $send->process( $post ) ) );
-			$this->assertCount( 1, wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+			$retry = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+			$this->assertIsArray( $retry );
+			$this->assertCount( 1, $retry );
 			$this->assertStringNotContainsString( '<noscript>', FormFields::render( $action ) );
 		}
 	}
@@ -148,12 +163,22 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->optional_business_verification();
 		$limit = static fn ( array $limits, string $action, Identity $identity ): array => array_merge( $limits, array( new Allowance( 'optional_fixture', $identity->browser, 1, HOUR_IN_SECONDS ) ) );
 		add_filter( 'linker_commerce_public_business_limits', $limit, 99, 3 );
-		$this->later( static fn () => remove_filter( 'linker_commerce_public_business_limits', $limit, 99 ) );
+		$this->later(
+			static function () use ( $limit ): void {
+				remove_filter( 'linker_commerce_public_business_limits', $limit, 99 );
+			}
+		);
 		$first                 = $this->post( 'contact' );
 		$first['linker_proof'] = '';
 		$this->assertSame( 'sent', ( new ContactHandler() )->process( $first ) );
-		$order = wc_get_orders( array( 'billing_email' => $first['email'] ) )[0];
-		$this->later( static fn () => $order->delete( true ) );
+		$orders = wc_get_orders( array( 'billing_email' => $first['email'] ) );
+		$this->assertIsArray( $orders );
+		$order = $orders[0];
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
 		$second                 = $this->post( 'contact' );
 		$second['linker_proof'] = '';
 		$this->assertSame( 'throttled', ( new ContactHandler() )->process( $second ) );
