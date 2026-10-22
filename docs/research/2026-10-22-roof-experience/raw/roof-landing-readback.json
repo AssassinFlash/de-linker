@@ -1,0 +1,18 @@
+[
+  {
+    "path": "/solution-configurator/?step=roof",
+    "status": 200,
+    "mount_attributes_sanitized": {
+      "data-linker-app": "configurator",
+      "data-engine-url": "http://127.0.0.1:9323/wp-json/linker-ai/v1/engine"
+    }
+  },
+  {
+    "path": "/de/loesungskonfigurator/?step=roof",
+    "status": 200,
+    "mount_attributes_sanitized": {
+      "data-linker-app": "configurator",
+      "data-engine-url": "http://127.0.0.1:9323/wp-json/linker-ai/v1/engine"
+    }
+  }
+]

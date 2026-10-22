@@ -1,0 +1,206 @@
+{
+  "base_commit": "123aea571e80b5b1ba756816914ba86408866ba5",
+  "scope": "Research artifacts only; manifest excludes itself. Browser filenames are preserved as supplied; actual image format is reported independently.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 19781,
+      "sha256": "eafc65a659c04e2eb6ea6bfaa35321f81b263f583e84448dc089b64b307d6f36"
+    },
+    {
+      "path": "browser/local-de-commercial-no-roof-1440.png",
+      "bytes": 74583,
+      "sha256": "e57305670099c0a0bfdd33f6841cb669463cd5fc0eab2b76733b259bd7068dfd",
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-de-guest-save-390.png",
+      "bytes": 37015,
+      "sha256": "a0be97b069a6698274ab3beef04107ced7320d6cd708c265b27cd65092b43a4b",
+      "image_pixels": [
+        390,
+        844
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-de-guest-saved-link-login-390.png",
+      "bytes": 26740,
+      "sha256": "b5dd959eb93db257293ad6205dccbeee71181f7ac71fcf89b29f6e2fde5b4706",
+      "image_pixels": [
+        390,
+        844
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-de-input-changed-stale-report-390.png",
+      "bytes": 32567,
+      "sha256": "96620f29320371cabd270f9c0433c421f9dfee3ff5f87fb0f2a69e26474eaab4",
+      "image_pixels": [
+        390,
+        844
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-de-roof-deeplink-390.png",
+      "bytes": 37831,
+      "sha256": "86b021d9499ef23c5599699f9575da3c93957a4cb8bfe263cfd4911bf6256ca3",
+      "image_pixels": [
+        390,
+        844
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-de-stale-result-and-guest-save.json",
+      "bytes": 4911,
+      "sha256": "7842cd61c664ee91ee9230f38601e36f7d8dd4a664883634774cf23e5ba7d26f"
+    },
+    {
+      "path": "browser/local-en-roof-deeplink-1440.png",
+      "bytes": 69507,
+      "sha256": "0e6a137d23cbe75b37c36c870bbd7b5bcfecb8bd8832f7f2d3c492604351af72",
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-en-roof-deeplink-390.png",
+      "bytes": 36375,
+      "sha256": "a62784271d09de69642b564e43c651b580007357fc709ee1a5e854e27fbc3973",
+      "image_pixels": [
+        390,
+        844
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-en-roof-empty-postcode-1440.png",
+      "bytes": 73131,
+      "sha256": "bc8527d3ccc6f681a5a81402c703b57c2b3b0684f9df588e40ff264a3994977a",
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-en-roof-open-1440.png",
+      "bytes": 59173,
+      "sha256": "d1d622ba6c196afffb1bd4a9100f724bfa609ec8fca7ca96f185fa26e797000c",
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-en-roof-tile-failure-logs.json",
+      "bytes": 6638,
+      "sha256": "0f3d7abcf4d16507313f24fbc9f76915bab25fc43e73fa05b473bf20cc82b785"
+    },
+    {
+      "path": "browser/local-en-roof-tile-failure-ui-1440.png",
+      "bytes": 58379,
+      "sha256": "22d57b80c9ba1578d28635ecf2c69f378d87a590a8e2e34f16619f2de384f68c",
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "browser/local-en-yield-unavailable-1440.png",
+      "bytes": 68930,
+      "sha256": "0a8eef451198e3ac772fabbd13ea5ea46cdf0e6b8ede6a2dbec548892e303f88",
+      "image_pixels": [
+        1440,
+        900
+      ],
+      "image_format": "JPEG"
+    },
+    {
+      "path": "raw/claude-initial.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/claude-initial.stderr",
+      "bytes": 106,
+      "sha256": "1ac5fc7f639208d1c0d06b6aa6fb76893525f80d1981a6cfbe9395bf675c3ec9"
+    },
+    {
+      "path": "raw/claude-invocation-status.json",
+      "bytes": 863,
+      "sha256": "69b2b54d8d45ecbb36f63fd655cdb7c3d3bea2843e0b5a75e6f058691c06ffcd"
+    },
+    {
+      "path": "raw/claude-prompt.txt",
+      "bytes": 3287,
+      "sha256": "3a03871b21f9f8740adb155bc5c277a0499ea17924e1239cfe1154178fd29a7d"
+    },
+    {
+      "path": "raw/collect-entry-links.py",
+      "bytes": 2546,
+      "sha256": "96c93a3ed287603731f849d9283dcce65fc2b53ca10e344aa8ded8f2fab94af0"
+    },
+    {
+      "path": "raw/controlled-cache.json",
+      "bytes": 831,
+      "sha256": "5a688838243c1bee76a10fd26168b9748731c93af24b911c203625737c6f5815"
+    },
+    {
+      "path": "raw/controlled-residential-response.json",
+      "bytes": 106056,
+      "sha256": "e211d8a82fe130cbd67788ee8c71871c42459046309bb5d78b10c079f206960e"
+    },
+    {
+      "path": "raw/entry-links.json",
+      "bytes": 21702,
+      "sha256": "2aef2ab438fc624b318bd8d7d64865a8dbe9eb06d734fca10cf280a6df05c149"
+    },
+    {
+      "path": "raw/environment.json",
+      "bytes": 3112,
+      "sha256": "6cd9cca1ab195eecf463ab88afe623a209f91bb9a9fca27493cd6ae094e3d203"
+    },
+    {
+      "path": "raw/input-conversion.json",
+      "bytes": 629,
+      "sha256": "0ea2b7d18ab778e3197186db2ea6e5c05a43cbe42acbeb3a57b69880bf398ac0"
+    },
+    {
+      "path": "raw/probe-roof-inputs.py",
+      "bytes": 1523,
+      "sha256": "ce08da99293a750c77b06480fd67f34b3aad3f6a4445378cdd649685be475a6f"
+    },
+    {
+      "path": "raw/roof-input-probes.json",
+      "bytes": 3224,
+      "sha256": "8a29add76d6a29f330ef2c1a23061e6477f931dd979aeb49c25b78f9ef84ebd2"
+    },
+    {
+      "path": "raw/roof-landing-readback.json",
+      "bytes": 479,
+      "sha256": "7442c74699a660adcdd0d5a346a9d3c9d07a2d0f3343d4f354d796d30e189b74"
+    },
+    {
+      "path": "raw/roof-to-residential-schema.json",
+      "bytes": 1331,
+      "sha256": "5c55ee6b6f4fdf6e550637188befb02120c8b14b56f87d2b7bca5aa64147e357"
+    },
+    {
+      "path": "raw/snapshot-load.json",
+      "bytes": 624,
+      "sha256": "e8a4a3e738b2cc953902adf30ad007ecea51dff7c6eb110983061f60cbe144a0"
+    }
+  ]
+}

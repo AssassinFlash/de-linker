@@ -1,0 +1,56 @@
+[
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1289951.289340634,6130096.794414565,1290104.1633972041,6130249.668471135&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:15.976Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1289951.289340634,6130249.668471135,1290104.1633972041,6130402.542527705&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:16.056Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1289798.4152840637,6130096.794414565,1289951.289340634,6130249.668471135&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:16.198Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1290104.1633972041,6130096.794414565,1290257.0374537744,6130249.668471135&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:16.319Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1289951.289340634,6129943.920357995,1290104.1633972041,6130096.794414565&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:16.326Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1289798.4152840637,6130249.668471135,1289951.289340634,6130402.542527705&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:16.364Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1290104.1633972041,6130249.668471135,1290257.0374537744,6130402.542527705&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:23.991Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1289798.4152840637,6129943.920357995,1289951.289340634,6130096.794414565&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:24.886Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  },
+  {
+    "level": "error",
+    "message": "dt: AJAXError: Failed to fetch (0): https://geoservices.bayern.de/od/wms/dop/v1/dop20?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=by_dop20c&STYLES=&CRS=EPSG:3857&BBOX=1290104.1633972041,6129943.920357995,1290257.0374537744,6130096.794414565&WIDTH=256&HEIGHT=256&FORMAT=image/png\n    at http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:10642\n    at Generator.throw (<anonymous>)\n    at a (http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0:1:561)",
+    "timestamp": "2026-10-22T09:24:27.160Z",
+    "url": "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/555.js?ver=07be35653daada62a5b0"
+  }
+]

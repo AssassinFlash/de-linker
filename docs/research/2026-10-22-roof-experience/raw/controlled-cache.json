@@ -1,0 +1,12 @@
+{
+  "utc": "2026-10-22T09:30:20.227057+00:00",
+  "kind": "controlled recorded fixture, not a fresh successful PVGIS request",
+  "source": "services/engine/tests/fixtures/pvgis/48.15_11.60_t35_a180_l14.json",
+  "source_commit": "123aea57",
+  "source_sha256": "7b12df13e8dce9505400ec9e96a9f09f415219fdab3836ceaa22b3bc2e35a548",
+  "target": "/Users/chesterjohn/de-linker-local/r549/engine/cache/pvgis/48.15_11.60_t35_a180_l14.json",
+  "target_existed_before": false,
+  "target_sha256": "7b12df13e8dce9505400ec9e96a9f09f415219fdab3836ceaa22b3bc2e35a548",
+  "source_claim": "Existing repository fixture; conftest describes a recorded Munich PVGIS answer. This run did not independently refetch PVGIS.",
+  "scope": "Only this instance cache; no business source, feed, compatibility, algorithm, model route or production data changed."
+}

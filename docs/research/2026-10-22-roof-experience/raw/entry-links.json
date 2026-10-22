@@ -1,0 +1,603 @@
+{
+  "utc": "2026-10-22T09:27:03.304746+00:00",
+  "base": "http://127.0.0.1:9323",
+  "identity": "cookie-free HTTP client; HTML anchors, not browser visibility proof",
+  "rows": [
+    {
+      "path": "/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/products/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/products/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "Open the Solution Configurator"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/produkte/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/produkte/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator öffnen"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/for-installer/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/for-installer/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Plan a Project Solution →"
+        },
+        {
+          "href": "/solution-configurator/?step=roof",
+          "text": "Open the Roof detail step →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Open the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Plan a Project Solution →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/fuer-installateur/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/fuer-installateur/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Projektlösung planen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/?step=roof",
+          "text": "Dachdetail-Schritt öffnen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator öffnen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Projektlösung planen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/blog/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/blog/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "Open the Solution Configurator ↗"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/blog/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/blog/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator öffnen ↗"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/solution-configurator/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/solution-configurator/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "EN"
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "DE"
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "EN"
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "DE"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "English"
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "Deutsch"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/loesungskonfigurator/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "EN"
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "DE"
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "EN"
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "DE"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "http://127.0.0.1:9323/solution-configurator/",
+          "text": "Englisch"
+        },
+        {
+          "href": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+          "text": "Deutsch"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/product/goodwe-gw60k-sts-g10/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/product/goodwe-gw60k-sts-g10/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/produkt/goodwe-gw60k-sts-g10/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/produkt/goodwe-gw60k-sts-g10/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/solution/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/solution/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Open the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Plan with the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/loesung/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/loesung/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator öffnen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Mit dem Lösungskonfigurator planen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/solution/residential-storage/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/solution/residential-storage/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Explore Backup Options →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Open the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Open the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Start in the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Design in the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/loesung/heimspeicher/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/loesung/heimspeicher/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Notstromoptionen entdecken →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator öffnen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator öffnen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Im Lösungskonfigurator starten →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Im Lösungskonfigurator planen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/solution/commercial-storage/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/solution/commercial-storage/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Plan peak-shaving →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Plan solar self-consumption →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Size an EV charging buffer →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Plan backup for critical loads →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Open the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Model the project in the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Start in the Solution Configurator →"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Design in the Solution Configurator ↗"
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/loesung/gewerbespeicher/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/loesung/gewerbespeicher/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lastspitzenkappung planen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Solar-Eigenverbrauch planen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Ladepuffer für E-Fahrzeuge auslegen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Notstrom für kritische Lasten planen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator öffnen →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Projekt im Lösungskonfigurator modellieren →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Im Lösungskonfigurator starten →"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Im Lösungskonfigurator planen ↗"
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    },
+    {
+      "path": "/hybrid-inverter-vs-ac-coupled-storage/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/hybrid-inverter-vs-ac-coupled-storage/",
+      "links": [
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Plan Bring your goal, site and existing equipment into a complete solution with a bill of materials. The Roof detail step adds the building's layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator Configure a complete solution with a bill of materials. The Roof detail step adds the layout."
+        },
+        {
+          "href": "/solution-configurator/",
+          "text": "Solution Configurator"
+        }
+      ]
+    },
+    {
+      "path": "/de/hybridwechselrichter-vs-ac-speicher/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/hybridwechselrichter-vs-ac-speicher/",
+      "links": [
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Plan Führen Sie Ziel, Standort und vorhandene Ausrüstung zu einer vollständigen Lösung mit Stückliste zusammen. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator Konfigurieren Sie eine vollständige Lösung mit Stückliste. Der Schritt Dachdetails nimmt die Dachfläche auf."
+        },
+        {
+          "href": "/de/loesungskonfigurator/",
+          "text": "Lösungskonfigurator"
+        }
+      ]
+    }
+  ]
+}

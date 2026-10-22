@@ -1,0 +1,27 @@
+{
+  "home": "http://127.0.0.1:9323",
+  "published_products": {
+    "snapshot": 212,
+    "instance": 212
+  },
+  "attachments": {
+    "snapshot": 2756,
+    "instance": 2756
+  },
+  "attachment_files_missing": 0,
+  "live_address_left": {
+    "https://de-linker.com": 0,
+    "https:\\/\\/de-linker.com": 0,
+    "https%3A%2F%2Fde-linker.com": 0
+  },
+  "ok": true,
+  "licences": {
+    "seopress-pro": "applied",
+    "livecanvas": "applied"
+  },
+  "snapshot": {
+    "name": "20261022-1653",
+    "taken": "2026-10-22T08:56:45+00:00"
+  },
+  "sanitization": "Staff login names omitted; counts, snapshot and licence state preserved."
+}

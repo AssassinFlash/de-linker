@@ -1,0 +1,165 @@
+{
+  "utc": "2026-10-22T09:24:42.691410+00:00",
+  "base": "http://127.0.0.1:9323/wp-json/linker-ai/v1/engine",
+  "scope": "Local deterministic compute only; no browser rendering proof; comma mapping separately read from RoofStep.tsx",
+  "rows": [
+    {
+      "case": "valid",
+      "request": {
+        "polygon": [
+          [
+            11.5882,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1405
+          ],
+          [
+            11.5882,
+            48.1405
+          ]
+        ],
+        "tilt_deg": 35,
+        "azimuth_deg": 180,
+        "locale": "de"
+      },
+      "status": 200,
+      "answer": {
+        "tilt_deg": 35,
+        "azimuth_deg": 180,
+        "area_m2": 909.3,
+        "usable": true,
+        "excluded_reason": null,
+        "modules": 375,
+        "kwp": 172.5
+      }
+    },
+    {
+      "case": "what_comma_inputs_become",
+      "request": {
+        "polygon": [
+          [
+            11.5882,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1405
+          ],
+          [
+            11.5882,
+            48.1405
+          ]
+        ],
+        "tilt_deg": 0,
+        "azimuth_deg": 0,
+        "locale": "de"
+      },
+      "status": 200,
+      "answer": {
+        "tilt_deg": 0,
+        "azimuth_deg": 0,
+        "area_m2": 744.86,
+        "usable": true,
+        "excluded_reason": null,
+        "modules": 303,
+        "kwp": 139.38
+      }
+    },
+    {
+      "case": "tilt_out_of_range",
+      "request": {
+        "polygon": [
+          [
+            11.5882,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1405
+          ],
+          [
+            11.5882,
+            48.1405
+          ]
+        ],
+        "tilt_deg": 91,
+        "azimuth_deg": 180,
+        "locale": "de"
+      },
+      "status": 422,
+      "answer": {
+        "detail": [
+          {
+            "type": "less_than_equal",
+            "loc": [
+              "body",
+              "tilt_deg"
+            ],
+            "msg": "Input should be less than or equal to 90",
+            "input": 91,
+            "ctx": {
+              "le": 90
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "negative_facing",
+      "request": {
+        "polygon": [
+          [
+            11.5882,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1402
+          ],
+          [
+            11.5885,
+            48.1405
+          ],
+          [
+            11.5882,
+            48.1405
+          ]
+        ],
+        "tilt_deg": 35,
+        "azimuth_deg": -90,
+        "locale": "de"
+      },
+      "status": 422,
+      "answer": {
+        "detail": [
+          {
+            "type": "greater_than_equal",
+            "loc": [
+              "body",
+              "azimuth_deg"
+            ],
+            "msg": "Input should be greater than or equal to 0",
+            "input": -90,
+            "ctx": {
+              "ge": 0
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

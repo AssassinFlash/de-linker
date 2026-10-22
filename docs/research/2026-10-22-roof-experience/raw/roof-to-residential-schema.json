@@ -1,0 +1,57 @@
+{
+  "method": "Local unchanged Pydantic model validation only; no browser rendering or network",
+  "input_derived_from": "172.5 kWp result in roof-input-probes.json passed in the current ResidentialForm.toInput shape",
+  "request": {
+    "locale": "en",
+    "plz": "80538",
+    "annual_kwh": 4500,
+    "pv_kwp": 172.5,
+    "phase": 3,
+    "backup": "none",
+    "heat_pump": false,
+    "electric_vehicle": false,
+    "planes": [
+      {
+        "kwp": 172.5,
+        "tilt_deg": 35,
+        "azimuth_deg": 180
+      }
+    ],
+    "location": {
+      "latitude": 48.1402,
+      "longitude": 11.5882
+    },
+    "roof_source": "drawn"
+  },
+  "result": {
+    "accepted": false,
+    "errors": [
+      {
+        "type": "less_than_equal",
+        "loc": [
+          "pv_kwp"
+        ],
+        "msg": "Input should be less than or equal to 100",
+        "input": 172.5,
+        "ctx": {
+          "le": 100.0
+        },
+        "url": "https://errors.pydantic.dev/2.14/v/less_than_equal"
+      },
+      {
+        "type": "less_than_equal",
+        "loc": [
+          "planes",
+          0,
+          "kwp"
+        ],
+        "msg": "Input should be less than or equal to 100",
+        "input": 172.5,
+        "ctx": {
+          "le": 100.0
+        },
+        "url": "https://errors.pydantic.dev/2.14/v/less_than_equal"
+      }
+    ]
+  }
+}

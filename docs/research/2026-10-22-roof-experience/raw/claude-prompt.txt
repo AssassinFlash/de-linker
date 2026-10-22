@@ -1,0 +1,11 @@
+你是本项目的 Claude 只读研究执行者，已由编排者放到独立工作树。任务票：https://github.com/AssassinFlash/de-linker/issues/549《当前屋顶工具的完整用户路径有哪些可复现问题？》，父地图 https://github.com/AssassinFlash/de-linker/issues/548 。
+
+先调用 research 技能；若当前 Skill 工具没有注册该名字，直接 Read /Users/chesterjohn/.agents/skills/research/SKILL.md，并说明发现情况，不改配置。该技能的背景代理要求已由这次后台Claude调用满足，无需再开代理。读 AGENTS.md、CONTEXT.md 和票据后工作。你不是唯一在仓库工作，不改/回滚任何文件。所有输出交给编排者写入证据。本CLI只提供Read,Glob,Grep,Bash,Skill；Bash仅允许只读命令，不要修改文件、启动/停止服务、写数据库、登录、发信、调用模型服务或执行浏览器。不要外部网络研究，已有的GitHub票据可只读查。不要读取密钥/.env，也不要调用或变更任何全局配置或fallback模型。
+
+最新用户裁定：老板只认可产品想法，未认可任何现有视觉、操作或结果；历史通过/选原型不构成当前老板验收。屋顶工具与Solution Configurator下游不可分开评审。完整预期是首次入口→理解用途/输出→输入/选自动轮廓/手绘/修改→采纳屋顶→计算→结果/报告→加入Solution draft/保存账户/询盘/Genie读取；需要逐层区分数据是否真实承接。
+
+职责：只研究UX、入口可发现性、说明/单位/校验、操作反馈/恢复、EN/DE和桌面手机的表面契约、工具与业务联动、证据缺口。数学正确性、欧洲地图数据研究有别票负责人，本票不要代做。父会话独占Computer Use；正在为本票建立快照实例r549，真实浏览器证据稍后补给你。当前阶段可以先做来源与入口核对，但任何只能从代码推断的现象必须标“代码路径，待浏览器复现”，不能称runtime已证。
+
+重点读取：当前RoofStep.tsx/geometry.ts/ResidentialForm.tsx/ResidentialPanel.tsx/App.tsx/Solution.tsx/Report.tsx/MobileNavigation.tsx/config.ts/types/api/store等；WordPress Configurator Mount、site header/footer、安装商/产品/solution/blog工具链接、SavedSolutions的恢复消费、Genie roof与saved-solution上下文、inquiry加入方案上下文；关联tests和docs/specs/14及docs/research/2026-10-21-configurator-rooftop仅作对照。提炼现有入口的实际href和文案、deep link是否打开/预填、商业屋顶分支、手绘可编辑性/失败恢复、关闭/再开/刷新/改邮编和kWp的持久性、采用屋顶后的计算数据/报告/草稿差异。
+
+输出中文Markdown（通过最终stdout，不写文件），内容：1）证据范围和版本；2）真实客户路径矩阵；3）具体发现表（ID、严重度、预期依据、复现步骤、代码文件行、测试/历史证据、当前证据层级、影响、还需浏览器核实的断言）；4）最小有价值的CUA复现清单（EN/DE ×1440/390，优先能击穿完整链路的状态）；5）明确不要从代码存在推成产品通过，也不要以规格没要求就自动认定没有客户价值。避免把历史编号用作规则依据。

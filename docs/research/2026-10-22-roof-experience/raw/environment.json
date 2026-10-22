@@ -1,0 +1,82 @@
+{
+  "utc": "2026-10-22T09:20:12.840593+00:00",
+  "checkout": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-experience-549",
+  "base_commit": "123aea57",
+  "snapshot": "20261022-1653",
+  "snapshot_taken": "2026-10-22T08:56:45+00:00",
+  "wp": "http://127.0.0.1:9323",
+  "engine": "http://127.0.0.1:9324",
+  "genie": "http://127.0.0.1:9325",
+  "readback": [
+    {
+      "path": "/solution-configurator/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/solution-configurator/",
+      "robots": "noindex, nofollow",
+      "csp_present": true,
+      "html_lang": "en-US",
+      "configurator_mounts": 1,
+      "authenticated_wordpress_cookie_sent": false,
+      "body_sha256": "b772c8f4348c21349fa28784a479d157c2d4fc99f19af38adea1f3b6fcfe3593",
+      "configurator_assets": [
+        "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/configurator.css?ver=b3f5e0260a82fa964995",
+        "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/configurator.js?ver=b3f5e0260a82fa964995"
+      ]
+    },
+    {
+      "path": "/de/loesungskonfigurator/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/loesungskonfigurator/",
+      "robots": "noindex, nofollow",
+      "csp_present": true,
+      "html_lang": "de-DE",
+      "configurator_mounts": 1,
+      "authenticated_wordpress_cookie_sent": false,
+      "body_sha256": "6983df188c3d8f4dfb95f4cdb8d3b975a97470ddef7843ee1901ca591d8dbe8e",
+      "configurator_assets": [
+        "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/configurator.css?ver=b3f5e0260a82fa964995",
+        "http://127.0.0.1:9323/wp-content/plugins/linker-tools/build/configurator.js?ver=b3f5e0260a82fa964995"
+      ]
+    },
+    {
+      "path": "/for-installer/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/for-installer/",
+      "robots": "noindex, nofollow",
+      "csp_present": true,
+      "html_lang": "en-US",
+      "configurator_mounts": 0,
+      "authenticated_wordpress_cookie_sent": false,
+      "body_sha256": "44ac6f2af5bd6a37fa165289aedf6f1a08af88d0476e646269985b66ce455590",
+      "configurator_assets": []
+    },
+    {
+      "path": "/de/fuer-installateur/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/de/fuer-installateur/",
+      "robots": "noindex, nofollow",
+      "csp_present": true,
+      "html_lang": "de-DE",
+      "configurator_mounts": 0,
+      "authenticated_wordpress_cookie_sent": false,
+      "body_sha256": "d0d63fcafef4a22a01ac473218d03daf7c9749a06bef8a6e8b7fb44e46d7921d",
+      "configurator_assets": []
+    },
+    {
+      "path": "/wp-json/linker-ai/v1/engine/health",
+      "status": 200,
+      "final_url": "http://127.0.0.1:9323/wp-json/linker-ai/v1/engine/health",
+      "robots": "noindex",
+      "csp_present": true,
+      "html_lang": null,
+      "configurator_mounts": 0,
+      "authenticated_wordpress_cookie_sent": false,
+      "body_sha256": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288",
+      "configurator_assets": [],
+      "health_body": {
+        "status": "ok"
+      }
+    }
+  ],
+  "local_mail_files": 0
+}

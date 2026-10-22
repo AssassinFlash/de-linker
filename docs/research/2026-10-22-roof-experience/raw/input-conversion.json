@@ -1,0 +1,30 @@
+{
+  "source": "plugins/linker-tools/src/configurator/roof/RoofStep.tsx addDrawn lines 401-405 at 123aea57",
+  "method": "Exact Number expressions executed in Node; no browser observation claimed",
+  "rows": [
+    {
+      "tilt": "35.5",
+      "azimuth": "180.5",
+      "sentTilt": 35.5,
+      "sentAzimuth": 180.5
+    },
+    {
+      "tilt": "35,5",
+      "azimuth": "180,5",
+      "sentTilt": 0,
+      "sentAzimuth": 0
+    },
+    {
+      "tilt": "abc",
+      "azimuth": "abc",
+      "sentTilt": 0,
+      "sentAzimuth": 0
+    },
+    {
+      "tilt": "",
+      "azimuth": "",
+      "sentTilt": 0,
+      "sentAzimuth": 0
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "binary": "/Users/chesterjohn/.local/bin/claude",
+  "command_flags": [
+    "-p",
+    "--permission-mode",
+    "plan",
+    "--tools",
+    "Read,Glob,Grep,Bash,Skill",
+    "--allowedTools",
+    "Read,Glob,Grep,Bash,Skill",
+    "--output-format",
+    "json",
+    "--no-session-persistence"
+  ],
+  "status": "terminated_by_orchestrator_before_output",
+  "exit_code": 143,
+  "reason": "Parent detected configured model aliases may not resolve to an Anthropic Claude model; awaiting verified existing Claude route. No output counted as Claude research.",
+  "final_research_status": "Specified Claude audit incomplete; subsequent primary-source/HTTP/CUA audit explicitly authorized by parent.",
+  "parent_reported_true_claude_failure": "OAuth session expired and could not be refreshed; no modelUsage. This worker did not inspect that separate invocation output."
+}
