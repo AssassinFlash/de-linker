@@ -55,6 +55,18 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$old    = get_option( Ledger::OPTION );
 		$review = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
 		delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		// These proof/receipt cases need available normal reception, independently
+		// of the loaded snapshot's history. The capacity/disposition suites exercise
+		// native history debt; do not delete that history to make this fixture pass.
+		$this->assertIsArray(
+			\Linker\Commerce\Protection\IntakeStore::edit(
+				static function ( array &$state ): array {
+					$state['business'] = array();
+					\Linker\Commerce\Protection\IntakeStore::save( $state );
+					return array();
+				}
+			)
+		);
 		delete_option( Ledger::OPTION );
 		$cookie                      = $_COOKIE; // phpcs:ignore WordPress.Security.NonceVerification -- Restore the fixture request.
 		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'b', 32 );

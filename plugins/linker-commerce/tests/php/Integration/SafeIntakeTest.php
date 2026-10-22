@@ -196,6 +196,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			array(
 				'entries'        => $entries,
 				'campaign_count' => 0,
+				'business'       => array(),
 			),
 			false
 		);
@@ -243,6 +244,17 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Technical Russian, quotations, normal links and domain substrings stay normal. */
 	public function test_campaign_rule_does_not_generalize_language_or_links(): void {
+		// This campaign predicate case needs available normal reception, not the
+		// unrelated snapshot's full history. Its registry is restored in teardown.
+		self::assertIsArray(
+			IntakeStore::edit(
+				static function ( array &$state ): array {
+					$state['business'] = array();
+					IntakeStore::save( $state );
+					return array();
+				}
+			)
+		);
 		$messages = array( 'Нужна батарея 10 кВт·ч https://fredmer.buzz/manual', 'Вам перевод 100 руб. забрать тут https://fredmer.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://example.test/fredmer.buzz', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://fredmer.buzz/x', "Вам перевод 100 руб. забрать тут https://fredmer.buzz/x\nPlease quote an inverter." );
 		foreach ( $messages as $message ) {
 			self::assertFalse( Campaign::matches( $message ) );
@@ -713,6 +725,17 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 	/** The operational summary includes genuine review requests, not campaign samples. */
 	public function test_pending_summary_excludes_confirmed_campaign_and_normal_jev_requests(): void {
+		// The summary comparison needs one available normal slot alongside review.
+		// Preserve native history and restore only this fixture registry afterward.
+		self::assertIsArray(
+			IntakeStore::edit(
+				static function ( array &$state ): array {
+					$state['business'] = array();
+					IntakeStore::save( $state );
+					return array();
+				}
+			)
+		);
 		$review = ( new Handler() )->process( $this->post() );
 		self::assertInstanceOf( WC_Order::class, $review );
 		$campaign            = $this->post();

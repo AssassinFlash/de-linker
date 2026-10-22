@@ -71,8 +71,12 @@ final class BusinessCapacity {
 		if ( 'enforce' !== Configuration::active_mode() || $order->get_id() > 0 || $order->get_meta( Intake::META ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'proforma' ), true ) ) {
 			return;
 		}
+		// Freeze the same trusted association before measuring, including the
+		// explicit pre-provider path that precedes Woo's before-save hooks.
+		( new BusinessRecord() )->stamp( $order );
 		$key = (string) $order->get_meta( self::KEY );
 		if ( '' !== $key ) {
+			self::finalize( $order );
 			return;
 		}
 		$context = apply_filters( 'linker_commerce_public_business_context', null ); // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- Native source association, never browser fields.
@@ -169,6 +173,17 @@ final class BusinessCapacity {
 				return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 			}
 		}
+		if ( '' !== $key ) {
+			$bound = IntakeStore::edit(
+				static function ( array &$state ) use ( $key, $fresh ): array|WP_Error {
+					return ( $state['business'][ $key ]['order'] ?? 0 ) === $fresh->get_id() ? array() : self::problem();
+				},
+				1
+			);
+			if ( $bound instanceof WP_Error ) {
+				return $bound;
+			}
+		}
 		return null;
 	}
 
@@ -186,6 +201,7 @@ final class BusinessCapacity {
 	 *
 	 * @param int            $id Actual saved order.
 	 * @param WC_Order|false $order Native saved object.
+	 * @throws CapacityFull The native first-save owner must roll back a failed binding.
 	 */
 	public function bind( int $id, WC_Order|false $order = false ): void {
 		$order = $order instanceof WC_Order ? $order : wc_get_order( $id );
@@ -193,16 +209,20 @@ final class BusinessCapacity {
 		if ( '' === $key ) {
 			return;
 		}
-		IntakeStore::edit(
-			static function ( array &$state ) use ( $key, $id ): array {
-				if ( isset( $state['business'][ $key ] ) ) {
-					$state['business'][ $key ]['order'] = $id;
-					IntakeStore::save( $state );
+		$result = IntakeStore::edit(
+			static function ( array &$state ) use ( $key, $id ): array|WP_Error {
+				if ( ! isset( $state['business'][ $key ] ) || ! in_array( $state['business'][ $key ]['order'], array( 0, $id ), true ) ) {
+					return self::problem();
 				}
+				$state['business'][ $key ]['order'] = $id;
+				IntakeStore::save( $state );
 				return array();
 			},
 			1
 		);
+		if ( $result instanceof WP_Error ) {
+			throw new CapacityFull( $result ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Native first-save owner rolls back; never acknowledges an unbound record.
+		}
 	}
 
 	/**

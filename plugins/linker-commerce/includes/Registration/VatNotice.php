@@ -77,6 +77,7 @@ class VatNotice {
 					$record = array(
 						'version'  => wp_generate_uuid4(),
 						'source'   => self::fingerprint( $id ),
+						'verdict'  => self::fingerprint( $id, false ),
 						'previous' => self::status( $previous ),
 						'current'  => self::status( $result['status'] ),
 						'job'      => $pending ? 0 : -1,
@@ -116,8 +117,41 @@ class VatNotice {
 			static function () use ( $id, $capture, &$job ): void {
 				wp_cache_delete( $id, 'user_meta' );
 				$record = self::meta( $id, self::SOURCE, true );
-				if ( ! get_userdata( $id ) || ! is_array( $record ) || ! empty( $record['erased'] ) || 0 !== ( $record['job'] ?? -1 ) || 'yes' !== self::meta( $id, self::PENDING, true ) || ! is_string( $record['source'] ?? null ) || ! hash_equals( $record['source'], self::fingerprint( $id ) ) ) {
+				if ( ! get_userdata( $id ) || ! is_array( $record ) || ! empty( $record['erased'] ) || 0 !== ( $record['job'] ?? -1 ) || 'yes' !== self::meta( $id, self::PENDING, true ) || ! is_string( $record['source'] ?? null ) ) {
 					return;
+				}
+				if ( ! hash_equals( $record['source'], self::fingerprint( $id ) ) ) {
+					// Only unchanged native VAT facts permit rebinding a current email.
+					// Erasure/new verdict generations remain authoritative and cannot revive.
+					if ( ! is_string( $record['verdict'] ?? null ) || ! hash_equals( $record['verdict'], self::fingerprint( $id, false ) ) ) {
+						return;
+					}
+					try {
+						$record = NativeTransaction::run(
+							static function () use ( $id, $record ): array {
+								wp_cache_delete( $id, 'user_meta' );
+								if ( self::meta( $id, self::SOURCE, true ) !== $record || ! hash_equals( $record['verdict'], self::fingerprint( $id, false ) ) ) {
+									throw new \RuntimeException( 'vat_notice_rebind_source_changed' );
+								}
+								$latest = array_merge(
+									$record,
+									array(
+										'version' => wp_generate_uuid4(),
+										'source'  => self::fingerprint( $id ),
+									)
+								);
+								update_user_meta( $id, self::SOURCE, $latest );
+								wp_cache_delete( $id, 'user_meta' );
+								if ( self::meta( $id, self::SOURCE, true ) !== $latest ) {
+									throw new \RuntimeException( 'vat_notice_rebind_readback_failed' );
+								}
+								return $latest;
+							}
+						);
+					} catch ( \Throwable $error ) {
+						CapacityHealth::failed();
+						return;
+					}
 				}
 				$message = $capture( $record );
 				if ( ! $message instanceof Message ) {
@@ -249,11 +283,13 @@ class VatNotice {
 	/**
 	 * Native current fields remain in their original place; only their HMAC is stored.
 	 *
-	 * @param int $id Native account.
+	 * @param int  $id Native account.
+	 * @param bool $email Include the mutable native contact address.
 	 */
-	private static function fingerprint( int $id ): string {
-		$user   = get_userdata( $id );
-		$fields = array( $user instanceof \WP_User ? $user->user_email : '' );
+	private static function fingerprint( int $id, bool $email = true ): string {
+		clean_user_cache( $id );
+		$user   = $email ? get_userdata( $id ) : false;
+		$fields = $email ? array( $user instanceof \WP_User ? $user->user_email : '' ) : array();
 		foreach ( array( VatProfile::STATUS_META, VatProfile::DETAIL_META, VatProfile::NUMBER_META, VatProfile::CHECKED_META ) as $key ) {
 			$fields[] = (string) self::meta( $id, $key, true );
 		}

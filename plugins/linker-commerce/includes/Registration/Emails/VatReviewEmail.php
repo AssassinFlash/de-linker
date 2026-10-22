@@ -67,6 +67,10 @@ final class VatReviewEmail extends TeamEmail {
 		$this->notices->deliver(
 			$user->ID,
 			function ( array $record ) use ( $user ): ?\Linker\Commerce\Mail\Message {
+				$user = get_userdata( $user->ID );
+				if ( ! $user instanceof WP_User ) {
+					return null;
+				}
 				$this->change                    = array(
 					'previous' => $record['previous'],
 					'current'  => $record['current'],

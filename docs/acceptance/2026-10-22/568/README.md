@@ -21,7 +21,7 @@ not deleted, automatically refunded or sent by this implementation.
 
 | Evidence | Native result | Concrete consumer boundary |
 | --- | --- | --- |
-| `GlobalBusinessCapacityTest`, `BusinessAdmissionTest`, `PublicSubmissionTest` | Included in 174 tests / 2,569 assertions | Five shared site actions; identity rotation; trust provenance; complete prepared bytes and legal large drafts; first native writer; approved reserve; two-connection final-slot races; draft retention |
+| `GlobalBusinessCapacityTest`, `BusinessAdmissionTest`, `PublicSubmissionTest` | Included in 233 tests / 3,166 assertions | Five shared site actions; identity rotation; trust provenance; complete prepared bytes and legal large drafts; first native writer; approved reserve; two-connection final-slot races; draft retention |
 | `SummaryEnvelopeTest`, `SafeIntakeTest` | Included in the same native run | Existing summary retained; complete base plus schema-derived envelope before paid work; no site mutex during provider work; saved source recovery versus genuinely unknown pre-save work |
 | `MailCapacityTest`, `CriticalNotificationCapacityTest` | Included in the same native run | Final job count/bytes; critical reservation consumption; ordinary full leaves critical space; immutable native approval; reset before key mutation; Proforma source recovery; held promotion; outer rollback has zero transport |
 | `AtomicMailConnectionTest`, business/account KILL cases | Included in the same native run | Real second-connection KILL before first native write and after partial writes; original-client fencing; commit-unknown does not invent rollback; original job plus AS survives post-commit SIGKILL |
@@ -29,16 +29,24 @@ not deleted, automatically refunded or sent by this implementation.
 | `ConversationConfirmationCapacityTest` | Included in the same native run | Exact native confirmation token to one durable original job/ACK; two real workers; full retains retry; erased/expired/foreign source; caller transaction rollback |
 | `BusinessDispositionTest` | Included in the same native run | Guarded historical note/body/marker authority, invalidation returns debt, old registry restoration, exact rollback, no mail |
 | `ConversationRoutesTest` (Tools native) | 9 tests / 87 assertions | Real route callers preserve failure/retry and existing normal bool contract |
-| Commerce unit suite | 1,591 tests / 6,139 assertions; 350 native tests skipped by the unit bootstrap | All unit assertions pass; the relevant 174 native cases above were executed separately, not all 350 native cases in this plugin |
+| Commerce unit suite | 1,601 tests / 6,139 assertions; 358 native tests skipped by the unit bootstrap | All unit assertions pass; the relevant 233 native cases above were executed separately, not all 358 native cases in this plugin |
 | Tools affected unit suite | 6 tests / 37 assertions | Bounded internal summary diagnostic; existing customer content remains unchanged |
-| Commerce / Tools PHPStan and owned-file WPCS | Pass | Commerce whole PHPStan, Tools whole PHPStan with 2 GiB analysis memory; 82 Commerce PHP files and four Tools PHP files follow native standards |
+| Commerce / Tools PHPStan and owned-file WPCS | Pass | Commerce whole PHPStan, Tools whole PHPStan with 2 GiB analysis memory; 89 Commerce PHP files and four Tools PHP files follow native standards |
 
-The native large run is `native-final10.txt`; final unit/style analysis logs are
-`unit-final11.txt`, `phpcs-final11.txt`, `phpstan-final10.txt`,
-`phpstan-tools-final12.txt` and `phpcs-tools-final12.txt`. These sanitized logs,
+The expanded native run is `review-native-final11.txt`; final Commerce unit/style
+analysis logs are `review-unit-final11.txt`, `review-phpcs-final11.txt` and
+`review-phpstan-final11.txt`. Full-base Commerce style was rechecked in `review-phpcs-full12.txt`; unchanged
+Tools logs remain `phpstan-tools-final12.txt` and
+`phpcs-tools-final12.txt`. These sanitized logs,
 failure reproductions and private snapshot/rehearsal artifacts are held locally
 under `/Users/chesterjohn/de-linker-data/incident-20261022/intake-568/` with private
 permissions. No business text or credentials are included in this public record.
+
+The [review repair record](review-repairs.md) traces the fixed-source five native
+consumer defects, original critical-mail CI failures, actual in-progress retry
+seam and separate fixture lifecycle/history corrections. The general job in
+workflow `39815794782` passed; its native-mail job failed before these repairs.
+A fresh exact-head workflow is required. No production success is inferred.
 
 ## Rendered native forms
 

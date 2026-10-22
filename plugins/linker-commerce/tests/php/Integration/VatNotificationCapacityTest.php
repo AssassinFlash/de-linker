@@ -69,17 +69,28 @@ final class VatNotificationCapacityTest extends IntegrationTestCase {
 		self::assertSame( 'yes', get_user_meta( $id, VatNotice::PENDING, true ) );
 		self::assertSame( VatProfile::VALID, get_user_meta( $id, VatProfile::STATUS_META, true ) );
 		self::assertSame( $before, self::newest_mail_job() );
+		self::assertSame(
+			$id,
+			wp_update_user(
+				array(
+					'ID'         => $id,
+					'user_email' => 'updated-vat-' . $id . '@example.test',
+				)
+			)
+		);
+		self::assertSame( VatProfile::VALID, ( new VatProfile( new ViesClient() ) )->update( $id, 'DE123456789', true ) );
 		$this->free_ordinary( $blocked );
 		VatNotice::recover();
 		wp_cache_delete( $id, 'user_meta' );
 		$accepted = get_user_meta( $id, VatNotice::SOURCE, true );
-		self::assertSame( $source['version'], $accepted['version'] );
+		self::assertNotSame( $source['version'], $accepted['version'], 'Native email change binds a new latest version without VIES.' );
 		self::assertGreaterThan( $before, $accepted['job'] );
 		self::assertSame( 'no', get_user_meta( $id, VatNotice::PENDING, true ) );
 		$job = ( new JobStore() )->load( $accepted['job'] );
 		self::assertNotNull( $job );
 		self::assertStringContainsString( 'VAT', $job['message']->subject );
 		self::assertTrue( $job['message']->is_internal() );
+		self::assertStringContainsString( 'updated-vat-' . $id . '@example.test', implode( '\n', $job['message']->headers ), 'The current native email owns Reply-to, not a stale capture.' );
 		VatNotice::recover();
 		self::assertSame( $accepted['job'], self::newest_mail_job() );
 		self::assertSame( 1, $http, 'Recovery never repeats VIES.' );
@@ -149,6 +160,59 @@ final class VatNotificationCapacityTest extends IntegrationTestCase {
 		wp_cache_delete( $id, 'user_meta' );
 		self::assertSame( $last, get_user_meta( $id, VatNotice::SOURCE, true ) );
 		self::assertSame( 'yes', get_user_meta( $id, VatNotice::PENDING, true ) );
+	}
+
+	/** An email change during capture cannot ACK stale Reply-to; recovery uses only latest non-erased facts. */
+	public function test_email_change_during_capture_retries_latest_version_and_erasure_stays_final(): void {
+		$customer = $this->customer();
+		$id       = $customer->get_id();
+		update_user_meta( $id, VatProfile::STATUS_META, VatProfile::INVALID );
+		$notices = new VatNotice();
+		$source  = $notices->persist(
+			$id,
+			'DE123456789',
+			array(
+				'status' => VatProfile::VALID,
+				'detail' => '',
+			),
+			true,
+			''
+		);
+		self::assertIsArray( $source );
+		$before = self::newest_mail_job();
+		$skip   = static fn (): bool => false;
+		add_filter( 'send_email_change_email', $skip );
+		try {
+			$notices->deliver(
+				$id,
+				static function () use ( $id ): Message {
+					self::assertSame(
+						$id,
+						wp_update_user(
+							array(
+								'ID'         => $id,
+								'user_email' => 'capture-vat-' . $id . '@example.test',
+							)
+						)
+					);
+					return new Message( array( self::TESTER ), 'Synthetic stale VAT email', 'No stale address can be acknowledged.', array( Message::INTERNAL_HEADER ), array() );
+				}
+			);
+		} finally {
+			remove_filter( 'send_email_change_email', $skip ); }
+		self::assertSame( $before, self::newest_mail_job() );
+		self::assertSame( 'yes', get_user_meta( $id, VatNotice::PENDING, true ) );
+		VatNotice::recover();
+		$latest = get_user_meta( $id, VatNotice::SOURCE, true );
+		self::assertNotSame( $source['version'], $latest['version'] );
+		self::assertGreaterThan( $before, $latest['job'] );
+		$job = ( new JobStore() )->load( $latest['job'] );
+		self::assertNotNull( $job );
+		self::assertStringContainsString( 'capture-vat-' . $id . '@example.test', implode( '\n', $job['message']->headers ) );
+		$notices->erase( array(), $customer );
+		VatNotice::recover();
+		self::assertSame( $latest['job'], self::newest_mail_job() );
+		self::assertTrue( get_user_meta( $id, VatNotice::SOURCE, true )['erased'] );
 	}
 
 	/** Native write failure is not falsely published as a pending changed verdict. */

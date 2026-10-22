@@ -630,7 +630,160 @@ final class GlobalBusinessCapacityTest extends IntegrationTestCase {
 		);
 	}
 
-	/** Native fixture settings; no public-proof requirement is bypassed by a live request. */
+	/** Complete native association and the exact remaining logical byte use one serializer. */
+	public function test_first_save_counts_complete_native_association_and_exact_last_byte(): void {
+		$this->enforce();
+		$this->seed_business( 0 );
+		$context = static fn (): array => array(
+			'enforced'    => true,
+			'id'          => wp_generate_uuid4(),
+			'fingerprint' => str_repeat( 'a', 64 ),
+			'binding'     => str_repeat( 'b', 64 ),
+		);
+		// One stable dispatched native context per actual writer, not browser input.
+		$current = $context();
+		$filter  = static fn () => $current;
+		add_filter( 'linker_commerce_public_business_context', $filter );
+		$this->later(
+			static function () use ( $filter ): void {
+				remove_filter( 'linker_commerce_public_business_context', $filter );
+			}
+		);
+		$observed = 0;
+		$reserved = 0;
+		$prepared = null;
+		$watch    = static function ( WC_Order $order ) use ( &$observed, &$reserved, &$prepared ): void {
+			if ( 0 === $order->get_id() && $order->get_meta( BusinessCapacity::KEY ) ) {
+				$observed = BusinessCapacity::bytes( $order );
+				$reserved = get_option( IntakeStore::OPTION )['business'][ $order->get_meta( BusinessCapacity::KEY ) ]['bytes'];
+				self::assertNotEmpty( $order->get_meta( \Linker\Commerce\Protection\BusinessRecord::REQUEST ) );
+				$prepared = clone $order;
+				$prepared->init_meta_data(
+					array_map(
+						static fn ( \WC_Meta_Data $meta ): object => (object) array(
+							'meta_id'    => $meta->id,
+							'meta_key'   => $meta->key, // phpcs:ignore WordPress.DB.SlowDBQuery -- Native in-memory WC metadata shape, no query.
+							'meta_value' => $meta->value, // phpcs:ignore WordPress.DB.SlowDBQuery -- Native in-memory WC metadata shape, no query.
+						),
+						$order->get_meta_data()
+					)
+				);
+			}
+		};
+		add_action( 'woocommerce_before_order_object_save', $watch, 100 );
+		$this->later(
+			static function () use ( $watch ): void {
+				remove_action( 'woocommerce_before_order_object_save', $watch, 100 );
+			}
+		);
+		$order = ( new Sender() )->message( $this->details() );
+		self::assertInstanceOf( WC_Order::class, $order );
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		self::assertSame( $observed, $reserved, 'Actual first-save serializer includes all three dispatched association metadata values.' );
+		$order->delete( true );
+		remove_action( 'woocommerce_before_order_object_save', $watch, 100 );
+		foreach ( array( -1, 0 ) as $slack ) {
+			$this->seed_business( 0 );
+			IntakeStore::edit(
+				static function ( array &$state ) use ( $observed, $slack ): array {
+					$state['business']['synthetic-exact-byte-debt'] = array(
+						'pool'  => 'ordinary',
+						'order' => 0,
+						'bytes' => BusinessCapacity::LIMITS['ordinary']['bytes'] - $observed - $slack,
+					);
+					IntakeStore::save( $state );
+					return array();
+				}
+			);
+			$before = $this->native_order_count();
+			self::assertInstanceOf( WC_Order::class, $prepared );
+			$next = clone $prepared;
+			$next->init_meta_data(
+				array_map(
+					static fn ( \WC_Meta_Data $meta ): object => (object) array(
+						'meta_id'    => $meta->id,
+						'meta_key'   => $meta->key, // phpcs:ignore WordPress.DB.SlowDBQuery -- Native in-memory WC metadata shape, no query.
+						'meta_value' => $meta->value, // phpcs:ignore WordPress.DB.SlowDBQuery -- Native in-memory WC metadata shape, no query.
+					),
+					$prepared->get_meta_data()
+				)
+			);
+			$next->delete_meta_data( BusinessCapacity::KEY );
+			try {
+				BusinessCapacity::prepare( $next );
+				\Linker\Commerce\Mail\NativeTransaction::run(
+					static function () use ( $next ): void {
+						$next->save();
+						self::assertNull( BusinessCapacity::verify( $next ) );
+					}
+				);
+			} catch ( \Linker\Commerce\Protection\CapacityFull $error ) {
+				$next = $error->problem; }
+			if ( -1 === $slack ) {
+				self::assertInstanceOf( WP_Error::class, $next, 'One missing byte refuses before any native record.' );
+				self::assertSame( $before, $this->native_order_count() );
+			} else {
+				self::assertInstanceOf( WC_Order::class, $next, 'Exact complete logical byte envelope is accepted.' );
+				$this->later(
+					static function () use ( $next ): void {
+						$next->delete( true );
+					}
+				);
+				self::assertSame( BusinessCapacity::LIMITS['ordinary']['bytes'], array_sum( array_column( get_option( IntakeStore::OPTION )['business'], 'bytes' ) ) );
+			}
+		}
+	}
+
+	/** A one-shot native binding mutex failure must not publish an unbound received record. */
+	public function test_failed_first_save_binding_is_not_accepted_or_left_as_a_received_source(): void {
+		$this->enforce();
+		$this->seed_business( 0 );
+		$before = $this->native_order_count();
+		$fault  = false;
+		$armed  = false;
+		$arm    = static function () use ( &$armed ): void {
+			$armed = true;
+		};
+		$fail   = static function ( string $sql ) use ( &$armed, &$fault ): string {
+			if ( $armed && ! $fault && str_contains( $sql, 'GET_LOCK(' ) ) {
+				$fault = true;
+				return 'SELECT 0'; }
+			return $sql;
+		};
+		add_action( 'woocommerce_new_order', $arm, 29 );
+		add_filter( 'query', $fail, 998 );
+		try {
+			$result = ( new Sender() )->message( $this->details() ); } finally {
+			remove_action( 'woocommerce_new_order', $arm, 29 );
+			remove_filter( 'query', $fail, 998 ); }
+			if ( $result instanceof WC_Order ) {
+				$this->later(
+					static function () use ( $result ): void {
+						$result->delete( true );
+					}
+				); }
+			self::assertTrue( $fault );
+			self::assertInstanceOf( WP_Error::class, $result, 'A failed final native bind cannot be announced as received.' );
+			self::assertSame( $before, $this->native_order_count(), 'Known failure rolls back the actual native first-save transaction.' );
+	}
+
+	/** Actual native row count, not Woo's optional paginated result wrapper. */
+	private function native_order_count(): int {
+		$orders = wc_get_orders(
+			array(
+				'limit'  => -1,
+				'return' => 'ids',
+			)
+		);
+		self::assertIsArray( $orders );
+		return count( $orders );
+	}
+
+	/** Native fixture settings restored after each test. */
 	private function enforce(): void {
 		$mode = getenv( 'LINKER_PUBLIC_PROTECTION_MODE' );
 		putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Restored local fixture configuration.

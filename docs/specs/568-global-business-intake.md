@@ -88,9 +88,14 @@ spans optional summary HTTP, model dispatch or SMTP. Native two-connection
 fixtures prove final count/byte winners and query actual lock ownership during
 the provider seam and PHPMailer transport.
 
-The prepared association is stamped before first save. Sender forces native
-metadata readback before status or mail and never claims success solely from
-its in-memory Woo object. After provider work ends, Sender starts a short fenced native transaction
+The trusted REQUEST/INPUT/SUBJECT association is stamped before explicit byte
+reservation. The final pre-save hook rechecks the complete actual metadata with
+the identical serializer; exactly one missing byte refuses the complete record.
+Native binding failure propagates to the first-save owner, and verification
+requires the registry to reference the actual saved order ID as well as all
+expected metadata. Sender never claims success solely from its in-memory Woo
+object. Earlier durable pre-provider reservations remain charged on uncertain
+failures; no general automatic time or exception refund is introduced. After provider work ends, Sender starts a short fenced native transaction
 covering first save, native received status, source metadata and any synchronous
 notification handoff. A known exception before commit rolls back that native
 phase. A lost commit remains uncertain, with no fabricated received result or
@@ -335,3 +340,7 @@ retained fields and product draft, with no additional normal steps. Copy review 
 recorded in [copy-review.md](../acceptance/2026-10-22/568/copy-review.md).
 Local/CI evidence is not production inbox evidence; real customer delivery after
 release remains a distinct authorized readback gate.
+
+The fixed-source review and CI failure recipes, actual native red/green seams
+and narrowly scoped fixture corrections are recorded in
+[review-repairs.md](../acceptance/2026-10-22/568/review-repairs.md).

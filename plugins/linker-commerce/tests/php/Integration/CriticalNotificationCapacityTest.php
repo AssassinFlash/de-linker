@@ -117,7 +117,7 @@ final class CriticalNotificationCapacityTest extends IntegrationTestCase {
 		);
 		$email = WC()->mailer()->get_emails()[ \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class ];
 		self::assertInstanceOf( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class, $email );
-		$before = self::newest_mail_job();
+				$before = self::newest_mail_job();
 		$email->trigger( $order->get_id(), $order );
 		$order->read_meta_data( true );
 		self::assertSame( 'yes', $order->get_meta( $email::PENDING ) );
@@ -137,6 +137,102 @@ final class CriticalNotificationCapacityTest extends IntegrationTestCase {
 		$email->trigger( $order->get_id(), $order );
 		$email::recover();
 		self::assertSame( $id, self::newest_mail_job() );
+	}
+
+	/** A stale same-number native callback must not reopen an acknowledged pending index. */
+	public function test_stale_proforma_callback_does_not_reopen_the_pending_index(): void {
+		$this->seed_jobs( 0 );
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
+		$order = $this->pending_proforma();
+		$order->update_meta_data( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::PENDING, 'no' );
+		$order->save_meta_data();
+		$stale = wc_get_order( $order->get_id() );
+		self::assertInstanceOf( \WC_Order::class, $stale );
+		$stale->read_meta_data( true );
+		$stale->init_meta_data(
+			array_map(
+				static fn ( \WC_Meta_Data $meta ): object => (object) array(
+					'meta_id'    => $meta->id,
+					'meta_key'   => $meta->key, // phpcs:ignore WordPress.DB.SlowDBQuery -- Native in-memory WC metadata shape, no query.
+					'meta_value' => $meta->value, // phpcs:ignore WordPress.DB.SlowDBQuery -- Native in-memory WC metadata shape, no query.
+				),
+				$stale->get_meta_data()
+			)
+		);
+		self::assertSame( 'no', $stale->get_meta( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::PENDING ) );
+		self::assertSame( '', $stale->get_meta( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::ACCEPTED ) );
+		$email = WC()->mailer()->get_emails()[ \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class ];
+		self::assertInstanceOf( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class, $email );
+		$email->trigger( $order->get_id(), $order );
+		$order->read_meta_data( true );
+		$job = $order->get_meta( $email::JOB );
+		self::assertNotEmpty( $job );
+		$email->trigger( $order->get_id(), $stale );
+		$order->read_meta_data( true );
+		self::assertSame( 'no', $order->get_meta( $email::PENDING ) );
+		self::assertSame( $job, $order->get_meta( $email::JOB ) );
+	}
+
+	/** Older terminal/erased/accepted entries cannot permanently hide a later valid source.
+	 *
+	 * @dataProvider proforma_index_debris
+	 * @param string $kind Actual old source state.
+	 */
+	public function test_proforma_recovery_advances_past_a_full_batch_of_invalid_sources( string $kind ): void {
+		$this->seed_jobs( 0 );
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
+		for ( $i = 0; $i < 64; ++$i ) {
+			$order = $this->pending_proforma();
+			if ( 'terminal' === $kind ) {
+				$order->set_status( 'cancelled' ); }
+			if ( 'erased' === $kind ) {
+				$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' ); }
+			if ( 'accepted' === $kind ) {
+				$order->update_meta_data( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::ACCEPTED, $order->get_meta( \Linker\Commerce\Proforma\Issuer::NUMBER_META ) ); }
+			$order->save();
+		}
+		$valid  = $this->pending_proforma();
+		$before = self::newest_mail_job();
+		$email  = WC()->mailer()->get_emails()[ \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class ];
+		self::assertInstanceOf( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class, $email );
+		$email::recover();
+		$email::recover();
+		$valid->read_meta_data( true );
+		$job = (int) $valid->get_meta( $email::JOB );
+		self::assertGreaterThan( $before, $job );
+		self::assertSame( $job, self::newest_mail_job(), 'Only the one eligible source gets a job.' );
+		$email::recover();
+		self::assertSame( $job, self::newest_mail_job() );
+	}
+
+	/** Native invalid source categories.
+	 *
+	 * @return array<string,array{string}> Native index cases.
+	 */
+	public static function proforma_index_debris(): array {
+		return array(
+			'terminal' => array( 'terminal' ),
+			'erased'   => array( 'erased' ),
+			'accepted' => array( 'accepted' ),
+		);
+	}
+
+	/** A local native issued source, no model, PDF network or mail transport. */
+	private function pending_proforma(): \WC_Order {
+		WC()->mailer();
+		$order = new \WC_Order();
+		$order->set_billing_email( self::TESTER );
+		$order->set_status( \Linker\Commerce\Inquiry\Statuses::PROFORMA );
+		$order->update_meta_data( \Linker\Commerce\Proforma\Issuer::NUMBER_META, 'SYNTHETIC-568-' . self::tag() );
+		$order->update_meta_data( \Linker\Commerce\Proforma\Issuer::ISSUED_META, (string) time() );
+		$order->update_meta_data( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::PENDING, 'yes' );
+		$order->save();
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		return $order;
 	}
 
 	/** Full critical capacity never releases an ordinary held job before atomic promotion. */
