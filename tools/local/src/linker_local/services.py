@@ -8,10 +8,13 @@ linker_engine_url (the Solution Configurator's engine) and linker_genie_url
 from __future__ import annotations
 
 import hashlib
+import json
 import os
+import re
 import secrets
 import shutil
 import subprocess
+import tempfile
 import urllib.error
 import urllib.request
 from collections.abc import Callable, Mapping
@@ -96,7 +99,10 @@ class Service:
 
 SERVICES = (
     Service(
-        "engine", "linker_engine.app:app", "linker_engine_url", lambda i: i.engine_port
+        "engine",
+        "linker_engine.application:app",
+        "linker_engine_url",
+        lambda i: i.engine_port,
     ),
     Service(
         "genie", "linker_genie.app:app", "linker_genie_url", lambda i: i.genie_port
@@ -160,6 +166,9 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
             START_TIMEOUT,
         )
         url = f"http://{HOST}:{port}"
+        if service.name == "engine":
+            _planner_probe(url, token)
+            wp.run("option", "update", "linker_planner_url", url + "/planning")
         wp.run("option", "update", service.option, url)
         urls.append(f"{service.name} {url}")
     urls.append(index.line())
@@ -256,7 +265,87 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
         # The configurator calls the engine cross-origin from the page; without
         # this allowance the browser blocks every call (the roof step first).
         "LINKER_ENGINE_CORS_ORIGINS": instance.url,
+        **planner_environment(instance),
     }
+
+
+def planner_environment(instance: Instance) -> dict[str, str]:
+    """Create an explicit local policy once; preserve operator changes.
+
+    These are development resource bounds, not project/engineering limits or
+    production capacity promises. Arithmetic settings are the independently
+    tested replay tolerances, frozen in each manifest (548-service-hosting).
+    """
+    directory = instance.dir / "planner"
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+    config = directory / "runtime.json"
+    if not config.exists():
+        payload = {
+            "schema_version": 1,
+            "directory": str(directory / "workspace"),
+            "max_body_bytes": 16 * 1024 * 1024,
+            "max_csv_bytes": 8 * 1024 * 1024,
+            "max_page_size": 100,
+            "max_json_depth": 32,
+            "max_intervals": 100_000,
+            "max_attempts": 2,
+            "absolute_kwh": 1e-7,
+            "absolute_kw": 1e-7,
+            "relative": 1e-9,
+        }
+        # Exclusive publication avoids overwriting an existing custom policy,
+        # even when two local runners initialise this instance concurrently.
+        with tempfile.NamedTemporaryFile(dir=directory, delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(json.dumps(payload, indent=2).encode())
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            try:
+                os.link(temporary, config)
+            except FileExistsError:
+                pass
+        finally:
+            temporary.unlink(missing_ok=True)
+    return {"LINKER_PLANNER_CONFIG": str(config)}
+
+
+def _planner_probe(base: str, token: str) -> None:
+    request = urllib.request.Request(
+        base + "/planning/version",
+        data=b'{"schema_version":1}',
+        headers={
+            "Content-Type": "application/json",
+            "X-Linker-Service-Token": token,
+            "X-Linker-Planner-Principal-Kind": "team",
+            "X-Linker-Planner-Principal-Subject": "local:readiness",
+        },
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=START_TIMEOUT) as response:
+            value = json.loads(response.read())
+        if (
+            not isinstance(value, dict)
+            or type(value.get("schema_version")) is not int
+            or value["schema_version"] != 1
+            or not isinstance(value.get("runtime_sha256"), str)
+            or re.fullmatch(r"[a-f0-9]{64}", value["runtime_sha256"]) is None
+            or not isinstance(value.get("limits"), dict)
+            or any(
+                type(value["limits"].get(name)) is not int or value["limits"][name] <= 0
+                for name in (
+                    "max_body_bytes",
+                    "max_csv_bytes",
+                    "max_page_size",
+                    "max_json_depth",
+                )
+            )
+        ):
+            raise ValueError("planning version response is invalid")
+    except (urllib.error.URLError, OSError, ValueError, TimeoutError) as error:
+        raise ProcessError(
+            "the private planning service did not pass readiness"
+        ) from error
 
 
 def _uv() -> Path:

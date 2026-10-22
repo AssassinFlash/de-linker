@@ -4,7 +4,12 @@ import pytest
 
 from linker_local.instance import Instance
 from linker_local.processes import ProcessError
-from linker_local.services import SERVICES, genie_environment, genie_index
+from linker_local.services import (
+    SERVICES,
+    genie_environment,
+    genie_index,
+    planner_environment,
+)
 
 
 def test_each_service_has_its_own_port_log_and_option() -> None:
@@ -19,6 +24,30 @@ def test_each_service_has_its_own_port_log_and_option() -> None:
         Path("/data/a/run/engine.pid"),
         Path("/data/a/logs/engine.log"),
     )
+    assert SERVICES[0].app == "linker_engine.application:app"
+
+
+def test_planner_config_is_private_isolated_and_preserves_operator_changes(
+    tmp_path: Path,
+) -> None:
+    import json
+    import stat
+
+    a = Instance("a", 8888, 8889, 8890, tmp_path)
+    b = Instance("b", 8891, 8892, 8893, tmp_path)
+    path_a = Path(planner_environment(a)["LINKER_PLANNER_CONFIG"])
+    path_b = Path(planner_environment(b)["LINKER_PLANNER_CONFIG"])
+    values_a = json.loads(path_a.read_bytes())
+    values_b = json.loads(path_b.read_bytes())
+    assert values_a["directory"] != values_b["directory"]
+    assert values_a["directory"] == str(a.dir / "planner/workspace")
+    assert values_a["max_csv_bytes"] < values_a["max_body_bytes"]
+    assert values_a["schema_version"] == 1
+    assert stat.S_IMODE(path_a.stat().st_mode) == 0o600
+    changed = {**values_a, "max_page_size": 17}
+    path_a.write_text(json.dumps(changed))
+    assert planner_environment(a)["LINKER_PLANNER_CONFIG"] == str(path_a)
+    assert json.loads(path_a.read_bytes()) == changed
 
 
 def test_each_instance_logs_genie_turns_in_its_own_directory() -> None:

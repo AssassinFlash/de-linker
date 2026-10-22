@@ -6,7 +6,7 @@ After=network.target
 [Service]
 WorkingDirectory=/opt/linker-engine/current
 EnvironmentFile=/etc/linker-engine.env
-ExecStart=/opt/linker-engine/current/.venv/bin/python -m uvicorn linker_engine.app:app --host 127.0.0.1 --port 8901
+ExecStart=/opt/linker-engine/current/.venv/bin/python -m uvicorn linker_engine.application:app --host 127.0.0.1 --port 8901
 Restart=always
 RestartSec=2
 

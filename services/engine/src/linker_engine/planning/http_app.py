@@ -2,8 +2,9 @@
 
 This app is constructed behind ServiceBoundary, with no public off switch or
 browser CORS. A separate WP route must verify native identity, nonce/origin
-and resource policy before making this authenticated hop. It is not yet mounted
-in the existing customer engine. Numerical work runs only in the Worker.
+and resource policy before making this authenticated hop. The composed service
+mounts this app outside legacy public middleware. Numerical work runs only in
+the Worker.
 """
 
 from __future__ import annotations
@@ -20,7 +21,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
-from .access import positive_integer
+from .access import active_actor, positive_integer
 from .assets import Assets
 from .canonical import Json, Object, encode
 from .energy_service import EnergyService
@@ -148,7 +149,23 @@ def create_private_app(
             "schema_version": 1,
             "runtime_sha256": energy.kernel.runtime.sha256,
             "models": dict(energy.kernel.models),
+            "limits": {
+                "max_body_bytes": limits.max_body_bytes,
+                "max_csv_bytes": limits.max_csv_bytes,
+                "max_page_size": limits.max_page_size,
+                "max_json_depth": limits.max_json_depth,
+            },
         }
+
+    @app.post("/identity/status")
+    def identity_status(_body: Command, request: Request) -> Object:
+        actor = verified_actor(request.scope)
+        with workspace.database.read() as connection:
+            try:
+                active_actor(connection, actor)
+            except NotFound:
+                return {"schema_version": 1, "status": "retired"}
+        return {"schema_version": 1, "status": "active"}
 
     @app.post("/identity/claim-session")
     def claim_session(body: SessionClaim, request: Request) -> Object:

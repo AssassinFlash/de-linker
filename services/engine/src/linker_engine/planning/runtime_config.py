@@ -1,0 +1,71 @@
+"""Explicit deployment settings shared by planning HTTP and its worker.
+
+The file contains no credential. GENIE_SERVICE_TOKEN stays in the service
+environment. Limits are operational policy; arithmetic settings are frozen
+into each run and are not physical safety/engineering margins.
+"""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+from typing import Annotated, Self
+
+from pydantic import Field, model_validator
+
+from .energy_inputs import Document, Nonnegative, SchemaVersion
+from .energy_kernel import EnergyKernel
+from .energy_service import EnergyService
+from .http_app import HttpLimits
+from .numerical_tolerance import Tolerance
+from .workspace import Workspace
+
+type PositiveInteger = Annotated[int, Field(strict=True, gt=0)]
+
+
+class RuntimeConfig(Document):
+    schema_version: SchemaVersion
+    directory: str
+    max_body_bytes: PositiveInteger
+    max_csv_bytes: PositiveInteger
+    max_page_size: PositiveInteger
+    max_json_depth: PositiveInteger
+    max_intervals: PositiveInteger
+    max_attempts: PositiveInteger
+    absolute_kwh: Nonnegative
+    absolute_kw: Nonnegative
+    relative: Nonnegative
+
+    @model_validator(mode="after")
+    def absolute_directory(self) -> Self:
+        if not Path(self.directory).is_absolute():
+            raise ValueError("planning directory must be absolute")
+        if self.max_csv_bytes > self.max_body_bytes:
+            raise ValueError("CSV limit exceeds the request limit")
+        return self
+
+    @classmethod
+    def from_environment(cls) -> Self:
+        name = os.environ.get("LINKER_PLANNER_CONFIG", "")
+        if not name:
+            raise ValueError("planning configuration is absent")
+        return cls.model_validate_json(Path(name).read_bytes())
+
+    def open(self) -> tuple[Workspace, EnergyService]:
+        workspace = Workspace(Path(self.directory))
+        kernel = EnergyKernel(
+            workspace,
+            Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
+            max_intervals=self.max_intervals,
+        )
+        return workspace, EnergyService(
+            workspace, kernel, max_attempts=self.max_attempts
+        )
+
+    def http_limits(self) -> HttpLimits:
+        return HttpLimits(
+            self.max_body_bytes,
+            self.max_csv_bytes,
+            self.max_page_size,
+            self.max_json_depth,
+        )
