@@ -26,3 +26,10 @@ Affected API/component JS tests **16 tests PASS**; complete Tools PHPStan, chang
 The previous UI sentence said that the conversation follows once a guest opens the confirmation link. That promise is incompatible with mandatory pre-send checks. Final EN is “A confirmation link is on its way to %s.” Independent DE is “Ein Bestätigungslink an %s ist unterwegs.” assessment_spec_review adversarial copy review: PASS; both preserve the address and describe only accepted fixed confirmation mail, without promising conversation delivery. Confirmation-mail failure still uses unavailable, not this notice. This is a necessary consequence of the new sending contract.
 
 The confirmation notice delta passed the full affected App/API/component group:86tests, TypeScript, changed-file ESLint/Prettier, reproducible build manifest and complete i18n coverage. The prior a963 PHP review/native39/614 remain separate evidence; final combined native producer/browser acceptance is still required.
+
+
+## Combined native route acceptance
+
+With the actual Commerce sending gate installed on the snapshot-backed si533 instance, the old route fixture stopped native content capture before it could persist the new job. The fixture now permits only the native unclassified render to reach the real Capture hook; fixed confirmation mail remains intercepted, and no Outbox transport is driven. Both guest-confirmed and account-address routes assert HTTP/native pending, one actual private conversation_mail job, exact full template and recipient, durable pending state, and an actual denied sending permission. They retain one-use token and ownership assertions. PHPStan discovers the actual sibling Mail/Assessment symbols for these native assertions; no permission is mocked.
+
+Combined ConversationRoutesTest + ResourceAdmissionTest:39tests/631assertions PASS on real WordPress/Woo si533. Service token and endpoints use only the explicit local fixture configuration; no real provider or real email is used. This replaces the previous standalone route evidence for the changed producer contract. The final source/privacy follow-up and publication remain independent gates.

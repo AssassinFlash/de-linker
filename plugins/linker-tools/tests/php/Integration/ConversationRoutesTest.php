@@ -22,8 +22,8 @@ use WP_REST_Request;
  * The two routes a visitor uses on one conversation of the list (ticket
  * #235): DELETE clears it, POST …/email sends it to the visitor's own
  * address. The email goes through the site's real mail chain as far as
- * wp_mail(); the call is recorded there and stopped before the Outbox, so
- * a run writes no mail (AGENTS.md §5, test mail).
+ * native rendering and the actual pending job. Fixed confirmation calls
+ * stop before Outbox and content capture remains active, so a run writes no mail (AGENTS.md §5, test mail).
  *
  * @coversNothing
  */
@@ -93,7 +93,7 @@ final class ConversationRoutesTest extends TestCase {
 			remove_all_actions( $hook );
 		}
 		add_filter( 'wp_mail', array( $this, 'record' ), PHP_INT_MAX );
-		add_filter( 'pre_wp_mail', array( $this, 'stop' ), 1 );
+		add_filter( 'pre_wp_mail', array( $this, 'stop' ), 1, 2 );
 		$this->held['limit'] = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- held to be put back unchanged.
 		// A connection of its own, so a run starts with a full allowance
 		// and never spends another test's.
@@ -162,11 +162,44 @@ final class ConversationRoutesTest extends TestCase {
 	/**
 	 * Stops the call before the Outbox; the `pre_wp_mail` filter.
 	 *
-	 * @param null|bool $pre Earlier answer.
+	 * @param null|bool           $pre Earlier answer.
+	 * @param array<string,mixed> $atts Native email render arguments.
 	 */
-	public function stop( $pre ): bool {
-		unset( $pre );
-		return true;
+	public function stop( $pre, array $atts ): ?bool {
+		// Let the real native content capture build its pending job, without transport.
+		$origin = \Linker\Commerce\Mail\Producer::origin( $atts );
+		return 'unclassified' === ( $origin['kind'] ?? '' ) ? $pre : true;
+	}
+
+	/**
+	 * The actual content producer persists a separate pending job, without granting transport.
+	 *
+	 * @param int    $id Native conversation.
+	 * @param string $to Actual account/confirmed recipient.
+	 * @param string $body Full native rendered template.
+	 */
+	private function assert_pending_copy( int $id, string $to, string $body ): void {
+		$jobs = get_posts(
+			array(
+				'post_type'   => \Linker\Commerce\Mail\JobStore::POST_TYPE,
+				'post_status' => 'any',
+				'numberposts' => -1,
+				'fields'      => 'ids',
+				'meta_key'    => \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::SOURCE_ID, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Native lookup by this fixture's private source identity.
+				'meta_value'  => (string) $id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- The one fixture conversation, never another record.
+			)
+		);
+		$this->assertCount( 1, $jobs );
+		$job    = (int) $jobs[0];
+		$stored = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
+		$this->assertNotNull( $stored );
+		$this->assertSame( array( $to ), $stored['message']->to );
+		$this->assertSame( $body, $stored['message']->body );
+		$this->assertSame( 'conversation_mail', $stored['message']->origin['purpose'] );
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( 'conversation-' . $job );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'pending', $state['status'] );
+		$this->assertFalse( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $stored['message'], $job ), 'Saved content is not sending permission.' );
 	}
 
 	/**
@@ -194,7 +227,7 @@ final class ConversationRoutesTest extends TestCase {
 	/**
 	 * A guest's request sends only the confirmation: fixed words and a
 	 * link to the typed address, nothing of the conversation. Opening the
-	 * link sends the conversation there, with the product its answer
+	 * link saves the pending content copy there, with the product its answer
 	 * showed; the link works once.
 	 */
 	public function test_a_guest_confirms_the_address_before_the_conversation_goes(): void {
@@ -221,7 +254,7 @@ final class ConversationRoutesTest extends TestCase {
 		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', $confirmation, $token ), 'The link is in it.' );
 
 		$mail = new ConversationMail( new Conversations(), new Thread() );
-		$this->assertSame( 'sent', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
+		$this->assertSame( 'pending', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
 		$this->assertCount( 2, $this->mail );
 		$this->assertSame( array( 'tester@example.test' ), (array) $this->mail[1]['to'] );
 		$this->assertSame( 'Your conversation with Genie', $this->mail[1]['subject'] );
@@ -230,6 +263,7 @@ final class ConversationRoutesTest extends TestCase {
 		$this->assertStringContainsString( 'The SAJ H2-10K-T3 is a three-phase hybrid inverter.', $body, 'The last answer, from its stream.' );
 		$this->assertStringContainsString( esc_html( get_the_title( 4107 ) ), $body, 'The product the answer showed.' );
 		$this->assertStringNotContainsString( 'Bcc', implode( "\n", (array) $this->mail[1]['headers'] ), 'Nobody else is copied.' );
+		$this->assert_pending_copy( $id, 'tester@example.test', $body );
 
 		$this->assertSame( 'expired', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'], 'The link works once.' );
 		$this->assertCount( 2, $this->mail );
@@ -291,8 +325,8 @@ final class ConversationRoutesTest extends TestCase {
 	}
 
 	/**
-	 * A signed-in customer's conversation goes to the account's address at
-	 * once, whatever address the request names.
+	 * A signed-in customer's pending conversation is bound to the account's
+	 * address, whatever address the request names.
 	 */
 	public function test_a_customer_gets_it_at_the_account_address(): void {
 		$user = wp_insert_user(
@@ -318,11 +352,13 @@ final class ConversationRoutesTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 202, $response->get_status() );
+		$this->assertSame( 'pending', $response->get_data()['status'] );
 		$this->assertSame( 'linker-it-account@example.test', $response->get_data()['to'], 'The panel is told which address the account used.' );
 		$this->assertCount( 1, $this->mail );
 		$this->assertSame( array( 'linker-it-account@example.test' ), (array) $this->mail[0]['to'] );
 		$this->assertSame( 'Your conversation with Genie', $this->mail[0]['subject'] );
+		$this->assert_pending_copy( $id, 'linker-it-account@example.test', (string) $this->mail[0]['message'] );
 	}
 
 	/** A saved automatic check is acknowledged without claiming the email is on its way. */
