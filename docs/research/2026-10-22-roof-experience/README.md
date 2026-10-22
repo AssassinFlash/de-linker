@@ -17,9 +17,13 @@
 - **B** = 本轮浏览器截图/操作观察；**R** = 本轮 cookie-free HTTP 或确定性本地请求；**S** = 当前源码路径；**H** = 历史记录/既有测试，仅作对照。只有 S 的项目不得写成“浏览器已复现”。
 - 截图按父会话原文件保存；虽然扩展名是`.png`，实际编码为JPEG。像素尺寸为1440×900或390×844，完整性、编码与SHA256在[证据清单](raw/evidence-manifest.json)，未转换图像，也不据这些图宣称无损像素对照通过。
 
-### 指定 Claude 审读未完成
+### 评审状态与实际调用记录
 
-按项目分工先尝试安装的 Claude CLI，只开放 Read/Glob/Grep/Bash/Skill、plan 权限，不改全局设置。原调用 stderr 显示实际路由为 `ccs-claude-deepseek--deepseek-flash[1m]`，父协调者要求终止；本票只终止了自己工作树对应 PID，stdout 没有结论。父协调者随后报告真正 Claude 单次直连的 OAuth 已过期、无法刷新。**没有把 CLI 品牌名或其他模型输出算作 Claude 研究完成。** 经父协调者明确指示，继续直接审计原始源码、HTTP 与浏览器事实。本次不声称指定审读或全套评审通过。[调用提示](raw/claude-prompt.txt)、[路由 stderr](raw/claude-initial.stderr)、[中止状态](raw/claude-invocation-status.json)。
+按当时项目分工先尝试安装的 Claude CLI，只开放 Read/Glob/Grep/Bash/Skill、plan 权限，不改全局设置。原调用 stderr 显示实际路由为 `ccs-claude-deepseek--deepseek-flash[1m]`，父协调者要求终止；本票只终止了自己工作树对应 PID，stdout 没有结论。父协调者随后报告真正 Claude 单次直连的 OAuth 已过期、无法刷新。**没有把 CLI 品牌名或其他模型输出算作 Claude 研究完成。** 经父协调者明确指示，继续直接审计原始源码、HTTP 与浏览器事实。[调用提示](raw/claude-prompt.txt)、[路由 stderr](raw/claude-initial.stderr)、[中止状态](raw/claude-invocation-status.json)。
+
+**2026-10-22，用户明确：“不必理会claude，全权交给你来负责。”** 由此解除本轮研究必须由 Claude 执行或审读的人员要求，Codex 对结论负责，可以依据本轮实证与研究范围收口，不再等待 Claude。上述调用失败保留为历史事实，不再构成人员前置条件；没有声称 Claude 审读完成。
+
+人员要求的解除不改变真实证据边界：自动屋面、实际手绘/修订恢复、PDF字节、账户认领及询盘消费等未实测项，继续按下文保留为证据缺口，不能据此宣称全链验收通过。此次仅修订本节评审状态，未重复测试；原始取证材料未变，`raw/evidence-manifest.json` 封存的 README 哈希对应前一提交 `b12377a5` 的取证稿，本节的新状态以当前提交为准。
 
 ## 真实路径与入口采样
 
