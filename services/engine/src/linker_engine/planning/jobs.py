@@ -1,0 +1,201 @@
+"""Durable, leased work with atomic publication and stale-worker fencing.
+
+Durations and retry counts are explicit operator policy, never hidden engine
+defaults. A task completing is only a persistence state; engineering feasibility
+and evidence remain part of its frozen result.
+"""
+
+from __future__ import annotations
+
+import math
+import sqlite3
+from typing import cast
+from uuid import uuid4
+
+from .canonical import Object
+from .errors import Conflict, InvalidInput, LeaseLost, VersionUnavailable
+from .records import JobKind, Lease
+from .workspace import Workspace
+
+
+def _duration(value: float, name: str, *, zero: bool = False) -> None:
+    if (
+        type(value) not in (int, float)
+        or not math.isfinite(value)
+        or value < 0
+        or (not zero and value == 0)
+    ):
+        raise InvalidInput(
+            f"{name} must be finite and {'nonnegative' if zero else 'positive'}"
+        )
+
+
+class Jobs:
+    """Private worker operations; never exposed as browser-selected identities."""
+
+    def __init__(self, workspace: Workspace) -> None:
+        self.workspace = workspace
+
+    def claim(
+        self, worker: str, *, kinds: tuple[JobKind, ...], lease_seconds: float
+    ) -> Lease | None:
+        if (
+            not worker.strip()
+            or not kinds
+            or any(kind not in ("evaluate", "render_report") for kind in kinds)
+        ):
+            raise InvalidInput("worker and supported job kinds required")
+        _duration(lease_seconds, "lease duration")
+        workspace = self.workspace
+        with workspace.database.transaction() as connection:
+            now = workspace.clock()
+            # Only the placeholder count is interpolated; values are bound.
+            placeholders = ",".join("?" for _ in kinds)
+            while True:
+                row = connection.execute(
+                    f"SELECT * FROM jobs WHERE kind IN ({placeholders}) AND "
+                    "((state IN ('queued', 'retry_wait') AND available_at<=?) "
+                    "OR (state='running' AND lease_until<=?)) "
+                    "ORDER BY available_at, created_at, id LIMIT 1",
+                    (*kinds, now, now),
+                ).fetchone()
+                if row is None:
+                    return None
+                if row["attempt"] >= row["max_attempts"]:
+                    error = workspace.blobs.put_object(
+                        {"code": "attempts_exhausted", "retryable": False}
+                    )
+                    connection.execute(
+                        "UPDATE jobs SET state='failed', error_sha256=?, updated_at=? "
+                        "WHERE id=?",
+                        (error, now, row["id"]),
+                    )
+                    continue
+                try:
+                    request = workspace.blobs.object(row["request_sha256"])
+                except VersionUnavailable:
+                    error = workspace.blobs.put_object(
+                        {"code": "version_unavailable", "retryable": False}
+                    )
+                    connection.execute(
+                        "UPDATE jobs SET state='failed', error_sha256=?, updated_at=? "
+                        "WHERE id=?",
+                        (error, now, row["id"]),
+                    )
+                    continue
+                token = uuid4().hex
+                attempt = row["attempt"] + 1
+                until = now + lease_seconds
+                connection.execute(
+                    "UPDATE jobs SET state='running', attempt=?, worker=?, "
+                    "lease_token=?, lease_until=?, updated_at=? WHERE id=?",
+                    (attempt, worker, token, until, now, row["id"]),
+                )
+                return Lease(
+                    id=row["id"],
+                    run_id=row["run_id"],
+                    kind=cast(JobKind, row["kind"]),
+                    attempt=attempt,
+                    worker=worker,
+                    token=token,
+                    until=until,
+                    request=request,
+                )
+
+    @staticmethod
+    def _identity(row: sqlite3.Row | None, lease: Lease) -> bool:
+        return row is not None and (
+            row["run_id"],
+            row["kind"],
+            row["attempt"],
+            row["worker"],
+            row["lease_token"],
+        ) == (lease.run_id, lease.kind, lease.attempt, lease.worker, lease.token)
+
+    def _active(
+        self, connection: sqlite3.Connection, lease: Lease, now: float
+    ) -> sqlite3.Row:
+        row = connection.execute(
+            "SELECT * FROM jobs WHERE id=?", (lease.id,)
+        ).fetchone()
+        if (
+            not self._identity(row, lease)
+            or row is None
+            or row["state"] != "running"
+            or row["lease_until"] <= now
+        ):
+            raise LeaseLost("worker lease is no longer current")
+        return cast(sqlite3.Row, row)
+
+    def heartbeat(self, lease: Lease, *, lease_seconds: float) -> float:
+        _duration(lease_seconds, "lease duration")
+        with self.workspace.database.transaction() as connection:
+            now = self.workspace.clock()
+            self._active(connection, lease, now)
+            until = now + lease_seconds
+            connection.execute(
+                "UPDATE jobs SET lease_until=?, updated_at=? WHERE id=?",
+                (until, now, lease.id),
+            )
+            return until
+
+    def complete(self, lease: Lease, result: Object) -> str:
+        """Publish bytes and success together; late or cancelled attempts lose."""
+        workspace = self.workspace
+        output = workspace.blobs.put_object(result)
+        with workspace.database.transaction() as connection:
+            row = connection.execute(
+                "SELECT * FROM jobs WHERE id=?", (lease.id,)
+            ).fetchone()
+            # Repeating an acknowledged completion returns the same bytes. A
+            # different generation, even with equal output, never owns it.
+            if (
+                self._identity(row, lease)
+                and row is not None
+                and row["state"] == "succeeded"
+            ):
+                if row["output_sha256"] != output:
+                    raise Conflict("completed attempt has a different result")
+                return output
+            now = workspace.clock()
+            self._active(connection, lease, now)
+            if lease.kind == "evaluate":
+                changed = connection.execute(
+                    "UPDATE runs SET result_sha256=? "
+                    "WHERE id=? AND result_sha256 IS NULL",
+                    (output, lease.run_id),
+                ).rowcount
+                if changed != 1:
+                    raise Conflict("run already has a frozen result")
+            connection.execute(
+                "UPDATE jobs SET state='succeeded', output_sha256=?, "
+                "error_sha256=NULL, updated_at=? WHERE id=?",
+                (output, now, lease.id),
+            )
+        return output
+
+    def fail(self, lease: Lease, error: Object, *, retry_after: float | None) -> None:
+        """Persist a typed error; only explicitly retryable attempts re-enter."""
+        code = error.get("code")
+        if not isinstance(code, str) or not code.strip():
+            raise InvalidInput("named failure code required")
+        if retry_after is not None:
+            _duration(retry_after, "retry delay", zero=True)
+        workspace = self.workspace
+        content = workspace.blobs.put_object(error)
+        with workspace.database.transaction() as connection:
+            now = workspace.clock()
+            row = self._active(connection, lease, now)
+            retry = retry_after is not None and row["attempt"] < row["max_attempts"]
+            available = now + retry_after if retry and retry_after is not None else now
+            connection.execute(
+                "UPDATE jobs SET state=?, error_sha256=?, available_at=?, updated_at=? "
+                "WHERE id=?",
+                (
+                    "retry_wait" if retry else "failed",
+                    content,
+                    available,
+                    now,
+                    lease.id,
+                ),
+            )

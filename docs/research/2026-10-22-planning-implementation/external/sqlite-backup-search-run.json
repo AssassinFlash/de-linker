@@ -1,6 +1,10 @@
 {
   "id": "RdyJwhHedwSooNWNs",
-  "status": "READY",
+  "actId": "nFJndFXA5zjCTuudP",
+  "buildId": "G3YvRcwtJopIgVcSA",
+  "status": "SUCCEEDED",
+  "startedAt": "2026-10-22T14:42:38.813Z",
+  "finishedAt": "2026-10-22T14:43:08.663Z",
   "defaultDatasetId": "AgbHQD3ZIAH6WfNbq",
-  "startedAt": "2026-10-22T14:42:38.813Z"
+  "statusMessage": "Processed 1 queries on 1 pages. Extracted: 10 organicResults, 1 itemsPushed"
 }

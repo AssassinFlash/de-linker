@@ -11,15 +11,19 @@
 - 研究资产继续保留原研究分支，整体架构/范围/全站同步修复合同基于研究固定提交e1bfc71801e2a4a6f89fb95a5141264f348dd068。
 - 本实施基线为origin/main 3bb955569eecc972b71df7cf4d5df69eb6aac41c。主工作树及其他任务未修改。
 - 实施工作树：/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548；分支codex/unified-planner-548。
-- 已完成just up p548，独立实例http://127.0.0.1:9347，邮件截获隔离。尚未装入线上快照，不作为UI验收实例使用。
+- 已完成just up p548，独立实例http://127.0.0.1:9347，邮件截获隔离。现已装入线上只读快照20261022-2309；212件已发布商品、2756个附件对齐，附件文件缺失0，线上地址残留0，主题/uploads/LC/WindPress及既有许可已带入。尚未进行新应用的UI验收。
 - [数值实施合同](../../../research/2026-10-22-planning-implementation/NUMERICAL-MODELS.md)由独立研究代理完成；Apify新核6个官方页面，继承17条数值与4项物理参考，不重复研究。
 - Apify三组现有凭证均HTTP200认证；已备份原配置并提供APIFY_TOKEN/ALT/PREV环境变量别名，受限配置在用户目录，Token未入库。真实Google-search-scraper已SUCCEEDED，dataset有1项且含SQLite官方结果，原始公共搜索证据在external目录。所有后续外部研究继续强制Apify，失败修复，不普通搜索fallback。
 
 ## 当前正在承担的工作
 
-站点入口决定由本线认领；整体实施尚未完成，正式产品代码尚未写入。本轮先完成用户插入的视觉细化并确立独立环境。
+站点入口决定由本线认领；整体实施尚未完成。正式产品代码已开始写入services/engine/src/linker_engine/planning，现有工具入口仍由既有实现承接，新模块尚未公开挂载或部署。
 
-接下来按既有研究和最新业务消费者固定入口/项目/修订/运行/资产/交接合同，直接实现持久化及worker。输入修改不能覆盖旧结果，任务成功不能等同工程放行，所有消费者读取同一冻结运行。然后完成几何/能流/设备条件/国家包与报告、统一React工作台、WP权限网关、Genie与Woo交接及全站入口/旧资料迁移。每部分纳入同次验收，不以阶段完成结案。
+已实现并验证独立项目/修订/运行权威、幂等回执、每次读写归属检查、访客认领、不可变内容hash、持久租约队列、代次fencing、取消/重试/重启恢复、注册handler的独立worker与heartbeat、SQLite在线备份及完整资产恢复。合同在docs/specs/548-project-workspace.md，架构决定在docs/adr/0001-unified-project-authority.md。
+
+本地真实SQLite/文件及并发连接夹具27项通过，ruff格式/检查与strict mypy通过。非物理handler明确标记fixture_only；这些结果不代表实际PV/储能/设备、真实网关身份或生产吞吐通过。备份证据通过Apify取得3个官方页面（3/3成功），已保留输入、终态元信息与内容。
+
+接下来独立评审项目/执行增量并修复发现，再落实时间轴、几何/PV/能流/设备条件/国家包与报告、统一React工作台、WP权限网关、Genie与Woo交接及全站入口/旧资料迁移。输入修改不能覆盖旧结果，任务成功不能等同工程放行，所有消费者读取同一冻结运行。每部分纳入同次验收，不以阶段完成结案。
 
 ## 最终过关条件
 
