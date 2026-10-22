@@ -26,6 +26,14 @@ text-width and line-wrap changes inside auth are an intentional typography
 correction; account dashboards, marketing, header/footer, prices and business
 rules are outside the change.
 
+The actual second-step review additionally finds the native first/last name
+rows retaining Woo's 47% width inside the existing authentication grid. At
+EN320 the track is 254px, but each name row is only 119.375px. Let direct
+form rows use automatic width so they stretch across their assigned track.
+Keep the existing one-column phone grid, two-column desktop name placement,
+gap, labels and native fields. This intentional field-width correction
+requires a new before-source backup and six second-step layout checks.
+
 Work from the deployed 1dce2406 source and an owned, fully loaded snapshot
 instance. Back up its full database and exact source before changes. Preserve
 EN/DE privacy source fingerprints and backslashes. Record actual custom-font

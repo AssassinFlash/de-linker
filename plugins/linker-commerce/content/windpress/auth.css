@@ -650,6 +650,10 @@
  * side on a wide screen (the field ids are WooCommerce's own). */
 .linker-auth-fields { display: grid; gap: 0 14px; grid-template-columns: minmax(0, 1fr); }
 
+/* Native first/last rows keep a 47% width for Woo's float layout. The grid
+ * already places them, so each row must fill its assigned track. */
+.linker-auth-fields > .form-row { width: auto; }
+
 @media (min-width: 560px) {
 	.linker-auth-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 
