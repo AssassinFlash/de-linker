@@ -1,0 +1,263 @@
+"""Private, bounded project RPC over the real durable workspace.
+
+This app is constructed behind ServiceBoundary, with no public off switch or
+browser CORS. A separate WP route must verify native identity, nonce/origin
+and resource policy before making this authenticated hop. It is not yet mounted
+in the existing customer engine. Numerical work runs only in the Worker.
+"""
+
+from __future__ import annotations
+
+import base64
+import binascii
+from collections.abc import Callable
+from dataclasses import dataclass
+
+from fastapi import FastAPI, Request, Response
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.types import ASGIApp
+
+from .access import positive_integer
+from .assets import Assets
+from .canonical import Json, Object, encode
+from .energy_service import EnergyService
+from .errors import (
+    Conflict,
+    InvalidInput,
+    LeaseLost,
+    NotFound,
+    NumericalFailure,
+    PlanningError,
+    VersionUnavailable,
+)
+from .http_documents import (
+    AssetRead,
+    BatteryScenario,
+    Command,
+    CsvImport,
+    EnergyEvaluate,
+    ProjectCreate,
+    ProjectList,
+    ProjectRead,
+    ProjectRevise,
+    ProjectRuns,
+    RunRead,
+)
+from .http_index import project_page, run_page
+from .http_views import asset_view, project_view, run_view
+from .profile_import import ProfileImport
+from .service_boundary import ServiceBoundary, verified_actor
+from .workspace import Workspace
+
+
+@dataclass(frozen=True)
+class HttpLimits:
+    max_body_bytes: int
+    max_csv_bytes: int
+    max_page_size: int
+
+    def __post_init__(self) -> None:
+        for name in ("max_body_bytes", "max_csv_bytes", "max_page_size"):
+            positive_integer(getattr(self, name), name)
+
+
+def create_private_app(
+    workspace: Workspace,
+    energy: EnergyService,
+    *,
+    credential: Callable[[], str],
+    limits: HttpLimits,
+) -> ASGIApp:
+    if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
+        raise InvalidInput("HTTP and energy service must share the same authority")
+    app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+    assets = Assets(workspace)
+
+    @app.exception_handler(PlanningError)
+    async def domain_error(_request: Request, error: PlanningError) -> JSONResponse:
+        status = {
+            NotFound: 404,
+            Conflict: 409,
+            InvalidInput: 422,
+            VersionUnavailable: 503,
+            LeaseLost: 409,
+            NumericalFailure: 422,
+        }.get(type(error), 500)
+        # Private row/file values and exception traces are not returned.
+        return JSONResponse({"error": {"code": error.code}}, status_code=status)
+
+    @app.exception_handler(RequestValidationError)
+    async def bad_command(
+        _request: Request, error: RequestValidationError
+    ) -> JSONResponse:
+        fields: list[Json] = [
+            {"path": [str(part) for part in item["loc"]], "kind": item["type"]}
+            for item in error.errors()
+        ]
+        return JSONResponse(
+            {"error": {"code": "invalid_input", "fields": fields}}, status_code=422
+        )
+
+    @app.post("/version")
+    def runtime(_body: Command) -> Object:
+        return {
+            "schema_version": 1,
+            "runtime_sha256": energy.kernel.runtime.sha256,
+            "models": dict(energy.kernel.models),
+        }
+
+    @app.post("/projects/create")
+    def create(body: ProjectCreate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        return project_view(
+            workspace.create(actor, body.title, body.inputs, key=body.key)
+        )
+
+    @app.post("/projects/list")
+    def listing(body: ProjectList, request: Request) -> Object:
+        if body.page_size > limits.max_page_size:
+            raise InvalidInput("project page exceeds deployment limit")
+        return project_page(
+            workspace, verified_actor(request.scope), body.page_size, body.after
+        )
+
+    @app.post("/projects/read")
+    def read(body: ProjectRead, request: Request) -> Object:
+        return project_view(
+            workspace.get(
+                verified_actor(request.scope), body.project_id, revision=body.revision
+            )
+        )
+
+    @app.post("/projects/revise")
+    def revise(body: ProjectRevise, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        # Reject a foreign writer before publishing even an orphan input blob.
+        workspace.get(actor, body.project_id)
+        return project_view(
+            workspace.revise(
+                actor,
+                body.project_id,
+                body.expected_revision,
+                body.inputs,
+                key=body.key,
+            )
+        )
+
+    @app.post("/projects/runs")
+    def runs(body: ProjectRuns, request: Request) -> Object:
+        if body.page_size > limits.max_page_size:
+            raise InvalidInput("run page exceeds deployment limit")
+        return run_page(
+            workspace,
+            verified_actor(request.scope),
+            body.project_id,
+            body.page_size,
+            body.before_created_at,
+            body.before_id,
+        )
+
+    @app.post("/runs/read")
+    def run_read(body: RunRead, request: Request) -> Object:
+        return run_view(workspace.run(verified_actor(request.scope), body.run_id))
+
+    @app.post("/runs/cancel")
+    def cancel(body: RunRead, request: Request) -> Object:
+        return run_view(
+            workspace.cancel(verified_actor(request.scope, write=True), body.run_id)
+        )
+
+    @app.post("/runs/energy")
+    def evaluate(body: EnergyEvaluate, request: Request) -> Object:
+        return run_view(
+            energy.evaluate(
+                verified_actor(request.scope, write=True),
+                body.project_id,
+                body.expected_revision,
+                key=body.key,
+            )
+        )
+
+    @app.post("/runs/trace")
+    def energy_trace(body: RunRead, request: Request) -> Response:
+        run = workspace.run(verified_actor(request.scope), body.run_id)
+        trace_hash = run.result.get("trace_sha256") if run.result else None
+        if not isinstance(trace_hash, str):
+            raise NotFound("trace not found")
+        return Response(
+            workspace.blobs.read(trace_hash),
+            media_type="application/json",
+            headers={
+                "Content-Disposition": f'attachment; filename="{body.run_id}-energy-trace.json"'
+            },
+        )
+
+    @app.post("/assets/read")
+    def asset_read(body: AssetRead, request: Request) -> Object:
+        return asset_view(
+            assets.get(verified_actor(request.scope), body.project_id, body.asset_id)
+        )
+
+    @app.post("/assets/content")
+    def asset_content(body: AssetRead, request: Request) -> Response:
+        content = assets.content(
+            verified_actor(request.scope), body.project_id, body.asset_id
+        )
+        return Response(
+            content,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{body.asset_id}"'},
+        )
+
+    @app.post("/profiles/csv")
+    def csv_profile(body: CsvImport, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        assets.check_write(actor, body.project_id)
+        try:
+            content = base64.b64decode(body.content_base64, validate=True)
+        except (ValueError, binascii.Error) as error:
+            raise InvalidInput("CSV must be valid base64") from error
+        if len(content) > limits.max_csv_bytes:
+            raise InvalidInput("CSV exceeds deployment file limit")
+        # This records a user declaration, not proof of measured data or the
+        # right to relabel arbitrary provider material as permanently licensed.
+        provenance: Object = {
+            "label": body.source_label,
+            "basis": "user_upload_declaration",
+            "rights_basis": body.rights_note,
+        }
+        return asset_view(
+            ProfileImport(assets).csv(
+                actor,
+                body.project_id,
+                content,
+                body.mapping.mapping(),
+                provenance,
+                key=body.key,
+            )
+        )
+
+    @app.post("/battery/scenario")
+    def battery_scenario(body: BatteryScenario, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        provenance: Object = {
+            "label": body.source_note,
+            "basis": "user_explicit_scenario_not_equipment_release",
+            "rights_basis": "user-declared numeric scenario, no third-party provider asset",
+        }
+        return asset_view(
+            assets.add(
+                actor,
+                body.project_id,
+                encode(body.parameters.model_dump(mode="json")),
+                "application/json",
+                "battery_parameters_v1",
+                {"retention": "permanent", "provenance": provenance},
+                key=body.key,
+            )
+        )
+
+    return ServiceBoundary(
+        app, credential=credential, max_body_bytes=limits.max_body_bytes
+    )
