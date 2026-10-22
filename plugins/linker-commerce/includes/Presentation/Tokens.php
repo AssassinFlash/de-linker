@@ -51,7 +51,7 @@ final class Tokens {
 		$plugin_dir = dirname( __DIR__, 2 );
 		$prefix     = '/wp-content/plugins/linker-commerce/';
 		$fonts      = array();
-		if ( preg_match_all( '/src:url\("([^"]+)"\)/', self::css(), $urls ) ) {
+		if ( preg_match_all( '/url\("([^"]+)"\)/', self::css(), $urls ) ) {
 			foreach ( array_unique( $urls[1] ) as $url ) {
 				if ( str_starts_with( $url, $prefix ) ) {
 					$fonts[] = $plugin_dir . '/' . substr( $url, strlen( $prefix ) );
