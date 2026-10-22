@@ -247,7 +247,8 @@ final class NotificationHoldTest extends IntegrationTestCase {
 		file_put_contents( $barrier, 'go' );
 		$close( $one );
 		$close( $two );
-		$order->read_meta_data( true );
+		$order = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() );
+		$this->assertInstanceOf( WC_Order::class, $order );
 		$this->assertFalse( NotificationHold::held( $order ) );
 		$events = array_filter(
 			wc_get_order_notes(
