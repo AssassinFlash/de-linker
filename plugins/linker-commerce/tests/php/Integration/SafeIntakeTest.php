@@ -245,7 +245,22 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			self::assertSame( $old, WC()->session->get( $key ) );
 		}
 		$post['name'] = 'Installer recovery fixture';
-		$product      = $this->product( '10' );
+
+		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
+		$saved = WC()->session->get( $key );
+		self::assertIsArray( $saved );
+		self::assertSame( $post['name'], $saved['fields']['name'] );
+		self::assertSame( $post['message'], $saved['fields']['message'] );
+	}
+
+	/** A normalized search condition is checked independently of editable text. */
+	public function test_campaign_selection_is_not_stored_in_contact_recovery(): void {
+		$post     = $this->post();
+		$key      = 'linker_form_recovery_contact';
+		$old      = WC()->session->get( $key );
+		$activity = 'Вам перевод 100 руб. забрать тут https://fredmer.buzz/path';
+		$this->later( static fn () => WC()->session->set( $key, $old ) );
+		$product = $this->product( '10' );
 		$post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] = (string) wp_json_encode(
 			array(
 				'source'    => get_permalink( $product->get_id() ),
@@ -254,12 +269,6 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		);
 		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
 		self::assertSame( $old, WC()->session->get( $key ) );
-		unset( $post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] );
-		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
-		$saved = WC()->session->get( $key );
-		self::assertIsArray( $saved );
-		self::assertSame( $post['name'], $saved['fields']['name'] );
-		self::assertSame( $post['message'], $saved['fields']['message'] );
 	}
 
 	/** Actual native transport also excludes refused activity from inquiry recovery. */
@@ -268,7 +277,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$old_post = $_POST;
 		$old      = WC()->session->get( 'linker_inquiry_fields' );
 		$this->later( static fn () => WC()->session->set( 'linker_inquiry_fields', $old ) );
-		$redirect = static function (): string {
+		$redirect = static function ( string $location ): string {
+			if ( '' === $location ) {
+				return $location;
+			}
 			throw new \RuntimeException( 'fixture_redirect_reached' );
 		};
 		add_filter( 'wp_redirect', $redirect );

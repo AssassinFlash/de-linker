@@ -14,6 +14,8 @@ final class FormRecovery {
 	/**
 	 * Recover only this browser's editable contact fields, once.
 	 *
+	 * @phpstan-impure
+	 *
 	 * @param string              $action Native form name.
 	 * @param array<string,mixed> $post Unslashed posted fields.
 	 */
