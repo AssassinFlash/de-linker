@@ -45,23 +45,31 @@ final class NativeTransaction {
 	 * Start immediately before the native writes, after provider work has ended.
 	 *
 	 * @throws \RuntimeException The original transaction cannot be established.
-	 * @throws \Throwable A native start failure keeps its original error.
 	 */
 	public function __construct() {
 		global $wpdb;
 		$this->fence = ConnectionFence::enter();
+		$started     = false;
 		try {
 			$this->own   = ! Capacity::transaction_active();
 			$this->point = 'linker_native_' . bin2hex( random_bytes( 8 ) );
 			if ( $this->own && ! BudgetTransaction::begin() ) {
 				throw new \RuntimeException( 'native_transaction_start_failed' );
 			}
+			$started = $this->own;
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Server-generated hexadecimal savepoint, never public input.
 			if ( false === $wpdb->query( "SAVEPOINT {$this->point}" ) ) {
 				throw new \RuntimeException( 'native_transaction_savepoint_failed' );
 			}
 			self::$stack[] = $this;
 		} catch ( \Throwable $error ) {
+			if ( $started ) {
+				try {
+					$this->fence->assert_current();
+					$wpdb->query( 'ROLLBACK' ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Only this constructor's confirmed original owned transaction.
+				} catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- A failed original connection cannot compensate on a new client.
+				}
+			}
 			$this->fence->close();
 			throw $error;
 		}
@@ -84,6 +92,9 @@ final class NativeTransaction {
 		}
 		// phpcs:enable
 		$this->fence->assert_current();
+		if ( $this->own && Capacity::transaction_active() ) {
+			throw new \RuntimeException( 'native_transaction_commit_unconfirmed' );
+		}
 		$this->finished = true;
 		array_pop( self::$stack );
 		$this->fence->close();
