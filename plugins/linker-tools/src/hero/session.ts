@@ -22,7 +22,10 @@ import {
 	type TurnMessage,
 } from '../genie/api/turn';
 import type { Upload } from '../genie/attachments/prepare';
-import { assertEntryScope } from '../genie/shared/entryFailure';
+import {
+	assertEntryScope,
+	EntryScopeError,
+} from '../genie/shared/entryFailure';
 import { retryMessages } from '../genie/shared/failure';
 
 /** What the hero's mount point gives the session (config.ts). */
@@ -50,12 +53,26 @@ export type HeroReadThread = typeof readThread;
 /** The one send the hero needs; the same proxy call the dock makes. */
 export type HeroSendTurn = typeof sendTurn;
 
+export interface HeroTurnGuard {
+	authorize: () => Promise< boolean >;
+	settle: () => Promise< boolean >;
+}
 export class HeroSession {
 	private messagesValue: TurnMessage[] = [];
 	private turnValue: Turn | null = null;
 	private contactsValue: SentContact[] = [];
 	private inquiriesValue: SentInquiryCard[] = [];
 	private loading: Promise< void > | null = null;
+	private generation = 0;
+	/** A new native principal/thread cannot reuse a completed load from the prior context. */
+	invalidate(): void {
+		this.generation += 1;
+		this.loading = null;
+		this.messagesValue = [];
+		this.turnValue = null;
+		this.contactsValue = [];
+		this.inquiriesValue = [];
+	}
 
 	/**
 	 * @param config The mount's routes, nonce, language and page context.
@@ -107,14 +124,22 @@ export class HeroSession {
 
 	/**
 	 * Re-reads the shared thread before a send.
+	 * @param current
 	 */
-	private async refresh(): Promise< void > {
+	private async refresh( current?: HeroTurnGuard ): Promise< void > {
+		const generation = this.generation;
 		this.loading = this.read(
 			this.config.threadUrl,
 			this.config.nonce,
 			undefined,
 			{ restUrl: this.config.restUrl, locale: this.config.locale }
-		).then( ( stored ) => {
+		).then( async ( stored ) => {
+			if ( generation !== this.generation ) {
+				throw new EntryScopeError( true );
+			}
+			if ( current && ! ( await current.settle() ) ) {
+				throw new EntryScopeError( true );
+			}
 			this.messagesValue = stored.messages;
 			this.turnValue = stored.turn;
 			this.contactsValue = stored.contacts ?? [];
@@ -141,11 +166,13 @@ export class HeroSession {
 	 * @param text       The question, file names already named in it.
 	 * @param uploads    The turn's files, apart from the messages (#236).
 	 * @param entryScope Optional recovery owner, verified after shared-thread refresh.
+	 * @param current
 	 */
 	async ask(
 		text: string,
 		uploads: Upload[] = [],
-		entryScope?: string
+		entryScope?: string,
+		current?: HeroTurnGuard
 	): Promise< {
 		messages: TurnMessage[];
 		answer: Turn;
@@ -154,11 +181,12 @@ export class HeroSession {
 	} > {
 		// Every send, not only the first: the dock may have written a turn
 		// while this view was folded (or both surfaces are open).
-		await this.refresh();
+		await this.refresh( current );
 		return this.deliver(
 			[ ...this.messagesValue, { role: 'user', content: text } ],
 			uploads,
-			entryScope
+			entryScope,
+			current
 		);
 	}
 
@@ -169,22 +197,25 @@ export class HeroSession {
 	 * @param text       The question, file names already named in it.
 	 * @param uploads    The turn's files.
 	 * @param entryScope Optional recovery owner, verified after shared-thread refresh.
+	 * @param current
 	 */
 	async retry(
 		text: string,
 		uploads: Upload[] = [],
-		entryScope?: string
+		entryScope?: string,
+		current?: HeroTurnGuard
 	): Promise< {
 		messages: TurnMessage[];
 		answer: Turn;
 		contacts?: SentContact[];
 		inquiries?: SentInquiryCard[];
 	} > {
-		await this.refresh();
+		await this.refresh( current );
 		return this.deliver(
 			retryMessages( this.messagesValue, text ),
 			uploads,
-			entryScope
+			entryScope,
+			current
 		);
 	}
 
@@ -195,21 +226,29 @@ export class HeroSession {
 	 * @param next       The thread to send.
 	 * @param uploads    The turn's files.
 	 * @param entryScope Optional recovery owner, verified after shared-thread refresh.
+	 * @param current
 	 */
 	private async deliver(
 		next: TurnMessage[],
 		uploads: Upload[],
-		entryScope?: string
+		entryScope?: string,
+		current?: HeroTurnGuard
 	): Promise< {
 		messages: TurnMessage[];
 		answer: Turn;
 		contacts?: SentContact[];
 		inquiries?: SentInquiryCard[];
 	} > {
-		await assertEntryScope(
-			{ restUrl: this.config.restUrl, restNonce: this.config.nonce },
-			entryScope
-		);
+		if ( current ) {
+			if ( ! ( await current.authorize() ) ) {
+				throw new EntryScopeError( true );
+			}
+		} else {
+			await assertEntryScope(
+				{ restUrl: this.config.restUrl, restNonce: this.config.nonce },
+				entryScope
+			);
+		}
 		const answer = await this.send( {
 			turnUrl: this.config.turnUrl,
 			restUrl: this.config.restUrl,
@@ -219,6 +258,9 @@ export class HeroSession {
 			page: this.config.page,
 			uploads,
 		} );
+		if ( current && ! ( await current.settle() ) ) {
+			throw new EntryScopeError( true );
+		}
 		this.messagesValue = next.concat( assistantMessage( answer ) );
 		this.turnValue = answer;
 		return {

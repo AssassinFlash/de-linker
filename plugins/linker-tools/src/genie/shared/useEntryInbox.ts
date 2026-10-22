@@ -1,10 +1,12 @@
 /** One marketing attempt owns one delivery before it enters the turn lane. */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import type { DraftContext } from './draftContext';
 import type { GenieConfig } from '../config';
 import type { Attachments } from '../attachments/useAttachments';
 import type { Upload } from '../attachments/prepare';
 import { EntryScopeError } from './entryFailure';
-import { readFailure, pageFailureStore } from './failure';
+import { pageFailureStore } from './failure';
+import { hasOwnedRecovery } from './ownedFailure';
 import {
 	ENTRY_KEY,
 	entryAck,
@@ -25,6 +27,7 @@ interface Parked {
 	missing: string[];
 }
 interface Options {
+	context: DraftContext;
 	config: GenieConfig;
 	input: string;
 	setInput: ( text: string ) => void;
@@ -41,6 +44,25 @@ interface Options {
 export function useEntryInbox( options: Options ) {
 	const current = useRef( options );
 	current.current = options;
+	const nativeOwner = useCallback( async ( fresh = false ) => {
+		// Entry authority remains a fresh durable read. Its accepted bytes must also
+		// join the same current native owner as ordinary editing in this surface.
+		const verified = await entryScope(
+			current.current.config,
+			fresh || !! current.current.context.identity
+		);
+		const context = current.current.context;
+		await context.initialized();
+		if ( context.identity?.scope !== verified ) {
+			await context.verify( true );
+		}
+		const lease = await context.ready();
+		if ( lease?.scope !== verified ) {
+			throw new Error( 'entry-native-owner' );
+		}
+		return { scope: verified, lease };
+	}, [] );
+
 	const composerEpoch = useRef( 0 );
 	const previousComposer = useRef( {
 		input: options.input,
@@ -68,13 +90,12 @@ export function useEntryInbox( options: Options ) {
 	const claimed = useRef( new Set< string >() );
 	const checking = useRef( new Set< string >() );
 	const handling = useRef( false );
+	const handlingGeneration = useRef( 0 );
 	const scope = useRef( '' );
 	const live = useRef( true );
 	const owned = useRef( false );
 	const loaded = useRef< Promise< string > | null >( null );
-	const recoveryPending = useRef(
-		!! readFailure( pageFailureStore() )?.entryId
-	);
+	const recoveryPending = useRef( hasOwnedRecovery( pageFailureStore() ) );
 	const blockedEpoch = useRef( 0 );
 	const markRecoveryBlocked = useCallback( () => {
 		recoveryPending.current = true;
@@ -84,6 +105,9 @@ export function useEntryInbox( options: Options ) {
 	}, [] );
 	const claimComposer = useCallback(
 		( verified: string, releasePending = false ) => {
+			if ( current.current.context.identity?.scope !== verified ) {
+				throw new Error( 'entry-native-owner' );
+			}
 			scope.current = verified;
 			owned.current = true;
 			current.current.onVerified( verified );
@@ -165,10 +189,13 @@ export function useEntryInbox( options: Options ) {
 		if ( loaded.current ) {
 			return loaded.current;
 		}
-		loaded.current = entryScope( current.current.config, true )
-			.then( ( next ) => {
-				if ( ! live.current ) {
-					return next;
+		loaded.current = nativeOwner()
+			.then( ( { scope: next, lease } ) => {
+				if (
+					! live.current ||
+					! current.current.context.owns( lease )
+				) {
+					throw new Error( 'entry-native-owner' );
 				}
 				scope.current = next;
 				const record = readEntryRecovery( next );
@@ -203,7 +230,7 @@ export function useEntryInbox( options: Options ) {
 				throw error;
 			} );
 		return loaded.current;
-	}, [ claimComposer, offerRecovery, markRecoveryBlocked ] );
+	}, [ claimComposer, offerRecovery, markRecoveryBlocked, nativeOwner ] );
 	useEffect( () => {
 		live.current = true;
 		try {
@@ -216,7 +243,7 @@ export function useEntryInbox( options: Options ) {
 		return () => {
 			live.current = false;
 		};
-	}, [ initialise ] );
+	}, [ initialise, nativeOwner ] );
 	const receive = useCallback(
 		( value: unknown ) => {
 			if ( ! isEntryDraft( value ) ) {
@@ -229,17 +256,15 @@ export function useEntryInbox( options: Options ) {
 			checking.current.add( value.id );
 			void initialise()
 				.then( async () => {
-					const verified = await entryScope(
-						current.current.config,
-						true
-					);
-					if ( ! live.current ) {
+					const { scope: verified, lease } =
+						await nativeOwner( true );
+					if (
+						! live.current ||
+						! current.current.context.owns( lease )
+					) {
 						return;
 					}
-					if (
-						verified !== value.scope ||
-						verified !== scope.current
-					) {
+					if ( verified !== value.scope ) {
 						readEntryRecovery( verified );
 						if ( owned.current ) {
 							current.current.setInput( '' );
@@ -253,7 +278,30 @@ export function useEntryInbox( options: Options ) {
 						entryAck( value, 'failed' );
 						return;
 					}
+					if ( scope.current !== verified ) {
+						loaded.current = null;
+						await initialise();
+					}
+					if ( ! current.current.context.owns( lease ) ) {
+						throw new Error( 'entry-native-owner' );
+					}
 					if ( claimed.current.has( value.id ) ) {
+						if (
+							readEntryRecovery( verified ).entries.some(
+								( item ) => item.id === value.id
+							)
+						) {
+							setInbox( ( items ) =>
+								items.some(
+									( item ) => item.draft.id === value.id
+								)
+									? items
+									: [
+											...items,
+											{ draft: value, automatic: false },
+										]
+							);
+						}
 						entryAck( value, 'accepted' );
 						return;
 					}
@@ -298,29 +346,57 @@ export function useEntryInbox( options: Options ) {
 				} )
 				.catch( () => {
 					claimed.current.delete( value.id );
+					if (
+						current.current.context.identity?.scope === value.scope
+					) {
+						setInbox( ( items ) =>
+							items.some( ( item ) => item.draft.id === value.id )
+								? items
+								: [
+										...items,
+										{ draft: value, automatic: false },
+									]
+						);
+					}
 					setIdentityError( true );
 					entryAck( value, 'failed' );
 				} )
 				.finally( () => checking.current.delete( value.id ) );
 		},
-		[ initialise ]
+		[ initialise, nativeOwner ]
 	);
 	const remove = useCallback( ( draft: EntryDraft ) => {
-		finishEntry( draft );
+		if ( ! finishEntry( draft ) ) {
+			return false;
+		}
 		setInbox( ( items ) =>
 			items.filter( ( item ) => item.draft.id !== draft.id )
 		);
+		return true;
 	}, [] );
 	const accept = useCallback(
 		async ( draft: EntryDraft, separate = false ) => {
 			const now = current.current;
-			if ( handling.current || now.busy || now.files.busy ) {
+			const startingLease = now.context.capture();
+			if (
+				! startingLease ||
+				handling.current ||
+				now.busy ||
+				now.files.busy
+			) {
 				return;
 			}
 			handling.current = true;
+			const operation = ++handlingGeneration.current;
 			const epoch = composerEpoch.current;
 			try {
-				const verified = await entryScope( now.config, true );
+				const { scope: verified, lease } = await nativeOwner( true );
+				if (
+					! current.current.context.owns( startingLease ) ||
+					handlingGeneration.current !== operation
+				) {
+					return;
+				}
 				if ( verified !== draft.scope ) {
 					readEntryRecovery( verified );
 					if ( owned.current ) {
@@ -336,6 +412,7 @@ export function useEntryInbox( options: Options ) {
 				}
 				if (
 					composerEpoch.current !== epoch ||
+					! current.current.context.owns( lease ) ||
 					current.current.input !== now.input ||
 					current.current.files.picked !== now.files.picked ||
 					current.current.busy
@@ -406,6 +483,12 @@ export function useEntryInbox( options: Options ) {
 						draft.id,
 						draft.scope
 					);
+					if (
+						! current.current.context.valid( lease ) ||
+						handlingGeneration.current !== operation
+					) {
+						return;
+					}
 					if ( ! completed ) {
 						setInbox( ( items ) =>
 							items.map( ( item ) =>
@@ -420,9 +503,24 @@ export function useEntryInbox( options: Options ) {
 					now.setInput( draft.text );
 					now.onMode( draft.mode );
 				}
-				remove( draft );
+				if (
+					! current.current.context.valid( lease ) ||
+					handlingGeneration.current !== operation
+				) {
+					return;
+				}
+				if ( ! remove( draft ) ) {
+					throw new Error( 'entry-recovery' );
+				}
 				entryAck( draft, 'settled' );
 			} catch {
+				if (
+					! live.current ||
+					! current.current.context.owns( startingLease ) ||
+					handlingGeneration.current !== operation
+				) {
+					return;
+				}
 				setIdentityError( true );
 				entryAck( draft, 'failed' );
 				setInbox( ( items ) =>
@@ -433,15 +531,18 @@ export function useEntryInbox( options: Options ) {
 					)
 				);
 			} finally {
-				handling.current = false;
+				if ( handlingGeneration.current === operation ) {
+					handling.current = false;
+				}
 			}
 		},
-		[ missing, remove, parked, claimComposer ]
+		[ missing, remove, parked, claimComposer, nativeOwner ]
 	);
 	useEffect( () => {
 		const first = inbox[ 0 ];
 		if (
 			first?.automatic &&
+			options.context.phase === 'ready' &&
 			! options.busy &&
 			! options.input &&
 			options.files.picked.length === 0 &&
@@ -451,6 +552,7 @@ export function useEntryInbox( options: Options ) {
 		}
 	}, [
 		inbox,
+		options.context.phase,
 		options.busy,
 		options.input,
 		options.files.picked.length,
@@ -498,7 +600,10 @@ export function useEntryInbox( options: Options ) {
 	const verifyCurrent = useCallback(
 		async ( expected: string, transport = false ) => {
 			try {
-				const next = await entryScope( current.current.config, true );
+				const { scope: next, lease } = await nativeOwner( true );
+				if ( ! current.current.context.owns( lease ) ) {
+					return false;
+				}
 				if ( next === expected ) {
 					return true;
 				}
@@ -521,7 +626,7 @@ export function useEntryInbox( options: Options ) {
 			setIdentityError( true );
 			return false;
 		},
-		[]
+		[ nativeOwner ]
 	);
 	const append = useCallback(
 		async ( draft: EntryDraft ) => {
@@ -530,12 +635,16 @@ export function useEntryInbox( options: Options ) {
 			}
 			handling.current = true;
 			const epoch = composerEpoch.current;
+			// Must precede the await: New/Select invalidates this restoration.
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const lease = current.current.context.capture();
 			try {
 				if ( ! ( await verifyCurrent( draft.scope ) ) ) {
 					return;
 				}
 				if (
 					composerEpoch.current !== epoch ||
+					! current.current.context.owns( lease ) ||
 					current.current.busy ||
 					current.current.files.busy
 				) {
@@ -601,12 +710,16 @@ export function useEntryInbox( options: Options ) {
 		}
 		handling.current = true;
 		const epoch = composerEpoch.current;
+		// Must precede the await: New/Select invalidates this restoration.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const lease = current.current.context.capture();
 		try {
 			if ( ! ( await verifyCurrent( scope.current ) ) ) {
 				return;
 			}
 			if (
 				composerEpoch.current !== epoch ||
+				! current.current.context.owns( lease ) ||
 				current.current.busy ||
 				current.current.files.busy
 			) {
@@ -660,6 +773,18 @@ export function useEntryInbox( options: Options ) {
 	}, [ parked, missing, verifyCurrent, claimComposer ] );
 
 	return {
+		detach: () => {
+			handlingGeneration.current += 1;
+			handling.current = false;
+			owned.current = false;
+			scope.current = '';
+			loaded.current = null;
+			composerEpoch.current += 1;
+			setInbox( [] );
+			setParked( null );
+			setMissing( [] );
+			setIdentityError( false );
+		},
 		claimComposer,
 		resolveRecovery: () => {
 			recoveryPending.current = false;

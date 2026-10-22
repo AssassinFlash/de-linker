@@ -1,3 +1,7 @@
+import {
+	installNativeIdentityFixture,
+	renderOwned,
+} from './testing/nativeIdentity';
 /**
  * Prices follow the account (#242, docs/specs/13-genie.md 目标 8): the card
  * renders the price line the service filled from the customer's own product
@@ -9,7 +13,7 @@
 /**
  * External dependencies
  */
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 
 /**
@@ -99,7 +103,7 @@ async function cardWith( prices: CardPrice[] | null ) {
 			{ type: 'cards', product_ids: [ 4107 ], prices },
 		],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
@@ -129,6 +133,8 @@ test.each( [
 		expect( within( card ).queryByText( /€/ ) ).toBeNull();
 	}
 );
+
+installNativeIdentityFixture();
 
 test( 'an approved account reads the price as the product page prints it', async () => {
 	const card = await cardWith( [ { product_id: 4107, text: '1.680,00 €' } ] );

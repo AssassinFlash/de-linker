@@ -22,6 +22,7 @@ import {
 	type Refusal,
 	type Upload,
 } from './prepare';
+import type { DraftContext } from '../shared/draftContext';
 
 /** Why a pick is not sent: a file's refusal, or the turn's own limits. */
 export type PickRefusal = Refusal | 'count' | 'turn_size';
@@ -50,7 +51,7 @@ export interface Attachments {
 
 let nextKey = 1;
 
-export function useAttachments(): Attachments {
+export function useAttachments( context?: DraftContext ): Attachments {
 	const [ picked, setPicked ] = useState< Picked[] >( [] );
 	// The picks as of the last change, for a burst of picks in one render.
 	const current = useRef< Picked[] >( [] );
@@ -61,6 +62,10 @@ export function useAttachments(): Attachments {
 
 	const add = useCallback(
 		( files: ArrayLike< File > ) => {
+			const lease = context?.capture();
+			if ( context && ( ! lease || ! context.acceptEditor() ) ) {
+				return;
+			}
 			for ( const file of Array.from( files ) ) {
 				const key = nextKey++;
 				const kept = current.current.filter(
@@ -82,7 +87,13 @@ export function useAttachments(): Attachments {
 					...items,
 					{ key, name: file.name, state: 'preparing' },
 				] );
-				void prepare( file ).then( ( result ) =>
+				void prepare( file ).then( async ( result ) => {
+					if (
+						context &&
+						! ( await context.whenVerified( lease ?? null ) )
+					) {
+						return;
+					}
 					update( ( items ) =>
 						withTurnLimit(
 							items.map( ( item ) => {
@@ -104,11 +115,11 @@ export function useAttachments(): Attachments {
 										};
 							} )
 						)
-					)
-				);
+					);
+				} );
 			}
 		},
-		[ update ]
+		[ update, context ]
 	);
 
 	const remove = useCallback(

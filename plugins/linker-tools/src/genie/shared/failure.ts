@@ -44,7 +44,15 @@ export const FAILURE_KEY = 'linker-genie-turn-failure';
 export type FailureKind = 'truncated' | 'upstream';
 
 /** The turn that was sent, or is about to be. */
+export interface FailureOwner {
+	scope: string;
+	attempt: string;
+}
 export interface FailureDraft {
+	/** Independent native owner. Marketing provenance remains separate. */
+	owner?: FailureOwner;
+	/** Accepted editor content, never presented as a failed model turn. */
+	editing?: boolean;
 	/** Marketing ownership retained through retry/reload. */
 	entryId?: string;
 	entryScope?: string;
@@ -67,7 +75,7 @@ export interface StoredFailure extends FailureDraft {
 }
 
 export interface FailureState {
-	phase: 'clear' | 'pending' | 'failed';
+	phase: 'clear' | 'editing' | 'pending' | 'failed';
 	draft: FailureDraft | null;
 	kind: FailureKind | null;
 }
@@ -117,6 +125,7 @@ export interface FailureStore {
 	getItem: ( key: string ) => string | null;
 	setItem: ( key: string, value: string ) => void;
 	removeItem: ( key: string ) => void;
+	keys?: () => string[];
 }
 
 const CLEAR: FailureState = { phase: 'clear', draft: null, kind: null };
@@ -514,6 +523,8 @@ export function reconcile(
 		return CLEAR;
 	}
 	const draft: FailureDraft = {
+		...( stored.owner ? { owner: stored.owner } : {} ),
+		...( stored.editing ? { editing: true } : {} ),
 		...( stored.entryId
 			? { entryId: stored.entryId, entryScope: stored.entryScope }
 			: {} ),
@@ -537,6 +548,10 @@ export function reconcile(
 	) {
 		return CLEAR;
 	}
+	if ( stored.editing ) {
+		return { phase: 'editing', draft, kind: null };
+	}
+
 	const last = messages[ messages.length - 1 ];
 	if ( last && 'user' === last.role && last.content === stored.question ) {
 		return { phase: 'failed', draft, kind: 'truncated' };
@@ -652,7 +667,12 @@ export function browserStore( storage: FailureStore ): FailureStore {
  * This tab's sessionStorage.
  */
 export function pageFailureStore(): FailureStore {
-	return browserStore( window.sessionStorage );
+	return {
+		getItem: ( key ) => window.sessionStorage.getItem( key ),
+		setItem: ( key, value ) => window.sessionStorage.setItem( key, value ),
+		removeItem: ( key ) => window.sessionStorage.removeItem( key ),
+		keys: () => Object.keys( window.sessionStorage ),
+	};
 }
 
 /**
@@ -660,7 +680,7 @@ export function pageFailureStore(): FailureStore {
  *
  * @param value JSON.
  */
-function parseFailure( value: unknown ): StoredFailure | null {
+export function parseFailure( value: unknown ): StoredFailure | null {
 	if ( ! value || 'object' !== typeof value ) {
 		return null;
 	}
@@ -674,9 +694,7 @@ function parseFailure( value: unknown ): StoredFailure | null {
 	) {
 		return null;
 	}
-	if ( '' === record.question ) {
-		return null;
-	}
+
 	if (
 		null !== record.kind &&
 		'truncated' !== record.kind &&
@@ -693,11 +711,34 @@ function parseFailure( value: unknown ): StoredFailure | null {
 					'string' === typeof name && '' !== name
 			)
 		: [];
+	// An owned attachment-only upstream failure can have no retryable words
+	// after withheld attachment claims are removed. It remains an explicit
+	// reselection record, never an empty editing draft or a sendable payload.
+	if (
+		record.question === '' &&
+		( record.editing === true ||
+			record.kind !== 'upstream' ||
+			typeof record.owner?.attempt !== 'string' ||
+			! record.owner.attempt ||
+			! /^[a-f0-9]{64}$/.test( record.owner.scope ) ||
+			uploads.length !== 0 ||
+			omitted.length === 0 )
+	) {
+		return null;
+	}
+
 	return {
 		v: 1,
+		...( record.owner &&
+		typeof record.owner.scope === 'string' &&
+		typeof record.owner.attempt === 'string' &&
+		record.owner.attempt
+			? { owner: record.owner }
+			: {} ),
 		...( typeof record.entryId === 'string'
 			? { entryId: record.entryId, entryScope: record.entryScope }
 			: {} ),
+		...( record.editing === true ? { editing: true } : {} ),
 		text: record.text,
 		question: record.question,
 		uploads: uploads as Upload[],
@@ -734,13 +775,15 @@ function uploadOf( value: unknown ): Upload | null {
  *
  * @param state The machine. Its draft is required.
  */
-function recordOf( state: FailureState ): StoredFailure {
+export function recordOf( state: FailureState ): StoredFailure {
 	const draft = state.draft as FailureDraft;
 	return {
 		v: 1,
+		...( draft.owner ? { owner: draft.owner } : {} ),
 		...( draft.entryId
 			? { entryId: draft.entryId, entryScope: draft.entryScope }
 			: {} ),
+		...( draft.editing ? { editing: true } : {} ),
 		text: draft.text,
 		question: draft.question,
 		uploads: draft.uploads,
@@ -756,7 +799,7 @@ function recordOf( state: FailureState ): StoredFailure {
  *
  * @param state The machine.
  */
-function withHeldClaims( state: FailureState ): FailureState {
+export function withHeldClaims( state: FailureState ): FailureState {
 	if ( ! state.draft || 'upstream' !== state.kind ) {
 		return state;
 	}
@@ -777,7 +820,10 @@ function withHeldClaims( state: FailureState ): FailureState {
  * @param state   The machine.
  * @param uploads The files that fit.
  */
-function draftWith( state: FailureState, uploads: Upload[] ): FailureState {
+export function draftWith(
+	state: FailureState,
+	uploads: Upload[]
+): FailureState {
 	const draft = state.draft as FailureDraft;
 	const kept = new Set( uploads.map( ( file ) => file.name ) );
 	const omitted = [

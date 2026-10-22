@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-/** Real binder → App → turn consumer; model transport is the only double. */
+/** Real binder → App → turn consumer; native identity HTTP plus history/model clients are explicit fixtures. */
 import {
 	act,
 	fireEvent,
@@ -12,8 +12,12 @@ import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { App, resetTurnLane } from '../genie/App';
 import { readConfig } from '../genie/config';
 import { bindMarketingEntries } from './entries';
+import {
+	currentOwnedRaw,
+	seedOwnedFailure,
+} from '../genie/testing/nativeIdentity';
 import { ENTRY_KEY } from '../genie/shared/entryDraft';
-import { sendTurn, selectConversation } from '../genie/api/turn';
+import { sendTurn, selectConversation, readThread } from '../genie/api/turn';
 vi.mock( '../genie/api/turn', async ( original ) => {
 	const actual = await original< typeof import( '../genie/api/turn' ) >();
 	return {
@@ -40,11 +44,20 @@ let stop: () => void;
 let currentScope = SCOPE;
 let scopeOK = true;
 beforeEach( () => {
+	delete ( window as unknown as Record< string, unknown > )
+		.__linkerGenieFailureJournal;
+	delete ( window as unknown as Record< string, unknown > )
+		.__linkerGenieNativeScope;
 	sessionStorage.clear();
 	resetTurnLane();
 	currentScope = SCOPE;
 	scopeOK = true;
-	vi.mocked( sendTurn ).mockClear();
+	vi.mocked( sendTurn ).mockReset();
+	vi.mocked( sendTurn ).mockResolvedValue( {
+		meta: null,
+		blocks: [ { type: 'text', text: 'A grounded answer.', refs: [] } ],
+	} );
+	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.stubGlobal(
 		'fetch',
 		vi.fn( async () => ( {
@@ -148,6 +161,7 @@ test( 'attach opens a draft with exact text and no turn; canceled picker keeps i
 test( 'existing composer is preserved and separate send parks it without leaking its text', async () => {
 	const { source, send, composer } = setup();
 	act( () => window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) ) );
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
 	fireEvent.change( composer(), {
 		target: { value: 'Existing unsent note' },
 	} );
@@ -379,9 +393,7 @@ test( 'transport failure retains entry identity and exact failed text for the ex
 	await act( async () => send() );
 	await screen.findByText( 'Genie did not answer. Please try again.' );
 	expect( composer().value ).toBe( 'Original failed question' );
-	const failure = JSON.parse(
-		sessionStorage.getItem( 'linker-genie-turn-failure' )!
-	);
+	const failure = JSON.parse( currentOwnedRaw()! );
 	expect( failure.entryId ).toBeTruthy();
 	expect( failure.entryScope ).toBe( SCOPE );
 	await act( async () =>
@@ -523,6 +535,7 @@ test( 'claim quota failure after source persistence keeps source owned and retri
 test( 'park quota failure keeps prior composer and incoming question separate and retryable', async () => {
 	const { source, send, composer } = setup();
 	act( () => window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) ) );
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
 	fireEvent.change( composer(), {
 		target: { value: 'Original unsent owner' },
 	} );
@@ -589,9 +602,12 @@ test( 'missing-file-only draft is an occupied owner and is parked by a separate 
 		JSON.parse( sessionStorage.getItem( ENTRY_KEY )! ).parked.missing
 	).toEqual( [ 'schematic.pdf' ] );
 } );
-test( 'delayed parked restore cannot overwrite a new turn or consume its parked owner', async () => {
+test( 'delayed parked restore quarantines input and retains both explicitly exchanged owners', async () => {
 	const { source, send, composer } = setup();
-	act( () => window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) ) );
+	await act( async () =>
+		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
+	);
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
 	fireEvent.change( composer(), {
 		target: { value: 'Original parked requirement' },
 	} );
@@ -604,13 +620,16 @@ test( 'delayed parked restore cannot overwrite a new turn or consume its parked 
 		)
 	);
 	await screen.findByText( 'A grounded answer.' );
-	const releases: Array< ( value: unknown ) => void > = [];
+	fireEvent.change( composer(), {
+		target: { value: 'New accepted replacement' },
+	} );
+	let release!: ( value: unknown ) => void;
 	vi.stubGlobal(
 		'fetch',
 		vi.fn(
 			() =>
 				new Promise( ( resolve ) => {
-					releases.push( resolve );
+					release = resolve;
 				} )
 		)
 	);
@@ -619,25 +638,28 @@ test( 'delayed parked restore cannot overwrite a new turn or consume its parked 
 			screen.getByRole( 'button', { name: 'Restore unsent draft' } )
 		)
 	);
-	fireEvent.change( composer(), {
-		target: { value: 'Current question sent during verification' },
-	} );
-	await act( async () =>
-		fireEvent.click( document.querySelector( '.linker-genie-app__send' )! )
-	);
+	await waitFor( () => expect( release ).toBeTypeOf( 'function' ) );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
-	await act( async () =>
-		releases.forEach( ( release ) =>
-			release( { ok: true, json: async () => ( { scope: SCOPE } ) } )
-		)
-	);
-	await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 2 ) );
-	expect(
-		vi.mocked( sendTurn ).mock.calls[ 1 ]?.[ 0 ].messages.at( -1 )?.content
-	).toBe( 'Current question sent during verification' );
 	expect(
 		JSON.parse( sessionStorage.getItem( ENTRY_KEY )! ).parked.text
 	).toBe( 'Original parked requirement' );
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( {
+			ok: true,
+			json: async () => ( { scope: SCOPE } ),
+		} ) )
+	);
+	await act( async () =>
+		release( { ok: true, json: async () => ( { scope: SCOPE } ) } )
+	);
+	await waitFor( () =>
+		expect( composer().value ).toBe( 'Original parked requirement' )
+	);
+	expect(
+		JSON.parse( sessionStorage.getItem( ENTRY_KEY )! ).parked.text
+	).toBe( 'New accepted replacement' );
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 } );
 
 test( 'an attachment-derived ordinary failure keeps scope and cannot paint A text after B remount', async () => {
@@ -653,9 +675,7 @@ test( 'an attachment-derived ordinary failure keeps scope and cannot paint A tex
 		fireEvent.click( document.querySelector( '.linker-genie-app__send' )! )
 	);
 	await screen.findByText( 'Genie did not answer. Please try again.' );
-	const record = JSON.parse(
-		sessionStorage.getItem( 'linker-genie-turn-failure' )!
-	);
+	const record = JSON.parse( currentOwnedRaw()! );
 	expect( record.entryId ).toBeTruthy();
 	expect( record.entryScope ).toBe( SCOPE );
 	stop();
@@ -666,11 +686,7 @@ test( 'an attachment-derived ordinary failure keeps scope and cannot paint A tex
 	await act( async () =>
 		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 	);
-	await waitFor( () =>
-		expect(
-			sessionStorage.getItem( 'linker-genie-turn-failure' )
-		).toBeNull()
-	);
+	await waitFor( () => expect( next.composer().disabled ).toBe( false ) );
 	expect( painted ).not.toHaveBeenCalledWith( privateText );
 	expect( next.composer().value ).toBe( '' );
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
@@ -698,15 +714,31 @@ test( 'temporary scope outage preserves entry composer and files for a fresh ret
 	await waitFor( () =>
 		expect( screen.getByText( 'keep.pdf' ) ).toBeTruthy()
 	);
+	await waitFor( () => {
+		expect( screen.queryByText( 'Preparing file…' ) ).toBeNull();
+		expect(
+			document.querySelector( '.linker-genie-app__send' )
+		).not.toBeDisabled();
+	} );
+
 	scopeOK = false;
 	await act( async () =>
 		fireEvent.click( document.querySelector( '.linker-genie-app__send' )! )
 	);
 	expect( sendTurn ).not.toHaveBeenCalled();
-	expect( composer().value ).toBe( 'Keep this scoped schematic' );
-	expect( screen.getByText( 'keep.pdf' ) ).toBeTruthy();
+	expect( composer().value ).toBe( '' );
+	expect( composer().disabled ).toBe( true );
+	expect( screen.queryByText( 'keep.pdf' ) ).toBeNull();
 	expect( screen.getByRole( 'button', { name: 'Try again' } ) ).toBeTruthy();
 	scopeOK = true;
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
+	);
+	await waitFor( () =>
+		expect( composer().value ).toBe( 'Keep this scoped schematic' )
+	);
+	expect( screen.getByText( 'keep.pdf' ) ).toBeTruthy();
+	expect( sendTurn ).not.toHaveBeenCalled();
 	await act( async () =>
 		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
 	);
@@ -727,12 +759,17 @@ test( 'temporary scope outage on Retry keeps the exact failed entry retryable', 
 		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
 	);
 	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
-	expect( composer().value ).toBe( 'Keep failed scoped requirement' );
-	expect(
-		JSON.parse( sessionStorage.getItem( 'linker-genie-turn-failure' )! )
-			.entryScope
-	).toBe( SCOPE );
+	expect( composer().value ).toBe( '' );
+	expect( composer().disabled ).toBe( true );
+	expect( JSON.parse( currentOwnedRaw()! ).entryScope ).toBe( SCOPE );
 	scopeOK = true;
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
+	);
+	await waitFor( () =>
+		expect( composer().value ).toBe( 'Keep failed scoped requirement' )
+	);
+	expect( sendTurn ).toHaveBeenCalledTimes( 1 );
 	await act( async () =>
 		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
 	);
@@ -760,6 +797,7 @@ test( 'verified scoped pending failure reclaimed by composer stays scoped after 
 	await waitFor( () =>
 		expect( composer().value ).toBe( 'Scoped pending original' )
 	);
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
 	fireEvent.change( composer(), {
 		target: { value: 'Edited scoped original' },
 	} );
@@ -768,15 +806,13 @@ test( 'verified scoped pending failure reclaimed by composer stays scoped after 
 		fireEvent.click( document.querySelector( '.linker-genie-app__send' )! )
 	);
 	await screen.findByRole( 'button', { name: 'Try again' } );
-	expect(
-		JSON.parse( sessionStorage.getItem( 'linker-genie-turn-failure' )! )
-			.entryScope
-	).toBe( SCOPE );
+	expect( JSON.parse( currentOwnedRaw()! ).owner.scope ).toBe( SCOPE );
 } );
 
 test( 'parked restore after a conversation switch reclaims scope for edited ordinary failure', async () => {
 	const { source, send, composer } = setup();
 	act( () => window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) ) );
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
 	fireEvent.change( composer(), {
 		target: { value: 'Original parked private requirement' },
 	} );
@@ -808,10 +844,7 @@ test( 'parked restore after a conversation switch reclaims scope for edited ordi
 		fireEvent.click( document.querySelector( '.linker-genie-app__send' )! )
 	);
 	await screen.findByRole( 'button', { name: 'Try again' } );
-	expect(
-		JSON.parse( sessionStorage.getItem( 'linker-genie-turn-failure' )! )
-			.entryScope
-	).toBe( SCOPE );
+	expect( JSON.parse( currentOwnedRaw()! ).entryScope ).toBe( SCOPE );
 	stop();
 	cleanup();
 	currentScope = 'b'.repeat( 64 );
@@ -820,11 +853,7 @@ test( 'parked restore after a conversation switch reclaims scope for edited ordi
 	await act( async () =>
 		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 	);
-	await waitFor( () =>
-		expect(
-			sessionStorage.getItem( 'linker-genie-turn-failure' )
-		).toBeNull()
-	);
+	await waitFor( () => expect( next.composer().disabled ).toBe( false ) );
 	expect( painted ).not.toHaveBeenCalledWith(
 		'Original parked private requirement'
 	);
@@ -891,7 +920,7 @@ for ( const record of [ 'unsent', 'failure' ] as const ) {
 }
 
 for ( const record of [ 'unsent', 'failure' ] as const ) {
-	test( `scope recovery does not overwrite a newer ${ record } composer edit`, async () => {
+	test( `scope recovery accepts a new edit only after verification of the ${ record } composer edit`, async () => {
 		const original = 'Original hidden recovery';
 		if ( record === 'unsent' ) {
 			sessionStorage.setItem(
@@ -926,6 +955,7 @@ for ( const record of [ 'unsent', 'failure' ] as const ) {
 			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 		);
 		await screen.findByRole( 'button', { name: 'Try again' } );
+		expect( composer().disabled ).toBe( true );
 		fireEvent.change( composer(), {
 			target: {
 				value: 'New draft typed while verification was unavailable',
@@ -937,87 +967,74 @@ for ( const record of [ 'unsent', 'failure' ] as const ) {
 				screen.getByRole( 'button', { name: 'Try again' } )
 			)
 		);
+		await waitFor( () => expect( composer().disabled ).toBe( false ) );
+		expect( composer().value ).toBe( original );
+		fireEvent.change( composer(), {
+			target: { value: 'New accepted draft after verification' },
+		} );
 		expect( composer().value ).toBe(
-			'New draft typed while verification was unavailable'
+			'New accepted draft after verification'
 		);
 		expect( sendTurn ).not.toHaveBeenCalled();
 	} );
 }
 
-test( 'delayed verified failure is parked beside a newly edited composer', async () => {
-	sessionStorage.setItem(
-		'linker-genie-turn-failure',
-		JSON.stringify( {
-			v: 1,
-			kind: 'upstream',
-			text: 'Old verified failed draft',
-			question: 'Old verified failed draft',
-			entryId: 'old-failure',
-			entryScope: SCOPE,
-			uploads: [],
-			omitted: [],
-		} )
-	);
-	const releases: Array< ( value: unknown ) => void > = [];
-	vi.stubGlobal(
-		'fetch',
-		vi.fn( () => new Promise( ( resolve ) => releases.push( resolve ) ) )
+test( 'delayed verified failure is retained beside a newly accepted composer', async () => {
+	seedOwnedFailure( {
+		kind: 'upstream',
+		text: 'Old verified failed draft',
+		question: 'Old verified failed draft',
+	} );
+	let release!: ( value: Awaited< ReturnType< typeof readThread > > ) => void;
+	vi.mocked( readThread ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				release = resolve;
+			} )
 	);
 	const { composer } = setup();
-	await waitFor( () =>
-		expect( releases.length ).toBeGreaterThanOrEqual( 1 )
+	await act( async () =>
+		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 	);
-	act( () => window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) ) );
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
 	fireEvent.change( composer(), {
 		target: { value: 'Freshly typed replacement draft' },
 	} );
-	await act( async () =>
-		releases.forEach( ( resolve ) =>
-			resolve( { ok: true, json: async () => ( { scope: SCOPE } ) } )
-		)
-	);
+	await act( async () => release( { messages: [], turn: null } ) );
 	await screen.findByText( 'Old verified failed draft' );
 	expect( composer().value ).toBe( 'Freshly typed replacement draft' );
 	expect(
-		JSON.parse( sessionStorage.getItem( ENTRY_KEY )! ).parked.text
-	).toBe( 'Old verified failed draft' );
+		sessionStorage.getItem( 'linker-genie-turn-failure:v2:' + SCOPE )
+	).toContain( 'Old verified failed draft' );
 	expect( sendTurn ).not.toHaveBeenCalled();
 } );
 
 test( 'deferred failure stays owned and actionable after a newer attachment finishes preparing', async () => {
-	sessionStorage.setItem(
-		'linker-genie-turn-failure',
-		JSON.stringify( {
-			v: 1,
-			kind: 'upstream',
-			text: 'Old owner waiting for upload',
-			question: 'Old owner waiting for upload',
-			entryId: 'preparing-recovery',
-			entryScope: SCOPE,
-			uploads: [],
-			omitted: [],
-		} )
-	);
-	const releases: Array< ( value: unknown ) => void > = [];
-	vi.stubGlobal(
-		'fetch',
-		vi.fn( () => new Promise( ( resolve ) => releases.push( resolve ) ) )
+	seedOwnedFailure( {
+		kind: 'upstream',
+		text: 'Old owner waiting for upload',
+		question: 'Old owner waiting for upload',
+	} );
+	let release!: ( value: Awaited< ReturnType< typeof readThread > > ) => void;
+	vi.mocked( readThread ).mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				release = resolve;
+			} )
 	);
 	const reads: Array< () => void > = [];
-	const nativeRead = FileReader.prototype.readAsArrayBuffer;
-	const readSpy = vi
+	const native = FileReader.prototype.readAsArrayBuffer;
+	const spy = vi
 		.spyOn( FileReader.prototype, 'readAsArrayBuffer' )
 		.mockImplementation( function ( this: FileReader, file: Blob ) {
-			reads.push( () => nativeRead.call( this, file ) );
+			reads.push( () => native.call( this, file ) );
 		} );
 	try {
 		const { composer } = setup();
-		await waitFor( () =>
-			expect( releases.length ).toBeGreaterThanOrEqual( 1 )
-		);
-		act( () =>
+		await act( async () =>
 			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 		);
+		await waitFor( () => expect( composer().disabled ).toBe( false ) );
 		fireEvent.change( composer(), {
 			target: { value: 'New upload draft' },
 		} );
@@ -1030,11 +1047,9 @@ test( 'deferred failure stays owned and actionable after a newer attachment fini
 				],
 			},
 		} );
-		await act( async () =>
-			releases.forEach( ( resolve ) =>
-				resolve( { ok: true, json: async () => ( { scope: SCOPE } ) } )
-			)
-		);
+		await act( async () => release( { messages: [], turn: null } ) );
+		await screen.findByText( 'Old owner waiting for upload' );
+		expect( sendTurn ).not.toHaveBeenCalled();
 		await act( async () => reads.forEach( ( read ) => read() ) );
 		await waitFor( () =>
 			expect(
@@ -1045,36 +1060,13 @@ test( 'deferred failure stays owned and actionable after a newer attachment fini
 		await act( async () =>
 			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
 		);
-		expect( sendTurn ).not.toHaveBeenCalled();
-		expect(
-			sessionStorage.getItem( 'linker-genie-turn-failure' )
-		).toContain( 'Old owner waiting for upload' );
-		vi.stubGlobal(
-			'fetch',
-			vi.fn( async () => ( {
-				ok: true,
-				json: async () => ( { scope: SCOPE } ),
-			} ) )
-		);
-		await act( async () =>
-			fireEvent.click(
-				screen.getByRole( 'button', { name: 'Try again' } )
-			)
-		);
-		await screen.findByText( 'Old owner waiting for upload' );
-		expect( composer().value ).toBe( 'New upload draft' );
-		await act( async () =>
-			fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) )
-		);
 		await waitFor( () => expect( sendTurn ).toHaveBeenCalledTimes( 1 ) );
-		expect(
-			JSON.parse( sessionStorage.getItem( ENTRY_KEY )! ).parked.text
-		).toBe( 'Old owner waiting for upload' );
+		expect( currentOwnedRaw() ).toContain( 'Old owner waiting for upload' );
 		expect(
 			vi.mocked( sendTurn ).mock.calls[ 0 ]?.[ 0 ].uploads?.[ 0 ]?.name
 		).toBe( 'new.pdf' );
 	} finally {
-		readSpy.mockRestore();
+		spy.mockRestore();
 	}
 } );
 
@@ -1101,6 +1093,7 @@ test( 'App initially pending identity cannot overwrite sole old scoped failure',
 			window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 		);
 		await waitFor( () => expect( releases.length ).toBeGreaterThan( 0 ) );
+		expect( composer().disabled ).toBe( true );
 		fireEvent.change( composer(), {
 			target: { value: 'New prompt during first scope lookup' },
 		} );
@@ -1158,7 +1151,14 @@ test( 'accepted external entry remains durable and unsettled while an older fail
 	window.addEventListener( 'linker-genie-entry-state', ack );
 	try {
 		await act( async () => send() );
-		await screen.findByText( 'Incoming distinct question' );
+		await waitFor( () =>
+			expect(
+				JSON.parse( sessionStorage.getItem( ENTRY_KEY )! ).entries.some(
+					( item: { text: string } ) =>
+						item.text === 'Incoming distinct question'
+				)
+			).toBe( true )
+		);
 		expect( sendTurn ).not.toHaveBeenCalled();
 		expect( sessionStorage.getItem( 'linker-genie-turn-failure' ) ).toBe(
 			raw
@@ -1198,7 +1198,7 @@ test( 'accepted external entry remains durable and unsettled while an older fail
 	}
 } );
 
-test( 'confirmed scope mismatch removes the old owner and allows the current principal to ask', async () => {
+test( 'confirmed scope mismatch leaves old bytes inactive and allows the current principal to ask', async () => {
 	sessionStorage.setItem(
 		'linker-genie-turn-failure',
 		JSON.stringify( {
@@ -1217,12 +1217,12 @@ test( 'confirmed scope mismatch removes the old owner and allows the current pri
 	await act( async () =>
 		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
 	);
-	await waitFor( () =>
-		expect(
-			sessionStorage.getItem( 'linker-genie-turn-failure' )
-		).toBeNull()
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
+	expect( sessionStorage.getItem( 'linker-genie-turn-failure' ) ).toContain(
+		'Private principal A original'
 	);
 	expect( composer().value ).toBe( '' );
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
 	fireEvent.change( composer(), {
 		target: { value: 'Current principal B new requirement' },
 	} );
@@ -1233,4 +1233,44 @@ test( 'confirmed scope mismatch removes the old owner and allows the current pri
 	expect(
 		vi.mocked( sendTurn ).mock.calls[ 0 ]?.[ 0 ].messages.at( -1 )?.content
 	).toBe( 'Current principal B new requirement' );
+} );
+
+test( 'a fresh marketing Attach under A cannot give its later edited bytes to the previously mounted B context', async () => {
+	currentScope = 'b'.repeat( 64 );
+	const { source, composer } = setup();
+	await act( async () =>
+		window.dispatchEvent( new CustomEvent( 'linker-genie-open' ) )
+	);
+	await waitFor( () => expect( composer().disabled ).toBe( false ) );
+	currentScope = SCOPE;
+	source.value = 'A newly accepted private brief';
+	await act( async () =>
+		fireEvent.click( screen.getByRole( 'button', { name: 'Attach' } ) )
+	);
+	await waitFor( () =>
+		expect(
+			composer().value === 'A newly accepted private brief' ||
+				!! screen.queryByRole( 'button', { name: 'Open as draft' } )
+		).toBe( true )
+	);
+	if ( composer().value !== 'A newly accepted private brief' ) {
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Open as draft' } )
+			)
+		);
+	}
+	await waitFor( () =>
+		expect( composer().value ).toBe( 'A newly accepted private brief' )
+	);
+	fireEvent.change( composer(), {
+		target: { value: 'A edited private brief' },
+	} );
+	currentScope = 'b'.repeat( 64 );
+	await act( async () => window.dispatchEvent( new Event( 'focus' ) ) );
+	expect( composer().value ).toBe( '' );
+	expect( document.body.textContent ).not.toContain(
+		'A edited private brief'
+	);
+	expect( sendTurn ).not.toHaveBeenCalled();
 } );

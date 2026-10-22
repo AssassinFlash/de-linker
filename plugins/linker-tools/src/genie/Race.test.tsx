@@ -1,4 +1,8 @@
 // @vitest-environment jsdom
+import {
+	installNativeIdentityFixture,
+	renderOwned,
+} from './testing/nativeIdentity';
 
 /**
  * An ask that starts while a conversation switch is still resolving must wait
@@ -12,13 +16,7 @@
 /**
  * External dependencies
  */
-import {
-	act,
-	fireEvent,
-	render,
-	screen,
-	waitFor,
-} from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { beforeEach, expect, test, vi } from 'vitest';
 
 /**
@@ -95,6 +93,8 @@ function hangReads() {
 	} );
 }
 
+installNativeIdentityFixture();
+
 beforeEach( () => {
 	resetTurnLane();
 	reads.length = 0;
@@ -149,7 +149,7 @@ function targetThread() {
 }
 
 test( 'an ask that starts after select resolves still waits for the target thread', async () => {
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 
 	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 1 ) );
 	reads[ 0 ].resolve( {
@@ -187,7 +187,7 @@ test( 'an ask that starts after select resolves still waits for the target threa
 
 test( 'control: an ask after the switch settles carries the new thread', async () => {
 	vi.mocked( sendTurn ).mockClear();
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 
 	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 1 ) );
 	reads[ 0 ].resolve( {
@@ -233,7 +233,7 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 		return pending.promise as Promise< typeof listed >;
 	} );
 
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 1 ) );
 	reads[ 0 ].resolve( {
 		messages: [ { role: 'user', content: 'seven' } ],
@@ -246,20 +246,15 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	fireEvent.click( screen.getByRole( 'button', { name: 'Seven' } ) );
 
 	selects[ 0 ].resolve( listed );
-	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 2 ) );
-	reads[ 1 ].resolve( {
-		messages: [ { role: 'user', content: 'eight' } ],
-		turn: null,
-		contacts: [],
-	} );
+	// The second selection invalidates the first before its read can run.
 	await waitFor( () => expect( selects.length ).toBe( 2 ) );
 	selects[ 1 ].resolve( {
 		currentId: 7,
 		ok: true,
 		conversations: listed.conversations,
 	} );
-	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 3 ) );
-	reads[ 2 ].resolve( {
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 2 ) );
+	reads[ 1 ].resolve( {
 		messages: [ { role: 'user', content: 'seven' } ],
 		turn: null,
 		contacts: [],
@@ -268,8 +263,8 @@ test( 'two history clicks in a row continue the last one, not the first', async 
 	const input = await screen.findByRole( 'textbox' );
 	fireEvent.change( input, { target: { value: 'question for seven' } } );
 	fireEvent.submit( input.closest( 'form' )! );
-	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 4 ) );
-	reads[ 3 ].resolve( {
+	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 3 ) );
+	reads[ 2 ].resolve( {
 		messages: [ { role: 'user', content: 'seven' } ],
 		turn: null,
 		contacts: [],
@@ -309,7 +304,7 @@ test( 'a history refresh started by an ask cannot put the old conversation back'
 		],
 	} ) );
 
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await waitFor( () => expect( reads.length ).toBeGreaterThanOrEqual( 1 ) );
 	await act( async () => {
 		reads[ 0 ].resolve( { messages: [], turn: null, contacts: [] } );

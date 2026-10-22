@@ -26,7 +26,10 @@ import {
 	startDictation,
 	type DictationSession,
 } from '../genie/shared/dictation';
-import { readFailure, pageFailureStore } from '../genie/shared/failure';
+import { pageFailureStore } from '../genie/shared/failure';
+import { preserveEditing } from '../genie/shared/editingDraft';
+import { hasOwnedRecovery } from '../genie/shared/ownedFailure';
+import { DraftContext } from '../genie/shared/draftContext';
 import { verifiedEntryFailure } from '../genie/shared/entryFailure';
 import { HeroConversation, type HeroBridge } from './Hero';
 import { HeroSession } from './session';
@@ -79,6 +82,7 @@ export function startHero(
 	}
 
 	const originalPlaceholder = prompt.placeholder;
+	const originalDisabled = prompt.disabled;
 	const makeSession =
 		options.createSession ??
 		( () =>
@@ -145,11 +149,96 @@ export function startHero(
 		syncPill();
 	}
 
+	let quarantinedPrompt: string | null = null;
+	let retainedMode: 'attach' | 'nameplate' | 'voice' | null = null;
+	const context = new DraftContext( options.config, () => {
+		quarantinedPrompt = null;
+		prompt!.value = '';
+		recognition?.stop();
+		recognition = null;
+		pending = null;
+	} );
+	const stopPreserving = context.beforeLeave( () => {
+		if ( ! root ) {
+			preserveEditing( context, {
+				text: prompt!.value,
+				uploads: [],
+				missing: [],
+			} );
+		}
+	} );
+	let verifiedScope: string | undefined;
+	const unsubscribeContext = context.subscribe( () => {
+		if ( context.phase !== 'ready' ) {
+			if ( quarantinedPrompt === null ) {
+				quarantinedPrompt = prompt!.value;
+			}
+			prompt!.value = '';
+			prompt!.disabled = true;
+		} else {
+			const scope = context.identity?.scope;
+			const lease = context.capture();
+			if ( verifiedScope && scope && scope !== verifiedScope ) {
+				void verifiedEntryFailure(
+					options.config,
+					pageFailureStore()
+				).then( ( checked ) => {
+					if (
+						! stopped &&
+						context.valid( lease ) &&
+						checked?.record &&
+						checked.unchanged()
+					) {
+						update( { type: 'ask' } );
+					}
+				} );
+			}
+			verifiedScope = scope;
+			prompt!.disabled = false;
+			if ( quarantinedPrompt !== null ) {
+				prompt!.value = quarantinedPrompt;
+			}
+			quarantinedPrompt = null;
+			if ( retainedMode && bridge ) {
+				bridge.mode( retainedMode );
+				retainedMode = null;
+			}
+		}
+	} );
+	prompt.disabled = true;
+	void context.verify( false ).catch( () => undefined );
+	const revalidate = () => {
+		void context.verify().catch( () => undefined );
+	};
+	win.addEventListener( 'focus', revalidate );
+	win.addEventListener( 'pageshow', revalidate );
+	const checkpoint = () => context.checkpoint();
+	win.addEventListener( 'pagehide', checkpoint );
+	const onVisibility = () => {
+		if ( doc.visibilityState === 'hidden' ) {
+			checkpoint();
+		} else {
+			revalidate();
+		}
+	};
+	doc.addEventListener( 'visibilitychange', onVisibility );
+	win.addEventListener( 'linker-genie-identity-change', revalidate );
 	let promptVersion = 0;
 	const onPromptInput = () => {
+		if ( ! context.acceptEditor() ) {
+			prompt!.value = '';
+			return;
+		}
 		promptVersion += 1;
 	};
 	prompt.addEventListener( 'input', onPromptInput );
+	const onUnownedPointer = ( event: PointerEvent ) => {
+		if ( event.target === prompt && ! context.capture() ) {
+			lastTrigger = prompt;
+			update( { type: 'ask' } );
+		}
+	};
+	dialog.addEventListener( 'pointerdown', onUnownedPointer );
 
 	function mount(): void {
 		if ( root ) {
@@ -177,11 +266,14 @@ export function startHero(
 				} ) }
 				focusPrompt={ () => prompt!.focus() }
 				requestPicker={ openPicker }
+				requestVoice={ dictate }
+				context={ context }
 			/>
 		);
 	}
 
 	function unmount(): void {
+		context.invalidate();
 		// A dictation the closed hero started must not keep the microphone.
 		recognition?.stop();
 		recognition = null;
@@ -196,6 +288,10 @@ export function startHero(
 
 	function onReady( next: HeroBridge ): void {
 		bridge = next;
+		if ( retainedMode ) {
+			next.mode( retainedMode );
+			retainedMode = null;
+		}
 		if ( pending ) {
 			const { text, files } = pending;
 			pending = null;
@@ -231,6 +327,9 @@ export function startHero(
 
 	/** Folds the conversation back to the resting hero. */
 	function close(): void {
+		context.invalidate();
+		pending = null;
+		retainedMode = null;
 		const trigger = lastTrigger;
 		lastTrigger = null;
 		update( { type: 'close' } );
@@ -254,6 +353,11 @@ export function startHero(
 	}
 
 	function openPicker(): void {
+		if ( ! context.capture() ) {
+			retainedMode = 'attach';
+			update( { type: 'ask' } );
+			return;
+		}
 		// One accepted set for both buttons: prepare.ts refuses what Genie
 		// cannot read, and the nameplate button may still receive a PDF.
 		picker.accept = ACCEPT;
@@ -263,24 +367,40 @@ export function startHero(
 	}
 
 	function dictate(): void {
+		const lease = context.capture();
+		if ( ! lease ) {
+			retainedMode = 'voice';
+			update( { type: 'ask' } );
+			return;
+		}
 		if ( recognition ) {
 			recognition.stop();
 			recognition = null;
 			return;
 		}
-		const session = startDictation(
+		context.acceptEditor();
+		let ended = false;
+		let session: DictationSession | null = null;
+		session = startDictation(
 			win,
 			options.config.locale,
 			( heard ) => {
+				if ( ! context.valid( lease ) ) {
+					return;
+				}
 				prompt!.value = prompt!.value
 					? `${ prompt!.value } ${ heard }`
 					: heard;
 			},
 			() => {
-				recognition = null;
+				ended = true;
+				// An old native end/error may arrive after stop and a new session.
+				if ( context.owns( lease ) && recognition === session ) {
+					recognition = null;
+				}
 			}
 		);
-		if ( ! session ) {
+		if ( ! session || ended ) {
 			// No dictation, or a refused microphone: the field is the way in.
 			prompt!.focus();
 			return;
@@ -316,7 +436,12 @@ export function startHero(
 	}
 
 	function onKeyDown( event: KeyboardEvent ): void {
-		if ( event.key === 'Enter' && ! event.shiftKey ) {
+		if (
+			event.key === 'Enter' &&
+			! event.shiftKey &&
+			! event.isComposing &&
+			event.keyCode !== 229
+		) {
 			event.preventDefault();
 			runAsk( prompt!.value, undefined, prompt! );
 		}
@@ -326,6 +451,11 @@ export function startHero(
 		// The live anchor is the no-JavaScript fallback; with the script the
 		// conversation opens in place instead of leaving the page.
 		event.preventDefault();
+		if ( ! context.capture() ) {
+			lastTrigger = sendButton!;
+			update( { type: 'ask' } );
+			return;
+		}
 		runAsk( prompt!.value, undefined, sendButton! );
 	}
 
@@ -356,6 +486,10 @@ export function startHero(
 		if ( ! heroExpanded( state ) ) {
 			update( { type: 'ask' } );
 		}
+		if ( ! context.capture() ) {
+			retainedMode = 'nameplate';
+			return;
+		}
 		openPicker();
 	}
 
@@ -378,6 +512,11 @@ export function startHero(
 	}
 
 	function onPickerChange(): void {
+		if ( ! context.capture() ) {
+			picker.value = '';
+			return;
+		}
+		context.acceptEditor();
 		const files = picker.files;
 		if ( files && files.length > 0 ) {
 			runAsk( '', files );
@@ -443,28 +582,39 @@ export function startHero(
 	onScroll();
 	// A failed turn from before this load unfolds the conversation, so the
 	// error is on the page without another click (ticket #411).
-	const failed = readFailure( pageFailureStore() );
-	if ( failed?.entryId ) {
-		void verifiedEntryFailure( options.config, pageFailureStore() ).then(
-			( checked ) => {
-				if (
-					! stopped &&
-					( ( checked?.record && checked.unchanged() ) ||
-						( ! checked &&
-							readFailure( pageFailureStore() )?.entryId ===
-								failed.entryId ) )
-				) {
-					update( { type: 'ask' } );
-				}
+	void context
+		.initialized()
+		.then( () =>
+			verifiedEntryFailure( options.config, pageFailureStore(), context )
+		)
+		.then( ( checked ) => {
+			if (
+				! stopped &&
+				( ( checked?.record && checked.unchanged() ) ||
+					( ! checked && hasOwnedRecovery( pageFailureStore() ) ) )
+			) {
+				update( { type: 'ask' } );
 			}
-		);
-	} else if ( failed ) {
-		update( { type: 'ask' } );
-	}
+		} )
+		.catch( () => {
+			if ( ! stopped && hasOwnedRecovery( pageFailureStore() ) ) {
+				update( { type: 'ask' } );
+			}
+		} );
 
 	return () => {
 		stopped = true;
+		context.dispose();
+		stopPreserving();
+		unsubscribeContext();
+		win.removeEventListener( 'focus', revalidate );
+		win.removeEventListener( 'pageshow', revalidate );
+		win.removeEventListener( 'pagehide', checkpoint );
+		doc.removeEventListener( 'visibilitychange', onVisibility );
+		win.removeEventListener( 'linker-genie-identity-change', revalidate );
+		prompt.disabled = originalDisabled;
 		prompt.removeEventListener( 'input', onPromptInput );
+		dialog.removeEventListener( 'pointerdown', onUnownedPointer );
 		prompt.removeEventListener( 'keydown', onKeyDown );
 		sendButton.removeEventListener( 'click', onSendClick );
 		photoButton?.removeEventListener( 'click', onPhotoClick );

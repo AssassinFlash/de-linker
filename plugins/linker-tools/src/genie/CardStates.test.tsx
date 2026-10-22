@@ -1,3 +1,7 @@
+import {
+	installNativeIdentityFixture,
+	renderOwned,
+} from './testing/nativeIdentity';
 /**
  * The four card states inside the Genie thread: the card keeps its height and
  * the actions sit inside the card (docs/specs/13-genie.md; old ticket 191).
@@ -6,7 +10,7 @@
 /**
  * External dependencies
  */
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, screen, within } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 
 /**
@@ -100,7 +104,7 @@ async function openCardTurn() {
 		},
 		blocks: [ { type: 'cards', product_ids: [ 3556 ] } ],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
@@ -117,6 +121,8 @@ const STATES: [ CardState, string ][] = [
 	[ 'unverified', 'Sent, but the draft does not show it yet. Please check.' ],
 	[ 'retry', 'Not added. Try again.' ],
 ];
+
+installNativeIdentityFixture();
 
 test( 'the card walks every action state inside the card', async () => {
 	let captured:

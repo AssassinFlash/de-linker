@@ -1,4 +1,10 @@
 // @vitest-environment jsdom
+import {
+	installNativeIdentityFixture,
+	renderOwned,
+	seedOwnedFailure,
+	currentOwnedRaw,
+} from './testing/nativeIdentity';
 
 /**
  * One turn through the app: the disclosure once, the ask chips, and the card
@@ -8,13 +14,7 @@
 /**
  * External dependencies
  */
-import {
-	act,
-	fireEvent,
-	render,
-	screen,
-	waitFor,
-} from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 
 /**
@@ -97,7 +97,6 @@ import {
 	TurnError,
 	UnfinishedStreamError,
 } from './api/turn';
-import { FAILURE_KEY } from './shared/failure';
 
 const GERMAN_STREAM =
 	'event: meta\n' +
@@ -139,9 +138,18 @@ function config( locale: 'en' | 'de' = 'en' ): GenieConfig {
 	};
 }
 
+installNativeIdentityFixture();
+
 beforeEach( () => {
 	sessionStorage.clear();
 	resetTurnLane();
+	vi.mocked( readThread )
+		.mockReset()
+		.mockResolvedValue( { messages: [], turn: null } );
+	vi.mocked( listConversations )
+		.mockReset()
+		.mockResolvedValue( { currentId: 0, conversations: [], ok: true } );
+	vi.mocked( sendTurn ).mockReset();
 } );
 
 afterEach( () => {
@@ -166,7 +174,7 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 			},
 		],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 
 	expect(
@@ -216,7 +224,7 @@ test( 'a German turn keeps the thread and renders the chips in German', async ()
 	vi.mocked( sendTurn ).mockImplementation( async () =>
 		Promise.resolve( parseStream( GERMAN_STREAM ) )
 	);
-	render( <App config={ config( 'de' ) } /> );
+	await renderOwned( <App config={ config( 'de' ) } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
@@ -233,7 +241,7 @@ test( 'a German turn keeps the thread and renders the chips in German', async ()
 
 test( 'a failed proxy call shows the retry sentence, not a fake answer', async () => {
 	vi.mocked( sendTurn ).mockRejectedValue( new Error( 'turn 502' ) );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
@@ -254,7 +262,7 @@ test( 'a 502 keeps the question across a reload and retries once', async () => {
 	vi.mocked( sendTurn ).mockRejectedValue(
 		new TurnError( 502, 'linker_genie_upstream' )
 	);
-	const first = render( <App config={ config() } /> );
+	const first = await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const field = screen.getByLabelText( 'Ask Genie' );
 	fireEvent.change( field, { target: { value: 'EV chargers' } } );
@@ -281,7 +289,14 @@ test( 'a 502 keeps the question across a reload and retries once', async () => {
 				release = resolve;
 			} )
 	);
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
+	await act( async () =>
+		fireEvent.click(
+			await screen.findByRole( 'button', {
+				name: 'Restore unsent draft',
+			} )
+		)
+	);
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -308,7 +323,7 @@ test( 'a 502 keeps the question across a reload and retries once', async () => {
 test( 'a cut stream keeps the question, hides the partial answer, and retries the stored turn', async () => {
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( sendTurn ).mockRejectedValue( new UnfinishedStreamError() );
-	const first = render( <App config={ config() } /> );
+	const first = await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
 		target: { value: 'backup for 10 kW' },
@@ -334,7 +349,14 @@ test( 'a cut stream keeps the question, hides the partial answer, and retries th
 		meta: null,
 		blocks: [ { type: 'text', text: 'A hybrid covers that.', refs: [] } ],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
+	await act( async () =>
+		fireEvent.click(
+			await screen.findByRole( 'button', {
+				name: 'Restore unsent draft',
+			} )
+		)
+	);
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -370,7 +392,7 @@ test( 'a cut stream keeps the file on the composer, and a new question sends it'
 				{ type: 'text', text: 'The datasheet matches.', refs: [] },
 			],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
 		target: { value: 'Check this datasheet' },
@@ -430,7 +452,7 @@ test( 'a cut stream drops a file the visitor removes, and retry does not send it
 				{ type: 'text', text: 'Sent without the file.', refs: [] },
 			],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
 		target: { value: 'Check this datasheet' },
@@ -471,7 +493,7 @@ test( 'a 502 keeps an attached file across a reload', async () => {
 	vi.mocked( sendTurn ).mockRejectedValue(
 		new TurnError( 502, 'linker_genie_upstream' )
 	);
-	const first = render( <App config={ config() } /> );
+	const first = await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
 		target: { value: 'Check this datasheet' },
@@ -503,7 +525,14 @@ test( 'a 502 keeps an attached file across a reload', async () => {
 
 	first.unmount();
 	resetTurnLane();
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
+	await act( async () =>
+		fireEvent.click(
+			await screen.findByRole( 'button', {
+				name: 'Restore unsent draft',
+			} )
+		)
+	);
 	expect(
 		await screen.findByText( 'gw10k-et-datenblatt.pdf' )
 	).toBeInTheDocument();
@@ -535,7 +564,7 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 		.mockRejectedValue(
 			new TurnError( 409, 'linker_genie_turn_conflict' )
 		);
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await waitFor( () => expect( listConversations ).toHaveBeenCalled() );
 	vi.mocked( listConversations ).mockClear();
@@ -587,7 +616,7 @@ test( 'the next send uses the thread re-read from the server', async () => {
 				{ type: 'text', text: 'Stored with the peer.', refs: [] },
 			],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.click(
@@ -614,7 +643,7 @@ test( 'a conflicting attachment turn keeps the upload', async () => {
 		.mockRejectedValue(
 			new TurnError( 409, 'linker_genie_turn_conflict' )
 		);
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const fileInput = document.querySelector(
 		'input[type="file"]'
@@ -654,7 +683,7 @@ test( 'the assistant message carries the vote buttons and posts the vote', async
 			},
 		],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.click(
@@ -713,7 +742,7 @@ test( 'a reload opens with the thread and the last answer restored', async () =>
 		},
 	} );
 
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		fireEvent.click(
 			screen.getByRole( 'button', { name: /open|ask genie/i } )
@@ -756,7 +785,7 @@ test( 'the dock reads the thread the home hero wrote and says where it began (#2
 		},
 	} );
 
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-open', {
@@ -779,7 +808,7 @@ test( 'a first visit with no stored conversation opens empty', async () => {
 		turn: null,
 		contacts: [],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		fireEvent.click(
 			screen.getByRole( 'button', { name: /open|ask genie/i } )
@@ -803,7 +832,9 @@ test( 'the empty column carries the welcome title until a turn lands', async () 
 			meta: null,
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} );
-	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 	expect(
 		await screen.findByRole( 'heading', {
 			name: 'Where should we begin?',
@@ -836,7 +867,9 @@ test( 'an answer carries the answer label and a question does not', async () => 
 			meta: null,
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} );
-	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 	await act( async () => {
 		fireEvent.click(
 			screen.getByRole( 'button', {
@@ -877,7 +910,7 @@ test( 'the ready handshake opens once and Close/reopen reports the same state', 
 	window.addEventListener( 'linker-genie-state', onState );
 	window.addEventListener( 'linker-genie-ready', onReady );
 	try {
-		render( <App config={ config() } /> );
+		await renderOwned( <App config={ config() } /> );
 		expect( ready ).toBe( 1 );
 		expect( screen.getByRole( 'button', { name: 'Close' } ) ).toBeVisible();
 		fireEvent.click( screen.getByRole( 'button', { name: 'Close' } ) );
@@ -908,7 +941,7 @@ test( 'one entry ask survives a late thread restore without being sent twice', a
 			meta: null,
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-open', {
@@ -952,7 +985,9 @@ test( 'a history that is still loading is not an empty history', async () => {
 				lists.push( resolve );
 			} )
 	);
-	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 	expect( screen.getByRole( 'status' ) ).toHaveTextContent(
 		'Loading conversations…'
 	);
@@ -983,7 +1018,9 @@ test( 'a failed history load is not an empty history', async () => {
 		conversations: [],
 		ok: false,
 	} );
-	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Conversations could not be loaded.'
 	);
@@ -1002,7 +1039,9 @@ test( 'a failed switch says so instead of keeping a silent rail', async () => {
 	vi.mocked( selectConversation ).mockRejectedValue(
 		new Error( 'conversation 500' )
 	);
-	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 	fireEvent.click(
 		await screen.findByRole( 'button', { name: 'Battery pairing' } )
 	);
@@ -1035,7 +1074,9 @@ test( 'the workspace lists real conversations and loads the selected one', async
 			turn: null,
 		} );
 
-	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 
 	expect(
 		await screen.findByRole( 'button', { name: 'Battery pairing' } )
@@ -1057,14 +1098,14 @@ test( 'the workspace lists real conversations and loads the selected one', async
 
 // The dock head is the Advisor's `.lia-head-btns`: new conversation, the
 // full page, the history, closing — as named icon buttons.
-test( 'the open dock head carries the icon group', () => {
+test( 'the open dock head carries the icon group', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],
 		turn: null,
 		contacts: [],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
 		screen.getByRole( 'button', { name: 'New conversation' } )
@@ -1094,7 +1135,7 @@ test( 'the dock opens on the welcome and loses it with the first turn', async ()
 			meta: null,
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
 		screen.getByText( 'Get help with your solar project' )
@@ -1117,14 +1158,14 @@ test( 'the dock opens on the welcome and loses it with the first turn', async ()
 
 // The Advisor's `.lia-privacy` row, on this site's own pages: the questions
 // page, the contact page, the privacy policy — German twins on German pages.
-test( 'the dock footer carries the site links, locale-aware', () => {
+test( 'the dock footer carries the site links, locale-aware', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],
 		turn: null,
 		contacts: [],
 	} );
-	const { unmount } = render( <App config={ config() } /> );
+	const { unmount } = await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.click( screen.getByText( 'Help & privacy' ) );
 	expect(
@@ -1137,7 +1178,7 @@ test( 'the dock footer carries the site links, locale-aware', () => {
 		screen.getByRole( 'link', { name: 'Privacy Policy' } )
 	).toHaveAttribute( 'href', '/privacy-policy/' );
 	unmount();
-	render( <App config={ config( 'de' ) } /> );
+	await renderOwned( <App config={ config( 'de' ) } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.click( screen.getByText( 'Help & privacy' ) );
 	expect(
@@ -1176,7 +1217,7 @@ test( 'the dock history view lists conversations and continues one', async () =>
 		turn: null,
 		contacts: [],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	// The list stays behind the header's clock until asked for.
 	expect(
@@ -1232,7 +1273,7 @@ test( 'an attached file rides with the turn and its name in the question', async
 			meta: null,
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const fileInput = document.querySelector(
 		'input[type="file"]'
@@ -1278,7 +1319,7 @@ test( 'an attached file rides with the turn and its name in the question', async
 test( 'a file Genie cannot read is refused before it is sent', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const fileInput = document.querySelector(
 		'input[type="file"]'
@@ -1302,7 +1343,7 @@ test( 'a refusal of the proxy names its reason', async () => {
 		.mockRejectedValue(
 			new TurnError( 429, 'linker_genie_attachment_throttled' )
 		);
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const fileInput = document.querySelector(
 		'input[type="file"]'
@@ -1367,7 +1408,7 @@ test( 'a nameplate card confirms the device by a message naming it', async () =>
 				{ type: 'text', text: 'These batteries work.', refs: [] },
 			],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-open', {
@@ -1423,7 +1464,7 @@ test( 'an unreadable nameplate offers another photo or the model typed', async (
 			],
 		},
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
 		await screen.findByText( 'The model could not be read.' )
@@ -1446,7 +1487,7 @@ test( 'an unreadable nameplate offers another photo or the model typed', async (
 test( 'opened for a nameplate photo, the dock offers the picker', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-open', { detail: { attach: true } } )
@@ -1468,7 +1509,7 @@ test( 'opened for a nameplate photo, the dock offers the picker', async () => {
 test( 'opened for a parts list, the dock offers the file picker', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-open', {
@@ -1507,7 +1548,7 @@ test( 'a file sent from the list prompt says it is a parts list', async () => {
 		},
 		blocks: [ { type: 'text', text: 'ok', refs: [] } ],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-open', {
@@ -1559,7 +1600,7 @@ test( 'an unreadable list offers another file', async () => {
 			},
 		],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
@@ -1580,7 +1621,7 @@ test( 'an unreadable list offers another file', async () => {
 
 // The dictation button is the browser's own speech recognition: it writes
 // what it hears into the field and stops cleanly.
-test( 'the dictation button writes what the browser hears', () => {
+test( 'the dictation button writes what the browser hears', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],
@@ -1604,7 +1645,7 @@ test( 'the dictation button writes what the browser hears', () => {
 	const previous = window.SpeechRecognition;
 	window.SpeechRecognition = FakeDictation;
 	try {
-		render( <App config={ config() } /> );
+		await renderOwned( <App config={ config() } /> );
 		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 		const mic = screen.getByRole( 'button', { name: 'Dictate' } );
 		fireEvent.click( mic );
@@ -1632,20 +1673,20 @@ test( 'the dictation button writes what the browser hears', () => {
 } );
 
 // A browser without speech recognition carries no dead button.
-test( 'no speech recognition, no dictation button', () => {
+test( 'no speech recognition, no dictation button', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],
 		turn: null,
 		contacts: [],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect( screen.queryByRole( 'button', { name: 'Dictate' } ) ).toBeNull();
 } );
 
 // The mobile sheet's backdrop: a tap off the card folds the dock away.
-test( 'the dock mask folds the sheet', () => {
+test( 'the dock mask folds the sheet', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( {
 		messages: [],
@@ -1660,7 +1701,7 @@ test( 'the dock mask folds the sheet', () => {
 	};
 	window.addEventListener( 'linker-genie-state', onState );
 	try {
-		render( <App config={ config() } /> );
+		await renderOwned( <App config={ config() } /> );
 		fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 		// The backdrop remains a pointer target, outside the keyboard sequence.
 		const mask = document.querySelector< HTMLButtonElement >(
@@ -1702,7 +1743,9 @@ test( 'a new conversation and a switch keep the wide workspace rail open', async
 		turn: null,
 		contacts: [],
 	} );
-	render( <App config={ { ...config(), surface: 'workspace' } } /> );
+	await renderOwned(
+		<App config={ { ...config(), surface: 'workspace' } } />
+	);
 	const rail = screen.getByRole( 'complementary', {
 		name: 'Conversations',
 	} );
@@ -1752,7 +1795,9 @@ test( 'on a phone the rail overlay folds once a conversation is picked', async (
 			messages: [],
 			turn: null,
 		} );
-		render( <App config={ { ...config(), surface: 'workspace' } } /> );
+		await renderOwned(
+			<App config={ { ...config(), surface: 'workspace' } } />
+		);
 		const rail = screen.getByRole( 'complementary', {
 			name: 'Conversations',
 		} );
@@ -1790,7 +1835,7 @@ test( 'a conversation is deleted from the list once the visitor confirms', async
 		turn: null,
 		contacts: [],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
 
@@ -1839,7 +1884,7 @@ test( 'deleting the conversation on screen empties the panel', async () => {
 		ok: true,
 		conversations: [ THREE[ 1 ], THREE[ 2 ] ],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect( await screen.findByText( 'An answer.' ) ).toBeVisible();
 	fireEvent.click( screen.getByRole( 'button', { name: 'Conversations' } ) );
@@ -1860,24 +1905,28 @@ test( 'deleting the conversation on screen empties the panel', async () => {
 
 test( 'a new conversation clears the stored failure and its alert', async () => {
 	resetTurnLane();
-	sessionStorage.setItem(
-		FAILURE_KEY,
-		JSON.stringify( {
-			v: 1,
-			kind: 'upstream',
-			text: 'EV chargers',
-			question: 'EV chargers',
-			uploads: [],
-			omitted: [],
-		} )
-	);
+	seedOwnedFailure( {
+		v: 1,
+		kind: 'upstream',
+		text: 'EV chargers',
+		question: 'EV chargers',
+		uploads: [],
+		omitted: [],
+	} );
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( selectConversation ).mockResolvedValue( {
 		currentId: 10,
 		ok: true,
 		conversations: [],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
+	await act( async () =>
+		fireEvent.click(
+			await screen.findByRole( 'button', {
+				name: 'Restore unsent draft',
+			} )
+		)
+	);
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -1893,22 +1942,19 @@ test( 'a new conversation clears the stored failure and its alert', async () => 
 			screen.queryByText( 'Genie did not answer. Please try again.' )
 		).toBeNull()
 	);
-	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
+	expect( currentOwnedRaw() ).toBeNull();
 } );
 
 test( 'deleting the conversation on screen clears the stored failure too', async () => {
 	resetTurnLane();
-	sessionStorage.setItem(
-		FAILURE_KEY,
-		JSON.stringify( {
-			v: 1,
-			kind: 'upstream',
-			text: 'EV chargers',
-			question: 'EV chargers',
-			uploads: [],
-			omitted: [],
-		} )
-	);
+	seedOwnedFailure( {
+		v: 1,
+		kind: 'upstream',
+		text: 'EV chargers',
+		question: 'EV chargers',
+		uploads: [],
+		omitted: [],
+	} );
 	vi.mocked( listConversations ).mockResolvedValue( {
 		currentId: 9,
 		ok: true,
@@ -1922,7 +1968,14 @@ test( 'deleting the conversation on screen clears the stored failure too', async
 		ok: true,
 		conversations: [],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
+	await act( async () =>
+		fireEvent.click(
+			await screen.findByRole( 'button', {
+				name: 'Restore unsent draft',
+			} )
+		)
+	);
 	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
 		'Genie did not answer. Please try again.'
 	);
@@ -1942,7 +1995,7 @@ test( 'deleting the conversation on screen clears the stored failure too', async
 			screen.queryByText( 'Genie did not answer. Please try again.' )
 		).toBeNull()
 	);
-	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
+	expect( currentOwnedRaw() ).toBeNull();
 } );
 
 test( 'a guest gets a confirmation link at the address they type', async () => {
@@ -1964,7 +2017,7 @@ test( 'a guest gets a confirmation link at the address they type', async () => {
 		to: 'tester@example.test',
 		limit: 0,
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.click(
 		await screen.findByRole( 'button', {
@@ -2017,7 +2070,7 @@ test( 'a signed-in customer gets the email at the account address, no form', asy
 		to: 'buyer@example.test',
 		limit: 0,
 	} );
-	render( <App config={ { ...config(), signedIn: true } } /> );
+	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const start = await screen.findByRole( 'button', {
 		name: 'Email me this conversation',
@@ -2061,7 +2114,7 @@ test( 'the limit is named with the number the server counts to', async () => {
 		to: '',
 		limit: 3,
 	} );
-	render( <App config={ { ...config(), signedIn: true } } /> );
+	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const start = await screen.findByRole( 'button', {
 		name: 'Email me this conversation',
@@ -2094,7 +2147,7 @@ test( 'at the daily cap the panel says when emailing works again', async () => {
 		to: '',
 		limit: 3,
 	} );
-	render( <App config={ { ...config(), signedIn: true } } /> );
+	await renderOwned( <App config={ { ...config(), signedIn: true } } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const start = await screen.findByRole( 'button', {
 		name: 'Email me this conversation',
@@ -2111,7 +2164,9 @@ test( 'the page a confirmation link opens says how it went, once', async () => {
 	resetTurnLane();
 	window.history.replaceState( null, '', '/genie/?genie_email=sent' );
 	try {
-		render( <App config={ { ...config(), surface: 'workspace' } } /> );
+		await renderOwned(
+			<App config={ { ...config(), surface: 'workspace' } } />
+		);
 		expect(
 			screen.getByText(
 				'Email address confirmed. The conversation is on its way.'
@@ -2152,7 +2207,7 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 			{ type: 'contact', reason: 'asked' },
 		],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	const input = screen.getByLabelText( 'Ask Genie' );
 	await act( async () => {
@@ -2251,7 +2306,7 @@ test( 'the sent contact card stays in the history on the next turn', async () =>
 		receipt: true,
 	} );
 	vi.mocked( sendTurn ).mockResolvedValueOnce( CONTACT_TURN );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
@@ -2323,7 +2378,7 @@ test( 'a reload shows the sent card in the history, once', async () => {
 		conversations: [],
 		ok: true,
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
 		await screen.findByText( 'Your request is with the Linker team' )
@@ -2389,7 +2444,7 @@ test( 'the inquiry card follows the answer and the sent card stays on the next t
 		ok: true,
 		inquiry: SENT_INQUIRY,
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
@@ -2483,7 +2538,7 @@ test( 'a reload shows the sent inquiry in the history, once', async () => {
 		conversations: [],
 		ok: true,
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	expect(
 		await screen.findByText( 'Inquiry #9 · Inquiry received' )
@@ -2511,7 +2566,7 @@ test( 'an assistant reply renders its semantic Markdown instead of raw markers',
 			},
 		],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.click(
@@ -2540,7 +2595,7 @@ test( 'a second submit while a turn is in flight does not send another', async (
 					finish = resolve;
 				} )
 		);
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
 		target: { value: 'EV chargers' },
@@ -2576,11 +2631,13 @@ test( 'waiting for the unchanged turn request gives an accessible thinking statu
 				finish = resolve;
 			} )
 	);
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Ask Genie' } ) );
-	expect( await screen.findByRole( 'status' ) ).toHaveTextContent(
-		'Genie is thinking…'
+	await waitFor( () =>
+		expect( screen.getByRole( 'status' ) ).toHaveTextContent(
+			'Genie is thinking…'
+		)
 	);
 	expect( screen.getByRole( 'button', { name: 'Send' } ) ).toBeDisabled();
 	await act( async () =>
@@ -2612,7 +2669,7 @@ test( 'the saved solution handed over with the open rides every turn (#496)', as
 			meta: null,
 			blocks: [ { type: 'text', text: 'Fixture answer.', refs: [] } ],
 		} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => {
 		window.dispatchEvent(
 			new CustomEvent( 'linker-genie-open', {
@@ -2646,7 +2703,7 @@ test( 'the saved solution handed over with the open rides every turn (#496)', as
 test( 'a delayed explicit refresh cannot overwrite a newer ask outside the shared turn lane', async () => {
 	resetTurnLane();
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	await act( async () => undefined );
 	let release!: ( value: Awaited< ReturnType< typeof readThread > > ) => void;
 	vi.mocked( readThread ).mockImplementationOnce(

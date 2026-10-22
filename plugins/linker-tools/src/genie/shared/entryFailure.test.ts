@@ -1,4 +1,4 @@
-import { afterEach, expect, test, vi } from 'vitest';
+import { beforeEach, afterEach, expect, test, vi } from 'vitest';
 import { FAILURE_KEY } from './failure';
 import { verifiedEntryFailure } from './entryFailure';
 const config = { restUrl: '/wp-json/', restNonce: 'current' };
@@ -12,6 +12,12 @@ const first = {
 	entryId: 'source-a',
 	entryScope: 'a'.repeat( 64 ),
 };
+beforeEach( () => {
+	delete ( window as unknown as Record< string, unknown > )
+		.__linkerGenieFailureJournal;
+	delete ( window as unknown as Record< string, unknown > )
+		.__linkerGenieNativeScope;
+} );
 afterEach( () => {
 	vi.unstubAllGlobals();
 	sessionStorage.clear();
@@ -51,7 +57,7 @@ test( 'identity lookup failure hides scoped text and retains its exact recovery 
 	expect( await verifiedEntryFailure( config, sessionStorage ) ).toBeNull();
 	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBe( raw );
 } );
-test( 'a verified mismatch removes only the captured scoped failure, legacy recovery remains unchanged', async () => {
+test( 'a verified mismatch leaves scoped v1 inactive; ownerless v1 remains byte-identical and is never a candidate', async () => {
 	sessionStorage.setItem( FAILURE_KEY, JSON.stringify( first ) );
 	vi.stubGlobal(
 		'fetch',
@@ -60,13 +66,20 @@ test( 'a verified mismatch removes only the captured scoped failure, legacy reco
 			json: async () => ( { scope: 'b'.repeat( 64 ) } ),
 		} ) )
 	);
-	expect( await verifiedEntryFailure( config, sessionStorage ) ).toBeNull();
-	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
+	expect(
+		( await verifiedEntryFailure( config, sessionStorage ) )?.record
+	).toBeNull();
+	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBe(
+		JSON.stringify( first )
+	);
 	const { entryId: _id, entryScope: _scope, ...legacy } = first;
 	sessionStorage.setItem( FAILURE_KEY, JSON.stringify( legacy ) );
 	expect(
 		( await verifiedEntryFailure( config, sessionStorage ) )?.record?.text
-	).toBe( 'Private A' );
+	).toBeUndefined();
+	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBe(
+		JSON.stringify( legacy )
+	);
 } );
 
 test( 'transport cannot reuse a scope read that started before the principal changed', async () => {
@@ -89,7 +102,10 @@ test( 'transport cannot reuse a scope read that started before the principal cha
 	);
 	const old = entryScope( config );
 	sessionStorage.setItem( FAILURE_KEY, JSON.stringify( first ) );
-	expect( await verifiedEntryFailure( config, sessionStorage ) ).toBeNull();
+	expect(
+		( await verifiedEntryFailure( config, sessionStorage ) )?.record
+	).toBeNull();
+	expect( fetch ).toHaveBeenCalledTimes( 2 );
 	release( { ok: true, json: async () => ( { scope: 'a'.repeat( 64 ) } ) } );
 	await old;
 } );

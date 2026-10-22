@@ -1,3 +1,7 @@
+import {
+	installNativeIdentityFixture,
+	renderOwned,
+} from './testing/nativeIdentity';
 /**
  * The parts list inside the dock (#251): the service's block reaches the card,
  * and its one button calls the store once with every confirmed row.
@@ -6,7 +10,7 @@
 /**
  * External dependencies
  */
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import { expect, test, vi } from 'vitest';
 
 /**
@@ -76,6 +80,8 @@ function config(): GenieConfig {
 	};
 }
 
+installNativeIdentityFixture();
+
 test( 'the parts block reaches the card and its add is one store call', async () => {
 	vi.mocked( sendTurn ).mockResolvedValue( {
 		meta: {
@@ -123,7 +129,7 @@ test( 'the parts block reaches the card and its add is one store call', async ()
 			},
 		],
 	} );
-	render( <App config={ config() } /> );
+	await renderOwned( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	await act( async () => {
 		fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
