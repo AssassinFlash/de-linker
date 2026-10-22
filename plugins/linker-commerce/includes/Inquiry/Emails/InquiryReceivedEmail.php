@@ -58,6 +58,16 @@ final class InquiryReceivedEmail extends CustomerOrderEmail {
 		parent::trigger( $order_id, $order );
 	}
 
+	/** A refused Outbox handoff must not look like an accepted customer receipt. */
+	protected function send_notification(): bool {
+		$accepted = parent::send_notification();
+		if ( ! $accepted && $this->object instanceof WC_Order ) {
+			$this->object->update_meta_data( ReceiptLimit::SKIPPED_META, 'queue_unavailable' );
+			$this->object->save_meta_data();
+		}
+		return $accepted;
+	}
+
 	/**
 	 * Default subject.
 	 */

@@ -11,6 +11,8 @@ use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Mail\NativeTransaction;
+use Linker\Commerce\Mail\CapacityHealth;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Settings\Options;
@@ -50,42 +52,55 @@ final class ReviewReminder {
 				}
 				$state['events'] = $events;
 				$job             = 0;
-				$action          = 0;
 				$message         = $data['count'] > 0 ? $this->message( $data, $now ) : null;
 				$slot            = null !== $message ? ( new Throttle() )->next_message_slot( $now, $message ) : $now;
-				if ( ! \Linker\Commerce\Mail\BudgetTransaction::begin() ) {
-					return; }
+				$transaction     = null;
 				try {
+					$transaction = new NativeTransaction();
 					if ( null !== $message ) {
 						$job      = $this->jobs->create( $message );
 						$readback = $this->jobs->load( $job );
 						if ( null === $readback || $readback['message']->to_array() !== $message->to_array() ) {
 							throw new \RuntimeException( 'review_reminder_job_failed' ); }
-						$action = as_schedule_single_action( max( $now + 1, $slot ), Outbox::HOOK, array( $job ), Outbox::GROUP, true );
-						if ( $action <= 0 ) {
+						// JobStore already armed this exact original job in the owner
+						// transaction. Move that action, never create a second unique one.
+						$this->jobs->reschedule( $job, max( $now + 1, $slot ) );
+						$actions = as_get_scheduled_actions(
+							array(
+								'hook'     => Outbox::HOOK,
+								'args'     => array( $job ),
+								'group'    => Outbox::GROUP,
+								'status'   => 'pending',
+								'per_page' => 2,
+							),
+							'ids'
+						);
+						if ( 1 !== count( $actions ) ) {
 							throw new \RuntimeException( 'review_reminder_schedule_failed' ); }
 						$state['events'][] = $now;
 						$state['active']   = true;
 						$state['last']     = $now;
 						$state['job']      = $job;
 					}
-					$written = $wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'off') ON DUPLICATE KEY UPDATE option_value = VALUES(option_value)", self::OPTION, wp_json_encode( $state ) ) );
-					if ( false === $written ) {
+					$encoded = wp_json_encode( $state );
+					$written = $wpdb->query( $wpdb->prepare( "INSERT INTO {$wpdb->options} (option_name, option_value, autoload) VALUES (%s, %s, 'off') ON DUPLICATE KEY UPDATE option_value = VALUES(option_value)", self::OPTION, $encoded ) );
+					$read    = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", self::OPTION ) );
+					if ( false === $written || ! is_string( $encoded ) || $read !== $encoded ) {
 						throw new \RuntimeException( 'review_reminder_state_failed' ); }
-					if ( false === $wpdb->query( 'COMMIT' ) ) {
-						throw new \RuntimeException( 'review_reminder_commit_failed' ); }
+					$transaction->commit();
 					wp_cache_delete( self::OPTION, 'options' );
 					wp_cache_delete( 'notoptions', 'options' );
 				} catch ( \Throwable $error ) {
-					$wpdb->query( 'ROLLBACK' );
-					if ( $job > 0 ) {
-						clean_post_cache( $job ); }
-					if ( $action > 0 ) {
-						try {
-							\ActionScheduler::store()->cancel_action( $action ); } catch ( \Throwable $ignored ) {
-												/* The native transaction already removed this action. */
-							return; }
+					try {
+						if ( $transaction instanceof NativeTransaction ) {
+							$transaction->rollback();
+						}
+					} catch ( \Throwable $unknown ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Never compensate an unknown original commit on a new connection.
 					}
+					if ( $job > 0 ) {
+						clean_post_cache( $job );
+					}
+					CapacityHealth::failed();
 				}
 			// phpcs:enable
 			}

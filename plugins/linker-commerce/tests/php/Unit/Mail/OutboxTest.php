@@ -95,6 +95,9 @@ final class OutboxTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'clean_post_cache', array( 'return' => null ) );
+		WP_Mock::userFunction( 'get_post_status', array( 'return' => fn ( int $id ) => $this->posts[ $id ] ?? false ) );
+
 		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
 		WP_Mock::userFunction( 'clean_post_cache', array( 'return' => null ) );
 		$GLOBALS['wpdb']         = Mockery::mock( \wpdb::class );
@@ -174,7 +177,7 @@ final class OutboxTest extends TestCase {
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => str_contains( $email, '@' ) ? trim( $email ) : '' ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): string|false => 1 === preg_match( '/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/', $email ) ? $email : false ) );
 
-		$this->outbox = new Outbox( new JobStore(), new Throttle( new BudgetMemory( $this->options ) ) );
+		$this->outbox = new Outbox( new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() ), new Throttle( new BudgetMemory( $this->options ) ) );
 		WP_Mock::userFunction(
 			'wp_mail',
 			array(

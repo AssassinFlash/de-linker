@@ -43,6 +43,8 @@ final class Issuer {
 	public const NUMBER_META = '_linker_proforma_number';
 	public const ISSUED_META = '_linker_proforma_issued';
 	public const FILE_META   = '_linker_proforma_file';
+	/** Durable source index is owned by Issuer even before WC's mailer is loaded. */
+	public const NOTICE_PENDING_META = '_linker_proforma_notice_pending';
 
 	/**
 	 * Attempts at a free number when other requests issue at the same moment.
@@ -211,6 +213,9 @@ final class Issuer {
 			$number = Sequence::format( $this->options->proforma_prefix(), $year, $next );
 			$file   = $this->files->write( $order->get_id(), $number, $this->render( $order, $number, $issued ) );
 			if ( $this->sequence->commit( $year, $next ) ) {
+				// The issued native source is recoverable before any status listener
+				// can interrupt execution; never depend on reaching an email callback.
+				$order->update_meta_data( self::NOTICE_PENDING_META, 'yes' );
 				$order->update_meta_data( self::NUMBER_META, $number );
 				$order->update_meta_data( self::ISSUED_META, (string) $issued->getTimestamp() );
 				$order->update_meta_data( self::FILE_META, $file );

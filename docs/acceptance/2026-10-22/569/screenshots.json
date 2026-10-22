@@ -1,0 +1,58 @@
+[
+  {
+    "file": "de-1440-account-details-capacity-refusal.jpg",
+    "mime": "image/jpeg",
+    "file_readback": "JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, baseline, precision 8, 1425x2670, components 3",
+    "sha256": "e7c475fb62fa396f02f046eb8b6fc37f45bad8686e7fe0938b6cab9e342683b0",
+    "viewport": {
+      "clientWidth": 1425,
+      "innerHeight": 1000,
+      "innerWidth": 1440,
+      "lang": "de-DE",
+      "scrollWidth": 1425,
+      "url": "http://127.0.0.1:9338/de/mein-konto/kontodaten/"
+    }
+  },
+  {
+    "file": "de-390-account-details-capacity-refusal.jpg",
+    "mime": "image/jpeg",
+    "file_readback": "JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, baseline, precision 8, 375x3243, components 3",
+    "sha256": "52fb91d3a98138945d2ac2794b35977bd5a4e5290b3728221f6d16e6f5987b7c",
+    "viewport": {
+      "clientWidth": 375,
+      "innerHeight": 844,
+      "innerWidth": 390,
+      "lang": "de-DE",
+      "scrollWidth": 375,
+      "url": "http://127.0.0.1:9338/de/mein-konto/kontodaten/"
+    }
+  },
+  {
+    "file": "en-1440-account-details-capacity-refusal.jpg",
+    "mime": "image/jpeg",
+    "file_readback": "JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, baseline, precision 8, 1425x2670, components 3",
+    "sha256": "70a2f210b05b2e7223fd8b5dfaa872c4082a23187c3a705159f052e6f6236f7c",
+    "viewport": {
+      "clientWidth": 1425,
+      "innerHeight": 1000,
+      "innerWidth": 1440,
+      "lang": "en-US",
+      "scrollWidth": 1425,
+      "url": "http://127.0.0.1:9338/my-account/edit-account/"
+    }
+  },
+  {
+    "file": "en-390-account-details-capacity-refusal.jpg",
+    "mime": "image/jpeg",
+    "file_readback": "JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, baseline, precision 8, 375x3086, components 3",
+    "sha256": "79e2a6e9ba4e7b0d69527c054344fc892c245a6181c51c8c4ff87a760244b2aa",
+    "viewport": {
+      "clientWidth": 375,
+      "innerHeight": 844,
+      "innerWidth": 390,
+      "lang": "en-US",
+      "scrollWidth": 375,
+      "url": "http://127.0.0.1:9338/my-account/edit-account/"
+    }
+  }
+]

@@ -10,6 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Registration\Emails;
 
 use Linker\Commerce\Mail\LocaleSwitch;
+use Linker\Commerce\Mail\Capacity;
+use Linker\Commerce\Mail\Message;
+use Linker\Commerce\Mail\Prepared;
 use WC_Email;
 use WP_User;
 
@@ -21,6 +24,37 @@ use WP_User;
  * state changes to its own; the team's reason travels with the change.
  */
 abstract class CustomerApprovalEmail extends WC_Email {
+	/** Immutable native messages staged only for their actual producer.
+	 *
+	 * @var array<int,array{message:Message,reservation:array<string,mixed>}>
+	 */
+	private array $prepared = array();
+
+	/**
+	 * The state is known before user meta changes; preview has no account writes.
+	 *
+	 * @param int    $id Customer.
+	 * @param string $previous Existing state.
+	 * @param string $current Desired state.
+	 * @param string $reason Complete staff reason, never truncated.
+	 */
+	public function preview_approval( int $id, string $previous, string $current, string $reason ): ?Message {
+		return $current === $this->target_status() ? Prepared::capture( fn () => $this->trigger( $id, $previous, $current, $reason ) ) : null;
+	}
+
+	/**
+	 * Stage only this exact native notification's pre-reservation.
+	 *
+	 * @param int                 $id Customer.
+	 * @param Message             $message Immutable preview.
+	 * @param array<string,mixed> $reservation Server-only capacity.
+	 */
+	public function stage( int $id, Message $message, array $reservation ): void {
+		$this->prepared[ $id ] = array(
+			'message'     => $message,
+			'reservation' => $reservation,
+		);
+	}
 
 	/**
 	 * The language switch.
@@ -62,6 +96,7 @@ abstract class CustomerApprovalEmail extends WC_Email {
 	 * @param string $previous State before.
 	 * @param string $current  State now.
 	 * @param string $reason   The reason the team gave.
+	 * @throws \RuntimeException A staged critical notice was not durably accepted.
 	 */
 	public function trigger( $user_id, $previous = '', $current = '', $reason = '' ): void {
 		if ( (string) $current !== $this->target_status() ) {
@@ -77,7 +112,16 @@ abstract class CustomerApprovalEmail extends WC_Email {
 
 		$this->locale_switch->to( get_user_locale( $user->ID ) );
 		try {
-			$this->send_notification();
+			$prepared = $this->prepared[ $user->ID ] ?? null;
+			unset( $this->prepared[ $user->ID ] );
+			if ( null === $prepared ) {
+				$this->send_notification();
+			} else {
+				$accepted = Capacity::within( $prepared['reservation'], fn () => Prepared::within( $prepared['message'], fn () => $this->send_notification() ) );
+				if ( ! $accepted ) {
+					throw new \RuntimeException( 'approval_notice_not_accepted' );
+				}
+			}
 		} finally {
 			$this->locale_switch->back();
 		}

@@ -30,10 +30,40 @@ final class RegistrationInformation {
 	 */
 	public function rows( WP_User $user ): array {
 		$customer = new WC_Customer( $user->ID );
-		$country  = $customer->get_billing_country();
-		$billing  = $customer->get_billing();
-		$fields   = $this->fields->fields( $country ) + WC()->countries->get_address_fields( $country, 'billing_' );
-		$rows     = array();
+		return $this->customer_rows( $customer, $user );
+	}
+
+	/**
+	 * Render prospective native fields without creating a user or checking VIES.
+	 *
+	 * @param array<string,string> $values Validated public business fields.
+	 * @param WP_User              $user Prospective public identity, without a password.
+	 * @return list<array{key:string,label:string,value:string,website:bool}>
+	 */
+	public function prospective( array $values, WP_User $user ): array {
+		$customer = new WC_Customer();
+		foreach ( array( 'billing_company', 'billing_first_name', 'billing_last_name', 'billing_country' ) as $property ) {
+			$setter = 'set_' . $property;
+			$customer->$setter( $values[ $property ] ?? '' );
+		}
+		$customer->update_meta_data( Website::META, Website::normalize( $values[ Website::META ] ?? '' ) );
+		$customer->update_meta_data( VatProfile::VAT_META, VatNumber::normalize( $values[ VatProfile::VAT_META ] ?? '' ) );
+		$customer->update_meta_data( CustomerRole::META, $values[ CustomerRole::META ] ?? '' );
+		return $this->customer_rows( $customer, $user );
+	}
+
+	/**
+	 * Both native saved and prospective messages use the same field definitions.
+	 *
+	 * @param WC_Customer $customer Native customer values; never saved here.
+	 * @param WP_User     $user Public identity.
+	 * @return list<array{key:string,label:string,value:string,website:bool}>
+	 */
+	private function customer_rows( WC_Customer $customer, WP_User $user ): array {
+		$country = $customer->get_billing_country();
+		$billing = $customer->get_billing();
+		$fields  = $this->fields->fields( $country ) + WC()->countries->get_address_fields( $country, 'billing_' );
+		$rows    = array();
 		foreach ( $fields as $key => $field ) {
 			if ( in_array( $field['type'] ?? '', array( 'password', 'hidden' ), true ) ) {
 				continue;

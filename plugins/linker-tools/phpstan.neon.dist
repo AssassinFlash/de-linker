@@ -13,6 +13,8 @@ parameters:
 		- tests/php/Doubles
 	scanDirectories:
 		- ../linker-commerce/includes/Protection
+		# Conversation confirmation native tests inspect the companion Outbox handoff.
+		- ../linker-commerce/includes/Mail
 	scanFiles:
 		# The optional commerce digest boundary; no runtime dependency before
 		# the linker_commerce_digest_blocks filter runs.

@@ -90,6 +90,8 @@ class ConversationMail {
 	 * Post meta: the pending confirmation of a guest's address.
 	 */
 	public const PENDING = 'linker_genie_email_pending';
+	/** One fixed-size original-job receipt; contains no address or transcript. */
+	public const ACCEPTED = 'linker_genie_email_accepted';
 
 	/**
 	 * Emails one connection may ask for per hour: the contact form's
@@ -217,22 +219,83 @@ class ConversationMail {
 		if ( 1 !== preg_match( '/^(\d+)\.([0-9a-f]{64})$/', $token, $parts ) ) {
 			return self::result( self::EXPIRED, 'en' );
 		}
-		$id      = (int) $parts[1];
-		$pending = Conversations::POST_TYPE === get_post_type( $id ) ? get_post_meta( $id, self::PENDING, true ) : '';
-		if ( ! is_array( $pending ) || ! is_string( $pending['hash'] ?? null ) || ! hash_equals( $pending['hash'], hash( 'sha256', $parts[2] ) ) ) {
-			return self::result( self::EXPIRED, 'en' );
+		$id       = (int) $parts[1];
+		$result   = self::result( self::UNAVAILABLE, 'en' );
+		$dispatch = null;
+		$this->confirmation_lock(
+			$id,
+			function () use ( $id, $parts, &$result, &$dispatch ): void {
+				clean_post_cache( $id );
+				$pending = Conversations::POST_TYPE === get_post_type( $id ) ? get_post_meta( $id, self::PENDING, true ) : '';
+				if ( ! is_array( $pending ) || ! is_string( $pending['hash'] ?? null ) || ! hash_equals( $pending['hash'], hash( 'sha256', $parts[2] ) ) ) {
+					$result = self::result( self::EXPIRED, 'en' );
+					return;
+				}
+				$locale = 'de' === ( $pending['locale'] ?? '' ) ? 'de' : 'en';
+				if ( (int) ( $pending['expires'] ?? 0 ) < time() ) {
+					delete_post_meta( $id, self::PENDING, $pending );
+					$result = self::result( self::EXPIRED, $locale );
+					return;
+				}
+				if ( ! $this->guard->take_site() ) {
+					$result = self::result( self::CAPPED, $locale );
+					return;
+				}
+				// This native closure is never populated from an HTTP request. The
+				// commerce bridge executes it in the original job's transaction.
+				$accepted = static function ( int $job ) use ( $id, $pending ): void {
+					global $wpdb;
+					// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Final original-source row lock inside the native JobStore transaction.
+					$row = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE ID=%d AND post_type=%s FOR UPDATE NOWAIT", $id, Conversations::POST_TYPE ) );
+					$wpdb->get_col( $wpdb->prepare( "SELECT meta_id FROM {$wpdb->postmeta} WHERE post_id=%d AND meta_key=%s FOR UPDATE NOWAIT", $id, self::PENDING ) );
+					// phpcs:enable
+					clean_post_cache( $id );
+					if ( (int) $row !== $id || get_post_meta( $id, self::PENDING, true ) !== $pending || ! delete_post_meta( $id, self::PENDING, $pending ) ) {
+						throw new \RuntimeException( 'conversation_confirmation_source_changed' );
+					}
+					$receipt = array(
+						'hash' => $pending['hash'],
+						'job'  => $job,
+					);
+					update_post_meta( $id, self::ACCEPTED, $receipt );
+					wp_cache_delete( $id, 'post_meta' );
+					if ( metadata_exists( 'post', $id, self::PENDING ) || get_post_meta( $id, self::ACCEPTED, true ) !== $receipt ) {
+						throw new \RuntimeException( 'conversation_confirmation_ack_failed' );
+					}
+				};
+				$defer    = static function ( callable $work ) use ( &$dispatch ): void {
+					$dispatch = $work;
+				};
+				$status   = $this->deliver( $id, (string) ( $pending['to'] ?? '' ), $locale, $accepted, $defer )['status'];
+				$result   = self::result( $status, $locale );
+			}
+		);
+		if ( is_callable( $dispatch ) ) {
+			$dispatch();
 		}
-		$locale = 'de' === ( $pending['locale'] ?? '' ) ? 'de' : 'en';
-		if ( (int) ( $pending['expires'] ?? 0 ) < time() ) {
-			delete_post_meta( $id, self::PENDING );
-			return self::result( self::EXPIRED, $locale );
+		return $result;
+	}
+
+	/**
+	 * Independent connection-owned confirmation mutex; no model, SMTP or outer commit.
+	 *
+	 * @param int      $id Native conversation.
+	 * @param callable $work Source validation and original-job handoff only.
+	 */
+	private function confirmation_lock( int $id, callable $work ): void {
+		global $wpdb;
+		$database = is_string( $wpdb->dbname ?? null ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
+		$name     = 'linker-conversation-mail-' . md5( $database . '/' . $wpdb->prefix . '/' . $id );
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Connection-owned bounded mutex, following Thread's native DB namespace.
+		if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 1)', $name ) ) ) {
+			return;
 		}
-		// Over today's cap the link stays good until it expires.
-		if ( ! $this->guard->take_site() ) {
-			return self::result( self::CAPPED, $locale );
+		try {
+			$work();
+		} finally {
+			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
 		}
-		delete_post_meta( $id, self::PENDING );
-		return self::result( $this->deliver( $id, (string) ( $pending['to'] ?? '' ), $locale )['status'], $locale );
+		// phpcs:enable
 	}
 
 	/**
@@ -263,12 +326,14 @@ class ConversationMail {
 	/**
 	 * Hands the conversation to linker-commerce's email.
 	 *
-	 * @param int    $id     Conversation post ID.
-	 * @param string $to     The address.
-	 * @param string $locale `en` or `de`.
+	 * @param int           $id     Conversation post ID.
+	 * @param string        $to     The address.
+	 * @param string        $locale `en` or `de`.
+	 * @param callable|null $accepted Native original-job source ACK, never HTTP fields.
+	 * @param callable|null $defer Original-job dispatch after releasing the source lock.
 	 * @return array{status: string, to: string}
 	 */
-	private function deliver( int $id, string $to, string $locale ): array {
+	private function deliver( int $id, string $to, string $locale, ?callable $accepted = null, ?callable $defer = null ): array {
 		$messages = $this->thread->transcript( $id );
 		if ( '' === $to || array() === $messages ) {
 			return self::outcome( self::UNAVAILABLE );
@@ -283,16 +348,19 @@ class ConversationMail {
 		 * @param array<string, mixed> $email to, locale (a WordPress locale), messages.
 		 * @since 0.2.0
 		 */
-		$sent = apply_filters(
+		$sent         = apply_filters(
 			'linker_tools_genie_send_conversation',
 			false,
 			array(
 				'to'       => $to,
 				'locale'   => self::wp_locale( $locale ),
 				'messages' => $messages,
+				'accepted' => $accepted,
+				'defer'    => $defer,
 			)
 		);
-		return true === $sent ? self::outcome( self::SENT, $to ) : self::outcome( self::UNAVAILABLE );
+		$acknowledged = null === $accepted || ! metadata_exists( 'post', $id, self::PENDING );
+		return true === $sent && $acknowledged ? self::outcome( self::SENT, $to ) : self::outcome( self::UNAVAILABLE );
 	}
 
 	/**

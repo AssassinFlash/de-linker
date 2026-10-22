@@ -219,7 +219,7 @@ final class InquirySummaryTest extends TestCase {
 			static fn (): \WP_Error => new \WP_Error( 'down', 'timeout' )
 		) )->answer( null, 5 ) ?? array();
 		$this->assertSame( 'rule', $summary['source'] );
-		$this->assertSame( 'timeout', $summary['reason'] );
+		$this->assertSame( 'transport_error', $summary['reason'] );
 		$this->assertSame( 'The roof faces south. · Ten panels, please.', $summary['summary'] );
 		$this->assertSame( 'The roof faces south.', $summary['note'] );
 	}
@@ -253,7 +253,38 @@ final class InquirySummaryTest extends TestCase {
 			static fn (): \WP_Error => new \WP_Error( 'linker_genie_summary', 'HTTP 422' )
 		) )->answer( null, 5 ) ?? array();
 		$this->assertSame( 'rule', $summary['source'] );
-		$this->assertSame( 'HTTP 422', $summary['reason'] );
+		$this->assertSame( 'http_422', $summary['reason'] );
 		$this->assertSame( 'Two of them.', $summary['summary'] );
+	}
+
+	/** Raw provider errors never become unbounded stored diagnostics. */
+	public function test_fallback_reason_is_a_finite_category_without_changing_customer_words(): void {
+		WP_Mock::userFunction( 'get_transient', array( 'return' => false ) );
+		WP_Mock::userFunction( 'set_transient', array( 'return' => true ) );
+		foreach ( array(
+			'HTTP 100' => 'http_100',
+			'HTTP 599' => 'http_599',
+			'HTTP 600' => 'transport_error',
+			'HTTP 099' => 'transport_error',
+			str_repeat( 'Untrusted remote diagnostic. ', 20000 ) => 'transport_error',
+		) as $raw => $category ) {
+			$summary = ( new InquirySummary(
+				self::conversations(),
+				self::thread(
+					array(
+						array(
+							'role'     => 'user',
+							'content'  => 'Please retain my exact inquiry.',
+							'products' => array(),
+						),
+					)
+				),
+				static fn (): \WP_Error => new \WP_Error( 'untrusted_remote_code', $raw )
+			) )->answer( null, 5 );
+			$this->assertIsArray( $summary );
+			$this->assertSame( $category, $summary['reason'] );
+			$this->assertSame( 'Please retain my exact inquiry.', $summary['summary'] );
+			$this->assertSame( 'Please retain my exact inquiry.', $summary['note'] );
+		}
 	}
 }

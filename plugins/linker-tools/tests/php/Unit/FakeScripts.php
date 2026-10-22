@@ -15,6 +15,13 @@ namespace Linker\Tools\Tests\Unit;
 final class FakeScripts {
 
 	/**
+	 * Dependencies already printed by WordPress.
+	 *
+	 * @var list<string>
+	 */
+	public array $done = array();
+
+	/**
 	 * Whether the entry is registered.
 	 *
 	 * @var bool

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-22T10:58:13+00:00\n"
+"POT-Creation-Date: 2026-10-22T17:41:06+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -52,8 +52,8 @@ msgid ""
 "No accounts are waiting for review. New registrations will appear here and "
 "in the top bar."
 msgstr ""
-"Es warten keine Konten auf Prüfung. Neue Registrierungen erscheinen hier und"
-" in der oberen Leiste."
+"Es warten keine Konten auf Prüfung. Neue Registrierungen erscheinen hier und "
+"in der oberen Leiste."
 
 #: build/accounts.js:1
 msgid "No restricted accounts are awaiting customer information."
@@ -135,8 +135,8 @@ msgstr ""
 
 #: build/protection.js:1
 msgid ""
-"Verification could not be completed. Your entries are still here. Please try"
-" again or email sales@de-linker.com."
+"Verification could not be completed. Your entries are still here. Please try "
+"again or email sales@de-linker.com."
 msgstr ""
 "Die Prüfung konnte nicht abgeschlossen werden. Ihre Angaben bleiben "
 "erhalten. Sie können es erneut versuchen oder uns unter sales@de-linker.com "
@@ -204,8 +204,8 @@ msgstr ""
 #: includes/Abilities/CheckCompatibility.php:55
 msgid ""
 "Returns the documented release of an inverter with a battery: released, "
-"released with an accessory, not released, or unknown when no file covers the"
-" pair."
+"released with an accessory, not released, or unknown when no file covers the "
+"pair."
 msgstr ""
 
 #: includes/Abilities/CheckCompatibility.php:62
@@ -251,8 +251,7 @@ msgstr ""
 
 #: includes/Abilities/GetProduct.php:41
 msgid ""
-"Returns one published product: facts, figures, attributes, documents and "
-"FAQ."
+"Returns one published product: facts, figures, attributes, documents and FAQ."
 msgstr ""
 
 #: includes/Abilities/GetProduct.php:48
@@ -642,8 +641,8 @@ msgstr ""
 #: includes/Admin/DocumentsMetaBox.php:69
 msgid ""
 "The file itself is uploaded to the media library; the address here is the "
-"media file's URL. What a document may state is decided item by item — do not"
-" change a value or a claim without that confirmation."
+"media file's URL. What a document may state is decided item by item — do not "
+"change a value or a claim without that confirmation."
 msgstr ""
 "Die Datei selbst liegt in der Mediathek; die Adresse hier ist die URL der "
 "Mediendatei. Was eine Unterlage aussagen darf, wird Punkt für Punkt "
@@ -717,8 +716,8 @@ msgid ""
 "FAQ rows %s kept their previous content: an answer needs the document and "
 "the page it is printed on."
 msgstr ""
-"Die FAQ-Zeilen %s behalten ihren bisherigen Inhalt: Eine Antwort braucht das"
-" Dokument und die Seite, auf der sie gedruckt ist."
+"Die FAQ-Zeilen %s behalten ihren bisherigen Inhalt: Eine Antwort braucht das "
+"Dokument und die Seite, auf der sie gedruckt ist."
 
 #: includes/Admin/FaqsMetaBox.php:228 includes/Admin/FiguresMetaBox.php:116
 msgid "— none —"
@@ -760,8 +759,8 @@ msgstr "Keine Quellenangabe"
 #: includes/Admin/FiguresMetaBox.php:232
 #, php-format
 msgid ""
-"Figures %s kept their previous value: a changed value needs the document and"
-" the page it is printed on."
+"Figures %s kept their previous value: a changed value needs the document and "
+"the page it is printed on."
 msgstr ""
 "Die Kenndaten %s behalten ihren bisherigen Wert: Ein geänderter Wert "
 "benötigt das Dokument und die Seite, auf der er steht."
@@ -897,7 +896,7 @@ msgstr ""
 msgid "Explore with Genie"
 msgstr "Mit Genie weiterdenken"
 
-#: includes/Contact/Form.php:281 includes/Protection/Intake.php:72
+#: includes/Contact/Form.php:282 includes/Protection/Intake.php:73
 msgid ""
 "This request is too large to save for review. Your entries and solution "
 "draft are still here. Please email sales@de-linker.com."
@@ -906,16 +905,16 @@ msgstr ""
 "Eingaben und Ihr Lösungsentwurf bleiben erhalten. Bitte schreiben Sie an "
 "sales@de-linker.com."
 
-#: includes/Contact/Form.php:282 includes/Protection/Intake.php:287
+#: includes/Contact/Form.php:283 includes/Protection/Intake.php:329
 msgid ""
 "Your request has not been saved because the review queue is full. Your "
 "entries are still here. Please try again later or email sales@de-linker.com."
 msgstr ""
-"Ihre Anfrage wurde nicht gespeichert, da die Warteliste für die Prüfung voll"
-" ist. Ihre Eingaben bleiben erhalten. Sie können es später erneut versuchen "
+"Ihre Anfrage wurde nicht gespeichert, da die Warteliste für die Prüfung voll "
+"ist. Ihre Eingaben bleiben erhalten. Sie können es später erneut versuchen "
 "oder an sales@de-linker.com schreiben."
 
-#: includes/Contact/Form.php:283 includes/Protection/Intake.php:296
+#: includes/Contact/Form.php:284 includes/Protection/Intake.php:338
 msgid ""
 "This message matches a repeated spam submission. We have not saved a "
 "separate inquiry or sent an email. Your entries are still here. For an "
@@ -927,52 +926,51 @@ msgstr ""
 "bleiben erhalten. Für eine Einzelprüfung können Sie die Prüfungsoption im "
 "Formular auswählen oder an sales@de-linker.com schreiben."
 
-#: includes/Contact/Form.php:284
+#: includes/Contact/Form.php:285
 msgid ""
 "Thank you. Your message is with the Linker team. We have not sent a "
 "confirmation email. We reply within one business day."
 msgstr ""
-"Ihre Nachricht ist beim Linker-Team eingegangen. Eine Bestätigung per E-Mail"
-" wurde nicht versendet. Sie erhalten innerhalb eines Arbeitstags eine "
-"Antwort."
+"Ihre Nachricht ist beim Linker-Team eingegangen. Eine Bestätigung per E-Mail "
+"wurde nicht versendet. Sie erhalten innerhalb eines Arbeitstags eine Antwort."
 
-#: includes/Contact/Form.php:285
+#: includes/Contact/Form.php:286
 msgid "Thank you. Your message is with the Linker team."
 msgstr "Vielen Dank. Ihre Nachricht liegt beim Linker-Team."
 
-#: includes/Contact/Form.php:286 includes/Inquiry/Form.php:85
-#: includes/Inquiry/Handler.php:51 includes/Protection/Intake.php:68
+#: includes/Contact/Form.php:287 includes/Inquiry/Form.php:85
+#: includes/Inquiry/Handler.php:51 includes/Protection/Intake.php:69
 msgid "Please check your entries and send the form again."
 msgstr "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut."
 
-#: includes/Contact/Form.php:287 includes/Protection/Intake.php:230
+#: includes/Contact/Form.php:288 includes/Protection/Intake.php:272
 msgid ""
-"The message limit has been reached. Your entries are still here. You can try"
-" again later or email sales@de-linker.com."
+"The message limit has been reached. Your entries are still here. You can try "
+"again later or email sales@de-linker.com."
 msgstr ""
 "Die Nachrichtenbegrenzung ist erreicht. Ihre Angaben bleiben erhalten. Sie "
 "können es später erneut versuchen oder uns unter sales@de-linker.com "
 "schreiben."
 
-#: includes/Contact/Form.php:288
+#: includes/Contact/Form.php:289
 msgid ""
-"Verification expired or could not be confirmed. Your entries are still here."
-" Please try again."
+"Verification expired or could not be confirmed. Your entries are still here. "
+"Please try again."
 msgstr ""
 "Die Sicherheitsprüfung ist abgelaufen oder konnte nicht bestätigt werden. "
 "Ihre Angaben bleiben erhalten. Bitte versuchen Sie es erneut."
 
-#: includes/Contact/Form.php:289
+#: includes/Contact/Form.php:290
 msgid ""
-"Verification is temporarily unavailable. Your entries are still here. Please"
-" try again or email sales@de-linker.com."
+"Verification is temporarily unavailable. Your entries are still here. Please "
+"try again or email sales@de-linker.com."
 msgstr ""
 "Die Sicherheitsprüfung ist vorübergehend nicht verfügbar. Ihre Angaben "
 "bleiben erhalten. Sie können es erneut versuchen oder uns unter sales@de-"
 "linker.com schreiben."
 
-#: includes/Contact/Form.php:290 includes/Protection/Admission.php:194
-#: includes/Protection/Business.php:93
+#: includes/Contact/Form.php:291 includes/Protection/Admission.php:194
+#: includes/Protection/Business.php:97
 msgid ""
 "The request status could not be confirmed. Please check before sending it "
 "again."
@@ -980,12 +978,11 @@ msgstr ""
 "Der Status Ihrer Anfrage lässt sich derzeit nicht bestätigen. Bitte prüfen "
 "Sie ihn, bevor Sie die Anfrage erneut senden."
 
-#: includes/Contact/Form.php:306
+#: includes/Contact/Form.php:307
 msgid "Send another message"
 msgstr "Weitere Nachricht senden"
 
-#: includes/Contact/SelectionView.php:43
-#: includes/Contact/SelectionView.php:136
+#: includes/Contact/SelectionView.php:43 includes/Contact/SelectionView.php:136
 #: includes/Contact/SelectionView.php:159
 #: includes/Contact/SelectionView.php:166
 msgid "Product selection"
@@ -1001,8 +998,7 @@ msgstr "Diese Auswahl meiner Nachricht beifügen"
 
 #: includes/Contact/SelectionView.php:50
 msgid ""
-"This selection could not be loaded. You can exclude it and send your "
-"message."
+"This selection could not be loaded. You can exclude it and send your message."
 msgstr ""
 "Diese Auswahl konnte nicht geladen werden. Sie können sie abwählen und Ihre "
 "Nachricht senden."
@@ -1135,8 +1131,7 @@ msgstr "Tagesübersicht, {date}"
 msgid "Emails that could not be delivered"
 msgstr "Nicht zugestellte E-Mails"
 
-#. translators: 1: the recipients of the email, 2: the error of the last
-#. attempt.
+#. translators: 1: the recipients of the email, 2: the error of the last attempt.
 #: includes/Digest/FailedEmails.php:63
 #, php-format
 msgid "To: %1$s – Error: %2$s"
@@ -1216,8 +1211,8 @@ msgid ""
 "You can send this solution draft. Your account is under review; net prices "
 "appear after approval."
 msgstr ""
-"Sie können diesen Lösungsentwurf senden. Ihr Konto wird geprüft; Nettopreise"
-" erscheinen nach der Freigabe."
+"Sie können diesen Lösungsentwurf senden. Ihr Konto wird geprüft; Nettopreise "
+"erscheinen nach der Freigabe."
 
 #: includes/Gating/DraftSummary.php:52
 msgid ""
@@ -1235,8 +1230,7 @@ msgstr "Anfrage senden"
 msgid ""
 "For products without a price, we state the price in your Proforma invoice."
 msgstr ""
-"Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer "
-"Proformarechnung."
+"Für Produkte ohne Preisangabe nennen wir den Preis in Ihrer Proformarechnung."
 
 #: includes/Gating/PriceDisplay.php:233
 msgid "Log in for prices"
@@ -1250,8 +1244,7 @@ msgstr "Ihr Konto wird geprüft. Preise nach Freigabe."
 msgid "Not available for your account"
 msgstr "Für Ihr Konto nicht verfügbar"
 
-#: includes/Gating/PriceDisplay.php:242
-#: includes/Storefront/ProductView.php:325
+#: includes/Gating/PriceDisplay.php:242 includes/Storefront/ProductView.php:325
 msgid "Quoted per project"
 msgstr "Angebot pro Projekt"
 
@@ -1269,8 +1262,8 @@ msgid ""
 "conversation by email. It holds only a link that confirms the address; the "
 "conversation follows after the click."
 msgstr ""
-"Geht an die Adresse, die ein Besucher ohne Konto für eine Genie-Unterhaltung"
-" per E-Mail angibt. Die E-Mail enthält nur einen Link zur Bestätigung; die "
+"Geht an die Adresse, die ein Besucher ohne Konto für eine Genie-Unterhaltung "
+"per E-Mail angibt. Die E-Mail enthält nur einen Link zur Bestätigung; die "
 "Unterhaltung folgt nach dem Klick."
 
 #: includes/Genie/ConfirmAddressEmail.php:84
@@ -1296,7 +1289,7 @@ msgstr "Ihr Gespräch mit Genie"
 
 #: includes/Genie/GenieEmail.php:97 includes/Mail/CustomerOrderEmail.php:89
 #: includes/Mail/TeamEmail.php:125
-#: includes/Registration/Emails/CustomerApprovalEmail.php:130
+#: includes/Registration/Emails/CustomerApprovalEmail.php:174
 msgid "HTML"
 msgstr "HTML"
 
@@ -1371,8 +1364,7 @@ msgstr "Der Lösungskonfigurator"
 msgid "The %s service failed its health check"
 msgstr "Gesundheitsprüfung fehlgeschlagen: Dienst %s"
 
-#. translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what
-#. uses the service.
+#. translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what uses the service.
 #: includes/Health/Monitor.php:174
 #, php-format
 msgid ""
@@ -1382,7 +1374,8 @@ msgid ""
 "Reason: %3$s\n"
 "Checked: %4$s UTC\n"
 "\n"
-"%5$s uses this service. The check runs once a day and repeats this message on every failure."
+"%5$s uses this service. The check runs once a day and repeats this message "
+"on every failure."
 msgstr ""
 "Die tägliche Gesundheitsprüfung hat den Dienst %1$s nicht erreicht.\n"
 "\n"
@@ -1390,7 +1383,8 @@ msgstr ""
 "Grund: %3$s\n"
 "Geprüft: %4$s UTC\n"
 "\n"
-"%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt diese Nachricht bei jedem Fehlschlag."
+"%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
+"diese Nachricht bei jedem Fehlschlag."
 
 #: includes/Health/PendingReviews.php:25
 msgid "Inquiries awaiting staff review"
@@ -1420,13 +1414,12 @@ msgstr "Älteste Anfrage: vor %s."
 msgid "No saved inquiry is awaiting staff review."
 msgstr "Es wartet keine gespeicherte Anfrage auf die Prüfung durch das Team."
 
-#: includes/Health/ReviewReminder.php:104
+#: includes/Health/ReviewReminder.php:119
 msgid "Saved inquiries need staff review"
 msgstr "Gespeicherte Anfragen müssen vom Team geprüft werden"
 
-#. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff
-#. review URL.
-#: includes/Health/ReviewReminder.php:106
+#. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
+#: includes/Health/ReviewReminder.php:121
 #, php-format
 msgid ""
 "Saved inquiries awaiting staff review: %1$d.\n"
@@ -1434,14 +1427,16 @@ msgid ""
 "Count checked: %3$s.\n"
 "Review saved inquiries: %4$s\n"
 "\n"
-"These inquiries are saved. Their individual team notifications have not been released."
+"These inquiries are saved. Their individual team notifications have not been "
+"released."
 msgstr ""
 "Gespeicherte Anfragen zur manuellen Prüfung: %1$d.\n"
 "Älteste Anfrage: vor %2$s.\n"
 "Stand der Zählung: %3$s.\n"
 "Gespeicherte Anfragen prüfen: %4$s\n"
 "\n"
-"Diese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das Team sind noch nicht freigegeben."
+"Diese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das "
+"Team sind noch nicht freigegeben."
 
 #: includes/Inquiry/Assessment/Admin.php:29
 msgid "Inquiry review"
@@ -1459,8 +1454,8 @@ msgstr "Ersteinschätzung durch Jev"
 #: includes/Inquiry/Assessment/Admin.php:53
 msgid "Model labels do not reject inquiries or stop team notifications."
 msgstr ""
-"Modellbewertungen führen weder zur Ablehnung einer Anfrage noch zum Anhalten"
-" der Teambenachrichtigung."
+"Modellbewertungen führen weder zur Ablehnung einer Anfrage noch zum Anhalten "
+"der Teambenachrichtigung."
 
 #: includes/Inquiry/Assessment/Admin.php:54
 msgid "Diagnostic"
@@ -1739,8 +1734,8 @@ msgstr ""
 
 #: includes/Inquiry/Assessment/EvidenceView.php:114
 msgid ""
-"The submitted, saved or checked VAT numbers differ. The stored result cannot"
-" confirm the current number."
+"The submitted, saved or checked VAT numbers differ. The stored result cannot "
+"confirm the current number."
 msgstr ""
 "Die übermittelte, gespeicherte oder geprüfte USt-IdNr. weichen voneinander "
 "ab. Das gespeicherte Ergebnis bestätigt die aktuelle Nummer nicht."
@@ -1759,8 +1754,8 @@ msgid ""
 "The checked number or original check time is missing. VAT verification "
 "cannot be confirmed."
 msgstr ""
-"Die geprüfte Nummer oder der ursprüngliche Prüfzeitpunkt fehlt. Eine Prüfung"
-" der USt-IdNr. lässt sich nicht bestätigen."
+"Die geprüfte Nummer oder der ursprüngliche Prüfzeitpunkt fehlt. Eine Prüfung "
+"der USt-IdNr. lässt sich nicht bestätigen."
 
 #: includes/Inquiry/Assessment/EvidenceView.php:117
 msgid ""
@@ -1776,16 +1771,15 @@ msgstr ""
 
 #: includes/Inquiry/Assessment/EvidenceView.php:119
 msgid ""
-"VAT verification was unavailable or inconclusive. Review the recorded detail"
-" if needed."
+"VAT verification was unavailable or inconclusive. Review the recorded detail "
+"if needed."
 msgstr ""
-"Die Prüfung der USt-IdNr. war nicht verfügbar oder lieferte kein eindeutiges"
-" Ergebnis. Prüfen Sie bei Bedarf die gespeicherten Details."
+"Die Prüfung der USt-IdNr. war nicht verfügbar oder lieferte kein eindeutiges "
+"Ergebnis. Prüfen Sie bei Bedarf die gespeicherten Details."
 
 #: includes/Inquiry/Assessment/EvidenceView.php:130
 msgid "No related Genie context was available at submission."
-msgstr ""
-"Beim Eingang der Anfrage war kein zugehöriger Genie-Kontext verfügbar."
+msgstr "Beim Eingang der Anfrage war kein zugehöriger Genie-Kontext verfügbar."
 
 #: includes/Inquiry/Assessment/EvidenceView.php:133
 msgid "Related Genie context at submission"
@@ -1878,8 +1872,7 @@ msgstr "Keine Beurteilung möglich"
 #: includes/Inquiry/Assessment/Result.php:123
 msgid "No reliable assessment was available. Please review the inquiry."
 msgstr ""
-"Eine verlässliche Einschätzung liegt nicht vor. Bitte prüfen Sie die "
-"Anfrage."
+"Eine verlässliche Einschätzung liegt nicht vor. Bitte prüfen Sie die Anfrage."
 
 #: includes/Inquiry/Assessment/Result.php:126
 msgid "Possible fraud or phishing."
@@ -1920,8 +1913,8 @@ msgid ""
 "Saving a review changes this internal record only. It does not send mail or "
 "change the account decision."
 msgstr ""
-"Eine gespeicherte Prüfung aktualisiert diesen internen Eintrag. Dabei werden"
-" keine E-Mails versendet und keine Kontofreigaben geändert."
+"Eine gespeicherte Prüfung aktualisiert diesen internen Eintrag. Dabei werden "
+"keine E-Mails versendet und keine Kontofreigaben geändert."
 
 #: includes/Inquiry/Assessment/ReviewView.php:34
 msgid "Staff review"
@@ -2020,16 +2013,15 @@ msgstr ""
 "an."
 
 #: includes/Inquiry/Assessment/Reviews.php:97
-msgid ""
-"Another review is being saved. Reload this inquiry before trying again."
+msgid "Another review is being saved. Reload this inquiry before trying again."
 msgstr ""
 "Eine andere Prüfung wird gerade gespeichert. Laden Sie diese Anfrage vor "
 "einem erneuten Versuch neu."
 
 #: includes/Inquiry/Assessment/Reviews.php:113
 msgid ""
-"This review has changed. Reload the inquiry to see the latest revision; your"
-" change was not saved."
+"This review has changed. Reload the inquiry to see the latest revision; your "
+"change was not saved."
 msgstr ""
 "Diese Prüfung wurde inzwischen geändert. Laden Sie die Anfrage neu, um den "
 "aktuellen Stand zu sehen. Ihre Änderung wurde nicht gespeichert."
@@ -2037,8 +2029,8 @@ msgstr ""
 #: includes/Inquiry/Assessment/Reviews.php:178
 msgid "The review could not be saved. Reload the inquiry before trying again."
 msgstr ""
-"Die Prüfung konnte nicht gespeichert werden. Laden Sie die Anfrage vor einem"
-" erneuten Versuch neu."
+"Die Prüfung konnte nicht gespeichert werden. Laden Sie die Anfrage vor einem "
+"erneuten Versuch neu."
 
 #: includes/Inquiry/Assessment/Reviews.php:193
 msgid "Staff review recorded."
@@ -2051,7 +2043,7 @@ msgstr "Bitte senden Sie Ihre Anfrage über das Anfrageformular."
 
 #: includes/Inquiry/Checkout.php:121
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:35
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:73
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:83
 #: includes/Protection/IntakeAdmin.php:45 includes/Vocabulary/Labels.php:97
 #: includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
@@ -2094,7 +2086,7 @@ msgid "Sent to the customer when an inquiry is received."
 msgstr "Geht an den Kunden, wenn eine Anfrage eingegangen ist."
 
 #. translators: {order_number} is replaced by the inquiry number.
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:66
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:76
 msgid "Your inquiry #{order_number} has been received"
 msgstr "Ihre Anfrage #{order_number} ist eingegangen"
 
@@ -2199,8 +2191,8 @@ msgstr "Sie können uns auch ohne Produkte eine Nachricht senden."
 
 #: includes/Inquiry/Handler.php:58
 msgid ""
-"We received several messages from this connection. Please try again later or"
-" write to sales@de-linker.com."
+"We received several messages from this connection. Please try again later or "
+"write to sales@de-linker.com."
 msgstr ""
 "Von dieser Verbindung sind mehrere Nachrichten eingegangen. Bitte versuchen "
 "Sie es später erneut oder schreiben Sie an sales@de-linker.com."
@@ -2283,8 +2275,8 @@ msgstr "Wir prüfen Ihre Anfrage und senden Ihnen eine Proformarechnung."
 
 #: includes/Inquiry/ProformaGateway.php:68
 msgid ""
-"Sends the inquiry without payment. Staff issue the Proforma invoice from the"
-" inquiry. Always on: it is the only way to send an inquiry."
+"Sends the inquiry without payment. Staff issue the Proforma invoice from the "
+"inquiry. Always on: it is the only way to send an inquiry."
 msgstr ""
 "Sendet die Anfrage ohne Zahlung. Die Proformarechnung stellen die "
 "Mitarbeitenden in der Anfrage aus. Immer aktiv: Nur so lässt sich eine "
@@ -2294,20 +2286,34 @@ msgstr ""
 msgid "Website"
 msgstr "Website"
 
-#: includes/Inquiry/Sender.php:83
+#: includes/Inquiry/Sender.php:95
 msgid "Please try sending your inquiry again."
 msgstr "Bitte senden Sie Ihre Anfrage erneut."
 
-#: includes/Inquiry/Sender.php:97
+#: includes/Inquiry/Sender.php:130
 msgid "Please add a product or write a message."
 msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
 
-#: includes/Inquiry/Sender.php:104 includes/Protection/Business.php:61
+#: includes/Inquiry/Sender.php:137 includes/Protection/Business.php:61
 msgid ""
 "Your solution draft changed. Please review it and send your inquiry again."
 msgstr ""
 "Ihr Lösungsentwurf hat sich geändert. Bitte prüfen Sie die Produkte und "
 "senden Sie Ihre Anfrage erneut."
+
+#: includes/Inquiry/Sender.php:276 includes/Protection/BusinessCapacity.php:167
+#: includes/Protection/BusinessCapacity.php:173
+#: includes/Protection/Intake.php:207 includes/Protection/Intake.php:273
+#: includes/Protection/IntakeStore.php:56
+#: includes/Protection/IntakeStore.php:71
+#: includes/Protection/IntakeStore.php:93
+msgid ""
+"The request status could not be confirmed. Your entries are still here. "
+"Please check before sending a new request."
+msgstr ""
+"Der Status Ihrer Anfrage konnte nicht bestätigt werden. Ihre Eingaben "
+"bleiben erhalten. Bitte prüfen Sie den Status, bevor Sie eine neue Anfrage "
+"senden."
 
 #: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
 #: includes/Inquiry/Statuses.php:84
@@ -2352,7 +2358,7 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: includes/Mail/JobStore.php:76
+#: includes/Mail/JobStore.php:102
 msgid "Queued emails"
 msgstr "E-Mails in der Warteschlange"
 
@@ -2362,8 +2368,7 @@ msgstr "Sie haben keine Berechtigung, diese Benachrichtigung freizugeben."
 
 #: includes/Mail/NotificationHold.php:95
 msgid ""
-"This notification is being processed. Reload the inquiry before trying "
-"again."
+"This notification is being processed. Reload the inquiry before trying again."
 msgstr ""
 "Diese Benachrichtigung wird gerade verarbeitet. Laden Sie die Anfrage neu, "
 "bevor Sie es erneut versuchen."
@@ -2379,13 +2384,21 @@ msgid "Notification released by staff."
 msgstr "Benachrichtigung durch einen Mitarbeiter freigegeben."
 
 #: includes/Mail/NotificationHold.php:180
-#: includes/Protection/IntakeRelease.php:123
+#: includes/Protection/IntakeRelease.php:139
 msgid ""
 "The notification could not be released. Reload the inquiry before trying "
 "again."
 msgstr ""
 "Die Benachrichtigung konnte nicht freigegeben werden. Laden Sie die Anfrage "
 "neu, bevor Sie es erneut versuchen."
+
+#: includes/Mail/ResetNotice.php:122 includes/Protection/Accounts.php:407
+msgid ""
+"Password reset is temporarily unavailable. Please try again later or email "
+"sales@de-linker.com."
+msgstr ""
+"Das Zurücksetzen des Passworts ist derzeit nicht möglich. Bitte versuchen "
+"Sie es später erneut oder schreiben Sie an sales@de-linker.com."
 
 #: includes/Mail/SmtpHealth.php:58
 msgid "SMTP configured"
@@ -2750,7 +2763,7 @@ msgid "Account under review"
 msgstr "Konto in Prüfung"
 
 #: includes/Presentation/LoginGate.php:55
-#: includes/Registration/Approval.php:229
+#: includes/Registration/Approval.php:277
 msgid "Restricted"
 msgstr "Eingeschränkt"
 
@@ -2769,8 +2782,8 @@ msgid ""
 "approved. You can send inquiries now; approval opens net prices."
 msgstr ""
 "Wir prüfen Ihr Partnerkonto und informieren Sie per E-Mail über die "
-"Freigabe. Anfragen können Sie bereits senden; Nettopreise sehen Sie nach der"
-" Freigabe."
+"Freigabe. Anfragen können Sie bereits senden; Nettopreise sehen Sie nach der "
+"Freigabe."
 
 #: includes/Presentation/LoginGate.php:57
 #: includes/Presentation/LoginGate.php:78
@@ -2805,8 +2818,7 @@ msgstr "Startseite"
 #: includes/Storefront/ArchiveSchema.php:68
 msgid "Search products or filter by category and project requirements."
 msgstr ""
-"Suchen Sie Produkte oder filtern Sie nach Kategorie und "
-"Projektanforderungen."
+"Suchen Sie Produkte oder filtern Sie nach Kategorie und Projektanforderungen."
 
 #: includes/Presentation/ProductShortcodes.php:174
 msgid "Search model or item number"
@@ -2959,12 +2971,12 @@ msgstr "Produkt anfragen"
 #: includes/Presentation/ProductShortcodes.php:860
 #, php-format
 msgid ""
-"About %s: give me the key specs, which batteries or inverters it pairs with,"
-" and whether it fits my project."
+"About %s: give me the key specs, which batteries or inverters it pairs with, "
+"and whether it fits my project."
 msgstr ""
 "Zum Produkt %s: Nenne mir die wichtigsten technischen Daten und die dazu "
-"passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt"
-" geeignet ist."
+"passenden Batterien oder Wechselrichter, und sag mir, ob es für mein Projekt "
+"geeignet ist."
 
 #: includes/Presentation/ProductShortcodes.php:898
 msgid "New system"
@@ -2999,8 +3011,8 @@ msgstr "Ich ersetze ein Gerät in einem bestehenden System durch %s."
 #: includes/Presentation/ProductShortcodes.php:913
 msgid ""
 "Then ask one question at a time for what you still need (existing model, "
-"quantity, installation postcode, installation date) and check compatibility,"
-" missing system components and delivery windows against current Linker data."
+"quantity, installation postcode, installation date) and check compatibility, "
+"missing system components and delivery windows against current Linker data."
 msgstr ""
 "Frage danach immer nur nach der nächsten fehlenden Angabe (Bestandsmodell, "
 "Menge, Installations-PLZ, Montagetermin) und prüfe Kompatibilität, fehlende "
@@ -3022,8 +3034,8 @@ msgstr "Produktbild %d"
 
 #: includes/Presentation/ProductShortcodes.php:1029
 msgid ""
-"Introduction in preparation. The specification below carries the values from"
-" the datasheet on file."
+"Introduction in preparation. The specification below carries the values from "
+"the datasheet on file."
 msgstr ""
 "Die Einleitung wird vorbereitet. Die Spezifikation darunter enthält die "
 "Werte des hinterlegten Datenblatts."
@@ -3094,8 +3106,8 @@ msgstr "Unsere Einschätzung"
 msgid ""
 "No documents are attached to this product yet. Ask us and we will add them."
 msgstr ""
-"Für dieses Produkt sind noch keine Dokumente hinterlegt. Fragen Sie uns, wir"
-" ergänzen sie."
+"Für dieses Produkt sind noch keine Dokumente hinterlegt. Fragen Sie uns, wir "
+"ergänzen sie."
 
 #: includes/Presentation/ProductShortcodes.php:1425
 msgid "On the compatibility list on file"
@@ -3275,8 +3287,8 @@ msgstr "Ihr Großspeicherprojekt als Gesamtlösung gedacht."
 #: includes/Presentation/Shortcodes.php:274
 msgid ""
 "We work alongside developers and EPC teams to shape battery storage around "
-"the project’s energy goals, site conditions and integration needs. Together,"
-" we connect system choices with a practical plan for delivery."
+"the project’s energy goals, site conditions and integration needs. Together, "
+"we connect system choices with a practical plan for delivery."
 msgstr ""
 "Gemeinsam mit Projektentwicklern und EPC-Teams richten wir Batteriespeicher "
 "an Energiezielen, Standort und Einbindung aus. Dabei verbinden wir die "
@@ -3341,8 +3353,8 @@ msgstr "Eine frühe Frage reicht aus."
 
 #: includes/Presentation/Shortcodes.php:298
 msgid ""
-"Share what you already know. Project location and timing are optional in the"
-" short form."
+"Share what you already know. Project location and timing are optional in the "
+"short form."
 msgstr ""
 "Teilen Sie mit, was bereits feststeht. Projektstandort und Zeitraum sind im "
 "Kurzformular optional."
@@ -3361,14 +3373,13 @@ msgstr "Ihr Lösungsentwurf ist leer."
 
 #: includes/Presentation/Shortcodes.php:365
 msgid ""
-"Browse products and add them to your solution draft. You can send an inquiry"
-" without an account."
+"Browse products and add them to your solution draft. You can send an inquiry "
+"without an account."
 msgstr ""
 "Wählen Sie Produkte für Ihren Lösungsentwurf aus. Sie können Ihre Anfrage "
 "ohne Konto senden."
 
-#: includes/Products/Comparison.php:224
-#: includes/Storefront/ProductView.php:330
+#: includes/Products/Comparison.php:224 includes/Storefront/ProductView.php:330
 msgid "Net price after partner sign-in"
 msgstr "Nettopreis nach Partner-Anmeldung"
 
@@ -3402,15 +3413,15 @@ msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:115
 msgid ""
-"The engineering data of every published product, the overlay components, the"
-" compatibility contract and its version (docs/specs/8-engineering-data.md, "
-"target shape 5; the binding contract is "
-"services/engine/schemas/feed.schema.json)."
+"The engineering data of every published product, the overlay components, the "
+"compatibility contract and its version (docs/specs/8-engineering-data.md, "
+"target shape 5; the binding contract is services/engine/schemas/"
+"feed.schema.json)."
 msgstr ""
 "Die technischen Daten aller veröffentlichten Produkte, die Overlay-"
-"Komponenten, der Kompatibilitätsvertrag und seine Version "
-"(docs/specs/8-engineering-data.md, Zielform 5; der verbindliche Vertrag ist "
-"services/engine/schemas/feed.schema.json)."
+"Komponenten, der Kompatibilitätsvertrag und seine Version (docs/specs/8-"
+"engineering-data.md, Zielform 5; der verbindliche Vertrag ist services/"
+"engine/schemas/feed.schema.json)."
 
 #: includes/Products/EngineeringFeedController.php:120
 msgid "The feed schema version, the contract with the engine (#14)."
@@ -3422,8 +3433,8 @@ msgstr "Die in data/compatibility.json angegebene Version."
 
 #: includes/Products/EngineeringFeedController.php:132
 msgid ""
-"The compatibility contract itself (data/compatibility.json), so the engine's"
-" sync refreshes its copy from the same fetch; its version equals "
+"The compatibility contract itself (data/compatibility.json), so the engine's "
+"sync refreshes its copy from the same fetch; its version equals "
 "compatibility_version. Absent when the site cannot read the file."
 msgstr ""
 "Der Kompatibilitätsvertrag selbst (data/compatibility.json), damit die "
@@ -3433,8 +3444,7 @@ msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:136
 msgid ""
-"Engineering components that are not products (data/engineering-"
-"overlay.json)."
+"Engineering components that are not products (data/engineering-overlay.json)."
 msgstr ""
 "Technische Komponenten, die keine Produkte sind (data/engineering-"
 "overlay.json)."
@@ -3757,8 +3767,7 @@ msgstr "Sprache der Produkte und ihrer Adressen."
 #: includes/Products/ProductSearchController.php:148
 msgid "The products of the range whose name or item number holds the query."
 msgstr ""
-"Die Produkte des Sortiments, deren Name oder Artikelnummer die Suche "
-"enthält."
+"Die Produkte des Sortiments, deren Name oder Artikelnummer die Suche enthält."
 
 #: includes/Products/ProductSearchController.php:152
 msgid "What was searched for."
@@ -3847,11 +3856,11 @@ msgstr "PDF herunterladen"
 
 #: includes/Proforma/AdminBox.php:83
 msgid ""
-"Save your changes to prices and quantities, then issue the Proforma invoice."
-" The customer receives an email with the link."
+"Save your changes to prices and quantities, then issue the Proforma invoice. "
+"The customer receives an email with the link."
 msgstr ""
-"Speichern Sie zuerst Ihre Änderungen an Preisen und Mengen, dann stellen Sie"
-" die Proformarechnung aus. Der Kunde erhält eine E-Mail mit dem Link."
+"Speichern Sie zuerst Ihre Änderungen an Preisen und Mengen, dann stellen Sie "
+"die Proformarechnung aus. Der Kunde erhält eine E-Mail mit dem Link."
 
 #: includes/Proforma/AdminBox.php:85
 msgid "Issue Proforma"
@@ -3861,48 +3870,46 @@ msgstr "Proforma ausstellen"
 msgid "Proforma"
 msgstr "Proforma"
 
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:41
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:55
 msgid "Proforma invoice issued"
 msgstr "Proformarechnung ausgestellt"
 
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:42
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:56
 msgid ""
 "Sent to the customer when staff issue the Proforma invoice of an inquiry."
 msgstr ""
-"Geht an den Kunden, wenn die Proformarechnung einer Anfrage ausgestellt "
-"wird."
+"Geht an den Kunden, wenn die Proformarechnung einer Anfrage ausgestellt wird."
 
-#. translators: {proforma_number}: Proforma number, {order_number}: inquiry
-#. number.
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:84
+#. translators: {proforma_number}: Proforma number, {order_number}: inquiry number.
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:199
 msgid "Your Proforma invoice {proforma_number} for inquiry #{order_number}"
 msgstr "Ihre Proformarechnung {proforma_number} zur Anfrage #{order_number}"
 
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:91
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:206
 msgid "Your Proforma invoice is ready"
 msgstr "Ihre Proformarechnung liegt bereit"
 
-#: includes/Proforma/Issuer.php:134
+#: includes/Proforma/Issuer.php:136
 msgid "This inquiry already has a Proforma invoice."
 msgstr "Für diese Anfrage ist bereits eine Proformarechnung ausgestellt."
 
-#: includes/Proforma/Issuer.php:137
+#: includes/Proforma/Issuer.php:139
 msgid "Only a received inquiry gets a Proforma invoice."
 msgstr ""
 "Eine Proformarechnung lässt sich nur für eine eingegangene Anfrage "
 "ausstellen."
 
-#: includes/Proforma/Issuer.php:156
+#: includes/Proforma/Issuer.php:158
 msgid "The inquiry has no products."
 msgstr "Die Anfrage enthält keine Produkte."
 
-#: includes/Proforma/Issuer.php:159
+#: includes/Proforma/Issuer.php:161
 msgid "Set a price for every product before issuing the Proforma invoice."
 msgstr ""
 "Setzen Sie für jedes Produkt einen Preis, bevor Sie die Proformarechnung "
 "ausstellen."
 
-#: includes/Proforma/Issuer.php:162
+#: includes/Proforma/Issuer.php:164
 msgid ""
 "Enter the bank account under WooCommerce → Settings → Inquiries before "
 "issuing a Proforma invoice."
@@ -3910,33 +3917,68 @@ msgstr ""
 "Tragen Sie unter WooCommerce → Einstellungen → Anfragen die Bankverbindung "
 "ein, bevor Sie eine Proformarechnung ausstellen."
 
-#: includes/Proforma/Issuer.php:183
+#: includes/Proforma/Issuer.php:185
 msgid ""
-"This inquiry is being issued a Proforma invoice right now; please reload the"
-" page in a moment."
+"This inquiry is being issued a Proforma invoice right now; please reload the "
+"page in a moment."
 msgstr ""
 "Diese Anfrage wird gerade mit einer Proformarechnung versehen; bitte laden "
 "Sie die Seite in einem Moment neu."
 
 #. translators: %s: Proforma number.
-#: includes/Proforma/Issuer.php:218
+#: includes/Proforma/Issuer.php:223
 #, php-format
 msgid "Proforma invoice %s issued."
 msgstr "Proformarechnung %s ausgestellt."
 
-#: includes/Proforma/Issuer.php:233
+#: includes/Proforma/Issuer.php:238
 msgid "No Proforma number could be reserved; please try again."
 msgstr ""
 "Es konnte keine Proforma-Nummer vergeben werden. Bitte versuchen Sie es "
 "erneut."
 
-#: includes/Protection/Accounts.php:119
+#: includes/Protection/Accounts.php:142
 msgid "Please verify your registration and try again."
 msgstr ""
 "Bitte bestätigen Sie die Sicherheitsprüfung für Ihre Registrierung und "
 "versuchen Sie es erneut."
 
-#: includes/Protection/Accounts.php:162
+#: includes/Protection/Accounts.php:156
+msgid ""
+"Please use no more than 250 characters for your first and last name "
+"together. Your account has not been created; your entries are still here."
+msgstr ""
+"Bitte verwenden Sie für Vor- und Nachnamen zusammen höchstens 250 Zeichen. "
+"Ihr Konto wurde nicht angelegt; Ihre Eingaben bleiben erhalten."
+
+#: includes/Protection/Accounts.php:170 includes/Protection/Accounts.php:195
+#: includes/Protection/Accounts.php:201
+#: includes/Protection/RegistrationSlots.php:613
+#: includes/Registration/RegistrationMessage.php:197
+#: includes/Registration/RegistrationNotices.php:452
+msgid ""
+"Registration is currently unavailable. Your account has not been created. "
+"Please try again later or email sales@de-linker.com."
+msgstr ""
+"Eine Registrierung ist derzeit nicht möglich. Ihr Konto wurde nicht "
+"angelegt. Bitte versuchen Sie es später erneut oder schreiben Sie an "
+"sales@de-linker.com."
+
+#: includes/Protection/Accounts.php:224
+msgid "Please re-enter your password."
+msgstr "Bitte geben Sie Ihr Passwort erneut ein."
+
+#: includes/Protection/Accounts.php:260 includes/Protection/Accounts.php:271
+msgid ""
+"The registration status could not be confirmed. Please try signing in before "
+"registering again, or email sales@de-linker.com. You can send inquiries "
+"without an account."
+msgstr ""
+"Der Status Ihrer Registrierung konnte nicht bestätigt werden. Versuchen Sie "
+"bitte, sich anzumelden, bevor Sie sich erneut registrieren, oder schreiben "
+"Sie an sales@de-linker.com. Anfragen können Sie auch ohne Konto senden."
+
+#: includes/Protection/Accounts.php:398
 msgid "Please verify your request and try again."
 msgstr ""
 "Bitte schließen Sie die Sicherheitsprüfung ab und versuchen Sie es erneut."
@@ -3945,6 +3987,17 @@ msgstr ""
 msgid "Your request could not be processed. Please try again."
 msgstr ""
 "Ihre Anfrage konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut."
+
+#: includes/Protection/BusinessCapacity.php:413
+msgid ""
+"Your request has not been saved. We cannot accept new requests on this "
+"website right now. Your entries and solution draft are still here. Please "
+"try again later or email sales@de-linker.com."
+msgstr ""
+"Ihre Anfrage wurde nicht gespeichert. Über diese Website können wir derzeit "
+"keine weiteren Anfragen annehmen. Ihre Eingaben und Ihr Lösungsentwurf sind "
+"weiterhin vorhanden. Bitte versuchen Sie es später erneut oder schreiben Sie "
+"an sales@de-linker.com."
 
 #: includes/Protection/Comments.php:58
 msgid "Please verify your comment and try again."
@@ -3974,8 +4027,8 @@ msgid ""
 "Please enable JavaScript to verify this request, or email sales@de-"
 "linker.com."
 msgstr ""
-"Für die Sicherheitsprüfung muss JavaScript aktiviert sein. Sie erreichen uns"
-" auch unter sales@de-linker.com."
+"Für die Sicherheitsprüfung muss JavaScript aktiviert sein. Sie erreichen uns "
+"auch unter sales@de-linker.com."
 
 #: includes/Protection/FormFields.php:31
 msgid "Request individual review of this message"
@@ -4074,8 +4127,8 @@ msgid ""
 "Counts cover receipts still in the retry window. They are not a complete "
 "traffic history or an exact cost report."
 msgstr ""
-"Die Zählung umfasst die noch gespeicherten Verarbeitungsbelege innerhalb der"
-" Wiederholungsfrist. Sie zeigt weder den vollständigen Datenverkehr noch "
+"Die Zählung umfasst die noch gespeicherten Verarbeitungsbelege innerhalb der "
+"Wiederholungsfrist. Sie zeigt weder den vollständigen Datenverkehr noch "
 "genaue Kosten."
 
 #: includes/Protection/HealthPage.php:73
@@ -4116,8 +4169,8 @@ msgid ""
 "a site-wide allowance. Recovery can happen sooner when work finishes."
 msgstr ""
 "Für jede Dimension wird das kleinste verbleibende Kontingent eines aktiven "
-"Zählbereichs angezeigt. Dieser Wert gilt nicht für die gesamte Website. Wenn"
-" ein Vorgang endet, kann das Kontingent früher wieder frei werden."
+"Zählbereichs angezeigt. Dieser Wert gilt nicht für die gesamte Website. Wenn "
+"ein Vorgang endet, kann das Kontingent früher wieder frei werden."
 
 #: includes/Protection/HealthPage.php:85
 msgid "Active buckets"
@@ -4150,23 +4203,12 @@ msgstr ""
 "Beobachtungsmodus dienen die Ergebnisse nur als Hinweis. Die Zähler werden "
 "um Mitternacht UTC zurückgesetzt."
 
-#: includes/Protection/Intake.php:80
+#: includes/Protection/Intake.php:87
 msgid ""
 "Your entries changed. Please reload the form before sending a new request."
 msgstr ""
 "Ihre Eingaben haben sich geändert. Bitte laden Sie das Formular neu, bevor "
 "Sie eine neue Anfrage senden."
-
-#: includes/Protection/Intake.php:180 includes/Protection/Intake.php:231
-#: includes/Protection/IntakeStore.php:46
-#: includes/Protection/IntakeStore.php:67
-msgid ""
-"The request status could not be confirmed. Your entries are still here. "
-"Please check before sending a new request."
-msgstr ""
-"Der Status Ihrer Anfrage konnte nicht bestätigt werden. Ihre Eingaben "
-"bleiben erhalten. Bitte prüfen Sie den Status, bevor Sie eine neue Anfrage "
-"senden."
 
 #. translators: %d is the number of complete inquiries awaiting staff review.
 #: includes/Protection/IntakeAdmin.php:71
@@ -4241,18 +4283,19 @@ msgstr "Diese Regel deaktivieren"
 msgid "Enable this rule"
 msgstr "Diese Regel aktivieren"
 
-#: includes/Protection/IntakeRelease.php:82
+#: includes/Protection/IntakeRelease.php:98
 msgid "Review completed by staff; one internal notification queued."
 msgstr ""
-"Prüfung durch das Team abgeschlossen; eine interne Benachrichtigung wurde in"
-" die Warteschlange gestellt."
+"Prüfung durch das Team abgeschlossen; eine interne Benachrichtigung wurde in "
+"die Warteschlange gestellt."
 
-#: includes/Protection/Module.php:121
+#: includes/Protection/Module.php:123
 msgid "This verification request is too large. Please try again."
 msgstr ""
 "Diese Verifizierungsanfrage ist zu groß. Bitte versuchen Sie es erneut."
 
-#: includes/Protection/Operation.php:61
+#: includes/Protection/Operation.php:67
+#: includes/Protection/RegistrationSlots.php:46
 msgid ""
 "This request has already been processed. Please check the result before "
 "sending it again."
@@ -4289,8 +4332,8 @@ msgid ""
 "until the saved request is resolved or its native data is erased."
 msgstr ""
 "Die verknüpften Anfragedaten wurden entfernt. Minimale Kapazitätsmarker "
-"bleiben erhalten, bis die gespeicherte Anfrage bearbeitet oder ihre Daten im"
-" System gelöscht wurden."
+"bleiben erhalten, bis die gespeicherte Anfrage bearbeitet oder ihre Daten im "
+"System gelöscht wurden."
 
 #. translators: %s: email domain.
 #: includes/Registration/AccountSignals.php:56
@@ -4348,6 +4391,7 @@ msgid "Search accounts"
 msgstr "Konten suchen"
 
 #: includes/Registration/AccountsController.php:84
+#: includes/Registration/RegistrationCapacityAdmin.php:128
 msgid "You are not allowed to review accounts."
 msgstr "Sie sind nicht berechtigt, Konten zu prüfen."
 
@@ -4356,8 +4400,7 @@ msgid "You are not allowed to change this account."
 msgstr "Sie dürfen dieses Konto nicht ändern."
 
 #: includes/Registration/AccountsController.php:139
-msgid ""
-"This account is unavailable or you do not have permission to review it."
+msgid "This account is unavailable or you do not have permission to review it."
 msgstr ""
 "Dieses Konto ist nicht verfügbar oder Sie sind nicht berechtigt, es zu "
 "prüfen."
@@ -4378,7 +4421,7 @@ msgid "Reason"
 msgstr "Grund"
 
 #: includes/Registration/AccountsTable.php:47
-#: includes/Registration/RegistrationInformation.php:69
+#: includes/Registration/RegistrationInformation.php:99
 msgid "Registered"
 msgstr "Registriert am"
 
@@ -4395,27 +4438,27 @@ msgstr "Prüfen oder Entscheidung ändern"
 msgid "All accounts"
 msgstr "Alle Konten"
 
-#: includes/Registration/Approval.php:101
+#: includes/Registration/Approval.php:116
 msgid "The username or the password is not correct."
 msgstr "Benutzername oder Passwort ist nicht korrekt."
 
-#: includes/Registration/Approval.php:227
+#: includes/Registration/Approval.php:275
 msgid "Pending review"
 msgstr "In Prüfung"
 
-#: includes/Registration/Approval.php:228
+#: includes/Registration/Approval.php:276
 msgid "Approved"
 msgstr "Freigegeben"
 
-#: includes/Registration/Approval.php:230
+#: includes/Registration/Approval.php:278
 msgid "Rejected"
 msgstr "Abgelehnt"
 
-#: includes/Registration/Approval.php:232
+#: includes/Registration/Approval.php:280
 msgid "No decision yet"
 msgstr "Noch nicht entschieden"
 
-#: includes/Registration/Approval.php:248
+#: includes/Registration/Approval.php:296
 msgid ""
 "This account is not approved for sign-in. We have emailed you the reason. "
 "Write to sales@de-linker.com and we will look at it again."
@@ -4506,12 +4549,12 @@ msgstr "Ihr Partner-Konto ist freigegeben"
 msgid "Partner account approved"
 msgstr "Partner-Konto freigegeben"
 
-#: includes/Registration/Emails/NewCustomerEmail.php:39
-#: includes/Registration/Emails/NewCustomerEmail.php:73
+#: includes/Registration/Emails/NewCustomerEmail.php:54
+#: includes/Registration/Emails/NewCustomerEmail.php:111
 msgid "New customer"
 msgstr "Neuer Kunde"
 
-#: includes/Registration/Emails/NewCustomerEmail.php:40
+#: includes/Registration/Emails/NewCustomerEmail.php:55
 msgid ""
 "Sent to the internal notification address, with blind copies, when a "
 "customer registers."
@@ -4520,24 +4563,24 @@ msgstr ""
 "sich ein Kunde registriert."
 
 #. translators: {company}: the customer's company.
-#: includes/Registration/Emails/NewCustomerEmail.php:66
+#: includes/Registration/Emails/NewCustomerEmail.php:104
 msgid "New customer: {company}"
 msgstr "Neuer Kunde: {company}"
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:35
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:86
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:94
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:55
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:110
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:118
 msgid "Registration received"
 msgstr "Registrierung eingegangen"
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:36
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:56
 msgid ""
 "Sent to the customer when the account is registered and waiting for review."
 msgstr ""
 "Geht an den Kunden, wenn das Konto registriert ist und auf die Prüfung "
 "wartet."
 
-#: includes/Registration/Emails/RegistrationReceivedEmail.php:87
+#: includes/Registration/Emails/RegistrationReceivedEmail.php:111
 msgid "We received your partner registration"
 msgstr "Wir haben Ihre Partner-Registrierung erhalten"
 
@@ -4576,12 +4619,12 @@ msgstr "Der Zugriff Ihres Partner-Kontos ist derzeit eingeschränkt"
 msgid "Access limited"
 msgstr "Zugriff eingeschränkt"
 
-#: includes/Registration/Emails/VatReviewEmail.php:46
-#: includes/Registration/Emails/VatReviewEmail.php:86
+#: includes/Registration/Emails/VatReviewEmail.php:47
+#: includes/Registration/Emails/VatReviewEmail.php:96
 msgid "VAT check changed"
 msgstr "USt-IdNr.-Prüfung geändert"
 
-#: includes/Registration/Emails/VatReviewEmail.php:47
+#: includes/Registration/Emails/VatReviewEmail.php:48
 msgid ""
 "Sent to the internal notification address, with blind copies, when the VIES "
 "verdict of a customer changes."
@@ -4590,7 +4633,7 @@ msgstr ""
 "sich das VIES-Ergebnis eines Kunden ändert."
 
 #. translators: {company}: the customer's company.
-#: includes/Registration/Emails/VatReviewEmail.php:79
+#: includes/Registration/Emails/VatReviewEmail.php:89
 msgid "VAT check changed: {company}"
 msgstr "USt-IdNr.-Prüfung geändert: {company}"
 
@@ -4661,28 +4704,157 @@ msgstr "Kunden öffnen"
 msgid "Registered on %s"
 msgstr "Registriert am %s"
 
-#: includes/Registration/RegistrationInformation.php:63
+#: includes/Registration/PendingProfileCapacity.php:430
+msgid ""
+"The status of your changes could not be confirmed. Please check your account "
+"before saving again, or email sales@de-linker.com."
+msgstr ""
+"Der Status Ihrer Änderungen konnte nicht bestätigt werden. Bitte prüfen Sie "
+"Ihr Konto, bevor Sie erneut speichern, oder schreiben Sie an sales@de-"
+"linker.com."
+
+#: includes/Registration/PendingProfileCapacity.php:430
+msgid ""
+"Your changes could not be saved. Your entries are still here. Please try "
+"again later or email sales@de-linker.com."
+msgstr ""
+"Ihre Änderungen konnten nicht gespeichert werden. Ihre Eingaben bleiben "
+"erhalten. Bitte versuchen Sie es später erneut oder schreiben Sie an "
+"sales@de-linker.com."
+
+#: includes/Registration/PendingProfileCapacity.php:433
+msgid "Please re-enter your passwords."
+msgstr "Bitte geben Sie Ihre Passwörter erneut ein."
+
+#: includes/Registration/RegistrationCapacityAdmin.php:35
+#: includes/Registration/RegistrationCapacityAdmin.php:45
+msgid "Registration capacity"
+msgstr "Registrierungskapazität"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:52
+msgid "Pending accounts"
+msgstr "Konten zur Prüfung"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:53
+#: includes/Registration/RegistrationCapacityAdmin.php:77
+#: includes/Registration/RegistrationPrivacy.php:100
+msgid "Interrupted registrations"
+msgstr "Unterbrochene Registrierungen"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:54
+msgid "Account capacity"
+msgstr "Kontokapazität"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:55
+msgid "Business profile bytes"
+msgstr "Geschäftliche Profildaten in Bytes"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:56
+msgid "Reserved profile bytes"
+msgstr "Reservierte Profildaten in Bytes"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:57
+msgid "Profile byte capacity"
+msgstr "Byte-Kapazität für Profildaten"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:63
+msgid "Recover notifications"
+msgstr "Benachrichtigungen wieder aufnehmen"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:64
+#: includes/Registration/RegistrationPrivacy.php:38
+#: includes/Registration/RegistrationPrivacy.php:52
+#: includes/Registration/RegistrationPrivacy.php:78
+#: includes/Registration/RegistrationPrivacy.php:82
+#: includes/Registration/RegistrationPrivacy.php:96
+msgid "Registration notifications"
+msgstr "Registrierungsbenachrichtigungen"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:82
+msgid "Mark as resolved"
+msgstr "Als erledigt markieren"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:85
+msgid "Recent staff decisions"
+msgstr "Letzte Entscheidungen des Teams"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:109
+msgid "Accepted by the notification queue"
+msgstr "In die Benachrichtigungswarteschlange aufgenommen"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:110
+msgid "Notification skipped by policy"
+msgstr "Benachrichtigung gemäß Versandregel übersprungen"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:111
+msgid "Notification data erased"
+msgstr "Benachrichtigungsdaten gelöscht"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:112
+msgid "Account created; notification pending"
+msgstr "Konto angelegt; Benachrichtigung ausstehend"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:114
+msgid "Registration receipt"
+msgstr "Registrierungsbestätigung"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:114
+msgid "Team notification"
+msgstr "Team-Benachrichtigung"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:118
+msgid "Approve account"
+msgstr "Konto freigeben"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:119
+msgid "Reject account"
+msgstr "Konto ablehnen"
+
+#: includes/Registration/RegistrationCapacityAdmin.php:146
+msgid ""
+"The registration state could not be confirmed. Please check the account and "
+"capacity before trying again."
+msgstr ""
+"Der Registrierungsstatus konnte nicht bestätigt werden. Bitte prüfen Sie das "
+"Konto und die Kapazität, bevor Sie es erneut versuchen."
+
+#: includes/Registration/RegistrationCapacityAdmin.php:164
+msgid "Reason for this decision"
+msgstr "Grund für diese Entscheidung"
+
+#: includes/Registration/RegistrationInformation.php:93
 msgid "Login email"
 msgstr "E-Mail-Adresse für die Anmeldung"
 
-#: includes/Registration/VatProfile.php:128
+#: includes/Registration/RegistrationPrivacy.php:141
+msgid "Registration notification data is busy. Please retry the erasure."
+msgstr ""
+"Die Registrierungsbenachrichtigungsdaten werden gerade verarbeitet. Bitte "
+"versuchen Sie die Löschung erneut."
+
+#: includes/Registration/RegistrationPrivacy.php:194
+msgid "Registration notification data could not be read. Please try again."
+msgstr ""
+"Die Daten zu den Registrierungsbenachrichtigungen konnten nicht gelesen "
+"werden. Bitte versuchen Sie es erneut."
+
+#: includes/Registration/VatProfile.php:120
 msgid "Valid (VIES)"
 msgstr "Gültig (VIES)"
 
-#: includes/Registration/VatProfile.php:129
+#: includes/Registration/VatProfile.php:121
 msgid "Not valid according to VIES – review"
 msgstr "Laut VIES ungültig – prüfen"
 
-#: includes/Registration/VatProfile.php:130
+#: includes/Registration/VatProfile.php:122
 msgid "Not checked (VIES unavailable or not an EU VAT ID) – review"
-msgstr ""
-"Nicht geprüft (VIES nicht erreichbar oder keine EU-USt-IdNr.) – prüfen"
+msgstr "Nicht geprüft (VIES nicht erreichbar oder keine EU-USt-IdNr.) – prüfen"
 
-#: includes/Registration/VatProfile.php:131
+#: includes/Registration/VatProfile.php:123
 msgid "No VAT ID given"
 msgstr "Keine USt-IdNr. angegeben"
 
-#: includes/Registration/VatProfile.php:133
+#: includes/Registration/VatProfile.php:125
 msgid "Not checked yet"
 msgstr "Noch nicht geprüft"
 
@@ -4693,16 +4865,16 @@ msgid ""
 "%d email could not be delivered. The attempts are in WooCommerce → Status → "
 "Logs (linker-mail); the message stays queued under its post id."
 msgid_plural ""
-"%d emails could not be delivered. The attempts are in WooCommerce → Status →"
-" Logs (linker-mail); each message stays queued under its post id."
+"%d emails could not be delivered. The attempts are in WooCommerce → Status → "
+"Logs (linker-mail); each message stays queued under its post id."
 msgstr[0] ""
 "%d E-Mail konnte nicht zugestellt werden. Die Versuche stehen unter "
 "WooCommerce → Status → Logs (linker-mail); die Nachricht bleibt unter ihrer "
 "Beitrags-ID in der Warteschlange."
 msgstr[1] ""
 "%d E-Mails konnten nicht zugestellt werden. Die Versuche stehen unter "
-"WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer"
-" Beitrags-ID in der Warteschlange."
+"WooCommerce → Status → Logs (linker-mail); jede Nachricht bleibt unter ihrer "
+"Beitrags-ID in der Warteschlange."
 
 #: includes/Settings/SettingsTab.php:78 includes/Settings/SettingsTab.php:84
 msgid "Team mailbox"
@@ -4713,9 +4885,9 @@ msgid ""
 "The address customers see: on the Proforma, on the website and in Genie's "
 "answers. Internal notifications do not go here."
 msgstr ""
-"Die Adresse, die Kunden sehen: auf der Proformarechnung, auf der Website und"
-" in den Antworten von Genie. Interne Benachrichtigungen gehen nicht an diese"
-" Adresse."
+"Die Adresse, die Kunden sehen: auf der Proformarechnung, auf der Website und "
+"in den Antworten von Genie. Interne Benachrichtigungen gehen nicht an diese "
+"Adresse."
 
 #: includes/Settings/SettingsTab.php:96
 msgid "Internal notifications"
@@ -4727,10 +4899,9 @@ msgid ""
 "form message, daily digest, health check) is one message to this address, "
 "with a blind copy to each address below."
 msgstr ""
-"Jede interne Benachrichtigung (neuer Kunde, USt-IdNr.-Prüfung, neue Anfrage,"
-" Nachricht über das Kontaktformular, Tagesübersicht, Gesundheitsprüfung) ist"
-" eine Nachricht an diese Adresse, mit einer Blindkopie an jede Adresse "
-"unten."
+"Jede interne Benachrichtigung (neuer Kunde, USt-IdNr.-Prüfung, neue Anfrage, "
+"Nachricht über das Kontaktformular, Tagesübersicht, Gesundheitsprüfung) ist "
+"eine Nachricht an diese Adresse, mit einer Blindkopie an jede Adresse unten."
 
 #: includes/Settings/SettingsTab.php:102
 msgid "Recipient"
@@ -4763,11 +4934,11 @@ msgstr "Ansprechperson"
 
 #: includes/Settings/SettingsTab.php:133
 msgid ""
-"Shown to customers at the top of their account. Without an email address the"
-" team mailbox is shown."
+"Shown to customers at the top of their account. Without an email address the "
+"team mailbox is shown."
 msgstr ""
-"Wird Kunden oben in ihrem Konto angezeigt. Ohne E-Mail-Adresse erscheint das"
-" Team-Postfach."
+"Wird Kunden oben in ihrem Konto angezeigt. Ohne E-Mail-Adresse erscheint das "
+"Team-Postfach."
 
 #: includes/Settings/SettingsTab.php:149
 msgid "Phone"
@@ -4825,11 +4996,9 @@ msgstr "Keine E-Mail-Adresse, nicht übernommen: %s"
 
 #: includes/Settings/SettingsTab.php:254
 msgid ""
-"The IBAN is not valid (check digits do not match); the previous IBAN is "
-"kept."
+"The IBAN is not valid (check digits do not match); the previous IBAN is kept."
 msgstr ""
-"Die IBAN ist ungültig (Prüfziffern stimmen nicht); die bisherige IBAN "
-"bleibt."
+"Die IBAN ist ungültig (Prüfziffern stimmen nicht); die bisherige IBAN bleibt."
 
 #: includes/Settings/SettingsTab.php:269
 msgid "The BIC is not valid (8 or 11 characters); the previous BIC is kept."
@@ -4842,8 +5011,8 @@ msgstr ""
 #: includes/Stock/StockController.php:75
 msgid ""
 "The pushed stock rows. Each is an object with a string sku and a qty "
-"(integer, 0 or more), a state (instock or outofstock), or both; rows that do"
-" not parse, or name an unknown SKU, are answered as error rows of their own."
+"(integer, 0 or more), a state (instock or outofstock), or both; rows that do "
+"not parse, or name an unknown SKU, are answered as error rows of their own."
 msgstr ""
 
 #: includes/Stock/StockController.php:102
@@ -4856,8 +5025,8 @@ msgstr ""
 
 #: includes/Stock/StockController.php:140
 msgid ""
-"The batch was applied but its audit row could not be written; retry the push"
-" (it is idempotent)."
+"The batch was applied but its audit row could not be written; retry the push "
+"(it is idempotent)."
 msgstr ""
 
 #: includes/Stock/StockController.php:166
@@ -4942,19 +5111,19 @@ msgstr "Vielen Dank. Ihre Anfrage ist eingegangen."
 
 #: includes/Vocabulary/Labels.php:54 includes/Vocabulary/Terms.php:90
 msgid ""
-"Please log in to request a Proforma invoice. No account yet? Register on the"
-" account page."
+"Please log in to request a Proforma invoice. No account yet? Register on the "
+"account page."
 msgstr ""
 "Bitte melden Sie sich an, um eine Proformarechnung anzufordern. Noch kein "
 "Konto? Registrieren Sie sich auf der Kontoseite."
 
 #: includes/Vocabulary/Labels.php:66
 msgid ""
-"We use your personal data to process your inquiry and for the other purposes"
-" described in our [privacy_policy]."
+"We use your personal data to process your inquiry and for the other purposes "
+"described in our [privacy_policy]."
 msgstr ""
-"Wir verwenden Ihre personenbezogenen Daten zur Bearbeitung Ihrer Anfrage und"
-" für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
+"Wir verwenden Ihre personenbezogenen Daten zur Bearbeitung Ihrer Anfrage und "
+"für die weiteren in unserer [privacy_policy] beschriebenen Zwecke."
 
 #: includes/Vocabulary/Labels.php:69
 msgid ""
@@ -4979,8 +5148,8 @@ msgid ""
 "Build a solution draft from products or product numbers. Approved partner "
 "accounts can review prices, delivery, tax and the Proforma request."
 msgstr ""
-"Stellen Sie einen Lösungsentwurf aus Produkten oder Produktnummern zusammen."
-" Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die "
+"Stellen Sie einen Lösungsentwurf aus Produkten oder Produktnummern zusammen. "
+"Freigegebene Partnerkonten können Preise, Lieferung, Steuern und die "
 "Proforma-Anfrage prüfen."
 
 #: includes/Vocabulary/Labels.php:123
@@ -5071,8 +5240,8 @@ msgid ""
 "%1$s has been removed from your solution draft because the product has "
 "changed since you added it. You can <a href=\"%2$s\">add it again</a>."
 msgstr ""
-"%1$s wurde aus Ihrem Lösungsentwurf entfernt, weil sich das Produkt geändert"
-" hat, seit Sie es hinzugefügt haben. Sie können es <a href=\"%2$s\">erneut "
+"%1$s wurde aus Ihrem Lösungsentwurf entfernt, weil sich das Produkt geändert "
+"hat, seit Sie es hinzugefügt haben. Sie können es <a href=\"%2$s\">erneut "
 "hinzufügen</a>."
 
 #: includes/Vocabulary/Terms.php:55
@@ -5170,8 +5339,8 @@ msgstr "Ihre Anfrage"
 #: includes/Vocabulary/Terms.php:91
 msgid "Please read and accept the terms and conditions to send your inquiry."
 msgstr ""
-"Bitte lesen und akzeptieren Sie die Geschäftsbedingungen, um Ihre Anfrage zu"
-" senden."
+"Bitte lesen und akzeptieren Sie die Geschäftsbedingungen, um Ihre Anfrage zu "
+"senden."
 
 #: includes/Vocabulary/Terms.php:92
 msgid "Your inquiry could not be sent. Please try again."
@@ -5186,8 +5355,8 @@ msgstr ""
 #: includes/Vocabulary/Terms.php:94
 msgid "Your inquiry could not be sent. Please reload the page and try again."
 msgstr ""
-"Ihre Anfrage konnte nicht gesendet werden. Bitte laden Sie die Seite neu und"
-" versuchen Sie es erneut."
+"Ihre Anfrage konnte nicht gesendet werden. Bitte laden Sie die Seite neu und "
+"versuchen Sie es erneut."
 
 #: includes/Vocabulary/Terms.php:95
 msgid "An inquiry cannot be sent at the moment. Please contact us."
@@ -5213,8 +5382,8 @@ msgstr ""
 #: includes/Vocabulary/Terms.php:100
 #, php-format
 msgid ""
-"Your inquiry could not be sent. Please check your <a "
-"href=\"%s\">inquiries</a> before sending it again."
+"Your inquiry could not be sent. Please check your <a href=\"%s\">inquiries</"
+"a> before sending it again."
 msgstr ""
 "Ihre Anfrage konnte nicht gesendet werden. Bitte prüfen Sie Ihre <a "
 "href=\"%s\">Anfragen</a>, bevor Sie die Anfrage erneut senden."
@@ -5279,8 +5448,7 @@ msgstr "Diese Angaben werden auf der Seite „Proforma-Anfrage“ vorausgefüllt
 msgid "Save company details"
 msgstr "Unternehmensdaten speichern"
 
-#. translators: 1: link to the inquiries, 2: link to the company details, 3:
-#. link to the account details.
+#. translators: 1: link to the inquiries, 2: link to the company details, 3: link to the account details.
 #: includes/Vocabulary/Terms.php:130 includes/Vocabulary/Terms.php:132
 #, php-format
 msgid ""
@@ -5288,27 +5456,24 @@ msgid ""
 "your <a href=\"%2$s\">company details</a> up to date and <a "
 "href=\"%3$s\">change your password and account details</a>."
 msgstr ""
-"In Ihrem Konto verfolgen Sie Ihre <a href=\"%1$s\">Anfragen</a>, halten Ihre"
-" <a href=\"%2$s\">Unternehmensdaten</a> aktuell und <a href=\"%3$s\">ändern "
+"In Ihrem Konto verfolgen Sie Ihre <a href=\"%1$s\">Anfragen</a>, halten Ihre "
+"<a href=\"%2$s\">Unternehmensdaten</a> aktuell und <a href=\"%3$s\">ändern "
 "Ihr Passwort und Ihre Kontodetails</a>."
 
 #: includes/Vocabulary/Terms.php:135
-msgid ""
-"In your account you can follow your inquiries and change your password:"
+msgid "In your account you can follow your inquiries and change your password:"
 msgstr ""
 "In Ihrem Konto können Sie Ihre Anfragen verfolgen und Ihr Passwort ändern:"
 
-#. translators: 1: site name, 2: username, 3: link to the account. The
-#. sentence follows the salutation "Hi %s,".
+#. translators: 1: site name, 2: username, 3: link to the account. The sentence follows the salutation "Hi %s,".
 #: includes/Vocabulary/Terms.php:137
 #, php-format
 msgid ""
 "Thank you for creating an account on %1$s. Your username is %2$s. In your "
 "account you can follow your inquiries and change your password: %3$s"
 msgstr ""
-"vielen Dank für die Registrierung bei %1$s. Ihr Benutzername lautet %2$s. In"
-" Ihrem Konto können Sie Ihre Anfragen verfolgen und Ihr Passwort ändern: "
-"%3$s"
+"vielen Dank für die Registrierung bei %1$s. Ihr Benutzername lautet %2$s. In "
+"Ihrem Konto können Sie Ihre Anfragen verfolgen und Ihr Passwort ändern: %3$s"
 
 #. translators: %s: inquiry number.
 #: includes/Vocabulary/Terms.php:139
@@ -5332,8 +5497,8 @@ msgstr[1] "%s wurden Ihrem Lösungsentwurf hinzugefügt."
 #: includes/Vocabulary/Terms.php:163
 #, php-format
 msgid ""
-"%d product of the earlier inquiry is not available and could not be added to"
-" your solution draft."
+"%d product of the earlier inquiry is not available and could not be added to "
+"your solution draft."
 msgid_plural ""
 "%d products of the earlier inquiry are not available and could not be added "
 "to your solution draft."
@@ -5459,8 +5624,8 @@ msgstr "Sie"
 
 #: templates/emails/linker-genie-conversation.php:54
 msgid ""
-"Genie is an AI system, and its answers can contain mistakes. Where an answer"
-" differs from the product's datasheet, the datasheet applies."
+"Genie is an AI system, and its answers can contain mistakes. Where an answer "
+"differs from the product's datasheet, the datasheet applies."
 msgstr ""
 "Genie ist ein KI-System und seine Antworten können Fehler enthalten. "
 "Maßgeblich sind die Datenblätter auf den Produktseiten."
@@ -5505,8 +5670,7 @@ msgstr ""
 msgid "Hello %s,"
 msgstr "Guten Tag %s,"
 
-#. translators: %s: inquiry number. The sentence follows the salutation "Hello
-#. %s,".
+#. translators: %s: inquiry number. The sentence follows the salutation "Hello %s,".
 #: templates/emails/linker-inquiry-received.php:46
 #, php-format
 msgid "Thank you for your inquiry %s."
@@ -5514,8 +5678,8 @@ msgstr "vielen Dank für Ihre Anfrage %s."
 
 #: templates/emails/linker-inquiry-received.php:52
 msgid ""
-"Create an account with this email to see net prices after approval and track"
-" your inquiry."
+"Create an account with this email to see net prices after approval and track "
+"your inquiry."
 msgstr ""
 "Erstellen Sie mit dieser E-Mail-Adresse ein Konto. Nach der Freigabe sehen "
 "Sie Nettopreise und können Ihre Anfrage verfolgen."
@@ -5528,8 +5692,7 @@ msgstr "Mengen aus dem Gespräch"
 msgid "Conditions from the conversation"
 msgstr "Projektbedingungen aus dem Gespräch"
 
-#. translators: 1: inquiry number, 2: company or reply email when no name was
-#. given.
+#. translators: 1: inquiry number, 2: company or reply email when no name was given.
 #: templates/emails/linker-new-inquiry.php:30
 #, php-format
 msgid "New inquiry %1$s from %2$s."
@@ -5547,8 +5710,7 @@ msgstr "Neue Anfrage %1$s von %2$s (%3$s)."
 msgid "This is about: %s"
 msgstr "Es geht um: %s"
 
-#. translators: 1: Proforma number, 2: inquiry number, 3: last day of
-#. validity. The sentence follows the salutation "Hello %s,".
+#. translators: 1: Proforma number, 2: inquiry number, 3: last day of validity. The sentence follows the salutation "Hello %s,".
 #: templates/emails/linker-proforma-issued.php:34
 #, php-format
 msgid ""
@@ -5573,13 +5735,12 @@ msgstr ""
 
 #: templates/emails/linker-registration-received.php:24
 msgid "A partner registration was submitted using this email address."
-msgstr ""
-"Über diese E-Mail-Adresse wurde eine Partnerregistrierung eingereicht."
+msgstr "Über diese E-Mail-Adresse wurde eine Partnerregistrierung eingereicht."
 
 #: templates/emails/linker-registration-received.php:25
 msgid ""
-"Our team will review the company details. Approved partner accounts can view"
-" net prices. Inquiries do not require an account."
+"Our team will review the company details. Approved partner accounts can view "
+"net prices. Inquiries do not require an account."
 msgstr ""
 "Unser Team prüft die Unternehmensangaben. Freigegebene Partnerkonten können "
 "Nettopreise sehen. Anfragen können Sie auch ohne Konto senden."
@@ -5587,8 +5748,8 @@ msgstr ""
 #: templates/emails/linker-registration-received.php:26
 msgid "If you did not submit this registration, you can ignore this email."
 msgstr ""
-"Falls Sie diese Registrierung nicht eingereicht haben, können Sie diese "
-"E-Mail ignorieren."
+"Falls Sie diese Registrierung nicht eingereicht haben, können Sie diese E-"
+"Mail ignorieren."
 
 #: templates/emails/linker-registration-received.php:28
 msgid "We received your partner registration."
@@ -5828,8 +5989,8 @@ msgid ""
 "This document is not an invoice within the meaning of Section 14 of the "
 "German VAT Act (UStG). The invoice will be issued separately."
 msgstr ""
-"Dieses Dokument ist keine Rechnung im Sinne des § 14 UStG. Die Rechnung wird"
-" gesondert ausgestellt."
+"Dieses Dokument ist keine Rechnung im Sinne des § 14 UStG. Die Rechnung wird "
+"gesondert ausgestellt."
 
 #: templates/proforma/proforma.php:161
 msgid "Bank transfer"
@@ -5841,9 +6002,353 @@ msgstr "Überweisung"
 msgid ""
 "Please transfer the total to the account below and give %s as the reference."
 msgstr ""
-"Bitte überweisen Sie den Gesamtbetrag auf das unten genannte Konto und geben"
-" Sie %s als Verwendungszweck an."
+"Bitte überweisen Sie den Gesamtbetrag auf das unten genannte Konto und geben "
+"Sie %s als Verwendungszweck an."
 
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#, php-format
+#~ msgid ""
+#~ "%1$d saved inquiries need verification or staff review.\n"
+#~ "Oldest inquiry: %2$s ago.\n"
+#~ "Count checked: %3$s.\n"
+#~ "Review saved inquiries: %4$s\n"
+#~ "\n"
+#~ "These inquiries are saved. Their individual team notifications have not "
+#~ "been released."
+#~ msgstr ""
+#~ "%1$d gespeicherte Anfragen benötigen eine Verifizierung oder eine Prüfung "
+#~ "durch das Team.\n"
+#~ "Älteste Anfrage: vor %2$s.\n"
+#~ "Stand der Zählung: %3$s.\n"
+#~ "Gespeicherte Anfragen prüfen: %4$s\n"
+#~ "\n"
+#~ "Diese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das "
+#~ "Team sind noch nicht freigegeben."
+
+#, php-format
+#~ msgid "%1$s (%2$s) sent a message through the contact form."
+#~ msgstr "%1$s (%2$s) hat eine Nachricht über das Kontaktformular gesendet."
+
+#, php-format
+#~ msgid "%d answer"
+#~ msgid_plural "%d answers"
+#~ msgstr[0] "%d Antwort"
+#~ msgstr[1] "%d Antworten"
+
+#, php-format
+#~ msgid "%d document"
+#~ msgid_plural "%d documents"
+#~ msgstr[0] "%d Dokument"
+#~ msgstr[1] "%d Dokumente"
+
+#, php-format
+#~ msgid "%d saved inquiries need staff review."
+#~ msgstr "%d gespeicherte Anfragen müssen vom Team geprüft werden."
+
+#~ msgid ""
+#~ "A restriction or rejection needs a reason; the customer reads it in the "
+#~ "email."
+#~ msgstr ""
+#~ "Eine Einschränkung oder Ablehnung braucht einen Grund; der Kunde liest "
+#~ "ihn in der E-Mail."
+
+#~ msgid "Account with limited access"
+#~ msgstr "Konto mit eingeschränktem Zugriff"
+
+#~ msgid "Add to cart"
+#~ msgstr "In den Warenkorb"
+
+#~ msgid "Address"
+#~ msgstr "Anschrift"
+
+#~ msgid "Answer this email to reply to the visitor directly."
+#~ msgstr ""
+#~ "Antworten Sie auf diese E-Mail, um dem Besucher direkt zu antworten."
+
+#~ msgid "Authenticated SMTP is configured for internal notifications."
+#~ msgstr ""
+#~ "Authentifiziertes SMTP ist für interne Benachrichtigungen konfiguriert."
+
+#~ msgid ""
+#~ "Browse the products now. Adding to the solution draft is possible only "
+#~ "after your account has been reviewed."
+#~ msgstr ""
+#~ "Durchsuchen Sie jetzt die Produkte. Das Hinzufügen zum Lösungsentwurf ist "
+#~ "erst nach der Kontoprüfung möglich."
+
+#~ msgid "Choose approve, restrict or reject."
+#~ msgstr "Wählen Sie Freigeben, Einschränken oder Ablehnen."
+
+#~ msgid "Close image viewer"
+#~ msgstr "Bildbetrachter schließen"
+
+#~ msgid "Compatible products"
+#~ msgstr "Kompatible Produkte"
+
+#~ msgid "Contact and address"
+#~ msgstr "Kontakt und Adresse"
+
+#~ msgid "Contact form message"
+#~ msgstr "Nachricht über das Kontaktformular"
+
+#~ msgid "Contact form receipt"
+#~ msgstr "Eingangsbestätigung des Kontaktformulars"
+
+#~ msgid "FAQs"
+#~ msgstr "Produktfragen"
+
+#~ msgid "Find answers and product documents."
+#~ msgstr "Antworten und Dokumente zu Produkten finden."
+
+#~ msgid "Get your Proforma"
+#~ msgstr "Proformarechnung anfordern"
+
+#~ msgid "How can we help?"
+#~ msgstr "Wie können wir Ihnen helfen?"
+
+#~ msgid ""
+#~ "If anything is missing, reply to this email and it reaches the same team."
+#~ msgstr ""
+#~ "Falls etwas fehlt: Antworten Sie auf diese E-Mail, damit erreichen Sie "
+#~ "dasselbe Team."
+
+#~ msgid "In comparison"
+#~ msgstr "Im Vergleich"
+
+#~ msgid "Initial guidance only. Every inquiry is accepted and notified."
+#~ msgstr ""
+#~ "Die Einschätzung dient als Hinweis. Jede Anfrage wird gespeichert und dem "
+#~ "Team gemeldet."
+
+#~ msgid "Input voltage"
+#~ msgstr "Eingangsspannung"
+
+#~ msgid "Inverters per module"
+#~ msgstr "Wechselrichter je Modul"
+
+#~ msgid "Item number:"
+#~ msgstr "Artikelnummer:"
+
+#, php-format
+#~ msgid "Last change %1$s by %2$s."
+#~ msgstr "Letzte Änderung %1$s durch %2$s."
+
+#~ msgid "Log in and request a Proforma"
+#~ msgstr "Anmelden und Proforma anfordern"
+
+#, php-format
+#~ msgid "Matching entries: %d"
+#~ msgstr "Passende Einträge: %d"
+
+#~ msgid "Message:"
+#~ msgstr "Nachricht:"
+
+#~ msgid "Net prices and Proforma requests once approved"
+#~ msgstr "Nettopreise und Proforma-Anfragen nach Freigabe"
+
+#~ msgid "New message from the contact form"
+#~ msgstr "Neue Nachricht über das Kontaktformular"
+
+#~ msgid "New message from {name}"
+#~ msgstr "Neue Nachricht von {name}"
+
+#~ msgid "No account yet? Register"
+#~ msgstr "Noch kein Konto? Registrieren"
+
+#~ msgid "No matching entries. Try another search term."
+#~ msgstr "Keine passenden Einträge. Versuchen Sie einen anderen Suchbegriff."
+
+#~ msgid "Nothing to submit yet."
+#~ msgstr "Noch nichts zum Absenden."
+
+#~ msgid "Numbers read PREFIX-YEAR-NNNN and count from 1 each calendar year."
+#~ msgstr ""
+#~ "Nummern lauten PRÄFIX-JAHR-NNNN und beginnen in jedem Kalenderjahr bei 1."
+
+#~ msgid "Please choose"
+#~ msgstr "Bitte wählen"
+
+#~ msgid "Please enter a valid postcode."
+#~ msgstr "Bitte geben Sie eine gültige Postleitzahl ein."
+
+#~ msgid "Prices after approval"
+#~ msgstr "Preise nach Freigabe"
+
+#~ msgid ""
+#~ "Prices are shown after you log in. Then you can request a Proforma "
+#~ "invoice for this solution draft."
+#~ msgstr ""
+#~ "Preise sehen Sie nach der Anmeldung. Danach können Sie für diesen "
+#~ "Lösungsentwurf eine Proformarechnung anfordern."
+
+#~ msgid "Proforma request sign-in"
+#~ msgstr "Anmeldung zur Proforma-Anfrage"
+
+#, php-format
+#~ msgid "Reply address: %s"
+#~ msgstr "Antwortadresse: %s"
+
+#~ msgid ""
+#~ "Required for restrict and reject; the customer reads it in the email "
+#~ "about the change."
+#~ msgstr ""
+#~ "Pflicht beim Einschränken und Ablehnen; der Kunde liest ihn in der E-Mail "
+#~ "zur Änderung."
+
+#~ msgid ""
+#~ "Review the lines in your basket, adjust quantities and check the totals. "
+#~ "Approved partner accounts see net pricing, tax and delivery terms before "
+#~ "checkout."
+#~ msgstr ""
+#~ "Überprüfen Sie die Positionen in Ihrem Warenkorb, passen Sie die Mengen "
+#~ "an und prüfen Sie die Gesamtsummen. Zugelassene Partnerkonten sehen "
+#~ "Nettopreise, Steuern und Lieferbedingungen vor dem Checkout."
+
+#~ msgid "Search questions or models"
+#~ msgstr "Fragen oder Modelle suchen"
+
+#~ msgid "See the applications"
+#~ msgstr "Zu den Anwendungen"
+
+#~ msgid "Send enquiry"
+#~ msgstr "Anfrage senden"
+
+#~ msgid ""
+#~ "Sent to the internal notification address, with blind copies, when the "
+#~ "contact form is sent."
+#~ msgstr ""
+#~ "Geht an die Adresse für interne Benachrichtigungen (mit Blindkopien), "
+#~ "wenn das Kontaktformular abgesendet wird."
+
+#~ msgid "Sent to the visitor when the contact form is sent."
+#~ msgstr ""
+#~ "Wird an den Besucher gesendet, wenn das Kontaktformular abgesendet wird."
+
+#~ msgid "Sign in for partner pricing"
+#~ msgstr "Für Partnerpreise anmelden"
+
+#~ msgid "Sign in or register"
+#~ msgstr "Anmelden oder registrieren"
+
+#~ msgid "Sign in to get your Proforma."
+#~ msgstr "Melden Sie sich an, um Ihre Proformarechnung zu erhalten."
+
+#~ msgid "Sign in to request your Proforma"
+#~ msgstr "Melden Sie sich an, um Ihre Proformarechnung anzufordern"
+
+#~ msgid "Sign-in details"
+#~ msgstr "Zugangsdaten"
+
+#~ msgid "Status display"
+#~ msgstr "Statusanzeige"
+
+#~ msgid ""
+#~ "Thank you for your message. The Linker team will reply to this address."
+#~ msgstr ""
+#~ "Vielen Dank für Ihre Nachricht. Das Linker-Team antwortet an diese "
+#~ "Adresse."
+
+#~ msgid ""
+#~ "The Proforma request is reserved for Linker partner accounts. Register, "
+#~ "add your systems, and return here — VAT and delivery are ours to handle."
+#~ msgstr ""
+#~ "Die Proforma-Anfrage ist Linker-Partnerkonten vorbehalten. Registrieren "
+#~ "Sie sich, fügen Sie Ihre Systeme hinzu und kehren Sie hierher zurück — "
+#~ "Umsatzsteuer und Lieferung übernehmen wir."
+
+#~ msgid "Up to %d products. Remove one to add another."
+#~ msgstr ""
+#~ "Bis zu %d Produkte. Entfernen Sie eines, um ein weiteres hinzuzufügen."
+
+#~ msgid ""
+#~ "We are reviewing your partner account. Net prices and the Proforma "
+#~ "request open as soon as it is approved, and we will email you."
+#~ msgstr ""
+#~ "Wir prüfen Ihr Partner-Konto. Nettopreise und die Proforma-Anfrage öffnen "
+#~ "sich mit der Freigabe; wir melden uns per E-Mail."
+
+#~ msgid ""
+#~ "We check EU VAT IDs in the European Commission's VIES system. You can "
+#~ "register without one."
+#~ msgstr ""
+#~ "Eine EU-USt-IdNr. prüfen wir im VIES-System der Europäischen Kommission. "
+#~ "Sie können sich auch ohne USt-IdNr. registrieren."
+
+#~ msgid ""
+#~ "We have not sent a confirmation email. The Linker team will reply to the "
+#~ "email address you provided."
+#~ msgstr ""
+#~ "Es wurde keine Bestätigungs-E-Mail versendet. Das Linker-Team antwortet "
+#~ "an die angegebene E-Mail-Adresse."
+
+#~ msgid "We received your message"
+#~ msgstr "Wir haben Ihre Nachricht erhalten"
+
+#, php-format
+#~ msgid "Write to %s and we will look at your account again."
+#~ msgstr "Schreiben Sie an %s, und wir sehen uns Ihr Konto erneut an."
+
+#, php-format
+#~ msgid "Written in: %s"
+#~ msgstr "Geschrieben auf: %s"
+
+#~ msgid ""
+#~ "You can browse the products and match an item-number list now. Adding to "
+#~ "the solution draft is possible only after your account has been reviewed."
+#~ msgstr ""
+#~ "Sie können die Produkte durchsuchen und eine Artikelnummernliste "
+#~ "abgleichen. Das Hinzufügen zum Lösungsentwurf ist erst nach der "
+#~ "Kontoprüfung möglich."
+
+#~ msgid ""
+#~ "You can keep browsing the products, and you can reach us any time at "
+#~ "sales@de-linker.com. Net prices and the Proforma request are paused while "
+#~ "the account is limited."
+#~ msgstr ""
+#~ "Sie können die Produkte weiterhin ansehen und uns jederzeit unter "
+#~ "sales@de-linker.com erreichen. Nettopreise und Proforma-Anfrage sind "
+#~ "pausiert, solange das Konto eingeschränkt ist."
+
+#~ msgid ""
+#~ "Your Proforma invoice will be in your account under Inquiries, and we "
+#~ "will send you a link by email."
+#~ msgstr ""
+#~ "Ihre Proformarechnung finden Sie dann in Ihrem Konto unter „Anfragen“; "
+#~ "den Link schicken wir Ihnen auch per E-Mail."
+
+#~ msgid "Your message:"
+#~ msgstr "Ihre Nachricht:"
+
+#~ msgid ""
+#~ "Your partner account is limited for now: the products and your questions "
+#~ "stay open, net prices and the Proforma request are paused."
+#~ msgstr ""
+#~ "Ihr Partner-Konto ist vorerst eingeschränkt: Produkte und Ihre Fragen "
+#~ "bleiben offen, Nettopreise und Proforma-Anfrage sind pausiert."
+
+#~ msgid ""
+#~ "Your solution draft is empty. Add matched systems, then come back for "
+#~ "your Proforma."
+#~ msgstr ""
+#~ "Ihr Lösungsentwurf ist leer. Fügen Sie passende Systeme hinzu und kehren "
+#~ "Sie dann für Ihre Proformarechnung zurück."
+
+#~ msgid ""
+#~ "Your solution draft is saved. Log in with your partner account to send "
+#~ "the inquiry — no account yet? Register on the account page; the draft "
+#~ "waits for you."
+#~ msgstr ""
+#~ "Ihr Lösungsentwurf ist gespeichert. Melden Sie sich mit Ihrem Partner-"
+#~ "Konto an, um die Anfrage abzusenden — noch kein Konto? Registrieren Sie "
+#~ "sich auf der Kontoseite; Ihr Entwurf wartet dort auf Sie."
+
+#~ msgid "no company given"
+#~ msgstr "kein Unternehmen angegeben"
+
+#~ msgid "product"
+#~ msgid_plural "products"
+#~ msgstr[0] "Produkt"
+#~ msgstr[1] "Produkte"

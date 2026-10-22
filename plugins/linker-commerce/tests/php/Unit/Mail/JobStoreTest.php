@@ -41,6 +41,9 @@ final class JobStoreTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'clean_post_cache', array( 'return' => null ) );
+		WP_Mock::userFunction( 'get_post_status', array( 'return' => 'private' ) );
+
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( $value ) => json_encode( $value ) ) );
 		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn ( $value ) => $value ) );
 		WP_Mock::userFunction( 'wp_strip_all_tags', array( 'return' => static fn ( string $text ): string => strip_tags( $text ) ) );
@@ -78,7 +81,7 @@ final class JobStoreTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		$message = new Message( array( 'sales@de-linker.com' ), 'New <b>inquiry</b> #20', '<p>Body</p>', array( 'Bcc: a@example.test' ), array() );
-		$jobs    = new JobStore();
+		$jobs    = new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() );
 
 		$this->assertSame( 7, $jobs->create( $message ) );
 		$job = $jobs->load( 7 );
@@ -95,7 +98,7 @@ final class JobStoreTest extends TestCase {
 		WP_Mock::userFunction( 'wp_insert_post', array( 'return' => new WP_Error( 'db', 'No.' ) ) );
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => true ) );
 
-		$this->assertSame( 0, ( new JobStore() )->create( new Message( array(), 'S', 'B', array(), array() ) ) );
+		$this->assertSame( 0, ( new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() ) )->create( new Message( array(), 'S', 'B', array(), array() ) ) );
 	}
 
 	/**
@@ -121,7 +124,7 @@ final class JobStoreTest extends TestCase {
 				'args'  => array( 7, true ),
 			)
 		);
-		$jobs = new JobStore();
+		$jobs = new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() );
 
 		$jobs->record_failure( 7, 2, 'Could not instantiate mail function.' );
 		$this->assertSame( 2, $this->meta['_linker_mail_attempts'] );
@@ -148,7 +151,7 @@ final class JobStoreTest extends TestCase {
 			)
 		);
 
-		( new JobStore() )->register_post_type();
+		( new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() ) )->register_post_type();
 
 		$this->assertConditionsMet();
 	}
@@ -210,7 +213,7 @@ final class JobStoreTest extends TestCase {
 			)
 		);
 
-		$failed = ( new JobStore() )->failed();
+		$failed = ( new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() ) )->failed();
 
 		$this->assertSame(
 			array(
@@ -237,6 +240,6 @@ final class JobStoreTest extends TestCase {
 	public function test_failed_of_an_empty_queue(): void {
 		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
 
-		$this->assertSame( array(), ( new JobStore() )->failed() );
+		$this->assertSame( array(), ( new JobStore( new \Linker\Commerce\Tests\Fixtures\JobCapacityMemory() ) )->failed() );
 	}
 }
