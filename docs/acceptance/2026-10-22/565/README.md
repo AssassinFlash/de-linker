@@ -215,3 +215,27 @@ with zero account pages created and unchanged pre-existing state. See
 [bare pass](evidence/native-bare-after.json) and
 [snapshot guard](evidence/native-snapshot-ci-guard.json).
 These local results do not mark the next hosted CI run passed in advance.
+
+### Independent-process assessment fixture cache
+
+Hosted run39797885805 next reached the pre-existing assessment suite and failed
+`AssessmentAsyncTest::test_real_http_submit_does_not_wait_for_two_or_eight_second_classification`:
+the polling parent still read `false` at the final array assertion. The later
+administrator-MFA step was not reached in this failed job; local MFA evidence
+above remains separate.
+
+A local native two-process probe first reads an absent owned option, then writes
+it in a separate PHP process. Direct SQL confirms the row exists. Deleting only
+the option's positive-cache key still returns the parent's cached absence;
+deleting native `notoptions` as well returns the real array. The poll now clears
+that negative cache, matching the earlier disconnected-client poll in the same
+file. Production assessment code, deadlines and all timing assertions are unchanged.
+
+The complete native `AssessmentAsyncTest` passes **8 tests /150 assertions**.
+The actual 2/8-second workers finish after2.108/8.109 seconds while the client
+receives its response in0.774/0.164 seconds in this local run. These measurements
+prove this local asynchronous test path, not a production latency guarantee.
+The full hosted assessment scope also passes locally: **75 tests /856 assertions**.
+The next exact hosted head remains an explicit gate. An independent Spec and
+Standards review of this one-line polling change passes without findings; it
+does not replace the exact-head CI gate.
