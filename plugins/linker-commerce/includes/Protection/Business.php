@@ -73,14 +73,10 @@ final class Business {
 		$email  = $payload['email'] ?? ( $payload['details']['email'] ?? '' );
 		$owners = is_string( $email ) && is_email( $email ) ? array( Allowance::owner_for( Identity::recipient( $email ) ) ) : array();
 		if ( 'enforce' === $config->mode && in_array( $action, array( 'contact', 'inquiry' ), true ) ) {
-			$message    = $payload['message'] ?? ( $payload['details']['message'] ?? '' );
-			$campaign   = is_string( $message ) && Campaign::matches( $message );
-			$individual = $campaign && '1' === ( $post['linker_individual_review'] ?? '' );
-			if ( $individual ) {
-				$hex = hash_hmac( 'sha256', 'individual-review|' . $id . '|' . $identity->binding(), wp_salt( 'nonce' ) );
-				$id  = substr( $hex, 0, 8 ) . '-' . substr( $hex, 8, 4 ) . '-4' . substr( $hex, 13, 3 ) . '-8' . substr( $hex, 17, 3 ) . '-' . substr( $hex, 20, 12 );
+			if ( Campaign::submitted( $payload ) ) {
+				return new WP_Error( 'linker_admission_input', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
 			}
-			$lane = $campaign ? ( $individual ? 'individual' : 'campaign' ) : ( $config->ready() && Intake::verified( $proof, $action, $identity, $id ) ? '' : 'verification' );
+			$lane = $config->ready() && Intake::verified( $proof, $action, $identity, $id ) ? '' : 'verification';
 			if ( '' !== $lane ) {
 				return Intake::run( $lane, $action, $id, $fp, $identity, $payload, $limits, $carry, $owners, $work );
 			}
