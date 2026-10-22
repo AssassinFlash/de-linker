@@ -45,13 +45,13 @@ Native suite command from `plugins/linker-commerce`:
 LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/i542/wordpress \
   /opt/homebrew/opt/php@8.3/bin/php vendor/bin/phpunit \
   -c phpunit.integration.xml.dist \
-  --filter 'SafeIntakeTest|BusinessAdmissionTest|NotificationHoldTest|PublicLedgerTest|PublicControllerTest'
+  --filter 'SafeIntakeTest|BusinessAdmissionTest|NotificationHoldTest|PublicLedgerTest|PublicControllerTest|AssessmentAsyncTest|MailBudgetTest|MailBudgetRollbackTest|ReviewReminderTest|InternalSmtpTest'
 ```
 
-The combined suite passed 70 tests / 909 assertions before the additional
-erased-record release regression. The final focused SafeIntake run then passed
-18 tests / 281 assertions, including that regression and the #545 staff-release
-transaction rollback boundary. A maximum-length Unicode message first failed
+The final integrated native suite passed **109 tests / 1384 assertions** on the
+#545 `877d6e2e` dependency plus #543 fixture correction `06cf59a5`. This includes
+the staff-release transaction rollback, erasure/release interleaving and first
+initialization negative-cache regressions. A maximum-length Unicode message first failed
 under JSON escape-length accounting; the UTF-8 semantic-byte fix now saves the
 entire original message. Coverage exercises native
 guest/pending/approved customers, draft lines, successful/failed/forged/wrong-scope
@@ -61,10 +61,15 @@ last-slot competition between two independent PHP/DB connections, campaign
 cross-cookie/email/amount aggregation, exact-match exclusions, separate individual
 capacity, capability/record-bound staff release, zero duplicate model/mail jobs,
 privacy erasure before and after native write, truthful receipt copy, and the
-content-free operational summary producer.
+content-free operational summary producer. The two real HTTP fixtures simulated
+2- and 8-second classification while customer responses returned in 0.232 and
+0.256 seconds respectively; the real independent background requests completed.
+No live model was called. See [privacy-race.md](privacy-race.md) and
+[initialization-race.md](initialization-race.md) for explicit red/green evidence
+and the exact consumer/cache-mode boundaries.
 
-Commerce unit suite: 1484 discovered, 6125 assertions, 260 integration-only
-tests skipped by the unit configuration. Protection JavaScript: 24 passing tests;
+Commerce unit suite: 1518 discovered, 6139 assertions, 295 integration-only
+tests skipped by the unit configuration. Final targeted protection JavaScript: 18 passing tests;
 TypeScript, ESLint and formatting passed. Commerce PHPStan level 8 and WPCS
 passed on the implementation. German copy, gettext validity, translation coverage
 and internal-home URL gates passed. Build output was regenerated from source.

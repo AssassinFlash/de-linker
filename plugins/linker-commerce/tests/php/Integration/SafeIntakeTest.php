@@ -371,10 +371,22 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	 * @return array<string,mixed>
 	 */
 	private function erase_in_other_connection( int $id ): array {
+		return $this->run_native_worker( 'intake_privacy_worker.php', array( (string) $id ) );
+	}
+
+	/**
+	 * Execute one local worker with its own native DB connection and object cache.
+	 *
+	 * @param string   $fixture Tracked fixture filename.
+	 * @param string[] $arguments Fixture arguments.
+	 * @phpstan-param list<string> $arguments
+	 * @return array<string,mixed>
+	 */
+	private function run_native_worker( string $fixture, array $arguments ): array {
 		$pipes = array();
-		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Independent local WordPress/DB erasure, no external calls.
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Independent local WordPress/DB connection, no external calls.
 		$process = proc_open(
-			array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/intake_privacy_worker.php', (string) $id ),
+			array_merge( array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/' . $fixture ), $arguments ),
 			array(
 				0 => array( 'pipe', 'r' ),
 				1 => array( 'pipe', 'w' ),
@@ -392,6 +404,63 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$result = json_decode( (string) $out, true );
 		self::assertIsArray( $result, (string) $out );
 		return $result;
+	}
+
+	/** First initialization must ignore another connection's stale negative option cache. */
+	public function test_first_two_saves_preserve_both_records_after_negative_cache_warmup(): void {
+		$barrier = tempnam( sys_get_temp_dir(), 'linker-542-init-' );
+		self::assertIsString( $barrier );
+		$this->later(
+			static function () use ( $barrier ): void {
+				unlink( $barrier );
+			}
+		);
+		$pipes = array();
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- B warms its native in-process negative cache before A's first DB save.
+		$process = proc_open(
+			array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/safe_intake_worker.php', $barrier, 'initial-' . self::tag() . '@example.test', 'negative-cache' ),
+			array(
+				0 => array( 'pipe', 'r' ),
+				1 => array( 'pipe', 'w' ),
+				2 => array( 'pipe', 'w' ),
+			),
+			$pipes
+		);
+		self::assertIsResource( $process );
+		fclose( $pipes[0] );
+		$until = microtime( true ) + 5;
+		while ( 'ready' !== file_get_contents( $barrier ) && microtime( true ) < $until ) {
+			usleep( 10000 );
+		}
+		self::assertSame( 'ready', file_get_contents( $barrier ) );
+		$first = ( new Handler() )->process( $this->post() );
+		self::assertInstanceOf( WC_Order::class, $first );
+		// B still has its real WordPress notoptions cache; do not reset it here.
+		file_put_contents( $barrier, 'go' );
+		$out = stream_get_contents( $pipes[1] );
+		$err = stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		self::assertSame( 0, proc_close( $process ), (string) $err );
+		$second = json_decode( (string) $out, true );
+		self::assertIsArray( $second );
+		self::assertArrayHasKey( 'order', $second );
+		$second_id = (int) $second['order'];
+		$this->later(
+			static function () use ( $second_id ): void {
+				$order = wc_get_order( $second_id );
+				if ( $order instanceof WC_Order ) {
+					$order->delete( true );
+				}
+			}
+		);
+		wp_cache_delete( IntakeStore::OPTION, 'options' );
+		$state = get_option( IntakeStore::OPTION );
+		self::assertIsArray( $state );
+		self::assertCount( 2, $state['entries'] );
+		$ids = array_map( static fn ( array $entry ): int => (int) $entry['order'], $state['entries'] );
+		self::assertContains( $first->get_id(), $ids );
+		self::assertContains( $second_id, $ids );
 	}
 
 	/** A failed durable staff audit rolls back its job and preserves both budgets. */

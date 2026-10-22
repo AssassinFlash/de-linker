@@ -48,6 +48,13 @@ PII and retry associations, with no raw content in the capacity registry. All
 pre-existing browser/account/connection limits and global mail/model budgets remain.
 The verified path never consults the review capacity.
 
+Capacity reads, initial insert, exact-snapshot compare-and-write and readback use
+the database directly under that connection-owned mutex. WordPress request-local
+positive/negative option caches cannot initialize an empty replacement over an
+existing registry. Storage remains the same native serialized non-autoloaded
+option, with options/notoptions/alloptions cache invalidation; no table or data
+migration is introduced.
+
 Native erasure and staff restoration acquire locks in the same order:
 `release-{inquiry_id}` then `intake-capacity`. The earliest native erasure
 listener persists the `Reviews::ERASED` tombstone and removes the intake marker

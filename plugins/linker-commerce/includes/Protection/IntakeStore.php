@@ -16,6 +16,19 @@ use WP_Error;
 /** Native options store only bounded HMAC references; Woo owns all content. */
 final class IntakeStore {
 	public const OPTION = 'linker_public_review_capacity';
+	private const MUTEX = 'intake-capacity';
+	/**
+	 * Exact native serialized snapshot for compare-and-write within this edit.
+	 *
+	 * @var string|null
+	 */
+	private static ?string $snapshot = null;
+	/**
+	 * A missing option is a valid initial snapshot only inside a held edit.
+	 *
+	 * @var bool
+	 */
+	private static bool $editing = false;
 	// Initial operating allocation and separate lanes: docs/specs/542-safe-intake.md.
 	public const CAPACITY = array(
 		'verification' => 128,
@@ -32,25 +45,30 @@ final class IntakeStore {
 	public static function edit( callable $work ): WC_Order|WP_Error|array {
 		$result = new WP_Error( 'linker_intake_busy', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 		Lock::run(
-			'intake-capacity',
+			self::MUTEX,
 			static function () use ( $work, &$result ): void {
-				wp_cache_delete( self::OPTION, 'options' );
-				$state = get_option(
-					self::OPTION,
-					array(
+				$previous = self::$snapshot;
+				$editing  = self::$editing;
+				try {
+					$raw   = self::read();
+					$state = null === $raw ? array(
 						'entries'        => array(),
 						'campaign_count' => 0,
-					)
-				);
-				if ( ! is_array( $state ) || ! is_array( $state['entries'] ?? null ) || count( $state['entries'] ) > array_sum( self::CAPACITY ) ) {
-					return;
-				}
-				try {
-					$result = $work( $state );
+					) : maybe_unserialize( $raw );
+					if ( ! is_array( $state ) || ! is_array( $state['entries'] ?? null ) || count( $state['entries'] ) > array_sum( self::CAPACITY ) ) {
+						return;
+					}
+					self::$snapshot = $raw;
+					self::$editing  = true;
+					$result         = $work( $state );
 				} catch ( \Throwable $error ) {
 					// Native checkout may have started an unfinished transaction.
 					wc_transaction_query( 'rollback' );
 					$result = new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
+				} finally {
+					self::$snapshot = $previous;
+					self::$editing  = $editing;
+					self::clear_cache();
 				}
 			}
 		);
@@ -64,11 +82,53 @@ final class IntakeStore {
 	 * @throws \RuntimeException Storage/readback failure.
 	 */
 	public static function save( array $state ): void {
-		update_option( self::OPTION, $state, false );
-		wp_cache_delete( self::OPTION, 'options' );
-		if ( get_option( self::OPTION ) !== $state ) {
+		global $wpdb;
+		$encoded = maybe_serialize( $state );
+		if ( ! self::$editing ) {
+			throw new \RuntimeException( 'intake_capacity_unlocked_write' );
+		}
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- The native serialized option needs a cache-free CAS under the connection-owned capacity mutex.
+		if ( null === self::$snapshot ) {
+			$written = $wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name, option_value, autoload) SELECT %s, %s, 'off' WHERE IS_USED_LOCK(%s) = CONNECTION_ID()", self::OPTION, $encoded, self::lock_name() ) );
+		} else {
+			$written = $wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->options} SET option_value = %s, autoload = 'off' WHERE option_name = %s AND BINARY option_value = BINARY %s AND IS_USED_LOCK(%s) = CONNECTION_ID()", $encoded, self::OPTION, self::$snapshot, self::lock_name() ) );
+		}
+		// phpcs:enable
+		if ( false === $written || ( self::$snapshot !== $encoded && 1 !== $written ) || self::read() !== $encoded ) {
 			throw new \RuntimeException( 'intake_capacity_readback_failed' );
 		}
+		self::$snapshot = $encoded;
+		self::clear_cache();
+	}
+
+	/**
+	 * Read the authoritative option and connection ownership in one DB statement.
+	 * Neither a stale positive cache nor WordPress's notoptions cache is consulted.
+	 *
+	 * @throws \RuntimeException Missing lock or database failure.
+	 */
+	private static function read(): ?string {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Native option snapshot and mutex ownership must come from the same DB connection, without an object cache.
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT (SELECT option_value FROM {$wpdb->options} WHERE option_name = %s) AS value, IS_USED_LOCK(%s) = CONNECTION_ID() AS owned", self::OPTION, self::lock_name() ), ARRAY_A );
+		if ( ! is_array( $row ) || '1' !== (string) ( $row['owned'] ?? '' ) || '' !== $wpdb->last_error || ( null !== $row['value'] && ! is_string( $row['value'] ) ) ) {
+			throw new \RuntimeException( 'intake_capacity_read_failed' );
+		}
+		return $row['value'];
+	}
+
+	/** The existing Lock namespace is database/prefix/key scoped. */
+	private static function lock_name(): string {
+		global $wpdb;
+		$database = isset( $wpdb->dbname ) && is_string( $wpdb->dbname ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
+		return 'linker-assessment-' . md5( $database . '/' . $wpdb->prefix . '/' . self::MUTEX );
+	}
+
+	/** Native option consumers must not retain a pre-initialization negative cache. */
+	private static function clear_cache(): void {
+		wp_cache_delete( self::OPTION, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+		wp_cache_delete( 'alloptions', 'options' );
 	}
 
 	/**
