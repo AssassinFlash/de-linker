@@ -8,11 +8,12 @@ policy, not engineering restrictions. Further tasks state their own readiness.
 from __future__ import annotations
 
 from typing import Annotated, Literal
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from pydantic import Field, field_validator
 
 from .energy_inputs import Document, SchemaVersion
+from .errors import InvalidInput
+from .timezone_rules import require_iana_timezone
 
 type Text = Annotated[str, Field(max_length=4096)]
 type Country = Annotated[str, Field(pattern=r"^[A-Z]{2}$")]
@@ -31,8 +32,8 @@ class SiteBrief(Document):
     def known_timezone(cls, value: str | None) -> str | None:
         if value is not None:
             try:
-                ZoneInfo(value)
-            except (ZoneInfoNotFoundError, ValueError) as error:
+                require_iana_timezone(value)
+            except InvalidInput as error:
                 raise ValueError("known IANA timezone required") from error
         return value
 

@@ -10,9 +10,10 @@ from __future__ import annotations
 import io
 import re
 from dataclasses import dataclass
+from functools import cache
 from pathlib import Path
 from struct import error as StructError
-from zoneinfo import TZPATH, ZoneInfo
+from zoneinfo import TZPATH, ZoneInfo, available_timezones
 
 from .canonical import digest
 from .errors import InvalidInput, VersionUnavailable
@@ -23,6 +24,22 @@ def validate_zone_name(name: str) -> None:
         part in (".", "..") for part in name.split("/")
     ):
         raise InvalidInput("a valid IANA timezone key is required")
+
+
+@cache
+def installed_iana_names() -> frozenset[str]:
+    """The installed IANA set excludes host aliases such as localtime/posixrules.
+
+    This set is intake-only. Historical runs read their captured TZif bytes;
+    replay must not depend on a later host's installed names or tzdata version.
+    """
+    return frozenset(available_timezones())
+
+
+def require_iana_timezone(name: str) -> None:
+    validate_zone_name(name)
+    if name not in installed_iana_names():
+        raise InvalidInput("a known IANA timezone key is required")
 
 
 @dataclass(frozen=True)
@@ -49,7 +66,7 @@ class TimezoneRules:
 
 def load_timezone(name: str) -> TimezoneRules:
     """Trusted intake: capture the exact installed OS tzdata file or fail."""
-    validate_zone_name(name)
+    require_iana_timezone(name)
     for root in TZPATH:
         path = Path(root) / name
         try:

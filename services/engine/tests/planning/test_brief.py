@@ -71,6 +71,18 @@ def test_timezone_and_country_are_not_selected_by_interface_language() -> None:
 
 
 @pytest.mark.parametrize(
+    "name", ["posixrules", "localtime", "right/UTC", "posix/Europe/Oslo"]
+)
+def test_host_tzif_aliases_are_not_project_iana_names(name: str) -> None:
+    brief = incomplete_brief()
+    site = dict(brief["site"])  # type: ignore[call-overload]
+    site["timezone"] = name
+    brief["site"] = site
+    with pytest.raises(ValidationError, match="known IANA"):
+        PlanningBrief.model_validate(brief)
+
+
+@pytest.mark.parametrize(
     "value", [2**53, -(2**53), 9223372036854775809, 10**400, 1e100]
 )
 def test_unsupported_command_numbers_are_rejected_before_storage(

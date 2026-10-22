@@ -243,6 +243,21 @@ def test_truncated_tzif_with_valid_magic_is_a_named_version_error() -> None:
         TimezoneRules("UTC", b"TZif" + b"\0" * 10)
 
 
+@pytest.mark.parametrize(
+    "name", ["posixrules", "localtime", "right/UTC", "posix/Europe/Berlin"]
+)
+def test_timezone_intake_rejects_host_special_files(name: str) -> None:
+    with pytest.raises(InvalidInput, match="known IANA"):
+        load_timezone(name)
+
+
+def test_pinned_timezone_replay_does_not_require_a_current_host_name() -> None:
+    # A captured, valid TZif remains replayable even after an installed alias
+    # has disappeared. Only new intake depends on the current IANA name set.
+    rules = TimezoneRules("Historical/Zone", load_timezone("UTC").content)
+    assert rules.zone().utcoffset(None) is not None
+
+
 def test_averaging_then_refining_does_not_recover_measured_peaks(
     mapping: CsvMapping, rules: TimezoneRules
 ) -> None:
