@@ -170,6 +170,11 @@ mock-erp name:
 admin-mfa name *options:
     PHP={{ php }} uv run --locked --project tools/local python tools/checks/admin-mfa.py "$@"
 
+# Native synthetic credential authentication and complete inventory pagination.
+[positional-arguments]
+inventory-access name *options:
+    PHP={{ php }} uv run --locked --project tools/local python tools/checks/inventory-access.py "$@"
+
 # docs/specs/10-knowledge-index.md; `just index --help` lists the options.
 # Build Genie's document index on this Mac: hosted PDFs, Docling, chunks, vectors, SQLite.
 [working-directory("services/genie")]
