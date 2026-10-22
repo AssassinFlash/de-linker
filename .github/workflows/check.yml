@@ -204,6 +204,15 @@ jobs:
       - name: page cache follows a save
         run: just page-cache-chain smoke
 
+      # Native authentication plus the existing reader on 201 synthetic rows per
+      # collection; no production binding, credential, model or external mail.
+      - name: inventory application credential scope
+        run: |
+          uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/inventory-access.py
+          uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/inventory-access.py
+          uv run --locked --project tools/local mypy --strict tools/checks/inventory-access.py
+          just inventory-access smoke
+
       # #521: native pre-dispatch resource/replay/privacy fixtures. The preceding
       # page-cache step installs the local-only service token. All HTTP is
       # intercepted; running-version responses and sizing inputs are synthetic.
