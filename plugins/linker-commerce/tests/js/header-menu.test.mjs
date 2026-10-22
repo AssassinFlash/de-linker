@@ -91,3 +91,59 @@ test( 'an account menu served without hidden is closed on load', () => {
 	assert.equal( menu.id, 'linker-menu-account' );
 	assert.equal( button.getAttribute( 'aria-controls' ), menu.id );
 } );
+
+function mobilePage( open = false ) {
+	const dom = new JSDOM( `<!doctype html><html lang="en"><body>
+		<header id="tv-header-v2">
+			<details class="tv-mobile-navigation" ${ open ? 'open' : '' }>
+				<summary id="tv-mobile-toggle" role="button" aria-controls="tv-mobile-panel" aria-label="Open menu">Menu</summary>
+				<div id="tv-mobile-panel"><a href="/products/">Products</a></div>
+			</details>
+		</header><button id="outside">Outside</button>
+	</body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );
+	const { window } = dom;
+	window.eval( source );
+	return {
+		window,
+		details: window.document.querySelector( 'details' ),
+		toggle: window.document.querySelector( 'summary' ),
+		panel: window.document.querySelector( '#tv-mobile-panel' ),
+	};
+}
+
+test( 'an opening made before the enhancement is retained', () => {
+	const { details, toggle, panel } = mobilePage( true );
+	assert.equal( details.open, true );
+	assert.equal( panel.dataset.open, 'true' );
+	assert.equal( toggle.getAttribute( 'aria-label' ), 'Close menu' );
+	assert.equal( toggle.hasAttribute( 'aria-expanded' ), false );
+	assert.equal( toggle.getAttribute( 'aria-controls' ), panel.id );
+} );
+
+test( 'native summary activation is not toggled twice by the enhancement', async () => {
+	const { window, details, toggle, panel } = mobilePage();
+	toggle.click();
+	await new Promise( resolve => window.setTimeout( resolve, 0 ) );
+	assert.equal( details.open, true );
+	assert.equal( panel.dataset.open, 'true' );
+	toggle.click();
+	await new Promise( resolve => window.setTimeout( resolve, 0 ) );
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+} );
+
+test( 'Escape closes the actual native disclosure and returns focus', () => {
+	const { window, details, toggle, panel } = mobilePage( true );
+	panel.querySelector( 'a' ).focus();
+	window.document.activeElement.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+	assert.equal( window.document.activeElement, toggle );
+} );
+
+test( 'an outside click closes native open state as well as the CSS state', () => {
+	const { window, details, panel } = mobilePage( true );
+	window.document.querySelector( '#outside' ).click();
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+} );
