@@ -35,22 +35,9 @@ class ProfileImport:
         # Ownership precedes parsing/auxiliary blob writes. Assets.add repeats
         # this under its transaction in case ownership changed meanwhile.
         self.assets.check_write(actor, project_id)
-        logical: Object = {
-            "schema": 1,
-            "retention": "permanent",
-            "provenance": provenance,
-            "csv_mapping": mapping.document(),
-        }
-        previous = self.assets.receipt(
-            actor,
-            project_id,
-            key,
-            {
-                "content_sha256": digest(content),
-                "media_type": "text/csv; charset=utf-8",
-                "purpose": "csv_profile_v1",
-                "metadata": logical,
-            },
+        logical = self.logical(mapping, provenance)
+        previous = self.previous(
+            actor, project_id, content, mapping, provenance, key=key
         )
         if previous is not None:
             return previous
@@ -82,4 +69,36 @@ class ProfileImport:
             },
             key=key,
             logical_metadata=logical,
+        )
+
+    @staticmethod
+    def logical(mapping: CsvMapping, provenance: Object) -> Object:
+        return {
+            "schema": 1,
+            "retention": "permanent",
+            "provenance": provenance,
+            "csv_mapping": mapping.document(),
+        }
+
+    def previous(
+        self,
+        actor: Actor,
+        project_id: str,
+        content: bytes,
+        mapping: CsvMapping,
+        provenance: Object,
+        *,
+        key: str,
+    ) -> Asset | None:
+        """Read a permanent receipt without parsing CSV or recapturing TZif."""
+        return self.assets.receipt(
+            actor,
+            project_id,
+            key,
+            {
+                "content_sha256": digest(content),
+                "media_type": "text/csv; charset=utf-8",
+                "purpose": "csv_profile_v1",
+                "metadata": self.logical(mapping, provenance),
+            },
         )

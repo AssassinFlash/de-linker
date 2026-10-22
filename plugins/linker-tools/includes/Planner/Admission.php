@@ -32,6 +32,31 @@ final class Admission {
 		if ( null === $policy ) {
 			return $transport->call( $principal, $path, $body );
 		}
+		// The engine's immutable command receipt outlives the native journal's
+		// one-day resource receipt. Recover it before reserving another unit.
+		$previous = $transport->call( $principal, 'operations/replay/' . $path, $body );
+		if ( is_wp_error( $previous ) || $previous['status'] >= 400 ) {
+			return $previous;
+		}
+		$known = json_decode( $previous['body'] );
+		if ( ! $known instanceof \stdClass || 1 !== ( $known->schema_version ?? null ) || ! in_array( $known->status ?? null, array( 'absent', 'replayed' ), true ) || ! str_starts_with( $previous['type'], 'application/json' ) ) {
+			return Failure::make( 'invalid_reply', 502 );
+		}
+		if ( 'replayed' === $known->status ) {
+			if ( ! ( $known->result ?? null ) instanceof \stdClass ) {
+				return Failure::make( 'invalid_reply', 502 );
+			}
+			$acknowledged = $this->acknowledge( $principal, $path, $command, $body );
+			if ( is_wp_error( $acknowledged ) ) {
+				return $acknowledged;
+			}
+			$payload = wp_json_encode( $known->result, JSON_PRESERVE_ZERO_FRACTION );
+			return is_string( $payload ) ? array(
+				'status' => 200,
+				'type'   => 'application/json',
+				'body'   => $payload,
+			) : Failure::make( 'invalid_reply', 502 );
+		}
 		if ( ! class_exists( Ledger::class ) || ! class_exists( Identity::class ) || ! is_string( $command['key'] ?? null ) || ! wp_is_uuid( $command['key'], 4 ) ) {
 			return Failure::make( 'admission', 400 );
 		}
@@ -52,7 +77,7 @@ final class Admission {
 			);
 		}
 		$id          = $command['key'];
-		$fingerprint = wp_hash( 'linker-planner-admission:v1|' . $principal->kind . '|' . $principal->subject . '|' . $path . '|' . hash( 'sha256', $body ), 'nonce', 'sha256' );
+		$fingerprint = $this->fingerprint( $principal, $path, $body );
 		$ledger      = new Ledger();
 		// This lease covers only bounded RPC dispatch, not queued numerical work.
 		$receipt = $ledger->reserve( $id, $fingerprint, $limits, 30, $carry, 'planner_write', $quota->binding(), $quota->owners() );
@@ -78,6 +103,44 @@ final class Admission {
 			}
 		}
 		return $reply;
+	}
+
+	/**
+	 * Close a still-present uncertain receipt after the engine confirms it.
+	 * Missing/expired native receipts require no new reservation.
+	 *
+	 * @param Principal           $principal Verified owner.
+	 * @param string              $path Server-selected command.
+	 * @param array<string,mixed> $command Parsed command.
+	 * @param string              $body Exact retry bytes.
+	 * @return true|WP_Error Native acknowledgement or explicit journal failure.
+	 */
+	private function acknowledge( Principal $principal, string $path, array $command, string $body ): bool|WP_Error {
+		$id = $command['key'] ?? null;
+		if ( ! class_exists( Ledger::class ) || ! is_string( $id ) || ! wp_is_uuid( $id, 4 ) || false === get_option( Ledger::OPTION ) ) {
+			return true;
+		}
+		$ledger      = new Ledger();
+		$fingerprint = $this->fingerprint( $principal, $path, $body );
+		$receipt     = $ledger->lookup( $id, $fingerprint );
+		if ( is_wp_error( $receipt ) ) {
+			return 'linker_admission_unknown_receipt' === $receipt->get_error_code() ? true : Failure::make( 'receipt_persistence', 503 );
+		}
+		if ( in_array( $receipt['status'] ?? '', array( 'dispatched', 'unresolved' ), true ) && is_wp_error( $ledger->complete( $id, $fingerprint ) ) ) {
+			return Failure::make( 'receipt_persistence', 503 );
+		}
+		return true;
+	}
+
+	/**
+	 * Scope native quota receipts to the owner and exact public command bytes.
+	 *
+	 * @param Principal $principal Verified owner.
+	 * @param string    $path Server-selected command.
+	 * @param string    $body Exact input bytes.
+	 */
+	private function fingerprint( Principal $principal, string $path, string $body ): string {
+		return wp_hash( 'linker-planner-admission:v1|' . $principal->kind . '|' . $principal->subject . '|' . $path . '|' . hash( 'sha256', $body ), 'nonce', 'sha256' );
 	}
 
 	/**

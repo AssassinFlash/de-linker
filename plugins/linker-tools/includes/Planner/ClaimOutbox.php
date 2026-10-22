@@ -193,16 +193,7 @@ final class ClaimOutbox {
 	 * @param int $user Current native account.
 	 */
 	public function pending( int $user ): bool {
-		return $user > 0 && array() !== get_posts(
-			array(
-				'post_type'        => self::POST_TYPE,
-				'post_status'      => 'private',
-				'author'           => $user,
-				'numberposts'      => 1,
-				'fields'           => 'ids',
-				'suppress_filters' => true,
-			)
-		);
+		return $this->next_event( $user ) > 0;
 	}
 
 	/**
@@ -212,8 +203,20 @@ final class ClaimOutbox {
 	 * @param int $user Current native account.
 	 */
 	public function settle( int $user ): void {
+		$id = $this->next_event( $user );
+		if ( $id > 0 ) {
+			$this->run( $id );
+		}
+	}
+
+	/**
+	 * Find one unresolved native event for an account.
+	 *
+	 * @param int $user Current native account.
+	 */
+	private function next_event( int $user ): int {
 		if ( $user < 1 ) {
-			return;
+			return 0;
 		}
 		$ids = get_posts(
 			array(
@@ -225,9 +228,7 @@ final class ClaimOutbox {
 				'suppress_filters' => true,
 			)
 		);
-		if ( isset( $ids[0] ) ) {
-			$this->run( (int) $ids[0] );
-		}
+		return isset( $ids[0] ) ? (int) $ids[0] : 0;
 	}
 
 	/**

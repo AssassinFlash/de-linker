@@ -23,6 +23,12 @@ final class Gateway {
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
 	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|cancel|energy|trace)|assets/(?:read|content)|profiles/csv|battery/scenario';
+	/**
+	 * A rejected request stays rejected if an installed integration returns null.
+	 *
+	 * @var \WeakMap<WP_REST_Request,WP_Error>
+	 */
+	private \WeakMap $refusals;
 
 	/**
 	 * Compose native identity, private transport, recovery and admission.
@@ -32,7 +38,9 @@ final class Gateway {
 	 * @param ClaimOutbox    $claims Durable native login transition.
 	 * @param Admission      $admission Native write quota, never ownership.
 	 */
-	public function __construct( private readonly NativeIdentity $identity = new NativeIdentity(), private readonly Transport $transport = new Transport(), private readonly ClaimOutbox $claims = new ClaimOutbox(), private readonly Admission $admission = new Admission() ) {}
+	public function __construct( private readonly NativeIdentity $identity = new NativeIdentity(), private readonly Transport $transport = new Transport(), private readonly ClaimOutbox $claims = new ClaimOutbox(), private readonly Admission $admission = new Admission() ) {
+		$this->refusals = new \WeakMap();
+	}
 
 	/** Native REST declarations and private response lifecycle. */
 	public function register(): void {
@@ -58,9 +66,52 @@ final class Gateway {
 
 	/** Registered before any REST dispatch, so unknown routes/errors are private. */
 	public function lifecycle(): void {
+		add_filter( 'rest_pre_dispatch', array( $this, 'before_parse' ), 0, 3 );
+		// Installed ACF initialisation returns null even after an earlier error.
+		// Native integrations are at priority 10; retain the refusal after them.
+		add_filter( 'rest_pre_dispatch', array( $this, 'retain_refusal' ), 100, 3 );
 		add_filter( 'rest_post_dispatch', array( $this, 'private_response' ), 20, 3 );
 		// After core's rest_send_cors_headers, before bytes are served.
 		add_filter( 'rest_pre_serve_request', array( $this, 'serve' ), 100, 4 );
+	}
+
+	/**
+	 * Guard raw requests before core calls has_valid_params/parse_json_params.
+	 *
+	 * @param mixed           $result Earlier dispatch decision.
+	 * @param mixed           $server Native REST server.
+	 * @param WP_REST_Request $request Unparsed native request.
+	 * @return mixed Earlier decision or pre-parser refusal.
+	 */
+	public function before_parse( mixed $result, mixed $server, WP_REST_Request $request ): mixed {
+		unset( $server );
+		if ( ! self::in_scope( $request ) || 'POST' !== $request->get_method() ) {
+			return $result;
+		}
+		unset( $this->refusals[ $request ] );
+		$checked = ( new BodyGate() )->check( $request );
+		if ( is_wp_error( $checked ) ) {
+			// WP filters all continue after a returned error. Installed native
+			// integrations can call get_param() and trigger JSON parsing anyway.
+			// The rejected body must not remain available to those parsers.
+			$request->set_body( '' );
+			$this->refusals[ $request ] = $checked;
+			return $checked;
+		}
+		return $result;
+	}
+
+	/**
+	 * Reassert this request's bounded-input refusal after native integrations.
+	 *
+	 * @param mixed           $result Earlier native result.
+	 * @param mixed           $server Native REST server.
+	 * @param WP_REST_Request $request Current native request.
+	 * @return mixed Original refusal or the untouched native result.
+	 */
+	public function retain_refusal( mixed $result, mixed $server, WP_REST_Request $request ): mixed {
+		unset( $server );
+		return $this->refusals[ $request ] ?? $result;
 	}
 
 	/**
@@ -258,14 +309,11 @@ final class Gateway {
 	 * @return array<string,mixed>|WP_Error Parsed object or explicit refusal.
 	 */
 	private function command( WP_REST_Request $request ): array|WP_Error {
-		$body = (string) $request->get_body();
-		if ( strlen( $body ) > self::MAX_BODY_BYTES ) {
-			return Failure::make( 'body', 413 );
+		$checked = ( new BodyGate() )->check( $request );
+		if ( is_wp_error( $checked ) ) {
+			return $checked;
 		}
-		if ( 1 !== preg_match( '/\Aapplication\/json(?:\s*;\s*charset\s*=\s*utf-8)?\z/i', (string) $request->get_header( 'content-type' ) ) ) {
-			return Failure::make( 'content_type', 415 );
-		}
-		$data = json_decode( $body, false, self::MAX_JSON_DEPTH + 1 );
+		$data = json_decode( (string) $request->get_body(), false, self::MAX_JSON_DEPTH + 1 );
 		return $data instanceof \stdClass ? get_object_vars( $data ) : Failure::make( 'input', 400 );
 	}
 }

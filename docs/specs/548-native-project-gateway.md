@@ -21,6 +21,11 @@ engineering reports, and does not replace any model channel.
    including core REST errors and unknown paths, are private and expose no
    cross-origin read permission. Body, JSON-depth and transport response caps
    are enforced before expensive parsing/forwarding. Redirects are disabled.
+   The pre-dispatch guard runs before the installed integrations; a refused
+   body is removed from the native Request before later filters can parse it.
+   Its original refusal is reasserted afterward because installed ACF
+   initialisation can discard a previously returned error. Accepted requests
+   retain their original wire bytes. Core cookie authentication is unchanged.
 4. The native `woocommerce_guest_session_to_user_id` event records a complete
    private claim command in one native post insert. It verifies the old
    presented native cookie against the event and current user; copied data
@@ -51,6 +56,16 @@ engineering reports, and does not replace any model channel.
    calculation requests carry durable idempotency keys; replay cannot spend
    the same operation again. Read/poll calls never spend a calculation unit.
    Operational ceilings are documented and do not imply engineering limits.
+   Before a metered write, PHP asks the private engine's read-only
+   `/operations/replay/{path}` for the same raw command. An existing owned
+   receipt returns its original project revision/asset or current view of the
+   same frozen run, without CSV parsing, source recapture, context compilation,
+   another mutation or a new quota reservation. A different command under an
+   old key conflicts. A missing receipt proceeds through native admission and
+   the real command repeats ownership/idempotency checks. This replay path is
+   not publicly allowlisted and cannot claim sessions or invoke other commands.
+   An uncertain native receipt still present is completed from confirmed
+   engine evidence; its absence after 24 hours does not authorise another debit.
 
 Acceptance requires real HTTP cookies/nonces and a running local site, not
 only mocks: two isolated guests, reload, native login/registration and logout,
@@ -107,3 +122,30 @@ initial unit failure was a missing locked `jsdom` installation, resolved with
 the plugin's unchanged lockfile. Ruff and strict mypy cover the native HTTP
 fixtures. This is component integration evidence; the modern app's rendered
 browser acceptance and full production release remain open.
+
+### Independent review corrections
+
+The first fixed native-gateway review at `d2e5766d` found two genuine integration
+gaps: callback-only limits ran after native JSON parsing; the native journal's
+one-day receipt retention could charge a permanent command replay again. Those
+findings were retained and fixed before release, rather than treating the six
+successful functional tests as complete acceptance.
+
+The corrected eight-test native suite passes. It instruments the actual
+installed Request/Server and all installed REST filters: a 16 MiB-plus body,
+100 levels and 600 levels are rejected while the largest input reaching any
+native JSON parser is zero bytes. Literal quoted brackets/backslashes still
+reach the parser unchanged. The installed ACF filter's error reset was traced
+and covered. A separate real engine/native HTTP test removes only its own
+fixture UUID from the native journal, then recovers the same project, empty
+object/array and numeric input without changing quota state or adding a new
+receipt. A changed input under that UUID returns conflict.
+
+The private replay cases also pass for create, revision, CSV, battery and
+energy jobs (queued and completed), preserving original revisions after later
+edits and refusing foreign/team/non-authenticated callers. Source rights and
+CSV logical metadata have one shared construction for mutation and lookup.
+The full engine suite passes 413 tests; Tools' 289 unit tests, PHPStan, WPCS,
+Ruff and mypy pass. The native outbox's repeated account-event query is now one
+selector shared by pending and foreground recovery. Independent re-review of
+these fixes remains required before this component is accepted.

@@ -391,3 +391,66 @@ def test_native_insert_failure_tickets_stay_bound_across_shared_browser_accounts
     assert first.bootstrap()["kind"] == "user"
     assert first.read(first_project).status == 200
     assert first.read(second_project).status == 404
+
+
+def test_actual_native_dispatch_refuses_before_its_json_parser(local: tuple[Instance, WpCli]) -> None:
+    _, wp = local
+    result = wp.run("eval", '''
+class LinkerPlannerParserProbe extends WP_REST_Request {
+    public array $parser_bytes = array();
+    protected function parse_json_params() {
+        $this->parser_bytes[] = strlen((string) $this->get_body());
+        return parent::parse_json_params();
+    }
+}
+$server = rest_get_server();
+$bodies = array(
+    '{"schema_version":1,"blob":"' . str_repeat('x', 16 * 1024 * 1024) . '"}',
+    '{"schema_version":' . str_repeat('[', 100) . '1' . str_repeat(']', 100) . '}',
+    '{"schema_version":' . str_repeat('[', 600) . '1' . str_repeat(']', 600) . '}',
+    wp_json_encode(array('schema_version' => str_repeat('{["\\\\', 1000))),
+);
+$result = array();
+foreach ($bodies as $body) {
+    $request = new LinkerPlannerParserProbe('POST', '/linker/v1/planner/bootstrap');
+    $request->set_header('content-type', 'application/json');
+    $request->set_header('origin', home_url());
+    $request->set_body($body);
+    $response = $server->dispatch($request);
+    $result[] = array('status' => $response->get_status(), 'largest_parser_input' => $request->parser_bytes ? max($request->parser_bytes) : 0);
+}
+echo wp_json_encode($result);
+''')
+    cases = json.loads(result)
+    assert cases[:3] == [
+        {"status": 413, "largest_parser_input": 0},
+        {"status": 400, "largest_parser_input": 0},
+        {"status": 400, "largest_parser_input": 0},
+    ]
+    # Literal quote/bracket/backslash data is not container nesting. Native
+    # parsing executes, then the bootstrap schema rejects the wrong value.
+    assert cases[3]["status"] == 400 and cases[3]["largest_parser_input"] > 1000
+
+
+def test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting(local: tuple[Instance, WpCli]) -> None:
+    instance, wp = local
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    key = str(uuid.uuid4())
+    command = {"schema_version": 1, "title": "Permanent replay evidence", "inputs": {"object": {}, "array": [], "one": 1.0}, "key": key}
+    created = browser.rpc("rpc/projects/create", command)
+    assert created.status == 200, created.body
+    # Mimic the native journal's receipt-forgetting boundary for this fixture
+    # UUID only; do not advance global time or delete other native receipts.
+    before = wp.run("eval", '''
+$name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+$state = json_decode(get_option($name), true);
+unset($state['receipts'][getenv('LINKER_PLANNER_FIXTURE_OPERATION')]);
+update_option($name, wp_json_encode($state), false);
+echo hash('sha256', wp_json_encode($state));
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": key})
+    assert browser.rpc("rpc/projects/create", command).object() == created.object()
+    after = wp.run("eval", 'echo hash("sha256", get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION));')
+    assert before == after, "permanent replay must not reserve a new quota receipt"
+    command["inputs"] = {"changed": True}
+    assert browser.rpc("rpc/projects/create", command).status == 409

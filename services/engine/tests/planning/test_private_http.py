@@ -67,6 +67,9 @@ class Rig:
         assert "owner" not in project
         return str(project["id"])
 
+    def replay(self, path: str, body: Object, actor: Actor = USER) -> Object:
+        return self.post("/operations/replay" + path, body, actor)
+
 
 @pytest.fixture
 def rig(workspace: Workspace) -> Iterator[Rig]:
@@ -181,6 +184,93 @@ def test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings(
         {"title": "Unicode fixture", "inputs": {"text": value}, "key": "text"},
     )
     assert project["inputs"] == {"text": value}
+
+
+def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    command: Object = {
+        "title": "Permanent retry",
+        "inputs": {"object": {}, "list": [], "fraction": 1.0},
+        "key": "permanent",
+    }
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    assert rig.replay("/projects/create", command) == {
+        "schema_version": 1,
+        "status": "absent",
+    }
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+    created = rig.post("/projects/create", command)
+    revision_command: Object = {
+        "project_id": created["id"],
+        "expected_revision": 1,
+        "inputs": {"changed": True},
+        "key": "permanent-revision",
+    }
+    assert rig.replay("/projects/revise", revision_command)["status"] == "absent"
+    revised = rig.post("/projects/revise", revision_command)
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    now = rig.workspace.clock()
+    monkeypatch.setattr(rig.workspace, "clock", lambda: now + 2 * 86400)
+
+    def no_write(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("a replay must not call a mutation")
+
+    monkeypatch.setattr(rig.workspace, "create", no_write)
+    monkeypatch.setattr(rig.workspace, "revise", no_write)
+    assert rig.replay("/projects/create", command)["result"] == created
+    assert rig.replay("/projects/revise", revision_command)["result"] == revised
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+    assert rig.replay("/projects/create", command, FOREIGN)["status"] == "absent"
+    foreign = rig.client.post(
+        "/operations/replay/projects/revise",
+        json={"schema_version": 1, **revision_command},
+        headers=headers(FOREIGN),
+    )
+    assert foreign.status_code == 404
+    changed = rig.client.post(
+        "/operations/replay/projects/create",
+        json={"schema_version": 1, **command, "inputs": {"fraction": 1}},
+        headers=headers(),
+    )
+    assert changed.status_code == 409
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "projects/create",
+        "projects/revise",
+        "profiles/csv",
+        "battery/scenario",
+        "runs/energy",
+    ],
+)
+def test_replay_has_no_public_or_team_mutation_authority(rig: Rig, path: str) -> None:
+    response = rig.client.post("/operations/replay/" + path, content=b"not-json")
+    assert response.status_code == 401
+    response = rig.client.post(
+        "/operations/replay/" + path, json={"schema_version": 1}, headers=headers(TEAM)
+    )
+    assert response.status_code == 404
+    response = rig.client.post(
+        "/operations/replay/" + path,
+        json={"schema_version": True, "owner": "someone"},
+        headers=headers(),
+    )
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_input"
+    assert len(response.json()["error"]["fields"]) <= 16
+
+
+def test_replay_cannot_call_private_identity_or_unknown_command(rig: Rig) -> None:
+    response = rig.client.post(
+        "/operations/replay/identity/claim-session",
+        json={"schema_version": 1, "key": "x"},
+        headers=headers(),
+    )
+    assert response.status_code == 404
+    assert response.json() == {"error": {"code": "not_found"}}
 
 
 @pytest.mark.parametrize(
@@ -536,17 +626,17 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
             ",",
             ".",
         )
-        asset = rig.post(
-            "/profiles/csv",
-            {
-                "project_id": project_id,
-                "content_base64": base64.b64encode(content).decode(),
-                "mapping": mapping.document(),
-                "source_label": "Synthetic analytic fixture",
-                "rights_note": "created by this test",
-                "key": role,
-            },
-        )
+        command: Object = {
+            "project_id": project_id,
+            "content_base64": base64.b64encode(content).decode(),
+            "mapping": mapping.document(),
+            "source_label": "Synthetic analytic fixture",
+            "rights_note": "created by this test",
+            "key": role,
+        }
+        assert rig.replay("/profiles/csv", command)["status"] == "absent"
+        asset = rig.post("/profiles/csv", command)
+        assert rig.replay("/profiles/csv", command)["result"] == asset
         profiles[role] = str(asset["id"])
         assert (
             cast(Object, cast(Object, asset["metadata"])["provenance"])["basis"]
@@ -567,26 +657,26 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
             ).status_code
             == 404
         )
-    battery = rig.post(
-        "/battery/scenario",
-        {
-            "project_id": project_id,
-            "source_note": "Analytic scenario, no actual SKU",
-            "key": "battery",
-            "parameters": {
-                "schema_version": 1,
-                "model": "constant_window_single_ac_bus_v1",
-                "parameter_basis": "explicit_scenario",
-                "usable_window_kwh": 5,
-                "charge_ac_kw": 5,
-                "discharge_ac_kw": 5,
-                "eta_charge": 0.9,
-                "eta_discharge": 0.9,
-                "internal_aux_kw": 0,
-                "standing_loss_rate_per_hour": 0,
-            },
+    battery_command: Object = {
+        "project_id": project_id,
+        "source_note": "Analytic scenario, no actual SKU",
+        "key": "battery",
+        "parameters": {
+            "schema_version": 1,
+            "model": "constant_window_single_ac_bus_v1",
+            "parameter_basis": "explicit_scenario",
+            "usable_window_kwh": 5,
+            "charge_ac_kw": 5,
+            "discharge_ac_kw": 5,
+            "eta_charge": 0.9,
+            "eta_discharge": 0.9,
+            "internal_aux_kw": 0,
+            "standing_loss_rate_per_hour": 0,
         },
-    )
+    }
+    assert rig.replay("/battery/scenario", battery_command)["status"] == "absent"
+    battery = rig.post("/battery/scenario", battery_command)
+    assert rig.replay("/battery/scenario", battery_command)["result"] == battery
     energy: Object = {
         "schema_version": 1,
         "gross_load_asset_id": profiles["gross_load"],
@@ -629,6 +719,12 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
         "/runs/energy",
         {"project_id": project_id, "expected_revision": 2, "key": "evaluate"},
     )
+    evaluate_command: Object = {
+        "project_id": project_id,
+        "expected_revision": 2,
+        "key": "evaluate",
+    }
+    assert rig.replay("/runs/energy", evaluate_command)["result"] == run
     assert run["state"] == "queued" and run["result"] is None
     rig.post(
         "/projects/revise",
@@ -648,6 +744,7 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
         retry_seconds=1,
     ).run_once()
     completed = rig.post("/runs/read", {"run_id": run["id"]})
+    assert rig.replay("/runs/energy", evaluate_command)["result"] == completed
     assert completed["state"] == "succeeded" and completed["is_current"] is False
     result = cast(Object, completed["result"])
     assert result["input_sha256"] == revision["input_sha256"]

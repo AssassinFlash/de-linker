@@ -9,8 +9,6 @@ the Worker.
 
 from __future__ import annotations
 
-import base64
-import binascii
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -18,12 +16,13 @@ from dataclasses import dataclass
 from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 from starlette.exceptions import HTTPException
 from starlette.types import ASGIApp
 
 from .access import active_actor, positive_integer
 from .assets import Assets
-from .canonical import Json, Object, encode
+from .canonical import Json, Object
 from .energy_service import EnergyService
 from .errors import (
     Conflict,
@@ -35,6 +34,7 @@ from .errors import (
     VersionUnavailable,
 )
 from .guest_claims import GuestClaims
+from .http_asset_intake import HttpAssetIntake
 from .http_documents import (
     AssetRead,
     BatteryScenario,
@@ -50,8 +50,8 @@ from .http_documents import (
     SessionClaim,
 )
 from .http_index import project_page, run_page
+from .http_replay import HttpReplay
 from .http_views import asset_view, project_view, run_view
-from .profile_import import ProfileImport
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .workspace import Workspace
 
@@ -87,6 +87,8 @@ def create_private_app(
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
+    intake = HttpAssetIntake(assets, max_csv_bytes=limits.max_csv_bytes)
+    replays = HttpReplay(workspace, energy, intake)
 
     @app.exception_handler(PlanningError)
     async def domain_error(_request: Request, error: PlanningError) -> JSONResponse:
@@ -173,6 +175,13 @@ def create_private_app(
         if user.kind != "user":
             raise NotFound("verified account required")
         return claims.claim(verified_previous_guest(request.scope), user, key=body.key)
+
+    @app.post("/operations/replay/{path:path}")
+    def replay(path: str, body: Object, request: Request) -> Object:
+        try:
+            return replays.read(verified_actor(request.scope, write=True), path, body)
+        except ValidationError as error:
+            raise RequestValidationError(error.errors()) from error
 
     @app.post("/projects/create")
     def create(body: ProjectCreate, request: Request) -> Object:
@@ -280,50 +289,12 @@ def create_private_app(
     @app.post("/profiles/csv")
     def csv_profile(body: CsvImport, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
-        assets.check_write(actor, body.project_id)
-        try:
-            content = base64.b64decode(body.content_base64, validate=True)
-        except (ValueError, binascii.Error) as error:
-            raise InvalidInput("CSV must be valid base64") from error
-        if len(content) > limits.max_csv_bytes:
-            raise InvalidInput("CSV exceeds deployment file limit")
-        # This records a user declaration, not proof of measured data or the
-        # right to relabel arbitrary provider material as permanently licensed.
-        provenance: Object = {
-            "label": body.source_label,
-            "basis": "user_upload_declaration",
-            "rights_basis": body.rights_note,
-        }
-        return asset_view(
-            ProfileImport(assets).csv(
-                actor,
-                body.project_id,
-                content,
-                body.mapping.mapping(),
-                provenance,
-                key=body.key,
-            )
-        )
+        return asset_view(intake.csv(actor, body))
 
     @app.post("/battery/scenario")
     def battery_scenario(body: BatteryScenario, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
-        provenance: Object = {
-            "label": body.source_note,
-            "basis": "user_explicit_scenario_not_equipment_release",
-            "rights_basis": "user-declared numeric scenario, no third-party provider asset",
-        }
-        return asset_view(
-            assets.add(
-                actor,
-                body.project_id,
-                encode(body.parameters.model_dump(mode="json")),
-                "application/json",
-                "battery_parameters_v1",
-                {"retention": "permanent", "provenance": provenance},
-                key=body.key,
-            )
-        )
+        return asset_view(intake.battery(actor, body))
 
     return ServiceBoundary(
         app,
