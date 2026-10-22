@@ -139,6 +139,13 @@ final class Form {
 		$html .= '<p>' . esc_html__( 'Tell us what you need. We’ll use the email below for your reply.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
+		$query    = wp_unslash( $_GET );
+		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );
+		$context  = array() !== $previous ? SelectionContext::normalize( json_decode( $raw, true ) ) : SelectionContext::query( $query );
+		$included = ! ( array() !== $previous && '' === $raw && '0' === ( $previous[ SelectionContext::INCLUDE_FIELD ] ?? '' ) );
+		$html    .= SelectionView::form( $context, $raw, $included );
+
 		$html .= '<div class="linker-contact-question">';
 		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-message"><span>' . esc_html__( 'Your question', 'linker-commerce' ) . '</span>'
 			. '<textarea class="' . esc_attr( $field ) . '" id="linker-contact-message" name="message" rows="4" maxlength="' . esc_attr( (string) Submission::MAX_MESSAGE ) . '" placeholder="' . esc_attr__( 'What would you like to know?', 'linker-commerce' ) . '" required></textarea></label>';

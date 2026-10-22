@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-22T05:08:34.437Z",
+  "count": "25-48 / 65 Produktfamilien",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "de-DE",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name&product-page=2",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=2",
+      "language": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name&product-page=2",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=2",
+      "language": "de"
+    }
+  ],
+  "leads": [
+    "6569",
+    "6582",
+    "6568",
+    "6581",
+    "6710",
+    "6717",
+    "6716",
+    "6809",
+    "6586",
+    "6585",
+    "6802",
+    "6584",
+    "6654",
+    "6714",
+    "6801",
+    "6566",
+    "6576",
+    "6574",
+    "6650",
+    "6565",
+    "6803",
+    "6575",
+    "6573",
+    "6588"
+  ],
+  "overflow": false,
+  "pager": [
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name",
+      "text": "Zurück",
+      "width": 47.03125
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name",
+      "text": "1",
+      "width": 44
+    },
+    {
+      "current": "page",
+      "height": 44,
+      "href": null,
+      "text": "2",
+      "width": 44
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=3",
+      "text": "3",
+      "width": 44
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=3",
+      "text": "Weiter",
+      "width": 45.53125
+    }
+  ],
+  "search": "",
+  "selected": [],
+  "sort": "name",
+  "url": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=2",
+  "width": 390,
+  "y": 0
+}

@@ -1,0 +1,70 @@
+{
+  "at": "2026-10-22T04:54:13.248Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792643397"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "headerLanguage": [
+    {
+      "href": "http://127.0.0.1:9290/contact/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fproducts%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fde%5C%2Fprodukte%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/contact/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fproducts%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fde%5C%2Fprodukte%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+      "text": "DE"
+    }
+  ],
+  "height": 1000,
+  "intent": "product",
+  "lang": "de-DE",
+  "message": "Bitte helfen Sie mir bei der Auswahl eines passenden SAJ-Systems. \\ Diese Nachricht bleibt erhalten.",
+  "overflow": false,
+  "selection": {
+    "checked": true,
+    "excludedDisplay": "none",
+    "label": {
+      "bottom": 524.015625,
+      "height": 47.59375,
+      "left": 56,
+      "right": 334,
+      "top": 476.421875,
+      "width": 278,
+      "x": 56,
+      "y": 476.421875
+    },
+    "nativeControls": [
+      {
+        "checked": true,
+        "disabled": false,
+        "formAssociated": true,
+        "name": "linker_contact_selection",
+        "tag": "INPUT",
+        "type": "checkbox"
+      }
+    ],
+    "rect": {
+      "bottom": 787.390625,
+      "height": 351.46875,
+      "left": 39,
+      "right": 351,
+      "top": 435.921875,
+      "width": 312,
+      "x": 39,
+      "y": 435.921875
+    },
+    "summaryDisplay": "block",
+    "text": "ProduktauswahlDiese Auswahl meiner Nachricht beifügenWechselrichter, Speicher und SystemeMarkeSAJPhase3-phasigMindestleistung (kW)5.5SuchenSAJProdukte sortierenName A-ZDiese Auswahl wird nicht mitgesendet.",
+    "value": "{\"source\":\"http:\\/\\/127.0.0.1:9290\\/de\\/produkte\\/\",\"selection\":{\"brand\":\"saj\",\"phase\":\"3\",\"kw_min\":5.5,\"q\":\"SAJ\",\"sort\":\"name\"}}"
+  },
+  "url": "http://127.0.0.1:9290/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fde%5C%2Fprodukte%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+  "width": 390
+}

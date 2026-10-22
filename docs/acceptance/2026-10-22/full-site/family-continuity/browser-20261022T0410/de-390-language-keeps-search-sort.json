@@ -1,0 +1,51 @@
+{
+  "at": "2026-10-22T04:18:28.204Z",
+  "count": "1-13 / 13 Produktfamilien",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792640121"
+  ],
+  "fonts": "loaded",
+  "height": 844,
+  "lang": "de-DE",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/?q=SAJ&sort=name",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?q=SAJ&sort=name",
+      "language": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/?q=SAJ&sort=name",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?q=SAJ&sort=name",
+      "language": "de"
+    }
+  ],
+  "leads": [
+    "6839",
+    "6750",
+    "6736",
+    "6738",
+    "6735",
+    "6629",
+    "6798",
+    "6643",
+    "6784",
+    "6676",
+    "6628",
+    "6836",
+    "6729"
+  ],
+  "overflow": false,
+  "pager": [],
+  "search": "SAJ",
+  "selected": [],
+  "sort": "name",
+  "url": "http://127.0.0.1:9290/de/produkte/?q=SAJ&sort=name",
+  "width": 390,
+  "y": 0
+}

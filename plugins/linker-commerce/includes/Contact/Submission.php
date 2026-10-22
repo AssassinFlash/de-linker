@@ -43,12 +43,13 @@ final class Submission {
 	/**
 	 * Sets up the submission.
 	 *
-	 * @param string $name    The visitor's name.
-	 * @param string $email   Where the reply goes.
-	 * @param string $company The visitor's company, '' when not given.
-	 * @param string $message The question.
-	 * @param string $intent  What the enquiry is about, one of Form::INTENTS.
-	 * @param string $locale  The language the visitor wrote in.
+	 * @param string              $name    The visitor's name.
+	 * @param string              $email   Where the reply goes.
+	 * @param string              $company The visitor's company, '' when not given.
+	 * @param string              $message The question.
+	 * @param string              $intent  What the enquiry is about, one of Form::INTENTS.
+	 * @param string              $locale  The language the visitor wrote in.
+	 * @param array<string,mixed> $selection Validated optional public selection context.
 	 */
 	private function __construct(
 		public readonly string $name,
@@ -56,7 +57,8 @@ final class Submission {
 		public readonly string $company,
 		public readonly string $message,
 		public readonly string $intent,
-		public readonly string $locale
+		public readonly string $locale,
+		private readonly array $selection = array()
 	) {
 	}
 
@@ -115,8 +117,26 @@ final class Submission {
 			return new WP_Error( 'linker_contact_consent', __( 'Please agree to the use of your details for the reply.', 'linker-commerce' ) );
 		}
 
-		$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
-		return new self( $name, strtolower( $email ), $company, $message, $intent, OrderLocale::current( $language ) );
+		$language  = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
+		$selection = array();
+		// Only the native Contact door carries this optional selection.
+		if ( $name_required && $message_required && array_key_exists( SelectionContext::FIELD, $post ) ) {
+			$raw       = $post[ SelectionContext::FIELD ] ?? '';
+			$selection = SelectionContext::normalize( is_string( $raw ) ? json_decode( $raw, true ) : null );
+			if ( array() === $selection ) {
+				return new WP_Error( 'linker_contact_selection', __( 'Please review the product selection or exclude it before sending.', 'linker-commerce' ) );
+			}
+		}
+		return new self( $name, strtolower( $email ), $company, $message, $intent, OrderLocale::current( $language ), $selection );
+	}
+
+	/**
+	 * Optional Contact-only background, excluded from other doors' existing payloads.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public function selection(): array {
+		return $this->selection;
 	}
 
 	/**

@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-22T05:03:35.703Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "height": 1000,
+  "intent": "product",
+  "lang": "de-DE",
+  "message": "Bitte prüfen Sie die passende SAJ-Konfiguration. \\ Rückfrage zur Netzanbindung.",
+  "overflow": false,
+  "selection": {
+    "checked": true,
+    "excludedDisplay": "none",
+    "label": {
+      "bottom": 524.015625,
+      "height": 47.59375,
+      "left": 56,
+      "right": 334,
+      "top": 476.421875,
+      "width": 278,
+      "x": 56,
+      "y": 476.421875
+    },
+    "nativeControls": [
+      {
+        "checked": true,
+        "disabled": false,
+        "formAssociated": true,
+        "name": "linker_contact_selection",
+        "type": "checkbox"
+      }
+    ],
+    "rect": {
+      "bottom": 783.796875,
+      "height": 347.875,
+      "left": 39,
+      "right": 351,
+      "top": 435.921875,
+      "width": 312,
+      "x": 39,
+      "y": 435.921875
+    },
+    "summaryDisplay": "block",
+    "text": "ProduktauswahlDiese Auswahl meiner Nachricht beifügenWechselrichter, Speicher und SystemeMarkeSAJPhase3-phasigMindestleistung (kW)5.5SuchenSAJProdukte sortierenName A-ZDiese Auswahl wird nicht mitgesendet.",
+    "value": "{\"source\":\"http:\\/\\/127.0.0.1:9290\\/de\\/produkte\\/\",\"selection\":{\"brand\":\"saj\",\"phase\":\"3\",\"kw_min\":5.5,\"q\":\"SAJ\",\"sort\":\"name\"}}"
+  },
+  "source": {
+    "color": "rgb(10, 102, 92)",
+    "focus": true,
+    "hover": false,
+    "href": "http://127.0.0.1:9290/de/produkte/?brand=saj&phase=3&kw_min=5.5&q=SAJ&sort=name",
+    "outline": {
+      "color": "rgb(12, 127, 115)",
+      "style": "solid",
+      "width": "2px"
+    },
+    "rect": {
+      "bottom": 580.015625,
+      "height": 44,
+      "left": 56,
+      "right": 310.5078125,
+      "top": 536.015625,
+      "width": 254.5078125,
+      "x": 56,
+      "y": 536.015625
+    },
+    "text": "Wechselrichter, Speicher und Systeme"
+  },
+  "url": "http://127.0.0.1:9290/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fde%5C%2Fprodukte%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+  "width": 390
+}

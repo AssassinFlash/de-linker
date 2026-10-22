@@ -79,7 +79,13 @@ final class Handler {
 			return 'throttled';
 		}
 
-		$order = Business::run( 'contact', $post, get_object_vars( $submission ), static fn () => ( new Sender() )->message( $submission ) );
+		$selection = $submission->selection();
+		$payload   = get_object_vars( $submission );
+		if ( array() !== $selection ) {
+			$payload['selection'] = $selection;
+		}
+		// Woo handles string slashing consistently across classic and HPOS metadata stores.
+		$order = Business::run( 'contact', $post, $payload, static fn () => ( new Sender() )->message( $submission, array() !== $selection ? array( SelectionContext::META => (string) wp_json_encode( $selection ) ) : array() ) );
 		if ( $order instanceof WP_Error ) {
 			$code = $order->get_error_code();
 			return match ( $code ) {

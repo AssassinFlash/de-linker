@@ -150,6 +150,7 @@ if ( ! class_exists( 'WP_Session_Tokens' ) ) {
 		public $post_author = '0';
 		public $post_title  = '';
 		public $post_status  = 'publish';
+		public $post_password = '';
 		public $post_content = '';
 		public $post_name    = '';
 		public $post_date    = '';
