@@ -191,6 +191,11 @@ final class Outbox {
 	 * @return bool Whether the message was sent in this attempt.
 	 */
 	private function attempt( Message $message, int $attempts, int $job_id ): bool {
+		// Owner stop policy applies before any transport selection or quota reservation.
+		if ( Message::REVIEW_REMINDER === $message->category ) {
+			$this->hold_review_reminder( $job_id );
+			return false;
+		}
 		$now       = time();
 		$critical  = $message->critical || ( $job_id > 0 && $this->jobs->critical( $job_id ) );
 		$transport = $message->is_internal() && $this->smtp->available() ? Throttle::SMTP : Throttle::PHP;
@@ -268,6 +273,65 @@ final class Outbox {
 			array( 'source' => self::LOG_SOURCE )
 		);
 		return false;
+	}
+
+	/**
+	 * Retain a typed reminder and its history, never falling through after a failed hold.
+	 *
+	 * @param int $job_id Original persisted job, or zero for a nonqueued call.
+	 * @throws \RuntimeException Caught locally on unconfirmed hold or cancellation.
+	 */
+	private function hold_review_reminder( int $job_id ): void {
+		if ( $job_id < 1 ) {
+			return;
+		}
+		$phase = 'hold';
+		try {
+			wp_cache_delete( $job_id, 'post_meta' );
+			$hold = get_post_meta( $job_id, NotificationHold::META, true );
+			if ( ! $hold ) {
+				$hold = array(
+					'reason' => 'review_reminders_disabled',
+					'at'     => time(),
+				);
+				update_post_meta( $job_id, NotificationHold::META, $hold );
+			}
+			wp_cache_delete( $job_id, 'post_meta' );
+			if ( get_post_meta( $job_id, NotificationHold::META, true ) !== $hold ) {
+				throw new \RuntimeException( 'reminder_hold_unconfirmed' );
+			}
+			$phase = 'pending_action';
+			// A finite snapshot avoids AS's cancel-until-empty loop on a failed write.
+			$actions = as_get_scheduled_actions(
+				array(
+					'hook'     => self::HOOK,
+					'args'     => array( $job_id ),
+					'group'    => self::GROUP,
+					'status'   => 'pending',
+					'per_page' => -1,
+				),
+				'ids'
+			);
+			foreach ( $actions as $action ) {
+				\ActionScheduler::store()->cancel_action( (int) $action );
+			}
+			$pending = as_get_scheduled_actions(
+				array(
+					'hook'     => self::HOOK,
+					'args'     => array( $job_id ),
+					'group'    => self::GROUP,
+					'status'   => 'pending',
+					'per_page' => 1,
+				),
+				'ids'
+			);
+			if ( array() !== $pending ) {
+				throw new \RuntimeException( 'reminder_pending_action_unconfirmed' );
+			}
+		} catch ( \Throwable $error ) {
+			// Fixed bounded diagnostic only. Never copy DB/provider errors or the body.
+			wc_get_logger()->warning( 'Automatic review reminder retained; ' . $phase . ' confirmation failed.', array( 'source' => self::LOG_SOURCE ) );
+		}
 	}
 
 	/**
