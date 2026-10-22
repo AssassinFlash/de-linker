@@ -13,7 +13,7 @@ its existing suggestion anchor. Position the same counter below the row,
 with its existing 28px height and 8px separation. Reserve 44px bottom margin
 for that line plus its two 8px gaps. Use the existing is-enhanced state so
 an unavailable library script does not reserve space for a hidden control.
-Render the counter as muted informational text, retaining its existing
+Render the counter as plain informational text, retaining its existing
 aria-live and unique ID. A suggestion popup may cover this noninteractive
 metadata while open, as it covers other content below the input; dismissing
 it must reveal the unchanged current count.
@@ -22,6 +22,13 @@ The native filtered search establishes the counter's containing block. Add
 its existing 1px bottom border to the 8px offset, so measurement from the
 search's visible outer edge is 8px rather than 7px. The first candidate's
 7px measurement is retained as rejected spacing evidence.
+
+Use the page's existing deep-ink token for this small text on the exposed
+gradient. Recorded 390px nearby background samples reached RGB(232,234,234),
+where the original muted color has only about 4.475:1 contrast. These are
+nearby background samples, not measurements behind every glyph. Keep the
+12px size and plain background, and verify the darker result in the native
+render; retain the earlier muted-color captures as contrast evidence.
 
 The wrapper already spaces the icon and input, so remove the input's extra
 horizontal padding at that breakpoint. Enlarge the native clear button to
