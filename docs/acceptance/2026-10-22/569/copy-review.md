@@ -31,3 +31,18 @@ root 后续独立审查完整29组 EN/DE：27组保留，两组员工措辞收�
 “Accepted by the notification queue / In die Benachrichtigungswarteschlange aufgenommen”只表示持久 Outbox 接收，不能说 SMTP 或收件箱已收到。“Account created; notification pending / Konto angelegt; Benachrichtigung ausstehend”必须保留真实已创建账户；恢复不重复创建。“Notification skipped by policy / Benachrichtigung gemäß Versandregel übersprungen”是已持久确认的单个 notice 决策。“Notification data erased / Benachrichtigungsdaten gelöscht”只覆盖本轮准确归属的 source/job 数据，不声称删除账户或所有历史邮件。
 
 容量标签指公开待处理业务资料的逻辑字节，不代表 MySQL 物理磁盘。员工处置只在既有权限、nonce、审计和原生读回之后表示完成；未知结果不得称已释放。没有新增营销承诺、模型判断权限或客户 MFA 要求。完整私密审查原稿保留在本机 incident 目录，未把客户数据、令牌或原始 Message 放入仓库。
+
+
+## 评审修复：隐私原始owner读取失败
+
+初稿EN：**Registration notification data could not be read. Please try again.**
+
+初稿DE：**Die Registrierungsbenachrichtigungsdaten konnten nicht gelesen werden. Bitte versuchen Sie es erneut.**
+
+root独立对抗意见：EN原句通过；DE拆开长复合词，保留“读取失败、请重试”的事实，不改成空集、成功、已擦除或已向当前邮箱转移。
+
+定稿EN：**Registration notification data could not be read. Please try again.**
+
+定稿DE：**Die Daten zu den Registrierungsbenachrichtigungen konnten nicht gelesen werden. Bitte versuchen Sie es erneut.**
+
+只在verified-email回调的实际原始owner/原生读取失败时返回：export为原生WP_Error，erase为retained且done=false。原生测试证明原地址A改为B后，故障不掩盖A的数据；健康重试仍能读取并擦除。PO/MO同批交付，原生gettext分别读回EN源文和DE定稿正确；没有把该错误分支冒充成已拍摄的新浏览器状态。

@@ -6270,3 +6270,7 @@ msgstr "Grund für diese Entscheidung"
 #: includes/Registration/RegistrationPrivacy.php:126
 msgid "Registration notification data is busy. Please retry the erasure."
 msgstr "Die Registrierungsbenachrichtigungsdaten werden gerade verarbeitet. Bitte versuchen Sie die Löschung erneut."
+
+#: includes/Registration/RegistrationPrivacy.php:170
+msgid "Registration notification data could not be read. Please try again."
+msgstr "Die Daten zu den Registrierungsbenachrichtigungen konnten nicht gelesen werden. Bitte versuchen Sie es erneut."

@@ -259,7 +259,10 @@ final class Accounts {
 				$this->unfinished();
 				throw new \RuntimeException( esc_html__( 'The registration status could not be confirmed. Please try signing in before registering again, or email sales@de-linker.com. You can send inquiries without an account.', 'linker-commerce' ) );
 			}
-			Operation::finish( $active['permit'], $id );
+			$completed = ( new Admission( Configuration::current() ) )->complete( $active['permit'], $id );
+			if ( is_wp_error( $completed ) ) {
+				throw new \RuntimeException( 'registration_completion_unconfirmed' );
+			}
 			$active['transaction']->commit();
 			RegistrationSlots::release( $active['slot'] );
 			$this->registration = null;

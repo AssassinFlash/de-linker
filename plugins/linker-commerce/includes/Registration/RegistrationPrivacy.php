@@ -11,6 +11,7 @@ namespace Linker\Commerce\Registration;
 
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\RegistrationSlots;
+use WP_Error;
 
 /**
  * Native WordPress owns requester verification, user identity and deletion.
@@ -59,11 +60,14 @@ final class RegistrationPrivacy {
 	 *
 	 * @param  string $email Framework-verified requester.
 	 * @param  int    $page  Framework page.
-	 * @return array<string,mixed> Native privacy export.
+	 * @return array<string,mixed>|WP_Error Native privacy export or retryable read failure.
 	 */
-	public function export( string $email, int $page = 1 ): array {
+	public function export( string $email, int $page = 1 ): array|WP_Error {
 		$data  = array();
 		$users = self::users( $email, $page );
+		if ( is_wp_error( $users ) ) {
+			return $users;
+		}
 		foreach ( $users as $id ) {
 			$state = RegistrationNotices::read( $id );
 			if ( null === $state ) {
@@ -83,7 +87,10 @@ final class RegistrationPrivacy {
 		}
 		if ( 1 === $page ) {
 			$owned = RegistrationSlots::owned_data( Identity::recipient( $email ) );
-			if ( is_array( $owned ) && array() !== array_filter( $owned ) ) {
+			if ( is_wp_error( $owned ) ) {
+				return self::read_problem();
+			}
+			if ( array() !== array_filter( $owned ) ) {
 				$data[] = array(
 					'group_id'    => 'linker-registration-notices',
 					'group_label' => __( 'Registration notifications', 'linker-commerce' ),
@@ -114,7 +121,15 @@ final class RegistrationPrivacy {
 		unset( $page ); // Removing owner markers shifts pages; always resume from the first remaining owner.
 		// Erased owner markers disappear, so each retry starts at the first remaining page.
 		$users = self::users( $email, 1 );
-		$done  = true;
+		if ( is_wp_error( $users ) ) {
+			return array(
+				'items_removed'  => false,
+				'items_retained' => true,
+				'messages'       => array( $users->get_error_message() ),
+				'done'           => false,
+			);
+		}
+		$done = true;
 		foreach ( $users as $id ) {
 			$done = RegistrationNotices::erase( $id ) && $done;
 		}
@@ -133,28 +148,50 @@ final class RegistrationPrivacy {
 	 *
 	 * @param  string $email Framework-verified address.
 	 * @param  int    $page  Framework page.
-	 * @return list<int> Bounded native IDs, never an unverified client selector.
+	 * @return list<int>|WP_Error Bounded native IDs or explicit unknown, never cached failed emptiness.
 	 */
-	private static function users( string $email, int $page ): array {
-		$ids     = array_map(
+	private static function users( string $email, int $page ): array|WP_Error {
+		$ids = array_map(
 			'intval',
 			get_users(
 				array(
-					'fields'   => 'ID',
-					'number'   => 128,
-					'offset'   => max( 0, $page - 1 ) * 128,
-					'orderby'  => 'ID',
-					'order'    => 'ASC',
-					'meta_key' => RegistrationNotices::OWNER, // phpcs:ignore WordPress.DB.SlowDBQuery -- Framework-verified recipient, bounded native privacy page.
-				'meta_value'   => Identity::recipient( $email ), // phpcs:ignore WordPress.DB.SlowDBQuery -- HMAC ownership is the only original-recipient selector.
+					'cache_results' => false,
+					'fields'        => 'ID',
+					'number'        => 128,
+					'offset'        => max( 0, $page - 1 ) * 128,
+					'orderby'       => 'ID',
+					'order'         => 'ASC',
+					'meta_key'      => RegistrationNotices::OWNER, // phpcs:ignore WordPress.DB.SlowDBQuery -- Framework-verified recipient, bounded native privacy page.
+				'meta_value'        => Identity::recipient( $email ), // phpcs:ignore WordPress.DB.SlowDBQuery -- HMAC ownership is the only original-recipient selector.
 				)
 			)
 		);
+		if ( self::database_error() ) {
+			return self::read_problem();
+		}
 		$current = get_user_by( 'email', $email );
+		if ( self::database_error() ) {
+			return self::read_problem();
+		}
 		if ( 1 === $page && $current instanceof \WP_User && ! in_array( $current->ID, $ids, true ) && null !== RegistrationNotices::read( $current->ID ) ) {
 			$ids[] = $current->ID;
 		}
 		return array_values( $ids );
+	}
+
+	/**
+	 * Native owner/current-user queries can independently change the driver error.
+	 *
+	 * @phpstan-impure
+	 */
+	private static function database_error(): bool {
+		global $wpdb;
+		return '' !== $wpdb->last_error;
+	}
+
+	/** A failed owner lookup never means this verified recipient has no records. */
+	private static function read_problem(): WP_Error {
+		return new WP_Error( 'linker_registration_privacy_unavailable', __( 'Registration notification data could not be read. Please try again.', 'linker-commerce' ) );
 	}
 
 	/**

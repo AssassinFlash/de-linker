@@ -5451,3 +5451,7 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr ""
+
+#: includes/Registration/RegistrationPrivacy.php:170
+msgid "Registration notification data could not be read. Please try again."
+msgstr ""

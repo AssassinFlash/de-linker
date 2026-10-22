@@ -69,8 +69,9 @@ DE后台长恢复按钮最初出现横溢；独立copy审后只沿WP原生按钮
 检查命令：
 
 ```sh
+PHPRC=/Users/chesterjohn/de-linker-local/r569/php.ini \
 LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/r569/wordpress \
-php -c /Users/chesterjohn/de-linker-local/r569/php.ini \
+/opt/homebrew/opt/php@8.3/bin/php \
 plugins/linker-commerce/vendor/bin/phpunit \
 -c plugins/linker-commerce/phpunit.integration.xml.dist \
 --filter 'RegistrationCapacityTest|MailCapacityTest|MailDispatchCapacityTest|ProtectionAccountsTest|RegistrationTest|ApprovalTest|PrivacyTest|BusinessAdmissionTest|ConnectionFenceTest|OpenInquiryTest|AtomicMailConnectionTest'
@@ -91,9 +92,9 @@ npm run build:check
 npm run lint:types
 ```
 
-功能固定提交：`ca1b46901dc57e26ff4e0eacb3cebe59c961ac48`。下列检查与此功能版本对应，后续本段链接修正仅文档变更。
+首轮功能固定提交：`ca1b46901dc57e26ff4e0eacb3cebe59c961ac48`。下列首轮检查与此版本对应；其后全量独立评审确实发现五项遗漏，修复和最新检查见文末，不能用首轮绿门替代修复后的复审。
 
-最终检查：
+首轮检查：
 
 | 检查 | 结果 |
 |---|---|
@@ -106,3 +107,34 @@ npm run lint:types
 | diff whitespace / 新文件旧标识符检查 | PASS |
 
 本地build有既有bundle-size/performance建议，构建成功且build/source匹配，未改工具源码或构建产物。代码可回滚，持久pending source不应通过旧代码回滚而被遗忘：发布/回退时保留这些原生元数据、capacity及AS原job，先检查pending并由协调者决定兼容恢复版本；不能清空队列、历史、用户或额度作回滚。生产安装后的原生入站/组合/读回仍归协调者，本地验收不代表已上线。
+
+## 全量评审后的五项修复
+
+独立 Spec 在 `cf673e1d` 全量 diff 发现3项P2；独立 Standards 发现2项P1。本段记录修复及原生反证，**不把作者验证写成独立复审通过**。完整复审仍比较 `1f0547574a1a2582cf3ded2f6bf807dfc7284ea4` 到新的固定 head。先以固定提交 `654d4f38` 接入共享 `fc02979a`（NativeTransaction owned-start清理/commit结束确认及实际SIGKILL原任务恢复），没有复制其它工作树的未提交API。
+
+| 评审遗漏 | 修前原生红门 | 修法与修后见证 |
+|---|---|---|
+| 客户回执政策绑定当前邮箱，冻结通知仍发原地址 | 政策已完成、JobStore/source ACK失败后改邮箱，恢复一直pending | 政策取冻结Message实际To；原生A→B后仍只接收To A，政策receipt和所有bucket均不变，不重定向B |
+| 创建末尾void finish忽略非抛异常的completion错误 | 将最后Ledger写替换为原生无更新结果，账户仍被提交 | 直接检查Admission::complete；失败走原创建事务回滚/未知提示，无用户、job或占位被确认提交 |
+| 原地址OWNER查询失败被当作空集 | A→B后合成原生SELECT失败，export空完成/erase称done | 不缓存失败的空结果；export返回WP_Error，erase retained且done=false，source不变；撤故障后原地址可读回并擦除 |
+| REST路径猜测与原生匹配/写入target不一致 | 大小写原生route和body id覆盖route id时，第2字节仍写入 | 识别实际matched Users controller回调及其parsed id；真实dispatch最后1byte正常200，再增长1byte503，原值和8MiB占用保持 |
+| 首次policy-skip整份source在原连接范围外写入 | 真KILL旧writer，独立PHP执行native erase；旧SQL重放复活另一notice的parts | 重新取得原生owner锁，在NativeTransaction内重读exact source才作skip/accepted/cancel/erase；真实断线和同连接健康stale两门都拒绝复活，recovery后仍erased |
+
+冻结To去重、按规范地址稳定排序后，所有目标hour/day allowance和一次site/day在**同一Ledger reserve**提交；target full或site full均不产生半份扣款。原生夹具证明多To顺序/重复幂等、site只计一次、最后一次site额度成功及下一次整笔拒绝。原有string调用与规范化单To的operation ID/fingerprint、receipt和bucket字节兼容。保留Ledger既有16维输入界：每目标2维加site1维，至多7个唯一目标；超出或地址无法解析时保留通知pending/unavailable、不扣款、不裁剪To，也不拒绝已准入的注册。
+
+新的隐私读取失败EN/DE定稿及独立copy意见见 [copy review](copy-review.md)。本机原生gettext读回EN源句和DE定稿正确；该新增浏览器错误状态未另做CUA截图。既有34张JPEG只证明上文所列客户/员工状态，本轮未改模板、CSS、前端源码或构建产物；不把旧截图说成这五项故障的浏览器证据。
+
+最新修复检查（PHP8.3，子进程继承本次命令的PHPRC）：
+
+| 检查 | 结果 |
+|---|---|
+| 上述11组原生相关套件 | **132 tests / 2473 assertions，PASS** |
+| commerce完整unit命令 | **1595 tests / 6139 assertions，362 native-only skips，无错误** |
+| commerce全量PHPStan level8 | PASS，未增加ignore或baseline |
+| 本轮7个PHP文件WPCS（含原生测试和独立erase worker） | PASS |
+| i18n coverage / validity / 原生gettext | gap0；8 catalogs PASS；新EN/DE句读回正确 |
+| diff whitespace | PASS |
+
+首次扩大套件中共享SIGKILL门失败，原因是父进程 `-c` 不传给子进程；子进程未继承实例配置。未修改业务或断言，命令级PHPRC及明确PHP8.3下该门先1test/12assertions通过，再整组132项通过。工具源码和构建产物无变化，本轮未重复前端build。真正生产入站/组合读回、新的完整Standards与Spec修复复审、CI均是协调者后续门。
+
+私密原始反证与输出名：`review-native-red.txt`、`review-recipient-red.txt`、`review-policy-red.txt`、`review-stale-parts-controlled-red.txt`、`review-native-final-phprc.txt`、`review-unit-php83.txt`、`review-phpstan-final.txt`、`review-wpcs-final.txt`、`review-readback.json`。不复制原始Message、SQL数据、凭证或邮箱路由到仓库。最后只读恢复检查仍为15个原有用户、13个pending、4029业务bytes、0interrupted/0reserved；原38任务status+全部metadata SHA一致，原五次public消耗的Ledger SHA亦与首轮清理记录一致。没有新增MU fixture、额度reset或外部邮件投递。
