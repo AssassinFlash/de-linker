@@ -285,6 +285,16 @@ def test_capture_rejection_duplicate_json_and_resource_limits() -> None:
             read_pvgis(raw(), request(), capture(), **limits)
 
 
+@pytest.mark.parametrize("field", ["P", "Int"])
+def test_valid_json_integer_outside_float_range_is_a_typed_source_failure(
+    field: str,
+) -> None:
+    values = json.loads(raw())
+    values["outputs"]["hourly"][100][field] = 10**400
+    with pytest.raises(InvalidInput, match="representable numeric"):
+        parse(encode(cast(Object, values)))
+
+
 def test_reconstructed_radiation_quality_and_mutable_capture_are_not_lost() -> None:
     values = json.loads(raw())
     values["outputs"]["hourly"][100]["Int"] = 1

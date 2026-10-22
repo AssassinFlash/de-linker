@@ -101,9 +101,15 @@ def _unique_object(pairs: list[tuple[str, Json]]) -> Object:
 
 def _number(row: Object, name: str) -> float:
     value = row.get(name)
-    if type(value) not in (int, float) or not math.isfinite(cast(float, value)):
+    if type(value) not in (int, float):
         raise InvalidInput(f"finite numeric PVGIS {name} required")
-    return float(cast(float, value))
+    try:
+        number = float(cast(float, value))
+    except OverflowError as error:
+        raise InvalidInput(f"representable numeric PVGIS {name} required") from error
+    if not math.isfinite(number):
+        raise InvalidInput(f"finite numeric PVGIS {name} required")
+    return number
 
 
 def read_pvgis(
