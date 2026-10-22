@@ -28,6 +28,7 @@ final class RegistrationReceivedEmail extends CustomerApprovalEmail {
 	 * @param string   $locale Customer's current native locale.
 	 */
 	public function preview( \WP_User $user, string $locale ): ?Message {
+		$before          = array( $this->object, $this->recipient, $this->settings );
 		$this->object    = $user;
 		$this->recipient = $user->user_email;
 		$this->locale_switch->to( $locale );
@@ -35,7 +36,7 @@ final class RegistrationReceivedEmail extends CustomerApprovalEmail {
 			return Prepared::capture( fn () => $this->send_notification() );
 		} finally {
 			$this->locale_switch->back();
-			$this->object = false;
+			[ $this->object, $this->recipient, $this->settings ] = $before;
 		}
 	}
 
@@ -79,6 +80,10 @@ final class RegistrationReceivedEmail extends CustomerApprovalEmail {
 	 */
 	public function trigger( $user_id, $previous = '', $current = '', $reason = '' ): void {
 		unset( $previous, $current, $reason );
+		if ( \Linker\Commerce\Registration\RegistrationNotices::owns( (int) $user_id ) ) {
+			\Linker\Commerce\Registration\RegistrationNotices::deliver( (int) $user_id, 'received' );
+			return;
+		}
 		$user = get_userdata( (int) $user_id );
 		if ( ! $user instanceof \WP_User ) {
 			return;
