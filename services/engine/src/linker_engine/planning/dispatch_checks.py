@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from .battery_model import BatteryModel, nonnegative
 from .canonical import Json, Object
 from .dispatch_frame import Flows
+from .dispatch_priorities import priority_residuals
 from .errors import InvalidInput, NumericalFailure
 from .numerical_tolerance import Tolerance
 
@@ -113,6 +114,8 @@ def verify(
             )
         )
         energy_scale = max(model.usable_window_kwh, flow.before.total, flow.after.total)
+        for code, residual in priority_residuals(flow, model).items():
+            record(code, residual, "kW", index, power_scale)
         ac_left = math.fsum((flow.pv_available_kw, flow.import_kw, flow.discharge_kw))
         ac_right = math.fsum(
             (

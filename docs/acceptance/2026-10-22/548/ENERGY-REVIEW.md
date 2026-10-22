@@ -52,7 +52,20 @@ whole-engine regression run had 239 passes in 13.62s; it will be repeated after
 these fixes. A separate synthetic 8760-interval analytic fixture passes; neither
 its speed nor its energy totals are a production weather/SKU acceptance claim.
 
-Both axes will recheck the repaired fixed commit. Initial totals: Standards 3
-(worst P1 verifier), Spec 2 (worst P2 verifier; two shared causes). Overall goal,
-complete physical configuration/Genie/Woo/UI integration and live acceptance
-remain active, not delivered by this component review.
+Both axes independently rechecked `bd407575`: the original counterexamples
+were rejected; the ULP residual was retained and its externally supplied
+equivalent still rejected. Standards passed. Spec found one additional P2:
+balanced traces could violate the declared fixed allocation order. With zero
+battery, 2 kW PV and 1 kW load, a forged trace imported 1 kW and curtailed 2 kW
+instead of using direct PV, yet passed. Its solar autarky changed from 100% to
+0%. This is model semantics, not an invitation to test arbitrary EMS policies.
+
+Independent equations now reconstruct the fixed priorities and bounded
+delivery from frame, command, initial energy and model. They do not call the
+actuator, source withdrawal or its grid-limit helper. Four regressions first
+failed against the previous verifier (all forged traces passed), then passed
+after repair: direct PV, battery load-before-aux, PV-before-grid charging, and
+export-before-curtailment. Planning now has 90 passes, strict mypy/ruff/format
+passes. Both independent axes will recheck this fixed increment. The full
+physical configuration/Genie/Woo/UI integration and live acceptance remain
+active, not delivered by this component review.

@@ -485,3 +485,76 @@ def test_critical_or_mixed_demand_is_not_reported_as_whole_site_autarky() -> Non
         "undefined_reason": "requested_load_scope_is_not_whole_site_gross",
     }
     assert ratio(result, "solar_load_share_of_requested_demand") == 1
+
+
+def test_balanced_grid_supply_cannot_replace_available_direct_pv() -> None:
+    model = battery(0, 0)
+    flow = run((frame(0, load=1, pv=2),), model, EnergyOrigins(0, 0, 0))[0]
+    forged = replace(
+        flow, pv_to_load_kw=0, grid_to_load_kw=1, import_kw=1, curtailed_kw=2
+    )
+    verification = checks((forged,), model)
+    failures = {item.code for item in verification.checks if not item.passed}
+    assert "pv_load_priority" in failures
+    # Both records conserve energy, but their customer-facing conclusions
+    # disagree. The fixed allocation model must reject the forged one.
+    assert ratio(metrics((flow,), model), "solar_autarky") == 1
+    assert ratio(metrics((forged,), model), "solar_autarky") == 0
+
+
+def test_battery_cannot_serve_aux_before_remaining_customer_load() -> None:
+    model = battery(1, 1)
+    flow = run((frame(0, load=1, aux=1),), model, EnergyOrigins(0, 0, 1))[0]
+    forged = replace(
+        flow,
+        discharged_to_load_ac=EnergyOrigins(0, 0, 0),
+        grid_to_load_kw=1,
+        grid_to_aux_kw=0,
+    )
+    failures = {
+        item.code for item in checks((forged,), model).checks if not item.passed
+    }
+    assert {
+        "battery_load_priority",
+        "grid_load_priority",
+        "grid_aux_priority",
+    } <= failures
+
+
+def test_allowed_grid_charge_cannot_replace_available_pv_charge() -> None:
+    model = battery(2, 1)
+
+    def charge(_: Frame, __: BatteryModel, ___: EnergyOrigins) -> Command:
+        return Command(1, 0)
+
+    flow = run(
+        (frame(0, load=0, pv=1, grid_charge=True),),
+        model,
+        EnergyOrigins(0, 0, 0),
+        charge,
+    )[0]
+    forged = replace(
+        flow,
+        pv_charge_kw=0,
+        grid_charge_kw=1,
+        import_kw=1,
+        curtailed_kw=1,
+        after=EnergyOrigins(0, 1, 0),
+    )
+    failures = {
+        item.code for item in checks((forged,), model).checks if not item.passed
+    }
+    assert {"pv_charge_priority", "grid_charge_priority"} <= failures
+
+
+def test_available_export_precedes_curtailment_in_this_model() -> None:
+    model = battery(0, 0)
+    item = frame(0, load=1, pv=2)
+    item = replace(item, limits=replace(item.limits, export_cap_kw=None))
+    flow = run((item,), model, EnergyOrigins(0, 0, 0))[0]
+    assert flow.export_kw == 1
+    forged = replace(flow, export_kw=0, curtailed_kw=1)
+    failures = {
+        item.code for item in checks((forged,), model).checks if not item.passed
+    }
+    assert {"pv_export_priority", "pv_curtailment_priority"} <= failures

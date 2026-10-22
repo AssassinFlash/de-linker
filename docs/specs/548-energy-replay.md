@@ -85,6 +85,10 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
     not above requested. Internal shortage must be nonnegative, and actual
     internal auxiliary supply equals the smaller of its demand and inventory
     after standing loss; a reported shortage cannot cancel fictitious use.
+    Independently reconstructed `min` equations enforce the fixed allocation
+    priority in §7, including bounded delivery under the same command, PV and
+    battery load/auxiliary order, grid load/auxiliary/charge order, and PV
+    charge/export/curtail order. Energy balance alone cannot certify this model.
 15. Numerical tolerances are explicit, serialized software parameters. They do
     not represent field precision or engineering safety margins. Task execution,
     replay constraint satisfaction, equipment evidence and model applicability
