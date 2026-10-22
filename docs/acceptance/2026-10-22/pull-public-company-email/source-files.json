@@ -1,0 +1,23 @@
+{
+  "frozen_at": "2026-10-22T08:17:36.863279+00:00",
+  "base": "5da007fabb2beca2356da353a4b7dafa5eb3225c",
+  "branch": "codex/pull-public-company-email",
+  "aggregate_algorithm": "SHA256(sorted SHA256 + two spaces + relative path + LF)",
+  "aggregate": "9c3bf6a1c44ade8422f23b59ddec9f9556030ef93aa1e95ebebadaa6e4879180",
+  "files": {
+    "tools/pull/src/linker_pull/anonymize.py": "5914ca7c9b08b0b73f129bb40d984b775cff8874ad2cf98c8d5c10f6241f1d17",
+    "tools/pull/tests/test_public_company_email.py": "29fb49e8d12aca4773f917ca1dbb96bc371da6612ed75248d41f418ae1d64f79",
+    "docs/acceptance/2026-10-22/pull-public-company-email/README.md": "7749ac2ea248f15f8a5aac1b6beb695eb3cf11d220eb4451c1ca994651ef22be"
+  },
+  "production_files": [
+    "tools/pull/src/linker_pull/anonymize.py"
+  ],
+  "tests": {
+    "new_cases": 24,
+    "related_total_passed": 86,
+    "pristine_replay_failed": 8,
+    "pristine_replay_passed": 16
+  },
+  "runtime_status": "not run; no instance/browser/production/import",
+  "private_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/pull-public-email-20261022T081242807375Z"
+}
