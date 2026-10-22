@@ -1,0 +1,97 @@
+{
+  "decision": "normal",
+  "basis": "business_request",
+  "reason": "escalated",
+  "model": "typesafe/jev-1.13",
+  "rubric": "inquiry-mail-v1",
+  "raw": {
+    "primary": {
+      "model": "typesafe/jev-1.13-20260917",
+      "answers": {
+        "classification": {
+          "type": "choice",
+          "choice": "unknown",
+          "confidence": null,
+          "probabilities": {
+            "normal": 0.02,
+            "malicious": 0.02,
+            "unknown": 0.96
+          }
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "insufficient_context",
+          "confidence": null,
+          "probabilities": {
+            "business_request": 0.006666666666666667,
+            "service_or_complaint": 0.006666666666666667,
+            "reporting_abuse": 0.006666666666666667,
+            "fraud_or_phishing": 0.006666666666666667,
+            "unsolicited_bulk_promotion": 0.006666666666666667,
+            "meaningless_abuse": 0.006666666666666667,
+            "insufficient_context": 0.96
+          }
+        }
+      }
+    },
+    "escalation": {
+      "model": "deepseek-flash",
+      "answers": {
+        "classification": {
+          "type": "choice",
+          "choice": "normal",
+          "confidence": null,
+          "probabilities": {
+            "normal": 0.96,
+            "malicious": 0.02,
+            "unknown": 0.02
+          }
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "business_request",
+          "confidence": null,
+          "probabilities": {
+            "business_request": 0.96,
+            "service_or_complaint": 0.006666666666666667,
+            "reporting_abuse": 0.006666666666666667,
+            "fraud_or_phishing": 0.006666666666666667,
+            "unsolicited_bulk_promotion": 0.006666666666666667,
+            "meaningless_abuse": 0.006666666666666667,
+            "insufficient_context": 0.006666666666666667
+          }
+        }
+      }
+    }
+  },
+  "binding": {
+    "protocol": "inquiry-mail-v1",
+    "policy": "inquiry-mail-v1",
+    "record_id": 123,
+    "snapshot_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "purpose": "inquiry_mail"
+  },
+  "usage": {
+    "primary": {
+      "attempts": 1,
+      "calls": [
+        {
+          "seconds": 0.000267,
+          "status": 200
+        }
+      ],
+      "usage": {}
+    },
+    "escalation": {
+      "attempts": 1,
+      "calls": [
+        {
+          "seconds": 0.000197,
+          "status": 200
+        }
+      ],
+      "usage": {}
+    }
+  },
+  "seconds": 0.000633
+}
