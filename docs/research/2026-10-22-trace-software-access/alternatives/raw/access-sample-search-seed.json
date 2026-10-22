@@ -1,0 +1,6 @@
+{
+  "queries": "site:help.valentin-software.com pvsol example projects customer presentation PDF\nsite:valentin-software.com \"pdf\" \"customer presentation\"\nsite:manuals.sma.de/SDesign \"Without Registration\"\nsite:manuals.sma.de/SDesign \"Example Projects\"\nsite:easy-pv.co.uk/speedy-pv \"demo\"\nsite:help.easy-pv.co.uk \"export\" \"report\"\nsite:k2-systems.com \"sample\" \"report\" \"Base\"\nsite:support.opensolar.com \"demonstration\" \"project\"\nsite:opensolar.com \"sample proposal\"",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "languageCode": "en"
+}

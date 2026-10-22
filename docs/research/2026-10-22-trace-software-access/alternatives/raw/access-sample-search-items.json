@@ -1,0 +1,949 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:manuals.sma.de/SDesign \"Without Registration\"",
+      "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign+%22Without+Registration%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign+%22Without+Registration%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [
+      {
+        "title": "Signing up for Sunny Design",
+        "websiteTitle": "SMA Solar",
+        "url": "https://www.google.com/goto?url=CAEScAHrOzAVPuFt05uPHOlH8YiQueDMubv582wN9uwbjDiD3o7UvcmkjDWL7W4hwGN1jw7WhIgP-1cT1GQ0Ku6MpALpu3FOlyt8KU-MUK7TQO_pDZsBQ1i5_JLYU8fWM8B-tzjKTrIoS3UIGQUzFjmQtSs",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "If you already have an SMA ID, click on [Login]. To create an SMA ID, click on [Create SMA ID] and follow the instructions on the screen.Read more",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Creating a harmonics calculation",
+        "websiteTitle": "SMA Solar",
+        "url": "https://www.google.com/goto?url=CAEScAHrOzAVJbG7TkJyGbN-xWK1I2xc-cchh7hyz8APOvwC-3QT5UpFO1sMILdA_h-22CFqpfY8rNaN1YzKhluzZ9U7p8InPa0fA1118EsPEvZd5HhT6u3qa0WQEaCNsFhq5J5FgUJkgawIHUOYSpglUSo",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "With the harmonics calculation you can check whether the harmonic currents at the point of interconnection are within the thresholds.Read more",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {}
+      }
+    ],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/ZnUW6ITpJXggh1e-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:manuals.sma.de/SDesign \"Example Projects\"",
+      "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign+%22Example+Projects%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Amanuals.sma.de%2FSDesign+%22Example+Projects%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "A",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [
+      {
+        "title": "Example of your own consumption data - SMA Manuals",
+        "websiteTitle": "SMA.de",
+        "url": "https://manuals.sma.de/SDesign/en-US/14562660107.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "Example of your own consumption data containing data of one year (365 days) Creation and administration of own load profiles",
+        "emphasizedKeywords": [
+          "Example of your own consumption data"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Design of the project pages",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14317171083.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "Using this navigation, you can go to the project planning pages in the workspace section. The main navigation shows the steps for planning a project. Using the ...",
+        "emphasizedKeywords": [
+          "project",
+          "project"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Managing Existing Projects",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14329249803.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "To open an individual project, duplicate it, rename it, export it, save it as a template, delete it or to assign it to a customer, click on the desired project ...",
+        "emphasizedKeywords": [
+          "project",
+          "project"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Issuing project documentation",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14462685579.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "Design issues the project documentation as a PDF file. The project documentation will be created as a PDF file and downloaded to your computer. Example of your ...",
+        "emphasizedKeywords": [
+          "project",
+          "project",
+          "Example"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Downloading further project files",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14473577227.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "On the project page Create project documentation, click on the tab Other project files. · Click on the [Download] button next to the desired file. · For project ...",
+        "emphasizedKeywords": [
+          "project",
+          "project",
+          "project",
+          "project"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "\"Results\" project page",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14488603531.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "On the Results project page, you will receive an overview of the entries, results and current information on the design of the system.Read more",
+        "emphasizedKeywords": [
+          "project"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Project page \"Configure PV system\"",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14568603275.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "A subproject consists of 1 to 6 PV arrays and at least 1 inverter per PV array. In the project types PV system with total power feed-in to grid and with self- ...",
+        "emphasizedKeywords": [
+          "project"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "With energy systems: \"Summary\" project page",
+        "websiteTitle": "SMA.de",
+        "url": "https://manuals.sma.de/SDesign/en-US/14488608139.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "The most important project details are summarized on the Summary project page. Check the information before creating the project documentation.",
+        "emphasizedKeywords": [
+          "project",
+          "project",
+          "project"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Importing project data",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14326255499.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "On your personal home page in the Tools area, click on the button [Import data]. The Import data window will open. Drag the required files into the file ...",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {}
+      },
+      {
+        "title": "Design of the personal home page on the user interface",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/SDesign/en-US/14317169675.html",
+        "displayedUrl": "https://manuals.sma.de › SDesign › en-US",
+        "description": "This section contains a list of your planned projects. C. Workspace. In this section, you have access to your projects, templates and settings. Furthermore, ...",
+        "emphasizedKeywords": [
+          "projects",
+          "projects"
+        ],
+        "siteLinks": [],
+        "productInfo": {}
+      }
+    ],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/16usKXf0RnDenmg-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:opensolar.com \"sample proposal\"",
+      "url": "http://www.google.com/search?q=site%3Aopensolar.com+%22sample+proposal%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aopensolar.com+%22sample+proposal%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "A",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "How to create your swipe proposal",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/13440054388239-Editing-in-the-Sales-Machine-Proposal-SMP",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 13440...",
+        "description": "Optional: Select Demo on the Swipe card to preview a sample proposal before creating your own. Enter a Title for the template, such as ...Read more",
+        "date": "2026-09-02T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "sample proposal"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/PUtwvbm9J1VlLjJ-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:support.opensolar.com \"demonstration\" \"project\"",
+      "url": "http://www.google.com/search?q=site%3Asupport.opensolar.com+%22demonstration%22+%22project%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asupport.opensolar.com+%22demonstration%22+%22project%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Activating Renusol Components",
+        "websiteTitle": "OpenSolar",
+        "url": "https://support.opensolar.com/hc/en-us/articles/11487831904911-Activating-Renusol-Components",
+        "displayedUrl": "https://support.opensolar.com › en-us › articles › 11487...",
+        "description": "Watch this Video (possibly at increased playback speeds) to receive a quick demonstration ... Note that every time you click on the Renusol ...",
+        "date": "2024-12-20T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "demonstration"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/LNvIslbzm0fYMCt-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:help.easy-pv.co.uk \"export\" \"report\"",
+      "url": "http://www.google.com/search?q=site%3Ahelp.easy-pv.co.uk+%22export%22+%22report%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Ahelp.easy-pv.co.uk+%22export%22+%22report%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Performance and consumption task",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/chapter/performance-and-consumption-task/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › chapter › export › pdf",
+        "description": "Where is section C, D and E of the performance report? What is self ... This factors in forced charge and discharge times, battery specs and export limits.Read more",
+        "emphasizedKeywords": [
+          "report",
+          "export"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Where is section C, D and E of the performance report?",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/page/where-is-section-c-d-and-e-of-the-performance-report/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › faqs › page › export › pdf",
+        "description": "Where is section C, D and E of the performance report? These sections are displayed in both the MCS performance report and the performance and battery pages ...",
+        "emphasizedKeywords": [
+          "report",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "How do I attach my logo/branding to the customer proposal ...",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/page/how-do-i-attach-my-logobranding-to-the-customer-proposal-or-easy-pv-project-report/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › page › export › pdf",
+        "description": "To attach your Logo to the Easy PV Project Report navigate to My Account in the top right of the. Easy PV home page and then Preferences.Read more",
+        "date": "2024-09-04T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Why do some of the financial savings appear to be different on ...",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/page/why-do-some-of-the-financial-savings-appear-to-be-different-on-the-customer-proposal-and-easy-pv-project-report/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › page › export › pdf",
+        "description": "Project Report? Easy PV uses two different methods of calculating ... You then start getting savings and export income from it. But by the end of ...",
+        "emphasizedKeywords": [
+          "Report",
+          "export"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Financial task",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/chapter/financial-task/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › chapter › export › pdf",
+        "description": "When you pay for a PV install you do so in a lump sum on day 0. You then start getting savings and export income from it. But by the end of the first year, ...Read more",
+        "emphasizedKeywords": [
+          "export"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Customer proposal",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/chapter/customer-proposal/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › chapter › export › pdf",
+        "description": "project report? To attach your Logo to the Easy PV Project Report navigate to My Account in the top right of the. Easy PV home page and then Preferences ...",
+        "emphasizedKeywords": [
+          "report",
+          "Report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "New in August 2024",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/news-and-updates/page/new-in-august-2024/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › page › export › pdf",
+        "description": "Retirement of an older version of the PV Array Test Report which has been replaced with a new PV Array Test Report that is up-to-date with MCS documentation.Read more",
+        "emphasizedKeywords": [
+          "Report",
+          "Report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "How do I attach my log...",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/page/how-do-i-attach-my-logobranding-to-the-customer-proposal-or-easy-pv-project-report",
+        "displayedUrl": "https://help.easy-pv.co.uk › books › faqs › page › how-...",
+        "description": "Export. Contained Web File.html · PDF File.pdf · Plain Text File.txt ... How do I attach my logo/branding to the customer proposal or Easy PV project report?Read more",
+        "emphasizedKeywords": [
+          "Export",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Pro: Document Management",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/export/pdf",
+        "displayedUrl": "https://help.easy-pv.co.uk › page › export › pdf",
+        "description": "Saving an Easy PV report to the document manager. When previewing any report in Easy PV, on the right-hand sidebar there will be an orange Save button at the ...",
+        "emphasizedKeywords": [
+          "report",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "The payback period is too long, how can I fix this?",
+        "websiteTitle": "Easy PV",
+        "url": "https://help.easy-pv.co.uk/books/faqs/page/the-payback-period-is-too-long-how-can-i-fix-this",
+        "displayedUrl": "https://help.easy-pv.co.uk › books › faqs › page › the-p...",
+        "description": "... Report? Customer proposal. 10 Pages. Why does the quote page still show ... Add export tariff: if an export tariff is not configured, any benefits from ...Read more",
+        "emphasizedKeywords": [
+          "Report",
+          "export",
+          "export"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/hYlI1sQLTchpz3g-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:easy-pv.co.uk/speedy-pv \"demo\"",
+      "url": "http://www.google.com/search?q=site%3Aeasy-pv.co.uk%2Fspeedy-pv+%22demo%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aeasy-pv.co.uk%2Fspeedy-pv+%22demo%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "A",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/aAyFCMOKvtmsyWw-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:k2-systems.com \"sample\" \"report\" \"Base\"",
+      "url": "http://www.google.com/search?q=site%3Ak2-systems.com+%22sample%22+%22report%22+%22Base%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Ak2-systems.com+%22sample%22+%22report%22+%22Base%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Solar Connections McHenry, Illinois Structural Testing ...",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/wp-content/uploads/2022/09/SS-PowerClamp-Engineering-Letter.pdf",
+        "displayedUrl": "https://k2-systems.com › uploads › 2022/09 › SS-...",
+        "description": "It should be noted that it is our policy to retain components and sample remnants for 30 days from the date of this report, after which time they will be ...Read more",
+        "emphasizedKeywords": [
+          "sample",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "E-00004075_23_SDS_GreenRoof 2.0 - K2 Catalogue",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/1e/56/81/System%20data%20sheet_GreenRoof%202.0_Landscape_V-Form.pdf?ts=1786612718",
+        "displayedUrl": "https://catalogue.k2-systems.com › media",
+        "description": "layout sample. 1 : 50. X detail Z. 1 : 10. 1. 14. 13. 4. 14. 13 detail Y. 1 ... The resulting values are provided in your project's K2 Base report ...Read more",
+        "date": "2026-08-11T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "sample",
+          "Base report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "E-00004695_16_SDS_GreenRoof 2.0 - K2 Catalogue",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/1c/35/1f/System%20data%20sheet_GreenRoof%202.0_Portrait_A-Form.pdf?ts=1786612732",
+        "displayedUrl": "https://catalogue.k2-systems.com › media",
+        "description": "layout sample. 1 : 50. X detail Z. 1 : 10. 4. 1. 11. 10. 15. 14 detail Y. 1 ... The resulting values are provided in your project's K2 Base report ...Read more",
+        "date": "2026-08-11T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "sample",
+          "Base report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "K2 MiniRail MK2 system: all components, assembly ...",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/en/mounting-systems/pitched-roof-systems/k2-minirail-mk2-system/",
+        "displayedUrl": "https://catalogue.k2-systems.com › pitched-roof-systems",
+        "description": "* The project-specific minimum high crest width dimension can be found in the Base report. Dimensioning scheme MiniRail. W = width / H = height / L = length.Read more",
+        "emphasizedKeywords": [
+          "Base report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "K2 Tilt 10°",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalog.k2-systems.com/media/85/a2/ac/K2Tilt10-AI-EN.pdf",
+        "displayedUrl": "https://catalog.k2-systems.com › media",
+        "description": "/ Actual system structural capacities, such as the amount of modules intended for the system, are defined by a certified K2 Base report. Page 8. 8. Torque.Read more",
+        "emphasizedKeywords": [
+          "Base report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "The South Face System",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/wp-content/uploads/2023/04/SouthFace-AI-US.pdf",
+        "displayedUrl": "https://k2-systems.com › uploads › 2023/04 › So...",
+        "description": "A sample bonding path diagram is shown in Figure 1, below. Specific ... Actual system structural capacities are defined by a certified K2 Base report.Read more",
+        "emphasizedKeywords": [
+          "sample",
+          "Base report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "CrossRail System",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/wp-content/uploads/2022/09/CrossRail-AI-US.pdf",
+        "displayedUrl": "https://k2-systems.com › CrossRail-AI-US",
+        "description": "A sample bonding path diagram is shown in Figure 1 below. Your specific ... USH, 9\", Base Kit, w/Butyl. 4000140. Universal Standard Hook, 9\". Base, Kit.Read more",
+        "emphasizedKeywords": [
+          "sample",
+          "Base",
+          "Base"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "E-00003893_35_SDS_GreenRoof 2.0 - K2 Catalogue",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/a3/98/1d/System%20data%20sheet_GreenRoof%202.0_Portrait_V-Form.pdf?ts=1786612960",
+        "displayedUrl": "https://catalogue.k2-systems.com › media",
+        "description": "layout sample. 1 : 50. X detail Z. 1 : 10. 3. 1. 11. 10 detail Y. 1 : 5. 5 ... The resulting values are provided in your project's K2 Base report.Read more",
+        "date": "2026-08-12T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "sample",
+          "Base report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "E-00003893_29_SDS_GreenRoof 2.0 - K2 Catalogue - K2 Systems",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/a3/98/1d/System%20data%20sheet_GreenRoof%202.0_Portrait_V-Form.pdf",
+        "displayedUrl": "https://catalogue.k2-systems.com › media",
+        "description": "module length and clamping position in our planning software K2 Base. Calculated values are given for your project in your project's K2 Base report. Pos.No ...",
+        "emphasizedKeywords": [
+          "Base",
+          "Base report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "General terms and conditions of purchase (GPC)",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/en/conditions-of-purchase/",
+        "displayedUrl": "https://k2-systems.com › conditions-of-purchase",
+        "description": "K2 BaseK2 DocuAppProduct catalogue · MyK2 Login ... A quality inspection shall be carried out in the goods inwards department on a random sample basis.Read more",
+        "emphasizedKeywords": [
+          "Base",
+          "sample"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/5ZOIXeQDIaDtqKE-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:help.valentin-software.com pvsol example projects customer presentation PDF",
+      "url": "http://www.google.com/search?q=site%3Ahelp.valentin-software.com+pvsol+example+projects+customer+presentation+PDF&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Ahelp.valentin-software.com+pvsol+example+projects+customer+presentation+PDF&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [
+      {
+        "title": "Pvsol example projects customer presentation pdf download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&gl=us&hl=en&sxsrf=APpeQntObPRz030L1lMcCLBc47wJFNCbWg:1792671348419&q=Pvsol+example+projects+customer+presentation+pdf+download&sa=X&ved=2ahUKEwjR6aqXzc2XAxWi2TgGHU34C-MQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "Pvsol example projects customer presentation pdf 2021",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&gl=us&hl=en&sxsrf=APpeQntObPRz030L1lMcCLBc47wJFNCbWg:1792671348419&q=Pvsol+example+projects+customer+presentation+pdf+2021&sa=X&ved=2ahUKEwjR6aqXzc2XAxWi2TgGHU34C-MQ1QJ6BAg4EAE"
+      },
+      {
+        "title": "Pvsol example projects customer presentation pdf download",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&gl=us&hl=en&sxsrf=APpeQntObPRz030L1lMcCLBc47wJFNCbWg:1792671348419&q=Pvsol+example+projects+customer+presentation+pdf+download&sa=X&ved=2ahUKEwjR6aqXzc2XAxWi2TgGHU34C-MQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "Pvsol example projects customer presentation pdf 2021",
+        "url": "https://www.google.com/search?sca_esv=0e43a977f6a9dd0c&gl=us&hl=en&sxsrf=APpeQntObPRz030L1lMcCLBc47wJFNCbWg:1792671348419&q=Pvsol+example+projects+customer+presentation+pdf+2021&sa=X&ved=2ahUKEwjR6aqXzc2XAxWi2TgGHU34C-MQ1QJ6BAg4EAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Presentation :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/presentation/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages › pres...",
+        "description": "Create a presentation of your project with prepared simulation results in 27 languages. Export the project report as PDF or Word document.",
+        "emphasizedKeywords": [
+          "Create a presentation of your project"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Pages :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages",
+        "description": "All results are prepared graphically and can be printed out as a customer presentation or exported in pdf format. Quick guide for a grid-connected PV system.Read more",
+        "emphasizedKeywords": [
+          "customer presentation"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Interface to mounting system software :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/3d-design/interface-to-mounting-system-software/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages › inter...",
+        "description": "On the Presentation page you will find the button Show mounting system PDF, which opens a PDF file containing the Structural analysis report generated by the ...",
+        "emphasizedKeywords": [
+          "Presentation",
+          "PDF",
+          "PDF"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Plans and Parts list :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/plans-and-parts-list/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages › plan...",
+        "description": "All technical drawings and plans are displayed on the plans page. Schematic circuit diagram PDF, PNG, SVG Dimensioning plan PDF, PNG, DXF String diagram PDF, ...",
+        "emphasizedKeywords": [
+          "All technical drawings and plans are displayed on the plans page"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Tutorials :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/tutorials/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › tutorials",
+        "description": "On the following pages you will find instructions with various sample projects. Connecting two dormers to one strand: Map import and extrusion of 3D objects",
+        "emphasizedKeywords": [
+          "sample projects"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Diagram editor :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/results/diagram-editor/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages › results",
+        "description": "Each displayed diagram can be added to the presentation using the corresponding button Add to presentation . Three types of diagrams are available for ...",
+        "emphasizedKeywords": [
+          "presentation",
+          "presentation"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Licensing :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/licensing/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › licensing",
+        "description": "Licensing. You can try PV*SOL® for free for 30 days. The trial version offers all functions except for printing and saving the project report.Read more",
+        "emphasizedKeywords": [
+          "project"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Climate data (Calculation) :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/calculation/irradiation/climate-data/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › irradiation",
+        "description": "This presentation offers a good introduction to this topic: Accuracy of MeteoNorm",
+        "emphasizedKeywords": [
+          "presentation"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Registration :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/start/registration/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › start › registr...",
+        "description": "Register PV*SOL; Review your licence; Reapply your registration due to device replacement; Consider our software maintenance offer;",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "Import OND files (Databases) :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/databases/import-ond-files/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › import-ond-...",
+        "description": "Import OND files. From version PV*SOL® 2024 R1, OND files can be imported into the database. OND files contain specifications of inverters in text form.Read more",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/ak6D6Tgr6nzLGvB-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:valentin-software.com \"pdf\" \"customer presentation\"",
+      "url": "http://www.google.com/search?q=site%3Avalentin-software.com+%22pdf%22+%22customer+presentation%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Avalentin-software.com+%22pdf%22+%22customer+presentation%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Creating a customer presentation in PV*SOL premium",
+        "websiteTitle": "Valentin Software",
+        "url": "https://valentin-software.com/en/product-news-blog-en/creating-a-customer-presentation-in-pvsol-premium/",
+        "displayedUrl": "https://valentin-software.com › Home › Product news",
+        "description": "Go to the 'Presentation' page, select the \"Customer presentation - Compact\" template, choose the document language, and export it as a PDF.Read more",
+        "date": "2026-10-13T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Customer presentation",
+          "PDF"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Presentation :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/presentation/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages › pres...",
+        "description": "Export the project report as PDF ... Currently available document templates are Customer presentation - Compact, Customer presentation and Documentation.Read more",
+        "emphasizedKeywords": [
+          "PDF",
+          "Customer presentation",
+          "Customer presentation"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "New: PV*SOL premium 2026 available now",
+        "websiteTitle": "Valentin Software",
+        "url": "https://valentin-software.com/en/product-news-blog-en/pvsol-premium-2026-available-now/",
+        "displayedUrl": "https://valentin-software.com › Home › Product news",
+        "description": "With the 2026 release of PV*SOL premium (download free 30-day trial), you can now generate a new customer presentation in PDF and DOCX once ...Read more",
+        "date": "2025-11-24T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "customer presentation",
+          "PDF"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Pages :: PV*SOL® help",
+        "websiteTitle": "Valentin Software",
+        "url": "https://help.valentin-software.com/pvsol/en/pages/",
+        "displayedUrl": "https://help.valentin-software.com › pvsol › pages",
+        "description": "All results are prepared graphically and can be printed out as a customer presentation or exported in pdf format. Quick guide for a grid-connected PV system.Read more",
+        "emphasizedKeywords": [
+          "customer presentation",
+          "pdf"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "PV*SOL premium | Design software for photovoltaic systems",
+        "websiteTitle": "Valentin Software",
+        "url": "https://valentin-software.com/en/products/pvsol-premium/",
+        "displayedUrl": "https://valentin-software.com › Home › Products",
+        "description": "... PDF. PV*SOL premium is available in German , English , Spanish ... A visually appealing customer presentation for quotations and customer consultations is ...Read more",
+        "emphasizedKeywords": [
+          "PDF",
+          "customer presentation"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/XabcDx5gJSKQlxaRH/records/mHpjsZtLo5aXH0g-0.html"
+  }
+]

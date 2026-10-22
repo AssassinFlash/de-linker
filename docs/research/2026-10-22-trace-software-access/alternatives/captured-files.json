@@ -1,0 +1,20 @@
+[
+  {
+    "sourceUrl": "https://catalogue.k2-systems.com/media/15/24/91/Load-distribution-flat-roof-en.pdf",
+    "datasetFile": "access-native-docs-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/Ewk8bjbdyKWhLVDNb/records/file-014c42e-Load-distribution-flat-roof-en.pdf",
+    "localFile": "captured-files/file-014c42e-Load-distribution-flat-roof-en.pdf",
+    "sha256": "ca4bab5a0c0754e6e6b972095079d52cf6688305c0c96d537c52f9673106a049",
+    "bytes": 2261751,
+    "pdfInfo": "Creator:         Adobe InDesign 21.3 (Windows)\nProducer:        Adobe PDF Library 18.0\nCreationDate:    Tue Jun  2 21:35:58 2026 CST\nModDate:         Tue Jun  2 21:36:25 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           12\nEncrypted:       no\nPage size:       595.276 x 841.89 pts (A4)\nPage rot:        0\nFile size:       2261751 bytes\nOptimized:       no\nPDF version:     1.5\n"
+  },
+  {
+    "sourceUrl": "https://catalogue.k2-systems.com/media/11/5f/79/Base-Report-annotations-de.pdf",
+    "datasetFile": "access-native-docs-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/Ewk8bjbdyKWhLVDNb/records/file-6033e6f-Base-Report-annotations-de.pdf",
+    "localFile": "captured-files/file-6033e6f-Base-Report-annotations-de.pdf",
+    "sha256": "a030b7c520aa46ef33638f612acbb87c8ae85aa009064b41039028d164d34034",
+    "bytes": 907061,
+    "pdfInfo": "Title:           Base Report - DE\nSubject:         \nKeywords:        \nAuthor:          Ari Faßnacht | K2 Systems GmbH\nCreator:         Acrobat PDFMaker 23 für Word\nProducer:        Adobe PDF Library 23.3.20\nCreationDate:    Fri Jul 21 21:26:06 2023 CST\nModDate:         Fri Jul 21 21:26:20 2023 CST\nCustom Metadata: yes\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           10\nEncrypted:       no\nPage size:       612 x 792 pts (letter)\nPage rot:        0\nFile size:       907061 bytes\nOptimized:       no\nPDF version:     1.6\n"
+  }
+]

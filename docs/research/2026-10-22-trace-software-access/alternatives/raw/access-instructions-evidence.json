@@ -1,0 +1,3862 @@
+[
+  {
+    "url": "https://manuals.sma.de/SDesign/en-US/14317168267.html",
+    "crawl": {
+      "loadedUrl": "https://manuals.sma.de/SDesign/en-US/14317168267.html",
+      "loadedTime": "2026-10-22T12:16:28.624Z",
+      "referrerUrl": "https://manuals.sma.de/SDesign/en-US/14317168267.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 26994,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "4158f787a3afffe3c7ac654a7db4411ea167522b178ac0683436c0fcdf182ed6",
+    "navigationAndCtaLinks": [
+      {
+        "href": "14317163403.html",
+        "text": "Signing up and starting off",
+        "ancestors": [
+          "div:container-fluid",
+          "div:row full-row",
+          "ul:",
+          "li:",
+          "strong:",
+          "a:"
+        ]
+      },
+      {
+        "href": "#",
+        "text": "Starting Sunny Design",
+        "ancestors": [
+          "div:container-fluid",
+          "div:row full-row",
+          "ul:",
+          "li:",
+          "strong:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/smasolartechnology",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "div:page-wrapper",
+          "footer:",
+          "div:content_wrapper",
+          "div:socials",
+          "a:"
+        ]
+      },
+      {
+        "href": "14315436427.html",
+        "text": "Project Overview",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14410467979.html",
+        "text": "Functions per project type",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317163403.html",
+        "text": "Signing up and starting off",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14317168267.html",
+        "text": "Starting Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317171083.html",
+        "text": "Design of the project pages",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14562660107.html",
+        "text": "Example of your own consumption data",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14319534603.html",
+        "text": "Creating consumption data manually",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14480747147.html",
+        "text": "Managing project data",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14326251147.html",
+        "text": "Importing project data into Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326255499.html",
+        "text": "Importing project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326257675.html",
+        "text": "Creating and managing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14329247627.html",
+        "text": "Creating a new project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329249803.html",
+        "text": "Managing Existing Projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14468489099.html",
+        "text": "Opening an Existing Project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "15946573963.html",
+        "text": "Managing Projects with Your Team",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329251979.html",
+        "text": "Duplicating projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329254155.html",
+        "text": "Saving a project as a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329256331.html",
+        "text": "Creating a project from a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333264651.html",
+        "text": "Exporting a project via the \"Manage projects\" page",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14582207243.html",
+        "text": "Exporting a project via the main navigation area of a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333266827.html",
+        "text": "Sunny Design Pro: Exporting Polysun projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333269003.html",
+        "text": "Sunny Design Pro: Comparing projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333271179.html",
+        "text": "Deleting a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14335875851.html",
+        "text": "Procedure for designing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14567931915.html",
+        "text": "Procedure with e-mobility in projects with self-consumption",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346412427.html",
+        "text": "Project design",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14346415371.html",
+        "text": "Project page \"Project data\"",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346417547.html",
+        "text": "Entering project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346419979.html",
+        "text": "Upload project images",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346422155.html",
+        "text": "\"Advanced project data\" area",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346808331.html",
+        "text": "Entering advanced project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14518690699.html",
+        "text": "Manually connecting PV modules to strings",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568603275.html",
+        "text": "Project page \"Configure PV system\"",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14448214155.html",
+        "text": "Configuring a subproject",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14449198731.html",
+        "text": "Selecting inverters manually",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568622091.html",
+        "text": "\"Cable sizing\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14586224011.html",
+        "text": "\"Determine self-consumption\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568643339.html",
+        "text": "\"Planning the energy management\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14451908235.html",
+        "text": "\"Analyze Profitability\" project page",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488601355.html",
+        "text": "For off-grid system: \"Analyses of the energy and power in the system\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488603531.html",
+        "text": "\"Results\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488608139.html",
+        "text": "With energy systems: \"Summary\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14462685579.html",
+        "text": "Issuing project documentation",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14789784331.html",
+        "text": "Other project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14473577227.html",
+        "text": "Downloading further project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Starting Sunny Design"
+      },
+      {
+        "tag": "h4",
+        "text": "Information on this Document"
+      },
+      {
+        "tag": "h4",
+        "text": "Product overview"
+      },
+      {
+        "tag": "h4",
+        "text": "Signing up and starting off"
+      },
+      {
+        "tag": "h4",
+        "text": "User Interface"
+      },
+      {
+        "tag": "h4",
+        "text": "General Operation"
+      },
+      {
+        "tag": "h4",
+        "text": "\"My Sunny Design\" menu"
+      },
+      {
+        "tag": "h4",
+        "text": "Sunny Design Pro"
+      },
+      {
+        "tag": "h4",
+        "text": "Managing project data"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating and managing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Procedure for designing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Project design"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating a harmonics calculation"
+      },
+      {
+        "tag": "h4",
+        "text": "Glossary"
+      },
+      {
+        "tag": "h4",
+        "text": "Contact"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://manuals.sma.de/SDesign/en-US/14329256331.html",
+    "crawl": {
+      "loadedUrl": "https://manuals.sma.de/SDesign/en-US/14329256331.html",
+      "loadedTime": "2026-10-22T12:16:29.163Z",
+      "referrerUrl": "https://manuals.sma.de/SDesign/en-US/14329256331.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 27189,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "afde38fa4c30f9e37cb9eed1eae2bb85f73e79c5edd477fd53be341507c51e75",
+    "navigationAndCtaLinks": [
+      {
+        "href": "14329254155.html",
+        "text": "Saving a project as a template",
+        "ancestors": [
+          "div:page-wrapper",
+          "div:content_wrapper",
+          "main:main",
+          "div:page-navigation",
+          "div:block-back",
+          "a:btn-secondary"
+        ]
+      },
+      {
+        "href": "14333264651.html",
+        "text": "Exporting a project via the \"Manage projects\" page",
+        "ancestors": [
+          "div:page-wrapper",
+          "div:content_wrapper",
+          "main:main",
+          "div:page-navigation",
+          "div:block-next",
+          "a:btn-secondary"
+        ]
+      },
+      {
+        "href": "14326257675.html",
+        "text": "Creating and managing projects",
+        "ancestors": [
+          "div:container-fluid",
+          "div:row full-row",
+          "ul:",
+          "li:",
+          "strong:",
+          "a:"
+        ]
+      },
+      {
+        "href": "#",
+        "text": "Creating a project from a template",
+        "ancestors": [
+          "div:container-fluid",
+          "div:row full-row",
+          "ul:",
+          "li:",
+          "strong:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/smasolartechnology",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "div:page-wrapper",
+          "footer:",
+          "div:content_wrapper",
+          "div:socials",
+          "a:"
+        ]
+      },
+      {
+        "href": "14315436427.html",
+        "text": "Project Overview",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14410467979.html",
+        "text": "Functions per project type",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317163403.html",
+        "text": "Signing up and starting off",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14317168267.html",
+        "text": "Starting Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317171083.html",
+        "text": "Design of the project pages",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14562660107.html",
+        "text": "Example of your own consumption data",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14319534603.html",
+        "text": "Creating consumption data manually",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14480747147.html",
+        "text": "Managing project data",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14326251147.html",
+        "text": "Importing project data into Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326255499.html",
+        "text": "Importing project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326257675.html",
+        "text": "Creating and managing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14329247627.html",
+        "text": "Creating a new project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329249803.html",
+        "text": "Managing Existing Projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14468489099.html",
+        "text": "Opening an Existing Project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "15946573963.html",
+        "text": "Managing Projects with Your Team",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329251979.html",
+        "text": "Duplicating projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329254155.html",
+        "text": "Saving a project as a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329256331.html",
+        "text": "Creating a project from a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333264651.html",
+        "text": "Exporting a project via the \"Manage projects\" page",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14582207243.html",
+        "text": "Exporting a project via the main navigation area of a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333266827.html",
+        "text": "Sunny Design Pro: Exporting Polysun projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333269003.html",
+        "text": "Sunny Design Pro: Comparing projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333271179.html",
+        "text": "Deleting a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14335875851.html",
+        "text": "Procedure for designing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14567931915.html",
+        "text": "Procedure with e-mobility in projects with self-consumption",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346412427.html",
+        "text": "Project design",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14346415371.html",
+        "text": "Project page \"Project data\"",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346417547.html",
+        "text": "Entering project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346419979.html",
+        "text": "Upload project images",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346422155.html",
+        "text": "\"Advanced project data\" area",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346808331.html",
+        "text": "Entering advanced project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14518690699.html",
+        "text": "Manually connecting PV modules to strings",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568603275.html",
+        "text": "Project page \"Configure PV system\"",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14448214155.html",
+        "text": "Configuring a subproject",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14449198731.html",
+        "text": "Selecting inverters manually",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568622091.html",
+        "text": "\"Cable sizing\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14586224011.html",
+        "text": "\"Determine self-consumption\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568643339.html",
+        "text": "\"Planning the energy management\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14451908235.html",
+        "text": "\"Analyze Profitability\" project page",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488601355.html",
+        "text": "For off-grid system: \"Analyses of the energy and power in the system\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488603531.html",
+        "text": "\"Results\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488608139.html",
+        "text": "With energy systems: \"Summary\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14462685579.html",
+        "text": "Issuing project documentation",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14789784331.html",
+        "text": "Other project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14473577227.html",
+        "text": "Downloading further project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Creating a project from a template"
+      },
+      {
+        "tag": "h4",
+        "text": "Information on this Document"
+      },
+      {
+        "tag": "h4",
+        "text": "Product overview"
+      },
+      {
+        "tag": "h4",
+        "text": "Signing up and starting off"
+      },
+      {
+        "tag": "h4",
+        "text": "User Interface"
+      },
+      {
+        "tag": "h4",
+        "text": "General Operation"
+      },
+      {
+        "tag": "h4",
+        "text": "\"My Sunny Design\" menu"
+      },
+      {
+        "tag": "h4",
+        "text": "Sunny Design Pro"
+      },
+      {
+        "tag": "h4",
+        "text": "Managing project data"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating and managing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Procedure for designing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Project design"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating a harmonics calculation"
+      },
+      {
+        "tag": "h4",
+        "text": "Glossary"
+      },
+      {
+        "tag": "h4",
+        "text": "Contact"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://manuals.sma.de/SDesign/en-US/14462685579.html",
+    "crawl": {
+      "loadedUrl": "https://manuals.sma.de/SDesign/en-US/14462685579.html",
+      "loadedTime": "2026-10-22T12:16:29.292Z",
+      "referrerUrl": "https://manuals.sma.de/SDesign/en-US/14462685579.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 29322,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "1e84b5de0df50537c917b9dabba435d43fa258e878c20050102caeb867cff67f",
+    "navigationAndCtaLinks": [
+      {
+        "href": "14488608139.html",
+        "text": "With energy systems: \"Summary\" project page",
+        "ancestors": [
+          "div:page-wrapper",
+          "div:content_wrapper",
+          "main:main",
+          "div:page-navigation",
+          "div:block-back",
+          "a:btn-secondary"
+        ]
+      },
+      {
+        "href": "14789784331.html",
+        "text": "Other project files",
+        "ancestors": [
+          "div:page-wrapper",
+          "div:content_wrapper",
+          "main:main",
+          "div:page-navigation",
+          "div:block-next",
+          "a:btn-secondary"
+        ]
+      },
+      {
+        "href": "14346412427.html",
+        "text": "Project design",
+        "ancestors": [
+          "div:container-fluid",
+          "div:row full-row",
+          "ul:",
+          "li:",
+          "strong:",
+          "a:"
+        ]
+      },
+      {
+        "href": "#",
+        "text": "Issuing project documentation",
+        "ancestors": [
+          "div:container-fluid",
+          "div:row full-row",
+          "ul:",
+          "li:",
+          "strong:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/smasolartechnology",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "div:page-wrapper",
+          "footer:",
+          "div:content_wrapper",
+          "div:socials",
+          "a:"
+        ]
+      },
+      {
+        "href": "14315436427.html",
+        "text": "Project Overview",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14410467979.html",
+        "text": "Functions per project type",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317163403.html",
+        "text": "Signing up and starting off",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14317168267.html",
+        "text": "Starting Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317171083.html",
+        "text": "Design of the project pages",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14562660107.html",
+        "text": "Example of your own consumption data",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14319534603.html",
+        "text": "Creating consumption data manually",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14480747147.html",
+        "text": "Managing project data",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14326251147.html",
+        "text": "Importing project data into Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326255499.html",
+        "text": "Importing project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326257675.html",
+        "text": "Creating and managing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14329247627.html",
+        "text": "Creating a new project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329249803.html",
+        "text": "Managing Existing Projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14468489099.html",
+        "text": "Opening an Existing Project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "15946573963.html",
+        "text": "Managing Projects with Your Team",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329251979.html",
+        "text": "Duplicating projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329254155.html",
+        "text": "Saving a project as a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329256331.html",
+        "text": "Creating a project from a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333264651.html",
+        "text": "Exporting a project via the \"Manage projects\" page",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14582207243.html",
+        "text": "Exporting a project via the main navigation area of a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333266827.html",
+        "text": "Sunny Design Pro: Exporting Polysun projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333269003.html",
+        "text": "Sunny Design Pro: Comparing projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333271179.html",
+        "text": "Deleting a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14335875851.html",
+        "text": "Procedure for designing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14567931915.html",
+        "text": "Procedure with e-mobility in projects with self-consumption",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346412427.html",
+        "text": "Project design",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14346415371.html",
+        "text": "Project page \"Project data\"",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346417547.html",
+        "text": "Entering project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346419979.html",
+        "text": "Upload project images",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346422155.html",
+        "text": "\"Advanced project data\" area",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346808331.html",
+        "text": "Entering advanced project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14518690699.html",
+        "text": "Manually connecting PV modules to strings",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568603275.html",
+        "text": "Project page \"Configure PV system\"",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14448214155.html",
+        "text": "Configuring a subproject",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14449198731.html",
+        "text": "Selecting inverters manually",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568622091.html",
+        "text": "\"Cable sizing\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14586224011.html",
+        "text": "\"Determine self-consumption\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568643339.html",
+        "text": "\"Planning the energy management\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14451908235.html",
+        "text": "\"Analyze Profitability\" project page",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488601355.html",
+        "text": "For off-grid system: \"Analyses of the energy and power in the system\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488603531.html",
+        "text": "\"Results\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488608139.html",
+        "text": "With energy systems: \"Summary\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14462685579.html",
+        "text": "Issuing project documentation",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14789784331.html",
+        "text": "Other project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14473577227.html",
+        "text": "Downloading further project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Issuing project documentation"
+      },
+      {
+        "tag": "h4",
+        "text": "Information on this Document"
+      },
+      {
+        "tag": "h4",
+        "text": "Product overview"
+      },
+      {
+        "tag": "h4",
+        "text": "Signing up and starting off"
+      },
+      {
+        "tag": "h4",
+        "text": "User Interface"
+      },
+      {
+        "tag": "h4",
+        "text": "General Operation"
+      },
+      {
+        "tag": "h4",
+        "text": "\"My Sunny Design\" menu"
+      },
+      {
+        "tag": "h4",
+        "text": "Sunny Design Pro"
+      },
+      {
+        "tag": "h4",
+        "text": "Managing project data"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating and managing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Procedure for designing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Project design"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating a harmonics calculation"
+      },
+      {
+        "tag": "h4",
+        "text": "Glossary"
+      },
+      {
+        "tag": "h4",
+        "text": "Contact"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://manuals.sma.de/SDesign/en-US/14314408459.html",
+    "crawl": {
+      "loadedUrl": "https://manuals.sma.de/SDesign/en-US/14314408459.html",
+      "loadedTime": "2026-10-22T12:16:29.963Z",
+      "referrerUrl": "https://manuals.sma.de/SDesign/en-US/14314408459.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 27196,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "90ea4a4d7a13a10b9e48cc1e5bb5e3b1eba1f4de485dd6659970f3a71f7aea98",
+    "navigationAndCtaLinks": [
+      {
+        "href": "14410467979.html",
+        "text": "Functions per project type",
+        "ancestors": [
+          "div:page-wrapper",
+          "div:content_wrapper",
+          "main:main",
+          "div:page-navigation",
+          "div:block-back",
+          "a:btn-secondary"
+        ]
+      },
+      {
+        "href": "14317163403.html",
+        "text": "Signing up and starting off",
+        "ancestors": [
+          "div:page-wrapper",
+          "div:content_wrapper",
+          "main:main",
+          "div:page-navigation",
+          "div:block-next",
+          "a:btn-secondary"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/smasolartechnology",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "div:page-wrapper",
+          "footer:",
+          "div:content_wrapper",
+          "div:socials",
+          "a:"
+        ]
+      },
+      {
+        "href": "14315436427.html",
+        "text": "Project Overview",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14410467979.html",
+        "text": "Functions per project type",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317163403.html",
+        "text": "Signing up and starting off",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14317168267.html",
+        "text": "Starting Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14317171083.html",
+        "text": "Design of the project pages",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14562660107.html",
+        "text": "Example of your own consumption data",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14319534603.html",
+        "text": "Creating consumption data manually",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14480747147.html",
+        "text": "Managing project data",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14326251147.html",
+        "text": "Importing project data into Sunny Design",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326255499.html",
+        "text": "Importing project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14326257675.html",
+        "text": "Creating and managing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14329247627.html",
+        "text": "Creating a new project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329249803.html",
+        "text": "Managing Existing Projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14468489099.html",
+        "text": "Opening an Existing Project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "15946573963.html",
+        "text": "Managing Projects with Your Team",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329251979.html",
+        "text": "Duplicating projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329254155.html",
+        "text": "Saving a project as a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14329256331.html",
+        "text": "Creating a project from a template",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333264651.html",
+        "text": "Exporting a project via the \"Manage projects\" page",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14582207243.html",
+        "text": "Exporting a project via the main navigation area of a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333266827.html",
+        "text": "Sunny Design Pro: Exporting Polysun projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333269003.html",
+        "text": "Sunny Design Pro: Comparing projects",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14333271179.html",
+        "text": "Deleting a project",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14335875851.html",
+        "text": "Procedure for designing projects",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14567931915.html",
+        "text": "Procedure with e-mobility in projects with self-consumption",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346412427.html",
+        "text": "Project design",
+        "ancestors": [
+          "div:off-menu",
+          "div:panel-group",
+          "div:panel",
+          "div:panel-heading",
+          "h4:panel-title",
+          "a:collapsed"
+        ]
+      },
+      {
+        "href": "14346415371.html",
+        "text": "Project page \"Project data\"",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346417547.html",
+        "text": "Entering project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346419979.html",
+        "text": "Upload project images",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346422155.html",
+        "text": "\"Advanced project data\" area",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14346808331.html",
+        "text": "Entering advanced project data",
+        "ancestors": [
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14518690699.html",
+        "text": "Manually connecting PV modules to strings",
+        "ancestors": [
+          "div:panel-body",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568603275.html",
+        "text": "Project page \"Configure PV system\"",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14448214155.html",
+        "text": "Configuring a subproject",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14449198731.html",
+        "text": "Selecting inverters manually",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568622091.html",
+        "text": "\"Cable sizing\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14586224011.html",
+        "text": "\"Determine self-consumption\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14568643339.html",
+        "text": "\"Planning the energy management\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14451908235.html",
+        "text": "\"Analyze Profitability\" project page",
+        "ancestors": [
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488601355.html",
+        "text": "For off-grid system: \"Analyses of the energy and power in the system\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488603531.html",
+        "text": "\"Results\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14488608139.html",
+        "text": "With energy systems: \"Summary\" project page",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14462685579.html",
+        "text": "Issuing project documentation",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14789784331.html",
+        "text": "Other project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "14473577227.html",
+        "text": "Downloading further project files",
+        "ancestors": [
+          "div:panel",
+          "div:panel-heading",
+          "div:panel-collapse collapse",
+          "div:panel-body",
+          "li:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "System Requirements"
+      },
+      {
+        "tag": "h4",
+        "text": "Information on this Document"
+      },
+      {
+        "tag": "h4",
+        "text": "Product overview"
+      },
+      {
+        "tag": "h4",
+        "text": "Signing up and starting off"
+      },
+      {
+        "tag": "h4",
+        "text": "User Interface"
+      },
+      {
+        "tag": "h4",
+        "text": "General Operation"
+      },
+      {
+        "tag": "h4",
+        "text": "\"My Sunny Design\" menu"
+      },
+      {
+        "tag": "h4",
+        "text": "Sunny Design Pro"
+      },
+      {
+        "tag": "h4",
+        "text": "Managing project data"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating and managing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Procedure for designing projects"
+      },
+      {
+        "tag": "h4",
+        "text": "Project design"
+      },
+      {
+        "tag": "h4",
+        "text": "Creating a harmonics calculation"
+      },
+      {
+        "tag": "h4",
+        "text": "Glossary"
+      },
+      {
+        "tag": "h4",
+        "text": "Contact"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design",
+    "crawl": {
+      "loadedUrl": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design",
+      "loadedTime": "2026-10-22T12:16:31.862Z",
+      "referrerUrl": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 19991,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "3cd7280e0f30f0a0c34540219ebb924692df9cb018e01f5352cd13b87c6aa385",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://help.easy-pv.co.uk/login",
+        "text": "Log in",
+        "ancestors": [
+          "html:",
+          "body:",
+          "header:primary-background px-xl grid print-hidden",
+          "nav:header-links",
+          "div:links text-center",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design/revisions",
+        "text": "Revision #11",
+        "ancestors": [
+          "div:tri-layout-right print-hidden",
+          "aside:tri-layout-right-contents",
+          "div:entity-details mb-xl",
+          "div:blended-links",
+          "div:entity-meta",
+          "a:entity-meta-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design/references",
+        "text": "Referenced by 2 items",
+        "ancestors": [
+          "div:tri-layout-right print-hidden",
+          "aside:tri-layout-right-contents",
+          "div:entity-details mb-xl",
+          "div:blended-links",
+          "div:entity-meta",
+          "a:entity-meta-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design/revisions",
+        "text": "Revisions",
+        "ancestors": [
+          "div:tri-layout-sides-content",
+          "div:tri-layout-right print-hidden",
+          "aside:tri-layout-right-contents",
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "a:icon-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design/export/html",
+        "text": "Contained Web File.html",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design/export/pdf",
+        "text": "PDF File.pdf",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design/export/plaintext",
+        "text": "Plain Text File.txt",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design/export/markdown",
+        "text": "Markdown File.md",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "#bkmrk-swapping-parts-witho",
+        "text": "Swapping parts without starting again",
+        "ancestors": [
+          "aside:tri-layout-left-contents",
+          "nav:mb-xl",
+          "div:body",
+          "div:sidebar-page-nav menu",
+          "li:page-nav-item h3",
+          "a:text-limit-lines-1 block"
+        ]
+      },
+      {
+        "href": "#bkmrk-%E2%80%8Bpro-accounts%3A",
+        "text": "​Pro accounts:",
+        "ancestors": [
+          "aside:tri-layout-left-contents",
+          "nav:mb-xl",
+          "div:body",
+          "div:sidebar-page-nav menu",
+          "li:page-nav-item h4",
+          "a:text-limit-lines-1 block"
+        ]
+      },
+      {
+        "href": "#bkmrk-on-a-free-account",
+        "text": "On a free account",
+        "ancestors": [
+          "aside:tri-layout-left-contents",
+          "nav:mb-xl",
+          "div:body",
+          "div:sidebar-page-nav menu",
+          "li:page-nav-item h3",
+          "a:text-limit-lines-1 block"
+        ]
+      },
+      {
+        "href": "#bkmrk-%E2%80%8Bon-a-pro-account",
+        "text": "​On a Pro account",
+        "ancestors": [
+          "aside:tri-layout-left-contents",
+          "nav:mb-xl",
+          "div:body",
+          "div:sidebar-page-nav menu",
+          "li:page-nav-item h3",
+          "a:text-limit-lines-1 block"
+        ]
+      },
+      {
+        "href": "#bkmrk-your-own-settings%3A-m",
+        "text": "Your own settings: My Account > Preferences > Design",
+        "ancestors": [
+          "aside:tri-layout-left-contents",
+          "nav:mb-xl",
+          "div:body",
+          "div:sidebar-page-nav menu",
+          "li:page-nav-item h4",
+          "a:text-limit-lines-1 block"
+        ]
+      },
+      {
+        "href": "#bkmrk-your-team%27s-settings",
+        "text": "Your team's settings: Pro Account Settings > Design (team admins only)",
+        "ancestors": [
+          "aside:tri-layout-left-contents",
+          "nav:mb-xl",
+          "div:body",
+          "div:sidebar-page-nav menu",
+          "li:page-nav-item h4",
+          "a:text-limit-lines-1 block"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k",
+        "text": "Getting started",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-book book",
+          "a:book   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/who-is-midsummer",
+        "text": "Who is Midsummer?",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/connecting-to-midsummer",
+        "text": "Connecting to Midsummer",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/setting-financial-defaults",
+        "text": "Setting financial defaults",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/setting-up-your-automatic-pricing-calculator",
+        "text": "Setting up your Automatic Pricing Calculator",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/performance-task-preferences",
+        "text": "Performance task preferences",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/chapter/whole-system-design",
+        "text": "Whole-system Design",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-chapter chapter ",
+          "a:chapter   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design",
+        "text": "Whole-system Design",
+        "ancestors": [
+          "div:entity-list-item no-hover",
+          "div:content",
+          "div:chapter-child-menu",
+          "ul:chapter-contents-list sub-menu inset-list  open ",
+          "li:list-item-page ",
+          "a:page  selected entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k",
+        "text": "Getting started",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:mb-m print-hidden",
+          "nav:breadcrumbs text-center",
+          "a:text-book icon-list-item outline-hover"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/chapter/whole-system-design",
+        "text": "Whole-system Design",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:mb-m print-hidden",
+          "nav:breadcrumbs text-center",
+          "a:text-chapter icon-list-item outline-hover"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design",
+        "text": "Whole-system Design",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:mb-m print-hidden",
+          "nav:breadcrumbs text-center",
+          "a:text-page icon-list-item outline-hover"
+        ]
+      },
+      {
+        "href": "https://cal.com/easy-pv/easy-pv-free-training",
+        "text": "Book onto a live demo session",
+        "ancestors": [
+          "main:content-wrap card",
+          "div:page-content clearfix",
+          "div:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/getting-started-f2k/chapter/whole-system-design",
+        "text": "Previous Whole-system Design",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:grid half collapse-xs items-center mb-m px-m no-row-gap fade-in-when-active print-hidden",
+          "div:",
+          "a:outline-hover no-link-style block rounded"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h5",
+        "text": "Details"
+      },
+      {
+        "tag": "h5",
+        "text": "Actions"
+      },
+      {
+        "tag": "h5",
+        "text": "Page Navigation"
+      },
+      {
+        "tag": "h5",
+        "text": "Section Navigation"
+      },
+      {
+        "tag": "h4",
+        "text": "Getting started"
+      },
+      {
+        "tag": "h4",
+        "text": "Who is Midsummer?"
+      },
+      {
+        "tag": "h4",
+        "text": "Connecting to Midsummer"
+      },
+      {
+        "tag": "h4",
+        "text": "Setting financial defaults"
+      },
+      {
+        "tag": "h4",
+        "text": "Setting up your Automatic Pricing Calculator"
+      },
+      {
+        "tag": "h4",
+        "text": "Performance task preferences"
+      },
+      {
+        "tag": "h4",
+        "text": "Whole-system Design"
+      },
+      {
+        "tag": "h4",
+        "text": "Whole-system Design"
+      },
+      {
+        "tag": "h1",
+        "text": "Whole-system Design"
+      },
+      {
+        "tag": "h2",
+        "text": ""
+      },
+      {
+        "tag": "h2",
+        "text": "Viewing the Whole-system Design kit suggestions"
+      },
+      {
+        "tag": "h2",
+        "text": "Choosing a system"
+      },
+      {
+        "tag": "h4",
+        "text": "Filtering your options"
+      },
+      {
+        "tag": "h4",
+        "text": "Swapping parts without starting again"
+      },
+      {
+        "tag": "h4",
+        "text": "Checking the Financial assumptions"
+      },
+      {
+        "tag": "h2",
+        "text": "Choosing which roofs to use"
+      },
+      {
+        "tag": "h2",
+        "text": "Applying a system"
+      },
+      {
+        "tag": "h5",
+        "text": "Auto-finish consumption & financials"
+      },
+      {
+        "tag": "h2",
+        "text": "Where the suggestions come from"
+      },
+      {
+        "tag": "h5",
+        "text": "​Pro accounts:"
+      },
+      {
+        "tag": "h2",
+        "text": "Turning it on and off"
+      },
+      {
+        "tag": "h4",
+        "text": "On a free account"
+      },
+      {
+        "tag": "h4",
+        "text": "​On a Pro account"
+      },
+      {
+        "tag": "h5",
+        "text": "Your own settings: My Account > Preferences > Design"
+      },
+      {
+        "tag": "h5",
+        "text": "Your team's settings: Pro Account Settings > Design (team admins only)"
+      },
+      {
+        "tag": "h4",
+        "text": "Which setting wins"
+      },
+      {
+        "tag": "h5",
+        "text": "For the window opening automatically: any \"off\" wins."
+      },
+      {
+        "tag": "h5",
+        "text": "For auto-finish: the most specific setting wins."
+      },
+      {
+        "tag": "h2",
+        "text": "​How to set up your own kit configurations"
+      },
+      {
+        "tag": "h4",
+        "text": "What is a kit combination?"
+      },
+      {
+        "tag": "h4",
+        "text": "Create a kit combination"
+      },
+      {
+        "tag": "h4",
+        "text": "Manage your kits"
+      },
+      {
+        "tag": "h4",
+        "text": "Turn Whole-system Design on"
+      },
+      {
+        "tag": "h4",
+        "text": "Good to know"
+      },
+      {
+        "tag": "h2",
+        "text": ""
+      },
+      {
+        "tag": "h2",
+        "text": "​Good to know"
+      },
+      {
+        "tag": "h2",
+        "text": "​Still Need Help? / Want to know more?"
+      },
+      {
+        "tag": "h2",
+        "text": ""
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://valentin-software.com/en/product-news-blog-en/master-solar-design-with-this-pvsol-premium-video-tutorial/",
+    "crawl": {
+      "loadedUrl": "https://valentin-software.com/en/product-news-blog-en/master-solar-design-with-this-pvsol-premium-video-tutorial/",
+      "loadedTime": "2026-10-22T12:16:32.129Z",
+      "referrerUrl": "https://valentin-software.com/en/product-news-blog-en/master-solar-design-with-this-pvsol-premium-video-tutorial/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 51001,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "aaf90b904661e4d313158cb00fd95f8a761f60023310055a502686937b6d915f",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "Downloads",
+        "ancestors": [
+          "div:top_bar_left clearfix",
+          "div:menu_wrapper",
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/webinars/",
+        "text": "Free webinars",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/tutorials/",
+        "text": "Video tutorials",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/product-news-blog-en/master-solar-design-with-this-pvsol-premium-video-tutorial/",
+        "text": "EN",
+        "ancestors": [
+          "div:top_bar_right ",
+          "div:top_bar_right_wrapper",
+          "div:wpml-languages horizontal",
+          "ul:",
+          "li:lang-active",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "Download your free 30-day trial",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-wml7lkw9y mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-xilkzbrkw three-fifth laptop-three-fifth tablet-three-fifth mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-xilkzbrkw mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "div:widgets_wrapper",
+          "div:container",
+          "div:column one-fourth",
+          "aside:widget_text widget widget_custom_html",
+          "div:textwidget custom-html-widget",
+          "a:icon_bar  icon_bar_youtube icon_bar_large"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/product-news-blog-en/master-solar-design-with-this-pvsol-premium-video-tutorial/",
+        "text": "EN",
+        "ancestors": [
+          "body:",
+          "div:left light",
+          "div:lang-wrapper",
+          "ul:wpml-lang",
+          "li:",
+          "a:active"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:left light",
+          "ul:social",
+          "li:youtube",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h2",
+        "text": "Master solar design with this PV*SOL video tutorial"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://valentin-software.com/en/product-news-blog-en/creating-a-customer-presentation-in-pvsol-premium/",
+    "crawl": {
+      "loadedUrl": "https://valentin-software.com/en/product-news-blog-en/creating-a-customer-presentation-in-pvsol-premium/",
+      "loadedTime": "2026-10-22T12:16:32.911Z",
+      "referrerUrl": "https://valentin-software.com/en/product-news-blog-en/creating-a-customer-presentation-in-pvsol-premium/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 50868,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "e281a1b153098be29024617084b21c294ea897bc566aaf02b77f4c5010bb08c4",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "Downloads",
+        "ancestors": [
+          "div:top_bar_left clearfix",
+          "div:menu_wrapper",
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/webinars/",
+        "text": "Free webinars",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/tutorials/",
+        "text": "Video tutorials",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "download free 30-day trial",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-48efyz4ag mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-4vm80ojcd three-fifth laptop-three-fifth tablet-three-fifth mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-4vm80ojcd mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "div:widgets_wrapper",
+          "div:container",
+          "div:column one-fourth",
+          "aside:widget_text widget widget_custom_html",
+          "div:textwidget custom-html-widget",
+          "a:icon_bar  icon_bar_youtube icon_bar_large"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:left light",
+          "ul:social",
+          "li:youtube",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h2",
+        "text": "Creating a customer presentation in PV*SOL premium"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://k2-systems.com/en/knowledge-training/tutorials/",
+    "crawl": {
+      "loadedUrl": "https://k2-systems.com/en/knowledge-training/tutorials/",
+      "loadedTime": "2026-10-22T12:16:59.233Z",
+      "referrerUrl": "https://k2-systems.com/en/knowledge-training/tutorials/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 151638,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "a674e79786ea306fadb88511e35e8e9ae66b32cc79f20a2b68f1a4da08c7a765",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://base.k2-systems.com/",
+        "text": "K2 Base",
+        "ancestors": [
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "a:text-xs text-darkGrey mr-6 hover:text-red"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "div:inline-flex items-center",
+          "a:text-red hover:text-red items-center mr-6"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf",
+        "text": "More",
+        "ancestors": [
+          "div:basis-4/12 border-l border-silverGrey pl-8 hidden lg:block extraMenuElement",
+          "div:flex",
+          "div:basis-6/12",
+          "div:relative group",
+          "div:absolute w-full h-full left-0 top-0 flex items-center justify-center opacity-0 transition-opacity duration-300 hover:opa",
+          "a:bttn bttn-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf",
+        "text": "More",
+        "ancestors": [
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-grey-resource flex lg:pt-8",
+          "div:basis-4/12 border-l border-silverGrey pl-8 hidden lg:block extraMenuElement",
+          "div:flex",
+          "div:basis-6/12",
+          "p:ml-6 mr-6 align-top",
+          "a:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/solar-ground-mounting/",
+        "text": "Ground-mounted Systems",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/k2-carport-system/",
+        "text": "K2 Carport System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu  hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/",
+        "text": "Large-scale projects",
+        "ancestors": [
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:w-full inline-flex flex-col lg:flex-row items-start main-nav",
+          "li:py-2 ml-0 border-b-2 border-transparent lg:hover:border-red lg:pb-8 lg:ml-4 2xl:ml-8 w-full lg:w-auto group transition-a",
+          "p:group-hover:text-red cursor-pointer menuLink ",
+          "a: hidden lg:block group-hover:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/",
+        "text": "Large-scale projects",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/commercial-industry/",
+        "text": "Commercial-/Industry Roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/facade/",
+        "text": "Facade",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/ground-mounted/",
+        "text": "Ground-mounted",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/k2-carport-system/",
+        "text": "K2 Carport System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/download-library/",
+        "text": "Downloads",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/resource-center/tutorials/",
+        "text": "Tutorial",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-grey-resource flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://base.k2-systems.com",
+        "text": "K2 Base",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:items-center mb-2 flex",
+          "a:text-xs text-darkGrey ml-3"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:flex items-center mb-2",
+          "a:text-xs text-red ml-3"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/tutorials/",
+        "text": "CS Czech",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/tutorials/",
+        "text": "NL Dutch",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/tutorials/",
+        "text": "EN English",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/tutorials/",
+        "text": "UK English (UK)",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en-za/knowledge-training/tutorials/",
+        "text": "ZA English (ZA)",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/fr/connaissances-formations/tutorials/",
+        "text": "FR French",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/wissen-training/tutorials/",
+        "text": "DE German",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/it/conoscenza-formazione/tutorials/",
+        "text": "IT Italian",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/tutorials/",
+        "text": "PL Polish",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/pt-pt/resource-center/tutorials/",
+        "text": "PT Portuguese",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/tutorials/",
+        "text": "RO Romanian",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/tutorials/",
+        "text": "SL Slovenian",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/es/conocimientos-formacion/tutorials/",
+        "text": "ES Spanish",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/es-mx/wissen-training/tutorials/",
+        "text": "MX Spanish (MX + LATAM)",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed flex justify-end left-0 top-0 w-full h-full bg-black/20 overflow-hidden navmodal-container opacity-0 invisible tra",
+          "div:w-full xl:w-4/12 bg-white px-4 lg:px-8 pb-10 relative transition-all duration-300 navmodal-wrapper overflow-y-scroll no-",
+          "ul:mt-7 lg:mt-14 border-y border-silverGrey py-5 lg:py-10 lang-list",
+          "li:flex items-center justify-between cursor-pointer mb-4 lg:mb-7",
+          "a:slideLanguage flex items-center"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/resource-center/tutorials/",
+        "text": "Tutorials",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed w-full left-0 text-center z-30 resources-menu transition-all duration-300 ease-in-out",
+          "ul:inline-flex items-center gap-2 lg:gap-4 xl:gap-12 w-auto py-2 rounded-full pl-6 pr-3 lg:pl-8 lg:pr-2 shadow-16 relative ",
+          "a:flex items-center gap-4 text-cream"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/resource-center/downloads/",
+        "text": "Downloads",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "div:fixed w-full left-0 text-center z-30 resources-menu transition-all duration-300 ease-in-out",
+          "ul:inline-flex items-center gap-2 lg:gap-4 xl:gap-12 w-auto py-2 rounded-full pl-6 pr-3 lg:pl-8 lg:pr-2 shadow-16 relative ",
+          "a:flex items-center gap-4 text-cream"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/training-support/faqs/",
+        "text": "Start now",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "main:mt-20 lg:mt-28 archive--tutorials",
+          "section:mt-28 lg:mt-60 -mx-4 lg:mx-0 flex flex-col lg:flex-row items-stretch justify-between",
+          "div:flex items-center flex-1 flex-shrink-0 bg-red",
+          "div:w-full lg:w-5/6 text-white p-4 py-16 lg:p-8",
+          "a:bttn bttn-black"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/downloads-supplier-documents/",
+        "text": "Downloads supplier documents",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:flex flex-col lg:flex-row",
+          "div:basis-1/6 mr-4",
+          "ul:border-l border-silverGrey lg:border-none pl-6 lg:pl-0 ml-3 lg:ml-0 my-4 lg:my-0 hidden lg:block",
+          "li:mb-2 lg:mb-1",
+          "a:text-darkGrey"
+        ]
+      },
+      {
+        "href": "https://outlook.office365.com/mail/",
+        "text": "Employee login",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:flex flex-col lg:flex-row",
+          "div:basis-1/6 mr-4",
+          "ul:border-l border-silverGrey lg:border-none pl-6 lg:pl-0 ml-3 lg:ml-0 my-4 lg:my-0 hidden lg:block",
+          "li:mb-2 lg:mb-1",
+          "a:text-darkGrey"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/K2Systems",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-grey-resource",
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:mt-14",
+          "div:flex gap-6 lg:hidden justify-center mb-14",
+          "a:relative group opacity-40 hover:opacity-100 transition-all "
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/K2Systems",
+        "text": "",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:mt-14",
+          "div:flex items-center justify-between",
+          "div:hidden lg:flex w-full items-center",
+          "div:flex gap-6 ml-[61px]",
+          "a:relative group opacity-40 hover:opacity-100 transition-all "
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h2",
+        "text": "Tutorials"
+      },
+      {
+        "tag": "h3",
+        "text": "Any questions?"
+      },
+      {
+        "tag": "h4",
+        "text": "Stay updated: New features, updates & more"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  }
+]

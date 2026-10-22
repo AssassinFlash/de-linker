@@ -1,0 +1,139 @@
+[
+  {
+    "sourceUrl": "https://help.valentin-software.com/pvsol/en/tutorials/",
+    "collectionFile": "access-projects-items.json",
+    "resources": [
+      {
+        "element": "iframe",
+        "attribute": "src",
+        "url": "https://www.youtube.com/embed/LbEe_ObA5RM?autoplay=-1"
+      },
+      {
+        "element": "iframe",
+        "attribute": "src",
+        "url": "https://www.youtube.com/embed/iq-ajfJ-xdA?autoplay=-1"
+      },
+      {
+        "element": "iframe",
+        "attribute": "src",
+        "url": "https://www.youtube.com/embed/WcKrsm3cMjU?autoplay=-1"
+      },
+      {
+        "element": "iframe",
+        "attribute": "src",
+        "url": "https://www.youtube.com/embed/xXXH1hULJWQ?autoplay=-1"
+      },
+      {
+        "element": "iframe",
+        "attribute": "src",
+        "url": "https://www.youtube.com/embed/iq-IBay-u-Q?autoplay=-1"
+      },
+      {
+        "element": "iframe",
+        "attribute": "src",
+        "url": "https://www.youtube.com/embed/I8wMA7p7dbk?autoplay=-1"
+      },
+      {
+        "element": "iframe",
+        "attribute": "src",
+        "url": "https://www.youtube.com/embed/TiUaaZddJrI?autoplay=-1"
+      }
+    ],
+    "status": "official page embeds/links retrieved; video not played, binary not implied downloaded"
+  },
+  {
+    "sourceUrl": "https://k2-systems.com/en/digital-services/myk2-registration/",
+    "collectionFile": "access-projects-items.json",
+    "resources": [
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf"
+      },
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf"
+      },
+      {
+        "element": "source",
+        "attribute": "src",
+        "url": "https://k2-systems.com/wp-content/uploads/2025/05/EN_Website_MyK2_Clip_003.mp4"
+      }
+    ],
+    "status": "official page embeds/links retrieved; video not played, binary not implied downloaded"
+  },
+  {
+    "sourceUrl": "https://www.opensolar.com/pro/",
+    "collectionFile": "access-official-items.json",
+    "resources": [
+      {
+        "element": "video",
+        "attribute": "src",
+        "url": "https://videos.files.wordpress.com/LGSmNgGr/waiting-room-video-final-14mb.mp4"
+      }
+    ],
+    "status": "official page embeds/links retrieved; video not played, binary not implied downloaded"
+  },
+  {
+    "sourceUrl": "https://www.sma.de/en/products/apps-software/sunny-design",
+    "collectionFile": "access-official-items.json",
+    "resources": [
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://d3yvy865gav9f.cloudfront.net/asset/851725204959/document_4o2gatgbpl46948glbrmvkfe69/GTCD_AG_DE.pdf?content-disposition=inline"
+      },
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://d3yvy865gav9f.cloudfront.net/asset/851725204959/document_b64avpoh8h29tb5ajmh83i9p4s/GTCD-INT_AG_EN_DE_202411v2.pdf?content-disposition=inline"
+      },
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://d3yvy865gav9f.cloudfront.net/asset/851725204959/document_637kfganf92ql6pj2915l0vp7b/GTCP_AG_EN_202506.pdf?content-disposition=inline"
+      }
+    ],
+    "status": "official page embeds/links retrieved; video not played, binary not implied downloaded"
+  },
+  {
+    "sourceUrl": "https://k2-systems.com/en/digital-services/k2-base/",
+    "collectionFile": "access-official-items.json",
+    "resources": [
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf"
+      },
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf"
+      },
+      {
+        "element": "source",
+        "attribute": "src",
+        "url": "https://k2-systems.com/wp-content/uploads/2024/04/FHD_100p_a7iii_003_low_bitrate.mp4"
+      }
+    ],
+    "status": "official page embeds/links retrieved; video not played, binary not implied downloaded"
+  },
+  {
+    "sourceUrl": "https://k2-systems.com/en/knowledge-training/tutorials/",
+    "collectionFile": "access-instructions-items.json",
+    "resources": [
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf"
+      },
+      {
+        "element": "a",
+        "attribute": "href",
+        "url": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf"
+      }
+    ],
+    "status": "official page embeds/links retrieved; video not played, binary not implied downloaded"
+  }
+]

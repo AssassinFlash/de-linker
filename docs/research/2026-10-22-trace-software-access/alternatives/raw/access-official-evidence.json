@@ -1,0 +1,1784 @@
+[
+  {
+    "url": "https://pvsol-online.valentin-software.com/",
+    "crawl": {
+      "loadedUrl": "https://pvsol-online.valentin-software.com/",
+      "loadedTime": "2026-10-22T12:14:05.204Z",
+      "referrerUrl": "https://pvsol-online.valentin-software.com/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 2845,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "ab95e080578c1c6380a3f8b728f92766de108b5a020eda8dd6162ee92bc010b1",
+    "navigationAndCtaLinks": [],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "PV*SOL online is a free tool for the calculation of PV systems"
+      },
+      {
+        "tag": "h2",
+        "text": "Location"
+      },
+      {
+        "tag": "h2",
+        "text": "Consumption"
+      },
+      {
+        "tag": "h3",
+        "text": "Load profile"
+      },
+      {
+        "tag": "h3",
+        "text": "Annual consumption"
+      },
+      {
+        "tag": "h2",
+        "text": "PV modules"
+      },
+      {
+        "tag": "h3",
+        "text": "No of Modules"
+      },
+      {
+        "tag": "h3",
+        "text": "Total PV power"
+      },
+      {
+        "tag": "h3",
+        "text": "Inclination"
+      },
+      {
+        "tag": "h3",
+        "text": "Orientation"
+      },
+      {
+        "tag": "h3",
+        "text": "Installation type"
+      },
+      {
+        "tag": "h3",
+        "text": "Albedo"
+      },
+      {
+        "tag": "h3",
+        "text": "Shadowing"
+      },
+      {
+        "tag": "h3",
+        "text": "Soiling"
+      },
+      {
+        "tag": "h2",
+        "text": "Inverter"
+      },
+      {
+        "tag": "h2",
+        "text": "Simulate PV system"
+      },
+      {
+        "tag": "h2",
+        "text": "Results"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://valentin-software.com/en/downloads/",
+    "crawl": {
+      "loadedUrl": "https://valentin-software.com/en/downloads/",
+      "loadedTime": "2026-10-22T12:14:05.958Z",
+      "referrerUrl": "https://valentin-software.com/en/downloads/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 50890,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "5fc27fe37ca64a6f0ee17dcb7db72f0ddeadd7a938cf1a2ee523e8c076bb345a",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "Downloads",
+        "ancestors": [
+          "div:top_bar_left clearfix",
+          "div:menu_wrapper",
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-post_type menu-item-object-page current-menu-item page_item page-item-3364 current_page_item",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/webinars/",
+        "text": "Free webinars",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/tutorials/",
+        "text": "Video tutorials",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/downloads/",
+        "text": "DE",
+        "ancestors": [
+          "div:top_bar_right ",
+          "div:top_bar_right_wrapper",
+          "div:wpml-languages horizontal",
+          "ul:",
+          "li:None",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "EN",
+        "ancestors": [
+          "div:top_bar_right ",
+          "div:top_bar_right_wrapper",
+          "div:wpml-languages horizontal",
+          "ul:",
+          "li:lang-active",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/downloads/pvsol-premium/latest",
+        "text": "Download now",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-li3bn19qk mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-qec4o0yb7 one-fourth laptop-one-fourth tablet-one-fourth mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-qec4o0yb7 mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:vl--button popmake-5744 js-download-trigger-pvsolpremium plausible-event-name=DL_PVSOLpremiumEN"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/downloads/pvsol/latest",
+        "text": "Download now",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-li3bn19qk mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-1ooz2e3g1 one-fourth laptop-one-fourth tablet-one-fourth mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-1ooz2e3g1 mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:vl--button popmake-5748 js-download-trigger-pvsol plausible-event-name=DL_PVSOLEN"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/downloads/tsol/latest",
+        "text": "Download now",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-li3bn19qk mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-g53tkkh1a one-fourth laptop-one-fourth tablet-one-fourth mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-g53tkkh1a mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:vl--button popmake-5750 js-download-trigger-tsol plausible-event-name=DL_TSOLEN"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/downloads/geotsol/latest",
+        "text": "Download now",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-li3bn19qk mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-1pr0iag9i one-fourth laptop-one-fourth tablet-one-fourth mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-1pr0iag9i mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:vl--button popmake-5746 js-download-trigger-geotsol plausible-event-name=DL_GeoTSOLEN"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "div:widgets_wrapper",
+          "div:container",
+          "div:column one-fourth",
+          "aside:widget_text widget widget_custom_html",
+          "div:textwidget custom-html-widget",
+          "a:icon_bar  icon_bar_youtube icon_bar_large"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/downloads/",
+        "text": "DE",
+        "ancestors": [
+          "body:",
+          "div:left light",
+          "div:lang-wrapper",
+          "ul:wpml-lang",
+          "li:",
+          "a:None"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "EN",
+        "ancestors": [
+          "body:",
+          "div:left light",
+          "div:lang-wrapper",
+          "ul:wpml-lang",
+          "li:",
+          "a:active"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:left light",
+          "ul:social",
+          "li:youtube",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Downloads"
+      },
+      {
+        "tag": "h2",
+        "text": "30-day trial versions"
+      },
+      {
+        "tag": "h5",
+        "text": "PV*SOL premium"
+      },
+      {
+        "tag": "h5",
+        "text": "PV*SOL"
+      },
+      {
+        "tag": "h5",
+        "text": "T*SOL"
+      },
+      {
+        "tag": "h5",
+        "text": "GeoT*SOL"
+      },
+      {
+        "tag": "h2",
+        "text": "Contact"
+      },
+      {
+        "tag": "h5",
+        "text": "Sales"
+      },
+      {
+        "tag": "h5",
+        "text": "Technical support"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://valentin-software.com/en/products/pvsol-premium/",
+    "crawl": {
+      "loadedUrl": "https://valentin-software.com/en/products/pvsol-premium/",
+      "loadedTime": "2026-10-22T12:14:06.275Z",
+      "referrerUrl": "https://valentin-software.com/en/products/pvsol-premium/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 65854,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "666879727c77b3a30db79602964adf8a141054673f858016e47da30b9ec2f6ac",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "Downloads",
+        "ancestors": [
+          "div:top_bar_left clearfix",
+          "div:menu_wrapper",
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/webinars/",
+        "text": "Free webinars",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/training/tutorials/",
+        "text": "Video tutorials",
+        "ancestors": [
+          "nav:",
+          "ul:menu menu-main",
+          "li:menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "Download trial version",
+        "ancestors": [
+          "div:column mcb-column mcb-item-9oqh2sd1s one-second laptop-one-second tablet-one-second mobile-one column_fancy_heading vb-i",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-9oqh2sd1s mcb-item-fancy_heading-inner",
+          "div:fancy_heading fancy_heading_icon",
+          "div:inside",
+          "p:",
+          "a:vl--button"
+        ]
+      },
+      {
+        "href": "https://help.valentin-software.com/pvsol/en/start/",
+        "text": "help pages",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-0vaaaeokw mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-h58e5xosd two-third laptop-two-third tablet-two-third mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-h58e5xosd mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "free trial version",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-0vaaaeokw mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-h58e5xosd two-third laptop-two-third tablet-two-third mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-h58e5xosd mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "Download trial version",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-0vaaaeokw mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-mx5r29hjn three-fifth laptop-three-fifth tablet-three-fifth mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-mx5r29hjn mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix align_center",
+          "p:",
+          "a:vl--button"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/watch?v=zQ-cooyD5lo",
+        "text": "Google Solar API",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-li3bn19qk mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-2znc4e1rr one-third laptop-one-third tablet-one-third mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-2znc4e1rr mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://valentin-software.com/en/downloads/",
+        "text": "download",
+        "ancestors": [
+          "div:accordion",
+          "div:mfn-acc accordion_wrapper  toggle",
+          "div:question",
+          "div:answer",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "div:mcb-wrap-inner mcb-wrap-inner-58a1b5358 mfn-module-wrapper mfn-wrapper-for-wraps",
+          "div:column mcb-column mcb-item-944cf0a0a two-third laptop-two-third tablet-two-third mobile-one column_column vb-item",
+          "div:mcb-column-inner mfn-module-wrapper mcb-column-inner-944cf0a0a mcb-item-column-inner",
+          "div:column_attr mfn-inline-editor clearfix",
+          "p:",
+          "a:icon_bar  icon_bar_youtube icon_bar_large"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "div:widgets_wrapper",
+          "div:container",
+          "div:column one-fourth",
+          "aside:widget_text widget widget_custom_html",
+          "div:textwidget custom-html-widget",
+          "a:icon_bar  icon_bar_youtube icon_bar_large"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/valentinsoftware",
+        "text": "",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:left light",
+          "ul:social",
+          "li:youtube",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h2",
+        "text": "Design and simulation software for photovoltaic systems"
+      },
+      {
+        "tag": "h5",
+        "text": "The industry standard for PV system design with 3D visualization and detailed shading analysis"
+      },
+      {
+        "tag": "h1",
+        "text": "PV*SOL premium"
+      },
+      {
+        "tag": "h2",
+        "text": "Product highlights"
+      },
+      {
+        "tag": "h5",
+        "text": "Detailed 3D shading analysis"
+      },
+      {
+        "tag": "h5",
+        "text": "Extrude buildings in 3D"
+      },
+      {
+        "tag": "h5",
+        "text": "Global climate data available"
+      },
+      {
+        "tag": "h4",
+        "text": "More program details"
+      },
+      {
+        "tag": "h5",
+        "text": "Import of 3D models"
+      },
+      {
+        "tag": "h5",
+        "text": "Module assignment in 3D view"
+      },
+      {
+        "tag": "h5",
+        "text": "Polymorphic interconnection in combination with optimizers"
+      },
+      {
+        "tag": "h5",
+        "text": "Optimization of the module interconnection"
+      },
+      {
+        "tag": "h5",
+        "text": "Current online databases"
+      },
+      {
+        "tag": "h5",
+        "text": "Detailed project report"
+      },
+      {
+        "tag": "h5",
+        "text": "Grid-connected systems with battery storage"
+      },
+      {
+        "tag": "h5",
+        "text": "Electric vehicles"
+      },
+      {
+        "tag": "h5",
+        "text": "Summary of results"
+      },
+      {
+        "tag": "h5",
+        "text": "Circuit diagram"
+      },
+      {
+        "tag": "h5",
+        "text": "Thermal System"
+      },
+      {
+        "tag": "h5",
+        "text": "Other features"
+      },
+      {
+        "tag": "h2",
+        "text": "Licensing and pricing"
+      },
+      {
+        "tag": "h5",
+        "text": "Contact"
+      },
+      {
+        "tag": "h5",
+        "text": "PV*SOL premium Named user license (1 year)"
+      },
+      {
+        "tag": "h5",
+        "text": "845,00 EUR"
+      },
+      {
+        "tag": "h2",
+        "text": "System requirements and release notes"
+      },
+      {
+        "tag": "h4",
+        "text": "System requirements"
+      },
+      {
+        "tag": "h4",
+        "text": "Release Notes"
+      },
+      {
+        "tag": "h2",
+        "text": "Subscribe to our newsletter"
+      },
+      {
+        "tag": "h2",
+        "text": "Contact"
+      },
+      {
+        "tag": "h5",
+        "text": "Sales"
+      },
+      {
+        "tag": "h5",
+        "text": "Technical support"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://www.sunnydesignweb.com/",
+    "crawl": {
+      "loadedUrl": "https://www.sunnydesignweb.com/",
+      "loadedTime": "2026-10-22T12:14:07.828Z",
+      "referrerUrl": "https://www.sunnydesignweb.com/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 614,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "857861f887e60bec3ece2c6d49c53b9dbd6b0e4ae4b5b9a31e1cf9a7e0c41eca",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://www.sunnydesignweb.com/sdweb",
+        "text": "https://www.sunnydesignweb.com/sdweb",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://easy-pv.co.uk/",
+    "crawl": {
+      "loadedUrl": "https://easy-pv.co.uk/",
+      "loadedTime": "2026-10-22T12:14:10.406Z",
+      "referrerUrl": "https://easy-pv.co.uk/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 7780,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "650220a3b3ff958899faf965346406b40bd82b99534a66fee70b2e372fe09ba9",
+    "navigationAndCtaLinks": [
+      {
+        "href": "/speedy-pv",
+        "text": "Speedy PV",
+        "ancestors": [
+          "div:container w-container",
+          "div:div-block",
+          "div:div-block-2",
+          "nav:nav-menu w-nav-menu",
+          "div:div-block-12",
+          "a:button link w-button"
+        ]
+      },
+      {
+        "href": "https://cal.com/easy-pv/",
+        "text": "Book free training",
+        "ancestors": [
+          "body:body",
+          "section:clear-section header",
+          "div:main-div",
+          "div:left-title-div",
+          "div:div-block-11 header",
+          "a:button link w-button"
+        ]
+      },
+      {
+        "href": "https://cal.com/easy-pv/",
+        "text": "Book free training",
+        "ancestors": [
+          "body:",
+          "body:body",
+          "section:section half-grey",
+          "div:div-block-13",
+          "div:div-block-11",
+          "a:button link w-button"
+        ]
+      },
+      {
+        "href": "/speedy-pv",
+        "text": "Visit Speedy PV",
+        "ancestors": [
+          "div:spv-yellow-guy-container",
+          "div:spv-banner-orange-square",
+          "div:spv-banner-column-container",
+          "div:spv-banner-text-button",
+          "div:spv-banner-button-container mobile",
+          "a:button w-button"
+        ]
+      },
+      {
+        "href": "https://cal.com/easy-pv/",
+        "text": "sign up for training sessions",
+        "ancestors": [
+          "div:div-block-21",
+          "div:",
+          "div:faq-question w-dropdown",
+          "nav:dropdown-list w-dropdown-list",
+          "div:faq-answer",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/channel/UCcGCnLQs7n1d5b7CTstihfg",
+        "text": "YouTube",
+        "ancestors": [
+          "body:body",
+          "section:footer-dark",
+          "div:footer-wrapper",
+          "div:footer-content",
+          "div:footer-block",
+          "a:footer-link"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h3",
+        "text": "Say hello to"
+      },
+      {
+        "tag": "h1",
+        "text": "Speedy PV"
+      },
+      {
+        "tag": "h3",
+        "text": "Your industrious lead generation tool for solar"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://base.k2-systems.com/",
+    "crawl": {
+      "loadedUrl": "https://base.k2-systems.com/",
+      "loadedTime": "2026-10-22T12:14:12.354Z",
+      "referrerUrl": "https://base.k2-systems.com/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 73800,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "84ecf79859ba11ba81fb794877cf8904daf727fd7fb73f1740f81ab6a565a49e",
+    "navigationAndCtaLinks": [],
+    "headings": [],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://www.opensolar.com/pro/",
+    "crawl": {
+      "loadedUrl": "https://www.opensolar.com/pro/",
+      "loadedTime": "2026-10-22T12:14:13.108Z",
+      "referrerUrl": "https://www.opensolar.com/pro/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 227748,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "6bffdd241536d28ec01c27e5372e78a9d89fec07dcd06c298ffcc3b008a397f7",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://app.opensolar.com/#/login",
+        "text": "Log In",
+        "ancestors": [
+          "html:",
+          "body:",
+          "header:site-header",
+          "div:content",
+          "div:right",
+          "a:button-outlined-small"
+        ]
+      },
+      {
+        "href": "https://app.opensolar.com/#/register",
+        "text": "Create Pro Account",
+        "ancestors": [
+          "html:",
+          "body:",
+          "header:site-header",
+          "div:content",
+          "div:right",
+          "a:button-filled-small"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/project-management-crm/",
+        "text": "Project Management CRM",
+        "ancestors": [
+          "div:menu-pro-nav-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-8754",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8756",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/free/",
+        "text": "Why Free?",
+        "ancestors": [
+          "div:menu-about-nav-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-8731",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8734",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/accuracy/",
+        "text": "Accuracy Reports",
+        "ancestors": [
+          "div:menu-about-nav-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-8743",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8741",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://app.opensolar.com/#/login",
+        "text": "Log In",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:modal mobile-menu-modal",
+          "nav:main-navigation-mobile",
+          "a:button-outlined-small"
+        ]
+      },
+      {
+        "href": "https://app.opensolar.com/#/register",
+        "text": "Create Pro Account",
+        "ancestors": [
+          "html:",
+          "body:",
+          "div:modal mobile-menu-modal",
+          "nav:main-navigation-mobile",
+          "a:button-filled-small"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/project-management-crm/",
+        "text": "Project Management CRM",
+        "ancestors": [
+          "div:menu-pro-nav-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-8754",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8756",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/free/",
+        "text": "Why Free?",
+        "ancestors": [
+          "div:menu-about-nav-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-8731",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8734",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/accuracy/",
+        "text": "Accuracy Reports",
+        "ancestors": [
+          "div:menu-about-nav-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children menu-item-8743",
+          "ul:sub-menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8741",
+          "a:"
+        ]
+      },
+      {
+        "href": "/project-management-crm/",
+        "text": "ProjectManagement CRM",
+        "ancestors": [
+          "div:gb-element-4b319de1",
+          "svg:",
+          "g:",
+          "g:",
+          "g:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/free/",
+        "text": "free",
+        "ancestors": [
+          "div:content-block-regular",
+          "div:artwork-block artwork-right",
+          "div:text-space",
+          "div:sub-headline light-mode",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/premium-imagery/",
+        "text": "Imagery Marketplace Buy premium imagery inside OpenSolar when a project needs it. Use the imagery option that fits the job, with clearer setup, purchase controls, and provider choice by market. More",
+        "ancestors": [
+          "html:",
+          "body:",
+          "main:site-main",
+          "section:grid motion-grid-block light-mode background-bright-grey-200",
+          "div:cards default columns-three ",
+          "a:card card-grid-block_6487f1bed9281bc6fa0c0e9917c605a2-1 card-style-default card-container-padded clickable"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/rolesandpermissions/",
+        "text": "Roles & permissions Manage your projects and workflows easily with custom roles, teams, and collaboration tools More",
+        "ancestors": [
+          "html:",
+          "body:",
+          "main:site-main",
+          "section:grid motion-grid-block light-mode background-bright-grey-200",
+          "div:cards default columns-three ",
+          "a:card card-grid-block_6487f1bed9281bc6fa0c0e9917c605a2-3 card-style-default card-container-padded clickable"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/api/",
+        "text": "OpenSolar API Our enterprise-grade API lets you connect OpenSolar to your CRM, accounting, ops, incentive tools, and other business systems. More",
+        "ancestors": [
+          "html:",
+          "body:",
+          "main:site-main",
+          "section:grid motion-grid-block light-mode background-bright-grey-200",
+          "div:cards default columns-three ",
+          "a:card card-grid-block_6487f1bed9281bc6fa0c0e9917c605a2-8 card-style-default card-container-padded clickable"
+        ]
+      },
+      {
+        "href": "https://app.opensolar.com/register",
+        "text": "Get Started",
+        "ancestors": [
+          "html:",
+          "body:",
+          "section:footer-cta background-white",
+          "div:content",
+          "div:left",
+          "a:button-filled"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/free/",
+        "text": "Why Free?",
+        "ancestors": [
+          "div:columns",
+          "div:",
+          "div:menu-footer-column-4-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8130",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.opensolar.com/accuracy/",
+        "text": "Accuracy Reports",
+        "ancestors": [
+          "div:columns",
+          "div:",
+          "div:menu-footer-column-5-container",
+          "ul:menu",
+          "li:menu-item menu-item-type-post_type menu-item-object-page menu-item-8140",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/@OpenSolarGlobal",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "footer:site-footer",
+          "div:container",
+          "div:bottom",
+          "div:right",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Join OpenSolar’s worldwide community of 28,000+ solar electrification professionals"
+      },
+      {
+        "tag": "h2",
+        "text": "Your complete solar workflow,in one platform"
+      },
+      {
+        "tag": "h2",
+        "text": "The world’s fastest, most accurate solar design tool, now with Ada"
+      },
+      {
+        "tag": "h2",
+        "text": "Sell more often with dynamic, customizable proposals"
+      },
+      {
+        "tag": "h2",
+        "text": "Improve your cash flow with a built in solar payments system"
+      },
+      {
+        "tag": "h2",
+        "text": "Shop Hardware"
+      },
+      {
+        "tag": "h2",
+        "text": "More world-class features"
+      },
+      {
+        "tag": "h2",
+        "text": "Join 28,000+ pros running their businesses on OpenSolar today"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://www.sma.de/en/products/apps-software/sunny-design",
+    "crawl": {
+      "loadedUrl": "https://www.sma.de/en/products/apps-software/sunny-design",
+      "loadedTime": "2026-10-22T12:14:17.387Z",
+      "referrerUrl": "https://www.sma.de/en/products/apps-software/sunny-design",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 32713,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "htmlSha256": "b31a289386af9d3a092b1b864199d812a25e5d55d25be8afd71ef3633588658f",
+    "navigationAndCtaLinks": [
+      {
+        "href": "/en/service/downloads",
+        "text": "Downloads",
+        "ancestors": [
+          "div:meta-section",
+          "nav:meta",
+          "div:menu-content",
+          "div:meta-content",
+          "div:left",
+          "a:"
+        ]
+      },
+      {
+        "href": "/en/sustainability/all-important-documents",
+        "text": "Downloads",
+        "ancestors": [
+          "div:meta-content",
+          "div:right",
+          "div:meta-submenu-l1 meta-l1-children",
+          "ul:meta-submenu-l2",
+          "li:meta-level2",
+          "a:"
+        ]
+      },
+      {
+        "href": "/en/large-scale/contact",
+        "text": "Start now",
+        "ancestors": [
+          "div: flex flex--space-between break--sm",
+          "div:flex--sm-60",
+          "section:M1063  default pt-chicken pb-chicken",
+          "div:element-wrapper",
+          "div:element m1063-headline",
+          "a:link-small m1063-link"
+        ]
+      },
+      {
+        "href": "https://www.sma-onlineshop.com/ccrz__CCSiteRegister?cclcl=en_US&",
+        "text": "Online Shop",
+        "ancestors": [
+          "section:M1066  default pt-chicken pb-chicken",
+          "div:m1066-section-wrapper",
+          "div:m1066-section",
+          "div:m1066-element-wrapper",
+          "div:m1066-element element-without-img",
+          "a:m1066-link link-small"
+        ]
+      },
+      {
+        "href": "https://account.sma.energy/",
+        "text": "SMA ID",
+        "ancestors": [
+          "section:M1066  default pt-chicken pb-chicken",
+          "div:m1066-section-wrapper",
+          "div:m1066-section",
+          "div:m1066-element-wrapper",
+          "div:m1066-element element-without-img",
+          "a:m1066-link link-small"
+        ]
+      },
+      {
+        "href": "/en/service/downloads",
+        "text": "Downloads",
+        "ancestors": [
+          "div: flex flex--space-between break--sm",
+          "div:flex--sm-60",
+          "section:M1063  default pt-chicken pb-chicken",
+          "div:element-wrapper",
+          "div:element m1063-headline",
+          "a:link-small m1063-link"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/playlist?list=PLoiOll7F4i--y0vYrQSukBEytIivS4vpp",
+        "text": "TechTip Videos",
+        "ancestors": [
+          "div: flex flex--space-between break--sm",
+          "div:flex--sm-60",
+          "section:M1063  default pt-chicken pb-chicken",
+          "div:element-wrapper",
+          "div:element m1063-headline",
+          "a:link-small m1063-link"
+        ]
+      },
+      {
+        "href": "/en/large-scale/contact",
+        "text": "Start now",
+        "ancestors": [
+          "nav:mobile",
+          "ul:level1-menu",
+          "li:mobile-level1 children",
+          "ul:next-ul-level",
+          "li:next-li-level children",
+          "a:next-link"
+        ]
+      },
+      {
+        "href": "/en/service/downloads",
+        "text": "Downloads",
+        "ancestors": [
+          "nav:mobile",
+          "ul:level1-menu",
+          "li:mobile-level1 children",
+          "ul:next-ul-level",
+          "li:next-li-level",
+          "a:next-link"
+        ]
+      },
+      {
+        "href": "/en/service/downloads",
+        "text": "Downloads",
+        "ancestors": [
+          "div:navigation-content",
+          "div:left",
+          "nav:mobile",
+          "ul:level1-menu mobile-meta",
+          "li:mobile-level1",
+          "a:"
+        ]
+      },
+      {
+        "href": "/en/sustainability/all-important-documents",
+        "text": "Downloads",
+        "ancestors": [
+          "nav:mobile",
+          "ul:level1-menu mobile-meta",
+          "li:mobile-level1 children",
+          "ul:next-ul-level",
+          "li:next-li-level ",
+          "a:next-link"
+        ]
+      },
+      {
+        "href": "#t02",
+        "text": "Downloads",
+        "ancestors": [
+          "div:left",
+          "div:tabs-swiper",
+          "div:tabs-wrapper swiper-wrapper",
+          "div:tab swiper-slide",
+          "div:tab-border",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.sunnydesignweb.com/sdweb/",
+        "text": "Learn more",
+        "ancestors": [
+          "div:content tab-content",
+          "div:left",
+          "div:tabs-swiper",
+          "div:tabs-wrapper swiper-wrapper",
+          "div:tab-link swiper-slide",
+          "a:cta-blue"
+        ]
+      },
+      {
+        "href": "https://www.sunnydesignweb.com/sdweb/",
+        "text": "Learn more",
+        "ancestors": [
+          "main:content-main",
+          "div:tab-navigation tabs-top c1038v1",
+          "div:tabs-bar ",
+          "div:content tab-content",
+          "div:right",
+          "a:cta-blue"
+        ]
+      },
+      {
+        "href": "https://www.sunnydesignweb.com/sdweb/#/",
+        "text": "Learn more about Sunny Design",
+        "ancestors": [
+          "section:C1003 c1003v1 content default pt-bear pb-bear",
+          "div:flex flex--space-between break--md",
+          "div:flex--md-50 left",
+          "div:left-content",
+          "div:button-wrap mt-pony",
+          "a:c1003-left-link cta-blue cta-regular"
+        ]
+      },
+      {
+        "href": "https://www.sunnydesignweb.com/sdweb/#/",
+        "text": "Learn more about Sunny Design PRO",
+        "ancestors": [
+          "section:C1003 c1003v4 content default pt-bear pb-bear",
+          "div:flex flex--space-between break--md",
+          "div:flex--md-50 left",
+          "div:left-content",
+          "div:button-wrap mt-pony",
+          "a:c1003-left-link cta-blue cta-regular"
+        ]
+      },
+      {
+        "href": "https://manuals.sma.de/SDesign/en-US/index.html",
+        "text": "eManual",
+        "ancestors": [
+          "div:right-content",
+          "div:inline-content",
+          "div:c1003-boxes-wrapper",
+          "div:c1003-box box-flex",
+          "div:box-right",
+          "a:c1003-box-link cta-blue cta-regular mt-cat"
+        ]
+      },
+      {
+        "href": "https://www.sunnydesignweb.com/sdweb/#/",
+        "text": "",
+        "ancestors": [
+          "div:flex flex--space-between break--md content",
+          "div:flex--100",
+          "div:elements-wrapper",
+          "div:element",
+          "div:element-image",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.sunnydesignweb.com/sdweb/#/",
+        "text": "Plan your system now",
+        "ancestors": [
+          "section:C1005 c1005v5 full default pt-bear pb-bear",
+          "div:flex flex--space-between break--md content",
+          "div:flex--100",
+          "div:elements-wrapper",
+          "div:element",
+          "a:c1005-link cta-white cta-border cta-regular mt-chicken"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/smasolartechnology",
+        "text": "",
+        "ancestors": [
+          "section:F1077 full-wp default pt-bear pb-bear",
+          "div:element-content",
+          "div:f1077-top",
+          "div:top-right",
+          "div:social-icons",
+          "a:"
+        ]
+      },
+      {
+        "href": "/en/service/downloads",
+        "text": "Downloads",
+        "ancestors": [
+          "div:f1077-top",
+          "div:top-right",
+          "div:page-links",
+          "div:parent-link-wrapper",
+          "div:children",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://d3yvy865gav9f.cloudfront.net/asset/851725204959/document_4o2gatgbpl46948glbrmvkfe69/GTCD_AG_DE.pdf?content-disposition=inline",
+        "text": "General Terms of Delivery for German customers",
+        "ancestors": [
+          "div:f1077-top",
+          "div:top-right",
+          "div:page-links",
+          "div:parent-link-wrapper",
+          "div:children",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://d3yvy865gav9f.cloudfront.net/asset/851725204959/document_b64avpoh8h29tb5ajmh83i9p4s/GTCD-INT_AG_EN_DE_202411v2.pdf?content-disposition=inline",
+        "text": "General Terms of Delivery for customers outside Germany",
+        "ancestors": [
+          "div:f1077-top",
+          "div:top-right",
+          "div:page-links",
+          "div:parent-link-wrapper",
+          "div:children",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://d3yvy865gav9f.cloudfront.net/asset/851725204959/document_637kfganf92ql6pj2915l0vp7b/GTCP_AG_EN_202506.pdf?content-disposition=inline",
+        "text": "General Terms of Purchase",
+        "ancestors": [
+          "div:f1077-top",
+          "div:top-right",
+          "div:page-links",
+          "div:parent-link-wrapper",
+          "div:children",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h1",
+        "text": "Sunny Design"
+      },
+      {
+        "tag": "h2",
+        "text": "Sunny Design"
+      },
+      {
+        "tag": "h3",
+        "text": "New"
+      },
+      {
+        "tag": "h3",
+        "text": "Comprehensive"
+      },
+      {
+        "tag": "h3",
+        "text": "Good for customers"
+      },
+      {
+        "tag": "h3",
+        "text": "Flexible"
+      },
+      {
+        "tag": "h2",
+        "text": "Sunny Design PRO"
+      },
+      {
+        "tag": "h3",
+        "text": "Comprehensive"
+      },
+      {
+        "tag": "h3",
+        "text": "Impressive"
+      },
+      {
+        "tag": "h3",
+        "text": "Practical"
+      },
+      {
+        "tag": "h2",
+        "text": "Overview of Sunny Design functions"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 6.10"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 6.00"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.90"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.80"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.70"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.61"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.60"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.50"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.40"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.30"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.22"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.20"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.10"
+      },
+      {
+        "tag": "h3",
+        "text": "Release Notes Sunny Design 5.00"
+      },
+      {
+        "tag": "h2",
+        "text": "Downloads"
+      },
+      {
+        "tag": "h3",
+        "text": "Operating manual"
+      },
+      {
+        "tag": "h2",
+        "text": "Release Notes"
+      },
+      {
+        "tag": "h3",
+        "text": "For homeowners & business owners"
+      },
+      {
+        "tag": "h3",
+        "text": "Planning tool Sunny Design"
+      },
+      {
+        "tag": "h3",
+        "text": "For installers & solar system planners"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://k2-systems.com/en/digital-services/k2-base/",
+    "crawl": {
+      "loadedUrl": "https://k2-systems.com/en/digital-services/k2-base/",
+      "loadedTime": "2026-10-22T12:14:26.307Z",
+      "referrerUrl": "https://k2-systems.com/en/digital-services/k2-base/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 175988,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "9b75a15ce32a70d714ae840f838f453215c3a02b5f9499ac8c3ccd0e4fcb4300",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://base.k2-systems.com/",
+        "text": "K2 Base",
+        "ancestors": [
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "a:text-xs text-darkGrey mr-6 hover:text-red"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "div:inline-flex items-center",
+          "a:text-red hover:text-red items-center mr-6"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf",
+        "text": "More",
+        "ancestors": [
+          "div:basis-4/12 border-l border-silverGrey pl-8 hidden lg:block extraMenuElement",
+          "div:flex",
+          "div:basis-6/12",
+          "div:relative group",
+          "div:absolute w-full h-full left-0 top-0 flex items-center justify-center opacity-0 transition-opacity duration-300 hover:opa",
+          "a:bttn bttn-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf",
+        "text": "More",
+        "ancestors": [
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:basis-4/12 border-l border-silverGrey pl-8 hidden lg:block extraMenuElement",
+          "div:flex",
+          "div:basis-6/12",
+          "p:ml-6 mr-6 align-top",
+          "a:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/solar-ground-mounting/",
+        "text": "Ground-mounted Systems",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/k2-carport-system/",
+        "text": "K2 Carport System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu  hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/",
+        "text": "Large-scale projects",
+        "ancestors": [
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:w-full inline-flex flex-col lg:flex-row items-start main-nav",
+          "li:py-2 ml-0 border-b-2 border-transparent lg:hover:border-red lg:pb-8 lg:ml-4 2xl:ml-8 w-full lg:w-auto group transition-a",
+          "p:group-hover:text-red cursor-pointer menuLink ",
+          "a: hidden lg:block group-hover:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/",
+        "text": "Large-scale projects",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/commercial-industry/",
+        "text": "Commercial-/Industry Roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/facade/",
+        "text": "Facade",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/ground-mounted/",
+        "text": "Ground-mounted",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/k2-carport-system/",
+        "text": "K2 Carport System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/download-library/",
+        "text": "Downloads",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/resource-center/tutorials/",
+        "text": "Tutorial",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://base.k2-systems.com",
+        "text": "K2 Base",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:items-center mb-2 flex",
+          "a:text-xs text-darkGrey ml-3"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:flex items-center mb-2",
+          "a:text-xs text-red ml-3"
+        ]
+      },
+      {
+        "href": "https://base.k2-systems.com/",
+        "text": "To K2 Base",
+        "ancestors": [
+          "main:mt-20 page lg:mt-0",
+          "section:flex flex-col lg:flex-row",
+          "div:flex-1 flex flex-col justify-center",
+          "div:w-full lg:w-5/6",
+          "div:flex mt-8",
+          "a:bttn bttn-red mr-2"
+        ]
+      },
+      {
+        "href": "https://base.k2-systems.com/#/dashboard",
+        "text": "Test now",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "main:mt-20 page lg:mt-0",
+          "section:pt-16 lg:pt-60 page--section-features",
+          "div:flex items-center justify-between",
+          "div:hidden lg:inline-flex",
+          "a:bttn bttn-red mr-2"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/downloads-supplier-documents/",
+        "text": "Downloads supplier documents",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:flex flex-col lg:flex-row",
+          "div:basis-1/6 mr-4",
+          "ul:border-l border-silverGrey lg:border-none pl-6 lg:pl-0 ml-3 lg:ml-0 my-4 lg:my-0 hidden lg:block",
+          "li:mb-2 lg:mb-1",
+          "a:text-darkGrey"
+        ]
+      },
+      {
+        "href": "https://outlook.office365.com/mail/",
+        "text": "Employee login",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:flex flex-col lg:flex-row",
+          "div:basis-1/6 mr-4",
+          "ul:border-l border-silverGrey lg:border-none pl-6 lg:pl-0 ml-3 lg:ml-0 my-4 lg:my-0 hidden lg:block",
+          "li:mb-2 lg:mb-1",
+          "a:text-darkGrey"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/K2Systems",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:mt-14",
+          "div:flex gap-6 lg:hidden justify-center mb-14",
+          "a:relative group opacity-40 hover:opacity-100 transition-all "
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/K2Systems",
+        "text": "",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:mt-14",
+          "div:flex items-center justify-between",
+          "div:hidden lg:flex w-full items-center",
+          "div:flex gap-6 ml-[61px]",
+          "a:relative group opacity-40 hover:opacity-100 transition-all "
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h2",
+        "text": "K2 Base"
+      },
+      {
+        "tag": "h3",
+        "text": "The optimum K2 mounting system in 5 steps"
+      },
+      {
+        "tag": "h2",
+        "text": "Highlights"
+      },
+      {
+        "tag": "h3",
+        "text": "Plan using our intuitive software"
+      },
+      {
+        "tag": "h3",
+        "text": "Innovative planning tool"
+      },
+      {
+        "tag": "h3",
+        "text": "Complete result report: everything documented precisely"
+      },
+      {
+        "tag": "h3",
+        "text": "Send items directly to the shopping carts of your distributor’s webshops"
+      },
+      {
+        "tag": "h4",
+        "text": "Explained in brief: K2 Base"
+      },
+      {
+        "tag": "h3",
+        "text": "More videos"
+      },
+      {
+        "tag": "h5",
+        "text": "Explanation (EN)"
+      },
+      {
+        "tag": "h5",
+        "text": "Explanation (EN)"
+      },
+      {
+        "tag": "h5",
+        "text": "Explanation (EN)"
+      },
+      {
+        "tag": "h5",
+        "text": "Explanation (EN)"
+      },
+      {
+        "tag": "h5",
+        "text": "Explanation (EN)"
+      },
+      {
+        "tag": "h5",
+        "text": "Explanation (EN)"
+      },
+      {
+        "tag": "h2",
+        "text": "Any questions?"
+      },
+      {
+        "tag": "h3",
+        "text": "Stay updated: New features, updates & more"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  }
+]

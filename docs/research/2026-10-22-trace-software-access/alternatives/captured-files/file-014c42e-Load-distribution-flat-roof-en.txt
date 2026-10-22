@@ -1,0 +1,798 @@
+             Connecting Strength
+
+
+
+
+K2 Systems Recommendation
+
+Load distribution on
+flat roofs
+Solutions for Dome 6 and
+Dome Zero mounting systems
+Content
+• Introduction3
+    · Reference values from the K2 Base project report     3
+    · Scenarios with Dome 6 solutions                      4
+    · Area comparisons of systems and solutions            5
+
+• Optimisation of load distribution                        6
+    · Placement patterns with additional Mat S              6
+      · Dome 6 Xpress                                       6
+      · Dome 6 Classic                                      7
+      · Dome 6 Classic LS                                   8
+      · Dome Zero                                           9
+    · Enlargement of the contact surface with LoadSolver   10
+
+• Notes                                                    11
+
+
+
+
+2
+Uplift Verification                      LCC up
+                         Uplift Verification          =γ      * G + γQ
+                                                                     LCC * κup
+                                                                             Fl,Q * W =γ          * Gk + γQ * κFl,Q * Wk,n,Uplift
+Load case combination 02 Load case       LCC  02_sls
+                                      combination   02 =G,stb
+                                                         Gk + Wkk,Pressure
+                                                                      LCC 02_sls          =G,stb
+                                                                                             Gk + W
+                                                                                       k,n,Uplift
+                                                                                                        k,Pressure
+Displacement verificationDisplacement LCC     displ = γG,stb * Gk + γQ
+                                         verification                LCC * κdispl* W= γG,stb      * Gk + γQ * κFl,Q * Wk,n,Displacement
+Load case combination 03 Load case       LCC  03_sls
+                                      combination   03 = Gk + Wk,Pressure
+                                                                      LCC+Fl,Qψ  0,S * Si,n
+                                                                            03_sls        = Gk + W
+                                                                                       k,n,Displacement
+                                                                                                        k,Pressure + ψ0,S * Si,n
+
+Load case combination 04
+                       Load case   LCC 04_sls
+                                 combination 04 = Gk + Si,n + ψ
+                                                              LCC
+                                                               0,W * W
+                                                                   04_sls     = Gk + Si,n + ψ0,W * Wk,Pressure
+Introduction
+                                                                      k,Pressure
+Serviceability limit state
+                      Serviceability limit state
+Load case combination 06
+                       Load case   LCC 06_sls
+                                 combination 06 = Gk + Wk,Suction
+                                                             LCC 06_sls = Gk + Wk,Suction
+Combination coefficient with
+                        Combination
+                             regards to wind
+                                     coefficient with regards to wind                                                                        ψ0,       = 0.60                                                                           ψ0,           = 0.60
+Max.   Pressure
+            coefficienton
+                        Max.
+                           insulation
+                                Pressure
+                                       Snow on  with insulation
+                                                                                                                                             W                                                                                          W
+
+Combination            with
+                       Combination
+                            regards coefficient
+                                    to               regards to Snow                                                                         ψ0,S = 0.50                                                                                ψ0,S = 0.50
+Combination coefficient with
+                        Combination
+                             regards to wind
+                                     coefficient with
+                                              (additional
+                                                      regards
+                                                          varying            ψ1,W =
+                                                               to wind (additional   0.20
+                                                                                   varying                                                                                                                                              ψ1,W = 0.20
+General   information General
+influences)           influences)information
+               1    2     3     4                        5                                  6
+dead load system
+Load case combination 01  deadcase
+                         Load          g
+                               load system
+                                       LCC         =
+                                                   010.12
+                                              01_sls
+                                    combination
+                                         System        = GkN/m²
+                                                           k + Si,n
+                                                                     gSystem
+                                                                    LCC    01_sls= 0.12
+                                                                                    = GkN/m²
+                                                                                        k + Si,n
+aerodynamic  coefficient
+Load case combination 02  aerodynamic
+                         Load case     c
+                                       coefficient
+                                       LCC         =
+                                              02_sls
+                                    combination
+                                        p,Pressure   0.20            c
+                                                   02 = Gk + Wk,Pressure         = 0.20
+                                                                    LCC 02_sls = Gk + Wk,Pressure
+                                                                      p,Pressure
+
+Load case combination 03
+                       Load case    LCC      03 = Gk + Wk,Pressure
+                                        03_sls
+                                 combination                 LCC + ψ  0,S * S=
+                                                                   03_sls    i,n Gk + Wk,Pressure + ψ0,S * Si,n
+Loadcase
+Load distribution underneath
+         combination 04
+                      Load          building
+                            distribution
+                       Loadcase theLCC    underneath
+                                       04_sls
+                                combination   protection
+                                            04 = G       theLCC
+                                                            mat
+                                                  k + Si,n + ψ
+                                                              building
+                                                                  under
+                                                              0,W * W
+                                                                 04_sls   protection
+                                                                            Peak
+                                                                            =G
+                                                                     k,Pressure
+                                                                                    (45°)mat under Peak (45°)
+                                                                                k + Si,n + ψ0,W * Wk,Pressure
+
+Load case combination 06
+Dimensions             Load case    LCC  06_sls
+                                 combination
+                        Dimensions  75.3     06 =x Gk
+                                         x 380.0      +W
+                                                   23.1 mm   LCC
+                                                              75.306_sls
+                                                         k,Suction x 380.0=xGk23.1
+                                                                               +W  mm
+                                                                                    k,Suction
+                                                                                                                      | Connecting Strength
+                                                                   Aeff                  = 28,614.00 AStructural
+                                                                                                     mm²
+                                                                                                      eff            = 28,614.00
+                                                                                                                 analysis report | Roofmm²
+                                                                                                                                        1
+Max. Pressure on
+              Max.
+                 insulation
+                    Pressure on= 2.00 m²
+                        A        insulation
+                                         A                            load range area
+                                                                                                                 Static equilibrium
+                                                                                                                 load range area
+                                                                                                                 Uplift Verification
+                                                                                                                                             = 2.00 m²
+                                                                                                                                                       LCC up               = γG,stb * Gk + γQ * κFl,Q * Wk,n,Uplift
+maximum ballast                                        Gballast required = 22.1 kg
+                                           maximum ballast                                                     Gballast required = 22.1LCCkg
+                                                                                                                 Displacement verification displ = γ *G +γ *κ *W                G,stb     k       Q         Fl,Q         k,n,Displacement
+
+
+
+
+ General information General information                             Serviceability limit state
+                                                                                                                 Combination coefficient with regards to wind                                                             ψ0,         = 0.60
+
+ Load   distribution
+Illustration
+ dead load system
+                        underneath
+                           Load building
+                                  distribution
+                           dead①load
+             of roof structure:       the building
+                                         gsupport =structure
+                                     system
+                                                                  mat
+                                                             · ②the
+                                                     protection
+                                               underneath
+                                                     0.12 kN/m²
+                                                                            under
+                                                                     building
+                                                                 trapezoidal
+                                                                   g                 =sheet
+                                                                                           protection
+                                                                                             SD (45°)· ③mat
+                                                                                                metal
+                                                                                         0.12 kN/m²
+                                                                                                            under
+                                                                                                         thermal    SD (45°)
+                                                                                                                 insulation
+                                                                                                                 Combination coefficient with regards to Snow
+                                                                                                                                                                                                                          W
+
+                                                                                                                                                                                                                          ψ0,S = 0.50
+                                                                     System                                     System
+                                                                                                                 Combination coefficient with regards to wind (additional varying                                         ψ1,W = 0.20
+
+④ roofing ⑤ support surface  for load distribution  =· 0.20
+                                                       ⑥ PV module c Load case combination
+                                                                                                                 influences)
+
+aerodynamic
+Dimensions   coefficient aerodynamic    c
+                                       coefficient
+                         Dimensions 75.3       x 380.0
+                                         p,Pressure      x 23.1 mm 75.3      x 380.0
+                                                                    p,Pressure       = 01 0.20
+                                                                                             x 23.1   mm= G + S
+                                                                                                 LCC 01_sls                                                                        k      i,n
+
+                                                                                                                 Load case combination 02              LCC 02_sls = Gk + Wk,Pressure
+
+                                        Aeffa flat roof,= 28,614.00 ALoad
+                                                                        mm²                        =    Reference values from the K2 Base
+                                                                                                      28,614.00          mm²+ ψ * S
+                                                                               case combination 03        LCC 03_sls = G + W
+With the construction of a PV system on
+                                                                                                                                                                                   k       k,Pressure              0,S     i,n
+
+                                                                          eff
+                                                                          Load case combination 04        LCC 04_sls = G + S + ψ * W                                               k      i,n         0,W           k,Pressure
+
+
+
+Load distribution     underneath
+                         Load
+                            the roof the
+                                distribution
+                                         building
+                                     andAthe      underneath
+                                                          protection
+                                                           = 1.00  m²the A
+                                                                        mat
+                                                                          buildingunder Peak   protection
+                                                                          Load case combination 06
+
+                                                                          load range area = 1.00 m²
+                                                                                                             (45°)     mat under Peak (45°)
+                                                                                                          LCC 06_sls = G + W
+additional load is added to                    distribution
+                                                                                                        project report
+                                                                                                                                                                                   k       k,Suction
+
+
+                                         load range area
+                                                                          Max.    PressureStrength
+                                                                               | Connecting     on insulation
+of snow load  is changed. maximum ballast
+maximum
+Dimensions ballast       Dimensions 75.3           380.0=x5.7
+                                        Gballastxrequired       kgmm 75.3
+                                                              23.1       GGeneralx required
+                                                                           ballast
+                                                                          Structural 380.0 analysis
+                                                                                   information
+                                                                                                   =x 5.7
+                                                                                                      23.1 kgmm
+                                                                                                        report   | Roof 1
+                                                                                                                 dead load system                      gSystem        = 0.12 kN/m²
+
+This change depends on local conditions,         Aeffsuch as wind   = 28,614.00 Amm²      aerodynamic coefficient =
+                                                                                          Static equilibrium
+                                                                                         eff
+                                                                                          Uplift Verification
+                                                                                                                           28,614.00c
+                                                                                                                                    LCC up
+                                                                                                                                              = 0.20 mm²
+                                                                                                                                                 =γ
+                                                                                                                                                        p,Pressure
+                                                                                                                                                         *G +γ *κ *W
+
+ Load   Combinations           Load    Combinations
+                                                                                                                                                                                G,stb     k       Q         Fl,Q         k,n,Uplift
+
+
+
+and  snow loads,      the building  itself and A the    planned
+                                                   load range area  = 2.00    m²       A  Displacement
+                                                                                          Load    distribution
+                                                                                         load range area
+                                                                                                          verification
+                                                                                                                      =
+                                                                                                                 underneath
+                                                                                                                           2.00 the LCC
+                                                                                                                                        m²
+                                                                                                                                         displ = γ
+                                                                                                                                      building           *G +γ
+                                                                                                                                                 protection   mat*κ *
+                                                                                                                                                                    underW Peak (45°)
+                                                                                                                                                                                G,stb     k       Q         Fl,Q         k,n,Displacement
+
+
+
+                                                                                          Dimensions
+                                                                                          Serviceability limit state                75.3 x 380.0 x 23.1 mm
+PV  system.ballast
+ maximum                       maximum ballast   Gballast required = 22.1 kg Gballast                required         = regards
+                                                                                                                           22.1toAAwind
+                                                                                                                                      kg == 28,614.00   eff    mm²
+
+                                                                       σ                            [Pa]                     σ                                   σEk,heat
+                                                                                                                                                                    [Pa]                     [Pa]                                                                          σEk,heat insula
+                                                                                          Combination    coefficient with                                                  ψ     = 0.60
+                                                                                                                                                    2.00 m²                                                                   0,
+
+
+K2 Systems recommends taking the additional load into
+                                                                                                                                                        load range area                                                   W
+                                                                        Ek,heat insulation,D6_10
+                                                                                          maximum
+                                                                                          Combination
+                                                                                                                                Ek,heat
+                                                                                                         coefficient with regards toGSnow
+                                                                                                      ballast                                insulation,D6_10
+                                                                                                                                                  = 22.1 kg
+                                                                                                                                                         ballast required  ψ
+                                                                                                                                                                               insulation,SD
+                                                                                                                                                                                 = 0.50                                       0,S
+
+                                                                                          Combination coefficient with regards to wind (additional varying                 ψ     = 0.20
+accountcasein the  roof 00
+                         substructure,
+                                 Load casethe  installed   00thermal
+                                                                                                                                                                                                                              1,W
+
+  Load       combination
+ Load distribution         underneath the
+                               Load
+                                            combination
+                                       distribution
+                                                  building  underneath
+                                                                   protection    themat
+                                                                                          Load
+                                                                                              15,632                                                          15,632
+                                                                                                  distribution underneath the building protection mat under SD (45°)
+                                                                                          influences)
+                                                                                         building   under                                                                                   5,979
+                                                                                                      combination 01 SD
+                                                                                                                   protection   (45°)                mat           under SD                 (45°)
+insulation and the roofing. In addition, the condition of                                 Load  case
+                                                                                          Dimensions
+                                                                                          Load case combination 02
+                                                                                                                                    LCC
+                                                                                                                                    75.3 01_sls
+                                                                                                                                         x  380.0 =x G23.1
+                                                                                                                                    LCC 02_sls == G +
+                                                                                                                                    A
+                                                                                                                                                        +S mm
+                                                                                                                                                             σ Peak
+                                                                                                                                                           W mm²
+                                                                                                                                                    28,614.00
+                                                                                                                                                                                   k
+                                                                                                                                                                                        σ SD
+                                                                                                                                                                                          i,n
+
+
+
+  Load case combination 01       Load case combination 01                                    80,815                                                           80,815                      38,571
+                                                                                                                                                        eff                        k       k,Pressure
+
+
+
+the  roofing and insulationDimensions
+ Dimensions                     must be checked  75.3 by      experts
+                                                         x 380.0     x 23.1 mm 75.3
+                                                                                          Load case
+                                                                                          Load  case
+                                                                                          maximum
+                                                                                                      combination 03
+                                                                                                        380.004 x 23.1GLCC 04_sls
+                                                                                                   xballast
+                                                                                                      combination
+                                                                                                                                    LCC 03_sls == G
+                                                                                                                                    A                      W
+                                                                                                                                                    1.00+ m²
+                                                                                                                                        mm== G5.7 +kgS + ψ * W
+                                                                                                                                                                   +ψ
+                                                                                                                                                        load range area
+
+                                                                                                                                                         ballast required
+                                                                                                                                                                         *S        k
+
+                                                                                                                                                                                   k
+                                                                                                                                                                                           k,Pressure
+
+                                                                                                                                                                                          i,n         0,W
+                                                                                                                                                                                                                   0,S     i,n
+
+                                                                                                                                                                                                                    k,Pressure
+
+
+to ensure that it is in a suitable condition before con­                                  Load case combination 06                  LCC 06_sls = G + W                             k       k,Suction
+
+
+                                                 Aeff               = 28,614.00 Aeff    mm²
+                                                                                          Load    Combinations        = 28,614.00 mm²
+struction.                                                                                Max. Pressure on insulation
+                                                                                                                                                    σ               [Pa]                  σ       [Pa]
+
+The properties of the roofing differ, but Athe                      = 1.00 m² Aload                       area = 1.00 m²
+                                                                                                                                                                                  Ek,heat insulation,D6_10                                     Ek,heat insulation,SD
+
+
+
+                                                         agearea
+                                                   load range   or type                   Generalrange
+                                                                                                     information  Load case combination 00
+
+                                                                                                                  Load case combination 01
+                                                                                                                                                                  15,632
+                                                                                                                                                                  80,815
+                                                                                                                                                                                                 5,979
+                                                                                                                                                                                                38,571
+ maximum      ballast          maximum           Gballast required = 5.7 kg
+                                            ballast                                    Gballast          coefficient = 5.7 c       kg = 0.20
+                                                                                          dead load system                          g         = 0.12 kN/m²
+of  construction    also play a   decisive role.
+                                                                                                                                                        System
+
+                                                                                          aerodynamicrequired                                           p,Pressure
+
+
+
+ K2 Base Report 3.2.14.2 | K2 Base
+                                30/10/2024Report| Flat
+                                                     3.2.14.2
+                                                          roof |load
+                                                                   30/10/2024
+                                                                       distribution    | Load
+                                                                                         Flatdistribution
+                                                                                            (additional
+                                                                                                     roof load           MatheS)
+                                                                                                                 underneath  distribution
+                                                                                                                                      building               (additional
+                                                                                                                                                 protection mat under       Peak (45°)Mat S)22/26
+                                                                                          K2 Base Report 3.2.14.2 | 30/10/2024 | Flat roof load distribution (additional Mat S)                  22/26
+Options for optimising load distribution                                                  Dimensions                                75.3 x 380.0 x 23.1 mm
+
+ Load Combinations Load Combinations                                             The maximum
+                                                                                                                                    A
+
+                                                                                                                   actionsAG (sum== 2.00
+                                                                                                                                                  = 28,614.00 mm²
+                                                                                                                                                        eff
+
+
+                                                                                                                                                       ofm² dead load and snow
+                                                                                                                                                        load range area
+
+                                                                                          maximum ballast                                           22.1 kg
+                                                                                                                                                         ballast required
+
+
+One important factor is snow, which is distributed                               load) Loadon the             roof covering (LCC01) can be found in the
+                                                                       σ                            [Pa]                    σEk,heat insulation,D6_10σ[Pa]
+                                                                                                  distribution underneath the building protection mat under SD (45°)
+                                                                                                                                                                    Ek,heat insulation,SD[Pa]                                                                              σEk,heat insulat
+differently on the flat roof of a ballasted PV system, Ek,heat insulation,D6_10  ­Structural
+                                                                                          Dimensions Analysis                  report
+                                                                                                                                    75.3         of23.1 mm
+                                                                                                                                         x 380.0 x       the Base              project report.
+                                                                                                                                    A             = 28,614.00 mm²
+  Load casethat
+meaning      combination  00
+                 the resulting  Load case are
+                                  forces   combination
+                                                applied00via the                              10,421                                A             = 1.00 m² 10,421
+                                                                                                                                                        eff
+
+                                                                                                                                                        load range area                     3,986
+                                                                                          maximum ballast                           G             = 5.7 kg σ Peak                       σ SD
+contact   points.   Therefore,   check  all  relevant      entries   in
+                                                                                                                                                         ballast required
+
+
+  Load case combination 01      Load case combination 01                                     53,877
+                                                                                          Load    Combinations                                               53,877                       25,457
+K2 Base.                                                                                                                                            σ               [Pa]                  σ       [Pa]
+Compare the reference values from the project report
+                                                                                                                                                                                  Ek,heat insulation,D6_10                                     Ek,heat insulation,SD
+
+                                                                                                                  Load case combination 00                        10,421                         3,986
+
+with the permissible continuous compressive stress of
+                                                                                                                  Load case combination 01                        53,877                        25,457
+
+
+
+the thermal insulation manufacturer. Please refer to the
+technical data of the manufacturer or manufacturer as­                            The K2 Base
+                                                                                        placement   Report 3.2.14.2 |of    additional
+                                                                                                                      30/10/2024 | Flat                Mat S
+                                                                                                                                          roof load distribution      under
+                                                                                                                                                                 (additional Mat S) the SDs 22/26  and
+ K2 Base Report
+sociations    for the3.2.14.2 |K2 Base
+                                30/10/2024
+                       permissible       Report
+                                      continuous| Flat
+                                                    3.2.14.2
+                                                          roof |load
+                                                      pressure     30/10/2024
+                                                                       distribution
+                                                                    load.             | Flat
+                                                                                  Peaks             roof
+                                                                                            (additional
+                                                                                              reduces           load the Mat        S)
+                                                                                                                            distribution
+                                                                                                                             surface                pressure(additional           the Mat   22/26
+                                                                                                                                                                                             S)
+                                                                                                                                                                                          insulation
+If the pressure load is exceeded, distribute the super­                           significantly.
+imposed load over larger areas. By increasing the area,
+the system load can be introduced more homogeneously
+into the thermal insulation. To do this, you can select
+the ‘Additional Mat S’ option in the ‘Results’ tab.
+
+
+
+
+                                                                                                                                                                                                                                                                       3
+Introduction
+Scenarios with Dome 6 solutions
+
+Dome 6 Xpress/Classic
+
+In the standard Dome 6 Xpress & Classic systems, the
+PV modules are clamped at the corners on the short
+side of the modules. This ensures that the mounting
+rails are used optimally.
+The load distribution contact surfaces are called Mat
+S and are placed under the Peak (upper mounting) and
+SD (lower mounting) elevation elements. The system
+weight and any ballast components transfer their own
+weight as well as wind and snow loads to these contact
+surfaces.
+Depending on the project location, the properties and
+requirements of the thermal insulation, this solution      In the standard version, the D-Dome 6 Classic offers a
+may not be sufficient.                                     Mat S as a support surface for the inner modules.
+
+
+Dome 6 Xpress/Classic with additional Mat S
+
+Flat roof systems with Dome 6 Xpress or Classic can
+be equipped with additional Mat S to increase the load
+distribution contact area. With D-Dome Xpress, these
+are placed twice under Peaks, and with Classic, twice
+under SDs and Peaks. With S-Dome Xpress and Classic
+systems, additional mats are placed between Peaks and
+SDs.
+This significantly increases the contact area for the
+determining loads and correspondingly reduces the
+pressure on the thermal insulation.
+In many cases, this is this is a sufficient solution for   Additional Mat S pads for D-Dome 6 Classic and Xpress
+protecting the thermal insulation from excessive loads.    increase the contact area of the inner modules.
+
+
+Dome 6 Classic LS
+
+The Classic LS system variant clamps the modules on
+the long side, approximately ¼ (or ¹⁄₅) from the end
+of the module. Therefore, it is necessary to lay two
+mounting rails for each row of modules. Compared to
+the Xpress and Classic Systems, the LS requires more
+material.
+The advantage of this is that the snow loads on the
+modules are better distributed accross the roof.
+For load distribution on the insulation, there are auto­
+matically more contact surfaces, since for each mount­
+ing rail with Peaks and SDs the corresponding quantities
+of Mat S are added.                                        With D-Dome 6 Classic LS, the double mounting rails
+Overall the contact surface area for the LS system is      provide four Mat S as a support surface for each
+signifcantly larger and so better distributes the loads    module – even in outer areas.
+onto the roof. There is also the option of placing more
+Mat S in the intermediate spaces to reduce the pressure
+further.
+
+4
+Area comparisons of systems and solutions
+
+The following table compares the load-inducing contact              mately for respective Mat S by the corresponding factor
+areas of D-Dome 6 systems in the inner area of a mod­               for surface pressure.
+ule block, which result from the use of Mat S. We use
+D-Dome 6 Classic at 100% as the standard case.                      The contact surface area in Classic LS systems is great­
+                                                                    er than Xpress and Classic systems and with additional
+With additional Mat S, the contact surface area can                 Mat S, targeted results can be achieved for coverings
+be increased and thus values can be reduced approxi­                with low permissible surface pressure.
+
+
+D-Dome 6                         Contact area (σ Peak)
+variant
+                      Standard assembly                Additional
+                            Mat S                        Mat S
+                                                                                                                   Double module
+Xpress                        125 %                       200 %
+Classic                       100 %                       200 %
+Classic LS                    200 %                       400 %
+
+
+In the table, we consider a double module in the inner
+area of a module block, independently of the ballast.
+
+
+
+
+Comparison of the use of Mat S surfaces
+
+
+              Double module               Zone of influence Mat S
+
+
+
+ D-Dome 6 Xpress                                                     D-Dome 6 Classic LS
+          ½                           ½                        ½
+                                                                               ½                1              ½
+
+
+
+
+                                                                               ½                1              ½
+          ½                           ½                        ½
+
+
+                                                                                                                          ∑4
+                                                               ∑3
+
+A double module in the inner module block has                       The double rails for modules in D-Dome 6 Classic LS
+an area of 3× Mat S.                                                have one more Mat S compared to Xpress.
+
+
+
+
+                                                                                                                               5
+Optimisation of load distribution
+Placement patterns with additional Mat S
+
+Dome 6 Xpress
+• The additional Mat S only needs to be added to the         D-Dome 6                      S-Dome 6
+  i­nner rails. See red areas in the illustration on the
+   right.
+
+• For D-Dome 6 Xpress, an additional Mat S is added
+  under one Peak and the existing Mat S is repositioned
+  under the other Peak
+
+• For S-Dome 6 Xpress, an additional Mat S is added
+  between each Peak and SD.                                Placement areas in the module block under inner
+                                                           rails (blue)
+
+
+
+
+D-Dome 6 Xpress
+
+
+
+
+S-Dome 6 Xpress
+
+
+
+
+6
+Dome 6 Classic
+• The additional Mat S only needs to be added to the         D-Dome 6                      S-Dome 6
+  i­nner rails. See red areas in the illustration on the
+   right.
+
+• For D-Dome 6 Classic, an additional Mat S is added
+  under each of the peaks and SDs – not at rail ends.
+
+• For S-Dome 6 Classic, an additional Mat S is added
+  between each Peak and SD.
+                                                           Placement areas in the module block under inner
+                                                           rails (blue)
+
+
+
+
+D-Dome 6 Classic
+
+
+
+
+S-Dome 6 Classic
+
+
+
+
+                                                                                                             7
+Dome 6 Classic LS
+• The additional Mat S must be added for all rails.         D-Dome 6                        S-Dome 6
+• For D-Dome 6 Classic LS, one Mat S is added under
+  each Peak and SD – not at rail ends.
+
+• For S-Dome 6 Classic LS, an additional Mat S is added
+  between each Peak and SD.
+
+
+                                                          Additional Mat S are placed under the rails (blue)
+                                                          throughout the entire module block.
+
+
+
+
+D-Dome 6 Classic LS
+
+
+
+
+S-Dome 6 Classic LS
+
+
+
+
+8
+Dome Zero
+• The additional Mat S only needs to be added to the
+  i­nner rails. See red areas in the illustration on the
+   right.
+
+• Under the Dome Zero Peaks, an additional Mat S is
+  added centered to the existing Mat S – not at rail
+  ends.
+
+
+                                                           Placement areas in the module block under inner
+                                                           rails (blue)
+
+
+
+
+                                                                                                             9
+Optimisation of load distribution
+Enlargement of the contact surface with LoadSolver
+
+• Solution for special projects with soft thermal insula­   • Narrower distribution grid and substantial larger
+  tion and a wide range of customisation options              ­contact area possible
+
+• Significant increase in the contact area and place­       • Available as a project item with manual installation
+  ment according to ballast centres of gravity possible
+
+
+
+
+10
+Notes
+
+
+
+
+        11
+                                   Connecting Strength
+
+
+
+
+Thank you for choosing a
+K2 mounting system.
+Mounting ystems from K2 Systems are quick and easy to install. We
+hope these instructions have helped. Please contact us with any ques­
+tions or suggestions for improvement. Our contact data:
+
+• k2-systems.com/en/contact
+
+• Service Hotline: +49 (0)7159 42059-0
+
+Our General Terms of Business apply. Please refer:
+k2-systems.com
+
+
+
+
+K2 Systems GmbH
+Haldenstraße 1 · 71272 Renningen · Germany
++49 (0) 7159 - 42059 - 0 · info@k2-systems.com · k2-systems.com
+
+Load distribution flat roof EN V1 | 0626 · Subject to change · Product illustrations are
+exemplary and may differ from the original.
+

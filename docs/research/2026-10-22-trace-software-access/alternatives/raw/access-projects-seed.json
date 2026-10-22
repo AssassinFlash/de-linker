@@ -1,0 +1,40 @@
+{
+  "startUrls": [
+    {
+      "url": "https://help.valentin-software.com/pvsol/en/tutorials/"
+    },
+    {
+      "url": "https://help.valentin-software.com/pvsol/en/pages/presentation/"
+    },
+    {
+      "url": "https://help.valentin-software.com/pvsol/en/pages/plans-and-parts-list/"
+    },
+    {
+      "url": "https://help.valentin-software.com/pvsol/en/licensing/"
+    },
+    {
+      "url": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management"
+    },
+    {
+      "url": "https://support.opensolar.com/hc/en-us/articles/13440054388239-Editing-in-the-Sales-Machine-Proposal-SMP"
+    },
+    {
+      "url": "https://k2-systems.com/en/digital-services/myk2-registration/"
+    },
+    {
+      "url": "https://www.sunnydesignweb.com/sdweb/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 8,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "script,style,noscript",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 30,
+  "maxRequestRetries": 1
+}

@@ -1,0 +1,1870 @@
+[
+  {
+    "url": "https://help.valentin-software.com/pvsol/en/tutorials/",
+    "crawl": {
+      "loadedUrl": "https://help.valentin-software.com/pvsol/en/tutorials/",
+      "loadedTime": "2026-10-22T12:17:07.383Z",
+      "referrerUrl": "https://help.valentin-software.com/pvsol/en/tutorials/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 8963,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "7d2f80bdb39ff0976d9e19fedcb9378664ad9e2df3563b6e0286ad23c0de0cfa",
+    "navigationAndCtaLinks": [
+      {
+        "href": "/pvsol/en/start/",
+        "text": "Start",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/software-activation/",
+        "text": "Software activation",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/system-requirements/",
+        "text": "System requirements",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/disclaimer/",
+        "text": "Disclaimer",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/architecture/",
+        "text": "Architecture",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/licensing/license-portal-user-license/user-account/",
+        "text": "User account",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/",
+        "text": "Project data",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/further-pictures/",
+        "text": "Further pictures",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/3d-design/google-api-key/",
+        "text": "Register Google API-Key",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/project-comparison/",
+        "text": "Project Comparison",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/calculation/irradiation/extraterrestrial-irradiation/",
+        "text": "Extraterrestrial irradiation",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/tutorials/",
+        "text": "Tutorials",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item active",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/valentinsoftware",
+        "text": "YouTube",
+        "ancestors": [
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "section:",
+          "li:None",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://pvsol-online.valentin-software.com/#/",
+        "text": "PV*SOL online",
+        "ancestors": [
+          "div:padding highlightable",
+          "div:",
+          "footer: footline",
+          "div:",
+          "p:",
+          "a:footer"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h5",
+        "text": "More"
+      },
+      {
+        "tag": "h1",
+        "text": "Tutorials"
+      },
+      {
+        "tag": "h2",
+        "text": "Integration of electric cars:"
+      },
+      {
+        "tag": "h2",
+        "text": "Connecting two dormers to one strand:"
+      },
+      {
+        "tag": "h2",
+        "text": "Map import and extrusion of 3D objects"
+      },
+      {
+        "tag": "h2",
+        "text": "First steps"
+      },
+      {
+        "tag": "h2",
+        "text": "Program options"
+      },
+      {
+        "tag": "h2",
+        "text": "Polystring, Power Optimizers"
+      },
+      {
+        "tag": "h2",
+        "text": "Design a PV-System with PV*SOL"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://help.valentin-software.com/pvsol/en/pages/presentation/",
+    "crawl": {
+      "loadedUrl": "https://help.valentin-software.com/pvsol/en/pages/presentation/",
+      "loadedTime": "2026-10-22T12:17:07.724Z",
+      "referrerUrl": "https://help.valentin-software.com/pvsol/en/pages/presentation/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 12173,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "c360b1b05edf72b761b27e4d89e44acf8efa2cec7796a87c424354cdaf38400b",
+    "navigationAndCtaLinks": [
+      {
+        "href": "/pvsol/en/start/",
+        "text": "Start",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/software-activation/",
+        "text": "Software activation",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/system-requirements/",
+        "text": "System requirements",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/disclaimer/",
+        "text": "Disclaimer",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/licensing/license-portal-user-license/user-account/",
+        "text": "User account",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/",
+        "text": "Project data",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item parent",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/further-pictures/",
+        "text": "Further pictures",
+        "ancestors": [
+          "li:dd-item parent",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/3d-design/google-api-key/",
+        "text": "Register Google API-Key",
+        "ancestors": [
+          "li:dd-item parent",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/project-comparison/",
+        "text": "Project Comparison",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/calculation/irradiation/extraterrestrial-irradiation/",
+        "text": "Extraterrestrial irradiation",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/valentinsoftware",
+        "text": "YouTube",
+        "ancestors": [
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "section:",
+          "li:None",
+          "a:"
+        ]
+      },
+      {
+        "href": "#preview",
+        "text": "Preview",
+        "ancestors": [
+          "nav:",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "#project-options-presentation",
+        "text": "Project options Presentation",
+        "ancestors": [
+          "nav:",
+          "ul:",
+          "li:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "#preview",
+        "text": "Preview",
+        "ancestors": [
+          "body:",
+          "section:",
+          "div:padding highlightable",
+          "div:",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "#project-options-presentation",
+        "text": "Project Options",
+        "ancestors": [
+          "body:",
+          "section:",
+          "div:padding highlightable",
+          "div:",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "#project-options-presentation",
+        "text": "Project Options",
+        "ancestors": [
+          "body:",
+          "section:",
+          "div:padding highlightable",
+          "div:",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://pvsol-online.valentin-software.com/#/",
+        "text": "PV*SOL online",
+        "ancestors": [
+          "div:padding highlightable",
+          "div:",
+          "footer: footline",
+          "div:",
+          "p:",
+          "a:footer"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h5",
+        "text": "More"
+      },
+      {
+        "tag": "h1",
+        "text": "Presentation"
+      },
+      {
+        "tag": "h4",
+        "text": "Page Presentation"
+      },
+      {
+        "tag": "h3",
+        "text": "Options"
+      },
+      {
+        "tag": "h3",
+        "text": "Preview"
+      },
+      {
+        "tag": "h3",
+        "text": "Export"
+      },
+      {
+        "tag": "h3",
+        "text": "Project options Presentation"
+      },
+      {
+        "tag": "h4",
+        "text": "Configuration Presentation"
+      },
+      {
+        "tag": "h4",
+        "text": "Document template"
+      },
+      {
+        "tag": "h4",
+        "text": "Layout"
+      },
+      {
+        "tag": "h4",
+        "text": "Contents"
+      },
+      {
+        "tag": "h4",
+        "text": "Further Options"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://help.valentin-software.com/pvsol/en/licensing/",
+    "crawl": {
+      "loadedUrl": "https://help.valentin-software.com/pvsol/en/licensing/",
+      "loadedTime": "2026-10-22T12:17:08.844Z",
+      "referrerUrl": "https://help.valentin-software.com/pvsol/en/licensing/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 8680,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "44bf8ffad59fca7ac9f5389c593b4850e2d78c4e89984fb538cd2bdc7050d337",
+    "navigationAndCtaLinks": [
+      {
+        "href": "/pvsol/en/start/",
+        "text": "Start",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/software-activation/",
+        "text": "Software activation",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/system-requirements/",
+        "text": "System requirements",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/disclaimer/",
+        "text": "Disclaimer",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/licensing/license-portal-user-license/user-account/",
+        "text": "User account",
+        "ancestors": [
+          "li:dd-item active",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/",
+        "text": "Project data",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/further-pictures/",
+        "text": "Further pictures",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/3d-design/google-api-key/",
+        "text": "Register Google API-Key",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/project-comparison/",
+        "text": "Project Comparison",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/calculation/irradiation/extraterrestrial-irradiation/",
+        "text": "Extraterrestrial irradiation",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/valentinsoftware",
+        "text": "YouTube",
+        "ancestors": [
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "section:",
+          "li:None",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://pvsol-online.valentin-software.com/#/",
+        "text": "PV*SOL online",
+        "ancestors": [
+          "div:padding highlightable",
+          "div:",
+          "footer: footline",
+          "div:",
+          "p:",
+          "a:footer"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h5",
+        "text": "More"
+      },
+      {
+        "tag": "h1",
+        "text": "Licensing"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://help.valentin-software.com/pvsol/en/pages/plans-and-parts-list/",
+    "crawl": {
+      "loadedUrl": "https://help.valentin-software.com/pvsol/en/pages/plans-and-parts-list/",
+      "loadedTime": "2026-10-22T12:17:09.288Z",
+      "referrerUrl": "https://help.valentin-software.com/pvsol/en/pages/plans-and-parts-list/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 10711,
+      "contentType": "text/html"
+    },
+    "htmlSha256": "d8ad0ba92165376b52d3c63880425557305a6d9bee5c467a406e9d58a0a679cd",
+    "navigationAndCtaLinks": [
+      {
+        "href": "/pvsol/en/start/",
+        "text": "Start",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/software-activation/",
+        "text": "Software activation",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/system-requirements/",
+        "text": "System requirements",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/start/disclaimer/",
+        "text": "Disclaimer",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/licensing/license-portal-user-license/user-account/",
+        "text": "User account",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/",
+        "text": "Project data",
+        "ancestors": [
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item parent",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/project-data/further-pictures/",
+        "text": "Further pictures",
+        "ancestors": [
+          "li:dd-item parent",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/pages/3d-design/google-api-key/",
+        "text": "Register Google API-Key",
+        "ancestors": [
+          "li:dd-item parent",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/project-comparison/",
+        "text": "Project Comparison",
+        "ancestors": [
+          "body:",
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "/pvsol/en/calculation/irradiation/extraterrestrial-irradiation/",
+        "text": "Extraterrestrial irradiation",
+        "ancestors": [
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "ul:",
+          "li:dd-item",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/valentinsoftware",
+        "text": "YouTube",
+        "ancestors": [
+          "nav:None",
+          "div:highlightable",
+          "ul:topics",
+          "section:",
+          "li:None",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://pvsol-online.valentin-software.com/#/",
+        "text": "PV*SOL online",
+        "ancestors": [
+          "div:padding highlightable",
+          "div:",
+          "footer: footline",
+          "div:",
+          "p:",
+          "a:footer"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h5",
+        "text": "More"
+      },
+      {
+        "tag": "h1",
+        "text": "Plans and Parts list"
+      },
+      {
+        "tag": "h4",
+        "text": "Overview of the page Plans and Parts list"
+      },
+      {
+        "tag": "h3",
+        "text": "Schematic circuit diagram"
+      },
+      {
+        "tag": "h4",
+        "text": "Detail view circuit diagram"
+      },
+      {
+        "tag": "h4",
+        "text": "Dialogue plan properties"
+      },
+      {
+        "tag": "h3",
+        "text": "Dimension plan"
+      },
+      {
+        "tag": "h4",
+        "text": "Detail view dimensioning plan"
+      },
+      {
+        "tag": "h3",
+        "text": "String diagram"
+      },
+      {
+        "tag": "h4",
+        "text": "Detail view string diagram"
+      },
+      {
+        "tag": "h3",
+        "text": "Parts list"
+      },
+      {
+        "tag": "h4",
+        "text": "Detail view parts list"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management",
+    "crawl": {
+      "loadedUrl": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management",
+      "loadedTime": "2026-10-22T12:17:10.465Z",
+      "referrerUrl": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 13125,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "62ab0d31fff2610eb2aab02dacc7b51702817c042443d7ab0609b014b9b6305c",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://help.easy-pv.co.uk/login",
+        "text": "Log in",
+        "ancestors": [
+          "html:",
+          "body:",
+          "header:primary-background px-xl grid print-hidden",
+          "nav:header-links",
+          "div:links text-center",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/revisions",
+        "text": "Revision #28",
+        "ancestors": [
+          "div:tri-layout-right print-hidden",
+          "aside:tri-layout-right-contents",
+          "div:entity-details mb-xl",
+          "div:blended-links",
+          "div:entity-meta",
+          "a:entity-meta-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/references",
+        "text": "Referenced by 6 items",
+        "ancestors": [
+          "div:tri-layout-right print-hidden",
+          "aside:tri-layout-right-contents",
+          "div:entity-details mb-xl",
+          "div:blended-links",
+          "div:entity-meta",
+          "a:entity-meta-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/revisions",
+        "text": "Revisions",
+        "ancestors": [
+          "div:tri-layout-sides-content",
+          "div:tri-layout-right print-hidden",
+          "aside:tri-layout-right-contents",
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "a:icon-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/export/html",
+        "text": "Contained Web File.html",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/export/pdf",
+        "text": "PDF File.pdf",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/export/plaintext",
+        "text": "Plain Text File.txt",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management/export/markdown",
+        "text": "Markdown File.md",
+        "ancestors": [
+          "div:actions mb-xl",
+          "div:icon-list text-link",
+          "div:dropdown-container",
+          "ul:wide dropdown-menu",
+          "li:",
+          "a:label-item"
+        ]
+      },
+      {
+        "href": "#bkmrk-saving-an-easy-pv-re",
+        "text": "Saving an Easy PV report to the document manager",
+        "ancestors": [
+          "aside:tri-layout-left-contents",
+          "nav:mb-xl",
+          "div:body",
+          "div:sidebar-page-nav menu",
+          "li:page-nav-item h2",
+          "a:text-limit-lines-1 block"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails",
+        "text": "Reports, documents and emails",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-book book",
+          "a:book   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-dno-application-via-connect-direct",
+        "text": "Pro: DNO Application via Connect Direct",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-survey-and-installation-record-tasks",
+        "text": "Pro: Survey and installation record tasks",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management",
+        "text": "Pro: Document Management",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page  selected entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-sending-emails-from-easy-pv",
+        "text": "Pro: Sending emails from Easy PV",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-e-signing",
+        "text": "Pro: E-signing",
+        "ancestors": [
+          "div:tri-layout-left print-hidden",
+          "aside:tri-layout-left-contents",
+          "nav:book-tree mb-xl",
+          "ul:sidebar-page-list mt-xs menu entity-list",
+          "li:list-item-page page ",
+          "a:page   entity-list-item"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails",
+        "text": "Reports, documents and...",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:mb-m print-hidden",
+          "nav:breadcrumbs text-center",
+          "a:text-book icon-list-item outline-hover"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-document-management",
+        "text": "Pro: Document Management",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:mb-m print-hidden",
+          "nav:breadcrumbs text-center",
+          "a:text-page icon-list-item outline-hover"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-sending-emails-from-easy-pv",
+        "text": "emails sent within the Easy PV",
+        "ancestors": [
+          "div:tri-layout-middle-contents",
+          "main:content-wrap card",
+          "div:page-content clearfix",
+          "div:",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/emailing",
+        "text": "sending emails in Easy PV",
+        "ancestors": [
+          "main:content-wrap card",
+          "div:page-content clearfix",
+          "div:",
+          "ul:",
+          "li:null",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/uploads/images/gallery/2025-11/wmZ0JHkpTpkgZIgN-download.jpg",
+        "text": "",
+        "ancestors": [
+          "div:page-content clearfix",
+          "div:",
+          "ul:",
+          "li:null",
+          "strong:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-e-signing",
+        "text": "E-signing",
+        "ancestors": [
+          "main:content-wrap card",
+          "div:page-content clearfix",
+          "div:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-sending-emails-from-easy-pv",
+        "text": "Emailing",
+        "ancestors": [
+          "main:content-wrap card",
+          "div:page-content clearfix",
+          "div:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://cal.com/easy-pv/pro-training",
+        "text": "Book onto a live demo session",
+        "ancestors": [
+          "main:content-wrap card",
+          "div:page-content clearfix",
+          "div:",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-survey-and-installation-record-tasks",
+        "text": "Previous Pro: Survey and installation record tasks",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:grid half collapse-xs items-center mb-m px-m no-row-gap fade-in-when-active print-hidden",
+          "div:",
+          "a:outline-hover no-link-style block rounded"
+        ]
+      },
+      {
+        "href": "https://help.easy-pv.co.uk/books/reports-documents-and-emails/page/pro-sending-emails-from-easy-pv",
+        "text": "Next Pro: Sending emails from Easy PV",
+        "ancestors": [
+          "div:tri-layout-container",
+          "div: tri-layout-middle",
+          "div:tri-layout-middle-contents",
+          "div:grid half collapse-xs items-center mb-m px-m no-row-gap fade-in-when-active print-hidden",
+          "div:",
+          "a:outline-hover no-link-style block rounded text-xs-right"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h5",
+        "text": "Details"
+      },
+      {
+        "tag": "h5",
+        "text": "Actions"
+      },
+      {
+        "tag": "h5",
+        "text": "Page Navigation"
+      },
+      {
+        "tag": "h5",
+        "text": "Section Navigation"
+      },
+      {
+        "tag": "h4",
+        "text": "Reports, documents and emails"
+      },
+      {
+        "tag": "h4",
+        "text": "Pro: DNO Application via Connect Direct"
+      },
+      {
+        "tag": "h4",
+        "text": "Pro: Survey and installation record tasks"
+      },
+      {
+        "tag": "h4",
+        "text": "Pro: Document Management"
+      },
+      {
+        "tag": "h4",
+        "text": "Pro: Sending emails from Easy PV"
+      },
+      {
+        "tag": "h4",
+        "text": "Pro: E-signing"
+      },
+      {
+        "tag": "h1",
+        "text": "Pro: Document Management"
+      },
+      {
+        "tag": "h2",
+        "text": "Uploading files to the document manager"
+      },
+      {
+        "tag": "h3",
+        "text": "Saving an Easy PV report to the document manager"
+      },
+      {
+        "tag": "h3",
+        "text": "Upload a document from your device"
+      },
+      {
+        "tag": "h2",
+        "text": "Options on saved files"
+      },
+      {
+        "tag": "h2",
+        "text": "​Want to know more?"
+      },
+      {
+        "tag": "h2",
+        "text": ""
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://www.sunnydesignweb.com/sdweb/",
+    "crawl": {
+      "loadedUrl": "https://www.sunnydesignweb.com/sdweb/",
+      "loadedTime": "2026-10-22T12:17:12.892Z",
+      "referrerUrl": "https://www.sunnydesignweb.com/sdweb/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 479862,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "htmlSha256": "d990575164988e4b3cf71c6be4381ce94a0db8e56b579d9d676af90990073423",
+    "navigationAndCtaLinks": [
+      {
+        "href": null,
+        "text": "Show projects",
+        "ancestors": [
+          "body:",
+          "div:",
+          "sd-dialog:message-dialog",
+          "div:content",
+          "p:",
+          "a:"
+        ]
+      },
+      {
+        "href": null,
+        "text": "{{project.Name}} ({{project.CreationDateString}})",
+        "ancestors": [
+          "table:",
+          "tbody:",
+          "tr:",
+          "td:",
+          "div:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h3",
+        "text": "Breakdown of seasons into months"
+      },
+      {
+        "tag": "h3",
+        "text": "Limit products"
+      },
+      {
+        "tag": "h3",
+        "text": ""
+      },
+      {
+        "tag": "h4",
+        "text": "Design details"
+      },
+      {
+        "tag": "h2",
+        "text": "Project information"
+      },
+      {
+        "tag": "h3",
+        "text": "{{vm.model.title}}"
+      },
+      {
+        "tag": "h2",
+        "text": "SMA Solar Technology AG"
+      },
+      {
+        "tag": "h2",
+        "text": "SUNNY DESIGN"
+      },
+      {
+        "tag": "h4",
+        "text": "{{project.Name}}"
+      },
+      {
+        "tag": "h5",
+        "text": "{{project.ProjectNumber}}"
+      },
+      {
+        "tag": "h5",
+        "text": "{{project.LastOpenOnString}}"
+      },
+      {
+        "tag": "h4",
+        "text": "{{video.Title}}"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://k2-systems.com/en/digital-services/myk2-registration/",
+    "crawl": {
+      "loadedUrl": "https://k2-systems.com/en/digital-services/myk2-registration/",
+      "loadedTime": "2026-10-22T12:17:30.651Z",
+      "referrerUrl": "https://k2-systems.com/en/digital-services/myk2-registration/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 153332,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "htmlSha256": "31232b21cd020fb5412cfd2937f94dbe8c2fe968876f9ee255ccaeb4d04c0408",
+    "navigationAndCtaLinks": [
+      {
+        "href": "https://base.k2-systems.com/",
+        "text": "K2 Base",
+        "ancestors": [
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "a:text-xs text-darkGrey mr-6 hover:text-red"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "header:w-full flex-col lg:flex-row flex items-start justify-between sticky z-[1500] lg:z-20 print:hidden lg:pt-8 pb-4 pt-4 lg:p",
+          "div:w-full lg:w-auto",
+          "div:hidden lg:flex flex-wrap items-center justify-end",
+          "div:inline-flex items-center",
+          "a:text-red hover:text-red items-center mr-6"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf",
+        "text": "More",
+        "ancestors": [
+          "div:basis-4/12 border-l border-silverGrey pl-8 hidden lg:block extraMenuElement",
+          "div:flex",
+          "div:basis-6/12",
+          "div:relative group",
+          "div:absolute w-full h-full left-0 top-0 flex items-center justify-center opacity-0 transition-opacity duration-300 hover:opa",
+          "a:bttn bttn-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/wp-content/uploads/2026/06/Sustainibility-Report-en-2025.pdf",
+        "text": "More",
+        "ancestors": [
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:basis-4/12 border-l border-silverGrey pl-8 hidden lg:block extraMenuElement",
+          "div:flex",
+          "div:basis-6/12",
+          "p:ml-6 mr-6 align-top",
+          "a:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/solar-ground-mounting/",
+        "text": "Ground-mounted Systems",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu withArrow hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/k2-carport-system/",
+        "text": "K2 Carport System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8 threelevel bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:withSubMenu  hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/",
+        "text": "Large-scale projects",
+        "ancestors": [
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:w-full inline-flex flex-col lg:flex-row items-start main-nav",
+          "li:py-2 ml-0 border-b-2 border-transparent lg:hover:border-red lg:pb-8 lg:ml-4 2xl:ml-8 w-full lg:w-auto group transition-a",
+          "p:group-hover:text-red cursor-pointer menuLink ",
+          "a: hidden lg:block group-hover:text-red"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/",
+        "text": "Large-scale projects",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/commercial-industry/",
+        "text": "Commercial-/Industry Roofs",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/facade/",
+        "text": "Facade",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/ground-mounted/",
+        "text": "Ground-mounted",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/large-scale-projects/k2-carport-system/",
+        "text": "K2 Carport System",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/knowledge-training/download-library/",
+        "text": "Downloads",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/resource-center/tutorials/",
+        "text": "Tutorial",
+        "ancestors": [
+          "div:hidden lg:block w-full lg:border-t border-silverGrey static lg:absolute left-0 top-full lg:invisible lg:opacity-0 group-",
+          "div:w-full lg:basis-8/12 lg:pb-8  bg-white flex lg:pt-8",
+          "div:flex-1 lg:basis-4/12 border-l border-silverGrey ml-3 lg:ml-0 pl-6 lg:pl-8 dropdown-menu-item",
+          "ul:",
+          "li:pb-2",
+          "a:hover:text-red "
+        ]
+      },
+      {
+        "href": "https://base.k2-systems.com",
+        "text": "K2 Base",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:items-center mb-2 flex",
+          "a:text-xs text-darkGrey ml-3"
+        ]
+      },
+      {
+        "href": "https://my.k2-systems.com/",
+        "text": "MyK2 Login",
+        "ancestors": [
+          "div:w-full lg:w-auto",
+          "div:mt-0 lg:mt-6 flex flex-col lg:flex-row items-start lg:items-center justify-end",
+          "nav:hidden lg:inline-flex items-start flex-col lg:flex-row order-1 lg:order-0 lg:items-center w-full lg:w-auto pt-5 lg:pt-0 ",
+          "ul:block w-full lg:hidden py-5 mt-5 border-y border-silverGrey",
+          "li:flex items-center mb-2",
+          "a:text-xs text-red ml-3"
+        ]
+      },
+      {
+        "href": "https://k2-systems.com/en/downloads-supplier-documents/",
+        "text": "Downloads supplier documents",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:flex flex-col lg:flex-row",
+          "div:basis-1/6 mr-4",
+          "ul:border-l border-silverGrey lg:border-none pl-6 lg:pl-0 ml-3 lg:ml-0 my-4 lg:my-0 hidden lg:block",
+          "li:mb-2 lg:mb-1",
+          "a:text-darkGrey"
+        ]
+      },
+      {
+        "href": "https://outlook.office365.com/mail/",
+        "text": "Employee login",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:flex flex-col lg:flex-row",
+          "div:basis-1/6 mr-4",
+          "ul:border-l border-silverGrey lg:border-none pl-6 lg:pl-0 ml-3 lg:ml-0 my-4 lg:my-0 hidden lg:block",
+          "li:mb-2 lg:mb-1",
+          "a:text-darkGrey"
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/K2Systems",
+        "text": "",
+        "ancestors": [
+          "body:",
+          "div:2xl:max-w-[1600px] mx-auto p-4 lg:p-8 -mt-4 lg:-mt-8 bg-white",
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:mt-14",
+          "div:flex gap-6 lg:hidden justify-center mb-14",
+          "a:relative group opacity-40 hover:opacity-100 transition-all "
+        ]
+      },
+      {
+        "href": "https://www.youtube.com/user/K2Systems",
+        "text": "",
+        "ancestors": [
+          "footer:mt-28 lg:mt-56 print:hidden ",
+          "div:mt-14",
+          "div:flex items-center justify-between",
+          "div:hidden lg:flex w-full items-center",
+          "div:flex gap-6 ml-[61px]",
+          "a:relative group opacity-40 hover:opacity-100 transition-all "
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h2",
+        "text": "MyK2: less stress, more flow."
+      },
+      {
+        "tag": "h3",
+        "text": "Have you heard of K2 Base?"
+      },
+      {
+        "tag": "h3",
+        "text": "Sounds good? Wait until you see what the other tools have to offer."
+      },
+      {
+        "tag": "h5",
+        "text": "K2 product catalogue"
+      },
+      {
+        "tag": "h5",
+        "text": "K2 Training"
+      },
+      {
+        "tag": "h5",
+        "text": "K2 Webinar"
+      },
+      {
+        "tag": "h5",
+        "text": "MyK2Price"
+      },
+      {
+        "tag": "h5",
+        "text": ""
+      },
+      {
+        "tag": "h3",
+        "text": "On top of that, there are even more digital tools for you."
+      },
+      {
+        "tag": "h5",
+        "text": "K2 DocuApp"
+      },
+      {
+        "tag": "h5",
+        "text": "MyK2RoofHook"
+      },
+      {
+        "tag": "h5",
+        "text": "K2 Kai"
+      },
+      {
+        "tag": "h3",
+        "text": "Let’s keep it short"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  },
+  {
+    "url": "https://support.opensolar.com/hc/en-us/articles/13440054388239-Editing-in-the-Sales-Machine-Proposal-SMP",
+    "crawl": {
+      "loadedUrl": "https://support.opensolar.com/hc/en-us/articles/13440054388239-Editing-in-the-Sales-Machine-Proposal-SMP",
+      "loadedTime": "2026-10-22T12:17:48.404Z",
+      "referrerUrl": "https://support.opensolar.com/hc/en-us/articles/13440054388239-Editing-in-the-Sales-Machine-Proposal-SMP",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 47692,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "htmlSha256": "f4657d4152593c987afa234b8cce6273a76ece722ff7be28d41492f2353d265c",
+    "navigationAndCtaLinks": [
+      {
+        "href": "/hc/en-us/categories/12281937039503-Account-configuration",
+        "text": "Account configuration",
+        "ancestors": [
+          "main:",
+          "div:container",
+          "nav:sub-nav",
+          "ol:breadcrumbs",
+          "li:",
+          "a:"
+        ]
+      },
+      {
+        "href": "/hc/en-us/articles/17376846567183-How-to-create-a-PDF-contract-in-OpenSolar",
+        "text": "How to create a PDF contract in OpenSolar",
+        "ancestors": [
+          "div:article-container",
+          "section:article-sidebar",
+          "section:section-articles collapsible-sidebar",
+          "ul:",
+          "li:",
+          "a:sidenav-item "
+        ]
+      },
+      {
+        "href": "/hc/en-us/related/click?data=BAh7CjobZGVzdGluYXRpb25fYXJ0aWNsZV9pZGwrCI8XHyy%2FBToYcmVmZXJyZXJfYXJ0aWNsZV9pZGwrCA%2FmqkE5DDoLbG9jYWxlSSIKZW4tdXMGOgZFVDoIdXJsSSJrL2hjL2VuLXVzL2FydGljbGVzLzYzMTg2MzcxMjc1NjctSW5jZW50aXZlLUhvdy1TVENzLWFyZS1oYW5kbGVkLWZvci1SZXNpZGVudGlhbC1Db21tZXJjaWFsLXByb2plY3RzLUFVBjsIVDoJcmFua2kJ--09c3c46edfa10fb9c2c120577154df0a78387930",
+        "text": "Incentive: How STCs are handled for Residential/Commercial projects (AU)",
+        "ancestors": [
+          "article:article",
+          "section:article-relatives",
+          "section:related-articles",
+          "ul:",
+          "li:",
+          "a:"
+        ]
+      }
+    ],
+    "headings": [
+      {
+        "tag": "h3",
+        "text": "Articles in this section"
+      },
+      {
+        "tag": "h1",
+        "text": "How to create your swipe proposal"
+      },
+      {
+        "tag": "h2",
+        "text": "Summary:"
+      },
+      {
+        "tag": "h2",
+        "text": "Table of contents"
+      },
+      {
+        "tag": "h2",
+        "text": "Swipe vs Scroll proposals"
+      },
+      {
+        "tag": "h2",
+        "text": "Before you start"
+      },
+      {
+        "tag": "h3",
+        "text": "Organization requirements"
+      },
+      {
+        "tag": "h3",
+        "text": "Project requirements"
+      },
+      {
+        "tag": "h2",
+        "text": "Create a Swipe proposal template"
+      },
+      {
+        "tag": "h2",
+        "text": "Preview and edit your Swipe template"
+      },
+      {
+        "tag": "h3",
+        "text": "Select a preview project"
+      },
+      {
+        "tag": "h3",
+        "text": "Open Full Screen"
+      },
+      {
+        "tag": "h3",
+        "text": "How customers navigate Swipe"
+      },
+      {
+        "tag": "h2",
+        "text": "Customize your Swipe template"
+      },
+      {
+        "tag": "h3",
+        "text": "Featured Figures"
+      },
+      {
+        "tag": "h3",
+        "text": "Disclaimers"
+      },
+      {
+        "tag": "h3",
+        "text": "Advanced Settings"
+      },
+      {
+        "tag": "h4",
+        "text": "Proposal checkout"
+      },
+      {
+        "tag": "h4",
+        "text": "Bill savings chart"
+      },
+      {
+        "tag": "h4",
+        "text": "Net financial impact chart"
+      },
+      {
+        "tag": "h3",
+        "text": "Template Image"
+      },
+      {
+        "tag": "h2",
+        "text": "Customize pages in Full Screen"
+      },
+      {
+        "tag": "h3",
+        "text": "Pages"
+      },
+      {
+        "tag": "h4",
+        "text": "Brand pages"
+      },
+      {
+        "tag": "h4",
+        "text": "Graph pages"
+      },
+      {
+        "tag": "h4",
+        "text": "Layout pages"
+      },
+      {
+        "tag": "h3",
+        "text": "Edit"
+      },
+      {
+        "tag": "h3",
+        "text": "Settings"
+      },
+      {
+        "tag": "h2",
+        "text": "Open a Swipe proposal on a project"
+      },
+      {
+        "tag": "h2",
+        "text": "Customize the proposal for a specific project"
+      },
+      {
+        "tag": "h3",
+        "text": "If the organization template is updated"
+      },
+      {
+        "tag": "h2",
+        "text": "Send and share the proposal"
+      },
+      {
+        "tag": "h2",
+        "text": "Limits and troubleshooting"
+      },
+      {
+        "tag": "h2",
+        "text": "Related articles:"
+      },
+      {
+        "tag": "h3",
+        "text": "Related articles"
+      },
+      {
+        "tag": "h3",
+        "text": "Comments"
+      },
+      {
+        "tag": "h3",
+        "text": "OpenSolar"
+      },
+      {
+        "tag": "h3",
+        "text": "Support"
+      },
+      {
+        "tag": "h3",
+        "text": "Language"
+      }
+    ],
+    "note": "Public HTML parsed locally, not a rendered or logged-in test. Full original retained in the cited Apify dataset."
+  }
+]

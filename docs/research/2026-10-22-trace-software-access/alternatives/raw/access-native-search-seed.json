@@ -1,0 +1,6 @@
+{
+  "queries": "site:valentin-software.com filetype:pdf \"PV*SOL\" \"Project\"\nsite:help.valentin-software.com pvsol \".pvprj\"\nsite:k2-systems.com \"K2 Base\" \"report\" \"pdf\"\nsite:easy-pv.co.uk/speedy \"demo\"",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "languageCode": "en"
+}

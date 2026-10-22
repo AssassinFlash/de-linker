@@ -1,0 +1,280 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:valentin-software.com filetype:pdf \"PV*SOL\" \"Project\"",
+      "url": "http://www.google.com/search?q=site%3Avalentin-software.com+filetype%3Apdf+%22PV*SOL%22+%22Project%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Avalentin-software.com+filetype%3Apdf+%22PV*SOL%22+%22Project%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/BMSsIe4Wt18uiLlmd/records/mztilvQZ1q9pPVk-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:k2-systems.com \"K2 Base\" \"report\" \"pdf\"",
+      "url": "http://www.google.com/search?q=site%3Ak2-systems.com+%22K2+Base%22+%22report%22+%22pdf%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Ak2-systems.com+%22K2+Base%22+%22report%22+%22pdf%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [
+      {
+        "title": "K2 base report pdf free download",
+        "url": "https://www.google.com/search?sca_esv=e3f79fe763bf536d&hl=en&gl=us&sxsrf=APpeQnuzImMUiihJ20ofmJEsFJ8CUCKqaQ:1792671500132&q=K2+base+report+pdf+free+download&sa=X&ved=2ahUKEwjigdvfzc2XAxUinGoFHZ8UHA0Q1QJ6BAg2EAE"
+      },
+      {
+        "title": "K2 base report pdf free",
+        "url": "https://www.google.com/search?sca_esv=e3f79fe763bf536d&hl=en&gl=us&sxsrf=APpeQnuzImMUiihJ20ofmJEsFJ8CUCKqaQ:1792671500132&q=K2+base+report+pdf+free&sa=X&ved=2ahUKEwjigdvfzc2XAxUinGoFHZ8UHA0Q1QJ6BAg3EAE"
+      },
+      {
+        "title": "K2 base report pdf download",
+        "url": "https://www.google.com/search?sca_esv=e3f79fe763bf536d&hl=en&gl=us&sxsrf=APpeQnuzImMUiihJ20ofmJEsFJ8CUCKqaQ:1792671500132&q=K2+base+report+pdf+download&sa=X&ved=2ahUKEwjigdvfzc2XAxUinGoFHZ8UHA0Q1QJ6BAg1EAE"
+      },
+      {
+        "title": "K2 base report pdf free download",
+        "url": "https://www.google.com/search?sca_esv=e3f79fe763bf536d&hl=en&gl=us&sxsrf=APpeQnuzImMUiihJ20ofmJEsFJ8CUCKqaQ:1792671500132&q=K2+base+report+pdf+free+download&sa=X&ved=2ahUKEwjigdvfzc2XAxUinGoFHZ8UHA0Q1QJ6BAg2EAE"
+      },
+      {
+        "title": "K2 base report pdf free",
+        "url": "https://www.google.com/search?sca_esv=e3f79fe763bf536d&hl=en&gl=us&sxsrf=APpeQnuzImMUiihJ20ofmJEsFJ8CUCKqaQ:1792671500132&q=K2+base+report+pdf+free&sa=X&ved=2ahUKEwjigdvfzc2XAxUinGoFHZ8UHA0Q1QJ6BAg3EAE"
+      },
+      {
+        "title": "K2 base report pdf download",
+        "url": "https://www.google.com/search?sca_esv=e3f79fe763bf536d&hl=en&gl=us&sxsrf=APpeQnuzImMUiihJ20ofmJEsFJ8CUCKqaQ:1792671500132&q=K2+base+report+pdf+download&sa=X&ved=2ahUKEwjigdvfzc2XAxUinGoFHZ8UHA0Q1QJ6BAg1EAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "K2 Base",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/en/digital-services/k2-base/",
+        "displayedUrl": "https://k2-systems.com › Home › Digital Services",
+        "description": "K2 Base ... Share projects with other people – even outside your own organisation; Structural analysis report, assembly plans and ballasting in the form of PDF ...Read more",
+        "emphasizedKeywords": [
+          "K2 Base",
+          "report",
+          "PDF"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "FAQs: K2 Base",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/en/faq-category/k2-base/",
+        "displayedUrl": "https://k2-systems.com › Home › Digital Services",
+        "description": "Project planning: Flat roof. How to read the structural analysis report for flat roof systems in the K2 Base PDF Report?Read more",
+        "emphasizedKeywords": [
+          "report",
+          "K2 Base PDF Report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "K2 BasicRail System",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/ba/2d/6d/BasicRail-assembly-en.pdf",
+        "displayedUrl": "https://catalogue.k2-systems.com › media › Basic...",
+        "description": "The number and placement are shown in the K2 Base Report. For landscape assembly with AddOn XS see page 18 step B for rail fixation. ! Page 15. 15 ! ≥ 50mm.Read more",
+        "emphasizedKeywords": [
+          "K2 Base Report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "K2 Base",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/en-us/project-planning/k2-base/",
+        "displayedUrl": "https://k2-systems.com › Home › Project Planning",
+        "description": "... PDF ... Automatic calculation and display of roof and counterweight fasteners; Result report including assembly drawing and item list.Read more",
+        "emphasizedKeywords": [
+          "PDF",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Load distribution on flat roofs - K2 Catalogue",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/15/24/91/Load-distribution-flat-roof-en.pdf",
+        "displayedUrl": "https://catalogue.k2-systems.com › media › Load...",
+        "description": "K2 Base Report 3.2.14.2 | 30/10/2024 | Flat roof load distribution (additional Mat S). 22/26 σ. [Pa]. 5,979. 38,571 σ. [Pa]. 15,632. 80,815 σ SD σ Peak. The ...Read more",
+        "emphasizedKeywords": [
+          "K2 Base Report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Intersolar Europe 2026",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/wp-content/uploads/2026/06/K2-Systems-press-release_Intersolar-Highlights-2026_EN.pdf",
+        "displayedUrl": "https://k2-systems.com › uploads › 2026/06 › K...",
+        "description": "K2 Base allows for independent project planning. The facade systems ... Sustainability report download: https://k2-systems.com/en ...Read more",
+        "date": "2026-06-23T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "K2 Base",
+          "report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "TiltUp Vento System - K2 Catalogue",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/5e/06/a8/TiltUp-Vento-assembly-en.pdf",
+        "displayedUrl": "https://catalogue.k2-systems.com › media › TiltU...",
+        "description": ": See K2 Base PDF report. ≥50mm. Landscape assembly, single row. M. 3, 4. : See K2 Base PDF report ! 16 Nm. Page 22. 22 c. ≥50mm. M. 3, 4, 5. : See K2 Base ...Read more",
+        "emphasizedKeywords": [
+          "K2 Base PDF report",
+          "K2 Base PDF report",
+          "K2 Base"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "K2-GreenLancer-Press-Release.pdf",
+        "websiteTitle": "K2 Systems",
+        "url": "https://k2-systems.com/wp-content/uploads/2022/09/K2-GreenLancer-Press-Release.pdf",
+        "displayedUrl": "https://k2-systems.com › uploads › 2022/09 › K...",
+        "description": "The API bridge between K2 Base and GreenLancer is seamless and easy to use. ... k2o file and PDF report will be accessible through GreenLancer. From here ...Read more",
+        "emphasizedKeywords": [
+          "K2 Base",
+          "PDF report"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "BasicRail System - K2 Catalogue",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/d6/3d/18/BasicRail-D-Dome-6-assembly-en.pdf?ts=1775568983",
+        "displayedUrl": "https://catalogue.k2-systems.com › media › Basic...",
+        "description": "You receive a detailed project report with assembly plan and static report. ... K2 Base for the planning. In five steps, you can plan the right assembly ...Read more",
+        "emphasizedKeywords": [
+          "report",
+          "report",
+          "K2 Base"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "Connecting Strength Base Report - K2 Catalogue",
+        "websiteTitle": "K2 Systems",
+        "url": "https://catalogue.k2-systems.com/media/11/5f/79/Base-Report-annotations-de.pdf",
+        "displayedUrl": "https://catalogue.k2-systems.com › media › Base-...",
+        "description": "Base Report: Erläuterungen. Erläuterungen zum Statikbericht im von. K2 Base erstellten Dokument. Lasten. 1. Angewendete Norm für das Projekt. Windlast. 1 ...Read more",
+        "emphasizedKeywords": [
+          "Report",
+          "K2 Base"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/BMSsIe4Wt18uiLlmd/records/GABr0KYMR3BoD3U-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:easy-pv.co.uk/speedy \"demo\"",
+      "url": "http://www.google.com/search?q=site%3Aeasy-pv.co.uk%2Fspeedy+%22demo%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aeasy-pv.co.uk%2Fspeedy+%22demo%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/BMSsIe4Wt18uiLlmd/records/7X7Nw2OnKSkrMY1-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:help.valentin-software.com pvsol \".pvprj\"",
+      "url": "http://www.google.com/search?q=site%3Ahelp.valentin-software.com+pvsol+%22.pvprj%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Ahelp.valentin-software.com+pvsol+%22.pvprj%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/BMSsIe4Wt18uiLlmd/records/evDr61fDMxLXzI9-0.html"
+  }
+]

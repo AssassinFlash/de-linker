@@ -1,0 +1,43 @@
+{
+  "startUrls": [
+    {
+      "url": "https://pvsol-online.valentin-software.com/"
+    },
+    {
+      "url": "https://valentin-software.com/en/downloads/"
+    },
+    {
+      "url": "https://valentin-software.com/en/products/pvsol-premium/"
+    },
+    {
+      "url": "https://www.sma.de/en/products/apps-software/sunny-design"
+    },
+    {
+      "url": "https://www.sunnydesignweb.com/"
+    },
+    {
+      "url": "https://easy-pv.co.uk/"
+    },
+    {
+      "url": "https://k2-systems.com/en/digital-services/k2-base/"
+    },
+    {
+      "url": "https://base.k2-systems.com/"
+    },
+    {
+      "url": "https://www.opensolar.com/pro/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 9,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "script,style,noscript",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 30,
+  "maxRequestRetries": 1
+}

@@ -1,0 +1,95 @@
+[
+  {
+    "collection": "access-instructions",
+    "id": "X5ZWOpRoM3LQXBI0a",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T12:16:26.096Z",
+    "finishedAt": "2026-10-22T12:17:02.331Z",
+    "defaultDatasetId": "QF5tECwHUsFjeD0Y8",
+    "usageTotalUsd": 0.000784585944329699,
+    "statusMessage": "Finished! Total 8 requests: 8 succeeded, 0 failed.",
+    "returnedItems": 8,
+    "missingRequestedUrls": [
+      "https://easy-pv.co.uk/speedy-pv"
+    ]
+  },
+  {
+    "collection": "access-native-docs",
+    "id": "ThkseNdovehPw8w7F",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T12:20:56.796Z",
+    "finishedAt": "2026-10-22T12:21:18.983Z",
+    "defaultDatasetId": "gnXcHvjryC6ZKIfDW",
+    "usageTotalUsd": 0.004237158360797497,
+    "statusMessage": "Finished! Total 5 requests: 3 succeeded, 2 failed.",
+    "returnedItems": 5,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "access-native-search",
+    "id": "9ofto4WE1MOeSd90t",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T12:18:18.607Z",
+    "finishedAt": "2026-10-22T12:18:27.014Z",
+    "defaultDatasetId": "0sxDfxCwUvgLufv7o",
+    "usageTotalUsd": 0.018099999999999998,
+    "statusMessage": "Processed 4 queries on 4 pages. Extracted: 10 organicResults, 6 relatedQueries, 4 itemsPushed",
+    "returnedItems": 4,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "access-official",
+    "id": "9uFJhdxpezFhCCZYh",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T12:13:58.292Z",
+    "finishedAt": "2026-10-22T12:14:29.101Z",
+    "defaultDatasetId": "SsGvvKuUBHs6kHC8D",
+    "usageTotalUsd": 0.004170333404527771,
+    "statusMessage": "Finished! Total 9 requests: 9 succeeded, 0 failed.",
+    "returnedItems": 9,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "access-projects",
+    "id": "ewLM5hSdM3fLhhsk2",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T12:17:03.556Z",
+    "finishedAt": "2026-10-22T12:17:51.507Z",
+    "defaultDatasetId": "kL3QIcWbOQaxkLC64",
+    "usageTotalUsd": 0.0013670172088013756,
+    "statusMessage": "Finished! Total 8 requests: 8 succeeded, 0 failed.",
+    "returnedItems": 8,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "access-sample-search",
+    "id": "d3htxMIzixk1BxXXy",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T12:14:55.613Z",
+    "finishedAt": "2026-10-22T12:15:55.290Z",
+    "defaultDatasetId": "iIONM4KkXHE4oKcAT",
+    "usageTotalUsd": 0.0361,
+    "statusMessage": "Processed 9 queries on 9 pages. Extracted: 37 organicResults, 4 relatedQueries, 9 itemsPushed",
+    "returnedItems": 9,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "access-search",
+    "id": "psgadNSolUhNMIvGQ",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T12:11:52.480Z",
+    "finishedAt": "2026-10-22T12:13:07.308Z",
+    "defaultDatasetId": "RGap5hAgXfyCggdtN",
+    "usageTotalUsd": 0.027099999999999996,
+    "statusMessage": "Processed 7 queries on 7 pages. Extracted: 40 organicResults, 8 relatedQueries, 7 itemsPushed",
+    "returnedItems": 7,
+    "missingRequestedUrls": []
+  }
+]

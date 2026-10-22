@@ -1,0 +1,43 @@
+{
+  "startUrls": [
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14317168267.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14329256331.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14462685579.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14314408459.html"
+    },
+    {
+      "url": "https://easy-pv.co.uk/speedy-pv"
+    },
+    {
+      "url": "https://help.easy-pv.co.uk/books/getting-started-f2k/page/whole-system-design"
+    },
+    {
+      "url": "https://valentin-software.com/en/product-news-blog-en/master-solar-design-with-this-pvsol-premium-video-tutorial/"
+    },
+    {
+      "url": "https://valentin-software.com/en/product-news-blog-en/creating-a-customer-presentation-in-pvsol-premium/"
+    },
+    {
+      "url": "https://k2-systems.com/en/knowledge-training/tutorials/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 9,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "script,style,noscript",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 30,
+  "maxRequestRetries": 1
+}

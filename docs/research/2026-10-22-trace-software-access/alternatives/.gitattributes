@@ -1,0 +1,2 @@
+# Captured official PDF bytes are immutable evidence, not generated prose.
+captured-files/* -diff -text

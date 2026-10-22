@@ -1,0 +1,32 @@
+{
+  "startUrls": [
+    {
+      "url": "https://catalogue.k2-systems.com/media/15/24/91/Load-distribution-flat-roof-en.pdf"
+    },
+    {
+      "url": "https://catalogue.k2-systems.com/media/11/5f/79/Base-Report-annotations-de.pdf"
+    },
+    {
+      "url": "https://k2-systems.com/en/faq-category/k2-base/"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14559946891.html"
+    },
+    {
+      "url": "https://manuals.sma.de/SDesign/en-US/14326011403.html"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 5,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "saveContentTypes": "application/pdf",
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "script,style,noscript",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 1,
+  "requestTimeoutSecs": 40,
+  "maxRequestRetries": 1
+}

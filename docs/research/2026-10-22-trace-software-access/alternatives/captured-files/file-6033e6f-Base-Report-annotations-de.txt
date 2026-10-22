@@ -1,0 +1,323 @@
+               Connecting Strength
+
+Base Report: Erläuterungen
+Erläuterungen zum Statikbericht im von
+K2 Base erstellten Dokument.
+Lasten
+
+
+
+
+1.   Angewendete Norm für das Projekt
+
+
+
+Windlast
+
+
+
+
+1.   Böengeschwindigkeitsdruck/Geschwindigkeitsdruck auf dem Dach für eine Wiederkehrperiode von 50
+     Jahre
+     Laut DIN EN 1991-1-4
+2. Böengeschwindigkeitsdruck/Geschwindigkeitsdruck auf dem Dach für eine Wiederkehrperiode von 25
+   Jahre
+   Laut DIN EN 1991-1-4
+   qp,25 = qp,50 × fw
+
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+Schneelast
+
+
+
+
+1.   Ermittlung mithilfe von der Schneelastzone und Geländehöhe über Meeresspiegel. Je nach Land kann
+     eine andere Berechnungsweise angewendet werden.
+     Siehe DIN 1991-1-3 Nationale Anhänge entsprechender Länder.
+2. Wert zur Bestimmung der Lastenverteilung auf dem Dach. Abhängig von Dachform, Neigungswinkel
+   und Schneeart (Verwehter Schnee oder unverwehter Schnee)
+   Aus DIN EN 1991-1-3 + Nationaler Anhang
+3. Umrechnungswert für Dachparallele und Dachsenkrechte Kraft.
+   Cosinus Wert der Dachneigung
+4. Schneelast auf dem Dach für eine Wiederkehrperiode von 50 Jahren
+   Laut DIN EN 1991-1-3
+5. Schneelast auf dem Dach für eine Wiederkehrperiode von 25 Jahren
+   Laut DIN EN 1991-1-3
+   si,25 = si,50 × fs
+
+
+
+Eigenlast
+
+
+
+
+1.   Länge × Breite des Moduls
+2. Eigengewicht des Moduls per m²: Gewicht Module geteilt durch Modulfläche
+3. Eigengewicht Montagesystem per m²: Gewicht Montagesystem geteilt durch Modulfläche
+4. Gesamteigenlast per m²: (Eigengewicht Modul + Eigengewicht Montagesystem) × 9,81 / AM
+
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+Lastfallkombinationen
+Tragfähigkeit
+
+
+
+
+1.   Grenzzustände der Tragfähigkeit (engl. Ultimate Limit State (ULS))
+     Grenzzustände der Tragfähigkeit sind Zustände, bei deren Überschreitung es zu einem Einsturz des
+     Tragwerks oder anderen Formen des Versagens kommen kann. Kennzeichen der Grenzzustände der
+     Tragfähigkeit sind:
+     •    Gleichgewichtsverlust des gesamten Tragwerkes oder einzelner Tragwerksteile
+          (Montagezustände beachten)
+     •    Stabilitätsverluste (besonders bei schlanken Bauteilen)
+     •    Eintritt von Versagensmechanismen am Gesamtsystem oder einzelnen Tragwerksteile
+     Die Tragfähigkeit wird mit Sicherheiten berechnet.
+2. Teilsicherheitsbeiwerte (Gamma): Sie unterscheiden zwischen z.B. ständigen und variablen Lasten,
+   sowie ob eine Last günstig/stabilisierend oder ungünstig/destabilisierend wirkt.
+3. Kombinationsbeiwerte (Psi): Wenn mehrere Lasten, z.B. Wind und Schnee gleichzeitig wirken, dann
+   bestimmen sie in welchem Verhältnis sie auftreten, z.B.
+   1 × max. Schneelast + 0,6 × max. Windlast
+   Durch sie berücksichtigt die Norm die statistische Unwahrscheinlichkeit, dass sich eine maximales
+   Schneeereignis und ein maximales Windereignis zur gleichen Zeit einstellt
+4. Sicherheiten: Je nach Auslegung des EN 1990 durch nationale Behörden ist es auch möglich Lasten
+   gemäß ihrer erwarteten Schadensfolgen (Schadensfolgeklassen CC1, CC2, CC3) anzupassen. So
+   werden die Schadensfolgen z.B. bei einem landwirtschaftlichen Gebäude ohne signifikanten
+   Personenverkehr geringer bewertet als z.B. bei einem Hospital oder Stadion mit hohem
+   Personenverkehr. Dementsprechend werden sie gemäß EN 1990 durch die Bedeutungsbeiwerte
+   angepasst.
+5. Werte Abhängig vom Land
+6. Maximale Last aus Eigenlast und Schnee
+   6a Bemessungswert (Ed); Wenn Bemessungswert < Tragwiderstand versagen die Bauteile nicht
+   6b Gk = Charakteristische Eigenlast
+   6c Si,n=Charakteristische Schneelast auf dem Dach für eine Wiederkehrperiode von n Jahren
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+7.   Maximale Last aus Eigenlast und Winddruck
+     7a Wk,Druck = Charakteristischer Winddruck
+8. Maximale Last aus Eigenlast und Winddruck und ψsi0,S × Schneelast
+9. Maximale Last aus Eigenlast und Schnee und ψsi0,W × Winddruck
+10. Maximale Last aus Eigenlast und Windsog
+    10a Wk,sog = Charakteristischer Windsog
+
+
+
+Lagesicherheit
+
+
+
+
+1.   Nachweis der Lagesicherheit
+
+
+
+Gebrauchstauglichkeit
+
+
+
+
+1.   Grenzzustände der Gebrauchstauglichkeit (engl.: Serviceability Limit State (SLS)) [1]
+     Die Verformungen bzw. Durchbiegungen eines Tragwerkes infolge von Beanspruchungen sollen in
+     definierten Grenzen gehalten werden, um mögliche Schäden (wie z. B. Rissbildungen) an Bauteilen,
+     wie Decken, Fußboden, Trennwänden, Installationen, etc. zu vermeiden. Auch gilt es, die
+     Anforderungen hinsichtlich der Benutzbarkeit (Durchbiegungen, Schwingungen) und des
+     Erscheinungsbildes bzw. des Wohlbefindens der Nutzer zu erfüllen.
+     Gebrauchstauglichkeit wird ohne Sicherheiten berechnet
+2. Kombinationsbeiwerte: Wenn mehrere Lasten, z.B. Wind und Schnee gleichzeitig wirken, dann
+   bestimmen sie in welchem Verhältnis sie auftreten, z.B.
+   1 × max. Schneelast + 0,6 × max. Windlast
+   Durch sie berücksichtigt die Norm die statistischen Unwahrscheinlichkeit, dass sich eine maximales
+   Schneeereignis und ein maximales Windereignis zur gleichen Zeit einstellt
+3. Maximale Last aus Eigenlast und Schnee
+   3a Si,n = Schneelast auf dem Dach für eine Wiederkehrperiode von n Jahren
+4. Maximale Last aus Eigenlast und Winddruck
+   4a Wk,Druck = Winddruck
+5. Maximale Last aus Eigenlast und Winddruck und ψsi0,S × Schnee
+6. Maximale Last aus Eigenlast und Schnee und ψsi0,W × Winddruck
+7.   Maximale Last aus Eigenlast und Windsog
+     7a Wk,sog = Windsog
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+Max. Pressung auf Dämmung
+Allgemeine Informationen
+
+
+
+1.   (Eigengewicht Modul + Eigengewicht Montagesystem) × 9,81 / Modulfläche [m²]
+     Gesamteigengewicht pro Modulfläche
+2. Cp-Wert für das gesamte System aus der Norm 1991-1-1
+
+
+
+Lastverteilung Unter der Bautenschutzmatte Unter Peak (45°)
+
+
+
+
+1.   Der Bautenschutzmatte
+     1a Effektive Fläche unter den Matten, welche sich unter den Peaks befinden.
+        In einem Winkel von 45° von der Schiene nach unten befindet sich die Effektive Fläche der
+        Bautenschutzmatte (Dome BSP-Mat), ganze Fläche bei (Dome Mat S380)
+     1b Die Einzugsfläche aus der die Belastung auf die Bautenschutzmatte berechnet wird. Bspw. treffen
+        über dem Peak 4 Module aufeinander, somit wirken 4 × ¼ Modulflächen, also 1 ganze Modulfläche
+        pro Peak. Die verwendete Fläche ist abhängig vom gewählten System.
+
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+Lastverteilung Unter der Bautenschutzmatte Unter SD (45°)
+
+
+
+
+1.   Effektive Fläche unter den Matten, welche sich unter den SDs befinden.
+     In einem Winkel von 45° von der Schiene nach unten befindet sich die Effektive Fläche der
+     Bautenschutzmatte, ganze Fläche bei (Dome Mat S380)
+2. Die Einzugsfläche aus der die Belastung auf die Bautenschutzmatte berechnet wird. Bspw. treffen
+   über dem SD 2 Module aufeinander, somit wirken
+   2 × ¼ Modulflächen, also eine halbe Modulfläche pro SD. Die verwendete Fläche ist abhängig vom
+   gewählten System
+
+
+
+Lastfallkombinationen
+
+
+
+
+1. Flächenlast, die auf die Dämmung unter einem Peak aufs Dach wirkt. Unter Peak wirkt eine höhere
+   Last also unter SDs, da hier ein ganzes Modul (siehe Lasteinzugsfläche) die Last auf den Peak
+   überträgt.
+   Weiterhin spielt ebenfalls die Größe und Anzahl der Bautenschutzmatten eine Rolle.
+2. Flächenlast, die auf die Dämmung unter einem Peak aufs Dach wirkt. Unter Peak höhere Last als bei
+   SDs, da hier ein halbes Modul (siehe Lasteinzugsfläche) die Last auf den Peak überträgt.
+3. Lastfallkombinationen wie oben
+
+
+
+Einwirkungen aus Eigenlasten (PV Systems + Ballast)
+
+
+
+
+1.   Lastfallkombination 0
+
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+Maximale Einwirkungen
+
+
+
+
+1.   Ungünstigster Fall der Lastfallkombinationen wird gewählt
+
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+H-V-Lasten
+Aerodynamische Beiwerte
+
+
+
+
+1.   Belastungskoeffizient Horizontal und Vertikal
+     x- und y-Richtung: Vom Windkanalgutachten
+     Druck: Von der Norm
+
+     Siehe Bild
+
+
+
+Belastung Horizontal
+
+
+
+1.   Windkraft in x- und y-Richtung
+
+
+
+Belastung Vertikal
+
+
+
+
+1.   Windkraft (vertikal) in Gravitationsrichtung ohne Sicherheiten
+
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+Berechnung der Tabelle „Spezifische
+Lasten“
+
+
+
+
+1.   Anzahl der Module pro Modulblock
+2. Summe der Module aller Modulblöcke = 8+4+48+24+18 = 102
+3. Benötigter Ballast pro Modulblock in kg
+4. Summe des Ballasts aller Modulblöcke= 562 kg + 392 kg + 1335 kg + 781 kg + 778 kg = 3848 kg
+5. Eigengewicht pro Modulblock = Benötigter Ballast pro Modulblock (3) + Gewicht der Module pro
+   Modulblock + Gewicht von Montagesystems pro Modulblock
+
+
+
+
+          Gewicht des Modulblocks 1 ohne Ballast = 1,7 kg × 8 + 22 kg × 8 = 189,6 kg
+          Gesamtgewicht des Modulblocks 1 = 562 kg+ 189,6 kg = 751,6 kg
+
+6. Gesamtgewicht aller Modulblöcke = 751,6 kg+486,8 kg+2472,6 kg+1349,8 kg+1204,6 kg = 6265,4 kg
+7.   Modulblockfläche berechnet anhand der Abmessungen aus dem Kapiel „Montageplan“
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+               Connecting Strength
+
+
+
+
+          Modulblockfläche = 9,1m × 1,7m = 15,47m²
+          Die Werte variieren leicht, da hier gerundet wird. (Tabelle hat exakte Werte)
+
+8. Eigenlast pro Modulblock = (Eigengewicht pro Modulblock (5) × Fallbeschleunigung / 1000) /
+   Modulblockfläche (7)
+     Eigenlast Modulblock 1= (751,6 kg × 9,80655 m/s² / 1000) / (15,84 m²) = 0,465 kN/m²
+9. Eigenlast für die gesamte Dachfläche = (Gesamtgewicht aller Modulblöcke (6) × Fallbeschleunigung /
+   1000) / Dachfläche
+   Eigenlast für die gesamte Dachfläche = (6265,4 kg × 9,80655 / 1000) / 411,28 m² = 0,149 kN/m²
+
+
+
+
+K2 Systems GmbH · Industriestraße 18 · 71272 Renningen · Germany | +49 (0)7159 42059-0 · info@k2-systems.com
+
