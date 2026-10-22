@@ -59,6 +59,25 @@ final class NativeJobCapacity implements JobCapacity {
 		}
 	}
 
+	/**
+	 * Rescheduling cannot lose the old pending action if the replacement fails.
+	 *
+	 * @param int $id Original job.
+	 * @param int $time Next attempt time.
+	 */
+	public function reschedule( int $id, int $time ): void {
+			NativeTransaction::run(
+				static function () use ( $id, $time ): void {
+					// Replace only this original job's pending recovery, atomically.
+					as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
+					$action = as_schedule_single_action( $time, Outbox::HOOK, array( $id ), Outbox::GROUP, true );
+					if ( $action < 1 || ! as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) ) {
+						throw new \RuntimeException( 'notification_retry_not_persisted' );
+					}
+				}
+			);
+	}
+
 	/** Read actual native transaction state without committing the caller. */
 	public function transaction_active(): bool {
 		return Capacity::transaction_active();

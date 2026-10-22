@@ -10,6 +10,16 @@ namespace Linker\Commerce\Mail;
 
 /** Joins a caller through a savepoint; never commits or rolls back that caller. */
 final class NativeTransaction {
+	/** Active managed native writers; external transactions are never adopted.
+	 *
+	 * @var list<self>
+	 */
+	private static array $stack = array();
+	/** Immediate same-job consumers, only after confirmed owned commit.
+	 *
+	 * @var list<callable():void>
+	 */
+	private array $after = array();
 	/** Original connection policy.
 	 *
 	 * @var ConnectionFence
@@ -50,6 +60,7 @@ final class NativeTransaction {
 			if ( false === $wpdb->query( "SAVEPOINT {$this->point}" ) ) {
 				throw new \RuntimeException( 'native_transaction_savepoint_failed' );
 			}
+			self::$stack[] = $this;
 		} catch ( \Throwable $error ) {
 			$this->fence->close();
 			throw $error;
@@ -74,7 +85,20 @@ final class NativeTransaction {
 		// phpcs:enable
 		$this->fence->assert_current();
 		$this->finished = true;
+		array_pop( self::$stack );
 		$this->fence->close();
+		foreach ( $this->after as $work ) {
+			if ( ! $this->own ) {
+				self::after_commit( $work );
+				continue;
+			}
+			try {
+				$work();
+			} catch ( \Throwable $error ) {
+				// The committed original job and AS remain the recovery source.
+				CapacityHealth::failed();
+			}
+		}
 	}
 
 	/**
@@ -97,8 +121,24 @@ final class NativeTransaction {
 			// phpcs:enable
 		} finally {
 			$this->finished = true;
+			array_pop( self::$stack );
 			$this->fence->close();
 		}
+	}
+
+	/**
+	 * Keep original immediate delivery after a managed writer commits.
+	 * Unmanaged caller transactions retain their durable AS consumer instead.
+	 *
+	 * @param callable():void $work Original job-id consumer, no copied body.
+	 */
+	public static function after_commit( callable $work ): bool {
+		$owner = end( self::$stack );
+		if ( ! $owner instanceof self || $owner->finished ) {
+			return false;
+		}
+		$owner->after[] = $work;
+		return true;
 	}
 
 	/**

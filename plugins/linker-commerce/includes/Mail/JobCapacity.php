@@ -35,6 +35,14 @@ interface JobCapacity {
 	 */
 	public function deleted( int $id ): void;
 
+	/**
+	 * Replace the original job's pending attempt under the native transaction boundary.
+	 *
+	 * @param int $id Original job.
+	 * @param int $time Next native attempt time.
+	 */
+	public function reschedule( int $id, int $time ): void;
+
 	/** An outer native transaction must defer all external transport. */
 	public function transaction_active(): bool;
 }
