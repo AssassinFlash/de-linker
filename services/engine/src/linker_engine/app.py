@@ -103,7 +103,12 @@ def now() -> str:
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
-    app = FastAPI(title="Solution Configurator engine")
+    app = FastAPI(
+        title="Solution Configurator engine",
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+    )
     # Commercial CSV is capped at 4MB; report logo at 700kB (models.py).
     # 6MiB leaves JSON headroom without accepting unbounded parse/temp work.
     app.add_middleware(Gate, limit=6 * 1024 * 1024, version=lambda: services().version)

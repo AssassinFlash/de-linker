@@ -72,7 +72,12 @@ from linker_genie.understand import Prepared, Understander
 from linker_genie.vision import Vision
 from linker_genie.work import WorkError, hold
 
-app = FastAPI(title="Genie - Linker's AI assistant")
+app = FastAPI(
+    title="Genie - Linker's AI assistant",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
+)
 logger = logging.getLogger(__name__)
 # The shell's shared token and the body cap, before anything is parsed (gate.py).
 app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)

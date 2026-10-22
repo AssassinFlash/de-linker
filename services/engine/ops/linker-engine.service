@@ -1,0 +1,14 @@
+# Project-only backend. WordPress reaches it through linker-engine-tls on 8443.
+[Unit]
+Description=Linker design engine (rebuilt tree)
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/linker-engine/current
+EnvironmentFile=/etc/linker-engine.env
+ExecStart=/opt/linker-engine/current/.venv/bin/python -m uvicorn linker_engine.app:app --host 127.0.0.1 --port 8901
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

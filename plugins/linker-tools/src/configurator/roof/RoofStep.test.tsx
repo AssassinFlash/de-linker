@@ -232,6 +232,13 @@ async function mount( pack: () => Promise< RoofPlane > ) {
 	await screen.findByText(
 		'Click the roof of the building in the aerial image.'
 	);
+	// The ready text commits before the map's passive effect necessarily runs.
+	// Wait for this mounted canvas before dispatching pointer events to it.
+	await waitFor( () =>
+		expect(
+			screen.getByRole( 'application' ).querySelector( 'canvas' )
+		).toBeInTheDocument()
+	);
 	const map = harness.maps[ harness.maps.length - 1 ];
 	return { calls, engine, map };
 }
