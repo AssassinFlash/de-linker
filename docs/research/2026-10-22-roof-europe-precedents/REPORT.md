@@ -1,6 +1,6 @@
 # 欧洲工商业屋顶规划：成熟模式、系统选型依据与实际可行边界
 
-调查日期：2026-10-22（Asia/Shanghai）。研究基线 `origin/main`：`123aea571e80b5b1ba756816914ba86408866ba5`。工作树、研究分支：`de-linker-worktrees/research-roof-europe-precedents-551`、`research/roof-europe-precedents-551`。对应决策研究：[欧洲工商业屋顶规划有哪些可复刻且实际可行的成熟模式？](https://github.com/AssassinFlash/de-linker/issues/551)，隶属[屋顶规划工具全面审查与欧洲工商业重做方案](https://github.com/AssassinFlash/de-linker/issues/548)。
+调查日期：2026-10-22（Asia/Shanghai）。研究基线 `origin/main`：`123aea571e80b5b1ba756816914ba86408866ba5`。工作树、研究分支：`de-linker-worktrees/research-roof-europe-precedents-551`、`research/roof-europe-precedents-551`。对应决策研究：[欧洲工商业屋顶规划有哪些可复刻且实际可行的成熟模式？](https://github.com/AssassinFlash/de-linker/issues/551)，隶属[地图：屋顶规划与系统选型可信性审查及重构路线](https://github.com/AssassinFlash/de-linker/issues/548)。
 
 ## 判断
 
