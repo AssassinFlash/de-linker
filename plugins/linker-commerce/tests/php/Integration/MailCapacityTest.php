@@ -53,7 +53,13 @@ final class MailCapacityTest extends IntegrationTestCase {
 	public function test_native_job_creation_is_bounded_and_preserves_critical_capacity(): void {
 		$store    = new JobStore();
 		$message  = new Message( array( self::TESTER ), 'Synthetic capacity fixture', 'A stored synthetic notification.', array(), array() );
-		$existing = count( self::mail_jobs_after( 0 ) );
+		$existing = 0;
+		foreach ( self::mail_jobs_after( 0 ) as $old_id ) {
+			$old = $store->load( $old_id );
+			if ( null !== $old && ! $old['message']->critical && ! $store->critical( $old_id ) ) {
+				++$existing;
+			}
+		}
 		for ( $i = $existing; $i < 192; ++$i ) {
 			$id = $store->create( $message );
 			self::assertGreaterThan( 0, $id );
