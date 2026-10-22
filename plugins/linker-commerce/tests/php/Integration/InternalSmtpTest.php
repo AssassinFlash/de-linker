@@ -526,6 +526,123 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		as_unschedule_all_actions( Outbox::HOOK, array( $ids[0] ), Outbox::GROUP );
 	}
 
+	/** Every real reminder attempt is bounded, including failed SMTP, failed PHP and retries. */
+	public function test_reminder_transport_attempt_caps_preserve_other_critical_capacity(): void {
+		$directory = $this->fixture( 'fake-password', 1 );
+		$file      = $directory . '/smtp.env';
+		file_put_contents( $file, str_replace( 'fake-password', 'wrong-test-password', (string) file_get_contents( $file ) ) );
+		$now     = time();
+		$entries = array();
+		foreach ( array(
+			Throttle::SMTP => 360,
+			Throttle::PHP  => 64,
+		) as $transport => $count ) {
+			for ( $i = 0; $i < $count; ++$i ) {
+				$entries[] = array(
+					'time'      => $now - 300,
+					'transport' => $transport,
+					'origin'    => 'legacy',
+				);
+			}
+		}
+		$id = 1;
+		foreach ( array(
+			Throttle::SMTP => 21,
+			Throttle::PHP  => 7,
+		) as $transport => $count ) {
+			for ( $i = 0; $i < $count; ++$i ) {
+				$entries[] = array(
+					'time'      => $now - 120,
+					'transport' => $transport,
+					'origin'    => 'attempt',
+					'category'  => Message::REVIEW_REMINDER,
+					'id'        => $id++,
+				);
+			}
+		}
+		update_option(
+			\Linker\Commerce\Mail\OptionBudgetLedger::OPTION,
+			wp_json_encode(
+				array(
+					'entries' => $entries,
+					'next_id' => $id,
+				)
+			),
+			false
+		);
+		$previous = get_option( \Linker\Commerce\Health\ReviewReminder::OPTION );
+		update_option(
+			\Linker\Commerce\Health\ReviewReminder::OPTION,
+			wp_json_encode(
+				array(
+					'events' => array_fill( 0, 23, $now - 120 ),
+					'active' => false,
+					'job'    => 0,
+				)
+			),
+			false
+		);
+		$this->later(
+			static function () use ( $previous ): void {
+				false === $previous ? delete_option( \Linker\Commerce\Health\ReviewReminder::OPTION ) : update_option( \Linker\Commerce\Health\ReviewReminder::OPTION, $previous, false );
+			}
+		);
+		$summary = new \Linker\Commerce\Health\ReviewSummary(
+			static fn () => array(
+				'count'  => 1,
+				'oldest' => $now - 300,
+				'url'    => admin_url( 'edit.php?post_type=shop_order' ),
+			)
+		);
+		$marker  = self::newest_mail_job();
+		( new \Linker\Commerce\Health\ReviewReminder( $summary ) )->tick();
+		$ids = self::mail_jobs_after( $marker );
+		$this->assertCount( 1, $ids );
+		$jobs = new JobStore();
+		$job  = $jobs->load( $ids[0] );
+		$this->assertNotNull( $job );
+		$this->assertSame( Message::REVIEW_REMINDER, $job['message']->category );
+		$this->assertSame( Message::REVIEW_REMINDER, ( new TestMode() )->redirect( $job['message'] )->category );
+		for ( $attempt = 1; $attempt <= 3; ++$attempt ) {
+			/** This action is documented in Mail\Module::register(). */
+			do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Fixed native Outbox retry.
+			$retry = $jobs->load( $ids[0] );
+			$this->assertNotNull( $retry );
+			$this->assertSame( $attempt, $retry['attempts'] );
+			$this->assertSame( $job['message']->to_array(), $retry['message']->to_array() );
+		}
+		$state     = json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true );
+		$reminders = array_filter( $state['entries'], static fn ( array $entry ): bool => Message::REVIEW_REMINDER === ( $entry['category'] ?? '' ) );
+		$this->assertCount( 24, array_filter( $reminders, static fn ( array $entry ): bool => Throttle::SMTP === $entry['transport'] ) );
+		$this->assertCount( 8, array_filter( $reminders, static fn ( array $entry ): bool => Throttle::PHP === $entry['transport'] ) );
+		$this->assertCount( 384, array_filter( $state['entries'], static fn ( array $entry ): bool => Throttle::SMTP === $entry['transport'] ) );
+		$this->assertCount( 72, array_filter( $state['entries'], static fn ( array $entry ): bool => Throttle::PHP === $entry['transport'] ) );
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $ids[0] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Full category budget must retain the original job.
+		$waiting = $jobs->load( $ids[0] );
+		$this->assertNotNull( $waiting );
+		$this->assertSame( 3, $waiting['attempts'], 'A category-cap wait does not consume a failure retry.' );
+		$this->assertEquals( $state, json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true ), 'Denied retries create no additional transport charge.' );
+		$t = new Throttle( new \Linker\Commerce\Mail\OptionBudgetLedger(), new InternalSmtp( $file ) );
+		$this->assertSame( $now - 120 + DAY_IN_SECONDS, $t->next_message_slot( $now, $job['message'] ) );
+		$this->assertSame( $now, $t->next_slot( $now, Throttle::SMTP, true ) );
+		$this->assertSame( $now, $t->next_slot( $now, Throttle::PHP, true ) );
+		$t->next_message_slot( $now + DAY_IN_SECONDS, $job['message'] );
+		$this->assertEquals( $state, json_decode( get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true ), 'Future category scheduling cannot refund old attempts.' );
+		$this->assertFileDoesNotExist( $directory . '/smtp.jsonl' );
+		$this->assertFileDoesNotExist( $directory . '/mail.eml' );
+		// An authenticated single-record staff release can still use the remaining capacity.
+		$manual    = new Message( array( 'original@example.test' ), 'Manual critical recovery', 'Original message.', array( Message::INTERNAL_HEADER, 'From: Linker <sales@sunriverinverter.com>' ), array() );
+		$manual_id = $jobs->create( $manual );
+		$jobs->promote( $manual_id );
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $manual_id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Trusted staff-restored critical original job.
+		$this->assertNull( $jobs->load( $manual_id ) );
+		$this->assertFileExists( $directory . '/mail.eml' );
+		$this->assertStringContainsString( 'Manual critical recovery', (string) file_get_contents( $directory . '/mail.eml' ) );
+		as_unschedule_all_actions( Outbox::HOOK, array( $manual_id ), Outbox::GROUP );
+	}
+
 	/**
 	 * Replace only this process's Outbox hooks and mail capture, restoring both.
 	 *

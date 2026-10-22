@@ -194,7 +194,7 @@ final class Outbox {
 		$now       = time();
 		$critical  = $message->critical || ( $job_id > 0 && $this->jobs->critical( $job_id ) );
 		$transport = $message->is_internal() && $this->smtp->available() ? Throttle::SMTP : Throttle::PHP;
-		$slot      = $this->throttle->reserve( $now, $transport, $critical );
+		$slot      = $this->throttle->reserve( $now, $transport, $critical, $message->category );
 		if ( $slot > $now ) {
 			$this->schedule( $job_id > 0 ? $job_id : $this->jobs->create( $message ), $slot );
 			return false;
@@ -219,7 +219,7 @@ final class Outbox {
 						array( 'source' => self::LOG_SOURCE )
 					);
 						$fallback_now = time();
-						$wait_until   = $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical );
+						$wait_until   = $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category );
 					if ( $wait_until === $fallback_now ) {
 						$this->fallback = true;
 						$sent           = $this->deliver( $delivery );

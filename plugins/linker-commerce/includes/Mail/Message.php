@@ -22,6 +22,9 @@ final class Message {
 	 * Explicit internal routing marker, persisted by Outbox (#297).
 	 */
 	public const INTERNAL_HEADER = 'X-Linker-Internal: yes';
+	/** Trusted server producer categories; never parsed from public mail headers. */
+	public const STANDARD        = 'standard';
+	public const REVIEW_REMINDER = 'review_reminder';
 
 	/**
 	 * Marks either native wp_mail header form as an internal notification.
@@ -46,6 +49,7 @@ final class Message {
 	 * @param string[] $headers     Header lines, "Name: value".
 	 * @param string[] $attachments Paths of attached files.
 	 * @param bool     $critical    Server-owned producer priority.
+	 * @param string   $category    Trusted native producer category.
 	 */
 	public function __construct(
 		public readonly array $to,
@@ -53,7 +57,8 @@ final class Message {
 		public readonly string $body,
 		public readonly array $headers,
 		public readonly array $attachments,
-		public readonly bool $critical = false
+		public readonly bool $critical = false,
+		public readonly string $category = self::STANDARD
 	) {
 	}
 
@@ -144,7 +149,7 @@ final class Message {
 	/**
 	 * The message as a JSON-ready array, for the queue.
 	 *
-	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[], critical: bool}
+	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[], critical: bool, category: string}
 	 */
 	public function to_array(): array {
 		return array(
@@ -154,6 +159,7 @@ final class Message {
 			'headers'     => $this->headers,
 			'attachments' => $this->attachments,
 			'critical'    => $this->critical,
+			'category'    => $this->category,
 		);
 	}
 
@@ -171,7 +177,8 @@ final class Message {
 			is_string( $body ) ? $body : '',
 			self::lines( $data['headers'] ?? array() ),
 			self::lines( $data['attachments'] ?? array() ),
-			true === ( $data['critical'] ?? false )
+			true === ( $data['critical'] ?? false ),
+			self::REVIEW_REMINDER === ( $data['category'] ?? '' ) ? self::REVIEW_REMINDER : self::STANDARD
 		);
 	}
 

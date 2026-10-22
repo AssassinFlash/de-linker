@@ -25,6 +25,9 @@ final class Throttle {
 	public const SMTP_RESERVE = 40;
 	public const PHP          = 'php';
 	public const SMTP         = 'smtp';
+	/** Actual reminder attempt ceilings preserve at least 16 SMTP / 8 PHP critical slots (#545). */
+	public const REVIEW_SMTP_PER_DAY = 24;
+	public const REVIEW_PHP_PER_DAY  = 8;
 
 	/**
 	 * Create the atomic budget boundary.
@@ -41,9 +44,10 @@ final class Throttle {
 	 * @param int    $now       Unix time.
 	 * @param string $transport SMTP or PHP.
 	 * @param bool   $critical  Trusted producer priority.
+	 * @param string $category  Trusted producer category.
 	 */
-	public function next_slot( int $now, string $transport = self::PHP, bool $critical = false ): int {
-		return $this->slot( $now, $transport, $critical, false );
+	public function next_slot( int $now, string $transport = self::PHP, bool $critical = false, string $category = Message::STANDARD ): int {
+		return $this->slot( $now, $transport, $critical, false, $category );
 	}
 
 	/**
@@ -54,7 +58,7 @@ final class Throttle {
 	 * @param bool    $critical Staff-authorized job promotion.
 	 */
 	public function next_message_slot( int $now, Message $message, bool $critical = false ): int {
-		return $this->next_slot( $now, $this->transport( $message ), $critical || $message->critical );
+		return $this->next_slot( $now, $this->transport( $message ), $critical || $message->critical, $message->category );
 	}
 
 	/**
@@ -72,9 +76,10 @@ final class Throttle {
 	 * @param int    $now       Unix time.
 	 * @param string $transport Actual attempt channel.
 	 * @param bool   $critical  Trusted producer priority.
+	 * @param string $category  Trusted producer category.
 	 */
-	public function reserve( int $now, string $transport = self::PHP, bool $critical = false ): int {
-		return $this->slot( $now, $transport, $critical, true );
+	public function reserve( int $now, string $transport = self::PHP, bool $critical = false, string $category = Message::STANDARD ): int {
+		return $this->slot( $now, $transport, $critical, true, $category );
 	}
 
 	/**
@@ -93,13 +98,14 @@ final class Throttle {
 	 * @param string $transport Actual attempt channel.
 	 * @param bool   $critical  Trusted producer priority.
 	 * @param bool   $reserve   Whether to charge the slot.
+	 * @param string $category  Trusted producer category.
 	 */
-	private function slot( int $now, string $transport, bool $critical, bool $reserve ): int {
+	private function slot( int $now, string $transport, bool $critical, bool $reserve, string $category ): int {
 		if ( ! in_array( $transport, array( self::PHP, self::SMTP ), true ) ) {
 			return $now + DAY_IN_SECONDS;
 		}
 		$result = $this->ledger->transact(
-			static function ( array $state ) use ( $now, $transport, $critical, $reserve ): array {
+			static function ( array $state ) use ( $now, $transport, $critical, $reserve, $category ): array {
 				$entries = $state['entries'] ?? array();
 				if ( ! isset( $state['entries'] ) ) {
 					foreach ( is_array( $state['legacy'] ?? null ) ? $state['legacy'] : array() as $time ) {
@@ -131,11 +137,20 @@ final class Throttle {
 				if ( count( $times ) >= $limit ) {
 						$slot = max( $slot, $times[ count( $times ) - $limit ] + DAY_IN_SECONDS );
 				}
+				if ( Message::REVIEW_REMINDER === $category ) {
+					$reminders = array_column( array_filter( $entries, static fn ( array $entry ): bool => $entry['transport'] === $transport && Message::REVIEW_REMINDER === ( $entry['category'] ?? '' ) ), 'time' );
+					sort( $reminders );
+					$reminder_limit = self::SMTP === $transport ? self::REVIEW_SMTP_PER_DAY : self::REVIEW_PHP_PER_DAY;
+					if ( count( $reminders ) >= $reminder_limit ) {
+						$slot = max( $slot, $reminders[ count( $reminders ) - $reminder_limit ] + DAY_IN_SECONDS );
+					}
+				}
 				if ( $reserve && $slot === $now ) {
 					$entries[] = array(
 						'time'      => $now,
 						'transport' => $transport,
 						'origin'    => 'attempt',
+						'category'  => $category,
 						'id'        => $state['next_id'] ?? 1,
 					);
 				}

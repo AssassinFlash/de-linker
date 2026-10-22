@@ -109,7 +109,7 @@ final class ReviewReminder {
 			$headers = Message::mark_internal( array( sprintf( 'From: %s <%s>', $sender->name, $sender->email ), 'Content-Type: text/plain; charset=UTF-8' ) );
 			if ( array() !== $options->notify_bcc() ) {
 				$headers[] = 'Bcc: ' . implode( ', ', $options->notify_bcc() ); }
-			return new Message( array( $options->notify_to() ), $subject, $body, $headers, array(), true );
+			return new Message( array( $options->notify_to() ), $subject, $body, $headers, array(), true, Message::REVIEW_REMINDER );
 		} finally {
 			$locale->back(); }
 	}

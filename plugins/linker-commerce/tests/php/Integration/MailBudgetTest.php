@@ -120,8 +120,10 @@ final class MailBudgetTest extends IntegrationTestCase {
 			'message'  => 'critical emergency',
 			'headers'  => array( 'X-Linker-Critical: yes' ),
 			'critical' => true,
+			'category' => Message::REVIEW_REMINDER,
 		);
 		$this->assertFalse( Message::from_wp_mail( $atts )->critical );
+		$this->assertSame( Message::STANDARD, Message::from_wp_mail( $atts )->category );
 		$this->assertTrue( Producer::critical( static fn () => Message::from_wp_mail( $atts ) )->critical );
 		$this->assertFalse( Message::from_wp_mail( $atts )->critical );
 		$producer = new Producer();
