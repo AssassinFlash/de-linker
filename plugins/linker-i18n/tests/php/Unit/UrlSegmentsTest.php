@@ -119,17 +119,32 @@ final class UrlSegmentsTest extends TestCase {
 		$this->assertTrue( $segments->polylang_rule( true, array(), 'rewrite_rules_array', 'post' ) );
 	}
 
+	// phpcs:disable WordPress.WP.AlternativeFunctions.json_encode_json_encode -- wp_json_encode is mocked; real JSON serialization must bind the declaration to the hash.
+
 	/**
 	 * The rewrite cache is written again only when the German rules changed.
 	 */
 	public function test_refresh_flushes_once(): void {
-		$segments = $this->segments();
-		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => 'rules' ) );
+		$segments    = $this->segments();
+		$rules       = $segments->rules( array() );
+		$declaration = array(
+			'german'          => $rules,
+			'shared_archives' => array( 'product_brand', 'pa_brand', 'pa_series' ),
+		);
+		$fingerprint = md5( (string) json_encode( $declaration ) );
+		$this->assertNotSame( md5( (string) json_encode( $rules ) ), $fingerprint );
+		WP_Mock::userFunction(
+			'wp_json_encode',
+			array(
+				'args'   => array( $declaration ),
+				'return' => static fn( $value ) => json_encode( $value ),
+			)
+		);
 		WP_Mock::userFunction(
 			'get_option',
 			array(
 				'args'   => array( 'linker_i18n_rewrite_fingerprint' ),
-				'return' => md5( 'old' ),
+				'return' => md5( (string) json_encode( $rules ) ),
 			)
 		);
 		WP_Mock::userFunction(
@@ -143,7 +158,7 @@ final class UrlSegmentsTest extends TestCase {
 			'update_option',
 			array(
 				'times' => 1,
-				'args'  => array( 'linker_i18n_rewrite_fingerprint', md5( 'rules' ), false ),
+				'args'  => array( 'linker_i18n_rewrite_fingerprint', $fingerprint, false ),
 			)
 		);
 
@@ -151,4 +166,37 @@ final class UrlSegmentsTest extends TestCase {
 
 		$this->assertConditionsMet();
 	}
+
+	/**
+	 * A warm fingerprint must not flush or rewrite its own option on every request.
+	 */
+	public function test_unchanged_native_archive_declaration_does_not_flush(): void {
+		$segments    = $this->segments();
+		$declaration = array(
+			'german'          => $segments->rules( array() ),
+			'shared_archives' => array( 'product_brand', 'pa_brand', 'pa_series' ),
+		);
+		WP_Mock::userFunction(
+			'wp_json_encode',
+			array(
+				'args'   => array( $declaration ),
+				'return' => static fn( $value ) => json_encode( $value ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( 'linker_i18n_rewrite_fingerprint' ),
+				'return' => md5( (string) json_encode( $declaration ) ),
+			)
+		);
+		WP_Mock::userFunction( 'flush_rewrite_rules', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'update_option', array( 'times' => 0 ) );
+
+		$segments->refresh();
+
+		$this->assertConditionsMet();
+	}
+
+	// phpcs:enable WordPress.WP.AlternativeFunctions.json_encode_json_encode
 }

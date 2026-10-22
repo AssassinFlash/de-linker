@@ -1,0 +1,47 @@
+{
+  "local_only": true,
+  "scope": "Native option rollback to the exact existing empty string, explicit native flush, actual German helper readback, and restoration of the current pinned value. No code rollback in this probe; the separate native-cache-lifecycle covers code.",
+  "rows": [
+    {
+      "option_exists": true,
+      "value": "brand",
+      "rules_sha256": "60c7b8bdd2d26b40fb0ef0fca234e943814010db89b3e946d8f8e31064334a3c",
+      "terms_sha256": "0f2eec40918678fcd5ea5fcae7b5ed693cb95e3b7edeadc58325e0816198a35a",
+      "phase": "pinned-before",
+      "observed_at": "2026-10-21T22:41:51.690882+00:00",
+      "de_http_status": 200,
+      "de_final": "http://127.0.0.1:9290/de/brand/chint/",
+      "body_sha256": "b9d4e2157e8b9fdec7c215fde31620f369a81199bf8ed98c352375c1064b5f0f",
+      "contains_bad_Marke_source": false,
+      "contains_good_brand_source": true
+    },
+    {
+      "option_exists": true,
+      "value": "",
+      "rules_sha256": "60c7b8bdd2d26b40fb0ef0fca234e943814010db89b3e946d8f8e31064334a3c",
+      "terms_sha256": "0f2eec40918678fcd5ea5fcae7b5ed693cb95e3b7edeadc58325e0816198a35a",
+      "phase": "restored-original-empty-value-and-flushed",
+      "observed_at": "2026-10-21T22:41:54.112095+00:00",
+      "de_http_status": 200,
+      "de_final": "http://127.0.0.1:9290/de/brand/chint/",
+      "body_sha256": "13cfa6d077dbaae7409e44d218b316ba1c6fa4d1d95780f5d5d492bbbc98bb40",
+      "contains_bad_Marke_source": true,
+      "contains_good_brand_source": false
+    },
+    {
+      "option_exists": true,
+      "value": "brand",
+      "rules_sha256": "60c7b8bdd2d26b40fb0ef0fca234e943814010db89b3e946d8f8e31064334a3c",
+      "terms_sha256": "0f2eec40918678fcd5ea5fcae7b5ed693cb95e3b7edeadc58325e0816198a35a",
+      "phase": "pinned-restored-and-flushed",
+      "observed_at": "2026-10-21T22:41:56.843983+00:00",
+      "de_http_status": 200,
+      "de_final": "http://127.0.0.1:9290/de/brand/chint/",
+      "body_sha256": "c89fda29d66c715123cb5fea77a95b9f55b41b9422e3746b9436e2ffb2271c17",
+      "contains_bad_Marke_source": false,
+      "contains_good_brand_source": true
+    }
+  ],
+  "final_option_restored": true,
+  "shared_terms_unchanged": true
+}

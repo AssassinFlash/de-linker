@@ -1,0 +1,83 @@
+{
+  "active": "    Your cookie choices  We use essential cookies to keep this website working. With your permission, Google Analytics helps us understand how the sit",
+  "bodyClass": "archive tax-pa_series term-chint term-507 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce woocommerce-page woocommerce-js",
+  "canonical": [
+    "http://127.0.0.1:9290/series/chint/"
+  ],
+  "heading": "chint",
+  "height": 1000,
+  "helper": [
+    {
+      "href": "http://127.0.0.1:9290/contact/?intent=product&kind=catalogue&title=Category:%20chint&search&source=http://127.0.0.1:9290/series/chint/",
+      "text": "Need help choosing?"
+    }
+  ],
+  "hreflangs": [
+    {
+      "lang": "en",
+      "url": "http://127.0.0.1:9290/series/chint/"
+    },
+    {
+      "lang": "de",
+      "url": "http://127.0.0.1:9290/de/series/chint/"
+    },
+    {
+      "lang": "x-default",
+      "url": "http://127.0.0.1:9290/series/chint/"
+    }
+  ],
+  "lang": "en-US",
+  "observedAt": "2026-10-21T22:40:42.069Z",
+  "overflow": false,
+  "paging": [],
+  "products": [
+    {
+      "href": "http://127.0.0.1:9290/product/chint-dtsu666/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/product/chint-dtsu666/",
+      "text": "Chint DTSU666"
+    },
+    {
+      "href": "http://127.0.0.1:9290/product/chint-dtsu666/",
+      "text": "View product"
+    }
+  ],
+  "scrollY": 0,
+  "switches": [
+    {
+      "href": "http://127.0.0.1:9290/series/chint/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/series/chint/",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/series/chint/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/series/chint/",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/series/chint/",
+      "language": "en",
+      "text": "English"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/series/chint/",
+      "language": "de",
+      "text": "Deutsch"
+    }
+  ],
+  "title": "chint | Linker",
+  "url": "http://127.0.0.1:9290/series/chint/",
+  "width": 390
+}

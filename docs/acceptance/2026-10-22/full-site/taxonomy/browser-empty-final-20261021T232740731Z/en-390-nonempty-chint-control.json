@@ -1,0 +1,67 @@
+{
+  "action": null,
+  "canonical": "http://127.0.0.1:9290/brand/chint/",
+  "chips": [],
+  "contact": {
+    "href": "http://127.0.0.1:9290/contact/?intent=product&kind=catalogue&title=Category:%20Chint&search&source=http://127.0.0.1:9290/brand/chint/",
+    "rect": {
+      "bottom": 1113.15625,
+      "height": 44,
+      "left": 60,
+      "right": 330,
+      "top": 1069.15625,
+      "width": 270,
+      "x": 60,
+      "y": 1069.15625
+    }
+  },
+  "count": "1-1 / 1 product family",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792625222"
+  ],
+  "focus": {
+    "tag": "BODY",
+    "text": "    Your cookie choices  We use essential cookies to keep this website working. With your permission"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/brand/chint/?q",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/chint/?q",
+      "lang": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/chint/?q",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/chint/?q",
+      "lang": "de"
+    }
+  ],
+  "loadedFonts": "loaded",
+  "overflow": false,
+  "products": [
+    {
+      "href": "http://127.0.0.1:9290/product/chint-dtsu666/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/product/chint-dtsu666/",
+      "text": "Chint DTSU666"
+    },
+    {
+      "href": "http://127.0.0.1:9290/product/chint-dtsu666/",
+      "text": "View product"
+    }
+  ],
+  "root": true,
+  "sort": true,
+  "url": "http://127.0.0.1:9290/brand/chint/?q",
+  "width": 390,
+  "y": 0
+}

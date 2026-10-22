@@ -1,0 +1,89 @@
+{
+  "action": {
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "href": "http://127.0.0.1:9290/de/produkte/",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "outlineOffset": "0px",
+    "rect": {
+      "bottom": 651.390625,
+      "height": 46,
+      "left": 315,
+      "right": 447.46875,
+      "top": 605.390625,
+      "width": 132.46875,
+      "x": 315,
+      "y": 605.390625
+    },
+    "text": "Alle Produkte"
+  },
+  "chips": [
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022",
+      "rect": {
+        "bottom": 474.796875,
+        "height": 44,
+        "left": 282,
+        "right": 350.203125,
+        "top": 430.796875,
+        "width": 68.203125,
+        "x": 282,
+        "y": 430.796875
+      },
+      "text": "Chint ×"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/",
+      "rect": {
+        "bottom": 474.796875,
+        "height": 44,
+        "left": 362.203125,
+        "right": 491.828125,
+        "top": 430.796875,
+        "width": 129.625,
+        "x": 362.203125,
+        "y": 430.796875
+      },
+      "text": "Alle zurücksetzen"
+    }
+  ],
+  "contact": {
+    "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Archiv:%20Wechselrichter,%20Speicher%20und%20Systeme&search=linker-owned-no-match-20261022&source=http://127.0.0.1:9290/de/produkte/",
+    "rect": {
+      "bottom": 799.15625,
+      "height": 44,
+      "left": 1175,
+      "right": 1349,
+      "top": 755.15625,
+      "width": 174,
+      "x": 1175,
+      "y": 755.15625
+    }
+  },
+  "count": null,
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626127"
+  ],
+  "empty": "Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, um mehr zu sehen.\n\nAlle Produkte",
+  "emptyRect": {
+    "bottom": 684.390625,
+    "height": 189.59375,
+    "left": 282,
+    "right": 1400,
+    "top": 494.796875,
+    "width": 1118,
+    "x": 282,
+    "y": 494.796875
+  },
+  "filterLabel": "Produktfilter",
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "productLinks": [],
+  "root": true,
+  "sort": false,
+  "url": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022&brand=chint",
+  "width": 1440,
+  "y": 0
+}

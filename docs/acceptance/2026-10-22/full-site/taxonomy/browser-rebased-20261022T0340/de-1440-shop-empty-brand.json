@@ -1,0 +1,68 @@
+{
+  "action": {
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "href": "http://127.0.0.1:9290/de/produkte/",
+    "offset": "0px",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "rect": {
+      "bottom": 651.390625,
+      "height": 46,
+      "left": 315,
+      "right": 447.46875,
+      "top": 605.390625,
+      "width": 132.46875,
+      "x": 315,
+      "y": 605.390625
+    },
+    "text": "Alle Produkte"
+  },
+  "at": "2026-10-22T03:41:33.642Z",
+  "chips": [
+    {
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022",
+      "text": "Chint ×"
+    },
+    {
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/",
+      "text": "Alle zurücksetzen"
+    }
+  ],
+  "contact": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Archiv:%20Wechselrichter,%20Speicher%20und%20Systeme&search=linker-owned-no-match-20261022&source=http://127.0.0.1:9290/de/produkte/",
+  "count": null,
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792640121"
+  ],
+  "empty": "Kein Produkt passt zu dieser Filterauswahl. Setzen Sie einen Filter zurück, um mehr zu sehen.\n\nAlle Produkte",
+  "filterLabel": "Produktfilter",
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "de-DE",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022&brand=chint",
+      "lang": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022&brand=chint",
+      "lang": "de"
+    }
+  ],
+  "overflow": false,
+  "products": 0,
+  "root": true,
+  "sort": false,
+  "url": "http://127.0.0.1:9290/de/produkte/?q=linker-owned-no-match-20261022&brand=chint",
+  "width": 1440,
+  "y": 0
+}

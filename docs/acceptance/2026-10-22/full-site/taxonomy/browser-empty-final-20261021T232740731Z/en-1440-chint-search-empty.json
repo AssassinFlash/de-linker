@@ -1,0 +1,82 @@
+{
+  "action": {
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "href": "http://127.0.0.1:9290/products/",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "outlineOffset": "0px",
+    "rect": {
+      "bottom": 558.59375,
+      "height": 46,
+      "left": 315,
+      "right": 438.5,
+      "top": 512.59375,
+      "width": 123.5,
+      "x": 315,
+      "y": 512.59375
+    },
+    "text": "All products"
+  },
+  "canonical": "http://127.0.0.1:9290/brand/chint/",
+  "chips": [],
+  "contact": {
+    "href": "http://127.0.0.1:9290/contact/?intent=product&kind=catalogue&title=Category:%20Chint&search=linker-owned-no-match-20261022&source=http://127.0.0.1:9290/brand/chint/",
+    "rect": {
+      "bottom": 706.359375,
+      "height": 44,
+      "left": 1182.9921875,
+      "right": 1349,
+      "top": 662.359375,
+      "width": 166.0078125,
+      "x": 1182.9921875,
+      "y": 662.359375
+    }
+  },
+  "count": null,
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792625222"
+  ],
+  "empty": "No product matches these filters. Clear one to see more.\n\t\t\t\t\t\n\t\t\t\t\t\tAll products",
+  "emptyRect": {
+    "bottom": 591.59375,
+    "height": 160.796875,
+    "left": 282,
+    "right": 1400,
+    "top": 430.796875,
+    "width": 1118,
+    "x": 282,
+    "y": 430.796875
+  },
+  "focus": {
+    "tag": "BODY",
+    "text": "    Your cookie choices  We use essential cookies to keep this website working. With your permission"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/brand/chint/?q=linker-owned-no-match-20261022",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/chint/?q=linker-owned-no-match-20261022",
+      "lang": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/chint/?q=linker-owned-no-match-20261022",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/chint/?q=linker-owned-no-match-20261022",
+      "lang": "de"
+    }
+  ],
+  "loadedFonts": "loaded",
+  "overflow": false,
+  "products": [],
+  "root": true,
+  "sort": false,
+  "url": "http://127.0.0.1:9290/brand/chint/?q=linker-owned-no-match-20261022",
+  "width": 1440,
+  "y": 0
+}

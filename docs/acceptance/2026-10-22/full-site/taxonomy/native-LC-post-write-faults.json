@@ -1,0 +1,21 @@
+{
+    "local_only": true,
+    "native_wordpress_hooks": true,
+    "results": [
+        {
+            "throwable": "Exception",
+            "native_post_write_hook_calls": 1,
+            "same_throwable_rethrown": true,
+            "full_values_backslashes_absence_restored": true,
+            "outer_backup_unchanged": true
+        },
+        {
+            "throwable": "Error",
+            "native_post_write_hook_calls": 1,
+            "same_throwable_rethrown": true,
+            "full_values_backslashes_absence_restored": true,
+            "outer_backup_unchanged": true
+        }
+    ],
+    "final_assignment_snapshot_unchanged": true
+}

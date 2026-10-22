@@ -1,0 +1,57 @@
+{
+  "action": {
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "href": "http://127.0.0.1:9290/de/produkte/",
+    "offset": "0px",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "rect": {
+      "bottom": 558.59375,
+      "height": 46,
+      "left": 315,
+      "right": 447.46875,
+      "top": 512.59375,
+      "width": 132.46875,
+      "x": 315,
+      "y": 512.59375
+    },
+    "text": "Alle Produkte"
+  },
+  "at": "2026-10-22T03:37:29.663Z",
+  "chips": [],
+  "contact": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie:%20DEHN&search&source=http://127.0.0.1:9290/de/brand/dehn/",
+  "count": null,
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792640121"
+  ],
+  "empty": "Hier sind keine Produkte aufgeführt.\n\nAlle Produkte",
+  "filterLabel": "Produktfilter",
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "de-DE",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/brand/dehn/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/dehn/",
+      "lang": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/dehn/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/dehn/",
+      "lang": "de"
+    }
+  ],
+  "overflow": false,
+  "products": 0,
+  "root": true,
+  "sort": false,
+  "url": "http://127.0.0.1:9290/de/brand/dehn/",
+  "width": 1440,
+  "y": 0
+}

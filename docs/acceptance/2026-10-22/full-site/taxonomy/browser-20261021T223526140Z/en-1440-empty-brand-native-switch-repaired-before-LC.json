@@ -1,0 +1,65 @@
+{
+  "active": "    Your cookie choices  We use essential cookies to keep this website working. With your permission, Google Analytics helps us understand how the sit",
+  "bodyClass": "archive tax-product_brand term-dehn term-436 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce woocommerce-page woocommerce-js",
+  "canonical": [
+    "http://127.0.0.1:9290/brand/dehn/"
+  ],
+  "heading": "DEHN",
+  "height": 1000,
+  "helper": [],
+  "hreflangs": [
+    {
+      "lang": "en",
+      "url": "http://127.0.0.1:9290/brand/dehn/"
+    },
+    {
+      "lang": "de",
+      "url": "http://127.0.0.1:9290/de/brand/dehn/"
+    },
+    {
+      "lang": "x-default",
+      "url": "http://127.0.0.1:9290/brand/dehn/"
+    }
+  ],
+  "lang": "en-US",
+  "observedAt": "2026-10-21T22:52:38.685Z",
+  "overflow": false,
+  "paging": [],
+  "products": [],
+  "scrollY": 0,
+  "switches": [
+    {
+      "href": "http://127.0.0.1:9290/brand/dehn/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/dehn/",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/dehn/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/dehn/",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/dehn/",
+      "language": "en",
+      "text": "English"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/dehn/",
+      "language": "de",
+      "text": "Deutsch"
+    }
+  ],
+  "title": "DEHN | Linker",
+  "url": "http://127.0.0.1:9290/brand/dehn/",
+  "width": 1440
+}

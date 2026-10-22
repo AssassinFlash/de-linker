@@ -224,7 +224,43 @@ final class Templates {
 		}
 		$rows = array_merge( $rows, $this->drift_partial_rows( 'header', $header_partials ?? self::header_partials() ) );
 		$rows = array_merge( $rows, $this->drift_partial_rows( 'footer', self::footer_partials() ) );
+		try {
+			$rows = array_merge( $rows, ( new ArchiveAssignments() )->drift( $this->archive_targets() ) );
+		} catch ( \RuntimeException $error ) {
+			$rows[] = $this->row( 'archive assignments', 'product archive templates', $error->getMessage() );
+		}
 		return $rows;
+	}
+
+	/**
+	 * Exact pre-present metadata for only the existing owned archive pair.
+	 *
+	 * @return array<int, array<string, list<mixed>>>
+	 */
+	public function archive_assignment_snapshot(): array {
+		return ( new ArchiveAssignments() )->snapshot( $this->archive_targets() );
+	}
+
+	/**
+	 * The existing native English anchor and its existing Polylang German twin.
+	 * No assignment creates a second template or guesses a translated slug.
+	 *
+	 * @return array<string, int>
+	 */
+	private function archive_targets(): array {
+		if ( array() === ( new ArchiveAssignments() )->keys() ) {
+			return array();
+		}
+		$anchor = $this->existing_id( 'is_archive_for_post_type_product' );
+		if ( 0 === $anchor ) {
+			return array();
+		}
+		$targets = array( 'en' => $anchor );
+		$twin    = $this->german_twin( $anchor );
+		if ( $twin > 0 ) {
+			$targets['de'] = $twin;
+		}
+		return $targets;
 	}
 
 	/**
@@ -378,7 +414,7 @@ final class Templates {
 	 * @param list<string>|null $header_partials Header exports to install, the two
 	 *                                           files from header_partials() when null.
 	 *                                           Proved non-empty before any write.
-	 * @return array{created: int, updated: int, unchanged: int, created_ids: list<int>, de_twins_updated: int, de_twins_missing: list<string>}
+	 * @return array{created: int, updated: int, unchanged: int, created_ids: list<int>, de_twins_updated: int, de_twins_missing: list<string>, archive_assignments_updated: int}
 	 *         The ids of the posts this sync created (a rollback deletes them;
 	 *         the ones it only updated keep their pre-run content in the backup),
 	 *         the German page-type twins it wrote, and the page types whose twin
@@ -392,6 +428,7 @@ final class Templates {
 		// discover a missing header with nothing to roll back. A test passes
 		// the missing export in; production passes nothing and reads the exports.
 		$this->require_header_partials( $header_partials );
+		( new ArchiveAssignments() )->preflight( $this->archive_targets() );
 		$created           = 0;
 		$updated           = 0;
 		$unchanged         = 0;
@@ -443,21 +480,23 @@ final class Templates {
 				$this->created_ids = array_merge( $this->created_ids, $report['created_ids'] );
 		}
 		$this->assign_pages();
-		$twins    = $this->sync_page_type_twins();
-		$updated += $twins['updated'];
-		$updated += $this->sync_header_partials( $header_partials );
+		$twins               = $this->sync_page_type_twins();
+		$updated            += $twins['updated'];
+		$archive_assignments = ( new ArchiveAssignments() )->sync( $this->archive_targets() );
+		$updated            += $this->sync_header_partials( $header_partials );
 		// After the header write. A missing German header twin refuses
 		// the run before the footer is touched, so a header refusal does
 		// not also create footer posts.
 		$updated += $this->sync_footer_partials();
 
 		return array(
-			'created'          => $created,
-			'updated'          => $updated,
-			'unchanged'        => $unchanged,
-			'created_ids'      => $this->created_ids,
-			'de_twins_updated' => $twins['updated'],
-			'de_twins_missing' => $twins['missing'],
+			'created'                     => $created,
+			'updated'                     => $updated,
+			'unchanged'                   => $unchanged,
+			'created_ids'                 => $this->created_ids,
+			'de_twins_updated'            => $twins['updated'],
+			'de_twins_missing'            => $twins['missing'],
+			'archive_assignments_updated' => $archive_assignments,
 		);
 	}
 

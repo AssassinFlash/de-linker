@@ -1,6 +1,6 @@
 # Library navigation continuity — narrow repair design
 
-Status: minimal source/test candidate implemented; independent source review and actual browser acceptance pending. Baseline: release tree `d27f3dc3`; only `assets/library-ui.js`, its Node consumer tests and the existing Library browser spec are implementation scope. No content, PHP, template, CSS, data, model, or native download behavior changes.
+Status: scoped source, local and production navigation acceptance completed; see `navigation-production-readback.md` for release identity and actual online evidence. The earlier handoff sections below retain their historical candidate boundaries. Baseline: release tree `d27f3dc3`; only `assets/library-ui.js`, its Node consumer tests and the existing Library browser spec are implementation scope. No content, PHP, template, CSS, data, model, or native download behavior changes.
 
 The existing page is progressive enhancement of real anchors and server-rendered panels (specification `176-faq-download.md`, accepted variant 5). Keep those sources and the existing replaceState tab convention; do not add a router or new history entries. The supplied online early-tab and DE390 document-search captures are failures. The later manual-scroll capture only demonstrates that the hidden-above-viewport results exist.
 

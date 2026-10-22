@@ -1,0 +1,67 @@
+{
+  "active": [],
+  "adminBar": false,
+  "css": [
+    "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626156"
+  ],
+  "first": null,
+  "focus": {
+    "id": "",
+    "tag": "SUMMARY",
+    "text": "SAJ H2-30K-T3-DEWas gehört zum Lieferumfang des H2-30K-T3-DE?In der Antwort"
+  },
+  "fonts": "loaded",
+  "height": 1000,
+  "host": {
+    "bottom": 775.2421875,
+    "height": 1574.9296875,
+    "left": 80,
+    "right": 1360,
+    "top": -799.6875,
+    "width": 1280,
+    "x": 80,
+    "y": -799.6875
+  },
+  "observedAt": "2026-10-21T23:54:22.638Z",
+  "overflow": false,
+  "panels": [
+    {
+      "hidden": true,
+      "id": "linker-library-panel-faq",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "hidden": true,
+      "id": "linker-library-panel-documents",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "query": "AIO3",
+  "reduced": false,
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "faq",
+  "stickyBottom": 137,
+  "url": "https://de-linker.com/de/faq-dokumente/",
+  "width": 1440,
+  "y": 1356.5
+}

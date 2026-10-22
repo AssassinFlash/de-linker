@@ -1,0 +1,10 @@
+{
+  "official_rollback": true,
+  "all_31_LC_posts_full_values_and_HTML_exact": true,
+  "all_51_terms_exact": true,
+  "local_privacy_exact": true,
+  "settings_css_exact": true,
+  "present_backup_consumed_after_success": true,
+  "windpress_files_restored_separately_from_private_backup": 44,
+  "new_backup_files_preserved_privately": []
+}

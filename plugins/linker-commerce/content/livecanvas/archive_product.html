@@ -14,13 +14,24 @@
 			</aside>
 
 			<div class="product-results">
+				[lc_if condition="have_posts"]
 				<div class="wb-strip">
 					<div class="wbc">[linker_products_chips]</div>
 					<span class="wbcount">[linker_products_family_count]</span>
 					[linker_products_sort]
 				</div>
+				[lc_else]
+				<div class="sf-empty-filters wbc mb-5 flex flex-wrap items-center gap-3 empty:mb-0">[linker_products_chips]</div>
+				[/lc_if]
 
-				[linker_products_empty]
+				[lc_if condition="!have_posts"]
+				<div class="sf-empty-state rounded-2xl border border-[var(--shop-line)] bg-white p-6 sm:p-8" role="status">
+					[linker_products_empty]
+					<div class="mt-5 flex flex-wrap gap-3">
+						<a class="sf-empty-action sf-empty-action-primary inline-flex min-h-11 w-full items-center justify-center rounded-xl px-5 py-3 text-sm font-semibold no-underline sm:w-auto" href="[lc_wc_get_page_url page='shop']">All products</a>
+					</div>
+				</div>
+				[/lc_if]
 
 				<div class="product-grid" id="product-grid">
 					[linker_products_families]

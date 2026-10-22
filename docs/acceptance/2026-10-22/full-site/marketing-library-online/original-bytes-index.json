@@ -1,5 +1,5 @@
 {
-  "scope": "All files in this directory except this self-index. Original captures are not edited; earlier candidates/failures remain distinct.",
+  "scope": "All files in this directory except this self-index. Original captures are not edited; earlier candidates/failures remain distinct. Historical .png filenames that contain native JPEG bytes are disclosed per file.",
   "files": [
     {
       "path": "commercial-de-1440-voice-draft.json",
@@ -297,8 +297,8 @@
     },
     {
       "path": "navigation-continuity-design.md",
-      "bytes": 7380,
-      "sha256": "b6366db886c2f16301566008737c1045d305898e6c524124ae38f4601414ac26",
+      "bytes": 7511,
+      "sha256": "4e9c2958969e5df28049afc19ec21b7ec122b9e914bf5f656cd4df1fde804aa7",
       "native_format": null
     },
     {
@@ -410,6 +410,18 @@
       "native_format": null
     },
     {
+      "path": "navigation-cua-local/de-390-final-source-normal-motion-documents.jpg",
+      "bytes": 41266,
+      "sha256": "23638cae997fb43e31ca890cbfbd889aaccff92a84a3d8ad776343d36b12ed89",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-local/de-390-final-source-normal-motion-documents.json",
+      "bytes": 718,
+      "sha256": "71956a7c58b87839dacec80c6fab457808b77f053d510380320a34cc87eef351",
+      "native_format": null
+    },
+    {
       "path": "navigation-cua-local/de-390-reduced-deep-documents-final.jpg",
       "bytes": 42272,
       "sha256": "70cf1e705efef1aaebf5ba43c83c2963665767b89ca7eb43bc21d47da70766e8",
@@ -515,6 +527,282 @@
       "path": "navigation-cua-local/en-390-visible-saj-spy.json",
       "bytes": 713,
       "sha256": "e4ac06fddbf046ae45bbbd19c4a662e7d162344a275e194097765535d289721f",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-deep-faq-before-documents.jpg",
+      "bytes": 98596,
+      "sha256": "35374ac003c9d47b01f98c7d578a5e6a51125789adbaa1ea93b447131a65cf3b",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-deep-faq-before-documents.json",
+      "bytes": 1696,
+      "sha256": "db83edb436545e58d9a35306d839d66835bd9646a99ee5e0340a8ddcddefc419",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-deep-filtered-documents-final.jpg",
+      "bytes": 89049,
+      "sha256": "30fbd4a9d50be8e21b287752cd756d93df0bba73815d4db80cba25ebe0dec981",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-deep-filtered-documents-final.json",
+      "bytes": 1821,
+      "sha256": "064a3ac93636b9df60564927fedbe86b34236be3dbf2cc9655cad44e36e65675",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-deep-filtered-faq-precondition.jpg",
+      "bytes": 105153,
+      "sha256": "8d0b5bea91311e6c19b63707bfeaafd2e73e9660b3ca9434110d57994684dc56",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-deep-filtered-faq-precondition.json",
+      "bytes": 1401,
+      "sha256": "1d1ca821f7cfc7aa3d804d4fe1cc1529ceb99173bb86730ce4c3f94f0b521796",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-directory-then-keyboard-suggestion-settled.jpg",
+      "bytes": 138336,
+      "sha256": "2e24495d4d2106b4244b3082ac2b06ea20e3e81acdfb390af72f7fb0ef469f4a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-directory-then-keyboard-suggestion-settled.json",
+      "bytes": 1869,
+      "sha256": "b3ecbe3a55cd05933f6ded2eaae56acc7c0e67018b5c656a1206a1aaa34adac7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-directory-then-keyboard-suggestion.jpg",
+      "bytes": 126193,
+      "sha256": "e34cf8b6abb1c551ddba3ceb8192dc19d928a3accf0f76d58681be0197f7dd7c",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-directory-then-keyboard-suggestion.json",
+      "bytes": 1877,
+      "sha256": "489207548be2e2a13aa480ce79a315bda17231cdfbf9aacf5e3f41ede64deaa7",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-native-hash-wins-stale-tab.jpg",
+      "bytes": 89957,
+      "sha256": "961c89548a66132db5257d98e3187a39d77922d81d480cef23f956432b1390ac",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-1440-native-hash-wins-stale-tab.json",
+      "bytes": 1495,
+      "sha256": "fccc7f25f109775b05342c91cf5cd65cea36d7c303b4a4b3ecf30583e09076b0",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-deep-filtered-documents-final.jpg",
+      "bytes": 42273,
+      "sha256": "588674fd570d18c5bbe2ab59da69f5cf58b49e2444440080f6b85da3d7aa37b0",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-deep-filtered-documents-final.json",
+      "bytes": 1826,
+      "sha256": "debbb93082f10dc01da493d1b51f7e488ddb121a51545fa91ee69cb9570901fa",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-deep-filtered-faq-precondition.jpg",
+      "bytes": 62627,
+      "sha256": "a7328baeca9ef7ff97526f1222f224242cd347d0f618deeeb586c5ec09de4904",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-deep-filtered-faq-precondition.json",
+      "bytes": 1402,
+      "sha256": "e5a205763edd9694e8b2494a8bc664dba0cb6e95bf8ade4073350fe5166a4f96",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-directory-keyboard-suggestion.jpg",
+      "bytes": 66052,
+      "sha256": "7f9fb8e00b97e7c36402ecd6f7cbe50577ccc65cdd2e7bbe6bfbe9cf0a865805",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-directory-keyboard-suggestion.json",
+      "bytes": 1869,
+      "sha256": "a0f30cbe8c5fa5965944a6fe6d85416af673f17c825620ad0a00054b08fd49cc",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-native-hash-wins-stale-tab.jpg",
+      "bytes": 42113,
+      "sha256": "90c1124ecf2c1f34786a1cdad0e14d329aa4ec330d4cd80bad0520cc0457ba1f",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/de-390-native-hash-wins-stale-tab.json",
+      "bytes": 1489,
+      "sha256": "99b4baa3bd23d8e0ece57d88a82177985f87df4731d5cb09b20fdb8a40271855",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-deep-filtered-documents-final.jpg",
+      "bytes": 87701,
+      "sha256": "eaaabb06fbf705a73ad37a32cf7bd8f68c65fb71f1e0c13f2a6ea8e2f0ff631a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-deep-filtered-documents-final.json",
+      "bytes": 1818,
+      "sha256": "e4f4e300a03c72d917d4afd4809ea7e06a6877d8e7dc47c884480eaec9bc6daf",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-deep-filtered-faq-precondition.jpg",
+      "bytes": 97733,
+      "sha256": "fcdcc637dbfb6475a9c54c08b5a564060fe0ead3ad32b356231ad5d12d753cf0",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-deep-filtered-faq-precondition.json",
+      "bytes": 1394,
+      "sha256": "fcf9a4117d569bfce5b3402e40e5d1b8b23f7e700d06bce9cad88f527a4e19d2",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-directory-keyboard-suggestion.jpg",
+      "bytes": 132283,
+      "sha256": "d36a5b9ea4898751f074c64818fccd2ac03c21c0e43321c42ee63f9125b0b033",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-directory-keyboard-suggestion.json",
+      "bytes": 1860,
+      "sha256": "da9e66b3f88a71cdfeef74a3fff6b52ff34171646dae0ffda826ac3f6b1967e9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-native-hash-wins-stale-tab.jpg",
+      "bytes": 89170,
+      "sha256": "a45018333cb3dd3cf1ec274f0acc90bc3a62680a9bdb48fd28c2d6b51e651ec3",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-1440-native-hash-wins-stale-tab.json",
+      "bytes": 1486,
+      "sha256": "68b0451490b894f6771642b4a6546f12c233dcced4927d567a8f42d67552921a",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-cross-document-back-observation.jpg",
+      "bytes": 42113,
+      "sha256": "90c1124ecf2c1f34786a1cdad0e14d329aa4ec330d4cd80bad0520cc0457ba1f",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-cross-document-back-observation.json",
+      "bytes": 1465,
+      "sha256": "0fd6098cb164edcb343b49220a9bb54b2d2b75569eb345e575c0e3b42215e1f6",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-cross-document-forward-observation.jpg",
+      "bytes": 41489,
+      "sha256": "cc2ed6567181ed2ee3a5922755912d884dd3d841c28f683f16d65448dfc9b2cb",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-cross-document-forward-observation.json",
+      "bytes": 1459,
+      "sha256": "e27652de44a9879e0286f74f4a1eb52db173cf2e4f1eab312024ae6b42488a23",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-deep-filtered-documents-final.jpg",
+      "bytes": 41634,
+      "sha256": "1c8f7715bb8f6c09f344e1b9ff53e7ffe2044e6f1a904e96d3dc636df1cfc184",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-deep-filtered-documents-final.json",
+      "bytes": 1821,
+      "sha256": "f1eb410950baf5f958d730f3cd05a56acedf7e89754088e032075351302ffa51",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-deep-filtered-faq-precondition.jpg",
+      "bytes": 62176,
+      "sha256": "4386ee1eab364ca3980e345297258845c429b253043c48e31df30a58bef90b80",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-deep-filtered-faq-precondition.json",
+      "bytes": 1395,
+      "sha256": "deb16b7815d01b5fe03c02f120cb4d4ac15e926e075598db382964ce616df900",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-directory-keyboard-suggestion-settled.jpg",
+      "bytes": 64647,
+      "sha256": "28ed088df39d5f8cf7e21e08f31c22590114d4b746932f0e7360e92d4739e26e",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-directory-keyboard-suggestion-settled.json",
+      "bytes": 1858,
+      "sha256": "bed465f51fae824f875ec0c8857b47b00592ab5420d5e26d7eb21e5093ac78e3",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-native-hash-wins-stale-tab.jpg",
+      "bytes": 41638,
+      "sha256": "50b3a2e6c3d65a320c0395e11cd44a09e24a218fb458c177805189b86a91065a",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-native-hash-wins-stale-tab.json",
+      "bytes": 1493,
+      "sha256": "a3a1fb66e4c870d9d2ddf682f38a130e356b8e37e99a2cb998d7b772faf9b303",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-native-hashchange-preserves-query.jpg",
+      "bytes": 45470,
+      "sha256": "e649cf18eb5079cf2c5ea9b0f73bc8a50a5d4a31e2accd62612d644153433fc8",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-native-hashchange-preserves-query.json",
+      "bytes": 1511,
+      "sha256": "e8fd32901f6d0babf8a02d89cab95b5417a27bcdeeaf2fbc8e6c7671470abc79",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-same-document-back-preserves-query.jpg",
+      "bytes": 45708,
+      "sha256": "b18b8db28fb31e70ca43e7cc31fe547f881181d2e65238aba074ca2c48961976",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-same-document-back-preserves-query.json",
+      "bytes": 1942,
+      "sha256": "6c0995aa5c0160ddcac718693949e6ed72f23dea376982b79b118da8d89d45b9",
+      "native_format": null
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-same-document-forward-preserves-query.jpg",
+      "bytes": 46475,
+      "sha256": "e12a61a7c4ccc4f74d45b257b7bada2de3b6b0aa3e25666fa5fa4531a81bb8f7",
+      "native_format": "jpeg"
+    },
+    {
+      "path": "navigation-cua-online-20261022T0752/en-390-same-document-forward-preserves-query.json",
+      "bytes": 1512,
+      "sha256": "b536aca6ec9c1e7ab7db4702b664b7d54a245f182a2e84d36af0e03ebce6367b",
       "native_format": null
     },
     {
@@ -1697,6 +1985,24 @@
       "path": "navigation-node-red.log",
       "bytes": 10262,
       "sha256": "393dc8f0a78292307ef9198fdf33b54aef4af24f17b717bab9e1a2943b7129ba",
+      "native_format": null
+    },
+    {
+      "path": "navigation-online-cua-summary.json",
+      "bytes": 3237,
+      "sha256": "b11d4e0f0104bcf5ad77815317459293ffefc05ad0343eee2af90f69e6cce6fc",
+      "native_format": null
+    },
+    {
+      "path": "navigation-production-readback.json",
+      "bytes": 1928,
+      "sha256": "987a3ca84653449113d03d9b6f6d63a5ef121c7b855755fa56109514dda88b31",
+      "native_format": null
+    },
+    {
+      "path": "navigation-production-readback.md",
+      "bytes": 5837,
+      "sha256": "69ef88a990bff6094d215eda1a084923412e161a22d583c32c567804b44ef660",
       "native_format": null
     },
     {

@@ -1,0 +1,61 @@
+{
+  "scope": "Current local shop empty-state, actual native filter/Clear actions and native LC labels; not a complete page or production acceptance. Archive empty-root controls are separately retained in the same frame directory.",
+  "views": [
+    {
+      "language": "en",
+      "width": 1440,
+      "height": 1000,
+      "empty_frame": "en-1440-shop-search-empty-native-label",
+      "empty_button_height": 46,
+      "contact_height": 44,
+      "empty_has_no_count_or_sort": true,
+      "native_LC_label_matches_language": true,
+      "brand_chip_and_clear_targets_44px": true,
+      "clear_restores_24_families_72_links": true,
+      "no_horizontal_overflow": true
+    },
+    {
+      "language": "de",
+      "width": 1440,
+      "height": 1000,
+      "empty_frame": "de-1440-shop-search-empty-current",
+      "empty_button_height": 46,
+      "contact_height": 44,
+      "empty_has_no_count_or_sort": true,
+      "native_LC_label_matches_language": true,
+      "brand_chip_and_clear_targets_44px": true,
+      "clear_restores_24_families_72_links": true,
+      "no_horizontal_overflow": true
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "height": 1000,
+      "empty_frame": "en-390-shop-search-empty-native-label",
+      "empty_button_height": 46,
+      "contact_height": 44,
+      "empty_has_no_count_or_sort": true,
+      "native_LC_label_matches_language": true,
+      "brand_chip_and_clear_targets_44px": true,
+      "clear_restores_24_families_72_links": true,
+      "no_horizontal_overflow": true
+    },
+    {
+      "language": "de",
+      "width": 390,
+      "height": 1000,
+      "empty_frame": "de-390-shop-empty-from-top",
+      "empty_button_height": 46,
+      "contact_height": 44,
+      "empty_has_no_count_or_sort": true,
+      "native_LC_label_matches_language": true,
+      "brand_chip_and_clear_targets_44px": true,
+      "clear_restores_24_families_72_links": true,
+      "no_horizontal_overflow": true
+    }
+  ],
+  "english_desktop_actual_hover_white_on_dark_ink": true,
+  "english_desktop_actual_keyboard_outline_2px_offset_3px": true,
+  "contact_consumer_missing_context": "Confirmed local DE390. The link carries source/search, but landing form does not show a removable context; no form submitted. Remains open.",
+  "capture_diagnostics": "diagnostic-stale-tab18-de-1440-shop-empty is an old valid desktop tab captured by a stale helper; not a phone pass. diagnostic-de-390-restored-scroll-before-native-up is a restored-scroll observation, not top-of-page acceptance. Native image bytes retained."
+}

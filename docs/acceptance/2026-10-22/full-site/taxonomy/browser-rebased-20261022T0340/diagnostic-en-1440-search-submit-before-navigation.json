@@ -1,0 +1,39 @@
+{
+  "action": null,
+  "at": "2026-10-22T03:42:22.429Z",
+  "chips": [],
+  "contact": "http://127.0.0.1:9290/contact/?intent=product&kind=catalogue&title=Archives:%20Products&search&source=http://127.0.0.1:9290/products/",
+  "count": "1-24 / 65 product families",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792640121"
+  ],
+  "filterLabel": "Product filters",
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "en-US",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/",
+      "lang": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/",
+      "lang": "de"
+    }
+  ],
+  "overflow": false,
+  "products": 72,
+  "root": true,
+  "sort": true,
+  "url": "http://127.0.0.1:9290/products/",
+  "width": 1440,
+  "y": 0
+}

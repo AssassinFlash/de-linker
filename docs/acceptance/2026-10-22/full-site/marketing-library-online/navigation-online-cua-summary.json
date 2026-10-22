@@ -1,0 +1,92 @@
+{
+  "scope": "Actual online CUA after a33a0bce deployment; four responsive states, not a whole-site or full-page visual acceptance. Direct native hash boot, not a live held-script click.",
+  "views": [
+    {
+      "language": "de",
+      "width": 1440,
+      "height": 1000,
+      "motion": "normal",
+      "native_hash_wins_stale_tab": true,
+      "keyboard_suggestion_focus_and_saj_marker": true,
+      "deep_precondition_scroll_y": 1356.5,
+      "documents_first_top": 178.9609375,
+      "sticky_bottom": 137,
+      "documents_first_bottom": 269.9609375,
+      "tab_keeps_focus": true,
+      "thumbnail_loaded": true,
+      "no_horizontal_overflow": true,
+      "guest_without_admin_bar": true,
+      "evidence_prefix": "navigation-cua-online-20261022T0752/de-1440"
+    },
+    {
+      "language": "en",
+      "width": 1440,
+      "height": 1000,
+      "motion": "reduce",
+      "native_hash_wins_stale_tab": true,
+      "keyboard_suggestion_focus_and_saj_marker": true,
+      "deep_precondition_scroll_y": 1307,
+      "documents_first_top": 179.1640625,
+      "sticky_bottom": 137,
+      "documents_first_bottom": 270.1640625,
+      "tab_keeps_focus": true,
+      "thumbnail_loaded": true,
+      "no_horizontal_overflow": true,
+      "guest_without_admin_bar": true,
+      "evidence_prefix": "navigation-cua-online-20261022T0752/en-1440"
+    },
+    {
+      "language": "de",
+      "width": 390,
+      "height": 1000,
+      "motion": "reduce",
+      "native_hash_wins_stale_tab": true,
+      "keyboard_suggestion_focus_and_saj_marker": true,
+      "deep_precondition_scroll_y": 1811,
+      "documents_first_top": 170.9140625,
+      "sticky_bottom": 129,
+      "documents_first_bottom": 385.0078125,
+      "tab_keeps_focus": true,
+      "thumbnail_loaded": true,
+      "no_horizontal_overflow": true,
+      "guest_without_admin_bar": true,
+      "evidence_prefix": "navigation-cua-online-20261022T0752/de-390"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "height": 1000,
+      "motion": "normal",
+      "native_hash_wins_stale_tab": true,
+      "keyboard_suggestion_focus_and_saj_marker": true,
+      "deep_precondition_scroll_y": 1712,
+      "documents_first_top": 170.9140625,
+      "sticky_bottom": 129,
+      "documents_first_bottom": 385.0078125,
+      "tab_keeps_focus": true,
+      "thumbnail_loaded": true,
+      "no_horizontal_overflow": true,
+      "guest_without_admin_bar": true,
+      "evidence_prefix": "navigation-cua-online-20261022T0752/en-390"
+    }
+  ],
+  "same_document_native_history_en_390": [
+    {
+      "evidence": "en-390-native-hashchange-preserves-query",
+      "query": "AIO3",
+      "selected": "faq"
+    },
+    {
+      "evidence": "en-390-same-document-back-preserves-query",
+      "query": "AIO3",
+      "selected": "documents"
+    },
+    {
+      "evidence": "en-390-same-document-forward-preserves-query",
+      "query": "AIO3",
+      "selected": "faq"
+    }
+  ],
+  "cross_document_history": "The distinct cross-document captures reset search after navigation; they are observations, not same-document query-preservation passes.",
+  "animation_observation": "de-1440-directory-then-keyboard-suggestion is a mid-smooth-scroll observation. The settled frame is the marker acceptance."
+}

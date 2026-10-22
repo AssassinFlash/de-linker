@@ -1,0 +1,261 @@
+{
+  "active": "    Ihre Cookie-Auswahl  Wir verwenden notwendige Cookies für den Betrieb dieser Website. Mit Ihrer Einwilligung analysieren wir die Nutzung mit Googl",
+  "bodyClass": "archive paged tax-product_brand term-saj term-192 wp-custom-logo wp-embed-responsive paged-2 wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce woocommerce-page woocommerce-js",
+  "canonical": [],
+  "heading": "SAJ",
+  "height": 1000,
+  "helper": [
+    {
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Kategorie:%20SAJ&search&source=http://127.0.0.1:9290/de/brand/saj/",
+      "text": "Hilfe bei der Auswahl?"
+    }
+  ],
+  "hreflangs": [],
+  "lang": "de-DE",
+  "observedAt": "2026-10-21T22:39:48.434Z",
+  "overflow": false,
+  "paging": [
+    {
+      "href": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/?application=home",
+      "text": "Privat26"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/?application=commercial",
+      "text": "Gewerbe8"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/?power=low",
+      "text": "Bis 6 kW4"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/?power=mid",
+      "text": "6 bis 15 kW8"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/?power=high",
+      "text": "15 bis 30 kW5"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/?power=top",
+      "text": "Über 30 kW1"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "text": "Englisch"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+      "text": "Deutsch"
+    }
+  ],
+  "products": [
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-hs2-5k-t2-x/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-hs2-5k-t2-x/",
+      "text": "HS2"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-hs2-5k-t2-x/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-h2-12k-t3/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-h2-12k-t3/",
+      "text": "SAJ H2"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-h2-12k-t3/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-cb2-100-3-hv5/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-cb2-100-3-hv5/",
+      "text": "SAJ CB2"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-cb2-100-3-hv5/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-emanager-emanager-5-0-heim-energiemanager/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-emanager-emanager-5-0-heim-energiemanager/",
+      "text": "SAJ eManager (Energiemanagement-Systemmodul)"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-emanager-emanager-5-0-heim-energiemanager/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
+      "text": "SAJ eSolar AIO3 Datenlogger (WLAN/Ethernet/Bluetooth)"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-esolar-aio3-datensammler-wifi-lan-bluetooth/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-hs3-10k-t2-w-p/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-hs3-10k-t2-w-p/",
+      "text": "SAJ HS3-10K-T2-W/G-PX"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-hs3-10k-t2-w-p/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bu3-5-0-tv2-pro/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bu3-5-0-tv2-pro/",
+      "text": "SAJ BU3-5.0-TV2-PRO"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bu3-5-0-tv2-pro/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bc2-hv1/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bc2-hv1/",
+      "text": "SAJ BC2-HV1"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bc2-hv1/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bu2-5-0-hv1/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bu2-5-0-hv1/",
+      "text": "SAJ BU2-5.0-HV1"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-bu2-5-0-hv1/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-b2-25-0-hv1/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-b2-25-0-hv1/",
+      "text": "SAJ BU2-HV1"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-b2-25-0-hv1/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-emanager-c1-pro/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-emanager-c1-pro/",
+      "text": "SAJ eManager-C1 Pro"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-emanager-c1-pro/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-chs2-50k-t6-x/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-chs2-50k-t6-x/",
+      "text": "SAJ CHS2-50K-T6-X"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-chs2-50k-t6-x/",
+      "text": "Produkt ansehen"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-ats1-t63-a/",
+      "text": ""
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-ats1-t63-a/",
+      "text": "SAJ ATS1-T63-A"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkt/saj-ats1-t63-a/",
+      "text": "Produkt ansehen"
+    }
+  ],
+  "scrollY": 0,
+  "switches": [
+    {
+      "href": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "language": "en",
+      "text": "EN"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+      "language": "de",
+      "text": "DE"
+    },
+    {
+      "href": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "language": "en",
+      "text": "Englisch"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+      "language": "de",
+      "text": "Deutsch"
+    }
+  ],
+  "title": "SAJ 2 | Linker",
+  "url": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+  "width": 390
+}

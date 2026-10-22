@@ -1,0 +1,45 @@
+{
+  "scope": "Isolated sharedarchives native LC assignment, official present/rollback and real HTTP consumers; visual/production gates remain open.",
+  "source_sha256": {
+    "plugins/linker-commerce/includes/Presentation/ArchiveAssignments.php": "7c6e982e781efb469bdec33089c846774316e94e4c8019e86928f0dfb7fd6b14",
+    "plugins/linker-commerce/includes/Presentation/Templates.php": "e61ef26a53124651e9e6cf48792c27b327572c24843e491ad7b4695e7e7fab56",
+    "plugins/linker-commerce/includes/Cli/PresentCommand.php": "68d95821f2b15f34317bdf46b2d65c68bd98ec6813a406cdcc6d83cd6b9b89a7",
+    "plugins/linker-commerce/content/livecanvas/archive_product.html": "9708b1e197dd4dd8b0e7cd705fab9dbe5a319a84b6b13eb59059772c4f572ba4",
+    "plugins/linker-commerce/content/livecanvas/de/archive_product.html": "f361b51854cae973aa0140213709537453eaaffc97cf51d5d1f35beb5283e5a9",
+    "plugins/linker-commerce/content/windpress/products.css": "30fd32016f2cfbf957ca23f7dc74a9e3082b4755d76076ee385ee4fb33c5ffae"
+  },
+  "native_matcher_phases": {
+    "before": "lc-before-20261021T225322978685Z-89e4bc83/native-matcher.json",
+    "after": "lc-after-20261021T232116249103Z-e55d52c1/native-matcher.json",
+    "rollback": "lc-rollback-20261021T232204336673Z-cceb0035/native-matcher.json",
+    "restored": "lc-restored-20261021T232229651624Z-4bbb442a/native-matcher.json"
+  },
+  "official_present": {
+    "changed_post_ids": [
+      231,
+      6905
+    ],
+    "created_posts": 0,
+    "generic_assignments": 22
+  },
+  "full_local_before_rollback_comparison": {
+    "LC_posts": 31,
+    "shared_terms": 51,
+    "full_HTML_titles_status_languages_metadata_equal": true,
+    "privacy_unchanged": true,
+    "native_brand_option_unchanged": "brand",
+    "settings_and_custom_css_equal": true
+  },
+  "backup": {
+    "gzip_bytes": 6546653,
+    "sql_bytes": 40860357,
+    "tables": 60,
+    "dump_completed": true,
+    "sha256": "8344fb76f6680749d744d5b7a9fdc1987fcca8265827b5e4b244d6bdeb7b2363",
+    "database": "linker_sharedarchives",
+    "native_flags": "single-transaction; set-gtid-purged=OFF; skip-masking-policies; no-tablespaces"
+  },
+  "windpress_files_restored_separately_from_private_copy": 44,
+  "important_boundary": "Local imported privacy posts predate the earlier production repair and contain zero backslashes; equality here only proves this archive operation leaves those local bytes unchanged. Production privacy acceptance remains the separate exact live 29-backslash/hash readback.",
+  "no_observer_left": true
+}

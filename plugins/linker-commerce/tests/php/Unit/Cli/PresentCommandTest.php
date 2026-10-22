@@ -76,6 +76,7 @@ final class PresentCommandTest extends TestCase {
 	/** Prepares the per-test cache and source files. */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'get_object_taxonomies' )->andReturn( array() )->byDefault();
 		$this->cache_path   = sys_get_temp_dir() . '/linker-commerce-present-command-test.css';
 		$this->source_paths = array(
 			sys_get_temp_dir() . '/linker-commerce-present-command-source-a.html',
@@ -398,6 +399,289 @@ final class PresentCommandTest extends TestCase {
 			$this->assertSame( array( 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517 ), $backup['created_templates'], 'the missing templates are staged as creations' );
 		$this->assertFalse( $backup['settings_existed'] );
 		$this->assertSame( array(), $backup['settings'] );
+	}
+
+	/** Existing archive metadata is backed up before the actual sync changes it. */
+	public function test_present_backs_up_owned_archive_assignment_values_before_sync(): void {
+		$archive = array(
+			'ID'           => 231,
+			'post_content' => '<section>existing archive</section>',
+		);
+		$this->mock_install(
+			array(
+				'templates' => array( $archive ),
+				'assigned'  => array( 'is_archive_for_post_type_product' => $archive ),
+				'partials'  => array(),
+			)
+		);
+		$taxonomies = array(
+			'product_brand' => (object) array(
+				'name'               => 'product_brand',
+				'public'             => true,
+				'publicly_queryable' => true,
+				'object_type'        => array( 'product' ),
+			),
+			'pa_series'     => (object) array(
+				'name'               => 'pa_series',
+				'public'             => true,
+				'publicly_queryable' => true,
+				'object_type'        => array( 'product' ),
+			),
+		);
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => $taxonomies ) );
+		$meta = array(
+			'is_archive_for_tax_product_brand'        => array( '', '0', 'literal\\n' ),
+			'is_archive_for_tax_product_brand__chint' => array( '1' ),
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static function ( int $id, string $key, bool $single = true ) use ( &$meta ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed -- native metadata signature.
+					$values = 231 === $id ? ( $meta[ $key ] ?? array() ) : array();
+					return $single ? ( $values[0] ?? '' ) : $values;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'update_post_meta',
+			array(
+				'return' => static function ( int $id, string $key, $value ) use ( &$meta ): bool {
+					if ( 231 === $id && str_starts_with( $key, 'is_archive_for_tax_' ) ) {
+						$meta[ $key ] = array( $value );
+					}
+					return true;
+				},
+			)
+		);
+		file_put_contents( $this->cache_path, self::COMPILED_ALL );
+		touch( $this->cache_path, time() + 60 );
+		$this->present();
+		$this->assertSame(
+			array(
+				231 => array(
+					'is_archive_for_tax_pa_series'     => array(),
+					'is_archive_for_tax_product_brand' => array( '', '0', 'literal\\n' ),
+				),
+			),
+			$this->options[ self::BACKUP ]['archive_assignments']
+		);
+		$this->assertSame( array( '1' ), $meta['is_archive_for_tax_product_brand'] );
+		$this->assertSame( array( '1' ), $meta['is_archive_for_tax_pa_series'] );
+		$this->assertSame( array( '1' ), $meta['is_archive_for_tax_product_brand__chint'] );
+	}
+
+	/** The backup's native option readback is a gate before template writes. */
+	public function test_present_refuses_backup_readback_before_template_writes(): void {
+		$this->mock_install();
+		WP_Mock::userFunction(
+			'get_option',
+			array(
+				'args'   => array( self::BACKUP ),
+				'return' => false,
+			)
+		);
+		WP_Mock::userFunction( 'wp_insert_post', array( 'times' => 0 ) );
+		$this->expectException( ExitException::class );
+		$this->expectExceptionMessage( 'backup failed readback' );
+		$this->present();
+	}
+
+	/**
+	 * Failures a native updated-post-meta hook can raise after persistence.
+	 *
+	 * @return array<string, array{\Throwable}>
+	 */
+	public static function assignment_hook_throwables(): array {
+		return array(
+			'plain Exception' => array( new \Exception( 'native assignment hook Exception' ) ),
+			'Error'           => array( new \Error( 'native assignment hook Error' ) ),
+		);
+	}
+
+	/**
+	 * The actual present dispatcher retains its original backup on either throwable.
+	 *
+	 * @dataProvider assignment_hook_throwables
+	 * @param \Throwable $failure Native hook failure.
+	 */
+	public function test_present_keeps_backup_on_native_assignment_throwable( \Throwable $failure ): void {
+		$archive = array(
+			'ID'           => 231,
+			'post_content' => '<section>existing archive</section>',
+		);
+		$this->mock_install(
+			array(
+				'templates' => array( $archive ),
+				'assigned'  => array( 'is_archive_for_post_type_product' => $archive ),
+				'partials'  => array(),
+			)
+		);
+		$taxonomies = array();
+		foreach ( array( 'pa_brand', 'pa_series' ) as $name ) {
+			$taxonomies[ $name ] = (object) array(
+				'name'               => $name,
+				'public'             => true,
+				'publicly_queryable' => true,
+				'object_type'        => array( 'product' ),
+			);
+		}
+		WP_Mock::userFunction( 'get_object_taxonomies', array( 'return' => $taxonomies ) );
+		$meta   = array(
+			'is_archive_for_tax_pa_brand'        => array( '', '0', "literal\\n and quote's" ),
+			'is_archive_for_tax_pa_brand__chint' => array( '1' ),
+			'unrelated'                          => array( 'keep' ),
+		);
+		$before = $meta;
+		$writes = 0;
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static function ( int $id, string $key, bool $single = true ) use ( &$meta ) {
+					$values = 231 === $id ? ( $meta[ $key ] ?? array() ) : array();
+					return $single ? ( $values[0] ?? '' ) : $values;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'update_post_meta',
+			array(
+				'return' => static function ( int $id, string $key, $value ) use ( &$meta, &$writes, $failure ): bool {
+					if ( 231 === $id && str_starts_with( $key, 'is_archive_for_tax_' ) ) {
+						$meta[ $key ] = array( $value );
+						if ( 2 === ++$writes ) {
+							throw $failure;
+						}
+					}
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'delete_post_meta',
+			array(
+				'return' => static function ( int $id, string $key ) use ( &$meta ): bool {
+					if ( 231 === $id ) {
+						unset( $meta[ $key ] );
+					}
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'add_post_meta',
+			array(
+				'return' => static function ( int $id, string $key, $value ) use ( &$meta ): int {
+					if ( 231 === $id ) {
+						$meta[ $key ][] = $value;
+					}
+					return 1;
+				},
+			)
+		);
+		try {
+			$this->present();
+			$this->fail( 'The native hook failure must escape present.' );
+		} catch ( \Throwable $caught ) {
+			$this->assertSame( $failure, $caught );
+		}
+		$backup = $this->options[ self::BACKUP ] ?? null;
+		$this->assertIsArray( $backup );
+		$this->assertSame(
+			array(
+				231 => array(
+					'is_archive_for_tax_pa_brand'  => $before['is_archive_for_tax_pa_brand'],
+					'is_archive_for_tax_pa_series' => array(),
+				),
+			),
+			$backup['archive_assignments']
+		);
+		ksort( $before );
+		ksort( $meta );
+		$this->assertSame( $before, $meta );
+		$this->assertSame( 2, $writes );
+		$this->assertStringNotContainsString( 'Presentation installed.', $this->output() );
+	}
+
+	/** Restores only saved IDs/keys with original presence and full value lists. */
+	public function test_rollback_restores_exact_archive_assignment_metadata(): void {
+		$snapshot = array(
+			231 => array(
+				'is_archive_for_tax_product_brand' => array( '', '0' ),
+				'is_archive_for_tax_pa_series'     => array(),
+			),
+		);
+		$this->mock_rollback(
+			array(
+				'at'                  => 'owned test',
+				'templates'           => array(),
+				'custom_css'          => '',
+				'archive_assignments' => $snapshot,
+			)
+		);
+		$meta = array(
+			'is_archive_for_tax_product_brand'        => array( '1' ),
+			'is_archive_for_tax_pa_series'            => array( '1' ),
+			'is_archive_for_tax_product_brand__chint' => array( '1' ),
+			'unrelated'                               => array( 'keep' ),
+		);
+		WP_Mock::userFunction(
+			'get_post_meta',
+			array(
+				'return' => static function ( int $id, string $key ) use ( &$meta ): array {
+					return 231 === $id ? ( $meta[ $key ] ?? array() ) : array();
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'delete_post_meta',
+			array(
+				'return' => static function ( int $id, string $key ) use ( &$meta ): bool {
+					if ( 231 === $id ) {
+						unset( $meta[ $key ] );
+					}
+					return true;
+				},
+			)
+		);
+		WP_Mock::userFunction(
+			'add_post_meta',
+			array(
+				'return' => static function ( int $id, string $key, $value ) use ( &$meta ): int {
+					if ( 231 === $id ) {
+						$meta[ $key ][] = $value;
+					}
+					return 1;
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_update_custom_css_post', array( 'return' => 1 ) );
+		$this->rollback();
+		$this->assertSame( array( '', '0' ), $meta['is_archive_for_tax_product_brand'] );
+		$this->assertArrayNotHasKey( 'is_archive_for_tax_pa_series', $meta );
+		$this->assertSame( array( '1' ), $meta['is_archive_for_tax_product_brand__chint'] );
+		$this->assertSame( array( 'keep' ), $meta['unrelated'] );
+		$this->assertArrayNotHasKey( self::BACKUP, $this->options );
+	}
+
+	/** A failed metadata rollback keeps the existing backup for a real retry. */
+	public function test_rollback_keeps_backup_when_assignment_readback_fails(): void {
+		$this->mock_rollback(
+			array(
+				'at'                  => 'owned test',
+				'templates'           => array(),
+				'custom_css'          => '',
+				'archive_assignments' => array( 231 => array( 'is_archive_for_tax_product_brand' => array() ) ),
+			)
+		);
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => array( '1' ) ) );
+		WP_Mock::userFunction( 'delete_post_meta', array( 'return' => false ) );
+		try {
+			$this->rollback();
+			$this->fail( 'A native metadata readback failure must stop rollback.' );
+		} catch ( ExitException $error ) {
+			$this->assertStringContainsString( 'failed readback', $error->getMessage() );
+		}
+		$this->assertArrayHasKey( self::BACKUP, $this->options );
 	}
 
 	/**
@@ -1227,7 +1511,7 @@ final class PresentCommandTest extends TestCase {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'return' => '' ) )->byDefault();
 		WP_Mock::userFunction( 'is_wp_error', array( 'return' => false ) );
 		WP_Mock::userFunction(
 			'get_post',
@@ -1253,7 +1537,7 @@ final class PresentCommandTest extends TestCase {
 				},
 			)
 		);
-		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) );
+		WP_Mock::userFunction( 'update_post_meta', array( 'return' => true ) )->byDefault();
 		WP_Mock::userFunction( 'wp_slash', array( 'return' => static fn ( $value ) => $value ) );
 		WP_Mock::userFunction(
 			'wp_get_custom_css',
@@ -1310,7 +1594,7 @@ final class PresentCommandTest extends TestCase {
 					return array_key_exists( $name, $this->options ) ? $this->options[ $name ] : $fallback;
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction(
 			'update_option',
 			array(

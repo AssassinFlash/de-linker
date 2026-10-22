@@ -1,0 +1,89 @@
+{
+  "action": {
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "href": "http://127.0.0.1:9290/products/",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "outlineOffset": "0px",
+    "rect": {
+      "bottom": 563.234375,
+      "height": 46,
+      "left": 41,
+      "right": 349,
+      "top": 517.234375,
+      "width": 308,
+      "x": 41,
+      "y": 517.234375
+    },
+    "text": "All products"
+  },
+  "chips": [
+    {
+      "href": "http://127.0.0.1:9290/products/?q=linker-owned-no-match-20261022",
+      "rect": {
+        "bottom": 394.640625,
+        "height": 44,
+        "left": 16,
+        "right": 84.203125,
+        "top": 350.640625,
+        "width": 68.203125,
+        "x": 16,
+        "y": 350.640625
+      },
+      "text": "Chint ×"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/",
+      "rect": {
+        "bottom": 394.640625,
+        "height": 44,
+        "left": 96.203125,
+        "right": 168.6328125,
+        "top": 350.640625,
+        "width": 72.4296875,
+        "x": 96.203125,
+        "y": 350.640625
+      },
+      "text": "Clear all"
+    }
+  ],
+  "contact": {
+    "href": "http://127.0.0.1:9290/contact/?intent=product&kind=catalogue&title=Archives:%20Products&search=linker-owned-no-match-20261022&source=http://127.0.0.1:9290/products/",
+    "rect": {
+      "bottom": 853.3046875,
+      "height": 44,
+      "left": 60,
+      "right": 330,
+      "top": 809.3046875,
+      "width": 270,
+      "x": 60,
+      "y": 809.3046875
+    }
+  },
+  "count": null,
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626127"
+  ],
+  "empty": "No product matches these filters. Clear one to see more.\n\nAll products",
+  "emptyRect": {
+    "bottom": 588.234375,
+    "height": 173.59375,
+    "left": 16,
+    "right": 374,
+    "top": 414.640625,
+    "width": 358,
+    "x": 16,
+    "y": 414.640625
+  },
+  "filterLabel": "Product filters",
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "en-US",
+  "overflow": false,
+  "productLinks": [],
+  "root": true,
+  "sort": false,
+  "url": "http://127.0.0.1:9290/products/?q=linker-owned-no-match-20261022&brand=chint",
+  "width": 390,
+  "y": 0
+}

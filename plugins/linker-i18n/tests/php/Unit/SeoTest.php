@@ -11,6 +11,7 @@ namespace Linker\I18n\Tests\Unit;
 
 use Linker\I18n\Seo;
 use Linker\I18n\TranslatedTypes;
+use Mockery;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 
@@ -21,6 +22,59 @@ use WP_Mock\Tools\TestCase;
  * @covers \Linker\I18n\TranslatedTypes
  */
 final class SeoTest extends TestCase {
+
+	/**
+	 * Proper-name archives keep shared terms while native Polylang filters products.
+	 */
+	public function test_shared_archives_preserve_native_and_other_plugin_entries(): void {
+		$types = new TranslatedTypes();
+		$this->assertSame(
+			array( 'post_format', 'custom_shared', 'pa_brand', 'product_brand', 'pa_series' ),
+			$types->shared_archives( array( 'post_format', 'custom_shared', 'pa_brand' ) )
+		);
+		foreach ( array( 'product_brand', 'pa_brand', 'pa_series' ) as $taxonomy ) {
+			$this->assertArrayNotHasKey( $taxonomy, $types->taxonomies( array(), false ) );
+		}
+	}
+
+	/**
+	 * Empty product type is scoped only on the main shared archive.
+	 *
+	 * @return array<string, array{mixed, bool, bool, bool}>
+	 */
+	public function provide_shared_archive_queries(): array {
+		return array(
+			'empty native product archive' => array( '', true, true, true ),
+			'implicit product archive'     => array( null, true, true, true ),
+			'explicit product'             => array( 'product', true, true, false ),
+			'explicit other type'          => array( 'post', true, true, false ),
+			'explicit any'                 => array( 'any', true, true, false ),
+			'explicit list'                => array( array(), true, true, false ),
+			'secondary query'              => array( '', false, true, false ),
+			'other taxonomy'               => array( '', true, false, false ),
+		);
+	}
+
+	/**
+	 * Keep native main-query identity explicit without broad query rewriting.
+	 *
+	 * @dataProvider provide_shared_archive_queries
+	 * @param mixed $post_type Existing post-type declaration.
+	 * @param bool  $main      Main query.
+	 * @param bool  $shared    One of the approved shared product archives.
+	 * @param bool  $scoped    Whether the empty type should become product.
+	 */
+	public function test_shared_archive_query( mixed $post_type, bool $main, bool $shared, bool $scoped ): void {
+		$query = Mockery::mock( \WP_Query::class );
+		$query->allows( 'is_main_query' )->andReturn( $main );
+		$query->allows( 'is_tax' )->with( TranslatedTypes::SHARED_ARCHIVES )->andReturn( $shared );
+		$query->allows( 'get' )->with( 'post_type' )->andReturn( $post_type );
+		$query->shouldReceive( 'set' )->with( 'post_type', 'product' )->times( $scoped ? 1 : 0 );
+
+		( new TranslatedTypes() )->shared_archive_query( $query );
+
+		$this->assertConditionsMet();
+	}
 
 	/**
 	 * The x-default alternate points at the English URL.

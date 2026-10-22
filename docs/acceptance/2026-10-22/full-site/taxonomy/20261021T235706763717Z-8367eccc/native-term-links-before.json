@@ -1,0 +1,410 @@
+[
+  {
+    "taxonomy": "product_brand",
+    "id": 205,
+    "slug": "chint",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/brand/chint/",
+    "de": "http://127.0.0.1:9290/de/brand/chint/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 436,
+    "slug": "dehn",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/dehn/",
+    "de": "http://127.0.0.1:9290/de/brand/dehn/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 194,
+    "slug": "ecoflow",
+    "count": 38,
+    "en": "http://127.0.0.1:9290/brand/ecoflow/",
+    "de": "http://127.0.0.1:9290/de/brand/ecoflow/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 191,
+    "slug": "goodwe",
+    "count": 48,
+    "en": "http://127.0.0.1:9290/brand/goodwe/",
+    "de": "http://127.0.0.1:9290/de/brand/goodwe/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 437,
+    "slug": "lapp",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/lapp/",
+    "de": "http://127.0.0.1:9290/de/brand/lapp/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 206,
+    "slug": "mbs",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/mbs/",
+    "de": "http://127.0.0.1:9290/de/brand/mbs/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 438,
+    "slug": "mersen",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/mersen/",
+    "de": "http://127.0.0.1:9290/de/brand/mersen/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 193,
+    "slug": "pylontech",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/brand/pylontech/",
+    "de": "http://127.0.0.1:9290/de/brand/pylontech/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 192,
+    "slug": "saj",
+    "count": 68,
+    "en": "http://127.0.0.1:9290/brand/saj/",
+    "de": "http://127.0.0.1:9290/de/brand/saj/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 440,
+    "slug": "staubli",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/staubli/",
+    "de": "http://127.0.0.1:9290/de/brand/staubli/"
+  },
+  {
+    "taxonomy": "product_brand",
+    "id": 442,
+    "slug": "trina-solar",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/trina-solar/",
+    "de": "http://127.0.0.1:9290/de/brand/trina-solar/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 208,
+    "slug": "chint",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/brand/chint/",
+    "de": "http://127.0.0.1:9290/de/brand/chint/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 443,
+    "slug": "dehn",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/dehn/",
+    "de": "http://127.0.0.1:9290/de/brand/dehn/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 45,
+    "slug": "ecoflow",
+    "count": 42,
+    "en": "http://127.0.0.1:9290/brand/ecoflow/",
+    "de": "http://127.0.0.1:9290/de/brand/ecoflow/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 70,
+    "slug": "goodwe",
+    "count": 98,
+    "en": "http://127.0.0.1:9290/brand/goodwe/",
+    "de": "http://127.0.0.1:9290/de/brand/goodwe/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 444,
+    "slug": "lapp",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/lapp/",
+    "de": "http://127.0.0.1:9290/de/brand/lapp/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 209,
+    "slug": "mbs",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/mbs/",
+    "de": "http://127.0.0.1:9290/de/brand/mbs/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 445,
+    "slug": "mersen",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/mersen/",
+    "de": "http://127.0.0.1:9290/de/brand/mersen/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 78,
+    "slug": "pylontech",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/brand/pylontech/",
+    "de": "http://127.0.0.1:9290/de/brand/pylontech/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 94,
+    "slug": "saj",
+    "count": 68,
+    "en": "http://127.0.0.1:9290/brand/saj/",
+    "de": "http://127.0.0.1:9290/de/brand/saj/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 446,
+    "slug": "staubli",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/staubli/",
+    "de": "http://127.0.0.1:9290/de/brand/staubli/"
+  },
+  {
+    "taxonomy": "pa_brand",
+    "id": 447,
+    "slug": "trina-solar",
+    "count": 0,
+    "en": "http://127.0.0.1:9290/brand/trina-solar/",
+    "de": "http://127.0.0.1:9290/de/brand/trina-solar/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 507,
+    "slug": "chint",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/chint/",
+    "de": "http://127.0.0.1:9290/de/series/chint/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 519,
+    "slug": "ecoflow-battery-installation-accessories",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/ecoflow-battery-installation-accessories/",
+    "de": "http://127.0.0.1:9290/de/series/ecoflow-battery-installation-accessories/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 518,
+    "slug": "ecoflow-ocean-2-battery",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/ecoflow-ocean-2-battery/",
+    "de": "http://127.0.0.1:9290/de/series/ecoflow-ocean-2-battery/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 511,
+    "slug": "ecoflow-ocean2-hd-p3-s2",
+    "count": 14,
+    "en": "http://127.0.0.1:9290/series/ecoflow-ocean2-hd-p3-s2/",
+    "de": "http://127.0.0.1:9290/de/series/ecoflow-ocean2-hd-p3-s2/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 516,
+    "slug": "ecoflow-ocean2-lfp-battery-s2",
+    "count": 4,
+    "en": "http://127.0.0.1:9290/series/ecoflow-ocean2-lfp-battery-s2/",
+    "de": "http://127.0.0.1:9290/de/series/ecoflow-ocean2-lfp-battery-s2/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 515,
+    "slug": "ecoflow-ocean2-plus-hd-p1-s2",
+    "count": 20,
+    "en": "http://127.0.0.1:9290/series/ecoflow-ocean2-plus-hd-p1-s2/",
+    "de": "http://127.0.0.1:9290/de/series/ecoflow-ocean2-plus-hd-p1-s2/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 502,
+    "slug": "goodwe-bat-c",
+    "count": 10,
+    "en": "http://127.0.0.1:9290/series/goodwe-bat-c/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-bat-c/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 510,
+    "slug": "goodwe-ems",
+    "count": 4,
+    "en": "http://127.0.0.1:9290/series/goodwe-ems/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-ems/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 523,
+    "slug": "goodwe-esa-3-10kw-eha-g20",
+    "count": 12,
+    "en": "http://127.0.0.1:9290/series/goodwe-esa-3-10kw-eha-g20/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-esa-3-10kw-eha-g20/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 512,
+    "slug": "goodwe-esa-5-30kw-eta-g20",
+    "count": 22,
+    "en": "http://127.0.0.1:9290/series/goodwe-esa-5-30kw-eta-g20/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-esa-5-30kw-eta-g20/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 520,
+    "slug": "goodwe-esa-bat-d-g20",
+    "count": 12,
+    "en": "http://127.0.0.1:9290/series/goodwe-esa-bat-d-g20/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-esa-bat-d-g20/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 522,
+    "slug": "goodwe-esa-lcn",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/goodwe-esa-lcn/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-esa-lcn/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 501,
+    "slug": "goodwe-et-80-100k",
+    "count": 8,
+    "en": "http://127.0.0.1:9290/series/goodwe-et-80-100k/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-et-80-100k/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 517,
+    "slug": "goodwe-etr",
+    "count": 12,
+    "en": "http://127.0.0.1:9290/series/goodwe-etr/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-etr/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 513,
+    "slug": "goodwe-hca",
+    "count": 6,
+    "en": "http://127.0.0.1:9290/series/goodwe-hca/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-hca/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 508,
+    "slug": "goodwe-meters",
+    "count": 4,
+    "en": "http://127.0.0.1:9290/series/goodwe-meters/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-meters/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 509,
+    "slug": "goodwe-sts-125k",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/goodwe-sts-125k/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-sts-125k/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 524,
+    "slug": "goodwe-sts-30-60k",
+    "count": 4,
+    "en": "http://127.0.0.1:9290/series/goodwe-sts-30-60k/",
+    "de": "http://127.0.0.1:9290/de/series/goodwe-sts-30-60k/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 505,
+    "slug": "pylontech-optim-utility",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/pylontech-optim-utility/",
+    "de": "http://127.0.0.1:9290/de/series/pylontech-optim-utility/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 496,
+    "slug": "saj-accessories",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/saj-accessories/",
+    "de": "http://127.0.0.1:9290/de/series/saj-accessories/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 500,
+    "slug": "saj-b2-bu3",
+    "count": 12,
+    "en": "http://127.0.0.1:9290/series/saj-b2-bu3/",
+    "de": "http://127.0.0.1:9290/de/series/saj-b2-bu3/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 506,
+    "slug": "saj-b2-hv-5-25kwh",
+    "count": 4,
+    "en": "http://127.0.0.1:9290/series/saj-b2-hv-5-25kwh/",
+    "de": "http://127.0.0.1:9290/de/series/saj-b2-hv-5-25kwh/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 503,
+    "slug": "saj-ci-line",
+    "count": 14,
+    "en": "http://127.0.0.1:9290/series/saj-ci-line/",
+    "de": "http://127.0.0.1:9290/de/series/saj-ci-line/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 514,
+    "slug": "saj-data-collectors",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/saj-data-collectors/",
+    "de": "http://127.0.0.1:9290/de/series/saj-data-collectors/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 521,
+    "slug": "saj-emanager",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/saj-emanager/",
+    "de": "http://127.0.0.1:9290/de/series/saj-emanager/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 504,
+    "slug": "saj-emanager-c1-pro",
+    "count": 2,
+    "en": "http://127.0.0.1:9290/series/saj-emanager-c1-pro/",
+    "de": "http://127.0.0.1:9290/de/series/saj-emanager-c1-pro/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 497,
+    "slug": "saj-h2",
+    "count": 12,
+    "en": "http://127.0.0.1:9290/series/saj-h2/",
+    "de": "http://127.0.0.1:9290/de/series/saj-h2/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 498,
+    "slug": "saj-hs2",
+    "count": 8,
+    "en": "http://127.0.0.1:9290/series/saj-hs2/",
+    "de": "http://127.0.0.1:9290/de/series/saj-hs2/"
+  },
+  {
+    "taxonomy": "pa_series",
+    "id": 499,
+    "slug": "saj-hs3",
+    "count": 10,
+    "en": "http://127.0.0.1:9290/series/saj-hs3/",
+    "de": "http://127.0.0.1:9290/de/series/saj-hs3/"
+  }
+]

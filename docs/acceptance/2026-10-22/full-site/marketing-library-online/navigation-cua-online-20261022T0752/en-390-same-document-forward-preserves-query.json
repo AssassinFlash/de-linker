@@ -1,0 +1,67 @@
+{
+  "active": [],
+  "adminBar": false,
+  "css": [
+    "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626156"
+  ],
+  "first": null,
+  "focus": {
+    "id": "",
+    "tag": "BODY",
+    "text": "    Your cookie choices  We use essential cookies to keep this website working. With your permission, Google Analytics helps us understand how the sit"
+  },
+  "fonts": "loaded",
+  "height": 1000,
+  "host": {
+    "bottom": 1911.1640625,
+    "height": 1415.8984375,
+    "left": 20,
+    "right": 370,
+    "top": 495.265625,
+    "width": 350,
+    "x": 20,
+    "y": 495.265625
+  },
+  "observedAt": "2026-10-21T23:55:41.754Z",
+  "overflow": false,
+  "panels": [
+    {
+      "hidden": true,
+      "id": "linker-library-panel-faq",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "hidden": true,
+      "id": "linker-library-panel-documents",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "query": "AIO3",
+  "reduced": false,
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "faq",
+  "stickyBottom": 471.265625,
+  "url": "https://de-linker.com/faq-download/?tab=documents#linker-library-panel-faq",
+  "width": 390,
+  "y": 11.5
+}

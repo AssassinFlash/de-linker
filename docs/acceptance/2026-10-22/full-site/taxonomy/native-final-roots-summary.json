@@ -1,0 +1,12 @@
+{
+  "run": "20261021T235706763717Z-8367eccc",
+  "actual_native_requests": 90,
+  "shared_root_requests": 80,
+  "empty_root_requests": 16,
+  "all_shared_roots_200": true,
+  "all_root_language_canonical_hreflang_and_switch_destinations_match_native_term_pairs": true,
+  "all_returned_posts_match_requested_language": true,
+  "terms_unchanged": true,
+  "observer_removed": true,
+  "scope": "Native current shared-taxonomy root acceptance only. Ten explicit feed/paged controls retain separate results; SAJ duplicate displayed page two remains open."
+}

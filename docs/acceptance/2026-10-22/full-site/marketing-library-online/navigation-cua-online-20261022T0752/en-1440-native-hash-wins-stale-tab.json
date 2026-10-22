@@ -1,0 +1,63 @@
+{
+  "active": [
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-zone-documents"
+    }
+  ],
+  "adminBar": false,
+  "css": [
+    "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626156"
+  ],
+  "first": null,
+  "focus": {
+    "id": "",
+    "tag": "BODY",
+    "text": "    Your cookie choices  We use essential cookies to keep this website working. With your permission, Google Analytics helps us understand how the sit"
+  },
+  "fonts": "loaded",
+  "height": 1000,
+  "observedAt": "2026-10-21T23:54:29.843Z",
+  "overflow": false,
+  "panels": [
+    {
+      "hidden": true,
+      "id": "linker-library-panel-faq",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "hidden": false,
+      "id": "linker-library-panel-documents",
+      "rect": {
+        "bottom": 7502.8125,
+        "height": 7342.796875,
+        "left": 344,
+        "right": 1360,
+        "top": 160.015625,
+        "width": 1016,
+        "x": 344,
+        "y": 160.015625
+      }
+    }
+  ],
+  "query": "",
+  "reduced": true,
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "documents",
+  "stickyBottom": 137,
+  "url": "https://de-linker.com/faq-download/?tab=faq#linker-library-panel-documents",
+  "width": 1440,
+  "y": 382
+}

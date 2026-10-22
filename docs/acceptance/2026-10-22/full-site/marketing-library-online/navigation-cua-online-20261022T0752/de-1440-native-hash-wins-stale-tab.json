@@ -1,0 +1,63 @@
+{
+  "active": [
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-zone-documents"
+    }
+  ],
+  "adminBar": false,
+  "css": [
+    "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626156"
+  ],
+  "first": null,
+  "focus": {
+    "id": "",
+    "tag": "BODY",
+    "text": "    Ihre Cookie-Auswahl  Wir verwenden notwendige Cookies für den Betrieb dieser Website. Mit Ihrer Einwilligung analysieren wir die Nutzung mit Googl"
+  },
+  "fonts": "loaded",
+  "height": 1000,
+  "observedAt": "2026-10-21T23:53:21.782Z",
+  "overflow": false,
+  "panels": [
+    {
+      "hidden": true,
+      "id": "linker-library-panel-faq",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "hidden": false,
+      "id": "linker-library-panel-documents",
+      "rect": {
+        "bottom": 7556.609375,
+        "height": 7342.796875,
+        "left": 344,
+        "right": 1360,
+        "top": 213.8125,
+        "width": 1016,
+        "x": 344,
+        "y": 213.8125
+      }
+    }
+  ],
+  "query": "",
+  "reduced": false,
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "documents",
+  "stickyBottom": 179.8125,
+  "url": "https://de-linker.com/de/faq-dokumente/?tab=faq#linker-library-panel-documents",
+  "width": 1440,
+  "y": 353
+}

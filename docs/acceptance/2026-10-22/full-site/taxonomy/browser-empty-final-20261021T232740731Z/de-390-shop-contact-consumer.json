@@ -1,0 +1,11 @@
+{
+  "contextElements": [],
+  "formVisibleText": "KONTAKT ZU LINKER\nWie können wir helfen?\n\nBeschreiben Sie Ihr Anliegen. Für die Antwort verwenden wir die unten angegebene E-Mail-Adresse.\n\nIhre Frage\nEs geht um\nEine Frage\nProduktberatung\nPreis und Verfügbarkeit\nProduktunterlagen\nProjekt besprechen\nHilfe zu einer Bestellung\nZusammenarbeit mit Linker\nWohin dürfen wir antworten?\nName\nE-Mail für die Antwort\nUnternehmen optional\n\nFür eine Frage brauchen Sie weder ein Konto noch ein Projekt.\n\nIch bin damit einverstanden, dass meine Angaben zur Beantwortung dieser Nachricht verwendet werden.\nNachricht senden\n↗\n\nIhre Nachricht geht an das Linker-Team. Wir antworten an die Adresse, die Sie hier angeben.\n\nLIEBER PER E-MAIL?\nsales@de-linker.com\n\nSchreiben Sie unserem Team direkt. Das Öffnen Ihres E-Mail-Programms sendet noch keine Nachricht.\n\nNOCH IN DER ORIENTIERUNG?\nNehmen Sie sich Zeit.\n\nMit Genie können Sie Ihre Möglichkeiten erkunden und später zu Ihrer Frage zurückkehren.\n\nMit Genie weiterdenken\n↗",
+  "height": 1000,
+  "intent": "product",
+  "message": "",
+  "submitted": false,
+  "title": "Kontakt zu Linker | Anfragen zu Solar & Speicher",
+  "url": "http://127.0.0.1:9290/de/kontakt/?intent=product&kind=catalogue&title=Archiv%3A+Wechselrichter%2C+Speicher+und+Systeme&search=linker-owned-no-match-20261022&source=http%3A%2F%2F127.0.0.1%3A9290%2Fde%2Fprodukte%2F",
+  "width": 390
+}

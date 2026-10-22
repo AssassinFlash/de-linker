@@ -133,6 +133,7 @@ final class PresentCommand {
 			$this->backfill_backup( $templates->created_ids() );
 		}
 		WP_CLI::log( sprintf( 'templates: created %d, updated %d, unchanged %d', $report['created'], $report['updated'], $report['unchanged'] ) );
+		WP_CLI::log( sprintf( 'native product-taxonomy assignments: updated %d', $report['archive_assignments_updated'] ) );
 		if ( array() !== $report['de_twins_missing'] ) {
 			// A page type without a German twin keeps whatever template this
 			// site already carried on its German page — the state the German
@@ -204,6 +205,11 @@ final class PresentCommand {
 				)
 			);
 			++$restored;
+		}
+		try {
+			( new \Linker\Commerce\Presentation\ArchiveAssignments() )->restore( (array) ( $backup['archive_assignments'] ?? array() ) );
+		} catch ( \RuntimeException $error ) {
+			WP_CLI::error( $error->getMessage() . ' The present backup is kept.' );
 		}
 
 		foreach ( (array) ( $backup['created_templates'] ?? array() ) as $created_id ) {
@@ -387,19 +393,20 @@ final class PresentCommand {
 			$settings = array();
 		}
 
-		update_option(
-			self::BACKUP_OPTION,
-			array(
-				'at'                => gmdate( 'Y-m-d H:i:s' ) . ' UTC',
-				'templates'         => $templates,
-				'custom_css'        => (string) wp_get_custom_css(),
-				'partials'          => $partials,
-				'settings'          => $settings,
-				'settings_existed'  => $settings_existed,
-				'created_templates' => array(),
-			),
-			false
+		$backup = array(
+			'at'                  => gmdate( 'Y-m-d H:i:s' ) . ' UTC',
+			'templates'           => $templates,
+			'custom_css'          => (string) wp_get_custom_css(),
+			'partials'            => $partials,
+			'settings'            => $settings,
+			'settings_existed'    => $settings_existed,
+			'created_templates'   => array(),
+			'archive_assignments' => ( new Templates() )->archive_assignment_snapshot(),
 		);
+		update_option( self::BACKUP_OPTION, $backup, false );
+		if ( get_option( self::BACKUP_OPTION ) !== $backup ) {
+			WP_CLI::error( 'Presentation backup failed readback: refusing to change templates or their assignments.' );
+		}
 		WP_CLI::log( sprintf( 'backup: %d templates, additional css, %d partials staged for rollback', count( $templates ), count( $partials ) ) );
 	}
 

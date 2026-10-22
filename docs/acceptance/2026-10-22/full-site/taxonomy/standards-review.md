@@ -1,0 +1,91 @@
+# Shared archive routes — Standards source review
+
+Verdict: **SOURCE PASS: no actionable production-source blocker found in the original six-file diff against `ff741c57` or the later native empty-root hide-filter increment (seven source/test files in total). The hide-filter increment passes both narrow Spec and Standards review.** The permanent fingerprint regression gap is closed and independently mutation-checked. The parent's native cache lifecycle evidence was read and is identified below. Final language-switch, helper-source, ordered-route and rendered acceptance remain separate; this verdict does not establish that the live defect is repaired.
+
+The reviewed worktree is `/Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker`. Repository `AGENTS.md` and `README.md` govern. The review used the existing native-source investigation and read Polylang 3.8.11 at `/Users/chesterjohn/de-linker-local/privacyviz/wordpress/wp-content/plugins/polylang/`; it did not start an instance or write an instance option. The reviewer wrote only owned review/design documents and temporary fixtures outside the repository. Other contributors' source and working trees were left intact.
+
+## Source findings
+
+- `Plugin::register()` adds `pll_filtered_taxonomies` while the plugin is included, before the API-dependent `pll_init` callback. `TranslatedTypes::shared_archives()` needs no Polylang API or taxonomy-registration lookup. This avoids deriving an empty declaration before Woo registers attributes and avoids relying on a late addition after the native static list has formed.
+- `TranslatedTypes::SHARED_ARCHIVES` is limited to `product_brand`, `pa_brand` and `pa_series`. The callback preserves native and other plugins' values, adds the approved names and removes duplicate values. It does not modify the translated-taxonomy list, term language, translation pairs or product assignments. Native `Taxonomies::get_filtered(true)` later intersects declarations with registered names. Confirming the installed public/product permastruct configuration is still a native probe requirement.
+- Native `links-permalinks.php::get_rewrite_rules_filters()` includes filtered taxonomies, and `links-directory.php::rewrite_rules()` owns the complete language-prefixed native rule family. The change adds no manual root/feed/pagination rule, regex fallback, OR-taxonomy query, duplicate term or second language-link implementation. `UrlSegments::polylang_rule()` retains its product/product-category/product-archive exclusions. The existing German pagination aliases are unchanged.
+- The added `woocommerce_product_query` action declares `post_type=product` only when the actual query is main, belongs to the three-name shared archive list and its existing type is strictly `''` or `null`. Existing `product`, `post`, `any`, array declarations, secondary queries and other taxonomies are preserved. Installed WooCommerce `includes/class-wc-query.php::pre_get_posts()` delegates product-taxonomy main queries to `product_query()`, which fires this native action at line 605. Polylang `frontend/frontend-links.php::get_translation_url()` passes the main query's post type into its Other archives count; `src/model.php::count_posts()` at lines 352–365 falls back to blog posts when no valid post type remains. The narrow declaration therefore fixes inferred product identity at its native source; it does not fabricate a count, switcher URL, language or taxonomy fallback.
+- `UrlSegments::refresh()` now fingerprints both the existing German rules and the explicit shared-archive declaration. This changes the old fingerprint without requiring a taxonomy data migration. The existing `wp_loaded` priority 20 refresh remains after native rewrite-filter preparation; it retains the soft flush, autoload-disabled fingerprint update and unchanged-value early return.
+- Rolling back to the baseline fingerprint algorithm produces a different expected fingerprint and invokes the existing soft refresh again. This is source-level rollback behavior, independently exercised below; it is not evidence that a deployed rollback restored its persisted rule graph.
+- No PHP visual layer, inline style, snippet channel, new dependency, customer-copy change, broad cleanup or old implementation was introduced by this diff. The scoped old-identifier search over the six changed files returned no matches.
+
+## Native empty-root hide-filter increment — narrow Spec and Standards PASS
+
+The later increment adds `Plugin::hook()` registration of `pll_hide_archive_translation_url` at priority 10 with three arguments, `TranslatedTypes::hide_shared_archive()`, its strict hook expectation and the new `SharedArchiveLinksTest`. The earlier source hashes at the time of the query-only review have been replaced in the final table below; earlier native lifecycle evidence is explicitly version-limited.
+
+The reviewer independently read installed Polylang 3.8.11 `src/frontend/frontend-links.php::get_translation_url()` and `get_archive_url()` in `/Users/chesterjohn/de-linker-local/sharedarchives/wordpress/wp-content/plugins/polylang/`. In Other archives, the native caller passes its count decision, the target language **slug**, and the actual count arguments; when permitted it calls its own `get_archive_url()`. That method switches the native requested URL through the configured language model, removes paging through the existing helper, and retains the existing archive/translation filters. The callback does not create a URL, change the count, pair/copy terms or add a second language-link writer. Registration during `pll_init` precedes normal frontend switcher/alternate-link resolution and its per-request translation URL cache.
+
+The callback preserves an already-visible native decision. It otherwise rejects non-main queries, 404, paged, feed and native search requests; requires a real positive-ID `WP_Term` in the three-name approved shared list; refuses translated taxonomies; and requires a registered public/publicly-queryable taxonomy attached to products with a string query variable. The native count arguments must name exactly `product` and the queried term's slug under that registered query variable. The target slug must appear in the configured native language list. These conditions implement the approved valid-root seam without broadening explicit unrelated post types, unknown terms or pagination. The custom product `q` filter is distinct from native `is_search()` and does not by itself disqualify a valid archive root.
+
+The final formatting/temporary-variable cleanup (`0 >= term_id`, separate `$argument_slug`, test documentation/alignment) was re-read and preserves the reviewed comparisons. Independent command `vendor/bin/phpunit --filter 'SharedArchiveLinksTest|PluginTest|SeoTest|UrlSegmentsTest'` passed **58 tests / 77 assertions** again against the final hashes below, including all 26 hide-policy cases and the strict priority/arity hook contract. The tests cover all three approved taxonomies, both configured target languages, preservation of false, main/secondary, 404/paged/feed/search, no/invalid term, unrelated/translated/unregistered/nonpublic/nonqueryable taxonomy, nonproduct attachment, absent native query variable, incompatible count type, missing/wrong count slug and unknown language. `git diff --check` passed. These are actual callback/hook tests with WP_Mock, not native URL/rendering integration tests.
+
+No concrete security, typing, native-authority, scope or regression blocker was found in this increment. The parent reports its actual local DEHN header now reaches `/de/brand/dehn/` and native alternates return; that action was performed by the parent, not independently repeated by this reviewer. The new callback alone does not repair the separate empty Woo loop's LC template selection, search/Clear escape or visual surface. Those remain pending with the LC assignment implementer and the parent's browser acceptance. The older route/cache matrix cannot be relabelled as a new-hide-policy full PASS.
+
+## Independent verification
+
+After the query-declaration increment, independent `vendor/bin/phpunit --filter 'PluginTest|SeoTest|UrlSegmentsTest'` passed **32 tests / 51 assertions**. The eight new query cases enforce empty/null versus explicit product/post/any/array values, main versus secondary query, and shared versus other taxonomy. `PluginTest` includes the new native action in its strict hook list and uses the existing `expectHookAdded` contract for the early filter with callback class/method, priority 10 and one argument. `git diff ff741c57 --check` reported no whitespace errors. Parent separately reports the complete plugin suite as 248 tests / 597 assertions, WPCS and PHPStan with `--memory-limit=1G` green; those complete checks were not repeated by this reviewer.
+
+A temporary fixture outside the repository executes the actual current `UrlSegments` and an otherwise unchanged, renamed baseline class extracted from `ff741c57`, using real JSON serialization and in-memory function doubles. It loads no WordPress instance and writes no database or rewrite option. The fixture is retained at `/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/shared-archive-standards-d2ihsjow/fingerprint-probe.php`.
+
+Its SHA-256 is `31d85830cda95b2ec08af9f879ea2611684ad6f4ef22ee6e9885665f0dc4c128`; the renamed baseline class has SHA-256 `7a137d007164a4a7756fb14a1bf8ad5c820a85db205ba164669536f26bdaa005`. It was rerun after the permanent-test correction. The exact stdout is retained beside it as `fingerprint-probe-output.json`, SHA-256 `ab44bba4f829fc0137bfdf5d4082240d7acc808c7a9bbcb1c7c8d6d8e2e95b31`.
+
+The fixture passed these checks:
+
+1. A baseline fingerprint (`6508a399351297bcbf37bcdeddc009d7`) becomes the new fingerprint (`0667b179c7bee4ba2b7e02ce408fbe20`) with exactly one soft flush.
+2. The actual encoded input contains both `german` and the exact `SHARED_ARCHIVES` declaration.
+3. A second unchanged current refresh performs no flush.
+4. Returning to the baseline algorithm restores its fingerprint with exactly one soft flush; a subsequent unchanged baseline refresh performs none.
+5. The native associative `post_format => post_format` declaration, another plugin's shared entry and an existing `pa_brand` entry survive deduplication. The approved names remain absent from `TAXONOMIES`.
+
+These checks establish the current helper behavior with controlled function doubles. They do not exercise real native permastruct generation, cache warm-up, request parsing, product queries, canonical redirects or browser links.
+
+## Permanent test regression gap — closed
+
+Both permanent refresh tests now constrain the actual `wp_json_encode()` argument to an envelope containing the existing German rules and the explicit three-name shared list, and return real JSON serialization. The upgrade test supplies the actual German-only baseline hash, requires a distinct new hash and one soft flush/update. The unchanged test supplies the actual new hash and forbids both flush and update. Thus omission of the new field cannot pass merely because a fixed mock return ignores the input.
+
+An independent mutation check copied only `UrlSegments.php` to the temporary fixture directory, removed only its `shared_archives` fingerprint field, and preloaded that class through a temporary PHPUnit bootstrap. It ran the two actual, unchanged repository refresh tests. Both rejected the mutant with `NoMatchingExpectationException` for the incomplete `wp_json_encode(['german' => …])` argument, exit 2. This was the expected negative result, not a syntax or bootstrap failure. Repository and instance sources were not mutated. The mutant SHA-256 is `27b89f848b5061c8467d0eb313102ded05f60235cf46e47179f14a7d3a921ffb`; the retained `permanent-fingerprint-mutant.log` SHA-256 is `f696ea1d1f6528b8dbd6ad0ac350390d8d3e3bf94626dd403eea79c273c8b584`.
+
+The permanent omission/upgrade/warm regression is therefore closed. The independently executed baseline/current/baseline four-step fixture remains supplemental rollback evidence under function doubles, not native-instance execution or a deployed rollback PASS.
+
+## Parent-executed native cache lifecycle
+
+The reviewer read `native-cache-lifecycle.json`, SHA-256 `e895e52a931061ccf9bafb16c8ec2942342eb9210cc64924145a8a3b928e958c`. This was executed by the parent on the isolated local instance, not by this reviewer. Its three recorded source hashes match the earlier reviewed query-declaration revision. They do **not** identify the later hide-filter revision in the current hash table; this lifecycle record is historical evidence for its stated source/cache phases, not a native execution PASS for the new hide policy.
+
+The phases current-warm → rollback → rollback-warm → upgrade → upgrade-warm record flush counts `0,1,0,1,0` and German Chint statuses `200,404,404,200,200`. CLI and HTTP class hashes agree in each phase. Current persisted rule SHA-256 `60c7b8bdd2d26b40fb0ef0fca234e943814010db89b3e946d8f8e31064334a3c` returns exactly after upgrade; shared term records remain equal across all rows. The final row records the normal source symlink restored and the observer removed. These source/cache/request bindings support the parent's native lifecycle result. They do not substitute for browser switching or later permalink-option consumer checks.
+
+The parent separately reports an earlier symlink probe mixed source reads when PHP was not restarted. That red evidence is retained by the parent and is excluded from this PASS record; no result is inferred from that earlier run.
+
+## Native brand-base configuration and rollback contract
+
+The parent found that the real `woocommerce_brand_permalink` option exists with value `''`. The reviewer read the local backup `/Users/chesterjohn/de-linker-data/privacy-visual-20261021/shared-archive-brand-option-before.txt`, SHA-256 `099cbe874c5183bfc7722b65d5160110950b628d6eac043fdff480f39d7ed1b3`; it explicitly records `{"exists":true,"value":""}` after its command preamble. This distinguishes restoring an empty value from deleting a previously absent option.
+
+Installed WooCommerce `includes/class-wc-brands.php::init_taxonomy()` at lines 267–272 reads this native option and, only when it is empty, substitutes `__('brand', 'woocommerce')`. The parent's reported German `/de/Marke/chint/` helper source is therefore consistent with the actual native fallback. Explicitly setting the existing public base `brand` in the native option is a proportionate configuration repair: it preserves the established addresses and shared terms without adding a PHP rewrite or translating/duplicating term data.
+
+The reviewer also read the local option-update success log (SHA-256 `32b10c7fc4e2765f251d1d8691ed412bac37ebfa4fe6a586c495800c92aa7a76`) and native rewrite-flush success log (SHA-256 `22aafb47926cfb99f3e3b9eaa2b3cbf32e5a2d58fda0398da7d04df78b7ae89b`). These show reported command success; they are not an independent after-value, final German taxonomy-registration or actual helper-link readback. Those final consumer checks remain with the parent.
+
+The rollback contract must restore the existing option to the original **empty string**, not delete it, then explicitly regenerate the matching native rewrite rules and read back the option, ordered rules and affected EN/DE destinations. Code rollback and option rollback are separate parts of a complete reversal. The code fingerprint contains the German-rule/shared-taxonomy declaration, not this Woo option, so neither an unchanged fingerprint nor the earlier source-only cache lifecycle proves activation or reversal of the option change. Use an explicit soft flush after configuration changes in both directions; no per-request option forcing or flushing is justified.
+
+The local option backup is suitable for reversing this isolated configuration change. Before any eventual production option write, perform the project's required full/incremental data backup, retain a fresh native before-value, apply only the planned option change, and read back the installed value and actual native consumers. A code-deployment database snapshot alone must not be described as the separate complete data-write backup. This reviewer has not written local-instance or production data, and no production option change is claimed here.
+
+## Acceptance still required
+
+The isolated `sharedarchives` instance remains the parent's customer-path gate. Final coverage must bind to the reviewed query callback and explicit native brand option: ordered EN/DE root/feed/pagination rules and capture targets; the unchanged `product_brand` winner where `pa_brand` shares its base; actual shared term IDs and language-filtered product IDs; native term links; header/footer roundtrips; canonical and `page`/`seite` behavior; unknown/empty cases; and the actual German helper source. The source-only cache lifecycle above is supplied evidence for its stated phases, not a blanket PASS for the ongoing 90-request consumer matrix or CUA. An HTTP 200 or a late CLI filter call alone cannot close those checks. Stored LC links require their own consumer inventory; this source diff does not make unrecognized hard-coded paths language-aware.
+
+No production write, deployment, browser action or change to the ordinary-failure worktree was performed for this review.
+
+## Reviewed file hashes
+
+| File | SHA-256 |
+| --- | --- |
+| `plugins/linker-i18n/includes/Plugin.php` | `e8e1635829f43bb1e58f510fad83c3d74c489344a30564a82de87108e910fde0` |
+| `plugins/linker-i18n/includes/TranslatedTypes.php` | `ebf4f82fa644cd6b30f5a9dc3954ce6c84b5b2527fb14f65fdc8aa8eb6383a6c` |
+| `plugins/linker-i18n/includes/UrlSegments.php` | `bf12d0cb7764600c43014944e214272f1ed71368489d87eb0571e9ff06c18ed8` |
+| `plugins/linker-i18n/tests/php/Unit/PluginTest.php` | `a6e8c0fed90eea7dd2f8100ae6f5f56823b8cfe4c4b42224b81e2dbd19ef3d8b` |
+| `plugins/linker-i18n/tests/php/Unit/SeoTest.php` | `6b008a384269a05b07576f210c477aaedbeee010648293fd7c831417e548cf41` |
+| `plugins/linker-i18n/tests/php/Unit/UrlSegmentsTest.php` | `8fffddb0fa7224857820576b1d1c8460960398983b7e1c2b060c804d9c96e710` |
+| `plugins/linker-i18n/tests/php/Unit/SharedArchiveLinksTest.php` | `69bd2515663ac6ad9de3960c5dc0f8806f78f81b7db53185ff7772612c18f11d` |

@@ -1,0 +1,183 @@
+{
+  "scope": "Read-only local native SEO and metadata; no policy changed or product behavior accepted.",
+  "observer_removed": true,
+  "rows": [
+    {
+      "requested": "http://127.0.0.1:9290/brand/saj/",
+      "final": "http://127.0.0.1:9290/brand/saj/",
+      "status": 200,
+      "body_sha256": "62a8bc2f9d91cd85a3d47f02f067489579e415937706e489b550ed30ff625d09",
+      "native": {
+        "uri": "/brand/saj/",
+        "is_paged": false,
+        "is_404": false,
+        "language": "en",
+        "paged_noindex_option": "1",
+        "global_noindex_option": null,
+        "effective_noindex": null,
+        "canonical_on_noindex": false
+      },
+      "canonical": [
+        "http://127.0.0.1:9290/brand/saj/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+      ],
+      "hreflangs": {
+        "en": "http://127.0.0.1:9290/brand/saj/",
+        "de": "http://127.0.0.1:9290/de/brand/saj/",
+        "x-default": "http://127.0.0.1:9290/brand/saj/"
+      }
+    },
+    {
+      "requested": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "final": "http://127.0.0.1:9290/brand/saj/page/2/",
+      "status": 200,
+      "body_sha256": "e4387b2cacc6755770c8251a9bbca88b7d42f52cb23f4b33af3b97a955d4f83e",
+      "native": {
+        "uri": "/brand/saj/page/2/",
+        "is_paged": true,
+        "is_404": false,
+        "language": "en",
+        "paged_noindex_option": "1",
+        "global_noindex_option": null,
+        "effective_noindex": null,
+        "canonical_on_noindex": false
+      },
+      "canonical": [],
+      "robots": [
+        "follow, noindex"
+      ],
+      "hreflangs": {}
+    },
+    {
+      "requested": "http://127.0.0.1:9290/de/brand/saj/",
+      "final": "http://127.0.0.1:9290/de/brand/saj/",
+      "status": 200,
+      "body_sha256": "8fd5ba01064a6ef2bd02b9d69a270919c1a93a27d6800ea1434c9b763db63338",
+      "native": {
+        "uri": "/de/brand/saj/",
+        "is_paged": false,
+        "is_404": false,
+        "language": "de",
+        "paged_noindex_option": "1",
+        "global_noindex_option": null,
+        "effective_noindex": null,
+        "canonical_on_noindex": false
+      },
+      "canonical": [
+        "http://127.0.0.1:9290/de/brand/saj/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+      ],
+      "hreflangs": {
+        "en": "http://127.0.0.1:9290/brand/saj/",
+        "de": "http://127.0.0.1:9290/de/brand/saj/",
+        "x-default": "http://127.0.0.1:9290/brand/saj/"
+      }
+    },
+    {
+      "requested": "http://127.0.0.1:9290/de/brand/saj/page/2/",
+      "final": "http://127.0.0.1:9290/de/brand/saj/seite/2/",
+      "status": 200,
+      "body_sha256": "db7f03e85b0c4e05dac76f0714530e2de966e572e7e58b2cc84de87838a1beb9",
+      "native": {
+        "uri": "/de/brand/saj/page/2/",
+        "is_paged": true,
+        "is_404": false,
+        "language": "de",
+        "paged_noindex_option": "1",
+        "global_noindex_option": null,
+        "effective_noindex": null,
+        "canonical_on_noindex": false
+      },
+      "canonical": [],
+      "robots": [
+        "follow, noindex"
+      ],
+      "hreflangs": {}
+    },
+    {
+      "requested": "http://127.0.0.1:9290/products/",
+      "final": "http://127.0.0.1:9290/products/",
+      "status": 200,
+      "body_sha256": "5de78c61d871fb43209845f87587fcf8b4c7cb8eb150cad340eb047268623bca",
+      "native": {
+        "uri": "/products/",
+        "is_paged": false,
+        "is_404": false,
+        "language": "en",
+        "paged_noindex_option": "1",
+        "global_noindex_option": null,
+        "effective_noindex": null,
+        "canonical_on_noindex": false
+      },
+      "canonical": [
+        "http://127.0.0.1:9290/products/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+      ],
+      "hreflangs": {
+        "en": "http://127.0.0.1:9290/products/",
+        "de": "http://127.0.0.1:9290/de/produkte/",
+        "x-default": "http://127.0.0.1:9290/products/"
+      }
+    },
+    {
+      "requested": "http://127.0.0.1:9290/products/?product-page=2",
+      "final": "http://127.0.0.1:9290/products/?product-page=2",
+      "status": 200,
+      "body_sha256": "42f47222e35a44bf29d7f463201dca33747d249ae36bf7080cf7ced382461b09",
+      "native": {
+        "uri": "/products/?product-page=2",
+        "is_paged": false,
+        "is_404": false,
+        "language": "en",
+        "paged_noindex_option": "1",
+        "global_noindex_option": null,
+        "effective_noindex": null,
+        "canonical_on_noindex": false
+      },
+      "canonical": [
+        "http://127.0.0.1:9290/products/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+      ],
+      "hreflangs": {
+        "en": "http://127.0.0.1:9290/products/?product-page=2",
+        "de": "http://127.0.0.1:9290/de/produkte/?product-page=2",
+        "x-default": "http://127.0.0.1:9290/products/?product-page=2"
+      }
+    },
+    {
+      "requested": "http://127.0.0.1:9290/de/produkte/?product-page=2",
+      "final": "http://127.0.0.1:9290/de/produkte/?product-page=2",
+      "status": 200,
+      "body_sha256": "68710ca21fc1c57fec06fd7634b04753a72081e3e7e986f7b6a18e0ebd96b55d",
+      "native": {
+        "uri": "/de/produkte/?product-page=2",
+        "is_paged": false,
+        "is_404": false,
+        "language": "de",
+        "paged_noindex_option": "1",
+        "global_noindex_option": null,
+        "effective_noindex": null,
+        "canonical_on_noindex": false
+      },
+      "canonical": [
+        "http://127.0.0.1:9290/de/produkte/"
+      ],
+      "robots": [
+        "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+      ],
+      "hreflangs": {
+        "en": "http://127.0.0.1:9290/products/?product-page=2",
+        "de": "http://127.0.0.1:9290/de/produkte/?product-page=2",
+        "x-default": "http://127.0.0.1:9290/products/?product-page=2"
+      }
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "action": {
+    "background": "rgb(12, 127, 115)",
+    "color": "rgb(255, 255, 255)",
+    "href": "http://127.0.0.1:9290/products/",
+    "offset": "0px",
+    "outline": "rgb(255, 255, 255) none 3px",
+    "rect": {
+      "bottom": 499.234375,
+      "height": 46,
+      "left": 41,
+      "right": 349,
+      "top": 453.234375,
+      "width": 308,
+      "x": 41,
+      "y": 453.234375
+    },
+    "text": "All products"
+  },
+  "at": "2026-10-22T03:43:09.262Z",
+  "chips": [],
+  "contact": "http://127.0.0.1:9290/contact/?intent=product&kind=catalogue&title=Archives:%20Products&search=linker-owned-no-match-20261022&source=http://127.0.0.1:9290/products/",
+  "count": null,
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792640121"
+  ],
+  "empty": "No product matches these filters. Clear one to see more.\n\nAll products",
+  "filterLabel": "Product filters",
+  "fonts": "loaded",
+  "height": 844,
+  "lang": "en-US",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/?q=linker-owned-no-match-20261022",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/",
+      "lang": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/?q=linker-owned-no-match-20261022",
+      "lang": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/",
+      "lang": "de"
+    }
+  ],
+  "overflow": false,
+  "products": 0,
+  "root": true,
+  "sort": false,
+  "url": "http://127.0.0.1:9290/products/?q=linker-owned-no-match-20261022",
+  "width": 390,
+  "y": 0
+}
