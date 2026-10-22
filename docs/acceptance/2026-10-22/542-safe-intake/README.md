@@ -50,7 +50,8 @@ LINKER_WP_ROOT=/Users/chesterjohn/de-linker-local/i542/wordpress \
 
 The combined suite passed 70 tests / 909 assertions before the additional
 erased-record release regression. The final focused SafeIntake run then passed
-16 tests / 266 assertions, including that regression. Coverage exercises native
+17 tests / 277 assertions, including that regression and the #545 staff-release
+transaction rollback boundary. Coverage exercises native
 guest/pending/approved customers, draft lines, successful/failed/forged/wrong-scope
 proof, configuration outage, unchanged normal verified admission, stable UUID
 retry, interrupted native save recovery, durable occupancy over day boundaries,

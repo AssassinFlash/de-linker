@@ -56,7 +56,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 				}
 			);
 		}
-		foreach ( array( Ledger::OPTION, IntakeStore::OPTION, Campaign::DISABLED ) as $key ) {
+		foreach ( array( Ledger::OPTION, IntakeStore::OPTION, Campaign::DISABLED, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) as $key ) {
 			$old = get_option( $key );
 			delete_option( $key );
 			$this->later(
@@ -261,6 +261,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$result = NotificationHold::release( $order->get_id(), $basis );
 		self::assertIsArray( $result );
 		self::assertGreaterThan( 0, $result['job'] );
+		self::assertTrue( ( new \Linker\Commerce\Mail\JobStore() )->critical( $result['job'] ) );
 		self::assertSame( $result, NotificationHold::release( $order->get_id(), $basis ) );
 		self::assertCount( 1, self::mail_jobs_after( $marker ) );
 		self::assertSame( $budget, get_option( Throttle::OPTION ) );
@@ -299,6 +300,36 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( array(), self::mail_jobs_after( $marker ) );
 		$order->read_meta_data( true );
 		self::assertTrue( NotificationHold::held( $order ) );
+	}
+
+	/** A failed durable staff audit rolls back its job and preserves both budgets. */
+	public function test_staff_release_rollback_preserves_existing_transport_history(): void {
+		$order = ( new Handler() )->process( $this->post() );
+		self::assertInstanceOf( WC_Order::class, $order );
+		$staff = $this->customer();
+		$user  = get_userdata( $staff->get_id() );
+		self::assertInstanceOf( \WP_User::class, $user );
+		$user->set_role( 'shop_manager' );
+		$this->as_user( $staff->get_id() );
+		$legacy = array( time() - 120 );
+		$state  = wp_json_encode( array( 'entries' => array( array( 'time' => time() - 120, 'transport' => Throttle::PHP ) ) ) );
+		update_option( Throttle::OPTION, $legacy, false );
+		update_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION, $state, false );
+		$marker = self::newest_mail_job();
+		$fail   = static fn ( $check, $id, $key ) => NotificationHold::EVENT === $key ? false : $check;
+		add_filter( 'add_comment_metadata', $fail, 10, 3 );
+		try {
+			self::assertInstanceOf( WP_Error::class, NotificationHold::release( $order->get_id(), NotificationHold::reference( $order ) ) );
+		} finally {
+			remove_filter( 'add_comment_metadata', $fail, 10 );
+		}
+		self::assertSame( array(), self::mail_jobs_after( $marker ) );
+		wp_cache_delete( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION, 'options' );
+		self::assertSame( $state, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		self::assertSame( $legacy, get_option( Throttle::OPTION ) );
+		$order->read_meta_data( true );
+		self::assertTrue( NotificationHold::held( $order ) );
+		self::assertCount( 1, get_option( IntakeStore::OPTION )['entries'] );
 	}
 
 	/** The contact adapter reports review rather than a sent-team notification. */
