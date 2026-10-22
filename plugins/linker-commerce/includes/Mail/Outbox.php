@@ -300,38 +300,47 @@ final class Outbox {
 			if ( get_post_meta( $job_id, NotificationHold::META, true ) !== $hold ) {
 				throw new \RuntimeException( 'reminder_hold_unconfirmed' );
 			}
-			$phase = 'pending_action';
+			$phase = 'pending_snapshot';
 			// A finite snapshot avoids AS's cancel-until-empty loop on a failed write.
-			$actions = as_get_scheduled_actions(
-				array(
-					'hook'     => self::HOOK,
-					'args'     => array( $job_id ),
-					'group'    => self::GROUP,
-					'status'   => 'pending',
-					'per_page' => -1,
-				),
-				'ids'
-			);
+			$actions = $this->pending_reminder_actions( $job_id, -1 );
 			foreach ( $actions as $action ) {
 				\ActionScheduler::store()->cancel_action( (int) $action );
 			}
-			$pending = as_get_scheduled_actions(
-				array(
-					'hook'     => self::HOOK,
-					'args'     => array( $job_id ),
-					'group'    => self::GROUP,
-					'status'   => 'pending',
-					'per_page' => 1,
-				),
-				'ids'
-			);
-			if ( array() !== $pending ) {
+			$phase = 'pending_readback';
+			if ( array() !== $this->pending_reminder_actions( $job_id, 1 ) ) {
 				throw new \RuntimeException( 'reminder_pending_action_unconfirmed' );
 			}
 		} catch ( \Throwable $error ) {
 			// Fixed bounded diagnostic only. Never copy DB/provider errors or the body.
 			wc_get_logger()->warning( 'Automatic review reminder retained; ' . $phase . ' confirmation failed.', array( 'source' => self::LOG_SOURCE ) );
 		}
+	}
+
+	/**
+	 * Read native AS IDs without treating a failed SELECT as confirmed absence.
+	 *
+	 * @param int $job_id Original reminder job.
+	 * @param int $limit Native AS page size, -1 for the finite snapshot.
+	 * @return array<mixed> Native action IDs.
+	 * @throws \RuntimeException When the native read did not complete.
+	 */
+	private function pending_reminder_actions( int $job_id, int $limit ): array {
+		global $wpdb;
+		$wpdb->flush();
+		$actions = as_get_scheduled_actions(
+			array(
+				'hook'     => self::HOOK,
+				'args'     => array( $job_id ),
+				'group'    => self::GROUP,
+				'status'   => 'pending',
+				'per_page' => $limit,
+			),
+			'ids'
+		);
+		if ( '' !== $wpdb->last_error ) {
+			throw new \RuntimeException( 'reminder_pending_read_unconfirmed' );
+		}
+		return $actions;
 	}
 
 	/**

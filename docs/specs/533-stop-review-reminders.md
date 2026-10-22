@@ -24,7 +24,9 @@ released. Inbox/source evidence stays private with the coordinator.
   Clear metadata cache before reading and before readback. Retain complete
   Message/category/status/attempts/error/audit. Do not delete or refund old budgets.
 - Snapshot that job's pending AS IDs once, cancel each once through the native
-  store, then read back. The native cancel-until-empty helper can loop forever
+  store, then read back. Check the native DB error separately for the initial
+  snapshot and final readback: an empty AS result after a failed SELECT is not
+  confirmed absence. The native cancel-until-empty helper can loop forever
   after a failed cancellation and is unsuitable here. Leave running actions alone.
 - Hold write/readback or cancellation failure still returns before transport.
   Keep original job/history and emit only a fixed bounded diagnostic identifying

@@ -100,26 +100,58 @@ final class ReviewReminderTest extends IntegrationTestCase {
 			}
 			return $check;
 		};
-		$cancel    = static function ( string $sql ) use ( $fault, &$fault_hit ): string {
+		$reads     = 0;
+		$cancel    = static function ( string $sql ) use ( $fault, &$fault_hit, &$reads ): string {
 			if ( 'cancel' === $fault && str_starts_with( $sql, 'UPDATE' ) && str_contains( $sql, 'actionscheduler_actions' ) && str_contains( $sql, 'canceled' ) ) {
 				$fault_hit = true;
 				return 'SELECT 0';
 			}
+			// Native AS query_actions selects IDs; cancellation's other reads are excluded.
+			if ( str_starts_with( ltrim( $sql ), 'SELECT a.action_id' ) && str_contains( $sql, 'actionscheduler_actions' ) ) {
+				++$reads;
+				if ( ( 'snapshot-read' === $fault && 1 === $reads ) || ( 'readback-read' === $fault && 2 === $reads ) ) {
+					$fault_hit = true;
+					return 'SELECT * FROM linker_synthetic_missing_reminder_actions';
+				}
+			}
 			return $sql;
 		};
+		$warnings  = array();
+		$logger    = static function ( string $line ) use ( &$warnings ): string {
+			if ( str_starts_with( $line, 'Automatic review reminder retained;' ) ) {
+				$warnings[] = $line;
+			}
+			return $line;
+		};
+		global $wpdb;
+		$suppressed = $wpdb->suppress_errors( true );
 		add_action( 'phpmailer_init', $observe, PHP_INT_MAX );
 		add_filter( 'update_post_metadata', $hold, 10, 3 );
 		add_filter( 'query', $cancel, 998 );
+		add_filter( 'woocommerce_logger_log_message', $logger );
 		try {
 			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual original-job consumer.
 		} finally {
 			remove_action( 'phpmailer_init', $observe, PHP_INT_MAX );
 			remove_filter( 'update_post_metadata', $hold, 10 );
 			remove_filter( 'query', $cancel, 998 );
+			remove_filter( 'woocommerce_logger_log_message', $logger );
+			$wpdb->suppress_errors( $suppressed );
 		}
 		$this->assertSame( 0, $attempts );
 		if ( '' !== $fault ) {
 			$this->assertTrue( $fault_hit );
+			$phases = array(
+				'hold'          => 'hold',
+				'cancel'        => 'pending_readback',
+				'snapshot-read' => 'pending_snapshot',
+				'readback-read' => 'pending_readback',
+			);
+			// Woo invokes this filter once per enabled native log handler.
+			$this->assertSame( array( 'Automatic review reminder retained; ' . $phases[ $fault ] . ' confirmation failed.' ), array_values( array_unique( $warnings ) ) );
+			if ( 'snapshot-read' === $fault || 'readback-read' === $fault ) {
+				$this->assertSame( 'snapshot-read' === $fault ? 1 : 2, $reads );
+			}
 		}
 		$stored = $jobs->load( $id );
 		$this->assertNotNull( $stored );
@@ -154,9 +186,11 @@ final class ReviewReminderTest extends IntegrationTestCase {
 	 */
 	public static function hold_failures(): array {
 		return array(
-			'normal'       => array( '' ),
-			'hold-write'   => array( 'hold' ),
-			'cancel-write' => array( 'cancel' ),
+			'normal'        => array( '' ),
+			'hold-write'    => array( 'hold' ),
+			'cancel-write'  => array( 'cancel' ),
+			'snapshot-read' => array( 'snapshot-read' ),
+			'readback-read' => array( 'readback-read' ),
 		);
 	}
 
