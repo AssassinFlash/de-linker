@@ -97,10 +97,15 @@ for ( const initial of [ 'present', 'missing', 'failed-fallback' ] ) {
 	}
 	assert.equal( ready, 1 );
 	assert.equal( win.wp.i18n, runtime );
+	const expectedDependencyRequests = {
+		present: 0,
+		missing: 1,
+		'failed-fallback': 2,
+	};
 	assert.equal(
 		requested.filter( ( url ) => url.endsWith( '/fallback-i18n.js' ) )
 			.length,
-		initial === 'present' ? 0 : initial === 'missing' ? 1 : 2
+		expectedDependencyRequests[ initial ]
 	);
 	assert.equal(
 		requested.filter( ( url ) => url.endsWith( '/genie.js' ) ).length,
