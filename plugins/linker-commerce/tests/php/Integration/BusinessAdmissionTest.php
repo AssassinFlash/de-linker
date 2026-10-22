@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 // phpcs:disable WordPress.Security.NonceVerification -- Fixture snapshots and posted data are intentionally sent to the actual native nonce/proof validators.
 // phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Isolated private env fixtures are restored in cleanup.
 
@@ -38,11 +40,23 @@ use WP_Error;
  */
 final class BusinessAdmissionTest extends IntegrationTestCase {
 
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
+
 	/**
 	 * Private fixtures never use live keys or send customer mail.
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		$this->as_user( 0 );
 		$old    = get_option( Ledger::OPTION );
 		$review = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
@@ -529,8 +543,8 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	/**
 	 * Optional customer receipt is fixed; every actual message retains team notification.
 	 */
-	public function test_target_receipt_cap_retains_business_and_team_with_no_reflected_spam(): void {
-		$target = 'same-target@example.test';
+	public function test_target_receipt_cap_retains_normal_business_and_complete_authorized_receipts(): void {
+		$target = 'same-target-' . self::tag() . '@example.test';
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		$store = new \Linker\Commerce\Mail\JobStore();
@@ -539,20 +553,21 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				$this->post( 'contact' ),
 				array(
 					'email'   => $target,
-					'name'    => 'ArbitrarySpamName',
-					'message' => 'https://spam.example.test/claim ArbitrarySpamBody',
+					'name'    => 'InstallerFixtureName',
+					'message' => 'Please quote three compatible inverters. https://example.test/product',
 				)
 			);
 			$marker = self::newest_mail_job();
-			$this->assertSame( 2 === $i ? 'sent_no_receipt' : 'sent', ( new ContactHandler() )->process( $post ) );
+			$this->assertSame( 'sent', ( new ContactHandler() )->process( $post ), 'Receipt admission follows the background verdict.' );
+			$this->authorization->drain();
 			$jobs = array_map( static fn ( int $id ) => $store->load( $id ), self::mail_jobs_after( $marker ) );
 			$this->assertCount( 2 === $i ? 1 : 2, $jobs );
 			foreach ( $jobs as $job ) {
 					$this->assertNotNull( $job );
 				if ( str_contains( $job['message']->subject, 'Your inquiry' ) ) {
-					$this->assertStringNotContainsString( 'ArbitrarySpamName', $job['message']->body );
-					$this->assertStringNotContainsString( 'ArbitrarySpamBody', $job['message']->body );
-					$this->assertStringNotContainsString( 'spam.example.test', $job['message']->body );
+					$this->assertStringContainsString( 'InstallerFixtureName', $job['message']->body );
+					$this->assertStringContainsString( 'Please quote three compatible inverters.', $job['message']->body );
+					$this->assertStringContainsString( 'https://example.test/product', $job['message']->body );
 				}
 			}
 		}
@@ -606,6 +621,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 					}
 				);
 				$this->assertSame( 'inquiry-received', $order->get_status() );
+				$this->assertSame( 'assessment_pending', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+				$this->authorization->drain();
+				$order->read_meta_data( true );
 				$this->assertSame( $reason, $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
 				$this->assertCount( 1, self::mail_jobs_after( $marker ), 'Only the normal team notice is queued.' );
 			}

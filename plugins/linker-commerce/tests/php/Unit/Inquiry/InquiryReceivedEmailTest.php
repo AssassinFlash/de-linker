@@ -39,6 +39,7 @@ final class InquiryReceivedEmailTest extends TestCase {
 		parent::setUp();
 		$this->plain_text();
 		$this->reload_plugin_textdomain();
+		$this->options( array() );
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		$this->expect_action_on_any( 'woocommerce_order_status_pending_to_' . Statuses::RECEIVED . '_notification', InquiryReceivedEmail::class, 'trigger', 10, 2 );
 		$this->email = new InquiryReceivedEmail( '/plugin/linker-commerce.php' );
@@ -47,16 +48,20 @@ final class InquiryReceivedEmailTest extends TestCase {
 	/**
 	 * The confirmation goes to the billing address, in the inquiry's language.
 	 */
-	public function test_sends_in_the_inquiry_language(): void {
+	public function test_captures_in_the_inquiry_language(): void {
 		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		$order->allows( 'get_meta' )->with( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META )->andReturn( '' );
 		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'de_DE_formal' );
 		$this->allow_locale_switch( 'de_DE_formal' );
+		// Capture renders after authorization; native Queue tests cover actual dispatch.
+		WP_Mock::expectFilterAdded( 'pre_wp_mail', \Closure::class, 9, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_log_enabled', \Closure::class, 10, 3 );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_inquiry_received', 'maria@example.test' );
 
-		$this->email->trigger( 20, $order );
+		$this->email->capture( $order );
 
 		$this->assertTrue( $this->email->is_customer_email() );
 		$this->assertSame( '20', $this->email->placeholders['{order_number}'] );

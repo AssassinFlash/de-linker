@@ -35,7 +35,7 @@ final class NewInquiryEmailTest extends TestCase {
 	/**
 	 * A received inquiry goes to the team mailbox with blind copies and a reply address of the customer.
 	 */
-	public function test_notifies_the_team(): void {
+	public function test_captures_the_team_route(): void {
 		$this->plain_text();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => $email ) );
@@ -48,16 +48,20 @@ final class NewInquiryEmailTest extends TestCase {
 		);
 		$this->expect_action_on_any( 'woocommerce_order_status_pending_to_' . Statuses::RECEIVED . '_notification', NewInquiryEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
+		$order->allows( 'get_id' )->andReturn( 20 );
 		$order->shouldReceive( 'get_meta' )->andReturn( '' );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		$order->allows( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );
 		$order->allows( 'get_formatted_billing_full_name' )->andReturn( 'Maria Beispiel' );
 		$this->allow_locale_switch( 'en_US' );
+		// Capture renders after authorization; native Queue tests cover actual dispatch.
+		WP_Mock::expectFilterAdded( 'pre_wp_mail', \Closure::class, 9, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_log_enabled', \Closure::class, 10, 3 );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_new_inquiry', 'sales@sunriverinverter.com' );
 
 		$email = new NewInquiryEmail( '/plugin/linker-commerce.php', new Options() );
-		$email->trigger( 20, $order );
+		$email->capture( $order );
 
 		$this->assertSame(
 			array(
