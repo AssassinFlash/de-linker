@@ -187,7 +187,7 @@ final class Approval {
 				if ( ! $email instanceof Emails\CustomerApprovalEmail ) {
 					continue;
 				}
-				$message = $email->preview( $user_id, $previous, $status, $reason );
+				$message = $email->preview_approval( $user_id, $previous, $status, $reason );
 				if ( null === $message ) {
 					continue;
 				}

@@ -38,7 +38,7 @@ abstract class CustomerApprovalEmail extends WC_Email {
 	 * @param string $current Desired state.
 	 * @param string $reason Complete staff reason, never truncated.
 	 */
-	public function preview( int $id, string $previous, string $current, string $reason ): ?Message {
+	public function preview_approval( int $id, string $previous, string $current, string $reason ): ?Message {
 		return $current === $this->target_status() ? Prepared::capture( fn () => $this->trigger( $id, $previous, $current, $reason ) ) : null;
 	}
 
