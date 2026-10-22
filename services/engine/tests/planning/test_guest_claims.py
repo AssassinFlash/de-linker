@@ -11,7 +11,7 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.types import Receive, Scope, Send
 
-from linker_engine.planning import archive
+from linker_engine.planning import archive, commands
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import Object, digest
 from linker_engine.planning.energy_kernel import EnergyKernel
@@ -127,28 +127,68 @@ def test_request_admitted_before_login_cannot_publish_a_late_guest_project(
     workspace: Workspace,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    published, resume = Event(), Event()
-    original = workspace.blobs.put_object
+    admitted, resume = Event(), Event()
+    original = commands.command_hash
 
-    def pause(value: Object) -> str:
-        result = original(value)
-        if value == {"late": True}:
-            published.set()
+    def pause(value: Object, key: str) -> str:
+        result = original(value, key)
+        if value.get("inputs") == {"late": True}:
+            admitted.set()
             assert resume.wait(timeout=10)
         return result
 
-    monkeypatch.setattr(workspace.blobs, "put_object", pause)
+    # Intake now validates and publishes bytes under the create transaction.
+    # Pause before that lock, so this fixture actually exercises claim-first.
+    monkeypatch.setattr(commands, "command_hash", pause)
     with ThreadPoolExecutor(max_workers=1) as pool:
         request = pool.submit(
             workspace.create, GUEST, "In flight", {"late": True}, key="late"
         )
-        assert published.wait(timeout=10)
-        receipt = GuestClaims(workspace).claim(GUEST, USER, key="login")
-        resume.set()
+        assert admitted.wait(timeout=10)
+        try:
+            receipt = GuestClaims(workspace).claim(GUEST, USER, key="login")
+        finally:
+            resume.set()
         with pytest.raises(NotFound):
             request.result(timeout=10)
     assert receipt["transferred_count"] == 0
     assert workspace.projects(USER) == []
+
+
+def test_a_create_already_holding_the_write_lock_is_included_in_login_transfer(
+    workspace: Workspace, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    publishing, resume, claim_started = Event(), Event(), Event()
+    original = workspace.blobs.put_object
+
+    def pause(value: Object) -> str:
+        result = original(value)
+        if value == {"inflight": True}:
+            publishing.set()
+            assert resume.wait(timeout=10)
+        return result
+
+    def claim() -> Object:
+        claim_started.set()
+        return GuestClaims(workspace).claim(GUEST, USER, key="login")
+
+    monkeypatch.setattr(workspace.blobs, "put_object", pause)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        creation = pool.submit(
+            workspace.create, GUEST, "In flight", {"inflight": True}, key="create"
+        )
+        assert publishing.wait(timeout=10)
+        transfer = pool.submit(claim)
+        try:
+            assert claim_started.wait(timeout=10)
+        finally:
+            resume.set()
+        project = creation.result(timeout=10)
+        receipt = transfer.result(timeout=10)
+    assert receipt["transferred_count"] == 1
+    assert workspace.get(USER, project.id).inputs == {"inflight": True}
+    with pytest.raises(NotFound):
+        workspace.get(GUEST, project.id)
 
 
 def test_competing_verified_accounts_cannot_split_one_guest_session(
