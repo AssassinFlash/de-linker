@@ -558,3 +558,22 @@ def test_available_export_precedes_curtailment_in_this_model() -> None:
         item.code for item in checks((forged,), model).checks if not item.passed
     }
     assert {"pv_export_priority", "pv_curtailment_priority"} <= failures
+
+
+def test_small_energy_delivery_is_not_recomputed_from_large_total_difference() -> None:
+    model = battery(1000, 10, internal_aux=1)
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    item = Frame(
+        Interval(start, start + timedelta(milliseconds=1)),
+        1,
+        10,
+        0,
+        OperatingLimits("connected", 0, None, None, True, False),
+        "gross_load",
+    )
+    flows = run((item,), model, EnergyOrigins(300, 400, 300))
+    assert flows[0].charge_kw == pytest.approx(1.0000003385357559)
+    verification = checks(flows, model)
+    assert verification.passed, [
+        item.document() for item in verification.checks if not item.passed
+    ]

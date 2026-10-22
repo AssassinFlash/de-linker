@@ -114,7 +114,7 @@ def verify(
             )
         )
         energy_scale = max(model.usable_window_kwh, flow.before.total, flow.after.total)
-        for code, residual in priority_residuals(flow, model).items():
+        for code, residual in priority_residuals(flow).items():
             record(code, residual, "kW", index, power_scale)
         ac_left = math.fsum((flow.pv_available_kw, flow.import_kw, flow.discharge_kw))
         ac_right = math.fsum(

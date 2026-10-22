@@ -60,12 +60,20 @@ battery, 2 kW PV and 1 kW load, a forged trace imported 1 kW and curtailed 2 kW
 instead of using direct PV, yet passed. Its solar autarky changed from 100% to
 0%. This is model semantics, not an invitation to test arbitrary EMS policies.
 
-Independent equations now reconstruct the fixed priorities and bounded
-delivery from frame, command, initial energy and model. They do not call the
+Independent equations now reconstruct the fixed priorities at actual delivery,
+whose bounds remain independently verified by energy/source/capacity/reserve/
+power/command equations. They do not call the
 actuator, source withdrawal or its grid-limit helper. Four regressions first
 failed against the previous verifier (all forged traces passed), then passed
 after repair: direct PV, battery load-before-aux, PV-before-grid charging, and
-export-before-curtailment. Planning now has 90 passes, strict mypy/ruff/format
-passes. Both independent axes will recheck this fixed increment. The full
+export-before-curtailment. Standards found a short-interval numerical regression
+in the first repair: reconstructing an energy-limited power from large total
+inventory subtraction amplified a 1.14e-13 kWh arithmetic difference over 1 ms.
+The allocation checker now uses the already independently constrained actual
+delivery instead of duplicating the actuator's energy-to-power truncation.
+The original simple 1000 kWh / 1 ms / 1 kW internal auxiliary case is retained
+as a regression; no minimum interval, hidden tolerance or engineering margin
+was added. Planning now has 91 passes, strict mypy/ruff/format passes.
+Both independent axes will recheck this fixed increment. The full
 physical configuration/Genie/Woo/UI integration and live acceptance remain
 active, not delivered by this component review.
