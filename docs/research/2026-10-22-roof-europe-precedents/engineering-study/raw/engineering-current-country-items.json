@@ -1,0 +1,262 @@
+[
+  {
+    "url": "https://www.netbeheernederland.nl/publicatie/country-settings-generation-units-type-and-b",
+    "crawl": {
+      "loadedUrl": "https://www.netbeheernederland.nl/publicatie/country-settings-generation-units-type-and-b",
+      "loadedTime": "2026-10-22T10:56:08.097Z",
+      "referrerUrl": "https://www.netbeheernederland.nl/publicatie/country-settings-generation-units-type-and-b",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 9738,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.netbeheernederland.nl/publicatie/country-settings-generation-units-type-and-b",
+      "title": "Country settings generation units type A and B | Netbeheer Nederland",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "nl",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://www.netbeheernederland.nl/publicatie/country-settings-generation-units-type-and-b"
+        },
+        {
+          "property": "og:title",
+          "content": "Country settings generation units type A and B"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "630"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "must-revalidate, no-cache, private",
+        "content-encoding": "gzip",
+        "content-language": "nl",
+        "content-length": "9738",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Mon, 19 Oct 2026 14:07:58 GMT",
+        "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+        "server": "Apache",
+        "strict-transport-security": "max-age=63072000; includeSubDomains",
+        "vary": "X-Consumer-ID,Accept-Encoding",
+        "x-consumer-id": "default_consumer",
+        "x-content-type-options": "nosniff",
+        "x-drupal-cache": "HIT",
+        "x-frame-options": "SAMEORIGIN",
+        "x-generator": "Drupal 10 (https://www.drupal.org)",
+        "x-node-name": "netbeheernederland-web01.hostinc.nl"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Country settings generation units type A and B\nNaar publicatie overzicht\nPublicatie•9 september 2026\nEisen voor opwekeenheden, opslag, verbruikseenheden met vraagsturing en HVDC\nPaginavan 0\n100%\nLoading PDF…\nDownloadOpens in a new tab",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Country settings generation units type A and B\n\nNaar publicatie overzicht\n\nPublicatie•9 september 2026\n\n[Eisen voor opwekeenheden, opslag, verbruikseenheden met vraagsturing en HVDC](https://www.netbeheernederland.nl/requirements-generators)\n\nPaginavan 0\n\n100%\n\nLoading PDF…\n\n[DownloadOpens in a new tab](https://www.netbeheernederland.nl/sites/default/files/2026-09/country_settings_type_a_and_b_pgms.pdf)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036956/2026-10-22",
+    "crawl": {
+      "loadedUrl": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036956/2026-10-22",
+      "loadedTime": "2026-10-22T10:56:45.731Z",
+      "referrerUrl": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036956/2026-10-22",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 175223,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036956/2026-10-22",
+      "title": "Article 24 - Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité - Légifrance",
+      "description": null,
+      "author": "",
+      "keywords": null,
+      "languageCode": "fr",
+      "jsonLd": [
+        {
+          "@context": "http://schema.org",
+          "@type": "Organization",
+          "url": "https://www.legifrance.gouv.fr",
+          "logo": "https://www.legifrance.gouv.fr/contenu/logo"
+        },
+        {
+          "@context": "http://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/contenu/menu/droit-national-en-vigueur",
+                "name": "Droit national en vigueur"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/search?fonds=LEGI&searchField=ALL&query=&page=1&init=true",
+                "name": "Textes consolidés"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000042032189/2026-10-22",
+                "name": "Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036956/2026-10-22",
+                "name": "Article 24"
+              }
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "age": "0",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "max-age=300, must-revalidate",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e7fa2c49db61e6-CDG",
+        "connection": "keep-alive",
+        "content-language": "fr-FR",
+        "content-type": "text/html;charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 10:56:45 GMT",
+        "expires": "0",
+        "keep-alive": "timeout=5",
+        "last-modified": "Thu, 22 Oct 2026 10:56:45 GMT",
+        "pragma": "no-cache",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "vary": "Accept-Encoding",
+        "x-apify-unblocker-final-url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036956/2026-10-22",
+        "x-apify-unblocker-route": "HIMALIA",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-xss-protection": "0"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Article 24 - Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité\n\nI.-La tension de raccordement de référence est déterminée en fonction de la puissance Pinstallée conformément aux limites figurant dans le tableau ci-après : \n\nDomaine de tension \nPuissance Pinstallée limite \n\nBT monophasé \t\n18 kVA \t\n\nBT triphasé \t\n250 kVA \t\n\nHTA \t\n12 MW \t\n\nII.-Des raccordements dérogatoires aux domaines de tension de raccordement de référence de ce tableau peuvent être effectués sous réserve du respect des conditions fixées aux III à VI ci-après et des autres prescriptions du présent arrêté. \nIII.-Pour une installation de production qui n'est pas située dans une zone du territoire non interconnectée au réseau métropolitain continental, un producteur peut solliciter, à titre dérogatoire et exceptionnel, un raccordement en HTA si la puissance Pinstallée de l'installation est comprise entre 12 MW et 17 MW. Le gestionnaire du réseau public de distribution d'électricité n'est tenu d'y donner une suite favorable que dans le cas où, au vu des résultats de l'étude mentionnée à l'article 23, le raccordement s'avère possible sur un départ direct depuis le poste source au regard des prescriptions du présent arrêté. \nLorsqu'un tel raccordement est effectué en HTA dans le cadre des prescriptions du présent arrêté et non en HTB conformément aux prescriptions de raccordement propres à ce dernier domaine de tension, ce raccordement est réputé s'effectuer à la tension de raccordement qualifiée d'\" inférieure au domaine de tension de raccordement de référence \" au sens des dispositions de l'article D. 342-2 de la partie réglementaire du code de l'énergie susvisé. \nIV.-Aucune installation de production ne peut être raccordée à un réseau public de distribution d'électricité en BT monophasée lorsque sa puissance Pinstallée excède 18 kVA. \nV.-Aucune installation de production ne peut être raccordée à un réseau public de distribution d'électricité en BT lorsque sa puissance Pinstallée excède 250 kVA. \nVI.-Aucune installation de production ne peut être raccordée à un réseau public de distribution d'électricité en HTA lorsque sa puissance Pinstallée excède 17 MW dans le cas général ou 12 MW lorsque l'installation est située dans une zone du territoire non interconnectée au réseau métropolitain continental. Ces installations de production doivent être raccordées à un réseau public d'électricité disposant du domaine de tension HTB dans le cadre des prescriptions propres à ce domaine de tension.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Article 24 - Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité\n\n  \nI.-La tension de raccordement de référence est déterminée en fonction de la puissance Pinstallée conformément aux limites figurant dans le tableau ci-après :\n\n| Domaine de tension | Puissance Pinstallée limite |\n| --- | --- |\n| BT monophasé | 18 kVA |\n| BT triphasé | 250 kVA |\n| HTA | 12 MW |\n\n  \nII.-Des raccordements dérogatoires aux domaines de tension de raccordement de référence de ce tableau peuvent être effectués sous réserve du respect des conditions fixées aux III à VI ci-après et des autres prescriptions du présent arrêté.  \nIII.-Pour une installation de production qui n'est pas située dans une zone du territoire non interconnectée au réseau métropolitain continental, un producteur peut solliciter, à titre dérogatoire et exceptionnel, un raccordement en HTA si la puissance Pinstallée de l'installation est comprise entre 12 MW et 17 MW. Le gestionnaire du réseau public de distribution d'électricité n'est tenu d'y donner une suite favorable que dans le cas où, au vu des résultats de l'étude mentionnée à l'article 23, le raccordement s'avère possible sur un départ direct depuis le poste source au regard des prescriptions du présent arrêté.  \nLorsqu'un tel raccordement est effectué en HTA dans le cadre des prescriptions du présent arrêté et non en HTB conformément aux prescriptions de raccordement propres à ce dernier domaine de tension, ce raccordement est réputé s'effectuer à la tension de raccordement qualifiée d'\" inférieure au domaine de tension de raccordement de référence \" au sens des [dispositions de l'article D. 342-2 de la partie réglementaire du code de l'énergie susvisé](https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000023983208&idArticle=LEGIARTI000031749081&dateTexte=&categorieLien=cid).  \nIV.-Aucune installation de production ne peut être raccordée à un réseau public de distribution d'électricité en BT monophasée lorsque sa puissance Pinstallée excède 18 kVA.  \nV.-Aucune installation de production ne peut être raccordée à un réseau public de distribution d'électricité en BT lorsque sa puissance Pinstallée excède 250 kVA.  \nVI.-Aucune installation de production ne peut être raccordée à un réseau public de distribution d'électricité en HTA lorsque sa puissance Pinstallée excède 17 MW dans le cas général ou 12 MW lorsque l'installation est située dans une zone du territoire non interconnectée au réseau métropolitain continental. Ces installations de production doivent être raccordées à un réseau public d'électricité disposant du domaine de tension HTB dans le cadre des prescriptions propres à ce domaine de tension.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844/2026-10-22",
+    "crawl": {
+      "loadedUrl": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844/2026-10-22",
+      "loadedTime": "2026-10-22T10:57:15.220Z",
+      "referrerUrl": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844/2026-10-22",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 183711,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844/2026-10-22",
+      "title": "Article 3 - Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité - Légifrance",
+      "description": null,
+      "author": "",
+      "keywords": null,
+      "languageCode": "fr",
+      "jsonLd": [
+        {
+          "@context": "http://schema.org",
+          "@type": "Organization",
+          "url": "https://www.legifrance.gouv.fr",
+          "logo": "https://www.legifrance.gouv.fr/contenu/logo"
+        },
+        {
+          "@context": "http://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/contenu/menu/droit-national-en-vigueur",
+                "name": "Droit national en vigueur"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/search?fonds=LEGI&searchField=ALL&query=&page=1&init=true",
+                "name": "Textes consolidés"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000042032189/2026-10-22",
+                "name": "Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "item": {
+                "@id": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844/2026-10-22",
+                "name": "Article 3"
+              }
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cache-control": "max-age=300, must-revalidate",
+        "cf-cache-status": "MISS",
+        "cf-ray": "a4e7fa989effffff-AMS",
+        "connection": "keep-alive",
+        "content-language": "en-US",
+        "content-type": "text/html;charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 10:57:02 GMT",
+        "expires": "0",
+        "keep-alive": "timeout=5",
+        "last-modified": "Thu, 22 Oct 2026 10:57:02 GMT",
+        "pragma": "no-cache",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=63072000; includeSubDomains",
+        "transfer-encoding": "chunked",
+        "vary": "Accept-Encoding",
+        "x-apify-unblocker-final-url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844/2026-10-22",
+        "x-apify-unblocker-route": "HIMALIA",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-xss-protection": "0"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Article 3 - Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité\nArticle 3\nEn vigueur depuis le 26 juin 2020En vigueur depuis le 26 juin 2020\n\nLes dispositions du présent titre s'appliquent aux installations de production d'électricité qui livrent en permanence, ou par intermittence, tout ou partie de leur production à un réseau public de transport ou de distribution d'électricité, ou qui sont couplées à ce réseau. \nPour leur application, la définition suivante s'applique : \n\" Pinstallée \" désigne la puissance installée de l'installation de production d'électricité qui s'entend comme la somme des puissances actives unitaires maximales des machines électrogènes susceptibles de fonctionner simultanément disposant d'un même point de raccordement aux réseaux publics d'électricité. Par convention, la puissance Pinstallée est la puissance apparente pour les installations de production d'électricité raccordées dans le domaine de tension de référence BT défini à l'article 24 et la puissance active pour les installations de production d'électricité raccordées dans un autre domaine de tension de référence, y compris pour les sites définis aux articles D. 342-15-3 et D. 342-15-6 de la partie réglementaire du code de l'énergie.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Article 3 - Arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité\n\n## Article 3\n\nEn vigueur depuis le 26 juin 2020En vigueur depuis le 26 juin 2020\n\n  \nLes dispositions du présent titre s'appliquent aux installations de production d'électricité qui livrent en permanence, ou par intermittence, tout ou partie de leur production à un réseau public de transport ou de distribution d'électricité, ou qui sont couplées à ce réseau.  \nPour leur application, la définition suivante s'applique :  \n\" Pinstallée \" désigne la puissance installée de l'installation de production d'électricité qui s'entend comme la somme des puissances actives unitaires maximales des machines électrogènes susceptibles de fonctionner simultanément disposant d'un même point de raccordement aux réseaux publics d'électricité. Par convention, la puissance Pinstallée est la puissance apparente pour les installations de production d'électricité raccordées dans le domaine de tension de référence BT défini à l'article 24 et la puissance active pour les installations de production d'électricité raccordées dans un autre domaine de tension de référence, y compris pour les sites définis aux articles [D. 342-15-3](https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000023983208&idArticle=LEGIARTI000037135116&dateTexte=&categorieLien=cid) et [D. 342-15-6](https://www.legifrance.gouv.fr/affichCodeArticle.do?cidTexte=LEGITEXT000023983208&idArticle=LEGIARTI000037135124&dateTexte=&categorieLien=cid) de la partie réglementaire du code de l'énergie.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

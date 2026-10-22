@@ -1,0 +1,6 @@
+{
+  "queries": "site:webstore.iec.ch \"62548-1\" \"2025\"\nsite:webstore.iec.ch \"60364-7-712\" \"2025\"\nsite:webstore.iec.ch \"62446-1\" photovoltaic documentation\nsite:vde.com \"4105\" \"2026\"\nsite:vde.com \"135 kW\" \"30 kVA\"\nsite:netztransparenz.de \"ZEREZ\" \"2025\"\nsite:netbeheernederland.nl opwekeenheden type A 1 MW RfG certificaat\nsite:liander.nl zonnepanelen omvormer type A 3x80A vermogen kVA\nsite:tennet.eu Netherlands RfG type A 1 MW generating units\nsite:enedis.fr \"36 kVA\" \"250 kVA\" raccordement production\nsite:enedis.fr \"NF EN 50549\" \"DIN VDE\"\nsite:legifrance.gouv.fr \"0,8 kW\" \"18 MW\" production type A\nsite:pvlib-python.readthedocs.io \"max_power_point\" \"temperature\"\nsite:pvlib-python.readthedocs.io \"calcparams_cec\" \"beta_oc\"\nsite:publications.jrc.ec.europa.eu photovoltaic rooftop potential validation shading accuracy",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 6,
+  "languageCode": "en"
+}

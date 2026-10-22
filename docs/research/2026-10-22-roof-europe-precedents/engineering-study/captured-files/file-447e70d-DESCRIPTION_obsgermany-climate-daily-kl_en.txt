@@ -1,0 +1,270 @@
+www.dwd.de
+
+
+
+
+                                             DATASET DESCRIPTION
+
+
+Daily station observations (temperature, pressure, precipitation, sunshine
+duration, etc.) for Germany
+Version: v24.3
+
+Publication date: 2024
+
+
+Cite data set as:             Daily station observations (temperature, pressure, precipitation, sunshine duration, etc.) for Germany, Version
+                              v24.3
+
+Dataset-ID:                   urn:wmo:md:de-dwd-cdc:obsgermany-climate-daily-kl
+
+Dataset-URL:                  https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/recent/
+
+Dataset-URL:                  https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/historical/
+
+Dataset-URL:                  https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl
+                              //timeseries_overview//
+
+
+
+ABSTRACT
+These data originate from the stations of the DWD and legally as well as qualitatively equal partner network stations. Extensive station
+metadata, such as station relocations, instrument changes, reference time changes, algorithm changes or operator information are
+included.
+
+The dataset is divided into a versioned part with completed quality check, in the directory ./historical/.
+And a part for which the quality check has not yet been completed, in the directory ./recent/.
+
+The folder ./timeseries_overview/ contains information about long time series.
+
+
+POINT OF CONTACT
+Deutscher Wetterdienst
+CDC - Vertrieb Klima und Umwelt
+Frankfurter Strasse 135
+63067 Offenbach
+Tel:+ 49 (0) 69 8062-4400
+Fax:+ 49 (0) 69 8062-4499
+E-Mail:klima.vertrieb@dwd.de
+
+
+
+
+DATASET DESCRIPTION
+
+Parameter                     precipitation parameters, form of precipitation, relative humidity, vapor pressure, air pressure at station level,
+                              sunshine duration, air temperature at 2 m, wind velocity, wind gust, air temperature near ground, snow depth,
+                              cloud coverage, precipitation height
+
+Unit(s)                       eighth, beaufort, °C, %, mm, m/s, cm, hPa
+
+Statistical processing        daily mean, daily sum, time series, daily min, daily max
+
+Temporal coverage             1781-01-01 -- ...
+
+Spatial coverage              stations in Germany
+
+Projection                    WGS 84 (EPSG:4326)
+
+Format description            Recent daily station observations (temperature, pressure, precipitation, sunshine duration, etc.) for Germany,
+                              quality control not completed :
+                              In the folder recent/ for each station a zip-archive is provided.
+                              The zip-archive contains the data and meta information about the station, instruments and algorithms.
+
+© Deutscher WetterdienstThe naming schema of the zip-archives is: *_{product_code}_{station_id}_akt.zip
+                         2024
+Format description     Historical daily station observations (temperature, pressure, precipitation, sunshine duration, etc.) for Germa :
+                       In the folder recent/ for each station a zip-archive is provided.
+                       The zip-archive contains the data and meta information about the station, instruments and algorithms.
+
+                       The naming schema of the zip-archives is: *_{product_code}_{station_id}_{begin_date}_{end_date}_hist.zip
+
+Format description     timeseries overview :
+                       In the folder ./timeseries_overview, information on long time series is available. The files provided
+                       (TimeSeries_[DataType]_[Interval]_GE_[XXXYears]_[Parameter].html or ***.txt) contain a sorted overview of
+                       stations for which time series of >=100, >=50 and >=30 years are available. Information on the proportion of
+                       missing values is also provided.
+
+                       Content description
+                       Stations_id := Identifier of the station;
+                       Start := Start date of the time series;
+                       End := End date of the time series;
+                       Number_years := Number of years of measurement operation;
+                       Missing_Years := Number of missing years of measurement operation;
+                       Missing_values := number of missing values ;
+                       max(Missing_period)>=25 := More than 25 years missing in the time series: Indication of start date and end
+                       date;
+                       Station name := Station name of the current location ;
+                       Federal state := Name of the federal state
+
+application schema     csv dialect description
+
+                       delimiter    line terminator       header    quote char
+
+                       ;            \\r\\n                true      \"
+
+                       csv content description
+
+                       column name           description                                uom             type           format
+
+                       STATIONS_ID           Station ID                                                 VARCHAR2
+
+                       MESS_DATUM            reference date                                             NUMBER         YYYYMMDD
+
+                       QN_3                  quality level of the following columns                     NUMBER         numerical
+                                                                                                                       code
+
+                       FX                    daily maximum of windgust                  m/s             NUMBER         9990.0
+
+                       FM                    daily mean of wind velocity                m/s             NUMBER         9990.0
+
+                       QN_4                  quality level of the following columns                     NUMBER         numerical
+                                                                                                                       code
+
+                       RSK                   daily precipitation height                 mm              NUMBER         9990.0
+
+                       RSKF                  precipitation form                         numerical       NUMBER
+                                                                                        code
+
+                       SDK                   daily sunshine duration                    h               NUMBER         9990.0
+
+                       SHK_TAG               daily snow depth                           cm              NUMBER         9990.0
+
+                       NM                    daily mean of cloud cover                  1/8             NUMBER         9990.0
+
+                       VPM                   daily mean of vapor pressure               hPa             NUMBER         9990.0
+
+                       PM                    daily mean of pressure                     hPa             NUMBER         9990.0
+
+                       TMK                   daily mean of temperature                  °C              NUMBER         9990.0
+
+                       UPM                   daily mean of relative humidity            %               NUMBER         9990.0
+
+                       TXK                   daily maximum of temperature at 2 m        °C              NUMBER         9990.0
+                                             height
+
+                       TNK                   daily minimum of temperature at 2m         °C              NUMBER         9990.0
+                                             height
+
+                       TGK                   daily minimum of air temperature at 5 cm   °C              NUMBER         9990.0
+                                             above ground
+
+Quality Information    The QUALITAETS_NIVEAU (QN) shows the quality control procedure applied for a data report (of several
+                       parameters) for a certain reporting time.
+
+
+                       Data before and including 1980 can reach as best quality check level QN=5. Data after 1980 can reach
+                       QN=10 as best quality check level.
+
+                       QN = 1 : only formal control;
+                       QN = 2 : controlled with individually defined criteria;
+                       QN = 3 : automatic control and correction;
+                       QN = 5 : historic, subjective procedures;
+                       QN = 7 : second control done, before correction;
+                       QN = 8 : quality control outside ROUTINE;
+                       QN = 9 : not all parameters corrected;
+                       QN = 10 : quality control finished, all corrections finished.
+
+
+
+© Deutscher Wetterdienst 2024
+                              The QUALITAETS_BYTE (QB) denotes whether the value was objected to and/or corrected.
+
+                              QB = 0 : denotes not flagged,
+                              QB = 1 : had no objections (either checked and not objected, or not checked and not objected, this can be
+                              interpreted only when considering QN);
+                              QB = 2 : corrected;
+                              QB = 3 : confirmed with objection rejected;
+                              QB = 4 : added or calculated;
+                              QB = 5 : objected;
+                              QB = 6 : only formally checked;
+                              QB = 7 : formal objection;
+                              QB = -999 : quality flag does not exist.
+
+
+
+
+DATA ORIGIN
+The data are taken from the station measuring networks of Deutscher Wetterdienst as well as its predecessor organisations.
+The dataset is regularly updated with recent as well as with recovered historical data.
+From 1997 onwards, the data have been imported operationally into the central specialist database and archived, see Behrendt et al., 2011,
+and Kaspar et al., 2013.
+Note that when going back to historical times, guidelines on observation procedure, instruments and observation times were issued by the
+authority in charge (see, e.g., Freydank, 2014), and might be incompletely recorded in the metadata.
+As explained in Kaspar et al., 2013 in the early years numerous meteorological agencies were active in the area of todays Germany. After
+establishment of the der International Meteorological Organization (IMO) in 1873, the various standards were gradually harmonized,
+resulting in a single standard 1936.
+After 1945, the standards in East and West Germany developed differently, and were harmonized again after re-unification in 1990.
+Between the end of the nineties and 2009 many stations were changed from manual to automated.
+
+
+
+
+RESOURCE MAINTENANCE
+[Data maintenance]: In the directory recent/ the data files are updated daily. On a rolling basis, the data of the last 500 days - up to
+yesterday - are exchanged.
+Quality control has not yet been completed for these data, so there may always be changes in the values.
+
+
+In the directory historical/ the data files are updated annually.
+Quality control has been completed for this data, so that the values for the version are constant.
+During the annual version change, both corrections and historical additions are incorporated.
+
+
+
+
+VALIDATION AND UNCERTAINTY ESTIMATE
+The quality control (see Spengler, 2002) of this data is not completed yet. Various levels of quality control (see Kaspar et al., 2013) are in
+progress.
+
+
+
+
+UNCERTAINTIES
+The stations are nowadays selected and operated according to WMO guidelines. Though these guidelines aim at minimizing possible local
+effects, still some applications of certain parameters may require the consideration of local and regional effects.
+
+
+
+
+CONSIDERATIONS FOR APPLICATIONS
+For any data analysis, the metadata available in the *.zip files should be taken into account.
+
+
+
+
+ADDITIONAL INFORMATION
+For extending the time series into the past, see subdirectories ../historical/. When data from both directories "historical" and "recent" are
+used together, the difference in the quality control procedure should be considered. For the long term stability consider the uncertainties
+explained in the data set descriptions within subdirectories /historical/.
+
+
+
+
+LITERATURE
+Behrendt, J., et al.: Beschreibung der Datenbasis des NKDZ. Version 3.5, Offenbach, 15.02.2011.
+DWD Vorschriften und Betriebsunterlagen Nr. 2 (VuB 2), Wetterschlüsselhandbuch Band D, Nov 2013.
+DWD Vorschriften und Betriebsunterlagen Nr. 3 (VuB 3), Beobachterhandbuch (BHB) für Wettermeldestellen des synoptisch-
+klimatologischen Mess- und Beobachtungsnetzes, März 2014a.
+DWD Vorschriften und Betriebsunterlagen Nr. 3 (VuB 3), Technikerhandbuch (THB) für Wettermeldestellen des synoptisch-
+klimatologischen Mess- und Beobachtungsnetzes, März 2014b.
+Kaspar, F., et al.: Monitoring of climate change in Germany – data, products and services of Germany`s National Climate Data Centre. Adv.
+Sci. Res., 10, doi:10.5194/asr-10-99-2013, 99–106, 2013.
+Spengler, R.: The new Quality Control- and Monitoring System of the Deutscher Wetterdienst. Proceedings of the WMO Technical
+Conference on Meteorological and Environmental Instruments and Methods of Observation, Bratislava, 2002.
+
+
+© Deutscher Wetterdienst 2024
+COPYRIGHT
+The Creative Commons BY 4.0 - Licence "CC BY 4.0" apply.
+
+
+
+REVISION HISTORY
+This document is maintained by Deutscher Wetterdienst, Climate Data Center (CDC) - Betrieb, last edited at 2024-06-05.
+
+
+
+
+© Deutscher Wetterdienst 2024
+

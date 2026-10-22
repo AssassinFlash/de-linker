@@ -1,0 +1,36 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000042032189/2026-10-22/"
+    },
+    {
+      "url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036860/2026-10-22"
+    },
+    {
+      "url": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/vde-ar-n-4105"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/requirements-generators"
+    },
+    {
+      "url": "https://www.isprs.org/resources/datasets/benchmarks/UrbanSemLab/default.aspx"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/3DBAG/roofer/main/LICENSE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/shapely/shapely/main/LICENSE.txt"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 7,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "script,style,noscript",
+  "saveContentTypes": "application/pdf, text/plain",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

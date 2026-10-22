@@ -1,0 +1,156 @@
+[
+  {
+    "collection": "engineering-accuracy-search",
+    "id": "isna0QZM9AaHUBRiZ",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:40:16.347Z",
+    "finishedAt": "2026-10-22T10:41:57.634Z",
+    "defaultDatasetId": "59X1FRD9A8Vo6hfSV",
+    "usageTotalUsd": 0.03155,
+    "statusMessage": "Processed 8 queries on 8 pages. Extracted: 44 organicResults, 12 relatedQueries, 8 itemsPushed",
+    "returnedItems": 8,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "engineering-constraint-search",
+    "id": "9avLf7qK8fdHvWxDO",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:41:41.835Z",
+    "finishedAt": "2026-10-22T10:43:12.969Z",
+    "defaultDatasetId": "JTJMXaipyiCmTweDf",
+    "usageTotalUsd": 0.03155,
+    "statusMessage": "Processed 8 queries on 8 pages. Extracted: 49 organicResults, 14 relatedQueries, 8 itemsPushed",
+    "returnedItems": 8,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "engineering-current-country",
+    "id": "FJI4J5SjGbUAdBLXf",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:56:02.897Z",
+    "finishedAt": "2026-10-22T10:57:19.835Z",
+    "defaultDatasetId": "eX5Y8H6fKGJwBPhnz",
+    "usageTotalUsd": 0.009252699482667777,
+    "statusMessage": "Finished! Total 3 requests: 3 succeeded, 0 failed.",
+    "returnedItems": 3,
+    "missingRequestedUrls": [
+      "https://www.netbeheernederland.nl/media/13808/download?attachment",
+      "https://www.netbeheernederland.nl/media/13813/download?attachment",
+      "https://www.netbeheernederland.nl/media/13814/download?attachment"
+    ]
+  },
+  {
+    "collection": "engineering-method-accuracy",
+    "id": "4yuf2SUg4RflELFD5",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "ABORTED",
+    "startedAt": "2026-10-22T10:45:35.101Z",
+    "finishedAt": "2026-10-22T10:56:48.975Z",
+    "defaultDatasetId": "rqJCVtlSnl8z0v6e0",
+    "usageTotalUsd": 0.0796495800859332,
+    "statusMessage": "Crawled 9/13 pages, 3 failed requests, desired concurrency 2.",
+    "returnedItems": 11,
+    "missingRequestedUrls": [
+      "https://docs.3dbag.nl/en/schema/attributes/",
+      "https://docs.3dbag.nl/en/overview/sources/"
+    ]
+  },
+  {
+    "collection": "engineering-nl-settings",
+    "id": "7uckPggqev43Fgs6Q",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:59:27.772Z",
+    "finishedAt": "2026-10-22T10:59:35.508Z",
+    "defaultDatasetId": "UVmlzlRxfxJ3bYEDV",
+    "usageTotalUsd": 0.0010231255764464539,
+    "statusMessage": "Finished! Total 2 requests: 1 succeeded, 1 failed.",
+    "returnedItems": 2,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "engineering-physics",
+    "id": "7MOtn1UhYhSXuaK5b",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:40:15.776Z",
+    "finishedAt": "2026-10-22T10:41:22.091Z",
+    "defaultDatasetId": "Z44vSQlt8cWdoUnW5",
+    "usageTotalUsd": 0.01665128035431935,
+    "statusMessage": "Finished! Total 8 requests: 7 succeeded, 1 failed.",
+    "returnedItems": 7,
+    "missingRequestedUrls": [
+      "https://re.jrc.ec.europa.eu/pvg_tools/en/"
+    ]
+  },
+  {
+    "collection": "engineering-primary-search",
+    "id": "OXdplD7mrYqLWeRT4",
+    "actId": "nFJndFXA5zjCTuudP",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:39:31.515Z",
+    "finishedAt": "2026-10-22T10:41:23.958Z",
+    "defaultDatasetId": "c81elDDO5nj5KGy5F",
+    "usageTotalUsd": 0.06754999999999999,
+    "statusMessage": "Processed 15 queries on 15 pages. Extracted: 90 organicResults, 4 relatedQueries, 15 itemsPushed",
+    "returnedItems": 15,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "engineering-standards-grid",
+    "id": "QPwsFbC2j2LTcuJ71",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:44:47.271Z",
+    "finishedAt": "2026-10-22T10:46:18.649Z",
+    "defaultDatasetId": "Xa7jXHpq7K42Da5uN",
+    "usageTotalUsd": 0.008734609342974094,
+    "statusMessage": "Finished! Total 13 requests: 7 succeeded, 6 failed.",
+    "returnedItems": 13,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "engineering-temperature",
+    "id": "ZpKrhg7p1qwQa9zzs",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:55:13.691Z",
+    "finishedAt": "2026-10-22T10:55:22.054Z",
+    "defaultDatasetId": "sPC6L7NdNlscyeUjI",
+    "usageTotalUsd": 0.0011281956150962248,
+    "statusMessage": "Finished! Total 4 requests: 4 succeeded, 0 failed.",
+    "returnedItems": 4,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "engineering-vde-current",
+    "id": "Dy9RekHqM7cYJuMdC",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:57:01.625Z",
+    "finishedAt": "2026-10-22T10:57:08.899Z",
+    "defaultDatasetId": "TnecJWrvDlmt50pKd",
+    "usageTotalUsd": 0.002167778077542782,
+    "statusMessage": "Finished! Total 2 requests: 1 succeeded, 1 failed.",
+    "returnedItems": 2,
+    "missingRequestedUrls": []
+  },
+  {
+    "collection": "engineering-version-supplement",
+    "id": "CbIE8OOA4rRkHsqRN",
+    "actId": "aYG0l9s7dbB7j3gbS",
+    "status": "SUCCEEDED",
+    "startedAt": "2026-10-22T10:53:02.324Z",
+    "finishedAt": "2026-10-22T10:54:49.499Z",
+    "defaultDatasetId": "oVGpbUvtmUsNMeQ5I",
+    "usageTotalUsd": 0.011729149726495147,
+    "statusMessage": "Finished! Total 7 requests: 4 succeeded, 3 failed.",
+    "returnedItems": 6,
+    "missingRequestedUrls": [
+      "https://www.legifrance.gouv.fr/loda/id/JORFTEXT000042032189/2026-10-22/"
+    ]
+  }
+]

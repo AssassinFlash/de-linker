@@ -1,0 +1,1018 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:pvsyst.com/help temperature behavior MPP voltage coefficient",
+      "url": "http://www.google.com/search?q=site%3Apvsyst.com%2Fhelp+temperature+behavior+MPP+voltage+coefficient&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Apvsyst.com%2Fhelp+temperature+behavior+MPP+voltage+coefficient&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "O",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Temperature Coefficients - PV modules - Additional data",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help-pvsyst7/pvmodule_tempcoefficients.htm",
+        "displayedUrl": "https://www.pvsyst.com › pvmodule_tempcoefficients",
+        "description": "The temperature behavior of the Pmpp, Voc and Isc values (at STC) are usually specified on the manufacturer's datasheets. the maximum power point Pmpp behaves ...",
+        "emphasizedKeywords": [
+          "temperature behavior"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Temperature behaviour correction",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help-pvsyst7/pvmodule_corrtemper.htm",
+        "displayedUrl": "https://www.pvsyst.com › pvmodule_corrtemper",
+        "description": "This expression fixes the muVco and muPmax temperature coefficient values, which are therefore a result of the model. Temperature Correction on Gamma.Read more",
+        "emphasizedKeywords": [
+          "temperature coefficient",
+          "Temperature"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Rseries and Rshunt determination procedure",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help-pvsyst7/pvmodule_rserie_rshunt_determ.htm",
+        "displayedUrl": "https://www.pvsyst.com › help-pvsyst7 › pvmodule_rse...",
+        "description": "Check of the Temperature coefficient muPmpp at -10°C. If this is positive, increases RSMax again, by increasing RShunt and possibly Voc. This procedure is ...Read more",
+        "emphasizedKeywords": [
+          "Temperature coefficient muPmpp"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Determination of parameters",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help-pvsyst7/pv-module---model-description.htm",
+        "displayedUrl": "https://www.pvsyst.com › pv-module---model-description",
+        "description": "Vmpref = Current / Voltage at any point (close to the MPP). muIsc = temperature coefficient of the short-circuit current. muVco = temperature coefficient of ...",
+        "emphasizedKeywords": [
+          "Voltage",
+          "MPP",
+          "temperature coefficient",
+          "temperature coefficient"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Rseries and Rshunt determination",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help/physical-models-used/pv-module-standard-one-diode-model/rseries-and-rshunt-determination.html",
+        "displayedUrl": "https://www.pvsyst.com › help › physical-models-used",
+        "description": "Check of the Temperature coefficient muPmpp at -10°C. If this is positive, increases RSMax again, by increasing RShunt and possibly Voc. This procedure is ...Read more",
+        "emphasizedKeywords": [
+          "Temperature coefficient muPmpp"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Main interface > PV modules - Basic data",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help-pvsyst7/pvmodule_basicdata.htm",
+        "displayedUrl": "https://www.pvsyst.com › pvmodule_basicdata",
+        "description": "temperature coefficient for Isc. This has only weak influence on the module behaviour. When not known, it can be taken as about 0.05%/°C. Model summary.",
+        "emphasizedKeywords": [
+          "temperature coefficient"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Array losses, general considerations",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help/array_losses_general.htm",
+        "displayedUrl": "https://www.pvsyst.com › help › array_losses_general",
+        "description": "For crystalline silicon cells, the loss is about -0.4 %/°C at MPP. For fixed voltage operating conditions, the temperature mainly affects the I/V curve voltage ...Read more",
+        "emphasizedKeywords": [
+          "MPP",
+          "voltage",
+          "temperature",
+          "voltage"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Inverter model: efficiency",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help/inverter_efficiency.htm",
+        "displayedUrl": "https://www.pvsyst.com › help › inverter_efficiency",
+        "description": "The efficiency is the ratio of the output power with respect to the input power. It depends mainly on the power and can also be a function of the input voltage.",
+        "emphasizedKeywords": [
+          "voltage"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Project design > Results > Simulation variables: Grid system",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help/simulation_variables_grid.htm",
+        "displayedUrl": "https://www.pvsyst.com › help › simulation_variables_...",
+        "description": "Simulation variables: Grid system ; IL_Vmin. Inverter Loss due to low voltage MPP window ; IL_Vmax. Inverter Loss due to upper voltage MPP window ; IL_Night.",
+        "emphasizedKeywords": [
+          "voltage MPP",
+          "voltage MPP"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "Power optimizers",
+        "websiteTitle": "PVsyst",
+        "url": "https://www.pvsyst.com/help/power_optimizers.htm",
+        "displayedUrl": "https://www.pvsyst.com › help › power_optimizers",
+        "description": "When you have one only string per MPPT input, the Vmpp of the string is reduced but the Impp current is identical for all modules, so that the Pmpp of the ...",
+        "emphasizedKeywords": [
+          "MPPT"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/sr4M66TmirITEKl-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:sma.de polystring different orientations MPP tracker string length",
+      "url": "http://www.google.com/search?q=site%3Asma.de+polystring+different+orientations+MPP+tracker+string+length&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asma.de+polystring+different+orientations+MPP+tracker+string+length&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Polystring operation",
+        "websiteTitle": "SMA Solar",
+        "url": "https://manuals.sma.de/Business-Systeme-PL/en-US/14480808715.html",
+        "displayedUrl": "https://manuals.sma.de › Business-Systeme-PL › en-US",
+        "description": "With this system design, PV strings with different orientations can still be operated in parallel on a MPP tracker of the inverter. Requirements: In ...Read more",
+        "emphasizedKeywords": [
+          "strings",
+          "different orientations",
+          "MPP tracker"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/EgFG35ksHD4gTLi-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:nen.nl \"EN 50549-1\" \"2023\"",
+      "url": "http://www.google.com/search?q=site%3Anen.nl+%22EN+50549-1%22+%222023%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Anen.nl+%22EN+50549-1%22+%222023%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "NEN-EN 50549-1:2019/A1:2023 en",
+        "websiteTitle": "NEN-normen",
+        "url": "https://www.nen.nl/en/nen-en-50549-1-2019-a1-2023-en-317053",
+        "displayedUrl": "https://www.nen.nl › nen-en-5054...",
+        "description": "NEN-EN 50549-1:2019/A1:2023 en ; 364008 · Requirements for generating plants to be connected in parallel with distribution networks - Part 1: ...Read more",
+        "date": "2023-11-01T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "EN 50549-1",
+          "2023"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Pagina 479 - Normen - Elektrotechniek",
+        "websiteTitle": "NEN-normen",
+        "url": "https://www.nen.nl/elektrotechniek/normen?p=479",
+        "displayedUrl": "https://www.nen.nl › elektrotechniek",
+        "description": "NEN-EN 50549-1:2019/A1:2023 en. Norm NEN-EN 50549-1:2019/A1:2023 en. Requirements for generating plants to be connected in parallel with distribution networks ...",
+        "emphasizedKeywords": [
+          "EN 50549-1",
+          "2023",
+          "EN 50549-1",
+          "2023"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Pagina 531 - Normen - Elektrotechniek",
+        "websiteTitle": "NEN-normen",
+        "url": "https://www.nen.nl/elektrotechniek/normen?p=531",
+        "displayedUrl": "https://www.nen.nl › elektrotechniek",
+        "description": "NEN-EN 50549-1:2019/Ontw. A1:2023 en. Norm NEN-EN 50549-1:2019/Ontw. A1:2023 en. Requirements for generating plants to be connected in parallel with ...",
+        "emphasizedKeywords": [
+          "EN 50549-1",
+          "2023",
+          "EN 50549-1",
+          "2023"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/JmlzPJYywFgRxCS-1.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:pvpmc.sandia.gov single diode temperature voltage module",
+      "url": "http://www.google.com/search?q=site%3Apvpmc.sandia.gov+single+diode+temperature+voltage+module&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Apvpmc.sandia.gov+single+diode+temperature+voltage+module&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [
+      {
+        "title": "Single diode temperature voltage module pdf",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+pdf&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg0EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module ppt",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+ppt&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg4EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module diagram",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+diagram&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg3EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module formula",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+formula&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg2EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module calculator",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+calculator&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg1EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module pdf",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+pdf&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg0EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module ppt",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+ppt&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg4EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module diagram",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+diagram&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg3EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module formula",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+formula&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg2EAE"
+      },
+      {
+        "title": "Single diode temperature voltage module calculator",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&gl=us&sxsrf=APpeQnuWGhGO-QwSt6IRC03A-g9b45MwBw:1792665738954&q=Single+diode+temperature+voltage+module+calculator&sa=X&ved=2ahUKEwitysikuM2XAxXxj-EIHZF6DP0Q1QJ6BAg1EAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Single Diode Equivalent Circuit Models",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/single-diode-equivalent-circuit-models/",
+        "displayedUrl": "https://pvpmc.sandia.gov › 2-dc-module-iv › single-diod...",
+        "description": "Equivalent circuit models define the entire I-V curve of a cell, module, or array. One basic equivalent the single diode model, with cell temperature and ...",
+        "emphasizedKeywords": [
+          "module",
+          "One",
+          "single diode",
+          "temperature"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "PVsyst Module Model",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/single-diode-equivalent-circuit-models/pvsyst-module-model/",
+        "displayedUrl": "https://pvpmc.sandia.gov › 2-dc-module-iv › pvsyst-mo...",
+        "description": "PVsyst employs a single diode module model with the following ancillary equations. ... The PVsyst User's Guide provides an option to use a temperature-dependent ...Read more",
+        "emphasizedKeywords": [
+          "PVsyst employs a single diode module model"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Look Mom, No MET Station!",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/app/uploads/sites/243/2022/10/Mark_Campenelli_2019_poster.pdf",
+        "displayedUrl": "https://pvpmc.sandia.gov › app › sites › 2022/10",
+        "description": "Formulate a single-diode model (SDM) enable new PV-based irradiance and temperature sensors that do not rely on temperature coefficients. module back-surface  ...",
+        "emphasizedKeywords": [
+          "Formulate a single-diode model (SDM"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Datasets - PV Performance Modeling Collaborative (PVPMC)",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/datasets/",
+        "displayedUrl": "https://pvpmc.sandia.gov › datasets",
+        "description": "PVsyst single-diode model parameters, The purpose of this dataset is to provide PVsyst model parameters for all modules in the CEC module database,",
+        "emphasizedKeywords": [
+          "single",
+          "diode",
+          "modules",
+          "module"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "PV Performance Modeling Collaborative (PVPMC) – Sandia ...",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/",
+        "displayedUrl": "https://pvpmc.sandia.gov",
+        "description": "Single Diode Equivalent Circuit Models. This group is interested in improving the accuracy and technical rigor of PV performance models and analyses. the most ...",
+        "emphasizedKeywords": [
+          "Single Diode"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Sandia PV Array Performance Model",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/point-value-models/sandia-pv-array-performance-model/",
+        "displayedUrl": "https://pvpmc.sandia.gov › point-value-models › sandia-...",
+        "description": "Single Diode Equivalent Circuit. The Sandia PV Array Performance Model (SAPM) defines five points on the IV curve. is the temperature coefficient for module ...",
+        "emphasizedKeywords": [
+          "is the temperature coefficient for module"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "PVsyst Cell Temperature Model",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/cell-temperature/pvsyst-cell-temperature-model/",
+        "displayedUrl": "https://pvpmc.sandia.gov › 2-dc-module-iv › pvsyst-cell-...",
+        "description": "The PV performance modeling application, PVsyst, implements the following cell temperature model: Single Diode Equivalent Circuit Models",
+        "emphasizedKeywords": [
+          "temperature",
+          "Single Diode"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "CFV Labs - PV Performance Modeling Collaborative (PVPMC)",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/app/uploads/sites/243/2022/10/19074-PR-E-005-PAN-File-Report-Canadian-Solar-CS6K-275M.pdf",
+        "displayedUrl": "https://pvpmc.sandia.gov › app › sites › 2022/10",
+        "description": "I-V curves at multiple irradiance and temperature conditions were obtained on one sample per IEC 61853-1:2011. The PVsyst 6 single-diode model coefficients were ...Read more",
+        "emphasizedKeywords": [
+          "temperature",
+          "one",
+          "single",
+          "diode"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "CEC Inverter Test Protocol",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/modeling-guide/dc-to-ac-conversion/cec-inverter-test-protocol/",
+        "displayedUrl": "https://pvpmc.sandia.gov › dc-to-ac-conversion › cec-in...",
+        "description": "The inverter efficiency is measured at six power levels (10%, 20%, 30%, 50%, 75%, and 100% of rated output AC power) and at three DC voltage levels (Vmin, Vnom, ...Read more",
+        "emphasizedKeywords": [
+          "voltage"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "Inverter Saturation or “Clipping” – PV Performance Modeling ...",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/modeling-guide/dc-to-ac-conversion/inverter-saturation-or-clipping/",
+        "displayedUrl": "https://pvpmc.sandia.gov › dc-to-ac-conversion › inverte...",
+        "description": "Inverter saturation, commonly referred to as “clipping”, occurs when the DC power from the PV array exceeds the maximum input level for the inverter.",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/uIkIlJJzU5VQZ9R-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:netbeheernederland.nl \"800\" \"1 MW\" \"type A\"",
+      "url": "http://www.google.com/search?q=site%3Anetbeheernederland.nl+%22800%22+%221+MW%22+%22type+A%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Anetbeheernederland.nl+%22800%22+%221+MW%22+%22type+A%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Power-Generating Modules compliance verification",
+        "websiteTitle": "Netbeheer Nederland",
+        "url": "https://www.netbeheernederland.nl/sites/default/files/2024-03/rfg_compliance_verification_document_v2.0.pdf",
+        "displayedUrl": "https://www.netbeheernederland.nl › default › files",
+        "description": "Pmax < 800 W ? yes no. Pmax < 1 MW ? yes no. Pmax < 50 MW ? yes no. Pmax < 60 MW ? yes no. Type C. Type D. Type B. Type A. Not RfG. Synchronous connection ? yes.Read more",
+        "emphasizedKeywords": [
+          "800",
+          "1 MW",
+          "Type A"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "RfG compliance verification by testing and simulating",
+        "websiteTitle": "Netbeheer Nederland",
+        "url": "https://www.netbeheernederland.nl/publicatie/rfg-compliance-verification-testing-and-simulating",
+        "displayedUrl": "https://www.netbeheernederland.nl › publicatie › rfg-co...",
+        "description": "type A Power-Generating Module or a demand unit, with demand ... Pmax < 1 MW ? yes no. Pmax < 50 MW ? yes no. Pmax < 60 MW ? yes no. Type ...Read more",
+        "date": "2024-04-01T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "type A",
+          "1 MW"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Netcode elektriciteit",
+        "websiteTitle": "Netbeheer Nederland",
+        "url": "https://www.netbeheernederland.nl/sites/default/files/2024-08/e02_-_20240827_-_20240722_-_netcode_elektriciteit.pdf",
+        "displayedUrl": "https://www.netbeheernederland.nl › default › files",
+        "description": "type A, B, C of D, waarop overeenkomstig artikel 4, eerste lid, van ... 1 MW, kan de netbeheerder per bepaling een hogere grenswaarde ...Read more",
+        "date": "2024-08-27T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "type A",
+          "1 MW"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/24BCvQcnexUi2DH-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:enedis.fr \"type A\" \"18\" \"production\"",
+      "url": "http://www.google.com/search?q=site%3Aenedis.fr+%22type+A%22+%2218%22+%22production%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aenedis.fr+%22type+A%22+%2218%22+%22production%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Note interne",
+        "websiteTitle": "Enedis",
+        "url": "https://www.enedis.fr/media/1987/download",
+        "displayedUrl": "https://www.enedis.fr › media › download",
+        "description": "Page : 18/50 ... Bascules des auxiliaires des Installations de Production. [Concerne les Installations de Production avec alimentation des ...Read more",
+        "date": "2026-09-03T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "18",
+          "Production",
+          "Production"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Note interne",
+        "websiteTitle": "Enedis",
+        "url": "https://www.enedis.fr/media/1983/download",
+        "displayedUrl": "https://www.enedis.fr › media › download",
+        "description": "— « l'installation de production » doit être compris comme l'ensemble des installations de production. ... BT type A.docx. Modèle Attestation. BT non-RfG.Read more",
+        "emphasizedKeywords": [
+          "production",
+          "production",
+          "type A"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Structure des réseaux et des ouvrages composant le ...",
+        "websiteTitle": "Enedis",
+        "url": "https://www.enedis.fr/media/4383/download",
+        "displayedUrl": "https://www.enedis.fr › media › download",
+        "description": "Des Unités de Production sont également raccordées sur le réseau HTA et BT, ce qui nécessite des études spécifiques de réseau. Enedis décide de ...Read more",
+        "date": "2024-12-03T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "Production"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Note interne",
+        "websiteTitle": "Enedis",
+        "url": "https://www.enedis.fr/media/1985/download",
+        "displayedUrl": "https://www.enedis.fr › media › download",
+        "description": "Production en BT de puissance supérieure à 36 kVA et en HTA, au Réseau ... BT type A.docx. Modèle Attestation. BT non-RfG. Page 40. Modèle de Convention de ...Read more",
+        "emphasizedKeywords": [
+          "Production",
+          "type A"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Note externe Structures de référence des Postes Sources",
+        "websiteTitle": "Enedis",
+        "url": "https://www.enedis.fr/media/2271/download",
+        "displayedUrl": "https://www.enedis.fr › media › download",
+        "description": "Dans certains cas, il peut servir à collecter de la production d'électricité HTA et à l'injecter, totalement ou partiellement, sur le. RPD ou le ...Read more",
+        "date": "2025-09-15T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "production"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Version validée FNCCR-ERDF du 23 Mars 2015 MAJ ...",
+        "websiteTitle": "Enedis",
+        "url": "https://www.enedis.fr/media/3677/download",
+        "displayedUrl": "https://www.enedis.fr › media › download",
+        "description": "Dans le cadre de la production des attestations d'achèvement de travaux simplifiés, l'Opérateur ou le ... 18-510-1. Dans le respect des dispositions de la ...Read more",
+        "emphasizedKeywords": [
+          "production",
+          "18"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Note externe",
+        "websiteTitle": "Enedis",
+        "url": "https://www.enedis.fr/media/4260/download",
+        "displayedUrl": "https://www.enedis.fr › media › download",
+        "description": "18/01/2021 Prise en compte de la délibération CRE n°2019-275 du 12 ... production d'énergies renouvelables, de l'Ordonnance n° 2023-816 ...Read more",
+        "date": "2026-09-01T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "18",
+          "production"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/NFgFSsNXR7NBSwb-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:boutique.afnor.org \"NF EN 50549-1\"",
+      "url": "http://www.google.com/search?q=site%3Aboutique.afnor.org+%22NF+EN+50549-1%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aboutique.afnor.org+%22NF+EN+50549-1%22&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [
+      {
+        "title": "Nf en 50549 1 pdf",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnse0gs0dWKDiDXCbGL6UuwDqmyECg:1792665765598&q=Nf+en+50549+1+pdf&sa=X&ved=2ahUKEwiJy6GxuM2XAxW4afUHHYGeAuwQ1QJ6BAgUEAE"
+      },
+      {
+        "title": "Nf en 50549 1 test",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnse0gs0dWKDiDXCbGL6UuwDqmyECg:1792665765598&q=Nf+en+50549+1+test&sa=X&ved=2ahUKEwiJy6GxuM2XAxW4afUHHYGeAuwQ1QJ6BAgVEAE"
+      },
+      {
+        "title": "Nf en 50549 1 pdf",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnse0gs0dWKDiDXCbGL6UuwDqmyECg:1792665765598&q=Nf+en+50549+1+pdf&sa=X&ved=2ahUKEwiJy6GxuM2XAxW4afUHHYGeAuwQ1QJ6BAgUEAE"
+      },
+      {
+        "title": "Nf en 50549 1 test",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnse0gs0dWKDiDXCbGL6UuwDqmyECg:1792665765598&q=Nf+en+50549+1+test&sa=X&ved=2ahUKEwiJy6GxuM2XAxW4afUHHYGeAuwQ1QJ6BAgVEAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Achats normes NF EN 50549-1",
+        "websiteTitle": "Afnor EDITIONS",
+        "url": "https://www.boutique.afnor.org/en-gb/standard/nf-en-505491/requirements-for-generating-plants-to-be-connected-in-parallel-with-distrib/fa187555/260493",
+        "displayedUrl": "https://www.boutique.afnor.org › Standards",
+        "description": "NF EN 50549-1. February 2019. Standard Current mandatory application standard. Consult online for free; Consult ...Read more",
+        "emphasizedKeywords": [
+          "NF EN 50549-1"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Achats normes NF EN 50549-1/A1",
+        "websiteTitle": "Afnor EDITIONS",
+        "url": "https://www.boutique.afnor.org/en-gb/standard/nf-en-505491-a1/requirements-for-generating-plants-to-be-connected-in-parallel-with-distrib/fa202816/354222",
+        "displayedUrl": "https://www.boutique.afnor.org › Standards",
+        "description": "... NF EN 50549-1/A1. NF EN 50549-1/A1. October 2023. Standard Current. Requirements for generating plants to be connected in parallel with ...",
+        "emphasizedKeywords": [
+          "NF EN 50549-1",
+          "NF EN 50549-1"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Achats normes NF EN 50438",
+        "websiteTitle": "Afnor EDITIONS",
+        "url": "https://www.boutique.afnor.org/en-gb/standard/nf-en-50438/requirements-for-microgenerating-plants-to-be-connected-in-parallel-with-pu/fa181269/43276",
+        "displayedUrl": "https://www.boutique.afnor.org › Standards",
+        "description": "... NF EN 50549-1. February 2019. Standard Current. Requirements for generating plants to be connected in parallel with distribution networks ...",
+        "emphasizedKeywords": [
+          "NF EN 50549-1"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Résultat de recherche",
+        "websiteTitle": "Afnor EDITIONS",
+        "url": "https://www.boutique.afnor.org/fr-fr/resultats?Keywords=NF%20EN%201993-1-1&Culture=fr-FR&PageIndex=8&PageSize=10&SortPropertyName=_score&SortByDescending=True&StandardStateIds[0]=1&MandatoryApplication=0&Harmonised=0&IsNovelty=0",
+        "displayedUrl": "https://www.boutique.afnor.org › re...",
+        "description": "NF EN 50549-1/A1. octobre 2023. Norme En vigueur. Exigences relatives aux centrales électriques destinées à être raccordées en parallèle à des réseaux de ...",
+        "emphasizedKeywords": [
+          "NF EN 50549-1"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Résultat de recherche",
+        "websiteTitle": "Afnor EDITIONS",
+        "url": "https://www.boutique.afnor.org/fr-fr/resultats?Keywords=NF%20ISO%2017874-1&Culture=fr-FR&PageIndex=14&PageSize=10&SortPropertyName=_score&SortByDescending=True&StandardStateIds[0]=1&MandatoryApplication=0&Harmonised=0&IsNovelty=0",
+        "displayedUrl": "https://www.boutique.afnor.org › re...",
+        "description": "NF EN 50549-1. février 2019. Norme En vigueur norme d'application obligatoire. Exigences relatives aux centrales électriques destinées à être raccordées en ...",
+        "emphasizedKeywords": [
+          "NF EN 50549-1"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/b4KI9y8g1XO2lHn-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:iec.ch photovoltaic minimum temperature maximum voltage 62548",
+      "url": "http://www.google.com/search?q=site%3Aiec.ch+photovoltaic+minimum+temperature+maximum+voltage+62548&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aiec.ch+photovoltaic+minimum+temperature+maximum+voltage+62548&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "George Kelly, Secretary Liang Ji, Asst. ...",
+        "websiteTitle": "iec.ch",
+        "url": "https://www.iec.ch/system/files/2021-04/iec-tc-82_presentation_final_upload.pdf",
+        "displayedUrl": "https://www.iec.ch › system › files › iec-tc-82_pr...",
+        "description": "Scope: “To prepare international standards for systems of photovoltaic conversion of solar energy into electrical energy and for all the.Read more",
+        "date": "2021-03-19T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "photovoltaic"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "250 kWp solar power plant at Godo Olo",
+        "websiteTitle": "iec.ch",
+        "url": "https://www.iec.ch/system/files/2023-11/case_study_suriname_0.pdf",
+        "displayedUrl": "https://www.iec.ch › files › case_study_suriname_0",
+        "description": "Average temperature : 24 ◦c min and max 30 ・ 250 kWp solar power plant ・ 61010-1:2010; Low-voltage electrical installation",
+        "date": "2023-10-30T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "temperature",
+          "min",
+          "max",
+          "solar power",
+          "Low",
+          "voltage"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "IEC 61730-1:2023",
+        "websiteTitle": "IEC Webstore",
+        "url": "https://webstore.iec.ch/en/publication/59803",
+        "displayedUrl": "https://webstore.iec.ch › Home › IEC 61730-1:2023",
+        "description": "This document lays down requirements for terrestrial PV modules … climates with 98th percentile module operating temperatures of 70 °C or less.",
+        "emphasizedKeywords": [
+          "PV",
+          "temperatures"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "INTERNATIONAL STANDARD",
+        "websiteTitle": "iec.ch",
+        "url": "https://ocp-api.iec.ch/api/publications/112759/view?hasAccess=false&language=en&previewLanguage=en&media=PDF",
+        "displayedUrl": "https://ocp-api.iec.ch › api › publications › view",
+        "description": "PVAs have the following characteristics: voltage does not exceed 1 500 V DC;",
+        "emphasizedKeywords": [
+          "voltage does not exceed 1 500 V DC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "IEC 62852:2014",
+        "websiteTitle": "IEC Webstore",
+        "url": "https://webstore.iec.ch/en/publication/7463",
+        "displayedUrl": "https://webstore.iec.ch › Home › IEC 62852:2014",
+        "description": "IEC 62852:2014 applies to connectors for use in the d.c. circuits of photovoltaic systems according to class II of IEC 61140:2001 with rated voltages up to ...Read more",
+        "emphasizedKeywords": [
+          "photovoltaic",
+          "voltages"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "IEC homepage",
+        "websiteTitle": "iec.ch",
+        "url": "https://iec.ch/homepage",
+        "displayedUrl": "https://iec.ch › ...",
+        "description": "Standards drive progress. See how we are advancing SDG 7 to power a cleaner, fairer, and more sustainable energy future.Read more",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "INTERNATIONAL STANDARD",
+        "websiteTitle": "iec.ch",
+        "url": "https://ocp-api.iec.ch/api/publications/79126/view?hasAccess=false&language=en&previewLanguage=en&media=PDF",
+        "displayedUrl": "https://ocp-api.iec.ch › api › publications › view",
+        "description": "low-voltage switchgear and controlgear assemblies for use in photovoltaic installations. ... IEC TR 60890, A method of temperature-rise verification of low- ...",
+        "emphasizedKeywords": [
+          "low",
+          "voltage",
+          "photovoltaic",
+          "temperature",
+          "low"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "IEC 62930:2017",
+        "websiteTitle": "IEC Webstore",
+        "url": "https://webstore.iec.ch/en/publication/28067",
+        "displayedUrl": "https://webstore.iec.ch › Home › IEC 62930:2017",
+        "description": "maximum conductor temperature of 90 °C. The permissible period of use at a maximum conductor temperature of 120 °C is limited to 20 000 h.",
+        "date": "2017-12-13T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "maximum",
+          "temperature",
+          "maximum",
+          "temperature"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "OSD list of projects",
+        "websiteTitle": "iec.ch",
+        "url": "https://www.iec.ch/osd/projects",
+        "displayedUrl": "https://www.iec.ch › osd › projects",
+        "description": "IEC TS 62548-2 ED1Photovoltaic (PV) arrays. Guidelines for qualifying PV(...) Electrical installations of ships and mobile. Low-Voltage Fuses. properties of ...",
+        "emphasizedKeywords": [
+          "62548",
+          "PV",
+          "PV",
+          "Low",
+          "Voltage"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "IEC 60947-1:1988",
+        "websiteTitle": "IEC Webstore",
+        "url": "https://webstore.iec.ch/en/publication/18464",
+        "displayedUrl": "https://webstore.iec.ch › Home › IEC 60947-1:1988",
+        "description": "Low-voltage switchgear and controlgear. Part 1: General rules. Applies, when required by the relevant product standard, to switchgear and controlgear ...Read more",
+        "emphasizedKeywords": [
+          "Low",
+          "voltage"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/dCS5APyCQEn7HjA7R/records/d4qN9TEXAeGyc69-1.html"
+  }
+]

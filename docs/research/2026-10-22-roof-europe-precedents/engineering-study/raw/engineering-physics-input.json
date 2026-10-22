@@ -1,0 +1,35 @@
+{
+  "startUrls": [
+    {
+      "url": "https://pvlib-python.readthedocs.io/en/stable/reference/generated/pvlib.pvsystem.calcparams_cec.html"
+    },
+    {
+      "url": "https://pvlib-python.readthedocs.io/en/stable/reference/generated/pvlib.pvsystem.singlediode.html"
+    },
+    {
+      "url": "https://pvlib-python.readthedocs.io/en/stable/reference/generated/pvlib.temperature.faiman.html"
+    },
+    {
+      "url": "https://pvlib-python.readthedocs.io/en/stable/reference/generated/pvlib.bifacial.infinite_sheds.get_irradiance.html"
+    },
+    {
+      "url": "https://pvlib-python.readthedocs.io/en/stable/reference/generated/pvlib.shading.shaded_fraction1d.html"
+    },
+    {
+      "url": "https://github.com/pvlib/pvlib-python/blob/main/LICENSE"
+    },
+    {
+      "url": "https://re.jrc.ec.europa.eu/pvg_tools/en/"
+    },
+    {
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/getting-started-pvgis/api-non-interactive-service_en"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 8,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 4
+}

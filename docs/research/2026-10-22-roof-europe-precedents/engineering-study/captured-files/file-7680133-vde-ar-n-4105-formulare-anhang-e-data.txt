@@ -1,0 +1,1178 @@
+                                                 Anhang F
+
+                                                Vordrucke
+
+Zu den Formularen F.1 und F.2:
+
+Die Anmeldung muss entsprechend dem beim Netzbetreiber verwendeten Verfahren erfolgen. Für Anlagen,
+die nach dem EEG einem standardisierten Anmeldeverfahren unterliegen, muss in digitalen Netzanschluss-
+portalen der Umfang des FNN-Hinweises „Daten-Set zum digitalen Netzanschlussprozess“ verwendet werden.
+
+ANMERKUNG Für die Anmeldung von PV-Anlagen bis 30 kWp Modulleistung (außer dem vereinfachten
+Netzanschlussprozesses für Kleinsterzeugungsanlagen und Kleinstspeicher ≤ 800 VA, siehe 4.4) und für die Anmeldung
+von Speichern liegen die notwendigen Datenfelder im oben genannten FNN-Hinweis bei Veröffentlichung dieser
+Anwendungsregel vor. Für diese Anlagen sind die Datenfelder in den Anhängen F.1 und F.2 informative Beispiele.
+
+Für alle anderen Anlagen müssen, bis zur Aufnahme in diesen FNN-Hinweis, die in den Anhängen F.1 und F.2
+geforderten Datenfelder verwendet werden.
+
+Zu den Formularen F.3 bis F.11:
+
+F.1 Die Inhalte sind normativ.
+
+
+
+
+                                                                                                              125
+VDE-AR-N 4105:2026-03
+
+
+
+F.1     Antragstellung
+
+F.1.1      Standardverfahren zur Antragstellung
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+ Antragstellung für Erzeugungsanlagen am Niederspannungsnetz
+
+
+ Anlagenstandort              Straße, Hausnummer
+                              PLZ, Ort, Ortsteil
+ Anschlussnehmer              Vorname, Name
+ (Eigentümer)
+                              Straße, Hausnummer
+ (Adressangaben nur wenn
+                              PLZ, Ort, Ortsteil
+ abweichend vom
+ Anlagenstandort)             Telefon, E-Mail
+
+ Anschlussnutzer              Vorname, Name
+ (Anlagenbetreiber)
+                              Straße, Hausnummer
+ (Angaben nur, wenn
+                              PLZ, Ort, Ortsteil
+ abweichend vom
+ Anschlussnehmer)             Telefon, E-Mail
+
+ Elektrofachbetrieb           Firma, PLZ, Ort, Ortsteil
+                              Eintragungsnummer
+                              bei Netzbetreiber
+
+
+ Antragsart                       Neuerrichtung                Erweiterung                Rückbau
+
+ Folgende Unterlagen sind bei Neuerrichtung und/oder Erweiterung zwingend
+                                                                                        beigefügt:
+ erforderlich:
+
+ aktueller Lageplan, aus dem der Aufstellungsort der Erzeugungsanlage ersichtlich ist
+ oder digitaler Eintrag in einem Geo-System des Netzbetreibers
+
+ Datenblatt für Erzeugungsanlage und/oder Speicher (siehe Vordruck F.2)
+
+ ZEREZ-ID der Einheitenzertifikate nach VDE-AR-N 4105 bzw. nach VDE-AR-N 4110           ID:_____________________
+
+ ZEREZ-ID des Zertifikats für den NA-Schutz                                             ID:_____________________
+
+ Optional: Soweit im jeweiligen Anschlussfall vorhanden: ZEREZ-ID des Zertifikats für
+                                                                                        ID:_____________________
+ die Leistungsflussüberwachung am Netzanschlusspunkt (PAV, E – Schutz)
+
+ Übersichtsschaltplan ab Netzanschluss beigefügt (inkl. Darstellung des
+ Messkonzeptes und bei Erzeugungsanlagen/Speicher > 30 kVA des Einbauortes des
+ zentralen NA-Schutzes und der Ausführungsvariante der Kuppelschalter, einpolige
+ Darstellung, bspw. Bild 7 aus Anhang B.1.7)
+
+ Falls mit dem Messkonzept ein neuer Zähler erforderlich wird und dessen
+ Bereitstellung und der Messstellenbetrieb nicht durch den grundzuständigen
+ Messstellenbetreiber (MSB) erfolgen sollen, wird stattdessen folgender MSB
+ ausgewählt: _______________________________________                                    nur bei abweichendem MSB
+
+ Messstellenbetreiber-ID laut MSB-Rahmenvertrag:
+ _______________________________________
+
+ Befindet sich hinter dem Netzanschlusspunkt eine steuerbare Verbrauchseinrichtung        ja
+ nach § 14a EnWG?                                                                         nein
+
+
+
+
+126
+Ist bereits ein intelligentes Messsystem (mit Smart-Meter-Gateway) am                        ja
+Netzanschlusspunkt verbaut, auf das der Netzbetreiber zugreifen kann?                        nein
+
+Der Antragsteller bestätigt, dass der Anschlussnehmer darüber informiert und einverstanden ist, dass auf seinem
+Grundstück eine Erzeugungsanlage und/oder Speicher im Parallelbetrieb mit dem Niederspannungsnetz des
+Netzbetreibers errichtet wird.
+
+Geplanter Inbetriebsetzungstermin                                                       ___________
+
+________________________________________                   _________________________________________
+Ort, Datum                                                 Unterschrift des Antragstellers
+
+
+
+
+                                                                                                                  127
+VDE-AR-N 4105:2026-03
+
+
+
+F.1.2      Vereinfachter Anschlussprozess für Kleinsterzeugungsanlagen, Kleinstspeicher
+           und kombinierte DC-gekoppelte Erzeugungs- und Speichereinheiten (EZSE) mit in
+           Summe SAmax ≤ 800 VA beim Netzbetreiber
+Folgende Bedingungen müssen erfüllt sein:
+
+–     Bei PV-Anlagen mit Vergütungswunsch für die eingespeiste Energie, sowie bei PV-Anlagen in
+      Kombination mit Speichern, bei Speichern allein, bei KWK-Anlagen, Brennstoffzellen,
+      Windenergieanlagen ist neben der Anmeldung bei der Bundesnetzagentur dieses Formular anzuwenden
+      und beim Netzbetreiber einzureichen.
+–     Wenn es sich ausschließlich um eine PV-Anlage und Verzicht auf eine Vergütung der eingespeisten
+      Energie handelt, dann besteht nach §8 (5a) EEG 2023 eine gesetzliche Anmeldepflicht für diese
+      Kleinsterzeugungsanlage ausschließlich im Marktstammdatenregister auf der Internetplattform der
+      Bundesnetzagentur und dieses Formular braucht nicht genutzt zu werden.
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+ Anmeldung und Inbetriebsetzungserklärung für Kleinsterzeugungsanlagen
+ Kleinstspeicher und kombinierte DC-gekoppelte Erzeugungs- und
+ Speichereinheiten (EZSE) mit in Summe SAmax ≤ 800 VA
+ (vom Anschlussnutzer auszufüllen)
+
+ Anlagenstandort              Straße, Hausnummer
+                              PLZ, Ort, Ortsteil
+
+ Anschlussnehmer              Vorname, Name
+ (Eigentümer)
+                              Straße, Hausnummer
+ (Adressangaben nur wenn
+                              PLZ, Ort, Ortsteil
+ abweichend vom
+ Anlagenstandort)             Telefon, E-Mail
+
+ Anschlussnutzer              Vorname, Name
+ (Anlagenbetreiber)
+                              Straße, Hausnummer
+ (Angaben nur, wenn
+                              PLZ, Ort, Ortsteil
+ abweichend vom
+ Anschlussnehmer)             Telefon, E-Mail
+
+ Zählernummer                                                    __________________________________________
+
+ Erzeugungsein-        PV-Module: ___ Anzahl: ___ Leistung je Modul: _____ Wp
+ heiten/Speicher
+                       PV-Wechselrichter: Anzahl: ___ Hersteller/Typ: ______________________________
+                       Leistung je Wechselrichter: ____kVA
+
+                       Speicher: ___    Anzahl: ___ Typ: _________________Leistung: ___ kW
+
+                       wenn der Speicher AC-gekoppelt ist (eigener Wechselrichter für den Speicher):
+                       Speicher-Wechselrichter: Anzahl: __    Hersteller/Typ: ______________________________
+                       Leistung je Wechselrichter: ____kVA
+
+                       andere Erzeugungsart        KWK-Anlage        Brennstoffzelle   Windenergieanlage
+                       Erzeugungseinheit: Anzahl: ___      Typ: ________________Leistung: ______ kW
+
+ Die erstmalige Inbetriebsetzung der Anlage erfolgte am:
+
+
+
+
+128
+                  Die maximale Erzeugungsleistung von 800 VA wird nicht überschritten und es werden über diese maximale
+                  Erzeugungsleistung hinaus keine weiteren Kleinst-Erzeugungsanlagen, z.B. steckerfertige PV-Anlagen
+                  betrieben.
+
+                  Mein Zähler soll, soweit nicht bereits vorhanden, vom Netzbetreiber auf einen Zähler mit Erfassung beider
+                  Energierichtungen gewechselt werden. Gemäß den Reglungen des Messstellenbetriebsgesetzes erfolgt der
+                  Wechsel auf eine moderne Messeinrichtung bzw. intelligentes Messsystem. Habe ich abweichend vom
+                  grundzuständigen Messstellenbetreiber (in der Regel der Netzbetreiber) einen wettbewerblichen
+                  Messstellenbetreiber gewählt, werde ich den Zählerwechsel bei diesem veranlassen.
+
+                  Die Stromerzeugungsanlage entspricht den Bedingungen der VDE-Anwendungsregel VDE-AR-N 4105
+                  „Erzeugungsanlagen am Niederspannungsnetz“. Ein entsprechendes Einheiten- und NA-Schutz-Zertifikat mit
+                  ZEREZ-ID zur Konformität sind vorhanden und können auf Nachfrage vorgelegt werden.
+
+                  ANMERKUNG Erzeugungseinheiten und Speicher mit verifiziertem Einheitenzertifikat und dazugehöriger
+Allgemeine
+                  ZEREZ-ID sind unter www.zerez.net abrufbar.
+Bedingungen
+und Datenschutz   Der Anschluss erfolgte nach der Installationsnorm DIN VDE V 0100-551-1 und bei steckerfertigen Erzeugungs-
+                  anlagen zusätzlich nach der Produktnorm DIN VDE V 0126-95.
+
+                  Es gelten die „Niederspannungsanschlussverordnung (NAV) und die Ergänzenden Bedingungen des Netz-
+                  betreibers zur NAV“, die „Technischen Anschlussbedingungen (TAB)“, sowie weitere vom Netzbetreiber
+                  veröffentlichte technische Mindestanforderungen.
+
+                  Ich bin mir darüber bewusst, dass ich bei Nichteinhaltung der vorbenannten Punkte die Kleinst-Erzeugungs-
+                  anlage nicht betreiben darf und werde in diesem Fall dafür sorgen, dass eine Stromerzeugung nicht erfolgt.
+
+                  Für den Umgang mit personenbezogenen Daten gilt die im Internet veröffentlichte Datenschutz-Information des
+                  Netzbetreibers, die auf Wunsch zugesandt wird. Dies wurde zur Kenntnis genommen.
+
+                  Der Anschlussnutzer (Anlagenbetreiber) bestätigt, dass der Anschlussnehmer darüber informiert und
+                  einverstanden ist, dass auf seinem Grundstück eine Erzeugungsanlage und/oder Speicher im Parallelbetrieb
+                  mit dem Niederspannungsnetz des Netzbetreibers errichtet wird.
+
+                  Ich möchte eine Vergütung für den in das Netz des Netzbetreibers eingespeisten Strom.
+
+                  Für diesen Fall gelten die nachfolgenden Angaben:
+
+                  Gutschriftenverfahren
+
+                  Als Anlagenbetreiber erkläre ich hiermit, dass die Vergütung der eingespeisten elektrischen Energie im
+                  Gutschriftenverfahren erfolgen soll. Die Gutschrift ist auf Basis der nachfolgend aufgeführten Angaben zur
+                  Umsatzsteuer, Bankverbindung und Gutschriftenanschrift monatlich abzüglich des an den grundzuständigen
+                  Messtellenbetreiber zu zahlenden Preises für den Messstellenbetrieb des Erzeugungszählers (sofern im
+                  Messkonzept vorgesehen und sofern der grundzuständigen Messtellenbetreiber den Messstellenbetrieb
+                  durchführt), in der Regel jeweils bis zum 15. Kalendertag des folgenden Monats zu erteilen.
+
+
+
+
+                                                                                               Ich erkläre hiermit, dass ich als
+Vergütung                                                                                   Unternehmer dem Umsatzsteuer-
+                                                                                            gesetz unterliege und auf die
+                                                                                            Anwendung der Kleinunternehmer-
+                                                                                            regelung nach § 19 Umsatzsteuer-
+                                                   Ich erkläre hiermit, dass ich dem        gesetz verzichte (i.d.R. USt 19%).
+                                               Umsatzsteuergesetz nicht unterliege bzw.     anzuwendender Steuersatz: ____%
+                  Umsatzsteuer:
+                                               Kleinunternehmer i. S. d. § 19
+                                               Umsatzsteuergesetz bin (USt 0%).             zuständiges Finanzamt
+
+                                                                                            ____________________
+
+                                                                                            Umsatzsteuernummer bzw.
+                                                                                            Einkommenssteuernummer
+
+                                                                                            ____________________
+
+
+
+
+                                                                                                                               129
+VDE-AR-N 4105:2026-03
+
+
+
+                                             IBAN _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+                                             BIC _ _ _ _ _ _ _ _ _ _ _
+               Bankverbindung:               Verwendungszweck _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+                                             Name Kontoinhaber:                             Name Kreditinstitut:
+                                             __________________________                     ___________________________
+
+               abweichende                   Vorname, Name
+               Gutschriftenanschrift (wenn   Straße, Hausnummer
+               Gutschrift nicht an den
+               Anlagenbetreiber erfolgen     PLZ, Ort
+               soll):                        Telefon, E-Mail
+
+
+
+_______________________________________                 _________________________________________________
+             Ort, Datum                                        Unterschrift des Anschlussnutzers (Anlagenbetreiber)
+
+
+
+
+130
+F.2     Datenblatt für Erzeugungsanlagen und/oder Speicher
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+ Datenblatt – Erzeugungsanlage und/oder Speicher am Niederspannungsnetz
+
+                       Straße, Hausnummer
+ Anlagenanschrift
+                       PLZ, Ort, Ortsteil
+ Erzeugungseinheiten dieser Anmeldung
+
+                                                                                                       Primärenergie:
+
+                                                                                                  Biogas
+
+ Erzeugungsart            Photovoltaik         Wind             Wasser               KWK-Anlage Erdgas
+
+                                                                                                  Öl
+
+                                                                                                  Sonstige:________
+
+
+ Module (nur bei PV-   Gesamtleistung aller Module: ____________ kWp
+ Anlagen)
+ Erzeugungs-                             vom Netzbetreiber aus der ZEREZ-Datenbank über die ID abzurufen
+ einheiten (bei PV-
+ Anlagen                                                                                                 Symmetrie (1,
+ Wechselrichter, bei                                                                                     2, 3)
+ DC-gekoppelten        Anzahl            Hersteller    Typ             PEmax in kW      SEmax in kVA     (1-phasig oder 2-
+ Speichern                                                                                               phasig oder 3-
+                                                                                                         phasig
+ gemeinsamer                                                                                             symmetrisch)
+ Wechselrichter)
+
+
+
+
+ nur bei direkt
+ gekoppelten
+                       Verhältnis Anlaufstrom/ Bemessungsstrom:        Anfangs-Kurzschlusswechselstrom Ik“:
+ Synchron- und
+                       Ia/Ir: _______                                  _______ A
+ Asynchron-
+ generatoren
+ Speichereinheiten dieser Anmeldung
+
+ Anschluss des
+ Speichers
+
+
+
+                                                                       DC-gekoppelt (gemeinsamer Wechselrichter
+                                                                       mit der Erzeugungsanlage)
+                       AC-gekoppelt (Speicher hat eigenen
+                                                                       dieser Anmeldung
+                       Wechselrichter)
+                                                                       mit der vorhandenen Erzeugungsanlage
+                                                                       Vorgangsnummer __________
+
+
+
+
+                                                                                                                        131
+VDE-AR-N 4105:2026-03
+
+
+
+ Speicherleisung                            vom Netzbetreiber aus der ZEREZ-Datenbank über die ID abzurufen
+ (nur wenn AC-
+ gekoppelt)                     Lade-                                                                        Symmetrie
+                                                                          Entlade-          Entlade-         (1, 2, 3)
+                                leis-
+                      An-                                                 leistung          leistung         (1-phasig oder 2-
+                                tung        Hersteller    Typ
+                      zahl                                                                                   phasig oder, 3-
+                                PEmax B
+                                                                          PEmax in kW       SEmax in kVA     phasig
+                                in kW*
+                                                                                                             symmetrisch)
+
+
+
+
+ Betriebsweise        kein Bezug aus dem Netz und keine Einspeisung in das Netz des Netzbetreibers
+
+                      Bezug aus dem Netz und keine Einspeisung in das Netz des Netzbetreibers
+
+                      kein Bezug aus dem Netz und Einspeisung in das Netz des Netzbetreibers
+
+                      Bezug aus dem Netz und Einspeisung in das Netz des Netzbetreibers
+
+                      und Betrieb mit Ausschließlichkeitsoption        Abgrenzungsoption           Pauschaloption
+
+ bidirektionale/rückspeisefähige Ladeeinrichtungen dieser Anmeldung
+
+ bidirektionale DC-                          vom Netzbetreiber aus der ZEREZ-Datenbank über die ID abzurufen
+ Ladeeinrichtung
+                                                                                                             Symmetrie
+                                 Lade-                                    Entlade-          Entlade-         (1, 2, 3)
+                       Anzahl
+                                 leistung
+                                             Hersteller    Typ            leistung          leistung         (1-phasig oder
+                                 PEmax B                                                                     2-phasig oder
+                                 in kW*                                   PEmax in kW       SEmax in kVA     3-phasig
+                                                                                                             symmetrisch)
+
+
+
+
+ bidirektionale AC-                          vom Netzbetreiber aus der ZEREZ-Datenbank über die ID abzurufen
+ Ladeeinrichtung
+                                                                                                             Symmetrie
+                                 Lade-                                    Entlade-          Entlade-         (1, 2, 3)
+                       Anzahl
+                                 leistung
+                                             Hersteller    Typ            leistung          leistung         (1-phasig oder
+                                 PEmax B                                                                     2-phasig oder
+                                 in kW*                                   PEmax in kW       SEmax in kVA     3-phasig
+                                                                                                             symmetrisch)
+
+
+
+
+ Betriebsweise         kein Bezug aus dem Netz und keine Einspeisung in das Netz des Netzbetreibers (Nulleinspeisung)
+
+                       Bezug aus dem Netz und keine Einspeisung in das Netz des Netzbetreibers (Nulleinspeisung)
+
+                       kein Bezug aus dem Netz und Einspeisung in das Netz des Netzbetreibers
+
+                       Bezug aus dem Netz und Einspeisung in das Netz des Netzbetreibers
+
+                       und Betrieb mit Ausschließlichkeitsoption        Abgrenzungsoption                  Pauschaloption
+
+
+
+
+132
+ Ersatzstromerzeuger
+
+ Betriebsweise         ohne oder mit ≤ 100 ms Netzparallelbetrieb
+
+                       mit > 100 ms bis zu 1h/Monat Netzparallelbetrieb > 1h/Monat
+                       Netzparallelbetrieb (dann oben bei EZE angeben)
+
+ Übersicht zur gesamten Kundenanlage
+
+ Erzeugungs-      vorhanden          Neuerrichtung /     Rückbau             Summe PAmax          Summe PAV, E
+ anlage +         (Bestand)          Erweiterung /                           (installiert)        (geplante Leistung
+ Speicher +                          Erneuerung /                                                 für die
+ bidirektionale                      Modernisierung                                               Netzeinspeisung,
+ Ladeeinrichtun                      (mit dieser                                                  wenn diese kleiner
+ gen(Entladelei                      Anmeldung)                                                   als ∑PAmax ist,
+ stungen)                                                                                         dann
+                                                                                                  Überwachung
+                                                                                                  notwendig)
+
+                  ______      kW     ______      kW      ______     kW       ______     kW        ______      kW
+
+ Anschlusskonzept
+
+                       Volleinspeisung (Einspeisung der gesamten Energie in das Netz
+                       des Netzbetreibers)
+ Betriebsweise
+                       Überschusseinspeisung (Selbstverbrauch und Lieferung in das Netz
+                       des Netzbetreibers)
+
+                       Inselbetrieb der Kundenanlage oder von Teilen der
+                                                                                             ja            nein
+                       Kundenanlage vorgesehen?
+
+
+
+ Bemerkungen
+
+
+
+
+*In Abhängigkeit der Höhe der Ladeleistung können sich weitere Datenfelder ergeben. Diese liegen nicht im
+Geltungsbereich der VDE-AR-N 4105.
+
+
+
+
+                                                                                                                   133
+VDE-AR-N 4105:2026-03
+
+
+
+F.3     Einheitenzertifikat
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+ Einheitenzertifikat                                                          Nr.: ___________________
+                                                                              (JJJJ – nnnn laufende Nr.)
+                                                                              Unterzeichnete Kopie Nr. 1
+
+ Hersteller
+ Typ Erzeugungseinheit
+      Umrichter                            Asynchrongenerator                  Synchrongenerator
+     rückspeisefähige DC-Ladeein-          rückspeisefähige AC-                  rückspeisefähiger System-
+ richtung für Elektrofahrzeuge          Ladeeinrichtung für                   verbund aus AC-Ladeeinrichtung
+                                        Elektrofahrzeuge                      und Elektrofahrzeug
+                                           Umrichter eines rückspeise-
+                                        fähigen AC-gekoppelten
+                                        Elektrofahrzeuges
+      AC-gekoppelter Speicher              Brennstoffzelle                  andere ___________________
+ Bemessungswerte                        max. Wirkleistung PEmax                             ___________ kW
+
+                                        max. Scheinleistung SEmax                           ___________ kVA
+
+                                        Bemessungsspannung                                  ___________ V
+ Bemessungswerte                        Bemessungsstrom (AC) Ir                             ___________ A
+
+ Bemessungswerte                        Anfangs-Kurzschlusswechselstrom I k               ___________ A
+
+ integrierter Kuppelschalter,           Schnittstelle vorhanden
+ Ansteuerung durch externen
+ Schutz                                 wenn vorhanden, Eigenzeit des         ___________ ms
+                                        Kuppelschalters bei Ansteuerung
+                                        durch externen Schutz
+ Netzanschlussregel        VDE-AR-N 4105 „Erzeugungsanlagen am Niederspannungsnetz“
+                           Technische Mindestanforderungen für Anschluss und Parallelbetrieb von
+                           Erzeugungsanlagen am Niederspannungsnetz
+ Prüfanforderung           DIN VDE V 0124-100 (VDE V 0124-100) „Netzintegration von
+                           Erzeugungsanlagen – Niederspannung“
+                           Prüfanforderungen an Erzeugungseinheiten vorgesehen zum Anschluss und
+                           Parallelbetrieb am Niederspannungsnetz
+ Prüfbericht               ________________________________ vom __________ (TT.MM.JJJJ)
+ Die oben bezeichnete Erzeugungseinheit erfüllt die Anforderungen der VDE-AR-N 4105.
+ Ort, Datum (TT.MM.JJJJ) Zertifizierungsstelle
+
+
+ Dieses Einheitenzertifikat darf nicht in Ausschnitten verwendet werden.
+
+
+
+
+ Zertifizierungsstelle, Firmen-LOGO, Adresse, E-Mail
+
+
+
+
+134
+F.4       Prüfbericht „Netzrückwirkungen“ für Erzeugungseinheiten mit einem
+          Eingangsstrom > 75 A
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+Auszug aus dem Prüfbericht für Erzeugungseinheiten                                                Nr.: ___________________
+„Bestimmung der elektrischen Eigenschaften“                                                       JJJJ – nnnn (laufende Nr.)
+
+
+Anlagenhersteller:                    __________________________________________________________
+
+Herstellerangaben:                    Anlagenart (KWK, PV-WR, …)
+
+                                      maximale Wirkleistung PEmax                 ________________________ kW
+
+                                      Bemessungsspannung                          ________________________ V
+
+Messzeitraum                          vom JJJJ-MM-TT bis JJJJ-MM-TT               ________________________
+
+Schnelle Spannungsänderungen
+
+Einschalten ohne Vorgabe (zum Primärenergieträger)                                       ki = ______________
+
+Ungünstigster Fall beim Umschalten der Generatorstufen                                   ki = ______________
+
+Einschalten bei Nennbedingungen (des Primärenergieträgers)                               ki = ______________
+
+Ausschalten bei Bemessungsleistung                                                       ki = ______________
+
+Schlechtester Wert aller Schaltvorgänge                                                  kimax = ____________
+
+Flicker              Netzimpedanzwinkel k                      30°             50°               70°             85°
+
+                     Anlagenflickerbeiwert c
+
+Oberschwingungen
+      Wirkleistung P/Pn [%]                     10      20      30      40       50       60      70      80       90      100
+
+      Ordnungszahl                              I [%]   I [%]   I [%]   I [%]    I [%]    I [%]   I [%]   I [%]    I [%]   I [%]
+
+2
+
+3
+
+4
+
+5
+
+…
+
+40
+
+Zwischenharmonische
+      Wirkleistung P/Pn [%]                     10      20      30      40       50       60      70      80       90      100
+
+      Frequenz [Hz]                             I [%]   I [%]   I [%]   I [%]    I [%]    I [%]   I [%]   I [%]    I [%]   I [%]
+
+75
+
+125
+
+175
+
+225
+
+…
+
+1975
+
+
+
+
+                                                                                                                                   135
+VDE-AR-N 4105:2026-03
+
+
+
+Höhere Frequenzen
+      Wirkleistung P/Pn [%]   10    20      30      40      50      60      70      80      90      100
+
+      Frequenz [kHz]          I     I [%]   I [%]   I [%]   I [%]   I [%]   I [%]   I [%]   I [%]   I [%]
+                              [%]
+
+2,1
+
+2,3
+
+2,5
+
+2,7
+
+…
+
+8,9
+
+
+
+
+136
+F.5     Zertifikat für den Netz- und Anlagenschutz
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+                                                                    Nr: ___________________
+ Zertifikat für den NA-Schutz                                       JJJJ – nnnn (laufende Nr.)
+                                                                    Unterzeichnete Kopie Nr. 1
+ Hersteller
+ Typ NA-Schutz
+ Zentraler NA-Schutz
+ Integrierter NA-Schutz mit                  Zugeordnet zu Erzeugungseinheit/Speicher Typ _____________
+ abgesetzter Spannungs-
+ messung
+ Integrierter NA-Schutz                      Zugeordnet zu Erzeugungseinheit/Speicher Typ _____________
+ Integrierter NA-Schutz in                   Zugeordnet zu Ladeeinrichtung Typ
+ einer rückspeisefähigen
+                                             _____________
+ AC- oder DC-Ladeein-
+ richtung
+
+ Integrierter NA-Schutz in                   Zugeordnet zu Systemverbund Typ
+ einem rückspeisefähigen
+                                             _____________
+ Systemverbund aus AC-
+ Ladeeinrichtung und
+ Elektrofahrzeug
+ Netzanschlussregel               VDE-AR-N 4105 „Erzeugungsanlagen am Niederspannungsnetz“
+                                  Technische Mindestanforderungen für Anschluss und Parallelbetrieb von
+                                  Erzeugungsanlagen am Niederspannungsnetz
+ Prüfanforderung                  DIN VDE V 0124-100 (VDE V 0124-100) „Netzintegration von
+                                  Erzeugungsanlagen – Niederspannung“
+                                  Prüfanforderungen an Erzeugungseinheiten vorgesehen zum Anschluss
+                                  und Parallelbetrieb am Niederspannungsnetz
+ Prüfbericht                      ________________________________ vom __________ (TT.MM.JJJJ)
+ Der oben bezeichnete Netz- und Anlagenschutz erfüllt die Anforderungen der VDE-AR-N 4105.
+ Ort, Datum (TT.MM.JJJJ) Zertifizierungsstelle
+
+
+
+
+ Dieses Zertifikat für den NA-Schutz darf nicht in Ausschnitten verwendet werden.
+
+
+
+
+ Zertifizierungsstelle, Firmen-LOGO, Adresse, E-Mail
+
+
+
+
+                                                                                                          137
+VDE-AR-N 4105:2026-03
+
+
+
+F.6     Anforderungen an den Prüfbericht zum NA-Schutz
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+ Auszug aus dem Prüfbericht für den NA-Schutz                                                            Nr. ____________
+                                                                                                         (JJJJ – nnnn; laufende
+ „Bestimmung der elektrischen Eigenschaften“                                                             Nummer)
+
+Prüfbericht NA-Schutz
+
+Typ NA-Schutz:           ____________________________                     weitere Herstellerangaben
+
+Software-Version:        ____________________________
+
+Hersteller:              ____________________________
+
+
+Messzeitraum:            Vom:____________ bis:______________
+
+
+                                                       Brennstoffzellen                                Umrichter
+
+                                         direkt oder über Umrichter gekoppelte             direkt gekoppelte Synchron- und
+                                       Synchron- und Asynchrongeneratoren mit            Asynchrongeneratoren mit Pn > 50 kW
+                                                       Pn ≤ 50 kW
+
+              Schutzfunktion            Einstellwert     Auslösewert      Auslösezeit   Einstellwert   Auslösewert      Auslösezeit
+                                                                          NA-Schutz*                                    NA-Schutz*
+
+ Spannungssteigerungsschutz U >>         1,15 * Un           * Un             ms         1,25 * Un         * Un             ms
+
+ Spannungssteigerungsschutz U >          1,10 * Un           * Un             s**        1,10 * Un         * Un             s**
+
+ Spannungsrückgangsschutz U <             0,8 * Un           * Un             ms         0,8 * Un          * Un             ms
+
+ Spannungsrückgangsschutz U <<                             entfällt                      0,45 * Un         * Un             ms
+
+ Frequenzrückgangsschutz f <              47,5 Hz            Hz               ms         47,5 Hz            Hz              ms
+
+ Frequenzsteigerungsschutz f >            51,5 Hz            Hz               ms         51,5 Hz            Hz              ms
+
+ Frequenzsteigerungsschutz f >>           52,6 Hz            Hz               ms         52,6 Hz            Hz              ms
+*     Die Auslösezeit umfasst den Zeitraum von der Grenzwertverletzung U/f bis zum Auslösesignal an den Kuppelschalter.
+
+**    Der Wert weist die längste Abschaltzeit des Spannungssteigerungsschutz U> als gleitender 10-min-Mittelwert aus.
+
+Bei der Planung der Erzeugungsanlage ist die Eigenzeit des Kuppelschalters zum höchsten oben ermittelten Zeitwert zu addieren.
+
+Die Abschaltzeit (Summe der Auslösezeit NA-Schutz zzgl. Eigenzeit des Kuppelschalters) darf 200 ms für U>> und f>> nicht
+überschreiten.
+
+      Bei integriertem NA-Schutz
+
+zugeordnet zu Erzeugungseinheit/Speicher Typ
+
+zugeordnet zu Ladeeinrichtung Typ
+
+zugeordnet zu Systemverbund Typ
+
+Typ integrierter Kuppelschalter
+
+Eigenzeit des Kuppelschalters bei integriertem NA-Schutz
+
+Die Überprüfung der Gesamtwirkungskette „integrierter NA-Schutz – Kuppelschalter“ führte zu einer
+erfolgreichen Abschaltung.
+
+
+
+138
+139
+VDE-AR-N 4105:2026-03
+
+
+
+F.7     Zertifikat für den PAV, E - Schutz
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+                                                                    Nr: ___________________________
+ Zertifikat für den PAV, E - Schutz                                 (JJJJ – nnnn laufende Nr.)
+                                                                    Unterzeichnete Kopie Nr. 1
+ Hersteller
+ Typ PAV, E - Schutz
+ Zentraler PAV, E - Schutz                   Leistungsmessung erfolgt mit konventionellen Stromwandlern
+                                             Typ der Leistungsmessung am Netzanschlusspunkt:
+                                             _____________________________________________
+
+ Integrierter PAV, E – Schutz                Typ der Leistungsmessung am Netzanschlusspunkt:
+                                             _____________________________________________
+ Netzanschlussregel               VDE-AR-N 4105 „Erzeugungsanlagen am Niederspannungsnetz“
+                                  Technische Mindestanforderungen für Anschluss und Parallelbetrieb von
+                                  Erzeugungsanlagen am Niederspannungsnetz
+ Prüfanforderung                  DIN VDE V 0124-100 (VDE V 0124-100) „Netzintegration von
+                                  Erzeugungsanlagen – Niederspannung“
+                                  Prüfanforderungen an Erzeugungseinheiten vorgesehen zum Anschluss
+                                  und Parallelbetrieb am Niederspannungsnetz
+ Prüfbericht                      ________________________________ vom __________ (TT.MM.JJJJ)
+ Der oben bezeichnete PAV, E - Schutz erfüllt die Anforderungen der VDE-AR-N 4105.
+ Ort, Datum (TT.MM.JJJJ) Zertifizierungsstelle
+
+
+
+
+ Dieses Zertifikat für den PAV, E-Schutz darf nicht in Ausschnitten verwendet werden.
+
+
+
+
+ Zertifizierungsstelle, Firmen-LOGO, Adresse, E-Mail
+
+
+
+
+140
+F.8     Anlagenzertifikat
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+ Name Zertifizierungsstelle: …………………………………....…                    LOGO
+
+ Akkreditiert nach DIN EN ISO/IEC 17065
+
+                                                                   Nr.:.………………....................
+ Anlagenzertifikat
+                                                                   Exemplar-Nr. ………………….
+
+ Projektbezeichnung                        _____________________________________________________
+
+ Anschlussnehmer                           _____________________________________________________
+
+ Leistungsangaben der Erzeugungs-          Vereinbarte Anschlusswirkleistung PAV, E                  ________ kW
+ anlage
+                                           Vereinbarte Anschlussscheinleistung SAV, E                ________ kVA
+
+                                           Vereinbarte Anschlusswirkleistung PAV, B                  ________ kW
+
+                                           Vereinbarte Anschlussscheinleistung SAV, B                ________ kVA
+
+                                           Installierte Wirkleistung ∑PAmax                          ________ kW
+
+ VDE-Anwendungsregel                       VDE-AR-N 4105 „Erzeugungsanlagen am Niederspannungsnetz“
+
+ Zertifizierungsprogramm                   FGW Technische Richtlinie Nr. 8 (mit Ausgabestand)
+
+ Die oben bezeichnete Erzeugungsanlage erfüllt die Anforderungen der oben aufgeführten VDE-Anwendungsregel.
+
+ Das Zertifikat beinhaltet folgende Angaben:
+
+ –    Den schematischen Aufbau der Erzeugungsanlage mit Angabe der Erzeugungseinheiten und aller
+
+      weiteren Komponenten;
+
+ –    zusammengefasste Angaben zu den Eigenschaften der Erzeugungsanlage;
+
+ –    Aussagen zur Gültigkeitsdauer.
+
+
+
+ ____________________________________________                      ______________________________
+
+ Ort, Datum (TT.MM.JJJJ)                                           Name, Funktion
+
+
+
+ ____________________________________________                      ______________________________
+
+ Name Zertifizierungsstelle, Adresse, E-Mail                       DAkkS Logo
+
+
+
+ Dieses Zertifikat darf nicht in Ausschnitten verwendet werden.
+
+
+
+
+                                                                                                                    141
+VDE-AR-N 4105:2026-03
+
+
+
+F.9      Inbetriebsetzungsprotokoll für Erzeugungsanlagen und/oder Speicher
+Anwendung für alle Erzeugungsanlagen außer Kleinsterzeugungsanlagen, Kleinstspeicher und kombinierte
+DC-gekoppelte Erzeugungs- und Speichereinheiten (EZSE) mit ∑SAmax ≤ 800 VA
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+ Inbetriebsetzungsprotokoll Erzeugungsanlagen/Speicher Niederspannung
+ (vom Elektrofachbetrieb auszufüllen)
+
+                             Straße, Hausnummer
+ Anlagenanschrift
+                             PLZ, Ort, Ortsteil
+
+                             Firma, PLZ, Ort, Ortsteil
+ Elektrofachbetrieb
+                             Eintragungsnummer
+
+                             bei Netzbetreiber
+
+ max. Scheinleistung SAmax                                      _____ kVA            max. Wirkleistung PAmax           ____ kW
+
+ Für PV-Anlagen: Modulleistung/Generatorleistung (für Einspeisevergütung maßgebend)                                    ___ kWp
+
+ Übereinstimmung der Antragstellung F.1 und des Datenblattes F.2 mit dem Anlagenaufbau?
+
+ Bei Nichtübereinstimmung sind aktualisierte Formulare F.1 und F.2 beigefügt.
+
+ Abrechnungsmessung: Vorinbetriebsetzungsprüfung + Inbetriebsetzungsprüfung erfolgt?
+
+ Integrierter NA-Schutz: Eingestellter Wert Spannungssteigerungsschutz U>                                              ______
+
+ Zentraler NA-Schutz: Eingestellter Wert Spannungssteigerungsschutz U>                                                 ______
+
+                                        Auslösetest „Zentraler NA-Schutz – Kuppelschalter“ erfolgreich durchgeführt?
+ Wenn zentraler NA-Schutz
+ vorhanden:                             Auslösekreises „Zentraler NA-Schutz – Kuppelschalter“ nach
+                                        Ruhestromprinzip ausgeführt und geprüft?
+
+                                        Es wurde geprüft, dass eine Unterbrechung des Messkreises
+ Wenn integrierter NA-Schutz mit        „Spannungsmessung am zentralen Zählerplatz – integrierter NA-Schutz“ in ≤ 1
+ abgesetzter Spannungsmessung           Minute zur Abschaltung der Erzeugungsanlage führt.
+ vorhanden (eine der beiden
+ Varianten muss ausgeführt worden       Es wurde geprüft, dass eine Unterbrechung des Messkreises
+ sein):                                 „Spannungsmessung am zentralen Zählerplatz – integrierter NA-Schutz“ zu
+                                        einer Aktivierung des integrierten NA-Schutzes mit U> 1,10 Un führt.
+
+                                        Eingestellte Wirkleistung PAV, E                                               _____ kW
+ Wenn PAV, E - Überwachung
+ vorhanden:
+                                        Funktionstest erfolgreich durchgeführt?
+
+ Wenn nach EnWG oder EEG erforderlich: Technische Einrichtung zur ferngesteuerten Leistungsreduzierung der
+ Erzeugungsleistung nach Vorgabe des Netzbetreibers vom Elektrofachbetrieb installiert?
+
+
+
+
+ Wenn bei Einbau eines Speichers aus bilanziellen Gründen (Abgrenzung Grau-/Grünstrom) erforderlich:
+ Leistungsmessung am Netzanschlusspunkt (EnFluRi) sperrt die unzulässige Richtung – Funktionstest durch Errichter
+ durchgeführt und bestanden?
+
+
+
+
+142
+Die Symmetriebedingung wird eingehalten:
+
+   durch einen Drehstromgenerator oder einen dreiphasigen Umrichter
+
+   durch folgende Aufteilung der einphasig angeschlossenen Erzeugungseinheiten je Außenleiter:
+
+                                                                                       L1               L2             L3
+
+Summe SEmax der ggf. vorhandenen Erzeugungsanlagen/Speicher                            _____ kVA        _____ kVA      ______ kVA
+
+Summe SEmax der neu hinzukommenden Erzeugungsanlagen/Speicher                          _____ kVA        _____ kVA      ______ kVA
+
+                                                                      Q(U) Standard-Kennlinie belassen
+Verfahren zur Blindleistungsbereitstellung nach Vorgabe des
+                                                                      cos φ (P)-Kennlinie eingestellt
+Netzbetreibers eingestellt:
+                                                                      fester Verschiebungsfaktor cos φ =            eingestellt
+
+Bei Anschluss an das MS-Netz des               Der –Parametersatz für den Anschluss an das Mittelspannungsnetz des Netzbetreibers
+Netzbetreibers bis ∑PAmax, ≥135 kW ≤ 500       (∑PAmax ≤ 270 kW)“ wurde an den Erzeugungseinheiten eingestellt.
+kW und PAV, E ≤ 270 kW
+                                               Der Parametersatz für den Anschluss an das Mittelspannungsnetz des Netzbetreibers
+                                               (∑PAmax > 270 kW) wurde an den Erzeugungseinheiten eingestellt.
+
+                                               Bei ∑PAmax > 270 kW ist das Schutzprüfprotokoll für den übergeordneten
+                                               Entkupplungsschutz diesem Protokoll beigefügt.
+
+Die Erzeugungsanlage und/oder der Speicher ist/sind nach VDE-AR-N 4105, VDE-AR-N 4100 und den technischen
+Anschlussbedingungen des Netzbetreibers errichtet. Der Elektrofachbetrieb hat den Anlagenbetreiber einzuweisen und eine
+vollständige Dokumentation inkl. Schaltplan nach den jeweils gültigen VDE-Bestimmungen zu übergeben.
+
+Datum der Inbetriebsetzung der Erzeugungsanlage und/oder des Speichers:                                 _______________________
+
+Datum des erstmaligen Netzparallelbetriebes:                                                        _______________________
+
+
+
+
+Ort, Datum                 Unterschrift Anlagenbetreiber                               Unterschrift Elektrofachbetrieb
+
+
+
+
+                                                                                                                                    143
+VDE-AR-N 4105:2026-03
+
+
+
+F.10 Konformitätserklärung für Erzeugungsanlagen/Speicher
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+ Name Zertifizierungsstelle…………………………………....…                            LOGO
+
+ Akkreditiert nach DIN EN ISO/IEC 17065 für VDE-AR-N 4105
+
+                                                                         Nr.: …………………..…………….........….
+ Konformitätserklärung
+                                                                         Unterzeichnete Kopie Nr.:..………..........
+ für Erzeugungsanlagen/Speicher
+
+ Projektbezeichnung
+
+ Anschlussnehmer
+
+ Leistungsangaben der                Vereinbarte Anschlusswirkleistung       ________________ kW
+ Erzeugungsanlage/des Speichers      PAV, E
+
+                                     Vereinbarte                             ________________ kVA
+                                     Anschlussscheinleistung SAV, E
+
+                                     Vereinbarte Anschlusswirkleistung       ________________ kW
+                                     PAV, B
+
+                                     Vereinbarte                             ________________ kVA
+                                     Anschlussscheinleistung SAV, B
+
+                                     Installierte Wirkleistung ∑PAmax        ________________ kW
+
+ Ersteller des Anlagenzertifikates   Vorname, Name                           _______________________________
+
+                                     Straße, Hausnummer                      _______________________________
+
+                                     Nr. Anlagenzertifikat                   _______________________________
+
+                                     Ausstelldatum                           _______________________________
+
+ Ersteller der Inbe-                 Vorname, Name                           _______________________________
+ triebsetzungserklärung
+                                     Straße, Hausnummer                      _______________________________
+
+                                     Ausstelldatum                           _______________________________
+
+ Die Erzeugungsanlage/der Speicher (Komponenten, Einheiten und Betriebsmittel, usw.) wurde entsprechend dem
+ Anlagenzertifikat und nach den Vorgaben des Netzbetreibers errichtet.
+
+      Erfüllt
+
+ ANMERKUNG _______________________________________________________________________
+
+ ____________________________________________________________________________________
+
+ Die in der Inbetriebsetzungserklärung ausgewiesenen Bestandteile und Einstellungen der errichteten
+ Erzeugungsanlage/des Speichers stimmen mit dem Anlagenzertifikat überein.
+
+      Erfüllt
+
+ ANMERKUNG _______________________________________________________________________
+
+ ____________________________________________________________________________________
+
+
+
+
+144
+Das Konzept zur statischen Blindleistungsbereitstellung, das Konzept zur Wirkleistungssteuerung, die Umsetzung der
+dynamischen Netzstützung und das Schutzkonzept wurden unter Berücksichtigung der Vorgaben des Netzbetreibers
+umgesetzt.
+
+    Erfüllt
+
+ANMERKUNG________________________________________________________________________
+
+___________________________________________________________________________________
+
+
+
+Die zuvor bezeichnete Erzeugungsanlage/der Speicher
+
+      erfüllt die Anforderungen der VDE-AR-N 4105 „Erzeugungsanlagen am Niederspannungsnetz“
+
+      erfüllt die Anforderungen der TAB des Netzbetreibers
+
+      und wurde konform zum oben angeführten Anlagenzertifikat errichtet.
+
+ANMERKUNG _______________________________________________________________________
+
+____________________________________________________________________________________
+
+
+
+Die geforderten Funktionsprüfungen zum Wirkleistungsverhalten
+
+      wurden im Rahmen der Inbetriebsetzungserklärung erbracht.
+
+    konnten aus folgenden Gründen nicht durchgeführt werden und werden in Abstimmung mit dem Netzbetreiber
+nachgeholt.
+
+____________________________________________________________________________________
+
+Die Konformitätserklärung beinhaltet folgende Anlagen:
+
+–     Inbetriebsetzungserklärung
+
+–     Weitere zur Erstellung der Konformitätserklärung geprüfte Dokumente: ________________________
+
+____________________________________________________________________________________
+
+
+
+___________________________________________________
+
+Ort, Datum (TT.MM.JJJJ)
+
+___________________________________________________
+
+Zertifizierungsstelle, Adresse, E-Mail
+
+
+
+Dieses Zertifikat darf nicht in Ausschnitten verwendet werden.
+
+
+
+
+                                                                                                                145
+VDE-AR-N 4105:2026-03
+
+
+
+F.11 Betriebserlaubnisverfahren
+
+(Dieses Formular ist zur Vervielfältigung durch den Anwender dieser VDE-Anwendungsregel bestimmt.)
+
+ Erteilung der Betriebserlaubnis für Erzeugungsanlagen und Speicher mit
+ Anschluss an das Niederspannungsnetz des Netzbetreibers
+
+ (vom Netzbetreiber auszufüllen)
+
+ Bezeichnung Erzeugungsanlage/Speicher
+
+ Vereinbarte Anschluss-Wirkleistung Einspeisung PAV, E                     ………………………….……………. kW
+
+ maximale Wirkleistung der Erzeugungsanlage PAmax                          ………………………….………….... kW
+
+
+ Registriernummer des Netzbetreibers                                       …………………………………………………
+
+ Anlagenanschrift                      Vorname, Name                       …………………………………………………
+
+                                       Straße, Hausnummer                  …………………………………………………
+
+                                       PLZ, Ort                            …………………………………………………
+
+ Erteilung der vorübergehenden Betriebserlaubnis für Erzeugungsanlagen und Speicher und Pflicht
+ zur Anlagenzertifizierung
+
+      Der vorgenannten Erzeugungsanlage wird die vorübergehende Betriebserlaubnis erteilt.
+
+ Die vorübergehende Betriebserlaubnis gilt für eine Dauer von 6 Monaten nach Inbetriebnahme der Erzeugungsanlage
+ jedoch längstens für 12 Monate nach Inbetriebsetzung der ersten Erzeugungseinheit.
+
+      Der Entscheidung liegt das Anlagenzertifikat (F.8) Nr. _________________________ zu Grunde.
+
+
+ Erteilung der endgültigen Betriebserlaubnis für Erzeugungsanlagen und Speicher mit PAmax ≥ 135
+ kW
+
+      Der vorgenannten Erzeugungsanlage wird die endgültige Betriebserlaubnis erteilt.
+
+
+ Der Entscheidung liegt folgende vollständige Dokumentation zu Grunde:
+
+
+
+                                                                     Inbetriebsetzungserklärung für
+                                                                 Erzeugungsanlagen und Speicher (F.9)
+
+
+
+
+      Einheitenzertifikat (siehe Vordruck F.3), Zertifikat für
+ den Netz- und Anlagenschutz (siehe Vordruck F.5) und
+ soweit im jeweiligen Anschlussfall erforderlich: Zertifikat
+ für den PAV, E-Schutz (siehe Vordruck F.7)
+                                                                     Konformitätserklärung (F.10) (bei Erzeugungsanlagen
+                                                                 und Speicher mit Pflicht zur Anlagenzertifizierung)
+
+
+
+
+146
+Sonstige Bemerkungen
+………………………………………………………………………………………………………………………….
+………………………………………………………………………………………………………………………….
+
+
+
+
+……………………………….…………….    ……………………………………………………………………….
+Ort, Datum             Unterschrift des Netzbetreibers
+
+
+
+
+                                                         147
+

@@ -1,0 +1,110 @@
+[
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/pvlib/pvlib-python/main/LICENSE",
+    "datasetFile": "engineering-method-accuracy-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/8u2CBuKWyWn7cnqdc/records/file-96fd88b-LICENSE",
+    "localFile": "captured-files/file-96fd88b-LICENSE.txt",
+    "sha256": "a02e12ddaada3cf0d5dbdd8affdd577c2eec640758a95842a304f7513b8c0be4",
+    "bytes": 1622,
+    "pdfInfo": ""
+  },
+  {
+    "sourceUrl": "https://www.netbeheernederland.nl/sites/default/files/2024-03/rfg_compliance_verification_document_v2.0.pdf",
+    "datasetFile": "engineering-method-accuracy-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/8u2CBuKWyWn7cnqdc/records/file-a934308-rfg_compliance_verification_document_v2.0.pdf",
+    "localFile": "captured-files/file-a934308-rfg_compliance_verification_document_v2-0.pdf",
+    "sha256": "20bb6808c599c123ad0701048e852dc96e744642416ca12a9a97e3ec2d93c742",
+    "bytes": 2375582,
+    "pdfInfo": "Title:           Netbeheer Nederland\nAuthor:          Gebruiker\nCreator:         Microsoft® Word for Microsoft 365\nProducer:        Microsoft® Word for Microsoft 365\nCreationDate:    Tue Mar 19 20:18:46 2024 CST\nModDate:         Tue Mar 19 20:18:46 2024 CST\nCustom Metadata: yes\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           165\nEncrypted:       no\nPage size:       595.32 x 841.92 pts (A4)\nPage rot:        0\nFile size:       2375582 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "sourceUrl": "https://www.netbeheernederland.nl/sites/default/files/2026-09/country_settings_type_a_and_b_pgms.pdf",
+    "datasetFile": "engineering-nl-settings-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/BbJ8CMlc8oQ2MKw9x/records/file-64327f5-country_settings_type_a_and_b_pgms.pdf",
+    "localFile": "captured-files/file-64327f5-country_settings_type_a_and_b_pgms.pdf",
+    "sha256": "dcdd4f5da455caf4e35f366a1ef2798a505fcfb66ff2533aca4cdbbb4aa6909c",
+    "bytes": 174121,
+    "pdfInfo": "Title:           Microsoft PowerPoint - Country settings v2\nAuthor:          jmorren\nCreator:         PScript5.dll Version 5.2.2\nProducer:        Acrobat Distiller 26.0 (Windows)\nCreationDate:    Fri Sep  4 15:27:40 2026 CST\nModDate:         Fri Sep  4 15:27:40 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           3\nEncrypted:       no\nPage size:       595.22 x 842 pts (A4)\nPage rot:        90\nFile size:       174121 bytes\nOptimized:       yes\nPDF version:     1.6\n"
+  },
+  {
+    "sourceUrl": "https://www.vde.com/resource/blob/1785304/f23a9f50f050aaad54dc4a280aa82377/vde-ar-n-4105-formulare-anhang-e-data.pdf",
+    "datasetFile": "engineering-standards-grid-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/ViMV81JnraRuVntKZ/records/file-7680133-vde-ar-n-4105-formulare-anhang-e-data.pdf",
+    "localFile": "captured-files/file-7680133-vde-ar-n-4105-formulare-anhang-e-data.pdf",
+    "sha256": "3caa7365e7532f6f528bcf0c779d99f9211ce34d2a4631b344e7c9fbf7aa2eb0",
+    "bytes": 667479,
+    "pdfInfo": "Title:           Anhang F - Formulare zur VDE-AR-N 4105\nKeywords:        Anhang F; Formulare; VDE-AR-N 4105; Technische Anschlussregeln; Erzeugungsanlagen am Niederspannungsnetz; TAR; VDE FNN\nAuthor:          VDE FNN\nCreator:         Microsoft® Word für Microsoft 365\nProducer:        Microsoft® Word für Microsoft 365\nCreationDate:    Tue May 12 17:21:18 2026 CST\nModDate:         Wed May 20 00:18:09 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            AcroForm\nJavaScript:      yes\nPages:           23\nEncrypted:       no\nPage size:       595.32 x 842.04 pts (A4)\nPage rot:        0\nFile size:       667479 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "sourceUrl": "https://www.vde.com/resource/blob/2306364/ae50ed2dfe20e6584fad16e2525565e2/nelev-hinweis-download-data.pdf",
+    "datasetFile": "engineering-standards-grid-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/ViMV81JnraRuVntKZ/records/file-fbe9824-nelev-hinweis-download-data.pdf",
+    "localFile": "captured-files/file-fbe9824-nelev-hinweis-download-data.pdf",
+    "sha256": "29e75cfc060a89c4312c25bbc9b780d1c6f2f68201edaa75b8532b256854e3fa",
+    "bytes": 1115535,
+    "pdfInfo": "Author:          Wulkow, Christoph\nCreator:         Microsoft® Word für Microsoft 365\nProducer:        Microsoft® Word für Microsoft 365\nCreationDate:    Tue Mar 19 15:42:47 2024 CST\nModDate:         Tue Mar 19 15:42:47 2024 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           35\nEncrypted:       yes (print:yes copy:no change:no addNotes:no algorithm:RC4)\nPage size:       595.32 x 841.92 pts (A4)\nPage rot:        0\nFile size:       1115535 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "sourceUrl": "https://www.enedis.fr/media/1977/download",
+    "datasetFile": "engineering-standards-grid-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/ViMV81JnraRuVntKZ/records/file-de96c24-download",
+    "localFile": "captured-files/file-de96c24-download.pdf",
+    "sha256": "5c8b71928d64ba4292f926e509ce40ded36f7f5222aa1a92ce99bea1bd4da5a4",
+    "bytes": 941875,
+    "pdfInfo": "Title:           Note interne\nAuthor:          ARCHIER Lionel\nCreator:         Microsoft® Word pour Microsoft 365\nProducer:        Microsoft® Word pour Microsoft 365\nCreationDate:    Wed Aug 26 15:08:03 2026 CST\nModDate:         Wed Aug 26 15:08:03 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           41\nEncrypted:       no\nPage size:       595.32 x 841.92 pts (A4)\nPage rot:        0\nFile size:       941875 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "sourceUrl": "https://www.enedis.fr/media/1983/download",
+    "datasetFile": "engineering-standards-grid-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/ViMV81JnraRuVntKZ/records/file-1eadf24-download",
+    "localFile": "captured-files/file-1eadf24-download.pdf",
+    "sha256": "55519c3da5d973caf7129bc0bb56a5fb3f77481e81472331fffc91954a6cff8c",
+    "bytes": 1006586,
+    "pdfInfo": "Title:           Note interne\nAuthor:          GROUD Alain\nCreator:         Microsoft® Word pour Microsoft 365\nProducer:        Microsoft® Word pour Microsoft 365\nCreationDate:    Wed Aug 26 15:03:41 2026 CST\nModDate:         Wed Aug 26 15:03:41 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           33\nEncrypted:       no\nPage size:       595.32 x 841.92 pts (A4)\nPage rot:        0\nFile size:       1006586 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "sourceUrl": "https://www.enedis.fr/media/1976/download",
+    "datasetFile": "engineering-standards-grid-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/ViMV81JnraRuVntKZ/records/file-4cc7206-download",
+    "localFile": "captured-files/file-4cc7206-download.pdf",
+    "sha256": "085e9604dd86a6a4f51265e05a6d856ed9537212e5b66dbe9549c22f2bbb2bf9",
+    "bytes": 982152,
+    "pdfInfo": "Title:           Note interne\nAuthor:          ARCHIER Lionel\nCreator:         Microsoft® Word pour Microsoft 365\nProducer:        Microsoft® Word pour Microsoft 365\nCreationDate:    Wed Aug 26 15:11:42 2026 CST\nModDate:         Wed Aug 26 15:11:42 2026 CST\nCustom Metadata: no\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           38\nEncrypted:       no\nPage size:       595.32 x 841.92 pts (A4)\nPage rot:        0\nFile size:       982152 bytes\nOptimized:       no\nPDF version:     1.7\n"
+  },
+  {
+    "sourceUrl": "https://www.enedis.fr/media/1975/download",
+    "datasetFile": "engineering-standards-grid-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/ViMV81JnraRuVntKZ/records/file-286e57e-download",
+    "localFile": "captured-files/file-286e57e-download.pdf",
+    "sha256": "06e0dd24f482cd295b3917bd723208c55a2cccf4f87fe77926f3df1b6bc7024f",
+    "bytes": 908669,
+    "pdfInfo": "Title:           FPB-Enedis-MOP-RES_047E.docx\nAuthor:          SAINTILAN Patrick\nCreator:         Acrobat PDFMaker 24 pour Word\nProducer:        Adobe PDF Library 24.4.252\nCreationDate:    Fri Apr  4 22:43:45 2025 CST\nModDate:         Sat Apr  5 00:03:03 2025 CST\nCustom Metadata: yes\nMetadata Stream: yes\nTagged:          yes\nUserProperties:  no\nSuspects:        no\nForm:            AcroForm\nJavaScript:      no\nPages:           34\nEncrypted:       no\nPage size:       595.32 x 841.92 pts (A4)\nPage rot:        0\nFile size:       908669 bytes\nOptimized:       no\nPDF version:     1.4\n"
+  },
+  {
+    "sourceUrl": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+    "datasetFile": "engineering-vde-current-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/xx0k5kcRxW5eweyhu/records/file-447e70d-DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+    "localFile": "captured-files/file-447e70d-DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+    "sha256": "47920d29d1d3d44b52b8d2c4293f92abbf8bfe8d3c44ef5ba371bdac358137ba",
+    "bytes": 32920,
+    "pdfInfo": "Producer:        OpenPDF 1.3.26\nCreationDate:    Wed Jun  5 19:36:21 2024 CST\nModDate:         Wed Jun  5 19:36:21 2024 CST\nCustom Metadata: no\nMetadata Stream: no\nTagged:          no\nUserProperties:  no\nSuspects:        no\nForm:            none\nJavaScript:      no\nPages:           4\nEncrypted:       no\nPage size:       595.275 x 841.875 pts (A4)\nPage rot:        0\nFile size:       32920 bytes\nOptimized:       no\nPDF version:     1.5\n"
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/3DBAG/roofer/main/LICENSE",
+    "datasetFile": "engineering-version-supplement-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/oAvVdegeWpvgcXlVX/records/file-5ea3644-LICENSE",
+    "localFile": "captured-files/file-5ea3644-LICENSE.txt",
+    "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "bytes": 35149,
+    "pdfInfo": ""
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/shapely/shapely/main/LICENSE.txt",
+    "datasetFile": "engineering-version-supplement-items.json",
+    "apifyRecordUrl": "https://api.apify.com/v2/key-value-stores/oAvVdegeWpvgcXlVX/records/file-2e9d5ad-LICENSE.txt",
+    "localFile": "captured-files/file-2e9d5ad-LICENSE-txt.txt",
+    "sha256": "4a207eac9bf257ed286e1c6f0fce253d1abfdb134fc61ec855e37f5692a3f754",
+    "bytes": 1583,
+    "pdfInfo": ""
+  }
+]

@@ -1,0 +1,94 @@
+[
+  {
+    "url": "https://www.netbeheernederland.nl/publicatie/esm-compliance-verification-document",
+    "crawl": {
+      "loadedUrl": "https://www.netbeheernederland.nl/publicatie/esm-compliance-verification-document",
+      "loadedTime": "2026-10-22T10:59:32.332Z",
+      "referrerUrl": "https://www.netbeheernederland.nl/publicatie/esm-compliance-verification-document",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 8848,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.netbeheernederland.nl/publicatie/esm-compliance-verification-document",
+      "title": "ESM Compliance Verification Document | Netbeheer Nederland",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "nl",
+      "openGraph": [
+        {
+          "property": "og:url",
+          "content": "https://www.netbeheernederland.nl/publicatie/esm-compliance-verification-document"
+        },
+        {
+          "property": "og:title",
+          "content": "ESM Compliance Verification Document"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "630"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "must-revalidate, no-cache, private",
+        "content-encoding": "gzip",
+        "content-language": "nl",
+        "content-length": "8848",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Mon, 19 Oct 2026 09:38:41 GMT",
+        "expires": "Sun, 19 Nov 1978 05:00:00 GMT",
+        "server": "Apache",
+        "strict-transport-security": "max-age=63072000; includeSubDomains",
+        "vary": "X-Consumer-ID,Accept-Encoding",
+        "x-consumer-id": "default_consumer",
+        "x-content-type-options": "nosniff",
+        "x-drupal-cache": "HIT",
+        "x-frame-options": "SAMEORIGIN",
+        "x-generator": "Drupal 10 (https://www.drupal.org)",
+        "x-node-name": "netbeheernederland-web01.hostinc.nl"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "ESM Compliance Verification Document | Netbeheer Nederland\nNaar publicatie overzicht\nPublicatie•1 april 2024\nPaginavan 0\n100%\nLoading PDF…\nDownloadOpens in a new tab",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# ESM Compliance Verification Document | Netbeheer Nederland\n\nNaar publicatie overzicht\n\nPublicatie•1 april 2024\n\nPaginavan 0\n\n100%\n\nLoading PDF…\n\n[DownloadOpens in a new tab](https://www.netbeheernederland.nl/sites/default/files/2024-03/esm_compliance_verification_document_v2.0.pdf)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.netbeheernederland.nl/sites/default/files/2026-09/country_settings_type_a_and_b_pgms.pdf",
+    "crawl": {
+      "loadedUrl": "https://www.netbeheernederland.nl/sites/default/files/2026-09/country_settings_type_a_and_b_pgms.pdf",
+      "depth": 0,
+      "referrerUrl": "https://www.netbeheernederland.nl/sites/default/files/2026-09/country_settings_type_a_and_b_pgms.pdf",
+      "loadedTime": "2026-10-22T10:59:32.949Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 174121,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://www.netbeheernederland.nl/sites/default/files/2026-09/country_settings_type_a_and_b_pgms.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "country_settings_type_a_and_b_pgms.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/BbJ8CMlc8oQ2MKw9x/records/file-64327f5-country_settings_type_a_and_b_pgms.pdf",
+    "signedRetrievalQueryOmitted": true
+  }
+]

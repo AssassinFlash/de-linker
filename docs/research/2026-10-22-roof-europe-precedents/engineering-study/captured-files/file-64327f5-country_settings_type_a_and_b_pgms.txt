@@ -1,0 +1,42 @@
+Country settings
+Generation units Type A and B
+Inleiding
+
+•   Generation units connected to the Dutch electricity network should meet the requirements
+    of the European Network Code Requirements for Generators – RfG (EU Regulation
+    2016/631)
+•   For some parameters the RfG gives a range of possible settings
+•   Each member country had to specify a value in that range
+•   In the Netherlands this is done in the ‘Netcode’
+•   On the next page these settings given
+•   Manufacturers of generation units often have a menu with pre-programmed country
+    settings
+•   The settings on the next page should be used as country settings for the Netherlands
+Country settings the Netherlands
+   Topic                                                   Type A                                       Type B
+
+   Protection settings                                     For LV and MV
+                                                           U<<: 70% / 0.2 s                             U<<: 5% / 0.25 s
+                                                           U<: 80% / 2 s                                U<: 85% / 3 s
+                                                           U>: 110% / 2 sec                             U>: 115% / 2 sec
+                                                           f<: 47.5 Hz / 2 sec                          f<: 47.5 Hz / 2 sec
+                                                           f>: 51.5 Hz / 2 sec                          f>: 51.5 Hz / 2 sec
+   LFSM-O                                                  Threshold 50.2 Hz                            Threshold 50.2 Hz
+                                                           Droop 5%                                     Droop 5%
+                                                           Pref = Pact                                  Pref = Pact
+   Fault-Ride-Through and                                  None                                         Active
+   Fast fault-current injection                                                                         Insensitivity range +/-10%
+                                                                                                        k=2
+                                                                                                        Umax=120%
+   Automatic reconnection                                  Umin = 90%                                   Umin = 90%
+                                                           Umax = 110%                                  Umax = 110%
+                                                           fmin: 49.9 Hz                                fmin: 49.9 Hz
+                                                           fmax: 50.1 Hz                                fmax: 50.1 Hz
+                                                           Waiting time: 60 sec                         Waiting time: 60 sec
+                                                           Gradiënt P: 10%/min                          Gradiënt P: 10%/min
+
+   Reactive power / voltage control                        Default: power factor = 1 *)                 Default: power factor = 1 *)
+
+
+*) This is a default setting. During commissioning network operators can have additional requirements
+

@@ -1,0 +1,6 @@
+{
+  "queries": "site:github.com roofer 3DBAG license roof reconstruction\nsite:docs.3dbag.nl accuracy reconstruction roof attributes license\nsite:isprs.org benchmark 3D building reconstruction evaluation roof planes licence\nsite:pvlib-python.readthedocs.io \"shaded_fraction1d\"\nsite:pvlib-python.readthedocs.io \"infinite_sheds\" assumptions\nsite:github.com/pvlib/pvlib-python \"BSD\"\nsite:docs.ladybug.tools honeybee radiance license shadow photovoltaic\nsite:joint-research-centre.ec.europa.eu PVGIS validation limitations shading building",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "languageCode": "en"
+}

@@ -1,0 +1,1934 @@
+                                                                                    Note externe
+                                                                                    Direction Clients et Territoires
+
+
+
+Convention de raccordement au Réseau Public de Distribution BT
+d’une Installation de Production de puissance comprise entre 36 et
+250 kVA - Conditions Générales
+
+Identification :    Enedis-MOP-RES_047E
+Version :           1
+Nb. de pages :      1+xx
+
+
+     Version           Date d’application   Nature de la modification                          Annule et remplace
+         1                15/09/2025        Création – changement de référence                 Enedis-FOR-RES_17E
+
+
+
+
+Document(s) associé(s) et annexe(s) :
+
+
+Résumé / Avertissement
+NB : Dans le cadre de son projet de simplification documentaire, Enedis modernise son système de
+référencement et met à jour toutes ses références de notes, tant internes qu’externes.
+Cette note Enedis-MOP-RES_047E remplace donc à l’identique la note Enedis-FOR-RES_17E, comme indiqué
+dans la note récapitulative Enedis-MOP-RCA_003E.
+
+Ce document précise les conditions techniques, juridiques et financières permettant à une installation de
+production d’être raccordée au Réseau Public de Distribution BT géré par Enedis.
+La Convention de Raccordement s’inscrit dans un dispositif contractuel comprenant le Contrat d’Accès au
+Réseau Public de Distribution BT et la Convention d’Exploitation, conclus entre Enedis et l’Utilisateur.
+Par ailleurs, Enedis rappelle l'existence de sa Documentation Technique de Référence (DTR), de son barème de
+raccordement et de son Catalogue des Prestations que vous pouvez télécharger sur le site internet
+www.enedis.fr.
+
+
+
+
+ Enedis                                       SA à directoire et à conseil de surveillance                      Page : 1/1+xx
+ 4, place de la Pyramide – TSA 25001          Capital de 270 037 000 euros                                      15/09/2025
+ 92030 Paris La Défense Cedex                 R.C.S. de Nanterre 444 608 442
+ enedis.fr                                    © Copyright Enedis
+                                                                                      Note externe
+                                                                                      Direction Clients Territoires
+
+
+
+Convention de raccordement au Réseau Public de Distribution BT
+d’une Installation de Production de puissance comprise entre 36 et
+250 kVA
+Conditions Générales
+
+Identification :     Enedis-FOR-RES_17E
+Version :            7
+Nb. de pages :       33
+
+
+  Version       Date d’application   Nature de la modification                                         Annule et remplace
+      4             01/09/2016       Prise en compte de la nouvelle dénomination sociale d’Enedis ERDF-FOR-RES_17E
+                                     Prise en compte des dispositions de l’article L342-2 du Code
+      5             02/12/2019
+                                     de l’énergie
+                                     Prise en compte de l’arrêté du 9 juin 2020 et des exigences
+      6             01/02/2023
+                                     relatives aux capacités en puissance réactive
+      7             01/01/2025       Mise en application des normes NF EN 50549
+
+
+
+Document(s) associé(s) et annexe(s) :
+Enedis-PRO-RES_67E : « Procédure de traitement des demandes de raccordement d'une Installation de
+Production en BT de puissance supérieure à 36 kVA et en HTA, au Réseau Public de Distribution géré par
+Enedis »
+Enedis-PRO-RES_65E : « Conditions de raccordement des Installations de Production relevant d'un Schéma
+Régional de Raccordement au Réseau des Énergies Renouvelables ou d'un volet géographique »
+Enedis-PRO-RES_64E : « Modalités du contrôle de performances des Installations de Production raccordées au
+Réseau Public de Distribution géré par Enedis »
+
+Résumé / Avertissement
+Ce document précise les conditions techniques, juridiques et financières permettant à une installation de
+production d’être raccordée au Réseau Public de Distribution BT géré par Enedis.
+
+La Convention de Raccordement s’inscrit dans un dispositif contractuel comprenant le Contrat d’Accès au
+Réseau Public de Distribution BT et la Convention d’Exploitation, conclus entre Enedis et l’Utilisateur.
+
+Par ailleurs, Enedis rappelle l'existence de sa Documentation Technique de Référence (DTR), de son barème de
+raccordement et de son Catalogue des Prestations que vous pouvez télécharger sur le site internet
+www.enedis.fr.
+
+
+
+
+ Enedis                                         SA à directoire et à conseil de surveillance                          Page : 1/33
+ 4, place de la Pyramide                        Capital de 270 037 000 euros                                      01/01/2025
+ 92800 Puteaux                                  R.C.S. de Nanterre 444 608 442
+ enedis.fr                                      © Copyright Enedis
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+
+SOMMAIRE
+
+Préambule ............................................................................................................................................ 5
+
+
+1 — Objet de la convention et périmètre contractuel .................................................................. 6
+      1.1.        Objet .......................................................................................................................................................................................... 6
+      1.2.        Périmètre contractuel ......................................................................................................................................................... 6
+
+
+2 — Solution technique du raccordement ......................................................................................7
+      2.1.        Fréquence et Tension des Ouvrages de Raccordement .........................................................................................7
+      2.2.        Capacité d’accès au Réseau Public de Distribution BT de l’installation de production ............................ 8
+      2.3.        Puissance de raccordement de l’installation de production ................................................................................ 8
+      2.4.        Energie réactive ..................................................................................................................................................................... 8
+      2.5.        Point de Livraison ................................................................................................................................................................. 9
+      2.6.        Point de comptage ............................................................................................................................................................... 9
+      2.7.        Point(s) de Décompte.......................................................................................................................................................... 9
+      2.8.        Raccordement de référence ou Solution de raccordement s’inscrivant dans un SRRRER ..................... 9
+
+
+3 — Ouvrages de Raccordement ..................................................................................................... 11
+      3.1.        Description du Raccordement de l’installation de production ............................................................................ 11
+             3.1.1. Installation de production ne relevant pas d’un SRRRER .................................................................... 11
+             3.1.2. Installation de production relevant d’un SRRRER ................................................................................. 11
+      3.2.        Caractéristiques détaillées des Ouvrages de Raccordement d’Enedis .......................................................... 12
+             3.2.1. Propriété et régime des Ouvrages de Raccordement .......................................................................... 12
+             3.2.2. Réalisation des Ouvrages de Raccordement ......................................................................................... 12
+             3.2.3. Cheminement des ouvrages du Réseau Public de Distribution sur des domaines privés autres
+                    que celui du Demandeur ............................................................................................................................. 12
+             3.2.4. Exploitation, entretien et renouvellement ............................................................................................... 12
+      3.3.        Ouvrages et aménagements réalisés par le Demandeur .....................................................................................13
+      3.4.        Conditions préalables à la réalisation des travaux.................................................................................................13
+      3.5.        Modification des Ouvrages de Raccordement .........................................................................................................13
+
+
+4 — Ouvrages de l'installation de production .............................................................................. 14
+      4.1.        Caractéristiques des ouvrages ...................................................................................................................................... 14
+             4.1.1.      Régime du neutre de l’installation de production .................................................................................. 14
+             4.1.2.      Sectionnement .............................................................................................................................................. 14
+             4.1.3.      Protections rendues nécessaires par le raccordement au Réseau Public de Distribution BT.... 15
+      4.2.        Le Dispositif de comptage ................................................................................................................................................15
+             4.2.1.      Fourniture des équipements du ou des dispositif(s) de comptage .................................................... 16
+      4.3.        Installations de télécommunication ..............................................................................................................................16
+
+Enedis-FOR-RES_17E                                                                                                                                                                              Page : 2/33
+Version 7                                                                                                                                                                                      01/01/2025
+         Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                     Production de puissance comprise entre 36 et 250 kVA
+                                                                      Conditions Générales
+      4.4.     Dispositif de filtrage pour limiter les perturbations du signal tarifaire ............................................................16
+      4.5.     Dispositif de filtrage pour limiter les Injections de courants harmoniques.................................................... 17
+
+
+5 — Perturbations et continuité de l’alimentation ...................................................................... 17
+      5.1.     Perturbations et continuité de l’alimentation venant du Réseau ...................................................................... 17
+      5.2.     Perturbations générées par l’installation de production ...................................................................................... 17
+      5.3.     Obligation de prudence du Demandeur ......................................................................................................................18
+
+
+6 — Mise en service de l’installation de production .................................................................... 18
+      6.1.     Convention d’Exploitation .................................................................................................................................................18
+      6.2.     Préparation à la mise en service de l’installation de production .......................................................................19
+      6.3.     Cas particulier de la demande de mise sous tension pour essais de l’installation de production ...... 20
+
+
+7 — Contribution financière et délai de mise à disposition du raccordement ........................ 21
+      7.1.     Périmètre de facturation des Ouvrages de Raccordement ................................................................................ 21
+          7.1.1.      Cas des installations de production ne relevant pas d’un SRRRER .................................................. 21
+          7.1.2.      Cas des installations de production relevant d’un SRRRER ............................................................... 21
+      7.2.     Montant de la contribution ...............................................................................................................................................21
+      7.3.     Présentation de la contribution ......................................................................................................................................21
+          7.3.1. Conditions financières du raccordement................................................................................................ 21
+          7.3.2. Proposition Technique et Financière ...................................................................................................... 22
+          7.3.3. Convention de Raccordement directe .................................................................................................... 22
+      7.4.     Modalités de règlement ....................................................................................................................................................22
+          7.4.1. Pénalités prévues en cas de retard de paiement ................................................................................. 22
+          7.4.2. Révision du montant de la contribution .................................................................................................. 23
+          7.4.3. Modalités de règlement en cas d’application de l’article L342-2 du Code de l’énergie .............. 23
+      7.5.     Réserves sur le délai de mise à disposition du raccordement...........................................................................23
+
+
+8 — Responsabilités ........................................................................................................................ 24
+      8.1.     Régimes de responsabilité .............................................................................................................................................. 24
+      8.2.     Cas particulier dans le cas du raccordement indirect..........................................................................................24
+      8.3.     Procédure de réparation ..................................................................................................................................................24
+      8.4.     Régime perturbé – Force majeure ................................................................................................................................25
+          8.4.1. Définition ....................................................................................................................................................... 25
+          8.4.2. Régime juridique .......................................................................................................................................... 26
+      8.5.     Garanties contre les revendications des tiers .........................................................................................................26
+
+
+9 — Assurance ................................................................................................................................. 26
+
+
+10 — Exécution de la Convention de Raccordement ................................................................... 27
+Enedis-FOR-RES_17E                                                                                                                                                        Page : 3/33
+Version 7                                                                                                                                                                 01/01/2025
+        Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                    Production de puissance comprise entre 36 et 250 kVA
+                                                                     Conditions Générales
+    10.1. Adaptation de la convention .......................................................................................................................................... 27
+    10.2. Révision de la Convention de Raccordement .......................................................................................................... 27
+        10.2.1. Conditions de la révision ............................................................................................................................ 27
+        10.2.2. Modalités et effets de la révision ............................................................................................................. 27
+    10.3. Modification de la Convention de Raccordement ..................................................................................................28
+    10.4. Suspension de la Convention de Raccordement ....................................................................................................28
+        10.4.1. Conditions de la suspension ..................................................................................................................... 28
+        10.4.2. Effets de la suspension .............................................................................................................................. 29
+    10.5. Cession de la Convention de Raccordement ............................................................................................................31
+    10.6. Résiliation de la Convention de Raccordement .......................................................................................................31
+        10.6.1. Cas de résiliation anticipée ........................................................................................................................ 31
+        10.6.2. Effets de la résiliation ................................................................................................................................. 32
+    10.7. Confidentialité ......................................................................................................................................................................32
+    10.8. Contestations .......................................................................................................................................................................33
+    10.9. Entrée en vigueur - Durée ................................................................................................................................................33
+    10.10. Droit applicable – Langue de la Convention de Raccordement ........................................................................33
+
+
+
+
+Enedis-FOR-RES_17E                                                                                                                                                             Page : 4/33
+Version 7                                                                                                                                                                      01/01/2025
+        Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                    Production de puissance comprise entre 36 et 250 kVA
+                                                                     Conditions Générales
+Préambule
+Vu d’une part,
+Les dispositions législatives applicables au réseau public de distribution d’électricité et notamment le Code de
+l’énergie ;
+
+Vu d’autre part,
+Les dispositions réglementaires applicables au raccordement au dit réseau public dont notamment l'arrêté du
+9 juin 2020 relatif aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux
+réseaux d’électricité.
+
+Considérant,
+Que les dispositions du cahier des charges annexé à la convention de concession pour le service public de
+distribution d'énergie électrique signée entre Enedis et l'autorité concédante sur le territoire de laquelle est
+située l’installation de production sont applicables, pour autant qu'elles ne sont pas contraires aux dispositions
+législatives et réglementaires postérieures à la date de signature de la convention de concession.
+
+Etant rappelé que :
+dans le cas d'un raccordement indirect de l’ (ou des) installations de production (dite « hébergé ») sur une
+installation de production et/ou de consommation déjà raccordée au réseau et détentrice d’un CARD (dite «
+hébergeur »), l’hébergeur et l' (ou les) hébergé(s) seront solidairement responsables vis-à-vis d’Enedis de
+l’ensemble des obligations mises à la charge de l’hébergeur et de l' (ou des) hébergé(s).
+
+Dans la suite du document, conformément à la procédure en vigueur (Enedis-PRO-RES_67E), le terme
+« Demandeur » désigne, sauf mention contraire, soit le Demandeur du raccordement lui-même (utilisateur final
+de l’installation de production), soit le tiers qu’il a habilité, soit le groupement solidaire entre l’hébergeur et l' (ou
+les) hébergé(s) dans le cas du raccordement indirect.
+Dans la suite du document, le terme « l’installation de production » doit être compris comme l’ensemble des
+installations de production de l’hébergeur et le cas échéant de l’ (ou des) hébergé(s) dans le cas de raccordement
+indirect.
+
+Le Demandeur a sollicité Enedis pour le raccordement au Réseau Public de Distribution BT d’une installation de
+production d’électricité.
+
+A cet effet, le Demandeur a transmis à Enedis une demande de raccordement précisant les caractéristiques
+techniques permettant l’étude du raccordement conformément aux dispositions de l’arrêté du 9 juin 2020
+modifié relatifs aux prescriptions techniques de conception et de fonctionnement pour le raccordement aux
+réseaux d’électricité.
+
+Dans le cas général, Enedis adresse au Demandeur une Proposition Technique et Financière (PTF). L’acceptation
+de cette Offre de Raccordement (« l’Offre de raccordement » correspond à la Proposition Technique et
+Financière (PTF) ou à une Convention de raccordement directe (CRD) relative au raccordement d’une Installation
+de production) conditionne l’envoi ultérieur d’une Convention de Raccordement par Enedis.
+Lorsqu’Enedis estime, dès ce stade, être en mesure d’arrêter définitivement les conditions techniques et
+financières et les délais de réalisation du raccordement, une Convention de Raccordement Directe est établie.
+
+Il est précisé qu’Enedis reste seule à même d’apprécier si ces conditions sont réunies, sans que cela puisse
+constituer un droit pour le Demandeur ni donner lieu à contestation. Dans ce cas, la Convention de
+Raccordement vaut Offre de Raccordement et doit être regardée comme incluant la PTF.
+
+Les présentes Conditions Générales de la Convention de Raccordement s'appliquent aux Conditions
+Particulières de la Convention de Raccordement et aux Conditions Particulières de la Convention de
+Raccordement Directe.
+
+Le Demandeur et Enedis (ci-après appelés les Parties) sont convenus de ce qui suit.
+
+
+
+Enedis-FOR-RES_17E                                                                                            Page : 5/33
+Version 7                                                                                                     01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+1 — Objet de la convention et périmètre contractuel
+   1.1.    Objet
+La Convention de Raccordement est élaborée en fonction :
+— de la demande de raccordement faite par le Demandeur et qualifiée par Enedis après échanges éventuels,
+— du Réseau existant ainsi que des décisions prises à propos de son évolution,
+— des autres projets de production situés en amont dans la File d’Attente.
+
+La Convention de Raccordement entre le Demandeur et Enedis a pour objet de préciser les modalités
+techniques, juridiques et financières du raccordement de l’installation de production du Demandeur au Réseau
+Public de Distribution BT et en particulier, les caractéristiques auxquelles elle doit satisfaire dans cette optique.
+
+
+   1.2.    Périmètre contractuel
+La Convention de Raccordement s’inscrit dans le dispositif contractuel comprenant également un Contrat
+d’Accès au Réseau Public de Distribution (CARD I BT) qui intègre les règles d’exploitation de l’Installation de
+Production et de ses ouvrages de raccordement, et éventuellement un (ou des) contrat(s) de service de
+décompte dans le cas d'un (ou des) raccordement(s) indirect(s).
+
+La Convention de Raccordement comprend les pièces contractuelles suivantes :
+— les présentes Conditions Générales,
+— les Conditions Particulières et leurs annexes signées entre le Demandeur et Enedis, ci-après désignés « les
+  Parties ».
+— en cas de mise en œuvre de l’article L342-2 du Code de l’énergie, le Contrat de Mandat signé par les Parties
+  et ses annexes (garanties bancaires notamment) figurent à l’annexe n°3 de l’avenant à la PTF ou à la CRD
+  en application de l’article L342-2. La solution technique à réaliser en application du Contrat de Mandat est
+  celle décrite dans les Conditions Particulières à la Convention de Raccordement.
+
+Celles-ci constituent l’accord des Parties. Elles annulent et remplacent tous les contrats, lettres, propositions,
+offres et conventions remis, échangés ou signés entre les Parties antérieurement à la signature de la Convention
+de Raccordement et portant sur le même objet.
+
+En cas de contradiction ou de différence entre les pièces constitutives de la Convention de Raccordement, les
+Conditions Particulières et leurs annexes prévalent sur les présentes Conditions Générales.
+
+Dans le cadre de l'exécution de la Convention de Raccordement, Enedis rappelle au Demandeur l'existence de
+sa Documentation Technique de Référence publiée à la date de signature des Conditions Particulières de la
+Convention de Raccordement, de son barème de raccordement (pour les Installations1 de production ne relevant
+pas d’un Schéma Régional de Raccordement au Réseau des Energies Renouvelables (SRRRER)) et de son
+Catalogue des Prestations.
+
+La Documentation Technique de Référence comprend notamment la procédure de traitement des demandes
+de raccordement en BT de puissance supérieure à 36 kVA et en HTA, au Réseau Public de Distribution géré par
+Enedis, en application de laquelle la Convention de Raccordement est établie. Elle expose également les
+dispositions réglementaires applicables et les règles techniques complémentaires qu’Enedis applique à
+l'ensemble des utilisateurs pour assurer l'accès au Réseau Public de Distribution.
+
+Pour les installations de production ne relevant pas d’un Schéma Régional de Raccordement au Réseau des
+Energies Renouvelables (SRRRER), le barème de raccordement présente les modalités et les prix pour la
+facturation de l’opération de raccordement des utilisateurs du Réseau Public de Distribution concédé à Enedis.
+
+
+1 La définition « Installations relevant d’un SRRRER est indiquée dans la note Enedis-PRO-RES_65E de la Documentation Technique de
+Référence.
+Enedis-FOR-RES_17E                                                                                                    Page : 6/33
+Version 7                                                                                                            01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+Le Catalogue des Prestations décrit l'offre de prestations réalisées par Enedis non couvertes par le Tarif
+d’Utilisation des Réseaux Publics d’Électricité.
+
+La Documentation Technique de Référence, le barème de raccordement et le Catalogue des Prestations sont
+accessibles à l'adresse internet www.enedis.fr. Les documents de la Documentation Technique de Référence et
+le barème de raccordement sont communiqués au Demandeur à sa demande écrite, à ses frais.
+
+Le Demandeur reconnaît avoir été informé, préalablement à la conclusion de la Convention de Raccordement,
+de l'existence de ces documentations.
+
+Enedis tient également à la disposition du Demandeur le cahier des charges annexé à la convention de
+concession pour le service public de distribution d'énergie électrique signé entre Enedis et l'autorité concédante
+sur le territoire de laquelle est situé l’installation de production, objet de la Convention de Raccordement. Une
+copie dudit cahier des charges est communiquée au Demandeur qui en fait la demande écrite, à ses frais.
+
+Pour l’application de l’article L342-2 du Code de l’énergie, on se réfère aux définitions figurant à l’article 1
+« Définitions » du Contrat de Mandat.
+
+
+2 — Solution technique du raccordement
+La Convention de Raccordement présente la solution technique du raccordement qui consiste en l’ensemble
+des prescriptions techniques auxquelles doit satisfaire l’installation de production pour être raccordée au
+réseau ainsi que la solution de raccordement au Réseau Public de Distribution BT :
+— nécessaire et suffisante permettant l’évacuation de l’énergie électrique produite par l’installation de
+  production conformément à la demande du Demandeur ;
+— qui emprunte un tracé techniquement et administrativement réalisable en conformité avec les dispositions
+  du cahier des charges de la concession ;
+— conforme à la Documentation Technique de Référence publiée, par Enedis, à la date de signature des
+  Conditions Particulières de la Convention de Raccordement.
+
+La solution technique de raccordement est élaborée suite aux résultats d’études réalisées par Enedis selon les
+méthodes définies dans la Documentation Technique de Référence.
+La solution technique de raccordement est détaillée dans les Conditions Particulières de la Convention de
+Raccordement.
+
+
+   2.1.    Fréquence et Tension des Ouvrages de Raccordement
+L’installation de production est raccordée sur un réseau alternatif triphasé à la fréquence de 50 hertz dans le
+domaine de tension BT.
+
+L’arrêté du 24 décembre 2007, relatif aux niveaux de qualité et aux prescriptions techniques en matière de
+qualité des Réseaux Publics de Distribution et de Transport d’électricité, précise les valeurs efficaces nominales
+de la basse tension.
+
+La Tension Nominale du Réseau sur lequel est raccordée l’installation de production du Demandeur est de :
+— 230 volts en monophasé entre l’une des trois phases et le neutre ;
+— 400 volts en triphasé entre deux des trois phases.
+
+La Tension Contractuelle de l'installation de production en injection est égale à la Tension Nominale du Réseau.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                     Page : 7/33
+Version 7                                                                                              01/01/2025
+           Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                       Production de puissance comprise entre 36 et 250 kVA
+                                                                        Conditions Générales
+    2.2.    Capacité d’accès au Réseau Public de Distribution BT de l’installation de production
+En aucun cas, une installation de production de puissance installée « PInstallée »2 supérieure à 250 kVA ne peut
+être raccordée à un Réseau Public de Distribution en BT.
+Les éléments propres à l’installation de production à raccorder sont décrits aux Conditions Particulières de la
+Convention de Raccordement.
+
+
+    2.3.    Puissance de raccordement de l’installation de production
+La Puissance de Raccordement en injection utilisée pour établir la solution technique de raccordement est
+indiquée dans les Conditions Particulières de la Convention de Raccordement.
+
+
+    2.4.    Energie réactive
+Conformément à l'article 54 de l'arrêté du 9 juin 2020 relatif aux prescriptions techniques de conception et de
+fonctionnement pour le raccordement aux réseaux d'électricité, lorsque la tension au point de raccordement est
+égale à la tension nominale plus ou moins 10 %, l’installation de production qui délivre la puissance Pmax3 doit
+pouvoir également, sans limitation de durée, fournir une puissance réactive au moins égale à 0,4 × Pmax ou
+absorber une puissance réactive au moins égale à 0,35 x Pmax.
+
+L'installation de production devra à tout instant absorber une puissance réactive égale à 0,35 x la puissance
+active produite par l'installation (cos(phi)=0,944 sous excité).
+Pour les producteurs vendant leur énergie en totalité, Enedis pourra contrôler le respect des consignes portant
+sur l'énergie réactive en considérant que lorsque la puissance active dépasse 0,2 x Puissance de Raccordement
+en Injection, la puissance réactive absorbée doit être comprise entre 0,3 x puissance active produite et 0,4 x
+puissance active produite. Selon la nature du Dispositif de comptage de référence, le contrôle du respect des
+engagements du Demandeur en matière de réactif s’opérera sur la base d’une Courbe de Mesure en réactif si
+celle-ci est disponible ou des index de réactif dans les autres cas.
+Pour les autres types de valorisation de l’énergie produite et si les modalités de contrôle précédentes ne sont
+pas pertinentes, Enedis pourra demander la vérification du réglage du dispositif intégrant l’absorption du réactif,
+tel que l’onduleur, par tout moyen disponible, le plus simple étant la fourniture par le producteur d’une attestation
+de réglage.
+
+Pour les installations de production dont la capacité à fournir ou absorber de la puissance réactive impose des
+contraintes comme des adaptations particulières ou l’adjonction d’équipements accessoires (ce peut être
+notamment le cas avec des machines tournantes), et sous réserve qu’elle ne modifie pas la solution de
+raccordement de référence (déterminée sur la base d’une consigne d’absorption de réactif à tan phi=-0,35), une
+dérogation peut être accordée sous la forme d’un délai de mise en œuvre de la consigne à partir de la date de
+mise en service de l’installation de production ou à défaut, d’une valeur adaptée de la consigne et de modalités
+de contrôle du réalisé associées. Ces adaptations doivent résulter d’un compromis entre les contraintes du
+réseau et les capacités techniques de l’installation de production. Ces dispositions sont précisées dans les
+Conditions Particulières de la Convention de Raccordement. Afin d’obtenir cette dérogation, le producteur aura
+présenté des documents justifiant les contraintes particulières précitées. Si le besoin du producteur ne peut être
+satisfait dans le cadre de l’offre de raccordement de référence, une offre de raccordement alternative pourra
+être envisagée à sa demande.
+
+Les Installations initialement mises en service avec un réglage différent (spécifié par la règlementation ou par
+Enedis) pourront le conserver sauf en cas de modification substantielle4 de l’installation incluant le
+remplacement de tous les dispositifs qui intègrent la gestion du réactif, tels que les onduleurs. Dans ce dernier
+cas, les dispositions d’absorption de l’énergie réactive indiquées dans la DTR en vigueur s’appliqueront.
+
+
+
+
+2 « PInstallée » désigne la puissance installée définie à l’article 3 de l’arrêté du 9 juin 2020 modifié. Par convention, la puissance « PInstallée » est
+la puissance apparente pour les Installations de Production raccordées en BT.
+3 « Pmax » est définie à l’alinéa 16 de l’article 2 du règlement UE no 2016/631 de la Commission
+4 Définie dans la DTR Enedis-PRO-RES_64E
+
+Enedis-FOR-RES_17E                                                                                                                        Page : 8/33
+Version 7                                                                                                                                 01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+   2.5.    Point de Livraison
+Le Point de Livraison est le point physique où l’énergie électrique est injectée au Réseau. Le Point de Livraison
+est précisé dans les Conditions Particulières. Il est généralement identifié par référence à une extrémité d’un
+élément d’ouvrage électrique. Il est désigné par la règlementation (arrêté du 9 juin 2020) comme le « Point de
+raccordement ». Il coïncide généralement avec le Point de connexion.
+
+Toutefois le Demandeur peut souhaiter lors de sa demande une position différente du point de livraison.
+
+
+   2.6.    Point de comptage
+Lorsque le Point De Livraison est placé dans une ou des armoire(s) située(s) en limite de domaine privé du
+Demandeur, le Dispositif de comptage est installé dans l’armoire.
+
+Lorsque le Point De Livraison n’est pas en limite de domaine privé, le Dispositif de comptage est installé dans un
+local dédié ou un emplacement dans un bâtiment mis à disposition par le Demandeur. Le local ne doit être
+accessible qu'aux personnes explicitement autorisées par le Demandeur ou par Enedis.
+
+L’emplacement du Point de comptage est précisé aux Conditions Particulières de la Convention de
+Raccordement.
+
+
+   2.7.    Point(s) de Décompte
+Dans le cas d'un (ou des) raccordement(s) indirect(s), le (ou les) Point(s) de Décompte est (sont) le (ou les)
+point(s) physiques où l’énergie électrique du (ou des) installation(s) de production du (ou des) hébergé(s) est
+injectée sur le réseau privé de l’hébergeur. C’est (Ce sont) le(s) point(s) frontière(s) entre le(s) réseau(x) de l’ (ou
+des) hébergé(s) et celui de l’hébergeur.
+
+Dans le cas d'un (ou des) raccordement(s) indirect(s), les flux de comptage de l’ (ou des) installation(s) de
+production de l’ (ou des) hébergé(s) sont définis au(x) Point(s) de Décompte.
+
+Le (ou les) emplacement(s) du (ou des) Point(s) de Décompte est (ou sont) précisé(s) aux Conditions Particulières
+de la Convention de Raccordement.
+
+
+   2.8.    Raccordement de référence ou Solution de raccordement s’inscrivant dans un SRRRER
+Le raccordement de référence ou la solution de raccordement s’inscrivant dans les SRRRER fixe le Point De
+Livraison et le Point de comptage en limite de domaine privé du Demandeur. Toutefois le Demandeur peut
+souhaiter lors de sa demande une position différente du point de livraison. Si la longueur des Ouvrages de
+Raccordement en domaine privé est compatible avec les règles de conception du Réseau publiées dans la
+Documentation Technique de Référence d’Enedis, le Point De Livraison et le Point de comptage peuvent être
+situés dans les locaux du Demandeur. Dans ce cas, les travaux de réalisation des Ouvrages de Raccordement
+en domaine privé sont facturés au Demandeur.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                           Page : 9/33
+Version 7                                                                                                   01/01/2025
+        Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                    Production de puissance comprise entre 36 et 250 kVA
+                                                                     Conditions Générales
+Les schémas suivants présentent les typologies possibles de raccordements de référence et de solution de
+raccordement SRRRER:
+
+   raccordement BT pour une Puissance de Raccordement en injection inférieure à 120 kVA nécessitant
+    uniquement un branchement
+                                                                                           Dispositif de
+                                                                                            comptage                            AGCP
+                                                                                                           Sectionnement à
+                                                                                                            coupure visible
+                                                                                    CCPI
+
+
+
+
+                                                                                                                              Point de
+                                                                                                                              Livraison
+                                                                                                           Armoire ou local
+
+                            Réseau existant                               Branchement
+
+                                               Domaine public                                              Domaine privé
+
+                                                                          NF C 14-100                                         NF C 15-100
+
+
+
+
+CCPI : Coupe-Circuit Principal Individuel
+AGCP : Appareil Général de Commande et de Protection
+
+
+   raccordement BT pour une Puissance de Raccordement en injection inférieure à 120 kVA nécessitant un
+    branchement et une extension de réseau
+                                                                                                    Dispositif de                          AGCP
+                                                                                                     comptage
+                                                                                                                    Sectionnement à
+                                                                                                                     coupure visible
+                                                                                           CCPI
+
+
+
+
+                                               Extension
+                                                                                                                                          Point de
+                                                                                                                                          Livraison
+                                                                                                                    Armoire ou local
+                                  Réseau existant           Réseau à
+                                   ou à adapter              créer                      Branchement
+
+                                                         Domaine public                                             Domaine privé
+
+                                                                                        NF C 14-100                                    NF C 15-100
+
+
+
+CCPI : Coupe-Circuit Principal Individuel
+AGCP : Appareil Général de Commande et de Protection
+
+
+   raccordement BT pour une Puissance de Raccordement en injection supérieure ou égal à 120 kVA
+
+                                                                                            Dispositif de                      AGCP
+                                        Poste HTA / BT                                       comptage Sectionnement à
+                                                                                                            coupure visible
+                                                                                    CCPI
+
+
+
+
+                                                  Extension
+                                                                                                                              Point de
+                                                                                                                              Livraison
+                                                                                                           Armoire ou local
+                             Réseau existant
+                               ou à créer                    Réseau à créer                Branchement
+
+                                                Domaine public                                             Domaine privé
+
+                                                                                           NF C 14-100                        NF C 15-100
+
+
+
+CCPI : Coupe-Circuit Principal Individuel
+AGCP : Appareil Général de Commande et de Protection
+
+
+
+
+Enedis-FOR-RES_17E                                                                                                                                    Page : 10/33
+Version 7                                                                                                                                             01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+3 — Ouvrages de Raccordement
+   3.1.    Description du Raccordement de l’installation de production
+Les différentes solutions de raccordement étudiées pour lever les contraintes et tenant compte des souhaits
+exprimés par le Demandeur sur la position du Point De Livraison conduisent à proposer la réalisation d’ouvrages
+nouvellement créés et/ou d’ouvrages créés en remplacement d’ouvrages existants en BT et la création
+éventuelle d’ouvrages du Réseau HTA.
+La description des Ouvrages de Raccordement relatifs à l’extension de Réseau, en particulier la longueur des
+canalisations souterraines ou aériennes créées ou adaptées, la nature et la section des conducteurs sont
+précisées aux Conditions Particulières de la Convention de Raccordement.
+Le plan de situation et le plan de masse du raccordement de l’installation de production au Réseau Public de
+Distribution BT figurent aux Conditions Particulières de la Convention de Raccordement.
+En application des articles L342-1 et D321-10 du Code de l’énergie, relèvent d’un SRRRER l’ensemble des
+Installations de production d’électricité à partir de sources d'énergie renouvelable indépendamment de leur
+puissance de raccordement.
+
+
+
+          3.1.1. Installation de production ne relevant pas d’un SRRRER
+Conformément à l’article L342-1 du Code de l’énergie, le raccordement d’un utilisateur au Réseau Public de
+Distribution d’Électricité comprend la création d’ouvrages d’extension, d’ouvrages de branchement en basse
+tension et, le cas échéant, le renforcement des réseaux existants.
+Les articles D342-1 et 2 du Code de l’énergie relatifs à la consistance des ouvrages de branchement et
+d’extension des raccordements aux Réseaux Publics de Distribution d’électricité, indiquent que les Ouvrages de
+Raccordement au Réseau Public de Distribution d’une installation de production de puissance supérieure à
+36 kVA comprennent :
+— le branchement : ouvrages compris entre les bornes amont du Coupe-Circuit Principal Individuel (CCPI) et le
+  Point De Livraison. Si la Puissance de Raccordement en injection demandée est inférieure à 120 kVA, les
+  ouvrages de branchement peuvent être complétés jusqu’à l’accessoire de dérivation au Réseau existant. Le
+  branchement inclut les installations de comptage ;
+— l’extension de Réseau : ouvrages nouvellement créés et si besoin créés en remplacement d’ouvrages
+  existants en BT, la création ou la modification d’un poste de transformation de distribution publique, et le
+  cas échéant le réseau HTA nouvellement créé pour alimenter un nouveau poste de transformation
+  nécessaire pour raccorder l’installation de production du Demandeur.
+
+Les canalisations du raccordement de l’installation de production sont précisées aux Conditions Particulières
+de la Convention de Raccordement.
+
+
+          3.1.2. Installation de production relevant d’un SRRRER
+Conformément à l’article L342-1 du Code de l’énergie, lorsque le raccordement est destiné à desservir une
+installation de production à partir de sources d'énergie renouvelable et s'inscrit dans le Schéma Régional de
+Raccordement au Réseau des Energies Renouvelables mentionné à l'article L321-7, le raccordement comprend
+les ouvrages propres à l'installation de production ainsi qu'une quote-part des ouvrages créés en application de
+ce schéma.
+L’article D342-22 du Code de l’Energie, relatif aux Schémas Régionaux de Raccordement au Réseau des
+Énergies Renouvelables (SRRRER) indique que les Ouvrages de Raccordement au Réseau Public de Distribution
+d’une installation production relevant d’un SRRRER comprennent des ouvrages propres destinés à assurer le
+raccordement de l’installation de production aux ouvrages du SRRRER. Les ouvrages propres sont constitués
+par les ouvrages électriques nouvellement créés ou créés en remplacement d’ouvrages existants dans le
+domaine de tension de raccordement ainsi que par ceux créés au niveau de tension supérieur et situés à l’amont
+des bornes de sortie du disjoncteur équipant le point de raccordement d’un Producteur au Réseau Public de
+Distribution et à l’aval des ouvrages des réseaux publics relevant du schéma qui permettent de desservir
+d'autres installations.
+
+
+Enedis-FOR-RES_17E                                                                                   Page : 11/33
+Version 7                                                                                            01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+   3.2.    Caractéristiques détaillées des Ouvrages de Raccordement d’Enedis
+          3.2.1. Propriété et régime des Ouvrages de Raccordement
+Les Ouvrages de Raccordement situés en amont de la Limite de Propriété des ouvrages électriques du
+demandeur, y compris ceux situés dans le domaine privé du Demandeur, font partie du Réseau Public de
+Distribution géré par Enedis. En aval de cette Limite, définie ci-après, les ouvrages, à l’exception des appareils
+de mesure et de contrôle mentionnés aux Conditions Particulières de la Convention de Raccordement, sont sous
+la responsabilité du Demandeur.
+
+Le Dispositif de comptage, l’armoire ou les armoires comportant le panneau de comptage, les réducteurs de
+mesure, les boites d’essai et les différents borniers sont fournis par Enedis. Ils font partie du domaine géré par
+Enedis.
+
+La Limite de Propriété est fixée aux bornes aval du dispositif de sectionnement placé soit dans une ou (des)
+armoire(s) en limite de domaine privé, soit dans les locaux du Demandeur ou dans un local technique.
+
+En ce qui concerne les circuits d’information du Demandeur, la Limite de Propriété est située au niveau du bornier
+client ou du bornier de télé information.
+
+La Limite de Propriété des Ouvrages de Raccordement est précisée aux Conditions Particulières de la
+Convention de Raccordement.
+
+
+          3.2.2. Réalisation des Ouvrages de Raccordement
+Les travaux d'adaptation ou de création des Ouvrages de Raccordement au Réseau Public de Distribution sont
+réalisés sous maîtrise d’ouvrage d’Enedis conformément aux dispositions du Cahier des Charges de Concession
+pour la Distribution Publique d’Electricité sur le territoire de la commune où est située l’installation de production
+à raccorder.
+
+Dans le cas d’application des dispositions de l’article L342-2 du Code de l’énergie, Enedis délègue au Mandataire
+la réalisation des Ouvrages Mandataire. La répartition des travaux entre Enedis et le Mandataire est précisée
+dans les conditions particulières de la convention de raccordement.
+
+
+          3.2.3. Cheminement des ouvrages du Réseau Public de Distribution sur des domaines privés autres
+                 que celui du Demandeur
+La traversée par les Ouvrages de Raccordement de domaine privé se fera nécessairement avec un caractère
+d’intangibilité des Ouvrages. Pour ce qui concerne les travaux dont elle n’a pas délégué la maîtrise d’ouvrage,
+Enedis se chargera d’obtenir les autorisations nécessaires auprès des propriétaires des terrains empruntés. Une
+Convention de Passage sera signée entre chaque propriétaire et Enedis. Enedis prendra en charge l’intégralité
+des frais des actes de régularisation des conventions et d’indemnisation des propriétaires.
+
+Dans le cas de mise en œuvre des dispositions de l’article L342-2 du Code de l’énergie, les dispositions qui
+s’appliquent sont celles définies au Contrat de Mandat à l’article 3.3 Obligations des parties pour la phase avant
+travaux.
+
+
+          3.2.4. Exploitation, entretien et renouvellement
+Les Ouvrages de Raccordement définis dans le présent paragraphe sont entretenus, exploités et renouvelés par
+Enedis.
+Les conditions d’exploitation et d’entretien des ouvrages de raccordement sont définies dans la Convention
+d’Exploitation.
+Lorsque le Point De Livraison n’est pas directement accessible depuis le domaine public, le Demandeur doit en
+garantir l’accessibilité permanente à Enedis ou à ses représentants afin de permettre à cette dernière d’assurer
+l’exploitation, l’entretien, le dépannage et le renouvellement des Ouvrages de Raccordement.
+Les modalités de l’accès au Point De Livraison sont précisées dans la Convention d’Exploitation.
+Enedis-FOR-RES_17E                                                                                        Page : 12/33
+Version 7                                                                                                 01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+   3.3.    Ouvrages et aménagements réalisés par le Demandeur
+Les éventuels travaux de maçonnerie pour la réalisation de niche pour l’encastrement de l’armoire ou du CCPI,
+de saignée pour le passage de câbles, de reprise des revêtements de façade, sont à réaliser par le Demandeur
+et à sa charge.
+
+Les aménagements permettant le cheminement des liaisons de raccordement du Réseau Public de Distribution
+BT et de la liaison téléphonique permettant le télé-relevé du Dispositif de comptage sur le domaine privé du
+Demandeur (passage en caniveau, gaines ou en pleine terre sur ses terrains) sont réalisés sous maîtrise
+d’ouvrage du Demandeur et aux frais de ce dernier, conformément aux prescriptions d’Enedis. Le Demandeur
+remettra à Enedis les plans de recollement du tracé de ces aménagements sur le domaine privé.
+
+Le Demandeur assume les frais d’entretien et de renouvellement de ces aménagements de génie civil sur son
+domaine privé.
+
+
+   3.4.    Conditions préalables à la réalisation des travaux
+Le commencement des travaux de raccordement est subordonné à la réunion de toutes les conditions
+suivantes :
+— accord sur les Conditions Particulières de la Convention de Raccordement, formalisé par la réception d’un
+  exemplaire daté et signé des Conditions Particulières de la Convention de Raccordement sans modification
+  ni réserve, accompagné le cas échéant du règlement de l’acompte demandé ;
+— en cas d’application de l’article L342-2 du Code de l’énergie, le client est redevable également des éléments
+  prévus au Contrat de Mandat à l’article 3.3 (notamment étude de réalisation détaillée des Travaux
+  Mandataire et résultat de l’appel d’offres concernant les Travaux Mandataire) ;
+— réception par Enedis en temps utile de l’autorisation administrative de construire un réseau ;
+— réception par Enedis en temps utile de l’autorisation de voirie et/ou des autorisations particulières ou
+  spécifiques (SNCF, autoroute, voie navigable…) ;
+— le cas échéant, réception par Enedis en temps utile de la Convention de Servitude concernant les Ouvrages
+  de Raccordement implantés en domaine privé ;
+— le cas échéant, mise à disposition du terrain du poste HTA/BT ;
+— le cas échéant, mise à disposition du génie civil du poste HTA/BT ;
+— le cas échéant, mise à disposition des voiries (niveaux et alignements) pour la construction du Réseau ;
+— le cas échéant, réalisation de travaux complémentaires imposés par le demandeur, l’administration ou par
+  le gestionnaire de voirie ;
+— le cas échéant, réalisation des travaux qui incombent à l’autorité concédante ;
+— réalisation des travaux qui incombent au Demandeur et réception par Enedis (confection niche CCPI, mise
+  à disposition d’un local technique, fourniture et pose du fourreau...).
+
+Le Demandeur peut différer le commencement des travaux de raccordement au maximum trois mois après la
+date d’acceptation de la Convention de Raccordement.
+
+
+   3.5.    Modification des Ouvrages de Raccordement
+Le raccordement de l’installation de production décrit dans les Conditions Particulières de la Convention de
+Raccordement prend en compte le besoin en injection.
+
+Les caractéristiques des Ouvrages de Raccordement sont susceptibles d’être modifiées en fonction de
+l’évolution du Réseau. Les modifications des Ouvrages de Raccordement de l’installation de production feront
+l’objet d’une mise à jour de la Convention de Raccordement selon les modalités décrites à l’article 10.3 des
+présentes Conditions Générales.
+
+
+Enedis-FOR-RES_17E                                                                                  Page : 13/33
+Version 7                                                                                           01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+4 — Ouvrages de l'installation de production
+Les ouvrages relatifs à l’installation intérieure doivent respecter les textes et normes en vigueur, notamment la
+norme NF C 15-100 et ses normes associées, le Code du Travail (notamment l’arrêté du 14 novembre 1988 pris
+pour l'exécution des dispositions du livre II du Code du travail) ainsi que les prescriptions techniques d’Enedis
+déclinées dans sa Documentation Technique de Référence, publiée à la date de signature des Conditions
+Particulières de la Convention de Raccordement sur le site Internet www.enedis.fr.
+
+
+   4.1.    Caractéristiques des ouvrages
+          4.1.1. Régime du neutre de l’installation de production
+Le Réseau Public de Distribution BT est conçu pour alimenter des installations BT dont les masses des
+installations électriques sont reliées directement à une prise de terre distincte de la mise à la terre du conducteur
+neutre du Réseau Public de Distribution BT (fonctionnement selon le schéma TT).
+
+Si le Demandeur souhaite disposer d’une installation dont les masses des installations électriques et le
+conducteur neutre du Réseau Public de Distribution BT sont reliés à une prise de terre commune
+(fonctionnement selon le schéma TN-S), il doit en faire la demande et transmettre à Enedis les schémas
+correspondants et le calcul de la section du conducteur de protection PE. Enedis vérifiera la possibilité technique
+de répondre à cette demande. Le fonctionnement de l’installation BT selon le schéma TN-S doit être réalisé
+suivant l’annexe F de la NF C 14-100.
+
+Toutefois, en cas d'incident ou de travaux, Enedis pouvant être amenée à ré-alimenter l’installation de
+production du Demandeur en secours pendant une durée limitée, Enedis informe le Demandeur que la valeur de
+l'impédance de boucle des défauts des installations en schéma TN-S peut alors être supérieure à la valeur
+calculée à la conception et dans ce cas, la protection par coupure automatique de l'alimentation peut ne plus
+être assurée sur certains circuits du Demandeur en schéma TN-S.
+
+Le choix du schéma de mise à la terre retenu pour le raccordement de l’installation de production est précisé
+dans la Convention d’Exploitation.
+
+
+          4.1.2. Sectionnement
+             4.1.2.1. Coupe-Circuit Principal Individuel (CCPI)
+Conformément à la norme NF C 14-100, l’installation de production doit pouvoir être séparée du Réseau Public
+de Distribution BT par un organe de sectionnement-protection placé dans un coffret accessible depuis le
+domaine public sans franchissement d’accès contrôlé, notamment en cas d’incendie ou de défaut sur
+l’installation intérieure.
+
+
+             4.1.2.2. Sectionnement de l’installation intérieure
+Afin de permettre la séparation entre les ouvrages de l’installation intérieure, régis par la norme NF C 15-100 et
+les Ouvrages de Raccordement d’Enedis, régis par la norme NF C 14-100, un dispositif de sectionnement à
+coupure visible doit être placé entre le Dispositif de comptage et l’Appareil Général de Commande et de
+Protection (AGCP).
+
+Ce sectionnement doit être à coupure multipolaire, visible, condamnable et manœuvrable par le Demandeur
+comme par Enedis.
+
+Le type de sectionnement est précisé aux Conditions Particulières de la Convention de Raccordement.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                       Page : 14/33
+Version 7                                                                                                 01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+          4.1.3. Protections rendues nécessaires par le raccordement au Réseau Public de Distribution BT
+L’article 25 II-b de l’arrêté du 9 juin 2020 impose que toute installation de production raccordée au Réseau
+Public de Distribution BT soit équipée de protections permettant d’éliminer les défauts à la fois de l’installation
+de production et sur le Réseau Public de Distribution.
+
+Ces protections doivent être choisies dans une liste de matériels autorisés d’emploi par Enedis. Ce dernier
+précise au Demandeur, le type de protection et les seuils des réglages à adopter pour permettre le raccordement
+de l’installation de production au Réseau Public de Distribution.
+
+
+            4.1.3.1. Protection contre les surintensités et les courants de défaut à la terre internes à
+                     l’installation de production
+La protection contre les courts-circuits entre conducteurs de phase et la protection contre les défauts à la terre
+sera assurée par l’AGCP du Demandeur.
+
+
+            4.1.3.2. Protection de découplage contre les défauts sur le Réseau Public de Distribution
+Conformément à l’article 27 de l’arrêté précité, une protection de découplage sera installée au Point De Livraison
+ou sera intégrée aux onduleurs ou au sectionneur automatique en interface avec l’installation de production.
+La description des éléments constitutifs de cette protection de découplage sera précisée aux Conditions
+Particulières de la Convention de Raccordement.
+
+
+   4.2.    Le Dispositif de comptage
+Les mesures des énergies et puissances doivent permettre de satisfaire aux besoins suivants :
+— au titre du contrat d’injection :
+    la mesure au Point de Livraison de l’énergie active injectée ;
+    le cas échéant, la mesure au Point de Livraison des énergies actives et réactives consommées par les
+     auxiliaires de l’installation de production dans le cadre du Contrat d’Accès au Réseau Public de
+     Distribution BT ;
+— au titre du contrat de service de décompte :
+    la mesure, au(x) Point(s) de décompte des énergies actives injectées ;
+    le cas échéant, la mesure au(x) Point(s) de décompte des énergies actives des auxiliaires de l’ (des)
+     installation(s) de production ;
+— la reconstitution des flux d’injection des Responsables d’Equilibre.
+
+Un Dispositif de comptage comprend généralement les équipements suivants :
+— les réducteurs de mesure,
+— un ou plusieurs ensembles d’armoires et de panneaux de comptage,
+— un ou plusieurs Compteurs,
+— des accessoires : boîtes d'essai, bornier client, boîtier d'accès au télé-relevé,
+— des câbles de liaison entre ces différents équipements,
+— une ou plusieurs liaisons de téléreport ou téléphoniques nécessaires à la télé-relève du (ou des) Compteur(s)
+  reliant le Dispositif de comptage au réseau public.
+
+Le(s) Dispositif(s) de comptage est (sont) installé(s) dans un (plusieurs) local (locaux) ou armoire(s) dédié(s) mis
+à disposition par le Demandeur. L’ensemble des équipements du (des) Dispositif(s) de comptage est mis en
+service, contrôlé et scellé par Enedis.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                         Page : 15/33
+Version 7                                                                                                  01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+En contrepartie des fournitures, installations, entretiens et contrôles assurés par Enedis, une composante
+annuelle de comptage prévue par les tarifs d’utilisation des Réseaux Publics de Transport et de Distribution
+d’électricité est facturée au titre du (des) Contrat(s) d’Accès au Réseau Public de Distribution en injection et en
+soutirage.
+
+Dans le cas du raccordement indirect, tout compteur associé à un point de décompte constitue un dispositif de
+comptage et fait l’objet d’une facturation spécifique.
+
+En cas de modification de l’installation de production du Demandeur nécessitant une adaptation du Dispositif
+de comptage, celle-ci sera réalisée et facturée par Enedis selon les dispositions du Catalogue des Prestations.
+
+Toute intervention du Demandeur sur les installations dont il a la responsabilité doit faire l’objet d’une
+information à Enedis et est soumise à son accord préalable dès lors que cette intervention peut avoir un impact
+temporaire ou durable sur la qualité de fonctionnement du Dispositif de comptage (mise hors tension/remise
+sous tension, déplacement, intervention sur un raccordement, …).
+La description du Dispositif de comptage est précisée aux Conditions Particulières de la Convention de
+Raccordement.
+
+
+          4.2.1. Fourniture des équipements du ou des dispositif(s) de comptage
+Le ou les Compteur(s), accompagné(s) du panneau de comptage, sont fournis par Enedis. Les réducteurs de
+mesure (transformateur de courant) sont également fournis par Enedis.
+
+
+   4.3.    Installations de télécommunication
+Enedis détermine le moyen le plus adapté pour relever les données de comptage. En fonction de la technologie
+choisie, le Demandeur peut être amené à mettre à disposition une (des) ligne(s) téléphonique(s) analogique(s).
+Dans tous les cas, un dispositif de téléreport des données de comptage est installé au niveau du coffret
+contenant le Coupe-Circuit Principal Individuel.
+
+Afin de permettre à Enedis d’effectuer à distance le relevé des données de comptage de l’installation de
+production et la télémaintenance du Dispositif de comptage, le Demandeur peut mettre à la disposition d’Enedis
+une (des) ligne(s) téléphonique(s) dédiée(s) raccordée(s) au réseau téléphonique commuté (RTC). Cette (ces)
+ligne(s) RTC sera(ont) de type analogique. L’usage de ligne de type numérique n’est pas autorisé.
+
+Le Demandeur prend à sa charge la réalisation de la ou des liaisons téléphoniques et la mise à disposition des
+accès au réseau téléphonique commuté pour le ou les appareils concernés c’est à dire la pose du câble jusqu’au
+panneau ou armoire supportant l’appareil (panneau de comptage par exemple), le raccordement éventuel du
+câble côté autocommutateur, ainsi que les essais. Le raccordement du câble et sa mise en service côté Dispositif
+de comptage sont réalisés à la charge d’Enedis.
+Dans le cas où la(les) ligne(s) est(sont) posée(s) et exploitée(s) par un opérateur téléphonique, Enedis prend à sa
+charge les frais d'abonnement correspondant et assure le transfert d'abonnement.
+
+Si cette (ces) ligne(s) téléphonique(s) n’est (ne sont) pas mise(s) à disposition lors de la Mise en Service de
+l’installation de production, l’accès aux données de comptage s’effectuera par la liaison GSM, pendant un délai
+de 2 ans, dans l’attente d’une mise à disposition par le Demandeur d’une (des) ligne(s) RTC conforme(s) et
+fonctionnelle(s). Cette(ces) prestation(s) sera(seront) facturée(s) conformément à la fiche P330 du Catalogue
+des Prestations d’Enedis.
+
+
+   4.4.    Dispositif de filtrage pour limiter les perturbations du signal tarifaire
+Si l’installation de production du Demandeur perturbe la transmission du signal tarifaire au-delà des limites
+admises, un dispositif de filtrage du signal tarifaire doit être installé dans l’installation de production du
+Demandeur.
+
+
+
+Enedis-FOR-RES_17E                                                                                     Page : 16/33
+Version 7                                                                                               01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+Le Demandeur fait réaliser à ses frais la pose du filtre, et en assure son exploitation, son entretien et son
+renouvellement. Il en est le propriétaire exclusif et assume seul les responsabilités afférentes en cas d’anomalie
+de fonctionnement de celui-ci.
+
+Le Demandeur fera également réaliser les vérifications initiales et les essais de mise en service du filtre.
+
+La prévention des risques de perturbation du signal tarifaire constitue une obligation de résultats du Demandeur
+qui engage sa responsabilité telle que prévue à l’article 8 — des présentes Conditions Générales.
+
+Les Conditions Particulières de la Convention de Raccordement indiquent les caractéristiques des filtres à
+installer dans l’installation de production du Demandeur.
+
+
+   4.5.    Dispositif de filtrage pour limiter les Injections de courants harmoniques
+Si l’installation de production du Demandeur injecte des courants harmoniques ne permettant pas à Enedis de
+respecter ses engagements en terme de tensions harmoniques, le Demandeur mettra en œuvre dans son
+installation de production un dispositif de filtrage des courants harmoniques permettant de ramener ceux-ci à
+des niveaux admissibles au Point De Livraison. Il en supporte seul les frais d’installation, d’exploitation,
+d’entretien et de renouvellement.
+
+Les Conditions Particulières de la Convention de Raccordement indiquent les caractéristiques du ou des filtre(s)
+à installer.
+
+
+5 — Perturbations et continuité de l’alimentation
+   5.1.    Perturbations et continuité de l’alimentation venant du Réseau
+Les engagements d’Enedis en termes de qualité de l’onde (fluctuations rapides et lentes, déséquilibres et
+fréquence) et de continuité de fourniture (coupures sur travaux et coupures hors travaux) applicables au Point
+De Livraison, ainsi que les modalités d’interruption de service ou de diminution de capacités d’injection sont
+décrits dans le Contrat d’Accès au Réseau Public de Distribution BT et sont déclinés en fonction de la zone
+d’alimentation.
+
+
+   5.2.    Perturbations générées par l’installation de production
+Enedis vérifiera, conformément à sa Documentation Technique de Référence publiée à la date de signature des
+Conditions Particulières de la Convention de Raccordement et aux éléments techniques précisés dans les Fiches
+de Collecte, que l’installation de production du Demandeur respecte les prescriptions réglementaires en vigueur,
+lors de la mise en service et pendant la durée du raccordement au Réseau Public de Distribution de l’installation
+de production objet de la Convention de Raccordement.
+
+Au titre de la Convention de Raccordement, les dispositions constructives et organisationnelles de l’installation
+de production doivent permettre au Demandeur de limiter les perturbations qu’elle génère sur le Réseau Public
+de Distribution, aux niveaux réglementaires fixés par l'arrêté du 9 juin 2020. Ces niveaux réglementaires sont
+applicables au Point De Livraison défini aux Conditions Particulières de la Convention de Raccordement.
+
+D’autre part, l’installation de production doit être conforme aux obligations réglementaires et aux normes
+relatives à la compatibilité électromagnétique des installations raccordées sur le Réseau Public de Distribution
+BT, en vigueur.
+
+La limitation des perturbations que l’installation de production génère sur le Réseau Public de Distribution de
+par ses dispositions constructives et organisationnelles constitue une obligation de résultats qui engage la
+responsabilité du Demandeur dans les conditions prévues à l’article 8 — des présentes Conditions Générales.
+
+Les limites réglementaires à respecter sont rappelées en annexe des Conditions Particulières de la Convention
+de Raccordement.
+
+Enedis-FOR-RES_17E                                                                                      Page : 17/33
+Version 7                                                                                               01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+En cas de machine de production de type asynchrone, l’installation de production respectera le tableau 55A de
+la norme NF C 15-100.
+
+En cas de machine de production de type onduleurs, ces derniers devront être conformes aux normes :
+— CEI 61000-3-2 pour les appareils de moins de 16 A par phase,
+— CEI 61000-3-4 pour les appareils de plus de 16 A par phase,
+— CEI 61000-3-12 pour les appareils de moins de 75 A par phase.
+
+
+   5.3.    Obligation de prudence du Demandeur
+Si le Demandeur le sollicite, Enedis lui adresse les informations sur les conditions de qualité et de continuité de
+l’alimentation électrique de son installation de production, sur leurs évolutions envisageables ainsi que sur les
+mesures habituelles que le Demandeur peut prendre pour minimiser les conséquences des aléas de distribution,
+tout particulièrement s'il a subi des dommages suite à une perturbation électrique.
+
+Il appartient au Demandeur, dûment informé des aléas, de prendre les mesures économiquement raisonnables
+et techniquement efficaces pour en minimiser, dans la mesure du possible, les conséquences sur son installation
+de production. Il peut s’agir, à titre d'exemples, de l'optimisation des schémas électriques, de la pose de
+dispositifs d'arrêt d'urgence, de la mise en place d'onduleurs ou de groupes de sécurité.
+
+
+6 — Mise en service de l’installation de production
+Avant toute mise en service de son installation de production, le Demandeur adresse à Enedis une demande
+écrite précisant l’échéancier des mises sous tension souhaitées en précisant s’il s’agit d’une mise sous tension
+pour essai ou mise en service définitive.
+
+Les prestations relatives à la mise en service de l’installation de production sont facturées conformément au
+Catalogue des Prestations publié sur le site internet www.enedis.fr.
+
+L’acceptation sans réserves de la Convention de Raccordement est impérative avant toute mise en service de
+l’installation de production du Demandeur.
+
+
+   6.1.    Contrôle de performances des Installations de production raccordées au Réseau Public de
+           Distribution d’électricité
+L’Installation de production doit être conforme aux prescriptions techniques de conception et de fonctionnement
+de la règlementation pour le raccordement aux réseaux d’électricité auxquelles s’ajoute, pour les Installations
+qui y sont soumises, le règlement européen (UE) 2016/631 dit « code RfG ».
+
+Les exigences et les modalités de contrôle de la conformité par Enedis sont définies dans la Documentation
+Technique de Référence Enedis-PRO-RES_64E. Elles se distinguent en particulier selon que l’Installation de
+production est soumise ou non au code RfG. Les Conditions Particulières de la Convention de Raccordement
+indiquent si l’Installation est soumise ou non au code RfG et précisent, le cas échéant, les exigences de
+conformité applicables.
+
+Le respect de ces dispositions constitue une obligation de résultats qui engage la responsabilité du Demandeur
+dans les conditions prévues à l’article 8 des présentes Conditions Générales.
+
+
+   6.2.    Convention d’Exploitation
+La conclusion d’une Convention d’Exploitation avec le Demandeur est obligatoire avant toute mise sous tension
+de l’installation de production du Demandeur. A compter de son envoi par Enedis, le délai de validité de la
+Convention d’Exploitation est de trois mois. Elle est adressée au Demandeur après la signature de la Convention
+de Raccordement.
+
+Enedis-FOR-RES_17E                                                                                     Page : 18/33
+Version 7                                                                                               01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+
+La Convention d’Exploitation précise les règles permettant l’exploitation de l’installation de production en
+cohérence avec les règles d’exploitation du Réseau Public de Distribution et a pour objectif :
+— de définir les relations de service entre les responsables d’Enedis et du Demandeur plus particulièrement
+  chargés de l'exploitation et de l'entretien des installations de productions concernées ;
+— de préciser les principales règles d'exploitation à observer, tant en régime normal de fonctionnement qu'en
+  situations perturbées ou en cas d’anomalies ;
+— de spécifier certaines dispositions particulières du schéma d'alimentation, notamment les limites de
+  propriété et d’entretien, les droits de manœuvre, les réglages des protections.
+
+Si le Demandeur confie l’exploitation de l’installation de production à un tiers, la Convention d’Exploitation peut
+être conclue entre Enedis et l’exploitant dûment mandaté au nom et pour le compte du Demandeur. Le
+Demandeur s’engage, par la Convention de Raccordement, à mettre à la disposition de son exploitant tous les
+renseignements et documents nécessaires à la réalisation de sa mission et dégage, dès à présent, Enedis de
+toute obligation de confidentialité vis-à-vis de celui-ci.
+En outre, le Demandeur s’engage à ne pas se prévaloir, vis-à-vis d’Enedis, des accords qu’il a conclus avec son
+exploitant pour tenter de se soustraire à ses responsabilités lors de la survenance de dommages en cours
+d’exploitation.
+
+Des dispositions particulières sont à mettre en œuvre dans l’installation de production lorsque le Site sur lequel
+elle est située est alimenté par plusieurs Points De Livraison issus du Réseau Public de Distribution. Dans ce cas,
+conformément à la réglementation, le Demandeur s’engage à ne pas mettre en place dans son installation de
+production, de dispositif permettant de réaliser de façon automatique ou manuelle la mise en parallèle de
+canalisations de son installation de production desservies par deux canalisations de raccordement distinctes
+du Réseau Public de Distribution.
+
+
+   6.3.    Préparation à la mise en service de l’installation de production
+Pour procéder à la mise en service du Point De Livraison l'installation de production (avec consommation limitée
+aux auxiliaires de production), le Demandeur doit fournir à Enedis l’attestation de conformité de l’installation de
+production prévue par le décret n°2010-301 du 22 mars 2010 (article 1), établie par l’installateur et visée par
+l’organisme de contrôle agréé par l’arrêté du 17 octobre 1973.
+
+D’autre part, toute mise en service de l’installation de production est conditionnée à l’ensemble des conditions
+suivantes :
+— à la complète réalisation des travaux prévus dans le respect des prescriptions décrites dans la Convention
+  de Raccordement et du Contrat de Mandat (en cas d’application de l’article L342-2 du Code de l’énergie),
+— à la cohérence entre l’installation de production et la fiche de collecte jointe en annexe des Conditions
+  Particulières de la Convention de Raccordement,
+— à la signature des Conditions Particulières de la Convention de Raccordement,
+— à la signature d’une Convention d’Exploitation,
+— au paiement du solde des travaux de raccordement,
+— à la réception de l'accord de rattachement de l’ (ou des) installation(s) de production à raccorder à un
+  périmètre de Responsable d’Equilibre (RE) effectif au moment de la mise en service,
+— à la signature et à la prise d’effet des contrats concernant l’accès au RPD et son utilisation,
+— à la vérification du bon fonctionnement de la protection de découplage, conformément au paragraphe 4.1.3
+  des présentes Conditions Générales de la Convention de Raccordement,
+— le cas échéant, à la fourniture du récépissé de la déclaration d’exploiter ou du document valant récépissé de
+  la déclaration d’exploiter au sens du décret n°2000-877 du 7 septembre 2000 modifié, dont la copie sera
+  jointe,
+— le cas échéant, au contrat de soutirage pour subvenir à ces besoins,
+
+Enedis-FOR-RES_17E                                                                                     Page : 19/33
+Version 7                                                                                               01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+— à la fourniture de l’attestation d’assurance responsabilité civile du Producteur telle que définie au
+  paragraphe 9 —,
+— A la validation complète par Enedis du contrôle de la conformité de l’Installation aux normes et aux
+  exigences réglementaires en vigueur, selon les modalités fixées par la DTR Enedis-PRO-RES_64E qui prévoit
+  notamment la remise de certificats de conformité établis par un organisme accrédité lorsque l’Installation
+  est soumise au code RfG.
+
+Les Conditions Particulières de la Convention de Raccordement indiquent les dates prévisionnelles de mise en
+service de l’installation de production et éventuellement, des différentes tranches le constituant, sous réserve
+que les conditions évoquées ci-dessus soient satisfaites. A défaut, de nouvelles dates seront convenues entre le
+Demandeur et Enedis, à partir de la date de réalisation de la dernière condition requise.
+
+
+   6.4.    Cas particulier de la demande de mise sous tension pour essais de l’installation de production
+Certaines vérifications ou contrôles, sur les installations électriques intérieures sont nécessaires à l’obtention
+des attestations (attestations de conformité visée par CONSUEL, …) et nécessitent que les installations
+électriques soient sous tension préalablement à la mise en service.
+
+La mise sous tension pour essais d’une installation de production est limitée à la réalisation des vérifications et
+des travaux de mise en conformité. L’injection est limitée à la Puissance de Raccordement en Injection.
+La mise sous tension pour essais est effectuée en utilisant le raccordement définitif pour une période justifiée
+par la seule durée des essais.
+
+Les modalités de la réalisation de la mise sous tension pour essai sont décrites dans le Catalogue des
+Prestations d’Enedis.
+
+Cette mise sous tension pour essais n’intervient que si toutes les conditions suivantes sont remplies :
+— à la complète réalisation des travaux prévus y compris le Dispositif de comptage dans le respect des
+  prescriptions décrites dans les présentes Conditions Générales,
+— au contrôle par Enedis de la conformité des Ouvrages aux normes en vigueur et aux prescriptions d’Enedis
+  mentionnées à l’article 5 — des présentes Conditions Générales de la Convention de Raccordement,
+— au paiement du solde des travaux de raccordement,
+— à l’engagement du Demandeur de fournir une attestation de conformité avant l’achèvement de la période
+  de mise sous tension pour essai,
+— à la signature d’une Convention d’Exploitation et de la Convention de Raccordement,
+— à la réception par Enedis de l'accord de rattachement de l’ (ou des) installation(s) de production à raccorder
+  à un périmètre de responsable d’équilibre (RE) effectif au moment de la mise en service,
+— le cas échéant, la fourniture du récépissé de la déclaration d’exploiter ou du document valant récépissé de
+  la déclaration d’exploiter au sens du décret n°2000-877 du 7 septembre 2000 modifié, dont la copie sera
+  jointe.
+
+Cette mise sous tension pour essais est accordée par Enedis pour une durée limitée fixée d’un commun accord
+entre les Parties, mais ne pouvant excéder un mois. Cette mise sous tension pour essais doit être formalisée par
+un engagement du Demandeur à l’aide de l’imprimé «mise sous tension pour essais d’installations électriques
+de bâtiments commerciaux, industriels, administratifs » disponible dans la Documentation Technique de
+Référence d’Enedis publiée sur le site internet www.enedis.fr, précisant notamment le caractère précaire de son
+alimentation et le droit d’Enedis à suspendre de plein droit la Convention de Raccordement en cas de non-
+respect de son engagement par le Demandeur, après mise en demeure par lettre recommandée avec demande
+d’avis de réception de la part d’Enedis restée sans effet pendant 15 jours à compter de sa réception.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                     Page : 20/33
+Version 7                                                                                                 01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+7 — Contribution financière et délai de mise à disposition du raccordement
+Le délai prévisionnel de mise à disposition du raccordement et le montant de la contribution au coût du
+raccordement à la charge du Demandeur figurent dans les Conditions Particulières de la Convention de
+Raccordement.
+
+Ce délai tient compte de la réalisation des éventuels Ouvrages hors périmètre de facturation (adaptation du
+réseau HTA) et de la réalisation des Ouvrages Mandataire (en application de l’article L342-2 du Code de
+l’énergie). Il est établi à partir des conditions préalables qui sont précisées à l’article 3.4 des présentes
+Conditions Générales. Ce délai est soumis à la levée des réserves précisées à l’article 7.5.
+
+La Convention de Raccordement précisera, s’il y a lieu, si les coûts et les délais annoncés sont susceptibles d’être
+influencés par des demandes de raccordement antérieures pour lesquelles une Convention de Raccordement
+n’a pas encore été signée.
+
+
+   7.1.    Périmètre de facturation des Ouvrages de Raccordement
+          7.1.1. Cas des installations de production ne relevant pas d’un SRRRER
+Le barème de raccordement, approuvé par la CRE, présente les modalités et les prix pour la facturation de
+l’opération de raccordement des utilisateurs du Réseau Public de Distribution géré par Enedis.
+
+Le barème est accessible à l'adresse internet www.enedis.fr. Le document peut être communiqué au Demandeur
+à sa demande écrite et à ses frais.
+
+Le raccordement de l’installation de production peut nécessiter l’adaptation d’ouvrages situés hors du périmètre
+de facturation. Ces derniers sont à la charge financière d’Enedis.
+
+
+          7.1.2. Cas des installations de production relevant d’un SRRRER
+Pour les installations de production relevant d’un SRRRER, le prix du raccordement facturé au demandeur est
+calculé selon les modalités publiées dans la Documentation Technique de Référence. Le Demandeur est
+redevable du coût des ouvrages propres et d’une quote-part du coût des ouvrages à créer en application du
+SRRRER.
+
+Le raccordement de l’installation de production peut nécessiter l’adaptation d’ouvrages situés hors du périmètre
+de facturation. Ces derniers sont alors à la charge financière d’Enedis.
+
+
+   7.2.    Montant de la contribution
+En l’absence de mise en œuvre de mise en œuvre de l’article L342-2, le coût des Ouvrages de Raccordement est
+déterminé sur devis par Enedis et, le cas échéant, complété d’un devis d’un autre gestionnaire de réseau.
+
+Le montant détaillé de la contribution au raccordement de l’installation de production et les conditions de
+paiement, sont indiqués dans les Conditions Particulières de la Convention de Raccordement.
+En cas de mise en œuvre de l’article L342-2 du Code de l’énergie, les Travaux Mandataire sont directement
+financés par le Client et sont traités conformément aux dispositions financières précisées à l’article 5.1 du
+Contrat de mandat conclu entre Enedis en tant que Maître d’ouvrage et le Demandeur du raccordement.
+
+
+   7.3.    Présentation de la contribution
+          7.3.1. Conditions financières du raccordement
+Les conditions financières du raccordement, établies par Enedis à l’attention du Demandeur, sont présentées
+dans les Conditions Particulières de la Convention de Raccordement.
+
+
+
+Enedis-FOR-RES_17E                                                                                      Page : 21/33
+Version 7                                                                                                01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+Pour formaliser son acceptation, le Demandeur doit retourner signées sans modification ni réserve, les
+Conditions Particulières de la Convention de Raccordement et accompagnées le cas échéant du complément
+d’acompte précisé dans ces dernières.
+
+
+          7.3.2. Proposition Technique et Financière
+Si le délai de réalisation et les coûts du raccordement n’étaient pas maîtrisables par Enedis au moment de
+l’étude de raccordement, la demande de raccordement ferait l’objet d’une Proposition Technique et Financière
+(PTF) préalable comprenant les éléments techniques et financiers de la solution de raccordement envisagée,
+assortis d’une marge d’incertitude et le cas échéant de réserves sur le montant de la contribution, ainsi qu’un
+échéancier prévisionnel de l’étape de réalisation des travaux et de préparation de la mise en service. Pour
+accepter cette Proposition Technique et Financière, le Demandeur s’engage financièrement par le versement
+d’un acompte.
+
+Après acceptation de la Proposition Technique et Financière par le Demandeur, Enedis et le Mandataire (en cas
+d’application de l’article L342-2 du Code de l’énergie) ayant procédé aux études de terrain et aux consultations
+des entreprises chargées des travaux, le montant définitif mis à la charge du Demandeur et la décomposition
+des coûts sont indiqués dans les Conditions Particulières de la Convention de Raccordement.
+
+
+          7.3.3. Convention de Raccordement directe
+Dans le cas où Enedis estime être en mesure d’arrêter définitivement les conditions techniques et financières et
+les délais de réalisation du raccordement dès l’étude de raccordement, elle établit une Convention de
+Raccordement et l’adresse directement au Demandeur. Enedis reste seule à même d’apprécier si ces conditions
+sont réunies, sans pouvoir constituer un droit pour le Demandeur ni donner lieu à contestation. Dans ce cas, la
+Convention de Raccordement vaut Offre de Raccordement et doit être regardée comme incluant la PTF.
+
+
+   7.4.    Modalités de règlement
+A l’achèvement des travaux par Enedis et avant toute mise à disposition du raccordement, le solde est réglé par
+le Demandeur, sans escompte, par chèque à trente jours calendaires de réception de la facture.
+
+Le régime des taxes sera celui en vigueur à la date d’émission de la facture.
+
+
+          7.4.1. Pénalités prévues en cas de retard de paiement
+             7.4.1.1. Dispositions générales
+Pour l’application du présent article, le montant de la créance est le montant restant dû de la facture TTC.
+
+A défaut de paiement intégral du raccordement dans le délai fixé dans les Conditions Particulières, les sommes
+restant dues seront majorées de plein droit, et sans qu’il soit besoin d’une mise en demeure, des pénalités
+calculées sur la base du taux d’intérêt appliqué par la Banque Centrale Européenne à son opération de
+financement la plus récente à la date d’émission de la facture, majoré de dix points de pourcentage. Cet intérêt
+est dû à compter du jour suivant la date d’échéance jusqu’à la date de paiement effectif de la facture ou à défaut
+de règlement, jusqu’à la date de résiliation de la Convention de Raccordement.
+
+Si le paiement intégral de toutes les sommes dues n’est pas intervenu dans un délai de vingt jours calendaires à
+compter de la date d’échéance, Enedis peut, sous réserve du respect d’un préavis de 10 jours calendaires à
+compter de la réception par le Demandeur d'une lettre recommandée avec avis de réception valant mise en
+demeure, suspendre la Convention de Raccordement, dans les conditions de l'article 10.4, sans préjudice des
+dommages-intérêts auxquels Enedis pourrait prétendre. Dans ce cas, la lettre susvisée indique notamment la
+date de prise d'effet de la suspension de la Convention de Raccordement.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                    Page : 22/33
+Version 7                                                                                              01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+Conformément aux dispositions de l'article 10.4 des présentes Conditions Générales, seul le paiement intégral
+par le Demandeur de toutes les sommes dues et des intérêts de retard y afférents entraîne la fin de la suspension
+de la Convention de Raccordement.
+
+
+             7.4.1.2. Dispositions spécifiques à l’état, aux collectivités territoriales et établissements publics
+                      locaux
+Les pénalités sont calculées sur la base du taux d’intérêt appliqué par la Banque Centrale Européenne à son
+opération de financement la plus récente à la date d’émission de la facture, majoré de sept points de
+pourcentage.
+
+
+          7.4.2. Révision du montant de la contribution
+Les prix figurant dans les Conditions Particulières de la Convention de Raccordement sont établis aux conditions
+économiques et fiscales en cours à la date de signature de la convention, c’est-à-dire les valeurs des indices
+publiés par le Bulletin Officiel de la Concurrence et de la Consommation (BOCC) et les taux d’imposition à la
+valeur ajoutée à cette date. Ils sont fermes et non révisables si l’ensemble des travaux prévus dans les
+Conditions Particulières de la Convention de Raccordement sont achevés dans le délai précisé dans les
+Conditions Particulières de la Convention de Raccordement.
+
+Si, du fait du Demandeur, les travaux se poursuivent au-delà de ce délai, le montant de la contribution au coût
+du raccordement, sous déduction de l’acompte versé le cas échéant, est révisé selon l’évolution des prix contenu
+dans le barème de raccordement.
+
+
+          7.4.3. Modalités de règlement en cas d’application de l’article L342-2 du Code de l’énergie
+Lorsque le demandeur du raccordement a recours à l’article L342-2 du Code de l’énergie pour effectuer ses
+travaux de raccordement, seules les dispositions financières prévues à l’article 5 du contrat de mandat
+s’appliquent pour le paiement des Travaux Mandataires.
+Pour le paiement des Travaux Enedis, l’article 7.4.1 et suivants de cette convention s’appliquent.
+
+
+   7.5.    Réserves sur le délai de mise à disposition du raccordement
+La mise à disposition des Ouvrages de Raccordement réalisés sous la maîtrise d’ouvrage des gestionnaires de
+réseaux à la date prévue reste soumise à la levée des réserves suivantes :
+— l’aboutissement des procédures administratives (délais d’obtention des autorisations administratives,
+  recours contentieux…) dans un délai compatible avec la date de mise à disposition du raccordement prévue,
+— la signature des conventions de passage des Ouvrages de Raccordement entre les gestionnaires de réseau
+  et le ou les propriétaires des terrains empruntés, y compris ceux du Demandeur,
+— l’absence de demande des autorités administratives ou des personnes de droit privé compétentes de
+  modification du tracé des Ouvrages objets du présent paragraphe, d’adjonctions de matériel ou de travaux
+  complémentaires sur ces Ouvrages,
+— la mise à disposition par le Demandeur des aménagements de passage de câbles dans les terrains de ce
+  dernier,
+— la possibilité de réaliser les consignations des Ouvrages du Réseau Public de Distribution, nécessaires à la
+  réalisation des travaux suivant le programme prévisionnel prévu par Enedis; ce programme prévisionnel
+  figure aux Conditions Particulières de la Convention de Raccordement,
+— d’aléas non signalés liés, notamment à l'encombrement du sous-sol aux conditions climatiques, d’intensité
+  ou de durée telles qu’ils empêchent l’exécution des travaux de réalisation des ouvrages,
+— une modification de la réglementation imposant des contraintes, notamment en termes de délais quant à la
+  réalisation du raccordement.
+
+
+
+Enedis-FOR-RES_17E                                                                                         Page : 23/33
+Version 7                                                                                                  01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+En cas de mise en œuvre des dispositions de l’article L342-2 du Code de l’énergie, outre la levée des réserves ci-
+dessus, la mise à disposition des Ouvrages de raccordement (Ouvrages Enedis et Ouvrages Mandataires) est
+également soumise à la levée des réserves suivantes :
+— la mise à disposition par le Mandataire de l’étude détaillée des Travaux Mandataire avec le dossier de
+  consultation des Entreprises Agréées pour ces mêmes Travaux ;
+— la réception des Travaux Mandataire sans réserves par le Mandant ;
+— en tout état de cause, le respect de l’article 4.2 « Exécution des travaux » du Contrat de mandat.
+
+L’engagement de respect de la date prévue de mise à disposition des Ouvrages de Raccordement ne s’applique
+qu’en l’absence de retards de réalisation des Travaux Mandataire imputables au Client.
+
+Si toutes ces réserves ne peuvent être levées, la Convention de Raccordement fera l’objet d’une révision selon
+les dispositions de l’article 10.2 des présentes Conditions Générales.
+
+
+
+
+8 — Responsabilités
+En cas de recours à l’article L342-2 du Code de l’énergie, les dispositions des articles 5.3 et 5.4 du Contrat de
+mandat s’appliquent aux Travaux Mandataires.
+
+
+   8.1.    Régimes de responsabilité
+Dans le cadre de l’exécution de la Convention de Raccordement, lorsqu’une Partie est reconnue responsable vis
+à vis de l’autre en application des articles ci-dessous, elle est tenue de réparer pécuniairement l’ensemble des
+dommages directs et certains causés à l’autre Partie, dans la limite du préjudice réellement subi par l’autre
+Partie, qui résulteraient du non-respect d’engagements, d’erreurs ou d’omissions qui lui sont imputables ou qui
+sont imputables à ses co-contractants dans les conditions de l’article 8.3 ci-dessous.
+
+En revanche, les Parties ne sont en aucune circonstance responsables l’une vis à vis de l’autre pour les
+dommages indirects.
+
+
+   8.2.    Cas particulier dans le cas du raccordement indirect
+Dans le cas d'un raccordement indirect d’une installation de production (dite « hébergé ») sur une installation de
+production et/ou de consommation déjà raccordée au réseau et détentrice d’un CARD (dite « hébergeur »)
+l’hébergeur et l’ (ou les) hébergé(s) seront solidairement responsables vis-à-vis d’Enedis de l’ensemble des
+obligations mises à la charge de l’hébergeur et de l' (ou des) hébergé(s).
+
+L’hébergeur et l’ (ou les) hébergé(s) détermineront d’un commun accord un groupement solidaire, responsable
+pour le compte de l’hébergeur et de l' (ou des) hébergé(s), de l’ensemble des échanges d’informations entre
+Enedis d’une part et l’hébergeur et l' (ou les) hébergé(s) d’autre part.
+
+
+   8.3.    Procédure de réparation
+La Partie victime d'un dommage qu'elle attribue à une faute de l'autre Partie est tenue, afin d'obtenir réparation
+de ce dommage, d'informer cette Partie de l’existence d’un préjudice en déclarant le dommage par lettre
+recommandée avec avis de réception dans un délai de vingt (20) jours calendaires à compter de la survenance
+du dommage ou de la date à laquelle elle en a eu connaissance, ceci afin de permettre d’accélérer le traitement
+de la demande, et de faciliter la recherche des éléments sur les circonstances de l’incident, et de collecter les
+justificatifs relatifs au préjudice subi.
+
+La Partie victime du dommage doit également adresser, par lettre recommandée avec avis de réception, une
+demande de réparation à l'autre Partie dans un délai de trois (3) mois à compter du jour où le dommage est
+
+Enedis-FOR-RES_17E                                                                                    Page : 24/33
+Version 7                                                                                              01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+survenu. Cette demande doit être accompagnée d'un dossier démontrant de manière indiscutable, à l'aide de
+toutes pièces et documents nécessaires, l'existence de son droit à réparation.
+
+Ce dossier contient notamment :
+— le fondement de sa demande,
+— l'existence et l'évaluation précise des dommages poste par poste,
+— la preuve du lien de causalité entre l'incident et le dommage occasionné.
+
+La Partie mise en cause ou son assureur doit, dans un délai de trente (30) jours calendaires à compter de la
+réception de la demande de réparation susvisée, répondre par lettre recommandée avec avis de réception. Cette
+réponse peut faire part :
+— d'une demande de délai supplémentaire pour rassembler les éléments nécessaires au dossier ;
+— d’un refus d'indemnisation. Dans ce cas, la Partie victime peut mettre en œuvre la procédure de contestation
+  prévue à l'article 10.8 des présentes Conditions Générales ;
+— d’un accord total sur le principe et sur le montant de la réparation. Dans ce cas, la Partie mise en cause ou
+  son assureur doit verser à la Partie victime l'indemnité réclamée (hors TVA) dans un délai de trente jours
+  calendaires à compter de la date de réception de la réponse par la Partie victime. Les Parties déterminent
+  alors ensemble les modalités de paiement les mieux adaptées ;
+— ou d’un accord sur le principe de la réparation mais d'un désaccord sur le montant de celle-ci. Dans ce cas,
+  la Partie mise en cause ou son assureur organise une expertise amiable afin de rechercher un accord dans
+  un délai de trente jours calendaires à compter de la date de réception de la réponse par la Partie victime. En
+  cas d'accord partiel, la Partie mise en cause ou son assureur s'engage à verser à la Partie victime une
+  provision dont le montant correspond à la part non contestée de la demande de réparation. Les Parties
+  déterminent alors, ensemble, les modalités de paiement les mieux adaptées. Le règlement de cette part doit
+  intervenir dans un délai de trente jours calendaires. Pour la part contestée de la demande de réparation, la
+  Partie victime peut mettre en œuvre la procédure de contestation prévue à l'article 10.8 des présentes
+  Conditions Générales.
+
+La Partie qui estime que la responsabilité d'un tiers doit être mise en cause (par exemple, en cas d'arrachage
+d'un câble par une entreprise de travaux publics) doit effectuer, à ses frais, toutes les démarches nécessaires à
+cette mise en cause.
+
+
+   8.4.    Régime perturbé – Force majeure
+En cas de recours à l’article L342-2 du Code de l’énergie, les dispositions de l’article 5.8 du Contrat de mandat
+s’appliquent aux Travaux Mandataires.
+
+
+          8.4.1. Définition
+Pour l'exécution de la Convention de Raccordement, un événement de force majeure désigne tout événement
+irrésistible, imprévisible et extérieur, rendant impossible l’exécution de tout ou partie des obligations
+contractuelles de l’une ou l’autre des Parties.
+
+En outre, il existe des circonstances exceptionnelles, indépendantes de la volonté d’Enedis et non maîtrisables
+en l’état des connaissances techniques, qui sont assimilées par les Parties à des événements de force majeure
+pouvant conduire dans certains cas à des perturbations dans l’acheminement de l’électricité aux Points De
+Livraison voire à des délestages partiels.
+
+Ces circonstances, caractérisant le régime perturbé, sont les suivantes :
+— les destructions volontaires dues à des actes de guerre, émeutes, pillages, sabotages, attentats ou atteintes
+  délictuelles ;
+— les dommages causés par des faits accidentels et non maîtrisables, imputables à des tiers, tels qu’incendies,
+  explosions ou chutes d'avions ;
+Enedis-FOR-RES_17E                                                                                   Page : 25/33
+Version 7                                                                                             01/01/2025
+          Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                      Production de puissance comprise entre 36 et 250 kVA
+                                                                       Conditions Générales
+— les catastrophes naturelles au sens de la loi n°82-600 du 13 juillet 1982, c’est à dire des dommages matériels
+  directs ayant pour cause déterminante l’intensité anormale d’un agent naturel, lorsque les mesures
+  habituelles à prendre pour prévenir ces dommages n’ont pu empêcher leur survenance ou n’ont pu être
+  prises ;
+— les phénomènes atmosphériques irrésistibles par leur cause et leur ampleur et auxquels les réseaux
+  électriques, et notamment aériens, sont particulièrement vulnérables (ex. : givre, neige collante, tempête),
+  dès que, lors d’une même journée et pour la même cause au moins 100 000 Clients, alimentés par le Réseau
+  Public de Transport et/ou par le Réseau Public de Distribution sont privés d’électricité ;
+— les délestages rendus nécessaires au titre du maintien du service prioritaire prévu par l’arrêté du 5 juillet
+  1990 modifié fixant les consignes générales de délestage sur les réseaux électriques ;
+— les mises hors service d’Ouvrages imposées par les pouvoirs publics pour des motifs de défense ou de
+  sécurité publique ;
+— les délestages imposés par les grèves du personnel dans la seule hypothèse où elles revêtent les
+  caractéristiques de la force majeure ;
+— l'indisponibilité soudaine, fortuite et simultanée de plusieurs installations de production raccordées au
+  Réseau Public de Transport et au Réseaux Public de Distribution, conduisant à l'impossibilité de subvenir
+  aux besoins de la consommation nationale dans le respect des règles relatives à l'interconnexion des
+  différents réseaux nationaux d'électricité.
+
+
+          8.4.2. Régime juridique
+Les Parties n'encourent aucune responsabilité et ne sont tenues d'aucune obligation de réparation au titre des
+dommages subis par l’une ou l’autre du fait de l'inexécution ou de l’exécution défectueuse de tout ou partie de
+leurs obligations contractuelles, lorsque cette inexécution ou cette exécution défectueuse est due à un cas de
+force majeure ou à l’une des circonstances exceptionnelles énumérées ci-dessus. Les obligations contractuelles
+des Parties, à l’exception de celle de confidentialité prévue à l’article 10.7, sont alors suspendues pendant toute
+la durée de l’événement de force majeure ou de la circonstance exceptionnelle.
+
+La Partie qui désire invoquer l’événement de force majeure informe l’autre Partie par tout moyen, dans les
+meilleurs délais, de la nature de l'événement de force majeure invoqué et de sa durée probable.
+
+La Partie qui invoque un événement de force majeure a l’obligation de mettre en œuvre tous les moyens dont
+elle dispose pour en limiter sa portée et sa durée.
+
+Si à l’expiration d’un délai de 3 mois à compter de la déclaration du cas de force majeure ou de la circonstance
+exceptionnelle assimilable à un cas de force majeure, la Partie qui a déclaré le cas de force majeure n’est
+toujours pas en mesure d’exécuter ses obligations contractuelles, chacune des Parties peut résilier totalement
+ou partiellement la convention par l’envoi à l’autre Partie d’une lettre recommandée avec demande d’avis de
+réception, sans qu’il en résulte un quelconque droit à indemnité pour l’autre Partie. La résiliation sera effective
+selon les modalités définies à l’article 10.6.2 des présentes Conditions Générales.
+
+
+   8.5.    Garanties contre les revendications des tiers
+Au cas où l’inobservation de l’une quelconque de ses obligations par l’une des Parties engagerait la
+responsabilité de l’autre Partie, la Partie fautive s’engage à garantir l’autre Partie contre tout recours intenté
+par des tiers.
+
+
+9 — Assurance
+En cas de recours à l’article L342-2 du Code de l’énergie, les dispositions de l’article 5.5 du Contrat de mandat
+s’appliquent aux Travaux Mandataires.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                     Page : 26/33
+Version 7                                                                                               01/01/2025
+           Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                       Production de puissance comprise entre 36 et 250 kVA
+                                                                        Conditions Générales
+Les Parties s'engagent à souscrire auprès de compagnies d'assurances notoirement solvables et à conserver
+pendant toute la durée de la Convention de Raccordement, une assurance responsabilité civile couvrant tous
+les dommages corporels, matériels et immatériels susceptibles de survenir du fait ou à l'occasion de l'exécution
+de la Convention de Raccordement, ou imputables au fonctionnement de leurs installations respectives.
+
+Chaque Partie peut demander à l'autre Partie, par tout moyen, les attestations d'assurances correspondantes
+qui doivent mentionner notamment l'objet de la garantie et les montants garantis. Si, sur demande expresse
+d’Enedis, le Demandeur refuse de produire lesdites attestations, Enedis peut, sous réserve du respect d’un
+préavis de dix jours calendaires à compter de la réception par le Demandeur d'une mise en demeure adressée
+par lettre recommandée avec avis de réception, suspendre la Convention de Raccordement, dans les conditions
+de l’article 10.1 des présentes Conditions Générales. Dans ce cas, la mise en demeure indique notamment la date
+de prise d'effet de la suspension de la Convention de Raccordement.
+
+
+10 — Exécution de la Convention de Raccordement
+Pendant toute la période de raccordement, le Demandeur a l’obligation de maintenir l’installation de production
+conforme aux termes de cette Convention de Raccordement et à la réglementation applicable. Enedis a
+obligation de tenir à la disposition du Demandeur les capacités du raccordement décrites dans la Convention
+de Raccordement.
+
+
+   10.1.    Adaptation de la convention
+Dès l’entrée en vigueur de textes législatifs ou réglementaires en relation avec l’objet de la Convention de
+Raccordement, ceux-ci s’appliquent de plein droit de la Convention de Raccordement.
+Par ailleurs, en cas de modification substantielle de l’environnement légal, réglementaire conduisant à la
+nécessité de revoir tout ou partie des dispositions de la Convention de Raccordement, les Parties conviennent
+de se rencontrer afin de la rendre conforme et adaptée aux nouvelles règles en vigueur.
+
+En cas d'événement, notamment de nature économique ou commerciale, survenant après l’entrée en vigueur de
+la Convention de Raccordement, entraînant une rupture significative dans l’équilibre de la Convention de
+Raccordement, les Parties se rencontreront afin de procéder à l’examen de la situation ainsi créée et de
+déterminer en commun les modalités selon lesquelles la Convention de Raccordement pourrait être poursuivie
+dans des conditions d’équilibre identiques à celles qui ont prévalu au moment de sa signature.
+
+
+   10.2. Révision de la Convention de Raccordement
+           10.2.1. Conditions de la révision
+La Convention de Raccordement peut faire l’objet d’une révision dans les conditions définies à l’article 10.2.2
+des présentes Conditions Générales en tant que de besoin et en particulier :
+— en cas de non levée des réserves précisées à l’article 7.5 des présentes Conditions Générales,
+— en cas de modification telle que définie à l’article 10.3 des présentes Conditions Générales,
+— en cas d’événement nécessitant d’adapter la convention à son nouvel environnement, conformément à
+  l’article 10.1 des présentes Conditions Générales.
+
+
+           10.2.2. Modalités et effets de la révision
+La Partie à l’origine de la révision envoie à l’autre Partie une Lettre Recommandée avec demande d’Avis de
+Réception signifiant la demande de révision. Les Parties conviennent de se rapprocher dans un délai maximal
+de quinze jours à compter de la date de réception de cette lettre pour redéfinir les nouvelles modalités
+techniques et financières du Raccordement de l’installation de production du Demandeur au Réseau Public de
+Distribution BT. Si les Parties parviennent à un accord, Enedis soumet au Demandeur une nouvelle proposition
+de solution de raccordement dans le meilleur délai possible, ce dernier n’excédant jamais trois mois. Si le
+Demandeur est à l’origine de la révision, ce délai court à partir de la date de réception par le Demandeur de la
+Lettre Recommandée avec demande d’Avis de Réception envoyée par Enedis acceptant les nouvelles
+Enedis-FOR-RES_17E                                                                                  Page : 27/33
+Version 7                                                                                            01/01/2025
+       Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                   Production de puissance comprise entre 36 et 250 kVA
+                                                                    Conditions Générales
+caractéristiques de l’installation de production soumises par le Demandeur. Si Enedis est à l’origine de la
+révision, ce délai court à partir de la date de réception par le Demandeur de la Lettre Recommandée avec Avis
+de Réception de demande de révision envoyée par Enedis.
+
+Suivant la teneur des modifications à apporter, les Parties conviennent de réviser les termes de la Convention
+de Raccordement par voie d’avenant ou par résiliation de celle-ci et établissement d’une nouvelle Convention de
+Raccordement.
+
+Chaque Partie prend à sa charge le montant des adjonctions de matériel ou des travaux complémentaires lui
+incombant, conformément à l’application des dispositions légales et réglementaires en vigueur à la date de la
+demande initiale de raccordement.
+Enedis ne peut en aucun cas être tenue pour responsable des dommages causés au Demandeur du fait de la
+révision de la Convention de Raccordement entraînant un retard sur la mise en service de l’installation de
+production. Toutefois, la responsabilité d‘Enedis est susceptible d’être engagée en tout ou partie si le Demandeur
+rapporte la preuve d’une faute ou d’une négligence d’Enedis.
+
+
+   10.3. Modification de la Convention de Raccordement
+Toute modification des Ouvrages de Raccordement à l’initiative d’Enedis, ainsi que toute modification de
+l’installation de production à l’initiative du Demandeur ou de son successeur, modifiant les termes de la
+Convention de Raccordement, doivent faire l’objet d’une concertation entre les Parties préalable à la rédaction
+d’un avenant aux Conditions Particulières de la Convention de Raccordement et le cas échéant aux Conditions
+Particulières de la Convention d’Exploitation.
+Le Demandeur s’engage à informer Enedis par Lettre Recommandée avec Avis de Réception de tout projet de
+modification des caractéristiques électriques de son installation de production décrite dans les Conditions
+Particulières de la Convention de Raccordement.
+
+Enedis s’engage à informer le Demandeur par Lettre Recommandée avec Avis de Réception des modifications
+des caractéristiques électriques des Ouvrages de Raccordement du Réseau Public de Distribution ayant un
+impact sur les clauses et conditions de la Convention de Raccordement, à l’exception des modifications des
+caractéristiques électriques des Ouvrages de Raccordement sans impact sur la structure ou la tension du Point
+De Livraison.
+
+Cependant, Enedis se réserve la possibilité d’adapter les Ouvrages de Raccordement pour répondre aux besoins
+de développement et d’exploitation du Réseau Public de Distribution.
+
+L’information de toute modification entraîne la révision de la Convention de Raccordement dans les conditions
+indiquées à l’article 10.2 des présentes Conditions Générales de la Convention de Raccordement.
+
+
+   10.4. Suspension de la Convention de Raccordement
+        10.4.1. Conditions de la suspension
+La Convention de Raccordement peut être suspendue, dans les conditions définies à l’article 10.4.2, de plein
+droit et sans que le Demandeur puisse prétendre à une quelconque indemnité :
+— en cas de dépassement de la Puissance de Raccordement en injection,
+— en cas de non-respect par le Demandeur de ses engagements de limitation des perturbations générées par
+  l’installation de production tels que définis à l’article 5.2 ou de la règlementation relative aux prescriptions
+  techniques de conception et de fonctionnement pour le raccordement aux réseaux d’électricité ainsi qu’au
+  code RfG le cas échéant,
+— en cas d'écart à la consigne de régulation de l'énergie réactive tel que défini à l'article 2.4,
+— en cas de non-respect de l’engagement pris par le Demandeur dans le cas de la mise sous tension pour
+  essais de l’installation de production telle que définie à l’article 6.4,
+— en cas de retard de paiement tel que défini à l’article 7.4.1,
+
+Enedis-FOR-RES_17E                                                                                    Page : 28/33
+Version 7                                                                                              01/01/2025
+       Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                   Production de puissance comprise entre 36 et 250 kVA
+                                                                    Conditions Générales
+— en cas de défaut de production de l’attestation d’assurance telle que prévue à l’article 9 —,
+— en cas de force majeure tels que définis à l’article 8.4,
+— si le Demandeur refuse à Enedis l'accès pour vérification, à ses installations électriques et en particulier au
+  local de comptage,
+— si, le Demandeur refuse de procéder aux réparations ou renouvellements d’installations électriques, y
+  compris le Dispositif de comptage, défectueuses,
+— si la Commission de Régulation de l’Energie prononce à l'encontre du Demandeur pour le Site, la sanction
+  d'interdiction temporaire d'accès au Réseau Public de Distribution en application des articles L134-25 à
+  L134-34 du Code de l’Energie,
+— conformément aux cahiers des charges de distribution publique d'électricité, dans les cas suivants :
+   injonction émanant de l'autorité compétente en matière d'urbanisme ou de police en cas de trouble à
+    l'ordre public,
+   non justification de la conformité des installations à la réglementation et aux normes en vigueur,
+   danger grave et immédiat porté à la connaissance d’Enedis concessionnaire,
+   modification, dégradation ou destruction volontaire des Ouvrages et comptages exploités par Enedis,
+    quelle qu'en soit la cause,
+   usage illicite ou frauduleux de l'énergie, dûment constaté par Enedis.
+
+En cas de mise en œuvre de l’article L342-2 du Code de l’énergie, la Convention de Raccordement peut être
+suspendue dans les mêmes conditions que précédemment en cas de manque par le Demandeur :
+— dans la transmission de l’étude détaillée des Travaux Mandataire,
+— dans la transmission de la totalité du dossier de consultation des Travaux Mandataire
+— à la signature du Contrat de Mandat actualisé pour la réalisation des Travaux Mandataire
+
+Dans ce cas, les dispositions de l’article 4.5 du Contrat de Mandat s’appliquent à la suspension des Travaux
+Mandataires.
+
+La suspension par Enedis de la Convention de Raccordement pour des impératifs de sécurité peut intervenir
+sans délai. Dans les autres cas, les délais et les modalités de la suspension sont ceux des articles sur la base
+desquels il est procédé à ladite suspension ; à défaut de telles dispositions, la suspension prend effet dix jours
+calendaires après l'envoi par Enedis d'une Lettre Recommandée avec Avis de Réception.
+
+La Convention de Raccordement est alors suspendue de plein droit et sans que le Demandeur puisse prétendre
+à une quelconque indemnité ou réparation.
+
+
+        10.4.2. Effets de la suspension
+La suspension de la Convention de Raccordement entraîne la suspension de l’accès au Réseau Public de
+Distribution ainsi que la suspension de plein droit du Contrat d’Accès au Réseau Public de Distribution s’il est en
+vigueur et le cas échéant de la Convention d’Exploitation, selon les modalités retenues par Enedis pour
+interrompre l’accès au Réseau Public de Distribution.
+En cas de recours à l’article L342-2 du Code de l’énergie, la suspension de la Convention de Raccordement
+entraîne la suspension de l’exécution du Contrat de Mandat s’agissant des Travaux Mandataires.
+
+Les obligations contractuelles des Parties, à l'exception de celle de confidentialité prévue à l’article 10.7 et le cas
+échéant, de révision prévue à l’article 10.2, ne sont plus exécutées pendant la durée de la suspension de la
+Convention. Les Parties n'encourent aucune responsabilité du fait de l'inexécution de leurs obligations
+respectives pendant la durée de la suspension.
+
+La durée de la suspension est sans effet sur le terme de la Convention de Raccordement et est sans incidence
+sur les périodes et le décompte du temps mentionnés dans celle-ci.
+Enedis-FOR-RES_17E                                                                                        Page : 29/33
+Version 7                                                                                                  01/01/2025
+       Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                   Production de puissance comprise entre 36 et 250 kVA
+                                                                    Conditions Générales
+
+Par ailleurs la Partie à l'origine de la suspension s'engage à mettre en œuvre tous les moyens afin de faire cesser
+l'évènement ayant entraîné la suspension et de permettre la reprise des relations contractuelles. Il est
+expressément convenu entre les Parties que tous les frais de suspension ainsi que les éventuels frais de reprise
+de l'exécution de la Convention de Raccordement et de l'accès au Réseau Public de Distribution sont à la charge
+exclusive de la Partie à l’origine de la suspension. S’il s’agit du Demandeur, celui-ci recevra en conséquence une
+facture spécifique.
+
+Si la suspension de la Convention de Raccordement résulte du non-paiement prévu à l’article 7.4.1 des présentes
+Conditions Générales, la reprise des relations contractuelles dans les mêmes termes et conditions n’est possible
+qu'à compter de la réception par Enedis du paiement intégral de toutes les sommes dues par le Demandeur.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                     Page : 30/33
+Version 7                                                                                               01/01/2025
+        Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                    Production de puissance comprise entre 36 et 250 kVA
+                                                                     Conditions Générales
+Si la suspension de la Convention de Raccordement excède une durée de trois mois à compter de la date
+effective de la suspension, chaque Partie peut résilier la Convention de Raccordement de plein droit, dans les
+conditions de l’article 10.6.
+Nonobstant la suspension et sans préjudice de tout dommage-intérêt qu’elle pourrait demander du fait de cette
+suspension, Enedis peut exercer toute voie et moyen de droit à l'encontre du Demandeur afin de recouvrer les
+sommes exigibles dans le cadre de la Convention de Raccordement.
+
+
+   10.5. Cession de la Convention de Raccordement
+La Convention de Raccordement est conclue en fonction des caractéristiques du Site existantes au moment de
+sa signature.
+
+Elle peut être cédée sous réserve de l'accord préalable et écrit d’Enedis. Les droits et obligations de la
+Convention de Raccordement s'appliquent de plein droit à tout cessionnaire à compter de la date de cession.
+La cession donnera lieu à la conclusion d'un avenant entre Enedis et le cessionnaire.
+
+En cas de changement d'exploitant du Site sans changement d'activité, la Convention de Raccordement pourra
+être cédée au nouvel exploitant. A cette fin, le Demandeur s'engage à informer Enedis, par lettre recommandée
+avec avis de réception, préalablement à tout changement d'exploitant, de l'identité et de l'adresse du futur
+exploitant en indiquant notamment le nom, la forme juridique, l'adresse du siège social ainsi que le numéro
+d'immatriculation au registre du commerce et des sociétés.
+
+En cas de modification de la situation juridique du Demandeur ou du Site, et quelle que soit la nature de cette
+modification, le Demandeur informe Enedis dans les meilleurs délais, par Lettre Recommandée avec Avis de
+Réception.
+
+En cas de recours à l’article L342-2 du Code de l’énergie, la cession de la Convention de Raccordement
+n’entraîne pas la cession du Contrat de Mandat s’agissant des Travaux Mandataires. Ceux-ci doivent être
+réalisés par le Demandeur du raccordement avec lequel Enedis a signé le Contrat de Mandat.
+
+
+   10.6. Résiliation de la Convention de Raccordement
+        10.6.1. Cas de résiliation anticipée
+Chaque Partie peut résilier la Convention de Raccordement de plein droit et sans indemnité dans les cas
+limitativement énumérés ci-après :
+— sur l’initiative d’Enedis, en cas de sortie des Ouvrages de Raccordement du Réseau Public de Distribution
+  géré par Enedis,
+— sur l’initiative d’Enedis, en cas de demande par le Demandeur d’un sursis à l’exécution des travaux supérieur
+  à 3 mois,
+— sur l’initiative d’Enedis, en cas de non mise en service de l’installation de production deux ans après la mise
+  à disposition des Ouvrages de Raccordement,
+— en cas de renonciation par le Demandeur à son projet de raccordement au Réseau Public de Distribution de
+  l’installation de production; dans ce cas le Demandeur doit en informer Enedis dans les plus brefs délais,
+— en cas de suspension de la Convention de Raccordement d’une durée supérieure à trois mois telle que
+  décrite à l’article 10.4 des présentes Conditions Générales,
+— en cas de renonciation par le Demandeur à une nouvelle Offre de Raccordement dans le cadre d’une révision
+  de la Convention de Raccordement,
+— lors la signature par les deux Parties d’une nouvelle Convention de Raccordement l’annulant et le
+  remplaçant.
+
+Cette résiliation de plein droit prend effet quinze (15) jours calendaires après l'envoi, par la Partie à l'initiative de
+la résiliation, d'une Lettre Recommandée avec Avis de Réception à l'autre Partie.
+
+
+Enedis-FOR-RES_17E                                                                                           Page : 31/33
+Version 7                                                                                                    01/01/2025
+       Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                   Production de puissance comprise entre 36 et 250 kVA
+                                                                    Conditions Générales
+        10.6.2. Effets de la résiliation
+La résiliation de la Convention de Raccordement entraîne la suppression du raccordement de l’installation de
+production aux frais du Demandeur en l’absence de la signature par les deux Parties d’une nouvelle Convention
+de Raccordement l’annulant et le remplaçant.
+
+En cas de résiliation et sans préjudice de dommages et intérêts, le Demandeur doit régler l’intégralité des
+prestations effectuées par ou pour le compte d’Enedis et des engagements financiers non remboursables pris
+auprès des entreprises agissant pour son compte. Toutefois, si le montant de ceux-ci est inférieur à l’acompte
+mentionné dans les Conditions Particulières de la Convention de Raccordement, ce dernier restera acquis à
+Enedis. Si ce montant est supérieur à l’acompte mentionné dans les Conditions Particulières de la Convention
+de Raccordement ce dernier viendra en déduction du montant des prestations réellement effectuées et mise à
+la charge du Demandeur en application des dispositions du présent article.
+En cas de mise en œuvre de l’article L342-2 du Code de l’énergie, en application de l’article 5.7.4 du Contrat de
+Mandat, en cas de résiliation de la Convention de Raccordement pour quelque raison que ce soit le Demandeur
+perd ses droits dans la file d’attente.
+
+
+   10.7. Confidentialité
+Les Parties s’engagent à respecter, notamment dans les conditions du décret n°2001-630 du 16 juillet 2001
+modifié relatif à la confidentialité des informations détenues par les gestionnaires des Réseaux Publics de
+Transport ou de Distribution d’électricité, la plus stricte confidentialité des informations d’ordre économique,
+commercial, industriel, financier ou technique, dont la communication est de nature à porter atteinte aux règles
+de concurrence libre et loyale et de non-discrimination et dont elles ont connaissance par quelque moyen que
+ce soit à l’occasion de l’exécution de la Convention de Raccordement.
+
+La liste des informations dont la confidentialité doit être préservée en application de l’article L111-73 du Code de
+l’énergie et fixée par l’article 1er du décret susvisé.
+
+En outre, chaque Partie détermine, par tout moyen à sa convenance, les autres informations, de tout type et sur
+tout support, qu’elle considère comme confidentielles.
+
+Pour les informations non visées par le décret susvisé, et dès lors qu’elles n’ont pas fait l’objet d’un engagement
+de confidentialité tel que prévu à l’alinéa précédent, les Parties s’autorisent à communiquer à des tiers ces
+informations si cette communication est nécessaire à l’exécution de la Convention de Raccordement.
+
+La Partie destinataire d’une information confidentielle ne peut l’utiliser que dans le cadre de l’exécution de la
+Convention de Raccordement et ne peut la communiquer à des tiers sans l’accord préalable et écrit de l’autre
+Partie, et sous réserve que ces tiers prennent les mêmes engagements de confidentialité. La Partie destinataire
+d’une information confidentielle s’engage à prendre toutes les mesures utiles pour faire respecter la présente
+obligation de confidentialité par son personnel. Elle prend, en outre, toutes dispositions pratiques pour assurer
+la protection physique de ces informations, notamment lors de l'archivage de celles-ci.
+
+Chaque Partie notifie, dans les plus brefs délais, à l’autre Partie toute violation des obligations découlant du
+présent article.
+
+Les obligations résultant du présent article ne s’appliquent pas :
+— si la Partie destinataire de l’information apporte la preuve que celle-ci, au moment de sa communication,
+  était déjà accessible au public ;
+— si l’information est sollicitée par une autorité administrative (notamment le Ministre chargé de l’électricité,
+  l'Ingénieur en chef chargé du contrôle, la Commission de Régulation de l’Energie, le Conseil de la
+  concurrence) dans le cadre de l’exercice de leurs missions.
+
+De même, l'obligation de confidentialité ne trouve pas à s’appliquer si la Partie destinataire apporte la preuve
+que, depuis sa communication, cette information a été reçue par elle, d’un tiers, licitement ou est devenue
+accessible au public.
+
+Enedis-FOR-RES_17E                                                                                      Page : 32/33
+Version 7                                                                                                01/01/2025
+       Convention de raccordement au Réseau Public de Distribution BT d’une Installation de
+                                   Production de puissance comprise entre 36 et 250 kVA
+                                                                    Conditions Générales
+
+Les Parties s’engagent à respecter la présente clause de confidentialité pendant toute la durée de la Convention
+de Raccordement et pendant une période de trois années suivant l’expiration, la caducité ou la résiliation de
+celle-ci.
+
+
+   10.8. Contestations
+Dans le cas de contestation relative à l’interprétation ou à l’exécution des dispositions de la Convention de
+Raccordement pendant la durée de celle-ci ou lors de sa résiliation, les Parties s’engagent à se rencontrer et à
+mettre en œuvre tous les moyens pour résoudre cette contestation.
+
+A cet effet, la Partie demanderesse adresse à l’autre Partie, par Lettre Recommandée avec Avis de Réception,
+une notification précisant :
+— la référence de la Convention de Raccordement (titre et date de signature),
+— l’objet de la contestation,
+— la proposition d’une rencontre en vue de régler à l’amiable le litige.
+
+Les Parties conviennent expressément que le défaut d’accord, à l’issue d’un délai de trente jours calendaires à
+compter du début des négociations, constaté par la signature conjointe d’un procès-verbal de réunion y faisant
+référence, vaut échec desdites négociations.
+
+A défaut de règlement amiable du litige, il pourra être soumis à l’appréciation des juridictions compétentes.
+
+Conformément à l'article L 134-19 du Code de l’énergie, en cas de différend entre les gestionnaires et utilisateurs
+du Réseau Public de Distribution lié à l'accès au dit réseau ou à son utilisation, notamment en cas de refus
+d'accès aux Réseau Public de Distribution ou de désaccord sur la conclusion, l'interprétation ou l'exécution des
+contrats, le comité de règlement de différends et des sanctions de la Commission de Régulation de l'énergie
+peut être saisi par l'une ou l'autre des Parties.
+En cas de recours à l’article L342-2 du Code de l’énergie, les litiges relatifs à l’exécution du Contrat de Mandat
+s’agissant des Travaux Mandataires sont régis par les dispositions de l’article 5.2 du Contrat de Mandat.
+
+
+   10.9. Entrée en vigueur - Durée
+La Convention de Raccordement entre en vigueur à la date de sa signature des Conditions Particulières de la
+Convention de Raccordement par les Parties. Elle prend fin lorsque les Ouvrages de Raccordement de
+l’installation de production sont dé-raccordés du Réseau Public de Distribution.
+
+En cas de dé-raccordement, les Parties déterminent d'un commun accord la date de réalisation des travaux
+nécessaires. Enedis indique au Demandeur, par lettre recommandée avec demande d’avis de réception, la durée
+des travaux et leur coût, étant entendu que tous les frais en résultant sont à la charge du Demandeur,
+conformément au Catalogue des Prestations d’Enedis. La date d'effet de la suppression effective du
+raccordement du Site est le jour de la fin des travaux susvisés ; elle est indiquée à l’issue des travaux par Enedis
+au Demandeur par Lettre Recommandée avec Avis de Réception. Avant cette date, le Point De Livraison est
+réputé sous tension. En conséquence le Demandeur est entièrement responsable de tout dommage susceptible
+d’être causé par ses installations de production, nonobstant la résiliation de la Convention de Raccordement.
+
+
+   10.10. Droit applicable – Langue de la Convention de Raccordement
+La Convention de Raccordement est régie par le droit français.
+
+Nonobstant toutes traductions qui peuvent en être faites, signées ou non, la langue faisant foi pour
+l’interprétation ou l’exécution de la Convention de Raccordement est le français.
+
+
+
+
+Enedis-FOR-RES_17E                                                                                      Page : 33/33
+Version 7                                                                                                01/01/2025
+

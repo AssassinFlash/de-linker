@@ -1,0 +1,227 @@
+[
+  {
+    "url": "https://www.knmi.nl/nederland-nu/klimatologie/daggegevens",
+    "crawl": {
+      "loadedUrl": "https://www.knmi.nl/nederland-nu/klimatologie/daggegevens",
+      "loadedTime": "2026-10-22T10:55:17.264Z",
+      "referrerUrl": "https://www.knmi.nl/nederland-nu/klimatologie/daggegevens",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 31906,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.knmi.nl/nederland-nu/klimatologie/daggegevens",
+      "title": "KNMI - Daggegevens van het weer in Nederland",
+      "description": "",
+      "author": "",
+      "keywords": null,
+      "languageCode": "nl",
+      "openGraph": [
+        {
+          "property": "og:site_name",
+          "content": "knmi.nl"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        },
+        {
+          "property": "og:title",
+          "content": "Daggegevens van het weer in Nederland"
+        },
+        {
+          "property": "og:url",
+          "content": "https://www.knmi.nl/nederland-nu/klimatologie/daggegevens"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "max-age=120, public",
+        "content-length": "31906",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 10:55:17 GMT",
+        "etag": "W/\"a142986235d0dfc6b75975644dabc504\"",
+        "link": "</assets/application-ee09b9ede8d70f0a4f77eb0935533c88004242f3fc0fb32401f3c9f416f18c64.css>; rel=preload; as=style; nopush,</assets/application-6a04d7793de7eadd33c25ec70ef546324bda6ac6178a211fe356f8228a1a8428.js>; rel=preload; as=script; nopush",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=63072000; includeSubDomains",
+        "vary": "Accept-Encoding",
+        "via": "1.1 692c5d47d454ff60e7f0753e5a3f0af6.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "4DEnwpZ_bMW8D44He68u6jKHIc3g9xyZCXpcAr8KQtgCc5LldXhy5w==",
+        "x-amz-cf-pop": "LAX54-P11",
+        "x-cache": "Miss from cloudfront",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-permitted-cross-domain-policies": "none",
+        "x-request-id": "cab72a13-febd-46b6-83e9-522ee7598369",
+        "x-runtime": "0.220428",
+        "x-xss-protection": "0"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Daggegevens van het weer in Nederland\nDownload\nIn onderstaande files zijn de gegevens van temperatuur, zon, bewolking en zicht, luchtdruk, wind en neerslag per station gecombineerd.\nOpmerking: De temperatuurreeksen van de stations De Kooy, Eelde, De Bilt, Vlissingen en Beek zijn gehomogeniseerd. De reeksen van andere stations zijn niet gehomogeniseerd. Door stationsverplaatsingen en veranderingen in waarneemmethodieken zijn die tijdreeksen van dagwaarden mogelijk inhomogeen. Dat betekent dat deze reeksen niet geschikt zijn voor trendanalyse. Voor studies naar klimaatverandering verwijzen we naar de gehomogeniseerde reeksen of de Centraal Nederland Temperatuur. Trendanalyses worden gepresenteerd in het KNMI-23 gebruikersrapport.\nHet KNMI voert op werkdagen een controle uit op deze gegevens afkomstig uit het meetnet van het KNMI. De gegevens worden op kwaliteit gecontroleerd en eventueel aangepast. Zoveel als mogelijk worden ook ontbrekende waarden aangevuld. Hierdoor kunnen verschillen ontstaan met de ongevalideerde actuele 10-minuut gegevens uit het meetnet.\nKNMI Dataverkenner\nVia dataverkenner.knmi.nl kunnen meetgegevens van een aantal variabelen direct worden ingezien en gevisualiseerd. Dit nieuwe interactieve platform wordt in 2026 stap voor stap uitgebreid en zal deze webpagina uiteindelijk vervangen.\nScroll onderstaande tabel om meer te zien \nNummer Station Vanaf Tot en met \n\tAlle stations, lopend jaar\t20260101\t20261020\t\n\tAlle stations, lopende maand\t20261001\t20261020\t\n\tAlle stations, voorlaatste maand\t20260901\t20260930\t\n\tInteractieve selectie\t\t\t\n209\tIJmond \t20010130\t20261020\t\n210\tValkenburg Vk \t19510101\t20160504\t\n215\tVoorschoten \t20140715\t20261020\t\n225\tIJmuiden \t19710101\t20261020\t\n229\tTexelhors \t20171213\t20261020\t\n235\tDe Kooy Airport\t19060101\t20261020\t\n240\tSchiphol Airport \t19510101\t20261020\t\n242\tVlieland Vliehors \t19960101\t20261020\t\n248\tWijdenes \t19940715\t20261020\t\n249\tBerkhout \t19990312\t20261020\t\n251\tHoorn Terschelling \t19940526\t20261020\t\n257\tWijk aan Zee\t20010430\t20261020\t\n258\tHoutribdijk \t20060201\t20261020\t\n260\tDe Bilt \t19010101\t20261020\t\n265\tSoesterberg \t19510901\t20081116\t\n267\tStavoren \t19900618\t20261020\t\n269\tLelystad Airport \t19900117\t20261020\t\n270\tLeeuwarden Airport \t19510101\t20261020\t\n273\tMarknesse \t19890101\t20261020\t\n275\tDeelen Airport \t19510101\t20261020\t\n277\tLauwersoog \t19910318\t20261020\t\n278\tHeino \t19910101\t20261020\t\n279\tHoogeveen \t19890926\t20261020\t\n280\tGroningen Airport Eelde\t19060101\t20261020\t\n283\tHupsel \t19891016\t20261020\t\n285\tHuibertgat \t19810101\t20261020\t\n286\tNieuw Beerta \t19900117\t20261020\t\n290\tTwenthe Airport \t19510101\t20261020\t\n308\tCadzand \t19720101\t20261020\t\n310\tVlissingen \t19060101\t20261020\t\n311\tHoofdplaat \t19970131\t20160201\t\n312\tOosterschelde \t19820101\t20261020\t\n313\tVlakte van De Raan\t19970131\t20261020\t\n315\tHansweert \t19970131\t20261020\t\n316\tSchaar \t19830101\t20261020\t\n319\tWestdorpe \t19910625\t20261020\t\n323\tWilhelminadorp \t20171215\t20261020\t\n324\tStavenisse \t19970930\t20261020\t\n330\tHoek van Holland\t19710101\t20261020\t\n331\tTholen \t19810101\t20261020\t\n340\tWoensdrecht Airport \t19930401\t20261020\t\n343\tRotterdam Geulhaven \t19910101\t20261020\t\n344\tRotterdam Airport \t19561001\t20261020\t\n348\tCabauw \t19860301\t20261020\t\n350\tGilze-Rijen Airport \t19510101\t20261020\t\n356\tHerwijnen \t19890926\t20261020\t\n370\tEindhoven Airport \t19510101\t20261020\t\n375\tVolkel \t19510201\t20261020\t\n377\tEll \t19990501\t20261020\t\n380\tMaastricht Airport \t19060101\t20261020\t\n391\tArcen \t19900618\t20250930\t\n392\tHorst \t20250123\t20261020",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Daggegevens van het weer in Nederland\n\n## Download\n\nIn onderstaande files zijn de gegevens van temperatuur, zon, bewolking en zicht, luchtdruk, wind en neerslag per station gecombineerd.\n\nOpmerking: De temperatuurreeksen van de stations De Kooy, Eelde, De Bilt, Vlissingen en Beek zijn [gehomogeniseerd](http://www.knmi.nl/kennis-en-datacentrum/achtergrond/gehomogeniseerde-tijdreeksen-dagwaarden). De reeksen van andere stations zijn niet gehomogeniseerd. Door stationsverplaatsingen en veranderingen in waarneemmethodieken zijn die tijdreeksen van dagwaarden mogelijk inhomogeen. Dat betekent dat deze reeksen niet geschikt zijn voor trendanalyse. Voor studies naar klimaatverandering verwijzen we naar de gehomogeniseerde reeksen of de [Centraal Nederland Temperatuur](http://www.knmi.nl/kennis-en-datacentrum/achtergrond/centraal-nederland-temperatuur-cnt). Trendanalyses worden gepresenteerd in het [KNMI-23 gebruikersrapport](https://www.knmi.nl/kennis-en-datacentrum/achtergrond/knmi-23-klimaatscenario-s).\n\nHet KNMI voert op werkdagen een controle uit op deze gegevens afkomstig uit het meetnet van het KNMI. De gegevens worden op kwaliteit gecontroleerd en eventueel aangepast. Zoveel als mogelijk worden ook ontbrekende waarden aangevuld. Hierdoor kunnen verschillen ontstaan met de ongevalideerde actuele 10-minuut gegevens uit het meetnet.\n\n## KNMI Dataverkenner\n\nVia [dataverkenner.knmi.nl](https://dataverkenner.knmi.nl/) kunnen meetgegevens van een aantal variabelen direct worden ingezien en gevisualiseerd. Dit nieuwe interactieve platform wordt in 2026 stap voor stap uitgebreid en zal deze webpagina uiteindelijk vervangen.\n\nScroll onderstaande tabel om meer te zien\n\n| Nummer | Station | Vanaf | Tot en met |\n| --- | --- | --- | --- |\n|     | [Alle stations, lopend jaar](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/jaar.zip) | 20260101 | 20261020 |\n|     | [Alle stations, lopende maand](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/dezemaand.zip) | 20261001 | 20261020 |\n|     | [Alle stations, voorlaatste maand](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/vorigemaand.zip) | 20260901 | 20260930 |\n|     | [Interactieve selectie](https://daggegevens.knmi.nl/klimatologie/daggegevens) |     |     |\n| 209 | [IJmond](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_209.zip) | 20010130 | 20261020 |\n| 210 | [Valkenburg Vk](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_210.zip) | 19510101 | 20160504 |\n| 215 | [Voorschoten](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_215.zip) | 20140715 | 20261020 |\n| 225 | [IJmuiden](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_225.zip) | 19710101 | 20261020 |\n| 229 | [Texelhors](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_229.zip) | 20171213 | 20261020 |\n| 235 | [De Kooy Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_235.zip) | 19060101 | 20261020 |\n| 240 | [Schiphol Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_240.zip) | 19510101 | 20261020 |\n| 242 | [Vlieland Vliehors](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_242.zip) | 19960101 | 20261020 |\n| 248 | [Wijdenes](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_248.zip) | 19940715 | 20261020 |\n| 249 | [Berkhout](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_249.zip) | 19990312 | 20261020 |\n| 251 | [Hoorn Terschelling](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_251.zip) | 19940526 | 20261020 |\n| 257 | [Wijk aan Zee](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_257.zip) | 20010430 | 20261020 |\n| 258 | [Houtribdijk](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_258.zip) | 20060201 | 20261020 |\n| 260 | [De Bilt](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_260.zip) | 19010101 | 20261020 |\n| 265 | [Soesterberg](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_265.zip) | 19510901 | 20081116 |\n| 267 | [Stavoren](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_267.zip) | 19900618 | 20261020 |\n| 269 | [Lelystad Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_269.zip) | 19900117 | 20261020 |\n| 270 | [Leeuwarden Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_270.zip) | 19510101 | 20261020 |\n| 273 | [Marknesse](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_273.zip) | 19890101 | 20261020 |\n| 275 | [Deelen Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_275.zip) | 19510101 | 20261020 |\n| 277 | [Lauwersoog](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_277.zip) | 19910318 | 20261020 |\n| 278 | [Heino](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_278.zip) | 19910101 | 20261020 |\n| 279 | [Hoogeveen](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_279.zip) | 19890926 | 20261020 |\n| 280 | [Groningen Airport Eelde](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_280.zip) | 19060101 | 20261020 |\n| 283 | [Hupsel](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_283.zip) | 19891016 | 20261020 |\n| 285 | [Huibertgat](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_285.zip) | 19810101 | 20261020 |\n| 286 | [Nieuw Beerta](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_286.zip) | 19900117 | 20261020 |\n| 290 | [Twenthe Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_290.zip) | 19510101 | 20261020 |\n| 308 | [Cadzand](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_308.zip) | 19720101 | 20261020 |\n| 310 | [Vlissingen](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_310.zip) | 19060101 | 20261020 |\n| 311 | [Hoofdplaat](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_311.zip) | 19970131 | 20160201 |\n| 312 | [Oosterschelde](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_312.zip) | 19820101 | 20261020 |\n| 313 | [Vlakte van De Raan](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_313.zip) | 19970131 | 20261020 |\n| 315 | [Hansweert](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_315.zip) | 19970131 | 20261020 |\n| 316 | [Schaar](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_316.zip) | 19830101 | 20261020 |\n| 319 | [Westdorpe](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_319.zip) | 19910625 | 20261020 |\n| 323 | [Wilhelminadorp](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_323.zip) | 20171215 | 20261020 |\n| 324 | [Stavenisse](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_324.zip) | 19970930 | 20261020 |\n| 330 | [Hoek van Holland](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_330.zip) | 19710101 | 20261020 |\n| 331 | [Tholen](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_331.zip) | 19810101 | 20261020 |\n| 340 | [Woensdrecht Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_340.zip) | 19930401 | 20261020 |\n| 343 | [Rotterdam Geulhaven](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_343.zip) | 19910101 | 20261020 |\n| 344 | [Rotterdam Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_344.zip) | 19561001 | 20261020 |\n| 348 | [Cabauw](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_348.zip) | 19860301 | 20261020 |\n| 350 | [Gilze-Rijen Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_350.zip) | 19510101 | 20261020 |\n| 356 | [Herwijnen](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_356.zip) | 19890926 | 20261020 |\n| 370 | [Eindhoven Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_370.zip) | 19510101 | 20261020 |\n| 375 | [Volkel](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_375.zip) | 19510201 | 20261020 |\n| 377 | [Ell](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_377.zip) | 19990501 | 20261020 |\n| 380 | [Maastricht Airport](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_380.zip) | 19060101 | 20261020 |\n| 391 | [Arcen](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_391.zip) | 19900618 | 20250930 |\n| 392 | [Horst](https://cdn.knmi.nl/knmi/map/page/klimatologie/gegevens/daggegevens/etmgeg_392.zip) | 20250123 | 20261020 |\n|     |     |     |     |",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://meteo.data.gouv.fr/datasets/",
+    "crawl": {
+      "loadedUrl": "https://meteo.data.gouv.fr/datasets/",
+      "loadedTime": "2026-10-22T10:55:19.061Z",
+      "referrerUrl": "https://meteo.data.gouv.fr/datasets/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 570,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://meteo.data.gouv.fr/datasets/",
+      "title": "meteo.data.gouv.fr",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "fr",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "meteo.data.gouv.fr"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-encoding": "gzip",
+        "content-type": "text/html",
+        "date": "Thu, 22 Oct 2026 10:55:18 GMT",
+        "etag": "W/\"6a7c8cb6-23e\"",
+        "last-modified": "Wed, 12 Aug 2026 15:09:42 GMT",
+        "server": "nginx/1.30.2",
+        "strict-transport-security": "max-age=86400; includeSubDomains; preload;"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "meteo.data.gouv.fr",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/",
+    "crawl": {
+      "loadedUrl": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/",
+      "loadedTime": "2026-10-22T10:55:19.694Z",
+      "referrerUrl": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 930,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/",
+      "title": "Index of /climate_environment/CDC/observations_germany/climate/daily/kl/",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": null,
+      "jsonLd": null,
+      "headers": {
+        "content-type": "text/html",
+        "date": "Thu, 22 Oct 2026 10:55:19 GMT",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31536000",
+        "x-frame-options": "SAMEORIGIN"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Index of /climate_environment/CDC/observations_germany/climate/daily/kl/\n../\nhistorical/                                        22-Oct-2026 09:05:08                   -\nrecent/                                            22-Oct-2026 10:25:07                   -\ntimeseries_overview/                               21-Aug-2026 15:35:10                   -\nBESCHREIBUNG_obsgermany-climate-daily-kl_de.pdf    10-Jun-2024 17:30:04               34789\nDESCRIPTION_obsgermany-climate-daily-kl_en.pdf     10-Jun-2024 17:30:04               32920",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Index of /climate\\_environment/CDC/observations\\_germany/climate/daily/kl/\n\n* * *\n\n[../](https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/)\n[historical/](https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/historical/)                                        22-Oct-2026 09:05:08                   -\n[recent/](https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/recent/)                                            22-Oct-2026 10:25:07                   -\n[timeseries\\_overview/](https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/timeseries_overview/)                               21-Aug-2026 15:35:10                   -\n[BESCHREIBUNG\\_obsgermany-climate-daily-kl\\_de.pdf](https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/BESCHREIBUNG_obsgermany-climate-daily-kl_de.pdf)    10-Jun-2024 17:30:04               34789\n[DESCRIPTION\\_obsgermany-climate-daily-kl\\_en.pdf](https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/DESCRIPTION_obsgermany-climate-daily-kl_en.pdf)     10-Jun-2024 17:30:04               32920\n\n* * *",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung",
+    "crawl": {
+      "loadedUrl": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung",
+      "loadedTime": "2026-10-22T10:55:20.539Z",
+      "referrerUrl": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 11629,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung",
+      "title": "Technische Anschlussregeln für die Niederspannung",
+      "description": " VDE FNN definiert Anforderungen für den Anschluss von Kundenanlagen am Niederspannungsnetz, z.B. Speicher oder Ladesäulen für Elektromobilität.\n",
+      "author": null,
+      "keywords": null,
+      "languageCode": "de",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Niederspannung"
+        },
+        {
+          "property": "twitter:title",
+          "content": "Niederspannung"
+        },
+        {
+          "property": "og:description",
+          "content": "Die Bedeutung der Niederspannungsebene für die Energiewende nimmt immer weiter zu. Wesentliche Treiber sind eine Vielzahl neuer Erzeugungsanlagen und Verbrauchseinrichtungen in den Sektoren Strom (PV-Anlagen, Speicher), Wärme (Wärmepumpen) und Verkehr (Ladeeinrichtungen für Elektrofahrzeuge)."
+        },
+        {
+          "property": "og:image",
+          "content": "https://www.vde.com/image/2198174/stage_md/1023/512/1/icon-tar-ns.jpg"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://www.vde.com/image/2198174/stage_md/1023/512/1/icon-tar-ns.jpg"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1023"
+        },
+        {
+          "property": "og:image:height",
+          "content": "512"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-encoding": "gzip",
+        "content-language": "de-DE",
+        "content-length": "11629",
+        "content-security-policy": "frame-ancestors 'self' http://*.vde.com;",
+        "content-type": "text/html;charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 10:55:19 GMT",
+        "expires": "0",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "strict-transport-security": "max-age=31536000; includeSubDomains, max-age=31536000 ; includeSubDomains",
+        "vary": "Origin,Accept-Encoding,User-Agent,Access-Control-Request-Method,Access-Control-Request-Headers",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Technische Anschlussregeln für die Niederspannung\nVDE FNN Hinweise bieten konkrete Hilfe für Netzbetreiber, Anlagenbetreiber, Hersteller und andere Fachkreise, die am Stromnetz arbeiten.\nEinbau Messsysteme in Bestandsanlagen\nIm fortschreitenden Einbau von modernen Messeinrichtungen (mME) und intelligenten Messsystemen (iMsys) müssen Zählerplätze älterer Bauart Mindestanforderungen erfüllen. Der VDE FNN Hinweis „Einbau von Messsystemen in Bestandsanlagen“ formuliert diese und gibt konkrete Umsetzungsbeispiele für elektronische Haushaltszähler – (eHZ) und Dreipunkt-Technik (3.HZ).\nWeitere Informationen\nZählerplätze in Bestandsanlagen\nEine Kundenanlage durch neue Erzeugungs- und Verbrauchseinrichtungen zu ändern oder zu erweitern, hat Auswirkungen auf bestehende Zählerplätze. Eindeutige technische Anforderungen für Änderungen und Erweiterungen sorgen für Klarheit bei der Instandsetzung von Bestandszählerplätzen nach dem Stand der Technik. Der VDE FNN Hinweis „Zählerplätze in Bestandsanlagen“ beschreibt, wie notwendige Ertüchtigungen von Bestandsanlagen durchgeführt werden können, so dass sie ein zur TAR Niederspannung vergleichbares Schutz- und Sicherheitsniveau erreichen.\nWeitere Informationen\nAnschluss und Betrieb von Erzeugungsanlagen, Speichern und Verbrauchseinrichtungen am Niederspannungsnetz\nDer Hinweis zeigt auf, wie die bestehenden Rahmenbedingungen, insbesondere aus dem Erneuerbare-Energien-Gesetz (EEG) und Kraft-Wärme-Kopplungs-Gesetz (KWKG), wirtschaftlich und effektiv umgesetzt werden können. Dabei stellt der Hinweis standardisierte Anschluss- und Betriebskonzepte bereit und gibt Hinweise zur technischen Umsetzung. Wesentlicher Vorteil: Konzepte können so an die individuellen Gegebenheiten der Kundenanlage angepasst und in der Praxis auf eine Vielzahl von Anwendungsfällen übertragen werden.\nDieser Hinweis ergänzt die TAR Niederspannung (VDE-AR-N 4100) und TAR Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105). \nDieser Hinweis ersetzt den Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ Version 7.1 (siehe nachfolgenden Absatz).\nKonzepte, die ausschließlich im Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ Version 7.1 aufgeführt sind und nicht im Hinweis \"Anschluss und Betrieb von Erzeugungsanlagen, Speichern und Verbrauchseinrichtungen am Niederspannungsnetz\" aufgenommen wurden, zum Beispiel Mieterstrommodelle, dürfen weiterhin angewendet werden.\nWeitere Informationen\nAnschluss und Betrieb von Speichern am Niederspannungsnetz\nDer VDE FNN Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ dient der technischen Umsetzung des Anschlusses und Betriebs von Speichern am Niederspannungsnetz. Daneben definiert der Hinweis weiterführende Anforderungen an Speicher und deren Weiterentwicklung.\nDieser Hinweis wurde in den Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ Version 7.1 überführt (siehe vorherigen Absatz). Allerdings ist der Hinweis VDE FNN Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ noch für Konzepte anwendbar, die ausschließlich in diesem Hinweis aufgeführt sind und nicht im Hinweis \"Anschluss und Betrieb von Erzeugungsanlagen, Speichern und Verbrauchseinrichtungen am Niederspannungsnetz\" aufgenommen wurden, zum Beispiel Mieterstrommodelle.\nWeitere Informationen\nNELEV\nFür den Netzanschluss von Erzeugungsanlagen regelt die Verordnung zum Nachweis von elektrotechnischen Eigenschaften von Energieanlagen (Elektronische-Eigenschaften-Nachweis-Verordnung – NELEV) den Nachweis der Einhaltung der allgemeinen technischen Mindestanforderungen. VDE FNN hat für alle betroffenen Stakeholder, ob Anlagenbetreiber, Zertifizierer oder Netzbetreiber, eine Anwendungshilfe für den konkreten Umgang mit den kommenden Verordnungen für die Vereinfachung erstellt. Mit dem Hinweis „​​Vereinfachter Anschluss und Nachweis von Erzeugungsanlagen und Speichern mit Netzanschluss in der Mittel- und Hochspannung​“ können sich Anwender frühzeitig auf die künftigen Anschlussprozesse vorbereiten. \nWeitere Informationen\nFolgende Hinweise wurden weiterentwickelt und in die TAR Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105:2026-03) integriert. Daher sind diese Hinweise zurückgezogen:\nErrichtung mehrerer Netzanschlüsse\nMesswerte im Vorzählerbereich\nAnforderungen für den symmetrischen Anschluss und Betrieb\nZählerplätze mit halbindirekten Messungen bis 1000 A in der Niederspannung (Wandleranlagen)",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Technische Anschlussregeln für die Niederspannung\n\nVDE FNN Hinweise bieten konkrete Hilfe für Netzbetreiber, Anlagenbetreiber, Hersteller und andere Fachkreise, die am Stromnetz arbeiten.\n\n**Einbau Messsysteme in Bestandsanlagen**  \nIm fortschreitenden Einbau von modernen Messeinrichtungen (mME) und intelligenten Messsystemen (iMsys) müssen Zählerplätze älterer Bauart Mindestanforderungen erfüllen. Der VDE FNN Hinweis „Einbau von Messsystemen in Bestandsanlagen“ formuliert diese und gibt konkrete Umsetzungsbeispiele für elektronische Haushaltszähler – (eHZ) und Dreipunkt-Technik (3.HZ).\n\n[Weitere Informationen](https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/tar-niederspannung-vde-ar-n-4100/messsysteme-in-bestandsanlagen)\n\n**Zählerplätze in Bestandsanlagen**  \nEine Kundenanlage durch neue Erzeugungs- und Verbrauchseinrichtungen zu ändern oder zu erweitern, hat Auswirkungen auf bestehende Zählerplätze. Eindeutige technische Anforderungen für Änderungen und Erweiterungen sorgen für Klarheit bei der Instandsetzung von Bestandszählerplätzen nach dem Stand der Technik. Der [VDE FNN Hinweis „Zählerplätze in Bestandsanlagen“](https://www.vde.com/resource/blob/2308614/43b92f419c25661679ea337686871b5d/vde-fnn-hinweis-zaehlerplaetze-in-bestandsanlagen-data.pdf) beschreibt, wie notwendige Ertüchtigungen von Bestandsanlagen durchgeführt werden können, so dass sie ein zur TAR Niederspannung vergleichbares Schutz- und Sicherheitsniveau erreichen.\n\n[Weitere Informationen](https://www.vde.com/de/fnn/aktuelles/2023-11-30-zaehlerplaetze-in-bestandsanlagen)\n\n**Anschluss und Betrieb von Erzeugungsanlagen, Speichern und Verbrauchseinrichtungen am Niederspannungsnetz**\n\nDer [Hinweis](https://www.vde.com/resource/blob/2434724/02833b45ff85c9b9beb3a37073755444/vde-fnn-hinweis-anschluss-betrieb-niederspannung-data.pdf) zeigt auf, wie die bestehenden Rahmenbedingungen, insbesondere aus dem Erneuerbare-Energien-Gesetz (EEG) und Kraft-Wärme-Kopplungs-Gesetz (KWKG), wirtschaftlich und effektiv umgesetzt werden können. Dabei stellt der Hinweis standardisierte Anschluss- und Betriebskonzepte bereit und gibt Hinweise zur technischen Umsetzung. Wesentlicher Vorteil: Konzepte können so an die individuellen Gegebenheiten der Kundenanlage angepasst und in der Praxis auf eine Vielzahl von Anwendungsfällen übertragen werden.\n\nDieser Hinweis ergänzt die [TAR Niederspannung (VDE-AR-N 4100)](https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/tar-niederspannung-vde-ar-n-4100) und [TAR Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105).](https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/erzeugungsanlagen-am-niederspannungsnetz-vde-ar-n-4105-2018)  \n\nDieser Hinweis ersetzt den Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ Version 7.1 (siehe nachfolgenden Absatz).\n\nKonzepte, die ausschließlich im Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ Version 7.1 aufgeführt sind und nicht im Hinweis \"Anschluss und Betrieb von Erzeugungsanlagen, Speichern und Verbrauchseinrichtungen am Niederspannungsnetz\" aufgenommen wurden, zum Beispiel Mieterstrommodelle, dürfen weiterhin angewendet werden.\n\n[Weitere Informationen](https://www.vde.com/de/fnn/aktuelles/abstimmungsaufwand-reduzieren)\n\n**Anschluss und Betrieb von Speichern am Niederspannungsnetz**  \nDer [VDE FNN Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“](https://www.vde.com/resource/blob/2322542/8c4409de40eb1e69555cfc7e075fd781/vde-fnn-hinweis--anschluss-und-betrieb-von-speichern-am-niederspannungsnetz---2024--data.pdf) dient der technischen Umsetzung des Anschlusses und Betriebs von Speichern am Niederspannungsnetz. Daneben definiert der Hinweis weiterführende Anforderungen an Speicher und deren Weiterentwicklung.\n\nDieser Hinweis wurde in den Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“ Version 7.1 überführt (siehe vorherigen Absatz). Allerdings ist der Hinweis [VDE FNN Hinweis „Anschluss und Betrieb von Speichern am Niederspannungsnetz“](https://www.vde.com/resource/blob/2322542/8c4409de40eb1e69555cfc7e075fd781/vde-fnn-hinweis--anschluss-und-betrieb-von-speichern-am-niederspannungsnetz---2024--data.pdf) noch für Konzepte anwendbar, die ausschließlich in diesem Hinweis aufgeführt sind und nicht im Hinweis \"Anschluss und Betrieb von Erzeugungsanlagen, Speichern und Verbrauchseinrichtungen am Niederspannungsnetz\" aufgenommen wurden, zum Beispiel Mieterstrommodelle.\n\n[Weitere Informationen](https://www.vde.com/de/fnn/themen/flexibilitaeten/speicher)\n\n**NELEV**  \nFür den Netzanschluss von Erzeugungsanlagen regelt die Verordnung zum Nachweis von elektrotechnischen Eigenschaften von Energieanlagen (Elektronische-Eigenschaften-Nachweis-Verordnung – NELEV) den Nachweis der Einhaltung der allgemeinen technischen Mindestanforderungen. VDE FNN hat für alle betroffenen Stakeholder, ob Anlagenbetreiber, Zertifizierer oder Netzbetreiber, eine Anwendungshilfe für den konkreten Umgang mit den kommenden Verordnungen für die Vereinfachung erstellt. Mit dem [Hinweis](https://www.vde.com/resource/blob/2306364/ae50ed2dfe20e6584fad16e2525565e2/nelev-hinweis-download-data.pdf) [„​​Vereinfachter Anschluss und Nachweis von Erzeugungsanlagen und Speichern mit Netzanschluss in der Mittel- und Hochspannung​“](https://www.vde.com/resource/blob/2306364/ae50ed2dfe20e6584fad16e2525565e2/nelev-hinweis-download-data.pdf) können sich Anwender frühzeitig auf die künftigen Anschlussprozesse vorbereiten. \n\n[Weitere Informationen](https://www.vde.com/de/fnn/aktuelles/vereinfachter-anschluss-und-nachweis-von-erzeugungsanlagen-in-mittel--und-hochspannung-in-kraft)\n\nFolgende Hinweise wurden weiterentwickelt und in die [TAR Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105:2026-03)](https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/erzeugungsanlagen-am-niederspannungsnetz-vde-ar-n-4105-2018) integriert. Daher sind diese Hinweise zurückgezogen:\n\n*   Errichtung mehrerer Netzanschlüsse\n*   Messwerte im Vorzählerbereich\n*   Anforderungen für den symmetrischen Anschluss und Betrieb\n*   Zählerplätze mit halbindirekten Messungen bis 1000 A in der Niederspannung (Wandleranlagen)",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  }
+]

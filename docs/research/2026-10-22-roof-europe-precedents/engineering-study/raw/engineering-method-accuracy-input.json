@@ -1,0 +1,51 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.pvsyst.com/help-pvsyst7/pvmodule_tempcoefficients.htm"
+    },
+    {
+      "url": "https://www.pvsyst.com/help-pvsyst7/pvmodule_corrtemper.htm"
+    },
+    {
+      "url": "https://pvpmc.sandia.gov/modeling-guide/2-dc-module-iv/single-diode-equivalent-circuit-models/"
+    },
+    {
+      "url": "https://manuals.sma.de/Business-Systeme-PL/en-US/14480808715.html"
+    },
+    {
+      "url": "https://github.com/3DBAG/roofer"
+    },
+    {
+      "url": "https://docs.3dbag.nl/en/schema/attributes/"
+    },
+    {
+      "url": "https://docs.3dbag.nl/en/overview/sources/"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/publicatie/rfg-compliance-verification-testing-and-simulating"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/sites/default/files/2024-03/rfg_compliance_verification_document_v2.0.pdf"
+    },
+    {
+      "url": "https://www.nen.nl/en/nen-en-50549-1-2019-a1-2023-en-317053"
+    },
+    {
+      "url": "https://www.boutique.afnor.org/en-gb/standard/nf-en-505491-a1/requirements-for-generating-plants-to-be-connected-in-parallel-with-distrib/fa202816/354222"
+    },
+    {
+      "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/data-sources-calculation-methods_en"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/pvlib/pvlib-python/main/LICENSE"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 13,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveContentTypes": "application/pdf, text/plain",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

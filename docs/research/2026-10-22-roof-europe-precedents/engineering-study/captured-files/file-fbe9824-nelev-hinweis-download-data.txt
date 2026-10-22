@@ -1,0 +1,1578 @@
+VDE FNN Hinweis
+
+
+
+
+ Vereinfachter Anschluss und Nachweis
+ von Erzeugungsanlagen und Speichern
+ mit Netzanschluss in der Mittel- und
+ Hochspannung
+
+ Anwendungshilfe zur Elektrotechnische-Eigenschaften-Nachweis-
+ Verordnung (NELEV) Novelle 2024 und zur Energieanlagen-
+ Anforderungen-Verordnung (EAAV)
+
+
+
+
+ Version 1.0
+ März 2024
+ VDE FNN Hinweis
+
+
+
+Inhalt
+1 Anwendungsbereich ............................................................................................................6
+2 Normative und sonstige Verweisungen ..............................................................................6
+3 Abkürzungen und Definitionen............................................................................................7
+    3.1 Abkürzungen ...................................................................................................................7
+    3.2 Begriffe ............................................................................................................................7
+4 Einleitung & Allgemeines.....................................................................................................9
+  4.1 Grundsätzliche Rahmenbedingungen ..............................................................................9
+    4.2 Anschlussprozess und Rahmenbedingungen der Nachweisführung nach NELEV und
+        EAAV...............................................................................................................................9
+    4.3 Technische Rahmenbedingungen nach EAAV .............................................................. 11
+          4.3.1 Erzeugungsanlagen und Speicher mit 135 kW ≤ ∑PEmax ≤ 270 kW und
+                PAV,E ≤ 270 kW an der Mittelspannung............................................................ 11
+          4.3.2 Erzeugungsanlagen und Speicher mit ∑PEmax > 270 kW und ≤ 500 kW und
+                PAV,E ≤ 270 kW an der Mittelspannung ............................................................. 12
+          4.3.3 Erzeugungsanlagen und Speicher mit ∑PEmax > 500 kW oder PAV,E > 270 kW
+                an der Mittelspannung ........................................................................................ 13
+5 Technische Anforderungen an die Planung, Inbetriebsetzung und zugehörige
+  Nachweise........................................................................................................................... 14
+    5.1 Anschluss von Erzeugungsanlagen und Speichern mit PAmax ≥ 135 kW am
+        Niederspannungsnetz des Netzbetreibers ..................................................................... 14
+    5.2 Allgemeine Anforderungen zur Umsetzung des Netzsicherheitsmanagements am Mittel-
+        und Hochspannungsnetz des Netzbetreibers ................................................................ 14
+    5.3 Anschluss von Erzeugungsanlagen und Speichern mit ∑PEmax ≤ 270 kW und PAV,E ≤
+        270 kW am Mittel- und Hochspannungsnetz des Netzbetreibers – Technische
+        Anforderungen an den NA-Schutz ................................................................................. 15
+    5.4 Anschluss von Erzeugungsanlagen und Speichern mit ∑PEmax > 270 kW bis 500 kW
+        und PAV,E ≤ 270 kW am Mittel- und Hochspannungsnetz des Netzbetreibers .............. 17
+          5.4.1 Allgemeines ....................................................................................................... 17
+          5.4.2 PAV,E -Überwachung nach VDE-AR-N 4105 ..................................................... 17
+          5.4.3 PAV,E -Überwachung nach FNN Hinweis für die Mittel- und Hochspannung ..... 18
+          5.4.4 Sonstige Besonderheiten bei Mischanlagen ....................................................... 18
+    5.5 Parameterlisten für die Inbetriebsetzung von nach EAAV privilegierten
+        Erzeugungsanlagen und Speichern ab der Mittelspannungsebene ............................... 18
+          5.5.1 Allgemeines ....................................................................................................... 18
+          5.5.2 Erzeugungsanlagen und Speicher mit Einspeiseleistung und installierter Leistung
+                bis 270 kW ......................................................................................................... 18
+          5.5.3 Erzeugungsanlagen und Speicher mit ∑PEmax zwischen 270 kW und 500 kW
+                sowie PAV,E ≤ 270 kW....................................................................................... 21
+          5.5.4 Umgang mit Einschränkungen im Einheitenzertifikat nach VDE-AR-N 4110 ...... 23
+    5.6 Nachweisdokumente für den Anschluss von nach NELEV und EAAV privilegierten
+        Erzeugungsanlagen und Speichern ab der Mittelspannungsebene ............................... 24
+          5.6.1 Allgemeines ....................................................................................................... 24
+VDE FNN Hinweis
+
+         5.6.2 Inbetriebsetzungsprotokoll E.8 der VDE-AR-N 4105 .......................................... 25
+         5.6.3 Einstellnachweis zur EAAV ................................................................................ 26
+         5.6.4 Nachweis mit Schutzprüfprotokoll für den üEKS einschließlich PAV,E -
+               Schutzeinrichtung............................................................................................... 27
+6 Besonderheiten der kumulierten Leistung nach EAAV und NELEV-
+  Änderungsverodnung ........................................................................................................ 30
+7 Zeitliche Einordnung in der Übergangsphase und Anwendungsbeispiele .................... 31
+
+
+
+
+                                                                                                      VDE FNN Hinweis
+Bildverzeichnis
+Bild 1: Vereinfachte Übersicht zu den wesentlichen Unterschieden des Anschluss- und
+          Nachweisprozesses durch die NELEV-Novelle 2024 und die EAAV zu den bisherigen
+          Prozessen nach den TAR ..................................................................................... 10
+Bild 2: Nach EAAV zulässiges MS-Anschlusskonzept mit ∑PEmax 135 kW bis 270 kW und
+          zentralem NA-Schutz ............................................................................................ 12
+Bild 3: Nach EAAV zulässiges MS-Anschlusskonzept mit ∑PEmax ≤ 500 kW, übergeordnetem
+          Entkupplungsschutz und PAV,E - Überwachung nach VDE-AR-N 4105 (PAV,E /
+          ∑PEmax 0,54) ........................................................................................................ 13
+Bild 4: Beispielhaftes Anschlusskonzept für einen Anschluss einer Mischanlage nach VDE-AR-
+          N 4110 .................................................................................................................. 14
+Bild 5: Beispielhafte Umsetzung des zentralen NA-Schutzes innerhalb der Kundenanlage.. 16
+Bild 6: Beispielhafte Umsetzung des NA-Schutzes bei mehreren Gebäuden innerhalb einer
+          Kundenanlage ∑PEmax > 135 kW. In Gebäuden mit ∑SAmax ≤ 30 kVA ist ein
+          integrierter NA-Schutz ausreichend. ...................................................................... 16
+Bild 7: Beispiel zur Ermittlung der relevanten Leistungsgrößen zur Anwendung der EAAV und
+          NELEV-Änderungsverordnung .............................................................................. 31
+Bild 8: Entscheidungshilfe zur Anwendung VDE-AR-N 4105, VDE-AR-N 4110 sowie FNN
+          Hinweis Vereinfachter Anschluss nach NELEV und EAAV .................................... 34
+
+
+
+
+Tabellenverzeichnis
+Tabelle 1: Parameterliste für Erzeugungsanlagen und Speicher mit ∑PEmax und PAV,E ≤ 270
+          kW ........................................................................................................................ 20
+Tabelle 2: Parameterliste für Erzeugungsanlagen und Speicher mit ∑PEmax >270 kW und ≤
+          500 kW sowie PAV,E ≤ 270 kW............................................................................. 22
+
+
+
+
+4                              VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+Vorwort
+Mit Inkrafttreten der am 13. September 2023 vom Bundeskabinett und am 24. November 2023 vom
+Bundesrat beschlossenen Verordnung zur Änderung der Elektrotechnische-Eigenschaften-Nachweis-
+Verordnung (NELEV-Änderungsverordnung, Bundesratsdrucksache 456/23) wird u.a. eine Ausnahme von
+der Pflicht zur Vorlage eines Anlagenzertifikats für Erzeugungsanlagen und Speicher des Typs B
+geschaffen, die eine kumulierte installierte Leistung von bis zu 500 kW hinter demselben
+Verknüpfungspunkt mit dem Netz der allgemeinen Versorgung aufweisen und eine maximale
+Einspeiseleistung      von    270 kW      erbringen.     Diese    neue    Ausnahme        gilt   unabhängig      von    der
+Spannungsebene. Auch für Anlagen im vorgenannten Sinne, die an ein Mittelspannungs- oder
+Hochspannungsnetz angeschlossen sind, sind zukünftig die Nachweise der VDE-AR-N 4105 für
+Erzeugungsanlagen am Niederspannungsnetz ausreichend. Dadurch soll das Nachweisverfahren für die
+genannten Anlagen vereinfacht werden.
+
+Ergänzend dazu gelten für diese Erzeugungsanlagen und Speicher, sowie auch schon für
+Erzeugungsanlagen und Speicher mit einer installierten Leistung ab 135 kW (kumulierte Leistung am
+Netzanschlusspunkt)          auf   Grundlage       der     Energieanlagen-Anforderungen-Verordnung                 (EAAV)
+grundsätzlich die Anforderungen der VDE-AR-N 4105 und, um der Systemstabilität Rechnung zu tragen,
+zusätzlich einzelne Anforderungen der VDE-AR-N 4110 für Anlagen mit Anschluss an der Mittelspannung.
+Bis zur Novellierung der Technischen Anschlussregeln (TARs), werden wenige essenzielle Anforderungen
+über die EAAV festgelegt.
+
+Damit der Anschluss der oben genannten Anlagen wirksam vereinfacht wird, dient dieser FNN Hinweis als
+strukturierte Anwendungshilfe für den Umgang mit der NELEV-Änderungsverordnung und der EAAV in
+Kombination mit den VDE-AR-N 4105:2018-11 und VDE-AR-N 4110:2023-09. Dieser FNN Hinweis liefert
+neben einer Einordnung seiner technischen und grundsätzlichen Rahmenbedingungen, einer Übersicht zur
+Umsetzung der technischen Anforderungen und Nachweise sowie einer zeitlichen Einordnung in der
+Übergangsphase bis zur Überarbeitung der TARs auch Anwendungsbeispiele, in denen die
+Vereinfachungen Anwendung finden.
+
+Dieser FNN Hinweis wurde auf Basis der NELEV-Änderungsverordnung in der vom Bundesrat
+beschlossenen Fassung und des Referentenentwurfes der EAAV erstellt. Beide Rechtsverordnungen
+sind im Zeitpunkt der Veröffentlichung dieses FNN Hinweises noch nicht in Kraft. Sie können erst
+nach dem sog. Solarpaket I („Gesetz zur Änderung des Erneuerbare-Energien-Gesetzes und weiterer
+energiewirtschaftsrechtlicher        Vorschriften        zur     Steigerung      des     Ausbaus        photovoltaischer
+Energieerzeugung“, Bundestagsdrucksache 20/8657) in Kraft treten. Dieses beinhaltet u.a. Anpassungen
+von Verordnungsermächtigungen, die rechtlich für das Inkrafttreten der Rechtsverordnungen zwingend
+erforderlich sind. Die Inbetriebnahme von Anlagen im oben genannten Leistungssegment auf Basis
+dieses FNN Hinweises darf erst nach Inkrafttreten der NELEV-Änderungsverordnung und der EAAV
+erfolgen.1
+
+Der FNN Hinweis erscheint bewusst vor Inkrafttreten der beiden NELEV-Änderungsverordnungen und der
+EAAV, damit sich alle Stakeholder frühzeitig auf die Änderungen und das neue Verfahren vorbereiten
+können. Der FNN Hinweis wurde von der Projektgruppe „Technische Anschlussregeln für die
+Mittelspannung“ in Zusammenarbeit mit der Projektgruppe „Erzeugungsanlagen am Niederspannungsnetz“
+erstellt, um die Inbetriebnahme betroffener Anlagen zu beschleunigen.
+
+1
+  Zudem wird darauf hingewiesen, dass unmittelbar nach der (ersten) NELEV-Änderungsverordnung noch eine Zweite NELEV-
+Änderungsverordnung in Kraft treten soll. Der einzige Gegenstand dieser Zweiten NELEV-Änderungsverordnung besteht darin, das
+in der (ersten) NELEV-Änderungsverordnung für die verpflichtende Nutzung des neuen Einheiten- und
+Komponentenzertifikateregisters vorgesehene Datum (1. September 2024) zu verschieben. Dadurch wird die eingetretene
+Verzögerung des Inkrafttretens des Zertifizierungspakets ausgeglichen und der rund achtmonatige Zeitraum ab Verkündung für
+den rechtlich unverbindlichen Probebetrieb wiederhergestellt. An den materiellen Anforderungen der NELEV-Änderungsverordnung
+ändert sich nichts.
+
+
+5                            VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+1 Anwendungsbereich
+Die Möglichkeit einer vereinfachten Nachweisführung gemäß der NELEV-Änderungsverordnung sowie die
+Anforderungen der EAAV gelten erst ab Inkrafttreten der NELEV-Änderungsverordnung und der
+EAAV. Die Inkraftsetzung beider Verordnungen soll zeitgleich und unmittelbar nach dem Inkrafttreten
+des Solarpakets I erfolgen. Dieses steht im Zeitpunkt der Veröffentlichung dieses FNN Hinweises noch
+aus.
+
+Die Verordnungen gelten sowohl für Anschlussnehmer, die bereits mit der Anlagenplanung begonnen
+haben, als auch für jene Anschlussnehmer, die erst nach dem Inkrafttreten mit der Anlagenplanung
+beginnen. Eine Nachweisführung mit Anlagenzertifikat und Konformitätserklärung nach den aktuell gültigen
+TAR ist nur dann zulässig, wenn der Anschlussnehmer dies wünscht.
+
+Nach Novellierung der TAR wird dieser Hinweis nicht mehr benötigt (voraussichtlich im Laufe des Jahres
+2025).
+
+An Erzeugungsanlagen und Speicher mit Netzanschluss am öffentlichen Niederspannungsnetz werden
+nach der neuen Rechtslage nur wenige geänderte Anforderungen gestellt. Diese sind somit nur am Rande
+Bestandteil dieses Hinweises.
+
+ANMERKUNG         Nach       NELEV-Änderungsverordnung      (NELEV-ÄndVO)        sind   zukünftig    für
+Erzeugungsanlagen und Speicher mit ∑PEmax > 500 kW oder PAV,E > 270 kW Anlagenzertifikate in der
+Niederspannung zu erbringen. Diese Verpflichtung wird allerdings erst nach Inkrafttreten der kommenden
+Novelle der VDE-AR-N 4105 gelten, da erst dann die für die Ausstellung des notwendigen
+Nachweisdokuments erforderlichen allgemein anerkannten Regeln der Technik vorliegen werden.
+
+Ziel von Festlegungen (insbesondere der Parametervorlagen) in diesem Hinweis ist es, einen
+massentauglichen Prozess für die Umsetzung der Anforderungen zu ermöglichen. Diese sind grundsätzlich
+zu verwenden, insbesondere bei Anlagen mit einer kumulierten installierten Leistung ≤ 270 kW. Projekt-
+bzw. netzanschlusspunktspezifische Vorgaben in Abstimmung zwischen Netzbetreiber und Errichter sind
+jedoch weiterhin zulässig.
+
+
+2 Normative und sonstige Verweisungen
+VDE-AR-N 4105 Erzeugungsanlagen am Niederspannungsnetz - Technische Mindestanforderungen für
+Anschluss und Parallelbetrieb von Erzeugungsanlagen am Niederspannungsnetz
+
+VDE-AR-N 4110 Technische Regeln für den Anschluss von Kundenanlagen an das Mittelspannungsnetz
+und deren Betrieb (TAR Mittelspannung)
+
+VDE-AR-N 4120 Technische Regeln für den Anschluss von Kundenanlagen an das Hochspannungsnetz
+und deren Betrieb (TAR Hochspannung)
+
+Energieanlagen-Anforderungen-Verordnung – EAAV (Referentenentwurf vom 22.08.2023), abrufbar unter
+https://technical-regulation-information-system.ec.europa.eu/de/notification/24521
+
+Verordnung zur Änderung der Elektrotechnische-Eigenschaften-Nachweis-Verordnung - NELEV-
+Änderungsverordnung      (Bundesratsdrucksache   456/23   vom    24.11.2023), abrufbar unter
+https://www.bundesrat.de/SharedDocs/drucksachen/2023/0401-0500/456-
+23.pdf?__blob=publicationFile&v=2
+
+Zweite Verordnung zur Änderung der Elektrotechnische-Eigenschaften-Nachweis-Verordnung – Zweite
+NELEV-Änderungsverordnung (Referentenentwurf vom 06.03.2024)
+
+FNN Hinweis „PAV,E - Überwachung bei Anschlüssen am Mittel- und Hochspannungsnetz“
+
+
+6                      VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+3 Abkürzungen und Definitionen
+3.1    Abkürzungen
+
+ AWE                        Automatische Wiedereinschaltung
+ EAAV                       Energieanlagen-Anforderungen-Verordnung (im Zeitpunkt der
+                            Veröffentlichung dieses Hinweises noch nicht in Kraft)
+ NELEV                      Elektrotechnische-Eigenschaften-Nachweis-Verordnung
+ NELEV-                     Ende 2023 vom Bundesrat gebilligte Verordnung zur Änderung der
+ Änderungsverordnung        Elektrotechnische-Eigenschaften-Nachweis-Verordnung (auch „NELEV-
+                            Novelle 2024“ genannt; im Zeitpunkt der Veröffentlichung dieses Hinweises
+                            noch nicht in Kraft)
+ üEKS                       übergeordneter Entkupplungsschutz der Erzeugungsanlage nach VDE-AR-
+                            N 4110
+ ÜGS                        Übergabestation
+ AR 4110                    VDE-AR-N 4110
+ AR 4105                    VDE-AR-N 4105
+
+
+3.2    Begriffe
+
+vereinbarte Anschlusswirkleistung für Einspeisung
+PAV,E
+zwischen Netzbetreiber und Anschlussnehmer vereinbarte Wirkleistung der Kundenanlage für die
+Einspeisung am Netzanschlusspunkt
+
+maximale Wirkleistung
+PEmax
+höchster 10-Minuten-Mittelwert der Wirkleistung einer Erzeugungseinheit (gemäß Einheitenzertifikat)
+
+Anmerkung zum Begriff: Ist dieser Wert nicht explizit angegeben, wird in der Regel die elektrische
+Bemessungswirkleistung der Erzeugungseinheit eingesetzt.
+
+kumulierte maximale Wirkleistung (Installierte Leistung)
+∑PEmax
+kumulierte maximale Wirkleistung als Summe der maximalen 10-min Mittelwerte der Wirkleistung aller
+Erzeugungseinheiten und Speicher PEmax, unabhängig vom Typ der Erzeugungseinheit am
+Netzanschlusspunkt
+
+Anmerkung zum Begriff: In diesem Hinweis wird der Begriff „installierte Leistung“ gleich ∑PEmax gesetzt.
+
+maximale reduzierte Wirkleistung
+PEmax,red
+höchster 10-min Mittelwert der Wirkleistung einer Erzeugungseinheit PEmax, welcher bei Einsatz einer
+dauerhaften       Leistungsreduzierung   durch     diese   Erzeugungseinheit    erbracht   werden     kann
+(PEmax,red ≤ PEmax)
+
+Anmerkung 1 zum Begriff: Trotz dauerhafter Leistungsreduzierung behält das Einheitenzertifikat, bzw. die
+Prototypenbestätigung seine/ihre Gültigkeit. Für PEmax,red ist kein aktualisierter Prüfbericht nach FGW
+TR3 notwendig.
+
+
+
+7                         VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+Anmerkung 2 zum Begriff: Die Umsetzung einer dauerhaften Leistungsreduzierung an der
+Erzeugungseinheit ist projektspezifisch vom Hersteller oder dem Anlagenerrichter zu bescheinigen und
+darf auch nicht durch Software-Updates überschrieben werden. Eine ungewollte und unautorisierte
+Aufhebung der dauerhaften Leistungsreduzierung ist durch eingeschränkte Zugriffsrechte / Passwortschutz
+sicherzustellen.
+
+Anmerkung 3 zum Begriff: Eine Reduzierung der Primärenergie (z. B. Installation einer geringeren Modul-
+als Umrichterleistung) allein ist nicht ausreichend. Die Verwendung von PEmax,red ist nur zulässig, wenn
+die Begrenzung der Leistung im Umrichter bzw. der Maschinensteuerung umgesetzt ist.
+
+maximale Wirkleistung einer Erzeugungsanlage
+PAmax
+höchster 10-Minuten-Mittelwert der Wirkleistung einer Erzeugungsanlage
+
+Anmerkung 1 zum Begriff: Mit den Größen PAmax, Typ-1, PAmax, Typ-2-EZE bzw. PAmax, Typ-2-Speicher
+können anlagenspezifische Unterscheidungen vorgenommen werden.
+
+Anmerkung 2 zum Begriff: Erzeugungseinheiten Typ 1 werden zu einer gemeinsamen Erzeugungsanlage
+Typ 1 zusammengefasst, sobald eines der genannten Kriterien erfüllt ist:
+
+    ‒   Eine gemeinsame EZA-Regelung/Zentralsteuerung
+
+    ‒   Ein gemeinsam genutzter Maschinentransformator
+
+momentane Wirkleistung
+Pmom
+momentaner Wert der am Netzanschlusspunkt eingespeisten Wirkleistung, gleitend gemittelt über 200 ms
+
+in Betrieb befindliche installierte Wirkleistung
+Pb inst
+Summe der Bemessungswirkleistungen aller              sich   generatorisch   in    Betrieb   befindenden
+Erzeugungseinheiten und Speicher
+
+Nennspannung
+Un
+Spannung, durch die ein Netz oder eine Anlage bezeichnet oder identifiziert wird
+
+vereinbarte Versorgungsspannung
+Uc
+zwischen dem Netzbetreiber und dem Anschlussnehmer vereinbarte Spannung zur Versorgung
+
+Anmerkung zum Begriff: In der Regel ist die vereinbarte Versorgungsspannung gleich der Nennspannung
+Un, sie darf allerdings von der Nennspannung abweichen, wenn eine entsprechende Vereinbarung
+zwischen dem Netzbetreiber und dem Anschlussnehmer besteht.
+
+niederspannungsseitige Bezugsspannung
+UNS
+der Spannungswert auf der Niederspannungsseite des Maschinentransformators der Erzeugungseinheit
+unter Berücksichtigung der vereinbarten Versorgungsspannung Uc und des Übersetzungsverhältnisses ü
+des Maschinentransformators (UNS = Uc / ü)
+
+Anmerkung zum Begriff: Erfolgt die Spannungsmessung auf der MS-Seite, ist ü = 1 zu setzen.
+
+
+
+
+8                       VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+4 Einleitung & Allgemeines
+4.1   Grundsätzliche Rahmenbedingungen
+
+Die NELEV-Änderungsverordnung und die EAAV haben bezüglich der Kumulation der maximalen
+Wirkleistung unterschiedliche Ansätze, welche allerdings in den meisten Anwendungsfällen nicht von
+Relevanz sind. Im Sinne einer einfachen Anwendung dieses Hinweises beziehen sich die folgenden
+Leistungsangaben und Leistungsgrenzen immer auf die kumulierte maximale Wirkleistung ∑PEmax aller
+Erzeugungseinheiten     (Typ-1-EZE     und    Typ-2-EZE)     und   Speicher    an    einem    gemeinsamen
+Netzanschlusspunkt.
+
+ANMERKUNG 1 Wenn sich in der Kundenanlage Erzeugungsanlagen oder Speicher mit einem
+PAmax < 135 kW befinden, können sich durch die unterschiedlichen Ansätze der Kumulation
+Besonderheiten in der Nachweisführung nach NELEV-Änderung ergeben. Diese werden in Abschnitt 6
+beschrieben.
+
+Vorhandene Erzeugungseinheiten und Speicher sind bei der Bestimmung der kumulierten maximalen
+Wirkleistung mit zu berücksichtigen. Das heißt, die aus den TAR-Regelwerken bekannte Logik der
+Trennung von Speichern, Typ-1 und Typ-2 Anlagen findet bei Anwendung von NELEV und EAAV nicht
+statt. Dies gilt unabhängig davon, ob der Speicher in das Netz des Netzbetreibers oder lediglich netzparallel
+in die Kundenanlage einspeist.
+
+ANMERKUNG 2 Die Betrachtung der kumulierten maximalen Leistung bei dem vereinfachten Anschluss
+und Nachweis von Erzeugungsanlagen und Speichern weicht insoweit von den für die Bestimmung des
+Anwendungsbereichs der VDE-AR-N 4105 und VDE-AR-N 4110 maßgeblichen Schwellenwerten ab.
+
+ANMERKUNG 3 Bei der Kumulation nach EAAV sind auch Erzeugungseinheiten zu berücksichtigen, die
+unter die Ausnahmeregelung von < 30 kW in den Anwendungsbereichen der VDE-AR-N 4105 und VDE-
+AR-N 4110 fallen.
+
+In diesem Hinweis wird der Begriff „installierte Leistung“ gleich ∑PEmax gesetzt. In Anlehnung an die VDE-
+AR-N 4110 und VDE-AR-N 4120 ist die Angabe von PEmax für alle Leistungsgrenzen heranzuziehen. Wird
+eine Erzeugungseinheit dauerhaft und passwortgeschützt in ihrer Wirkleistung begrenzt, so ist der
+reduzierte Wert PEmax,red2 anstelle PEmax zu verwenden.
+
+ANMERKUNG 4 Die Angabe von PEmax ist dem Einheitenzertifikat zu entnehmen und vom Hersteller im
+technischen Datenblatt auszuweisen.
+
+Bei PV-Anlagen und Speichern mit Wechselrichtern beziehen sich die Leistungsangaben auf die AC-
+Ausgangsseite der Wechselrichter. Die Modulleistung (kWp) der PV-Anlagen sowie die Leistung eines DC-
+gekoppelten Speichers spielen in der Leistungsbestimmung keine Rolle.
+
+4.2   Anschlussprozess und Rahmenbedingungen der Nachweisführung nach NELEV und EAAV
+
+Die prozessuale Einordnung der NELEV-Novelle in den Anschluss- und Nachweisprozess der
+VDE-AR-N 4110 ist in Bild 1 kenntlich gemacht. Die Übertragbarkeit auf die VDE-AR-N 4120 ist gegeben.
+Prozessschritte im Rahmen einer ggf. notwendigen Errichtung oder Änderung einer Übergabestation sind
+in Bild 1 aus Übersichtsgründen nicht dargestellt.
+
+
+
+2 Siehe auch FNN Hinweis „PAV, E-Überwachung bei Anschlüssen am Mittel- und Hochspannungsnetz“
+
+
+
+
+9                        VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+Wenn für eine Erzeugungsanlage vom Typ 1 bzw. Typ 2 oder einen Speicher mit PAmax ≥ 135 kW bisher
+die Nachweisschritte Anlagenzertifikat und Konformitätserklärung notwendig waren, können diese nun
+entfallen, wenn die folgenden beiden Leistungsgrenzen am Netzanschlusspunkt eingehalten werden:
+
+ ∑PEmax ≤ 270 kW und
+
+ PAV,E ≤ 270 kW.
+
+Wird dem Netzbetreiber bei Anlagen mit Anschluss an ein Mittelspannungsnetz der allgemeinen
+Versorgung (oder einer höheren Spannungsebene) die korrekte Installation eines übergeordneten
+Entkupplungsschutzes (oder einer alternativen Einrichtung, die in den TAR für Erzeugungsanlagen im
+Hinblick auf die Schutzfunktion als gleichwertig anerkannt ist) nachgewiesen, können die Nachweisschritte
+Anlagenzertifikat und Konformitätserklärung bis zu folgenden Leistungsgrenzen entfallen:
+
+ ∑PEmax ≤ 500 kW und
+
+ PAV,E ≤ 270 kW.
+
+ANMERKUNG 1 Es existiert zum Zeitpunkt der Veröffentlichung dieses Hinweises keine in den TAR
+anerkannte technische Einrichtung, die zum MS-seitig messenden übergeordneten Entkupplungsschutz
+gleichwertig ist. Entsprechende Alternativen sind derzeit in Prüfung und Diskussion.
+
+Oberhalb von ∑PEmax = 270 kW ist auch ohne Nachweisführung mittels Anlagenzertifikat und
+Konformitätserklärung ein Datenaustausch nach der VDE-AR-N 4110 mit den Formularen E.8 und E.9
+zwischen Anlagenbetreiber und Netzbetreiber notwendig. Durch diesen Anschlussprozessschritt wird
+sichergestellt, dass projektspezifische Vorgaben des Netzbetreibers für die Einstellungen des
+übergeordneten Entkupplungsschutzes, der PAV,E-Überwachung und – falls der Netzbetreiber
+diesbezüglich von der Empfehlung in diesem Hinweis abweichende Vorgaben für notwendig erachtet – der
+statischen Spannungshaltung an den Anschlussnehmer kommuniziert werden.
+
+
+
+
+      Bild 1: Vereinfachte Übersicht zu den wesentlichen Unterschieden des Anschluss- und
+ Nachweisprozesses durch die NELEV-Novelle 2024 und die EAAV zu den bisherigen Prozessen nach
+                                            den TAR
+
+ANMERKUNG 2 Zur besseren Lesbarkeit wurden in Bild 1 die kumulierte Leistung gemäß EAAV
+verwendet. Die Ausnahmen, die hier nicht abgebildet sind, sind Abschnitt 6 zu entnehmen.
+
+
+10                      VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+4.3     Technische Rahmenbedingungen nach EAAV
+
+Die technischen Rahmenbedingungen für den Anschluss von Erzeugungsanlagen und Speichern von
+135 kW bis einschließlich 500 kW kumulierter installierter Leistung hinter demselben Verknüpfungspunkt
+mit einem Netz der allgemeinen Versorgung und einer maximalen Einspeiseleistung von bis zu 270 kW am
+Mittelspannungsnetz und höher werden in der EAAV geregelt. Dabei gehen direkte Vorgaben aus der
+EAAV dem bestehenden TAR-Regelwerk und den TAB des Netzbetreibers bei Widersprüchen gegen die
+EAAV/NELEV vor und sind verpflichtend umzusetzen.
+
+ANMERKUNG 1 Der Anwendungsbereich der EAAV umfasst Erzeugungsanlagen und Speicher mit einer
+kumulierten installierten Leistung von 135 kW bis einschließlich 500 kW bei einer maximalen
+Einspeiseleistung von 270 kW hinter demselben Verknüpfungspunkt mit einem Netz der allgemeinen
+Versorgung. Das bedeutet, dass auch mehrere Erzeugungsanlagen mit einer installierten Leistung, die
+jeweils kleiner als 135 kW sind und von denen jede für sich bisher ausschließlich nach VDE-AR-N 4105
+errichtet werden durfte, nunmehr zusätzlich die Anforderungen der EAAV erfüllen müssen, wenn diese
+Anlagen in diesen Leistungsbereich fallen.
+
+ANMERKUNG 2 Die in diesem Abschnitt aufgeführten Bilder treffen keine Aussage darüber, ob ein
+Lasttrennschalter ggf. mit Sicherung oder Leistungsschalter von Nöten ist. Die Schalter sind entsprechend
+der Anforderungen nach VDE-AR-N 4105 bzw. VDE-AR-N 4110 auszuführen.
+
+4.3.1    Erzeugungsanlagen und Speicher mit 135 kW ≤ ∑PEmax ≤ 270 kW und PAV,E ≤ 270 kW an
+         der Mittelspannung
+
+Mit Inkrafttreten der EAAV sind Erzeugungsanlagen und Speicher mit ∑PEmax ≤ 270 kW und
+PAV,E ≤ 270 kW unabhängig von ihrem Anschlusspunkt mit dem öffentlichen Netz nach den aktuell
+gültigen technischen Regeln der VDE-AR-N 4105 zu errichten.
+
+Die EAAV regelt jedoch, dass diese Anlagen abweichend zur VDE-AR-N 4105 folgende Anforderungen
+umsetzen müssen:
+
+ ein ggf. vorhandenes Frequenzvermögen bis 52,5 Hz nach der P(f)-Kennlinie der VDE-AR-N 4110 ist
+  auszunutzen und
+ der Überfrequenzschutz ist mit den Einstellwerten der VDE-AR-N 4110 auszuführen und
+ die Inselnetzerkennung ist zu deaktivieren.
+
+Bild 2 zeigt ein beispielhaftes nach EAAV zulässiges MS-Anschlusskonzept mit ∑PEmax 135 kW bis
+270 kW, PAV,E ≤ 270 kW und zentralem NA-Schutz für Anlagen nach diesem Unterabschnitt.
+
+
+
+
+11                      VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+                                                              ÜGS
+
+                                                3xI
+                                                  3xU                 Zählung
+
+
+
+
+                                                        Zentraler NA-Schutz
+                                                      Parameter NA-Schutz nach EAAV
+
+
+
+
+                                            G             G
+
+
+                                   Parameter Erzeugungseinheit nach EAAV
+
+
+Bild 2: Nach EAAV zulässiges MS-Anschlusskonzept mit ∑PEmax 135 kW bis 270 kW und zentralem
+NA-Schutz
+
+4.3.2    Erzeugungsanlagen und Speicher mit ∑PEmax > 270 kW und ≤ 500 kW und PAV,E ≤ 270 kW
+         an der Mittelspannung
+
+Mit Inkrafttreten der EAAV sind Erzeugungsanlagen und Speicher mit ∑PEmax > 270 kW bis ≤ 500 kW und
+PAV,E ≤ 270 kW unabhängig von ihrem Anschlusspunkt mit dem öffentlichen Netz nach den aktuell gültigen
+Regeln der VDE-AR-N 4105 zu errichten.
+
+Die EAAV regelt jedoch, dass diese Anlagen abweichend zur VDE-AR-N 4105 folgende Anforderungen
+umsetzen müssen:
+
+ ein ggf. vorhandenes Frequenzvermögen bis 52,5 Hz nach der P(f)-Kennlinie der VDE-AR-N 4110 ist
+  auszunutzen und
+ der Überfrequenzschutz ist zweistufig mit den Einstellwerten der VDE-AR-N 4110 auszuführen und
+ die Inselnetzerkennung ist zu deaktivieren und
+ ein übergeordneter Entkupplungsschutz oder eine alternative Einrichtung, die in den technischen
+  Regeln des VDE FNN für Erzeugungsanlagen im Hinblick auf die Schutzfunktion als gleichwertig
+  anerkannt ist, ist zu installieren und
+ eine geeignete PAV,E-Überwachung ist zu installieren:
+
+     ‒   bei einem Leistungsverhältnis von PAV,E/ ∑PEmax ≥ 0,54 nach der aktuell gültigen VDE-AR-N
+         4105 (Managementsystem);
+
+     ‒   bei einem Leistungsverhältnis PAV,E / ∑PEmax < 0,54 nach dem FNN Hinweis PAV,E-
+         Überwachung (Einspeisebegrenzung) bei Anschlüssen am Mittel- & Hochspannungsnetz
+         (Managementsystem + Schutzfunktion).
+
+
+12                      VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+ANMERKUNG Es existiert zum Zeitpunkt der Veröffentlichung dieses Hinweises keine in den TAR
+anerkannte technische Einrichtung, die zum MS-seitig messenden übergeordneten Entkupplungsschutz
+gleichwertig ist. Entsprechende Alternativen sind derzeit in Prüfung und Diskussion.
+
+Bild 3 zeigt ein beispielhaftes nach EAAV zulässiges MS-Anschlusskonzept mit ∑PEmax ≤ 500 kW,
+übergeordnetem Entkupplungsschutz und PAV,E - Überwachung nach VDE-AR-N 4105 (PAV,E / ∑PEmax
+≥ 0,54)
+
+
+                                                           ÜGS
+
+                                               3xI
+                                                 3xU              Zählung
+
+
+                                                        Parameter üEKS nach Vorgaben E.9 (4110)
+                                                     übergeordneter Entkupplungsschutz
+
+                   PAV,E - Überwachung nach TAR 4105
+
+
+
+
+                                           G           G
+
+
+                                  Parameter Erzeugungseinheit nach EAAV
+
+
+        Bild 3: Nach EAAV zulässiges MS-Anschlusskonzept mit ∑PEmax ≤ 500 kW, übergeordnetem
+        Entkupplungsschutz und PAV,E - Überwachung nach VDE-AR-N 4105 (PAV,E / ∑PEmax 0,54)
+
+4.3.3      Erzeugungsanlagen und Speicher mit ∑PEmax > 500 kW oder PAV,E > 270 kW an der
+           Mittelspannung
+
+Mit Inkrafttreten der EAAV gibt es für Erzeugungsanlagen und Speicher bei ∑PEmax > 500 kW oder
+PAV,E > 270 kW keine Veränderungen. Diese Anlagen sind weiterhin vollumfänglich nach den
+Regelwerken der VDE-AR-N 4110 oder VDE-AR-N 4120 anzuschließen und zu zertifizieren. Bei
+Verwendung einer PAV,E-Überwachung ist diese nach dem FNN Hinweis „PAV,E - Überwachung bei
+Anschlüssen am Mittel- & Hochspannungsnetz“ auszuführen. Eine beispielhafte Darstellung ist in Bild 4
+gezeigt.
+
+
+
+
+13                      VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+                                                      ÜGS
+
+                                          3xI
+                                            3xU              Zählung                           EZA-Regler
+                                                                                             nach TAR 4110
+                                                   Parameter üEkS nach Vorgaben E.9 (4110)
+                                                übergeordneter Entkupplungsschutz
+
+           PAV,E - Überwachung nach TAR 4110
+
+
+
+
+                                     G            G
+
+
+                             Parameter Erzeugungseinheit nach 4110
+
+
+ Bild 4: Beispielhaftes Anschlusskonzept für einen Anschluss einer Mischanlage nach VDE-AR-N 4110
+
+5 Technische Anforderungen an die Planung, Inbetriebsetzung und
+  zugehörige Nachweise
+5.1     Anschluss von Erzeugungsanlagen und Speichern mit PAmax ≥ 135 kW am
+        Niederspannungsnetz des Netzbetreibers
+
+Entsprechend Abschnitt 8.4 der VDE-AR-N 4105 gelten Besonderheiten für die Planung, die Errichtung
+und den Betrieb von Erzeugungsanlagen und Speichern mit PAmax ≥ 135 kW am Niederspannungsnetz
+des Netzbetreibers. Dabei sind Anpassungen der Anlagen-/Einheiten-Parametrierung notwendig, um einen
+Anschluss dieser Erzeugungseinheiten am NS-Netz des Netzbetreibers realisieren zu können.
+
+Mit Inkrafttreten der EAAV bleibt der Abschnitt 8.4 der VDE-AR-N 4105 für die hier genannten Anlagen
+unverändert gültig.
+
+5.2     Allgemeine Anforderungen zur Umsetzung des Netzsicherheitsmanagements am Mittel- und
+        Hochspannungsnetz des Netzbetreibers
+
+Die technische Einrichtung zur Umsetzung des Netzsicherheitsmanagements ist vorzugsweise in der
+Übergabestation umzusetzen. Die Erfassung der Ist-Einspeisung kann niederspannungsseitig erfolgen. Für
+die Datenverbindung zwischen Übergabestation und Erzeugungsanlage ist der Anschlussnehmer
+verantwortlich.
+
+In    Einzelfällen   kann   die   Umsetzung        des      Netzsicherheitsmanagements           auch   außerhalb   der
+Übergabestation umgesetzt werden, sofern die technischen und baulichen Anforderungen des
+Netzbetreibers an solch eine technische Einrichtung weiterhin erfüllt werden.
+
+
+
+
+14                          VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+Dies gilt insbesondere in den Fällen, in denen der Bau einer Datenverbindung zwischen Übergabestation
+und Erzeugungsanlage bisher nicht gefordert wurde. Die Abstimmung erfolgt im Rahmen der
+Errichtungsplanung mit dem Anschlussnetzbetreiber.
+
+5.3      Anschluss von Erzeugungsanlagen und Speichern mit ∑PEmax ≤ 270 kW und PAV,E ≤ 270
+         kW am Mittel- und Hochspannungsnetz des Netzbetreibers – Technische Anforderungen an
+         den NA-Schutz
+
+Diese Anlagen sind gemäß EAAV nach der VDE-AR-N 4105 anzuschließen. Dabei ist ab ∑SAmax > 30 kVA
+am Netzanschlusspunkt grundsätzlich ein zentraler NA-Schutz notwendig. Dabei ist Folgendes zu
+beachten:
+
+ Der NA-Schutz ist so elektrisch nah wie möglich zur Übergabestation umzusetzen, sodass sich eine
+      geringstmögliche Spannungsdifferenz ergibt (siehe Bild 2). Durch die elektrische Nähe zum
+      Netzanschlusspunkt    soll   eine       sachgerechte   Funktion   des   NA-Schutzes    gewährleistet   und
+      Fehlauslösungen vermieden werden.
+
+ Sofern sich eine Verbindung zwischen zentralem NA-Schutz und dezentralem Kuppelschalter der
+      Erzeugungseinheiten nur mit unverhältnismäßigem Aufwand realisieren lässt, kann davon abweichend
+      der zentrale NA-Schutz innerhalb der Kundenanlage umgesetzt werden (siehe Bild 5).
+
+ Die       Umsetzung      ist     auf        einen   zentralen    NA-Schutz     pro    Gebäude     oder      pro
+      Niederspannungshauptverteilung innerhalb der Kundenanlage begrenzt, um die Anzahl an NA-Schutz-
+      Geräten innerhalb einer Kundenanlage so gering wie möglich zu halten.
+
+ Gebäude        mit   ∑SAmax      ≤     30    kVA    benötigen   keinen   zentralen   NA-Schutz.   Bei    diesen
+      Erzeugungseinheiten ist die Umsetzung über den integrierten NA-Schutz ausreichend (siehe Bild 6).
+
+ Die Parametrierung des NA-Schutzes hat gemäß Abschnitt 5.5.2 zu erfolgen.
+
+
+
+
+15                         VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+                                                                                       ÜGS
+
+                                                                      3xI
+
+                                                                            3xU              Zählung
+
+
+
+
+                                                                                  Zentraler NA-
+                                                                                     Schutz
+                                                                            Parameter NA-Schutz nach EAAV
+
+
+
+
+                                                                  G                G
+
+
+                                                      Parameter Erzeugungseinheit nach EAAV
+
+
+         Bild 5: Beispielhafte Umsetzung des zentralen NA-Schutzes innerhalb der Kundenanlage
+
+
+                                                     ÜGS
+
+                                         3xI
+                                                               Zählung
+                                               3xU
+
+
+
+
+ Gebäude 1                                                                                               Gebäude 2
+
+                                               Parameter NA-Schutz nach EAAV                       Parameter NA-Schutz nach EAAV
+
+                                                         Zentraler NA-                                      Zentraler NA-
+                                                            Schutz                                             Schutz
+             Verbraucher
+
+
+
+
+                                                                                                                      Verbraucher
+
+                                     G               G                                         G           G
+
+                           Parameter Erzeugungseinheit nach EAAV                             Parameter Erzeugungseinheit nach EAAV
+
+
+                            SAMAX Gebäude 1 > 30 kVA                                         SAMAX Gebäude 2 > 30 kVA
+
+        Bild 6: Beispielhafte Umsetzung des NA-Schutzes bei mehreren Gebäuden innerhalb einer
+     Kundenanlage ∑PEmax > 135 kW. In Gebäuden mit ∑SAmax ≤ 30 kVA ist ein integrierter NA-Schutz
+                                             ausreichend.
+
+
+16                            VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+5.4     Anschluss von Erzeugungsanlagen und Speichern mit ∑PEmax > 270 kW bis 500 kW und
+        PAV,E ≤ 270 kW am Mittel- und Hochspannungsnetz des Netzbetreibers
+
+5.4.1    Allgemeines
+
+Bei Erzeugungsanlagen und Speichern mit ∑PEmax > 270 kW und bis 500 kW ist ein übergeordneter
+Entkupplungsschutz nach den Vorgaben der VDE-AR-N 4110 zu installieren.
+
+Der übergeordnete Entkupplungsschutz ist MS-seitig zu installieren. Es wird darauf hingewiesen, dass
+hierfür entsprechende Fachfirmen mit Mittelspannungs-Schaltberechtigung benötigt werden. Die
+konzeptionelle Umsetzung des übergeordneten Entkupplungsschutzes ist vor Bestellung der Komponenten
+mit dem Netzbetreiber abzustimmen, damit folgende Fehlerquellen vorzeitig ausgeschlossen werden:
+
+ Falscher Einbauort der Spannungsmessung
+
+ Falsche Wandlerklassen
+
+ Ungeeigneter Auslöseort
+
+ Unzureichende USV-Auslegung.
+
+Prozessual ist dafür der Netzbetreiberabfragebogen (i.d.R. E.9 nach VDE-AR-N 4110) vom Netzbetreiber
+erforderlich. Dieser wird nach Einreichung des Anlagenbetreiberabfragebogens (i.d.R. E.8 nach VDE-AR-
+N 4110) und zugehörigem Single-Line-Diagramm der Kundenanlage erstellt.
+
+ANMERKUNG 1 Auf die ordnungsgemäße Umsetzung des übergeordneten Entkupplungsschutzes ist
+durch den Anlagenerrichter besondere Sorgfalt zu legen. Die Frist zur Behebung von Mängeln beträgt hier
+nur einen Monat, bevor der Netzbetreiber die Anlage vom Netz trennen oder deren Einspeisung
+unterbinden muss.
+
+Der Netz- und Anlagenschutz auf der Niederspannungsseite kann als integrierter NA-Schutz nach VDE-
+AR-N 4105 ausgeführt werden. Ein zentraler NA-Schutz ist in diesem Fall nicht notwendig, aber zulässig.
+Die Parametrierung erfolgt in beiden Fällen nach Tabelle 2, eine Schutzprüfung für den NA-Schutz ist nicht
+erforderlich.
+
+ANMERKUNG 2 Aufgrund des übergeordneten Entkupplungsschutzes ist die Ausführung als integrierter
+NA-Schutz auch in Anlagen mit einer installierten Leistung bis 500 kW zulässig.
+
+Zudem ist für diese Anlagen eine PAV,E -Überwachung (nach VDE-AR-N 4105 oder dem FNN Hinweis
+„PAV,E – Überwachung bei Anschlüssen am Mittel- & Hochspannungsnetz“) zu installieren. Der Nachweis
+erfolgt im Rahmen des Inbetriebsetzungsprotokolls bzw. der Inbetriebsetzungserklärung.
+
+5.4.2    PAV,E -Überwachung nach VDE-AR-N 4105
+
+Bei einem Leistungsverhältnis von PAV,E / ∑PEmax ≥ 0,54 darf die PAV,E - Überwachung nach der aktuell
+gültigen VDE-AR-N 4105 niederspannungsseitig ausgeführt werden (kundenseitiges Managementsystem
+ausreichend). In Anschlussfällen mit mehreren Transformatoren und darauf verteilten Erzeugungseinheiten
+kann der Aufbau einer PAV,E – Überwachung wie bei Anschlüssen am Mittel- und Hochspannungsnetz
+(siehe Abschnitt 5.4.3.) zielführend sein und ist ebenfalls zulässig.
+
+
+
+
+17                       VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+5.4.3    PAV,E -Überwachung nach FNN Hinweis für die Mittel- und Hochspannung
+
+Bei einem Leistungsverhältnis PAV,E / ∑PEmax < 0,54 ist die PAV,E – Überwachung nach dem
+FNN Hinweis „PAV,E – Überwachung bei Anschlüssen am Mittel- und Hochspannungsnetz“ auszuführen.
+Entsprechend kann die Umsetzung der PAV,E - Wirkleistungsgrenzkurve einer PAV,E -Überwachung im
+EZA-Regler oder in einer separaten technischen Einrichtung erfolgen. Es ist neben dem übergeordneten
+Entkupplungsschutz      auch   eine   zweistufige   Leistungsrichtungsschutzfunktion      vorzusehen.    Die
+Leistungsrichtungsschutzfunktion erfolgt in der Regel im übergeordneten Entkupplungsschutz mit
+Anschluss     an     Schutzwandler.      In   Abstimmung     mit   dem         Netzbetreiber    dürfen   die
+Überwachungseinrichtungen (PAV,E Wirkleistungsgrenzkurve und PAV,E Schutzeinrichtung) auch an
+einer anderen geeigneten Stelle angeschlossen werden (z.B. NS-Seite am Netzanschlusspunkt). Bei den
+hier betrachteten Erzeugungsanlagen ist die Umsetzung der PAV,E-Überwachung bei Bestandsanlagen
+auf der HS- oder MS-Seite häufig mit hohem Aufwand verbunden. In diesen Fällen wird die Umsetzung der
+PAV,E Überwachung auf der NS-Seite empfohlen.
+
+5.4.4 Sonstige Besonderheiten bei Mischanlagen
+Bei Vorhandensein einer Blindstromkompensationsanlage              für   die     Bezugsanlage    muss    die
+Erzeugungsanlage so aufgebaut sein, dass die Blindleistung der Erzeugungsanlage nicht die Regelung der
+Blindstromkompensationsanlage beeinflusst und es damit zu einer gegenseitigen Aufhebung der
+Blindleistung und damit der gewünschten Wirkung der Blindleistung der Erzeugungsanlage kommt.
+
+5.5     Parameterlisten für die Inbetriebsetzung von nach EAAV privilegierten Erzeugungsanlagen
+        und Speichern ab der Mittelspannungsebene
+5.5.1    Allgemeines
+
+Der Anlagenhersteller ist verpflichtet, eine Herstellerklärung abzugeben, in der bestätigt wird, dass die
+Einhaltung der Anforderungen der EAAV mit seinen neu errichteten Erzeugungseinheiten möglich ist.
+
+Es wird den Herstellern empfohlen, einen speziellen Datensatz oder eine Parameteränderungs-Anleitung
+mit den Anpassungen gemäß Anforderungen der EAAV zur Verfügung zu stellen.
+
+5.5.2    Erzeugungsanlagen und Speicher mit Einspeiseleistung und installierter Leistung bis 270
+         kW
+                                      Eckdaten der Erzeugungsanlage
+
+                   Kumulierte maximale Wirkleistung ∑PEmax    Einspeiseleistung (PAV,E)
+                   ≥ 135 kW & ≤ 270 kW                        ≤ 270 kW
+
+Die Parameter für den zentralen NA-Schutz in Tabelle 5.1 basieren auf den Vorgaben für Umrichter
+gemäß VDE-AR-N 4105. In Rot gekennzeichnet sind die davon abweichenden zu realisierenden
+Vorgaben.
+
+Die Vorgaben für die Erzeugungseinheiten in Tabelle 1 basieren auf den Anforderungen nach
+VDE-AR-N 4110, da die EAAV bzgl. des Frequenzverhaltens die Anforderungen nach VDE-AR-N 4110
+vorsieht. In Rot gekennzeichnet sind die vom Parametersatz der VDE-AR-N 4110 abweichend zu
+realisierenden Vorgaben. Hinsichtlich Schutzeinstellungen an den Erzeugungseinheiten wird von einem
+mit Automatischer Wiedereinschaltung (AWE) betriebenen MS-Netz des Netzbetreibers ausgegangen.
+
+
+
+
+18                       VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+ANMERKUNG 1 Das ist bzgl. der Umsetzung eine beispielhafte Darstellung. Es ist auch möglich, bei den
+Erzeugungseinheiten einen in den EZE ggf. vorhandenen Parametersatz nach der VDE-AR-N 4105 als
+Grundlage zu nutzen und diesen entsprechend den Anforderungen aus diesem Hinweis anzupassen.
+
+ANMERKUNG 2 In der Parameterliste in Tabelle 4.2 wird davon ausgegangen, dass keine PAV,E -
+Überwachung erforderlich ist. Sollte aus der Anschlusssituation heraus doch eine PAV,E-Überwachung
+erforderlich sein, so ist diese je nach dem Verhältnis zwischen installierter Leistung ∑PEmax zur
+Einspeiseleistung PAV,E entsprechend 5.4.2 oder 5.4.3 dieses Hinweises zusätzlich zu parametrieren.
+
+ANMERKUNG        3   Die    Transformatorstufenstellung     muss    in   dieser   Leistungsklasse   bei   der
+Parametervorgabe nicht berücksichtigt werden. Es wird davon ausgegangen, dass die EZEs bei
+Nennspannung betrieben werden und diese als Bezugsgröße gewählt wird.
+
+ANMERKUNG 4 Die Erzeugungseinheiten sind so zu parametrieren, dass sie selektiv nach dem zentralen
+NA-Schutz auslösen. Die Parameterangabe bei den Erzeugungseinheiten zeigt das beispielhaft.
+
+ANMERKUNG 5 Falls die Erzeugungseinheit nur bis zu der geforderten Netzfrequenz von 51,5 Hz
+betrieben werden kann, ist als Frequenzsteigerungsschutz eine Frequenzstufe mit 51,5 Hz/≤ 100 ms zu
+nutzen. Falls die Erzeugungseinheit nicht vollständig bis zu einer Netzfrequenz von 52,5 Hz betrieben
+werden kann, ist der Wert von 52,5 Hz auf den technisch maximal möglichen Wert zwischen 51,5 Hz und
+52,5 Hz einzustellen.
+
+ANMERKUNG 6 Falls im zentralen NA-Schutz nur eine Frequenzsteigerungsschutz-Funktion vorhanden
+ist, so ist diese mit der Einstellwertvorgabe für f>> zu belegen.
+
+
+
+
+19                       VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+     Tabelle 1: Parameterliste für Erzeugungsanlagen und Speicher mit ∑PEmax und PAV,E ≤ 270 kW
+
+Funktionen Gesamtanlage
+Diese Funktionen können auch durch externe Komponenten wie Datenmanager / Steuerungen / Anlagenregler oder
+entsprechende Programmierungen in den Anlagen selbst realisiert werden. Eine Zertifizierung ist nicht erforderlich.
+Leistungsvorgabe Netzsicherheitsmanagement                                             aktiviert
+(NSM)/Redispatch (RD)
+Leistungsvorgabe Direktvermarkter (DV)                                                 aktiviert
+(sofern gefordert)
+Priorisierung NSM/RD > P(f) > DV                                                      umgesetzt
+
+
+Parameter zentraler NA-Schutz
+Die Änderungen gegenüber der VDE-AR-N 4105 sind in Rot hervorgehoben. Es ist sicherzustellen, dass die Parameter während
+der Inbetriebnahme eingestellt werden.
+                                                     Typ-2 (Umrichter) mit zentralem          Typ-1 (direkt gekoppelter
+                                                               NA-Schutz                           Synchron- oder
+                                                                                           Asynchrongenerator > 50 kW)
+Spannungssteigerungsschutz U >>                    1,25 Un        ≤ 0,1 s
+Spannungssteigerungsschutz U >                           1,10 Un         ≤ 0,1 s
+Spannungsrückgangsschutz U <                             0,80 Un         3s
+Spannungsrückgangsschutz U <<                            0,45 Un         0,3 s
+Frequenzsteigerungsschutz f >>                           52,5 Hz         ≤ 0,1 s
+Frequenzsteigerungsschutz f >                            51,5 Hz         ≤5s
+Frequenzrückgangsschutz f <                              47,5 Hz         ≤ 0,1 s
+Inselnetzerkennung                                                    deaktiviert
+
+
+Parameter Erzeugungseinheiten
+Die Änderungen gegenüber der VDE-AR-N 4110 sind in Rot hervorgehoben. Es ist sicherzustellen, dass die Parameter während
+der Inbetriebnahme eingestellt werden.
+dauerhafte Wirkleistungsbegrenzung                                                  nein
+Blindleistungspriorisierung                                                          ja
+                                                    Umrichter bei Vorhandensein eines         Typ-1 (direkt gekoppelter
+                                                       vorgelagerten zentralen NA-                 Synchron- oder
+                                                                Schutzes                   Asynchrongenerator > 50 kW)
+
+Spannungssteigerungsschutz U >>                          ≥ 1,30 Un       ≥ 0,2 s                 1,25 Un            ≤ 0,1 s
+Spannungssteigerungsschutz U >                           ≥ 1,11 Un       ≥ 0,2 s                 1,10 Un            ≤ 0,1 s
+Spannungsrückgangsschutz U <                             ≤ 0,75 Un       ≥ 3,1 s                 0,80 Un            0,3 s
+Spannungsrückgangsschutz U <<                            ≤ 0,25 Un       ≥ 1,0 s                 0,45 Un            unverzögert
+Frequenzsteigerungsschutz f >>                           ≥ 52,5 Hz       ≥ 0,2 s                 52,5 Hz            ≤ 0,1 s
+Frequenzsteigerungsschutz f >                            ≥ 51,5 Hz       ≥ 5,1 s                 51,5 Hz            ≤5s
+Frequenzrückgangsschutz f <                              ≤ 47,5 Hz       ≥ 0,2 s                 47,5 Hz            ≤ 0,1 s
+
+Inselnetzerkennung                                                                      deaktiviert
+Wiederankopplungsspannung nach Schutzauslösung                                          U ≥ 0,95 Un
+Wiederankopplungsfrequenz nach Schutzauslösung           funtere ≥ 49,9 Hz                       fobere ≤ 50,1 Hz
+Wiederankopplungs-Verzögerungszeit                                                         10 min
+Leistungsänderung nach Sollwertvorgabe oder                                  ≥ 0,33% PrE / s und ≤ 0,66% PrE / s
+Wiederankopplung
+Zuschaltspannung im Normalbetrieb                        Uuntere ≥ 0,9 Un                        Uobere ≤ 1,1 Un
+Zuschaltfrequenz im Normalbetrieb                        funtere ≥ 47,5 Hz                       fobere ≤ 50,2 Hz
+FRT-Verhalten                                               eingeschränkte dynamische Netzstützung nach VDE-AR-N 4110
+FRT-Schwelle-EIN                                         0,90 Un                               1,10 Un
+Blindleistungsvorgabe                                    Q(P)-Beispielkennlinie nach VDE-AR-N 4110:2023-09 bis cos phi 0,95
+                                                         untererregt mit Messort und Erfüllungsort an den Klemmen der EZE
+                                                         oder an der EZA, ersatzweise darf die cos phi (P)-Beispielkennlinie bis
+                                                         cos phi 0,90 untererregt nach VDE-AR-N 4105:2018-11 eingestellt
+                                                         werden
+Zeitkonstante für Blindleistungsregelung                                                3τ = 10 s
+
+
+
+
+20                          VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+ Wirkleistungsgradient (Statik) bei Über- bzw.                           40% Pmom / Hz (Typ-2-EZA)
+ Unterfrequenz 1)                                                        40% Pb inst/ Hz (Typ-1-EZA)
+                                                                      100% Pb inst / Hz (Typ-2-Speicher)
+                                                                             Jeweils bis 52,5 Hz
+ Anschwingzeit während Über- bzw. Unterfrequenz 1)                            ≤ 2s (Typ-2-EZA)
+                                                                            ≤ 2s (Typ-2-Speicher)
+                                                                              ≤ 8 s (Typ-1-EZA)
+ Toleranzband für „Normalbetrieb“ nach Über-bzw.
+                                                                             49,8 Hz bzw. 50,2 Hz
+ Unterfrequenz 1)
+ Wartezeit innerhalb des Toleranzbandes nach Über-
+ bzw. Unterfrequenz für Rückkehr in den                                             10 min
+ „Normalbetrieb“ (insofern einstellbar) 1)
+ Wirkleistungsgradient nach Über- bzw. Unterfrequenz                        Maximal 10% Pinst / min
+ (insofern einstellbar) 1)
+1) Die Ausnahmeregeln der VDE-AR-N 4110 (einschließlich dazugehöriger FAQ) dürfen angewendet werden.
+
+
+
+5.5.3    Erzeugungsanlagen und Speicher mit ∑PEmax zwischen 270 kW und 500 kW sowie
+         PAV,E ≤ 270 kW
+
+                                             Eckdaten der Erzeugungsanlage
+
+ Kumulierte maximale Wirkleistung                    Einspeiseleistung          PAV,E / ∑PEmax
+ (∑PEmax)                                            (PAV,E)
+ > 270 kW & ≤ 500 kW                                 ≤ 270 kW                   Fallunterscheidung siehe
+                                                                                Tabelle 4.4 linker und rechter
+                                                                                oberer Teil
+
+Entsprechend dem Verhältnis PAV,E zu ∑PEmax ist der Parametersatz für den übergeordneten
+Entkupplungsschutz auszuwählen. Auf die Parameter der Erzeugungseinheiten hat dies keinen Einfluss.
+
+ANMERKUNG 1 Der PAV,E Schutz muss nicht zwangsläufig im gleichen Gerät realisiert werden, in dem
+der übergeordneten Entkupplungsschutz realisiert ist. Vergleiche hierzu den FNN Hinweis „PAV, E -
+Überwachung bei Anschlüssen am Mittel- und Hochspannungsnetz“.
+
+Die Vorgaben für die Erzeugungseinheiten in Tabelle 4.4 basieren auf den Anforderungen nach VDE-AR-
+N 4110, da die EAAV bzgl. des Frequenzverhaltens die Anforderungen nach VDE-AR-N 4110 vorsieht. In
+Rot gekennzeichnet sind die vom Standard-Parametersatz der VDE-AR-N 4110 abweichend zu
+realisierenden Vorgaben. Hinsichtlich Schutzeinstellungen an den Erzeugungseinheiten wird eine
+Fallunterscheidung zwischen einem ohne und einem mit AWE betriebenen MS-Netz des Netzbetreibers
+vorgenommen, die im Netzbetreiberfragebogen ausspezifiziert wird.
+
+ANMERKUNG 2 Das ist wieder eine beispielhafte Darstellung. Es ist auch möglich, bei den
+Erzeugungseinheiten den Parametersatz nach der VDE-AR-N 4105 als Grundlage zu nutzen und diesen
+entsprechend den Anforderungen aus diesem Hinweis anzupassen.
+
+ANMERKUNG 3 Die Transformatorstufenstellung wird in dieser Leistungsklasse bei der Parametervorgabe
+berücksichtigt, so dass gilt UNS = Uc/ü. Im Beispielparametersatz für die Erzeugungseinheiten wird von
+einem Übersetzungsverhältnis vereinbarte Versorgungsspannung / Nennspannung (im Regelfall also
+Trafomittelstellung) ausgegangen, so dass keine Anpassung der Einstellwerte vorgenommen werden
+muss.
+
+ANMERKUNG 4 Falls die Erzeugungseinheit nur bis zu der geforderten Netzfrequenz von 51,5 Hz
+betrieben werden kann, ist als Frequenzsteigerungsschutz eine Frequenzstufe mit 51,5 Hz/≤ 100 ms zu
+nutzen. Falls die Erzeugungseinheit nicht vollständig bis zu einer Netzfrequenz von 52,5 Hz betrieben
+
+
+21                            VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+werden kann, ist der Wert von 52,5 Hz auf den technisch maximal möglichen Wert zwischen 51,5 Hz und
+52,5 Hz einzustellen.
+
+ANMERKUNG 5 Falls im zentralen NA-Schutz nur eine Frequenzsteigerungsschutz-Funktion vorhanden
+ist, so ist diese mit der Einstellwertvorgabe für f >> zu belegen.
+
+  Tabelle 2: Parameterliste für Erzeugungsanlagen und Speicher mit ∑PEmax >270 kW und ≤ 500 kW
+                                        sowie PAV,E ≤ 270 kW
+Parameter übergeordneter Entkupplungsschutz
+                                      PAV,E≥ 0,54 ∑PEmax                         PAV,E < 0,54 ∑PEmax
+                                      (z.B. ∑PEmax = 500 kW,                     (z.B. ∑PEmax = 500 kW,
+                                      PAV,E = 270 kW)                            PAV,E < 270 kW)
+
+ Spannungssteigerungsschutz U >>      1,20 Uc            0,3 s                   1,20 Uc                  0,3 s
+ Spannungssteigerungsschutz U >       1,10 Uc            180 s                   1,10 Uc                  180 s
+ Spannungsrückgangsschutz U <         0,80 Uc            2,7 s                   0,80 Uc                  2,7 s
+ PAV,E Schutz P >>                    entfällt                                   lt. E.9 oder             3,4 s
+                                                                                 projektspezifisch
+ PAV,E Schutz P>                      entfällt                                   lt. E.9 oder             10,4 s
+                                                                                 projektspezifisch
+
+
+Funktionalitäten Gesamtanlage
+Diese Funktionen können auch durch externe Komponenten wie Datenmanager / Steuerungen / Anlagenregler oder entsprechende
+Programmierungen in den Anlagen selbst realisiert werden. Eine Zertifizierung ist nicht erforderlich.
+ ∑PEmax                                                        lt. E.8
+ PAV,E Überwachung                                           aktiviert
+ Leistungsvorgabe Netzsicherheitsmanagement/Redispatch       aktiviert
+ Leistungsvorgabe Direktvermarkter                           aktiviert
+ Priorisierung NSM/RD > P(f) > DV                            umgesetzt
+
+Parameter Erzeugungseinheiten
+ dauerhafte Wirkleistungsbegrenzung                                                         nein
+ Blindleistungspriorisierung                                                                 ja
+                                                             Empfehlung nach VDE-           Ausnahme nach VDE-AR-N 4110
+                                                              AR-N 4110 MS-Netz             MS-Netz (Tabelle 13 Fußnote a)
+                                                                  (Tabelle 13)              Vorgabe aus E.9 (entspricht MS-
+                                                                Vorgabe aus E.9                     Netz mit AWE)
+                                                              (entspricht MS-Netz
+                                                                  ohne AWE)
+ Spannungssteigerungsschutz U >>                                                     1,25 UNS / 0,1 s
+
+ Spannungsrückgangsschutz U <                               0,80         1,0 s             0,80         0,3 s
+                                                            UNS                            UNS
+
+ Spannungsrückgangsschutz U <<                              0,45         0,3 s             0,45         unverzögert
+                                                            UNS                            UNS
+
+ Frequenzsteigerungsschutz f >>                                                      52,5 Hz / ≤ 0,1 s
+ Frequenzsteigerungsschutz f >                                                        51,5 Hz / ≤ 5 s
+ Frequenzrückgangsschutz f <                                                         47,5 Hz / ≤ 0,1 s
+ Inselnetzerkennung                                                                     deaktiviert
+ Wiederankopplungsspannung nach Schutzauslösung                                        U ≥ 0,95 UNS
+ Wiederankopplungsfrequenz nach Schutzauslösung             funtere ≥ 49,9 Hz            fobere≤ 50,1 Hz
+
+ Wiederankopplungs-Verzögerungszeit                                                       10 min
+ Leistungsänderung nach Sollwertvorgabe oder                                ≥ 0,33% PrE / s und ≤ 0,66% PrE / s
+
+ Wiederankopplung
+ Zuschaltspannung im Normalbetrieb                          Uuntere ≥ 0,9 UNS              Uobere ≤ 1,1 UNS
+
+ Zuschaltfrequenz im Normalbetrieb                          funtere ≥ 47,5 Hz              fobere ≤ 50,2 Hz
+
+ FRT-Verhalten                                                           eingeschränkte dynamische Netzstützung,
+                                                                                  nach VDE-AR-N 4110
+
+
+
+
+22                             VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+ Blindleistungsvorgabe                                       Q(P)-Beispielkennlinie nach VDE-AR-N 4110:2023-09 bis cos phi
+                                                             0,95 untererregt mit Messort und Erfüllungsort an den Klemmen
+                                                               der EZE oder an der EZA, ersatzweise darf die cos phi (P)-
+                                                              Beispielkennlinie bis cos phi 0,90 untererregt nach VDE-AR-N
+                                                                             4105:2018-11 eingestellt werden
+                                                               (sofern keine anderweitige Netzbetreibervorgabe vorliegt 2))
+ Zeitkonstante für Blindleistungsregelung                                             3τ = 10 s
+ Wirkleistungsgradient (Statik) bei Über- bzw.                                 40% Pmom / Hz (Typ-2-EZA)
+ Unterfrequenz1)
+                                                                              40% Pb inst / Hz (Typ-1-EZA)
+                                                                            100% Pb inst / Hz (Typ-2-Speicher)
+                                                                                    Jeweils bis 52,5 Hz
+ Anschwingzeit während Über-bzw. Unterfrequenz   1)                                  ≤ 2s (Typ-2-EZA)
+                                                                                   ≤ 2s (Typ-2-Speicher)
+                                                                                     ≤ 8 s (Typ-1-EZA)
+ Toleranzband für „Normalbetrieb“ nach Über-bzw.
+                                                                                     49,8 Hz bzw. 50,2 Hz
+ Unterfrequenz1)
+ Wartezeit innerhalb des Toleranzbandes nach Über-bzw.                                      10 min
+ Unterfrequenz für Rückkehr in den „Normalbetrieb“ (insofern
+              1)
+ einstellbar)
+ Wirkleistungsgradient nach Über-bzw. Unterfrequenz                                 Maximal 10% Pinst / min
+ (insofern einstellbar)1)
+1) Die Ausnahmeregeln der VDE-AR-N 4110 dürfen angewendet werden.
+2) Sollte der Netzbetreiber eine Q(U)-Regelung oder eine Blindleistungsvorgabe mit Spannungsbegrenzungsfunktion vorgeben, so
+sollte diese den Beispielkennlinien aus der VDE-AR-N 4110 entsprechen. Der Messort der Spannung sollte an der Mittelspannung,
+der Erfüllungsort der Blindleistungsbereitstellung an den Klemmen der EZE bzw. der EZA liegen.
+
+
+5.5.4    Umgang mit Einschränkungen im Einheitenzertifikat nach VDE-AR-N 4110
+
+Im Kontext der VDE-AR-N 4110 werden die Anforderungen an Erzeugungsanlagen und Speicher auf den
+Netzanschlusspunkt bezogen. Das bedeutet, dass technische Eigenschaften, die Erzeugungseinheiten
+nach VDE-AR-N 4110 nicht vollständig selbst erfüllen, dann auf Anlagenebene durch z.B. weitere
+Komponenten erfüllt werden dürfen. Entsprechende Einschränkungen sind im Einheitenzertifikat
+ausgewiesen. Die Bewertung dieses Gesamtkonzeptes zur Erfüllung der Anforderungen erfolgt im Rahmen
+der Anlagenzertifizierung.
+
+Für die nach NELEV-Änderungsverordnung und EAAV privilegierten Erzeugungsanlagen und Speicher
+entfällt jedoch die Anlagenzertifizierung und somit eine unabhängige Überprüfung des Gesamtkonzeptes.
+Die Gesamtplanung vom Anlagenplaner und -errichter ist daher so zu dokumentieren, dass diese dem
+Netzbetreiber nachvollziehbar vorgelegt werden kann. Wenn Einschränkungen im Einheitenzertifikat nach
+VDE-AR-N 4110 bestehen, ist durch den Hersteller der Erzeugungseinheit anzugeben, ob diese für die
+Erfüllung der Anforderungen nach EAAV relevant sind und wie diese zu beheben sind. Dies ist zum Beispiel
+durch eine Herstellererklärung zu bestätigen. Gleichwertig können Lösungen von anderen Marktakteuren
+sein.
+
+Der Anlagenerrichter hat zu bestätigen, dass die Anforderungen durch die getroffene Lösung erfüllt werden.
+
+Typische Beispiele hierfür können sein:
+
+ die Koordinierung der Priorisierung NSM vor P(f) vor Direktvermarktung,
+ die Umsetzung bestimmter Kennlinien bei der Blindleistungsbereitstellung,
+ die Kontrolle der tatsächlich vorliegenden Trafoimpedanz mit der Vorgabe aus dem Einheitenzertifikat
+  bei Typ-1-Anlagen.
+
+Sollte kein Einheitenzertifikat nach VDE-AR-N 4110 vorliegen, ist das Einzelnachweisverfahren nach VDE-
+AR-N 4110 anzuwenden.
+
+
+
+
+23                            VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+5.6      Nachweisdokumente für den Anschluss von nach NELEV und EAAV privilegierten
+         Erzeugungsanlagen und Speichern ab der Mittelspannungsebene
+5.6.1     Allgemeines
+
+Der Nachweis der Umsetzung der technischen Anforderungen erfolgt für Erzeugungsanlagen und Speicher
+mit einer Leistung:
+
+ ∑PEmax < 135 kW mit dem Inbetriebsetzungsprotokoll E.8 der VDE-AR-N 4105
+
+ ∑PEmax ≥ 135 kW und ∑PEmax ≤ 270 kW (kumulierte Leistung am Netzanschlusspunkt) mit dem
+      Inbetriebsetzungsprotokoll E.8 der VDE-AR-N 4105 und dem Einstellnachweis zur EAAV
+ ∑PEmax > 270 kW und ∑PEmax ≤ 500 kW (kumulierte Leistung am Netzanschlusspunkt) mit dem
+      Inbetriebsetzungsprotokoll E.8 der VDE-AR-N 4105, dem Einstellnachweis zur EAAV und dem
+      Schutzprüfprotokoll für den üEKS einschließlich PAV,E-Schutzeinrichtung.
+
+Sofern am Netzanschlusspunkt weitere Schutzfunktionen (z.B. Kurzschlussschutz) neu errichtet oder
+verändert werden, ist auch deren ordnungsgemäße Funktion dem Netzbetreiber nachzuweisen (z.B.
+durch Einreichen eines Schutzprüfprotokolls). Wird ein EZA-Regler zur Erfüllung der Anforderungen nach
+EAAV und nach VDE-AR-N 4110 benötigt, so muss dieser ein Komponentenzertifikat nach VDE-AR-N
+4110 besitzen.
+
+
+
+
+24                       VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+5.6.2    Inbetriebsetzungsprotokoll E.8 der VDE-AR-N 4105
+
+Inbetriebsetzungsprotokoll Erzeugungsanlagen/Speicher Niederspannung
+(vom Anlagenerrichter (eingetragener Elektrofachbetrieb) – siehe 4.1 auszufüllen)
+                              Vorname, Name
+Anlagenanschrift              Straße, Hausnummer
+                              PLZ, Ort
+Anlagenerrichter              Firma, Ort
+(Ausnahme siehe 5.5.3, 2.     Straße, Hausnummer
+Absatz)                       Telefon, E-Mail
+max. Scheinleistung SAmax                             _____ kVA        max. Wirkleistung PAmax            ____ kW
+Für PV-Anlagen: Modulleistung/Generatorleistung PAgen (für Einspeisevergütung maßgebend)                  ___ kWp
+Übereinstimmung des ausgefüllten Datenblattes E.2 und/oder E.3 mit dem Anlagenaufbau?
+Abrechnungsmessung: Vorinbetriebsetzungsprüfung + Inbetriebsetzungsprüfung erfolgt?
+Einheitenzertifikat für Erzeugungseinheiten und/oder Speicher (soweit jeweils in der Kundenanlage
+verbaut) vorhanden (siehe Vordruck E.4) bzw. nach VDE-AR-N 4110?
+Soweit im jeweiligen Anschlussfall erforderlich: Zertifikat für die Leistungsflussüberwachung am
+Netzanschlusspunkt (PAV, E-Überwachung, 70-%-Begrenzung nach 5.7.4.2, Symmetrieeinrichtung nach
+VDE-AR-N 4100, 5.5
+Zertifikat für den NA-Schutz vorhanden (siehe Vordruck E.6)?
+Integrierter NA-Schutz: Eingestellter Wert Spannungssteigerungsschutz U>                                  ______
+Zentraler NA-Schutz: Eingestellter Wert Spannungssteigerungsschutz U>                                     ______
+                                       Auslösetest „Zentraler NA-Schutz – Kuppelschalter“ erfolgreich
+                                       durchgeführt?
+Zentraler NA-Schutz vorhanden:
+                                       Auslösekreises „Zentraler NA-Schutz – Kuppelschalter“ nach
+                                       Ruhestromprinzip ausgeführt und geprüft?
+                                       Funktionstest PAV, E-Überwachung erfolgreich durchgeführt?
+PAV, E-Überwachung vorhanden:
+                                       Eingestellte Wirkleistung PAV, E                                   _____ kW
+                                     Drosselung auf 70 % im Umrichter eingestellt?
+                                     Zertifizierte technische Steuerung zur Drosselung auf 70 %
+Technische Einrichtung zur
+                                     vorgesehen?
+Reduzierung der Einspeiseleistung:
+                                     Technische Einrichtung zur ferngesteuerten Leistungsreduzierung
+                                     der Einspeiseleistung durch den Netzbetreiber?
+Energieflussrichtungssensor – Funktionstest durch Errichter durchgeführt und bestanden?
+Die Symmetriebedingung wird eingehalten:
+   durch einen Drehstromgenerator oder einen dreiphasigen Umrichter
+   durch folgende Aufteilung der einphasig angeschlossenen Erzeugungseinheiten je Außenleiter:
+                                                                               L1           L2       L3
+Summe SEmax der ggf. vorhandenen Erzeugungsanlagen/Speicher               _____ kVA _____ kVA ______ kVA
+Summe SEmax der neu hinzukommenden Erzeugungsanlagen/Speicher             _____ kVA    _____ kVA       ______ kVA
+   oder durch eine Symmetrieeinrichtung, die den Unsymmetriewert auf 4,6 kVA je Außenleiter begrenzt.
+Verfahren zur Blindleistungsbereitstellung nach Vorgabe des Netzbetreibers eingestellt:
+Q(U)-Standard-Kennlinie     cos  (P)-Standard-Kennlinie          fester Verschiebungsfaktor cos  =
+TF-Sperren in der Anschlusszusage gefordert? ja     nein          Eingebaut             Prüfprotokoll liegt vor
+Die Erzeugungsanlage und/oder der Speicher ist/sind nach VDE-AR-N 4105, VDE-AR-N 4100 und den technischen
+Anschlussbedingungen des Netzbetreibers errichtet. Der Anlagenerrichter hat den Anlagenbetreiber einzuweisen und
+eine vollständige Dokumentation inkl. Schaltplan nach den jeweils gültigen VDE-Bestimmungen zu übergeben.
+Datum der Inbetriebsetzung der Erzeugungsanlage und/oder des Speichers:               _______________________
+
+
+
+                                                                          Unterschrift Anlagenerrichter
+Ort, Datum                    Unterschrift Anlagenbetreiber               (Ausnahme siehe 5.5.3, 2. Absatz)
+
+
+
+
+25                          VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+5.6.3     Einstellnachweis zur EAAV
+
+Einstellnachweis zur EAAV
+Komponente(n) (Hersteller / Typ):
+(Erfolgt der Nachweis bei mehreren eingesetzten
+Komponenten unterschiedlich, ist dieser
+Einstellnachweis entsprechend mehrfach
+auszufüllen)
+Anlagenanschrift                   Vorname, Name
+                                   Straße, Hausnummer
+                                   PLZ, Ort
+Anlagenerrichter                   Firma, Ort
+                                   Straße, Hausnummer
+                                   Telefon, E-Mail
+Nur bei Einschränkungen des Einheitenzertifikates nach VDE-AR-N 4110:
+Es wurde durch zusätzliche Maßnahmen sichergestellt, dass alle durch die
+Parametersätze des FNN Hinweises „Vereinfachter Anschluss und Nachweis von
+Erzeugungsanlagen und Speichern mit Netzanschluss in der Mittel- und
+Hochspannung“ beschriebenen Funktionen umgesetzt werden.
+
+Der Parametersatz zur EAAV gemäß Herstellererklärung wurde ausgewählt.
+
+oder alternativ:
+
+Frequenzvermögen entsprechend VDE-AR-N 4110 eingestellt (P(f) bis 52,5 Hz)*
+
+Überfrequenzschutz entsprechend VDE-AR-N 4110 (f >> bis 52,5 Hz/0,1s)*
+
+Inselnetzerkennung nach VDE-AR-N 4105 in den Erzeugungseinheiten deaktiviert
+Inselnetzerkennung nach VDE-AR-N 4105 im zentralen NA-Schutz (soweit
+vorhanden) deaktiviert
+
+Schutzprüfprotokoll übergeordneter Entkupplungsschutz (falls benötigt) ist beigefügt
+Schutzprüfprotokoll PAV,E (falls benötigt) ist beigefügt
+
+Reduktion der maximalen Wirkleistung auf PEmax,red = _____________ kW
+
+Die Erzeugungsanlage und/oder der Speicher ist/sind nach dem FNN Hinweis „Vereinfachter Anschluss
+und Nachweis von Erzeugungsanlagen und Speichern mit Netzanschluss in der Mittel- und
+Hochspannung “ errichtet. Der Anlagenbetreiber kann auf Anforderung des Netzbetreibers eine
+vollständige Dokumentation über die Einstellungen der Erzeugungseinheiten und des NA-Schutzes
+vorlegen.
+
+
+
+Ort, Datum                                        Unterschrift Anlagenbetreiber   Unterschrift Anlagenerrichter
+
+* Falls die Erzeugungseinheit nur bis zu der geforderten Netzfrequenz von 51,5 Hz betrieben werden kann, ist als
+Frequenzsteigerungsschutz eine Frequenzstufe mit 51,5 Hz/ ≤100 ms zu nutzen. Falls die Erzeugungseinheit nicht
+vollständig bis zu einer Netzfrequenz von 52,5 Hz betrieben werden kann, ist der Wert von 52,5 Hz auf den technisch
+maximal möglichen Wert zwischen 51,5 Hz und 52,5 Hz einzustellen.
+
+
+
+
+26                            VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+5.6.4   Nachweis mit Schutzprüfprotokoll für den üEKS einschließlich PAV,E -Schutzeinrichtung
+Nachweis mit Schutzprüfprotokoll für den üEKS einschließlich PAV,E -Schutzeinrichtung
+                                                                                                     1(3)
+(vom Anlagenerrichter/Schutzprüfer auszufüllen)
+                             Bearbeitungsnummer
+                             Stationsbezeichnung
+                             Beschreibung der Anschlussanlage
+Anschlussanlage
+
+                             Bemerkungen
+
+                             Hersteller und Typ                     Klasse
+                                                                    Nennleistung / gemessene       __/___ VA
+Stromwandler                 Übersetzung
+                                                                    Bürde
+(PAV,E -Schutz)                                                     Wandler sekundärseitig geerdet         S2
+                             Spannungsebene
+                                                                    (P2 zum Kunden Schutzobjekt)
+                             Geschaltet
+                             Hersteller und Typ
+                                                                    Wicklung Nennleistung /
+                             Wicklung Übersetzung                                                    __/___ VA
+                                                                    gemessene Bürde
+Spannungswandler                                                    Wandler sekundärseitig geerdet
+(üEKS, PAV,E)                Wicklung Klasse                                                                 n
+                                                                    (Primär „N“ geerdet)
+                             en-Wicklung                            en-Wicklung Nennleistung /
+                                                                                                     __/___ VA
+                             Übersetzung                            gemessene Bürde
+                             en-Wicklung Klasse                     Wandler sekundärseitig geerdet      dn(L1)
+                             Hersteller und Typ Batterie
+                             Nennspannung              _________V   Kapazität
+                             Typ
+Hilfsenergieversorgung       Nennlast der
+(USV)                                                               Überbrückungszeit
+                             Verbraucher
+                                                                                                            Ja
+                             Batteriepole geerdet
+                                                                                                            Nein
+                             Hersteller und Typ Gleichrichter
+Prüfklemmleiste oder         Fabrikat
+Prüfsteckdose                Typ                              nach VDE-AR-N 4110         nach TAB des VNB
+                             Hersteller und Typ
+                             Bestellnummer/Konfiguration
+Schutzrelais                                                                                                 DC
+(üEKS, PAV,E)                Softwarestand                          Versorgungsspannung _____ V
+                                                                                                             AC
+                             Wandler Sekundär                                              100 V            1A
+                                                                                           400 V            5A
+Schutzrelais PAV,E
+(wenn abweichendes Gerät     Hersteller und Typ
+zu üEKS-Schutzrelais)
+                             Bestellnummer/Konfiguration
+                                                                                                             DC
+                             Softwarestand                          Versorgungsspannung _____ V
+                                                                                                             AC
+                             Wandler Sekundär                                              100 V            1A
+                                                                                           400 V            5A
+
+
+Bemerkungen
+
+
+
+
+27                       VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+Nachweis mit Schutzprüfprotokoll für den üEKS einschließlich PAV,E -Schutzeinrichtung
+                                                                                                                            2(3)
+(vom Anlagenerrichter/Schutzprüfer auszufüllen)
+1. Funktionen des übergeordneten Entkupplungsschutzes
+                                                   Verwendete Schutzfunktion
+Prüfung der Gesamtwirkungskette
+                                                   Abschaltzeit Ist(gemessen) (aus Prüfung)
+(Abschaltzeiten vom Fehlereintritt bis zur                                                                                  ______ s
+Leistungsschalterabschaltung anhand einer
+Schutzfunktion)                                   Einstellzeit Ist (aus nachfolgender Tabelle)                              ______ s
+                                                  LS-Auslösung erfolgreich         Ja      Nein
+                                                                       Schutzrelais-Einstellwerte
+                                          Ansprechwert          Rückfallwert        Einstellzeit
+Spannungssteigerungsschutz                Soll: ______          Ist: ______         Soll: ______ s
+U >> -Stufe                               Ist: ______           Verhältnis: _____ Ist: ______ s
+Spannungssteigerungsschutz                Soll: ______          Ist: ______         Soll: ______ s
+U > -Stufe                                Ist: ______           Verhältnis: _____ Ist: ______ s
+                                          Soll: ______          Ist: ______         Soll: ______ s
+Spannungsrückgangsschutz
+                                          Ist: ______           Verhältnis: _____ Ist: ______ s
+U < -Stufe
+                                          Ist: ______           Ist: ______         Ist: ______ s
+2. Schutzfunktion der PAV,E Überwachung
+                                                                       Schutzrelais-Einstellwerte
+                                          Einstellzeit          Rückfallwert        Einstellzeit
+                                          Soll: ______          Ist: ______         Soll: ______ s
+P >> -Stufe 2)
+                                          Ist: ______           Verhältnis: _____ Ist: ______ s
+                                          Soll: ______          Ist: ______            Soll: ______ s
+P > -Stufe 2)
+                                          Ist: ______           Verhältnis: _____      Ist: ______ s
+1) Abschaltzeit Ist = Einstellzeit Ist + LS-Eigenzeit (Errechneter Wert, ermittelt mit „Prüfung der Gesamtwirkungskette“)
+2) Die Leistungsrichtung in das MS-Netz des Netzbetreibers soll überwacht werden, ggf. Nutzung P<; P<< entsprechend
+Wandlererdung / Einstellmöglichkeit der Schutzeinrichtung.
+
+
+
+
+28                            VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+Schutzprüfprotokoll für den üEKS einschließlich PAV,E -Schutzeinrichtung
+                                                                                            3(3)
+(vom Anlagenerrichter auszufüllen)
+2. Test von Überwachungsfunktionen
+                                                                                  Meldung zur
+                                                          Zwangsauslösung des
+Funktion                                                                          kundeneigenen
+                                                          Leistungsschalters
+                                                                                  Meldestelle
+Selbstüberwachung der Schutzeinrichtung (Life-Kontakt)
+Überwachung der netzunabhängigen
+Hilfsenergieversorgung
+Ausfall der Leistungsschaltersteuerspannung
+Ausfall der Messspannung für den Entkupplungsschutz
+Ausfall der Auslöseverbindung
+                                              Ja
+(Schutzeinrichtung und Schaltgerät sind       Nein
+räumlich getrennt)
+kundeneigene Meldestelle                                                 Kontaktdaten
+Besetzte Warte
+E-Mail-Störungspostfach
+SMS-Störungsbenachrichtigung
+Sonstiges:
+                                           UL1: ______           UL2: ______          UL3: ______
+Aufnahme der Betriebsmesswerte
+                                            IL1: ______          IL2: ______            IL3: ______
+                                             P: ______     Einspeisung    Bezug aus dem öffentl. Netz
+                                             Q: ______     Einspeisung    Bezug aus dem öffentl. Netz
+Bemerkungen
+
+
+
+
+Bestätigung für die ordnungsgemäße Durchführung der Schutzprüfung
+
+
+
+________________________________           _______________________________________________
+Ort, Datum                                 Unterschrift Schutzprüfer
+
+
+
+
+29                         VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+6 Besonderheiten der kumulierten Leistung nach EAAV und NELEV-
+  Änderungsverodnung
+Für die Regelungen der EAAV wird die Summe aller Erzeugungseinheiten und Speicher an einem
+Netzanschlusspunkt gebildet . Dabei ist es unerheblich zu welcher Leistungsklassedes Europäischen
+Network Code „Requirements for Generators“ (NC RfG) eine Anlage gehört..
+
+Der Grenzwert der maximalen Einspeiseleistung am Netzverknüpfungspunkt von 270 kW bezieht sich in
+beiden    Verordnungen    auf    den   gleichen   Wert.   Es   existiert   nur   eine   Einspeiseleistung   am
+Netzverknüpfungspunkt des Netzbetreibers.
+
+Die kumulierte installierte Leistung nach EAAV und die kumulierte installierte Leistung nach NELEV
+unterscheiden sich jedoch. Die EAAV betrachtet hierbei alle Erzeugungseinheiten und Speicher am
+Netzanschlusspunkt, die NELEV betrachtet hierbei nur die sogenannten Typ-B-Anlagen.
+
+Für die Nachweisdokumente gilt:
+
+         Die Verpflichtung, den Nachweisprozess über ein Anlagenzertifikat und eine Konformitätserklärung
+         zu führen, besteht nur dann nicht, wenn die maximale Einspeiseleistung am Netzanschlusspunkt
+         des Netzbetreibers auf 270 kW begrenzt ist und die kumulierte installierte Leistung der Typ-B-
+         Anlagen ≤ 500 kW ist.
+
+ANMERKUNG Die Leistungsklasse des Typs B liegt vor, wenn die Leistung einer Erzeugungsanlage vom
+Typ 1, Typ 2 oder eines Speichers ≥ 135 kW und < 36 MW ist.
+
+Die unterschiedliche Kumulierung in NELEV und EAAV kann zu besonderen Konstellationen führen. Das
+Beispiel in Bild 7 zeigt eine Kundenanlage mit einer maximalen Einspeiseleistung von 270 kW in
+Mittelspannung und einer kumulierten installierten Leistung nach EAAV von 600 kW und nach NELEV von
+400 kW. Damit fällt die Anlage aus dem Anwendungsbereich der EAAV heraus und es gelten die
+technischen Anforderungen gemäß VDE-AR-N 4110, ein Anlagenzertifikat muss aufgrund der neuen
+Regelung der NELEV-Änderungsverordnung jedoch nicht erstellt werden. Die Erstellung des
+Anlagenzertifikats und der Konformitätserklärung wird dennoch empfohlen, da es sich um einen
+standardisierten Nachweisprozess handelt. Alternativ dazu müsste das Nachweisverfahren individuell mit
+dem jeweiligen Netzbetreiber durchgeführt werden.
+
+Somit ist die vereinfachte Darstellung in diesem Hinweis vorbehaltlich dieses Sonderfalls zu sehen.
+Letztendlich betrifft dieser Sonderfall lediglich Anlagen mit einem ∑PEmax > 500 kW und einem
+PAV,E ≤ 270 kW (vierte Anlagen-Konstellation im Bild 1, rechts).
+
+
+
+
+30                       VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+ Bild 7: Beispiel zur Ermittlung der relevanten Leistungsgrößen zur Anwendung der EAAV und NELEV-
+                                           Änderungsverordnung
+
+
+
+7 Zeitliche Einordnung in der Übergangsphase und
+  Anwendungsbeispiele
+Das vereinfachte Zertifizierungsverfahren gemäß NELEV-Änderungsverordnung gilt ab ihrem Inkrafttreten
+und demjenigen der EAAV. Dies gilt sowohl für Anschlussnehmer, die bereits mit der Anlagenplanung
+begonnen haben als auch für jene Anschlussnehmer, die erst nach dem Inkrafttreten der NELEV-
+Änderungsverordnung und der EAAV mit der Anlagenplanung beginnen.
+
+Die Einreichung der Nachweise nach diesem FNN Hinweis hat unverzüglich (ohne schuldhaftes Zögern
+seitens des Nachweiserbringers) zu erfolgen. Unverzüglich bedeutet ohne schuldhaftes Zögern;
+entscheidend ist also nicht ein „Sofort“, sondern die Zumutbarkeit alsbaldigen Handelns für den
+Anlagenbetreiber.
+
+Zu berücksichtigen sind in diesem Zusammenhang im Besonderen die Rechtsfolgen bei Nichterfüllung der
+Nachweiserbringung: Nach der NELEV in ihrer seit Sommer 2022 geltenden Form (§ 4 Absatz 2) muss der
+zuständige Netzbetreiber schon jetzt eine in Betrieb genommene Erzeugungs- oder Speicheranlage vom
+Netz trennen oder deren Einspeisung durch andere Maßnahmen unterbinden, sofern der Betreiber dieser
+Erzeugungs- oder Speicheranlage seine Nachweispflichten nicht eingehalten hat. Diese Pflicht gilt nach
+bestehender Rechtslage grundsätzlich ohne das Erfordernis einer vorherigen Fristsetzung seitens des
+Netzbetreibers. Auch bisher hat der Netzbetreiber jedoch je nach den Gegebenheiten des Einzelfalls dem
+Anlagenbetreiber vor der Netztrennung bzw. Einspeiseunterbindung aus Gründen der Verhältnismäßigkeit
+zunächst eine angemessene Frist gesetzt, bevor er das „scharfe Schwert“ der Netztrennung bzw.
+Einspeiseunterbindung gezogen hat.
+
+In der NELEV-ÄndVO wird dies nun rechtlich präziser geregelt, um einen besseren Ausgleich der
+Interessen von Anlagenbetreibern und Netzbetreibern herbeizuführen. Danach muss der Netzbetreiber
+dem Anlagenbetreiber vor Netztrennung in Textform eine Frist von einem Monat setzen, wenn das
+Schutzprüfprotokoll für den übergeordneten Entkupplungsschutz (üEKS) fehlt. In allen anderen Fällen
+muss er eine Frist von zwei Monaten setzen. Der Netzbetreiber kann die Fristen einmalig um bis zu einen
+Monat verlängern.
+
+
+
+
+31                     VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+ANMERKUNG Erforderliche Nachweise sind unverzüglich beim Netzbetreiber einzureichen, da dieser bei
+in Betrieb genommenen Erzeugungsanlagen ansonsten gemäß § 6 NELEV-Änderungsverordnung
+verpflichtet ist, durch entsprechende Fristsetzung den Prozess der Trennung der Erzeugungsanlage oder
+der Unterbindung der Einspeisung durch andere Maßnahmen einzuleiten.
+
+Anlagenspezifische Unterscheidungen sind in Bild 8 beschrieben und können als Entscheidungshilfe
+genutzt werden.
+
+Hinter einem Netzanschlusspunkt können mehrere Erzeugungsanlagen und Speicher angeschlossen sein.
+Dabei wird in den TAR zwischen Typ-1-Erzeugungsanlagen (∑PAmax, Typ-1), Typ-2-Erzeugungsanlagen
+(PAmax, Typ-2-EZE) und Speichern (PAmax, Typ-2-Speicher) unterschieden und nur innerhalb dieser
+Kategorien kumuliert bei der Frage, ob eine Anlage den Kriterien des Anlagen-Typs B des RfG entspricht.
+In der Kumulation nach NELEV-Änderungsverordnung werden nur Anlagen des Typs B berücksichtigt. Das
+entspricht allen Erzeugungs- und Speicheranlagen, welche größer sind als 135 kW.
+
+
+
+Anwendungsbeispiele
+
+Die nachfolgenden Beispiele gelten für die Zeit nach dem Inkrafttreten der NELEV-Novelle und der EAAV
+und einem Anschluss am Mittelspannungsnetz des Netzbetreibers:
+
+Beispiel 1:
+Für eine Anlage im Anwendungsbereich dieses FNN Hinweises wurde ein Anlagenzertifikat mit Datum vor
+Inkrafttreten der NELEV-Novelle und der EAAV erstellt (das kann auch ein Anlagenzertifikat B unter
+Auflagen sein). Die Anlage hat erstmalig nach Inkrafttreten der NELEV-Novelle und EAAV Energie in das
+Netz des Netzbetreibers eingespeist.
+
+Zur Weiterführung des Vorgangs bestehen dann folgende Optionen:
+a. Umsetzung der Anforderungen und Nachweise nach diesem Hinweis (NELEV + EAAV) oder
+b. Umsetzung der Anforderungen und Nachweise nach VDE-AR-N 4110.
+
+Beispiel 2:
+Eine PV-Anlage mit ∑PEmax = 250 kW ist mittels einer Leistungsreduzierung des netzseitigen Umrichters
+auf 134 kW in Betrieb gegangen nach VDE-AR-N 4105. Der Kunde hat beim Netzbetreiber eine
+Erweiterung der PV-Anlage um 116 kW angemeldet.
+
+Zur Weiterführung des Vorgangs (nach Bestätigung durch den Netzbetreiber) muss der Kunde die
+Anforderungen und Nachweise nach diesem Hinweis (NELEV + EAAV) in der Erweiterung oder für die
+Gesamtanlage umsetzen.
+
+Beispiel 3:
+Eine Typ-2-Erzeugungsanlage (z.B. PV-Anlage) mit ∑PEmax = 130 kW und ein Typ-2-Speicher mit ∑PEmax
+= 130 kW soll an einem Netzanschlusspunkt mit einer Bestandsanlage des Typs 1 mit ∑PEmax = 50 kW
+installiert werden. Die kumulierte installierte Leistung der Anlage beträgt damit ∑PEmax = 310 kW. Diese
+Leistung ist auch als vertraglich vereinbarte Einspeiseleistung PAV,E = 310 kW vorgesehen Die gesamte
+Anlage wurde nach VDE-AR-N 4105 (da alles Anlagen ≤ 135 kW sind), zuzüglich übergeordnetem
+Entkupplungsschutz geplant.
+
+Zur Weiterführung des Vorgangs muss der Kunde die Anforderungen und Nachweise gemäß
+Anwendungsbereich der VDE-AR-N 4110 nach VDE-AR-N 4105 in der Erweiterung oder für die
+
+
+32                     VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+Gesamtanlage umsetzen und es ist zusätzlich ein übergeordneter Entkupplungsschutz vorzusehen und ein
+Schutzprüfprotokoll für diesen einzureichen.
+
+Beispiel 4:
+Eine Typ-2-Erzeugungsanlge (z.B. PV-Anlage) mit ∑PEmax = 140 kW und ein Typ-2-Speicher mit ∑PEmax
+= 130 kW soll an einem Netzanschlusspunkt mit einer Bestandsanlage des Typs 1 mit ∑PEmax = 50 kW
+installiert werden. Die kumulierte installierte Leistung der Anlage beträgt damit ∑PEmax = 320 kW. Die
+Anlagen wurden nach VDE-AR-N 4110 geplant (da eine der Anlagen > 135 kW ist).
+
+Zur Weiterführung des Vorgangs bestehen dann folgende Optionen:
+a. Installation einer PAV,E-Überwachung für 270 kW; Umsetzung der Anforderungen und Nachweise nach
+diesem Hinweis (NELEV + EAAV) (also auch mit übergeordnetem Entkupplungsschutz und dessen
+Schutzprüfprotokoll) in der Erweiterung oder der Gesamtanlage; oder
+b. Umsetzung der Anforderungen und Nachweise nach VDE-AR-N 4110, wenn PAV,E > 270 kW ist; oder
+c. Reduzierung ∑PEmax der Typ-2-Erzeugungsanlage auf ∑PEmax,red auf < 135 kW, damit Umsetzung der
+Anforderungen der VDE-AR-N 4105 + üEKS nach VDE-AR-N 4110.
+
+
+
+
+33                      VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+     Bild 8: Entscheidungshilfe zur Anwendung VDE-AR-N 4105, VDE-AR-N 4110 sowie FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+
+
+
+
+34                 VDE FNN Hinweis Vereinfachter Anschluss nach NELEV und EAAV
+VDE Verband der Elektrotechnik
+Elektronik Informationstechnik e.V.
+
+Forum Netztechnik/Netzbetrieb im VDE (FNN)
+Bismarckstraße 33
+10625 Berlin
+Tel. +49 30 383868-70
+fnn@vde.com
+www.vde.com/fnn
+

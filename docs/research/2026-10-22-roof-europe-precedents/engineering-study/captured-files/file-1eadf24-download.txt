@@ -1,0 +1,1901 @@
+                                                                                     Note externe
+                                                                                     Direction Clients Territoires
+
+
+Modèle de Convention de Raccordement Directe au Réseau Public
+de Distribution BT d’une Installation de Production ou susceptible
+d’injecter et de soutirer de puissance comprise entre 36 et
+250 kVA - Conditions Particulières
+Identification :     Enedis-MOP-RES_054E
+Version :            2
+Nb. de pages :       33
+
+
+  Version        Date d’application   Nature de la modification                                            Annule et remplace
+                                      Changement de numérotation des notes externes d’Enedis en
+                                      2025
+      1              01/01/2025                                                                 Enedis-FOR-RES_37E
+                                      Mise en application des normes NF EN 50549
+                                      Fusion avec la note Enedis-FOR-RES_38E
+                                                                                                              Enedis-MOP-
+      2             03/09/2026        Modification du taux d’acompte
+                                                                                                              RES_054E-V1
+
+Document(s) associé(s) et annexe(s) :
+Enedis-MOP-RES_047E : « Convention de raccordement au Réseau Public de Distribution BT d’une Installation
+de production de puissance comprise entre 36 et 250 kVA - Conditions Générales »
+Enedis-NMO-RES_030E : « Procédure de traitement des demandes de raccordement d'une Installation de
+Production en BT de puissance supérieure à 36 kVA et en HTA, au Réseau Public de Distribution géré par
+Enedis »
+Enedis-NMO-RES_029E : « Conditions de raccordement des Installations de production relevant d'un Schéma
+Régional de Raccordement au Réseau des Energies Renouvelables ou d'un volet géographique »
+Enedis-NMO-RES_032E : « Conditions de raccordement des Installations susceptibles d’injecter et de soutirer »
+Enedis-NMO-RES_026E : « Modalités du contrôle de performances des Installations de Production raccordées
+au Réseau Public de Distribution géré par Enedis »
+
+Résumé / Avertissement
+Les présentes Conditions Particulières de la Convention de Raccordement Directe, complètent les Conditions
+Générales en précisant les conditions techniques, financières et les délais de mise à disposition des ouvrages
+de Raccordement à réaliser pour le raccordement de l’Installation de Production d’énergie électrique ou
+susceptible d’injecter et de soutirer raccordée au Réseau Public de Distribution BT.
+L’ensemble Conditions Générales et Conditions Particulières constitue la Convention de Raccordement Directe
+qui vaut offre de raccordement et doit être regardée comme incluant la Proposition Technique et Financière.
+La Convention de Raccordement Directe s’inscrit dans un dispositif contractuel comprenant le Contrat d’Accès
+au Réseau et la Convention d’Exploitation conclus entre l’Utilisateur et Enedis pour une Installation de Production
+raccordée au Réseau Public de Distribution BT. Par ailleurs, Enedis rappelle l'existence de sa Documentation
+Technique de Référence (DTR), disponible sur le site internet www.enedis.fr, qui inclut notamment son barème
+de raccordement et de son catalogue des prestations.
+
+
+
+
+ Enedis                                        SA à directoire et à conseil de surveillance                           Page : 1/33
+ 4, place de la Pyramide                       Capital de 270 037 000 euros                                          25/08/2026
+ 92800 Puteaux                                 R.C.S. de Nanterre 444 608 442
+ enedis.fr                                     © Copyright Enedis
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+    CONDITIONS PARTICULIÈRES de la Convention de Raccordement
+    Directe au Réseau Public de Distribution Basse Tension d'une
+  Installation de Production «Type_de_production» ou [susceptible
+                       d’injecter et de soutirer]
+
+                   Nom de l’installation : «Nomdusite» de puissance «P_INJ» kVA
+                                    N° SIRET : «NumérodeSIRET»
+                            Située : «Adressesite» - «Cpsite» «Villesite»
+
+                             Référence Enedis : «RefGefarp» / «RefIEP»
+
+             COMPLETANT LES CONDITIONS GENERALES VERSION «VersionCG»
+
+                                                                                             XXX, le jj/mm/aaaa
+Auteur de la Convention de Raccordement Directe :
+
+
+Enedis, société anonyme au capital de 270 037 000 euros, dont le siège social est situé 4, place de la Pyramide
+- 92800 Puteaux, immatriculée au Registre du Commerce et des Sociétés de NANTERRE sous le numéro 444
+608 442, représentée par «PrénomNomReprésentant», «FonctionReprésentantEnedis», Enedis « NomDR »
+dûment habilitée à cet effet,
+Ci-après dénommé « Enedis ».
+
+
+Bénéficiaire de la Convention de Raccordement Directe :
+
+
+«NomouraisonsocialedelEtablissement», dont le siège social est situé «Adresseclient» - «CPclient» «villeclient»,
+immatriculée au Registre du Commerce et des Sociétés de «RCS» sous le numéro «SIREN», représentée par
+«PrénomNomSignataire», «fonctionsignataire», dûment habilité à cet effet,
+Ci-après dénommé par « le Demandeur »
+
+Les parties ci-dessus sont appelées dans le présent contrat “ Partie ”, ou ensemble “ Parties ”.
+
+Par l’acceptation de la présente Convention de Raccordement Directe, le Demandeur reconnait expressément
+avoir été informé que cette offre est régie par la procédure de traitement des demandes de raccordement en
+BT de puissance supérieure à 36 kVA et en HTA, au Réseau Public de Distribution géré par Enedis référencée
+Enedis-NMO-RES_030E (version «Version030E») et, le cas échéant, par les conditions de raccordement des
+Installations de Production relevant d’un Schéma Régional de Raccordement au Réseau des Energies
+Renouvelables ou d’un volet géographique référencée Enedis-NMO-RES_029E. Ces documents sont publiés
+sur le site internet d’Enedis www.enedis.fr.
+
+
+
+
+Enedis -MOP -RES_054E                                                                                 Page : 2/33
+Version 2                                                                                            25 /0 8 /202 6
+      Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+    Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+             Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                   Particulières
+
+SOMMAIRE
+
+Préambule ............................................................................................................................................ 5
+
+
+1 — Synthèse de la Convention de Raccordement Directe ........................................................ 6
+
+
+2 — Objet des Conditions Particulières...........................................................................................7
+
+
+3 — Solution technique du Raccordement .....................................................................................7
+      3.1. Puissance de raccordement de l'installation ................................................................................................................7
+      3.2. Energie réactive ....................................................................................................................................................................... 8
+      3.3. Description du Raccordement de l’Installation ............................................................................................................ 9
+
+
+4 — Ouvrages de Raccordement ....................................................................................................10
+      4.1. S3REnR concerné ................................................................................................................................................................. 10
+      4.2. Caractéristiques détaillées des Ouvrages pour le raccordement de l’installation ...................................... 10
+      4.3. Dispositif de comptage ....................................................................................................................................................... 10
+          4.3.1. Compteur(s) et circuits de mesure installés au niveau du point de livraison ....................................10
+          4.3.2. Compteur(s) et circuits de mesure installés au point de décompte ..................................................... 11
+      4.4. Ouvrages de Raccordement privés à construire par le Demandeur ................................................................... 11
+
+
+5 — Ouvrages de l'Installation ........................................................................................................ 12
+      5.1. Caractéristiques des ouvrages ......................................................................................................................................... 12
+          5.1.1. Sectionnement du Point De Livraison ........................................................................................................ 12
+          5.1.2. Protections rendues nécessaires par le raccordement au Réseau Public de Distribution BT ...... 12
+                5.1.2.1. Protection de découplage contre les défauts sur le Réseau Public de Distribution .................... 12
+                5.1.2.2. Coordination des protections ........................................................................................................................... 12
+      5.2. Installations de télécommunication ................................................................................................................................ 12
+      5.3. Contrôle de performances .................................................................................................................................................. 12
+
+
+6 — Propriété des ouvrages, emplacement du Point De Livraison et du Point de comptage
+    ...................................................................................................................................................... 13
+
+
+7 — Contribution financière et délai de mise à disposition du raccordement ....................... 27
+      7.1. Contribution pour reprise d’études ................................................................................................................................. 27
+      7.2. Contribution financière ....................................................................................................................................................... 27
+          7.2.1. [Variante 1] Installations relevant d’un S3REnR Ouvrages propres [Variante 2] Installations
+                 relevant d’un S3REnR Ouvrages de branchement et d’extension ..................................................... 27
+          7.2.2. Quote-part du coût des ouvrages à créer en application du S3REnR ............................................... 28
+
+Enedis -MOP -RES_054E                                                                                                                                                             Page : 3 /33
+Version 2                                                                                                                                                                         25 /0 8 /202 6
+      Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+    Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+             Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                   Particulières
+
+          7.2.3. Montant total de la contribution financière ............................................................................................. 28
+          7.2.4. Modalités de règlement ................................................................................................................................ 28
+      7.3. Délai de mise à disposition du raccordement ............................................................................................................29
+
+
+8 — Signatures ................................................................................................................................. 30
+
+
+Annexe 1           Caractéristiques de la demande (Fiches de collecte) ............................................. 31
+
+
+Annexe 2 Plan de situation et plan de masse ............................................................................. 31
+
+
+Annexe 3 Schéma simplifié de l'installation ............................................................................... 31
+
+
+Annexe 4 Description du raccordement prévu ........................................................................... 31
+
+
+Annexe 5 Résultats des études .................................................................................................... 32
+
+
+Annexe 6 : Attestation relative au contrôle de performances des Installations de
+    Production et Certificats de conformité des Equipements ou de l’Installation ............. 33
+
+
+
+
+Enedis -MOP -RES_054E                                                                                                                                      Page : 4 /33
+Version 2                                                                                                                                                 25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+Préambule
+Le Demandeur reconnaît avoir pris connaissance des Conditions Générales Version «VersionCG» de la
+Convention de Raccordement d’une Installation de Production de puissance comprise entre 36 et 250 kVA au
+Réseau Public de Distribution Basse Tension. Celles-ci sont disponibles sur le site internet www.enedis.fr dans la
+rubrique « Documentation Technique de Référence ».
+
+Elles peuvent être transmises par voie électronique ou postale sur simple demande à Enedis.
+
+Etant rappelé que :
+Dans la suite du document, conformément à la procédure en vigueur (Enedis-NMO-RES_030E), le terme :
+— « demandeur » désigne, sauf mention contraire, soit le demandeur du raccordement lui-même (utilisateur
+  final de l’Installation de production), soit le tiers qu’il a habilité,
+— « l’installation de production » doit être compris comme l’ensemble des installations de production.
+
+La signature des présentes Conditions Particulières et de leurs annexes vaut acceptation des Conditions
+Générales sans aucune réserve.
+
+Enedis rappelle au Demandeur que les dispositions de la procédure de traitement des demandes de
+raccordement individuel d'installations en BT de puissance supérieure à 36 kVA et en HTA au RPD géré par
+Enedis, le barème de raccordement et le Catalogue des Prestations publiés sur le site internet d'Enedis à la date
+des présentes Conditions Particulières sont applicables à la Convention de Raccordement.
+
+
+
+
+Enedis -MOP -RES_054E                                                                                  Page : 5 /33
+Version 2                                                                                              25 /0 8 /202 6
+    Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+  Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+           Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                 Particulières
+
+1—      Synthèse de la Convention de Raccordement Directe
+                        Alimentation principale pour le Site de «Nomdusite» pour une Puissance de raccordement en
+                        injection de «puissanceInjection» kVA.
+      Votre         [Variante 1 : demande soutirage]
+     demande            Une Puissance de raccordement en soutirage de «puissanceSoutirage» kVA a aussi été
+                        demandée.
+                    [Fin variante 1]
+                        Demande recevable le : «dateT0»
+
+
+                 L'installation sera raccordée au Réseau Public de Distribution d’Électricité Basse Tension
+Caractéristiques par l'intermédiaire d'un unique Point De Livraison alimenté en antenne souterraine.
+  techniques     Le détail de la solution de raccordement est décrit au chapitre 4 —.
+
+
+                        La mise à disposition des ouvrages de raccordement est décomptée à partir de l’acceptation
+                        de la présente convention de raccordement.
+
+                                                                                                       Mise en
+                         Envoi par Enedis de      Acceptation de la
+                                                                                                   exploitation des
+                          la Convention de         Convention de
+                                                                                                    Ouvrages de
+                           Raccordement            Raccordement
+                                                                                                   Raccordement
+   Planning du
+  raccordement                                                      Durée des travaux (en mois) :
+                                                            Réseaux BT, HTA et poste HTA/BT : « durée
+                                        3 mois maxi
+                                                                           travaux » mois
+                                                              Source et/ou HTB : « durée source » mois
+                        Le détail du délai de mise à disposition du raccordement [Option], intégrant la proposition
+                        d’Enedis d’une mise à disposition anticipée du raccordement dans l’attente de la réalisation
+                        des travaux au Poste Source et/ou sur le réseau HTB [Fin option] est décrit au chapitre 7.3.
+
+                        La contribution financière au raccordement est de «MontantHT» € HT et TVA «TVA20» €
+                        au taux de TVA en vigueur, soit «MontantTTC» € TTC .
+                    [Option 1 : projets groupés, mutualisés ou présence d’autre offres en amont]
+                        La présente offre tient compte d’autres projets : toute modification ou abandon d'un
+                        quelconque de ces projets remettra en cause l'intégralité des offres associées.
+   Contribution
+   financière au    [Fin option1]
+  raccordement          Modalités de paiement : nets et sans escompte, par virement ou chèque à l’ordre d’Enedis
+                        (voir chapitre 7.2.4). Le Demandeur verse à Enedis un acompte dont le montant s’élève à
+                        «MontantAcompte» € TTC
+                    [Variante 1 : client de type « collectivité »]
+                        Le Demandeur adresse à Enedis un ordre de service.
+                    [Fin variante 1]
+                        ➔ le détail du coût du raccordement est décrit au chapitre 7.2
+                    Le Demandeur dispose d’un délai de trois mois, à compter de la date d’envoi par Enedis, pour
+                    donner son accord sur cette Convention, accord matérialisé par la réception par Enedis des
+                    deux éléments suivants:
+     Validité
+                    — la réception par courrier postal ou électronique d’un exemplaire original, daté et signé, de
+                      l’Offre de Raccordement, sans modification ni réserve,
+                    — le versement de l’acompte ou la réception de l’ordre de service défini au chapitre 7.2.4
+
+
+
+
+Enedis -MOP -RES_054E                                                                                      Page : 6 /33
+Version 2                                                                                                 25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+
+                      La mise à disposition des Ouvrages de Raccordement du Demandeur est conditionnée par :
+        Formalités
+       nécéssaires    — la fourniture à Enedis du certificat de conformité visé par le CONSUEL,
+                      — le paiement de la totalité du solde de la contribution au coût du raccordement.
+
+
+
+
+2—         Objet des Conditions Particulières
+[Variante 1 : cas d’une nouvelle installation de Production ou susceptible d’injecter et de soutirer raccordée
+directement]
+Le Demandeur a sollicité Enedis pour le raccordement au Réseau Public de Distribution Basse Tension (BT)
+d’une Installation de Production d’électricité et éventuellement d’une Installation de Consommation d’électricité.
+[Fin de variante 1]
+[Variante 2 : cas d’une nouvelle installation de production raccordé indirectement]
+Le Demandeur a sollicité Enedis pour le raccordement indirect au Réseau Public de Distribution Basse Tension
+d’une installation de production d’électricité.
+[Fin de variante 2]
+
+Les présentes Conditions Particulières de la Convention de Raccordement Directe précisent les
+caractéristiques auxquelles l’Installation doit satisfaire pour être raccordée au Réseau Public de Distribution
+BT.
+
+Les caractéristiques de cette demande, jointes en annexe 1 des présentes Conditions Particulières, présentent
+notamment les caractéristiques suivantes :
+— Puissance installée totale de l’Installation de Production : [TotalPuissanceGénérateur] kVA,
+
+[Option : existence de Producteur(s) en Décompte]
+— Dont Puissance de production maximale de l’installation de décompte (puissance installée) :
+  [PuissanceGénérateursIndirect] kVA,
+
+[Fin option]
+— Tension de raccordement : BT.
+
+Enedis estime, dès ce stade, être en mesure d’arrêter définitivement les conditions techniques et financières et
+les délais de réalisation du raccordement, elle établit donc directement la présente Convention de
+Raccordement qui vaut offre de raccordement et doit être regardée comme incluant la PTF.
+
+
+3—         Solution technique du Raccordement
+3.1.       Puissance de raccordement de l'installation
+[Variante 1 : injection en Totalité]
+La totalité de la production sera injectée sur le Réseau Public de Distribution BT.
+
+Les capacités d’accès au Réseau Public de Distribution BT sont :
+— en injection : la Puissance de production maximale nette livrée au Réseau Public de Distribution
+  correspondant à la Puissance de Raccordement en injection sur le Réseau Public de Distribution BT
+  (Pracc_inj_BT) de l’Installation est de «puissanceInjection» kVA ;
+
+[Option 1: demande d’un raccordement supplémentaire en soutirage]
+
+
+
+Enedis -MOP -RES_054E                                                                                     Page : 7/33
+Version 2                                                                                                 25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+— en soutirage : une demande d’un raccordement supplémentaire en soutirage, pour la même entité juridique
+  du Demandeur, a également été effectuée. La Puissance de Raccordement pour le soutirage sur le Réseau
+  Public de Distribution BT (Pracc_sout_BT) est de «puissanceSoutirage» kVA ;
+
+[Fin option 1]
+[Option 2: raccordement existant en soutirage]
+— en soutirage : la Puissance de Raccordement pour le soutirage existant sur le Réseau Public de Distribution
+  BT (Pracc_sout_BT) est de «Psoutirageexistante» kVA.
+[Fin option 2]
+[Fin variante 1]
+
+[Variante 2: injection en Surplus ]
+Le surplus de la production alimentant le Site sera injecté sur le Réseau Public de Distribution.
+Les capacités d’accès au Réseau Public de Distribution BT sont :
+— en injection : la Puissance de production maximale nette livrée au Réseau Public de Distribution
+  correspondant à la Puissance de Raccordement en injection sur le Réseau Public de Distribution BT
+  (Pracc_inj_BT) de l’Installation est de «puissanceInjection» kVA ;
+— en soutirage : la Puissance de Raccordement pour le soutirage sur le Réseau Public de Distribution BT
+  (Pracc_sout_BT) est de «puissanceSoutirage» kVA.
+
+[Fin variante 2]
+[Option 3 : bridage de l’installation]
+Le respect de la puissance maximale de l’installation est assuré par un bridage statique.
+Le respect de la puissance de raccordement en injection est assuré par un bridage dynamique.
+[Fin option 3]
+
+Un dispositif de bridage dynamique, id est un dispositif limitant la puissance injectée au point de raccordement.
+est obligatoire dès lors que la puissance de production installée Pinstallée est strictement supérieure à la puissance
+de raccordement en injection Pracc_inj_BT. Le dispositif de bridage doit alors garantir que la puissance
+apparente injectée sur le réseau ne dépasse pas de plus de 5% la Pracc_inj_BT en moyenne sur 1 minute
+glissante.
+
+
+3.2.    Energie réactive
+[Variante 1] : consigne à la valeur courante donnée par les CG (tanϕ = -0,35 ou cosϕ = 0,944 sous excité )
+La consigne de fonctionnement en énergie réactive de l’installation de production est précisée au § 2.4 des
+Conditions Générales de la présente Convention de Raccordement Directe (Enedis-MOP-RES_047E).
+[Fin variante 1]
+
+[Variante 2] : consigne dérogatoire prévue par les CG (modification de l’installation avec maintien de la consigne
+d’origine à tanϕ = 0 ou bien demande de raccordement qualifiée avant le 01/02/2023)
+A tout instant, l'installation de production ne devra ni absorber ni injecter d’énergie réactive.
+
+Pour les producteurs vendant leur énergie en totalité, Enedis pourra contrôler le respect des consignes portant
+sur l'énergie réactive en considérant que lorsque la puissance active dépasse 0,2 x Puissance de Raccordement
+en Injection, la puissance réactive absorbée doit être comprise entre 0 et 0,1 x puissance active produite. Selon
+la nature du Dispositif de comptage de référence, le contrôle du respect des engagements du Demandeur en
+matière de réactif s’opérera sur la base d’une Courbe de Mesure en réactif si celle-ci est disponible ou des index
+de réactif dans les autres cas.
+Pour les autres types de valorisation de l’énergie produite et si les modalités de contrôle précédentes ne sont
+pas pertinentes, Enedis pourra demander la vérification du réglage du dispositif intégrant l’absorption du réactif,
+tel que l’onduleur, par tout moyen disponible, le plus simple étant la fourniture par le producteur d’une attestation
+de réglage.
+[Fin variante 2]
+
+Enedis -MOP -RES_054E                                                                                      Page : 8 /33
+Version 2                                                                                                 25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+
+[Variante 3] : consigne dérogatoire prévue par les CG (cas de contrainte technique particulière d’une production
+utilisant des machines tournantes)
+L'installation de production devra à tout instant absorber une puissance réactive égale à [ valeur de tanϕ] x la
+puissance active produite par l'installation (équivalente à cosϕ = [valeur de cosϕ] sous excité).
+
+Pour les producteurs vendant leur énergie en totalité, Enedis pourra contrôler le respect des consignes portant
+sur l'énergie réactive en considérant que lorsque la puissance active dépasse [ 0,2 par défaut ; seuil ajustable
+jusqu’à 0,6] x Puissance de Raccordement en Injection, la puissance réactive absorbée doit être comprise entre
+[valeur de tanϕ - 0,05] x puissance active produite et [valeur de tanϕ + 0,05] x puissance active produite. Selon
+la nature du Dispositif de comptage de référence, le contrôle du respect des engagements du Demandeur en
+matière de réactif s’opérera sur la base d’une Courbe de Mesure en réactif si celle-ci est disponible ou des index
+de réactif dans les autres cas.
+Pour les autres types de valorisation de l’énergie produite et si les modalités de contrôle précédentes ne sont
+pas pertinentes, Enedis pourra demander la vérification du réglage du dispositif intégrant l’absorption du réactif,
+tel que l’onduleur, par tout moyen disponible, le plus simple étant la fourniture par le producteur d’une attestation
+de réglage.
+[Fin variante 3]
+
+
+3.3.    Description du Raccordement de l’Installation
+Le plan de situation et le plan de masse du raccordement de l’Installation au Réseau Public de Distribution BT
+sont joints en Annexe 2. L’emplacement du point de livraison et d’un éventuel cheminement en domaine privé
+des canalisations de raccordement y seront précisés.
+Les éventuels travaux nécessaires sur les Réseau Public de Distribution et/ou de Transport pour le
+raccordement de l’Installation sont décrits à l’article 4 — des présentes Conditions Particulières.
+
+
+
+
+Enedis -MOP -RES_054E                                                                                     Page : 9 /33
+Version 2                                                                                                25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+4—      Ouvrages de Raccordement
+[Option] Installations relevant d’un S3REnR
+4.1.    S3REnR concerné
+[Variante 1 : cas usuel]
+L’Installation de Production est située dans la région administrative de «S3REnR». Le S3REnR de cette région a
+été validé le «DateS3REnR». Le Poste Source le plus proche disposant d’une capacité réservée suffisante pour
+satisfaire la Puissance de Raccordement proposée, en aval duquel la solution de raccordement minimise le coût
+du raccordement (Ouvrages Propres) fait partie de ce S3REnR.
+[Fin variante 1]
+
+[Variante 2 – poste source le plus proche relève d’un autre S3REnR]
+L’Installation de Production est située dans la région administrative de «S3REnR» dont le S3REnR a été validé
+le «DateS3REnR». Cependant, le Poste Source le plus proche disposant d’une capacité réservée suffisante pour
+satisfaire la Puissance de Raccordement proposée, en aval duquel la solution de raccordement minimise le coût
+du raccordement (Ouvrages Propres) fait partie du S3REnR de la région administrative de ______ validé le ______.
+[Fin variante 2]
+[Fin option]
+        4.2.       Caractéristiques détaillées des Ouvrages pour le raccordement de l’installation
+
+               Poste source     Réseau HTA               Poste DP                       Branchement
+   [Nom du Poste Source]        [Nom    du      départ   [Nom du poste HTA/BT]
+                                HTA]
+Réseau HTB                                                                  Réseau BT              Domaine privé
+
+
+
+Création de rame HTA,                             Création d’un poste       Création d’un        Coffret de
+Mutation / Création de                            HTA/BT ≤ ou > 160 kVA     câble BT xxx m,      sectionnement et
+transformation HTB/HTA                            Aménagement du poste                           coffret de comptage
+Travaux sur le réseau                             existant : augmentation   Création d’un        incluant
+                              Création d’un
+HTB (renforcement de                              de puissance du           départ direct BT     transformateurs de
+                              câble HTA xxx m
+ligne, création de ligne,                         transformateur et/ou      xxx m                courant
+etc.)                                             augmentation de la
+Autres travaux PS et/ou                           capacité en départs BT    Renforcement d’un    Liaison en domaine
+HTB à expliciter                                  sur poste type XXX        câble BT xxx m       privé x xxx m
+
+
+4.3.    Dispositif de comptage
+
+        4.3.1. Compteur(s) et circuits de mesure installés au niveau du point de livraison
+Le schéma unifilaire de l’installation est donné en Annexe 3. Celui-ci indique en particulier les positions des
+compteurs et réducteurs de mesure listés ci-après :
+
+   Type de compteur                 Energie comptée               Libellé de l'énergie comptée        Propriété
+                       Actif produit                                    P-
+                       Réactif produit en production                    Q-
+       PME/PMI                                                                                          Enedis
+                       Réactif absorbé en production                    Q+
+                       Actif soutiré                                    P+
+Les réducteurs de mesure pour le dispositif de comptage de référence suivants sont installés :
+
+
+
+
+Enedis -MOP -RES_054E                                                                                     Page : 10/33
+Version 2                                                                                                 25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+                                                                                         Type de
+                Réf. du                                Classe de      Puissance de
+                                  Rapport                                               compteurs
+               réducteur                               Précision       Précision
+                                                                                         associés
+
+                           100/5 (36 à 60 kVA)
+                   TC      200/5 (60 à 120 kVA)            0.5            15 VA          PME/PMI
+                           500/5 (120 à 250 kVA)
+
+[Variante : à supprimer si pas de point de décompte]
+
+
+        4.3.2. Compteur(s) et circuits de mesure installés au point de décompte
+
+   Type de compteur               Energie comptée                Libellé de l'énergie comptée       Propriété
+
+                           Actif produit                                     P-
+                           Réactif produit en production                     Q-
+       PME/PMI                                                                                       Enedis
+                           Réactif absorbé en production                     Q+
+                           Actif soutiré                                     P+
+
+Les réducteurs de mesure pour le dispositif de comptage de référence suivants sont installés :
+
+
+                                                                                         Type de
+                Réf. du                                Classe de      Puissance de
+                                  Rapport                                               compteurs
+               réducteur                               Précision       Précision
+                                                                                         associés
+                           100/5 (36 à 59 kVA)
+                   TC      200/5 (60 à 119 kVA)            0.5            15 VA          PME/PMI
+                           500/5 (120 à 250 kVA)
+[Fin variante]
+
+
+4.4.    Ouvrages de Raccordement privés à construire par le Demandeur
+[Variante 1 Décrire les travaux à réaliser par le Demandeur]
+— Travaux de maçonnerie pour la réalisation de niche pour l’encastrement de l’armoire ou du CCPI, de saignée
+  pour le passage de câbles, les aménagements de génie civil (tranchée, fourreaux, caniveaux),
+— Matérialisation de l’emplacement et encastrement de l’armoire,
+— Implantation du poste en lien avec le propriétaire de la parcelle,
+— La mise à disposition d’un local technique conforme à la NF C14.100,
+— Raccordement aval du point de livraison.
+[Fin variante 1]
+
+[Variante 2]
+Sans Objet
+[Fin variante 2]
+
+
+
+
+Enedis -MOP -RES_054E                                                                                  Page : 11/33
+Version 2                                                                                              25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+5—      Ouvrages de l'Installation
+5.1.    Caractéristiques des ouvrages
+        5.1.1. Sectionnement du Point De Livraison
+Le sectionnement est assuré par un dispositif décrit à l’article 6 — des présentes Conditions Particulières.
+
+
+        5.1.2. Protections rendues nécessaires par le raccordement au Réseau Public de Distribution BT
+
+            5.1.2.1. Protection de découplage contre les défauts sur le Réseau Public de Distribution
+[Variante 1]
+La protection de découplage installée au Point De Livraison sera du type B.1, conformément à la note Enedis-
+NMO-RES_025E.
+[Fin variante 1]
+[Variante 2]
+La protection de découplage est assurée par un dispositif de séparation qui peut ou non être intégré à chaque
+onduleur (ou au sectionneur automatique) utilisé et conforme à la recommandation DIN VDE 0126 1.1 / A1,
+conformément à la note Enedis-NMO-RES_025E.
+[Fin variante 2]
+
+
+            5.1.2.2. Coordination des protections
+[Option correspondant aux variantes 2.3, 2.4, 2.5, 2.6, 3.2, 3.3, 3.4, 3.7, 3.8 du paragraphe 6]
+Le Demandeur a fait le choix afin de minimiser les coûts de raccordement de ses Installations de Production et
+de Consommation d’une solution qui n'assure pas la sélectivité des protections BT. En effet, un défaut sur un
+des branchements injection ou soutirage ou sur le câble réseau direct du poste HTA/BT peut générer la mise
+hors tension de l’une de ses installations.
+
+
+5.2.    Installations de télécommunication
+Enedis fait établir à ses frais un accès radio mobile au réseau de télécommunication et souscrit à un service sur
+IP pour tous les compteurs constituant le Dispositif de Comptage de référence et prend à sa charge les frais
+d’exploitation et d’abonnement correspondant.
+
+
+5.3.    Contrôle de performances
+Cf § 6.1 des Conditions Générales.
+
+[Variante 1] : Installation soumise au code RfG (neuve ou suite à modification substantielle)
+[Sous-Variante 1]
+L’Installation est soumise au code RfG.
+A ce titre, son fonctionnement doit être conforme à la norme NF EN 50549-1 et notamment à son annexe C
+référencée FD_C11-519-11 version octobre 2023..
+[Fin sous-Variante 1]
+
+[Sous-Variante 2]
+L’Installation est soumise au code RfG seulement pour ses parties neuves ou modifiées.
+A ce titre, le fonctionnement de ces parties doit être conforme à la norme NF EN 50549-1 et notamment à son
+annexe C référencée FD_C11-519-11 version octobre 2023.
+Le reste de l’Installation doit respecter la règlementation en vigueur lors de son raccordement initial.
+[Fin sous-Variante 2]
+
+
+[Paragraphe optionnel] : Si les certificats de conformité des Equipements ou de l’Installation n’ont pas été remis
+Les certificats de conformité requis au titre du contrôle de performances de l’Installation n’ont pas été remis
+pour l’établissement de la présente Convention de Raccordement. Conformément aux modalités de la note
+
+Enedis -MOP -RES_054E                                                                                   Page : 12/33
+Version 2                                                                                               25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+Enedis-NMO-RES_026E et aux Conditions Générales de la présente Convention de Raccordement, leur remise
+sera une condition nécessaire à toute mise en service de l’Installation.
+[Fin option]
+[Fin variante 1]
+
+[Variante 2] : Installation non soumise au code RfG
+[Sous-Variante 1] Installation de stockage
+L’Installation doit respecter les exigences de conformité définies pour les stockages par la note Enedis-NMO-
+RES_026E. A ce titre, elle doit être conforme à la norme NF EN 50549-1 et notamment à son annexe C référencée
+FD_C11-519-11 version octobre 2023.
+[Fin sous-Variante 1]
+
+[Sous-Variante 2] Autre Installation non soumise au code RfG
+L’Installation n’est pas soumise au code RfG.
+A ce titre, elle doit être conforme aux dispositions correspondantes de l’arrêté du 9 juin 2020 relatif aux
+prescriptions techniques de conception et de fonctionnement pour le raccordement aux réseaux d'électricité,
+notamment aux articles 29, 30 et 57.
+[Fin sous-Variante 2]
+ [Fin variante 2]
+
+
+
+6—      Propriété des ouvrages, emplacement du Point De Livraison et du Point de comptage
+Le schéma de principe, extrait de la NF C14.100 pour les branchements à puissance surveillée est le suivant :
+
+
+
+
+                 C:   CCPI Coupe Circuit Principal Individuel,
+                 Wh : dispositif de comptage,
+                 D1 : dispositif assurant le sectionnement et la coupure,
+                 D2 : AGCP (Appareil Général de Commande et de Protection)
+Le Point De Livraison de l’Installation pour un branchement à puissance surveillée est fonction du moyen de
+protection utilisé :
+— pour un disjoncteur : sur les bornes aval de l’appareil de sectionnement à coupure visible placé en amont de
+  ce disjoncteur,
+— pour un sectionneur-disjoncteur : sur les bornes aval de l’appareil de sectionnement à coupure visible
+  associé à l’appareil général de commande et de protection,
+— pour un disjoncteur débrochable : sur les bornes amont du dispositif de débrochage de l’appareil général de
+  commande et de protection.
+
+Le schéma effectif mis en œuvre dépend des choix opérés selon :
+— le point de raccordement au réseau : existant ou à créer,
+— les modalités d’injection : totalité ou surplus,
+Enedis -MOP -RES_054E                                                                               Page : 13/33
+Version 2                                                                                            25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+— besoin simultané injection et soutirage avec option de regroupement éventuel des coupe-circuits dans un
+  même appareillage (ECP3D),
+— la création d’un départ direct : obligatoire si puissance de raccordement ≥120 kVA,
+— l’emplacement du dispositif de comptage : limite de propriété (offre de référence) ou en domaine privé,
+
+[Variante 1] :nouveau producteur supérieur à 36 kVA
+— avec injection en totalité sans besoin de soutirage,
+— avec injection en surplus et nouveau soutirage > 36 kVA,
+— avec injection en totalité et nouveau soutirage ≤ 36 kVA.
+
+[Sous variante 1.1] Puissances de Raccordement en injection et en soutirage < 120 kVA - Comptage en limite
+de domaine privé.
+
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+
+                          Domaine public                          Domaine privé
+
+
+                                                          Armoire de comptage et
+                                                         sectionnement à coupure
+                                                                  visible
+
+
+                                                                    Point De Livraison
+
+
+                                                      Vers AGCP
+
+
+
+
+[Fin sous variante 1.1]
+
+
+
+
+Enedis -MOP -RES_054E                                                                               Page : 14/33
+Version 2                                                                                           25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 1.2] Puissance de Raccordement en injection et en soutirage < 120 kVA - Comptage en domaine
+privé.
+Le Point De Livraison et le Point de comptage sont situés dans les locaux ou dans des armoires par le Demandeur
+et ne sont pas directement accessibles depuis le domaine public.
+
+                              Domaine public                                      Domaine privé
+
+
+
+
+                                                  Coupe Circuit                        Coffret de comptage avec
+                                                  Principal Individuel                 sectionnement à coupure visible
+
+
+
+
+                                                                                                                Point De Livraison
+
+                                                                                                    Vers AGCP
+[Fin sous variante 1.2]
+
+[Sous variante 1.3] Puissance de Raccordement en injection ou en soutirage ≥ 120 kVA - Comptage en limite de
+domaine privé.
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+                              Domaine public                                         Domaine privé
+
+
+                                                                           Armoire de comptage et
+                                                                          sectionnement à coupure
+                                                                                   visible
+
+
+                                                                                       Point De Livraison
+
+
+                          Départ direct                                  Vers AGCP
+                           Poste DP
+
+[Fin sous variante 1.3]
+
+[Sous variante 1.4] Puissance de Raccordement en injection ou en soutirage ≥ 120 kVA - Comptage en domaine
+privé.
+Le Point De Livraison et le Point de comptage sont situés dans les locaux ou dans des armoires mis à disposition
+par le Demandeur et ne sont pas directement accessibles depuis le domaine public.
+                                Domaine public                                       Domaine privé
+
+
+
+
+                                                                                     Coffret de comptage avec
+                                           Coupe Circuit                             sectionnement à coupure visible
+                                           Principal Individuel
+
+
+
+                           Départ direct
+                            Poste DP
+                                                                                                                Point De Livraison
+
+                                                                                                 Vers AGCP
+[Fin sous variante 1.4]
+[Fin variante 1]
+
+Enedis -MOP -RES_054E                                                                                                         Page : 15/33
+Version 2                                                                                                                      25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Variante 2] Nouveau producteur > 36 kVA avec injection en totalité et nouveau raccordement en soutirage >
+36 kVA.
+[Sous variante 2.1] Puissance de Raccordement en injection et en soutirage < 120 kVA - Comptage en limite de
+domaine privé.
+Les Points De Livraison et les Points de comptage sont en limite de domaine privé et directement accessibles
+du domaine public.
+
+                          Domaine public                            Domaine privé
+
+                                                                  Armoire de comptage et
+                                                                  sectionnement à coupure
+                                                                  visible                        Soutirage
+
+                                                                            Point de Livraison
+
+
+                                                          Vers AGCP
+
+
+                                                           Armoire de comptage et
+                                                          sectionnement à coupure
+                                                                   visible                        Injection
+
+                                                                            Point De Livraison
+
+
+                                                          Vers AGCP
+
+
+[Fin sous variante 2.1]
+
+[Sous variante 2.2] Puissance de Raccordement en injection et en soutirage < 120 kVA - Comptage en domaine
+privé.
+Les Points De Livraison et les Points de comptage sont situés dans les locaux ou dans des armoires mis à
+disposition par le Demandeur et ne sont pas directement accessibles depuis le domaine public.
+
+Selon les dispositions du Site et la situation géographique des installations d’injection et de soutirage :
+[Option 1 : regroupement des coupe-circuits dans un même appareillage possible (ECP3D)]
+
+
+          Domaine public                             Domaine privé
+
+
+                          Coupe Circuit
+                          Principal Individuel              Coffret de comptage avec
+                                                            sectionnement à coupure visible
+
+
+                                                                                                     Soutirage
+
+                                                                                     Point De Livraison
+
+                                                                    Vers AGCP
+
+                                                                                                     Injection
+
+                                                                      Point De Livraison
+
+                                                      Vers AGCP
+
+
+
+
+Enedis -MOP -RES_054E                                                                                            Page : 16/33
+Version 2                                                                                                        25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Option2 : deux coupe-circuits différents pour l’injection et le soutirage]
+
+
+          Domaine public                              Domaine privé
+
+
+
+                                                                   Coffret de comptage avec
+                                                                   sectionnement à coupure visible
+                                                Coupe Circuit
+                                                Principal
+                                                Individuel                                           Soutirage
+
+                                             Coupe Circuit                           Point De Livraison
+                                             Principal
+                                             Individuel             Vers AGCP
+                                                                                                     Injection
+
+                                                                      Point De Livraison
+
+                                                       Vers AGCP
+
+[Fin sous variante 2.2]
+
+[Sous variante 2.3] Comptage en limite de domaine privé - Puissance de Raccordement en injection ≥ 120 kVA
+et Puissance de Raccordement en soutirage < 120 kVA ou Puissance de Raccordement en injection < 120 kVA
+et Puissance de Raccordement en soutirage ≥ 120 kVA.
+ATTENTION : pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+
+            Domaine public                               Domaine privé
+
+            Départ direct
+             Poste DP                               Armoire de comptage et
+                                                   sectionnement à coupure
+                                                            visible
+                                                                                             Soutirage/Injection
+
+                                                                Point De Livraison
+
+
+                                                 Vers AGCP
+
+                                                                                           Soutirage/Injection
+
+                                                    Armoire de comptage et
+                                                   sectionnement à coupure
+                                                            visible
+
+
+                                                                Point De Livraison
+
+
+                                                 Vers AGCP
+
+
+
+
+[Fin sous variante 2.3]
+
+
+Enedis -MOP -RES_054E                                                                                            Page : 17/33
+Version 2                                                                                                          25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 2.4] Comptage en domaine privé - Puissance de Raccordement en injection ≥ 120 kVA et en
+soutirage < 120 kVA ou Puissance de Raccordement en injection < 120 kVA et Puissance de Raccordement en
+soutirage ≥ 120 kVA.
+ATTENTION : pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+Les Points De Livraison et les Points de comptage sont situés dans les locaux ou dans des armoires mis à
+disposition par le Demandeur et ne sont pas directement accessibles depuis le domaine public.
+Selon les dispositions du Site et la situation géographique des installations d’injection et de soutirage :
+[Option 1: regroupement des coupe circuits dans un même appareillage possible (ECP3D)]
+
+      Domaine public                               Domaine privé
+
+
+           Départ direct
+            Poste DP                                             Coffret de comptage avec
+                                            Coupe Circuit
+                                         Principal Individuel    sectionnement à coupure visible
+
+                                                                                                    Soutirage/Injection
+
+
+
+                                                                                    Point De Livraison
+
+                                                                     Vers AGCP
+                                                                                                    Soutirage/Injection
+
+                                                                     Point De Livraison
+
+                                                         Vers AGCP
+
+
+[Option2 : deux coupe-circuits différents pour l’injection et le soutirage]
+
+
+          Domaine public                                Domaine privé
+
+               Départ direct
+                Poste DP
+                                                                     Coffret de comptage avec
+                                                                     sectionnement à coupure visible
+                                                 Coupe Circuit
+                                                 Principal
+                                                 Individuel                                     Soutirage/Injection
+
+                                             Coupe Circuit                                Point De Livraison
+                                             Principal
+                                             Individuel               Vers AGCP
+                                                                                                Soutirage/Injection
+
+                                                                        Point De Livraison
+
+                                                         Vers AGCP
+
+[Fin sous variante 2.4]
+
+
+
+
+Enedis -MOP -RES_054E                                                                                                 Page : 18/33
+Version 2                                                                                                             25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 2.5] Puissance de Raccordement en injection ≥ 120 kVA et en soutirage ≥ 120 kVA - Comptage
+en limite de domaine privé.
+ATTENTION : pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+               Domaine public                               Domaine privé
+
+              Départ direct
+               Poste DP                          Armoire de comptage et
+                                                sectionnement à coupure
+                                                         visible
+                                                                                                   Soutirage
+
+                                                                      Point De Livraison
+
+
+                                                 Vers AGCP
+
+                                                                                                    Injection
+
+                                                  Armoire de comptage et
+                                                 sectionnement à coupure
+                                                          visible
+
+
+                                                                       Point De Livraison
+
+
+                                                 Vers AGCP
+[Fin sous variante 2.5]
+
+[Sous variante 2.6] Puissance de Raccordement en injection ≥ 120 kVA et en soutirage ≥ 120 kVA - Comptage
+en domaine privé.
+ATTENTION : pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+Les Points De Livraison et les Points de comptage sont situés dans les locaux ou dans des armoires mis à
+disposition par le Demandeur et ne sont pas directement accessibles depuis le domaine public.
+Selon les dispositions du Site et la situation géographique des installations d’injection et de soutirage :
+[Option 1: regroupement des coupe circuits dans un même appareillage possible (ECP3D)]
+
+             Domaine public                              Domaine privé
+
+
+                  Départ direct
+                   Poste DP
+                                                  Coupe Circuit           Coffret de comptage avec
+                                               Principal Individuel       sectionnement à coupure visible
+
+
+                                                                                                            Soutirage
+
+                                                                                             Point De Livraison
+
+                                                                            Vers AGCP
+                                                                                                            Injection
+
+                                                                              Point De Livraison
+
+                                                           Vers AGCP
+
+
+
+Enedis -MOP -RES_054E                                                                                                   Page : 19/33
+Version 2                                                                                                               25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Option2 : deux coupe-circuits différents pour l’injection et le soutirage]
+
+
+          Domaine public                              Domaine privé
+
+               Départ direct
+                Poste DP
+                                                                   Coffret de comptage avec
+                                                                   sectionnement à coupure visible
+                                                Coupe Circuit
+                                                Principal
+                                                Individuel                                             Soutirage
+
+                                             Coupe Circuit                              Point De Livraison
+                                             Principal
+                                             Individuel              Vers AGCP
+                                                                                                        Injection
+
+                                                                         Point De Livraison
+
+                                                       Vers AGCP
+
+[Fin sous variante 2.6]
+[Fin variante 2]
+
+[Variante 3] Nouveau producteur > 36 kVA avec injection en totalité avec raccordement en soutirage existant
+≥ 36 kVA
+[Sous variante 3.1] Ajout d’une Puissance de Raccordement en injection < 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en limite de domaine privé.
+Les Points De Livraison et les Points de comptage sont en limite de domaine privé et directement accessibles
+du domaine public.
+
+
+                          Domaine public                             Domaine privé
+
+                                                                    Coffret de comptage avec
+                                                                    sectionnement à coupure visible
+                                                                    existant
+                                                                                          Soutirage Existant
+
+                                                                               Point De Livraison
+
+
+
+                                                             Vers AGCP
+
+                                                                Nouveau coffret de comptage
+                                                                avec sectionnement à coupure
+                                                                visible
+                                                                                                    Injection
+
+                                                                               Point De Livraison
+
+
+                                                              Vers AGCP
+
+
+[Fin sous variante 3.1]
+
+
+
+
+Enedis -MOP -RES_054E                                                                                               Page : 20 /33
+Version 2                                                                                                           25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 3.2] Ajout d’une Puissance de Raccordement en injection < 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en domaine privé.
+ATTENTION : Pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+Les Points De Livraison et les Points de comptage sont situés dans les locaux ou dans des armoires mis à
+disposition par le Demandeur et ne sont pas directement accessibles depuis le domaine public.
+
+                        Domaine public                                Domaine privé
+
+
+
+
+                                                                                     Coffret de comptage avec
+                                  Coupe Circuit                                      sectionnement à coupure visible
+                                  Principal Individuel                               existant
+                                  existant
+                                                                                                   Soutirage Existant
+
+                                                                                                  Point De Livraison
+
+                                                                                            Nouveau coffret de comptage
+                                                                                            avec sectionnement à coupure
+                                                                                            visible
+
+                                                                                                Point De Livraison
+
+                                                                                   Vers AGCP
+                                                                                                       Injection
+
+[Fin sous variante 3.2]
+
+[Sous Variante 3.3] Ajout d’une Puissance de Raccordement en injection < 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage ≥ 120 kVA - Comptage en limite de domaine privé.
+ATTENTION : Pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+Les Points De Livraison et les Points de comptage sont en limite de domaine privé et directement accessibles
+du domaine public.
+
+
+             Domaine public                                   Domaine privé
+
+            Départ direct
+              existant                                     Armoire de comptage et
+             Poste DP                                      sectionnement à coupure
+                                                           visible
+                                                                                                       Injection
+
+                                                                      Point De Livraison
+
+
+                                                    Vers AGCP
+
+
+                                                         Armoire de comptage et
+                                                         sectionnement à coupure                     Soutirage existant
+                                                         visible
+
+
+
+                                                                      Point De Livraison
+
+
+
+                                                     Vers AGCP
+
+[Fin sous variante 3.3]
+
+Enedis -MOP -RES_054E                                                                                                   Page : 21/33
+Version 2                                                                                                                  25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 3.4] Ajout d’une Puissance de Raccordement en injection < 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage ≥ 120 kVA - Comptage en domaine privé.
+ATTENTION : Pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+
+Les Points De Livraison et les Points de comptage sont situés dans les locaux ou dans des armoires mis à
+disposition par le Demandeur et ne sont pas directement accessibles depuis le domaine public.
+
+                        Domaine public                              Domaine privé
+
+          Départ direct
+            existant
+           Poste DP                        Coupe Circuit                         Coffret de comptage avec
+                                        Principal Individuel                     sectionnement à coupure visible
+                                              existant                           existant
+                                                                                                     Soutirage existant
+
+
+                                                                                                  Point De Livraison
+
+
+                                                                                          Nouveau coffret de comptage
+                                                                                          avec sectionnement à coupure
+                                                                                          visible
+
+                                                                                              Point De Livraison
+
+                                                                               Vers AGCP                      Injection
+
+
+[Fin sous variante 3.4]
+
+[Sous variante 3.5] Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en limite de domaine privé.
+Le raccordement de la nouvelle production est indépendant du raccordement soutirage existant.
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+
+                            Domaine public                                 Domaine privé
+
+
+                                                                 Armoire de comptage et
+                                                                sectionnement à coupure
+                                                                         visible
+
+
+                                                                             Point De Livraison
+
+
+                        Départ direct                          Vers AGCP
+                         Poste DP
+[Fin sous variante 3.5]
+
+
+
+
+Enedis -MOP -RES_054E                                                                                                     Page : 22 /33
+Version 2                                                                                                                 25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 3.6] Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en domaine privé.
+Le raccordement de la nouvelle production est indépendant du raccordement soutirage existant.
+Le Point De Livraison et le Point de comptage sont situés dans les locaux ou dans des armoires mis à disposition
+par le Demandeur et ne sont pas directement accessibles depuis le domaine public.
+                            Domaine public                                  Domaine privé
+
+
+
+                                                                              Coffret de comptage avec
+                                           Coupe Circuit                      sectionnement à coupure visible
+                                        Principal Individuel
+
+
+
+                        Départ direct
+                         Poste DP
+                                                                                                       Point De Livraison
+
+                                                                                          Vers AGCP
+
+[Fin sous variante 3.6]
+
+[Sous variante 3.7] Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage ≥ 120 kVA - Comptage en limite de domaine privé.
+ATTENTION : Pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+
+             Domaine public                                           Domaine privé
+
+        Départ direct
+         Poste DP                                              Armoire de comptage et
+                                                               sectionnement à coupure
+                                                               visible
+
+                                                                                                                Injection
+
+                                                                            Point De Livraison
+
+
+                                                               Vers AGCP
+
+
+
+                                                                Armoire de comptage et                  Soutirage existant
+                                                                sectionnement à coupure
+                                                                visible
+
+
+
+                                                                             Point De Livraison
+
+
+[Fin sous variante 3.7]
+
+
+
+
+Enedis -MOP -RES_054E                                                                                                        Page : 23 /33
+Version 2                                                                                                                    25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 3.8] Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage ≥ 120 kVA Comptage en domaine privé.
+ATTENTION : Pour ce schéma, laisser le paragraphe 4.1.3.2 sur la sélectivité des protections.
+Les Points De Livraison et les Points de comptage sont situés dans l’installation intérieure du Demandeur et ne
+sont pas directement accessibles depuis le domaine public.
+
+                        Domaine public                            Domaine privé
+
+          Départ direct
+           Poste DP
+                                                                                Coffret de comptage avec
+                                    Coupe Circuit                               sectionnement à coupure visible
+                                    Principal Individuel                        existant
+                                    existant
+                                                                                                  Soutirage existant
+
+                                                                                               Point De Livraison
+
+                                                                                      Nouveau coffret de comptage
+                                                                                      avec sectionnement à coupure
+                                                                                      visible
+
+                                                                                           Point De Livraison
+
+                                                                             Vers AGCP                 Injection
+
+
+[Fin sous variante 3.8]
+[Fin variante 3]
+
+[Variante 4] Nouveau producteur > 36 kVA avec injection en surplus avec raccordement en soutirage existant
+≥ 36 kVA.
+[Sous variante 4.1] Ajout d’une Puissance de Raccordement en injection < 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en limite de domaine privé.
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+
+                           Domaine public                              Domaine privé
+                                                           Armoire de comptage et sectionnement à coupure
+                                                           visible déjà existant pour le soutirage
+
+
+
+
+                                                                          Point De Livraison
+
+
+
+                                                           Vers AGCP
+
+
+
+
+[Fin sous variante 4.1]
+
+
+
+
+Enedis -MOP -RES_054E                                                                                               Page : 24 /33
+Version 2                                                                                                            25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 4.2] Ajout d’une Puissance de Raccordement en injection < 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en domaine privé.
+Le Point De Livraison et le Point de comptage sont situés dans l’installation intérieure du Demandeur et ne sont
+pas directement accessibles depuis le domaine public.
+
+
+                             Domaine public                                       Domaine privé
+                                                                       Armoire de comptage et sectionnement
+                                                                       à coupure visible déjà existant pour le
+                                                                       soutirage
+
+
+
+                                                                                     Point De Livraison
+
+
+                        Départ direct                                 Vers AGCP
+                         Poste DP
+
+
+[Fin sous variante 4.3]
+
+[Sous variante 4.4] Ajout d’une Puissance de Raccordement en injection < 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage ≥ 120 kVA - Comptage en domaine privé.
+Le Point De Livraison et le Point de comptage sont situés dans l’installation intérieure du Demandeur et ne sont
+pas directement accessibles depuis le domaine public.
+                              Domaine public                                 Domaine privé
+
+
+
+
+                                                                              Coffret de comptage avec
+                                         Coupe Circuit                        sectionnement à coupure visible
+                                         Principal Individuel                 déjà existant pour le soutirage
+
+
+                         Départ direct
+                          Poste DP
+                                                                                                       Point De Livraison
+
+                                                                                         Vers AGCP
+
+[Fin sous variante 4.4]
+
+[Sous variante 4.5] Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en limite de domaine privé.
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+
+                   Domaine public                                           Domaine privé
+                                                                Coffret comptage avec sectionnement à
+                                                                coupure visible 400 A dans armoire de
+                                                                comptage existante
+
+
+
+                                                                              Point De Livraison
+
+
+              Départ direct                                     Vers AGCP
+               Poste DP
+
+
+[Fin sous variante 4.5]
+Enedis -MOP -RES_054E                                                                                                       Page : 25 /33
+Version 2                                                                                                                   25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+[Sous variante 4.6 Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage < 120 kVA - Comptage en domaine privé.
+Le Point De Livraison et le Point de comptage sont situés dans l’installation intérieure du Demandeur et ne sont
+pas directement accessibles depuis le domaine public.
+         Domaine public                            Domaine privé
+
+
+
+                                                         Ccoffret de comptage avec
+                               Coupe Circuit             sectionnement à coupure visible
+                            Principal Individuel         400 A
+                                   400 A
+
+
+     Départ direct
+      Poste DP
+                                                                             Point De Livraison
+
+                                                               Vers AGCP
+
+[Fin sous variante 4.6]
+
+[Sous variante 4.7] Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage ≥ 120 kVA - Comptage en limite de domaine privé.
+Le Point De Livraison et le Point de comptage sont en limite de domaine privé et directement accessibles du
+domaine public.
+
+
+                     Domaine public                                 Domaine privé
+                                                        Armoire de comptage et
+                                                        sectionnement à coupure visible
+                                                        déjà existant pour le soutirage
+
+
+
+                                                                     Point De Livraison
+
+
+                Départ direct
+                 Poste DP                              Vers AGCP
+
+
+
+[Fin sous variante 4.7]
+
+[Sous variante 4.8] Ajout d’une Puissance de Raccordement en injection ≥ 120 kVA sur une installation existante
+de Puissance de Raccordement en soutirage ≥ 120 kVA Comptage en domaine privé.
+Le Point De Livraison et le Point de comptage sont situés dans l’installation intérieure du Demandeur et ne sont
+pas directement accessibles depuis le domaine public.
+         Domaine public                            Domaine privé
+
+
+
+                                                    Coffret de comptage avec
+                     Coupe Circuit                  sectionnement à coupure visible
+                     Principal Individuel           déjà existant pour le soutirage
+
+
+     Départ direct
+      Poste DP
+                                                                             Point De Livraison
+
+                                                               Vers AGCP
+
+
+[Fin sous variante 4.8]
+[Fin variante 4]
+
+Enedis -MOP -RES_054E                                                                               Page : 26 /33
+Version 2                                                                                            25 /0 8 /202 6
+        Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+      Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+               Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                     Particulières
+
+7—          Contribution financière et délai de mise à disposition du raccordement
+[Option ]
+7.1.        Contribution pour reprise d’études
+Un changement dans les données techniques de l’Installation étant intervenu depuis l’offre de raccordement
+réalisée lors de la demande de Proposition Technique et Financière du __, la reprise d’études nécessaire à
+l’actualisation de l’offre de raccordement a fait l’objet d’un devis facturé selon le montant forfaitaire du barème
+de raccordement en vigueur.
+[Fin option]
+
+
+7.2.        Contribution financière
+            7.2.1. [Variante 1] Installations relevant d’un S3REnR Ouvrages propres
+                   [Variante 2] Installations relevant d’un S3REnR Ouvrages de branchement et d’extension
+[Variante 1 – chiffrage au FCS]
+Le chiffrage est réalisé selon les formules de coût simplifié prévue par la note Enedis-NMO-RES_027E en vigueur.
+La zone de facturation retenue est : ZFA/ZFB.
+[Fin variante 1]
+
+                                                                                   Application
+       Récapitulatif de la contribution au coût des travaux pour la                                              Montant facturé
+                                                                                      de la
+       solution retenue                                                                                          (après réfaction)
+                                                                                    réfaction
+                                                                                                        «CoutTravauxBTDomainePrive»
+      Travaux en domaine privé du Demandeur
+                                                                                                                       €
+                                                                                        Non
+      [Option] Forfait « Raccordement anticipé des producteurs                                              « Forait raccordement
+      BT>36kVA »1                                                                                            anticipé BT>36kVA»
+      Branchement, y compris dispositif de comptage :                                                          «CoutTravauxBT» €
+      Réseau BT                                                                                                «CoutTravauxBT» €
+                                                                                   «Réfaction»
+      Poste HTA/BT (création ou aménagement)                                                               «CoutTravauxPosteDP» €
+      Réseau HTA                                                                                              «CoutTravauxHTA» €
+                                             Total HT                                                          «MontantHT» €
+                                            TVA (20 %)                                                           «TVA20» €
+                                             Total TTC                                                         «MontantTTC» €
+L’intervention de première mise en service fera l’objet d’une prestation, dont le payement interviendra avec la
+première facture du contrat d’accès au réseau, au tarif en vigueur à la date de réalisation.
+Les détails de cette prestation (P100) sont disponibles sur le catalogue des prestations.
+[Option] Projets groupés, mutualisé ou autres projet en amont sur la file d’attente]
+Le coût du raccordement tient compte du groupement /mutualisation des projets XXX et YYY.
+Ce principe a été retenu en accord avec le Demandeur.
+Les coûts des travaux réalisés par le Distributeur ont été répartis sur les offres de raccordement, au prorata de
+puissance pour les ouvrages communs, et en totalité pour les ouvrages propres à chacun des sites.
+
+L’exécution de la présente convention nécessite impérativement une réalisation simultanée de tous les projets
+concernés et donc un accord sur toutes les conventions associées. En conséquence, la modification ou
+l'abandon d'un des projets remettra en cause l'intégralité des offres. Il serait alors nécessaire de réaliser une
+nouvelle offre pour chacun des sites.
+
+
+
+
+1
+ Cette prestation concerne les producteurs BT>36kVA souhaitant se raccorder de manière anticipée, sans attendre les travaux d’augmentation de capacité
+programmés soit au niveau du poste source soit au niveau du Réseau Public de Transport.
+
+
+
+    Enedis -MOP -RES_054E                                                                                                              Page : 27 /33
+    Version 2                                                                                                                          25 /0 8 /202 6
+        Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+      Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+               Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                     Particulières
+
+La solution technique présentée dans l’offre de raccordement dépend de l'acceptation d’offre(s) en cours
+d’acceptation pour un ou des projets situés en amont dans la File d'Attente.
+
+Dans l’hypothèse d’un abandon de l’offre de raccordement d'un projet en amont dans la File d'Attente, la
+présente offre deviendrait caduque. ENEDIS informera alors le Demandeur et fournira alors une nouvelle offre
+de raccordement.
+[Fin option 1]
+[Option] Installations relevant d’un S3REnR
+            7.2.2. Quote-part du coût des ouvrages à créer en application du S3REnR
+[Variante 1 : P ≤ 250kVA]
+Conformément aux dispositions de l’article D342-22-1 du code de l’énergie, les installations dont la puissance
+de raccordement est inférieure ou égale à 250 kVA, ainsi que les installations groupées dont la somme des
+puissances de raccordement est inférieure ou égale à 250 kVA sont exonérées du paiement de la quote-part.
+[Fin variante 1]
+
+[Variante 2 : P cumulée > 250kVA pour des installations groupées conformément à l’article D342-22-1 du code
+de l’énergie]
+Conformément aux dispositions de l’article D342-22 du code de l’énergie, le Demandeur est redevable d'une
+quote-part du coût des ouvrages à créer en application du S3REnR ou du volet particulier concerné.
+
+Le montant de la quote-part en k€/MW est publiée avec le S3REnR et est soumise à indexation.
+
+
+                                    Puissance de l’Installation du                   Application
+                                                                     Quote-part2                       Montant
+S3REnR «S3REnR»                             Demandeur                                   de la
+                                                                       (€/kW)                          (Euros)
+                                               (kW)                                   réfaction
+
+      Quote–part HT                              A calculer          «Quotepart»      «Réfaction»   «MontantQP»
+[Fin variante 2]
+[Fin option]
+
+
+            7.2.3. Montant total de la contribution financière
+La contribution financière associée à la solution de raccordement est de «MontantHT» € HT et TVA 20 % =
+«TVA20» €, soit «MontantTTC» € TTC.
+
+Le montant total de la contribution au coût du raccordement est ferme et non révisable si l’ensemble des travaux
+de raccordement à réaliser par le Demandeur sont achevés dans les délais indiqués au §7.3.
+Au-delà de ce délai, le montant de la contribution au coût du raccordement, sous déduction de l’acompte versé,
+est révisé suivant l’évolution des prix décrite au §7.4.2 des Conditions Générales de la Convention de
+Raccordement (Enedis-MOP-RES_047E).
+
+
+            7.2.4. Modalités de règlement
+Le Demandeur règle un acompte à la signature de la présente Convention de Raccordement égal à 30% de la
+contribution financière TTC indiquée au § 7.2.3, soit «MontantAcompte» € TTC.
+
+Le solde du montant total de la contribution financière, de «ResteàpayerTTC» € TTC, au taux de TVA en vigueur,
+sera réglé par le Demandeur à l’achèvement des travaux par Enedis et avant toute mise à disposition du
+raccordement.
+
+
+2
+    A la date de la présente offre de raccordement.
+
+Enedis -MOP -RES_054E                                                                                 Page : 28 /33
+Version 2                                                                                              25 /0 8 /202 6
+      Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+    Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+             Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                   Particulières
+
+[Variante : cas d’un client collectivité locale]
+Le Demandeur adresse un ordre de service pour la réalisation des travaux.
+Le montant de _______ € TTC, au taux de TVA en vigueur, sera réglé par le Demandeur à l’achèvement des
+travaux par Enedis et avant toute mise à disposition du raccordement à réception de la facture.
+[Fin de variante]
+Le règlement peut s’effectuer par virement en mentionnant la référence suivante «RefIEP». Pour accélérer votre
+projet, vous pouvez adresser directement par mail à votre interlocuteur une preuve du virement à : areprod-sup-
+36-XXX@enedis.fr.
+
+
+
+
+                                                           m e n
+                                             sp        éci
+Il peut aussi être réalisé par chèque, libellé à l’ordre d’Enedis et adressé à l’adresse suivante :
+
+
+
+                                                                 e n
+                                     Enedis - Agence Raccordement Grands Producteurs
+
+
+                                                               m
+                                                            ci
+                                       Groupe Encaissement /     A l’attention de   «NomIR» ,
+
+
+
+                                             spé
+                                                15 Rue Bruno d'Agay, TSA 41873
+                                                     80049 Amiens Cedex 1
+
+
+7.3.     Délai de mise à disposition du raccordement
+Le délai prévisionnel3 de mise à disposition des Ouvrages de Raccordement détaillés à l’article 4 — est :
+— pour les travaux sur les réseaux BT, HTA et le poste HTA/BT de « durée travaux » mois4 ;
+— pour les travaux au Poste Source et/ou sur le réseau HTB de « durée source » mois.
+[Option 1 : pas de Raccordement anticipé]
+La mise en service de l’installation de production est conditionnée à la complète réalisation de ces travaux.
+[Fin option 1]
+
+[Option 2 : raccordement anticipé proposé par Enedis dans l’attente de la réalisation des travaux S3REnR]
+La présente offre de raccordement implique un raccordement anticipé pour lequel la mise en service de
+l’installation de production est conditionnée uniquement à la complète réalisation des travaux sur les réseaux
+BT, HTA et le poste HTA/BT. Le délai prévisionnel de mise à disposition du raccordement anticipé est donc de
+« durée travaux » mois à compter de la signature des présentes Conditions Particulières.
+A compter de la mise en service anticipée de l’installation et jusqu’à l’achèvement de l’ensemble des travaux de
+raccordement, Enedis est susceptible de solliciter le Demandeur, sans contrepartie financière, pour qu’il limite
+ponctuellement la puissance injectée par son Installation.
+Pour la mise en application des conditions de l’article 6.3.2 de la note Enedis-NMO-RES_030E concernant la non
+sollicitation de la mise en service, la date de mise à disposition des Ouvrages de Raccordement sera considérée
+comme étant la date de mise à disposition du raccordement anticipé.
+[Fin option 2]
+
+
+
+
+3
+ Tous les délais s’entendent à compter de la signature de la Convention de Raccordement.
+4
+  Sous réserve de la réalisation par le Demandeur des aménagements de génie civil (tranchée, fourreaux, caniveaux) des ouvrages de
+raccordement, des implantations et de la liaison permettant le relevé du comptage.
+
+Enedis -MOP -RES_054E                                                                                                Page : 29 /33
+Version 2                                                                                                            25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+8—      Signatures
+Fait en deux exemplaires paraphés à toutes les pages et signés ci-dessous.
+
+L’accord du Demandeur sur la Convention de Raccordement est matérialisé par la réception par Enedis par
+courrier postal ou électronique d’un exemplaire original, daté et signé, de la Convention de Raccordement, sans
+modification ni réserve, accompagné le cas échéant du règlement d’un complément d’acompte.
+Conformément à l’article 1127-3 alinéa 2 du Code civil, les Parties déclarent expressément déroger et ne pas
+faire application des alinéas 1° et 5° de l’article 1127-1 du Code civil et de l’article 1127-2 du même code.
+
+AVERTISSEMENT : au cas où la Convention de Raccordement contiendrait des ratures, et/ou des ajouts/suppressions de
+clauses ou de mentions, celle-ci serait considérée comme nulle et non avenue. Dans cette hypothèse, il y aura lieu de signer
+une nouvelle convention destinée à remplacer la Convention de Raccordement annulée.
+
+A …………………………………………………………………, le …………………………………………………………………
+
+
+                           Pour le Demandeur
+                                                                                           Pour Enedis
+                         (ou le groupement solidaire
+                   dans le cas d’un raccordement indirect)
+                        «PrénomNomSignataire»                                  «PrénomNomsignataireEnedis»
+                «fonctionsignataire» de la société                                «FonctionsignataireEnedis»
+              «NomouraisonsocialedelEtablissement»
+
+
+
+
+Enedis -MOP -RES_054E                                                                                          Page : 30 /33
+Version 2                                                                                                       25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+Annexe 1         Caractéristiques de la demande (Fiches de collecte)
+La présente convention a été établie sur la base des fiches de collecte.
+
+
+Annexe 2         Plan de situation et plan de masse
+[Reprendre les seuls éléments fournis par le Demandeur]
+
+
+Annexe 3         Schéma simplifié de l'installation
+[Unifilaire sera repris dans le contrat CARD-I]
+
+
+Annexe 4         Description du raccordement prévu
+[Reprendre l’Avant Projet Sommaire du projet ou tout document équivalent]
+
+
+
+
+Enedis -MOP -RES_054E                                                                               Page : 31/33
+Version 2                                                                                           25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+Annexe 5         Résultats des études
+La tension normale de distribution BT est régie par l'arrêté interministériel du 24 décembre 2007. Celui-ci fixe à
+230 / 400 V le niveau de la tension nominale. Il définit des valeurs minimales et maximales admissibles au point
+de livraison d’un utilisateur (valeurs moyennées sur 10 mn), correspondant à une plage de [-10 %, +10 %] autour
+des valeurs nominales.
+
+                                                 Identification
+ Référence de l'étude                                                «RefGefarp»
+ Nom de la commune                                                   «Villesite»
+ Nom du départ HTA                                                   «DépartHTA»
+ Nom du poste HTA/BT                                                 «PosteHTABT»
+ Nom du Producteur                                                   «NomouraisonsocialedelEtablissement»
+ Lieu de production                                                  «Adressesite»
+ Type de production                                                  «Type_de_production»
+                                              Données de l'étude
+ Tension max HTA
+ Puissance du transformateur
+ Tension à vide optimisée au secondaire du transfo
+ Producteurs existants ou déjà en file d'attente
+ Pracc du producteur demandeur
+ Tangente(ϕ) au point de raccordement
+ Type de raccordement (départ mixte / départ direct)
+ Puissance conso max hiver poste HTA/BT
+ Puissance conso max hiver départ BT de raccordement
+ % de puissance conso max hiver retenue pour l'étude
+ Résistance amont (du JDB BT au PDR=Point De
+ Raccordement)
+ Résistance du transformateur
+                          Caractéristiques de l'extension de réseau / départ direct
+ Type de conducteur
+ Longueur
+ Section
+ Résistance de l'extension
+ Elévation de tension dans l'extension / départ direct
+                                          Résultats de l'étude.
+ Tension max sur départ BT sans les producteurs
+ Tension max sur départ BT avant le raccordement
+ Tension max sur départ BT après le raccordement
+ Tension max au PDR du producteur après le raccordement
+
+
+
+
+Enedis -MOP -RES_054E                                                                                 Page : 32 /33
+Version 2                                                                                              25 /0 8 /202 6
+     Modèle de Convention de Raccordement Directe au Réseau Public de Distribution BT d’une Installation de
+   Production ou susceptible d’injecter et de soutirer de puissance comprise entre 36 et 250 kVA relevant d’un
+            Schéma Régional de Raccordement au Réseau des Energies Renouvelables (S3REnR) - Conditions
+                                                                                                  Particulières
+
+Annexe 6 : Attestation relative au contrôle de performances des Installations de
+Production et Certificats de conformité des Equipements ou de l’Installation
+
+[Modèles d’attestation à signer par le producteur selon le cas]
+
+
+
+ Modèle Attestation   Modèle Attestation
+  BT type A.docx        BT non-RfG
+
+
+
+
+Enedis -MOP -RES_054E                                                                              Page : 33 /33
+Version 2                                                                                           25 /0 8 /202 6
+

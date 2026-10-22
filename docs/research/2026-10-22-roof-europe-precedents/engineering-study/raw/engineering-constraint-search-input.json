@@ -1,0 +1,6 @@
+{
+  "queries": "site:sma.de polystring different orientations MPP tracker string length\nsite:pvsyst.com/help temperature behavior MPP voltage coefficient\nsite:pvpmc.sandia.gov single diode temperature voltage module\nsite:iec.ch photovoltaic minimum temperature maximum voltage 62548\nsite:nen.nl \"EN 50549-1\" \"2023\"\nsite:boutique.afnor.org \"NF EN 50549-1\"\nsite:enedis.fr \"type A\" \"18\" \"production\"\nsite:netbeheernederland.nl \"800\" \"1 MW\" \"type A\"",
+  "maxPagesPerQuery": 1,
+  "resultsPerPage": 5,
+  "languageCode": "en"
+}

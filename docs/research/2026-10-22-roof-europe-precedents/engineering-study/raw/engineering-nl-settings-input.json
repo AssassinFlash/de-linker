@@ -1,0 +1,20 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.netbeheernederland.nl/sites/default/files/2026-09/country_settings_type_a_and_b_pgms.pdf"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/publicatie/esm-compliance-verification-document"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 2,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveContentTypes": "application/*",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 30,
+  "maxRequestRetries": 1
+}

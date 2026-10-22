@@ -1,0 +1,51 @@
+{
+  "startUrls": [
+    {
+      "url": "https://webstore.iec.ch/en/publication/110893"
+    },
+    {
+      "url": "https://webstore.iec.ch/en/publication/65748"
+    },
+    {
+      "url": "https://webstore.iec.ch/en/publication/24057"
+    },
+    {
+      "url": "https://webstore.iec.ch/en/publication/61011"
+    },
+    {
+      "url": "https://www.vde.com/en/fnn/topics/technical-connection-rules/power-generating-plants"
+    },
+    {
+      "url": "https://www.vde.com/resource/blob/1785304/f23a9f50f050aaad54dc4a280aa82377/vde-ar-n-4105-formulare-anhang-e-data.pdf"
+    },
+    {
+      "url": "https://www.vde.com/resource/blob/2306364/ae50ed2dfe20e6584fad16e2525565e2/nelev-hinweis-download-data.pdf"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/requirements-generators"
+    },
+    {
+      "url": "https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000042032189"
+    },
+    {
+      "url": "https://www.enedis.fr/media/1976/download"
+    },
+    {
+      "url": "https://www.enedis.fr/media/1977/download"
+    },
+    {
+      "url": "https://www.enedis.fr/media/1983/download"
+    },
+    {
+      "url": "https://www.enedis.fr/media/1975/download"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 13,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "saveContentTypes": "application/pdf"
+}

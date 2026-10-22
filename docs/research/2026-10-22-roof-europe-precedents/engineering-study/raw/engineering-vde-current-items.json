@@ -1,0 +1,109 @@
+[
+  {
+    "url": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/erzeugungsanlagen-am-niederspannungsnetz-vde-ar-n-4105-2018",
+    "crawl": {
+      "loadedUrl": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/erzeugungsanlagen-am-niederspannungsnetz-vde-ar-n-4105-2018",
+      "loadedTime": "2026-10-22T10:57:05.586Z",
+      "referrerUrl": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung/erzeugungsanlagen-am-niederspannungsnetz-vde-ar-n-4105-2018",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 11032,
+      "contentType": "text/html;charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.vde.com/vde-ar-n-4105-2018",
+      "title": "Technische Anschlussregeln Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105)",
+      "description": " Die Anwendungsregel „Erzeugungsanlagen am Niederspannungsnetz“ (VDE-AR-N 4105) enthält zahlreiche technische Neuerungen.\n",
+      "author": null,
+      "keywords": null,
+      "languageCode": "de",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "Technische Anschlussregeln Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105)"
+        },
+        {
+          "property": "twitter:title",
+          "content": "Technische Anschlussregeln Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105)"
+        },
+        {
+          "property": "og:description",
+          "content": "Bei Planung, Errichtung, Anschluss von Erzeugungsanlagen an das Niederspannungsnetz des Netzbetreibers und deren Betrieb sind technische Anforderungen zu beachten."
+        },
+        {
+          "property": "og:url",
+          "content": "https://www.vde.com/vde-ar-n-4105-2018"
+        },
+        {
+          "property": "og:image",
+          "content": "https://www.vde.com/image/2194990/stage_md/1023/512/1/icon-niederspannungsnetz.jpg"
+        },
+        {
+          "property": "twitter:image",
+          "content": "https://www.vde.com/image/2194990/stage_md/1023/512/1/icon-niederspannungsnetz.jpg"
+        },
+        {
+          "property": "og:image:width",
+          "content": "1023"
+        },
+        {
+          "property": "og:image:height",
+          "content": "512"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-cache, no-store, max-age=0, must-revalidate",
+        "content-encoding": "gzip",
+        "content-language": "de-DE",
+        "content-length": "11032",
+        "content-security-policy": "frame-ancestors 'self' http://*.vde.com;",
+        "content-type": "text/html;charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 10:57:04 GMT",
+        "expires": "0",
+        "pragma": "no-cache",
+        "server": "Apache",
+        "strict-transport-security": "max-age=31536000; includeSubDomains, max-age=31536000 ; includeSubDomains",
+        "vary": "Origin,Accept-Encoding,User-Agent,Access-Control-Request-Method,Access-Control-Request-Headers",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+        "x-xss-protection": "1; mode=block"
+      }
+    },
+    "screenshotUrl": null,
+    "text": "Technische Anschlussregeln Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105)\nVDE\n28.05.2026 Anwendungsregel \nBei Planung, Errichtung, Anschluss von Erzeugungsanlagen an das Niederspannungsnetz des Netzbetreibers und deren Betrieb sind technische Anforderungen zu beachten.\nNutzen und Verbesserung \nDie TAR Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105:2026-03) bietet ein einheitliches und harmonisiertes Regelwerk für diese Spannungsebene. \nInhalte\nAllgemeine Grundsätze des Netzanschlusses\nAusgestaltung des Netzanschlusses\nAusführung der Erzeugungsanlage\nNetz- und Anlagenschutz (NA-Schutz)\nAbrechnungsmessung\nBetrieb der Anlage\nNachweis der elektrischen Eigenschaften\nVorübergehend angeschlossene Anlagen\nNeuerungen der gültigen Fassung (VDE-AR-N 4105:2026-03)\nVereinfachung der Anforderungen für Kleinsterzeugungsanlagen und -speicher\nWeiterentwicklung der P-AVE Überwachung und Nulleinspeisung\nErweiterte Anforderungen an systemstützende Erzeugungseinheiten\nAnforderungen und Nachweisverfahren für rückspeisefähige Ladeeinrichtungen\nÜberarbeitung der Formulare für den Netzanschlussprozess\nZielgruppen \nDie TAR Erzeugungsanlagen am Niederspannungsnetz dient gleichermaßen dem Netzbetreiber wie dem Errichter als Planungsunterlage und Entscheidungshilfe. Außerdem erhält der Betreiber wichtige Informationen zum Betrieb solcher Anlagen.\nNetzbetreiber\nErrichter/Planer\nElektrohandwerk\nHersteller\nDie TAR Erzeugungsanlagen am Niederspannungsnetz ist die Basis für die Technischen Anschlussbedingungen (TAB) Niederspannung der Netzbetreiber. Der (Verteil-) Netzbetreiber ergänzt die Technischen Anschlussregeln um seine netzspezifischen Anforderungen und veröffentlicht diese dann als TAB Niederspannung auf seiner Internetseite. Die TAB des (Verteil-) Netzbetreibers gelten zusammen mit § 19 EnWG [2] „Technische Vorschriften“ und sind somit Bestandteil von Netzanschlussverträgen und Anschlussnutzungsverhältnissen.\nFAQ \nDie TAR Erzeugungsanlagen am Niederspannungsnetz fasst die technischen Anforderungen zusammen, die bei der Planung, bei der Errichtung, beim Anschluss und beim Betrieb von Erzeugungsanlagen an das Niederspannungsnetz des Netzbetreibers zu beachten sind. Um weitergehende Hilfestellung bei der Nutzung der Anwendungsregeln zu geben, veröffentlichen wir an dieser Stelle einen Teil der uns erreichenden Fragen nach Abschnittsnummern der VDE-AR-N 4105 geordnet als FAQ.",
+    "html": null,
+    "htmlUrl": null,
+    "markdown": "# Technische Anschlussregeln Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105)\n\n       \n\nVDE\n\n28.05.2026 Anwendungsregel\n\nBei Planung, Errichtung, Anschluss von Erzeugungsanlagen an das Niederspannungsnetz des Netzbetreibers und deren Betrieb sind technische Anforderungen zu beachten.\n\n## Nutzen und Verbesserung\n\nDie [TAR Erzeugungsanlagen am Niederspannungsnetz (VDE-AR-N 4105:2026-03)](https://www.vde-verlag.de/normen/0100940/vde-ar-n-4105-anwendungsregel-2026-03.html \"TAR Erzeugungsanlagen am Niederspannungsnetz kaufen\") bietet ein einheitliches und harmonisiertes Regelwerk für diese Spannungsebene. \n\n### Inhalte\n\n*   Allgemeine Grundsätze des Netzanschlusses\n*   Ausgestaltung des Netzanschlusses\n*   Ausführung der Erzeugungsanlage\n*   Netz- und Anlagenschutz (NA-Schutz)\n*   Abrechnungsmessung\n*   Betrieb der Anlage\n*   Nachweis der elektrischen Eigenschaften\n*   Vorübergehend angeschlossene Anlagen\n    \n\n### Neuerungen der gültigen Fassung (VDE-AR-N 4105:2026-03)\n\n*   Vereinfachung der Anforderungen für Kleinsterzeugungsanlagen und -speicher\n*   Weiterentwicklung der P-AVE Überwachung und Nulleinspeisung\n*   Erweiterte Anforderungen an systemstützende Erzeugungseinheiten\n*   Anforderungen und Nachweisverfahren für rückspeisefähige Ladeeinrichtungen\n*   Überarbeitung der Formulare für den Netzanschlussprozess\n\n## Zielgruppen\n\nDie TAR Erzeugungsanlagen am Niederspannungsnetz dient gleichermaßen dem Netzbetreiber wie dem Errichter als Planungsunterlage und Entscheidungshilfe. Außerdem erhält der Betreiber wichtige Informationen zum Betrieb solcher Anlagen.\n\n*   Netzbetreiber\n*   Errichter/Planer\n*   Elektrohandwerk\n*   Hersteller\n\nDie TAR Erzeugungsanlagen am Niederspannungsnetz ist die Basis für die Technischen Anschlussbedingungen (TAB) Niederspannung der Netzbetreiber. Der (Verteil-) Netzbetreiber ergänzt die Technischen Anschlussregeln um seine netzspezifischen Anforderungen und veröffentlicht diese dann als TAB Niederspannung auf seiner Internetseite. Die TAB des (Verteil-) Netzbetreibers gelten zusammen mit § 19 EnWG \\[2\\] „Technische Vorschriften“ und sind somit Bestandteil von Netzanschlussverträgen und Anschlussnutzungsverhältnissen.\n\n## FAQ\n\nDie TAR Erzeugungsanlagen am Niederspannungsnetz fasst die technischen Anforderungen zusammen, die bei der Planung, bei der Errichtung, beim Anschluss und beim Betrieb von Erzeugungsanlagen an das Niederspannungsnetz des Netzbetreibers zu beachten sind. Um weitergehende Hilfestellung bei der Nutzung der Anwendungsregeln zu geben, veröffentlichen wir an dieser Stelle einen Teil der uns erreichenden Fragen nach Abschnittsnummern der VDE-AR-N 4105 geordnet als FAQ.",
+    "debug": {
+      "requestHandlerMode": "http"
+    }
+  },
+  {
+    "url": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+    "crawl": {
+      "loadedUrl": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+      "depth": 0,
+      "referrerUrl": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+      "loadedTime": "2026-10-22T10:57:06.116Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 32920,
+      "contentType": "application/pdf"
+    },
+    "html": null,
+    "htmlUrl": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "DESCRIPTION_obsgermany-climate-daily-kl_en.pdf"
+    },
+    "screenshotUrl": null,
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/xx0k5kcRxW5eweyhu/records/file-447e70d-DESCRIPTION_obsgermany-climate-daily-kl_en.pdf",
+    "signedRetrievalQueryOmitted": true
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036844/2026-10-22"
+    },
+    {
+      "url": "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042036956/2026-10-22"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/media/13808/download?attachment"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/media/13813/download?attachment"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/publicatie/country-settings-generation-units-type-and-b"
+    },
+    {
+      "url": "https://www.netbeheernederland.nl/media/13814/download?attachment"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 6,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveContentTypes": "application/pdf",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 30,
+  "maxRequestRetries": 1
+}

@@ -1,0 +1,892 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:pvlib-python.readthedocs.io \"shaded_fraction1d\"",
+      "url": "http://www.google.com/search?q=site%3Apvlib-python.readthedocs.io+%22shaded_fraction1d%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Apvlib-python.readthedocs.io+%22shaded_fraction1d%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "pvlib.shading.shaded_fraction1d",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/latest/reference/generated/pvlib.shading.shaded_fraction1d.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › latest › generated",
+        "description": "pvlib.shading.shaded_fraction1d# · Fixed-tilt south-facing array on flat terrain. Tilted row with a pitch of 3 m, a collector width of 2 m, and row rotations of ...Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Shaded fraction of a horizontal single-axis tracker - pvlib python",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/gallery/shading/plot_shaded_fraction1d_ns_hsat_example.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › gallery › shading",
+        "description": "shaded_fraction1d() exposes a useful method for the calculation of the shaded fraction of the width of a solar collector. Here, the width is defined as the ...Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Modelling shading losses in modules with bypass diodes — pvlib ...",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/v0.16.1/gallery/shading/plot_martinez_shade_loss.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › gallery › shading",
+        "description": "shaded_fraction1d() to calculate the fraction of shaded surface and consequently the number of shaded blocks due to row-to-row shading. pvlib.tracking ...",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Shading — pvlib python 0.15.2 documentation",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/reference/effects_on_pv_system_output/shading.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › stable › reference",
+        "description": "shaded_fraction1d (solar_zenith, ...) Shaded fraction in the vertical dimension of tilted rows, or perpendicular to the axis of horizontal rows. shading ...Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "pvlib.shading — pvlib python 0.11.2 documentation",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/v0.11.2/_modules/pvlib/shading.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › _modules › shading",
+        "description": ">>> shaded_fraction1d(solar_zenith=80, solar_azimuth=90, axis_azimuth=180, ... shaded_row_rotation=-30, collector_width=1.4, pitch=3, axis_tilt=0 ...Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "pvlib.shading.direct_martinez",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/reference/generated/pvlib.shading.direct_martinez.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › stable › generated",
+        "description": "shaded_fraction1d( >>> solar_zenith=80, solar_azimuth=180, >>> axis_azimuth ... shaded_fraction1d. to calculate 1-dimensional shaded fraction. References.Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d",
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Decomposing and combining irradiance - pvlib python",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/v0.13.1/reference/irradiance/components.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › components",
+        "description": "pvlib.shading.shaded_fraction1d · pvlib.shading.direct_martinez · Spectrum · pvlib.spectrum.spectrl2 · pvlib.spectrum.get_example_spectral_response · pvlib.Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Index — pvlib python 0.15.2 documentation",
+        "websiteTitle": "Python Pvlib",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/genindex.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › stable › genindex",
+        "description": "shaded_fraction1d() (in module pvlib.shading) · simple_efficiency() (in module pvlib.transformer) · simplified_solis() (in module pvlib.clearsky) · singleaxis ...Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Shading — pvlib python 0.13.1 documentation",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/v0.13.1/reference/effects_on_pv_system_output/shading.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › reference › shading",
+        "description": "shaded_fraction1d (solar_zenith, ...) Shaded fraction in the vertical dimension of tilted rows, or perpendicular to the axis of horizontal rows. shading ...Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "Bifacial — pvlib python 0.16.2.dev2+gddcc77613 documentation",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/latest/reference/bifacial.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › latest › reference",
+        "description": "pvlib.shading.shaded_fraction1d · pvlib.shading.direct_martinez · Spectrum · pvlib.spectrum.spectrl2 · pvlib.spectrum.get_example_spectral_response · pvlib.Read more",
+        "emphasizedKeywords": [
+          "shaded_fraction1d"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/0wItrIVyfom66qX-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:isprs.org benchmark 3D building reconstruction evaluation roof planes licence",
+      "url": "http://www.google.com/search?q=site%3Aisprs.org+benchmark+3D+building+reconstruction+evaluation+roof+planes+licence&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Aisprs.org+benchmark+3D+building+reconstruction+evaluation+roof+planes+licence&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "L",
+    "relatedQueries": [
+      {
+        "title": "Benchmark 3d building reconstruction evaluation roof planes licence free",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&sxsrf=APpeQntcWZcBjIS7euSIZyqbix-_FyES_Q:1792665619220&q=Benchmark+3d+building+reconstruction+evaluation+roof+planes+licence+free&sa=X&ved=2ahUKEwiS1bzrt82XAxVOKFkFHRQlKnIQ1QJ6BAg0EAE"
+      },
+      {
+        "title": "Benchmark 3d building reconstruction evaluation roof planes licence near",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&sxsrf=APpeQntcWZcBjIS7euSIZyqbix-_FyES_Q:1792665619220&q=Benchmark+3d+building+reconstruction+evaluation+roof+planes+licence+near&sa=X&ved=2ahUKEwiS1bzrt82XAxVOKFkFHRQlKnIQ1QJ6BAg1EAE"
+      },
+      {
+        "title": "Benchmark 3d building reconstruction evaluation roof planes licence free",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&sxsrf=APpeQntcWZcBjIS7euSIZyqbix-_FyES_Q:1792665619220&q=Benchmark+3d+building+reconstruction+evaluation+roof+planes+licence+free&sa=X&ved=2ahUKEwiS1bzrt82XAxVOKFkFHRQlKnIQ1QJ6BAg0EAE"
+      },
+      {
+        "title": "Benchmark 3d building reconstruction evaluation roof planes licence near",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&hl=en&sxsrf=APpeQntcWZcBjIS7euSIZyqbix-_FyES_Q:1792665619220&q=Benchmark+3d+building+reconstruction+evaluation+roof+planes+licence+near&sa=X&ved=2ahUKEwiS1bzrt82XAxVOKFkFHRQlKnIQ1QJ6BAg1EAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Automatic Segmentation of Raw LIDAR Data for Extraction ...",
+        "websiteTitle": "ISPRS International Society for Photogrammetry and Remote Sensing",
+        "url": "https://www.isprs.org/resources/datasets/benchmarks/UrbanSemLab/results/papers/MON_remotesensing-06-03716c.pdf",
+        "displayedUrl": "https://www.isprs.org › datasets › results › papers",
+        "description": "by M Awrangjeb · Cited by 189 — A new LIDAR point cloud segmentation algorithm has been proposed for automatic extraction of 3D building roof planes from LIDAR data.",
+        "emphasizedKeywords": [
+          "3D building roof planes"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by M Awrangjeb · Cited by 189 — A new LIDAR point cloud segmentation algorithm has been proposed for automatic extraction of 3D building roof planes from LIDAR data."
+        },
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Commission 3 Symposium - ABSTRACTS (Part A and B)",
+        "websiteTitle": "International Society for Photogrammetry and Remote Sensing",
+        "url": "https://www.isprs.org/proceedings/xxxiv/part3/papers/abstracts.htm",
+        "displayedUrl": "https://www.isprs.org › xxxiv › part3 › papers › abstracts",
+        "description": "by L Van Gool · Cited by 21 — In this paper we present a new technique to reconstruct buildings. After filling the plane parameter space, we find the planes that can represent the building ...",
+        "emphasizedKeywords": [
+          "reconstruct buildings",
+          "plane",
+          "planes",
+          "building"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by L Van Gool · Cited by 21 — In this paper we present a new technique to reconstruct buildings. After filling the plane parameter space, we find the planes that can represent the building ..."
+        },
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "A Convolutional Neural Network-Based 3D Semantic ...",
+        "websiteTitle": "International Society for Photogrammetry and Remote Sensing",
+        "url": "https://isprs.org/resources/datasets/benchmarks/UrbanSemLab/results/papers/Wuhan_Y3.pdf",
+        "displayedUrl": "https://isprs.org › results › papers › Wuhan_Y3",
+        "description": "by W Huang · Cited by 125 — These two features help to distinguish planar objects such as roofs, façades, and roads easily from objects such as vegetation and cars. The ...Read more",
+        "emphasizedKeywords": [
+          "roofs"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by W Huang · Cited by 125 — These two features help to distinguish planar objects such as roofs, façades, and roads easily from objects such as vegetation and cars. The ...Read more"
+        },
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "PIA07 - Part B",
+        "websiteTitle": "International Society for Photogrammetry and Remote Sensing",
+        "url": "https://www.isprs.org/proceedings/xxxvi/3-w49/partb/Full%20Document.pdf",
+        "displayedUrl": "https://www.isprs.org › proceedings › xxxvi › pa...",
+        "description": "Automatic 3D building reconstruction from airborne laser scanning and cadastral data using Hough Transform. extraction of the roof faces and the generation of  ...",
+        "emphasizedKeywords": [
+          "3D building reconstruction",
+          "roof"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Volume XXXVIII – Part 2",
+        "websiteTitle": "ISPRS International Society for Photogrammetry and Remote Sensing",
+        "url": "https://www.isprs.org/proceedings/xxxviii/part2/book.pdf",
+        "displayedUrl": "https://www.isprs.org › xxxviii › part2 › book",
+        "description": "International Society for Photogrammetry and Remote Sensing. Evaluation Based on GIS. Relevance-driven Acquisition and Rapid on-site Analysis of 3D Geospatial ...",
+        "emphasizedKeywords": [
+          "Evaluation",
+          "3D"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "ISPRS e-Bulletin #3: July 2025",
+        "websiteTitle": "International Society for Photogrammetry and Remote Sensing",
+        "url": "https://www.isprs.org/news/newsletter/2025-03/index.html",
+        "displayedUrl": "https://www.isprs.org › news › newsletter",
+        "description": "This is the 3rd edition of the GEOBENCH Workshop, focusing on the evaluation, calibration, and benchmarking of geospatial sensors, systems, and data. Building ...",
+        "emphasizedKeywords": [
+          "evaluation",
+          "benchmarking",
+          "Building"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "PROCEEDINGS AND RESULTS",
+        "websiteTitle": "ISPRS International Society for Photogrammetry and Remote Sensing",
+        "url": "https://www.isprs.org/documents/archive/Volume-A/2016-Prague/XLI-partA-full.pdf",
+        "displayedUrl": "https://www.isprs.org › archive › XLI-partA-full",
+        "description": "3D Optical Metrology. Testing, calibration and evaluation of imaging and non- optical imaging sensors (including laboratory, in-flight /in-situ ...",
+        "date": "2015-11-26T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "3D",
+          "evaluation"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/YXHLO5K4Q5LNX5x-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:github.com roofer 3DBAG license roof reconstruction",
+      "url": "http://www.google.com/search?q=site%3Agithub.com+roofer+3DBAG+license+roof+reconstruction&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Agithub.com+roofer+3DBAG+license+roof+reconstruction&gl=us&hl=en",
+    "hasNextPage": false,
+    "serpProviderCode": "A",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "3DBAG/roofer: Large scale automatic LoD2.2 building ...",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/3DBAG/roofer",
+        "displayedUrl": "https://github.com › 3DBAG › roofer",
+        "description": "It reconstructs a 3D building model from a pointcloud and a 2D roofprint polygon; It is a fully automated process, there is no manual modelling required.Read more",
+        "emphasizedKeywords": [
+          "roofprint"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Using roofer with IGNF datasets",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/ignfab/roofer-with-ignf-datasets",
+        "displayedUrl": "https://github.com › ignfab › roofer-with-ignf-datasets",
+        "description": "roofer is the 3DBAG reconstruction tool that turns building footprints and point clouds into 3D building models. The wider 3dbag-pipeline project shows how ...Read more",
+        "emphasizedKeywords": [
+          "roofer is the 3DBAG reconstruction tool"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/713pzFEKJPZLJWU-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:pvlib-python.readthedocs.io \"infinite_sheds\" assumptions",
+      "url": "http://www.google.com/search?q=site%3Apvlib-python.readthedocs.io+%22infinite_sheds%22+assumptions&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Apvlib-python.readthedocs.io+%22infinite_sheds%22+assumptions&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "User Guide — pvlib python 0.16.1 documentation",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/user_guide/index.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › stable › user_guide",
+        "description": "pvfactors · Infinite Sheds · ANTS-2D · References · Clear sky · Location · Ineichen and Perez · Simplified Solis · Detect Clearsky · References · Weather data.Read more",
+        "emphasizedKeywords": [
+          "Infinite Sheds"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "User Guide — pvlib python 0.11.1 documentation",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/v0.11.1/user_guide/",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › user_guide",
+        "description": "pvfactors · Infinite Sheds · References · Weather data · Types of weather data sources · Usage · References · Variables and Symbols · Single Diode Equation.Read more",
+        "emphasizedKeywords": [
+          "Infinite Sheds"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Shading - pvlib python - Read the Docs",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/latest/gallery/shading/",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › latest › gallery › s...",
+        "description": "Shaded fraction of a horizontal single-axis tracker. Modelling shading losses in modules with bypass diodes. Modelling shading losses in modules with bypass ...Read more",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Example Gallery — pvlib python 0.16.1 documentation",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/gallery/index.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › stable › gallery",
+        "description": "This gallery shows examples of pvlib functionality. Community contributions are welcome! ADR Model for PV Module Efficiency#. Obtaining ADR model parameters ...Read more",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Example Gallery — pvlib python 0.9.3 documentation",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/v0.9.3/gallery/",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › gallery",
+        "description": "This gallery shows examples of pvlib functionality. partial module shading Calculating power loss. Download all examples in Python source code:",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Airmass and atmospheric models - pvlib python - Read the Docs",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/reference/airmass_atmospheric.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › stable › reference",
+        "description": "Calculate the relative and absolute airmass. at sea level. Calculates precipitable water (cm) from ambient air temperature (C) and relatively humidity",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "ADR Model for PV Module Efficiency - pvlib python",
+        "websiteTitle": "Python (pvlib)",
+        "url": "https://pvlib-python.readthedocs.io/en/latest/gallery/adr-pvarray/",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › latest › adr-pvarray",
+        "description": "Calculating a module's IV curves. Modelling shading losses in modules. Simulating PV system DC output using the ADR module efficiency model. Fast simulation ...",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Irradiance Transposition - pvlib python - Read the Docs",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/latest/gallery/irradiance-transposition/",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › latest › gallery › ir...",
+        "description": "Simple irradiance adjustment for horizon shading ・ shading losses in modules ・ transposition limitations Reverse transposition limitations Modeling with ...",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Testing and benchmarking — pvlib python 0.16.1 documentation",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/stable/contributing/testing.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › stable › contributing",
+        "description": "Developers must include comprehensive tests for any additions or modifications to pvlib. New unit test code should be placed in the corresponding test module in ...Read more",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "Documentation and style guide - pvlib python - Read the Docs",
+        "websiteTitle": "pvlib python",
+        "url": "https://pvlib-python.readthedocs.io/en/latest/contributing/style_guide.html",
+        "displayedUrl": "https://pvlib-python.readthedocs.io › latest › contributing",
+        "description": "Set your editor to strip extra whitespace from line endings. This prevents the git commit history from becoming cluttered with whitespace changes.",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/zgyp0YuN0p2xhkX-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:joint-research-centre.ec.europa.eu PVGIS validation limitations shading building",
+      "url": "http://www.google.com/search?q=site%3Ajoint-research-centre.ec.europa.eu+PVGIS+validation+limitations+shading+building&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Ajoint-research-centre.ec.europa.eu+PVGIS+validation+limitations+shading+building&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Data sources & calculation methods - Joint Research Centre",
+        "websiteTitle": "europa.eu",
+        "url": "https://joint-research-centre.ec.europa.eu/photovoltaic-geographical-information-system-pvgis/general-information/data-sources-calculation-methods_en",
+        "displayedUrl": "https://joint-research-centre.ec.europa.eu › data-sources...",
+        "description": "The disadvantages of these data sets is that they mostly have low spatial resolution (one value every 30km or more), and that the accuracy of the solar ...",
+        "emphasizedKeywords": [
+          "disadvantages"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/BTMYEo7EgrElu8A-1.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:github.com/pvlib/pvlib-python \"BSD\"",
+      "url": "http://www.google.com/search?q=site%3Agithub.com%2Fpvlib%2Fpvlib-python+%22BSD%22&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Agithub.com%2Fpvlib%2Fpvlib-python+%22BSD%22&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [
+      {
+        "title": "BSD merch",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=BSD+merch&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg7EAE"
+      },
+      {
+        "title": "BSD Phones",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=BSD+Phones&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "BSD bikes",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=BSD+bikes&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg4EAE"
+      },
+      {
+        "title": "Bsd TREE INC",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=Bsd+TREE+INC&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg6EAE"
+      },
+      {
+        "title": "BSD merch",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=BSD+merch&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg7EAE"
+      },
+      {
+        "title": "BSD Phones",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=BSD+Phones&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "BSD bikes",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=BSD+bikes&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg4EAE"
+      },
+      {
+        "title": "Bsd TREE INC",
+        "url": "https://www.google.com/search?sca_esv=2351a38461d14f4c&gl=us&hl=en&sxsrf=APpeQnv-6NVE_OFd-6P_RKb4-Hc8HPCrVw:1792665673383&q=Bsd+TREE+INC&sa=X&ved=2ahUKEwjYx6aFuM2XAxV1lmoFHRqwI0kQ1QJ6BAg6EAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "pvlib-python/LICENSE at main",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/blob/main/LICENSE",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › blob › LICE...",
+        "description": "BSD 3-Clause \"New\" or \"Revised\" License. A permissive license similar to the BSD 2-Clause License, but with a 3rd clause that prohibits others from using the ...Read more",
+        "emphasizedKeywords": [
+          "BSD",
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "pvlib/pvlib-python: A set of documented functions for ...",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python",
+        "description": "by CB Jones · 2017 — License ... BSD 3-clause. History and acknowledgement. pvlib python began in 2013 as a Python translation of the PVLIB for Matlab toolbox developed by Sandia ...Read more",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by CB Jones · 2017 — License ... BSD 3-clause. History and acknowledgement. pvlib python began in 2013 as a Python translation of the PVLIB for Matlab toolbox developed by Sandia ...Read more"
+        },
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "setuptools deprecation warning for license info in pyproject ...",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/issues/2440",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › issues",
+        "description": "I think the deprecated classifier line just needs to be removed, and then license = { text = \"BSD-3-Clause\" } should be replaced with the new ...Read more",
+        "date": "2025-04-16T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "GitHub doesn't recognize the license · Issue #503",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/issues/503",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › issues",
+        "description": "Pandas also has line 1: \"BSD 3-Clause License\". SunPower/PVMismatch license has no first line, but has numbers instead of bullets. The newlines ...Read more",
+        "date": "2018-07-12T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "update Comparison with PVLIB_MATLAB doc page #116",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/issues/116",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › issues",
+        "description": "Matlab license is BSD 3-clause as of v1.3. Matlab now has quite a few functions that are not in the python version; Documentation location and ...Read more",
+        "date": "2016-01-21T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Recommended virtual environment methods, tools #1874",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/discussions/1874",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › discussions",
+        "description": "It seems like the latest miniforge should be fine, as it gives a user the ability to use conda or mamba , is BSD-3, and lets you install from conda-forge, but ...Read more",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "pvlib-python/pyproject.toml at main",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/blob/main/pyproject.toml",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › blob › pypro...",
+        "description": "license = \"BSD-3-Clause\". classifiers = [. 'Development Status :: 4 - Beta',. 'Operating System :: OS Independent',. 'Intended Audience :: Science/Research ...Read more",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Proposal: fork pvfactors to a new pvlib project #1657",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/discussions/1657",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › discussions",
+        "description": "The pvfactors repository contents are BSD-3 licensed. It was developed and maintained by @anomam until he left SunPower a few years ago. Since then, the ...Read more",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "pvlib-python/AUTHORS.md at main",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/blob/main/AUTHORS.md",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › blob › AUT...",
+        "description": "pvlib python is distributed under a 3-clause BSD license. Footer. © 2026 GitHub, Inc. Footer navigation. Terms · Privacy · Security · Status · Community · Docs ...",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      },
+      {
+        "title": "add more Solar Position calculations like US Naval ...",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/pvlib/pvlib-python/discussions/1308",
+        "displayedUrl": "https://github.com › pvlib › pvlib-python › discussions",
+        "description": "C implementation (BSD I think?): https://github.com/DavidHoadley/sky. 1Read more",
+        "emphasizedKeywords": [
+          "BSD"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 10
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/kMCZgJMKJfReFPQ-0.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:docs.3dbag.nl accuracy reconstruction roof attributes license",
+      "url": "http://www.google.com/search?q=site%3Adocs.3dbag.nl+accuracy+reconstruction+roof+attributes+license&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Adocs.3dbag.nl+accuracy+reconstruction+roof+attributes+license&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Data Attributes",
+        "websiteTitle": "3DBAG Viewer",
+        "url": "https://docs.3dbag.nl/en/schema/attributes/",
+        "displayedUrl": "https://docs.3dbag.nl › schema › attributes",
+        "description": "The 70th percentile elevation on roof surface based on reconstructed 3D model in LoD2.2. Given as elevation above sea level (NAP). Source, roofer. Data Type ...Read more",
+        "emphasizedKeywords": [
+          "roof",
+          "reconstructed"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Release Notes",
+        "websiteTitle": "3DBAG Viewer",
+        "url": "https://docs.3dbag.nl/en/overview/release_notes/",
+        "displayedUrl": "https://docs.3dbag.nl › overview › release_notes",
+        "description": "The computation of the b3_rmse_* attributes are now calculated using all the AHN building points, instead of only roofplane points. Buildings with a footprint ...Read more",
+        "emphasizedKeywords": [
+          "attributes",
+          "roofplane"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Data Sources",
+        "websiteTitle": "3DBAG Viewer",
+        "url": "https://docs.3dbag.nl/en/overview/sources/",
+        "displayedUrl": "https://docs.3dbag.nl › overview › sources",
+        "description": "the data positional data accuracy is 30 cm. reconstruction algorithm. 3DGI is licensed under CC BY 4.0",
+        "emphasizedKeywords": [
+          "accuracy",
+          "reconstruction",
+          "licensed"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Data Layers",
+        "websiteTitle": "3DBAG Viewer",
+        "url": "https://docs.3dbag.nl/en/schema/layers/",
+        "displayedUrl": "https://docs.3dbag.nl › schema › layers",
+        "description": "D model can be fully reconstructed from the 2D model, 1.2 roof planes are stored as height attributes … 3DGI is licensed under CC BY 4.0",
+        "emphasizedKeywords": [
+          "reconstructed",
+          "roof",
+          "attributes",
+          "licensed"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/ndqrc5fp7LPKr8j-1.html"
+  },
+  {
+    "searchQuery": {
+      "term": "site:docs.ladybug.tools honeybee radiance license shadow photovoltaic",
+      "url": "http://www.google.com/search?q=site%3Adocs.ladybug.tools+honeybee+radiance+license+shadow+photovoltaic&gl=us&hl=en",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": "en",
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Adocs.ladybug.tools+honeybee+radiance+license+shadow+photovoltaic&gl=us&hl=en",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null,
+    "htmlSnapshotUrl": "https://api.apify.com/v2/key-value-stores/9ncncWUwFDcNz6bZT/records/fbFkbDMsipqcLCn-2.html"
+  }
+]

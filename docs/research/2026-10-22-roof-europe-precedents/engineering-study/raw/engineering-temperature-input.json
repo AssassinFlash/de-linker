@@ -1,0 +1,25 @@
+{
+  "startUrls": [
+    {
+      "url": "https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/"
+    },
+    {
+      "url": "https://www.knmi.nl/nederland-nu/klimatologie/daggegevens"
+    },
+    {
+      "url": "https://meteo.data.gouv.fr/datasets/"
+    },
+    {
+      "url": "https://www.vde.com/de/fnn/themen/tar/tar-niederspannung"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 4,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2,
+  "requestTimeoutSecs": 30,
+  "maxRequestRetries": 1
+}

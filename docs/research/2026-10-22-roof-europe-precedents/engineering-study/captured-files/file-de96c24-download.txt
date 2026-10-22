@@ -1,0 +1,2108 @@
+                                                                                     Note externe
+                                                                                     Direction Clients Territoires
+
+
+
+Fiches de Collecte de renseignements pour une Proposition de Raccordement
+avant complétude du dossier et pour une Offre de Raccordement, au Réseau
+Public de Distribution géré par Enedis, d’une Installation de Production hors
+photovoltaïque de puissance supérieure à 36 kVA
+
+Identification :   Enedis-MOP-RES_056E
+Version :          2
+Nb. de pages :     41
+
+  Version      Date d’application   Nature de la modification                                         Annule et remplace
+                                    Changement de numérotation des notes externes Enedis en
+      1            15/09/2025                                                                         FOR-RES_20E
+                                    2025
+                                                                                                      Enedis-MOP-
+     2             03/09/2026       Ordre de service études anticipé
+                                                                                                      RES_056E-V1
+
+Document(s) associé(s) et annexe(s) :
+Enedis-NMO-RES_030E : Procédure de traitement des demandes de raccordement d'une Installation de Production en BT
+de puissance supérieure à 36 kVA et en HTA, au Réseau Public de Distribution géré par Enedis
+Enedis-NMO-RES_029E : Conditions de raccordement des Installations de Production relevant d'un Schéma Régional de
+Raccordement au Réseau des Energies Renouvelables ou d'un volet géographique
+Enedis-NMO-RES_032E : Conditions de raccordement des installations susceptibles d’injecter et de soutirer
+Enedis-MOP-RES_089E : Mode d’emploi des Fiches de Collecte de renseignements pour une Proposition de Raccordement
+avant complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution géré par Enedis, d'une
+Installation de Production ou susceptible d’injecter et de soutirer de puissance supérieure à 36 kVA
+Enedis-MOP-RAC_046E : « Mandat de représentation pour le raccordement d’un ou plusieurs sites au Réseau Public de
+Distribution d’électricité »
+
+Résumé / Avertissement
+Ce document précise les différentes fiches techniques à remplir par un Demandeur dans le cadre d’une demande de
+raccordement d'une Installation de Production hors photovoltaïque de puissance supérieure à 36 kVA au Réseau Public de
+Distribution exploité par Enedis.
+
+
+
+
+ Enedis - Tour Enedis                          SA à directoire et à conseil de surveillance                          Page : 1/41
+ 34 place des Corolles                         Capital de 270 037 000 euros                                     25/08/2026
+ 92079 Paris La Défense Cedex                  R.C.S. de Nanterre 444 608 442
+ enedis.fr                                     © Copyright Enedis
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+Nous vous demandons d’accorder la plus grande attention à renseigner ce document. La qualité des éléments
+que vous nous communiquez (description du projet, localisation, plans, …) est garante de l'élaboration de la
+solution technique de raccordement conforme à votre demande. Toute imprécision est de nature à allonger les
+délais de traitement de la demande.
+
+Les demandes sont transmises préférentiellement sur le portail raccordement du site enedis.fr et à défaut par
+courrier postal ou électronique à partir du présent document, dans tous les cas, accompagnées des documents
+administratifs et techniques associés.
+Pour toute information complémentaire, veuillez contacter l’Accueil Raccordement d’Enedis dont dépend votre Point
+de Raccordement1. Les coordonnées de ces accueils sont disponibles sur le site internet d’Enedis : www.enedis.fr.
+La Proposition Technique et Financière et/ou la Convention de Raccordement qui découlera des informations
+communiquées deviendrait caduque si le descriptif du projet évoluait. Le cas échéant, vous vous engagez à nous
+transmettre toutes modifications de votre opération, afin de nous permettre de les prendre en considération.
+    DOCUMENTS CONSTITUTIFS D’UNE DEMANDE DE PROPOSITION DE RACCORDEMENT AVANT
+    COMPLÉTUDE DU DOSSIER
+        ✓   le présent document complété, paraphé et signé par vos soins,
+        ✓   le cas échéant, une copie du mandat ou de l’autorisation,
+        ✓   un plan de situation (échelle 1:25000 ou 1:10000, recommandée) avec l’identification des limites de
+            la parcelle concernée,
+        ✓   un schéma unifilaire de l’Installation,
+        ✓   un plan de masse de l’opération (échelle 1:200 ou 1:500) avec l’emplacement du Point de
+            Raccordement1 souhaité.
+        ✓   le cas échéant, un (plusieurs) certificat(s) de conformité de(s) machine(s) électrogène(s) à la norme
+            NF EN 50549-1 ou 2. (Certification selon la norme de test NF_EN_50549-10 ou équivalente)2
+
+    DOCUMENTS CONSTITUTIFS D’UNE DEMANDE D’OFFRE DE RACCORDEMENT
+        ✓   le présent document complété, paraphé et signé par vos soins,
+        ✓   le cas échéant, une copie du mandat ou de l’autorisation,
+        ✓   une copie du document administratif permettant l’obtention d’une Offre de Raccordement comme
+            précisé au § "Contenu de la demande de raccordement" de la procédure de traitement des demandes
+            de raccordement (Enedis-PRO-RES_67E) publiée sur le site internet d’Enedis,
+        ✓   un plan de situation (échelle 1:25000 ou 1:10000, recommandée) avec l’identification des limites de
+            la parcelle concernée,
+        ✓   un plan de masse de l’opération (échelle 1:200 ou 1:500) avec l’emplacement du Point de
+            Raccordement1 souhaité,
+        ✓   un schéma unifilaire de l’Installation,
+        ✓   le cas échéant, la fourniture du récépissé de la déclaration ou l’autorisation d’exploiter ou du
+            document valant récépissé de la déclaration ou de l’autorisation d’exploiter, conformément aux
+            dispositions des articles L311-1, L311-5, L311-6 et L312-2 du Code de l'énergie,
+        ✓   un schéma unifilaire spécifique dans le cas d’une demande de raccordement indirect, décrivant la
+            liaison entre le PdL et la (ou les) Installations de Production raccordée(s) indirectement,
+        ✓   l’attestation de tenue en régime perturbé du Réseau Public de Distribution pour les Installations dont
+            la Pinstallée ≥ 5 MW,
+        ✓   le cas échéant, un (plusieurs) certificat(s) de conformité de(s) machine(s) électrogène(s) à la norme
+            NF EN 50549-1 ou 2. (Certification selon la norme de test NF_EN_50549-10 ou équivalente selon les
+            critères de la norme de base)2
+        ✓   une attestation de groupement solidaire dans le cas du raccordement indirect ou dans le cas d’un
+            raccordement groupé, conforme au modèle fourni en annexe.
+
+
+
+1
+ Selon la définition de l'article 1 de l'arrêté du 9 juin 2020. Le terme « point de livraison » est équivalent au terme « point de raccordement ».
+2
+ Jusqu’au 31 décembre 2024, cette pièce n’est pas obligatoire. De plus, à partir du 01/01/2025, la remise de ces certificats ne constituera
+pas un prérequis à la qualification d’une demande de raccordement. Ils pourront être remis ultérieurement et au plus tard à la demande de
+mise en service. Se référer à la note Enedis-PRO-RES_64E.
+    Enedis-MOP-RES_056E                                                                                                              Page : 2/41
+    Version 2                                                                                                                      25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+Ces documents ainsi que les champs, du présent document, marqués d’un * sont considérés par Enedis
+comme obligatoires pour obtenir la complétude du dossier.
+
+
+
+
+Pour le raccordement d’une Installation de stockage, veuillez décrire le comportement de l’Installation :
+- en injection en complétant le chapitre « CARACTÉRISTIQUES GÉNÉRALES EN INJECTION » de la Fiche A
+- en soutirage en complétant le chapitre « CARACTÉRISTIQUES GÉNÉRALES EN SOUTIRAGE » de la Fiche A
+Veuillez compléter notamment les caractéristiques spécifiques au stockage :
+- dans les Fiches B ou C, selon le type d’installation,
+- dans la Fiche E, selon le type d’installation,
+- dans la Fiche T1.
+
+
+
+
+Enedis-MOP-RES_056E                                                                              Page : 3/41
+Version 2                                                                                      25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+Fiche A - DONNÉES GÉNÉRALES DU PROJET
+Définition des rôles
+Producteur
+Personne morale ou physique titulaire ou futur titulaire du contrat d’accès au réseau en injection (CARD -I) de
+l’installation.
+Mandataire
+Personne physique ou morale qui reçoit un Mandat de représentation du Producteur pour porter tout ou partie
+de la demande de raccordement en son nom et pour son compte.
+Hébergeur
+Titulaire d’un Contrat d’Accès au Réseau (CARD-I, CARD-S, Contrat Unique), par l’intermédiaire duquel un tiers
+en décompte, producteur ou IRVE, est raccordé indirectement au RPD.
+Hébergé
+Personne morale ou physique titulaire ou futur titulaire d’un contrat de Service de Décompte (CSD)
+
+BENEFICIAIRE DU RACCORDEMENT
+      Le Producteur ou dans le cas d’un raccordement Indirect l’Hébergeur
+           Correspond au titulaire ou futur titulaire du contrat d’accès au réseau de l’installation
+    Nom*
+     Particulier (M, Mme, Mlle)                           ___________________________
+     Société3
+     Collectivité locale ou service de l’État
+    Pour les                SIREN*                         ___________________________
+    entreprises et les      Fonction du
+    collectivités                                          ___________________________
+                            représentant*
+    Pour les                Forme Juridique*               ___________________________
+    entreprises             Nom de l’agence                ___________________________
+
+    Pour les                Code Engagement                ___________________________
+    collectivités           Code Service                   ___________________________
+    Adresse (du siège social)*                             ___________________________
+    Code Postal – Ville-Pays*                              ___________________________
+    Interlocuteur (Nom, Prénom)*                           ___________________________
+    Fonction du représentant                               ___________________________
+
+    Téléphone*                                             ___________________________
+
+    e-mail*                                                ___________________________
+    Interlocuteur Technique (Nom, Prénom)                  ___________________________
+
+    Téléphone                                              ___________________________
+    e-mail                                                 ___________________________
+
+
+
+
+3
+    Indiquer la forme juridique (exemple : SARL DUPONT).
+
+Enedis-MOP-RES_056E                                                                                     Page : 4/41
+Version 2                                                                                              25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+LE MANDATAIRE
+ Le Demandeur du raccordement a-t-il mandaté un tiers pour le représenter ?*  Oui  Non
+
+    Si Oui, joindre le document Enedis-FOR-RAC 02E4 dument renseigné et renseigner les éléments suivants * :
+     Le tiers habilité dispose d’un Mandat Simple de représentation
+     Le tiers habilité dispose d’un Mandat Spécial de représentation
+    Dans le cadre du mandat spécial de représentation, pour le raccordement de l’Installation de Production décrit
+    dans ce formulaire. Le Demandeur du raccordement donne pouvoir au tiers mandaté de :
+              signer en son nom et pour son compte le (ou les) document(s) contractuel(s) relatif(s) au
+             raccordement (Proposition de Raccordement Avant Complétude, Proposition Technique et
+             Financière et Convention de Raccordement, Convention de Raccordement Directe), et, en cas de
+             recours au L. 342-6 du Code de l’énergie, le Contrat de Mandat, et ses Annexes et le cas échéant tout
+             Avenant à l’offre de raccordement,
+              signer en son nom et pour son compte le Contrat d’Accès au Réseau Public de Distribution
+              procéder en son nom aux règlements financiers relatifs au raccordement,
+              en cas de recours au L. 342-6 du Code de l’énergie, exécuter le Contrat de Mandat et ses annexes
+             au nom et pour le compte du Mandant (au sens du mandat de représentation).
+    Dans le cas d'une demande de raccordement simultanée Consommation plus Production, un seul mandat
+    peut être délivré à un tiers, qui sera l'interlocuteur d'Enedis et agira au nom et pour le compte du Demandeur
+    pour l'ensemble.
+    Nom*
+     Particulier (M, Mme, Mlle)
+                                                   ___________________________
+     Société
+     Collectivité locale ou service de l’État
+    pour une       SIRET*                          ___________________________
+    société et
+                   Nom du représentant*            ___________________________
+    collectivité
+    Pour les       Forme Juridique5*               ___________________________
+    entreprises      Nom de l’agence                        ___________________________
+    Adresse (du siège social)*                              ___________________________
+    Code Postal – Ville-Pays*                               ___________________________
+    Téléphone du représentant*                              ___________________________
+    e-mail du représentant*                                   ___________________________
+
+LOCALISATION DU SITE
+ Nom de l'Installation6*
+ SIRET (pour une société)7
+ Adresse*
+ Code Postal – Ville*
+ Code INSEE Commune6*
+ Coordonnées GPS du Point de Raccordement*
+ [Latitude (Décimal) ; Longitude (Décimal)] dans le système                                   (___________________ ; ___________________)
+ WGS84
+
+
+
+
+4
+  Un document équivalent est admis sous réserve de la présence de l’intégralité des informations du document Enedis-FOR-RAC_02E.
+5
+  Indiquer la forme juridique (exemple : SARL DUPONT).
+6
+  Donnée nécessaire à l'application de l'arrêté du 7 juillet 2016.
+7
+  Donnée facultative pour la demande mais susceptible d’en accélérer le traitement. A défaut du SIRET du site, celui du siège d e la société sera accepté.
+Toutefois, le SIRET du site sera obligatoire pour établir la convention de raccordement.
+
+Enedis-MOP-RES_056E                                                                                                                         Page : 5/41
+Version 2                                                                                                                                 25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+CARACTÉRISTIQUES GÉNÉRALES EN INJECTION ➔ Veuillez remplir les cases ci-dessous ainsi que la Fiche T1
+La Puissance installée Pinstallée d’une Installation de Production est définie comme la somme des puissances
+actives unitaires maximales des machines électrogènes susceptibles de fonctionner simultanément dans un même
+établissement, identifié par son numéro d’identité au répertoire national des entreprises et des établissements
+(SIRET)
+La Puissance de raccordement en injection P raccinj désigne la puissance de production maximale nette livrée au
+Réseau Public de Distribution. Cette puissance est calculée par le Demandeur à partir de la puissance nominale
+de fonctionnement des ouvrages de production installés.
+La définition des puissances et les calculs afférents sont détaillées sur la DTR ENEDIS-OPE-RES_08E
+Toutes les puissances doivent être exprimées en entiers naturels, le cas échéant arrondies à l’entier supérieur.
+Rappel : la tension de raccordement de référence est déterminée en fonction de Puissance de production
+installée Pinstallée. L’article 24 de l’arrêté du 9 juin 2020 précise les valeurs de la puissance limite pour un
+raccordement en basse tension soit 250 kVA, les alinéas IV et V mentionnent qu’aucune Installation ne peut
+être raccordée dans le domaine de tension BT dès lors que la puissance de l’Installation Pinstallée dépasse
+cette Plimite.
+             Si Pinstallée < 250 kVA remplir la fiche BT ➔ Fiche B
+             Si Pinstallée ≥ 250 kVA remplir la fiche HTA ➔ Fiche C
+Bridage Statique :
+Dispositif limitant la puissance maximale d’une machine de production
+Un dispositif de « bridage statique » est-il mis en place pour respecter  Oui
+cette valeur de Pinstallée ?                                              Non
+
+Puissance de production installée Pinstallée 8 *, après bridage statique le ____________________ kVA si puissance
+cas échéant                                                                 installée ≤ 250 kVA
+➔ correspond à la puissance qui figure dans la déclaration ou la ____________________ kW si puissance
+demande d’autorisation d’exploiter.                                         installée > 250 kVA
+Bridage Dynamique :
+Dispositif limitant la puissance injectée au Point de Raccordement.
+
+Ce dispositif est obligatoire si :
+• La puissance de production installée Pinstallée > Puissance de raccordement en injection P racc,inj . Dans ce cas,
+     le dispositif de bridage doit permettre que la puissance active injectée sur le réseau ne dépasse pas de
+     plus de 5% la Pracc,inj en moyenne sur 1 minute glissante.
+Ou si :
+La puissance de raccordement en injection P racc,inj > 16 000 kW à 20 kV ou 12 000 kW à 15 kV et le
+raccordement de l’installation est composé d’un seul câble. Dans ce cas, le dispositif de bridage dynamique
+doit permettre que la puissance apparente injectée sur le réseau ne dépasse pas de plus de 5% la               puissance
+apparente maximale admissible du câble (       17 000 kVA à 20 kV ou de 12 750 kVA à 15 kV, du fait d’un courant
+maximal admissible de      490A conformément à la norme C33         -226) sur 1 minute glissante.
+Puissance de Raccordement en injection (Pracc inj)*, après bridage ____________________ kVA si puissance
+dynamique le cas échéant                                                        installée ≤ 250 kVA
+Correspond à la puissance de production maximale nette livrée au                ____________________ kW si puissance
+Réseau Public de Distribution                                                   installée > 250 kVA
+Si P installée > Pracc inj, le respect de la puissance de raccordement Par la signature de cette demande de
+en injection est obtenu au moyen d’un dispositif de bridage raccordement le producteur s’engage
+dynamique.                                                                      à respecter ces dispositions et ainsi à
+                                                                                installer un dispositif de bridage
+                                                                                dynamique, s’il est dans le cas cité.
+
+
+
+
+8
+    Désigne la puissance installée définie à l’article 3 de l’arrêté du 9 juin 2020, qui détermine la tension de raccordement de référence.
+
+Enedis-MOP-RES_056E                                                                                                                 Page : 6/41
+Version 2                                                                                                                         25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+Si Pracc inj > 16 000 kW à 20 kV ou 12 000 kW à 15 kV
+Le respect du courant maximal admissible par câble de 490A                                Par la signature de ce document, le
+conformément à la norme C33        -226 (soit 17 000 kVA à 20 kV ou                       producteur s’engage à installer un
+12 750 kVA à 15 kV) dans les situations de soutirage d’énergie                            dispositif de bridage dynamique s’il est
+réactive nécessite l’installation d’un dispositif de bridage dynamique                    dans le cas cité
+si le raccordement est composé d’un seul câble
+Période de production envisagée*
+(Ex : toute l’année, 1er novembre – 31 mars)
+
+Productibilité moyenne annuelle*                                                          ____________________ kWh
+
+
+CARACTÉRISTIQUES GÉNÉRALES EN SOUTIRAGE
+Puissance active maximale soutirée au Réseau Public de Distribution
+                                                                    ____________________ kWErreur ! Signet non
+(au niveau du Point de Raccordement1 du Site)*                      défini.
+Puissances des auxiliaires, ou du contrat de soutirage
+                                                                    Oui
+Si la puissance est non nulle, le soutirage est-il uniquement pour  Non ➔ Veuillez remplir la Fiche T2
+l'alimentation des auxiliaires hors période de production ?*       nécessaire à un raccordement
+                                                                   mixte
+
+RACCORDEMENT ACTUEL AU RÉSEAU
+ La demande concerne-t-  Non
+ elle un Site9 (ou bâtiment  Oui (faire apparaître, sur le plan de masse, le(s) coupe(s) circuit(s) relatif(s) à
+ supportant     l’Installation) ce(s) raccordement(s))
+ déjà raccordé au Réseau           BT en Soutirage
+ Public de Distribution ?*         BT en Injection
+                                   HTA en Soutirage
+                                   HTA en Injection
+
+    Le Demandeur souhaite-t-il :*  Cas 1 : la création d’un nouveau Point de Raccordement dédié à la présente
+                                                                                          1
+
+                                  demande
+                                      Cas 2 : le raccordement, sur le Point de Raccordement 1 existant, d’une nouvelle
+                                     Installation relevant de la même entité juridique que l’Installation existante
+                                      Cas 3 : le raccordement, sur le Point de Raccordement 1 existant, d’une nouvelle
+                                     Installation relevant d’une autre entité juridique que l’Installation existante
+    Si Cas 2 souhaité :
+    Indiquer les caractéristiques du site existant :
+        ✓ En soutirage :
+    • Niveau de tension et Puissance Souscrite actuelle*                          BT : _______ kVA  HTA : _______ kW
+    • Référence du Point de Référence Mesure (PRM)*                              ____________________
+    • Nom du Titulaire*                                                          ____________________
+
+       ✓ En injection :
+    • Puissance de production installée Pinstallée actuelle*                     _______ kWErreur ! Signet non défini.
+    • Référence du contrat d’accès (CARD-I, CRAE/CAE)*                           ____________________
+
+    • Nature de la modification de raccordement*                                  Augmentation de Puissance de
+                                                                                 Raccordement
+                                                                                  Mise en œuvre d’une nouvelle Installation
+                                                                                 de Production
+
+9
+ Établissement identifié par son numéro d’identité au répertoire national des entreprises et établissements (SIRET), tel que défini par le
+décret n°73-314 du 14 mars 1973.
+Enedis-MOP-RES_056E                                                                                                           Page : 7/41
+Version 2                                                                                                                   25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                                                                              Une des modifications listées à l’article 4
+      Détails modification de raccordement souhaitée                        de l’arrêté du 9 juin 2020
+                                                                              Autre :___________________________________
+
+ Si Cas 3 souhaité :
+ Cette demande de raccordement fait l’objet d’une demande
+ de raccordement indirect.6
+ La Fiche D est à remplir pour chaque Installation
+ indirectement raccordée.
+
+ CARD-S et/ou CARD-I ou-CU et Puissance de Raccordement                       CARD-S ou CARD-I
+ en Soutirage et/ou Injection du Site hébergeur : *                           CU
+                                                                             N° Contrat: ____________________
+                                                                                                  _______ kW
+
+
+VALORISATION EVENTUELLE DE LA PRODUCTION SOUHAITEE
+ Modalité de la valorisation10 éventuelle de la production*
+                                                                     Totalité de la production (nette d’auxiliaires)
+
+                                                                     Surplus de la production (déduction faite de la
+                                                                    consommation)
+                                                                     Absence de valorisation (autoconsommation
+                                                                    totale). L’électricité produite sera entièrement
+                                                                    consommée sur le Site11 et elle ne fera l’objet
+                                                                    d’aucun contrat de valorisation auprès de co-
+                                                                    contractants.
+
+DISPOSITIF DE COMPTAGE
+
+ Schéma de référence souhaité pour le dispositif de comptage *                     Schéma S1
+ Les schémas de comptage dépendent de la valorisation souhaitée  Schéma S2
+ de la production, retrouvez la description des schémas sur la note
+                                                                     Schéma S3
+ Enedis-NOI-RES_46E
+                                                                     Schéma S4
+                                                                                   Schéma S5
+                                                                                   Schéma S6
+                                                                                   Schéma S7
+                                                                                   Schéma S8
+                                                                                   Schéma S9
+                                                                                   Autre
+
+ Si Autre, préciser les dispositifs particuliers de comptage souhaités et joindre un schéma explicatif*
+
+
+
+
+10
+  Le caractère direct ou indirect du raccordement peut impacter la valorisation de la production demandée.
+11
+  Il n'y a pas établissement d’une Offre de Raccordement dans ce cas et seule une Convention d’Exploitation organisera les modalités
+d’exploitation avec le Réseau Public de Distribution.
+ Enedis-MOP-RES_056E                                                                                                    Page : 8/41
+ Version 2                                                                                                            25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+RACCORDEMENT D'INSTALLATIONS GROUPÉES12 DONT LA SOMME DES PUISSANCES DE
+RACCORDEMENT EST SUPÉRIEURE À 250 kVA DANS LE CADRE DES SCHÉMAS RÉGIONAUX DE
+RACCORDEMENT AU RÉSEAU DES ÉNERGIES RENOUVELABLES
+
+     Le Demandeur atteste qu'il n'a aucun projet déjà raccordé ou en file d'attente
+     pour une Installation utilisant le même type d’énergie, ayant le même code                         Oui (aucun autre projet)
+     INSEE que le Site de Production concerné, et appartenant à la même société                         Non (compléter les
+     ou à une société qui lui est liée au sens de l’article L. 336-4 du Code de                        informations ci-dessous)
+     l’énergie*
+
+     Indiquer les références des Installations se trouvant dans le cas ci-dessus12                     Numéros des contrats ou
+                                                                                                       numéros des dossiers de
+                                                                                                       demandes de raccordement:
+                                                                                                       - ____________________
+                                                                                                       - ____________________
+                                                                                                       - ____________________
+
+
+PROJETS GROUPÉS EN INJECTION13
+ Cette demande de raccordement fait-elle l’objet d’une demande de raccordement                                Oui
+ groupée14 ?*                                                                                                 Non
+
+
+
+
+       ✓    Si Oui, préciser les références des autres demandes 15 :*
+
+
+
+
+INFORMATIONS COMPLÉMENTAIRES16
+
+
+
+
+12
+   Telles que définies à l’article D342-22 du Code de l’énergie. Comme précisé dans la procédure DTR Enedis-PRO-RES_65E, le code INSEE
+n’est pas le critère qui sera utilisé directement pour considérer des Installations comme étant groupées. Il apparaît ici car c’est une
+information à laquelle le Demandeur a accès pour signaler les Installations à examiner par Enedis. Lors de cet examen, Enedis vérifiera si
+les installations sont raccordées ou à raccorder sur le même poste HTA/BT. Dans ce cas et si la somme des puissances des Installations
+dépasse 250 kVA, la quote-part du S3REnR sera appliquée sur la base de la somme des puissances.
+13
+   Conformément à l’article 7 de l’arrêté du 28 août 2007 fixant les principes de calcul de la contribution mentionnée aux articles 4 et 18 de
+la loi n° 2000-108 du 10 février 2000 relative à la modernisation et au développement du service public de l’électricité.
+14
+   Conformément à l'article 7 de l'arrêté du 28 août 2007
+15
+   Préciser les noms, SIRET et adresses des autres demandes de raccordement.
+16
+   Cette rubrique permet au Demandeur d'apporter toutes informations complémentaires nécessaires au traitement de sa demande de
+raccordement.
+Enedis-MOP-RES_056E                                                                                                              Page : 9/41
+Version 2                                                                                                                      25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+TYPE DE DEMANDE
+                                      Proposition de raccordement avant complétude du dossier
+                                      Offre de Raccordement avec travaux sur les ouvrages dédiés réalisés par
+ Demande (dans tous les cas
+                              Enedis
+ continuez le questionnaire)*
+                               Offre de Raccordement avec travaux sur les ouvrages dédiés réalisés par le
+                                Demandeur dans le cadre de l’article L. 342-2 du Code de l’énergie 17
+
+CERTIFICATION DES DONNÉES : « Fiche A : DONNÉES GÉNÉRALES DU PROJET »
+
+                                                                  Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                                  ____________________
+ Date :* ____________________                                     Signature*
+
+
+
+
+17
+  L’article L. 342-2 du Code de l’énergie autorise le Demandeur à faire exécuter les travaux de raccordement concernant les ouvrages
+dédiés à son Installation selon un dispositif décrit dans la note de la DTR Enedis-PRO-RES_67E.
+ Enedis-MOP-RES_056E                                                                                                   Page : 10/41
+ Version 2                                                                                                            25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                 Fiche B - CARACTÉRISTIQUES DU SITE À RACCORDER EN BASSE TENSION
+
+Cette fiche n’est à renvoyer que dans le cas d’un raccordement en Basse Tension, et doit être ignorée pour les
+Installations se raccordant en HTA.
+Dans le cas d’une demande de raccordement indirect, remplir une fiche par Installation indirectement
+raccordée.
+
+EMPLACEMENT SOUHAITE DU POINT DE RACCORDEMENT
+
+  Importance de la localisation des éléments de votre raccordement
+  Il existe deux configurations possibles,
+  La différence entre les deux configurations porte sur l'emplacement du coffret de contrôle-commande (AGCP
+  + Compteur+ sectionneur) du branchement à puissance surveillée.
+  Quelle que soit la configuration, le Coupe-Circuit Principal Individuel doit être accessible depuis le domaine
+  public sans franchissement d’accès contrôlé, sur la voie d’accès naturel au site.
+  L’emplacement du CCPI doit être conforme à la DTR Enedis-NMO-RAC_001E.
+  Cocher la configuration que vous souhaitez :*
+  Raccordement de référence                                 Autre Configuration 
+  Le coffret de contrôle commande et le CCPI sont            Le coffret de contrôle commande est intégré à
+  positionnés en limite du domaine public, sur la voir       un bâtiment.
+  d’accès naturel du site.
+                                                             Le CCPI est positionné en limite de domaine
+                                                             public. Sur la voie d’accès naturel du site
+
+
+
+
+  Il est indispensable que vous localisiez le CCPI, le coffret de contrôle commande et l’Appareil Général de
+  Commande et de Protection (AGCP) sur le plan de masse de votre opération, que vous nous fournirez.
+
+  Si vous souhaitez un raccordement différent du raccordement de référence, le montant des travaux dans le
+  domaine privé est alors à votre charge :*
+  - Indiquez la distance entre l’emplacement du coffret CCPI et le coffret de contrôle-commande : d = _______
+  mètres.
+  - Souhaitez-vous réaliser la tranchée en domaine privé et fournir le fourreau ?
+        Oui                Non
+  (Le diamètre du fourreau sera précisé dans l’offre de raccordement).
+  Le Demandeur fournira à Enedis un Plan Géoréférencé des Ouvrages Construits (PGOC) de classe A définie
+  dans l'arrêté du 15 février 2012.
+
+
+
+
+Enedis-MOP-RES_056E                                                                                   Page : 11/41
+Version 2                                                                                            25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+
+RÉSEAU ÉLECTRIQUE INTÉRIEUR
+                                                                Indiquer sur le schéma l’ensemble des Unités de Production,
+ Schéma unifilaire de l’Installation intérieure*
+                                                                l’organe de couplage de chaque Unité de Production, l’organe
+                                                                de découplage du Site, les connexions éventuelles aux
+                                                                Installations de Consommation et les longueurs et les sections
+                                                                des câbles.
+ En cas d’utilisation d’onduleurs de type                        Phase 1 : _______ kVA
+ monophasé, donner la répartition de la
+                                                                 Phase 2 : _______ kVA
+ puissance de raccordement sur chacune des
+ 3 phases18*                                                     Phase 3 : _______ kVA
+
+UNITÉS DE PRODUCTION (Y COMPRIS DE STOCKAGE) *
+                                                                                                 Puissance
+                                  Marque et                 Type (synchrone,
+         Machine                                                                                 apparente                    Nombre
+                                  référence               asynchrone, onduleur)
+                                                                                                nominale Sn
+            N° 1                                                                                 _______kVA
+           N° 2                                                                                  _______kVA
+           N° 3                                                                                  _______kVA
+            N° 4                                                                                 _______kVA
+           N° 5                                                                                  _______kVA
+           N° 6                                                                                  _______kVA
+            N° 7                                                                                 _______kVA
+           N° 8                                                                                  _______kVA
+           N° 9                                                                                  _______kVA
+
+
+
+
+18
+     Enedis rappelle l’intérêt du Demandeur à équilibrer au mieux son installation triphasée, pour limiter les frais du raccordement.
+
+Enedis-MOP-RES_056E                                                                                                                Page : 12/41
+Version 2                                                                                                                         25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+PROTECTION DE DÉCOUPLAGE*
+
+ La protection de découplage est obligatoire en application de l’article 27 de
+ l’arrêté du 9 juin 2020. Elle peut :
+                                                                                             Intégrée à l’onduleur*
+      •   être intégrée à l’onduleur (ou au sectionneur automatique) (Cocher la
+                                                                                            → Joindre la preuve de conformité19
+          case « Intégrée à l’onduleur ») et conforme à la norme NF_EN_50549-
+          1.;                                                                                Le Demandeur s’engage à ce que la
+                                                                                            surveillance de la tension soit effectuée
+                                                                                            à partir d’une mesure entre les
+ ou                                                                                         conducteurs de phase et de neutre, ce
+                                                                                            qui implique que les onduleurs soient
+                                                                                            raccordés au conducteur de neutre issu
+                                                                                            du réseau20.*
+ être un relais externe de protection de découplage conforme a la norme
+ NF_EN_50549-1 ;
+ ou                                                                                          Relais externe NF_EN_50549-1*
+                                                                                            Marque: ____________________
+      •   en être indépendante, dans ce cas elle sera de type B.1 ;                         Modèle: ____________________
+                                                                                            → Joindre la preuve de conformité2122
+
+
+
+CERTIFICATION DES DONNÉES : « Fiche B : CARACTÉRISTIQUES DU SITE À RACCORDER EN BASSE
+TENSION »
+
+                                                                     Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                                     ____________________
+
+
+                                                                     Signature*
+ Date :* ____________________
+
+
+
+
+19
+   Conformément à la note DTR Enedis-PRO-RES_10E : via l’attestation de conformité de l’onduleur (émise par un organisme externe
+accrédité) à la norme NF_EN_50549-1 rédigée en français pour chacun des appareils différents mis en œuvre. Voir aussi la note de bas de
+page n°2.
+20
+   Validation obligatoire pour toute protection de découplage intégrée à un onduleur triphasé : la protection de découplage doit mesurer la
+tension « simple » entre les conducteurs de phase et de neutre (cf Enedis-PRO-RES_10E)
+21
+   Conformément à la note DTR Enedis-PRO-RES_10E : via une attestation de conformité (émise par un organisme externe accrédité) à la
+norme NF_EN_50549-1.
+22
+   Jusqu’au 31 décembre 2024, les certificats de conformité à la protection de découplage DIN VDE 0126-1-1 (2023-08) sont acceptés. Se
+référer à la note Enedis-PRO-RES_64E
+
+
+Enedis-MOP-RES_056E                                                                                                           Page : 13/41
+Version 2                                                                                                                    25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                          Fiche C - CARACTÉRISTIQUES DU SITE À RACCORDER EN HTA
+
+
+Cette fiche n’est à renvoyer que dans le cas d’un raccordement en HTA, et doit être ignorée pour les
+Installations se raccordant en Basse Tension.
+Dans le cas d’une demande de raccordement indirect, remplir une fiche par Installation indirectement
+raccordée.
+
+EMPLACEMENT DU POSTE DE LIVRAISON
+ Importance de la localisation des éléments de votre raccordement*
+ Enedis vous précise que le poste de livraison doit être accessible 24 h sur 24 h par son personnel, sans
+ franchissement d’accès contrôlé.
+ Selon la Documentation Technique de Référence d’Enedis, le raccordement de référence de votre Installation
+ correspond au poste de livraison en limite de domaine privé.
+ À votre demande, Enedis étudie la possibilité de réaliser le déport du poste de livraison à l’intérieur du Site.
+ Enedis vous précise alors que le montant des travaux dans le domaine privé est à votre charge et ne bénéficie
+ pas de la réfaction tarifaire sur le coût du raccordement de votre Installation.
+
+ Cocher la configuration que vous souhaitez :*
+
+ Raccordement de référence :                             Autre Configuration : 
+
+ Le poste de livraison est accessible depuis le           Le poste de livraison est intégré dans le bâtiment par
+ domaine public sans franchissement d’accès               exemple. Vous devrez garantir l’accès permanent au
+ contrôlé.                                                poste de livraison au personnel d’Enedis
+                Poste de livraison                                                          Poste de livraison
+
+
+
+
+                                                                           d
+
+
+
+
+ Il est indispensable que vous localisiez le poste de livraison sur le plan de masse de votre opération, que vous
+ nous fournirez.
+
+ Si vous souhaitez un raccordement différent du raccordement de référence, le montant des travaux dans le
+ domaine privé est alors à votre charge : *
+ Indiquez la distance entre le point de pénétration souhaité pour votre raccordement et le poste de livraison :
+ d = _____________ mètres
+ Souhaitez-vous réaliser la tranchée en domaine privé et fournir le(s) fourreau(x) ?
+        Oui                     Non
+ Le diamètre des fourreaux sera précisé dans la Convention de Raccordement
+ Le Demandeur fournira à Enedis un Plan Géoréférencé des Ouvrages Construits (PGOC) de classe A définie
+ dans l'arrêté du 15 février 2012.
+
+
+
+
+Enedis-MOP-RES_056E                                                                                         Page : 14/41
+Version 2                                                                                                  25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+ORDRE DE SERVICE ÉTUDE (OSE) ANTICIPE
+
+ Le Demandeur souhaite-t-il bénéficier d'un OSE anticipé23                              Oui               Non
+
+
+RÉSEAU ÉLECTRIQUE INTÉRIEUR
+
+ Schéma de l’Installation intérieure*                          Indiquer sur le schéma l’ensemble des transformateurs
+                                                               d’évacuation (reporter leur puissance nominale Sn), les
+                                                               onduleurs, la position de l’organe de couplage de chaque
+                                                               Unité de Production et la position de l’organe de
+                                                               découplage. Indiquer les longueurs et sections des câbles
+                                                               HTA entre les postes satellites
+
+ Schéma du poste de livraison*                                 Joindre un schéma unifilaire précisant les caractéristiques
+                                                               des matériels électriques (matériel HTA, comptage, TT, TC,
+                                                               protection…)
+
+                                               Échelonnée 1 à 1
+ Mise sous tension des transformateurs
+ d’évacuation des machines de production lors  Simultanée par fermeture du disjoncteur général
+ d’une remise en service du Site, suite à
+                                               Transformateurs magnétisés par les machines de
+ découplage ou opération d’entretien*
+                                              production
+
+
+COMPENSATION GÉNÉRALE DU SITE : NB : ne pas inclure dans cette compensation générale la compensation
+propre à chaque machine
+
+ Le Site est-il équipé de batteries de condensateurs de  Oui
+ compensation générale ?                                 Non
+
+ Puissance totale des condensateurs                                 _______kvar
+
+ Nombre de gradins et puissance unitaire                            _______ / _______kvar
+
+
+CARACTÉRISTIQUES GÉNÉRALES EN SOUTIRAGE
+                                                                      Standard
+Dans le cadre des besoins en qualité d’alimentation, quels seuils  Personnalisé, pour les :
+souhaitez-vous pour les engagements ?
+                                                                              Creux        Coupures
+Une demande simultanée pour une alimentation de secours en Soutirage  Oui
+est-elle nécessaire ?                                                 Non
+                                                                     ____________________ kWErreur ! Signet non
+   ✓ Si Oui, Puissance de secours demandée en Soutirage              défini.
+
+
+
+CARACTÉRISTIQUES GÉNÉRALES EN PUISSANCE REACTIVE
+Uniquement pour les demandes de raccordement au réseau HTA, l’Installation  Oui
+est-elle capable de fournir ou d’absorber les puissances réactives minimales  Non ➔ Veuillez remplir la Fiche F
+au Point de raccordement définies à l’arrêté du 9 juin 2020 ?
+
+
+
+
+23
+    L'OSE anticipé permet, dans le cadre d’une demande anticipée de raccordement, d’anticiper la réalisation des études nécessaires à
+l’établissement du tracé définitif de raccordement comprises dans l’étude de réalisation de raccordement. Les modalités en sont précisées
+dans la procédure de raccordement Enedis-NMO-RES_030E.
+Enedis-MOP-RES_056E                                                                                                         Page : 15/41
+Version 2                                                                                                                  25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+LOI DE RÉGULATION LOCALE DE PUISSANCE RÉACTIVE
+
+Le Demandeur souhaite qu’Enedis étudie une solution de  Oui
+raccordement avec une loi de régulation locale de puissance réactive
+de type Q=f(U)*                                                       Non
+
+Si Oui, indiquer les capacités constructives en puissance réactive à Qmax = _______ kVAR
+prendre en compte24.                                                 Soit un ratio Qmax/Pracc inj = _______
+Si aucune valeur n’est remplie, les valeurs par défaut suivantes seront Qmin = _______ kVAR
+prises en compte :                                                      Soit un ratio Qmin/Pracc inj = _______
+Qmin = -0,35xPracc inj et Qmax = 0,4xPracc inj
+OPTIONS POUR RECEVOIR PLUSIEURS SOLUTIONS DE RACCORDEMENT
+Dans le cas où la Solution de Raccordement de Référence, établie par Enedis suite à la présente demande de
+raccordement, implique soit :
+     •    la création d’un départ direct,
+     •    des renforcements du réseau HTA existant,
+
+le Demandeur souhaite recevoir, en plus de l’Offre de Raccordement de Référence ou en plus de la Proposition
+de raccordement avant complétude de Référence :
+Un devis d’étude de type :
+     •    division de parc25 ?                                                                            Oui          Non
+     •    puissance de raccordement en injection plus faible               Erreur ! Signet non défini.    Oui          Non
+          ?
+
+Préciser la puissance minimale de raccordement en injection souhaitée                                    Pracc inj min = _______ kW
+(≥ 70 % Pracc inj)26.
+Un devis d’étude de type Offre à modulation de puissance 27 ?                                             Oui          Non
+Préciser la valeur minimale souhaitée pour la puissance injectable garantie
+(≥ 70 % Pracc inj)28.                                                                                    Pgar inj = _______ kW
+CAPACITÉS D’ACCUEIL DES DÉPARTS HTA EXISTANTS
+
+Dans le cas où la Solution de Raccordement de Référence, établie par
+Enedis suite à la présente demande de raccordement, implique soit :
+   • la création d’un départ direct,
+   • des renforcements du réseau HTA existant,
+
+                                                                                                     Oui
+                                                                                                     Non
+
+
+
+
+24
+   Si la case « oui » est cochée, joindre un diagramme [P, Q] et [U, Q] précisant les capacités constructives de l’installation au niveau du
+Point de Raccordement. Les valeurs remplies doivent respecter les exigences décrites dans la note de la DTR Enedis-NOI-RES_60E, à défaut
+une attestation d’engagement du producteur à respecter les capacités constructives déclarées (Qmin/Qmax) peut être jointe.
+25
+   Solution de raccordement telle que définie au § 3.1.3 de la note DTR Enedis-PRO-RES_67E.
+26
+   La Pracc_inj_min correspond à la puissance de raccordement en injection la plus faible que le Demandeur est prêt à accepter. Elle servira
+au dimensionnement de la nouvelle solution de raccordement (nouvelle Pracc_inj qui ne pourra jamais être dépassée, comme précisé dans
+le mode d’emploi des Fiches de Collecte Enedis-OPE-RES_08E). Dans le cas d’une division potentielle de parc, elle correspond à la somme
+des puissances de raccordement en injection des deux parcs. Elle ne peut être strictement inférieure à 70 % de la Pracc_inj initiale, et sera,
+par défaut, prise à cette valeur.
+27
+   L’offre de raccordement alternative à modulation de puissance est définie au § 3.2.3 de la note DTR Enedis-PRO-RES_67E.
+28
+   La Pgar inj correspond à la puissance garantie en injection, définie comme puissance assurée d’évacuation de l’énergie électrique produite
+ne pouvant faire l’objet de limitations en situation normale des réseaux dans le cadre de l’Offre de Raccordement Alternative à modulation
+de puissance. Elle ne peut être strictement inférieure à 70 % de la Pracc_inj initiale, et sera, par défaut, prise à cette valeur.
+Enedis-MOP-RES_056E                                                                                                              Page : 16/41
+Version 2                                                                                                                        25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+le Demandeur souhaite qu’Enedis lui fournisse la capacité d’accueil des
+trois départs existants les plus proches issus du même Poste Source
+que celui de la Solution de Raccordement de Référence 29 :
+
+
+
+RÉGULATION DE PUISSANCE ACTIVE EN FONCTION DE LA FRÉQUENCE 30
+Toute ou partie de l’installation de production mettra en œuvre une loi de régulation de                         Oui
+puissance active produite en réponse à une variation de fréquence, loi de type P=f(f) ?*                         Non
+DÉCLARATION DE LA VARIATION MAXIMALE DE PUISSANCE ACTIVE SUR UNE MINUTE :
+La variation maximale de puissance active pendant une minute ΔPmax doit être déclarée par le demandeur, dans
+le cas où l’installation fera l’objet de variations de puissance résultant d’actions volontaires 31 de sa part.
+Une installation de stockage ou une installation de stockage associé à une installation de production fera
+systématiquement l’objet d’une variation volontaire de puissance active.
+
+L’installation fera-t-elle l’objet de variations
+volontaires de puissance active ?                                   Oui             Non (Passez au paragraphe suivant)
+
+•  Pour les installations de stockage ou les installations de stockage associée à une installation de production,
+   la valeur souhaitée par le Demandeur de ΔPmax doit être comprise entre 0,5 et 2 fois la puissance installée
+   de stockage, dans la limite réglementaire de 8 MW par minute.
+        o La valeur par défaut d’une installation de stockage ou comprenant du stockage est :
+             ΔPmax (MW/min) = minimum [0,5 x Puissance installée de stockage ; 8 MW/min]
+• Pour toutes les installations, la limite règlementaire de ΔPmax est de 8 MW par minute.
+Quel est le ΔPmax souhaitée         Valeur par défaut (pour une installation de stockage ou une installation
+par le Demandeur* ?                      de stockage associée à une installation de production)
+ (≤ 8 MW / min)?                          Autre : ΔPmax = _______ MW / min
+DISPOSITIF DE SURVEILLANCE (Si la Pinstallée de l'Installation de Production est supérieure ou égale 5 MW) *
+
+ Le Demandeur souhaite-t-il bénéficier de la prestation P645 (Mise à
+ disposition d’un dispositif de surveillance pour une Installation de
+                                                                                           Oui
+ Production HTA) ?
+                                                                                           Non
+ Si Non, le Demandeur devra fournir et installer un dispositif de
+ surveillance autorisé d'emploi par Enedis.
+
+
+
+
+29
+   Si la demande concerne une Proposition de Raccordement avant complétude du dossier, les résultats de la Proposition de Raccordement
+avant complétude du dossier indiqueront, sous réserve des mêmes conditions, la capacité d’accueil des trois départs existants les plus
+proches, sans restriction concernant le Poste Source dont ils sont issus. Les Propositions de Raccordement avant complétude du dossier
+sont payantes et soumises à l’acceptation d’un devis.
+30
+   Selon la description du chapitre 2.3 de la note DTR Enedis-PROS-RES_10E.
+31
+   Selon la description du chapitre 4 de la note DTR Enedis-PROS-RES_12E.
+
+Enedis-MOP-RES_056E                                                                                                      Page : 17/41
+Version 2                                                                                                               25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+TRANSFORMATEURS D’ÉVACUATION ET UNITÉS DE PRODUCTION (Y COMPRIS DE STOCKAGE) *
+
+          Transformateurs d’évacuation                Unités de Production32 associées au transformateur
+
+                         Puissance                               Type (synchrone,     Puissance
+    Marque et                                     Marque et n°
+                         nominale        Nombre                    asynchrone,        apparente     Nombre
+ n° de référence                                  de référence
+                             Sn                                     onduleur)        nominale Sn
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+                        _______kVA                                                    _______kVA
+
+
+
+
+32
+     Machine asynchrone, machine synchrone.
+
+Enedis-MOP-RES_056E                                                                                 Page : 18/41
+Version 2                                                                                          25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+PROTECTION DE DÉCOUPLAGE (uniquement pour les installations de Pinstallée ≤ 250 kVA 33)*
+
+La protection de découplage est obligatoire en application de l’article                      Intégrée à l’onduleur*
+27 de l’arrêté du 9 juin 2020. Elle peut :
+                                                                                            → Joindre la preuve de conformité34
+    • être intégrée à l’onduleur (ou au sectionneur automatique)
+         (Cocher la case « Intégrée à l’onduleur ») et conforme à la                         Le Demandeur s’engage à ce que
+                                                                                            la surveillance de la tension soit
+         norme NF_EN_50549-2,
+                                                                                            effectuée à partir d’une mesure
+ou                                                                                          entre les conducteurs de phase et
+                                                                                            de neutre, ce qui implique que les
+être un relais externe de protection de découplage conforme a la
+                                                                                            onduleurs soient raccordés au
+norme NF_EN_50549-2;
+                                                                                            conducteur de neutre issu du
+ou                                                                                          réseau35.*
+                                                                                             Relais externe NF_EN_50549-2*
+     •    en être indépendante, dans ce cas elle sera de type B.1 ;                         Marque: ____________________
+                                                                                            Modèle: ____________________
+ou, uniquement pour un raccordement au réseau HTA,                                          → Joindre la preuve de conformité36
+                                                                                             Externe à l’onduleur B.1*
+     •    en être indépendante, dans ce cas elle sera de type H.X.
+                                                                                             Externe à l’onduleur H.X*
+
+
+CERTIFICATION DES DONNÉES : « Fiche C : CARACTÉRISTIQUES DU SITE À RACCORDER EN HTA »
+
+                                                                      Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                                      ____________________
+
+
+ Date :* ____________________                                         Signature*
+
+
+
+
+33
+   Conformément à la note DTR Enedis-PRO-RES_10E.
+34
+   Conformément à la note DTR Enedis-PRO-RES_10E : via l’attestation de conformité de l’onduleur (émise par un organisme externe
+accrédité) à la norme NF_EN_50549-1 rédigée en français pour chacun des appareils différents mis en œuvre. Voir aussi la note de bas de
+page n°2.
+35
+   Validation obligatoire pour toute protection de découplage intégrée à un onduleur triphasé : la protection de découplage doit mesurer la
+tension « simple » entre les conducteurs de phase et de neutre (cf Enedis-PRO-RES_10E)
+36
+   Conformément à la note DTR Enedis-PRO-RES_10E : via une attestation de conformité (émise par un organisme externe accrédité) à la
+norme NF_EN_50549-1.
+Enedis-MOP-RES_056E                                                                                                           Page : 19/41
+Version 2                                                                                                                   25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+            RAPPEL : REMPLIR UNE FICHE PAR TYPE DE TRANSFORMATEUR PRÉSENT SUR LE SITE
+TRANSFORMATEUR DE DÉBIT DES UNITÉS DE PRODUCTION - CARACTÉRISTIQUES ÉLECTRIQUES
+
+ Marque et référence du transformateur*
+
+                                                                                            Référence du document37 :
+ Fournir les caractéristiques constructeur du transformateur*
+                                                                                            _____________________________
+
+ Puissance nominale*                                                                        _______kVA
+
+ Tension primaire*                                                                          _______kV
+
+ Tension secondaire*                                                                        _______kV
+
+ Tension de court-circuit*                                                                  _______%
+
+ Courant d’enclenchement - I enclenchement crête/I nominal crête38
+ (remplir la valeur prenant en compte le dispositif de limitation de
+ courant d’enclenchement le cas échéant)
+
+ Utilisation d’un dispositif de limitation de courant d’enclenchement : _______p.u.
+  Oui (si oui, une attestation du constructeur précisant la valeur du
+ courant d’enclenchement maximal doit être jointe aux Fiches de
+ Collecte)
+  Non
+
+ Courant à vide*                                                                            _______%
+
+ Pertes à vide*                                                                             _______kW
+
+ Pertes au courant nominal*                                                                 _______kW
+
+
+CERTIFICATION DES DONNÉES : « TRANSFORMATEUR »
+
+                                                                       Nom – Prénom du Demandeur ou du tiers habilité :*
+                                                                       ____________________
+
+
+ Date :* ____________________                                          Signature*
+
+
+
+
+37
+  Préciser le nom du document qui sera fourni avec le dossier.
+38
+  Vérifier si le courant d'enclenchement est rapporté au courant nominal efficace ou crête.
+Rappel : I enclenchement crête / I nominal crête = I enclenchement crête / I nominal efficace / 2.
+Enedis-MOP-RES_056E                                                                                                     Page : 20/41
+Version 2                                                                                                              25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+     Fiche T - CARACTÉRISTIQUES TECHNOLOGIQUES DES INSTALLATIONS DU SITE A RACCORDER
+
+                              Fiche T1 - CARACTÉRISTIQUES DE PRODUCTION
+
+
+CARACTÉRISTIQUES GÉNÉRALES DES NOUVEAUX MOYENS DE PRODUCTION*
+Si nécessaire, veuillez cocher plusieurs filières.
+     FILIÈRE 6*                       COMBUSTIBLE 6*                         TECHNOLOGIE 6*
+                        FIOUL                                     TURBINE À COMBUSTION
+                        CHARBON                                   TURBINE À VAPEUR
+                        GAZ                                       CYCLE COMBINE
+ THERMIQUE NON                                                    MOTEUR PISTON
+RENOUVELABLE                                                       COGÉNÉRATION À COMBUSTION
+                                                                   COGÉNÉRATION À VAPEUR
+                                                                   AUTRES
+                        BOIS ÉNERGIE                              TURBINE À COMBUSTION
+                        DÉCHETS DE PAPETERIE                      TURBINE À VAPEUR
+                        BAGASSE                                   CYCLE COMBINE
+                        AUTRES BIOCOMBUSTIBLES SOLIDES OU         MOTEUR PISTON
+                       LIQUIDES                                    COGÉNÉRATION À COMBUSTION
+ BIOÉNERGIES           BIOGAZ DE STATIONS D'ÉPURATION            COGÉNÉRATION À VAPEUR
+                        BIOGAZ DE MÉTHANISATION                   AUTRES
+                        BIOGAZ D'INSTALLATIONS DE STOCKAGE
+                       DE DÉCHETS NON DANGEREUX
+                        DÉCHETS MÉNAGERS ET URBAINS
+                        DÉCHETS INDUSTRIELS
+                                                                   FIL DE L'EAU
+                                                                   ÉCLUSE
+ HYDRAULIQUE                                                      LAC
+                                                                   POMPAGE TURBINAGE
+                                                                   HYDROLIEN FLUVIAL
+                                                                   MARÉMOTRICE
+ ÉNERGIES
+                                                                   HYDROLIENNE EN MER
+MARINES
+                                                                   AUTRES
+                                                                   TERRESTRE
+ ÉOLIEN                                                           EN MER FLOTTANT
+                                                                   EN MER POSE
+                                                                  Pour le PHOTOVOLTAÏQUE, utiliser le
+ SOLAIRE                                                         formulaire Enedis-FOR-RES_18E
+                                                                   THERMODYNAMIQUE
+ GÉOTHERMIE
+ STOCKAGE                                                         BATTERIE
+HORS                                                               HYDROGÈNE
+HYDRAULIQUE                                                        VOLANT D'INERTIE
+ AUTRE
+Préciser :             Le cas échéant, préciser :                 Le cas échéant, préciser :
+____________________   _______________________________            _____________________________
+
+Nombre total de groupes de production, y compris de stockage 6*
+
+
+
+
+Enedis-MOP-RES_056E                                                                           Page : 21/41
+Version 2                                                                                    25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+CARACTÉRISTIQUES COMPLÉMENTAIRES POUR L'HYDRAULIQUE (à compléter en fonction de la
+technologie)
+
+ Débit maximal des équipements6*: _______ m3/s            Hauteur de chute6*: _______ m
+
+ Productible moyen6*: _______ GWh                         Capacité du réservoir6*: _______ millions m3
+
+
+CARACTÉRISTIQUES COMPLÉMENTAIRES POUR LE STOCKAGE (hydraulique et hors hydraulique)
+ Cette demande comprend-elle le raccordement d'un moyen de  Oui
+ stockage ?*                                                Non
+ Si Oui :
+    - Puissance active maximale installée en charge6*                    _______ kW
+
+    - Puissance active maximale installée en décharge6*                  _______ kW
+
+    - Energie stockable6*                                                _______ MWh
+
+
+
+
+                            Fiche T2 - CARACTÉRISTIQUES DE CONSOMMATION
+Cette fiche n’est à renvoyer que dans le cas d’une consommation d’autre nature que les auxiliaires de
+l’installation de production ou qu’un moyen de stockage.
+
+CARACTÉRISTIQUES POUR UN SITE RACCORDE AU RÉSEAU BT
+
+La liste suivante nous permettra d’identifier le type d’appareil que comporte votre Installation. Certains de ces
+appareils présentant des caractéristiques particulières il est important de les identifier pour apporter à votre
+projet la solution de raccordement la plus adaptée et ainsi garantir la qualité de votre alimentation électrique.
+Vos installations comportent :
+         Appareils de radiologie :    Oui    Non                       Pompes à chaleur :       Oui       Non
+              Machines à souder :     Oui    Non                            Climatisation :     Oui       Non
+    Ascenseur ou monte-charge :       Oui    Non                    Chaudière électrique :      Oui       Non
+ Engins de levage (pont roulant) :    Oui    Non                  Onduleur de puissance :       Oui       Non
+                     Concasseur :     Oui    Non      Nombre important d’ordinateurs (PC) :     Oui       Non
+         Compresseur de fluides :     Oui    Non
+
+Le cas échéant, merci de nous préciser également les éléments suivants :
+    - Puissance des moteurs                                                      _______ kVA
+    - Puissance totale des process de type traction électrique                   _______ kVA
+
+
+
+
+Enedis-MOP-RES_056E                                                                                      Page : 22/41
+Version 2                                                                                                25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+CARACTÉRISTIQUES POUR UN SITE RACCORDÉ AU RÉSEAU HTA
+
+La liste suivante nous permettra d’identifier le type d’appareil que comporte votre Installation. Certains de ces
+appareils présentant des caractéristiques particulières il est important de les identifier pour apporter à votre
+projet la solution de raccordement la plus adaptée et ainsi garantir la qualité de votre alimentation électrique.
+    - Nombre de transformateurs HTA/BT :             _______
+    - Puissance des transformateurs :                _______ kVA
+
+Présence de process utilisant la force motrice (compression de fluides, pompage, froid,
+climatisation, robotique, machine-outil, chaîne de fabrication, transport, levage,
+sciage, laminage, forage…) :                                                                Oui        Non
+✓        Si oui, puissance totale de la force motrice :                                    _______ kVA
+
+Présence de process de chauffage industriel (chaudières électriques, appareils de
+chauffage, (résistance, câbles), …) :                                                       Oui        Non
+✓      Si oui, puissance totale des process « chauffage industriel » :                     _______ kVA
+
+Présence de process de type électrochimie (électrolyse…) :                                  Oui        Non
+✓      Si oui, puissance totale des process « électrochimie » :                            _______ kVA
+
+Présence de process de type électrothermie (fours à induction à fréquence industrielle,
+fours à induction à haute fréquence, fours à arcs à courant alternatif, fours à arcs à
+courant continu, chauffage micro-ondes, fours à résistance…) :                              Oui        Non
+✓        Si oui, puissance totale des process « électrothermie » :                         _______ kVA
+
+Présence de process de type soudage :                                                       Oui        Non
+✓      Si oui, puissance totale des process « soudage » :                                  _______ kVA
+
+Présence de process de type broyage (broyeur concasseur…) :                                 Oui        Non
+✓      Si oui, puissance totale des process « broyage » :                                  _______ kVA
+
+Présence de process de type traction électrique (tramway, sous-station SNCF…) :             Oui        Non
+✓      Si oui, puissance totale des process « traction électrique » :                      _______ kVA
+
+Présence d’autres usages perturbateurs (éclairage à décharge, éclairage générant
+des harmoniques…) :                                                                         Oui        Non
+✓      Si oui, puissance totale des autres usages perturbateurs :                          _______ kVA
+
+
+CERTIFICATION DES DONNÉES : « Fiche T : CARACTÉRISTIQUES TECHNOLOGIQUES DES INSTALLATIONS
+DU SITE À RACCORDER »
+
+                                                        Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                        ____________________
+
+
+Date :* ____________________                            Signature*
+
+
+
+
+Enedis-MOP-RES_056E                                                                                    Page : 23/41
+Version 2                                                                                             25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                 Fiche M - CARACTÉRISTIQUES DES AÉROGÉNÉRATEURS À RACCORDER
+
+
+Cette fiche n’est à renvoyer que dans le cas d’un raccordement d’un Site éolien.
+
+                              Fiche M1 - CARACTÉRISTIQUES DU SITE ÉOLIEN
+
+
+CARACTÉRISTIQUES DU VENT (pour raccordement d’un Site éolien)
+
+Vitesse moyenne 10 min du vent sur l’année sur le Site* _______m/s
+
+
+GESTION DES AÉROGÉNÉRATEURS
+
+                                                          Les aérogénérateurs sont indépendants.
+Gestion des couplages des aérogénérateurs*                Il existe une gestion centralisée des couplages au
+                                                         niveau du Site.
+
+S’il existe une gestion centralisée indiquer le nombre
+maxi de couplages d’aérogénérateurs par période de
+10 min*.
+
+S’il existe une gestion centralisée indiquer le nombre
+maxi de couplages d’aérogénérateurs par période de
+120 min*.
+
+
+
+
+Enedis-MOP-RES_056E                                                                                 Page : 24/41
+Version 2                                                                                           25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                         Fiche M2 - DESCRIPTION GÉNÉRALE D’UN AÉROGÉNÉRATEUR
+
+
+MARQUE TYPE PUISSANCE
+Marque*
+Type*
+Adresse du fabricant
+Rapport des tests de mesure*               Joindre le résumé du rapport de test CEI 61400-21
+
+TECHNOLOGIE
+                                            Type 1
+                                            Type 2
+Technologie de l’aérogénérateur*            Type 3-A  Type 3-B
+                                            Type 4
+                                            Autre (à décrire) ____________________
+
+DONNÉES GÉNÉRALES
+                                            Pas fixe, Stall
+Contrôle des pales*
+                                            Pas variable, Pitch
+                                            Vitesse fixe
+Contrôle de la vitesse                      Vitesse variable
+                                            Deux vitesses
+                                            Machine asynchrone
+Type de machine tournante*
+                                            Machine synchrone
+                                            Aérogénérateur non équipé de convertisseur
+Type de convertisseur*                      Commutation assistée (Thyristors)
+                                            Commutation forcée (MLI, IGBT)
+
+Hauteur du mât avec nacelle                _______m
+
+
+CARACTÉRISTIQUES NOMINALES (rapport CEI)
+
+Puissance active nominale – Pn*                                              _______kW
+
+Puissance apparente nominale – Sn (incluant les électroniques et la
+                                                                    _______kVA
+compensation propre à chaque aérogénérateur)*
+
+Tension nominale – Un*                                                       _______V
+
+
+PUISSANCES (rapport CEI)
+
+Puissance maximale autorisée en régime permanent – Pmc*                      _______kW
+
+Valeur réduite – pmc = Pmc / Pn*
+
+Puissance maximale mesurée moyenne 0,2s – P0,2*                              _______kW
+
+Valeur réduite – p0,2 = P0,2 / Pn*
+
+
+
+
+Enedis-MOP-RES_056E                                                                            Page : 25/41
+Version 2                                                                                      25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+FLUCTUATIONS RAPIDES DE TENSION – EN FONCTIONNEMENT ÉTABLI
+« Continuous operations » (rapport CEI) *
+   Angle de l’impédance du réseau - k – en degrés 30      50                            70              85
+   Vitesse moyenne annuelle du vent – Va – en m/s                   Coefficient de flicker c(k,Va)
+                            6,0
+                            7,5
+                            8,5
+                            10,0
+
+FLUCTUATIONS RAPIDES DE TENSION – LORS DES OPÉRATIONS DE COUPLAGE
+« Switching operations » (rapport CEI) *
+                                                       Couplage à vitesse de vent minimale de
+             Type d’opération de couplage considéré
+                                                                  fonctionnement
+Nombre maxi d’opérations de couplage sur 10 min – N10
+Nombre maxi d’opérations de couplage sur 120 min – N120
+Angle de l’impédance du réseau - k – en degrés                         30         50          70          85
+Facteur de flicker kf(k)
+
+             Type d’opération de couplage considéré                    Couplage à vitesse de vent nominale
+Nombre maxi d’opérations de couplage sur 10 min – N10
+Nombre maxi d’opérations de couplage sur 120 min – N120
+Angle de l’impédance du réseau - k – en degrés                         30         50          70          85
+Facteur de flicker kf(k)
+
+                                                                     Cas le plus défavorable de basculement
+             Type d’opération de couplage considéré
+                                                                             d’une machine sur l’autre
+Nombre maxi d’opérations de couplage sur 10 min – N10
+Nombre maxi d’opérations de couplage sur 120 min – N120
+Angle de l’impédance du réseau - k – en degrés                         30         50         70          85
+Facteur de flicker kf(k)
+Si les coefficients kf ne sont pas renseignés ou si les fiches de tests CEI pour le Pst lors des opérations de
+couplage ne sont pas fournies, joindre les courbes de puissances actives et réactives instantanées (moyennées
+0.02s maximum) lors des séquences suivantes :
+• couplage à vent faible, en incluant les phases de couplage, montée en puissance et d’enclenchement de
+     tous les éventuels gradins de condensateurs,
+• couplage à vent nominal, en incluant les phases de couplage, montée en puissance et d’enclenchement de
+     tous les éventuels gradins de condensateurs.
+De plus, si l’aérogénérateur est équipé de deux machines ou d’une machine fonctionnant en couplage triangle
+et étoile, joindre aussi les courbes de puissances actives et réactives instantanées (moyennées 0.02s
+maximum) lors des séquences suivantes :
+• transition de la machine secondaire vers la machine principale ou du couplage étoile vers le couplage
+    triangle, en incluant les phases de baisse de puissance et de découplage de la première machine, de
+    couplage et de montée en puissance de la deuxième machine et d’enclenchement de tous les éventuels
+    gradins de condensateurs,
+• transition de la machine principale vers la machine secondaire ou du couplage étoile vers le couplage
+    triangle, en incluant les phases de baisse de puissance et de découplage de la première machine, de
+    couplage et de montée en puissance de la deuxième machine et d’enclenchement de tous les éventuels
+    gradins de condensateurs.
+
+Enedis-MOP-RES_056E                                                                                   Page : 26/41
+Version 2                                                                                             25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+HARMONIQUES (rapport CEI) *
+                  Puissance                                                        Puissance
+                                     Courant harmonique                                                    Courant harmonique
+     Rang          produite                                          Rang           produite
+                     kW                     % de In39                                 kW                           % de In
+      2                                                                3
+      4                                                                5
+      6                                                                7
+      8                                                                9
+      10                                                               11
+      12                                                               13
+      14                                                               15
+      16                                                               17
+      18                                                               19
+     20                                                                21
+     22                                                                23
+      24                                                               25
+
+CERTIFICATION DES DONNÉES : « Fiche M2 : CARACTÉRISTIQUES DES AÉROGÉNÉRATEURS À
+RACCORDER »
+
+                                                                       Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                                       ____________________
+
+
+ Date :* ____________________                                          Signature*
+
+
+
+
+39
+  In défini ci-dessus dans la fiche B1 (incluant les électroniques et la compensation propre à chaque aérogénérateur). Mettre 0 si le courant
+harmonique est mesuré nul ou est jugé négligeable.
+Enedis-MOP-RES_056E                                                                                                            Page : 27/41
+Version 2                                                                                                                     25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                               Fiche M3 - MACHINE ASYNCHRONE DE L’AÉROGÉNÉRATEUR
+RAPPEL*
+
+ Marque et type de l’aérogénérateur
+
+
+CARACTÉRISTIQUES ÉLECTRIQUES
+Note importante : Si la machine est utilisée à la fois en couplage triangle et étoile, les 2 colonnes sont à
+renseigner
+ Couplage*                                                                                                Étoile        Triangle
+ Puissance apparente nominale électrique (de la machine seule, sans tenir compte
+                                                                                 _______kVA                             _______kVA
+ de la compensation par condensateurs ou électronique)*
+ Tension de sortie assignée*                                                                             _______kV      _______kV
+ Facteur de puissance nominal (sans tenir compte de la compensation par
+ condensateurs ou électronique)*
+ I démarrage / I nominal 40 (rotor bloqué)*
+ -non obligatoire pour type 3-A
+ -prendre en compte l’impédance du dispositif de protection pour le type 3-B
+ Facteur de puissance au démarrage (cos phid)
+ non obligatoire pour type 3-A
+ Fournir les caractéristiques constructeur de la machine Référence du document41 :
+ asynchrone*                                             _____________________________
+
+Choix entre le modèle équivalent ou l’impédance de l’aérogénérateur à 175 HZ.
+MODÈLE ÉQUIVALENT
+ Glissement nominal en fonctionnement moteur*                                     _______%                          _______%
+
+ Couplage pour les valeurs suivantes des impédances*  Étoile                              Triangle
+
+ R1*                                                                  _______
+
+ X1*                                                                  _______
+
+ R’2*                                                                 _______
+
+ X’2*                                                                 _______
+
+ Rm (schéma parallèle)*                                               _______
+
+ Xm (schéma parallèle)*                                               _______
+
+SCHÉMA DU MODÈLE ÉQUIVALENT
+                                             R1         X1                  X'2
+
+
+
+                                  Vn                   Xm                Rm                    R'2 / g
+
+
+
+
+40
+     I nominal de la machine seule, sans tenir compte de la compensation par condensateurs ou électronique.
+41
+     Préciser le nom du document qui sera fourni avec le dossier.
+
+Enedis-MOP-RES_056E                                                                                                       Page : 28/41
+Version 2                                                                                                                 25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+IMPÉDANCE A 175 Hz*
+Données obligatoires pour type 3-A : l’aérogénérateur sera modélisé comme une machine asynchrone classique
+à défaut.
+Impédance de l’aérogénérateur à 175 Hz - R et X en      schéma équivalent série        R175 Hz=_______ 
+ohm donner les valeurs côté BT (non prise en compte
+du transformateur)                                      schéma équivalent parallèle    X175 Hz =_______ 
+
+
+
+
+   Fiche M4 - BATTERIES DE CONDENSATEURS DE COMPENSATION PROPRES A L’AÉROGÉNÉRATEUR
+RAPPEL*
+
+Marque et type de l’aérogénérateur
+
+
+CARACTÉRISTIQUES ÉLECTRIQUES
+                                                                  Oui
+Cet aérogénérateur comporte-t-il des condensateurs propres ?*
+                                                                  Non
+
+Puissance totale des condensateurs de l’aérogénérateur*          _______kvar
+
+Puissance des gradins enclenchés lorsque la machine principale
+                                                               _______kvar
+est à vide*
+Puissance des gradins supplémentaires enclenchés lorsque la
+                                                            _______kvar
+machine principale est à pleine charge*
+Puissance des gradins enclenchés        lorsque   la   machine
+                                                                 _______kvar
+secondaire éventuelle est à vide*
+Puissance des gradins supplémentaires enclenchés lorsque la
+                                                            _______kvar
+machine secondaire éventuelle est à pleine charge*
+
+
+
+
+Enedis-MOP-RES_056E                                                                             Page : 29/41
+Version 2                                                                                      25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                  Fiche M5 - CONVERTISSEUR STATIQUE AU ROTOR, COUPLE AU RÉSEAU
+                                (à remplir pour aérogénérateur de Type 3)
+RAPPEL*
+
+Marque et type de l’aérogénérateur
+
+
+TECHNOLOGIE
+                                                   Commutation assistée (Thyristors)
+Type d’électronique de puissance*
+                                                   Commutation forcée (MLI, IGBT)
+
+Puissance du convertisseur*                       _______kVA
+
+
+COMPORTEMENT EN CAS DE COURT-CIRCUIT TRIPHASÉ EN SORTIE AÉROGÉNÉRATEUR*
+Choix entre la valeur du courant crête maximal (Ip) ou le courant de court-circuit symétrique initial (Ik’’)
+(obligatoire pour le type 3-A)
+
+Valeurs mesurées à la sortie de l’aérogénérateur,       donner les valeurs côté BT      Ip* = _______ A
+(non prise en compte du transformateur)                                                 Ik‘‘* = _______ A
+
+
+
+
+Enedis-MOP-RES_056E                                                                              Page : 30/41
+Version 2                                                                                        25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+   Fiche M6 - CONVERTISSEUR STATIQUE AU STATOR ASSURANT LE TRANSIT TOTAL DE PUISSANCE
+                             (à remplir pour aérogénérateur de Type 4)
+RAPPEL*
+
+Marque et type de l’aérogénérateur
+
+
+TECHNOLOGIE
+                                                           Commutation assistée (Thyristors)
+Type d’électronique de puissance*
+                                                           Commutation forcée (MLI, IGBT)
+
+Puissance du convertisseur*                               _______kVA
+
+
+IMPÉDANCE A 175 Hz*
+Le Demandeur s'engage sur une valeur d'impédance à 175 Hz infinie s'il ne renseigne pas ces données.
+Impédance du convertisseur à 175 Hz - R et X en ohm,  schéma équivalent série                 R175 Hz=_______ 
+donner les valeurs côté BT (non prise en compte du
+transformateur)                                       schéma équivalent parallèle             X175 Hz =_______ 
+
+
+COMPORTEMENT EN CAS DE COURT-CIRCUIT TRIPHASÉ EN SORTIE AÉROGÉNÉRATEUR*
+Fournir la valeur du courant crête maximal (Ip) et/ou le courant de court-circuit symétrique initial (Ik’’)
+
+Valeurs mesurées à la sortie de l’aérogénérateur, donner les valeurs côté BT (non prise en Ip* = _______ A
+compte du transformateur)                                                                  Ik‘‘* = _______ A
+
+
+
+
+Enedis-MOP-RES_056E                                                                                      Page : 31/41
+Version 2                                                                                               25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                    Fiche E - CARACTÉRISTIQUES DES AUTRES GÉNÉRATEURS À RACCORDER
+Cette fiche n’est à renvoyer que dans le cas d’un raccordement d’un Site Biogaz, Biomasse, Cogénération,
+Déchets ménagers et assimilés, Farines animales, Géothermie, Hydraulique, Stockage, autres types.
+
+                                                Fiche E1 - MACHINE SYNCHRONE
+RAPPEL*
+
+Marque et type de la machine de production
+
+
+CARACTÉRISTIQUES ÉLECTRIQUES
+
+Puissance apparente nominale électrique*                              _______kVA
+
+Tension de sortie assignée*                                           _______kV
+
+Facteur de puissance nominal*
+
+Réactance directe subtransitoire (non saturée) X’’d*                  _______%
+
+Réactance inverse Xi42*                                               _______%
+
+Moment d’inertie*                                                     _______kg.m²
+
+Vitesse de rotation de référence*                                     _______tr/min
+Fournir les caractéristiques constructeur de la
+                                                Référence du document43 : ___________________________
+machine synchrone*
+
+CERTIFICATION DES DONNÉES : « Fiche E1 : MACHINE SYNCHRONE »
+
+                                                                      Nom – Prénom du Demandeur ou du tiers habilité :*
+                                                                      ____________________
+
+
+Date :* ____________________                                          Signature*
+
+
+
+
+42
+   Possibilité de prendre la moyenne arithmétique des réactances subtransitoires longitudinales et transversales (X"d et X"q) pour le calcul
+de la réactance inverse (Xi). Ces réactances devraient correspondre à un état peu saturé; on pourra adopter, dans la pratique, la moyenne
+arithmétique des valeurs aux états saturé et non saturé (la différence entre états saturés et non saturés est de 30 % à 40 %).
+43
+   Préciser le nom du document qui sera fourni avec le dossier.
+
+Enedis-MOP-RES_056E                                                                                                           Page : 32/41
+Version 2                                                                                                                    25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                                               Fiche E2 - MACHINE ASYNCHRONE
+RAPPEL*
+ Marque et type de la machine de production
+
+CARACTÉRISTIQUES ÉLECTRIQUES
+Note importante : Si la machine est utilisée à la fois en couplage triangle et étoile, les 2 colonnes sont à renseigner.
+ Couplage*                                                                                               Étoile      Triangle
+ Puissance apparente nominale électrique (de la machine seule, sans tenir compte
+                                                                                 _______ kVA                         _______ kVA
+ de la compensation par condensateurs ou électronique)*
+ Tension de sortie assignée*                                                                            _______ kV   _______ kV
+ Facteur de puissance nominal (sans tenir compte de la compensation par
+ condensateurs ou électronique)*
+ Courant nominal (I nominal)*                                                                           _______A     _______A
+ I démarrage / I nominal 44 (rotor bloqué)*
+ Glissement nominal en fonctionnement moteur*                                                           _______%     _______%
+                                                                                         Référence du document45 :
+ Fournir les caractéristiques constructeur de la machine asynchrone*
+                                                                                         _____________________________
+MODÈLE ÉQUIVALENT
+Couplage pour les valeurs suivantes des impédances*  Étoile                              Triangle
+R1*                                                                   _______
+X1*                                                                   _______
+R’2*                                                                  _______
+X’2*                                                                  _______
+Rm (schéma parallèle)*                                                _______
+Xm (schéma parallèle)*                                                _______
+SCHÉMA DU MODÈLE ÉQUIVALENT
+                                                R1       X1                X'2
+
+
+
+                                      Vn                 Xm             Rm                  R'2 / g
+
+
+
+CERTIFICATION DES DONNÉES : « Fiche E2 : MACHINE ASYNCHRONE »
+
+                                                                        Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                                        ____________________
+
+Date :* ____________________
+                                                                        Signature*
+
+
+
+
+44
+     I nominal de la machine seule, sans tenir compte de la compensation par condensateurs ou électronique.
+45
+     Préciser le nom du document qui sera fourni avec le dossier.
+
+Enedis-MOP-RES_056E                                                                                                      Page : 33/41
+Version 2                                                                                                             25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+       Fiche E3 - BATTERIES DE CONDENSATEURS DE COMPENSATION PROPRES À LA MACHINE
+RAPPEL*
+
+Marque et type de la machine de production
+
+
+CARACTÉRISTIQUES ÉLECTRIQUES
+
+Cette machine comporte-t-elle des condensateurs  Oui
+propres ? *                                      Non
+
+Puissance totale des condensateurs*            _______kvar
+
+Nombre de gradins et puissance unitaire*       _______ / _______kvar
+
+
+CERTIFICATION DES DONNÉES : « Fiche E3 : BATTERIES DE CONDENSATEURS DE COMPENSATION
+PROPRES À LA MACHINE »
+                                               Nom – Prénom du Demandeur ou du tiers habilité :*
+                                               ____________________
+
+
+Date :* ____________________                   Signature*
+
+
+
+
+Enedis-MOP-RES_056E                                                                     Page : 34/41
+Version 2                                                                              25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                       Fiche E4 - ONDULEUR ASSURANT LE TRANSIT TOTAL DE PUISSANCE
+RAPPEL - REMPLIR UNE FICHE PAR TYPE D’ONDULEUR ASSURANT LE TRANSIT TOTAL DE PUISSANCE
+ONDULEUR
+ Marque et référence de l’onduleur*
+
+ Fournir les        caractéristiques       constructeur       de
+                                                                   Référence du document46 : ____________________
+ l’onduleur*
+
+
+TECHNOLOGIE
+ Puissance apparente nominale de l’onduleur*                       _______ kVA
+
+ Courant nominal – In*                                             _______ A
+
+ Puissance apparente maximale de l’onduleur 47*                    _______ kVA
+
+                                                                    Commutation assistée (Thyristors)
+ Type d’électronique de puissance*
+                                                                    Commutation forcée (IGBT-MLI)
+
+ Tension de sortie assignée*                                       _______ V
+
+                                                                    Monophasé
+ Type de connexion*
+                                                                    Triphasé
+
+
+IMPÉDANCE A 175 Hz*
+Le Demandeur s'engage sur une valeur d'impédance à 175 Hz infinie s'il ne renseigne pas ces données.
+ Impédance du convertisseur à 175 Hz - R et X en ohm,  schéma équivalent série                                  R175 Hz=_______ 
+ donner les valeurs côté BT (non prise en compte du
+ transformateur)                                       schéma équivalent parallèle                              X175 Hz =_______ 
+
+
+COMPORTEMENT EN CAS DE COURT-CIRCUIT EN SORTIE ONDULEUR*
+Fournir la valeur du courant crête maximal (Ip) et/ou le courant de court-circuit symétrique initial (Ik’’)
+
+ Valeurs mesurées à la sortie de l’aérogénérateur, donner les  côté HTA                                    Ip* = _______ A
+ valeurs côté BT (non prise en compte du transformateur)       côté BT                                     Ik‘‘* = _______ A
+
+
+HARMONIQUES (uniquement pour les installations raccordées au réseau BT)*
+
+ Les onduleurs installés devront être conformes aux normes, telle que cela sera mentionné dans la Convention
+ de Raccordement :
+
+     ✓ CEI 61000-3-2 pour les appareils de moins de 16 A par phase,
+
+     ✓ CEI 61000-3-4 pour les appareils de plus de 16 A par phase,
+
+     ✓ CEI 61000-3-12 pour les appareils de moins de 75 A par phase.
+
+
+
+
+46
+  Préciser le nom du document qui sera fourni avec le dossier.
+47
+  Si le constructeur n’a pas communiqué de puissance apparente maximale pour son onduleur, préciser, par défaut, la même valeur que la
+puissance apparente nominale.
+Enedis-MOP-RES_056E                                                                                                      Page : 35/41
+Version 2                                                                                                               25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+HARMONIQUES (uniquement pour les Installations raccordées au réseau HTA)*
+        Courant harmonique             Courant harmonique
+Rang                           Rang
+             % de In                        % de In
+  2                              3
+  4                              5
+  6                              7
+  8                              9
+  10                             11
+  12                             13
+  14                             15
+  16                             17
+  18                             19
+  20                             21
+  22                            23
+  24                            25
+
+CERTIFICATION DES DONNÉES : « Fiche E4 : ONDULEUR assurant le transit total de puissance »
+
+                                                  Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                  ____________________
+
+
+Date :* ____________________                      Signature*
+
+
+
+
+Enedis-MOP-RES_056E                                                                          Page : 36/41
+Version 2                                                                                    25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+                            Fiche D - DONNÉES SPÉCIFIQUES AU RACCORDEMENT INDIRECT
+Cette fiche n’est à renvoyer que dans le cas d’une demande de raccordement indirect en BT ou en HTA, et doit
+être ignorée pour les demandes de raccordement direct au Réseau Public de Distribution. Dans le cas d’une
+demande de raccordement indirect, remplir une fiche par Installation indirectement raccordée.
+COORDONNÉES DE L’HÉBERGÉ
+L’Hébergeur reste le client de Enedis. A ce titre les éléments contractuels seront rédigés en son nom.( exception
+faite du CSD)
+Joindre avec cette fiche, une déclaration de groupement solidaire entre l’hébergeur et l’hébergé.
+ Nom de l’hébergé*
+   Particulier (M, Mme, Mlle)
+  Société48
+  Collectivité locale ou service de l’État
+SIREN (pour une société)
+
+Nom de l’agence (pour les entreprises)*
+
+Adresse*
+
+Code Postal – Ville-Pays*
+
+Interlocuteur (Nom, Prénom)*
+
+Téléphone                                                                    ___________________________
+e-mail*                                                                _______________________________________
+LOCALISATION DU SITE HÉBERGÉ
+Nom*
+
+SIRET
+
+Adresse*
+
+Code Postal – Ville*
+
+Code INSEE Commune*
+ Coordonnées GPS du Point de Raccordement*
+ [Latitude (Décimal) ; Longitude (Décimal)] dans le système (___________________ ; ___________________)
+ WGS84
+RÉSEAU ÉLECTRIQUE INTÉRIEUR SPÉCIFIQUE AU RACCORDEMENT INDIRECT
+                                                            Indiquer sur le schéma l’ensemble des tronçons de la
+                                                            liaison de raccordement entre le PdL et le poste de
+                                                            l’Installation de Production à raccorder. Indiquer les
+Schéma unifilaire du réseau interne*
+                                                            longueurs, sections et nature des câbles composant cette
+                                                            liaison. Indiquer la position, le type et les réglages des
+                                                            éventuels organes de coupure installés en aval du PdL.
+CERTIFICATION DES DONNÉES : « DONNÉES SPÉCIFIQUES AU RACCORDEMENT INDIRECT »
+                                                               Signature du demandeur*
+
+
+Date :* ____________________
+
+
+
+
+48
+     Indiquer la forme juridique (exemple : SARL DUPONT).
+
+Enedis-MOP-RES_056E                                                                                         Page : 37/41
+Version 2                                                                                                  25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+          ANNEXE - MODÈLE DE DÉCLARATION DE GROUPEMENT D’ENTREPRISES SOLIDAIRES
+
+                  DÉ CL A RA T IO N D E G R OU PE ME N T D ’E N T RE P RI SE S S OLI DAI RE S
+
+En vue de l’exécution de la Convention de Raccordement à signer avec Enedis
+
+
+
+
+Les entreprises soussignées déclarent avoir constitué un groupement d'entreprises solidaires en vue de
+l’exécution de la Convention de Raccordement à signer avec Enedis.
+…………………………………………….…………………………………………………………………….
+
+Chacune des entreprises soussignées est responsable solidairement de toutes les obligations visées à la
+Convention de Raccordement.
+
+
+
+       Désignation, siège social, adresse
+                                                               Nom et qualité du signataire dûment habilité pour
+                  complètes
+                                                                         représenter son entreprise,
+      et n° d’immatriculation au RCS des
+                                                                               date et signature
+                 entreprises
+
+
+
+
+ (si le nombre d'entreprises le justifie, poursuivre le tableau sur une 2ème page)
+
+
+
+
+Enedis-MOP-RES_056E                                                                                        Page : 38/41
+Version 2                                                                                                 25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+
+Fiche F - CAPACITE REACTIVE EFFECTIVE DE L’INSTALLATION DE PRODUCTION RACCORDEE EN HTA
+
+
+Renseigner la puissance réactive maximale que l’Installation de Production est capable de fournir ou
+d’absorber au Point de raccordement sans limitation de durée en régime de fonctionnement normal
+(UPdR = Uc±5 %), en fonction des niveaux de puissance active suivants :
+
+ Puissance active                  Puissance réactive maximale            Puissance réactive maximale
+                                   soutirée                               injectée
+ 0,1 x Pracc,inj                   - à remplir x Pracc,inj                - à remplir x Pracc,inj
+
+ 0,2 x Pracc,inj                   - à remplir x Pracc,inj                - à remplir x Pracc,inj
+
+ 0,5 x Pracc,inj                   - à remplir x Pracc,inj                - à remplir x Pracc,inj
+
+ 0,8 x Pracc,inj                   - à remplir x Pracc,inj                - à remplir x Pracc,inj
+
+ 0,9 x Pracc,inj                   - à remplir x Pracc,inj                - à remplir x Pracc,inj
+
+ Pracc,inj                         - à remplir x Pracc,inj                - à remplir x Pracc,inj
+
+
+
+Lister les équipements qui empêchent l’atteinte des capacités constructives prévues à l’arrêté du 9 juin 2020 :
+
+
+Type d’équipement                                        Marque et référence d’équipement
+
+Transformateur
+
+Onduleur
+
+Aérogénérateur
+
+Autres
+
+
+
+
+Enedis-MOP-RES_056E                                                                                    Page : 39/41
+Version 2                                                                                           25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+      RAPPEL : À REMPLIR SI NÉCESSAIRE DANS UN DEUXIÈME TEMPS À L’ISSUE DE LA PRÉSENTATION
+                            DES RÉSULTATS DE L’ÉTUDE DE RACCORDEMENT
+CARACTÉRISTIQUES DU FILTRE 175 Hz
+
+                                                                     Filtre actif
+ Type de filtre*
+                                                                     Filtre passif49
+
+
+La suite de cette fiche n’est à compléter que s’il s’agit d’un filtre passif.
+
+ Le filtre dispose-t-il d’un système d’accord                        Oui
+ automatique fonctionnant en temps réel ?*                           Non
+
+                                                                     Dans un local à température ambiante contrôlée
+ Filtre installé*                                                    En extérieur ou dans un local à température
+                                                                    ambiante non contrôlée
+
+
+
+
+                                                  L1                          R2
+
+                                                  R1                          C2
+
+
+
+
+     R1 à Température minimale de fonctionnement (hors tolérance)*                 _______m
+
+     R1 à Température maximale de fonctionnement (hors tolérance)* _______m
+
+     R2 à Température minimale de fonctionnement (hors tolérance)* _______m
+
+     R2 à Température maximale de fonctionnement (hors tolérance)* _______m
+
+
+
+
+49
+  Le Demandeur peut décider de mettre en œuvre un filtre passif. Dans ce cas, une validation de son efficacité doit être effectuée. Les
+vérifications sont à réaliser dans les conditions schéma transformateur secourant et de schéma normal.
+Enedis-MOP-RES_056E                                                                                                      Page : 40/41
+Version 2                                                                                                                25/08/2026
+       Fiches de Collecte de renseignements pour une Proposition de Raccordement avant
+complétude du dossier et pour une Offre de Raccordement, au Réseau Public de Distribution
+        géré par Enedis, d’une Installation de Production hors photovoltaïque de puissance
+                                                                      supérieure à 36 kVA
+
+SI LE FILTRE EST À RÉGLAGE CONTINU
+
+ C2 nominale*                      _______F             C2 nominale*                             _______F
+
+ Tolérance sur C2*                 _______%              Tolérance sur C2*                         _______%
+ Variations de C2 avec la                                C2 à Température minimale de
+                                   _______%                                                       _______F
+ température*                                            fonctionnement (hors tolérance)*
+                                                         C2 à Température maximale de
+                                                                                                  _______F
+                                                         fonctionnement (hors tolérance)*
+
+
+ Fréquence d’accord*                         _______Hz
+ Variations de L1 avec la
+                                             _______%
+ température*
+ Tolérance sur f*                            _______%
+
+
+SI LE FILTRE EST À RÉGLAGE DISCRET
+
+ C2 nominale*                    _______F                    C2 nominale*                         _______F
+
+ Tolérance sur C2*               _______%                     Tolérance sur C2*                    _______%
+ Variations de C2 avec la                                     C2 à Température minimale de
+                                 _______%                                                          _______F
+ température*                                                 fonctionnement*
+                                                              C2 à Température maximale de
+                                                                                                   _______F
+                                                              fonctionnement*
+
+                                                              L1 à Température minimale de
+ L1 nominale*                   _______mH                                                         _______mH
+                                                              fonctionnement*
+ Variations de L1 avec la                                     L1 à Température maximale de
+                                _______%                                                          _______mH
+ température*                                                 fonctionnement*
+ Tolérance sur L1*              _______%                      Tolérance sur L1*                    _______%
+
+
+CERTIFICATION DES DONNÉES : « FILTRE 175 Hz »
+
+                                                         Nom – Prénom du Demandeur ou du tiers habilité : *
+                                                         ____________________
+
+
+ Date :* ____________________                            Signature*
+
+
+
+
+Enedis-MOP-RES_056E                                                                                 Page : 41/41
+Version 2                                                                                          25/08/2026
+
