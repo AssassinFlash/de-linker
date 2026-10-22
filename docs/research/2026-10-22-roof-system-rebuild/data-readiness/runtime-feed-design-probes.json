@@ -1,0 +1,311 @@
+{
+  "battery_power": {
+    "required_power_kw": 75,
+    "required_energy_kwh": 60,
+    "systems": [
+      {
+        "inverter": {
+          "id": 1946,
+          "sku": "DLK-GOODWE-GW80KETG10",
+          "model": "GW80K-ET-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "inverter_units": 1,
+        "battery": {
+          "id": 1954,
+          "sku": "DLK-GOODWE-GW614BATACG10",
+          "model": "GW61.4-BAT-AC-G10",
+          "brand": "GoodWe",
+          "device_class": "battery-systems"
+        },
+        "battery_units": 1,
+        "usable_kwh": 60.0,
+        "power_kw": 80.0,
+        "release": {
+          "verdict": "released",
+          "conditions": [
+            "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+            "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V."
+          ],
+          "documents": [
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+              "page": null
+            }
+          ]
+        },
+        "lines": [
+          {
+            "role": "inverter",
+            "product": {
+              "id": 1946,
+              "sku": "DLK-GOODWE-GW80KETG10",
+              "model": "GW80K-ET-G10",
+              "brand": "GoodWe",
+              "device_class": "inverters"
+            },
+            "quantity": 1.0,
+            "unit": "pcs",
+            "label": "Hybrid inverter",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          {
+            "role": "battery",
+            "product": {
+              "id": 1954,
+              "sku": "DLK-GOODWE-GW614BATACG10",
+              "model": "GW61.4-BAT-AC-G10",
+              "brand": "GoodWe",
+              "device_class": "battery-systems"
+            },
+            "quantity": 1.0,
+            "unit": "pcs",
+            "label": "Battery system",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "inverter": {
+          "id": 1946,
+          "sku": "DLK-GOODWE-GW80KETG10",
+          "model": "GW80K-ET-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "inverter_units": 1,
+        "battery": {
+          "id": 1955,
+          "sku": "DLK-GOODWE-GW1126BATACG10",
+          "model": "GW112.6-BAT-AC-G10",
+          "brand": "GoodWe",
+          "device_class": "battery-systems"
+        },
+        "battery_units": 1,
+        "usable_kwh": 110.0,
+        "power_kw": 80.0,
+        "release": {
+          "verdict": "released",
+          "conditions": [
+            "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10."
+          ],
+          "documents": [
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+              "page": null
+            }
+          ]
+        },
+        "lines": [
+          {
+            "role": "inverter",
+            "product": {
+              "id": 1946,
+              "sku": "DLK-GOODWE-GW80KETG10",
+              "model": "GW80K-ET-G10",
+              "brand": "GoodWe",
+              "device_class": "inverters"
+            },
+            "quantity": 1.0,
+            "unit": "pcs",
+            "label": "Hybrid inverter",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          {
+            "role": "battery",
+            "product": {
+              "id": 1955,
+              "sku": "DLK-GOODWE-GW1126BATACG10",
+              "model": "GW112.6-BAT-AC-G10",
+              "brand": "GoodWe",
+              "device_class": "battery-systems"
+            },
+            "quantity": 1.0,
+            "unit": "pcs",
+            "label": "Battery system",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "inverter": {
+          "id": 1947,
+          "sku": "DLK-GOODWE-GW9999KETG10",
+          "model": "GW99.99K-ET-G10",
+          "brand": "GoodWe",
+          "device_class": "inverters"
+        },
+        "inverter_units": 1,
+        "battery": {
+          "id": 1954,
+          "sku": "DLK-GOODWE-GW614BATACG10",
+          "model": "GW61.4-BAT-AC-G10",
+          "brand": "GoodWe",
+          "device_class": "battery-systems"
+        },
+        "battery_units": 1,
+        "usable_kwh": 60.0,
+        "power_kw": 100.0,
+        "release": {
+          "verdict": "released",
+          "conditions": [
+            "Two GoodWe documents carry this pair: the Battery Compatibility Overview, ET (80–100 kW) column, and a signed Compatibility Statement of 2025-04-07 naming GW80K-ET-G10, GW99.99K-ET-G10 and GW100K-ET-G10 against GW61.4 to GW112.6-BAT-AC-G10.",
+            "The Battery Compatibility Overview (p. 6) states that GW61.4-BAT-AC-G10 paired with ET (80–100 kW) cannot reach the inverter's full power output. GoodWe's BAT-C datasheet (p. 2) gives the GW61.4-BAT-AC-G10 an operating voltage range of 275.52 to 346.56 V (nominal 307.2 V); the ET 75–100 kW datasheet (p. 2) gives a battery voltage range of 300 to 800 V and a start-up voltage of 300 V."
+          ],
+          "documents": [
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_Battery-Compatibility-Overview_EMEA-EN_20260910.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/BAT100KWHInverterCompatibilitystatement.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+              "page": null
+            },
+            {
+              "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+              "page": null
+            }
+          ]
+        },
+        "lines": [
+          {
+            "role": "inverter",
+            "product": {
+              "id": 1947,
+              "sku": "DLK-GOODWE-GW9999KETG10",
+              "model": "GW99.99K-ET-G10",
+              "brand": "GoodWe",
+              "device_class": "inverters"
+            },
+            "quantity": 1.0,
+            "unit": "pcs",
+            "label": "Hybrid inverter",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+                "page": null
+              }
+            ]
+          },
+          {
+            "role": "battery",
+            "product": {
+              "id": 1954,
+              "sku": "DLK-GOODWE-GW614BATACG10",
+              "model": "GW61.4-BAT-AC-G10",
+              "brand": "GoodWe",
+              "device_class": "battery-systems"
+            },
+            "quantity": 1.0,
+            "unit": "pcs",
+            "label": "Battery system",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+                "page": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cabinet_parallel": {
+    "required_power_kw": 100,
+    "required_energy_kwh": 600,
+    "systems": [
+      {
+        "inverter": {
+          "id": 6321,
+          "sku": "DLK-GOODWE-GW125261ESALCNG10",
+          "model": "GW125/261-ESA-LCN-G10",
+          "brand": "GoodWe",
+          "device_class": "all-in-one-systems"
+        },
+        "inverter_units": 3,
+        "battery": null,
+        "battery_units": 0,
+        "usable_kwh": 783.8,
+        "power_kw": 375.0,
+        "release": null,
+        "lines": [
+          {
+            "role": "inverter",
+            "product": {
+              "id": 6321,
+              "sku": "DLK-GOODWE-GW125261ESALCNG10",
+              "model": "GW125/261-ESA-LCN-G10",
+              "brand": "GoodWe",
+              "device_class": "all-in-one-systems"
+            },
+            "quantity": 3.0,
+            "unit": "pcs",
+            "label": "Hybrid inverter",
+            "basis": [],
+            "documents": [
+              {
+                "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+                "page": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

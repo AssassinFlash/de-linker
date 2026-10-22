@@ -1,0 +1,48 @@
+{
+  "external_fact_channel": "Apify",
+  "actor_run": "I4j9WdgWaxh2XCy1f",
+  "dataset": "xehL64heb1pvhM7hO",
+  "items_sha256": "281fd0d78b3c8f0072d0be538f83e646e04538d9f2977a1fb2a17f19b5fa7b6f",
+  "sources": [
+    {
+      "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/",
+      "title": "Background Tasks - FastAPI",
+      "http_status": 200,
+      "loaded_at": "2026-10-22T10:50:39.717Z",
+      "body_characters": 8028,
+      "body_sha256": "3e3b914616337a8f987ccf091fcbda0f2249c1ba1d8cc7e88eba8224d9108350"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/current/sql-select.html",
+      "title": "PostgreSQL: Documentation: 18: SELECT",
+      "http_status": 200,
+      "loaded_at": "2026-10-22T10:50:40.215Z",
+      "body_characters": 59534,
+      "body_sha256": "65096f603dcf01af11bf96293be5ba6e069cc4d6b6720a307ac588a521a62e9b"
+    },
+    {
+      "url": "https://www.sqlite.org/whentouse.html",
+      "title": "Appropriate Uses For SQLite",
+      "http_status": 200,
+      "loaded_at": "2026-10-22T10:50:40.922Z",
+      "body_characters": 13981,
+      "body_sha256": "fdff127a769f583bdd9bcb88999a9a47156288dd468e8196ee9985086d665fd0"
+    },
+    {
+      "url": "https://www.sqlite.org/wal.html",
+      "title": "Write-Ahead Logging",
+      "http_status": 200,
+      "loaded_at": "2026-10-22T10:50:41.789Z",
+      "body_characters": 35031,
+      "body_sha256": "5b9102b957ec500bf77b9ddb1919b779fe4f023eb6fe52910f4da596fab64e03"
+    },
+    {
+      "url": "https://react.dev/learn/extracting-state-logic-into-a-reducer",
+      "title": "Extracting State Logic into a Reducer – React",
+      "http_status": 200,
+      "loaded_at": "2026-10-22T10:50:41.573Z",
+      "body_characters": 14052,
+      "body_sha256": "32642af6702ec654fb3466314667410cd94ae023a27d5d7d81b26618173fe673"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "date": "2026-10-22",
   "timezone": "Asia/Shanghai",
-  "status": "fact_research_closed_by_codex_scope_decided_rebuild_validation_pending",
+  "status": "deep_research_completed_whole_architecture_designed_production_validation_pending",
   "map": "https://github.com/AssassinFlash/de-linker/issues/548",
   "code_baseline": "123aea571e80b5b1ba756816914ba86408866ba5",
   "reports": [
@@ -44,6 +44,56 @@
         "representative regions do not prove Europe-wide automatic coverage",
         "site-specific precision and costs unmeasured"
       ]
+    },
+    {
+      "title": "怎样建立并独立验证满足住宅与工商业任务的选型方法？",
+      "issue": "https://github.com/AssassinFlash/de-linker/issues/560",
+      "commit": "0b37a330219645bd1701b4c2174784931e87e604",
+      "report": "https://github.com/AssassinFlash/de-linker/blob/0b37a330219645bd1701b4c2174784931e87e604/docs/research/2026-10-22-roof-calculation/method-study/README.md",
+      "executed": {
+        "reference_run_records": 17,
+        "official_battery_stateful_checks": 4,
+        "official_library": "nlr-pysam==8.0.0"
+      },
+      "limitations": [
+        "reference records include controls and manual counterparts, not 17 distinct physical scenarios",
+        "perfect-foresight reference feasibility is not actual controller capability",
+        "no whole-year SAM dispatch equivalence, SKU or field acceptance"
+      ]
+    },
+    {
+      "title": "产品原始资料能支持哪些带条件的系统选型约束？",
+      "issue": "https://github.com/AssassinFlash/de-linker/issues/561",
+      "commit": "74aa66b921dfad70af92fe909663dfcf62978f92",
+      "report": "https://github.com/AssassinFlash/de-linker/blob/74aa66b921dfad70af92fe909663dfcf62978f92/docs/research/2026-10-22-roof-experience/hardware-study/README.md",
+      "executed": {
+        "original_documents": 17,
+        "page_render_and_table_verification": true
+      },
+      "limitations": [
+        "representative devices, not all SKUs/firmware/regions",
+        "missing dedicated wiring evidence remains unknown"
+      ]
+    },
+    {
+      "title": "欧洲屋顶、电气及并网约束怎样进入新的计算架构？",
+      "issue": "https://github.com/AssassinFlash/de-linker/issues/562",
+      "commit": "768cc73e921d3b07afd5548d51c43f47b2e5fc5c",
+      "report": "https://github.com/AssassinFlash/de-linker/blob/768cc73e921d3b07afd5548d51c43f47b2e5fc5c/docs/research/2026-10-22-roof-europe-precedents/engineering-study/REPORT.md",
+      "executed": {
+        "additional_evidence_groups": 11,
+        "captured_files": 12,
+        "representative_country_rules": [
+          "DE",
+          "NL",
+          "FR"
+        ]
+      },
+      "limitations": [
+        "licensed standard clauses and national adoption/transition not fully read",
+        "actual SKU/firmware certificates not all verified",
+        "real site accuracy, geometry benchmarks and capacity unmeasured"
+      ]
     }
   ],
   "designated_claude_review": {
@@ -60,16 +110,51 @@
     "inquiries_submitted": false
   },
   "remaining": [
-    "user workflow and entry prototypes",
-    "original hardware and country rule verification",
-    "independent engineering benchmarks and real site accuracy",
-    "performance and cost measurements",
-    "implementation and deployment acceptance"
+    "workflow/entry interaction and EN/DE copy validation",
+    "full SKU/firmware capability and applicable country rule evidence",
+    "licensed standard clause and national adoption review",
+    "real site geometry/shading/yield benchmarks and accuracy",
+    "actual EMS/control replay and full-scale candidate computation",
+    "authorization, ownership claim, failure recovery, backup and handoff acceptance",
+    "performance/cost measurement",
+    "production implementation and deployed readback"
   ],
   "responsibility": {
     "owner": "Codex",
     "scope_decision": "SCOPE.md",
     "basis": "user delegation on 2026-10-22",
     "production_implementation_authorized_in_this_map": false
+  },
+  "architecture": {
+    "design": "ARCHITECTURE.md",
+    "choice": "independent planning application with deterministic modular-monolith kernel",
+    "challenge_commit": "4e43a3332e9a15024ae3a58658d437a58c48dc59",
+    "technical_choice_status": "adopted research design, not deployed",
+    "lifecycle_experiment": {
+      "script": "architecture-study/lifecycle_reference.py",
+      "result": "architecture-study/lifecycle-results.json",
+      "case_groups": 6,
+      "local_sqlite": "3.54.1",
+      "actual_concurrent_connections": 2,
+      "limitations": [
+        "no physics",
+        "no authorization or tenant isolation",
+        "no production throughput or power-loss test",
+        "no external handoff delivery"
+      ]
+    },
+    "runtime_resources": "architecture-study/raw/runtime-resources.json",
+    "primary_source_index": "architecture-study/raw/source-index.json"
+  },
+  "data_readiness": {
+    "report": "data-readiness/README.md",
+    "source_product_count": 106,
+    "source_language": "English fact source; 212 published products include language pairs",
+    "woo_source_figure_entries": 2482,
+    "runtime_feed_figure_entries": 610,
+    "interpretation_limit": "includes display fields; not a percent of necessary engineering data missing",
+    "fresh_anonymous_feed_content_matches": true,
+    "actual_feed_selection_probe_groups": 2,
+    "production_python_process_readback": false
   }
 }

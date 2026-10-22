@@ -1,0 +1,8 @@
+{
+  "endpoint": "http://127.0.0.1:9323/wp-json/linker/v1/engineering-feed",
+  "current_generated_at": "2026-10-22T10:55:40+00:00",
+  "current_products": 106,
+  "loaded_content_hash": "fb228bc2b3bf4d923f2d988f6efec2ee675f815540330ae2e6243492c6617c0f",
+  "fresh_content_hash": "fb228bc2b3bf4d923f2d988f6efec2ee675f815540330ae2e6243492c6617c0f",
+  "same_except_generated_at": true
+}

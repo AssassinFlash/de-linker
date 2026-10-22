@@ -1,0 +1,25 @@
+{
+  "startUrls": [
+    {
+      "url": "https://fastapi.tiangolo.com/tutorial/background-tasks/"
+    },
+    {
+      "url": "https://www.postgresql.org/docs/current/sql-select.html"
+    },
+    {
+      "url": "https://www.sqlite.org/whentouse.html"
+    },
+    {
+      "url": "https://www.sqlite.org/wal.html"
+    },
+    {
+      "url": "https://react.dev/learn/extracting-state-logic-into-a-reducer"
+    }
+  ],
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 5,
+  "crawlerType": "cheerio",
+  "maxConcurrency": 2,
+  "saveMarkdown": true,
+  "saveHtml": false
+}

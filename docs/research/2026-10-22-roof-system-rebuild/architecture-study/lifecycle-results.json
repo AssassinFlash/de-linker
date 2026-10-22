@@ -1,0 +1,41 @@
+{
+  "purpose": "architecture workflow experiment only, not engineering validation",
+  "database": "temporary SQLite WAL, removed after run",
+  "sqlite_library": "3.54.1",
+  "cases": {
+    "duplicate_submission": {
+      "single_run": true
+    },
+    "editing_during_calculation": {
+      "calculated_revision": 1,
+      "current_revision": 2,
+      "historical_report_consumption": 4500,
+      "current_proposal_rejected": true,
+      "stale_edit_rejected": true
+    },
+    "restart_and_expired_worker": {
+      "recovered_same_run": true,
+      "old_worker_fenced": true,
+      "final_modules": 19,
+      "historical_export_unchanged": true
+    },
+    "job_success_is_not_engineering_pass": {
+      "job": "succeeded",
+      "feasibility": "needs_evidence",
+      "proposal_rejected": true
+    },
+    "cancelled_worker_completion": {
+      "rejected": true
+    },
+    "two_real_connections": {
+      "claimants": 2,
+      "winners": 1
+    }
+  },
+  "limitations": [
+    "no authorization or tenant isolation implemented",
+    "no production throughput or power-loss test",
+    "no actual physics model",
+    "no external delivery/outbox proof"
+  ]
+}

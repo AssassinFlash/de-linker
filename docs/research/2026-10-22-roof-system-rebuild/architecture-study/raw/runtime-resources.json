@@ -1,0 +1,55 @@
+{
+  "purpose": "Read-only infrastructure sample for architecture tradeoffs; no production capacity acceptance",
+  "host_alias": "linker-services",
+  "captured_at": "2026-10-22T10:49:59.848415+00:00",
+  "method": "SSH Python standard library reads of /proc, shutil.which and selected systemctl show properties",
+  "cpu_count": 1,
+  "memory_kib": {
+    "MemTotal": 4009192,
+    "MemAvailable": 3306740,
+    "SwapTotal": 0,
+    "SwapFree": 0
+  },
+  "binaries_available": {
+    "psql": false,
+    "postgres": false,
+    "sqlite3": false,
+    "redis-server": false,
+    "node": false,
+    "docker": false
+  },
+  "services": {
+    "linker-engine": {
+      "ActiveState": "active",
+      "MemoryCurrent": 83779584,
+      "MemoryPeak": 84946944,
+      "CPUUsageNSec": 12019905000,
+      "TasksCurrent": 2
+    },
+    "linker-genie": {
+      "ActiveState": "active",
+      "MemoryCurrent": 71667712,
+      "MemoryPeak": 72503296,
+      "CPUUsageNSec": 11863962000,
+      "TasksCurrent": 2
+    },
+    "linker-genie-judge": {
+      "ActiveState": "active",
+      "MemoryCurrent": 35356672,
+      "MemoryPeak": 36233216,
+      "CPUUsageNSec": 10472421000,
+      "TasksCurrent": 1
+    }
+  },
+  "followup_library_readback_same_session": {
+    "python": "3.12.3",
+    "python_sqlite_library": "3.45.1",
+    "sqlite_threadsafety": 3,
+    "sqlite_cli_absent_does_not_mean_library_absent": true
+  },
+  "limitations": [
+    "Single point-in-time observation; not a concurrency or sustained-load measurement",
+    "No package installs, test database writes, load tests or service changes on host",
+    "Lifecycle experiment ran locally with SQLite 3.54.1, not this host library"
+  ]
+}
