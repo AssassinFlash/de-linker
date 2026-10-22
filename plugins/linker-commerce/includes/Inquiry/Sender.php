@@ -173,7 +173,9 @@ final class Sender {
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
-		Assessment\Queue::prepare( $order, $context );
+		if ( ! \Linker\Commerce\Protection\Intake::prepare( $order ) ) {
+			Assessment\Queue::prepare( $order, $context );
+		}
 	}
 
 	/**
@@ -189,9 +191,10 @@ final class Sender {
 		$this->prepare( $order, $details, $source, $context );
 		// A real native id stabilizes the receipt reservation across a resumed save.
 		$order->save();
-		$receipt_reason = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
+		$held           = \Linker\Commerce\Mail\NotificationHold::held( $order );
+		$receipt_reason = $held ? 'review_hold' : ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
 			? \Linker\Commerce\Protection\ReceiptBudget::reason( $details->email, $order->get_id() )
-			: ( ( new ReceiptLimit() )->take() ? '' : 'daily_cap' );
+			: ( ( new ReceiptLimit() )->take() ? '' : 'daily_cap' ) );
 		$order->update_meta_data( ReceiptLimit::SKIPPED_META, $receipt_reason );
 		// Unverified destinations receive only a fixed acknowledgement, never
 		// attacker-supplied names, products, notes or links.

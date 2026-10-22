@@ -7,7 +7,7 @@ afterEach( () => {
 	document.body.replaceChildren();
 } );
 
-function fixture( mode = 'enforce', action = 'inquiry' ) {
+function fixture( mode = 'enforce', action = 'draft_write' ) {
 	document.body.innerHTML = `<form><input name="message" value="Customer message"><input name="linker_request_id" value="stable-id" data-linker-protected-action="${ action }"><input name="linker_proof"><div data-linker-protection-widget hidden></div><p data-linker-protection-status hidden></p><button type="submit" name="send" value="1">Send inquiry</button></form>`;
 	const form = document.querySelector( 'form' )!;
 	const button = form.querySelector( 'button' )!;
@@ -284,3 +284,36 @@ test( 'product quantity Enter keeps its native product form behavior', () => {
 	expect( f.submit ).not.toHaveBeenCalled();
 	expect( f.proof ).not.toHaveBeenCalled();
 } );
+
+test.each( [ 'contact', 'inquiry' ] )(
+	'%s submits immediately with a completed warmed proof or bounded review fallback',
+	( action ) => {
+		const f = fixture( 'enforce', action );
+		const ready = vi.fn( () => '' );
+		window.linkerPublicProtection!.ready = ready;
+		const first = new SubmitEvent( 'submit', {
+			cancelable: true,
+			submitter: f.button,
+		} );
+		f.form.dispatchEvent( first );
+		expect( first.defaultPrevented ).toBe( false );
+		expect( f.proof ).not.toHaveBeenCalled();
+		expect( f.submit ).not.toHaveBeenCalled();
+		expect( f.form.querySelector( '[name="linker_proof"]' ) ).toHaveValue(
+			''
+		);
+		ready.mockReturnValue( 'already-verified' );
+		const second = new SubmitEvent( 'submit', {
+			cancelable: true,
+			submitter: f.button,
+		} );
+		f.form.dispatchEvent( second );
+		expect( second.defaultPrevented ).toBe( false );
+		expect( f.form.querySelector( '[name="linker_proof"]' ) ).toHaveValue(
+			'already-verified'
+		);
+		expect( f.form.querySelector( '[name="message"]' ) ).toHaveValue(
+			'Customer message'
+		);
+	}
+);
