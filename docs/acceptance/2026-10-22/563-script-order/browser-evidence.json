@@ -1,0 +1,156 @@
+{
+  "instance": "g563i",
+  "snapshot": "20261022-2159",
+  "snapshot_taken": "2026-10-22T14:04:08+00:00",
+  "source_before_change": "3c3c3c25fff1d6b6f1aed8a990a410cfd9149577",
+  "native_hooks": {
+    "core_footer_priority": 20,
+    "dock_priorities": [
+      21
+    ]
+  },
+  "cases": [
+    {
+      "label": "guest-workspace-de-1440",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "de-DE",
+      "scroll": 1425,
+      "width": 1425,
+      "image_width": 1425,
+      "image_height": 990,
+      "screenshot": "screenshots/guest-workspace-de-1440.jpg",
+      "sha256": "b0cdace5ce2e929177a60061ae1fa2df27cf81aaa5a80311ca6000695c0558bd",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-workspace-en-1440",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "en-US",
+      "scroll": 1425,
+      "width": 1425,
+      "image_width": 1425,
+      "image_height": 990,
+      "screenshot": "screenshots/guest-workspace-en-1440.jpg",
+      "sha256": "b1600902332f3cd134ef61f79e5ee215870b748dfb33d8f67fb3b54356cc2357",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-en-1440",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "en-US",
+      "scroll": 1425,
+      "width": 1425,
+      "image_width": 1425,
+      "image_height": 990,
+      "screenshot": "screenshots/guest-helper-en-1440.jpg",
+      "sha256": "7be6d643123360278d243a049cd76ccbb025bc2e87f00ded3252759b8aaa71cf",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-en-390",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "en-US",
+      "scroll": 390,
+      "width": 390,
+      "image_width": 390,
+      "image_height": 844,
+      "screenshot": "screenshots/guest-helper-en-390.jpg",
+      "sha256": "d5069140d2ea3c4af45025c18e8e57adcf8201085fc969b2d9d79f5b6be16764",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-de-1440",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "de-DE",
+      "scroll": 1425,
+      "width": 1425,
+      "image_width": 1425,
+      "image_height": 990,
+      "screenshot": "screenshots/guest-helper-de-1440.jpg",
+      "sha256": "66044f85986740292ce13b2938c0d5691eb6b389e367837f5f8d6b47b7e14d20",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-de-390",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "de-DE",
+      "scroll": 390,
+      "width": 390,
+      "image_width": 390,
+      "image_height": 844,
+      "screenshot": "screenshots/guest-helper-de-390.jpg",
+      "sha256": "e9a8f653c7081f3ae101c173e2c4bf0af1642020567ace66be1c43d2fe608e4e",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-workspace-de-390",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "de-DE",
+      "scroll": 375,
+      "width": 375,
+      "image_width": 375,
+      "image_height": 812,
+      "screenshot": "screenshots/guest-workspace-de-390.jpg",
+      "sha256": "696f77f172804d4647dbe5de18c4c2e9060ca44476446c0bc6f3d675e611a3d9",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-workspace-en-390",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "en-US",
+      "scroll": 375,
+      "width": 375,
+      "image_width": 375,
+      "image_height": 812,
+      "screenshot": "screenshots/guest-workspace-en-390.jpg",
+      "sha256": "1d32c6d21bdecc6ea567d774eda0560185c69d1c29cc859b9e304120d78326c0",
+      "mime": "image/jpeg"
+    }
+  ],
+  "provider_interception": false,
+  "paid_model_questions": 0,
+  "business_form_submissions": 0,
+  "production_writes": false,
+  "viewport_reset": true,
+  "temporary_chrome_tab_closed": true
+}

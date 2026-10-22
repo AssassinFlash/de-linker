@@ -78,7 +78,10 @@ class Entries {
 	 * Hooks the chips and the dock; runs during plugin registration.
 	 */
 	public function register(): void {
-		add_action( 'wp_footer', array( $this, 'dock' ) );
+		// Core default-filters.php prints queued footer scripts at priority 20.
+		// Build the loader after those handles are marked done, so a later native
+		// wp-i18n instance cannot replace the locale data the app just installed.
+		add_action( 'wp_footer', array( $this, 'dock' ), 21 );
 		add_action( 'woocommerce_before_shop_loop', array( $this, 'shop_chip' ) );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'product_chips' ), 35 );
 		add_action( 'woocommerce_before_cart', array( $this, 'draft_chips' ) );
@@ -988,6 +991,9 @@ JS,
 	private function script_deps(): array {
 		$urls = array();
 		$walk = function ( string $handle ) use ( &$urls, &$walk ): void {
+			if ( in_array( $handle, wp_scripts()->done, true ) ) {
+				return;
+			}
 			$script = wp_scripts()->query( $handle );
 			if ( ! $script || ! is_string( $script->src ) ) {
 				return;

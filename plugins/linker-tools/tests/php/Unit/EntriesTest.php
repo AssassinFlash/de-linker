@@ -104,6 +104,21 @@ final class EntriesTest extends TestCase {
 		$this->assertConditionsMet();
 	}
 
+	/** Native footer dependencies must retain their existing runtime instance. */
+	public function test_dock_does_not_reload_wordpress_dependencies_already_printed(): void {
+		$this->frontend( 'de', array( 'type' => 'other' ) );
+		$scripts       = new FakeScripts();
+		$scripts->done = array( 'react', 'react-dom', 'react-jsx-runtime', 'wp-element', 'wp-i18n' );
+		WP_Mock::userFunction( 'wp_scripts', array( 'return' => $scripts ) );
+		$GLOBALS['linker_tools_test_inline_scripts'] = array();
+		$this->capture( array( new Entries( '/plugin/linker-tools.php' ), 'dock' ) );
+		$inline  = $GLOBALS['linker_tools_test_inline_scripts'][0][1] ?? array();
+		$payload = json_decode( (string) $inline['data-linker-genie-boot-payload'], true );
+		$this->assertSame( array(), $payload['deps'] );
+		$this->assertStringContainsString( 'genie.js?ver=abc123', $payload['src'] );
+		$this->assertConditionsMet();
+	}
+
 	/**
 	 * German pages get the German disclosure; the prompts are translated
 	 * through the German catalogue (msgids here, the catalogue's coverage is
