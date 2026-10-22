@@ -1,0 +1,135 @@
+{
+  "actions": {
+    "direction": "column",
+    "display": "flex",
+    "gap": "12px",
+    "rect": {
+      "bottom": 878.0703125,
+      "height": 108,
+      "left": 18,
+      "right": 372,
+      "top": 770.0703125,
+      "width": 354,
+      "x": 18,
+      "y": 770.0703125
+    }
+  },
+  "admin": false,
+  "at": "2026-10-22T06:03:17.735Z",
+  "body": {
+    "font": "16px",
+    "lineHeight": "26.4px",
+    "rect": {
+      "bottom": 738.0703125,
+      "height": 105.59375,
+      "left": 18,
+      "right": 372,
+      "top": 632.4765625,
+      "width": 354,
+      "x": 18,
+      "y": 632.4765625
+    }
+  },
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792648845"
+  ],
+  "fonts": "loaded",
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none",
+    "rect": {
+      "bottom": 81,
+      "height": 81,
+      "left": 0,
+      "right": 390,
+      "top": 0,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "heading": {
+    "font": "42px",
+    "hyphens": "manual",
+    "rect": {
+      "bottom": 613.4765625,
+      "height": 226.796875,
+      "left": 18,
+      "right": 372,
+      "top": 386.6796875,
+      "width": 354,
+      "x": 18,
+      "y": 386.6796875
+    },
+    "text": "Bereit, Ihre nächste Installation zu planen und zu beschaffen?",
+    "textWrap": "balance"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "links": [
+    {
+      "background": "rgb(12, 127, 115)",
+      "color": "rgb(255, 255, 255)",
+      "focus": false,
+      "font": "14px",
+      "hover": false,
+      "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+      "outline": {
+        "color": "rgb(255, 255, 255)",
+        "offset": "0px",
+        "style": "none",
+        "width": "3px"
+      },
+      "rect": {
+        "bottom": 818.0703125,
+        "height": 48,
+        "left": 18,
+        "right": 372,
+        "top": 770.0703125,
+        "width": 354,
+        "x": 18,
+        "y": 770.0703125
+      },
+      "text": "Projektlösung planen →"
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(23, 39, 33)",
+      "focus": false,
+      "font": "14px",
+      "hover": false,
+      "href": "http://127.0.0.1:9290/de/mein-konto/",
+      "outline": {
+        "color": "rgb(23, 39, 33)",
+        "offset": "0px",
+        "style": "none",
+        "width": "3px"
+      },
+      "rect": {
+        "bottom": 878.0703125,
+        "height": 48,
+        "left": 18,
+        "right": 372,
+        "top": 830.0703125,
+        "width": 354,
+        "x": 18,
+        "y": 830.0703125
+      },
+      "text": "Partnerkonto öffnen"
+    }
+  ],
+  "overflow": false,
+  "section": {
+    "bottom": 1148.0703125,
+    "height": 874.1875,
+    "left": 0,
+    "right": 390,
+    "top": 273.8828125,
+    "width": 390,
+    "x": 0,
+    "y": 273.8828125
+  },
+  "url": "http://127.0.0.1:9290/de/fuer-installateur/",
+  "verticalGap": 32,
+  "width": 390
+}

@@ -1,0 +1,87 @@
+{
+  "at": "2026-10-22T06:25:21.798Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 448,
+            "height": 48,
+            "right": 1112.4296875,
+            "width": 296.875,
+            "x": 815.5546875,
+            "y": 400
+          },
+          "text": "Mit dem Lösungskonfigurator planen →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(12, 127, 115)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/kontakt/?intent=project&source=http%3A%2F%2F127.0.0.1%3A9290%2Fsolution%2F&kind=solution&source_id=746",
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 508,
+            "height": 48,
+            "right": 1106.0078125,
+            "width": 290.453125,
+            "x": 815.5546875,
+            "y": 460
+          },
+          "text": "Sprechen Sie mit unseren Ingenieuren"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "26.4px",
+        "rect": {
+          "bottom": 368,
+          "height": 52.796875,
+          "right": 1340,
+          "width": 524.4453125,
+          "x": 815.5546875,
+          "y": 315.203125
+        },
+        "tag": "P",
+        "text": "Von privaten Notstromversorgungspaketen bis zu Megawatt-Containerlieferungen verbindet Linker komplette Speicherlösungen für Sie."
+      },
+      "rect": {
+        "bottom": 508,
+        "height": 108,
+        "right": 1340,
+        "width": 524.4453125,
+        "x": 815.5546875,
+        "y": 400
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/loesung/",
+  "width": 1440
+}

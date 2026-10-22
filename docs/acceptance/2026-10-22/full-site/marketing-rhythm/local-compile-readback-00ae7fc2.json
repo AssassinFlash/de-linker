@@ -1,0 +1,20 @@
+{
+  "at": "2026-10-22T08:24:50.089293+00:00",
+  "sourceAggregate": "00ae7fc26d8df2d5bc63c9e4ab99e7c82da7caf8e2e4fb8d261ad3e892e742ff",
+  "sourceFilesInstalledExact": 3,
+  "cache": {
+    "mtime": 1792656909.8150694,
+    "version": 1792656909,
+    "bytes": 709779,
+    "sha256": "7b3b0ed61f18f3f6fd5897f844532ab4c342bc6138ef34388a49ce8e98c3d1cc"
+  },
+  "nativeUi": {
+    "lastGeneratedDisplayed": "2026-10-22 16:15:09",
+    "sizeDisplayed": "709.77 kB",
+    "generatingCompleted": true
+  },
+  "httpStatusCapture": "Not captured: native raw CDP temporarily unavailable during document-response resolution. No HTTP status inferred. Official UI completion, persisted cache bytes/mtime/compiled property and installed source hashes were verified separately.",
+  "runtime": "36 final hoverfix JPEG/JSON pairs assert actual winning transition-property, cache version, source aggregate, layout and native keyboard/mouse states. Independent visual gate recorded separately.",
+  "sessionCleanup": "Native logout visibly confirmed; original 33 cookie values restored exactly after tool connection reset.",
+  "privateEvidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/marketing-rhythm-transition-compile10"
+}

@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-22T06:12:44.087Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "16px",
+      "links": [
+        {
+          "background": "rgb(19, 184, 166)",
+          "color": "rgb(11, 31, 51)",
+          "font": "15px",
+          "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+          "rect": {
+            "bottom": 451.3203125,
+            "height": 51.25,
+            "right": 209.8125,
+            "width": 157.8125,
+            "x": 52,
+            "y": 400.0703125
+          },
+          "text": "Projekt anfragen"
+        },
+        {
+          "background": "rgba(255, 255, 255, 0.1)",
+          "color": "rgb(255, 255, 255)",
+          "font": "15px",
+          "href": "http://127.0.0.1:9290/de/kontakt/",
+          "rect": {
+            "bottom": 518.5703125,
+            "height": 51.25,
+            "right": 305.2421875,
+            "width": 253.2421875,
+            "x": 52,
+            "y": 467.3203125
+          },
+          "text": "Details über Kontakt ergänzen"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "24.8px",
+        "rect": {
+          "bottom": 368.0703125,
+          "height": 379.6953125,
+          "right": 338,
+          "width": 286,
+          "x": 52,
+          "y": -11.625
+        },
+        "tag": "DIV",
+        "text": "\n          \n            Projektanfrage\n            Standorttyp, Systemziel, Produktfamilie und Zeitplan, für eine Antwort, die auf Planung, Verfügbarkeit und Preis ausgerichtet ist.\n          \n          \n            Dokumentenanfrage\n            Datenblätter und Handbücher, beginnend bei FAQs und Downloads.\n          \n          \n            Zusätzliche Details\n            Ein Produktmodell, eine Standortbeschränkung oder Installationskontext, gesendet über die Kontaktseite.\n          \n        "
+      },
+      "rect": {
+        "bottom": 518.5703125,
+        "height": 118.5,
+        "right": 338,
+        "width": 286,
+        "x": 52,
+        "y": 400.0703125
+      }
+    }
+  ],
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/danke/",
+  "width": 390
+}

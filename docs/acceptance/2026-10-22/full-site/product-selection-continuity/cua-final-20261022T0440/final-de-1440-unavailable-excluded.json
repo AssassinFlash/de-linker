@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-22T05:05:36.180Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "height": 1000,
+  "intent": "product",
+  "lang": "de-DE",
+  "message": "",
+  "overflow": false,
+  "selection": {
+    "checked": false,
+    "excludedDisplay": "block",
+    "label": {
+      "bottom": 521.8671875,
+      "height": 44,
+      "left": 731.59375,
+      "right": 1342,
+      "top": 477.8671875,
+      "width": 610.40625,
+      "x": 731.59375,
+      "y": 477.8671875
+    },
+    "nativeControls": [
+      {
+        "checked": false,
+        "disabled": false,
+        "formAssociated": true,
+        "name": "linker_contact_selection",
+        "type": "checkbox"
+      }
+    ],
+    "rect": {
+      "bottom": 574.6640625,
+      "height": 137.296875,
+      "left": 714.59375,
+      "right": 1359,
+      "top": 437.3671875,
+      "width": 644.40625,
+      "x": 714.59375,
+      "y": 437.3671875
+    },
+    "summaryDisplay": "none",
+    "text": "ProduktauswahlDiese Auswahl meiner Nachricht beifügenDiese Auswahl konnte nicht geladen werden. Sie können sie abwählen und Ihre Nachricht senden.Diese Auswahl wird nicht mitgesendet.",
+    "value": "{\"source\":\"https://foreign.invalid/products/\",\"selection\":{\"q\":\"Untrusted source\"}}"
+  },
+  "source": null,
+  "url": "http://127.0.0.1:9290/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22https%3A%2F%2Fforeign.invalid%2Fproducts%2F%22%2C%22selection%22%3A%7B%22q%22%3A%22Untrusted+source%22%7D%7D",
+  "width": 1440
+}

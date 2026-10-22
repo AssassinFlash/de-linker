@@ -1,0 +1,97 @@
+{
+  "createdUtc": "2026-10-22T04:22:42.009355+00:00",
+  "worktree": "/Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker",
+  "branch": "codex/product-selection-continuity",
+  "aggregateSourceSha256": "928f70498d504ea470cabbffff4f90ad534bfdfbbb7d723948ed6faf29a5d4c6",
+  "algorithm": "sha256 of compact sorted-key JSON {source: owned_sources, fragment: shared_fragment excluding fullFileSnapshotSha256 and boundary}",
+  "owned_sources": [
+    {
+      "file": "plugins/linker-commerce/includes/Contact/Form.php",
+      "sha256": "365bb6faf2e94b9e8b82b79623d6ea1c704532a7069196938fb84ea0b21a2d8e"
+    },
+    {
+      "file": "plugins/linker-commerce/includes/Contact/Handler.php",
+      "sha256": "4e997beab1ba50c544b658ea54fa2aac2eef019bef1d459fd2ef82f1c074466c"
+    },
+    {
+      "file": "plugins/linker-commerce/includes/Contact/Module.php",
+      "sha256": "0cf1f856ee293ebf414723963883a4111551b075895e03be968960f54e6946d1"
+    },
+    {
+      "file": "plugins/linker-commerce/includes/Contact/SelectionContext.php",
+      "sha256": "a8d740c882a0426a3f51f92e9015b6b20f8da4d4e61034d14d229765b0695a3f"
+    },
+    {
+      "file": "plugins/linker-commerce/includes/Contact/SelectionView.php",
+      "sha256": "26a7915a84beaf1754121fec077221588f7ad770ee02415519d4989673acaa75"
+    },
+    {
+      "file": "plugins/linker-commerce/includes/Contact/Submission.php",
+      "sha256": "500a780d691cd329879799b6ced791b622f7096df485da37d4076ad618c2eeb3"
+    },
+    {
+      "file": "plugins/linker-commerce/includes/Protection/FormRecovery.php",
+      "sha256": "f6b2119e510fc7369d918d74fc387e6e0b726ebc5c03365a12813c3503834f0e"
+    },
+    {
+      "file": "plugins/linker-commerce/content/windpress/contact-card.css",
+      "sha256": "a2720c8f97f5b5f1cf275e06b98b7af34d3152a6d92c9640156cc2c68dce0b84"
+    },
+    {
+      "file": "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po",
+      "sha256": "ee73ac910a807d32fdc1c5a13c8d54fccfe4da07d83c2cb480281fc8352f7339"
+    }
+  ],
+  "shared_fragment": {
+    "file": "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php",
+    "method": "products_contact",
+    "sha256": "0bd1562f30778b1af2beb1cf92ee8155fecf2e3a5d02919b2fae39dfd9faf42e",
+    "byteLength": 2595,
+    "fullFileSnapshotSha256": "8da52f1a59e9979ced748e0d7636cbe34f7d68b397cfa13e966fb90e3b5b53bc",
+    "boundary": "Only this method belongs to child. Other methods belong to root and may change independently."
+  },
+  "owned_tests": [
+    {
+      "file": "plugins/linker-commerce/tests/php/Unit/Contact/FormTest.php",
+      "sha256": "aaa55e9d2178120e6b13b547f5996eb0c50fce69c4cfde44008fe2668955aac7"
+    },
+    {
+      "file": "plugins/linker-commerce/tests/php/Unit/Contact/SelectionContextTest.php",
+      "sha256": "131cd95740d8fed535d1c79aaadb724eab49adbd1e2f485ca34add2642075659"
+    },
+    {
+      "file": "plugins/linker-commerce/tests/php/Unit/Contact/SelectionLinkTest.php",
+      "sha256": "f4af385bb7aba49494fb767c7e8512db1bbe45a91bae1e546b4196de718c3280"
+    },
+    {
+      "file": "plugins/linker-commerce/tests/php/Unit/Contact/SelectionViewTest.php",
+      "sha256": "cd44de11c2cbf6e81626a60abad2cac3689d1dff1777d6d12e97b34f0ce1a870"
+    },
+    {
+      "file": "plugins/linker-commerce/tests/php/Integration/ContactSelectionTest.php",
+      "sha256": "2ec00b6dcf3c775c70212d5e6a64ea053d73431ee7b9f727963e2cc05cbeb327"
+    },
+    {
+      "file": "plugins/linker-commerce/tests/php/Unit/PluginTest.php",
+      "sha256": "0c32c15fb115ee0d9680100430656a6d0390b397436ff18c9d7856d30615424b"
+    },
+    {
+      "file": "plugins/linker-commerce/tests/php/Doubles/wordpress.php",
+      "sha256": "c938a91155517d217b60ce1d725eebe0803add1e9c7e0c3e1893599a9bf927af"
+    },
+    {
+      "file": "tests/e2e/specs/contact-selection-continuity.spec.ts",
+      "sha256": "738acb32a896e617a5958e62f76dad9f036a4a51708104384e61e2637a252320"
+    }
+  ],
+  "rootOwnedExcluded": [
+    "Presentation/LanguageLinks.php",
+    "Presentation/FamilyPage.php",
+    "Presentation/FamilyNavigation.php",
+    "Storefront/ProductFilters.php",
+    "Presentation/ModuleTest.php",
+    "Storefront/ProductFiltersTest.php",
+    "Presentation/ProductShortcodesTest.php"
+  ],
+  "generated": "Parent owns POT/MO generation, present, official compile and browser."
+}

@@ -1,0 +1,135 @@
+{
+  "actions": {
+    "direction": "row",
+    "display": "flex",
+    "gap": "12px",
+    "rect": {
+      "bottom": 752.4296875,
+      "height": 48,
+      "left": 100,
+      "right": 1340,
+      "top": 704.4296875,
+      "width": 1240,
+      "x": 100,
+      "y": 704.4296875
+    }
+  },
+  "admin": false,
+  "at": "2026-10-22T06:03:15.943Z",
+  "body": {
+    "font": "16px",
+    "lineHeight": "26.4px",
+    "rect": {
+      "bottom": 672.4296875,
+      "height": 52.796875,
+      "left": 100,
+      "right": 730,
+      "top": 619.6328125,
+      "width": 630,
+      "x": 100,
+      "y": 619.6328125
+    }
+  },
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792648845"
+  ],
+  "fonts": "loaded",
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none",
+    "rect": {
+      "bottom": 89,
+      "height": 89,
+      "left": 0,
+      "right": 1440,
+      "top": 0,
+      "width": 1440,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "heading": {
+    "font": "62px",
+    "hyphens": "manual",
+    "rect": {
+      "bottom": 600.6328125,
+      "height": 200.859375,
+      "left": 100,
+      "right": 800,
+      "top": 399.7734375,
+      "width": 700,
+      "x": 100,
+      "y": 399.7734375
+    },
+    "text": "Ready to design and source your next installation?",
+    "textWrap": "balance"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "links": [
+    {
+      "background": "rgb(12, 127, 115)",
+      "color": "rgb(255, 255, 255)",
+      "focus": false,
+      "font": "14px",
+      "hover": false,
+      "href": "http://127.0.0.1:9290/solution-configurator/",
+      "outline": {
+        "color": "rgb(255, 255, 255)",
+        "offset": "0px",
+        "style": "none",
+        "width": "3px"
+      },
+      "rect": {
+        "bottom": 752.4296875,
+        "height": 48,
+        "left": 100,
+        "right": 302.6015625,
+        "top": 704.4296875,
+        "width": 202.6015625,
+        "x": 100,
+        "y": 704.4296875
+      },
+      "text": "Plan a Project Solution →"
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(23, 39, 33)",
+      "focus": false,
+      "font": "14px",
+      "hover": false,
+      "href": "http://127.0.0.1:9290/my-account/",
+      "outline": {
+        "color": "rgb(23, 39, 33)",
+        "offset": "0px",
+        "style": "none",
+        "width": "3px"
+      },
+      "rect": {
+        "bottom": 752.4296875,
+        "height": 48,
+        "left": 314.6015625,
+        "right": 504.4609375,
+        "top": 704.4296875,
+        "width": 189.859375,
+        "x": 314.6015625,
+        "y": 704.4296875
+      },
+      "text": "Open Partner Account"
+    }
+  ],
+  "overflow": false,
+  "section": {
+    "bottom": 857.4296875,
+    "height": 593.453125,
+    "left": 0,
+    "right": 1440,
+    "top": 263.9765625,
+    "width": 1440,
+    "x": 0,
+    "y": 263.9765625
+  },
+  "url": "http://127.0.0.1:9290/for-installer/",
+  "verticalGap": 32,
+  "width": 1440
+}

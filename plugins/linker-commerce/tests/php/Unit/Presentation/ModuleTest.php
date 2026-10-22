@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Unit\Presentation;
 
 use Linker\Commerce\Presentation\AccountTemplates;
 use Linker\Commerce\Presentation\ComparePage;
+use Linker\Commerce\Presentation\FamilyNavigation;
 use Linker\Commerce\Presentation\LibraryPage;
 use Linker\Commerce\Presentation\JournalTitles;
 use Linker\Commerce\Presentation\LoginGate;
@@ -19,6 +20,7 @@ use Linker\Commerce\Presentation\Shortcodes;
 use Linker\Commerce\Presentation\WindPress;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
+use WP_Mock\Matcher\AnyInstance;
 
 /**
  * Tests for Module.
@@ -64,6 +66,23 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'f!windpress/core/cache:compile.providers', array( $windpress, 'providers' ) );
 		WP_Mock::expectFilterAdded( 'f!windpress/integration/livecanvas/compile:get_contents.render', array( $windpress, 'render_raw' ), 10, 2 );
 		WP_Mock::expectActionAdded( 'template_redirect', array( $compare, 'canonical_address' ), 5 );
+		$families     = new AnyInstance( FamilyNavigation::class );
+		$family_hooks = array(
+			array( 'action', 'template_redirect', 'redirect', 1 ),
+			array( 'filter', 'seopress_titles_noindex_bypass', 'noindex', 10 ),
+			array( 'filter', 'seopress_titles_canonical', 'canonical', 10 ),
+			array( 'filter', 'pll_rel_hreflang_attributes', 'hreflangs', 20 ),
+		);
+		$registered   = array_fill_keys( array_column( $family_hooks, 1 ), 0 );
+		foreach ( $family_hooks as list( $type, $hook, $method, $priority ) ) {
+			$responder = WP_Mock::onHookAdded( $hook, $type )->with( array( $families, $method ), $priority, 1 );
+			self::assertInstanceOf( \WP_Mock\HookedCallbackResponder::class, $responder );
+			$responder->perform(
+				static function () use ( &$registered, $hook ): void {
+					++$registered[ $hook ];
+				}
+			);
+		}
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $compare, 'assets' ) );
 		WP_Mock::expectActionAdded( 'wp_footer', array( $compare, 'standing_chip' ) );
 		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_product_scripts' ) );
@@ -72,6 +91,7 @@ final class ModuleTest extends TestCase {
 
 		WP_Mock::expectActionAdded( 'init', array( JournalTitles::class, 'register' ) );
 		$module->register();
+		self::assertSame( array_fill_keys( array_column( $family_hooks, 1 ), 1 ), $registered );
 
 		$this->assertConditionsMet();
 	}

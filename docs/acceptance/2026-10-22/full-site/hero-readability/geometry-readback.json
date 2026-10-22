@@ -1,0 +1,466 @@
+{
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661",
+  "cacheVersion": 1792655451,
+  "at": "2026-10-22T07:56:11.217745+00:00",
+  "scope": "Native DOM before/after geometry, text and link preservation plus loaded render checks; does not replace independent visual review or interaction/production acceptance.",
+  "views": [
+    {
+      "view": "epc-en-1440",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-en-1440.json",
+          "bytes": 1415,
+          "sha256": "1dcd9c8e958bac354dd617e1909a6b8bbef647fb6e4709fd1708d543b9acfa2b"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-en-1440.json",
+          "bytes": 2396,
+          "sha256": "a129c96fab566120e09db486cf871afd82692448cddb685d254889f618bbd67e"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-en-1440.jpg",
+          "bytes": 176631,
+          "sha256": "61523c44d6d194323ec35ae04a95e2f472912bd06ef908685691d0379d2d4004"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-en-1440.jpg",
+          "bytes": 146808,
+          "sha256": "350f188c038c8a4a5cf7e670563dc2ad7599b2ed086968e052380f05487b0849"
+        }
+      ]
+    },
+    {
+      "view": "epc-en-390",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-en-390.json",
+          "bytes": 1401,
+          "sha256": "3f48578626d86483b9d08532bb019388674dd78eba5fedff28c5eb54e9439d88"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-en-390.json",
+          "bytes": 2379,
+          "sha256": "7e05aebd42096086e8d32fb779ae8d353fe42cd519ec0ba12162ac8227488b6c"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-en-390.jpg",
+          "bytes": 55163,
+          "sha256": "e3b17602eba9b77ad1a40507df504d7846caf492a9957c7ea0f95353295cb52a"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-en-390.jpg",
+          "bytes": 50580,
+          "sha256": "a2ec7a567fb761356a4c080ba4bc9abb908600063d423334e1bdb0a85e066803"
+        }
+      ]
+    },
+    {
+      "view": "epc-de-1440",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-de-1440.json",
+          "bytes": 1433,
+          "sha256": "295afff26ba683ce1bc2f66e46a8d7104d3e095657cc5fe425a7eec5c510c7a6"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-de-1440.json",
+          "bytes": 2427,
+          "sha256": "b6b3a391f60ca98942120129329c85d63bc45394dde0cbe52dcc3f66c5d4388e"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-de-1440.jpg",
+          "bytes": 180586,
+          "sha256": "e541c0944c92c6a3fb886f6bc1ae7199e7f3c3e2ba64c3c6e158553a0150bea2"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-de-1440.jpg",
+          "bytes": 150807,
+          "sha256": "825843eb62bba2d40e03dfff01aff0bcfa2ed9036590508cbd0c786885dfadf0"
+        }
+      ]
+    },
+    {
+      "view": "epc-de-390",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-de-390.json",
+          "bytes": 1421,
+          "sha256": "8bc9d4b1906ea32176117d42ea1ae01d28d9139fb596f62e48f7f8b6e5607ac3"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-de-390.json",
+          "bytes": 2412,
+          "sha256": "1552cac19cb74fc6b441368c91e01aacdacfa5e241d07bb6c108811a74433623"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-epc-de-390.jpg",
+          "bytes": 56335,
+          "sha256": "d78fb683b2f60e37d70446d22d8d5bf92708cb3399c6247d64cc36e11b8bcfb5"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-epc-de-390.jpg",
+          "bytes": 51775,
+          "sha256": "b0ccb4f458343671bae253242299024e4454f3d1738dbfd16922aef6a3fb5676"
+        }
+      ]
+    },
+    {
+      "view": "residential-en-1440",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-en-1440.json",
+          "bytes": 2140,
+          "sha256": "bb7b86734567cc59e76946f317836440337783737d6215b2aa1e9379702f6829"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-en-1440.json",
+          "bytes": 3547,
+          "sha256": "2b57ad8c80b3e5a8b745f3ee63793ad07bb609921d4bb79dc510bb0b201137bb"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-en-1440.jpg",
+          "bytes": 147395,
+          "sha256": "d7888962661bd8f75a5ab8081b9fa21e7025118c303dec65b94ee51f76010331"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-en-1440.jpg",
+          "bytes": 129827,
+          "sha256": "0057e48fc221ac3685ba383595fb9c4f1af240768285687cf556eaf7c6e081d8"
+        }
+      ]
+    },
+    {
+      "view": "residential-en-390",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-en-390.json",
+          "bytes": 2124,
+          "sha256": "45801298740d4c1a6a48bfbd3948d9bfacd8da39821550c41920515b3082afd3"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-en-390.json",
+          "bytes": 3528,
+          "sha256": "690443f9260040760cbfe7a326d1c64f1ae0fdf90a740046bed0e246f915d1ec"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-en-390.jpg",
+          "bytes": 47803,
+          "sha256": "b286390c8ffa8568c4cce1189edcf29edd98f9763c1ce61b9d8b99957aad528e"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-en-390.jpg",
+          "bytes": 47723,
+          "sha256": "6afc42bbeee16a1405d89e02fde47f7f2ad7d8638ffafc0266bbbe3ab6c97312"
+        }
+      ]
+    },
+    {
+      "view": "residential-de-1440",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-de-1440.json",
+          "bytes": 2183,
+          "sha256": "c9492800c10c6ba9c3ad6d496fd8ca9bdc922fa831453477738d9a588e55ce16"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-de-1440.json",
+          "bytes": 3626,
+          "sha256": "ba4de76585950e170c50a71b5017d2d5664ee94b0b32c408600bc21504e68e6a"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-de-1440.jpg",
+          "bytes": 151083,
+          "sha256": "f9d34beb89cd5258ab40fd0b96f47c15ccd8813eb208f41d55b8b29148d481a0"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-de-1440.jpg",
+          "bytes": 133858,
+          "sha256": "f0ea699a7b60c341da212ba8136d40e4516797b859251ee9250894fb5fe46acd"
+        }
+      ]
+    },
+    {
+      "view": "residential-de-390",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-de-390.json",
+          "bytes": 2159,
+          "sha256": "26d5644af5cf27fd80ae7eea786b5ec59ff3729233670de128d37dbe45d9f561"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-de-390.json",
+          "bytes": 3599,
+          "sha256": "dd4b196d6d9df3d2d9fb46f347b7f3931bfa09218f00da1c2b70e1c5a9a1313d"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-residential-de-390.jpg",
+          "bytes": 50726,
+          "sha256": "80b3aadb049d168fd9350580f0ec65a7bede4c57efb5cb75371eacd3f132ee4b"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-residential-de-390.jpg",
+          "bytes": 51007,
+          "sha256": "62fcfa3c7bd139bcb74959571a08e871159299cea4f9fa267dab726c6e81040b"
+        }
+      ]
+    },
+    {
+      "view": "application-en-1440",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-en-1440.json",
+          "bytes": 1597,
+          "sha256": "8ae1872f796c02aff509f93266b3428752df75e6aa3692ce67a5161f2597eec7"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-en-1440.json",
+          "bytes": 2426,
+          "sha256": "79147f51ae2017e03cc8569bca9827cbb4eb548a11edeb2f6a41f3b99bf19fab"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-en-1440.jpg",
+          "bytes": 227362,
+          "sha256": "ab22c7ee0583e36fbd00842a9a7e27305d335a41913822607a200a684cf003f0"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-en-1440.jpg",
+          "bytes": 165923,
+          "sha256": "881f490d77562cf1a7323a4a1b24214ee89f2a2ad1cd4fd5b3e5dfd93086d619"
+        }
+      ]
+    },
+    {
+      "view": "application-en-390",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-en-390.json",
+          "bytes": 1580,
+          "sha256": "7a5028cde67a1d3d46029a64040a4330b6e3e289f047b9b58836ebe8b39e7b7f"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-en-390.json",
+          "bytes": 2406,
+          "sha256": "165576646529be893a75cfeb4e7c8101025ec21062d37257befe3eba9ab58327"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-en-390.jpg",
+          "bytes": 69101,
+          "sha256": "67bc93a348964740de4c75aedf6840da1ee0ce17e8bf8232553547435ff08eaf"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-en-390.jpg",
+          "bytes": 56238,
+          "sha256": "3ce49ca3273b646253d950d5830a639cff328b381a07a4780d26f9d9eb0ad8b2"
+        }
+      ]
+    },
+    {
+      "view": "application-de-1440",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-de-1440.json",
+          "bytes": 1646,
+          "sha256": "0de7181e6be8b359ba8fce0e2a00d1c47270a6ca31e506af8a80bee780114f04"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-de-1440.json",
+          "bytes": 2533,
+          "sha256": "7fb7cab235f488b6da1d28a6b9641d500c6150014ef82bd5588498c24e9ed076"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-de-1440.jpg",
+          "bytes": 235297,
+          "sha256": "791d1f7b87f23f5004a5aa6d81385b3b5a03383d0f84e42691e431ca4bc23c40"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-de-1440.jpg",
+          "bytes": 175836,
+          "sha256": "57eedda5cb634c96e2ce8033c66fb84b3daa6466881198881b0df56a908ee494"
+        }
+      ]
+    },
+    {
+      "view": "application-de-390",
+      "checks": {
+        "url": true,
+        "viewport": true,
+        "scrollY": true,
+        "overflow": true,
+        "heading": true,
+        "actions": true,
+        "coverGeometry": true,
+        "loadedFonts": true,
+        "newBackdrop": true,
+        "guest": true
+      },
+      "allPassed": true,
+      "files": [
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-de-390.json",
+          "bytes": 1630,
+          "sha256": "fdf19775fb9dff4d92f03f2274fc5566b1788c321b775fbb6c2dc7a68aaba3e7"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-de-390.json",
+          "bytes": 2514,
+          "sha256": "3b05c823bffa3cabc023af5d30822d2ee245062f415923796d7ba253ed06eaf3"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/before-application-de-390.jpg",
+          "bytes": 72645,
+          "sha256": "7a5b0a8011804938190bec868a1b28f4b4f8c9b343dcd546f009042394430621"
+        },
+        {
+          "path": "docs/acceptance/2026-10-22/full-site/hero-readability/after-application-de-390.jpg",
+          "bytes": 61251,
+          "sha256": "228c939b2430e7201fcbdc3908c812ad9733f720e5115bc8dd43e64168237264"
+        }
+      ]
+    }
+  ],
+  "passed": 12,
+  "total": 12
+}

@@ -1,0 +1,19 @@
+{
+  "at": "2026-10-22T07:54:03.497313+00:00",
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661",
+  "sourceFilesInstalledExact": 3,
+  "cache": {
+    "mtime": 1792655451.1290002,
+    "bytes": 709681,
+    "sha256": "3bc1c482a26fd4a39ab6573d1a9bd312f6f18e2173b66e723882326355cdaafd",
+    "url": "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css",
+    "indexLastGenerated": 1792655451
+  },
+  "nativeHttp": {
+    "storeStatus": 200,
+    "indexStatus": 200,
+    "lastFullBuild": "1792655449814"
+  },
+  "sessionCleanup": "native logout confirmed and all 33 prior cookie values restored; production cookies untouched",
+  "privateEvidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/marketing-rhythm-hero-compile9"
+}

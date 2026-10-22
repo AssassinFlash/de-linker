@@ -14,7 +14,8 @@ read from a dump stream on 2026-10-09 without storing it):
   actions, content) are replaced with the address of their account, or
   customer-<n>@example.test from GUEST_FIRST up. Kept: staff accounts,
   example.test, and the company's own mailboxes (COMPANY_DOMAINS), which the
-  site publishes on its pages.
+  site publishes on its pages. A company mailbox also used by a customer
+  account is kept only in a confirmed published, unprotected page body.
 - Orders: addresses, phone numbers, IP addresses, user agents, notes and
   payment-provider identifiers are replaced or emptied, by one rule for the
   order tables and the order meta of either storage (wp_postmeta for classic
@@ -352,8 +353,11 @@ class Emails:
         key = address.lower()
         return key not in self.customers and kept_as(key, self.staff) is not None
 
-    def replace(self, address: str) -> str:
+    def replace(self, address: str, *, public_company_email: bool = False) -> str:
         key = address.lower()
+        if public_company_email and kept_as(key, ()) in COMPANY_DOMAINS:
+            self.kept[key.rpartition("@")[2]] += 1
+            return address
         if key in self.customers:
             self.replaced += 1
             return customer_email(self.customers[key])
@@ -365,15 +369,17 @@ class Emails:
         self.replaced += 1
         return customer_email(number)
 
-    def replace_all(self, text: str) -> str:
+    def replace_all(self, text: str, *, public_company_email: bool = False) -> str:
         if "@" not in text:
             return text
-        return EMAIL.sub(self._replace_match, text)
+        return EMAIL.sub(
+            lambda found: self._replace_match(found, public_company_email), text
+        )
 
-    def _replace_match(self, found: re.Match[str]) -> str:
+    def _replace_match(self, found: re.Match[str], public_company_email: bool) -> str:
         if found.group(1).lower() in FILE_SUFFIXES:
             return found.group()
-        return self.replace(found.group())
+        return self.replace(found.group(), public_company_email=public_company_email)
 
 
 def kept_as(address: str, staff: Collection[str]) -> str | None:
@@ -471,6 +477,17 @@ class Anonymizer:
         rule = self.rules.get(table.name)
         kept: list[Row] = []
         for row in insert.rows:
+            # Read the original password before _posts clears it for the replica.
+            # Missing schema/status never grants the presentation-only exception.
+            public_page = (
+                table.name == TABLE_PREFIX + "posts"
+                and {"post_type", "post_status", "post_password"}.issubset(
+                    table.columns
+                )
+                and row[table.index("post_type")].text == "page"
+                and row[table.index("post_status")].text == "publish"
+                and row[table.index("post_password")].text == ""
+            )
             if rule is not None and not rule(table, row):
                 self.report.rows_dropped[table.name] += 1
                 continue
@@ -482,7 +499,12 @@ class Anonymizer:
                 ):
                     text = value.text
                     assert text is not None
-                    new = self.scrub(text)
+                    new = self.scrub(
+                        text,
+                        public_company_email=(
+                            public_page and table.columns[index] == "post_content"
+                        ),
+                    )
                     if new != text:
                         row[index] = Value.of(new)
             kept.append(row)
@@ -490,7 +512,7 @@ class Anonymizer:
 
     # -- text -------------------------------------------------------------
 
-    def scrub(self, text: str) -> str:
+    def scrub(self, text: str, *, public_company_email: bool = False) -> str:
         """`text` without customers' addresses, hashes, credentials and payment ids; serialized data stays valid."""
         if phpserial.looks_serialized(text):
 
@@ -498,14 +520,14 @@ class Anonymizer:
                 if key is not None and self._is_credential(key, inner):
                     self.report.credentials_by_key[key] += 1
                     return ""
-                return self.scrub(inner)
+                return self.scrub(inner, public_company_email=public_company_email)
 
             rewritten = phpserial.rewrite(text, member)
             if rewritten is not None:
                 return rewritten
         if text[:1] in ("{", "["):
             text = JSON_MEMBER.sub(self._json_member, text)
-        text = self.emails.replace_all(text)
+        text = self.emails.replace_all(text, public_company_email=public_company_email)
         text, hashes = HASH.subn("", text)
         text, secrets = SECRET.subn("", text)
         text, payments = PAYMENT_ID.subn("", text)

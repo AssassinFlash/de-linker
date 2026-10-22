@@ -1,0 +1,52 @@
+{
+  "at": "2026-10-22T05:05:34.519Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "height": 1000,
+  "intent": "product",
+  "lang": "en-US",
+  "message": "",
+  "overflow": false,
+  "selection": {
+    "checked": false,
+    "excludedDisplay": "block",
+    "label": {
+      "bottom": 512.0703125,
+      "height": 44,
+      "left": 731.59375,
+      "right": 1342,
+      "top": 468.0703125,
+      "width": 610.40625,
+      "x": 731.59375,
+      "y": 468.0703125
+    },
+    "nativeControls": [
+      {
+        "checked": false,
+        "disabled": false,
+        "formAssociated": true,
+        "name": "linker_contact_selection",
+        "type": "checkbox"
+      }
+    ],
+    "rect": {
+      "bottom": 564.8671875,
+      "height": 137.296875,
+      "left": 714.59375,
+      "right": 1359,
+      "top": 427.5703125,
+      "width": 644.40625,
+      "x": 714.59375,
+      "y": 427.5703125
+    },
+    "summaryDisplay": "none",
+    "text": "Product selectionInclude this selection with my messageThis selection could not be loaded. You can exclude it and send your message.This selection will not be sent.",
+    "value": "{\"source\":\"https://foreign.invalid/products/\",\"selection\":{\"q\":\"Untrusted source\"}}"
+  },
+  "source": null,
+  "url": "http://127.0.0.1:9290/contact/?intent=product&linker_contact_selection=%7B%22source%22%3A%22https%3A%2F%2Fforeign.invalid%2Fproducts%2F%22%2C%22selection%22%3A%7B%22q%22%3A%22Untrusted+source%22%7D%7D",
+  "width": 1440
+}

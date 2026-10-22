@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-22T06:11:21.836Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "grid",
+      "gap": "10px",
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/contact/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "rect": {
+            "bottom": 312.21875,
+            "height": 43,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 269.21875
+          },
+          "text": "Open Support Request →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "color": "rgb(23, 39, 33)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/my-account/",
+          "rect": {
+            "bottom": 400.8125,
+            "height": 43,
+            "right": 372,
+            "width": 354,
+            "x": 18,
+            "y": 357.8125
+          },
+          "text": "Access Partner Portal"
+        }
+      ],
+      "paragraphGap": 25,
+      "previous": {
+        "font": "14px",
+        "lineHeight": "22.4px",
+        "rect": {
+          "bottom": 244.21875,
+          "height": 67.1953125,
+          "right": 372,
+          "width": 354,
+          "x": 18,
+          "y": 177.0234375
+        },
+        "tag": "P",
+        "text": "Our team in Germany handles quotes, product documents, and engineering support. Registered trade partners order through the partner portal."
+      },
+      "rect": {
+        "bottom": 400.8125,
+        "height": 131.59375,
+        "right": 372,
+        "width": 354,
+        "x": 18,
+        "y": 269.21875
+      }
+    }
+  ],
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 844,
+  "lang": "en-US",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/services-support/",
+  "width": 390
+}

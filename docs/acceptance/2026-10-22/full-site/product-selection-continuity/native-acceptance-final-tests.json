@@ -1,0 +1,45 @@
+{
+  "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/contact-native-repair-20261022T052213490313Z",
+  "command": [
+    "/opt/homebrew/opt/php@8.3/bin/php",
+    "vendor/phpunit/phpunit/phpunit",
+    "-c",
+    "phpunit.integration.xml.dist",
+    "--filter",
+    "ContactSelectionTest|ContactNavigationTest"
+  ],
+  "exit": 0,
+  "comparisons": {
+    "options": true,
+    "queue": true,
+    "privacy": true,
+    "counts": true
+  },
+  "countsBefore": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "countsAfter": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "privacy": [
+    {
+      "ID": "1673",
+      "sha256": "8e00054bac129baa25deb66d81fd33f4028fdf0d09b69014eb392285c9e539c4",
+      "backslashes": 0
+    },
+    {
+      "ID": "6827",
+      "sha256": "4a7e625341d90629c98677f60bf95521d5f32359e1f73fb6e14c8f2aa81720d2",
+      "backslashes": 0
+    }
+  ],
+  "queueBefore": 0,
+  "queueAfter": 0,
+  "testSummary": "8 tests, 464 assertions, PASS",
+  "native_log_sha256": "82030414c441d29b55394359fa4f400cfa0aa13d22a166a1300f5bae212070d1",
+  "boundary": "Same repaired product source, additional runtime Location-header string assertion in six HTTP cases. Isolated native order/Outbox/recovery paths; all options/queue/privacy/counts match before and after, zero real mail transport. Local privacy is stale fixture content, not production legal proof."
+}

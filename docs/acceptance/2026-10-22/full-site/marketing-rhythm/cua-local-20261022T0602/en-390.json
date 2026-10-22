@@ -1,0 +1,135 @@
+{
+  "actions": {
+    "direction": "column",
+    "display": "flex",
+    "gap": "12px",
+    "rect": {
+      "bottom": 832.84375,
+      "height": 108,
+      "left": 18,
+      "right": 372,
+      "top": 724.84375,
+      "width": 354,
+      "x": 18,
+      "y": 724.84375
+    }
+  },
+  "admin": false,
+  "at": "2026-10-22T06:03:16.448Z",
+  "body": {
+    "font": "16px",
+    "lineHeight": "26.4px",
+    "rect": {
+      "bottom": 692.84375,
+      "height": 105.59375,
+      "left": 18,
+      "right": 372,
+      "top": 587.25,
+      "width": 354,
+      "x": 18,
+      "y": 587.25
+    }
+  },
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792648845"
+  ],
+  "fonts": "loaded",
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none",
+    "rect": {
+      "bottom": 81,
+      "height": 81,
+      "left": 0,
+      "right": 390,
+      "top": 0,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "heading": {
+    "font": "42px",
+    "hyphens": "manual",
+    "rect": {
+      "bottom": 568.25,
+      "height": 136.078125,
+      "left": 18,
+      "right": 372,
+      "top": 432.171875,
+      "width": 354,
+      "x": 18,
+      "y": 432.171875
+    },
+    "text": "Ready to design and source your next installation?",
+    "textWrap": "balance"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "links": [
+    {
+      "background": "rgb(12, 127, 115)",
+      "color": "rgb(255, 255, 255)",
+      "focus": false,
+      "font": "14px",
+      "hover": false,
+      "href": "http://127.0.0.1:9290/solution-configurator/",
+      "outline": {
+        "color": "rgb(255, 255, 255)",
+        "offset": "0px",
+        "style": "none",
+        "width": "3px"
+      },
+      "rect": {
+        "bottom": 772.84375,
+        "height": 48,
+        "left": 18,
+        "right": 372,
+        "top": 724.84375,
+        "width": 354,
+        "x": 18,
+        "y": 724.84375
+      },
+      "text": "Plan a Project Solution →"
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(23, 39, 33)",
+      "focus": false,
+      "font": "14px",
+      "hover": false,
+      "href": "http://127.0.0.1:9290/my-account/",
+      "outline": {
+        "color": "rgb(23, 39, 33)",
+        "offset": "0px",
+        "style": "none",
+        "width": "3px"
+      },
+      "rect": {
+        "bottom": 832.84375,
+        "height": 48,
+        "left": 18,
+        "right": 372,
+        "top": 784.84375,
+        "width": 354,
+        "x": 18,
+        "y": 784.84375
+      },
+      "text": "Open Partner Account"
+    }
+  ],
+  "overflow": false,
+  "section": {
+    "bottom": 1102.84375,
+    "height": 783.46875,
+    "left": 0,
+    "right": 390,
+    "top": 319.375,
+    "width": 390,
+    "x": 0,
+    "y": 319.375
+  },
+  "url": "http://127.0.0.1:9290/for-installer/",
+  "verticalGap": 32,
+  "width": 390
+}

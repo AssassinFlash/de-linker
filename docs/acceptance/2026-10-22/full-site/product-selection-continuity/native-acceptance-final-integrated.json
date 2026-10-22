@@ -1,0 +1,47 @@
+{
+  "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/contact-native-repair-20261022T053240329026Z",
+  "command": [
+    "/opt/homebrew/opt/php@8.3/bin/php",
+    "vendor/phpunit/phpunit/phpunit",
+    "-c",
+    "phpunit.integration.xml.dist",
+    "--filter",
+    "ContactSelectionTest|ContactNavigationTest"
+  ],
+  "exit": 0,
+  "comparisons": {
+    "options": true,
+    "queue": true,
+    "privacy": true,
+    "counts": true
+  },
+  "countsBefore": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "countsAfter": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "privacy": [
+    {
+      "ID": "1673",
+      "sha256": "8e00054bac129baa25deb66d81fd33f4028fdf0d09b69014eb392285c9e539c4",
+      "backslashes": 0
+    },
+    {
+      "ID": "6827",
+      "sha256": "4a7e625341d90629c98677f60bf95521d5f32359e1f73fb6e14c8f2aa81720d2",
+      "backslashes": 0
+    }
+  ],
+  "queueBefore": 0,
+  "queueAfter": 0,
+  "testSummary": "8 tests / 464 assertions PASS",
+  "source_aggregate": "ad96563eab36c1f0c73bf410ce61d212eb904393c8c563f1cf04ac69b9a4823a",
+  "parent": "dcd5560d",
+  "native_log_sha256": "9088e9d5ff25922bdad22ee81045cc8c72a4f539389ebb9501fd78d965274495",
+  "boundary": "Final native PHP/HTTP/order/isolated Outbox/recovery after integration with the newer public-business Admission main and host-only origin read. All recorded options, original queue, privacy bytes and counts are equal; zero real mail transport. Local privacy remains an imported fixture."
+}

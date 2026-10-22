@@ -279,3 +279,9 @@ body #linker-products.sf-products [data-card-gate] { background: #f5f6f8; border
 @media (min-width:861px){
   body #linker-products.sf-products .sidebar-filters{position:sticky;top:104px;align-self:start;max-height:calc(100vh - 128px);overflow-y:auto}
 }
+
+/* Native Woo ordering supplies behavior; the existing result bar owns spacing. */
+body #linker-products.sf-products form.wbsort.woocommerce-ordering {
+  float: none;
+  margin: 0;
+}

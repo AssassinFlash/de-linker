@@ -25,7 +25,7 @@ final class LanguageLinks {
 	/**
 	 * Visitor query state retained when switching this page's language.
 	 */
-	private const LANGUAGE_QUERY_KEYS = array( 's', 'orderby', 'step', 'key', 'admin-access' );
+	private const LANGUAGE_QUERY_KEYS = array( 's', 'orderby', 'step', 'key', 'admin-access', 'q', 'sort', 'application', 'brand', 'phase', 'power', 'kw_min', 'kw_max', 'kwh_min', 'kwh_max', 'product-page' );
 
 	/**
 	 * The header's toggle: a globe (hidden by the header's own stylesheet)
@@ -137,9 +137,15 @@ final class LanguageLinks {
 			if ( ! isset( $_GET[ $query_key ] ) || ! \is_string( $_GET[ $query_key ] ) || '' === $_GET[ $query_key ] ) {
 				continue;
 			}
-			$kept[ $query_key ] = sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
+			$kept[ $query_key ] = rawurlencode( sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
 		}
-		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'cbq' ) ), $url ) );
+		// A Contact handoff is revalidated, rather than retaining arbitrary transport JSON.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation.
+		$contact = \Linker\Commerce\Contact\SelectionContext::language_query( wp_unslash( $_GET ), $lang );
+		foreach ( $contact as $key => $value ) {
+			$kept[ $key ] = rawurlencode( $value );
+		}
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ) ), $url ) );
 		/**
 		 * Reapply Polylang's native URL translation after retaining request context.
 		 *

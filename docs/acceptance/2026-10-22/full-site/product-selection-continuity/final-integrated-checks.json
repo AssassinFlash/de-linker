@@ -1,0 +1,41 @@
+{
+  "at": "2026-10-22T05:39:21.087255+00:00",
+  "head_before_evidence_commit": "84427eb73115a1f7c2e420775bf38c36ce932f46",
+  "integrated_main_parent": "dcd5560d",
+  "source_aggregate": "ad96563eab36c1f0c73bf410ce61d212eb904393c8c563f1cf04ac69b9a4823a",
+  "full31": "79a7175f15f2c4a9b4d887ee72b2b926612af3b48c6e97562f499e1874621461",
+  "checks": {
+    "full_repository_check": {
+      "exit": 0,
+      "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/shared-continuity-final-origin-just-check.log",
+      "sha256": "cd6384f4005a9e444a604b1a0a614c9b475d883d509318f80a4625ca9ac53977",
+      "tail": "e-urls.py\" --root \"/Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker\"\ninternal-home-urls: clean\nPHP=/opt/homebrew/opt/php@8.3/bin/php python3 \"/Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker/tools/checks/i18n-coverage.py\"\nplugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=62 exempt=62 gap=0\nplugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0\nplugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=0 JSON problems=0\nplugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0\ni18n-coverage: clean\npython3 \"/Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker/tools/checks/i18n-validity.py\"\ni18n-validity: clean (8 catalogs)\ncd /Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker/plugins/linker-tools && npm run --silent build:check\nbuild/ matches its sources.\ncd /Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker/plugins/linker-commerce && npm run --silent build:check\nbuild/ matches its sources.\n"
+    },
+    "commerce_unit": {
+      "exit": 0,
+      "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/continuity-final-origin-full-unit.log",
+      "sha256": "de81445e07a49083af7a86327803055cbf951971687b1dd8dbe7f98f5490e348",
+      "tail": ".......................................  549 / 1228 ( 44%)\n.............................................................  610 / 1228 ( 49%)\n.............................................................  671 / 1228 ( 54%)\n.............................................................  732 / 1228 ( 59%)\n.............................................................  793 / 1228 ( 64%)\n.............................................................  854 / 1228 ( 69%)\n.............................................................  915 / 1228 ( 74%)\n.............................................................  976 / 1228 ( 79%)\n............................................................. 1037 / 1228 ( 84%)\n............................................................. 1098 / 1228 ( 89%)\n............................................................. 1159 / 1228 ( 94%)\n............................................................. 1220 / 1228 ( 99%)\n........                                                      1228 / 1228 (100%)\n\nTime: 00:02.432, Memory: 70.00 MB\n\nOK (1228 tests, 6348 assertions)\n"
+    },
+    "origin_scope_unit": {
+      "exit": 0,
+      "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/selection-origin-host-only-unit.log",
+      "sha256": "bb1930a40bac7a9824464d8972746cd2ac8a8b449808fdf61ad7c42443c8c828",
+      "tail": "PHPUnit 9.6.38 by Sebastian Bergmann and contributors.\n\n....................                                              20 / 20 (100%)\n\nTime: 00:00.061, Memory: 24.00 MB\n\nOK (20 tests, 190 assertions)\n"
+    },
+    "origin_phpcs": {
+      "exit": 0,
+      "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/selection-origin-host-only-phpcs.log",
+      "sha256": "46592f3ff266fc3f397a233e0e58138fa6e2ec51990a2ab50831b05bc423c966",
+      "tail": ". 1 / 1 (100%)\n\n\nTime: 214ms; Memory: 18MB\n\n"
+    },
+    "origin_phpstan": {
+      "exit": 0,
+      "path": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/selection-origin-host-only-phpstan.log",
+      "sha256": "154be59730039cb5af3a36ccd58209d036057ba772f2693e7c0340847cb8fd1a",
+      "tail": "Note: Using configuration file /Users/chesterjohn/.codex/worktrees/shared-archive-routes/de-linker/plugins/linker-commerce/phpstan.neon.dist.\n\n [OK] No errors                                                                 \n\n"
+    }
+  },
+  "native": "native-acceptance-final-integrated.json",
+  "carry_forward_CUA": "CUA/native family visuals bind prior14cb product bytes; only host-only home_url call changed after that, no markup/CSS/query-output change. Per-file before/current maps and narrow origin Spec/Standards reviews disclose this increment. No new actual browser capture is attributed to ad96563e."
+}

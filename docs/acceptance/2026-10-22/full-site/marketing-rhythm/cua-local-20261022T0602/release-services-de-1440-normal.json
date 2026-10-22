@@ -1,0 +1,93 @@
+{
+  "at": "2026-10-22T07:58:19.480Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "12px",
+      "lineBreaks": [
+        "none"
+      ],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/kontakt/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 494.1484375,
+            "height": 48,
+            "right": 319.1328125,
+            "width": 219.1328125,
+            "x": 100,
+            "y": 446.1484375
+          },
+          "text": "Support-Anfrage öffnen →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "1px solid rgb(160, 177, 164)",
+          "color": "rgb(23, 39, 33)",
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 494.1484375,
+            "height": 48,
+            "right": 553.234375,
+            "width": 222.1015625,
+            "x": 331.1328125,
+            "y": 446.1484375
+          },
+          "text": "Auf Partnerportal zugreifen"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "26.4px",
+        "rect": {
+          "bottom": 414.1484375,
+          "height": 79.1953125,
+          "right": 690,
+          "width": 590,
+          "x": 100,
+          "y": 334.953125
+        },
+        "tag": "P",
+        "text": "Unser Team in Deutschland bearbeitet Angebote, Produktunterlagen und technischen Support. Registrierte Fachpartner bestellen über das Partnerportal."
+      },
+      "rect": {
+        "bottom": 494.1484375,
+        "height": 48,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 446.1484375
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/kundendienst/",
+  "width": 1440,
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661",
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "actions": [
+    {
+      "fontSize": "13px",
+      "href": "http://127.0.0.1:9290/de/kontakt/?intent=project&source=http%3A%2F%2F127.0.0.1%3A9290%2Ffor-epc%2F&kind=solution&source_id=842",
+      "rect": {
+        "height": 48,
+        "width": 241.203125,
+        "x": 599.3984375,
+        "y": 543
+      },
+      "text": "Projektumfang besprechen →"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6867 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas epc-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(7, 29, 52, 0.64), rgba(7, 29, 52, 0.64) 62%, rgba(3, 19, 34, 0.82))",
+    "className": "lk-hero-split epc-cover",
+    "rect": {
+      "height": 650,
+      "width": 1440,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "48.96px",
+    "lineHeight": "56.304px",
+    "rect": {
+      "height": 112.609375,
+      "width": 940,
+      "x": 250,
+      "y": 173.046875
+    },
+    "text": "Projektanforderungen, geliefert als baubare Speichersysteme."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/de/fuer-epc/",
+  "viewport": [
+    1440,
+    844
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ],
+  "fonts": "loaded",
+  "header": "rgba(21, 53, 47, 0.8)",
+  "images": [
+    {
+      "complete": true,
+      "naturalWidth": 1672
+    }
+  ],
+  "texts": [
+    {
+      "className": "lk-hero-badge",
+      "color": "rgb(238, 248, 255)",
+      "fontSize": "11px",
+      "opacity": "1",
+      "text": "FÜR EPCS & PROJEKTENTWICKLER"
+    },
+    {
+      "className": "lk-hero-title",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "48.96px",
+      "opacity": "1",
+      "text": "Projektanforderungen, geliefert als baubare Speichersysteme."
+    },
+    {
+      "className": "lk-intake-p",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "14px",
+      "opacity": "1",
+      "text": "Besprechen Sie Ihre Projektparameter, Kapazitätsanforderungen oder Netzdokumentationsanforderungen direkt mit unserem Team."
+    }
+  ],
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661"
+}

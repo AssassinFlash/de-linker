@@ -1,0 +1,190 @@
+{
+  "at": "2026-10-22T07:03:48.269Z",
+  "body": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6871 page-parent wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas sol-at-cover",
+  "controls": [
+    {
+      "background": "rgba(255, 255, 255, 0.08)",
+      "color": "rgb(255, 255, 255)",
+      "label": "Produkte suchen",
+      "rect": {
+        "bottom": 67,
+        "height": 46,
+        "width": 46,
+        "x": 979.2734375,
+        "y": 21
+      }
+    },
+    {
+      "background": "rgba(255, 255, 255, 0.08)",
+      "color": "rgb(255, 255, 255)",
+      "label": "Lösungsentwurf",
+      "rect": {
+        "bottom": 67,
+        "height": 46,
+        "width": 46,
+        "x": 1033.2734375,
+        "y": 21
+      }
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(21, 53, 47)",
+      "label": "Linker kontaktieren",
+      "rect": {
+        "bottom": 67,
+        "height": 46,
+        "width": 174.328125,
+        "x": 1241.671875,
+        "y": 21
+      }
+    }
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792652406"
+  ],
+  "expanded": [],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgba(0, 0, 0, 0)",
+    "filter": "none",
+    "rect": {
+      "bottom": 89,
+      "height": 89,
+      "width": 1440,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "language": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/solution/",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgb(21, 53, 47)",
+      "rect": {
+        "bottom": 66,
+        "height": 44,
+        "width": 44,
+        "x": 1139.2734375,
+        "y": 22
+      },
+      "text": "EN",
+      "underline": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(255, 255, 255)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/de/loesung/",
+      "outline": "rgb(255, 255, 255) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgb(21, 53, 47)",
+      "rect": {
+        "bottom": 66,
+        "height": 44,
+        "width": 44,
+        "x": 1183.2734375,
+        "y": 22
+      },
+      "text": "DE",
+      "underline": "rgb(255, 255, 255)"
+    }
+  ],
+  "logoFilter": "brightness(0) invert(1)",
+  "overflow": false,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/de/loesung/",
+  "width": 1440,
+  "sourceAggregate": "d1b740ea801a440ba3a05ab60026a000ebfb06cd64484d53cb3467ee9fcd34e4",
+  "surface": {
+    "background": "rgba(21, 53, 47, 0.8)",
+    "headerImages": [
+      {
+        "complete": true,
+        "naturalWidth": 712,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/07/de-linker-logo-1.webp"
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1280,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp"
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1152,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/09/linker-home-battery-storage.webp"
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1536,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp"
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1152,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/09/linker-storage-at-every-scale.webp"
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1536,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/09/linker-home-storage-solution.webp"
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1344,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/09/linker-commercial-industrial-solution.webp"
+      },
+      {
+        "complete": true,
+        "naturalWidth": 1568,
+        "src": "http://127.0.0.1:9290/wp-content/uploads/2026/09/linker-utility-scale-bess.webp"
+      }
+    ],
+    "visibleNavigation": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "font": "14.5px",
+        "text": "Produkte"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "font": "14.5px",
+        "text": "Lösungen"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "font": "14.5px",
+        "text": "Planen mit Linker"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "font": "14.5px",
+        "text": "Dienstleistungen"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "font": "14.5px",
+        "text": "Für Partner"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "font": "14.5px",
+        "text": "Über uns"
+      }
+    ]
+  }
+}

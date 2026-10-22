@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-22T08:23:31.900Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "gap": "12px",
+      "lineBreaks": [],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "className": "lk-btn-teal",
+          "color": "rgb(255, 255, 255)",
+          "focusVisible": false,
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/solution-configurator/",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 374.515625,
+            "height": 48,
+            "right": 1099.9453125,
+            "width": 284.390625,
+            "x": 815.5546875,
+            "y": 326.515625
+          },
+          "text": "Plan with the Solution Configurator →",
+          "transitionDuration": "0.18s, 0.18s",
+          "transitionProperty": "border-color, box-shadow"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "className": "lk-btn-outline",
+          "color": "rgb(12, 127, 115)",
+          "focusVisible": false,
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/contact/?intent=project&source=http%3A%2F%2F127.0.0.1%3A9290%2Fsolution%2F&kind=solution&source_id=746",
+          "outline": "rgb(12, 127, 115) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 374.515625,
+            "height": 48,
+            "right": 1290.421875,
+            "width": 178.4765625,
+            "x": 1111.9453125,
+            "y": 326.515625
+          },
+          "text": "Talk to Our Engineers",
+          "transitionDuration": "0s",
+          "transitionProperty": "border-color, box-shadow"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "26.4px",
+        "rect": {
+          "bottom": 294.515625,
+          "height": 52.796875,
+          "right": 1340,
+          "width": 524.4453125,
+          "x": 815.5546875,
+          "y": 241.71875
+        },
+        "tag": "P",
+        "text": "From residential backup packages to megawatt container deliveries, Linker links complete storage solutions for you."
+      },
+      "rect": {
+        "bottom": 374.515625,
+        "height": 48,
+        "right": 1340,
+        "width": 524.4453125,
+        "x": 815.5546875,
+        "y": 326.515625
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "overflow": false,
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792656909"
+  ],
+  "url": "http://127.0.0.1:9290/solution/",
+  "width": 1440,
+  "sourceAggregate": "00ae7fc26d8df2d5bc63c9e4ab99e7c82da7caf8e2e4fb8d261ad3e892e742ff"
+}

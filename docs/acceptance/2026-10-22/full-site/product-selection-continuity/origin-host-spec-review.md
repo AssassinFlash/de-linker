@@ -1,0 +1,13 @@
+# Origin-host call — independent Spec increment
+
+**Verdict: PASS for this one-call source increment.** No origin-validation, customer-link or selection behavior regression was found.
+
+Independently verified all 31 current manifest hashes. Product aggregate is **`ad96563eab36c1f0c73bf410ce61d212eb904393c8c563f1cf04ac69b9a4823a`**; full aggregate is **`79a7175f15f2c4a9b4d887ee72b2b926612af3b48c6e97562f499e1874621461`**. Against the archived [eec1822a manifest](source-integrated-files-eec1822a.json), only `includes/Contact/SelectionContext.php` changes, now SHA256 `66d0897ff9a636c65956d176c5f648c09f596c9f77255855cb4869c7bb3f7a47`. Replacing that one new call back with `home_url( '/' )` reproduces its exact prior SHA; the other 30 artifacts are byte-identical.
+
+The private `same_origin()` helper at line 241 uses the native home URL solely to parse scheme, host and port. Changing `home_url( '/' )` to `home_url()` removes an unnecessary root-path literal. The helper never compares this home path, displays it, constructs a customer link from it or writes it into the selection. Its userinfo rejection, HTTP(S) allowlist, case-normalized scheme/host equality and exact port equality remain unchanged; canonical public-source path checks still occur separately.
+
+Read the existing internal-home-urls checker source: its documented host-only use explicitly allows `home_url()` and rejects path literals, including `/`, in runtime plugin PHP. The checker was not changed or ignored. This increment therefore uses the existing native host authority while respecting the established customer-link construction boundary; it does not replace a native translated permalink or invent a route.
+
+Read the unchanged SelectionContext scope tests: valid published shop/product/category sources remain the positive controls; foreign host, different scheme/port, userinfo, protocol-relative/executable URL, fake canonical path, unknown source, nonscalar input and publication/password restrictions remain negative controls. No assertion or normalization permission changed. This is static source/contract review, not a new claim about those tests executing here.
+
+No test/PHP runtime, npm, native HTTP, DB, browser, instance or production action was performed by this reviewer. Only this report was written; no product/test/catalog/checker file was edited. Parent-reported related units/PHPCS/PHPStan are separate evidence, and the final complete check on the actual rebased combination is parent-owned. Previous full source/CSS and five-test Spec conclusions remain valid within their exact unchanged-byte scopes; this narrow PASS does not upgrade visual, deployed or full-site acceptance.
