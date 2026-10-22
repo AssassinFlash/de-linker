@@ -271,14 +271,15 @@ class Entries {
 	 */
 	private function print_loader( bool $open ): void {
 		$payload = array(
-			'src'          => $this->script_src(),
-			'deps'         => $this->script_deps(),
-			'translations' => $this->script_translations(),
-			'error'        => __( 'Genie could not load.', 'linker-tools' ),
-			'retry'        => __( 'Try again', 'linker-tools' ),
-			'title'        => __( "Genie - Linker's AI assistant", 'linker-tools' ),
-			'close'        => __( 'Close', 'linker-tools' ),
-			'open'         => $open,
+			'src'                => $this->script_src(),
+			'deps'               => $this->script_deps(),
+			'nativeDependencies' => $this->native_dependencies(),
+			'translations'       => $this->script_translations(),
+			'error'              => __( 'Genie could not load.', 'linker-tools' ),
+			'retry'              => __( 'Try again', 'linker-tools' ),
+			'title'              => __( "Genie - Linker's AI assistant", 'linker-tools' ),
+			'close'              => __( 'Close', 'linker-tools' ),
+			'open'               => $open,
 		);
 		if ( '' === $payload['src'] ) {
 			return;
@@ -575,12 +576,29 @@ class Entries {
 		}
 		// Wait for every dependency, not merely the last one: any failed
 		// dependency aborts this batch before the app can execute broken.
-		var remaining = payload.deps.length;
+		// WordPress's done list records printed tags, not successful downloads.
+		// Reuse a native dependency only when its exported runtime is present;
+		// retain the original URL/error/retry path for a failed native request.
+		var deps = payload.deps.filter(function (url) {
+			var path = (payload.nativeDependencies || {})[url];
+			if (!Array.isArray(path) || path.length === 0) {
+				return true;
+			}
+			var value = window;
+			for (var i = 0; i < path.length; i += 1) {
+				if (value === undefined || value === null) {
+					return true;
+				}
+				value = value[path[i]];
+			}
+			return !value || (typeof value !== 'object' && typeof value !== 'function');
+		});
+		var remaining = deps.length;
 		if (remaining === 0) {
 			finish();
 			return;
 		}
-		payload.deps.forEach(function (url) {
+		deps.forEach(function (url) {
 			var dep = document.createElement('script');
 			dep.src = url;
 			dep.async = false;
@@ -991,9 +1009,6 @@ JS,
 	private function script_deps(): array {
 		$urls = array();
 		$walk = function ( string $handle ) use ( &$urls, &$walk ): void {
-			if ( in_array( $handle, wp_scripts()->done, true ) ) {
-				return;
-			}
 			$script = wp_scripts()->query( $handle );
 			if ( ! $script || ! is_string( $script->src ) ) {
 				return;
@@ -1015,6 +1030,37 @@ JS,
 		};
 		$walk( self::HANDLE );
 		return $urls;
+	}
+
+	/**
+	 * Exports of printed dependencies in Genie's current WordPress build graph.
+	 *
+	 * Names follow @wordpress/dependency-extraction-webpack-plugin's request
+	 * globals. Unknown handles keep their ordinary fallback URL; printed is
+	 * deliberately not treated as proof of a successful browser download.
+	 *
+	 * @return array<string,list<string>> Script URL to native global path.
+	 */
+	private function native_dependencies(): array {
+		$exports = array(
+			'react'             => array( 'React' ),
+			'react-dom'         => array( 'ReactDOM' ),
+			'react-jsx-runtime' => array( 'ReactJSXRuntime' ),
+			'wp-dom-ready'      => array( 'wp', 'domReady' ),
+			'wp-element'        => array( 'wp', 'element' ),
+			'wp-i18n'           => array( 'wp', 'i18n' ),
+		);
+		$native  = array();
+		foreach ( $exports as $handle => $path ) {
+			if ( ! in_array( $handle, wp_scripts()->done, true ) ) {
+				continue;
+			}
+			$script = wp_scripts()->query( $handle );
+			if ( $script && is_string( $script->src ) && '' !== $script->src ) {
+				$native[ $script->src ] = $path;
+			}
+		}
+		return $native;
 	}
 
 	/**

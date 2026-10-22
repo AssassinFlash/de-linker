@@ -11,20 +11,23 @@ it was not an inference from a missing translation file. Native translation JSON
 was present and contained `Senden`.
 
 Core's actual `wp_print_footer_scripts` callback runs at `wp_footer` priority 20.
-The dock loader now runs at 21 and omits dependency handles already in the native
-`WP_Scripts::done` list. It still loads missing dependencies and the versioned Genie
-entry on demand. The native footer runtime therefore remains the instance used by
+The dock loader now runs at 21. It describes printed native dependencies using
+the global exports of the current WordPress build graph, while retaining every
+fallback URL. The browser reuses an export only when that runtime actually exists;
+a failed native request still enters the existing download/error/retry path.
+Missing dependencies and the versioned Genie entry continue to load on demand. The native footer runtime therefore remains the instance used by
 the entry and its translation payload. No interface copy, style, model route,
 verification policy or provider budget changed.
 
 ## Verification
 
-- The added regression failed on the unchanged source: the loader included all
-  five core dependencies even when WordPress had already printed them. After the
-  fix, the complete Entries group passes **31 tests / 179 assertions**, including
-  the existing recoverable boot/keyboard-boundary JavaScript test. Its first run
-  lacked the new worktree's `jsdom`; installing the locked Node dependencies
-  resolved that environment failure without changing a business assertion.
+- The original source reproduced duplicate dependency loading. The PHP fixture
+  now requires both fallback URLs and the printed native export hints; the actual
+  loader JavaScript separately proves runtime reuse and download/retry recovery.
+  The complete Entries group passes **32 tests / 186 assertions**, including the
+  existing recoverable boot/keyboard-boundary test. Its first run lacked the new
+  worktree's `jsdom`; installing the locked Node dependencies resolved that
+  environment failure without changing a business assertion.
 - WPCS for all three changed PHP files and the entire Tools PHPStan level 8 pass.
 - Independent instance `g563i` uses the actual production snapshot
   `20261022-2159`, taken 14:04:08 UTC, with 212 published products, 2,756 attachments
@@ -36,12 +39,21 @@ verification policy or provider budget changed.
   German after loading completes.
 - [Eight native browser cases](browser-evidence.json) cover guest workspace and
   product-page helper, EN/DE, requested 1440×1000 and 390×844. Complete JPEGs have
-  actual DOM/image widths 1425, 375 or 390 (the open helper hides the scrollbar).
+  actual final DOM/image widths 1440 or 390.
   Every case has one i18n script and one versioned Genie entry, no horizontal
   overflow and the corresponding language. The mobile workspace screenshots use
   a fresh mobile navigation with the conversation rail closed; the rail was also
   opened/closed through its native button during inspection. All eight images
   were inspected. The temporary Chrome tab was closed and viewport override reset.
+
+Independent Spec review of the first correction found that `done` proves a tag
+was printed, not that its download succeeded. A new actual-loader JSDOM fixture
+now covers reuse without a duplicate request, missing-runtime fallback, and a
+failed fallback followed by the original successful Retry. Resources are supplied
+only from memory; this is not browser network-failure or production evidence. The
+exports follow the installed `@wordpress/dependency-extraction-webpack-plugin`
+mapping; unknown handles retain their fallback. All eight normal native browser
+cases were rerun after this correction.
 
 The screenshots and DOM records are from the isolated snapshot, with native local
 mail/HTTP guards. No provider response interception, paid question, business form

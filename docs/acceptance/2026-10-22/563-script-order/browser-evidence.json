@@ -19,97 +19,13 @@
         "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
       ],
       "lang": "de-DE",
-      "scroll": 1425,
-      "width": 1425,
-      "image_width": 1425,
-      "image_height": 990,
+      "nativeHintCount": 1,
+      "scroll": 1440,
+      "width": 1440,
+      "image_width": 1440,
+      "image_height": 1000,
       "screenshot": "screenshots/guest-workspace-de-1440.jpg",
-      "sha256": "b0cdace5ce2e929177a60061ae1fa2df27cf81aaa5a80311ca6000695c0558bd",
-      "mime": "image/jpeg"
-    },
-    {
-      "label": "guest-workspace-en-1440",
-      "genieScripts": [
-        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
-      ],
-      "i18nScripts": [
-        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
-      ],
-      "lang": "en-US",
-      "scroll": 1425,
-      "width": 1425,
-      "image_width": 1425,
-      "image_height": 990,
-      "screenshot": "screenshots/guest-workspace-en-1440.jpg",
-      "sha256": "b1600902332f3cd134ef61f79e5ee215870b748dfb33d8f67fb3b54356cc2357",
-      "mime": "image/jpeg"
-    },
-    {
-      "label": "guest-helper-en-1440",
-      "genieScripts": [
-        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
-      ],
-      "i18nScripts": [
-        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
-      ],
-      "lang": "en-US",
-      "scroll": 1425,
-      "width": 1425,
-      "image_width": 1425,
-      "image_height": 990,
-      "screenshot": "screenshots/guest-helper-en-1440.jpg",
-      "sha256": "7be6d643123360278d243a049cd76ccbb025bc2e87f00ded3252759b8aaa71cf",
-      "mime": "image/jpeg"
-    },
-    {
-      "label": "guest-helper-en-390",
-      "genieScripts": [
-        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
-      ],
-      "i18nScripts": [
-        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
-      ],
-      "lang": "en-US",
-      "scroll": 390,
-      "width": 390,
-      "image_width": 390,
-      "image_height": 844,
-      "screenshot": "screenshots/guest-helper-en-390.jpg",
-      "sha256": "d5069140d2ea3c4af45025c18e8e57adcf8201085fc969b2d9d79f5b6be16764",
-      "mime": "image/jpeg"
-    },
-    {
-      "label": "guest-helper-de-1440",
-      "genieScripts": [
-        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
-      ],
-      "i18nScripts": [
-        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
-      ],
-      "lang": "de-DE",
-      "scroll": 1425,
-      "width": 1425,
-      "image_width": 1425,
-      "image_height": 990,
-      "screenshot": "screenshots/guest-helper-de-1440.jpg",
-      "sha256": "66044f85986740292ce13b2938c0d5691eb6b389e367837f5f8d6b47b7e14d20",
-      "mime": "image/jpeg"
-    },
-    {
-      "label": "guest-helper-de-390",
-      "genieScripts": [
-        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
-      ],
-      "i18nScripts": [
-        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
-      ],
-      "lang": "de-DE",
-      "scroll": 390,
-      "width": 390,
-      "image_width": 390,
-      "image_height": 844,
-      "screenshot": "screenshots/guest-helper-de-390.jpg",
-      "sha256": "e9a8f653c7081f3ae101c173e2c4bf0af1642020567ace66be1c43d2fe608e4e",
+      "sha256": "d2343e1251f1eadf17654d3e0e600a78ce090e565f76f327afdf78b1e9cef36f",
       "mime": "image/jpeg"
     },
     {
@@ -121,12 +37,13 @@
         "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
       ],
       "lang": "de-DE",
-      "scroll": 375,
-      "width": 375,
-      "image_width": 375,
-      "image_height": 812,
+      "nativeHintCount": 1,
+      "scroll": 390,
+      "width": 390,
+      "image_width": 390,
+      "image_height": 844,
       "screenshot": "screenshots/guest-workspace-de-390.jpg",
-      "sha256": "696f77f172804d4647dbe5de18c4c2e9060ca44476446c0bc6f3d675e611a3d9",
+      "sha256": "87112a948d4f0532dea5ac40e3fe03cb2029f9d45e9b6da19b5d3630b3e41cef",
       "mime": "image/jpeg"
     },
     {
@@ -138,12 +55,103 @@
         "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
       ],
       "lang": "en-US",
-      "scroll": 375,
-      "width": 375,
-      "image_width": 375,
-      "image_height": 812,
+      "nativeHintCount": 1,
+      "scroll": 390,
+      "width": 390,
+      "image_width": 390,
+      "image_height": 844,
       "screenshot": "screenshots/guest-workspace-en-390.jpg",
-      "sha256": "1d32c6d21bdecc6ea567d774eda0560185c69d1c29cc859b9e304120d78326c0",
+      "sha256": "c95df8a8b4757f7800fa755c0bf28484bccee39e9c033febbc3e46f6ed4c7339",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-workspace-en-1440",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "en-US",
+      "nativeHintCount": 1,
+      "scroll": 1440,
+      "width": 1440,
+      "image_width": 1440,
+      "image_height": 1000,
+      "screenshot": "screenshots/guest-workspace-en-1440.jpg",
+      "sha256": "cad75ced8599532ca066df79c724116cfb62a8de0f1e15361696da62be14a136",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-en-1440",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "en-US",
+      "nativeHintCount": 2,
+      "scroll": 1440,
+      "width": 1440,
+      "image_width": 1440,
+      "image_height": 1000,
+      "screenshot": "screenshots/guest-helper-en-1440.jpg",
+      "sha256": "a359161c2c8c599ad3789b8870c4b5b107bdf8c41167843eac9ef7c1d7fac314",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-en-390",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "en-US",
+      "nativeHintCount": 2,
+      "scroll": 390,
+      "width": 390,
+      "image_width": 390,
+      "image_height": 844,
+      "screenshot": "screenshots/guest-helper-en-390.jpg",
+      "sha256": "c3257c1f36817eb005cd96e13634df952bc286e67f4d8cef0be52d8a6996171a",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-de-1440",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "de-DE",
+      "nativeHintCount": 2,
+      "scroll": 1440,
+      "width": 1440,
+      "image_width": 1440,
+      "image_height": 1000,
+      "screenshot": "screenshots/guest-helper-de-1440.jpg",
+      "sha256": "600e19ba652e95c1eb8920485903305f626374f39c102f624651dae7bbe90e2f",
+      "mime": "image/jpeg"
+    },
+    {
+      "label": "guest-helper-de-390",
+      "genieScripts": [
+        "http://127.0.0.1:9362/wp-content/plugins/linker-tools/build/genie.js?ver=800c32241182e6154857"
+      ],
+      "i18nScripts": [
+        "http://127.0.0.1:9362/wp-includes/js/dist/i18n.min.js?ver=1dfe7db3940c23ea9216"
+      ],
+      "lang": "de-DE",
+      "nativeHintCount": 2,
+      "scroll": 390,
+      "width": 390,
+      "image_width": 390,
+      "image_height": 844,
+      "screenshot": "screenshots/guest-helper-de-390.jpg",
+      "sha256": "e9a8f653c7081f3ae101c173e2c4bf0af1642020567ace66be1c43d2fe608e4e",
       "mime": "image/jpeg"
     }
   ],
@@ -152,5 +160,6 @@
   "business_form_submissions": 0,
   "production_writes": false,
   "viewport_reset": true,
-  "temporary_chrome_tab_closed": true
+  "temporary_chrome_tab_closed": true,
+  "runtime_recovery": "Fallback URLs retained; browser reuses printed exports only when the runtime exists. Final eight cases rerun after recovery correction."
 }
