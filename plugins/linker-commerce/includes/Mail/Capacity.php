@@ -328,6 +328,18 @@ final class Capacity {
 	 * @throws \RuntimeException A native savepoint cannot be established.
 	 */
 	private static function transaction( callable $work ): array {
+		return ConnectionFence::run( static fn (): array => self::transaction_native( $work ) );
+	}
+
+	/**
+	 * Keep the exact native transaction and original savepoint until commit.
+	 *
+	 * @param callable $work Short native writes.
+	 * @phpstan-param callable():array<string,mixed> $work
+	 * @return array<string,mixed>
+	 * @throws \RuntimeException The original transaction/savepoint cannot be confirmed.
+	 */
+	private static function transaction_native( callable $work ): array {
 		global $wpdb;
 		$own  = ! self::transaction_active();
 		$name = 'linker_mail_' . bin2hex( random_bytes( 8 ) );
@@ -347,20 +359,27 @@ final class Capacity {
 		}
 		try {
 			$result = $work();
+			// Releasing the ORIGINAL point proves the transaction survived all writes.
+			if ( false === $wpdb->query( "RELEASE SAVEPOINT $name" ) ) {
+				throw new \RuntimeException( 'mail_capacity_savepoint_unconfirmed' );
+			}
 			if ( $own ) {
 				wc_transaction_query( 'commit' );
 				if ( self::database_error() || self::transaction_active() ) {
 					throw new \RuntimeException( 'mail_capacity_commit_unconfirmed' );
 				}
-			} elseif ( false === $wpdb->query( "RELEASE SAVEPOINT $name" ) ) {
-					throw new \RuntimeException( 'mail_capacity_savepoint_unconfirmed' );
 			}
 			return $result;
 		} catch ( \Throwable $error ) {
-			if ( $own ) {
-				wc_transaction_query( 'rollback' );
-			} else {
-				$wpdb->query( "ROLLBACK TO SAVEPOINT $name" );
+			try {
+				if ( $own ) {
+					wc_transaction_query( 'rollback' );
+				} else {
+					$wpdb->query( "ROLLBACK TO SAVEPOINT $name" );
+				}
+			} catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- A dead connection must not trigger any new-connection compensation or erase the original failure.
+				// Strict original-handle policy forbids reconnect/compensation.
+				// A lost commit remains unknown, never reported as rolled back.
 			}
 			throw $error;
 		}
@@ -372,6 +391,7 @@ final class Capacity {
 	 *
 	 * @phpstan-impure
 	 * @throws \RuntimeException The DB connection cannot prove transaction state.
+	 * @throws \mysqli_sql_exception Unexpected native errors propagate without replay.
 	 */
 	public static function transaction_active(): bool {
 		global $wpdb;
@@ -381,11 +401,22 @@ final class Capacity {
 		$name     = 'linker_mail_' . bin2hex( random_bytes( 8 ) );
 		$previous = $wpdb->suppress_errors( true );
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Server-generated hexadecimal savepoint identifier, never public input.
-		$wpdb->query( "SAVEPOINT $name" );
-		$active = false !== $wpdb->query( "RELEASE SAVEPOINT $name" );
-		$wpdb->suppress_errors( $previous );
-		if ( '1' !== (string) $wpdb->get_var( 'SELECT 1' ) || self::database_error() ) {
-			throw new \RuntimeException( 'mail_capacity_transaction_unavailable' );
+		try {
+			$wpdb->query( "SAVEPOINT $name" );
+			try {
+				$active = false !== $wpdb->query( "RELEASE SAVEPOINT $name" );
+			} catch ( \mysqli_sql_exception $error ) {
+				if ( 1305 !== $error->getCode() ) {
+					throw $error;
+				}
+				// Expected native result: RELEASE outside a transaction has no point.
+				$active = false;
+			}
+			if ( '1' !== (string) $wpdb->get_var( 'SELECT 1' ) || self::database_error() ) {
+				throw new \RuntimeException( 'mail_capacity_transaction_unavailable' );
+			}
+		} finally {
+			$wpdb->suppress_errors( $previous );
 		}
 		return $active;
 		// phpcs:enable

@@ -50,6 +50,21 @@ final class IntakeStore {
 	 * @return WC_Order|WP_Error|array<string,mixed>
 	 */
 	public static function edit( callable $work, int $wait_seconds = 0 ): WC_Order|WP_Error|array {
+		try {
+			return \Linker\Commerce\Mail\ConnectionFence::run( static fn (): WC_Order|WP_Error|array => self::edit_native( $work, $wait_seconds ) );
+		} catch ( \Throwable $error ) {
+			return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
+		}
+	}
+
+	/**
+	 * Hold the same connection policy through lock, native writes and unlock.
+	 *
+	 * @param callable(array<string,mixed>&):(WC_Order|WP_Error|array<string,mixed>) $work Native work.
+	 * @param int                                                                    $wait_seconds Bounded native mutex wait.
+	 * @return WC_Order|WP_Error|array<string,mixed>
+	 */
+	private static function edit_native( callable $work, int $wait_seconds ): WC_Order|WP_Error|array {
 		if ( self::$editing && null !== self::$active ) {
 			return $work( self::$active );
 		}
