@@ -37,10 +37,22 @@
 
 最终 660fe136 在原生 present 时被旧缓存门正确拦住；WindPress 官方 Generate 后于 11:37:10 UTC 落盘，709,814 字节，SHA 与原实验缓存一致，原生 present 再次成功。其后均明确原生退出管理员，匿名再验证。
 
-`final-660-runtime/` 保存英德 1440 的六个披露菜单与账户菜单首次 ArrowDown、后续方向键、Home/End、Escape、首次 ArrowUp 和快速 next/Escape 的实际焦点与 expanded 状态。产品和方案菜单的七张照片实际 complete/naturalWidth>0，其他关闭菜单不提前加载。鼠标真实 pointerenter/pointerleave、按钮点击和真正位于菜单之外的点击另留证。EN 的早期“outside-close”记录实际点中了覆盖标题的方案链接，已按最终 URL 判为驱动目标错误，不能作为外部关闭 PASS。
+`final-660-runtime/` 保存英德 1440 的五个主披露菜单加账户菜单（共六个）首次 ArrowDown、后续方向键、Home/End、Escape、首次 ArrowUp 和快速 next/Escape 的实际焦点与 expanded 状态。最初 EN 非 Products 只存 first/End/Escape；独立评审指出后，已实际补齐 `final-en-1440-*-home/initial-up/fast-next-escape.json`，没有用旧文件推断这些操作。产品和方案菜单的七张照片实际 complete/naturalWidth>0，其他关闭菜单不提前加载。鼠标真实 pointerenter/pointerleave、按钮点击和真正位于菜单之外的点击另留证。EN 的早期“outside-close”记录实际点中了覆盖标题的方案链接，已按最终 URL 判为驱动目标错误，不能作为外部关闭 PASS。
 
 英德 390 五组原生 details 均实际展开/收起、照片完整出现，Escape 返回菜单按钮。新增 CTA 缺陷修复前 panel client=343、scroll=377，按钮宽377且右端393超过 panel 右端359；修复后英德 panel client=scroll=343，按钮宽343、44高、右端359。内部方案 rail 仍为 client343/scroll440，可真实横向滚至97，最后卡片完整落入视口并进入 `/solution/utility-storage/`。11:46:44 UTC 的原生缓存编译与 present 均完成。没有通过隐藏 panel overflow 来掩盖缺陷。
 
-IAB 不支持 Input.dispatchTouchEvent；该尝试明确失败，已立即恢复 touch emulation=false，不能把鼠标点击当作真实触屏硬件验证。响应式额外发现：在已加载字体的 1366 视口，EN 保留桌面导航、DE 进入折叠菜单；这项英德收纳差异需要继续查明。不得把额外宽度检查写为 parity PASS。
+IAB 不支持 Input.dispatchTouchEvent；该尝试明确失败，已立即恢复 touch emulation=false，不能把鼠标点击当作真实触屏硬件验证。原生 CTA 修复后又保存英德全部十组 `final-*-390-*-fixed.jpg/json`，每组 panel client=scroll、CTA width=panel client 且 height>=44，补齐仅最终 Solutions 两图的早期限制。
 
 24 次关闭菜单性能原始采样由独立 Spec 重算：12 次 AFTER 的 requestWillBeSent 也为零，并非只没有响应。局部 FCP 中位数减少45.6–47.3%，load减少42.1–49.8%。这些数字仅绑定原始本地六文件 aggregate，不将后来 CTA 盒模型修复、更新后的后端、生产或完整用户链路混进同一百分比。三组关闭截图完全一致；EN1440 仍有33像素差异，位于账户图标头部附近，最大通道差4，未证明成因，不能掩膜或签像素零差异。
+
+## 滚动条与英德收纳预算
+
+额外检查在1366发现 EN 桌面、DE折叠。独立 Standards 复算和原生宽度确认：window1366、document/header1351、frame client1335减16内边距=1319；CSS却用100vw得到1334的预算，德语实际需要1320.519。`fit()`按真实空间正确折叠，错误在样式预算。当前零padding四块1156.539与旧1156.5625仅差0.023，不是字号或文案突然变宽。
+
+WindPress 将页头设为命名 inline-size container，德语两条padding公式使用100cqw。第二条较紧预算也按同一容器的1288边界启用，保留既有 clamp、安全量、字体、文案和 JS 原生 fits。第一版仍按窗口1288切换时，DE在有滚动条的1288–1297比EN提前展开；失败原图/原数值保留在 `container-first-sweep.json`，没有作为最终结果。
+
+最终官方编译界面显示12:16:14 UTC。有15px滚动条的28个英德状态（1280–1288、1297、1298、1303、1366、1440）均一致：1297及以下折叠，1298及以上展开，所有 scrollWidth=clientWidth。另在真实无滚动条的 Imprint 4096高视口验证英德1280/1288/1366/1440共8组，1280折叠、其余展开，均无横向溢出。曾尝试8000高的 Privacy，但IAB实际上限4096，页面仍更长；该8组明确只是失败的无滚动条控制尝试，不能冒认为无滚动条证据。
+
+正常动画条件下重新实际展开十二个桌面菜单，保存 `container-final-*-1440-*-opened.jpg/json` 和几何汇总；产品/方案照片实际加载，绝对定位和账户 grid 保留。后续独立图像评审与最终 CI 仍单独判定。
+
+CI431发现迁移测试固定旧的七张lazy加五张不带loading。已更新既有测试：实际运行迁移步骤，再验证七张桌面和五张手机照片都保持真实src/native lazy，logo继续eager，迁移仍不得还原data-src或空图。8项定向迁移测试与Ruff通过，完整 `just test` 重跑中；没有删掉失败测试或放宽可解析图片要求。
