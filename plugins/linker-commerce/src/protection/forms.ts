@@ -39,6 +39,12 @@ export function connectForms( root: ParentNode = document ): void {
 		}
 		let submitting = false;
 		let verified = false;
+		const requiresVerification = () =>
+			window.linkerPublicProtectionConfig?.mode === 'enforce' &&
+			! (
+				window.linkerPublicProtectionConfig.businessVerification ===
+					'optional' && [ 'contact', 'inquiry' ].includes( action )
+			);
 		const failed = () => {
 			status.hidden = false;
 			status.textContent = __(
@@ -47,7 +53,7 @@ export function connectForms( root: ParentNode = document ): void {
 			);
 		};
 		const warm = () => {
-			if ( window.linkerPublicProtectionConfig?.mode === 'enforce' ) {
+			if ( requiresVerification() ) {
 				widget.hidden = false;
 				window.linkerPublicProtection?.warm( action, widget ).then(
 					() => {
@@ -95,7 +101,7 @@ export function connectForms( root: ParentNode = document ): void {
 				if (
 					event.defaultPrevented ||
 					verified ||
-					window.linkerPublicProtectionConfig?.mode !== 'enforce'
+					! requiresVerification()
 				) {
 					return;
 				}

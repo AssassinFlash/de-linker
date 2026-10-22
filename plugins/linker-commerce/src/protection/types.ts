@@ -4,6 +4,7 @@ export interface ProtectionConfig {
 	api: string;
 	nonce: string;
 	mode: string;
+	businessVerification?: 'required' | 'optional';
 	language: 'en' | 'de';
 }
 

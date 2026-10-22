@@ -51,6 +51,42 @@ test( 'browsing is passive; the verified native submit preserves the submitter a
 	).toBe( 'signed-proof' );
 } );
 
+test.each( [ 'contact', 'inquiry' ] )(
+	'optional business verification leaves %s native submission and fast filling unobstructed',
+	( action ) => {
+		const f = fixture( 'enforce', action );
+		window.linkerPublicProtectionConfig!.businessVerification = 'optional';
+		f.form.dispatchEvent( new Event( 'focusin' ) );
+		f.form.dispatchEvent( new Event( 'pointerdown' ) );
+		const event = new SubmitEvent( 'submit', {
+			cancelable: true,
+			submitter: f.button,
+		} );
+		f.form.dispatchEvent( event );
+		expect( event.defaultPrevented ).toBe( false );
+		expect( f.proof ).not.toHaveBeenCalled();
+		expect( window.linkerPublicProtection?.warm ).not.toHaveBeenCalled();
+		expect( f.submit ).not.toHaveBeenCalled();
+		expect( f.form.querySelector( '[name="message"]' ) ).toHaveValue(
+			'Customer message'
+		);
+	}
+);
+
+test( 'optional business verification cannot relax a draft mutation', async () => {
+	const f = fixture( 'enforce', 'draft_write' );
+	window.linkerPublicProtectionConfig!.businessVerification = 'optional';
+	f.proof.mockResolvedValue( 'draft-proof' );
+	const event = new SubmitEvent( 'submit', {
+		cancelable: true,
+		submitter: f.button,
+	} );
+	f.form.dispatchEvent( event );
+	expect( event.defaultPrevented ).toBe( true );
+	await vi.waitFor( () => expect( f.submit ).toHaveBeenCalledTimes( 1 ) );
+	expect( f.proof ).toHaveBeenCalledTimes( 1 );
+} );
+
 test( 'verification outage retains all input and permits an explicit retry', async () => {
 	const f = fixture();
 	f.proof

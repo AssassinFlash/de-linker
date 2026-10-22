@@ -1,0 +1,26 @@
+[
+  {
+    "id": 8532,
+    "email": "availability522-contact-en@example.test",
+    "customer_id": 0,
+    "status": "inquiry-received"
+  },
+  {
+    "id": 8533,
+    "email": "availability522-contact-de@example.test",
+    "customer_id": 0,
+    "status": "inquiry-received"
+  },
+  {
+    "id": 8534,
+    "email": "availability522-inquiry-en@example.test",
+    "customer_id": 0,
+    "status": "inquiry-received"
+  },
+  {
+    "id": 8535,
+    "email": "availability522-inquiry-de@example.test",
+    "customer_id": 0,
+    "status": "inquiry-received"
+  }
+]

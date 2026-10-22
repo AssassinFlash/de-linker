@@ -34,10 +34,11 @@ final class Assets {
 			self::HANDLE,
 			'window.linkerPublicProtectionConfig=' . wp_json_encode(
 				array(
-					'api'      => rest_url( Controller::NAMESPACE . Controller::ROUTE ),
-					'nonce'    => wp_create_nonce( 'wp_rest' ),
-					'mode'     => $this->configuration->mode,
-					'language' => str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en',
+					'api'                  => rest_url( Controller::NAMESPACE . Controller::ROUTE ),
+					'nonce'                => wp_create_nonce( 'wp_rest' ),
+					'mode'                 => $this->configuration->mode,
+					'businessVerification' => Configuration::verification_required( 'contact' ) ? 'required' : 'optional',
+					'language'             => str_starts_with( determine_locale(), 'de' ) ? 'de' : 'en',
 				),
 				JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
 			) . ';',

@@ -45,7 +45,8 @@ final class Admission {
 				'mode'     => $this->configuration->mode,
 			);
 		}
-		if ( ! $this->configuration->ready() || ! Actions::valid( $action ) || ! wp_is_uuid( $id, 4 ) ) {
+		$verification = Configuration::verification_required( $action );
+		if ( 'enforce' !== $this->configuration->mode || ( $verification && ! $this->configuration->ready() ) || ! Actions::valid( $action ) || ! wp_is_uuid( $id, 4 ) ) {
 			return self::failure( 'configuration', 503 );
 		}
 		$identity = Identity::current();
@@ -72,8 +73,8 @@ final class Admission {
 		if ( 'linker_admission_unknown_receipt' !== $old->get_error_code() ) {
 			return self::failure( 'unavailable', 503 );
 		}
-		$checked = ( new Proof() )->read( $proof, 'verified', $action, $identity );
-		if ( null === $checked ) {
+		$checked = $verification ? ( new Proof() )->read( $proof, 'verified', $action, $identity ) : null;
+		if ( $verification && null === $checked ) {
 			return self::failure( 'proof', 400 );
 		}
 		$receipt = $ledger->reserve( $id, $fingerprint, $limits, $lease, $carry, $action, $identity->binding(), array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ) );
@@ -86,7 +87,7 @@ final class Admission {
 			'receipt'     => $receipt,
 			'id'          => strtolower( $id ),
 			'fingerprint' => $fingerprint,
-			'proof'       => array(
+			'proof'       => null === $checked ? array() : array(
 				'id'      => $checked['id'],
 				'binding' => $identity->binding(),
 				'action'  => $action,
@@ -102,7 +103,7 @@ final class Admission {
 	 * @return array<string,mixed>|WP_Error Safe result; dispatch remains mandatory.
 	 */
 	public function validate( array $permit ): array|WP_Error {
-		if ( empty( $permit['enforced'] ) || ! empty( $permit['reused'] ) ) {
+		if ( empty( $permit['enforced'] ) || ! empty( $permit['reused'] ) || empty( $permit['proof'] ) ) {
 			return $permit;
 		}
 		$result = ( $this->ledger ?? new Ledger() )->verified( $permit['proof'], $permit['id'] );
