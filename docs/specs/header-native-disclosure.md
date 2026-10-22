@@ -21,6 +21,13 @@ pushing the page content. Record that intended open-state layout change in
 the visual evidence; the closed header and page content retain their layout.
 Check width, full panel scroll reach, final contact action, keyboard targets,
 focus visibility and stacking with existing page controls.
+The existing Genie launcher is 50px high, 20px above the viewport bottom,
+and visible above 860px (`plugins/linker-tools/src/genie/genie.css`). When
+that launcher exists, the folded panel reserves its footprint plus the
+existing 12px bottom gap and safe-area inset. At the actual scroll end,
+the whole contact action must be above the launcher; verify real hit targets
+along the action, not just a rectangle inside the viewport. Keep both the
+contact link and the Genie entry available.
 The actual expanded state remains native; the summary has an explicit button
 role and controls reference so it remains discoverable when styled. The panel
 also changes the hamburger glyph to a close glyph through native open-state

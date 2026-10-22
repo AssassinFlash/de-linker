@@ -204,6 +204,9 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-toggle .tv-menu-close-icon{display:block}
 #tv-header-v2 .tv-mobile-navigation>.tv-mobile-panel{position:absolute;top:100%;left:0;right:0;box-sizing:border-box;max-height:calc(100dvh - var(--lk-header-h) - var(--lk-toolbar-offset,0px));padding-left:1rem;padding-right:1rem;background:#fff;border-bottom:1px solid var(--proto-neutral-200)}
 #tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-panel{display:flex;flex-direction:column}
+/* Genie is 50px high, 20px from the bottom above 860px (src/genie/genie.css).
+   Keep the panel's existing 12px breathing room above that floating control. */
+@media (min-width:861px){body:has(.linker-genie>.linker-genie-open) #tv-header-v2 .tv-mobile-navigation>.tv-mobile-panel{padding-bottom:calc(20px + 50px + 12px + env(safe-area-inset-bottom,0px))}}
 @media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none}}
 #tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation{display:block}
 @media (min-width:1280px){#tv-header-v2 #tv-mobile-toggle{display:none!important}}
