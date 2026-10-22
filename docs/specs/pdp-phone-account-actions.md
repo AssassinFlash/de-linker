@@ -1,4 +1,4 @@
-# Complete phone product actions and readable details
+# Complete product actions and readable technical data
 
 The owner requested a full EN/DE review of small misleading, crowded and missing
 interactive surfaces. On the snapshot-backed product template, the phone dock's
@@ -9,7 +9,7 @@ reproduce incomplete or inaccessible account entries. This is a presentation bug
 in a working native destination, not a missing business capability.
 
 Use the existing LiveCanvas product template, Woo price gate and destinations.
-Only the WindPress `pdp.css` phone rules change. The guest dock has two rows:
+WindPress `pdp.css` owns the presentation changes. The guest dock has two rows:
 two complete account links followed by the existing primary product action.
 The existing 44px phone control minimum applies separately to both links, and
 the primary retains the product surface's 48px minimum. Existing 8/10px spacing,
@@ -35,7 +35,17 @@ column into the value column, and a long conformity-document name exceeding
 its text container. In the existing phone breakpoint, put each technical
 label above its value, separated by the existing 4px spacing step, and allow
 long labels, values and document names to wrap inside their containers. Keep
-every specification, document destination and desktop row intact.
+every specification, document destination and the desktop column structure intact.
+
+Actual site fonts must succeed at the registered instance origin before visual
+acceptance. A subsequent native-font DE1440 inspection finds two desktop labels
+with 178/185px scroll content inside 171px tracks. The latter leaves only about
+2px before its value. Let technical labels hyphenate according to the existing
+document language and wrap within their track at every width. This explicit
+desktop bug correction preserves the columns and values; a necessary extra
+label line may increase that row and move subsequent content. Record that
+intended reflow separately from unchanged surfaces. A prior localhost sample
+with failed custom fonts cannot establish correct-font layout acceptance.
 
 Remove the blanket phone price clamp as well: a logged-in pending/restricted
 account's status must remain readable. Approved prices retain the existing
@@ -52,8 +62,9 @@ Acceptance uses an owned complete snapshot instance, with source and database
 backups before modification. Capture EN/DE anonymous 1440/390 and narrow320,
 normal/hover/focus, real sign-in/registration destinations and native add to
 solution draft. Confirm all link text and hit areas are visible, the actual
-dock height feeds spacing, footer content remains reachable, desktop stays
-unchanged and the privacy source hashes/backslashes are preserved. Exercise
+dock height feeds spacing, footer content remains reachable, desktop retains
+its design with the declared long-label correction, and privacy source
+hashes/backslashes are preserved. Exercise
 existing pending and approved behavior with synthetic local account fixtures;
 no production submission, registration, email or model call. Source review,
 actual rendered checks, complete CI and production readback remain distinct

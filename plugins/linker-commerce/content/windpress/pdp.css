@@ -931,6 +931,8 @@
 #tv-storefront-pdp .pdp-stat-row dt {
 	color: var(--pdp-muted);
 	font-weight: 500;
+	overflow-wrap: anywhere;
+	hyphens: auto;
 }
 
 #tv-storefront-pdp .pdp-stat-row dd {
