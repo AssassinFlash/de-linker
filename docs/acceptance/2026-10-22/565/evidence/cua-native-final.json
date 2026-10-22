@@ -1,0 +1,146 @@
+{
+  "native_records": {
+    "contact_en": {
+      "user_exists": false,
+      "user_status": null,
+      "user_has_factor": false,
+      "orders": [
+        {
+          "customer_id": 0,
+          "held_for_review": false,
+          "ledger": {
+            "status": "completed",
+            "purpose": "contact",
+            "created_at": 1792672675,
+            "outcome": 8230,
+            "verified_parent_count": 1
+          },
+          "id": 8230,
+          "source": "contact",
+          "status": "inquiry-received"
+        },
+        {
+          "customer_id": 0,
+          "held_for_review": false,
+          "ledger": {
+            "verified_parent_count": 0
+          },
+          "id": 8224,
+          "source": "contact",
+          "status": "inquiry-received"
+        }
+      ]
+    },
+    "contact_de": {
+      "user_exists": false,
+      "user_status": null,
+      "user_has_factor": false,
+      "orders": [
+        {
+          "customer_id": 0,
+          "held_for_review": false,
+          "ledger": {
+            "status": "completed",
+            "purpose": "contact",
+            "created_at": 1792672657,
+            "outcome": 8227,
+            "verified_parent_count": 1
+          },
+          "id": 8227,
+          "source": "contact",
+          "status": "inquiry-received"
+        }
+      ]
+    },
+    "inquiry_en": {
+      "user_exists": false,
+      "user_status": null,
+      "user_has_factor": false,
+      "orders": [
+        {
+          "customer_id": 0,
+          "held_for_review": false,
+          "ledger": {
+            "status": "completed",
+            "purpose": "inquiry",
+            "created_at": 1792672731,
+            "outcome": 8233,
+            "verified_parent_count": 1
+          },
+          "id": 8233,
+          "source": "proforma",
+          "status": "inquiry-received"
+        }
+      ]
+    },
+    "inquiry_de": {
+      "user_exists": false,
+      "user_status": null,
+      "user_has_factor": false,
+      "orders": [
+        {
+          "customer_id": 0,
+          "held_for_review": false,
+          "ledger": {
+            "status": "completed",
+            "purpose": "inquiry",
+            "created_at": 1792673572,
+            "outcome": 8236,
+            "verified_parent_count": 1
+          },
+          "id": 8236,
+          "source": "proforma",
+          "status": "inquiry-received"
+        }
+      ]
+    },
+    "outage_de": {
+      "user_exists": false,
+      "user_status": null,
+      "user_has_factor": false,
+      "orders": [
+        {
+          "customer_id": 0,
+          "held_for_review": true,
+          "ledger": {
+            "status": "completed",
+            "purpose": "contact",
+            "created_at": 1792673616,
+            "outcome": 8239,
+            "verified_parent_count": 0
+          },
+          "id": 8239,
+          "source": "contact",
+          "status": "inquiry-received"
+        }
+      ]
+    },
+    "enforce_en": {
+      "user_exists": true,
+      "user_status": "pending",
+      "user_has_factor": false,
+      "orders": []
+    },
+    "enforce_de": {
+      "user_exists": true,
+      "user_status": "pending",
+      "user_has_factor": false,
+      "orders": []
+    }
+  },
+  "captured_mail": [
+    {
+      "file": "20261022-122146-fb5c4bdd-ca1e-4588-84c9-2ebd44c65864.eml",
+      "to_is_tester": true,
+      "has_cc": false,
+      "has_bcc": false
+    },
+    {
+      "file": "20261022-121744-9f5585cf-121e-4e9e-ab2d-b3fd83a4fbf5.eml",
+      "to_is_tester": true,
+      "has_cc": false,
+      "has_bcc": false
+    }
+  ],
+  "boundary": "No external mail delivery tested; later messages may remain in native Outbox under preserved snapshot budgets."
+}
