@@ -44,8 +44,11 @@ resolved correctly before SQLite read-only URI creation.
 
 Four additional real-file/SQLite regression cases cover team writes, fsync
 failure/retry and invalid request hashes. All 31 planning tests, strict mypy,
-ruff lint and formatting pass locally. Reviewers are being asked to recheck
-the repaired fixed commit before this increment is considered reviewed.
+ruff lint and formatting pass locally. Both independent reviewers rechecked
+fixed commit `7591075a779e98ea700dcf62de2aa1141c57bc68` and reported no remaining
+blocking findings. Each independently reran all 31 tests and repeated the
+original ownership/fsync/queue reproductions; relative backup/restore also
+passed. Neither changed files, committed, or deployed.
 
 Axis totals at initial review: Standards 2, Spec 2 (one shared cause). Worst
 within Standards: durability/ownership P1; within Spec: ownership P1. No claim
