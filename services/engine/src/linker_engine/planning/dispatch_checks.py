@@ -69,9 +69,12 @@ def verify(
 ) -> Verification:
     if not flows:
         raise InvalidInput("verification needs a nonempty replay")
+    if initial.total > model.usable_window_kwh:
+        raise InvalidInput("initial inventory exceeds the usable window")
     if terminal_min_kwh is not None:
         nonnegative(terminal_min_kwh, "terminal inventory requirement")
     checks: dict[str, Check] = {}
+    accumulated_state_roundoff_kwh = 0.0
 
     def record(
         code: str,
@@ -82,6 +85,7 @@ def verify(
         arithmetic_allowance: float = 0.0,
         *,
         exact: bool = False,
+        inventory_boundary: bool = False,
     ) -> None:
         if not math.isfinite(violation) or not math.isfinite(scale):
             raise NumericalFailure("replay verification received nonfinite arithmetic")
@@ -91,6 +95,8 @@ def verify(
         allowance = (
             0.0
             if exact
+            else arithmetic_allowance
+            if inventory_boundary
             else absolute + tolerance.relative * abs(scale) + arithmetic_allowance
         )
         if not math.isfinite(allowance):
@@ -145,7 +151,8 @@ def verify(
                 )
         for code, residual in priority_residuals(flow).items():
             record(code, residual, "kW", index, power_scale)
-        for check in delivery_checks(flow, model):
+        local_checks = delivery_checks(flow, model)
+        for check in local_checks:
             record(
                 check.code,
                 check.violation_kw,
@@ -154,6 +161,18 @@ def verify(
                 power_scale,
                 check.arithmetic_allowance_kw,
             )
+        # These source-transition bounds account for this step's paired
+        # products/addition/fsum. Inventory hard boundaries may use only this
+        # tracked numerical budget, never the generic absolute kWh tolerance.
+        accumulated_state_roundoff_kwh += math.fsum(
+            check.arithmetic_allowance_kw * dt
+            for check in local_checks
+            if check.code.startswith("origin_transition_kw_")
+        )
+        inventory_roundoff = accumulated_state_roundoff_kwh + math.fsum(
+            math.ulp(value) if value else 0.0
+            for value in (flow.before.total, flow.after.total)
+        )
         ac_left = math.fsum((flow.pv_available_kw, flow.import_kw, flow.discharge_kw))
         ac_right = math.fsum(
             (
@@ -435,6 +454,8 @@ def verify(
             "kWh",
             index,
             energy_scale,
+            inventory_roundoff,
+            inventory_boundary=True,
         )
         minimum_e = min(
             flow.before.total,
@@ -447,6 +468,18 @@ def verify(
             "kWh",
             index,
             energy_scale,
+            inventory_roundoff
+            + math.fsum(
+                math.ulp(value) if value else 0.0
+                for value in (
+                    flow.standing_loss.total,
+                    flow.internal_aux.total,
+                    flow.before.total
+                    - flow.standing_loss.total
+                    - flow.internal_aux.total,
+                )
+            ),
+            inventory_boundary=True,
         )
         record(
             "charge_power",
@@ -557,5 +590,8 @@ def verify(
             "kWh",
             len(flows) - 1,
             terminal_min_kwh,
+            accumulated_state_roundoff_kwh
+            + (math.ulp(flows[-1].after.total) if flows[-1].after.total else 0.0),
+            inventory_boundary=True,
         )
     return Verification(tuple(checks.values()), tolerance)

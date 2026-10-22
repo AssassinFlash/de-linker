@@ -106,6 +106,11 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
     the separately supplied frozen initial input, and each subsequent source
     state exactly inherits the previous after-state: assignment/JSON round-trip
     introduces no new arithmetic and receives no energy tolerance budget.
+    The verifier independently rejects an over-capacity frozen initial input.
+    Capacity, reserve and terminal inventory are hard physical/task boundaries;
+    only the accumulated local arithmetic budget is allowed there, not a
+    generic absolute kWh or relative-times-capacity allowance. A small real
+    energy deficit cannot be called restored reserve or a repeatable cycle.
 15. Numerical tolerances are explicit, serialized software parameters. They do
     not represent field precision or engineering safety margins. Task execution,
     replay constraint satisfaction, equipment evidence and model applicability

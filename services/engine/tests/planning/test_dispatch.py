@@ -759,3 +759,54 @@ def test_short_interval_cannot_charge_an_already_full_battery() -> None:
         check.code for check in checks((forged,), model).checks if not check.passed
     }
     assert "charge_available_headroom_kw" in failures
+
+
+def test_small_real_cycle_deficit_is_not_an_arithmetic_tolerance() -> None:
+    model = battery(1, 10)
+    item = frame(0, load=10, outage=True, pv_enabled=False)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flows = run((item,), model, EnergyOrigins(0, 0, 1))
+    # Every local physical constraint passes: this one-off event used real
+    # initial energy. The same event cannot claim that it restored inventory.
+    assert checks(flows, model, terminal=0).passed
+    verification = checks(flows, model, terminal=1)
+    terminal = next(
+        check for check in verification.checks if check.code == "terminal_inventory"
+    )
+    assert not terminal.passed
+    assert terminal.worst_violation == pytest.approx(2.7777778e-9)
+    assert (
+        terminal.allowance == terminal.arithmetic_allowance < terminal.worst_violation
+    )
+
+
+def test_real_internal_auxiliary_consumption_can_break_the_reserve_floor() -> None:
+    model = battery(1, 10, internal_aux=10)
+    item = frame(0, load=0, reserve=1)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flows = run((item,), model, EnergyOrigins(0, 0, 1))
+    verification = checks(flows, model)
+    reserve = next(
+        check for check in verification.checks if check.code == "reserve_maintained"
+    )
+    assert not reserve.passed
+    assert reserve.allowance == reserve.arithmetic_allowance < reserve.worst_violation
+
+
+def test_verifier_rejects_overcapacity_initial_independently_of_replay_entry() -> None:
+    model = battery(1, 10)
+    flow = run((frame(0, load=0),), model, EnergyOrigins(0, 0, 1))[0]
+    over = EnergyOrigins(0, 0, math.nextafter(1, math.inf))
+    forged = replace(flow, before=over, after=over)
+    with pytest.raises(InvalidInput, match="initial inventory"):
+        verify((forged,), model, TOLERANCE, initial=over, terminal_min_kwh=0)

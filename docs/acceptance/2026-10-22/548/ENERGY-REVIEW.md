@@ -90,6 +90,12 @@ Its initial inventory is also supplied separately from the trace and compared
 exactly. Six additional cases bring planning to 101 passing tests. The initial
 whole-engine regression after 8f253d9b had 248 passes in 13.71s; it will be
 repeated after these additional fixes.
-Both independent axes will recheck this fixed increment. The full
+The next independent sweep found real (unforged) reserve and cyclic-task
+deficits could also be swallowed by the absolute energy budget. Capacity,
+reserve and terminal hard boundaries now accept only accumulated, exposed
+local arithmetic roundoff. The verifier independently enforces the strict
+initial physical window too. Three additional regressions cover these cases;
+planning now has 104 tests. No smaller task horizon or physical margin was
+introduced. Both independent axes will recheck this fixed increment. The full
 physical configuration/Genie/Woo/UI integration and live acceptance remain
 active, not delivered by this component review.
