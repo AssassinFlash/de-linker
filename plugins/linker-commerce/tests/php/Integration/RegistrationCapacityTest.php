@@ -1688,6 +1688,290 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		}
 	}
 
+
+	/** A lost first eraser read cannot abandon its owner lock and erase a newly accepted job. */
+	public function test_eraser_first_read_connection_loss_cannot_erase_a_concurrent_native_handoff(): void {
+		$post = $this->public_post( 64 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
+		add_filter( 'update_user_metadata', $fail, 10, 3 );
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		} finally {
+			remove_filter( 'update_user_metadata', $fail, 10 );
+		}
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$this->assertSame( 'pending', $this->notices( $id )['received']['state'] );
+		global $wpdb;
+		$observer              = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$original              = $wpdb->__get( 'dbh' )->thread_id;
+		$owner                 = 'linker-assessment-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/registration-notices-' . $id );
+		$owner_before          = null;
+		$reads                 = 0;
+		$killed                = false;
+		$replayed              = false;
+		$child                 = null;
+		$launched_during_erase = false;
+		$fault                 = function ( string $sql ) use ( $id, $observer, $original, $owner, &$owner_before, &$reads, &$killed, &$replayed, &$child, &$launched_during_erase ): string {
+			global $wpdb;
+			if ( str_starts_with( $sql, 'SELECT user_id, meta_key, meta_value FROM ' . $wpdb->usermeta ) && str_contains( $sql, 'user_id IN (' . $id . ')' ) ) {
+				++$reads;
+				if ( ! $killed ) {
+					$owner_before = $observer->get_var( $observer->prepare( 'SELECT IS_USED_LOCK(%s)', $owner ) );
+					$killed       = true;
+					$observer->query( 'KILL CONNECTION ' . $original );
+				} else {
+					$replayed = $wpdb->__get( 'dbh' )->thread_id !== $original;
+				}
+			}
+			// Pause after the fresh comparison and before the first capacity mutex.
+			if ( $reads >= 2 && ! $launched_during_erase && str_starts_with( $sql, 'SELECT GET_LOCK(' ) ) {
+				$launched_during_erase = true;
+				$child                 = $this->notice_handoff_from_another_process( $id );
+			}
+			return $sql;
+		};
+		$previous              = $wpdb->suppress_errors( true );
+		add_filter( 'query', $fault );
+		try {
+			$erased = RegistrationNotices::erase( $id );
+		} finally {
+			remove_filter( 'query', $fault );
+			$wpdb->suppress_errors( $previous );
+			$this->assertTrue( $wpdb->db_connect( false ) );
+			$observer->close();
+		}
+		$this->assertTrue( $killed );
+		$this->assertSame( (string) $original, $owner_before );
+		$this->assertNotSame( $original, $wpdb->__get( 'dbh' )->thread_id );
+		// The fenced eraser aborts before that gap. The independent producer still
+		// completes afterwards; an unfenced eraser allows it inside the stale phase.
+		$child = $child ?? $this->notice_handoff_from_another_process( $id );
+		$this->assertSame( 'accepted', $child['received'] );
+		$job = $child['job'];
+		$this->assertIsInt( $job );
+		$this->assertGreaterThan( 0, $job );
+		$store = new \Linker\Commerce\Mail\JobStore();
+		$this->assertNotNull( $store->load( $job ) );
+		$this->assertFalse( $erased, 'An eraser that lost its owner must not report completion. Native replay=' . (int) $replayed . '; concurrent handoff=' . (int) $launched_during_erase );
+		$this->assertFalse( $launched_during_erase );
+		$this->assertSame( 'accepted', $this->notices( $id )['received']['state'] );
+		$this->assertNotSame( '', get_user_meta( $id, RegistrationNotices::OWNER, true ) );
+		$this->assertTrue( RegistrationNotices::erase( $id ) );
+		$this->assertNull( $store->load( $job ) );
+		$this->assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		$count     = 0;
+		$transport = static function () use ( &$count ): void {
+			++$count;
+		};
+		add_action( 'phpmailer_init', $transport, PHP_INT_MAX );
+		try {
+			RegistrationNotices::recover();
+			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+		} finally {
+			remove_action( 'phpmailer_init', $transport, PHP_INT_MAX );
+		}
+		$this->assertSame( 0, $count );
+	}
+
+	/** A failed pending reservation cancellation is retained, not a successful erasure. */
+	public function test_eraser_cancel_failure_retains_source_owner_and_capacity(): void {
+		$post = $this->public_post( 65 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
+		add_filter( 'update_user_metadata', $fail, 10, 3 );
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		} finally {
+			remove_filter( 'update_user_metadata', $fail, 10 );
+		}
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$before   = $this->notices( $id );
+		$capacity = get_option( IntakeStore::OPTION );
+		$failed   = false;
+		$fault    = static function ( string $sql ) use ( &$failed ): string {
+			if ( ! $failed && str_starts_with( $sql, 'UPDATE ' ) && str_contains( $sql, IntakeStore::OPTION ) ) {
+				$failed = true;
+				return 'DO 0';
+			}
+			return $sql;
+		};
+		add_filter( 'query', $fault );
+		try {
+			$erased = RegistrationNotices::erase( $id );
+		} finally {
+			remove_filter( 'query', $fault );
+		}
+		$this->assertTrue( $failed );
+		$this->assertFalse( $erased );
+		$this->assertSame( $before, $this->notices( $id ) );
+		wp_cache_delete( IntakeStore::OPTION, 'options' );
+		$this->assertSame( $capacity, get_option( IntakeStore::OPTION ) );
+		$this->assertNotSame( '', get_user_meta( $id, RegistrationNotices::OWNER, true ) );
+		$this->assertTrue( RegistrationNotices::erase( $id ) );
+	}
+
+	/**
+	 * Exercise the real producer in an independent native process with no transport/network.
+	 *
+	 * @param int $id This fixture's native account.
+	 * @return array<string,mixed> Actual committed received state and original job.
+	 */
+	private function notice_handoff_from_another_process( int $id ): array {
+		$command = array( PHP_BINARY, dirname( __DIR__, 2 ) . '/fixtures/registration_notice_deliver_writer.php' );
+		$process = proc_open( $command, array( array( 'pipe', 'r' ), array( 'pipe', 'w' ), array( 'pipe', 'w' ) ), $pipes );
+		$this->assertIsResource( $process );
+		fwrite( $pipes[0], (string) wp_json_encode( array( 'user' => $id ) ) );
+		fclose( $pipes[0] );
+		$result = json_decode( (string) stream_get_contents( $pipes[1] ), true );
+		$stderr = (string) stream_get_contents( $pipes[2] );
+		fclose( $pipes[1] );
+		fclose( $pipes[2] );
+		$this->assertSame( 0, proc_close( $process ), $stderr );
+		$this->assertIsArray( $result );
+		return $result;
+	}
+
+
+	/**
+	 * An audit SELECT failure is retryable and cannot erase another owner's history.
+	 *
+	 * @testWith ["owned_data"]
+	 *           ["forget_owner"]
+	 * @param string $method Native privacy source callback.
+	 */
+	public function test_privacy_audit_read_failure_preserves_other_owner_history( string $method ): void {
+		$old = get_option( 'linker_registration_dispositions' );
+		$this->later(
+			static function () use ( $old ): void {
+				delete_option( 'linker_registration_dispositions' );
+				if ( false !== $old ) {
+					update_option( 'linker_registration_dispositions', $old, false );
+				}
+			}
+		);
+		$owner = Identity::recipient( 'owned-audit@example.test' );
+		$audit = array(
+			array(
+				'owner'  => $owner,
+				'reason' => 'Synthetic owned decision',
+				'at'     => time(),
+			),
+			array(
+				'owner'  => Identity::recipient( 'other-audit@example.test' ),
+				'reason' => 'Synthetic other decision',
+				'at'     => time(),
+			),
+		);
+		update_option( 'linker_registration_dispositions', $audit, false );
+		$slot = RegistrationSlots::reserve( wp_generate_uuid4(), 1, $owner );
+		$this->assertIsArray( $slot );
+		$before = get_option( RegistrationSlots::OPTION );
+		foreach ( array( 'linker_registration_dispositions', 'alloptions', 'notoptions' ) as $key ) {
+			wp_cache_delete( $key, 'options' );
+		}
+		$failed = false;
+		$fault  = static function ( string $sql ) use ( &$failed ): string {
+			if ( ! $failed && str_starts_with( $sql, 'SELECT ' ) && str_contains( $sql, 'linker_registration_dispositions' ) ) {
+				$failed = true;
+				return 'SELECT id FROM linker_synthetic_missing_audit_table';
+			}
+			return $sql;
+		};
+		global $wpdb;
+		$previous = $wpdb->suppress_errors( true );
+		add_filter( 'query', $fault );
+		try {
+			$result = RegistrationSlots::$method( $owner );
+		} finally {
+			remove_filter( 'query', $fault );
+			$wpdb->suppress_errors( $previous );
+		}
+		$this->assertTrue( $failed );
+		$after_failed = get_option( 'linker_registration_dispositions' );
+		$this->assertSame( $audit[1], is_array( $after_failed ) ? ( $after_failed[1] ?? null ) : null, 'The unrelated native audit must remain readable after this failure.' );
+		if ( 'owned_data' === $method ) {
+			$this->assertInstanceOf( WP_Error::class, $result );
+		} else {
+			$this->assertFalse( $result );
+		}
+		$this->assertSame( $audit, get_option( 'linker_registration_dispositions' ), 'A failed read must not leave negative cache or lose any audit row.' );
+		$this->assertSame( $before, get_option( RegistrationSlots::OPTION ) );
+		$healthy = RegistrationSlots::owned_data( $owner );
+		$this->assertIsArray( $healthy );
+		$this->assertSame( array( $audit[0] ), $healthy['dispositions'] );
+		$this->assertTrue( RegistrationSlots::forget_owner( $owner ) );
+		$after = get_option( 'linker_registration_dispositions' );
+		$this->assertSame( $audit[1], $after[1] );
+		$this->assertArrayNotHasKey( 'owner', $after[0] );
+		$this->assertArrayNotHasKey( 'reason', $after[0] );
+	}
+
+	/** An audit write and owner marker remain atomic without rolling back the caller. */
+	public function test_privacy_audit_owner_ack_failure_rolls_back_only_its_savepoint(): void {
+		$old = get_option( 'linker_registration_dispositions' );
+		$this->later(
+			static function () use ( $old ): void {
+				delete_option( 'linker_registration_dispositions' );
+				if ( false !== $old ) {
+					update_option( 'linker_registration_dispositions', $old, false );
+				}
+			}
+		);
+		$owner = Identity::recipient( 'owned-audit@example.test' );
+		$audit = array(
+			array(
+				'owner'  => $owner,
+				'reason' => 'Synthetic owned decision',
+			),
+			array(
+				'owner'  => Identity::recipient( 'other-audit@example.test' ),
+				'reason' => 'Other decision',
+			),
+		);
+		update_option( 'linker_registration_dispositions', $audit, false );
+		$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), 1, $owner ) );
+		$before = get_option( RegistrationSlots::OPTION );
+		global $wpdb;
+		$observer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$key      = 'synthetic569_audit_outer_' . self::tag();
+		$wpdb->query( 'START TRANSACTION' );
+		$wpdb->insert(
+			$wpdb->options,
+			array(
+				'option_name'  => $key,
+				'option_value' => 'caller-owned',
+				'autoload'     => 'off',
+			)
+		);
+		$failed = false;
+		$fault  = static function ( string $sql ) use ( &$failed ): string {
+			if ( ! $failed && str_starts_with( $sql, 'UPDATE ' ) && str_contains( $sql, RegistrationSlots::OPTION ) ) {
+				$failed = true;
+				return 'DO 0';
+			}
+			return $sql;
+		};
+		add_filter( 'query', $fault );
+		try {
+			$this->assertFalse( RegistrationSlots::forget_owner( $owner ) );
+			$this->assertTrue( $failed );
+			wp_cache_delete( 'linker_registration_dispositions', 'options' );
+			$this->assertSame( $audit, get_option( 'linker_registration_dispositions' ) );
+			$this->assertSame( $before, get_option( RegistrationSlots::OPTION ) );
+			$this->assertTrue( Capacity::transaction_active() );
+			$query = $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $key );
+			$this->assertSame( 'caller-owned', $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name = %s", $key ) ) );
+			$this->assertNull( $observer->get_var( $query ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Exact query already prepared above, same native schema on the independent reader.
+		} finally {
+			remove_filter( 'query', $fault );
+			$wpdb->query( 'ROLLBACK' );
+			$observer->close();
+		}
+	}
+
 	/**
 	 * Independent actual public workers compete while the first reservation is uncommitted.
 	 *

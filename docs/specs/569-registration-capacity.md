@@ -62,7 +62,7 @@ WordPress 的数据库客户端可能在2006断线后重连并重放原 UPDATE�
 
 原生 Users 子页只呈现聚合数、真实 notice 状态、有限中断占位和最近128条员工 decision。中断占位只有 operation HMAC、原始 recipient HMAC、时间及 bytes，不复制业务正文；当前创建连接仍持锁时不能处置，GET_LOCK 同连接可重入也不构成许可。员工必须具备 edit_users、提交 nonce 和非空理由；原生关联不存在、审计与 slot CAS 同事务且读回后才称已处理，动作不建户。
 
-所有原始 Message/source 均在 WordPress 的 verified-email exporter/eraser 中覆盖，原始 recipient HMAC 与当前地址分别核读，改邮箱不使旧通知逃出隐私范围。erase 在至多两个原 job 的 native connection locks 下二次核归属，AS/job/capacity/source 一起提交；任一 ACK 写失败或 job 被另一个消费者占用则保留真实原状态，未知不能称已擦除。原生 user deletion 复用此门；已擦除 source 只留最小 erased/必要未知 reservation 关联，不能复活 payload 或伪造时间退款。
+所有原始 Message/source 均在 WordPress 的 verified-email exporter/eraser 中覆盖，原始 recipient HMAC 与当前地址分别核读，改邮箱不使旧通知逃出隐私范围。erase 在至多两个原 job 的 native connection locks 下二次核归属，AS/job/capacity/source 一起提交；任一 ACK 写失败或 job 被另一个消费者占用则保留真实原状态，未知不能称已擦除。原生 user deletion 复用此门；只有本次原 job 删除与未开始预留取消均确认后才写 erased；取消失败或未知保留原 source/owner 并返回未完成，不能复活 payload、漏掉新 job 或伪造时间退款。
 
 ## 原生机制与自定义范围
 
@@ -78,3 +78,5 @@ Woo/WordPress 原生 validation、users/meta、账户 writer、审批审计、pr
 创建提交前必须核实最后Admission completion的返回值，非抛异常WP_Error也不能被void适配器吞掉。REST业务字节门以实际matched Users controller写回调和原生parsed target为准，覆盖原生大小写匹配及body/JSON参数优先级，仍保留原鉴权和schema校验。
 
 通知policy/provider阶段可以先读状态；真正写skip、accepted、取消预留或erase时必须在原owner锁和原NativeTransaction内重读完全一致的source。已擦除、已变化或无法确认的source不能被旧快照覆盖。verified-email原owner查询失败不是空集：export原生错误、erase retained/done=false，拒绝失败空结果缓存，也不借当前邮箱fallback伪称完成。健康重试仍使用原有owner关联，不复制新的隐私队列。
+
+后续完整复审确认：erase的第一次source读取也必须在原连接范围内。整个owner GET_LOCK、首读、既有job锁、原事务中的fresh比较/删除/取消/ACK、解锁现在共用同一ConnectionFence；首读2006不能重连后借新连接继续。原始staff audit也使用带owner核验的cache-free native读取，真实读取失败不是空列表。owner audit与interrupted owner关联的擦除使用同一NativeTransaction/savepoint，任一最后ACK失败都回滚本轮，其他owner记录与调用者无关事务不变。原生staff追加审计复用相同权威读回；不改共享API或建立新的通用数据层。
