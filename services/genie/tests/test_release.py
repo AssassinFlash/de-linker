@@ -57,3 +57,28 @@ def test_status_lists_the_root(tmp_path: Path) -> None:
     status = _run(root, "status")
     assert f"root={root}" in status.stdout
     assert "current=" in status.stdout
+
+
+def test_retention_and_rollback_ignore_persistent_directories(tmp_path: Path) -> None:
+    root = tmp_path / "releases"
+    for name in ("index", "ops", "state", "unrelated"):
+        folder = root / name
+        folder.mkdir(parents=True)
+        (folder / "keep").write_text(name)
+    source = tmp_path / "source"
+    source.mkdir()
+    published = []
+    for value in range(4):
+        (source / "version").write_text(str(value))
+        _run(root, "publish", str(source))
+        published.append((root / "current").resolve())
+
+    assert not published[0].exists()
+    assert all(folder.is_dir() for folder in published[1:])
+    for name in ("index", "ops", "state", "unrelated"):
+        assert (root / name / "keep").read_text() == name
+    releases = _run(root, "status").stdout.split("releases=", 1)[1].strip()
+    assert releases.split(",") == [folder.name for folder in published[1:]]
+    _run(root, "rollback")
+    assert (root / "current").resolve() == published[-2]
+    assert (root / "current" / "version").read_text() == "2"

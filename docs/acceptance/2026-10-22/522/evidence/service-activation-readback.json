@@ -1,0 +1,77 @@
+{
+  "genie_health": {
+    "status": 200,
+    "body": {
+      "status": "ok"
+    }
+  },
+  "engine_health": {
+    "status": 200,
+    "body": {
+      "status": "ok"
+    }
+  },
+  "engine_unauthenticated_write": {
+    "status": 401,
+    "body": {
+      "detail": "unauthorized"
+    }
+  },
+  "genie_unauthenticated_write": {
+    "status": 401,
+    "body": {
+      "detail": "unauthorized"
+    }
+  },
+  "provider_unauthenticated_write": {
+    "status": 401,
+    "body": {
+      "detail": "unauthorized"
+    }
+  },
+  "engine_authenticated_version": {
+    "status": 200,
+    "body": {
+      "version": "0ceb196c2c75986cfbfd689e5e68dc80bb1ea4a96f5355ba03d6f4ba9ebb0323"
+    }
+  },
+  "engine_authenticated_missing_subject": {
+    "status": 400,
+    "body": {
+      "detail": "resource subject is required"
+    }
+  },
+  "token_matches": true,
+  "journals": {
+    "provider": {
+      "parent_mode": "0o700",
+      "exists": false,
+      "file_mode": null
+    },
+    "work": {
+      "parent_mode": "0o700",
+      "exists": false,
+      "file_mode": null
+    }
+  },
+  "process_modes": {
+    "linker-engine": {
+      "LINKER_ENGINE_GATE_MODE": "enforce"
+    },
+    "linker-genie": {
+      "LINKER_PROVIDER_BUDGET_MODE": "enforce",
+      "LINKER_GENIE_WORK_MODE": "enforce"
+    },
+    "linker-genie-judge": {
+      "LINKER_PROVIDER_BUDGET_MODE": "enforce",
+      "LINKER_GENIE_WORK_MODE": "enforce"
+    }
+  },
+  "model_readiness": {
+    "openrouter_key_present": true,
+    "deepseek_key_present": true,
+    "deepseek_official_base": true,
+    "jev_model": "typesafe/jev-1.13",
+    "jev_endpoint": "https://openrouter.ai/api/v1/systemone"
+  }
+}

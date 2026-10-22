@@ -1,0 +1,158 @@
+[
+  {
+    "path": "/contact/",
+    "status": 200,
+    "protected_actions": [
+      "contact"
+    ],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/de/kontakt/",
+    "status": 200,
+    "protected_actions": [
+      "contact"
+    ],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/proforma-request/",
+    "status": 200,
+    "protected_actions": [
+      "draft_write",
+      "inquiry"
+    ],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/de/proforma-anfrage/",
+    "status": 200,
+    "protected_actions": [
+      "draft_write",
+      "inquiry"
+    ],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/my-account/register/",
+    "status": 200,
+    "protected_actions": [
+      "registration"
+    ],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/de/mein-konto/registrieren/",
+    "status": 200,
+    "protected_actions": [
+      "registration"
+    ],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/my-account/",
+    "status": 200,
+    "protected_actions": [],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/de/mein-konto/",
+    "status": 200,
+    "protected_actions": [],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/my-account/lost-password/",
+    "status": 200,
+    "protected_actions": [
+      "password_reset"
+    ],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/de/mein-konto/passwort-vergessen/",
+    "status": 404,
+    "protected_actions": [],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/genie/",
+    "status": 200,
+    "protected_actions": [],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/de/genie/",
+    "status": 200,
+    "protected_actions": [],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/solution-configurator/",
+    "status": 200,
+    "protected_actions": [],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  },
+  {
+    "path": "/de/loesungskonfigurator/",
+    "status": 200,
+    "protected_actions": [],
+    "client_bundle": true,
+    "mode": [
+      "enforce"
+    ],
+    "cloudflare_script_on_idle": false
+  }
+]

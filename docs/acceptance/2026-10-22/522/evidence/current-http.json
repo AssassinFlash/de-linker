@@ -1,0 +1,47 @@
+{
+  "taken_at": "2026-10-22T03:35:09.231719+00:00",
+  "samples": [
+    {
+      "name": "home",
+      "path": "/",
+      "status": 200,
+      "seconds": 4.545
+    },
+    {
+      "name": "contact",
+      "path": "/contact/",
+      "status": 200,
+      "seconds": 6.54
+    },
+    {
+      "name": "proforma",
+      "path": "/proforma-request/",
+      "status": 200,
+      "seconds": 6.204
+    },
+    {
+      "name": "product",
+      "path": "/product/saj-b2-10-0-hv1/",
+      "status": 200,
+      "seconds": 4.999
+    },
+    {
+      "name": "commerce-rest",
+      "path": "/wp-json/linker/v1/catalog-search?q=SAJ&limit=2&lang=en",
+      "status": 200,
+      "seconds": 3.437
+    },
+    {
+      "name": "i18n-rest",
+      "path": "/wp-json/wp/v2/pages?lang=de&per_page=1&_fields=id,link",
+      "status": 200,
+      "seconds": 2.674
+    },
+    {
+      "name": "tools-rest",
+      "path": "/wp-json/linker-ai/v1/genie/conversation",
+      "status": 200,
+      "seconds": 3.633
+    }
+  ]
+}

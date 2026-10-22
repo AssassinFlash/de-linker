@@ -1,6 +1,11 @@
 # Combined acceptance progress
 
-No production deployment or configuration write yet.
+Current status: PR527 is merged and the production release is enabled. See
+[production acceptance](production.md) and rollout issue522 for actual native
+callbacks, natural Jev observations, service gates, independent recovery,
+backups, limitations and the final retention-helper repair. The entries below
+are the chronological pre-deployment record; their pending statements describe
+that earlier stage, not current production status.
 
 Combined base: current main a33a0bce; reviewed source branches 516 (includes511),
 520 (includes519), and521 9d5b9695. Merge conflicts preserve assessment preparation,

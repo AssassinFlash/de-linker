@@ -1,0 +1,8 @@
+{
+  "path": "/de/mein-konto/passwort-zuruecksetzen/",
+  "status": 200,
+  "password_reset_markup": true,
+  "client_bundle": true,
+  "enforce_markup": true,
+  "lookup": "native wc_lostpassword_url + visible DE login link"
+}
