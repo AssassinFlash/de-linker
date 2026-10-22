@@ -20,6 +20,14 @@ from .errors import InvalidInput, VersionUnavailable
 from .schema import SCHEMA, SCHEMA_VERSION
 
 
+def _sync_directory(directory: Path) -> None:
+    descriptor = os.open(directory, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 class Blobs:
     """Content-addressed private storage; callers must check project ownership."""
 
@@ -28,7 +36,7 @@ class Blobs:
         self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
 
     def _path(self, sha256: str) -> Path:
-        if not re.fullmatch(r"[a-f0-9]{64}", sha256):
+        if not isinstance(sha256, str) or not re.fullmatch(r"[a-f0-9]{64}", sha256):
             raise InvalidInput("invalid content hash")
         return self.directory / sha256[:2] / sha256
 
@@ -39,16 +47,13 @@ class Blobs:
             destination.parent.mkdir(mode=0o700)
         except FileExistsError:
             pass
-        else:
-            # The new prefix directory itself must survive a host interruption.
-            descriptor = os.open(self.directory, os.O_RDONLY)
-            try:
-                os.fsync(descriptor)
-            finally:
-                os.close(descriptor)
+        # Reconfirm the prefix even on retries. An existing entry may have
+        # survived a previous caller's failed fsync, without being durable yet.
+        _sync_directory(self.directory)
         if destination.exists():
             if self.read(sha256) != content:
                 raise VersionUnavailable("pinned bytes conflict")
+            _sync_directory(destination.parent)
             return sha256
         temporary = destination.parent / (".incoming-" + uuid4().hex)
         try:
@@ -63,11 +68,7 @@ class Blobs:
             except FileExistsError:
                 if self.read(sha256) != content:
                     raise VersionUnavailable("pinned bytes conflict") from None
-            descriptor = os.open(destination.parent, os.O_RDONLY)
-            try:
-                os.fsync(descriptor)
-            finally:
-                os.close(descriptor)
+            _sync_directory(destination.parent)
         finally:
             temporary.unlink(missing_ok=True)
         return sha256

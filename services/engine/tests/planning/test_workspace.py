@@ -160,6 +160,30 @@ def test_verified_guest_transfer_revokes_guest_and_retains_history(
         workspace.create(guest, "Guest project", {}, key="new")
 
 
+def test_team_read_permission_never_grants_customer_write_permission(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Customer", {"load": 1}, key="new")
+    run = workspace.evaluate(owner, project.id, 1, context, key="run", max_attempts=2)
+    team = Actor("team", "operator:1")
+    assert workspace.get(team, project.id, revision=1).inputs == {"load": 1}
+    assert workspace.run(team, run.id).id == run.id
+    assert workspace.runs(team, project.id)[0].id == run.id
+    for operation in (
+        lambda: workspace.revise(team, project.id, 1, {"load": 999}, key="edit"),
+        lambda: workspace.evaluate(
+            team, project.id, 1, context, key="run", max_attempts=2
+        ),
+        lambda: workspace.cancel(team, run.id),
+    ):
+        with pytest.raises(NotFound):
+            operation()
+    assert workspace.get(owner, project.id).inputs == {"load": 1}
+    assert workspace.get(owner, project.id).revision == 1
+    assert workspace.run(owner, run.id).state == "queued"
+    assert len(workspace.runs(owner, project.id)) == 1
+
+
 def test_failed_commit_has_no_acknowledged_project(
     workspace: Workspace, owner: Actor, monkeypatch: pytest.MonkeyPatch
 ) -> None:

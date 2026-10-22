@@ -73,7 +73,7 @@ class Jobs:
                     continue
                 try:
                     request = workspace.blobs.object(row["request_sha256"])
-                except VersionUnavailable:
+                except (VersionUnavailable, InvalidInput):
                     error = workspace.blobs.put_object(
                         {"code": "version_unavailable", "retryable": False}
                     )

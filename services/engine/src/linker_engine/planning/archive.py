@@ -23,7 +23,7 @@ from .workspace import Workspace
 
 
 def _check_database(path: Path, blobs: Blobs) -> None:
-    connection = sqlite3.connect(f"{path.as_uri()}?mode=ro", uri=True)
+    connection = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
     try:
         if connection.execute("PRAGMA user_version").fetchone()[0] != SCHEMA_VERSION:
             raise VersionUnavailable("unsupported archive schema")

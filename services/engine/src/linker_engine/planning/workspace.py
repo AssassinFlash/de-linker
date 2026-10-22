@@ -126,7 +126,7 @@ class Workspace:
         content = self.blobs.put_object(inputs)
         scope = f"revise:{project_id}"
         with self.database.transaction() as connection:
-            project = project_row(connection, actor, project_id)
+            project = project_row(connection, actor, project_id, write=True)
             receipt = commands.replay(
                 connection, self.blobs, actor, scope, key, command
             )
@@ -190,7 +190,7 @@ class Workspace:
             self.blobs.read(sha256)
         scope = f"evaluate:{project_id}"
         with self.database.transaction() as connection:
-            project = project_row(connection, actor, project_id)
+            project = project_row(connection, actor, project_id, write=True)
             receipt = commands.replay(
                 connection, self.blobs, actor, scope, key, command
             )
@@ -284,7 +284,8 @@ class Workspace:
 
     def cancel(self, actor: Actor, run_id: str) -> Run:
         with self.database.transaction() as connection:
-            self._run(connection, actor, run_id)
+            run = self._run(connection, actor, run_id)
+            project_row(connection, actor, run.project_id, write=True)
             connection.execute(
                 "UPDATE jobs SET state='cancelled', updated_at=? WHERE run_id=? "
                 "AND state IN ('queued', 'running', 'retry_wait')",
@@ -304,7 +305,7 @@ class Workspace:
             receipt = commands.replay(connection, self.blobs, user, scope, key, command)
             if receipt is not None:
                 return self._project(connection, user, project_id)
-            project = project_row(connection, guest, project_id)
+            project = project_row(connection, guest, project_id, write=True)
             now = self.clock()
             connection.execute(
                 "INSERT INTO ownership_transfers "

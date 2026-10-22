@@ -10,12 +10,17 @@ from .records import Actor
 
 
 def project_row(
-    connection: sqlite3.Connection, actor: Actor, project_id: str
+    connection: sqlite3.Connection,
+    actor: Actor,
+    project_id: str,
+    *,
+    write: bool = False,
 ) -> sqlite3.Row:
     row = connection.execute(
         "SELECT * FROM projects WHERE id=?", (project_id,)
     ).fetchone()
-    if row is None or (row["owner"] != actor.key and actor.kind != "team"):
+    team_read = actor.kind == "team" and not write
+    if row is None or (row["owner"] != actor.key and not team_read):
         raise NotFound("project not found")
     return cast(sqlite3.Row, row)
 

@@ -125,14 +125,27 @@ def test_cancelled_attempt_cannot_publish_or_retry(
     assert jobs.claim("next", kinds=("evaluate",), lease_seconds=30) is None
 
 
+@pytest.mark.parametrize("damage", ["missing", "invalid_hash"])
 def test_corrupt_queue_request_fails_without_blocking_other_work(
-    workspace: Workspace, owner: Actor, run: Run, context: Context, clock: Clock
+    workspace: Workspace,
+    owner: Actor,
+    run: Run,
+    context: Context,
+    clock: Clock,
+    damage: str,
 ) -> None:
     with workspace.database.read() as connection:
         sha = connection.execute(
             "SELECT request_sha256 FROM jobs WHERE run_id=?", (run.id,)
         ).fetchone()[0]
-    (workspace.blobs.directory / sha[:2] / sha).unlink()
+    if damage == "missing":
+        (workspace.blobs.directory / sha[:2] / sha).unlink()
+    else:
+        with workspace.database.transaction() as connection:
+            connection.execute(
+                "UPDATE jobs SET request_sha256='invalid-hash' WHERE run_id=?",
+                (run.id,),
+            )
     clock.advance(1)
     # Equal manifests share request bytes; a new revision has independent bytes.
     workspace.revise(owner, run.project_id, 1, {"load": 2}, key="edit")
