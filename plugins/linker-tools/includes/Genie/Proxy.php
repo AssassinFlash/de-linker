@@ -311,8 +311,9 @@ class Proxy {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function email_conversation( WP_REST_Request $request ) {
+		$url     = $request->get_url_params();
 		$outcome = $this->mail->send(
-			(int) $request->get_param( 'id' ),
+			(int) ( $url['id'] ?? 0 ),
 			(string) $request->get_param( 'email' ),
 			$this->locale( $request->get_param( 'locale' ) ),
 			array(

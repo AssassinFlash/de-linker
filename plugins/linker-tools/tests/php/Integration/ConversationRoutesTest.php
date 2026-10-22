@@ -89,7 +89,7 @@ final class ConversationRoutesTest extends TestCase {
 		);
 		global $wp_filter;
 		foreach ( array( 'linker_tools_set_conversation_cookie', 'linker_tools_set_genie_browser_cookie' ) as $hook ) {
-			$this->held[ $hook ] = $wp_filter[ $hook ] ?? null;
+			$this->held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
 			remove_all_actions( $hook );
 		}
 		add_filter( 'wp_mail', array( $this, 'record' ), PHP_INT_MAX );
@@ -339,9 +339,11 @@ final class ConversationRoutesTest extends TestCase {
 		$this->created['users'][] = $user;
 		wp_set_current_user( $user );
 		$id       = $this->answered( 'Please keep the complete answer for our engineer.' );
+		$other    = $this->answered( 'Another conversation must not replace the URL source.' );
 		$captured = array();
 		global $wp_filter;
-		$held = $wp_filter[ ConversationMail::SEND_FILTER ] ?? null;
+		$held               = self::producer_hook();
+		$expected_callbacks = $held->callbacks ?? array();
 		remove_all_filters( ConversationMail::SEND_FILTER );
 		add_filter(
 			ConversationMail::SEND_FILTER,
@@ -354,19 +356,25 @@ final class ConversationRoutesTest extends TestCase {
 			2
 		);
 		try {
-			$response = $this->call(
-				'POST',
-				$id,
-				'/email',
-				array(
+			foreach ( array( 'json', 'query' ) as $placement ) {
+				$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations/' . $id . '/email' );
+				$body    = array(
 					'email'           => 'someone-else@example.test',
 					'conversation_id' => $id + 1000,
-				)
-			);
-			$this->assertSame( 202, $response->get_status() );
-			$this->assertSame( array( 'status' => 'pending', 'to' => 'tester@example.test' ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete native response.
-			$this->assertSame( $id, $captured['conversation_id'] );
-			$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
+					'id'              => $other,
+				);
+				if ( 'json' === $placement ) {
+					$request->set_header( 'Content-Type', 'application/json' );
+					$request->set_body( (string) wp_json_encode( $body ) );
+				} else {
+					$request->set_query_params( $body );
+				}
+				$response = rest_ensure_response( rest_do_request( $request ) );
+				$this->assertSame( 202, $response->get_status() );
+				$this->assertSame( array( 'status' => 'pending', 'to' => 'tester@example.test' ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete native response.
+				$this->assertSame( $id, $captured['conversation_id'] );
+				$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
+			}
 			$this->assertSame( array(), $this->mail, 'The provider saved the request; this route must not send an extra email.' );
 		} finally {
 			if ( null === $held ) {
@@ -375,6 +383,7 @@ final class ConversationRoutesTest extends TestCase {
 				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the isolated fixture.
 			}
 		}
+		$this->assertSame( $expected_callbacks, $wp_filter[ ConversationMail::SEND_FILTER ]->callbacks ?? array(), 'The native producer survives this pending fixture.' );
 	}
 
 	/** A confirmed guest link may save a pending copy from a different browser, once. */
@@ -386,7 +395,8 @@ final class ConversationRoutesTest extends TestCase {
 		$_COOKIE  = array();
 		$captured = array();
 		global $wp_filter;
-		$held = $wp_filter[ ConversationMail::SEND_FILTER ] ?? null;
+		$held               = self::producer_hook();
+		$expected_callbacks = $held->callbacks ?? array();
 		remove_all_filters( ConversationMail::SEND_FILTER );
 		add_filter(
 			ConversationMail::SEND_FILTER,
@@ -414,6 +424,53 @@ final class ConversationRoutesTest extends TestCase {
 				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the isolated fixture.
 			}
 		}
+		$this->assertSame( $expected_callbacks, $wp_filter[ ConversationMail::SEND_FILTER ]->callbacks ?? array(), 'The native producer survives this confirmation fixture.' );
+	}
+
+	/** Two confirmations that read the same capability may produce only one saved copy. */
+	public function test_a_confirmation_capability_has_only_one_atomic_winner(): void {
+		$id = $this->answered( 'Please keep this conversation.' );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
+		$secret  = (string) ( $token[1] ?? '' );
+		$mail    = new ConversationMail( new Conversations(), new Thread() );
+		$calls   = 0;
+		$entered = false;
+		$nested  = array();
+		global $wp_filter;
+		$held               = self::producer_hook();
+		$expected_callbacks = $held->callbacks ?? array();
+		remove_all_filters( ConversationMail::SEND_FILTER );
+		$producer   = static function () use ( &$calls ): array {
+			++$calls;
+			return array( 'status' => 'pending' );
+		};
+		$interleave = static function ( mixed $prior, int $object_id, string $key ) use ( $id, $mail, $secret, &$entered, &$nested ): mixed {
+			if ( $id === $object_id && ConversationMail::PENDING === $key && ! $entered ) {
+				$entered = true;
+				$nested  = $mail->confirm( $secret );
+			}
+			return $prior;
+		};
+		add_filter( ConversationMail::SEND_FILTER, $producer );
+		add_filter( 'delete_post_metadata', $interleave, 10, 3 );
+		try {
+			$outer = $mail->confirm( $secret );
+			$this->assertTrue( $entered, 'The second confirmation ran after the first read and before its delete.' );
+			$this->assertSame( 'pending', $nested['status'] ?? '' );
+			$this->assertSame( 'expired', $outer['status'] );
+			$this->assertSame( 1, $calls );
+			$this->assertSame( '', get_post_meta( $id, ConversationMail::PENDING, true ) );
+			$this->assertCount( 1, $this->mail, 'Only the earlier fixed address confirmation reached the local mail capture.' );
+		} finally {
+			remove_filter( 'delete_post_metadata', $interleave, 10 );
+			if ( null === $held ) {
+				unset( $wp_filter[ ConversationMail::SEND_FILTER ] );
+			} else {
+				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the interleaved fixture.
+			}
+		}
+		$this->assertSame( $expected_callbacks, $wp_filter[ ConversationMail::SEND_FILTER ]->callbacks ?? array() );
 	}
 
 	/** Background sends can verify an unchanged source, but never a changed, expired or removed one. */
@@ -567,6 +624,13 @@ ANSWER;
 			'started'       => $stamp['started'],
 			'started_nonce' => $stamp['nonce'],
 		);
+	}
+
+	/** Keep a distinct native hook object before a fixture removes its callbacks. */
+	private static function producer_hook(): ?\WP_Hook {
+		global $wp_filter;
+		$hook = $wp_filter[ ConversationMail::SEND_FILTER ] ?? null;
+		return $hook instanceof \WP_Hook ? clone $hook : null;
 	}
 
 	/**

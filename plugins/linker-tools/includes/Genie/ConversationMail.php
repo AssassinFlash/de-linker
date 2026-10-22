@@ -246,14 +246,17 @@ class ConversationMail {
 		}
 		$locale = 'de' === ( $pending['locale'] ?? '' ) ? 'de' : 'en';
 		if ( (int) ( $pending['expires'] ?? 0 ) < time() ) {
-			delete_post_meta( $id, self::PENDING );
+			delete_post_meta( $id, self::PENDING, $pending );
 			return self::result( self::EXPIRED, $locale );
 		}
 		// Over today's cap the link stays good until it expires.
 		if ( ! $this->guard->take_site() ) {
 			return self::result( self::CAPPED, $locale );
 		}
-		delete_post_meta( $id, self::PENDING );
+		if ( ! delete_post_meta( $id, self::PENDING, $pending ) ) {
+			// Only the atomic winner can create a content-mail request.
+			return self::result( self::EXPIRED, $locale );
+		}
 		return self::result( $this->deliver( $id, (string) ( $pending['to'] ?? '' ), $locale )['status'], $locale );
 	}
 
