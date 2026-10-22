@@ -1,4 +1,4 @@
-# Complete phone product actions
+# Complete phone product actions and readable details
 
 The owner requested a full EN/DE review of small misleading, crowded and missing
 interactive surfaces. On the snapshot-backed product template, the phone dock's
@@ -23,8 +23,19 @@ to unchanged product-page parity.
 Keep the fixed dock within the device's CSS viewport: its maximum width is
 100vw less the existing two 12px insets. A native DE320 sample has a 351px
 layout viewport despite a 320px visual viewport, which otherwise puts the
-fixed dock's right edge at339px. The initial cause of that expansion remains
-unproven; this bounds the dock without hiding page overflow or its content.
+fixed dock's right edge at339px. A subsequent actual DOM check locates the
+overflow at the body heading's unbroken `(WLAN/Ethernet/Bluetooth)` text: the
+280px title container has 331px scroll content, and its section propagates
+351px page width. Allow phone section titles to wrap without suppressing page
+overflow. The next actual browser run must independently confirm that the
+page and fixed dock both return to the intended viewport.
+
+The same inspection finds German technical labels overflowing their 46%
+column into the value column, and a long conformity-document name exceeding
+its text container. In the existing phone breakpoint, put each technical
+label above its value, separated by the existing 4px spacing step, and allow
+long labels, values and document names to wrap inside their containers. Keep
+every specification, document destination and desktop row intact.
 
 Remove the blanket phone price clamp as well: a logged-in pending/restricted
 account's status must remain readable. Approved prices retain the existing

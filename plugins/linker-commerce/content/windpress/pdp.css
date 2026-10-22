@@ -1641,6 +1641,10 @@
 		padding-block: 40px;
 	}
 
+	#tv-storefront-pdp .pdp-section-title {
+		overflow-wrap: anywhere;
+	}
+
 	#tv-storefront-pdp .pdp-benefits {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 12px;
@@ -1705,10 +1709,12 @@
 	}
 
 	#tv-storefront-pdp .pdp-stat-row {
-		gap: 12px;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
 		padding: 12px 16px;
 	}
 
+	#tv-storefront-pdp .pdp-stat-row dt,
 	#tv-storefront-pdp .pdp-stat-row dd {
 		overflow-wrap: anywhere;
 	}
@@ -1741,6 +1747,11 @@
 
 	#tv-storefront-pdp .pdp-doc {
 		padding: 16px;
+	}
+
+	#tv-storefront-pdp .pdp-doc .grow {
+		min-width: 0;
+		overflow-wrap: anywhere;
 	}
 
 	#tv-storefront-pdp .pdp-pairings {
