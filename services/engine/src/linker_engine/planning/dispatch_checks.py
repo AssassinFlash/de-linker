@@ -13,26 +13,7 @@ from .battery_model import BatteryModel, nonnegative
 from .canonical import Json, Object
 from .dispatch_frame import Flows
 from .errors import InvalidInput, NumericalFailure
-
-
-@dataclass(frozen=True)
-class Tolerance:
-    absolute_kwh: float
-    absolute_kw: float
-    relative: float
-
-    def __post_init__(self) -> None:
-        nonnegative(self.absolute_kwh, "energy tolerance")
-        nonnegative(self.absolute_kw, "power tolerance")
-        nonnegative(self.relative, "relative tolerance")
-
-    def document(self) -> Object:
-        return {
-            "absolute_kwh": self.absolute_kwh,
-            "absolute_kw": self.absolute_kw,
-            "relative": self.relative,
-            "role": "floating_point_arithmetic_not_engineering_margin",
-        }
+from .numerical_tolerance import Tolerance
 
 
 @dataclass(frozen=True)
@@ -93,6 +74,10 @@ def verify(
             raise NumericalFailure("replay verification received nonfinite arithmetic")
         absolute = tolerance.absolute_kwh if unit == "kWh" else tolerance.absolute_kw
         allowance = absolute + tolerance.relative * abs(scale)
+        if not math.isfinite(allowance):
+            raise NumericalFailure(
+                "verification tolerance exceeds finite numerical domain"
+            )
         value = max(violation, 0.0)
         current = Check(
             code,
@@ -370,6 +355,23 @@ def verify(
             energy_scale,
         )
         aux_demand = model.internal_aux_kw * dt
+        expected_aux = min(
+            aux_demand, max(flow.before.total - flow.standing_loss.total, 0.0)
+        )
+        record(
+            "internal_aux_model",
+            abs(expected_aux - flow.internal_aux.total),
+            "kWh",
+            index,
+            energy_scale,
+        )
+        record(
+            "internal_aux_shortage_nonnegative",
+            -flow.internal_aux_unserved_kwh,
+            "kWh",
+            index,
+            aux_demand,
+        )
         record(
             "internal_aux_account",
             abs(aux_demand - flow.internal_aux.total - flow.internal_aux_unserved_kwh),
@@ -425,6 +427,38 @@ def verify(
             "kW",
             index,
             power_scale,
+        )
+        record(
+            "charge_command_account",
+            abs(flow.command.charge_kw - flow.charge_kw - flow.charge_command_unmet_kw),
+            "kW",
+            index,
+            flow.command.charge_kw,
+        )
+        record(
+            "discharge_command_account",
+            abs(
+                flow.command.discharge_kw
+                - flow.discharge_kw
+                - flow.discharge_command_unmet_kw
+            ),
+            "kW",
+            index,
+            flow.command.discharge_kw,
+        )
+        record(
+            "charge_not_above_command",
+            flow.charge_kw - flow.command.charge_kw,
+            "kW",
+            index,
+            flow.command.charge_kw,
+        )
+        record(
+            "discharge_not_above_command",
+            flow.discharge_kw - flow.command.discharge_kw,
+            "kW",
+            index,
+            flow.command.discharge_kw,
         )
         record(
             "charge_command_met",

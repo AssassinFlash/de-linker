@@ -29,7 +29,7 @@ def scenario_frames(
             "profiles and mode schedule must share the exact interval axis"
         )
     return tuple(
-        Frame(interval, power, solar, auxiliary, conditions)
+        Frame(interval, power, solar, auxiliary, conditions, load.measurement)
         for interval, power, solar, auxiliary, conditions in zip(
             load.intervals,
             load.values_kw,

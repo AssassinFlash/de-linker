@@ -44,8 +44,16 @@ def metrics(flows: tuple[Flows, ...], model: BatteryModel) -> Object:
     )
     solar_load = pv_direct_load + pv_battery_load
     onsite_pv_input = pv_direct_load + pv_aux + pv_charge
+    scopes = {flow.frame.load_measurement for flow in flows}
+    whole_site = scopes == {"gross_load"}
+    gross_reason = (
+        None if whole_site else "requested_load_scope_is_not_whole_site_gross"
+    )
     return {
-        "gross_load_kwh": load,
+        "load_demand_kwh": load,
+        "load_measurement_scope": next(iter(scopes)) if len(scopes) == 1 else "mixed",
+        "gross_load_kwh": load if whole_site else None,
+        "gross_load_undefined_reason": gross_reason,
         "unserved_load_kwh": math.fsum(
             flow.unserved_load_kw * flow.frame.interval.hours for flow in flows
         ),
@@ -95,7 +103,14 @@ def metrics(flows: tuple[Flows, ...], model: BatteryModel) -> Object:
         "maximum_interval_average_import_kw": max(flow.import_kw for flow in flows),
         "stored_initial": flows[0].before.document(),
         "stored_final": flows[-1].after.document(),
-        "solar_autarky": _ratio(solar_load, load, "gross_load_is_zero"),
+        "solar_autarky": (
+            _ratio(solar_load, load, "gross_load_is_zero")
+            if whole_site
+            else {"value": None, "undefined_reason": gross_reason}
+        ),
+        "solar_load_share_of_requested_demand": _ratio(
+            solar_load, load, "requested_load_is_zero"
+        ),
         "pv_input_self_use": _ratio(
             onsite_pv_input, generated_pv, "pv_generation_is_zero"
         ),
@@ -104,6 +119,7 @@ def metrics(flows: tuple[Flows, ...], model: BatteryModel) -> Object:
         ),
         "definitions": {
             "solar_autarky": "(PV_direct_to_customer_load + PV_origin_battery_to_customer_load) / gross_customer_load_demand",
+            "solar_load_share_of_requested_demand": "(PV_direct_to_requested_load + PV_origin_battery_to_requested_load) / requested_load_demand_in_explicit_scope",
             "pv_input_self_use": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_generated_after_curtailment",
             "pv_onsite_available_share": "(PV_direct_load + PV_direct_system_aux + PV_charge_input) / PV_available_before_curtailment",
             "inventory_origin": "proportional_mixing; initial_unknown_and_grid_are_not_solar",

@@ -10,7 +10,9 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
 1. Interval-average gross/critical load, available AC PV and separate system
    auxiliary demand have the exact same real-time axis and mode schedule.
    Net import cannot substitute for gross load. Measured PV after curtailment
-   cannot silently substitute for available generation potential.
+   cannot silently substitute for available generation potential. Each frame
+   retains gross/critical measurement scope; that identity cannot disappear
+   when profiles become numeric frames.
 2. The named `constant_window_single_ac_bus_v1` model consumes an explicit usable
    internal kWh window, AC charge/discharge kW, separate directional efficiencies,
    internal auxiliary kW, standing-loss rate per hour, and a pinned parameter
@@ -66,6 +68,9 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
     inventory input, not just solar energy eventually delivered to load.
     Available-PV onsite share uses available generation before curtailment as
     its separate denominator. No battery export is in this metric domain.
+    Critical-only or mixed gross/critical periods expose their requested-demand
+    solar share, but return whole-site gross load/autarky as undefined with a
+    scope reason. Critical-circuit performance is not whole-site self-sufficiency.
 13. Metrics expose import/export/curtailment, initial/final source inventories,
     conversion/standing/auxiliary losses and shortages. Zero denominators return
     a named undefined reason, not NaN or invented 0/100%. Maximum interval mean
@@ -76,11 +81,18 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
     load/aux supply, usable window, power, charge/discharge exclusivity, reserve,
     mode limits, command delivery, continuity and terminal requirements. It
     retains residuals/violations, thresholds and witness interval indices.
+    Command checks independently verify `actual+unmet=requested` and actual
+    not above requested. Internal shortage must be nonnegative, and actual
+    internal auxiliary supply equals the smaller of its demand and inventory
+    after standing loss; a reported shortage cannot cancel fictitious use.
 15. Numerical tolerances are explicit, serialized software parameters. They do
     not represent field precision or engineering safety margins. Task execution,
     replay constraint satisfaction, equipment evidence and model applicability
     remain separate judgements. A failing policy replay is no proof that every
-    possible policy/configuration is infeasible.
+    possible policy/configuration is infeasible. Initial inventory is strictly
+    bounded by the physical window. Intermediate states may carry float64
+    residuals within the same explicit tolerance used by the verifier; their
+    inventory/sources are not clamped away, and capacity residuals remain visible.
 
 ## Independent acceptance cases
 

@@ -16,12 +16,13 @@ from linker_engine.planning.dispatch import (
     replay,
     self_consumption_with_reserve,
 )
-from linker_engine.planning.dispatch_checks import Tolerance, Verification, verify
+from linker_engine.planning.dispatch_checks import Verification, verify
 from linker_engine.planning.dispatch_frame import Command, Flows, Frame
 from linker_engine.planning.energy_metrics import metrics
 from linker_engine.planning.energy_origins import EnergyOrigins
 from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.interval import Interval
+from linker_engine.planning.numerical_tolerance import Tolerance
 from linker_engine.planning.operating_limits import OperatingLimits
 from linker_engine.planning.worker import Control
 
@@ -81,7 +82,14 @@ def frame(
         pv_enabled,
         grid_charge,
     )
-    return Frame(Interval(start, start + timedelta(hours=1)), load, pv, aux, limits)
+    return Frame(
+        Interval(start, start + timedelta(hours=1)),
+        load,
+        pv,
+        aux,
+        limits,
+        "critical_load" if outage else "gross_load",
+    )
 
 
 def run(
@@ -90,7 +98,14 @@ def run(
     initial: EnergyOrigins,
     policy: Policy = self_consumption_with_reserve,
 ) -> tuple[Flows, ...]:
-    return replay(frames, model, initial, policy, checkpoint=Control().checkpoint)
+    return replay(
+        frames,
+        model,
+        initial,
+        policy,
+        checkpoint=Control().checkpoint,
+        tolerance=TOLERANCE,
+    )
 
 
 def checks(
@@ -155,7 +170,9 @@ def test_initial_unknown_inventory_is_not_a_repeatable_solar_source() -> None:
     assert flows[-1].after.total == pytest.approx(0)
     result = metrics(flows, model)
     assert result["initial_unknown_battery_to_load_kwh"] == 5
-    assert ratio(result, "solar_autarky") == 0
+    assert ratio(result, "solar_load_share_of_requested_demand") == 0
+    assert result["load_measurement_scope"] == "critical_load"
+    assert result["gross_load_kwh"] is None
 
 
 def test_power_limit_can_fail_a_large_capacity_outage() -> None:
@@ -273,7 +290,9 @@ def test_internal_and_ac_aux_losses_and_source_mixing_close() -> None:
     assert flow.after.grid_kwh == pytest.approx(0.8)
     assert flow.after.initial_unknown_kwh == pytest.approx(0.4)
     assert flow.discharged_to_load_ac.pv_kwh == pytest.approx(0.4)
-    assert ratio(metrics(flows, model), "solar_autarky") == pytest.approx(0.4)
+    assert ratio(
+        metrics(flows, model), "solar_load_share_of_requested_demand"
+    ) == pytest.approx(0.4)
 
 
 def test_insufficient_internal_aux_is_recorded_instead_of_free_energy() -> None:
@@ -348,6 +367,7 @@ def test_many_irregular_intervals_preserve_ledger_and_limits() -> None:
                 generator.random() * 30,
                 generator.random(),
                 conditions,
+                "gross_load",
             )
         )
         start = end
@@ -376,6 +396,7 @@ def test_complete_synthetic_year_matches_independent_daily_energy_totals() -> No
             10 if index % 24 == 12 else 0,
             0,
             conditions,
+            "gross_load",
         )
         for index in range(8760)
     )
@@ -391,3 +412,76 @@ def test_complete_synthetic_year_matches_independent_daily_energy_totals() -> No
     assert result["grid_import_kwh"] == pytest.approx(6752.5)
     assert ratio(result, "solar_autarky") == pytest.approx(0.22916666666666666)
     assert flows[-1].after.total == pytest.approx(0)
+
+
+def test_actual_delivery_cannot_be_verified_against_a_different_command() -> None:
+    model = battery(5, 5)
+    flows = run((frame(0, load=1),), model, EnergyOrigins(0, 0, 5))
+    assert checks(flows, model).passed
+    tampered = (replace(flows[0], command=Command(0, 0)),)
+    verification = checks(tampered, model)
+    assert not verification.passed
+    failures = {item.code for item in verification.checks if not item.passed}
+    assert {"discharge_command_account", "discharge_not_above_command"} <= failures
+
+
+def test_negative_internal_shortage_cannot_hide_extra_consumption() -> None:
+    model = battery(5, 5)
+    flows = run((frame(0, load=1),), model, EnergyOrigins(0, 0, 5))
+    forged = replace(
+        flows[0],
+        internal_aux=EnergyOrigins(0, 0, 1),
+        internal_aux_unserved_kwh=-1,
+        after=EnergyOrigins(0, 0, 3),
+    )
+    verification = checks((forged,), model)
+    assert not verification.passed
+    failures = {item.code for item in verification.checks if not item.passed}
+    assert {"internal_aux_model", "internal_aux_shortage_nonnegative"} <= failures
+
+
+def test_roundoff_at_full_charge_does_not_interrupt_continuous_state() -> None:
+    model = battery(1, 2, eta=0.95)
+    start = datetime(2024, 1, 1, tzinfo=UTC)
+    conditions = OperatingLimits("connected", 0, None, 0, True, False)
+    frames = tuple(
+        Frame(
+            Interval(
+                start + timedelta(minutes=45 * index),
+                start + timedelta(minutes=45 * (index + 1)),
+            ),
+            0,
+            2,
+            0,
+            conditions,
+            "gross_load",
+        )
+        for index in range(2)
+    )
+    flows = run(frames, model, EnergyOrigins(0, 0, 0.1))
+    assert flows[0].after.total == 1.0000000000000002
+    assert flows[1].before == flows[0].after
+    assert flows[1].after == flows[0].after
+    verified = checks(flows, model)
+    assert verified.passed
+    capacity = next(item for item in verified.checks if item.code == "usable_capacity")
+    assert 0 < capacity.worst_violation < capacity.allowance
+    # A caller-supplied over-capacity initial value is still invalid input.
+    with pytest.raises(InvalidInput, match="initial inventory"):
+        run(frames, model, EnergyOrigins(0, 0, 1.0000000000000002))
+
+
+def test_critical_or_mixed_demand_is_not_reported_as_whole_site_autarky() -> None:
+    model = battery(5, 5)
+    frames = (frame(0, load=1, pv=1), frame(1, load=1, pv=1, outage=True))
+    flows = run(frames, model, EnergyOrigins(0, 0, 0))
+    assert checks(flows, model).passed
+    result = metrics(flows, model)
+    assert result["load_demand_kwh"] == 2
+    assert result["gross_load_kwh"] is None
+    assert result["load_measurement_scope"] == "mixed"
+    assert result["solar_autarky"] == {
+        "value": None,
+        "undefined_reason": "requested_load_scope_is_not_whole_site_gross",
+    }
+    assert ratio(result, "solar_load_share_of_requested_demand") == 1

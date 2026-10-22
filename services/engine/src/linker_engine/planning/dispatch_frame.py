@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
 
 from .battery_model import nonnegative
 from .energy_origins import EnergyOrigins
@@ -18,8 +19,11 @@ class Frame:
     pv_potential_kw: float
     aux_ac_kw: float
     limits: OperatingLimits
+    load_measurement: Literal["gross_load", "critical_load"]
 
     def __post_init__(self) -> None:
+        if self.load_measurement not in ("gross_load", "critical_load"):
+            raise InvalidInput("explicit gross/critical load boundary required")
         for name in ("load_kw", "pv_potential_kw", "aux_ac_kw"):
             nonnegative(getattr(self, name), name)
 

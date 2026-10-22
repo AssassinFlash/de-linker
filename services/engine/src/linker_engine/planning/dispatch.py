@@ -14,6 +14,7 @@ from .battery_model import BatteryModel
 from .dispatch_frame import Command, Flows, Frame
 from .energy_origins import EnergyOrigins
 from .errors import InvalidInput
+from .numerical_tolerance import Tolerance
 
 type Policy = Callable[[Frame, BatteryModel, EnergyOrigins], Command]
 
@@ -55,10 +56,20 @@ def self_consumption_with_reserve(
 
 
 def step(
-    frame: Frame, model: BatteryModel, before: EnergyOrigins, command: Command
+    frame: Frame,
+    model: BatteryModel,
+    before: EnergyOrigins,
+    command: Command,
+    *,
+    tolerance: Tolerance,
 ) -> Flows:
+    arithmetic_allowance = tolerance.absolute_kwh + tolerance.relative * max(
+        before.total, model.usable_window_kwh
+    )
+    if not math.isfinite(arithmetic_allowance):
+        raise InvalidInput("numerical tolerance exceeds finite domain")
     if (
-        before.total > model.usable_window_kwh
+        before.total - model.usable_window_kwh > arithmetic_allowance
         or frame.limits.reserve_kwh > model.usable_window_kwh
     ):
         raise InvalidInput("initial inventory and reserve must fit the usable window")
@@ -150,9 +161,15 @@ def replay(
     policy: Policy,
     *,
     checkpoint: Callable[[], None],
+    tolerance: Tolerance,
 ) -> tuple[Flows, ...]:
     if not frames:
         raise InvalidInput("replay requires a nonempty horizon")
+    # Caller-supplied initial energy is a physical input. Subsequent float64
+    # states may have arithmetic residuals within the recorded tolerance; no
+    # inventory/source is clipped or erased, and the verifier retains them.
+    if initial.total > model.usable_window_kwh:
+        raise InvalidInput("initial inventory exceeds the usable window")
     for previous, current in zip(frames, frames[1:], strict=False):
         if previous.interval.end != current.interval.start:
             raise InvalidInput("replay requires a continuous ordered horizon")
@@ -160,7 +177,9 @@ def replay(
     result: list[Flows] = []
     for frame in frames:
         checkpoint()
-        flow = step(frame, model, state, policy(frame, model, state))
+        flow = step(
+            frame, model, state, policy(frame, model, state), tolerance=tolerance
+        )
         result.append(flow)
         state = flow.after
     return tuple(result)
