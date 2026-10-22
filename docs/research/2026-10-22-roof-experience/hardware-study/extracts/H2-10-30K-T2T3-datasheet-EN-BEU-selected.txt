@@ -1,0 +1,74 @@
+===== PDF PAGE 2 =====
+MODEL                                       H2-10K-T3      H2-12K-T3     H2-15K-T2      H2-15K-T3     H2-20K-T2        H2-20K-T3 H2-25K-T3-BE H2-25K-T3 H2-30K-T3-DE H2-30K-T3
+DC Input
+Max. PV Array Power [Wp]@STC                 20000            24000        30000          30000         30000             40000     45000      45000       45000      45000
+Max. DC Voltage [V]                                                                                              1000
+MPPT Voltage Range [V]                                                                                         180～900
+Rated DC Voltage [V]                                                                                             600
+
+H2 10-30K Three Phase Hybrid Inverter                                                                                  Start Voltage [V]
+Max. DC Input Current [A]                        40/40/40                  40/40        40/40/40        40/40
+180
+40/40/40
+Max. DC Short Circuit Current [A]                50/50/50                  50/50        50/50/50        50/50                                 50/50/50
+No. of MPPT                                            3                      2             3             2                                      3
+Number of String per MPPT Tracker                    2/2/2                   2/2          2/2/2          2/2                                    2/2/2
+Battery Parameters
+Battery Type                                                                                                    LiFePO4
+Battery Voltage Range [V]                                                                                      180～800
+SAJ's latest hybrid inverter supported easy setting of smart working modes, UPS 10ms swtich time and 1C VPP            Max. Charging/Discharging Current [A]                                                                            50/50
+No. of BAT                                                                                                        2
+charging/discharging speed of battery. H2 covers 10-30kW, 3MPPTs and three phase grid.
+AC Output [On-grid]
+Rated AC Power [W]                           10000            12000        15000          15000         20000             20000     25000      25000       29999      30000
+Max.Apparent Power [VA]                      11000            13200        16500          16500         22000             22000     25000      27500       29999      33000
+Rated Output Current [A]@230Vac               14.5             17.4         21.8          21.8          29.0              29.0       36.3       36.3        43.4       43.5
+Max. Output Current [A]                        16              19.2         24.0          24.0          31.9              31.9       36.3       39.9        43.4       47.9
+Rated AC Voltage/Range [V]                                                           3L+N+PE, 220/380, 230/400, 240/415; 180～280/312～485
+Rated Output Frequency/Range [Hz]                                                                      50,60/45～55,55～65
+Power Factor [cos φ]                                                                                  0.8 leading～0.8 lagging
+Total Harmonic Distortion [THDi]                                                                                 <3%
+AC Input [On-grid]
+Rated AC Voltage/Range [V]                                                           3L+N+PE, 220/380, 230/400, 240/415; 180～280/312～485
+Rated Input Frequency [Hz]                                                                                       50,60
+Easy setting of smart working modes                Max. Input Current [A]@230Vac                 28.3             28.3         28.3          28.3           37.7             37.7       47.2       47.2        56.5       56.6
+AC Output [Back-up]
+DC 20A string matched with ultra high PV modules   Max. Output Power [VA]                       10000            12000        15000          15000         20000             20000     25000      25000       29999      30000
+Max. Output Current [A]                       14.5             17.4         21.8          21.8          29.0              29.0       36.3       36.3        43.4       43.5
+Peak Output Apparent Power [VA]             15000,3S         18000,3S     22500,3s      22500,3s      30000,3s          30000,3s   37500,3s   37500,3s    45000,3S   45000,3s
+Supported three phase voltage imbalance
+Rated AC Voltage/Range [V]                                                           3L+N+PE, 220/380, 230/400, 240/415; 180～280/312～485
+Rated Output Frequency/Range [Hz]                                                                      50,60/45～55,55～65
+Battery fast charging/ discharging supported       Output THDv (@ Linear Load)                                                                                      <3%
+Efficiency
+150% DC oversizing                                 Max. Efficiency                                                                                                  98.0%
+Euro Efficiency                                                                                                  97.6%
+With backup switch time ≤ 20ms                     Protection
+Battery Input Reverse Polarity Protection                                                                     Integrated
+Over load Protection                                                                                          Integrated
+AC Short Circuit Current Protection                                                                           Integrated
+DC Surge Protection                                                                                             Type II
+AC Surge Protection                                                                                             Type II
+Anti-islanding Protection                                                                                     Integrated
+AFCI Protection                                                                                               Integrated
+Interface
+PV Connection                                                                                                    MC4
+AC Connection                                                                                             Terminal Block
+AC Connection                                                                                            Quick connector
+Display                                                                                                        LED+APP
+Communication                                                                                       Wi-Fi/Ethernet/4G(Optional)
+General Parameters
+Topology                                                                                                   Non-isolated
+H2-10K-T3 | H2-12K-T3 | H2-15K-T2   Operating Temperature Range                                                               -40℃ to +60℃ (45℃ and above with derating)
+Cooling Method                                                                                         Intelligent Fan cooling
+H2-15K-T3 | H2-20K-T2 | H2-20K-T3
+Ambient Humidity                                                                                     0-100% Non-condensing
+H2-25K-T3-BE | H2-25K-T3 | H2-30K-T3-DE | H2-30K-T3    Altitude                                                                                          4000m (>3000m Power Derating)
+Noise [dBA]                                                                                                      <50
+Ingress Protection                                                                                               IP65
+Dimensions [H*W*D] [mm]                                                                                    576*659*242
+Weight [kg]                                                                                                       50
+Warranty [Year]                                                                                                   10
+Standard                                                              EN 62109-1/2, EN 61000-6-2/4, EN 50438, EN 50549, C10/11, IEC 62116, IEC 61727,
+RD 1699, RD 413, UNE 206006, UNE 206007, NTS, CEI 0-16, CEI 0-21, AS 4777.2,
+NBR 16149, NBR 16150, VDE-AR-N 4105, VDE 0126-1-1

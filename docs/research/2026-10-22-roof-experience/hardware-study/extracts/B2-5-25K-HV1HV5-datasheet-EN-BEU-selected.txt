@@ -1,0 +1,74 @@
+===== PDF PAGE 2 =====
+MODEL                         B2-5.0-HV1     B2-10.0-HV1              B2-15.0-HV1            B2-20.0-HV1    B2-25.0-HV1
+Battery Module                                             BU2-5.0-HV1 (32S1P 102.4V50Ah)
+No. of Modules                     1               2                        3                     4              5
+
+
+B2 5.0kWh High Voltage Battery                                                                                            Rated Energy [kWh]
+Usable Energy [kWh]
+5.0
+4.5
+10.0
+9.0
+15.0
+13.5
+20.0
+18.0
+25.0
+22.5
+Rated Power [W]                  3072            6144                     9216                  12288          15360
+Dimension (H*W*D)[mm]         261*626*365     522*626*365             783*626*365            1044*626*365   1305*626*365
+Weight [kg]                      50.5             101                     151.5                  202           252.5
+Nominal Voltage [V]              102.4           204.8                    307.2                 409.6           512
+Operating Voltage [V]          89.6-115.2     179.2-230.4              268.8-345.6           358.4-460.8     448-576.0
+B2 high voltage battery follows the same design language from H2 inverter, provides a stackable design for end-user to
+Max. Charge Current [A]                                                    30
+choose different capacity of battery system, from 5kWh to 25kWh in one stack, with high efficiency.
+Max. Discharge Current [A]                                                 30
+Control Module                                                          BC2-HV1
+Max. Fault Current [A]                                                     100
+Dimension (H*W*D)[mm]                                                 200*626*365
+Weight [kg]                                                                11
+General Parameters
+Ingress Protection                                                        IP65
+Mounting                                                Wall-Mounted (optional)/ Ground-Mounted
+Operating Temperature Range                              Charging: 0～50℃; Discharging: -10～50℃
+Ambient Humidity                                                0～95% non-condensing
+Wall-mounted or ground-mounted                Cooling Method                                                     Natural convection
+Communication                                                             CAN
+Remote firmware upgrade
+Warranty [Year]                                                 Refer to the warranty card
+Applicable Standard                         IEC 62619(Cell&Pack), EN 62477-1, EN 61000-6-1/2/3/4, UN38.3
+Modular design scalable up to 25.0kWh
+
+IP65 outdoor design
+MODEL                         B2-5.0-HV5     B2-10.0-HV5              B2-15.0-HV5            B2-20.0-HV5    B2-25.0-HV5
+LiFePO4 batteries, safe and reliable                                                                     BU2-5.0-HV5 (32S1P 102.4V50Ah)
+Battery Module
+No. of Modules                     1               2                        3                     4              5
+90% Depth of discharge
+Rated Energy [kWh]                5.0             10.0                    15.0                   20.0           25.0
+Usable Energy [kWh]               4.5             9.0                     13.5                   18.0           22.5
+Rated Power [W]                  3072            6144                     9216                  12288          15360
+Dimension (H*W*D)[mm]         261*626*365     522*626*365             783*626*365            1044*626*365   1305*626*365
+Weight [kg]                      52.5             105                     157.5                  210           262.5
+Nominal Voltage [V]              102.4           204.8                    307.2                 409.6           512
+Operating Voltage [V]          89.6-115.2     179.2-230.4              268.8-345.6           358.4-460.8     448-576.0
+Max. Charge Current [A]                                                    30
+Max. Discharge Current [A]                                                 30
+Control Module                                                          BC2-HV1
+Max. Fault Current [A]                                                     100
+B2-5.0-HV1 | B2-10.0-HV1 | B2-15.0-HV1
+Dimension (H*W*D)[mm]                                                 200*626*365
+B2-20.0-HV1 | B2-25.0-HV1   Weight [kg]                                                                11
+General Parameters
+B2-5.0-HV5 | B2-10.0-HV5 | B2-15.0-HV5
+Ingress Protection                                                        IP65
+B2-20.0-HV5 | B2-25.0-HV5
+Mounting                                                Wall-Mounted (optional)/ Ground-Mounted
+Operating Temperature Range                              Charging: 0～50℃; Discharging: -10～50℃
+Ambient Humidity                                                0～95% non-condensing
+Cooling Method                                                     Natural convection
+Communication                                                             CAN
+Warranty [Year]                                                 Refer to the warranty card
+Applicable Standard                         IEC 62619(Cell&Pack), EN 62477-1, EN 61000-6-1/2/3/4, UN38.3

@@ -1,0 +1,137 @@
+===== PDF PAGE 1 =====
+H2 Serie
+HYBRID-SOLARWECHSELRICHTER
+Tel: (86)20 66608588   Fax: (86)20 66608589    Web: www.saj-electric.com
+BEDIENUNGSANLEITUNG
+Adresse: SAJ Innovation Park, No.9, Lizhishan Road, Science City, Guangzhou High-Tech Zone, Guangdong,
+GUANGZHOU SANJING ELECTRIC CO.,LTD
+Volksrepublik China   H2-(10K-30K)-(T2, T3)
+V0.3
+
+V1.1
+
+===== PDF PAGE 37 =====
+Hybrid Solar Inverter User Manual
+
+
+
+
+Model                                         H2-10K-T3           H2-12K-T3            H2-15K-T2                H2-15K-T3        H2-20K-T2
+2.4. Datasheet                                                                                                                               Rated AC Voltage/Range [V]                                         3+N+PE, 220/380, 230/400, 240/415; 180 - 280/312 - 485
+⚫    50: 45 – 55
+Rated Output Frequency/Range [Hz]
+⚫    60: 55 – 65
+Output THDv (@ Linear Load)                                                                   <3%
+Model                                        H2-10K-T3              H2-12K-T3          H2-15K-T2               H2-15K-T3     H2-20K-T2
+Efficiency
+DC Input
+Max. PV Array Power [Wp]@STC                   20000                  24000                30000                 30000         30000     Max. Efficiency                                                                               98.0%
+Euro Efficiency                                                                               97.6%
+Max. DC Voltage [V]                                                                           1000
+Protection
+MPPT Voltage Range [V]                                                                    180 - 900                                      Battery Input Reverse Polarity Protection                                                Integrated
+Rated DC Voltage [V]                                                                           600                                       Over Load Protection                                                                     Integrated
+AC Short Circuit Current Protection                                                      Integrated
+Start Voltage [V]                                                                              180
+DC Surge Protection                                                                         Type II
+Max. DC Input Current [A]                                40/40/40                          40/40                40/40/40       40/40
+AC Surge Protection                                                                         Type II
+Max. DC Short Circuit Current [A]                        50/50/50                          50/50                50/50/50       50/50     Anti-islanding Protection                                                                Integrated
+
+No. of MPPT                                                                                                                              AFCI Protection                                                                          Integrated
+3                                  2                   3             2
+Interface
+Number of String per MPP Tracker                          2/2/2                               2/2                2/2/2          2/2
+PV Connection                                                                       D4,MC4（Optional）
+Battery Port Connection
+AC Connection                                                                          Terminal block
+Battery Type                                                                               LiFePO4                                       Battery Connection                                                                    Quick connector
+
+Battery Voltage Range [V]                                                                 180 - 800                                      Display                                                                                   LED+App
+Communication                                                                   Wi-Fi/Ethernet/4G (Optional)
+Max. Charging/Discharging Current [A]                                                         2*50
+General Parameters
+AC Output [On-grid]
+Topology                                                                                Non-isolated
+Rated AC Power [W]                             10000                  12000                15000                 15000         20000
+Operating Temperature Range                                             -40℃ to +60℃ (45℃ and above with derating)
+Max. Apparent Power [VA]                       11000                  13200                16500                 16500         22000
+Cooling Method                                                                      Intelligent fan cooling
+Rated Output Current [A]@230Vac                 14.5                   17.4                   21.8                21.8          29.0
+Ambient Humidity                                                                  0-100% Non-condensing
+Max. AC Output Current to Utility Grid [A]      16.0                   19.2                   24.0                24.0          31.9
+Altitude                                                                      4000m (>3000m Power Derating)
+Rated AC Voltage/Range [V]                                          3+N+PE, 220/380, 230/400, 240/415; 180 - 280/312 - 485
+Noise [dBA]                                                                                   <50
+⚫    50: 45 – 55
+Rated Output Frequency/Range [Hz]                                                                                                        Ingress Protection                                                                            IP65
+⚫    60: 55 – 65
+Power Factor [cos φ]                                                               0.8 leading - 0.8 lagging                             Dimensions [H*W*D] [mm]                                                                 576*659*242
+Total Harmonic Distortion [THDi]                                                               <3%                                       Weight [kg]                                                                                    50
+AC Input [On-grid]                                                                                                                       Warranty [Year]                                                                  Refer to the warranty policy
+Rated AC Voltage/Range [V]                                          3+N+PE, 220/380, 230/400, 240/415; 180 - 280/312 - 485                                                           EN 62109-1/2, EN 61000-6-2/4, EN 50438, EN 50549, C10/11, IEC 62116, IEC 61727, RD 1699, RD 413, UNE
+Standard                                     206006, UNE 206007, NTS, CEI 0-16, CEI 0-021, AS 4777.2, NBR 16149, NBR 16150 VDE-AR-N 4105, VDE
+Rated Input Frequency [Hz]                                                                    50, 60
+0126-1-1
+Max. Input Current [A]@230Vac                   28.3                   28.3                   28.3                28.3          37.7
+AC Output [Back-up]
+Max. Output Power [VA]                         10000                  12000                15000                 15000         20000
+Max. Output Current [A]                         14.5                   17.4                   21.8                21.8          29.0
+Peak Output Apparent Power [VA]               15000,3S               18000,3S            22500,3s               22500,3s      30000,3s
+
+
+
+9                                                                                                                                                                                                                                                                                               10
+
+===== PDF PAGE 43 =====
+Hybrid Solar Inverter User Manual
+
+
+
+
+Code   Name                          Description                                                4.4. Assembling the AC-side Electrical Connection
+A      DC SWITCH                     Direct current (DC) switch. You can turn it to OFF or ON
+position.                                                  4.4.1. Installing a Circuit Breaker
+B      MPPT1                         PV input
+C      MPPT2                         PV input                                                                        For safety operation and regulation compliance, install air circuit breaker between the grid and the inverter.
+D      MPPT3                         PV input
+Inverter type                             Recommended breaker specification
+E      BAT1+, BAT1-                  Battery input
+H2-(10K-20K)-(T2,T3)                                            50A
+F      BAT2+, BAT2-                  Battery input
+H2-(25K-30K)-T3                                               63A
+G                                    Grounding
+Notice: Do not connect multiple inverters to one AC circuit breaker.
+H      4G/WIFI                       4G, Wi-Fi, and Ethernet
+I      LAN/ CAN/ PART/ EMS/ RS485/   Communication port
+By installing a circuit breaker, the inverter can be disconnected from the grid quickly and safely when the
+METER/ DRMs
+integrated leakage current detector of the inverter detects that the leakage current exceeds the limitation.
+J      BACK-UP                       Backup loads
+K      GRID                          Grid
+
+4.4.2. Installing an RCD (optional)
+4.3. Grounding                                                                                                                        An external residential current device (RCD) is not required since the inverter is integrated with a residential
+current monitoring unit (RCMU). However, if the external RCD must be installed according to the local
+regulations, either type A or B RCD can be installed with the action current 300 mA.
+
+
+
+
+4.4.3. Connecting the Grid and Backup Loads
+Prerequisite
+
+Select cables according to the below specification. You can amplify appropriate diameter selection of the
+alternating current (AC) cable for the long grid-connection distance.
+
+Cable cross-sectional area（mm²）
+Type
+Range                       Recommend
+H2-(10K-30K)-(T2,T3)                            10 - 16                          16
+Additional grounding cable cross-sectional area (mm²): 8
+Procedure
+
+
+
+
+21                                                                                                                                                                                                                                               22

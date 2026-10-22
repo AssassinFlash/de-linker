@@ -1,0 +1,242 @@
+===== PDF PAGE 1 =====
+V1.3 2026-6-30
+
+
+
+
+ET 50-100kW
+Solution Manual_EN
+
+===== PDF PAGE 10 =====
+Figure3 Grid-connected scenario (parallel, withBAT 92.1-112.6kWh or BAT-C 208.9kWh)
+
+
+
+Device Type       Model                       Description
+
+
+GW50K-ET-L-G10
+GW75K-ET-G10
+Hybrid
+GW80K-ET-G10
+Inverter
+GW99.99K-ET-G10
+GW100K-ET-G10
+
+
+
+
+9
+
+===== PDF PAGE 11 =====
+Device Type   Model              Description
+
+
+• The system supports a maximum of 15
+inverters in parallel.
+• The inverter has two battery input
+terminals. The two battery terminals can be
+connected in parallel to the same battery
+system or independently to two battery
+GW75K-BT-G10
+systems. Each battery input terminal can be
+AC-coupled    GW80K-BT-G10
+connected to batteries according to the
+inverter      GW99.99K-BT-G10
+maximum number of battery units in a
+GW100K-BT-G10
+parallel cluster.
+• Software Version Requirements:
+○ The inverter ARM software version is
+2.184 or above.
+○ The inverter DSP software version is 2.212
+or above.
+
+
+Battery
+system                           • The battery system can be connected in
+parallel clusters with up to 6 units.
+• Battery systems of different models cannot
+be mixed and used in parallel clusters.
+• To ensure full-power charging/discharging
+BAT-S series         of the inverter and improve the reliability
+and load capacity of system battery
+GW40.9-BAT-I-G10
+balancing operation, priority should be
+GW46.0-BAT-I-G10
+given to balanced connection through two
+GW51.2-BAT-I-G10
+battery ports; connecting only one battery
+GW56.3-BAT-I-G10     branch to the inverter battery port is not
+recommended.
+• When GW40.9-BAT-I-G10 or GW46.0-BAT-I-
+G10 batteries are used in the system, the
+inverter's full power output cannot be
+achieved.
+
+
+
+
+10
+
+===== PDF PAGE 12 =====
+Device Type   Model             Description
+
+
+• The battery system can be connected in
+parallel clusters with up to 4 units.
+BAT-C series
+Battery systems of different models cannot
+GW61.4-BAT-AC-      be mixed and used in parallel clusters.
+G10               • When GW61.4-BAT-AC-G10 batteries are
+GW92.1-BAT-AC-      used in the system, to ensure full-power
+G10                 charge/discharge of the inverter and
+GW102.4-BAT-AC-     improve the system's battery balance
+G10                 operation reliability and load-carrying
+GW112.6-BAT-AC-     capability, balanced connection through
+two battery ports is preferred; connecting
+G10
+only one battery bank to the inverter
+battery port is not recommended.
+
+
+BAT-C series
+The battery system supports up to4 units in
+GW208.9-BAT-LC-
+parallel clusters
+G10
+
+
+Smart                           • (Optional) Used in parallel scenarios.
+Energy        SEC3000C          • SEC main program version is V7.5.32 or
+Control Box                       above.
+
+
+
+• (Optional) Used in the grid-connected
+Smart meter   GM330               scenario in single-unit systems.
+• Shipped with the inverter
+
+
+Can be purchased from GoodWe or self-
+purchased; CT ratio requirement: nA/5A
+
+CT            -                 • nA: CT primary input current, n ranges from
+200 to 5000.
+• 5A: CT secondary output current.
+
+
+
+
+11
+
+===== PDF PAGE 16 =====
+Figure6 On/Off-grid scenario (parallel operation, withBAT 92.1-112.6kWh or BAT-C 208.9kWh)
+
+
+
+Device
+Model                              Description
+Type
+
+
+• The system supports a maximum of 6
+GW50K-ET-L-G10
+inverters in parallel operation.
+GW75K-ET-G10
+Hybrid                                           • The inverter has 2 pairs of battery input
+GW80K-ET-G10
+Inverter                                           terminals. The two battery terminals can
+GW99.99K-ET-G10
+be connected in parallel to the same
+GW100K-ET-G10
+battery system or independently to two
+battery systems. Each pair of battery
+input terminals can be connected to
+batteries according to the maximum
+GW75K-BT-G10                         number of battery units supported in
+AC-coupled    GW80K-BT-G10                         one parallel cluster.
+inverter      GW99.99K-BT-G10                    • Software Version Requirements:
+GW100K-BT-G10                         ○ARM software version is3.193or above
+○   DSP software version is3.306or above
+
+
+
+
+15
+
+===== PDF PAGE 17 =====
+Device
+Model                Description
+Type
+
+Battery
+system                         • The battery system can be connected in
+parallel clusters with up to 6 units.
+• Battery systems of different models
+cannot be mixed and used in parallel
+clusters.
+• To ensure full-power
+GW51.2-BAT-I-G10       charging/discharging of the inverter and
+GW56.3-BAT-I-G10       improve the reliability and load capacity
+of system battery balancing operation,
+priority should be given to balanced
+connection through two battery ports;
+connecting only one battery branch to
+the inverter battery port is not
+recommended.
+
+
+The battery system can be connected in
+GW92.1-BAT-AC-G10    parallel clusters with up to 4 units.
+GW102.4-BAT-AC-G10   Battery systems of different models
+GW112.6-BAT-AC-G10   cannot be mixed and used in parallel
+clusters.
+
+The battery system supports up to4 units
+GW208.9-BAT-LC-G10
+in parallel clusters
+
+
+
+
+16
+
+===== PDF PAGE 18 =====
+Device
+Model              Description
+Type
+
+
+• The BACK-UP port supports connection
+of critical loads.
+• Number of Supported Inverters:
+○ 125K: wall-mounted; Rated Power of
+grid side, BACK-UP port and SMART-
+PORT port is 125kW@400V; supports
+connection of 1 hybrid inverter (or AC-
+coupled inverter).
+○ 375K: cabinet type; Rated Power of
+GW125K-STS-G10         grid side, BACK-UP port and SMART-
+STS        GW375K-STS-A-G10       PORT port is
+GW750K-STS-A-G10       375kW@400V/200kW@220V; supports
+connection of 3 hybrid inverters (or
+AC-coupled inverters).
+○ 750K: cabinet type; Rated Power of
+grid side, BACK-UP port and SMART-
+PORT port is
+750kW@400V/400kW@220V; supports
+connection of 6 hybrid inverters (or
+AC-coupled inverters).
+• Software version is 3.304 or above.
+
+
+
+Smart                         • (Optional) Required in parallel operation
+Energy      SEC3000C            scenarios.
+Control Box                   • Software version is7.18or above
+
+
+
+
+17

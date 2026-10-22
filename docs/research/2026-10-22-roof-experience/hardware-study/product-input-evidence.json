@@ -1,0 +1,1067 @@
+[
+  {
+    "source": "running-local-feed",
+    "id": 1946,
+    "model": "GW80K-ET-G10",
+    "application": "commercial",
+    "ac_power_kw": 80,
+    "usable_kwh": "unknown",
+    "figures": {
+      "battery_voltage_range_v": {
+        "value": "300 ~ 800",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_pv_input_power_w": {
+        "value": "160",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "mppt_voltage_range_v": {
+        "value": "160 ~ 950",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "mppt_max_current_a": {
+        "value": "42 × 8",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+        "title": "GoodWe ET Series 75–100 kW Datasheet (EN)",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+        "title": "GoodWe ET 50–100 kW Solution Manual (EN)",
+        "type": "manual",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "running-local-feed",
+    "id": 1954,
+    "model": "GW61.4-BAT-AC-G10",
+    "application": "commercial",
+    "ac_power_kw": "unknown",
+    "usable_kwh": 60,
+    "figures": {
+      "module_energy_kwh_nominal": {
+        "value": "10.24",
+        "unit": "kWh",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_max": {
+        "value": "6",
+        "unit": "packs",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_min": {
+        "value": "6",
+        "unit": "packs",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "stacks_parallel_max": {
+        "value": "4",
+        "unit": "units",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 1
+        }
+      },
+      "system_operating_voltage_range_v": {
+        "value": "275.52 ~ 346.56",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+        "title": "GoodWe BAT-C Series 61.4–112.6 kWh Datasheet (EMEA, EN)",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+        "title": "GW BAT-C-60-112kWh Quick-Installation-Guide-POLY V1.7",
+        "type": "manual",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "running-local-feed",
+    "id": 2090,
+    "model": "BU2-5.0-HV1",
+    "application": "home",
+    "ac_power_kw": "unknown",
+    "usable_kwh": 4.5,
+    "figures": {
+      "module_energy_kwh_nominal": {
+        "value": "5.0",
+        "unit": "kWh",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "module_energy_kwh_usable": {
+        "value": "4.5",
+        "unit": "kWh",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_max": {
+        "value": "5",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_min": {
+        "value": "1",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 High Voltage Battery User Manual (EN)",
+        "type": "manual",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "running-local-feed",
+    "id": 2092,
+    "model": "BC2-HV1",
+    "application": "home",
+    "ac_power_kw": "unknown",
+    "usable_kwh": "unknown",
+    "figures": {
+      "modules_per_stack_max": {
+        "value": "5",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_min": {
+        "value": "1",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "system_operating_voltage_range_v": {
+        "value": "89.6-115.2 / 179.2-230.4 / 268.8-345.6 / 358.4-460.8 / 448-576.0",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 Battery Datasheet (EN, BEU)",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/B2-5.0-HV1-HV5-user-manual-EN-EU.pdf",
+        "title": "SAJ B2 Series (5.0-25.0) HV1/HV5 High Voltage Battery User Manual (EN)",
+        "type": "manual",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "running-local-feed",
+    "id": 4107,
+    "model": "H2-10K-T3",
+    "application": "home",
+    "ac_power_kw": 10,
+    "usable_kwh": "unknown",
+    "figures": {
+      "battery_voltage_range_v": {
+        "value": "180~800",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_pv_input_power_w": {
+        "value": "20000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "mppt_voltage_range_v": {
+        "value": "180~900",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "mppt_max_current_a": {
+        "value": "40",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+        "title": "SAJ H2 Series (10-30K) T2/T3 Datasheet (EN, BEU)",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/SAJ_H2_10-30K_User-Manual_DE-EN_EU.pdf",
+        "title": "SAJ H2-(10K-30K)-(T2, T3) Hybrid Solar Inverter User Manual (DE/EN)",
+        "type": "manual",
+        "lang": "de"
+      }
+    ]
+  },
+  {
+    "source": "running-local-feed",
+    "id": 6321,
+    "model": "GW125/261-ESA-LCN-G10",
+    "application": "commercial",
+    "ac_power_kw": 125,
+    "usable_kwh": 261.25,
+    "figures": {},
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+        "title": "GW ESA 261kWh Datasheet EMEA EN V1.1",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+        "title": "GW ESA 261kWh User Manual EN V1.6",
+        "type": "manual",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "running-local-feed",
+    "id": 6512,
+    "model": "GW5K-ETA-G20",
+    "application": "home",
+    "ac_power_kw": 5,
+    "usable_kwh": "unknown",
+    "figures": {
+      "battery_voltage_range_v": {
+        "value": "700~950",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "max_pv_input_power_w": {
+        "value": "10",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "mppt_voltage_range_v": {
+        "value": "120~950",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "mppt_max_current_a": {
+        "value": "21/21/21",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "title": "GoodWe ESA Series 5–30 kW Datasheet (EN)",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "title": "GW ESA-5-30kW User-Manual-EN V1.5",
+        "type": "manual",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+        "title": "GW Limited-Warranty Inverter-System Europe",
+        "type": "warranty",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "test-fixture",
+    "id": 1946,
+    "model": "GW80K-ET-G10",
+    "application": "commercial",
+    "ac_power_kw": 80.0,
+    "usable_kwh": "unknown",
+    "figures": {
+      "backup_power_kw": {
+        "value": "80",
+        "unit": "kVA",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "battery_voltage_range_v": {
+        "value": "300 ~ 800",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_apparent_power_kva": {
+        "value": "88",
+        "unit": "kVA",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_charge_a": {
+        "value": "100 × 2",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_charge_power_kw": {
+        "value": "88",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_discharge_a": {
+        "value": "100 × 2",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_discharge_power_kw": {
+        "value": "88",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_input_current_per_mppt_a": {
+        "value": "42 × 8",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "max_pv_input_power_w": {
+        "value": "160",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "mppt_voltage_range_v": {
+        "value": "160 ~ 950",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "nominal_apparent_power_kva": {
+        "value": "80",
+        "unit": "kVA",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "parallel_operation": {
+        "value": "With the GoodWe SEC3000C smart energy controller",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+          "page": 10
+        },
+        "value_de": "Mit dem GoodWe Smart Energy Controller SEC3000C"
+      },
+      "start_voltage_v": {
+        "value": "200",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      },
+      "mppt_max_current_a": {
+        "value": "42 × 8",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+        "title": "GW_ET-75-100kW_Datasheet-EN-20260708-V2.1.pdf",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+        "title": "GW_ET-50-100kW_User-Manual-EN_V1.3.pdf",
+        "type": "manual",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "test-fixture",
+    "id": 1954,
+    "model": "GW61.4-BAT-AC-G10",
+    "application": "commercial",
+    "ac_power_kw": "unknown",
+    "usable_kwh": 60.0,
+    "figures": {
+      "cell_capacity_ah": {
+        "value": "100",
+        "unit": "Ah",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "max_charge_current_a": {
+        "value": "180",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "max_charge_discharge_power_kw": {
+        "value": "55.2 / 67.5",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "max_discharge_current_a": {
+        "value": "220",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "module_energy_kwh_nominal": {
+        "value": "10.24",
+        "unit": "kWh",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_max": {
+        "value": "6",
+        "unit": "packs",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_min": {
+        "value": "6",
+        "unit": "packs",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "rated_capacity_ah": {
+        "value": "200",
+        "unit": "Ah",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "stacks_parallel_max": {
+        "value": "4",
+        "unit": "units",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 1
+        }
+      },
+      "system_nominal_voltage_v": {
+        "value": "307.2",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      },
+      "system_operating_voltage_range_v": {
+        "value": "275.52 ~ 346.56",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/07/delinker-goodwe_batc60-datasheet.pdf",
+        "title": "delinker-goodwe_batc60-datasheet.pdf",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+        "title": "GW_BAT-C-60-112kWh_Quick-Installation-Guide-POLY_V1.7.pdf",
+        "type": "manual",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "test-fixture",
+    "id": 2090,
+    "model": "BU2-5.0-HV1",
+    "application": "home",
+    "ac_power_kw": "unknown",
+    "usable_kwh": 4.5,
+    "figures": {
+      "max_charge_current_a": {
+        "value": "30",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_discharge_current_a": {
+        "value": "30",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "module_energy_kwh_nominal": {
+        "value": "5.0",
+        "unit": "kWh",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "module_energy_kwh_usable": {
+        "value": "4.5",
+        "unit": "kWh",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "module_voltage_range_v": {
+        "value": "89.6-115.2",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "module_voltage_v_nominal": {
+        "value": "102.4",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_max": {
+        "value": "5",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_min": {
+        "value": "1",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "title": "B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "type": "datasheet",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "test-fixture",
+    "id": 2092,
+    "model": "BC2-HV1",
+    "application": "home",
+    "ac_power_kw": "unknown",
+    "usable_kwh": "unknown",
+    "figures": {
+      "modules_per_stack_max": {
+        "value": "5",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "modules_per_stack_min": {
+        "value": "1",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "system_operating_voltage_range_v": {
+        "value": "89.6-115.2 / 179.2-230.4 / 268.8-345.6 / 358.4-460.8 / 448-576.0",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "title": "B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+        "type": "datasheet",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "test-fixture",
+    "id": 4107,
+    "model": "H2-10K-T3",
+    "application": "home",
+    "ac_power_kw": 10.0,
+    "usable_kwh": "unknown",
+    "figures": {
+      "ac_voltage_range_v": {
+        "value": "3L+N+PE, 220/380, 230/400, 240/415; 180~280/312~485",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "backup_power_kw": {
+        "value": "10000",
+        "unit": "VA",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "battery_type": {
+        "value": "LiFePO4",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "battery_voltage_range_v": {
+        "value": "180~800",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_ac_input_current_a": {
+        "value": "28.3",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_charge_a": {
+        "value": "50",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_discharge_a": {
+        "value": "50",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_input_current_per_mppt_a": {
+        "value": "40",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_output_current_a_ongrid": {
+        "value": "16",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "max_pv_input_power_w": {
+        "value": "20000",
+        "unit": "Wp",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "mppt_voltage_range_v": {
+        "value": "180~900",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "n_battery_ports": {
+        "value": "2",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "peak_backup_apparent_power_va": {
+        "value": "15000 (3 s)",
+        "unit": "VA",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "power_factor_range": {
+        "value": "0.8 leading~0.8 lagging",
+        "unit": null,
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        },
+        "value_de": "0,8 kapazitiv~0,8 induktiv"
+      },
+      "rated_dc_voltage_v": {
+        "value": "600",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "rated_output_current_a_ongrid": {
+        "value": "14.5",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "start_voltage_v": {
+        "value": "180",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      },
+      "mppt_max_current_a": {
+        "value": "40",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+        "title": "H2-10-30K-T2T3-datasheet-EN-BEU.pdf",
+        "type": "datasheet",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "test-fixture",
+    "id": 6321,
+    "model": "GW125/261-ESA-LCN-G10",
+    "application": "commercial",
+    "ac_power_kw": 125.0,
+    "usable_kwh": 261.25,
+    "figures": {
+      "system_nominal_voltage_v": {
+        "value": "832",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "battery_voltage_range_v": {
+        "value": "676 ~ 936",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "max_charge_current_a": {
+        "value": "198.5",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      },
+      "max_discharge_current_a": {
+        "value": "198.5",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+        "title": "GW_ESA-261kWh_Datasheet_EMEA-EN_V1.1.pdf",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+        "title": "GW_ESA-261kWh_User-Manual-EN_V1.6.pdf",
+        "type": "manual",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-261kWh_Limited-Warranty-Europe_Rev1.4.pdf",
+        "title": "GW_ESA-261kWh_Limited-Warranty-Europe_Rev1.4.pdf",
+        "type": "warranty",
+        "lang": "en"
+      }
+    ]
+  },
+  {
+    "source": "test-fixture",
+    "id": 6512,
+    "model": "GW5K-ETA-G20",
+    "application": "home",
+    "ac_power_kw": 5.0,
+    "usable_kwh": "unknown",
+    "figures": {
+      "backup_power_kw": {
+        "value": "5",
+        "unit": "kVA",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "battery_voltage_range_v": {
+        "value": "700~950",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_charge_a": {
+        "value": "6.7",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "max_battery_discharge_a": {
+        "value": "7.4",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "max_input_current_per_mppt_a": {
+        "value": "21/21/21",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "max_pv_input_power_w": {
+        "value": "10",
+        "unit": "kW",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "mppt_voltage_range_at_nominal_power_v": {
+        "value": "185~850",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+          "page": 281
+        }
+      },
+      "mppt_voltage_range_v": {
+        "value": "120~950",
+        "unit": "V",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      },
+      "mppt_max_current_a": {
+        "value": "21/21/21",
+        "unit": "A",
+        "citation": {
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+          "page": 2
+        }
+      }
+    },
+    "documents": [
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "title": "GW_ESA-5-30kW_Datasheet-EN.pdf",
+        "type": "datasheet",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "title": "GW_ESA-5-30kW_User-Manual-EN_V1.5.pdf",
+        "type": "manual",
+        "lang": "en"
+      },
+      {
+        "url": "https://de-linker.com/wp-content/uploads/2026/10/GW_Limited-Warranty_Inverter-System_Europe.pdf",
+        "title": "GW_Limited-Warranty_Inverter-System_Europe.pdf",
+        "type": "warranty",
+        "lang": "en"
+      }
+    ]
+  }
+]

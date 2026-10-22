@@ -1,0 +1,120 @@
+===== PDF PAGE 2 =====
+ET Series
+
+Technical Data                                       GW75K-ET-G10                          GW80K-ET-G10                          GW99.99K-ET-G10                      GW100K-ET-G10
+Battery Side
+Battery Type                                                                                                              Li-Ion
+Nominal Voltage (V)                                                                                                        600
+Voltage Range (V)                                                                                                       300 ~ 800
+Start-up Voltage (V)                                                                                                       300
+Number of Battery Inputs                                                                                                     2
+Max. Continuous Charging Current (A)                           85 × 2                               100 × 2                                      110 × 2                        110 × 2
+Max. Continuous Discharging Current (A)                        85 × 2                               100 × 2                                      110 × 2                        110 × 2
+Max. Charging Power (kW)                                         75                                   88                                          99.99                           110
+Max. Discharging Power (kW)                                      75                                   88                                          99.99                           110
+
+PV Side
+Max. Input Power (kW)                                           150                                   160                                          200                            200
+Max. Input Voltage (V)*1                                       1000                                  1000                                         1000                           1000
+MPPT Operating Voltage Range (V)*2                           160 ~ 950                             160 ~ 950                                    160 ~ 950                      160 ~ 950
+Start-up Voltage (V)                                                                                                       200
+Nominal Input Voltage (V)                                       620                                  620                                          620                             620
+Max. MPPT Current (A)                                                                                                     42 × 8
+Max. MPPT Short Circuit Current (A)                                                                                       55 × 8
+Number of MPPTs                                                                                                             8
+Number of Strings per MPPT                                                                                                  2
+
+AC Side (on-grid)
+
+
+
+
+GoodWe-Single page-20260708-EN-V2.1 Information may be subject to change without notice during product improving.
+Nominal Power (kW)                                               75                                   80                                    99.99                                100
+Max. Power (kW)                                                  75                                  88*4                                   99.99                                110*4
+Nominal Apparent Power from / to Grid (kVA)                      75                                   80                                    99.99                                100
+Max. Apparent Power to Grid (kVA)                                75                                  88*5                                   99.99                                110*5
+Max. Apparent Power from Grid (kVA)                              75                                  88*5                                   99.99                                110*5
+Nominal Voltage (V)                                                                                  220 / 380, 230 / 400, 240 / 415, 3L / N / PE
+Voltage Range (V) (according to local standard)                                                                       180 ~ 280
+Nominal Frequency (Hz)                                                                                                 50 / 60
+Frequency Range (Hz)                                                                                              45 ~ 55 / 55 ~ 65
+Nominal Current from / to Grid (A)                114.0 @380Vac; 108.3 @400Vac;         121.6 @380Vac; 115.5 @400Vac;        152.0 @380Vac; 144.4 @400Vac;          152.0 @380Vac; 144.4 @400Vac;
+104.4 @415Vac                         111.3 @415Vac                          139.2 @415Vac                        139.2 @415Vac
+Max. Current to Grid (A)*6                        114.0 @380Vac; 108.3 @400Vac;         133.8 @380Vac; 127.1 @400Vac;        152.0 @380Vac; 144.4 @400Vac;          167.2 @380Vac; 158.8 @400Vac;
+104.4 @415Vac                         122.5 @415Vac                          139.2 @415Vac                        153.1 @415Vac
+Max. Current from Grid (A)*6                      114.0 @380Vac; 108.3 @400Vac;         133.8 @380Vac; 127.1 @400Vac;        152.0 @380Vac; 144.4 @400Vac;          167.2 @380Vac; 158.8 @400Vac;
+104.4 @415Vac                         122.5 @415Vac                          139.2 @415Vac                        153.1 @415Vac
+Power Factor                                                                                                 0.8 leading ~ 0.8 lagging
+THDi                                                                                                                    <3%
+
+Backup Side*3
+Nominal Output Apparent Power (kVA)                             75                                   80                                    99.99                                100
+Max. Output Apparent Power (kVA)                                75                                   88                                    99.99                                110
+Peak Output Power without Grid (kW)                         120% @ 60s;                110% @ continuous; 120% @ 60s;                  120% @ 60s;                 110% @ continuous; 120% @ 60s;
+150% @ 10s                          150% @ 10s                             150% @ 10s                           150% @ 10s
+Nominal Output Voltage (V)                                                                          220 / 380, 230 / 400, 240 / 415, 3L / N / PE
+Nominal Output Frequency (Hz)                                                                                         50 / 60
+Max. Output Current (A)                           114.0 @380Vac; 108.3 @400Vac;        133.8 @380Vac; 127.1 @400Vac;        152.0 @380Vac; 144.4 @400Vac;           167.2 @380Vac; 158.8 @400Vac;
+104.4 @415Vac                        122.5 @415Vac                          139.2 @415Vac                         153.1 @415Vac
+THDv (@Linear Load)                                                                                                    <3%
+On / Off-grid Switching Time                                                                                          <10ms
+
+Generator Side*3
+Nominal Apparent Power (kVA)                                     75                                   80                                    99.99                                 100
+Max. Apparent Power (kVA)                                        75                                   88                                    99.99                                 110
+Nominal Voltage (V)                                                                                  220 / 380, 230 / 400, 240 / 415, 3L / N / PE
+Nominal Frequency (Hz)                                                                                                 50 / 60
+Frequency Range (Hz)                                                                                              45 ~ 55 / 55 ~ 65
+Max. Current (A)                                  114.0 @380Vac; 108.3 @400Vac;         133.8 @380Vac; 127.1 @400Vac;        152.0 @380Vac; 144.4 @400Vac;          167.2 @380Vac; 158.8 @400Vac;
+104.4 @415Vac                         122.5 @415Vac                          139.2 @415Vac                        153.1 @415Vac
+
+Efficiency
+Max. Efficiency                                                98.1%                                98.1%                                        98.1%                           98.1%
+European Efficiency                                            97.7%                                97.7%                                        97.7%                           97.7%
+Max. Battery to AC Efficiency                                  98.2%                                98.2%                                        98.2%                           98.2%
+MPPT Efficiency                                                                                                           99.9%
+
+Protection
+PV String Current Monitoring                                                                                             Integrated
+PV Insulation Resistance Detection                                                                                       Integrated
+Residual Current Monitoring                                                                                              Integrated
+PV Reverse Polarity Protection                                                                                           Integrated
+Battery Reverse Polarity Protection                                                                                      Integrated
+Anti-islanding Protection                                                                                                Integrated
+AC Overcurrent Protection                                                                                                Integrated
+AC Short Circuit Protection                                                                                              Integrated
+AC Overvoltage Protection                                                                                                Integrated
+DC Switch                                                                                                                Integrated
+DC Surge Protection                                                                                            Type II (Type I + II Optional)
+AC Surge Protection                                                                                                        Type II
+AFCI*7                                                                                                                    Optional
+Rapid Shutdown                                                                                                            Optional
+Remote Shutdown                                                                                                           Optional
+
+General Data
+Operating Temperature Range (°C)                                                                                    -35 ~ +60
+Relative Humidity                                                                                                   0 ~ 100%
+Max. Operating Altitude (m)                                                                                            4000
+Cooling Method                                                                                                  Smart Fan Cooling
+User Interface                                                                                          LED, LCD (Optional), WLAN + APP
+Communication with BMS                                                                                                 CAN
+Communication                                                                                 RS485, WiFi + LAN + Bluetooth, 4G + Bluetooth (Optional)
+Communication Protocols                                                                                     Modbus-RTU, Modbus-TCP
+Weight (kg)                                                                                                             97
+Dimension (W × H × D mm)                                                                                         995 × 758 × 358
+Noise Emission (dB)                                                                                                    <60
+Power Self-consumption at Night (W)                                                                                    <15
+Ingress Protection Rating                                                                                              IP66
+Anti-corrosion Class                                                                                                    C4
+Mounting Method                                                                                                   Wall Mounted
+*1: For GW75K-ET-G10/GW80K-ET-G10/GW99.99K-ET-G10/GW100K-ET-G10, when the input voltage                                 *5: For Chile, Max. Apparent Power to Grid (kVA)/Max. Apparent Power from Grid (kVA):
+ranges from 950V to 1000V, the inverter will enter the standby mode, and the voltage returns to 950V                     GW80K-ET-G10: 80kVA, GW100K-ET-G10: 100kVA.
+to enter the normal operation state.                                                                                 *6: For Chile, Max. Current to Grid (A)/Max. Current from Grid (A): GW80K-ET-G10:
+*2: Please refer to the user manual for the MPPT Voltage Range at nominal Power.                                             121.6@380Vac, 115.5@400Vac, 111.3@415Vac; GW100K-ET-G10: 152.0@380Vac,
+*3: The STS Box or STS Cabinet is needed.                                                                                    144.4@400Vac, 139.2@415Vac.
+*4: For Chile, Max. Power (kW): GW80K-ET-G10: 80kW, GW100K-ET-G10: 100kW.                                                *7: For Brazil, AFCI: Integrated.
+*: Please visit GoodWe website for the latest certificates.
+
+
+www.goodwe.com

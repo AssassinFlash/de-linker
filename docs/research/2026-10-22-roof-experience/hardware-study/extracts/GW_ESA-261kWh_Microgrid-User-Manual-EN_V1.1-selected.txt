@@ -1,0 +1,197 @@
+===== PDF PAGE 1 =====
+V1.1 2026-08-26
+
+===== PDF PAGE 21 =====
+2.1.1 STS Solution
+
+NOTICE
+
+
+1. The energy storage system that is directly connected to the STS for
+communication must be less than or equal to 30 m away from the STS.
+2. The communication cable length between the STS and the nearest energy
+storage system should not exceed 45 m, and the communication cable length
+between two adjacent energy storage systems should not exceed 5 m.
+3. It is recommended to install a UPS between the STS and SEC3000C. With the UPS
+installed, the system can implement remote black start; without the UPS, remote
+black start cannot be implemented.
+4. For STS port descriptions, refer to the user manual of the corresponding STS.
+
+
+
+Networking Introduction
+
+• Method 1:
+
+
+
+
+20
+
+===== PDF PAGE 24 =====
+Name          Model/Specifications                 Description
+
+
+• GW500K-STS-PCS-G10                 On/Off-grid switching cabinet,
+• GW250K-STS-PCS-G10                 supports seamless On/Off-
+STS
+• GW500K-STS-PCS-G11                 grid switching within 20 ms.
+• GW250K-STS-PCS-G11                 Purchase from GoodWe.
+
+
+Purchase from GoodWe. For
+the same project, the model
+and specifications of the
+• GW100/261-ESA-LCN-G10              energy storage systems
+Energy        • GW100/261-ESA-LCN-G11              should remain consistent;
+Storage                                            mixing products is not
+• GW125/261-ESA-LCN-G10
+System
+• GW125/261-ESA-LCN-G11              recommended.
+
+• Paired with 500K STS: n<=5
+• Paired with 250K STS: n<=2
+
+
+PV Grid-                                           Convert PV DC power to AC
+Please consult Sales for the
+connected                                          power.
+specific compatible models.
+Inverter                                           Purchase from GoodWe
+
+CT ratio: nA/5A.
+
+• nA: CT primary-side input
+current. Depending on the site's   For use with GM330 smart
+PCC busbar or cable
+meter.
+CT              specifications, the value of n
+Customer to purchase
+shall be determined according
+separately.
+to actual conditions.
+• 5A: CT secondary side output
+current.
+
+
+Used for grid-connected
+GM330 Smart
+GM330                                power limitation.
+Meter
+Purchase from GoodWe.
+
+
+23
+
+===== PDF PAGE 25 =====
+Name           Model/Specifications              Description
+
+CT ratio: 5A/2mA.
+
+• 5A: CT primary side input       For use with secondary smart
+Secondary CT     current,                        meter DTSD1352.
+• 2mA: CT secondary side output   Purchase from GoodWe.
+current.
+
+
+Secondary                                        Used for grid-connected
+smart meter    DTSD1352                          power limitation.
+DTSD1352                                         Purchase from GoodWe.
+
+Collects system data and
+sends it to WE 3.0/SEMS+ to
+enable centralized monitoring,
+SEC3000C       SEC3000C
+operation, and maintenance
+of the system.
+Purchase from GoodWe.
+
+Collects system data and
+sends it to a third-party
+monitoring platform to enable
+Third-party
+-                                 centralized monitoring,
+EMS
+operation, and maintenance
+of the system.
+Provided by customer.
+
+Remotely monitor the
+operating data of the energy
+SEMS+/WE
+SEMS+/WE 3.0                      storage system and set
+3.0
+system parameters.
+Purchase from GoodWe.
+
+
+
+
+24
+
+===== PDF PAGE 30 =====
+2.1.2 MC Synchronization Scheme
+
+NOTICE
+
+
+• The off-grid parallel bus length should not exceed 50 m.
+• It is recommended to add a UPS to supply power to SEC3000C.
+
+
+
+• PV-Storage on/off-Grid Switching Scenario
+
+1. The ACB is closed, and the PV energy storage system operates in grid-connected
+mode. When the power grid fails, ESA261 controls the ACB to open through the MC
+board. The action time is approximately 150 ms, and the load outage duration is
+approximately 150 ms. After the ACB opens, the system switches to PV energy
+storage load-carrying operation.
+2. The ACB is closed, and the PV energy storage system operates in grid-connected
+
+29
+
+===== PDF PAGE 58 =====
+4 Technical Specifications
+Functions             Technical Specifications   Description
+
+Maximum Number
+of Energy Storage     • STS 500K：≤5
+-
+Integrated Cabinets   • STS 250K：≤2
+Connected to STS
+
+Supports up to 10 ESA261
+Off-grid Operation    Supported                  units in off-grid parallel
+operation
+
+Off-grid THDu         3%                         -
+
+Grid Type             TN-S/TN-C/TN-C-S/TT        -
+
+PV-to-storage Ratio   <1.6 : 1                   -
+
+Energy Storage Black
+Supported                   -
+Start
+
+When paired with STS,
+On/Off-grid                                      seamless On/Off-grid
+Supported
+Switching                                        switching within 20 ms can be
+achieved
+
+Load Control          Supported                  -
+
+Off-grid Control      Supported                  -
+
+Backup Control        Supported                  -
+
+Diesel Generation
+Supported                  -
+Control
+
+
+
+
+57

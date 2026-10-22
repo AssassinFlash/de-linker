@@ -1,0 +1,231 @@
+===== PDF PAGE 1 =====
+V1.6 2026-04-20
+
+===== PDF PAGE 3 =====
+About This Manual
+Overview
+This document primarily introduces the product information, installation wiring,
+configuration tuning, troubleshooting, and maintenance of the energy storage
+system. Before installing and using this product, please read this manual carefully to
+understand the product safety information and familiarize yourself with the
+product's functions and features. The document may be updated periodically. Please
+obtain the latest version and more product information from the official website:
+https://www.goodwe.com.
+
+
+Applicable Model
+This document applies to the following models of energy storage systems.
+
+Nominal output         Nominal output          Available
+Product Model
+power                  voltage                 Energy
+
+GW125/261-ESA-
+125kW                  400/380V, 3L/N/PE       261.25kWh
+LCN-G10
+
+GW125/261-ESA-
+125kW                  400/380V, 3L/N/PE       261.25kWh
+LCN-G11
+
+
+
+
+Symbol Definition
+
+DANGER
+
+Indicates a highly hazardous situation which, if not avoided, will result in death or
+serious injury.
+
+
+
+
+2
+
+===== PDF PAGE 14 =====
+2 Product Introduction
+2.1 Product Overview
+The ESA Series 125kW/261kWh Commercial & Industrial Energy Storage System is a
+fully self-developed product featuring high energy density, high power density, and
+deep 3S integration. This storage system integrates a 314Ah liquid-cooled PACK and
+a 125kW intelligent air-cooled PCS, and is equipped with dual fire protection at both
+the PACK and system levels. It also supports integration with an STS to enable grid-
+tied and off-grid switching.
+
+Supported Grid Types
+
+
+
+
+NOTICE
+
+The device does not support direct connection to IT system grids. If the customer
+needs to connect to an IT system grid, it can be achieved by externally equipping
+an isolation transformer. The specific wiring method must comply with local power
+distribution regulations.
+
+
+2.2 Application Scenarios
+2.2.1 Grid-Connected Scenarios
+
+• Master-Slave Parallel Operation (China only)
+
+
+
+13
+
+===== PDF PAGE 46 =====
+5.4.1 Grid-Connected Scenarios
+
+NOTICE
+
+Current transformers (CTs) and meters must be configured at the grid connection
+point to enable the grid connection power limitation function. Please select the
+appropriate solution based on the actual on-site conditions:
+
+• If power outage operations are permitted on-site, install a primary CT at the grid
+connection point and connect it to the GM330/primary meter.
+• If power outage is not permitted on-site, install a secondary CT on the existing
+primary CT and connect it to the DTSD1352/secondary meter.
+
+
+
+Master-Slave Parallel Connection
+
+The energy storage system supports master-slave parallel connection. The system
+does not support connection to a PV inverter, and can support up to 8 units in
+parallel.
+
+
+
+
+45
+
+===== PDF PAGE 48 =====
+Name              Description
+
+For circuit protection. Recommended specification: 250A.
+breaker
+Customer to purchase separately.
+
+Used with the GM330 smart meter. CT ratio is: nA/5A.
+
+• nA: CT primary side input current. The value of 'n' depends on
+the actual specifications of the PCC point's busbar or cable on
+CT
+site.
+• 5A: CT secondary side output current.
+
+Customer to purchase separately.
+
+GM330 Smart       Used for grid-connection power limiting.
+Meter             Purchase from GoodWe.
+
+Used with the secondary smart meter DTSD1352. CT ratio is:
+Secondary CT      5A/2mA.
+Purchase from GoodWe.
+
+Secondary
+Used for grid-connection power limiting.
+Smart Meter
+Purchase from GoodWe.
+DTSD1352
+
+Remotely monitors the operating data of the energy storage
+WE 3.0            system and sets system parameters.
+Purchase from GoodWe.
+
+
+Parallel Connection via EMS
+
+The ESA261 energy storage system supports parallel connection via SEC3000C/third-
+party EMS, and the system supports connection to PV inverters.
+When connected to SEC3000C, up to 20 units can be connected in parallel.
+When connected to a third-party EMS, the number of units supported in parallel is
+determined by the third-party EMS.
+
+
+
+
+47
+
+===== PDF PAGE 49 =====
+Communi                                 Max.
+Compatib                                                       Monitoring
+cation           Connection Topology    Parallel
+le Device                                                      Platform
+Method                                  Units
+
+SEC3000C                     Daisy-chain / Hybrid              WE 3.0 (Domestic
+LAN                                     20
+Daisy-chain Star                  Version)
+SEMS+ (Overseas
+LAN              Star                   15         Version)
+
+Third-                                                         Third-party
+LAN/RS485 Daisy-chain                   N
+party EMS                                                      Monitoring Platform
+
+
+■    Parallel Connection via SEC3000C
+
+■       Daisy-Chain Connection
+
+
+
+
+48
+
+===== PDF PAGE 94 =====
+10 Technical Data
+Technical Data             GW125/261-ESA-LCN-G10 GW125/261-ESA-LCN-G11
+
+Battery Data
+
+Cell Type                  LFP (LiFePO4)
+
+Cell Capacity (Ah)         314
+
+Module Nominal Energy
+52.25
+(kWh)
+
+Module Configuration       1P52S
+
+Module Weight (kg)         348±2                 335±8
+
+Number of Packs            5
+
+Rack Nominal Energy
+261.25
+(kWh)
+
+Rack Usable Energy (kWh)   261.25
+
+Nominal Voltage (V)        832
+
+Operating Voltage Range
+676~936
+(V)
+
+Max Continuous
+Charge/Discharge           188
+Current（A）
+
+Max. Charge/ Discharge
+198.5
+Current (A)
+
+Max. Charge/ Discharge
+0.5P
+Rate
+
+Depth of Discharge         90%~100%（90%Recommended）
+
+AC Output Data (On-grid)
+
+
+
+
+93

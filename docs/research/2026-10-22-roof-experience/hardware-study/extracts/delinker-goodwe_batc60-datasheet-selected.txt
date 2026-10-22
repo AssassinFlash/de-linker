@@ -1,0 +1,98 @@
+===== PDF PAGE 2 =====
+BAT-C Series
+
+Technical Data                                                              GW61.4-BAT-AC-G10                                       GW112.6-BAT-AC-G10
+
+Battery System
+
+Cell Type                                                                                                        LFP (LiFePO4)
+
+Cell Capacity (Ah)                                                                                                     100
+
+Rated Capacity (Ah)                                                                                                    200
+
+Pack Type / model                                                                                          GW10.2-PACK-ACI-G10
+
+Pack Nominal Energy (kWh)                                                                                             10.24
+
+Pack Configuration                                                                       2P96S                                                   2P176S
+
+Pack Weight (kg)                                                                                                       <90
+
+
+
+
+GoodWe-Single page-20260112-EMEA-EN-V1.1 Information may be subject to change without notice during product improving.
+Number of Packs                                                                             6                                                       11
+
+Nominal Energy (kWh)                                                                      61.4                                                    112.6
+
+Usable Energy (kWh)*1                                                                      60                                                      110
+
+Nominal Voltage (V)                                                                      307.2                                                    563.2
+
+Operating Voltage Range (V)                                                        275.52 ~ 346.56                                          505.12 ~ 635.36
+
+Charging Operating Temperature Range (°C)                                                                          -20 ~ +55
+
+Discharging Operating Temperature Range (°C)                                                                       -20 ~ +55
+*2
+Max. Charge / Disharge Current (A)                                                                                  180 / 220
+*2
+Max. Charge / Discharge Rate                                                                                       0.9C / 1.1C
+
+Max. Charge / Discharge Power (kW)*2                                                  55.2 / 67.5                                             101.3 / 123.9
+
+Cycle Life                                                                                       6000 (25 ± 2°C, 0.5C, 90%DOD, 70%EOL)
+
+Depth of Discharge                                                                                                    100%
+
+Efficiency
+
+Round-trip Efficiency                                                                                 96%@100%DOD, 0.2C, 25 ± 2°C
+
+General Data
+
+Operating Temperature Range (°C)                                                                                   -20 ~ +55
+
+Storage Temperature (°C)                                                                         +35 ~ +45 (<6 Months); -20 ~ +35 (<1 Year)
+
+Relative Humidity                                                                                       0 ~ 100% (Condensationless)
+
+Max. Operating Altitude (m)                                                                                           4000
+
+Cooling Method                                                                                                  Air Conditioner
+
+User Interface                                                                                                         LED
+
+Communication                                                                                               CAN (RS485 Optional)
+
+Weight (kg)                                                                               <950                                                    <1400
+
+Dimension (W × H × D mm)                                                                                     1055 × 2000 × 1055
+
+Ingress Protection Rating                                                                                             IP55
+
+Anti-corrosion Class                                                                                          C4 (C5-M Optional)
+
+Fire Safety Equipment                                                                                  Aerosol (Pack & Cabinet Level)
+
+*3
+Certification
+
+IEC62619 / IEC63056 / IEC60730 / IEC62477 / VDE2510 /
+Safety Regulation
+ISO13849 IEC62040 / N140 / EU 2023 / 1542 / UN38.3
+
+EMC                                                                                                      IEC / EN61000-6-1 / 2 / 3 / 4
+
+*1: Test conditions, 100% DOD, 0.2C charge & discharge at +25 ± 2°C for battery system at beginning life. System Usable Energy may vary with system configuration.
+*2: Actual Dis- / Charge Current and power derating will occur related to Cell Temperature and SOC. And, Max C-rate continuous time is affected by SOC, Cell Temperature, Atmosphere
+environment temperature.
+*3: Not all certifications & standards listed, check the official website for detail.
+*: Please visit GoodWe website for the latest certificates.
+
+
+
+
+emea.goodwe.com                                                                                             This datasheet provides information about products offered in the EMEA region.

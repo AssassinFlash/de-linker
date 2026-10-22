@@ -1,0 +1,334 @@
+===== PDF PAGE 1 =====
+B2 Series Battery
+
+
+
+
+B2 Series
+HIGH VOLTAGE BATTERY
+USER MANUAL
+Tel: (86)20 66608588      Fax: (86)20 66608589      Web: www.saj-electric.com
+GUANGZHOU SANJING ELECTRIC CO., LTD   Add: SAJ Innovation Park, No.9, Lizhishan Road, Science City, Guangzhou High-tech Zone , Guangdong, P.R.China
+B2-5.0-25.0-HV1
+{=2*{page}-1}
+V1.2
+B2-5.0-25.0-HV5
+
+===== PDF PAGE 5 =====
+B2 Series Battery
+
+
+
+
+2.1 Safety Instructions
+
+
+
+
+2.
+For safety, be sure to read all the safety instructions carefully prior to any works, and please observe the
+appropriate rules and regulations of the country or region where you installed B2 battery.
+
+
+DANGER
+
+·Please keep the power off prior to any operations
+·Do not use the battery or the battery control unit if it is defective, broken or damaged.
+·Do not expose the battery to temperatures in excess of 50°C.
+·Do not subject the battery to any strong force.
+·Do not place the battery near a heat source, such as direct sunlight, a fireplace.
+·Keep inflammable and explosive dangerous items or flames away from the battery.
+·Do not soak the battery in water or expose it to moisture or liquids.
+·Do not use the battery in vehicles.
+·Do not use the battery in areas where the ammonia content of the air exceeds 20ppm.
+
+
+
+
+WARNING
+
+·Only qualified personnel who has full knowledge of local safety regulations and local standards on battery can install,
+maintain, retrieve and process this product.
+·SAJ electric shall not be liable for any loss or warranty claims arising from any unauthorized change of product which may
+cause fatal injury to the operator, third party or equipment performance.
+·For personal and property safety, do not short-circuit the positive (+) and negative (-) electrode terminals.
+
+
+
+
+PREPARATION
+CAUTION
+·Do not modify or change any components in the battery.
+·Risk of damage due to improper modification
+·Use professional tools when operating the products.
+
+
+
+
+NOTICE
+
+·During installation of the battery B2 high voltage battery, circuit breaker must be disconnected from the battery pack wiring.
+·The battery B2 can only be used as a set with SAJ's H2 high voltage series storage inverter, otherwise it cannot be used
+normally.
+
+
+
+
+3                                                                                                                                                            4
+
+===== PDF PAGE 10 =====
+B2 Series Battery
+
+
+
+
+3.5 Datasheet
+Model                                               B2-5.0-HV1       B2-10.0-HV1         B2-15.0-HV1         B2-20.0-HV1     B2-25.0-HV1    Model                                               B2-5.0-HV5       B2-10.0-HV5         B2-15.0-HV5         B2-20.0-HV5       B2-25.0-HV5
+Battery Module                                                               BU2-5.0-HV1 (1P32S        102.4V 50Ah)
+Battery Module                                                               BU2-5.0-HV5 (1P32S 102.4V 50Ah)
+No. of Modules                                           1                  2                    3                    4           5
+No. of Modules                                           1                  2                    3                 4                  5
+Rated Energy [kWh]                                      5.0                10.0                15.0               20.0           25.0
+Rated Energy [kWh]                                      5.0                10.0                15.0               20.0              25.0
+Usable Energy [kWh]                                     4.5                9.0                 13.5               18.0           22.5
+Usable Energy [kWh]                                     4.5                9.0                 13.5               18.0              22.5
+Rated Power (W)                                        3072               6144                 9216               12288         15360
+Rated Power (W)                                        3072               6144                 9216               12288             15360
+Dimension (H*W*D) [mm]                              261*626*365        522*626*365         783*626*365        1044*626*365   1305*626*365   Dimension (H*W*D) [mm]                              261*626*365        522*626*365         783*626*365        1044*626*365      1305*626*365
+Weight [kg]                                            50.5                101                 151.5              202            252.5      Weight [kg]                                            52.5                105                 157.5              210               262.5
+Nominal Voltage [V]                                    102.4              204.8                307.2              409.6          512        Nominal Voltage [V]                                    102.4              204.8                307.2              409.6              512
+Operating Voltage [V]                               89.6～115.2         179.2～230.4         268.8～345.6        358.4～460.8     448～576.0     Operating Voltage [V]                               89.6～115.2         179.2～230.4         268.8～345.6        358.4～460.8        448～576.0
+Max. Charge Current [A]                                                                        30                                           Max. Charge Current [A]                                                                        30
+Max. Discharge Current [A]                                                                     30                                           Max. Discharge Current [A]                                                                     30
+Control Module                                                                              BC2-HV1                                         Control Module                                                                              BC2-HV1
+Max. Fault Current [A]                                                                         100                                          Max. Fault Current [A]                                                                         100
+Dimension (H*W*D)[mm]                                                                     200*626*365                                       Dimension (H*W*D)[mm]                                                                     200*626*365
+Weight [kg]                                                                                    11                                           Weight [kg]                                                                                    11
+General Data
+General Data
+Ingress Protection                                                                            IP65
+Ingress Protection                                                                            IP65
+Dimension (H*W*D) [mm] (Battery Control Unit +
+461*626*365       722*626*365         983*626*365        1244*626*365    1505*626*365   Dimension (H*W*D) [mm] (Battery Control Unit +
+Battery Unit)                                                                                                                                                                                   461*626*365       722*626*365         983*626*365        1244*626*365       1505*626*365
+Battery Unit)
+Weight [kg] (Battery Control Unit + Battery Unit)      61.5               112                 162.5               213           263.5
+Weight [kg] (Battery Control Unit + Battery Unit)      63.5               116                 168.5               221              273.5
+Mounting                                                                         Wall-Mounted / Ground-Mounted
+Mounting                                                                         Wall-Mounted / Ground-Mounted
+Operating Temperature Range                                               Charging: 0～50℃; Discharging: -10～50℃
+Operating Temperature Range                                               Charging: 0～50℃; Discharging: -10～50℃
+Ambient Humidity                                                                     0～95% non-condensing
+Ambient Humidity                                                                     0～95% non-condensing
+Cooling Method                                                                         Natural convection
+Cooling Method                                                                         Natural convection
+Communication                                                                                 CAN
+Communication                                                                                 CAN
+Warranty [Year]                                                                    Refer to the warranty policy
+Warranty [Year]                                                                    Refer to the warranty policy
+Applicable Standard                                               IEC62619(Cell&Pack)/EN62477-1/EN61000-6-1/2/3/4/UN38.3
+Applicable Standard                                               IEC62619(Cell&Pack)/EN62477-1/EN61000-6-1/2/3/4/UN38.3
+
+
+
+
+13                                                                                                                                                                                                                                                                                            14
+
+===== PDF PAGE 11 =====
+B2 Series Battery
+
+
+
+
+4.1 Unpacking and Inspection
+4.1.1 Checking the Package
+
+
+
+
+4.
+Although SAJ’s battery have thoroughly tested and checked before delivery, it is uncertain that the battery
+may suffer damages during transportation. Please check the package for any obvious signs of damage, and if
+such evidence is present, do not open the package and contact your dealer as soon as possible
+
+
+
+
+4.1.2 Scope of Delivery
+
+Please contact after sales if there are missing or damaged components.
+
+Battery Control Unit Package
+
+
+
+
+Battery control unit*1         Side cover*2                Documents               Grounding cable*1
+
+
+
+
+INSTRUCTIONS FOR                                     M4*25 screw*6              M10*80 screw*2              M6*12 screw*4             M4*10 screw*1
+
+
+
+
+INSTALLATION                                                                                                                      Battery cable*2 (Battery
+Communication cable*1      Power cable (1450mm) *1    Power cable (150mm) *1
+control unit to inverter)
+
+
+
+
+15                                                                                                                                                  16
+
+===== PDF PAGE 19 =====
+B2 Series Battery
+
+
+
+
+Remove the screw of grounding terminal and secure the additional grounding cable by insert a screw into the   5.2 Connecting Battery COMM Cable
+screw hole in the OT/DT terminal. Connect the grounding cables as the following diagram.
+
+Step1: Connect link port 0 of battery control unit to link port 1 of battery 5 (the battery number can be varied,
+it should be depended on the number of battery modules in the system
+Step 2: Repeat step 1 to connect the rest of the battery modules
+Step 3: Insert a RJ45 plug to link port 0 of battery 1, insert a RJ45 plug to CAN port of battery control unit
+Note: If the RJ45 plug is not installed, a communication error will occur.
+
+
+
+
+RJ45 Plug
+GND
+COMM
+Battery 5
+
+
+
+Battery 4                                         Mounting Torque
+1.5-1.8 N·m
+
+COMM
+Battery 3
+Figure 5.2
+Connecting the additional
+grounding cable
+
+
+Battery 2
+
+RJ45 Plug
+Figure 5.3
+Connecting battery COMM cable            Battery 1
+
+
+
+
+31                                                                                                                                                                                                                                                                                   32
+
+===== PDF PAGE 20 =====
+B2 Series Battery
+
+
+
+
+5.3 Connecting Battery Power Cable                                                                                                                            5.4 Connecting Battery to Inverter
+WARNING                                                                                                  Please follow the following diagram to connect battery and inverter.
+
+· Power off the battery system before connecting the power cable to avoid high voltage danger
+·     · The electrical connection of high voltage battery systems must be operated by qualified technicians in accordance
+with local and national power grid standards and regulations.                                                                                                                        Inverter
+
+
+Step 1: Connect the power cable from B- port of battery control unit to B- port of the battery 5 (the battery
+BAT-
+COMM                         BAT+
+number can be varied, it should be depended on the number of battery modules in the system).
+Step 2: Connect power cable from B+ port of battery 5 to B- port of battery 4.
+Step 3: Repeat step 2 to connect the rest of the battery modules.
+Step 4: Connect the B+ from battery control unit to B+ of battery 1.
+Note: Please follow the following diagrams to connect cables.
+
+
+
+Battery                                                                                                                 Figure 5.5
+Control
+Power cables                                                                      Connecting battery system to inverter
+Unit
+
+Battery 5
+
+Power cables
+Battery 4
+
+
+
+
+Figure 5.4
+Battery 3
+Connecting battery power cables
+
+
+Battery 2
+
+
+
+Battery 1
+
+
+
+
+33                                                                                                                                                                                                                                                                                        34
+
+===== PDF PAGE 21 =====
+B2 Series Battery
+
+
+
+
+5.5 Communication Interface                                                                                                       5.6 Installation of Side Covers
+Note: 1) The communication cable is one end crimped, this crimped end is for battery side connection. The
+other end is for inverter side connection. Customer should crimp the other end of communication                                       Install the side covers for battery control unit and battery module and secure it with screws (M4*25).
+cable by themselves.
+2) The pinout of RJ45 is detailed in Table 5.1 below.
+3) Confirm that the DC switch is OFF during installation to avoid short circuit caused by wrong operation
+during battery wiring.
+4) Please use the battery cable in original package.
+
+
+
+
+Figure 5.7
+Installing side covers for
+battery control unit
+Figure 5.6
+Pinout of RJ45
+
+
+
+
+Color                           Name
+
+1               White-orange                       Blank
+
+2                 Orange                           Blank
+
+3               White-green                        Blank
+
+4                   Blue                           CAN-H                                         Figure 5.8
+Installing side covers for
+5                White-blue                        CAN-L                                         battery module
+
+6                  Green                           Blank
+Table 5.1
+Pinout of RJ45
+7               White-brown                       RS485-A
+Description
+8                  Brown                          RS485-B
+
+
+
+
+35                                                                                                                                                                                                                                                                     36

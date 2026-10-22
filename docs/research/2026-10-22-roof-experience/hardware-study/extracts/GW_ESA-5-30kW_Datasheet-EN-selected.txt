@@ -1,0 +1,193 @@
+===== PDF PAGE 2 =====
+ESA Series / Power Module
+GW5K- GW6K- GW8K- GW9.999K- GW10K- GW12K- GW15K- GW20K- GW25K- GW29.999K- GW30K-
+Technical Data                                      ETA-G20 ETA-G20 ETA-G20 ETA-G20 ETA-G20 ETA-G20 ETA-G20 ETA-G20 ETA-G20 ETA-G20 ETA-G20
+Battery Side
+Battery Type                                                                                                                            LFP (LiFePO4)
+Nominal Voltage (V)                                                                                                                          750
+Voltage Range (V)                                                                                                                         700 ~ 950
+Start-up Voltage (V)                                                                                                                         720
+Number of Battery Input                                                                                                                       1
+Max. Continuous Charging Current (A)                     6.7               8.1             10.7             13.4              13.4           16.1                20.1             26.7             33.3              40.0             40.0
+Max. Continuous Discharging Current (A)                  7.4               8.9             11.8             14.7              14.7           17.7                22.1             29.4             36.7              44.1             44.1
+Max. Charging Power (kW)                                 5.0               6.0             8.0              10.0              10.0           12.0                15.0             20.0             25.0              30.0             30.0
+Max. Discharging Power (kW)                              5.5               6.6             8.8              11.0              11.0           13.2                16.5             22.0             27.5              33.0             33.0
+PV Side
+Max. Input Power (kW)                                     10               12               16                20               20              24                 30               40                50               60               60
+Max. Input Voltage (V)*1                                                                                                                      1000
+MPPT Operating Voltage Range (V)*2                                                                                                        120 ~ 950
+Start-up Voltage (V)                                                                                                                          150
+Nominal Input Voltage (V)                                                                                                                     750
+Max. MPPT Current (A)                                                21 / 21 / 21                                                       21 / 21 / 21 / 21                                                    21 / 21 / 42 / 42
+Max. MPPT Short Circuit Current (A)                                  26 / 26 / 26                                                       26 / 26 / 26 / 26                                                    26 / 26 / 52 / 52
+Number of MPPTs                                                            3                                                                                               4
+Number of Strings per MPPT                                             1/1/1                                                               1/1/1/1                                                              1/1/2/2
+
+
+
+
+GoodWe-Single page-20260616-EN-V2.1 Information may be subject to change without notice during product improving.
+AC Side (Grid Port)
+Rated Power (kW)                                         5                 6                8               9.999             10           12            15                        20               25             29.999              30
+Max. Power (kW)                                          5                 6                8               9.999             10           12            15                        20               25             29.999              30
+Rated Apparent Power to Grid (kVA)                       5                 6                8               9.999             10           12            15                        20               25             29.999              30
+Rated Apparent Power from Grid (kVA)                     5                 6                8               9.999             10           12            15                        20               25             29.999              30
+Max. Apparent Power to Grid (kVA)*3                      5                 6                8               9.999             10           12            15                        20               25             29.999              30
+Max. Apparent Power from Grid (kVA)*4                   43.5              43.5             43.5              43.5            43.5         43.5          43.5                      43.5             55.2             55.2              55.2
+Nominal Voltage (V)                                                                                                         220 / 380, 230 / 400, 3L / N / PE
+Voltage Range (V) (According to local standard)                                                                                        180 ~ 260
+Nominal Frequency (Hz)                                                                                                                   50 / 60
+Frequency Range (Hz)                                                                                                                45 ~ 55 / 55 ~ 65
+7.6@380V         9.1@380V        12.2@380V         15.2@380V        15.2@380V 18.2@380V 22.8@380V                        30.4@380V        37.9@380V        45.5@380V        45.5@380V
+Rated Current to Grid (A)                             7.3@400V         8.7@400V        11.6@400V         14.5@400V        14.5@400V 17.4@400V 21.8@400V                        29.0@400V        36.3@400V        43.5@400V        43.5@400V
+7.6@380V         9.1@380V        12.2@380V         15.2@380V        15.2@380V 18.2@380V 22.8@380V                        30.4@380V        37.9@380V        45.5@380V        45.5@380V
+Rated Current from Grid (A)                           7.3@400V         8.7@400V        11.6@400V         14.5@400V        14.5@400V 17.4@400V 21.8@400V                        29.0@400V        36.3@400V        43.5@400V        43.5@400V
+7.6@380V         9.1@380V        12.2@380V         15.2@380V        15.2@380V 18.2@380V 22.8@380V                        30.4@380V        37.9@380V        45.5@380V        45.5@380V
+Max. Current to Grid (A)*5                            7.3@400V         8.7@400V        11.6@400V         14.5@400V        14.5@400V 17.4@400V 21.8@400V                        29.0@400V        36.3@400V        43.5@400V        43.5@400V
+Max. Current from Grid (A)*4*5                           63               63               63                63               63           63            63                        63               80               80               80
+Power Factor                                                                                                                   0.8 leading ... 0.8 lagging
+THDi                                                                                                                                      <3%
+AC Side (Back-up Port)
+Rated Apparent Power (kVA)                                 5                6                8                10                10               12              15               20                25                30                30
+Off-grid:        Off-grid:        Off-grid:         Off-grid:         Off-grid:        Off-grid:       Off-grid:        Off-grid:         Off-grid:         Off-grid:         Off-grid:
+Max. Apparent Power (kVA)*6                         5.5 (10.0, 10s), 6.6 (12.0, 10s), 8.8 (16.0, 10s), 11.0 (20.0, 10s), 11.0 (20.0, 10s), 13.2 (24, 10s), 16.5 (30, 10s), 22.0 (30.0, 10s), 27.5 (45.0, 10s), 33.0 (45.0, 10s), 33.0 (45.0, 10s),
+on-grid: 43.5 on-grid: 43.5 on-grid: 43.5 on-grid: 43.5 on-grid: 43.5 on-grid: 43.5 on-grid: 43.5 on-grid: 43.5 on-grid: 55.2 on-grid: 55.2 on-grid: 55.2
+Nominal Voltage (V)                                                                                                          220 / 380, 230 / 400, 3L / N / PE
+Nominal Frequency (Hz)                                                                                                                       50 / 60
+Off-grid: 11.4, Off-grid: 13.7, Off-grid: 18.2, Off-grid: 22.8, Off-grid: 22.8, Off-grid: 27.3, Off-grid: 33.4, Off-grid: 33.4, Off-grid: 50.0, Off-grid: 50.0, Off-grid: 50.0,
+Max. Current (A)*6                                    on-grid: 63      on-grid:63       on-grid: 63       on-grid:63       on-grid: 63      on-grid: 63     on-grid: 63      on-grid: 63       on-grid: 80       on-grid: 80       on-grid: 80
+THDv (@Linear Load)                                                                                                                            <3%
+On / Off-grid Switching Time (ms)                                                                                                                <4
+
+
+Max. Efficiency                                        98.0%            98.0%             98.0%            98.1%            98.1%             98.1%            98.1%             98.1%            98.2%            98.2%             98.2%
+European Efficiency                                    96.4%            96.9%             97.1%            97.2%            97.2%             97.2%            97.3%             97.3%            97.4%            97.4%             97.4%
+Max. Battery to AC Efficiency                                                                                                                 98.0%
+Protection
+PV String Current Monitoring                                                                                                             Integrated
+PV Insulation Resistance Detection                                                                                                       Integrated
+Residual Current Monitoring                                                                                                              Integrated
+PV Reverse Polarity Protection                                                                                                           Integrated
+Battery Reverse Polarity Protection                                                                                                      Integrated
+Anti-islanding Protection                                                                                                                Integrated
+AC Overcurrent Protection                                                                                                                Integrated
+AC Short Circuit Protection                                                                                                              Integrated
+AC Overvoltage Protection                                                                                                                Integrated
+DC Switch                                                                                                                                Integrated
+DC Surge Protection                                                                                                             Type II(Type I + II optional)
+AC Surge Protection                                                                                                                        Type II
+Rapid Shutdown                                                                                                                            Optional
+AFCI                                                                                                                                      Optional
+Remote Shutdown                                                                                                                          Integrated
+General Data
+Operating Temperature Range (ºC)                                                                                                 -35 ~ +60
+Relative Humidity                                                                                                                0 ~ 100%
+Max. Operating Altitude (m)                                                                                                4000 (>2000 derating)
+Cooling Method                                                                                                               Smart Fan Cooling
+User Interface                                                                                                               LED, WLAN + APP
+Communication with BMS                                                                                                              CAN
+Communication                                                                                             RS485, WiFi + LAN + Bluetooth, 4G + Bluetooth (Optional)
+Communication Protocols                                                                                                 Modbus-RTU, Modbus-TCP
+Weight (kg)                                               34               34               34              34          34           34          34          34                                      38               38               38
+Dimension (W × H × D mm)                                                                                                      800 × 340 × 270
+Ingress Protection Rating                                                                                                           IP66
+Mounting Method                                                                                                             Wall/Floor Mounted
+*1: When the input voltage ranges from 950V to 1000V, the inverter will enter the standby mode,                          *5: If the backup port is not used, select an appropriate circuit breaker based on the AC maximum
+and the voltage returns to950V to enter the normal operation state.                                                      output current.
+*2: Please refer to the user manual for the MPPT Voltage Range at nominal Power.                                         *6: "Off grid"means the energy of backup output only comes from PV and battery. "On grid"means
+*3: According to the local grid regulation.                                                                                  the energy of the backup output includes the energy from grid or generator(on-grid) side.
+*4: GOODWE ESA series has internal bypass 63A passthrough ability to supprt whole home                                   *: Please visit GoodWe website for the latest certificates.
+backup solution. If the customer don't want to do any breaker upgrade, the main breaker size
+in SolarGo(or SEMS+) can be set as previous breaker size.
+
+
+
+
+www.goodwe.com
+
+===== PDF PAGE 3 =====
+ESA Series / Battery Module*
+
+GW5.1-BAT- GW8.3-BAT- GW5.1-BAT- GW8.3-BAT- GW6.0-BAT- GW9.0-BAT-
+Technical Data                                             D-G20      D-G20      D-G21      D-G21      D-G20      D-G20
+
+Battery Type                                                                                                      LFP (LiFePO4)
+
+Rated Energy (kWh)                                              5.12                  8.32                 5.12                  8.32                 6.0                  9.0
+
+Usable Energy (kWh)                                             5.0*1                 8.0*1                5.0*1                 8.0*1               5.8*2                 8.7*2
+
+Operating Voltage Range (V)
+350 ~ 550
+(single phase system)
+Operating Voltage Range (V)
+700 ~ 950
+(three phase system)
+
+Max. Input Current (System) (A)                                 12.0                  19.0                 12.0                  19.0                 7.1                  10.7
+
+Max. Output Current (System) (A)                                13.2                  21.0                 13.2                  21.0                 7.9                  11.8
+
+Max. Input Power (System) (kW)*3                                 5.0                  8.0                   5.0                   8.0                 3.0                  4.5
+
+Max. Output Power (System) (kW)*3                                5.0                  8.0                   5.0                   8.0                 3.0                  4.5
+
+Peak.Output Power (System) (kW)*3                             7.5 @10s             12 @10s              7.5 @10s              12 @10s             4.5 @ 10s            6.75 @ 10s
+
+Charging Temperature Range (°C)                              -18 ~ +55            -18 ~ +55             +2 ~ +55              +2 ~ +55            -20 ~ +55            -20 ~ +55
+
+Discharging Temperature Range (°C)                                                                                  -20 ~ +55
+
+Relative Humidity                                                                                                   4 ~ 100%
+
+Max. Operating Altitude (m)                                                                                           4000
+
+Noise Emission (dB)                                               29                   29                   29                    29                   27                   27
+
+Communication                                                   CAN                  CAN                  CAN                   CAN              CAN & 485            CAN & 485
+
+Weight (kg)                                                   57.5 ± 1              79 ± 1              57.5 ± 1                79 ± 1              61 ± 1                77± 1
+
+Ingress Protection                                                                                                    IP66
+
+Dimensions (W × H × D mm)                                                                                     800 × 326 × 270
+
+Heating (Optional); Aerosol fire              Aerosol fire extinguishing            Heating (Integrated); Aerosol fire
+Function Configuration
+extinguishing (Integrated)                        (Integrated)                       extinguishing (Integrated)
+12 months (-20°C ~ +35°C)
+Max. Storage time
+6 months (+35°C ~ +45°C)
+
+Scalability*4                                                                                                        12 pcs
+
+Floor stacked / Wall-mounted /
+Mounting Method                                                                   Floor stacked / Wall-mounted
+Grounded
+
+Cycle Life*5                                                     8000                 8000                 8000                   8000               10000                10000
+
+IEC62619, IEC60730, EN62477,
+IEC62619, IEC60730, EN62477, IEC63056, IEC62040,
+Safety                                                                                                       IEC63056, IEC62040, CE, CEC,
+CE, CEC, VDE2510
+Regulation 2023 / 1542, VDE2510-50
+Standard and
+Certification                      EMC                                                                              CE, RCM
+
+Transportation                                                                  UN38.3, ADR
+
+*1: Test conditions, 100% DOD (cell 2.85~3.6V voltage range), 0.2P charge & discharge at 25±2°C for battery system at the beginning of life. Usable energy is defined by its initial design
+value. Actual available energy may vary depending on charge/discharge rate, environmental conditions (e.g. temperature), transport and storage factors.
+*2: Test conditions, 100% DOD (cell 2.87~3.61V voltage range), 0.4P charge & discharge at 25±2°C for battery system at the beginning of life. Usable energy is defined by its initial design
+value. Actual available energy may vary depending on charge/discharge rate, environmental conditions (e.g. temperature), transport and storage factors.
+*3: Max. Input Power /Max. Output Power/Peak.Output Power derating will occur related to Temperature and SOC.
+*4: For single-column stacked installations, the maximum number of parallel units is 6.
+*5: Based on test data under specific laboratory conditions.
+*: Based on Lynx D G2 Series technology
+*: Please visit GoodWe website for the latest certificates.
+
+
+
+
+www.goodwe.com

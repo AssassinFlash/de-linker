@@ -1,0 +1,364 @@
+===== PDF PAGE 1 =====
+V1.5-2026-09-04
+
+===== PDF PAGE 27 =====
+2 System Introduction
+
+
+2.1 System Overview
+
+WARNING
+
+• The energy storage system is not suitable for connection to devices that rely on a
+stable power supply, such as life-sustaining medical equipment. Ensure that
+when the system is powered off, no personal injury can occur.
+• If the residential storage integrated machine is in a high-temperature state or
+under BMS current limiting, the battery charging power may be limited, which
+may cause the system voltage to be too high and trigger overvoltage protection.
+• The inverter only supports GoodWe brand batteries specified in this manual. If
+no battery is connected, it can only operate in grid-tied mode, and must be
+installed on the base provided in the package.
+• In microgrid scenarios, the PV open-circuit voltage of the residential storage
+integrated machine is recommended to be < 0.85*PV maximum input voltage to
+avoid overvoltage protection triggered by excessive system voltage under harsh
+operating conditions.
+• In microgrid scenarios, ensure that the over-frequency derating point of the
+grid-tied inverter is consistent with that of the residential storage integrated
+machine.
+• In systems where the inverter operates completely off-grid, if the battery is
+exposed to prolonged low sunlight or rainy weather without timely recharging,
+over-discharge may occur, causing battery performance degradation or damage.
+To ensure long-term stable system operation, the battery should be prevented
+from being completely drained. Recommended measures are as follows:
+○  When operating off-grid, set a minimum SOC protection threshold. It is
+recommended to set the off-grid battery SOC lower limit to 30%.
+○  When the SOC approaches the protection threshold, the system will
+automatically enter load-limiting or protection mode.
+○  If sunlight is insufficient for several consecutive days and the battery SOC is
+too low, the battery should be recharged in a timely manner through external
+energy sources (such as a generator or grid-assisted charging).
+
+
+
+26
+
+===== PDF PAGE 60 =====
+Figure7 Self-consumption
+
+
+Backup Mode
+
+• Recommended for areas with unstable grids.
+• When the grid fails, the inverter switches to off-grid working mode, and the battery
+discharges to supply power to loads, ensuring that BACK-UP Loads remain
+powered; when the grid recovers, the inverter switches back to grid-tied operation.
+• To ensure the battery SOC is sufficient for normal operation during off-grid
+conditions, the battery will be charged to the backup power SOC using PV or grid
+power while the system is grid-tied. If you need to charge the battery from the
+grid, ensure compliance with local grid laws and regulations.
+
+
+
+
+59
+
+===== PDF PAGE 107 =====
+Note
+
+
+• According to the regulatory requirements of different regions, the wiring
+methods of N and PE wires for the GRID and BACK-UP ports of the inverter vary,
+and the specific wiring shall follow local regulations.
+• The inverter has a built-in meter and can be directly connected to the CT for use.
+The CT cable shipped with the unit is 10 meters. If a longer distance is required, a
+CAT5e or higher shielded cable can be used to extend the connection up to 30
+meters.
+• CT connection length to inverter exceeding 30m will reduce accuracy. For high
+accuracy requirements, an external smart meter can be connected.
+• The built-in relay of the inverter's GRID AC port is in the open state when the
+inverter is in off-grid mode, and in the closed state when the inverter is in grid-
+connected mode.
+• When the inverter is powered on, the BACK-UP AC port becomes energized. If
+maintenance on the BACK-UP load is required, please power off the inverter;
+otherwise, it may cause electric shock.
+• In an all-home backup scenario, if the total power of connected loads exceeds 1.1
+times the inverter's Rated Power, after a grid outage, the inverter will stop
+outputting due to Over load Protection. At this point, please shut down some
+non-essential loads to ensure that the total power of loads is less than 1.1 times
+the inverter's Rated Power.
+
+
+Neutral and PE wires are connected together in the distribution box
+
+Note
+
+
+• To maintain neutral integrity, the neutral wires of the grid-tied side and off-grid
+side must be connected together; otherwise, the off-grid function cannot operate
+normally.
+• The following diagram shows a schematic of the power grid system for regions
+such as Australia and New Zealand:
+
+
+Type 1:
+Whole house backup power
+
+
+
+
+106
+
+===== PDF PAGE 280 =====
+9 technical parameter
+9.1 Inverter Parameters
+
+Technical Data      GW5K-ETA-G20      GW6K-ETA-G20    GW8K-ETA-G20
+
+Battery Side
+
+Battery Type        LFP (LiFePO4)     LFP (LiFePO4)   LFP (LiFePO4)
+
+Nominal Voltage
+750               750             750
+(V)
+
+Voltage Range (V)   700~950           700~950         700~950
+
+Start-up Voltage (V) 720              720             720
+
+Number of Battery
+1                 1               1
+Input
+
+Max. Continuous
+Charging Current    6.7               8.1             10.7
+(A)
+
+Max. Continuous
+Discharging         7.4               8.9             11.8
+Current (A)
+
+Max. Charging
+5                 6               8
+Power (kW)
+
+Max. Discharging
+5.5               6.6             8.8
+Power (kW)
+
+PV Side
+
+Max. Input Power
+10                12              16
+(kW)
+
+
+
+279
+
+===== PDF PAGE 281 =====
+Technical Data        GW5K-ETA-G20     GW6K-ETA-G20   GW8K-ETA-G20
+
+Max. Input Voltage
+1000             1000           1000
+(V)*1
+
+MPPT Operating
+Voltage Range         120~950          120~950        120~950
+(V)*2
+
+MPPT Voltage
+Range at Nominal      185~850          225~850        300~850
+Power (V)
+
+Start-up Voltage (V) 150               150            150
+
+Nominal Input
+750              750            750
+Voltage (V)
+
+Max. MPPT Current
+21/21/21             21/21/21       21/21/21
+(A)
+
+Max. MPPT Short
+26/26/26         26/26/26       26/26/26
+Circuit Current (A)
+
+Max. Backfeed
+Current to The        0                0              0
+Array (A)
+
+Number of MPPTs       3                3              3
+
+Number of Strings
+1/1/1            1/1/1          1/1/1
+per MPPT
+
+AC Side (Grid Port)
+
+Rated Power (kW)      5                6              8
+
+Max. Power (kW)       5                6              8
+
+Rated Apparent
+5                  6              8
+Power to Grid (kVA)
+
+
+
+280
+
+===== PDF PAGE 282 =====
+Technical Data      GW5K-ETA-G20            GW6K-ETA-G20          GW8K-ETA-G20
+
+Rated Apparent
+Power from Grid     5                       6                     8
+(kVA)
+
+Max. Apparent
+Power to Grid       5                       6                     8
+(kVA)*3
+
+Max. Apparent
+Power from Grid     43.5*4                  43.5*4                43.5*4
+(kVA)
+
+Nominal Voltage     220/380, 230/400,       220/380, 230/400,     220/380, 230/400,
+(V)                 3L/N/PE                 3L/N/PE               3L/N/PE
+
+180～260                 180～260               180～260
+Voltage Range (V)   (According to local     (According to local   (According to local
+standard)               standard)             standard)
+
+Nominal
+50/60                   50/60                 50/60
+Frequency (Hz)
+
+Frequency Range
+45~55 / 55~65           45~55 / 55~65         45~55 / 55~65
+(Hz)
+
+Rated Current to    7.6 @380V               9.1 @380V             12.2 @380V
+Grid (A)            7.3 @400V               8.7 @400V             11.6 @400V
+
+Rated Current       7.6 @380V               9.1 @380V             12.2 @380V
+from Grid (A)       7.3 @400V               8.7 @400V             11.6 @400V
+
+Max. Current to     7.6 @380V               9.1 @380V             12.2 @380V
+Grid (A)*6          7.3 @400V               8.7 @400V             11.6 @400V
+
+Max. Current from
+63.0*4                  63.0*4                63.0*4
+Grid (A)*6
+
+Max. Output Fault
+Current (Peak and   46.7@4μs                46.7@4μs              46.7@4μs
+Duration) (A)
+
+
+
+281
+
+===== PDF PAGE 283 =====
+Technical Data       GW5K-ETA-G20             GW6K-ETA-G20        GW8K-ETA-G20
+
+Inrush Current
+(Peak and            21.3@5ms                 21.3@5ms            21.3@5ms
+Duration) (A)
+
+THDi                 <3%                      <3%                 <3%
+
+Maximum Output
+Overcurrent          46.7                     46.7                46.7
+Protection (A)
+
+Type of Voltage      a.c.                     a.c.                a.c.
+
+AC Side (Back-up Port)
+
+Rated Apparent
+5                        6                   8
+Power (kVA)
+
+Off-grid: 5.5 (10.0,     Off-grid: 6.6(12,   Off-grid: 8.8 (16.0,
+Max. Apparent
+10s),                    10s),               10s),
+Power (kVA)*7
+on-grid: 43.5            on-grid： 43.5       on-grid： 43.5
+
+Nominal Voltage      220/380, 230/400,        220/380, 230/400,   220/380, 230/400,
+(V)                  3L/N/PE                  3L/N/PE             3L/N/PE
+
+Nominal
+50/60                    50/60               50/60
+Frequency (Hz)
+
+Frequency Range
+45~55 / 55~65            45~55 / 55~65       45~55 / 55~65
+(Hz)
+
+7.6 @380V                9.1 @380V           12.2 @380V
+Rated Current (A)
+7.3 @400V                8.7 @400V           11.6 @400V
+
+Off-grid: 11.4,          Off-grid: 13.7,     Off-grid: 18.2,
+Max. Current (A)*7
+on-grid: 63              on-grid:63          on-grid: 63
+
+Max. Fault Current
+(Peak and            46.7@4μs                 46.7@4μs            46.7@4μs
+Duration) (A)
+
+
+
+282
+
+===== PDF PAGE 311 =====
+home backup solution. If the customer don't want to do any breaker upgrade, the
+main breaker size in GoodWe commissioning APP can be set as previous breaker
+size.
+*5：GOODWE ESA series has internal bypass 80A passthrough ability to supprt whole
+home backup solution. If the customer don't want to do any breaker upgrade, the
+main breaker size in GoodWe commissioning APP can be set as previous breaker
+size.
+*6：If the backup port is not used, select an appropriate circuit breaker based on the
+AC maximum output current.
+*7:"Off grid"means the energy of backup output only comes from PV and battery.
+"On grid"means the energy of the backup output includes the energy from grid or
+generator(on-grid) side.
+*8: AFDPF: Active Frequency Drift with Positive Feedback
+
+Technical         GW5K-BTA-        GW6K-BTA-        GW8K-BTA-        GW9.999K-
+Data              G20              G20              G20              BTA-G20
+
+Battery Side
+
+Battery Type      Li-Ion           Li-Ion           Li-Ion           Li-Ion
+
+Nominal
+750              750              750              750
+Voltage (V)
+
+Voltage Range
+700-950          700-950          700-950          700-950
+(V)
+
+Start-up
+720              720              720              720
+Voltage (V)
+
+Number of
+1                1                1                1
+Battery Inputs
+
+Max.
+Continuous
+6.7              8.1              10.7             13.4
+Charging
+Current (A)
+
+
+
+
+310

@@ -1,0 +1,285 @@
+===== PDF PAGE 1 =====
+V1.0 2026-8-26
+
+===== PDF PAGE 20 =====
+2 Grid-Connected Solution Introduction
+In grid-connected scenarios, three parallel operation solutions are supported:
+master-slave parallel operation / parallel operation via SEC3000C / parallel operation
+via third-party EMS.
+
+• Master-slave parallel operation: ESA261 energy storage system
+• Parallel operation via SEC3000C: ESA261 energy storage system + (grid-connected
+inverter) + SEC3000C
+• Parallel operation via third-party EMS: ESA261 energy storage system + (grid-
+connected inverter) + third-party EMS
+
+NOTICE
+
+At the grid connection point, current transformers (CTs) and electricity meters need
+to be configured to implement the Power Limit function. Please select a suitable
+solution based on actual site conditions:
+
+• If on-site power outage operations are permitted, a primary CT can be installed
+at the grid connection point and connected to the GM330 smart meter.
+• If on-site power outage operations are not permitted, a secondary CT should be
+installed on the existing primary CT and connected to the DTSD1352 secondary
+meter.
+
+
+
+2.1 Master-Slave Parallel Operation
+The ESA261 energy storage system supports master-slave parallel operation. During
+master-slave parallel operation, the system does not support connection to PV
+inverters, and supports parallel operation of up to 8 energy storage systems. Master-
+slave parallel operation is supported only in China.
+
+
+
+
+2.1.1 Networking Introduction
+
+
+
+
+19
+
+===== PDF PAGE 24 =====
+Technical
+Functions                            Specificatio   Remarks
+ns
+
+Grid    Self-
+Dispa   consumption/TOU+Deman        Supported      •   Self-consumption Mode
+tch     d Control                                       (PV+ESS scenario).
+Featu                                               •   TOU Mode (PV+ESS
+Self-
+res                                                     scenario or storage-only
+consumption/TOU+Capacit      Supported
+scenario, with peak-valley
+y Control
+Tariff. Equipped with a
+Self-                                           meter or using voltage
+consumption/TOU+Grid         Supported          transformer and current
+Power Limit                                     transformer sampling).
+Self-                                       •   Remote Dispatch Mode
+consumption/TOU+Deman                           (third-party controller
+Supported
+d Control+Sub-demand                            scenario).
+Control
+
+Self-
+consumption/TOU+Deman        Supported
+d Control+Grid Power Limit
+
+Self-
+consumption/TOU+Deman
+Supported
+d Control+Sub-demand
+Control+Grid Power Limit
+
+Remote Dispatch Mode         Supported
+
+
+2.2 Parallel Operation via SEC3000C
+
+
+2.2.1 Communication Architecture
+
+When connected to SEC3000C, supports up to 20 ESA261 energy storage systems in
+parallel + 40 grid-tied inverters in parallel.
+
+
+
+23
+
+===== PDF PAGE 25 =====
+Communica                    Maximum
+Connecting to                        Connectio                      Monitoring
+tion                         Parallel
+SEC3000C                             n Method                       Platform
+Method                       Quantity
+
+Daisy chain
+WE 3.0
+/ Daisy
+ESA261 Energy         LAN                          20               (Domestic
+chain-star
+Storage System                                                      Version)
+hybrid
+SEMS+
+LAN            Star          15               (Overseas
+Version)
+Grid-tied inverter    RS485          Daisy chain   40
+
+
+NOTICE
+
+SEC3000C is equipped with 4 RS485 communication interfaces, one of which is
+already used to connect the built-in GM330 meter, and each of the remaining
+interfaces can support up to 20 grid-tied inverters in parallel. If the built-in GM330
+meter is used directly, or the built-in meter is replaced with an Acrel meter, then up
+to 60 grid-tied inverters can be connected in parallel. For details, please contact
+after-sales for support.
+
+
+2.2.2 Networking Introduction
+
+• Daisy-Chain Connection
+
+
+
+
+24
+
+===== PDF PAGE 27 =====
+Name      Model/Specifications        Description
+
+Please keep the model and
+• GW125/261-ESA-LCN-G10     specifications of energy storage
+Energy    • GW125/261-ESA-LCN-G11     systems in the same system
+Storage
+• GW100/261-ESA-LCN-G10     consistent. Mixing products is
+System
+• GW100/261-ESA-LCN-G11     not recommended.
+Purchase from GoodWe.
+
+
+26
+
+===== PDF PAGE 28 =====
+Name           Model/Specifications               Description
+
+For circuit Protection.
+Circuit        Recommended specification:
+To be purchased separately by
+breaker        250 A
+the customer.
+
+Convert PV DC power to AC
+Grid-tied      Please consult Sales for the
+power.
+inverter       specific compatible models.
+Purchase from GoodWe.
+
+CT ratio: nA/5A.
+
+• nA: CT primary-side input
+current. Depending on the
+site's PCC busbar or cable       For use with GM330 smart
+specifications, the value of n   meter.
+CT
+shall be determined              To be purchased separately by
+according to actual              the customer.
+conditions.
+• 5A: CT secondary side output
+current.
+
+
+Used for grid-connected power
+GM330 Smart
+GM330                              limitation.
+Meter
+Purchase from GoodWe.
+
+CT ratio: 5A/2mA.
+
+• 5A: CT primary side input        For use with secondary smart
+Secondary CT     current,                         meter DTSD1352.
+• 2mA: CT secondary side           Purchase from GoodWe.
+output current.
+
+
+Secondary                                         Used for grid-connected power
+smart meter    DTSD1352                           limitation.
+DTSD1352                                          Purchase from GoodWe.
+
+
+
+
+27
+
+===== PDF PAGE 29 =====
+Name             Model/Specifications           Description
+
+Collects system data and sends
+it to WE 3.0/SEMS+ to enable
+SEC3000C
+centralized monitoring,
+Smart Energy     SEC3000C
+operation, and maintenance of
+Control Box
+the system.
+Purchase from GoodWe.
+
+Remotely monitor the operating
+data of the energy storage
+SEMS+/WE 3.0     SEMS+/WE 3.0                   system and set system
+parameters.
+Purchase from GoodWe.
+
+
+2.2.3 Technical Specifications
+
+Technical
+Functions                                             Remarks
+Specifications
+
+
+• Daisy-chain
+connection/dai
+sy-chain star
+Multiple   ESA261 Energy Storage
+hybrid          -
+units in   System
+connection: ≤20
+parallel                            • Star
+connection: ≤15
+
+
+Grid-tied inverter       ≤40               -
+
+ESA261 Energy Storage
+Commu                               LAN               -
+System
+nication
+Grid-tied inverter       RS485             -
+
+
+• Domestic: WE3.0
+Remote Monitoring                   Supported
+• Overseas: SEMS+
+
+
+
+
+28
+
+===== PDF PAGE 31 =====
+2.3 Parallel Operation via Third-Party EMS
+
+
+2.3.1 Communication Architecture
+
+When connected to a third-party EMS, the supported number of parallel units is
+determined by the third-party EMS.
+
+Communica                       Maximum
+Connect to Third-                      Connectio                 Monitoring
+tion                            Parallel
+party EMS                              n Method                  Platform
+Method                          Quantity
+
+ESA261 Energy                                                    Third-party
+LAN/RS485         Daisy chain   N
+Storage System                                                   Monitoring
+Grid-tied inverter   RS485             Daisy chain   N           Platform
+
+
+2.3.2 Networking Introduction
+
+• Parallel connection via RS485 cable
+
+
+
+
+30

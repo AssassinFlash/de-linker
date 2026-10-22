@@ -1,0 +1,74 @@
+===== PDF PAGE 6 =====
+Battery Compatibility
+Overview
+
+3) Commercial and Industrial Energy Storage Systems
+Battery        Battery                    Battery                                           Inverter Series
+Brand          Series                     Model                     ETC BTC         ET(40-50kW)    ET (80-100kW)              ETR 80-125kW
+GW60KWH-D-10
+
+GW100KWH-D-10                                          ●
+
+GW100KWH-D-10
+●
+(Extension)
+
+
+
+
+GoodWe Battery Compatibility Overview-20260910-EMEA-EN-V029.1 Information may be subject to change without notice.
+Lynx C*1                LX C 101-10*2                   ●   ●               ●
+
+LX C 120-10*2                   ●   ●               ●
+
+LX C 138-10                    ●   ●               ●
+GOODWE
+LX C 156-10                    ●   ●               ●
+
+GW61.4-BAT-AC-G10                                        ●                        ●
+
+GW102.4-BAT-AC-G10                                       ●                        ●
+
+BAT*3            GW112.6-BAT-AC-G10                                       ●                        ●
+
+GW208.9-BAT-LC-G10                                                                ●
+
+GW261.2-BAT-LCD-G10                                                                               ●
+
+ETC 50kW/BTC 50kW:
+*1. EMS firmware versions 02 and above are required for compatibility.
+ETC 100kW:
+*1. EMS firmware versions 00 and above are required for compatibility.
+ET (40-50kW):
+*2. ET 50kW with Lynx C-Series LX C101-10, LX C120-10 cannot reach the maximum power of the inverter.ET (40-50kW):
+*3. For compatibility, the ET (40-50kW) series requires ARM10 and above.
+ET (40-50kW)/ET (80-100kW):
+*3. The BAT series GW61.4-BAT-AC-G10 model paired with ET (80-100kW) cannot achieve full power output from the inverter.
+Formula: Battery Charging/Discharging Power = Battery Working Voltage × MIN (Battery Charge/Discharge Current, 100A*).
+*The Max. Continuous Charging/Discharging Current of ET50 is 100A.
+
+Battery
+Battery Series              Battery Model               ETC     BTC       ET(40-50kW)             ET (80-100kW)    ETR 80-125kW
+Brand
+
+LITE 30                                         ●
+
+LITE 37.5                                         ●
+
+LITE 45                                         ●
+BATTERYMAX
+BYD
+LITE*1
+LITE 52.5                                         ●
+
+LITE 60                                          ●
+
+LITE 67.5                                         ●
+
+ET (40-50kW):
+*1. ARM firmware versions 08 and above are required for compatibility.
+
+
+
+
+sales@goodwe.com                   www.goodwe.com

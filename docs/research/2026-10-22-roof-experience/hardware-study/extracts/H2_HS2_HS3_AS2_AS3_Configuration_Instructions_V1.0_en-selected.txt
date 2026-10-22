@@ -1,0 +1,63 @@
+===== PDF PAGE 1 =====
+Configuration
+
+
+
+
+Configuration Instructions
+H2 Series
+
+HS2/AS2 Series
+
+HS3/AS3 Series
+V1.0                        1   © Sanjing, 2024-2025. All rights reserved.
+
+===== PDF PAGE 7 =====
+1. About this document
+This document provides the guidance on how to configure the SAJ inverters, mainly covering the required devices, system connections,
+meter address settings, and system commissioning using elekeeper App. It is designed for the following SAJ inverter models:
+⚫   H2 series
+⚫   HS2/AS2 series
+⚫   HS3/AS3 series
+
+Note: For the system connection diagrams in this document, the inverters are connected to the PV array, which is applicable for models
+
+like H2/HS2/HS3 series. However, for the AS series, the inverters are not connected to the PV array.
+
+
+
+
+V1.0                                                                   7                         © Sanjing, 2024-2025. All rights reserved.
+
+===== PDF PAGE 8 =====
+2. Required devices
+⚫     H2 series storage inverter and BU2 series battery; or BC2 series battery control unit
+⚫     HS2/AS2 series hybrid inverter and BU2 series battery
+⚫     HS3/AS3 series hybrid inverter and BU3 series battery; or BC3 battery combiner box
+Equipment        One storage        One storage inverter or     Multiple storage inverters or            Multiple storage inverters or hybrid
+inverter or hybrid hybrid inverter + Solar     hybrid inverters (parallel)              inverters + Solar inverter (parallel +
+inverter           inverter (AC-coupling)                                               AC-coupling)
+Inverter and      ⚫ H2 + BC2 + BU2;
+batteries         ⚫ HS2/AS2 + BU2; or
+⚫ HS3/AS3 + BU3 + BC3 (BC3 is required only in the multi-battery cascading scenario)
+Solar inverter   /                  Yes                         /                                        Yes
+Meter            1                    2*                         /                                       Depending on the phase current of
+the solar inverter:
+⚫ Current ≤ 63A: 0
+⚫ Current > 63A: 1
+EMS              /                    /                          1                                       1
+External CT      ⚫   1-phase: 1        ⚫   1-phase: 2             ⚫      Current ≤ 63A：Not required
+⚫   3-phase: 3        ⚫   3-phase: 6             ⚫      Current > 63A:
+➢ 1-phase: 1
+➢ 3-phase: 3
+Note: Not required if you use an 80 A meter     /                                       Note: If you use a meter because the
+which has CT integrated.                                                                phase current of the solar inverter
+exceeds 63A, the CT quantity here will
+be doubled.
+* If two meters are required, on the grid side, use Meter 1 (with preset address 1) in the brown package box; on the solar inverter side,
+use Meter 2 (with the preset address 2) in the white package box.
+
+
+
+
+V1.0                                                                            8                        © Sanjing, 2024-2025. All rights reserved.

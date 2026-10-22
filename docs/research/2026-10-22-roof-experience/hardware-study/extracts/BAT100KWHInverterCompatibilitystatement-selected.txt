@@ -1,0 +1,65 @@
+===== PDF PAGE 1 =====
+Compatibility Statement of Battery
+We
+Company name: GoodWe Technologies Co., Ltd.
+Postal address:        No.90 Zijin Road., New District, Suzhou, China
+
+Postcode:     215011
+City:   Suzhou
+Country:      China
+Telephone number: +86-15851413771
+E-mail address:        tiantian.song@goodwe.com
+Web:    https://www.goodwe.com.au/
+
+
+declare that the statement is issued under our sole responsibility and belongs to the following
+product:
+Product:      Rechargeable Li-ion Battery System
+Model(s):     GW61.4-BAT-AC-G10，GW71.6-BAT-AC-G10，GW81.9-BAT-AC-G10，
+GW92.1-BAT-AC-G10，GW102.4-BAT-AC-G10,                     GW112.6-BAT-AC-G10
+
+
+Description: Rechargeable Li-ion battery systems consists of master control and slave batteries with
+stackable construction and spec as follows:
+
+
+GW61.4-BA       GW71.6-BA     GW81.9-BAT-         GW92.1-BA           GW102.4-B              GW112.6-B
+T-AC-G10         T-AC-G10         AC-G10           T-AC-G10           AT-AC-G10             AT-AC-G10
+Nominal voltage              307.2           358.4           409.6             460.8               512.0V                 563.2V
+Rated capacity                                              200Ah
+Modules                        6               7                8               9                      10                    11
+
+
+
+Object of the statement described above is compatible with the inverters in the following table.
+
+Inverter Manufacture             Product                                  Model
+ET 50 series     GW50K-ET-10 / GW40K-ET-10
+
+GW15K-ET / GW20K-ET / GW25K-ET / GW29.9K-E /
+GoodWe Technologies           ET 30 series
+GW30K-ET
+Co., Ltd.
+ET 100 series    GW80K-ET-G10 / GW99.99K-ET-G10 / GW100K-ET-G10
+
+
+
+
+GOODWE TECHNOLOGIES CO., LTD.
+ADD: No.90 Zijin Rd., New District, Suzhou, 215011, China
+TEL: +86 512 6239 7998       WEB: www.goodwe.com
+
+===== PDF PAGE 2 =====
+Notified body:     TÜV Rheinland LGA Products GmbH
+
+
+Singed for and on behalf of:
+
+Place of issue   SuZhou   Date of issue   07.04.2025   Name   Wang Young     Signature
+
+
+
+
+GOODWE TECHNOLOGIES CO., LTD.
+ADD: No.90 Zijin Rd., New District, Suzhou, 215011, China
+TEL: +86 512 6239 7998       WEB: www.goodwe.com

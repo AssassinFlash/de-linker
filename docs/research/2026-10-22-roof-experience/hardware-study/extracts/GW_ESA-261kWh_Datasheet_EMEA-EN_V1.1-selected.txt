@@ -1,0 +1,92 @@
+===== PDF PAGE 2 =====
+ESA Series
+
+Technical Data                                            GW125/261-ESA-LCN-G10                                 GW125/261-ESA-LCN-G11
+Battery Data
+Cell Type                                                                                   LFP (LiFePO4)
+Cell Capacity (Ah)                                                                               314
+Module Nominal Energy (kWh)                                                                     52.25
+Number of Packs                                                                                   5
+Rack Nominal Energy (kWh)                                                                      261.25
+Rack Usable Energy (kWh)                                                                       261.25
+Nominal Voltage (V)                                                                              832
+Operating Voltage Range (V)                                                                   676 ~ 936
+Max. Continuous Charge / Discharge Current (A)                                                   188
+Max. Charge / Discharge Current (A)                                                             198.5
+Max. Charge / Discharge Rate                                                                    0.5P
+Depth of Discharge                                                                 90% ~ 100% (90% Recommended)
+AC Output Data (On-grid)
+Nominal Output Power (kW)                                                                          125
+
+
+
+
+GoodWe-Single page-20260716-EN-EMEA-V1.1. Information may be subject to change without notice during product improving.
+Max. Output Power (kW)                                                              137.5@400V AC; 130.6@380V AC
+Nominal Apparent Power (kVA)                                                                       125
+Nominal Apparent Power Output to Utility Grid (kVA)                                                125
+Nominal Apparent Power from Utility Grid (kVA)                                                     125
+Max. Apparent Power (kVA)                                                           137.5@400V AC; 130.6@380V AC
+Max. Apparent Power Output to Utility Grid (kVA)                                    137.5@400V AC; 130.6@380V AC
+Max. Apparent Power from Utility Grid (kVA)                                         137.5@400V AC; 130.6@380V AC
+Nominal Output Voltage (V)                                                                400 / 380, 3L / N / PE
+Output Voltage Range (V)                                                                 340 ~ 440 / 323 ~ 418
+Nominal AC Grid Frequency (Hz)                                                                   50 / 60
+AC Grid Frequency Range (Hz)                                                            47.5 ~ 52.5 / 57.5 ~ 62.5
+Max. AC Output Current (A)                                                                        198.5
+Max. AC Current Output to Utility Grid (A)                                                        198.5
+Max. AC Current from Utility Grid (A)                                                             198.5
+Nominal Output Current (A)                                                          180.4@400V AC; 189.9@380V AC
+Power Factor                                                                             ~1 (0.8 lag to 0.8 lead)
+Max. Total Harmonic Distortion                                                                     <3%
+AC Output Data (Off-grid)
+Nominal Output Power (kW)                                                                          125
+Max. Output Power (kW)                                                              137.5@400V AC; 130.6@380V AC
+Nominal Apparent Power (kVA)                                                                       125
+Nominal Output Apparent Power to Grid (kVA)                                                        125
+Nominal Input Apparent Power from Grid (kVA)                                                       125
+Max. Apparent Power (kVA)                                                           137.5@400V AC; 130.6@380V AC
+Max. Output Apparent Power to Grid (kVA)                                            137.5@400V AC; 130.6@380V AC
+Max. Input Apparent Power from Grid (kVA)                                           137.5@400V AC; 130.6@380V AC
+Nominal Output Voltage (V)                                                                400 / 380, 3L / N / PE
+Output Voltage Range (V)                                                                 340 ~ 440 / 323 ~ 418
+Nominal Output Frequency (Hz)                                                                    50 / 60
+AC Grid Frequency Range (Hz)                                                            47.5 ~ 52.5 / 57.5 ~ 62.5
+Max. AC Output Current (A)                                                                        198.5
+Max. AC Current Output to Grid (A)                                                                198.5
+Max. AC Current from Grid (A)                                                                     198.5
+Nominal Output Current (A)                                                          180.4@400V AC; 189.9@380V AC
+Power Factor                                                                             ~1 (0.8 lag to 0.8 lead)
+Output THDi (@Linear Load)                                                                         <3%
+Efficiency
+Max. PCS Efficiency                                                                                 98.6%
+Max. System Efficiency                                                                              92.0%
+Protection
+Battery Reverse Polarity Protection                                                               Integrated
+Anti-islanding Protection                                                                         Integrated
+AC Overcurrent Protection                                                                         Integrated
+AC Short Circuit Protection                                                                       Integrated
+AC Surge Protection                                                                                 Type II
+General Data
+Operation Temperature Range (°C)                                                                -25 ~ +55
+Derating Temperature (°C)                                                                            45
+Storage Temperature (°C)                                                       -20 ~ +45 (One Month); 0 ~ +35 (One Year)
+Relative Humidity                                                                              10% ~ 95%
+Max. Operating Altitude (m)                                                               4000 (2000 derating)
+Cooling Method                                                                Pack: Liquid Cooling; PCS: Smart Fan Cooling
+User Interface                                                                              LED, WLAN + APP
+Communication Protocol                                                                 Modbus TCP, Modbus RTU
+Weight (kg)                                                                                        2580
+Dimension (W × H × D mm)                                                                   1050 × 2250 × 1400
+Noise Emission (dB)                                                                                 ≤70
+Topology                                                                                      Non-isolated
+Ingress Protection Rating                                                                          IP54
+Anti-Corrosion                                                                               C4 (C5 optional)
+Configuration of Safety                               Aerosol + water-based fire suppression, explosion-proof fan + explosion-proof plates (optional)
+Charge / Discharge Switching Time                                                                 <60ms
+*: Please visit GoodWe website for the latest certificates.
+
+
+
+
+emea.goodwe.com                                                                            This datasheet provides information about products offered in the EMEA region.
