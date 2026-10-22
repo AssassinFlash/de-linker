@@ -234,6 +234,20 @@ final class Capacity {
 	 */
 	private static function initialize( array &$state ): void {
 		if ( isset( $state['mail_capacity'] ) ) {
+			$capacity = $state['mail_capacity'];
+			if ( ! is_array( $capacity ) || ! is_array( $capacity['entries'] ?? null ) || ! is_array( $capacity['reservations'] ?? null ) || count( $capacity['reservations'] ) > self::MAX_RESERVATIONS ) {
+				throw new \RuntimeException( 'mail_capacity_invalid_state' );
+			}
+			foreach ( $capacity['entries'] as $id => $entry ) {
+				if ( ! is_int( $id ) || $id < 1 || ! is_array( $entry ) || ! isset( self::LIMITS[ $entry['pool'] ?? '' ] ) || ! is_int( $entry['bytes'] ?? null ) || $entry['bytes'] < 1 ) {
+					throw new \RuntimeException( 'mail_capacity_invalid_job' );
+				}
+			}
+			foreach ( $capacity['reservations'] as $key => $entry ) {
+				if ( ! is_string( $key ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $key ) || ! is_array( $entry ) || ! is_int( $entry['count'] ?? null ) || $entry['count'] < 1 || $entry['count'] > self::LIMITS['critical']['count'] || ! is_int( $entry['remaining'] ?? null ) || $entry['remaining'] < 0 || $entry['remaining'] > $entry['count'] || ! is_int( $entry['max_bytes'] ?? null ) || $entry['max_bytes'] < 1 || $entry['max_bytes'] > self::LIMITS['critical']['bytes'] || ! is_int( $entry['closed'] ?? null ) || $entry['closed'] < 0 ) {
+					throw new \RuntimeException( 'mail_capacity_invalid_reservation' );
+				}
+			}
 			return;
 		}
 		$state['mail_capacity'] = array(

@@ -120,8 +120,11 @@ final class IntakeStore {
 	 */
 	private static function read(): ?string {
 		global $wpdb;
+		// NOWAIT also handles a prior owner whose outer transaction has not yet
+		// committed after its connection mutex was released. CAS alone is safe
+		// against excess, but would otherwise wait for the DB's long row timeout.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Native option snapshot and mutex ownership must come from the same DB connection, without an object cache.
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT (SELECT option_value FROM {$wpdb->options} WHERE option_name = %s) AS value, IS_USED_LOCK(%s) = CONNECTION_ID() AS owned", self::OPTION, self::lock_name() ), ARRAY_A );
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT (SELECT option_value FROM {$wpdb->options} WHERE option_name = %s FOR UPDATE NOWAIT) AS value, IS_USED_LOCK(%s) = CONNECTION_ID() AS owned", self::OPTION, self::lock_name() ), ARRAY_A );
 		if ( ! is_array( $row ) || '1' !== (string) ( $row['owned'] ?? '' ) || '' !== $wpdb->last_error || ( null !== $row['value'] && ! is_string( $row['value'] ) ) ) {
 			throw new \RuntimeException( 'intake_capacity_read_failed' );
 		}

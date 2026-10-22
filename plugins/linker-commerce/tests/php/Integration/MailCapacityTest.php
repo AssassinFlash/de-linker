@@ -122,6 +122,43 @@ final class MailCapacityTest extends IntegrationTestCase {
 		clean_post_cache( $id );
 	}
 
+	/** Only a later committed consumer may send a joined native Outbox message. */
+	public function test_committed_outer_job_is_sent_once_by_independent_consumer(): void {
+		$this->seed_jobs( 0 );
+		$deliveries = 0;
+		$transport  = static function () use ( &$deliveries ): void {
+			++$deliveries;
+		};
+		add_action( 'phpmailer_init', $transport, PHP_INT_MAX );
+		$this->later(
+			static function () use ( $transport ): void {
+				remove_action( 'phpmailer_init', $transport, PHP_INT_MAX );
+			}
+		);
+		wc_transaction_query( 'start' );
+		try {
+			self::assertTrue( wp_mail( self::TESTER, 'Synthetic committed native transaction', 'Send only after native commit.' ) );
+			$id = self::newest_mail_job();
+			self::assertSame( 0, $deliveries );
+			self::assertNotNull( ( new JobStore() )->load( $id ) );
+			wc_transaction_query( 'commit' );
+		} finally {
+			wc_transaction_query( 'rollback' );
+		}
+		$this->later(
+			static function () use ( $id ): void {
+				as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
+			}
+		);
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Existing native prefixed hook.
+		self::assertSame( 1, $deliveries );
+		self::assertNull( ( new JobStore() )->load( $id ) );
+		/** This action is documented in Mail\Module::register(). */
+		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Existing native prefixed hook.
+		self::assertSame( 1, $deliveries );
+	}
+
 	/** Real consumer tests use a pre-filled, content-free registry snapshot.
 	 *
 	 * @param int $count Existing synthetic ordinary occupancy.
@@ -144,5 +181,120 @@ final class MailCapacityTest extends IntegrationTestCase {
 			}
 		);
 		self::assertIsArray( $result );
+	}
+
+	/** Two independent DB connections cannot spend the final native slot twice. */
+	public function test_two_native_workers_share_the_final_count_and_byte_slot(): void {
+		foreach ( array( 'count', 'bytes' ) as $boundary ) {
+			$this->seed_jobs( 'count' === $boundary ? 191 : 0 );
+			if ( 'bytes' === $boundary ) {
+				$message = new Message( array( self::TESTER ), 'Synthetic last writer', str_repeat( 'x', 4096 ), array(), array() );
+				$bytes   = strlen( (string) wp_json_encode( $message->to_array() ) );
+				IntakeStore::edit(
+					static function ( array &$state ) use ( $bytes ): array {
+						$state['mail_capacity']['entries'][10000001] = array(
+							'pool'  => 'ordinary',
+							'bytes' => Capacity::LIMITS['ordinary']['bytes'] - $bytes,
+						);
+						IntakeStore::save( $state );
+						return array();
+					}
+				);
+			}
+			$directory = $this->workers_directory();
+			$first     = $this->start_worker( $directory, 'a' );
+			$second    = $this->start_worker( $directory, 'b' );
+			$this->await_ready( $directory . '/a.ready' );
+			$this->await_ready( $directory . '/b.ready' );
+			file_put_contents( $directory . '/go', 'go' );
+			self::assertSame( 0, proc_close( $first ) );
+			self::assertSame( 0, proc_close( $second ) );
+			$a = json_decode( (string) file_get_contents( $directory . '/a' ), true );
+			$b = json_decode( (string) file_get_contents( $directory . '/b' ), true );
+			self::assertSame( 1, (int) ( $a['job'] > 0 ) + (int) ( $b['job'] > 0 ), $boundary . ': exactly one actual native job.' );
+			self::assertLessThan( 1, max( $a['seconds'], $b['seconds'] ), 'Contending public workers never wait for a long DB lock timeout.' );
+			wp_cache_delete( IntakeStore::OPTION, 'options' );
+			wp_cache_delete( 'notoptions', 'options' );
+		}
+	}
+
+	/** An uncommitted outer owner cannot make another public writer hang on CAS. */
+	public function test_uncommitted_outer_capacity_fails_competing_native_worker_without_waiting(): void {
+		$this->seed_jobs( 0 );
+		$directory = $this->workers_directory();
+		$process   = $this->start_worker( $directory, 'a' );
+		$this->await_ready( $directory . '/a.ready' );
+		wc_transaction_query( 'start' );
+		$finished = false;
+		try {
+			self::assertTrue( wp_mail( self::TESTER, 'Synthetic held transaction', 'No transport before commit.' ) );
+			file_put_contents( $directory . '/go', 'go' );
+			$deadline = microtime( true ) + 2;
+			while ( ! is_file( $directory . '/a' ) && microtime( true ) < $deadline ) {
+				usleep( 1000 );
+			}
+			$finished = is_file( $directory . '/a' );
+		} finally {
+			wc_transaction_query( 'rollback' );
+		}
+		self::assertSame( 0, proc_close( $process ) );
+		self::assertTrue( $finished, 'The competing request must return while the outer transaction is still open.' );
+		$result = json_decode( (string) file_get_contents( $directory . '/a' ), true );
+		self::assertSame( 0, $result['job'] );
+		self::assertLessThan( 1, $result['seconds'] );
+	}
+
+	/** Test-owned worker folder; do not touch any shared instance or process.
+	 *
+	 * @return string Private temporary directory.
+	 */
+	private function workers_directory(): string {
+		$directory = sys_get_temp_dir() . '/linker-capacity-' . self::tag();
+		mkdir( $directory, 0700 );
+		$this->later(
+			static function () use ( $directory ): void {
+				$files = glob( $directory . '/*' );
+				foreach ( false === $files ? array() : $files as $file ) {
+					unlink( $file );
+				}
+				rmdir( $directory );
+			}
+		);
+		return $directory;
+	}
+
+	/** Native worker runs this exact checkout against the exclusive local DB.
+	 *
+	 * @param string $directory Test-owned private folder.
+	 * @param string $worker Bounded fixture worker name.
+	 * @return resource Native process.
+	 */
+	private function start_worker( string $directory, string $worker ) {
+		$pipes = array();
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Two owned native DB workers, no transport.
+		$process = proc_open(
+			array( PHP_BINARY, '-d', 'memory_limit=2048M', dirname( __DIR__, 2 ) . '/fixtures/mail_capacity_writer.php', untrailingslashit( ABSPATH ), $directory . '/' . $worker, $directory . '/go' ),
+			array(
+				0 => array( 'pipe', 'r' ),
+				1 => array( 'file', $directory . '/log', 'a' ),
+				2 => array( 'file', $directory . '/log', 'a' ),
+			),
+			$pipes
+		); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Two owned native DB workers, no transport.
+		self::assertIsResource( $process );
+		fclose( $pipes[0] );
+		return $process;
+	}
+
+	/** Wait only for this test's deterministic ready barrier.
+	 *
+	 * @param string $file Native worker's ready flag.
+	 */
+	private function await_ready( string $file ): void {
+		$deadline = microtime( true ) + 15;
+		while ( ! is_file( $file ) && microtime( true ) < $deadline ) {
+			usleep( 1000 );
+		}
+		self::assertFileExists( $file );
 	}
 }
