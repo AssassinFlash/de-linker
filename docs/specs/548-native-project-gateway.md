@@ -71,7 +71,8 @@ engineering reports, and does not replace any model channel.
    engine evidence; its absence after 24 hours does not authorise another debit.
    The private response supplies the hash of the validated canonical domain
    command used by that same permanent receipt. Native admission uses this
-   hash, owner and operation, rather than implementing a second JSON
+   hash, the same project-qualified receipt scope, owner and operation,
+   rather than implementing a second JSON
    canonicalisation rule. Equivalent wire formatting can recover and settle
    the same receipt; a changed domain intent conflicts.
 

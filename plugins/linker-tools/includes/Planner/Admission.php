@@ -39,14 +39,14 @@ final class Admission {
 			return $previous;
 		}
 		$known = json_decode( $previous['body'] );
-		if ( ! $known instanceof \stdClass || 1 !== ( $known->schema_version ?? null ) || ! in_array( $known->status ?? null, array( 'absent', 'replayed' ), true ) || ! is_string( $known->command_sha256 ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $known->command_sha256 ) || ! str_starts_with( $previous['type'], 'application/json' ) ) {
+		if ( ! $known instanceof \stdClass || 1 !== ( $known->schema_version ?? null ) || ! in_array( $known->status ?? null, array( 'absent', 'replayed' ), true ) || ! is_string( $known->command_sha256 ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $known->command_sha256 ) || ! is_string( $known->command_scope ?? null ) || 1 !== preg_match( '/\A(?:create|(?:revise|evaluate|asset):[a-f0-9]{32})\z/', $known->command_scope ) || ! str_starts_with( $previous['type'], 'application/json' ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		if ( 'replayed' === $known->status ) {
 			if ( ! ( $known->result ?? null ) instanceof \stdClass ) {
 				return Failure::make( 'invalid_reply', 502 );
 			}
-			$acknowledged = $this->acknowledge( $principal, $path, $command, $known->command_sha256 );
+			$acknowledged = $this->acknowledge( $principal, $path, $command, $known->command_scope, $known->command_sha256 );
 			if ( is_wp_error( $acknowledged ) ) {
 				return $acknowledged;
 			}
@@ -62,7 +62,7 @@ final class Admission {
 		}
 		$quota = Identity::current();
 		if ( is_wp_error( $quota ) ) {
-			return $quota;
+			return $this->refusal( $quota );
 		}
 		list( $name, $guest, $account, $window, $site ) = $policy;
 		$signed = '' !== $quota->account;
@@ -77,18 +77,18 @@ final class Admission {
 			);
 		}
 		$id          = $command['key'];
-		$fingerprint = $this->fingerprint( $principal, $path, $known->command_sha256 );
+		$fingerprint = $this->fingerprint( $principal, $path, $known->command_scope, $known->command_sha256 );
 		$ledger      = new Ledger();
 		// This lease covers only bounded RPC dispatch, not queued numerical work.
 		$receipt = $ledger->reserve( $id, $fingerprint, $limits, 30, $carry, 'planner_write', $quota->binding(), $quota->owners() );
 		if ( is_wp_error( $receipt ) ) {
-			return $receipt;
+			return $this->refusal( $receipt );
 		}
 		$status = $receipt['status'] ?? '';
 		if ( 'reserved' === $status ) {
 			$dispatched = $ledger->dispatch( $id, $fingerprint );
 			if ( is_wp_error( $dispatched ) ) {
-				return $dispatched;
+				return $this->refusal( $dispatched );
 			}
 		} elseif ( ! in_array( $status, array( 'dispatched', 'unresolved', 'completed' ), true ) ) {
 			return Failure::make( 'operation_expired', 409 );
@@ -112,16 +112,17 @@ final class Admission {
 	 * @param Principal           $principal Verified owner.
 	 * @param string              $path Server-selected command.
 	 * @param array<string,mixed> $command Parsed command.
+	 * @param string              $command_scope Private receipt's project-qualified scope.
 	 * @param string              $command_hash Private engine's canonical intent.
 	 * @return true|WP_Error Native acknowledgement or explicit journal failure.
 	 */
-	private function acknowledge( Principal $principal, string $path, array $command, string $command_hash ): bool|WP_Error {
+	private function acknowledge( Principal $principal, string $path, array $command, string $command_scope, string $command_hash ): bool|WP_Error {
 		$id = $command['key'] ?? null;
 		if ( ! class_exists( Ledger::class ) || ! is_string( $id ) || ! wp_is_uuid( $id, 4 ) || false === get_option( Ledger::OPTION ) ) {
 			return true;
 		}
 		$ledger      = new Ledger();
-		$fingerprint = $this->fingerprint( $principal, $path, $command_hash );
+		$fingerprint = $this->fingerprint( $principal, $path, $command_scope, $command_hash );
 		$receipt     = $ledger->lookup( $id, $fingerprint );
 		if ( is_wp_error( $receipt ) ) {
 			return 'linker_admission_unknown_receipt' === $receipt->get_error_code() ? true : Failure::make( 'receipt_persistence', 503 );
@@ -137,10 +138,25 @@ final class Admission {
 	 *
 	 * @param Principal $principal Verified owner.
 	 * @param string    $path Server-selected command.
+	 * @param string    $command_scope Same private receipt's resource-qualified scope.
 	 * @param string    $command_hash Private engine's validated canonical hash.
 	 */
-	private function fingerprint( Principal $principal, string $path, string $command_hash ): string {
-		return wp_hash( 'linker-planner-admission:v1|' . $principal->kind . '|' . $principal->subject . '|' . $path . '|' . $command_hash, 'nonce', 'sha256' );
+	private function fingerprint( Principal $principal, string $path, string $command_scope, string $command_hash ): string {
+		return wp_hash( 'linker-planner-admission:v1|' . $principal->kind . '|' . $principal->subject . '|' . $path . '|' . $command_scope . '|' . $command_hash, 'nonce', 'sha256' );
+	}
+
+	/**
+	 * The native journal is transport-neutral; its adapter supplies HTTP status.
+	 *
+	 * @param WP_Error $error Native admission outcome.
+	 */
+	private function refusal( WP_Error $error ): WP_Error {
+		return match ( $error->get_error_code() ) {
+			'linker_admission_quota' => Failure::make( 'rate_limit', 429 ),
+			'linker_admission_payload_changed' => Failure::make( 'operation_changed', 409 ),
+			'linker_admission_input' => Failure::make( 'admission', 400 ),
+			default => Failure::make( 'admission_unavailable', 503 ),
+		};
 	}
 
 	/**

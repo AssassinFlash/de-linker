@@ -12,6 +12,7 @@ instance's private test workspace, not in the production project store.
 
 from __future__ import annotations
 
+import base64
 import copy
 import html
 import json
@@ -540,3 +541,36 @@ echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count
     assert before["count"] == after["count"] and before["buckets"] == after["buckets"]
     assert before["receipt"]["fingerprint"] == after["receipt"]["fingerprint"]
     assert before["receipt"]["debits"] == after["receipt"]["debits"]
+
+
+def test_one_public_operation_key_cannot_meter_two_project_resources(local: tuple[Instance, WpCli]) -> None:
+    instance, _ = local
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    first = browser.create("Receipt resource A")
+    second = browser.create("Receipt resource B")
+    csv = base64.b64encode(b"time,power\n2026-01-01T00:00:00Z,1\n2026-01-01T01:00:00Z,2\n").decode()
+    commands: list[tuple[str, dict[str, Any]]] = [
+        ("projects/revise", {"expected_revision": 1, "inputs": {"same": True}}),
+        ("battery/scenario", {"parameters": {
+            "schema_version": 1, "model": "constant_window_single_ac_bus_v1", "parameter_basis": "explicit_scenario",
+            "usable_window_kwh": 10.0, "charge_ac_kw": 5.0, "discharge_ac_kw": 5.0,
+            "eta_charge": 0.95, "eta_discharge": 0.95, "internal_aux_kw": 0.0, "standing_loss_rate_per_hour": 0.0,
+        }, "source_note": "Synthetic native integration scenario"}),
+        ("profiles/csv", {"content_base64": csv, "source_label": "Synthetic native integration profile", "rights_note": "Locally generated fixture", "mapping": {
+            "timestamp_column": "time", "value_column": "power", "measurement": "gross_load",
+            "value_kind": "interval_average_kw", "timestamp_role": "start", "timezone": "UTC", "origin": "synthetic",
+            "interval_seconds": 3600.0, "delimiter": ",", "decimal": ".", "end_timestamp_column": None,
+            "fold_column": None, "end_fold_column": None, "offset_rule": "explicit_offset_precedes_naive_timezone",
+            "within_interval_assumption": "constant_mean_no_new_observations",
+        }}),
+    ]
+    for path, fields in commands:
+        command = {"schema_version": 1, **fields, "project_id": first["id"], "key": str(uuid.uuid4())}
+        accepted = browser.rpc("rpc/" + path, command)
+        assert accepted.status == 200, accepted.body
+        changed_resource = {**command, "project_id": second["id"]}
+        rejected = browser.rpc("rpc/" + path, changed_resource)
+        assert rejected.status == 409, rejected.body
+        assert browser.rpc("rpc/" + path, command).object() == accepted.object()
+    assert browser.read(second).object()["revision"] == 1

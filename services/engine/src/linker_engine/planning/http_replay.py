@@ -39,9 +39,10 @@ class HttpReplay:
         result: Object | None
         if path == "projects/create":
             create = ProjectCreate.model_validate(value)
+            command_scope = "create"
             receipt, command_sha256 = self.receipt(
                 actor,
-                "create",
+                command_scope,
                 create.key,
                 {"title": create.title, "inputs": create.inputs},
             )
@@ -58,9 +59,10 @@ class HttpReplay:
             )
         elif path == "projects/revise":
             revise = ProjectRevise.model_validate(value)
+            command_scope = f"revise:{revise.project_id}"
             receipt, command_sha256 = self.receipt(
                 actor,
-                f"revise:{revise.project_id}",
+                command_scope,
                 revise.key,
                 {
                     "expected_revision": revise.expected_revision,
@@ -81,9 +83,10 @@ class HttpReplay:
             )
         elif path == "runs/energy":
             evaluate = EnergyEvaluate.model_validate(value)
+            command_scope = f"evaluate:{evaluate.project_id}"
             receipt, command_sha256 = self.receipt(
                 actor,
-                f"evaluate:{evaluate.project_id}",
+                command_scope,
                 evaluate.key,
                 {
                     "expected_revision": evaluate.expected_revision,
@@ -102,12 +105,14 @@ class HttpReplay:
             )
         elif path == "profiles/csv":
             csv = CsvImport.model_validate(value)
+            command_scope = f"asset:{csv.project_id}"
             command = self.intake.csv_command(actor, csv)
             command_sha256 = commands.command_hash(command, csv.key)
             asset = self.intake.assets.receipt(actor, csv.project_id, csv.key, command)
             result = None if asset is None else asset_view(asset)
         elif path == "battery/scenario":
             battery = BatteryScenario.model_validate(value)
+            command_scope = f"asset:{battery.project_id}"
             command = self.intake.battery_command(battery)
             command_sha256 = commands.command_hash(command, battery.key)
             asset = self.intake.assets.receipt(
@@ -116,16 +121,15 @@ class HttpReplay:
             result = None if asset is None else asset_view(asset)
         else:
             raise NotFound("mutation receipt not found")
-        return (
-            {"schema_version": 1, "status": "absent", "command_sha256": command_sha256}
-            if result is None
-            else {
-                "schema_version": 1,
-                "status": "replayed",
-                "command_sha256": command_sha256,
-                "result": result,
-            }
-        )
+        reply: Object = {
+            "schema_version": 1,
+            "status": "absent" if result is None else "replayed",
+            "command_scope": command_scope,
+            "command_sha256": command_sha256,
+        }
+        if result is not None:
+            reply["result"] = result
+        return reply
 
     def receipt(
         self,
