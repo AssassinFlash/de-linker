@@ -12,6 +12,7 @@ namespace Linker\Commerce\Registration;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\Capacity;
 use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Protection\ReceiptBudget;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
@@ -126,16 +127,25 @@ final class RegistrationNotices {
 					$class  = 'team' === $kind ? NewCustomerEmail::class : RegistrationReceivedEmail::class;
 					$reason = isset( $emails[ $class ] ) && ! $emails[ $class ]->is_enabled() ? 'disabled' : '';
 					if ( '' === $reason && 'received' === $kind ) {
-						$reason = ReceiptBudget::reason( $user->user_email, $id, 'registration' );
+						$reason = ReceiptBudget::reason( Message::from_array( $plan['message'] )->to, $id, 'registration' );
 					}
 					if ( in_array( $reason, array( 'disabled', 'daily_cap', 'target_cap' ), true ) ) {
-						$state[ $kind ] = array(
+						$next          = $state;
+						$next[ $kind ] = array(
 							'state'       => 'skipped',
 							'reason'      => $reason,
 							'reservation' => $plan['reservation'],
 						);
-						self::write( $id, $state );
-						self::cancel_skipped( $id, $kind, $state );
+						if ( self::transition(
+							$id,
+							$state,
+							static function () use ( $id, $next ): bool {
+								self::write( $id, $next );
+								return true;
+							}
+						) ) {
+							self::cancel_skipped( $id, $kind, $next );
+						}
 						return;
 					}
 					if ( '' !== $reason ) {
@@ -151,25 +161,32 @@ final class RegistrationNotices {
 						return; // Account exists; keep visible pending instead of inventing success.
 					}
 					try {
-						Capacity::within(
-							$plan['reservation'],
-							static function () use ( $message, $id, $kind, $state ): void {
-								( new JobStore() )->create(
-									$message,
-									0,
-									static function ( int $job ) use ( $id, $kind, $state ): void {
-										update_post_meta( $job, '_linker_registration_user', $id );
-										if ( (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
-											throw new \RuntimeException( 'registration_notice_owner_failed' );
-										}
-										$next          = $state;
-										$next[ $kind ] = array(
-											'state' => 'accepted',
-											'job'   => $job,
+						self::transition(
+							$id,
+							$state,
+							static function () use ( $message, $plan, $id, $kind, $state ): bool {
+								$job = Capacity::within(
+									$plan['reservation'],
+									static function () use ( $message, $id, $kind, $state ): int {
+										return ( new JobStore() )->create(
+											$message,
+											0,
+											static function ( int $job ) use ( $id, $kind, $state ): void {
+												update_post_meta( $job, '_linker_registration_user', $id );
+												if ( (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
+													throw new \RuntimeException( 'registration_notice_owner_failed' );
+												}
+												$next          = $state;
+												$next[ $kind ] = array(
+													'state' => 'accepted',
+													'job' => $job,
+												);
+												self::write( $id, $next );
+											}
 										);
-										self::write( $id, $next );
 									}
 								);
+								return is_int( $job ) && $job > 0;
 							}
 						);
 					} finally {
@@ -193,16 +210,39 @@ final class RegistrationNotices {
 	private static function cancel_skipped( int $id, string $kind, array $state ): void {
 		$scope = $state[ $kind ]['reservation'] ?? '';
 		if ( ! is_string( $scope ) || '' === $scope ) {
-			return; }
-		self::acknowledge(
+			return;
+		}
+		self::transition(
+			$id,
+			$state,
 			static function () use ( $id, $kind, $state, $scope ): bool {
 				if ( ! Capacity::cancel_before_side_effect( $scope ) ) {
-					return false; }
+					return false;
+				}
 				unset( $state[ $kind ]['reservation'], $state[ $kind ]['max_bytes'] );
 				self::write( $id, $state );
 				return true;
 			}
 		);
+	}
+
+	/**
+	 * Reacquire the native owner lock and reread under the original DB scope.
+	 * A stale source, especially erased data, must never be copied back.
+	 *
+	 * @param int                 $id Native notice owner.
+	 * @param array<string,mixed> $expected Exact source read before policy/provider work.
+	 * @param callable():bool     $work DB-only transition of that same source.
+	 */
+	private static function transition( int $id, array $expected, callable $work ): bool {
+		$done = false;
+		Lock::run(
+			'registration-notices-' . $id,
+			static function () use ( $id, $expected, $work, &$done ): void {
+				$done = self::acknowledge( static fn (): bool => self::read( $id ) === $expected && $work() );
+			}
+		);
+		return $done;
 	}
 
 	/**
@@ -248,9 +288,11 @@ final class RegistrationNotices {
 					$state = self::read( $id );
 					if ( null === $state ) {
 						$done = true;
-						return; }
+						return;
+					}
 					if ( count( $state ) > 2 || array() !== array_diff( array_keys( $state ), array( 'team', 'received' ) ) ) {
-						return; }
+						return;
+					}
 					$jobs = array_values( array_filter( array_map( static fn ( array $plan ): int => (int) ( $plan['job'] ?? 0 ), $state ), static fn ( int $job ): bool => $job > 0 ) );
 					$done = self::with_jobs(
 						$jobs,
@@ -259,22 +301,29 @@ final class RegistrationNotices {
 								return self::acknowledge(
 									static function () use ( $id, $state ): bool {
 										global $wpdb;
+										if ( self::read( $id ) !== $state ) {
+											return false;
+										}
 										foreach ( $state as $kind => $plan ) {
 											$job = (int) ( $plan['job'] ?? 0 );
 											if ( 0 < $job && get_post( $job ) ) {
 												if ( (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
-													return false; }
+													return false;
+												}
 												as_unschedule_all_actions( Outbox::HOOK, array( $job ), Outbox::GROUP );
 												( new JobStore() )->delete( $job );
 												clean_post_cache( $job );
 												if ( null !== ( new JobStore() )->load( $job ) ) {
-													return false; }
+													return false;
+												}
 											}
 											if ( '' !== $wpdb->last_error ) {
-												return false; }
+												return false;
+											}
 											$state[ $kind ] = array( 'state' => 'erased' );
 											if ( isset( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
-												$state[ $kind ]['reservation'] = $plan['reservation']; }
+												$state[ $kind ]['reservation'] = $plan['reservation'];
+											}
 										}
 										self::write( $id, $state );
 										delete_user_meta( $id, self::OWNER );
@@ -285,7 +334,8 @@ final class RegistrationNotices {
 							} finally {
 								// These connection-owned mail locks stay held through COMMIT/ROLLBACK.
 								foreach ( $jobs as $job ) {
-									clean_post_cache( $job ); }
+									clean_post_cache( $job );
+								}
 								wp_cache_set_posts_last_changed();
 							}
 						}
@@ -293,8 +343,10 @@ final class RegistrationNotices {
 				}
 			);
 		} catch ( \Throwable $error ) {
-			return false; } finally {
-			wp_cache_delete( $id, 'user_meta' ); }
+			return false;
+		} finally {
+			wp_cache_delete( $id, 'user_meta' );
+		}
 			return $done;
 	}
 
@@ -306,7 +358,8 @@ final class RegistrationNotices {
 	 */
 	private static function with_jobs( array $jobs, callable $work ): bool {
 		if ( array() === $jobs ) {
-			return $work(); }
+			return $work();
+		}
 		$job  = array_shift( $jobs );
 		$done = false;
 		Lock::run(
@@ -328,7 +381,8 @@ final class RegistrationNotices {
 			return \Linker\Commerce\Mail\NativeTransaction::run(
 				static function () use ( $work ): bool {
 					if ( ! $work() ) {
-						throw new \RuntimeException( 'registration_notice_ack_failed' ); }
+						throw new \RuntimeException( 'registration_notice_ack_failed' );
+					}
 					return true;
 				}
 			);
@@ -336,7 +390,8 @@ final class RegistrationNotices {
 			return false;
 		} finally {
 			foreach ( array( \Linker\Commerce\Protection\IntakeStore::OPTION, 'alloptions', 'notoptions' ) as $key ) {
-				wp_cache_delete( $key, 'options' ); }
+				wp_cache_delete( $key, 'options' );
+			}
 		}
 	}
 
@@ -352,7 +407,8 @@ final class RegistrationNotices {
 		$state = get_user_meta( $id, self::META, true );
 		global $wpdb;
 		if ( '' !== $wpdb->last_error ) {
-			throw new \RuntimeException( 'registration_notice_read_failed' ); }
+			throw new \RuntimeException( 'registration_notice_read_failed' );
+		}
 		return is_array( $state ) ? $state : null;
 	}
 

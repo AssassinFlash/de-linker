@@ -69,3 +69,12 @@ WordPress 的数据库客户端可能在2006断线后重连并重放原 UPDATE�
 Woo/WordPress 原生 validation、users/meta、账户 writer、审批审计、privacy callbacks 和 Action Scheduler 已复用。它们没有本站的跨公开入口 site/window、pending count/bytes 或冻结通知 capacity 合同，因此增加窄 Accounts/Slots/Notices adapter；LC tag 与 WindPress 不能承担业务 admission/事务。客户页面沿现有 LC/Woo/WindPress，只有现有账户表单四个 value 的数据供给变化，无新布局、CSS或 snippet。
 
 验收与回滚边界见 [本票记录](../acceptance/2026-10-22/569/README.md)，文案初稿、意见与定稿见 [copy review](../acceptance/2026-10-22/569/copy-review.md)。生产发布由协调者在完整复审与组合验收之后执行，本票执行者没有部署、合并、生产写入、真实模型调用或邮件投递。
+
+
+## 全量评审收窄的身份与失败合同
+
+客户回执的ReceiptBudget绑定冻结Message实际To，不从当前user_email重新推导。对冻结To解析原生Name <address>、去重并稳定排序，一次Ledger reserve原子包含全部目标hour/day与site/day一次；不逐目标扣款。单To与既有string接口的operation ID/fingerprint保持字节兼容，邮箱更改不重定向已冻结通知。保留既有Ledger16维界，最多7个唯一目标；无法证明或超出时通知保留pending，不裁剪目标、不放宽额度、不拒绝注册。
+
+创建提交前必须核实最后Admission completion的返回值，非抛异常WP_Error也不能被void适配器吞掉。REST业务字节门以实际matched Users controller写回调和原生parsed target为准，覆盖原生大小写匹配及body/JSON参数优先级，仍保留原鉴权和schema校验。
+
+通知policy/provider阶段可以先读状态；真正写skip、accepted、取消预留或erase时必须在原owner锁和原NativeTransaction内重读完全一致的source。已擦除、已变化或无法确认的source不能被旧快照覆盖。verified-email原owner查询失败不是空集：export原生错误、erase retained/done=false，拒绝失败空结果缓存，也不借当前邮箱fallback伪称完成。健康重试仍使用原有owner关联，不复制新的隐私队列。

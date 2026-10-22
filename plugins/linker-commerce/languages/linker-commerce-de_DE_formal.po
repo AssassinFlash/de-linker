@@ -6006,6 +6006,12 @@ msgstr ""
 "Die Registrierungsbenachrichtigungsdaten werden gerade verarbeitet. Bitte "
 "versuchen Sie die Löschung erneut."
 
+#: includes/Registration/RegistrationPrivacy.php:170
+msgid "Registration notification data could not be read. Please try again."
+msgstr ""
+"Die Daten zu den Registrierungsbenachrichtigungen konnten nicht gelesen "
+"werden. Bitte versuchen Sie es erneut."
+
 #, php-format
 #~ msgid ""
 #~ "%1$d saved inquiries need verification or staff review.\n"

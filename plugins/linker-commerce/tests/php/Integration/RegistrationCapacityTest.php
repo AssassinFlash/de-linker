@@ -7,7 +7,7 @@
 
 declare( strict_types = 1 );
 
-// phpcs:disable WordPress.DB.RestrictedFunctions, WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks, WordPress.PHP.DiscouragedPHPFunctions -- Test-only native request/process harness; real validation hooks remain under test.
+// phpcs:disable WordPress.DB.RestrictedFunctions, WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound, WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks, WordPress.PHP.DiscouragedPHPFunctions, WordPress.WP.AlternativeFunctions -- Test-only native request/process harness uses real pipes and temporary process witnesses; real validation hooks remain under test.
 
 namespace Linker\Commerce\Tests\Integration;
 
@@ -392,7 +392,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$this->assertIsInt( $id );
 		$this->own_user( $id );
 		$privacy = new RegistrationPrivacy();
-		$this->assertNotEmpty( $privacy->export( $post['email'] )['data'] );
+		$export  = $privacy->export( $post['email'] );
+		$this->assertIsArray( $export );
+		$this->assertNotEmpty( $export['data'] );
 		$this->assertStringNotContainsString( $post['password'], (string) wp_json_encode( $privacy->export( $post['email'] ) ) );
 		$this->assertCount( 2, self::mail_jobs_after( $this->mail_marker ) );
 		$this->assertTrue( $privacy->erase( $post['email'] )['items_removed'] );
@@ -658,7 +660,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			)
 		);
 		$privacy = new RegistrationPrivacy();
-		$this->assertNotEmpty( $privacy->export( $post['email'] )['data'] );
+		$export  = $privacy->export( $post['email'] );
+		$this->assertIsArray( $export );
+		$this->assertNotEmpty( $export['data'] );
 		$this->assertTrue( $privacy->erase( $post['email'] )['done'] );
 		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
 		RegistrationNotices::recover();
@@ -1174,10 +1178,10 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$this->assertSame( $user->display_name, $this->native_user( $user->ID )->display_name );
 		$this->assertSame( $expected, $_POST );
 		$old_query           = $GLOBALS['wp_query'];
-		$GLOBALS['wp_query'] = new \WP_Query( array( 'page_id' => wc_get_page_id( 'myaccount' ) ) );
+		$GLOBALS['wp_query'] = new \WP_Query( array( 'page_id' => wc_get_page_id( 'myaccount' ) ) ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Render the actual account template in its native page context.
 		$this->later(
 			static function () use ( $old_query ): void {
-				$GLOBALS['wp_query'] = $old_query;
+				$GLOBALS['wp_query'] = $old_query; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restore only the native query replaced by this fixture.
 			}
 		);
 		$this->assertTrue( is_account_page() );
@@ -1385,6 +1389,303 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$this->assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
 		RegistrationNotices::recover();
 		$this->assertSame( $state, $this->notices( $id ), 'A consumed job is never recreated from the cleared source.' );
+	}
+
+	/** A completed policy keeps the frozen recipient after a failed handoff and native email edit. */
+	public function test_review_receipt_recovery_keeps_frozen_recipient_after_policy_completion(): void {
+		$post = $this->public_post( 59 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
+		add_filter( 'update_user_metadata', $fail, 10, 3 );
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		} finally {
+			remove_filter( 'update_user_metadata', $fail, 10 );
+		}
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$this->assertSame( 'pending', $this->notices( $id )['received']['state'] );
+		$budget = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$policy = array_filter( $budget['receipts'], static fn ( array $r ): bool => 'customer_receipt' === $r['purpose'] );
+		$this->assertCount( 1, $policy );
+		$this->assertSame( 'completed', reset( $policy )['status'] );
+		add_filter( 'send_email_change_email', '__return_false' );
+		try {
+			$this->assertIsInt(
+				wp_update_user(
+					array(
+						'ID'         => $id,
+						'user_email' => 'changed-' . self::tag() . '@example.test',
+					)
+				)
+			);
+		} finally {
+			remove_filter( 'send_email_change_email', '__return_false' );
+		}
+		RegistrationNotices::deliver( $id, 'received' );
+		$state = $this->notices( $id );
+		$this->assertSame( 'accepted', $state['received']['state'] );
+		$job = ( new \Linker\Commerce\Mail\JobStore() )->load( $state['received']['job'] );
+		$this->assertNotNull( $job );
+		$this->assertSame( array( $post['email'] ), $job['message']->to );
+		$recovered = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$after     = array_filter( $recovered['receipts'], static fn ( array $r ): bool => 'customer_receipt' === $r['purpose'] );
+		$this->assertSame( $policy, $after );
+		$this->assertSame( $budget['buckets'], $recovered['buckets'] );
+	}
+
+	/** A nonthrowing final Ledger completion failure must not commit a native account. */
+	public function test_review_final_operation_ack_failure_rolls_back_native_account(): void {
+		$post = $this->public_post( 60 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$failed = false;
+		$fault  = static function ( string $sql ) use ( &$failed ): string {
+			if ( ! $failed && str_starts_with( $sql, 'UPDATE ' ) && str_contains( $sql, Ledger::OPTION ) ) {
+				$failed = true;
+				return 'DO 0';
+			}
+			return $sql;
+		};
+		add_filter( 'query', $fault );
+		$unknown = false;
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+			if ( is_int( $id ) ) {
+				$this->own_user( $id );
+			}
+		} catch ( \RuntimeException $error ) {
+			$unknown = str_contains( $error->getMessage(), 'could not be confirmed' );
+		} finally {
+			remove_filter( 'query', $fault );
+		}
+		$this->assertTrue( $failed );
+		$this->assertTrue( $unknown );
+		$this->assertFalse( email_exists( $post['email'] ) );
+		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		$this->assertSame( 0, $this->summary()['interrupted'] );
+	}
+
+	/**
+	 * A failed original-owner selector must not become empty-complete or poison retry.
+	 *
+	 * @testWith ["export"]
+	 *           ["erase"]
+	 * @param string $method Registered native privacy callback.
+	 */
+	public function test_review_privacy_owner_read_failure_is_retryable_after_email_edit( string $method ): void {
+		$post = $this->public_post( 61 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		add_filter( 'send_email_change_email', '__return_false' );
+		try {
+			wp_update_user(
+				array(
+					'ID'         => $id,
+					'user_email' => 'changed-' . self::tag() . '@example.test',
+				)
+			);
+		} finally {
+			remove_filter( 'send_email_change_email', '__return_false' );
+		}
+		$before = $this->notices( $id );
+		$failed = false;
+		$fault  = static function ( string $sql ) use ( &$failed ): string {
+			if ( ! $failed && str_starts_with( $sql, 'SELECT ' ) && str_contains( $sql, RegistrationNotices::OWNER ) ) {
+				$failed = true;
+				return 'SELECT id FROM linker_synthetic_missing_owner_table';
+			}
+			return $sql;
+		};
+		global $wpdb;
+		$previous = $wpdb->suppress_errors( true );
+		add_filter( 'query', $fault );
+		$privacy = new RegistrationPrivacy();
+		try {
+			$result = $privacy->$method( $post['email'] );
+		} finally {
+			remove_filter( 'query', $fault );
+			$wpdb->suppress_errors( $previous );
+		}
+		$this->assertTrue( $failed );
+		$this->assertSame( $before, $this->notices( $id ) );
+		if ( 'export' === $method ) {
+			$this->assertInstanceOf( WP_Error::class, $result );
+		} else {
+			$this->assertTrue( $result['items_retained'] );
+			$this->assertFalse( $result['done'] );
+			$this->assertFalse( $result['items_removed'] );
+		}
+		$export = $privacy->export( $post['email'] );
+		$this->assertIsArray( $export );
+		$this->assertNotEmpty( $export['data'] );
+		$this->assertTrue( $privacy->erase( $post['email'] )['done'] );
+		$this->assertSame( 'erased', $this->notices( $id )['received']['state'] );
+	}
+
+	/**
+	 * The actual native handler and parsed write target own both final-byte success and refusal.
+	 *
+	 * @testWith ["case"]
+	 *           ["body_target"]
+	 * @param string $variant Native REST matching/parameter behavior.
+	 */
+	public function test_review_native_rest_actual_target_respects_last_profile_byte( string $variant ): void {
+		$customer = $this->customer();
+		$id       = $customer->get_id();
+		update_user_meta( $id, Approval::STATUS_META, Approval::PENDING );
+		$this->as_user( $id );
+		$before = $this->summary();
+		$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), RegistrationSlots::MAX_BYTES - $before['business_bytes'] - 1 ) );
+		foreach ( array( 'x', 'xx' ) as $index => $value ) {
+			$request = new \WP_REST_Request( 'POST', 'case' === $variant ? '/WP/v2/USERS/ME' : '/wp/v2/users/99999999' );
+			$request->set_header( 'content-type', 'application/json' );
+			$request->set_body(
+				(string) wp_json_encode(
+					array(
+						'id'         => $id,
+						'first_name' => $value,
+					)
+				)
+			);
+			$result = rest_do_request( $request );
+			$this->assertSame( 0 === $index ? 200 : 503, $result->get_status() );
+			$this->assertSame( 'x', get_user_meta( $id, 'first_name', true ) );
+			$after = $this->summary();
+			$this->assertSame( RegistrationSlots::MAX_BYTES, $after['business_bytes'] + $after['reserved_bytes'] );
+		}
+	}
+
+	/** Frozen To normalization keeps the original single-recipient receipt identity byte-for-byte. */
+	public function test_review_receipt_policy_single_target_is_compatible_with_frozen_to(): void {
+		$policy = \Linker\Commerce\Protection\ReceiptBudget::class;
+		$this->assertSame( '', $policy::reason( 'one@example.test', 600, 'registration' ) );
+		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$this->assertSame( '', $policy::reason( array( 'Fixture <ONE@example.test>', ' one@example.test ' ), 600, 'registration' ) );
+		$after = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$this->assertSame( $before['receipts'], $after['receipts'] );
+		$this->assertSame( $before['buckets'], $after['buckets'] );
+	}
+
+	/** All frozen targets reserve atomically, replay independent of order and count site once. */
+	public function test_review_receipt_policy_multi_target_is_atomic_and_site_is_once(): void {
+		$policy = \Linker\Commerce\Protection\ReceiptBudget::class;
+		$this->assertSame( '', $policy::reason( array( 'two@example.test', 'one@example.test', 'ONE@example.test' ), 601, 'registration' ) );
+		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$this->assertCount( 1, $before['receipts'] );
+		$this->assertCount( 5, $before['buckets'] );
+		$this->assertSame( '', $policy::reason( array( 'one@example.test', 'two@example.test' ), 601, 'registration' ) );
+		$after = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$this->assertSame( $before['buckets'], $after['buckets'] );
+		$this->assertSame( '', $policy::reason( 'one@example.test', 602, 'registration' ) );
+		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$this->assertSame( 'target_cap', $policy::reason( array( 'fresh@example.test', 'one@example.test' ), 603, 'registration' ) );
+		$this->assertSame( $before['buckets'], json_decode( (string) get_option( Ledger::OPTION ), true )['buckets'] );
+		foreach ( range( 1, 7 ) as $n ) {
+			$this->assertSame( '', $policy::reason( 'site-' . $n . '@example.test', 610 + $n, 'registration' ) );
+		}
+		$this->assertSame( '', $policy::reason( array( 'last-a@example.test', 'last-b@example.test' ), 620, 'registration' ) );
+		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+		$this->assertSame( 'daily_cap', $policy::reason( array( 'overflow-a@example.test', 'overflow-b@example.test' ), 621, 'registration' ) );
+		$this->assertSame( $before['buckets'], json_decode( (string) get_option( Ledger::OPTION ), true )['buckets'] );
+	}
+
+	/** A real lost writer must not revive a stale sibling payload after independent native erasure. */
+	public function test_review_policy_skip_connection_loss_cannot_revive_erased_parts(): void {
+		$post = $this->public_post( 62 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
+		add_filter( 'update_user_metadata', $fail, 10, 3 );
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		} finally {
+			remove_filter( 'update_user_metadata', $fail, 10 );
+		}
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$this->assertArrayHasKey( 'parts', $this->notices( $id )['received'] );
+		$email          = WC()->mailer()->get_emails()[ NewCustomerEmail::class ];
+		$enabled        = $email->enabled;
+		$email->enabled = 'no';
+		global $wpdb;
+		$observer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$fired    = false;
+		$child    = null;
+		$stderr   = '';
+		$exit     = -1;
+		$fault    = static function ( string $sql ) use ( $observer, $id, &$fired, &$child, &$stderr, &$exit ): string {
+			global $wpdb;
+			if ( ! $fired && str_starts_with( $sql, 'UPDATE ' ) && str_contains( $sql, RegistrationNotices::META ) && str_contains( $sql, 'skipped' ) ) {
+				$fired = true;
+				$observer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+				$command = array( PHP_BINARY, '-c', dirname( (string) getenv( 'LINKER_WP_ROOT' ) ) . '/php.ini', dirname( __DIR__, 2 ) . '/fixtures/registration_notice_erase_writer.php' );
+				$process = proc_open( $command, array( array( 'pipe', 'r' ), array( 'pipe', 'w' ), array( 'pipe', 'w' ) ), $pipes );
+				if ( ! is_resource( $process ) ) {
+					throw new \RuntimeException( 'native_erase_fixture_unavailable' );
+				}
+				fwrite( $pipes[0], (string) wp_json_encode( array( 'user' => $id ) ) );
+				fclose( $pipes[0] );
+				$child  = json_decode( (string) stream_get_contents( $pipes[1] ), true );
+				$stderr = (string) stream_get_contents( $pipes[2] );
+				fclose( $pipes[1] );
+				fclose( $pipes[2] );
+				$exit = proc_close( $process );
+			}
+			return $sql;
+		};
+		add_filter( 'query', $fault );
+		try {
+			RegistrationNotices::deliver( $id, 'team' );
+		} finally {
+			remove_filter( 'query', $fault );
+			$email->enabled = $enabled;
+			$observer->close();
+		}
+		$this->assertTrue( $wpdb->db_connect( false ) );
+		$this->assertTrue( $fired );
+		$this->assertSame( 0, $exit, $stderr );
+		$this->assertTrue( $child['erased'] );
+		$after = $this->notices( $id );
+		$this->assertArrayNotHasKey( 'parts', $after['received'], 'The original sibling payload must not be resurrected by the stale writer.' );
+		foreach ( $after as $plan ) {
+			$this->assertSame( 'erased', $plan['state'] );
+			$this->assertArrayNotHasKey( 'parts', $plan );
+		}
+		RegistrationNotices::recover();
+		$this->assertSame( $after, $this->notices( $id ) );
+	}
+
+	/** A healthy writer must also reject a source erased after its policy snapshot. */
+	public function test_review_policy_skip_refuses_erased_snapshot_without_connection_loss(): void {
+		$post = $this->public_post( 63 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
+		add_filter( 'update_user_metadata', $fail, 10, 3 );
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		} finally {
+			remove_filter( 'update_user_metadata', $fail, 10 );
+		}
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$email  = WC()->mailer()->get_emails()[ NewCustomerEmail::class ];
+		$erased = false;
+		$erase  = static function () use ( $id, &$erased ): bool {
+			$erased = RegistrationNotices::erase( $id );
+			return false;
+		};
+		add_filter( 'woocommerce_email_enabled_' . $email->id, $erase );
+		try {
+			RegistrationNotices::deliver( $id, 'team' );
+		} finally {
+			remove_filter( 'woocommerce_email_enabled_' . $email->id, $erase );
+		}
+		$this->assertTrue( $erased );
+		foreach ( $this->notices( $id ) as $plan ) {
+			$this->assertSame( 'erased', $plan['state'] );
+			$this->assertArrayNotHasKey( 'parts', $plan );
+		}
 	}
 
 	/**

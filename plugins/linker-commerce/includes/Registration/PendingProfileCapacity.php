@@ -291,10 +291,12 @@ final class PendingProfileCapacity {
 	public function rest_user( mixed $response, WP_REST_Request $request, string $route, array $handler ): mixed {
 		unset( $route );
 		$callback = $handler['callback'] ?? null;
-		if ( null !== $response || ! is_array( $callback ) || ! ( $callback[0] ?? null ) instanceof \WP_REST_Users_Controller || ! in_array( $request->get_method(), array( 'POST', 'PUT', 'PATCH' ), true ) || ! preg_match( '#^/wp/v2/users/(me|[0-9]+)$#D', $request->get_route(), $match ) ) {
+		if ( null !== $response || ! is_array( $callback ) || ! ( $callback[0] ?? null ) instanceof \WP_REST_Users_Controller || ! is_string( $callback[1] ?? null ) || ! in_array( strtolower( $callback[1] ), array( 'update_item', 'update_current_item' ), true ) || ! in_array( $request->get_method(), array( 'POST', 'PUT', 'PATCH' ), true ) ) {
 			return $response;
 		}
-		$id = 'me' === $match[1] ? get_current_user_id() : (int) $match[1];
+		// The native current-user callback overwrites id; update_item reads the
+		// parsed request parameter (JSON/body can take precedence over URL params).
+		$id = 'update_current_item' === strtolower( $callback[1] ) ? get_current_user_id() : (int) $request->get_param( 'id' );
 		if ( ! $this->eligible( $id ) || null !== $this->active ) {
 			return $response;
 		}
