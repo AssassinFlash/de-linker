@@ -164,6 +164,70 @@ final class AtomicMailConnectionTest extends IntegrationTestCase {
 		$other->close();
 	}
 
+	/** Actual PHP process death after commit leaves the same original native recovery. */
+	public function test_sigkill_after_native_handoff_recovers_original_job_once(): void {
+		$source = 'synthetic568_crash_' . self::tag();
+		$file   = tempnam( sys_get_temp_dir(), 'linker568-crash-' );
+		self::assertIsString( $file );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_proc_open -- Actual isolated PHP process death after durable native handoff is under test.
+		$process = proc_open(
+			array( PHP_BINARY, dirname( __DIR__, 2 ) . '/fixtures/mail_commit_crash_writer.php', rtrim( ABSPATH, '/' ), $file, $source ),
+			array(
+				0 => array( 'pipe', 'r' ),
+				1 => array( 'file', $file . '.log', 'a' ),
+				2 => array( 'file', $file . '.log', 'a' ),
+			),
+			$pipes
+		);
+		self::assertIsResource( $process );
+		fclose( $pipes[0] );
+		$deadline = microtime( true ) + 10;
+		do {
+			$status = proc_get_status( $process );
+			if ( ! $status['running'] ) {
+				break;
+			}
+			usleep( 1000 );
+		} while ( microtime( true ) < $deadline );
+		if ( $status['running'] ) {
+			proc_terminate( $process, 9 );
+		}
+		proc_close( $process );
+		$this->later(
+			static function () use ( $source, $file ): void {
+				delete_option( $source );
+				unlink( $file );
+				unlink( $file . '.log' );
+			}
+		);
+		self::assertFalse( $status['running'] );
+		self::assertTrue( $status['signaled'] );
+		self::assertSame( 9, $status['termsig'] );
+		$id = (int) file_get_contents( $file );
+		self::assertGreaterThan( 0, $id );
+		wp_cache_delete( $source, 'options' );
+		wp_cache_delete( 'notoptions', 'options' );
+		self::assertSame( $id, (int) get_option( $source ) );
+		self::assertNotNull( ( new JobStore() )->load( $id ) );
+		self::assertTrue( as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) );
+		$count     = 0;
+		$transport = static function () use ( &$count ): void {
+			++$count;
+		};
+		add_action( 'phpmailer_init', $transport, PHP_INT_MAX );
+		try {
+			/** This action is documented in Mail\Module::register(). */
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Committed original-job consumer.
+			/** This action is documented in Mail\Module::register(). */
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Duplicate recovery.
+		} finally {
+			remove_action( 'phpmailer_init', $transport, PHP_INT_MAX );
+		}
+		self::assertSame( 1, $count );
+		self::assertNull( ( new JobStore() )->load( $id ) );
+		self::assertFalse( as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) );
+	}
+
 	/** A second connection observes actual commits rather than current PHP caches. */
 	private static function observer(): \wpdb {
 		return new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
