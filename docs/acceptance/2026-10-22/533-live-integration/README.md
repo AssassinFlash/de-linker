@@ -30,18 +30,18 @@ The browser loads the committed Genie and Hero assets of the reviewed functional
 
 | Surface | Language / actual configured viewport | Before Retry POST / stub | After Retry POST / stub | Images |
 |---|---|---|---|---|
-| workspace | EN / 1440 × 1000 | 3 / 3 | 3 / 3 | [failure](native-cf7/workspace-en-1440-failed.png), [recovered](native-cf7/workspace-en-1440-recovered.png) |
-| workspace | EN / 390 × 844 | 4 / 4 | 4 / 4 | [failure](native-cf7/workspace-en-390-failed.png), [recovered](native-cf7/workspace-en-390-recovered.png) |
-| workspace | DE / 390 × 844 | 5 / 5 | 5 / 5 | [failure](native-cf7/workspace-de-390-failed.png), [recovered](native-cf7/workspace-de-390-recovered.png) |
-| workspace | DE / 1440 × 1000 | 6 / 6 | 6 / 6 | [failure](native-cf7/workspace-de-1440-failed.png), [recovered](native-cf7/workspace-de-1440-recovered.png) |
-| hero | DE / 1440 × 1000 | 7 / 7 | 7 / 7 | [failure](native-cf7/hero-de-1440-failed.png), [recovered](native-cf7/hero-de-1440-recovered.png) |
-| hero | DE / 390 × 844 | 8 / 8 | 8 / 8 | [failure](native-cf7/hero-de-390-failed.png), [recovered](native-cf7/hero-de-390-recovered.png) |
-| hero | EN / 390 × 844 | 9 / 9 | 9 / 9 | [failure](native-cf7/hero-en-390-failed.png), [recovered](native-cf7/hero-en-390-recovered.png) |
-| hero | EN / 1440 × 1000 | 10 / 10 | 10 / 10 | [failure](native-cf7/hero-en-1440-failed.png), [recovered](native-cf7/hero-en-1440-recovered.png) |
+| workspace | EN / 1440 × 1000 | 3 / 3 | 3 / 3 | [failure](native-cf7/workspace-en-1440-failed.jpg), [recovered](native-cf7/workspace-en-1440-recovered.jpg) |
+| workspace | EN / 390 × 844 | 4 / 4 | 4 / 4 | [failure](native-cf7/workspace-en-390-failed.jpg), [recovered](native-cf7/workspace-en-390-recovered.jpg) |
+| workspace | DE / 390 × 844 | 5 / 5 | 5 / 5 | [failure](native-cf7/workspace-de-390-failed.jpg), [recovered](native-cf7/workspace-de-390-recovered.jpg) |
+| workspace | DE / 1440 × 1000 | 6 / 6 | 6 / 6 | [failure](native-cf7/workspace-de-1440-failed.jpg), [recovered](native-cf7/workspace-de-1440-recovered.jpg) |
+| hero | DE / 1440 × 1000 | 7 / 7 | 7 / 7 | [failure](native-cf7/hero-de-1440-failed.jpg), [recovered](native-cf7/hero-de-1440-recovered.jpg) |
+| hero | DE / 390 × 844 | 8 / 8 | 8 / 8 | [failure](native-cf7/hero-de-390-failed.jpg), [recovered](native-cf7/hero-de-390-recovered.jpg) |
+| hero | EN / 390 × 844 | 9 / 9 | 9 / 9 | [failure](native-cf7/hero-en-390-failed.jpg), [recovered](native-cf7/hero-en-390-recovered.jpg) |
+| hero | EN / 1440 × 1000 | 10 / 10 | 10 / 10 | [failure](native-cf7/hero-en-1440-failed.jpg), [recovered](native-cf7/hero-en-1440-recovered.jpg) |
 
 [Counts, dimensions, cleanup and image SHA-256](native-cf7/evidence.json) record **ten unique native operations**: one normal seed, one separate preflight completion and the final eight completed matrix turns. All eight Retry actions add **zero** POSTs or provider calls. The initial preflight used the prior fixture's document URL and remains private, separate from these eight correctly aligned rows. A requested-product phrase in that preflight does not determine the fixed synthetic response; none of this is a live model relevance test. The matrix uses one guest identity and the growing native conversation; it does not rotate identities or reset quotas.
 
-DOM viewport reads are 1440×1000 or 390×844, with document scroll widths 1425 or 375. The actual 16 PNGs are **1425×990 or 375×812**, rather than the configured viewport dimensions. Native transcript/outer-page scroll positions differ: some captures show part of the current card or history, while the visible DOM and native response contain the complete localized card, actions and document links. Existing history retains its original language when the surrounding site language changes. No card, inquiry, email or feedback action was invoked. Root inspected all sixteen captures as a contact sheet and the desktop result at full size; these are functional state captures, not a new pixel-parity claim for every page.
+DOM viewport reads are 1440×1000 or 390×844, with document scroll widths 1425 or 375. The actual 16 captures are JPEG/JFIF files, **1425×990 or 375×812**, rather than the configured viewport dimensions. Native transcript/outer-page scroll positions differ: some captures show part of the current card or history, while the visible DOM and native response contain the complete localized card, actions and document links. Existing history retains its original language when the surrounding site language changes. No card, inquiry, email or feedback action was invoked. Root inspected all sixteen captures as a contact sheet and the desktop result at full size; these are functional state captures, not a new pixel-parity claim for every page.
 
 One rapid Playwright Send action after switching desktop to mobile produced no POST and left the input in place. A subsequent native AX button action submitted normally. The cause is not established, and no speculative source patch or automatic resend was made. The normal final matrix uses fresh UI state before submission. The other page chat has a separate immediate-after-language-switch menu observation; a common cause has not been established.
 
@@ -52,3 +52,5 @@ The local fixture is removed. Native CLI reads protection mode `off`, no service
 Independent full-diff Spec and Standards reviews of `3bb95556…cf7c8471` both pass. Both independently verify all 72 parent-file hashes and the relevant runtime boundaries. The Spec reviewer identified the inaccurate earlier phrase “shared base”; the wording above now accurately calls `1f054757` a chosen comparison baseline. No runtime change is needed.
 
 CI [39792269179](https://github.com/AssassinFlash/de-linker/actions/runs/39792269179) is completed **success** for functional integration head `cf7c8471`: all checks/tests, native smoke and build reproducibility pass. This following commit adds only this evidence and the wording correction. Its own CI, PR merge, production window and final live readback remain separate gates. The production navigation release is now `20261022T140915063117Z-a975b7ca`; a subsequent deployment must verify that exact latest archived manifest, preserve any further page-chat changes and wait for that chat to release the performance-readback window. No WordPress publication is claimed here.
+
+The evidence reviewer checked the original bytes and found that the browser screenshot API returned JPEG/JFIF despite the initial `.png` filenames. The final files use `.jpg`; no image was transcoded and every original image SHA-256 remains unchanged. This is an evidence-format correction only.
