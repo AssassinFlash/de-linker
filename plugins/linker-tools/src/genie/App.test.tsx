@@ -249,6 +249,98 @@ test( 'a failed proxy call shows the retry sentence, not a fake answer', async (
 	).toBeNull();
 } );
 
+test.each( [
+	'completed',
+	'other-conversation',
+	'missing-id',
+	'changed-prefix',
+	'historical',
+	'unfinished',
+] )( 'retry requires a witnessed completed request: %s', async ( scenario ) => {
+	const before = [
+		{ role: 'user' as const, content: 'SAJ' },
+		{ role: 'assistant' as const, content: 'Which product?' },
+	];
+	const question = 'Show me the B2-10.0-HV1 product and its datasheet.';
+	vi.mocked( readThread ).mockResolvedValue( {
+		conversationId: 563,
+		messages: before,
+		turn: null,
+	} );
+	vi.mocked( sendTurn ).mockRejectedValue(
+		new Error( 'network result unknown' )
+	);
+	render( <App config={ config() } /> );
+	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: question },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
+		'Genie did not answer. Please try again.'
+	);
+	// The real reader parses the proxy's complete stream and appends its
+	// assistant message; the first HTTP request failed after it was stored.
+	const actual =
+		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
+	const recoveredId = scenario === 'other-conversation' ? 564 : 563;
+	const stored = await actual.readThread(
+		'/thread',
+		'n',
+		async () =>
+			new Response(
+				JSON.stringify( {
+					conversation_id:
+						scenario === 'missing-id' ? undefined : recoveredId,
+					messages: [
+						...( scenario === 'changed-prefix'
+							? [
+									{
+										role: 'user',
+										content: 'another context',
+									},
+									before[ 1 ],
+								]
+							: before ),
+						...( scenario === 'historical'
+							? []
+							: [ { role: 'user', content: question } ] ),
+					],
+					stream:
+						scenario === 'unfinished'
+							? 'event: block\ndata: {"type":"text","text":"Partial","refs":[]}\n\n'
+							: 'event: block\ndata: {"type":"text","text":"The stored answer.","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
+				} ),
+				{ status: 200 }
+			)
+	);
+	vi.mocked( readThread ).mockResolvedValue( stored );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) );
+	} );
+	expect( sendTurn ).toHaveBeenCalledTimes(
+		scenario === 'completed' ? 1 : 2
+	);
+	if ( scenario !== 'completed' ) {
+		return;
+	}
+	expect(
+		await screen.findByText( 'The stored answer.' )
+	).toBeInTheDocument();
+	expect( screen.queryByRole( 'alert' ) ).toBeNull();
+	expect( sessionStorage.getItem( FAILURE_KEY ) ).toBeNull();
+	// The same words typed as a new question remain a deliberate new turn.
+	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
+		target: { value: question },
+	} );
+	await act( async () => {
+		fireEvent.click( screen.getByRole( 'button', { name: 'Send' } ) );
+	} );
+	expect( sendTurn ).toHaveBeenCalledTimes( 2 );
+} );
+
 test( 'a 502 keeps the question across a reload and retries once', async () => {
 	vi.mocked( readThread ).mockResolvedValue( { messages: [], turn: null } );
 	vi.mocked( sendTurn ).mockRejectedValue(

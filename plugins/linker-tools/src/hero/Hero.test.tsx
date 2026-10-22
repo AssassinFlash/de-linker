@@ -285,6 +285,53 @@ test( 'retrying a failed hero turn sends it once', async () => {
 	).toBeNull();
 } );
 
+test( 'hero retry restores this request from a complete native Thread response', async () => {
+	const { readThread } =
+		await vi.importActual< typeof import( '../genie/api/turn' ) >(
+			'../genie/api/turn'
+		);
+	let stored: {
+		conversation_id: number;
+		messages: TurnMessage[];
+		stream: string;
+	} = {
+		conversation_id: 563,
+		messages: [],
+		stream: '',
+	};
+	const read = () =>
+		readThread(
+			'/thread',
+			'n',
+			async () =>
+				new Response( JSON.stringify( stored ), { status: 200 } )
+		);
+	const send = vi.fn( async ( request: { messages: TurnMessage[] } ) => {
+		stored = {
+			...stored,
+			messages: request.messages,
+			stream: 'event: block\ndata: {"type":"text","text":"Stored hero answer.","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
+		};
+		throw new Error( 'Ambiguous response after completion' );
+	} );
+	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ) );
+	await act( async () => {
+		view.bridge().ask( 'saj' );
+	} );
+	fireEvent.click(
+		await screen.findByRole( 'button', { name: 'Try again' } )
+	);
+	await waitFor( () =>
+		expect(
+			screen.queryByText( 'Genie did not answer. Please try again.' )
+		).toBeNull()
+	);
+	expect( send ).toHaveBeenCalledTimes( 1 );
+	expect(
+		( await screen.findAllByText( 'Stored hero answer.' ) ).length
+	).toBeGreaterThan( 0 );
+} );
+
 test( 'a cut stream on the hero keeps the question and not the partial answer', async () => {
 	const read = vi.fn( async () => ( { messages: [], turn: null } ) );
 	const send = vi.fn( async () => {

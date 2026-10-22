@@ -511,6 +511,8 @@ export async function readThread(
 ): Promise< {
 	messages: TurnMessage[];
 	turn: Turn | null;
+	/** The existing proxy identity, when the read returned a real conversation. */
+	conversationId?: number;
 	/** Always set here; optional for the callers' own stand-ins. */
 	contacts?: SentContact[];
 	/** Always set here; optional for the callers' own stand-ins. */
@@ -528,6 +530,7 @@ export async function readThread(
 			return empty;
 		}
 		const stored = ( await response.json() ) as {
+			conversation_id?: number;
 			messages?: TurnMessage[];
 			stream?: string;
 			contacts?: Array< Partial< SentContact > >;
@@ -545,8 +548,13 @@ export async function readThread(
 				role: message.role,
 				content: message.content,
 			} ) );
+		const identity =
+			Number.isInteger( stored.conversation_id ) &&
+			( stored.conversation_id ?? 0 ) > 0
+				? { conversationId: stored.conversation_id }
+				: {};
 		if ( messages.length === 0 ) {
-			return empty;
+			return { ...empty, ...identity };
 		}
 		let turn: Turn | null = null;
 		if ( stored.stream ) {
@@ -562,6 +570,7 @@ export async function readThread(
 			turn = await restoreArtifacts( turn, artifacts, nonce, fetcher );
 		}
 		return {
+			...identity,
 			messages: turn
 				? [ ...messages, assistantMessage( turn ) ]
 				: messages,

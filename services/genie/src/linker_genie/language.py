@@ -76,6 +76,15 @@ _UNIT_A = re.compile(
     r"(?<=\d)\s*[Aa]\b|(?<=\d)-[Aa]\b|\b(?:typ|type)\s+[Aa]\b",
     re.IGNORECASE,
 )
+# CAN is the communication protocol only in its exact uppercase spelling and
+# beside protocol wording. English "CAN YOU" and lowercase "can" still vote.
+# These are the document's existing CAN/RS485 and CAN-Bus terms (#563).
+_CAN_PROTOCOL = re.compile(
+    r"(?i:\b(?:über|ueber|via|per))\s+CAN\b|"
+    r"\bCAN(?i:[- ](?:bus|protokoll|protocol|kommunikation|communication|"
+    r"schnittstelle|interface)\b)|"
+    r"\bCAN(?=\s+(?i:und|and)\s+RS-?485\b)"
+)
 # A street name is an address, not a language vote (#404).
 _ADDRESS = re.compile(r"\b[\w]*?(?:straße|strasse)\b", re.IGNORECASE)
 # Quoted page text is data. A German sentence inside quotes does not vote.
@@ -136,6 +145,7 @@ def _prepare(text: str) -> str:
     Text in quotes is the page's, not the answer's language. Bold and underscore
     marks stay: they are emphasis, not a second way to hide a sentence (#443).
     """
+    text = _CAN_PROTOCOL.sub(lambda match: match.group().replace("CAN", " "), text)
     return _QUOTED.sub(" ", _ADDRESS.sub(" ", _UNIT_A.sub(" ", text)))
 
 

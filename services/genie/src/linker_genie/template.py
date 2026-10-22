@@ -655,8 +655,17 @@ def fallback(
         )
     if route is not None and route.name == "documents" and facts.documents:
         refs = _document_refs(facts)
-        document_blocks: list[Block] = [TextBlock(text=DOCUMENTS[language], refs=refs)]
+        # A separately requested product keeps only this turn's qualified
+        # cards. A document owner / page product alone is not qualification.
+        ids = sorted(facts.qualified_ids)[:SEARCH_LIMIT] if route.show_products else []
+        document_blocks: list[Block] = [
+            TextBlock(
+                text=DOCUMENTS[language], refs=[*refs, *(str(pid) for pid in ids)]
+            )
+        ]
         document_blocks.extend(DocumentBlock(ref=ref) for ref in refs)
+        if ids:
+            document_blocks.append(CardsBlock(product_ids=ids))
         return hydrate(TurnOutput(language=language, blocks=document_blocks), facts)
     clarified = _clarify(facts, language, route)
     if clarified is not None:
@@ -898,6 +907,10 @@ def _degraded_keeping_findings(
     if route is not None and route.name == "documents" and facts.documents:
         blocks: list[Block] = [HandoffBlock(summary=DEGRADED[language])]
         blocks.extend(DocumentBlock(ref=ref) for ref in _document_refs(facts))
+        if route.show_products and facts.qualified_ids:
+            blocks.append(
+                CardsBlock(product_ids=sorted(facts.qualified_ids)[:SEARCH_LIMIT])
+            )
         return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
     ids = _card_ids(facts, route)[:SEARCH_LIMIT]
     if not ids:
