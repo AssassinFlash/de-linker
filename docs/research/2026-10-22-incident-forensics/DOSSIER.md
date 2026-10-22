@@ -43,7 +43,7 @@ The 87 non-controlled records independently match the transfer-lure phrase and t
 
 All 88 recent records have source `contact`, `created_via=linker_contact`, customer ID zero, and received inquiry status. All 88 request UUIDs map to native ledger receipts with purpose `contact`, status `completed`, and outcome equal to that exact order ID. Each receipt has the expected browser-hour, browser-day and connection-hour debits. The 88 records have 88 distinct bound subjects. [E2]
 
-The native owner of this action is `Contact\Handler::process`, registered on both guest and signed-in `admin-post` hooks. Its sequence checks the native form nonce, validates fields and PublicGuard, then calls `Business::run`, which reserves and dispatches admission before `Sender::message` persists the order. The saved data and ledger therefore strongly identify this intended public contact path. No matching access log was available through the two conventional SSH log directories inspected, so the exact HTTP request URI, user agent, raw source IP and script implementation are not independently proven. [S2, S3, E6]
+The native owner of this action is `Contact\Handler::process`, registered on both guest and signed-in `admin-post` hooks. Its sequence checks the native form nonce, validates fields and PublicGuard, then calls `Business::run`, which reserves and dispatches admission before `Sender::message` persists the order. The saved data and ledger therefore strongly identify this intended public contact path. At the initial inspection, no matching access log was available through the two conventional SSH log directories inspected. The subsequent Hostinger CSV addendum supplies independently recorded HTTP paths, source identifiers and user-agent claims, but does not expose the actual attack script, request bodies or cookies. [S2, S3, E6, H1–H2]
 
 Nonce and signed-start values are embedded in the public form. A valid form token proves an acceptable form context; its existence alone does not identify a human. The hidden honeypot remains present. When the new business admission mode is active, the older fixed three-second minimum and legacy three-per-connection gate are intentionally bypassed in favor of the new policy. [S2, S3]
 
@@ -109,6 +109,71 @@ The WordPress shared-host WP-CLI process reported **PHP 8.3.35**, SAPI `cli`, Wo
 6. Complete the broader host/runtime/package/authentication audit separately. The evidenced incident mechanism is sufficient to fix the inquiry abuse path now; it does not justify dismissing the owner's PHP security notice.
 
 This research made no production write, cache flush, configuration change, real mail send, external model call, destructive action or request to the malicious destination. No implementation branch or PR is created by this dossier.
+
+## Addendum: actual Hostinger HTTP, account and malware evidence
+
+The coordinator requested an additional account-level investigation after the initial source/ledger research. This addendum uses the **actual de-linker Business Web Hosting account**, inspected through a newly created browser tab. The expected existing hosting account was verified privately; no password entry, new login, account setting change, malware scan initiation, production code change, queue operation, paid model call or mail send was performed. The researcher's own two hPanel tabs were separate from the coordinator's deployment tab.
+
+### Raw HTTP export and retained evidence
+
+Hostinger's Analytics → Access logs view generated an official downloadable CSV. The initial visible six-hour summary showed 6,106 requests; the subsequently prepared file contains **6,123 rows**, so the exported file, not the earlier live counter, supplies the statistics below. Its explicit `Z` timestamps cover **2026-10-22 04:36:02–10:35:41 UTC**.
+
+- Private file: `/Users/chesterjohn/de-linker-data/incident-20261022/hosting-logs/de-linker-access-last6h.raw.csv`.
+- Size: **1,328,992 bytes**.
+- SHA256: **`aa4368246e41d36c621a17dee706a70ed3b4aeddee90784c44b641abe9bbea90`**.
+- Columns: status, source IP, host, request, user agent, country code, bytes, duration and timestamp.
+- The export contains no request body, browser cookie, application request UUID, redirect Location or deployed release ID.
+- Evidence directory is mode **0700**; all evidence files, raw source identifiers and screenshots are mode **0600**. IPs, account addresses and user-agent originals remain private; `origin-1` and `origin-2` below are report-local aliases. [H1]
+
+| HTTP scope | Requests | Relevant observations |
+|---|---:|---|
+| Entire exported six-hour window | 6,123 | 164 source IPs; 2,293 POST and 3,830 GET. This total includes ordinary maintenance and service traffic. |
+| Incident window 05:30 ≤ UTC time < 07:00 | 1,486 | 42 source IPs; 511 POST and 975 GET. |
+| Incident-window POST `/wp-admin/admin-post.php` | 148 | 98 from origin-1, 49 from origin-2, plus the single Mac-labelled controlled-test source. All returned HTTP 302. |
+| Entire export, the two repeated origins' admin-post requests | 573 | 382 from origin-1 and 191 from origin-2, all HTTP 302. |
+| 06:38–07:00, after required-verification containment | 36 | Further admin-post requests persisted. Of these, 19 precede the final 06:50:29.955551 native sample; the saved cohort stayed unchanged through that sample. The remaining 17 are outside its observation window. |
+| Entire export, `/xmlrpc.php` | 138 | All returned HTTP 403; this is a refusal observation, not proof of an exploitation attempt or successful authentication. |
+| Incident-window HTTP 5xx | 0 | This does not negate the proven mail-capacity exhaustion or certify all dependency health. |
+
+The two repeated origins account for 2,865 total requests. Their counts form the same request pattern: each admin-post POST is accompanied, in aggregate, by two successful contact-page GETs, one successful root-page GET and one root-page HTTP 301. The source IP labels in Hostinger are NL and SE; those labels do not identify the operator or justify a country-wide block. Both sources cycle through the same five Windows/Chrome user-agent strings. User-agent claims are not authenticated client identities. The controlled source's one admin-post occurs at **05:47:47 UTC**, consistent with the independently retained #8037 test. [H1, H2]
+
+### HTTP/native correlation and the HTTP 302 boundary
+
+The native acceptance window is **05:46:11.442623–06:37:57.669249 UTC**. There are exactly 88 HTTP admin-post requests in the matching cohort, timestamped **05:46:12–06:37:58 UTC**, and 88 previously evidenced native records, including one controlled record. The matching search permits an HTTP timestamp from 0.5 seconds before to four seconds after a native timestamp; this is a temporal tolerance, not a shared request identifier. A complete one-to-one temporal alignment can be made with the previously used nearest-unused rule; its maximum recorded timestamp difference is **2.012 seconds**. In the retained 06:00–06:38 segment, the two HTTP-origin counts are **42 and 21**, exactly matching the native connection-bucket totals previously observed. This substantially strengthens attribution to the intended contact writer. [E2, H2]
+
+However, the initial phrase “uniquely corresponding requests” would overstate the export. The CSV has no application request UUID, body, cookie or redirect Location; adjacent requests at second-level timestamp precision permit alternative mathematical time pairings. The result is **complete temporal cohort alignment**, not a cryptographically or mathematically unique per-request binding. The native request UUID → order ID mapping remains the separate, stronger application-side evidence. [E2, H2]
+
+HTTP 302 is the native form handler's redirect transport for both accepted and refused submissions. It must **not** be counted as successful inquiry acceptance, successful mail delivery, or successful authentication. The 36 continued POSTs between 06:38 and 07:00 demonstrate that incoming requests continued. Nineteen fall within the native observation window ending at **06:50:29.955551 UTC**, during which the saved cohort remained at 88. The other 17 occur after that native readback, so that sample cannot establish their admission outcomes. Thus “no new saved inquiries through 06:50:29” was an application-level containment observation, not evidence that remote traffic stopped or that later attempts had the same outcome. [S2, E2, H1]
+
+The export also contains **12 admin-post POSTs from the same two origins after the coordinator-reported 10:29 UTC publication marker for release `003cedd3`**: eight from origin-1, four from origin-2, timestamped **10:29:10–10:34:52 UTC**, all HTTP 302. The file ends at 10:35:41. The marker does not establish the exact moment the new PHP code began serving requests. The HTTP rows alone do not prove which release executed or whether any operation was admitted, saved or notified. [H3]
+
+The coordinator's separate native readback at **10:49:58 UTC**, retained locally, records three new contact orders in the `campaign` lane: #8218 at **10:32:56 UTC**, and #8219/#8220 at **10:32:58 UTC**. All three have `held=true`, an empty wake marker, no assessment result and no notification job. Registry occupancy is exactly three in that lane; the distinct `campaign_count` counter reads 30. This proves the new intake behavior had executed by 10:32:56, with those records retained rather than turned into new assessment or notification work. It does not establish the exact effective-start time or a one-to-one mapping between the counter value 30 and the 12 CSV rows. The same readback retains 38 private/held mail jobs; a count alone does not establish each job's provenance. The coordinator separately verified the original historical jobs and blocked-callback behavior in its own acceptance evidence. This researcher did not query or mutate production during publication. [H7]
+
+### Existing malware scan result
+
+The actual de-linker malware-scanner page states that no malware was detected in the **past 30 days** for the Business Web Hosting plan. The same page explicitly limits the scanner to **website files and excludes database content**. It does not show an exact latest scan timestamp. No new scan or paid cleanup was started. [H4]
+
+This adds a hosting-provider file-scan observation to the earlier byte comparisons. It does not exclude database injection, credential or session theft, undiscovered files, scan blind spots or abuse of an intended public form. Do not describe it as a fresh full-site security pass.
+
+### Account activity and hosting-operation history
+
+The correct hosting account's Account activity page exposed **53 records**, all saved privately using its 100-row view: 26 email-type and 27 Google-type entries; 52 desktop and one mobile. Its introductory text describes connected devices and the ability to log them out. The two entries dated October 22 display **16:03:22** and **15:03:52**, both email/desktop. **The account-activity UI did not explicitly label its timezone**, so those displayed values are retained verbatim and are not converted into a definitive exclusion of the 05:30–07:00 UTC incident window. [H5]
+
+Within this displayed set, neither of the repeated HTTP-origin IPs overlaps an account-activity IP. The two newest account entries share the IP of the independently controlled HTTP test source. Those are private identifier comparisons, not proof of the operator behind any login or of account security. Failed login attempts, SSH authentication, cookie reuse and complete account audit events are not supplied by this connected-device table. No session was revoked and no account setting was modified. [H5]
+
+The website's separate Advanced → Activity log view displayed 291 hosting-operation records. Its first five visible entries were October 14 hosting/database operations; this view was saved but not presented as a complete authentication or SSH audit. It contains a different event class from both HTTP access and connected-account activity. [H6]
+
+### Hostinger addendum evidence index
+
+H1–H6 evidence is under the private `incident-20261022/hosting-logs/` directory. H7 is the coordinator's separate local native readback. Only aggregates and boundaries are committed here.
+
+- H1: raw official CSV, `access-export-manifest.json`, `access-analysis.sanitized.json`, `containment-overlap.sanitized.json`; observed source UI `https://hpanel.hostinger.com/websites/de-linker.com/analytics`.
+- H2: `native-http-correlation.sanitized.json`, `correlation-boundary.json`, `origin-request-shape.sanitized.json`, and private origin alias map. Pairing is explicitly non-unique at the export's time precision.
+- H3: `post-deploy-http-tail.sanitized.json`; deployment time/release supplied by the coordinator, actual tail rows supplied by Hostinger.
+- H4: `malware-full.ax.txt`, `malware.png`; observed source UI `https://hpanel.hostinger.com/websites/de-linker.com/hosting-security/malware-scanner`.
+- H5: `account-activity-all.ax.txt`, `account-activity-rows.private.json`, `account-activity.sanitized.json`, `account-activity.png`; observed source UI `https://hpanel.hostinger.com/profile/account-logs`. No explicit UI timezone was observed.
+- H6: `activity-view.ax.txt`; observed source UI `https://hpanel.hostinger.com/websites/de-linker.com/advanced/activity-log`.
+- H7: `/Users/chesterjohn/de-linker-data/incident-20261022/deploy-542/live-consumers-readback.json`, timestamped 10:49:58 UTC; coordinator-owned production readback, read locally without modifying it. The three saved-record times were converted from its Unix timestamps to UTC. It does not identify the effective serving-start timestamp or bind native counter 30 to specific HTTP rows.
 
 ## Primary source references
 
