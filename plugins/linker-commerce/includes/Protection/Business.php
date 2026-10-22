@@ -47,6 +47,11 @@ final class Business {
 			if ( ! is_wp_error( $old ) && $action === $old['purpose'] && $identity->binding() === $old['binding'] ) {
 				$order = BusinessRecord::recover( $id, $fp, $identity->binding(), $old );
 				if ( $order instanceof WC_Order ) {
+					if ( $order->has_status( 'pending' ) && $order->get_meta( Intake::META ) ) {
+						$order->update_meta_data( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META, 'review_hold' );
+						WC()->mailer();
+						$order->update_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED );
+					}
 					$ledger->complete( $id, $fp, $order->get_id() );
 					return $order;
 				}
@@ -67,6 +72,19 @@ final class Business {
 		// Initial native-write lease: bounded by the shared journal's 300-second ceiling (#519).
 		$email  = $payload['email'] ?? ( $payload['details']['email'] ?? '' );
 		$owners = is_string( $email ) && is_email( $email ) ? array( Allowance::owner_for( Identity::recipient( $email ) ) ) : array();
+		if ( 'enforce' === $config->mode && in_array( $action, array( 'contact', 'inquiry' ), true ) ) {
+			$message    = $payload['message'] ?? ( $payload['details']['message'] ?? '' );
+			$campaign   = is_string( $message ) && Campaign::matches( $message );
+			$individual = $campaign && '1' === ( $post['linker_individual_review'] ?? '' );
+			if ( $individual ) {
+				$hex = hash_hmac( 'sha256', 'individual-review|' . $id . '|' . $identity->binding(), wp_salt( 'nonce' ) );
+				$id  = substr( $hex, 0, 8 ) . '-' . substr( $hex, 8, 4 ) . '-4' . substr( $hex, 13, 3 ) . '-8' . substr( $hex, 17, 3 ) . '-' . substr( $hex, 20, 12 );
+			}
+			$lane = $campaign ? ( $individual ? 'individual' : 'campaign' ) : ( $config->ready() && Intake::verified( $proof, $action, $identity, $id ) ? '' : 'verification' );
+			if ( '' !== $lane ) {
+				return Intake::run( $lane, $action, $id, $fp, $identity, $payload, $limits, $carry, $owners, $work );
+			}
+		}
 		$permit = $gate->reserve( $action, $proof, $id, $payload, $limits, 120, true, $carry, $owners );
 		if ( is_wp_error( $permit ) ) {
 			return $permit;

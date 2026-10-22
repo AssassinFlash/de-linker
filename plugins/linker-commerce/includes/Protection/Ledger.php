@@ -177,6 +177,21 @@ final class Ledger {
 	}
 
 	/**
+	 * Read-only proof decision for the bounded business intake adapter.
+	 *
+	 * @param array{id:string,binding:string,action:string,single:bool} $proof Checked signed scope.
+	 * @param string                                                    $operation Business UUID.
+	 */
+	public function proof_valid( array $proof, string $operation ): bool {
+		$result = $this->edit(
+			static function ( array &$state, int $now ) use ( $proof, $operation ): array|WP_Error {
+				return self::proof_error( $state, $proof, $operation, $now ) ?? array( 'valid' => true );
+			}
+		);
+		return is_array( $result ) && ! empty( $result['valid'] );
+	}
+
+	/**
 	 * Check the native verification receipt before expensive reversible parsing.
 	 * Dispatch still repeats this check inside its atomic transition (#521).
 	 *

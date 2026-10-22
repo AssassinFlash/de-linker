@@ -20,7 +20,7 @@ final class FormRecovery {
 	public static function save( string $action, array $post ): void {
 		wc_load_cart();
 		$fields = array();
-		foreach ( array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id' ) as $key ) {
+		foreach ( array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', 'linker_individual_review' ) as $key ) {
 			$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? mb_substr( sanitize_textarea_field( $post[ $key ] ), 0, 5000 ) : '';
 		}
 		// Five-minute retry lifetime follows the shared proof window (#519).

@@ -99,6 +99,19 @@ export function connectForms( root: ParentNode = document ): void {
 			'submit',
 			async ( event: SubmitEvent ) => {
 				if (
+					[ 'contact', 'inquiry' ].includes( action ) &&
+					requiresVerification()
+				) {
+					proof.value =
+						window.linkerPublicProtection?.ready?.(
+							action,
+							widget
+						) || '';
+					widget.hidden = true;
+					return;
+				}
+
+				if (
 					event.defaultPrevented ||
 					verified ||
 					! requiresVerification()

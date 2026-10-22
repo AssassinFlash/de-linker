@@ -117,9 +117,10 @@ final class Form {
 	 * @param string $state The state message to show above the fields, '' on a fresh visit.
 	 */
 	private function form( string $state ): string {
-		$previous = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
-		$field    = 'linker-form-input';
-		$label    = 'linker-form-label';
+		$previous   = \Linker\Commerce\Protection\FormRecovery::consume( 'contact' );
+		$individual = isset( $previous['linker_individual_review'] ) && '1' === $previous['linker_individual_review'];
+		$field      = 'linker-form-input';
+		$label      = 'linker-form-label';
 
 		$html  = '<form class="linker-contact-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
@@ -127,7 +128,7 @@ final class Form {
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
 		$html .= wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD, true, false );
 		$html .= ( new \Linker\Commerce\Inquiry\PublicGuard() )->fields();
-		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '' );
+		$html .= \Linker\Commerce\Protection\FormFields::render( 'contact', $previous['linker_request_id'] ?? '', $individual );
 
 		if ( '' !== $state ) {
 			$html .= $state;
@@ -269,6 +270,10 @@ final class Form {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
 		return match ( $state ) {
+			'saved_review' => $this->notice( 'sent', \Linker\Commerce\Protection\IntakeAdmin::saved_message() ),
+			'review_size' => $this->notice( 'invalid', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) ),
+			'review_full' => $this->notice( 'invalid', __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),
+			'grouped' => $this->notice( 'invalid', __( 'This message matches a repeated spam submission. We have not saved a separate inquiry or sent an email. Your entries are still here. For an individual review, select the review option in this form or email sales@de-linker.com.', 'linker-commerce' ) ),
 			'sent_no_receipt' => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team. We have not sent a confirmation email. We reply within one business day.', 'linker-commerce' ) ),
 			'sent'      => $this->notice( 'sent', __( 'Thank you. Your message is with the Linker team.', 'linker-commerce' ) ),
 			'invalid'   => $this->notice( 'invalid', __( 'Please check your entries and send the form again.', 'linker-commerce' ) ),

@@ -82,8 +82,10 @@ final class NotificationHold {
 	/**
 	 * Restore one retained message. The HTTP controller also verifies its nonce.
 	 *
-	 * @param  int    $id        Native inquiry ID.
-	 * @param  string $reference Hold shown to the staff member.
+	 * @phpstan-impure
+	 *
+	 * @param int    $id Native inquiry ID.
+	 * @param string $reference Hold shown to the staff member.
 	 * @return array<string, mixed>|WP_Error Persisted release audit or explicit error.
 	 */
 	public static function release( int $id, string $reference ): array|WP_Error {
@@ -103,6 +105,10 @@ final class NotificationHold {
 				$previous = $order->get_meta( self::RELEASED );
 				if ( is_array( $previous ) && is_string( $previous['reference'] ?? null ) && hash_equals( $previous['reference'], $reference ) ) {
 					$result = $previous;
+					return;
+				}
+				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) && 0 === (int) ( Queue::data( $order )['notification_job'] ?? 0 ) ) {
+					$result = \Linker\Commerce\Protection\IntakeRelease::run( $order, $reference );
 					return;
 				}
 				$job    = (int) ( Queue::data( $order )['notification_job'] ?? 0 );
