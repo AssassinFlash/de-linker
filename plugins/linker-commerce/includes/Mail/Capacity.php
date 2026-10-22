@@ -334,16 +334,28 @@ final class Capacity {
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Server-generated hexadecimal savepoint identifier, never public input.
 		if ( $own ) {
 			wc_transaction_query( 'start' );
+			if ( '' !== $wpdb->last_error || ! self::transaction_active() ) {
+				wc_transaction_query( 'rollback' );
+				throw new \RuntimeException( 'mail_capacity_transaction_start_failed' );
+			}
 		}
 		if ( false === $wpdb->query( "SAVEPOINT $name" ) ) {
+			if ( $own ) {
+				wc_transaction_query( 'rollback' );
+			}
 			throw new \RuntimeException( 'mail_capacity_transaction_unavailable' );
 		}
 		try {
 			$result = $work();
 			if ( $own ) {
 				wc_transaction_query( 'commit' );
+				if ( '' !== $wpdb->last_error || self::transaction_active() ) {
+					throw new \RuntimeException( 'mail_capacity_commit_unconfirmed' );
+				}
 			} else {
-				$wpdb->query( "RELEASE SAVEPOINT $name" );
+				if ( false === $wpdb->query( "RELEASE SAVEPOINT $name" ) ) {
+					throw new \RuntimeException( 'mail_capacity_savepoint_unconfirmed' );
+				}
 			}
 			return $result;
 		} catch ( \Throwable $error ) {

@@ -256,6 +256,64 @@ final class MailCapacityTest extends IntegrationTestCase {
 		self::assertLessThan( 1, $result['seconds'] );
 	}
 
+	/** A failed joined helper cannot roll back or commit unrelated caller work.
+	 *
+	 * @dataProvider joined_failures
+	 * @param string $failure Native failure seam.
+	 */
+	public function test_joined_failure_preserves_callers_unrelated_uncommitted_write( string $failure ): void {
+		global $wpdb;
+		$this->seed_jobs( 0 );
+		$other    = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$name     = 'synthetic_outer_' . self::tag();
+		$filter   = static fn ( string $sql ): string => 'read' === $failure && str_contains( $sql, 'FOR UPDATE NOWAIT' ) ? 'SELECT missing_synthetic_568_column' : $sql;
+		$this->later(
+			static function () use ( $name, $other ): void {
+				delete_option( $name );
+				$other->close();
+			}
+		);
+		$previous = $wpdb->suppress_errors( true );
+		wc_transaction_query( 'start' );
+		try {
+			add_option( $name, 'unrelated-native-write', '', false );
+			add_filter( 'query', $filter );
+			try {
+				$id = ( new JobStore() )->create(
+					new Message( array( self::TESTER ), 'Synthetic joined failure', 'Never transported.', array(), array() ),
+					0,
+					static function (): void {
+						throw new \RuntimeException( 'synthetic_accepted_callback_failed' );
+					}
+				);
+			} finally {
+				remove_filter( 'query', $filter );
+			}
+			self::assertSame( 0, $id );
+			self::assertTrue( Capacity::transaction_active(), 'Only the outer owner may decide this transaction.' );
+			// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Independent native transaction visibility is the regression under test.
+			self::assertSame( '1', (string) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name=%s", $name ) ) );
+			self::assertSame( '0', (string) $other->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name=%s", $name ) ) );
+			wc_transaction_query( 'commit' );
+			self::assertSame( '1', (string) $other->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->options} WHERE option_name=%s", $name ) ) );
+			// phpcs:enable
+		} finally {
+			wc_transaction_query( 'rollback' );
+			$wpdb->suppress_errors( $previous );
+		}
+	}
+
+	/** Both a native write callback failure and an authoritative read failure.
+	 *
+	 * @return array<string,array{string}>
+	 */
+	public static function joined_failures(): array {
+		return array(
+			'callback' => array( 'callback' ),
+			'read'     => array( 'read' ),
+		);
+	}
+
 	/** Test-owned worker folder; do not touch any shared instance or process.
 	 *
 	 * @return string Private temporary directory.

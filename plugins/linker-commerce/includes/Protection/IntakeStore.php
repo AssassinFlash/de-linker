@@ -73,8 +73,8 @@ final class IntakeStore {
 					self::$active   =& $state;
 					$result         = $work( $state );
 				} catch ( \Throwable $error ) {
-					// Native checkout may have started an unfinished transaction.
-					wc_transaction_query( 'rollback' );
+					// This mutex wrapper owns no transaction. Native consumers roll
+					// back only their own transaction/savepoint before propagating.
 					$result = new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 				} finally {
 					self::$snapshot = $previous;
@@ -163,25 +163,32 @@ final class IntakeStore {
 					static function ( array &$state ) use ( $order ): array {
 						$order->read_meta_data( true );
 						$request = $order->get_meta( BusinessRecord::REQUEST );
-						wc_transaction_query( 'start' );
-						$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' );
-						$order->delete_meta_data( Intake::META );
-						$order->delete_meta_data( Intake::LANE_META );
-						$order->save_meta_data();
-						$order->read_meta_data( true );
-						if ( 'yes' !== $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $order->get_meta( Intake::META ) || $order->get_meta( Intake::LANE_META ) ) {
-							throw new \RuntimeException( 'intake_erasure_readback_failed' );
+						if ( ! \Linker\Commerce\Mail\BudgetTransaction::begin() ) {
+							throw new \RuntimeException( 'intake_erasure_transaction_unavailable' );
 						}
-						foreach ( $state['entries'] as $id => $entry ) {
-							if ( $order->get_id() === (int) ( $entry['order'] ?? 0 ) || $id === $request ) {
-								unset( $state['entries'][ $id ] );
+						try {
+							$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' );
+							$order->delete_meta_data( Intake::META );
+							$order->delete_meta_data( Intake::LANE_META );
+							$order->save_meta_data();
+							$order->read_meta_data( true );
+							if ( 'yes' !== $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $order->get_meta( Intake::META ) || $order->get_meta( Intake::LANE_META ) ) {
+								throw new \RuntimeException( 'intake_erasure_readback_failed' );
 							}
+							foreach ( $state['entries'] as $id => $entry ) {
+								if ( $order->get_id() === (int) ( $entry['order'] ?? 0 ) || $id === $request ) {
+									unset( $state['entries'][ $id ] );
+								}
+							}
+							self::save( $state );
+							// Native erasure continues outside these locks. Its durable
+							// tombstone already prevents any later notification capture.
+							wc_transaction_query( 'commit' );
+							return array();
+						} catch ( \Throwable $error ) {
+							wc_transaction_query( 'rollback' );
+							throw $error;
 						}
-						self::save( $state );
-						// Native erasure continues outside these locks. Its durable
-						// tombstone already prevents any later notification capture.
-						wc_transaction_query( 'commit' );
-						return array();
 					}
 				);
 				if ( is_wp_error( $result ) ) {
