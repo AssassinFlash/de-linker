@@ -1,7 +1,7 @@
 PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
 
-.................                                                 17 / 17 (100%)
+..............................................                    46 / 46 (100%)
 
-Time: 00:08.193, Memory: 144.00 MB
+Time: 00:19.810, Memory: 148.00 MB
 
-OK (17 tests, 186 assertions)
+OK (46 tests, 389 assertions)

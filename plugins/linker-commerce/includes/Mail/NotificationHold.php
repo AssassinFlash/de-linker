@@ -28,6 +28,10 @@ final class NotificationHold {
 	 */
 	public static function held( WC_Order $order ): bool {
 		$job = (int) ( Queue::data( $order )['notification_job'] ?? 0 );
+		if ( $job > 0 ) {
+			// Refresh the job after another DB connection changed a hold under the mutex.
+			wp_cache_delete( $job, 'post_meta' );
+		}
 		return (bool) $order->get_meta( self::META ) || 'held' === $order->get_meta( Queue::PENDING ) || ( $job > 0 && (bool) get_post_meta( $job, self::META, true ) );
 	}
 
@@ -37,6 +41,7 @@ final class NotificationHold {
 	 * @param int $job Original persistent mail job.
 	 */
 	public static function inquiry( int $job ): int {
+		wp_cache_delete( $job, 'post_meta' );
 		$hold = get_post_meta( $job, self::META, true );
 		$id   = (int) get_post_meta( $job, JobStore::INQUIRY_META, true );
 		return $id > 0 ? $id : ( is_array( $hold ) ? (int) ( $hold['order'] ?? 0 ) : 0 );
@@ -48,6 +53,7 @@ final class NotificationHold {
 	 * @param int $job Original notification job.
 	 */
 	public static function job_held( int $job ): bool {
+		wp_cache_delete( $job, 'post_meta' );
 		$hold = get_post_meta( $job, self::META, true );
 		if ( $hold ) {
 			return true;

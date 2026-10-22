@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-22T03:30:18+00:00\n"
+"POT-Creation-Date: 2026-10-22T07:19:36+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -939,7 +939,7 @@ msgstr ""
 "bleiben erhalten. Sie können es erneut versuchen oder uns unter sales@de-"
 "linker.com schreiben."
 
-#: includes/Contact/Form.php:278 includes/Protection/Admission.php:193
+#: includes/Contact/Form.php:278 includes/Protection/Admission.php:194
 #: includes/Protection/Business.php:75
 msgid ""
 "The request status could not be confirmed. Please check before sending it "
@@ -1255,55 +1255,55 @@ msgstr ""
 "%5$s nutzt diesen Dienst. Die Prüfung läuft einmal am Tag und wiederholt "
 "diese Nachricht bei jedem Fehlschlag."
 
-#: includes/Inquiry/Assessment/Admin.php:27
+#: includes/Inquiry/Assessment/Admin.php:29
 msgid "Inquiry review"
 msgstr "Anfrage prüfen"
 
-#: includes/Inquiry/Assessment/Admin.php:44
+#: includes/Inquiry/Assessment/Admin.php:47
 msgid "No assessment was requested."
 msgstr "Für diese Anfrage wurde keine Einschätzung angefordert."
 
-#: includes/Inquiry/Assessment/Admin.php:48
+#: includes/Inquiry/Assessment/Admin.php:51
 #: templates/emails/linker-new-inquiry.php:49
 msgid "Jev initial assessment"
 msgstr "Ersteinschätzung durch Jev"
 
-#: includes/Inquiry/Assessment/Admin.php:50
-msgid "Initial guidance only. Every inquiry is accepted and notified."
-msgstr ""
-"Die Einschätzung dient als Hinweis. Jede Anfrage wird gespeichert und dem "
-"Team gemeldet."
+#: includes/Inquiry/Assessment/Admin.php:53
+msgid "Model labels do not reject inquiries or stop team notifications."
+msgstr "Modellbewertungen führen weder zur Ablehnung einer Anfrage noch zum Anhalten der Teambenachrichtigung."
 
-#: includes/Inquiry/Assessment/Admin.php:51
+#: includes/Inquiry/Assessment/Admin.php:54
 msgid "Diagnostic"
 msgstr "Diagnosehinweis"
 
-#: includes/Inquiry/Assessment/Admin.php:51
+#: includes/Inquiry/Assessment/Admin.php:54
 msgid "Elapsed time"
 msgstr "Verstrichene Zeit"
 
-#: includes/Inquiry/Assessment/Admin.php:51
+#: includes/Inquiry/Assessment/Admin.php:54
 msgid "Model / rubric"
 msgstr "Modell / Bewertungsregeln"
 
-#: includes/Inquiry/Assessment/Admin.php:52
+#: includes/Inquiry/Assessment/Admin.php:55
 msgid "Original model result"
 msgstr "Ursprüngliches Modellergebnis"
 
-#: includes/Inquiry/Assessment/Admin.php:62
+#: includes/Inquiry/Assessment/Admin.php:78
+#: includes/Inquiry/Assessment/Admin.php:137
+#: includes/Inquiry/Assessment/Reviews.php:103
+#: includes/Inquiry/Assessment/Reviews.php:108
+#: includes/Mail/NotificationHold.php:90
+msgid "This inquiry is unavailable."
+msgstr "Diese Anfrage ist nicht verfügbar."
+
+#: includes/Inquiry/Assessment/Admin.php:90
 #: includes/Inquiry/Assessment/Reviews.php:89
 msgid "You cannot review this inquiry."
 msgstr "Sie sind nicht berechtigt, diese Anfrage zu prüfen."
 
-#: includes/Inquiry/Assessment/Admin.php:75
+#: includes/Inquiry/Assessment/Admin.php:103
 msgid "Reload this inquiry before saving a review."
 msgstr "Laden Sie diese Anfrage neu, bevor Sie eine Prüfung speichern."
-
-#: includes/Inquiry/Assessment/Admin.php:109
-#: includes/Inquiry/Assessment/Reviews.php:103
-#: includes/Inquiry/Assessment/Reviews.php:108
-msgid "This inquiry is unavailable."
-msgstr "Diese Anfrage ist nicht verfügbar."
 
 #: includes/Inquiry/Assessment/EvidencePrivacy.php:36
 msgid "Customer evidence and staff review"
@@ -1614,6 +1614,49 @@ msgstr "Auswertungen der Anhänge"
 #: includes/Inquiry/Assessment/EvidenceView.php:153
 msgid "Not recorded"
 msgstr "Nicht erfasst"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:27
+#: includes/Inquiry/Assessment/NotificationHoldView.php:35
+msgid "Internal notification"
+msgstr "Interne Benachrichtigung"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:27
+msgid "Released for delivery"
+msgstr "Zum Versand freigegeben"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:35
+msgid "Notification on hold"
+msgstr "Benachrichtigung zurückgehalten"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:36
+msgid ""
+"The inquiry and its original notification are retained. Releasing the "
+"notification queues the same message for delivery."
+msgstr "Die Anfrage und die ursprüngliche Benachrichtigung bleiben gespeichert. Mit der Freigabe stellen Sie dieselbe Nachricht in die Versandwarteschlange."
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Confirmed abuse campaign"
+msgstr "Bestätigte Missbrauchskampagne"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Held since"
+msgstr "Zurückgehalten seit"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Hold reason"
+msgstr "Grund der Zurückhaltung"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Original notification ID"
+msgstr "ID der ursprünglichen Benachrichtigung"
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:39
+msgid "The original notification is unavailable. It has not been recreated."
+msgstr "Die ursprüngliche Benachrichtigung ist nicht verfügbar. Es wurde keine neue Nachricht erstellt."
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:44
+msgid "Release this notification"
+msgstr "Diese Benachrichtigung freigeben"
 
 #: includes/Inquiry/Assessment/Result.php:110
 msgid "Likely genuine"
@@ -2091,9 +2134,32 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: includes/Mail/JobStore.php:45
+#: includes/Mail/JobStore.php:47
 msgid "Queued emails"
 msgstr "E-Mails in der Warteschlange"
+
+#: includes/Mail/NotificationHold.php:82
+msgid "You cannot release this notification."
+msgstr "Sie haben keine Berechtigung, diese Benachrichtigung freizugeben."
+
+#: includes/Mail/NotificationHold.php:84
+msgid ""
+"This notification is being processed. Reload the inquiry before trying again."
+msgstr "Diese Benachrichtigung wird gerade verarbeitet. Laden Sie die Anfrage neu, bevor Sie es erneut versuchen."
+
+#: includes/Mail/NotificationHold.php:102
+msgid "This notification has changed. Reload the inquiry before trying again."
+msgstr "Diese Benachrichtigung hat sich geändert. Laden Sie die Anfrage neu, bevor Sie es erneut versuchen."
+
+#: includes/Mail/NotificationHold.php:129
+msgid "Notification released by staff."
+msgstr "Benachrichtigung durch einen Mitarbeiter freigegeben."
+
+#: includes/Mail/NotificationHold.php:164
+msgid ""
+"The notification could not be released. Reload the inquiry before trying "
+"again."
+msgstr "Die Benachrichtigung konnte nicht freigegeben werden. Laden Sie die Anfrage neu, bevor Sie es erneut versuchen."
 
 #: includes/Mail/SmtpHealth.php:58
 msgid "SMTP configured"
@@ -3691,7 +3757,7 @@ msgid "Please verify your request and try again."
 msgstr ""
 "Bitte schließen Sie die Sicherheitsprüfung ab und versuchen Sie es erneut."
 
-#: includes/Protection/Admission.php:193
+#: includes/Protection/Admission.php:194
 msgid "Your request could not be processed. Please try again."
 msgstr ""
 "Ihre Anfrage konnte nicht verarbeitet werden. Bitte versuchen Sie es erneut."
@@ -3770,11 +3836,11 @@ msgstr "Testschlüssel; im Produktivbetrieb nicht zulässig"
 msgid "Validation keys"
 msgstr "Prüfschlüssel"
 
-#: includes/Protection/HealthPage.php:61
+#: includes/Protection/HealthPage.php:62
 msgid "Connected handlers"
 msgstr "Angebundene Verarbeitung"
 
-#: includes/Protection/HealthPage.php:61
+#: includes/Protection/HealthPage.php:62
 msgid ""
 "The mode and keys do not prove that every entry is protected. Check the "
 "connected handlers and observed results below."
@@ -3783,18 +3849,18 @@ msgstr ""
 "Prüfen Sie die angebundenen Verarbeitungen und die unten erfassten "
 "Ergebnisse."
 
-#: includes/Protection/HealthPage.php:63
+#: includes/Protection/HealthPage.php:64
 msgid ""
 "No business or resource handlers have been connected to this shared service."
 msgstr ""
 "An diesen gemeinsamen Dienst sind noch keine Verarbeitungen für "
 "Geschäftsanfragen oder Ressourcen angebunden."
 
-#: includes/Protection/HealthPage.php:71
+#: includes/Protection/HealthPage.php:72
 msgid "Check verification"
 msgstr "Prüfung starten"
 
-#: includes/Protection/HealthPage.php:71
+#: includes/Protection/HealthPage.php:72
 msgid ""
 "This checks the shared verification service. It does not create an inquiry, "
 "send mail or call a model."
@@ -3802,11 +3868,11 @@ msgstr ""
 "Hier prüfen Sie den gemeinsamen Verifizierungsdienst. Dabei werden keine "
 "Anfrage angelegt, keine E-Mail versendet und kein Modell aufgerufen."
 
-#: includes/Protection/HealthPage.php:71
+#: includes/Protection/HealthPage.php:72
 msgid "Verification check"
 msgstr "Verifizierung prüfen"
 
-#: includes/Protection/HealthPage.php:72
+#: includes/Protection/HealthPage.php:73
 msgid ""
 "Counts cover receipts still in the retry window. They are not a complete "
 "traffic history or an exact cost report."
@@ -3815,11 +3881,11 @@ msgstr ""
 "Wiederholungsfrist. Sie zeigt weder den vollständigen Datenverkehr noch "
 "genaue Kosten."
 
-#: includes/Protection/HealthPage.php:72
+#: includes/Protection/HealthPage.php:73
 msgid "Observed processing"
 msgstr "Erfasste Verarbeitung"
 
-#: includes/Protection/HealthPage.php:74
+#: includes/Protection/HealthPage.php:75
 msgid ""
 "The admission journal is unavailable. No successful protection check can be "
 "inferred from this page."
@@ -3827,27 +3893,27 @@ msgstr ""
 "Das Verarbeitungsprotokoll ist derzeit nicht verfügbar. Diese Seite "
 "bestätigt daher keine erfolgreiche Schutzprüfung."
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "Count"
 msgstr "Anzahl"
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "Operation"
 msgstr "Vorgang"
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "State"
 msgstr "Status"
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "Stored receipts"
 msgstr "Gespeicherte Verarbeitungsbelege"
 
-#: includes/Protection/HealthPage.php:82
+#: includes/Protection/HealthPage.php:83
 msgid "Current allowance windows"
 msgstr "Aktuelle Kontingentzeiträume"
 
-#: includes/Protection/HealthPage.php:82
+#: includes/Protection/HealthPage.php:83
 msgid ""
 "Remaining units are the minimum in one active bucket of each dimension, not "
 "a site-wide allowance. Recovery can happen sooner when work finishes."
@@ -3856,27 +3922,27 @@ msgstr ""
 "Zählbereichs angezeigt. Dieser Wert gilt nicht für die gesamte Website. Wenn "
 "ein Vorgang endet, kann das Kontingent früher wieder frei werden."
 
-#: includes/Protection/HealthPage.php:84
+#: includes/Protection/HealthPage.php:85
 msgid "Active buckets"
 msgstr "Aktive Zählbereiche"
 
-#: includes/Protection/HealthPage.php:84
+#: includes/Protection/HealthPage.php:85
 msgid "Latest reset or recovery (UTC)"
 msgstr "Späteste Rücksetzung oder Freigabe (UTC)"
 
-#: includes/Protection/HealthPage.php:84
+#: includes/Protection/HealthPage.php:85
 msgid "Minimum remaining"
 msgstr "Kleinstes Restkontingent"
 
-#: includes/Protection/HealthPage.php:86
+#: includes/Protection/HealthPage.php:87
 msgid "Daily admission reasons"
 msgstr "Tägliche Verarbeitungsergebnisse"
 
-#: includes/Protection/HealthPage.php:86
+#: includes/Protection/HealthPage.php:87
 msgid "Policy source version"
 msgstr "Version der Kontingentregeln"
 
-#: includes/Protection/HealthPage.php:86
+#: includes/Protection/HealthPage.php:87
 msgid ""
 "These bounded aggregate counts distinguish admitted requests, retries and "
 "quota refusals. Observe-mode results are advisory. Counters reset at UTC "
@@ -5464,6 +5530,11 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#~ msgid "Initial guidance only. Every inquiry is accepted and notified."
+#~ msgstr ""
+#~ "Die Einschätzung dient als Hinweis. Jede Anfrage wird gespeichert und dem "
+#~ "Team gemeldet."
 
 #~ msgid "Please choose"
 #~ msgstr "Bitte wählen"

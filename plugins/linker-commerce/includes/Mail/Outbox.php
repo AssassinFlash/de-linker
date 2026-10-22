@@ -124,11 +124,11 @@ final class Outbox {
 	 * @param int $job_id Job id.
 	 */
 	public function retry( int $job_id ): void {
-		if ( NotificationHold::job_held( $job_id ) ) {
-			return;
-		}
 		$inquiry = NotificationHold::inquiry( $job_id );
 		$work    = function () use ( $job_id ): void {
+			if ( NotificationHold::job_held( $job_id ) ) {
+				return;
+			}
 			$job = $this->jobs->load( $job_id );
 			if ( null !== $job ) {
 				$this->attempt( $job['message'], $job['attempts'], $job_id );

@@ -1,0 +1,4 @@
+Note: Using configuration file /Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/phpstan.neon.dist.
+
+ [OK] No errors                                                                 
+

@@ -48,6 +48,7 @@ final class NewInquiryEmailTest extends TestCase {
 		);
 		$this->expect_action_on_any( 'woocommerce_order_status_pending_to_' . Statuses::RECEIVED . '_notification', NewInquiryEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
+		$order->shouldReceive( 'get_meta' )->andReturn( '' );
 		$order->allows( 'get_order_number' )->andReturn( '20' );
 		$order->allows( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
 		$order->allows( 'get_billing_email' )->andReturn( 'maria@example.test' );

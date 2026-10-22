@@ -68,7 +68,7 @@ final class Admin {
 				esc_html( $result->get_error_message() ),
 				'',
 				array(
-					'response'  => $status,
+					'response'  => (int) $status,
 					'back_link' => true,
 				)
 			);

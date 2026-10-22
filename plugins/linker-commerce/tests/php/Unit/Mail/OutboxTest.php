@@ -93,6 +93,7 @@ final class OutboxTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_option', array( 'return' => fn ( string $name, $default_value = false ) => $this->options[ $name ] ?? $default_value ) );
 		WP_Mock::userFunction(
 			'update_option',

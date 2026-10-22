@@ -192,6 +192,13 @@ final class Queue {
 			}
 		);
 		if ( ! $done && function_exists( 'as_schedule_single_action' ) ) {
+			$order = wc_get_order( $id );
+			if ( $order instanceof WC_Order ) {
+				$order->read_meta_data( true );
+				if ( NotificationHold::held( $order ) ) {
+					return;
+				}
+			}
 			// Retry a small typed result next second after a release/deadline race;
 			// do not call a model or renew the original classification deadline.
 			as_schedule_single_action( time() + 1, self::FINISH, array( $id, $result ), Outbox::GROUP, true );

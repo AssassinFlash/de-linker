@@ -40,6 +40,7 @@ final class ModuleTest extends TestCase {
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\Queue::FINISH, \Linker\Commerce\Inquiry\Assessment\Queue::class, 'finish', 10, 2 );
 		$this->expect_action_on_any( 'add_meta_boxes', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'boxes' );
 		$this->expect_action_on_any( 'admin_post_linker_inquiry_assessment_correct', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'correct' );
+		$this->expect_action_on_any( 'admin_post_linker_inquiry_notification_release', \Linker\Commerce\Inquiry\Assessment\Admin::class, 'release' );
 		// @phpstan-ignore argument.type (WP_Mock accepts its AnyInstance matcher for array callbacks, as in TestCase::plain_text.)
 		WP_Mock::expectFilterAdded( 'woocommerce_privacy_export_order_personal_data', array( new WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class ), 'export' ), 10, 2 );
 		$this->expect_action_on_any( 'woocommerce_privacy_before_remove_order_personal_data', \Linker\Commerce\Inquiry\Assessment\EvidencePrivacy::class, 'erase' );
