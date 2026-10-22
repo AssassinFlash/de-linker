@@ -1415,7 +1415,13 @@
 	   the second action, the tool row, the project entry — the price and the
 	   primary action live in the action pill below. */
 	#tv-storefront-pdp {
-		padding-bottom: calc(var(--pdp-action-height, 64px) + 52px);
+		padding-bottom: 52px;
+	}
+
+	/* Reserve the measured dock after the page's final links, not before
+	   the footer. Reuse the existing phone clearance and safe-area inset. */
+	body:has(#tv-storefront-pdp) #tv-footer-v2 .tv-footer-container {
+		padding-bottom: calc(var(--pdp-action-height, 64px) + 52px + env(safe-area-inset-bottom));
 	}
 
 	#tv-storefront-pdp .pdp-crumbs {

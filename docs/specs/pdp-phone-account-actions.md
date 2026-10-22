@@ -40,9 +40,13 @@ every specification, document destination and desktop row intact.
 Remove the blanket phone price clamp as well: a logged-in pending/restricted
 account's status must remain readable. Approved prices retain the existing
 compact arrangement unless their real content requires additional height.
-The existing ResizeObserver measures the dock; page padding and auxiliary
-controls already consume that height. Do not replace that native consumer or
-hardcode a guest-only offset.
+The existing ResizeObserver measures the dock, and auxiliary controls already
+consume that height. A real wheel to the document end finds the footer's legal
+links covered by the fixed dock: reserving its height inside the product
+section only puts space before the footer. Keep the existing 52px product
+clearance, and place the measured height plus that clearance and the native
+safe-area inset in the existing footer container's bottom padding on phone
+product pages. Do not replace the observer or hardcode a guest-only height.
 
 Acceptance uses an owned complete snapshot instance, with source and database
 backups before modification. Capture EN/DE anonymous 1440/390 and narrow320,
