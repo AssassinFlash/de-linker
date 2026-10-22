@@ -31,17 +31,20 @@ final class ModuleTest extends TestCase {
 	public function test_register_adds_the_hooks(): void {
 		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, \Linker\Commerce\Health\ReviewReminder::class, 'tick', 20 );
 		$this->expect_action_on_any( 'rest_api_init', \Linker\Commerce\Mail\SmtpHealth::class, 'register_routes' );
-			$producer = new \Linker\Commerce\Mail\Producer();
+		$producer = new \Linker\Commerce\Mail\Producer();
 		WP_Mock::expectFilterAdded( 'woocommerce_mail_callback', array( $producer, 'woocommerce' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'retrieve_password_notification_email', array( $producer, 'password_reset' ), PHP_INT_MAX );
-		$jobs       = new JobStore();
-			$outbox = new Outbox( $jobs, new Throttle() );
-			$locale = new EmailLocale();
-			$policy = new EmailPolicy();
+		WP_Mock::expectFilterAdded( 'email_change_email', array( $producer, 'account_change' ), PHP_INT_MAX, 3 );
+		WP_Mock::expectFilterAdded( 'password_change_email', array( $producer, 'account_change' ), PHP_INT_MAX, 3 );
+		WP_Mock::expectFilterAdded( 'wp_password_change_notification_email', array( $producer, 'password_changed_admin' ), PHP_INT_MAX, 3 );
+		$jobs   = new JobStore();
+		$outbox = new Outbox( $jobs, new Throttle() );
+		$locale = new EmailLocale();
+		$policy = new EmailPolicy();
 
-			WP_Mock::expectActionAdded( 'init', array( $jobs, 'register_post_type' ) );
-			WP_Mock::expectFilterAdded( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
-			WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
+		WP_Mock::expectActionAdded( 'init', array( $jobs, 'register_post_type' ) );
+		WP_Mock::expectFilterAdded( 'pre_wp_mail', array( $outbox, 'intercept' ), 10, 2 );
+		WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
 		WP_Mock::expectActionAdded( 'phpmailer_init', array( $outbox, 'configure_mailer' ) );
 		WP_Mock::expectActionAdded( Outbox::HOOK, array( $outbox, 'retry' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_switching_email_locale', array( $locale, 'allow' ), 10, 2 );
@@ -49,7 +52,7 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectFilterAdded( 'woocommerce_email_recipient_customer_reset_password', array( $locale, 'password_recipient' ), 10, 3 );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_classes', array( $policy, 'switch_off_others' ), 1000 );
 
-			( new Module( $outbox, $jobs, $locale, $policy, new \Linker\Commerce\Mail\SmtpHealth(), $producer ) )->register();
+		( new Module( $outbox, $jobs, $locale, $policy, new \Linker\Commerce\Mail\SmtpHealth(), $producer ) )->register();
 
 		$this->assertConditionsMet();
 	}

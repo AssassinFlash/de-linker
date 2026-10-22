@@ -13,6 +13,8 @@ use Linker\Commerce\Inquiry\Assessment\AsyncRunner;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Assessment\Result;
+use Linker\Commerce\Inquiry\Assessment\AuthorizationStore;
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 use Linker\Commerce\Inquiry\Assessment\StructuredMeta;
 use Linker\Commerce\Mail\NotificationHold;
 use Linker\Commerce\Mail\Outbox;
@@ -35,6 +37,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		require_once dirname( __DIR__, 2 ) . '/fixtures/AssessmentFixtureEnvironment.php';
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
 		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
 		$this->assertTrue( class_exists( \WP_Async_Request::class ), 'Woo native async library must actually be loaded.' );
 		$this->assertNotFalse( has_action( 'wp_ajax_nopriv_' . AsyncRunner::ACTION ), 'The native HTTP callback must be registered.' );
@@ -98,23 +101,25 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 				foreach ( array( Queue::PROCESS, Queue::EXPIRE ) as $hook ) {
 					as_unschedule_all_actions( $hook, array( $order->get_id() ), Outbox::GROUP );
 				}
+				delete_option( AuthorizationStore::PREFIX . $order->get_id() );
 				$order->delete( true );
 			}
 		);
 	}
 
-	/** A real unconfigured service still queues the ordinary unknown notification with no wake. */
+	/** An unconfigured service preserves pending source and cannot create a content notification. */
 	public function test_unconfigured_service_preserves_normal_unknown_handoff(): void {
 		update_option( 'linker_genie_url', '' );
 		$this->assertFalse( \Linker\Commerce\Inquiry\Assessment\Client::configured() );
 		$order = $this->inquiry();
 		$this->assertTrue( Queue::defer( $order ) );
 		$order->read_meta_data( true );
-		$data = Queue::data( $order );
-		$this->assertSame( 'service_unavailable', $data['initial_result']['reason'] );
-		$this->assertSame( 'uncertain', $data['initial_result']['label'] );
-		$this->assertTrue( $data['inline_delivery'] );
-		$this->assertGreaterThan( 0, $data['notification_job'] );
+		$data  = Queue::data( $order );
+		$state = AuthorizationStore::read( $order->get_id() );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'pending', $state['status'] );
+		$this->assertSame( array(), $state['jobs'] );
+		$this->assertSame( 0, self::notification_job( $order ) );
 		$this->assertSame( '', $order->get_meta( AsyncRunner::META ) );
 		$this->assertCount( 0, $this->dispatches );
 	}
@@ -123,7 +128,9 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 	public function test_native_dispatch_is_bounded_private_and_one_per_record(): void {
 		$order = $this->inquiry();
 		$this->assertTrue( Queue::defer( $order ) );
+		AsyncRunner::enqueue( $order->get_id() );
 		$this->assertTrue( Queue::defer( $order ) );
+		AsyncRunner::enqueue( $order->get_id() );
 		$this->assertCount( 1, $this->dispatches );
 		$request = $this->dispatches[0];
 		$this->assertSame( admin_url( 'admin-ajax.php' ) . '?action=' . AsyncRunner::ACTION, $request['url'] );
@@ -142,7 +149,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$this->assertSame( Queue::data( $order )['deadline'], $wake['expires'] );
 		$this->assertStringNotContainsString( $args['body']['token'], (string) wp_json_encode( $wake ) );
 		$this->assertTrue( (bool) as_has_scheduled_action( Queue::PROCESS, array( $order->get_id() ), Outbox::GROUP ) );
-		$this->assertTrue( (bool) as_has_scheduled_action( Queue::EXPIRE, array( $order->get_id() ), Outbox::GROUP ) );
+		$this->assertFalse( (bool) as_has_scheduled_action( Queue::EXPIRE, array( $order->get_id() ), Outbox::GROUP ) );
 	}
 
 	/** Missing, forged, cross-record, replayed, expired and held requests do no provider work. */
@@ -150,6 +157,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$order = $this->inquiry();
 		$other = $this->inquiry();
 		Queue::defer( $order );
+		AsyncRunner::enqueue( $order->get_id() );
 		$token  = $this->dispatches[0]['args']['body']['token'];
 		$runner = new AsyncRunner();
 		$this->assertFalse( $runner->run( $order->get_id(), '' ) );
@@ -162,7 +170,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 				++$count;
 				return array(
 					'response' => array( 'code' => 200 ),
-					'body'     => wp_json_encode( Result::unknown( 'provider_budget_quota' ) ),
+					'body'     => wp_json_encode( NormalMailAuthorizationFixture::verdict( json_decode( $args['body'], true )['binding'], 'unknown', 'insufficient_context', 'provider_budget_quota' ) ),
 				);
 			}
 			return $pre;
@@ -178,15 +186,16 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$this->assertSame( 1, $count );
 		$order->read_meta_data( true );
 		$this->assertSame( 'provider_budget_quota', Queue::data( $order )['initial_result']['reason'] );
-		$this->assertGreaterThan( 0, Queue::data( $order )['notification_job'] );
+		$this->assertSame( 0, self::notification_job( $order ) );
 		Queue::defer( $other );
+		AsyncRunner::enqueue( $other->get_id() );
 		$second = $this->dispatches[1]['args']['body']['token'];
 		$other->update_meta_data( NotificationHold::META, array( 'reason' => 'synthetic' ) );
 		$other->save_meta_data();
 		$this->assertFalse( $runner->run( $other->get_id(), $second ) );
 		( new Queue() )->process( $other->get_id() );
 		$this->assertSame( 1, $count );
-		$this->assertSame( 0, Queue::data( $other )['notification_job'] );
+		$this->assertSame( 0, self::notification_job( $other ) );
 		$other->delete_meta_data( NotificationHold::META );
 		$data             = Queue::data( $other );
 		$data['deadline'] = microtime( true ) - 1;
@@ -194,16 +203,18 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$other->save_meta_data();
 		$this->assertFalse( $runner->run( $other->get_id(), $second ) );
 		( new Queue() )->recover();
+		( new Queue() )->process( $other->get_id() );
 		$other->read_meta_data( true );
-		$this->assertSame( 'deadline', Queue::data( $other )['initial_result']['reason'] );
-		$this->assertGreaterThan( 0, Queue::data( $other )['notification_job'] );
-		$this->assertSame( 1, $count );
+		$this->assertSame( 'provider_budget_quota', Queue::data( $other )['initial_result']['reason'] );
+		$this->assertSame( 0, self::notification_job( $other ) );
+		$this->assertSame( 2, $count, 'Expired HTTP capability is refused, while the independent native worker gets its own model attempt.' );
 	}
 
 	/** Two actual connections cannot replay one wake-up; a busy dedicated worker does not wait. */
 	public function test_real_db_connections_claim_once_and_busy_worker_retains_recovery(): void {
 		$order = $this->inquiry();
 		Queue::defer( $order );
+		AsyncRunner::enqueue( $order->get_id() );
 		$token   = $this->dispatches[0]['args']['body']['token'];
 		$barrier = tempnam( sys_get_temp_dir(), 'linker-543-' );
 		$this->assertIsString( $barrier );
@@ -222,9 +233,10 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$this->assertSame( 'claimed', $this->close_worker( $first ) );
 		$this->assertSame( "called\n", file_get_contents( $barrier ) );
 		$order->read_meta_data( true );
-		$this->assertGreaterThan( 0, Queue::data( $order )['notification_job'] );
+		$this->assertSame( 0, self::notification_job( $order ) );
 		$other = $this->inquiry();
 		Queue::defer( $other );
+		AsyncRunner::enqueue( $other->get_id() );
 		$token = $this->dispatches[1]['args']['body']['token'];
 		file_put_contents( $barrier, '' );
 		$busy  = $this->worker( $other->get_id(), $token, $barrier, 'busy' );
@@ -237,8 +249,8 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$this->assertLessThan( 1, microtime( true ) - $start );
 		$other->read_meta_data( true );
 		$this->assertSame( 'busy', $other->get_meta( AsyncRunner::META )['status'] );
-		$this->assertSame( 0, Queue::data( $other )['notification_job'] );
-		$this->assertTrue( (bool) as_has_scheduled_action( Queue::EXPIRE, array( $other->get_id() ), Outbox::GROUP ) );
+		$this->assertSame( 0, self::notification_job( $other ) );
+		$this->assertTrue( (bool) as_has_scheduled_action( Queue::PROCESS, array( $other->get_id() ), Outbox::GROUP ) );
 		$this->assertSame( '', $this->close_worker( $busy ) );
 	}
 
@@ -284,6 +296,15 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		return $out;
 	}
 
+	/** Read the actual team job identity from the durable new policy.
+	 *
+	 * @param WC_Order $order Native source.
+	 */
+	private static function notification_job( WC_Order $order ): int {
+		$state = AuthorizationStore::read( $order->get_id() );
+		return is_array( $state ) ? (int) ( $state['jobs']['team']['id'] ?? 0 ) : 0;
+	}
+
 	/**
 	 * Reload after a separate HTTP/database connection may have committed.
 	 *
@@ -320,6 +341,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		$order = $this->inquiry();
 		$other = $this->inquiry();
 		Queue::defer( $order );
+		AsyncRunner::enqueue( $order->get_id() );
 		$token = $this->dispatches[0]['args']['body']['token'];
 		$url   = admin_url( 'admin-ajax.php' );
 		foreach ( array(
@@ -344,7 +366,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 			$response = wp_remote_post( $url, array( 'body' => array_merge( array( 'action' => AsyncRunner::ACTION ), $body ) ) );
 			$this->assertSame( 403, wp_remote_retrieve_response_code( $response ) );
 			$order->read_meta_data( true );
-			$this->assertSame( 0, Queue::data( $order )['notification_job'] );
+			$this->assertSame( 0, self::notification_job( $order ) );
 		}
 		$response = wp_remote_post(
 			$url,
@@ -363,10 +385,11 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 			$order->read_meta_data( true );
 			$data = $this->fresh_data( $order );
 			usleep( 10000 );
-		} while ( 0 === (int) $data['notification_job'] && microtime( true ) < $until );
-		$this->assertGreaterThan( 0, $data['notification_job'] );
+		} while ( ! isset( $data['initial_result'] ) && microtime( true ) < $until );
+		$this->assertSame( 0, self::notification_job( $order ) );
 		$this->assertSame( 'service_unavailable', $data['initial_result']['reason'] );
-		$response = wp_remote_post(
+		$before_replay = AuthorizationStore::read( $order->get_id() );
+		$response      = wp_remote_post(
 			$url,
 			array(
 				'body' => array(
@@ -378,10 +401,10 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		);
 		$this->assertSame( 403, wp_remote_retrieve_response_code( $response ) );
 		$order->read_meta_data( true );
-		$this->assertSame( $data['notification_job'], Queue::data( $order )['notification_job'] );
+		$this->assertSame( $before_replay, AuthorizationStore::read( $order->get_id() ) );
 	}
 
-	/** A refused loopback leaves the original durable expiry and ordinary unknown notice. */
+	/** A refused loopback leaves durable recovery; queue waiting does not spend the model window. */
 	public function test_failed_loopback_keeps_original_durable_recovery(): void {
 		$order    = $this->inquiry();
 		$deadline = Queue::data( $order )['deadline'];
@@ -391,21 +414,29 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 		add_filter( 'pre_http_request', $fail, 20, 3 );
 		try {
 			Queue::defer( $order );
+			AsyncRunner::enqueue( $order->get_id() );
 		} finally {
 			remove_filter( 'pre_http_request', $fail, 20 ); }
 		$order->read_meta_data( true );
 		$this->assertSame( 'failed', $order->get_meta( AsyncRunner::META )['dispatch'] );
 		$this->assertSame( $deadline, Queue::data( $order )['deadline'] );
 		$this->assertSame( 'yes', $order->get_meta( Queue::PENDING ) );
-		$this->assertTrue( (bool) as_has_scheduled_action( Queue::EXPIRE, array( $order->get_id() ), Outbox::GROUP ) );
+		$this->assertTrue( (bool) as_has_scheduled_action( Queue::PROCESS, array( $order->get_id() ), Outbox::GROUP ) );
 		$data             = $this->fresh_data( $order );
 		$data['deadline'] = microtime( true ) - 1;
 		StructuredMeta::update( $order, Queue::META, $data );
 		$order->save_meta_data();
 		( new Queue() )->expire( $order->get_id() );
-		$order->read_meta_data( true );
-		$this->assertSame( 'deadline', Queue::data( $order )['initial_result']['reason'] );
-		$this->assertGreaterThan( 0, Queue::data( $order )['notification_job'] );
+		$normal = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
+		$permit = $normal->process( $order );
+		$this->assertSame( 'normal', $permit['verdict']['decision'] );
+		$this->assertCount( 2, $permit['jobs'] );
+		$this->assertGreaterThan( 9.0, $normal->requests[0]['remaining_seconds'] );
+		$this->assertLessThanOrEqual( Queue::WAIT_SECONDS, $normal->requests[0]['remaining_seconds'] );
 	}
 
 	/**
@@ -458,9 +489,9 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 			$order->read_meta_data( true );
 			$data = $this->fresh_data( $order );
 			usleep( 20000 );
-		} while ( 0 === (int) $data['notification_job'] && microtime( true ) < $until );
+		} while ( 0 === (int) self::notification_job( $order ) && microtime( true ) < $until );
 		$this->assertSame( 'normal', $data['initial_result']['label'] );
-		$this->assertGreaterThan( 0, $data['notification_job'] );
+		$this->assertGreaterThan( 0, self::notification_job( $order ) );
 		$this->assertLessThan( $data['deadline'], $data['completed_at'] );
 	}
 
@@ -499,10 +530,21 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 			$until = microtime( true ) + 12;
 			do {
 				wp_cache_delete( $key, 'options' );
+				wp_cache_delete( 'notoptions', 'options' );
 				$event = get_option( $key );
 				usleep( 20000 );
 			} while ( ( ! is_array( $event ) || ! isset( $event['completed_at'] ) ) && microtime( true ) < $until );
-			$this->assertIsArray( $event );
+			$diagnostic = AuthorizationStore::read( $order->get_id() );
+			$this->assertIsArray(
+				$event,
+				(string) wp_json_encode(
+					array(
+						'wake'     => $order->get_meta( AsyncRunner::META ),
+						'status'   => is_array( $diagnostic ) ? ( $diagnostic['status'] ?? '' ) : 'unavailable',
+						'attempts' => is_array( $diagnostic ) ? ( $diagnostic['attempts'] ?? 0 ) : 0,
+					)
+				)
+			);
 			$this->assertArrayHasKey( 'completed_at', $event );
 			$this->assertLessThan( $event['completed_at'], $received );
 			$this->assertLessThan( $delay, $body['responding_at'] - $body['defer_at'] );
@@ -512,7 +554,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 				$order->read_meta_data( true );
 				$data = $this->fresh_data( $order );
 				usleep( 10000 );
-			} while ( 0 === (int) $data['notification_job'] && microtime( true ) < $until );
+			} while ( 0 === (int) self::notification_job( $order ) && microtime( true ) < $until );
 			fwrite(
 				STDOUT,
 				(string) wp_json_encode(
@@ -520,16 +562,16 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 						'simulated_seconds' => $delay,
 						'client_seconds'    => $received - $start,
 						'defer_seconds'     => $body['responding_at'] - $body['defer_at'],
-						'queue_seconds'     => $data['result']['queue_seconds'] ?? null,
+						'queue_seconds'     => $event['started_at'] - $data['accepted_at'],
 						'elapsed'           => $data['elapsed'] ?? null,
 					)
 				) . PHP_EOL
 			);
 			$this->assertLessThan( $data['deadline'], $event['started_at'] );
 			$this->assertSame( 'normal', $data['initial_result']['label'] );
-			$this->assertSame( (float) $delay, $data['initial_result']['seconds'] );
-			$this->assertGreaterThan( 0, $data['notification_job'] );
-			$this->assertLessThan( Queue::WAIT_SECONDS, $data['result']['queue_seconds'] );
+			$this->assertSame( (float) $delay, (float) $data['initial_result']['seconds'], 'JSON may represent an integral number without a fractional suffix.' );
+			$this->assertGreaterThan( 0, self::notification_job( $order ) );
+			$this->assertLessThan( Queue::WAIT_SECONDS, $event['started_at'] - $data['accepted_at'] );
 		}
 	}
 }

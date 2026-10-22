@@ -311,7 +311,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 	}
 
-	/** Missing proof saves complete data, no snapshot, mail, model or receipt budget. */
+	/** Missing proof saves complete evidence without a permit, mail, model or receipt budget. */
 	public function test_failed_verification_saves_native_record_and_idempotent_retry_without_side_effects(): void {
 		$post   = $this->post();
 		$jobs   = self::newest_mail_job();
@@ -323,7 +323,12 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( $post['linker_request_id'], $order->get_meta( BusinessRecord::REQUEST ) );
 		self::assertSame( 'verification', $order->get_meta( Intake::META )['lane'] );
 		self::assertTrue( NotificationHold::held( $order ) );
-		self::assertSame( array(), Queue::data( $order ) );
+		self::assertSame( $post['message'], Queue::data( $order )['snapshot']['submission']['message'] );
+		$pending = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $pending );
+		self::assertSame( 'pending', $pending['status'] );
+		self::assertSame( 0, $pending['attempts'] );
+		self::assertSame( array(), $pending['jobs'] );
 		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
 		self::assertSame( $budget, get_option( Throttle::OPTION ) );
 		$retry = ( new Handler() )->process( $post );
@@ -514,18 +519,37 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$budget = array_fill( 0, Throttle::PER_DAY, time() );
 		update_option( Throttle::OPTION, $budget, false );
 		$marker = self::newest_mail_job();
+		$review = \Linker\Commerce\Inquiry\Assessment\Reviews::save(
+			$order->get_id(),
+			0,
+			'correct',
+			array(
+				'label' => 'normal',
+				'note'  => 'Native fixture checked the complete source.',
+				'basis' => \Linker\Commerce\Inquiry\Assessment\Reviews::reference( $order ),
+			)
+		);
+		self::assertIsArray( $review );
+		self::assertSame( array(), self::mail_jobs_after( $marker ), 'A staff correction alone does not authorize transport.' );
+		$order->read_meta_data( true );
+		$basis  = NotificationHold::reference( $order );
 		$result = NotificationHold::release( $order->get_id(), $basis );
 		self::assertIsArray( $result );
-		self::assertGreaterThan( 0, $result['job'] );
-		self::assertTrue( ( new \Linker\Commerce\Mail\JobStore() )->critical( $result['job'] ) );
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertSame( array( 'team' ), array_keys( $state['jobs'] ) );
+		$job = $state['jobs']['team']['id'];
+		self::assertGreaterThan( 0, $job );
+		self::assertFalse( ( new \Linker\Commerce\Mail\JobStore() )->critical( $job ), 'Public content retains the ordinary quota after a native explicit staff release.' );
 		self::assertSame( $result, NotificationHold::release( $order->get_id(), $basis ) );
 		self::assertCount( 1, self::mail_jobs_after( $marker ) );
 		self::assertSame( $budget, get_option( Throttle::OPTION ) );
 		$order->read_meta_data( true );
 		self::assertFalse( NotificationHold::held( $order ) );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
-		self::assertSame( 'staff_release', Queue::data( $order )['result']['reason'] );
-		self::assertTrue( as_has_scheduled_action( Outbox::HOOK, array( $result['job'] ), Outbox::GROUP ) );
+		self::assertSame( 'human_override', $state['producer'] );
+		self::assertSame( 'staff_release_team_only', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		self::assertTrue( as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) );
 	}
 
 	/** Native PII removal includes added registry and intake metadata. */

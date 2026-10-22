@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+
 use Linker\Commerce\Contact\Handler as ContactHandler;
 use Linker\Commerce\Inquiry\Handler;
 use Linker\Commerce\Mail\Throttle;
@@ -20,6 +22,23 @@ use WC_Order;
  * @coversNothing
  */
 final class PublicSubmissionTest extends IntegrationTestCase {
+
+	/** Install only this test's bound local service seam. */
+	protected function setUp(): void {
+		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
+	}
+
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 
 	/**
 	 * Round-one decision: three accepted messages per connection per hour,
@@ -127,6 +146,17 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		);
 		$this->assertIsArray( $orders );
 		$this->assertCount( 3, $orders );
+		foreach ( $orders as $accepted_order ) {
+			$native = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $accepted_order->get_id() );
+			$this->assertIsArray( $native );
+			$this->assertSame( 0, $native['attempts'], 'The submitting child must not let an unrelated background request consume this fixture source before the parent installs its typed service.' );
+			$accepted_order->read_meta_data( true );
+			$this->assertSame( 'yes', $accepted_order->get_meta( \Linker\Commerce\Inquiry\Assessment\Queue::PENDING ) );
+			$this->assertSame( 'Parallel public inquiry.', $accepted_order->get_customer_note() );
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::recover( $accepted_order->get_id() );
+			$this->authorization->process( $accepted_order );
+		}
+		$this->authorization->drain();
 		$this->assertCount( 6, self::mail_jobs_after( $marker ), 'Only the three accepted inquiries produce a team row and receipt.' );
 	}
 
@@ -162,6 +192,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 				}
 			);
 		}
+		$this->authorization->drain();
 		$this->assertCount( 20, self::mail_jobs_after( $before ), 'Each allowed nameless message still gets the ordinary receipt and team mail.' );
 		$stamp  = (string) ( time() - 5 );
 		$email  = 'tester246-cap-' . self::tag() . '@example.test';
@@ -192,17 +223,19 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 			); }
 		$this->assertCount( 1, $orders );
 		$this->assertSame( 'inquiry-received', $orders[0]->get_status() );
+		$this->authorization->drain();
 		$jobs = self::mail_jobs_after( $marker );
 		$this->assertCount( 1, $jobs, 'Only the team notification is queued after the receipt cap.' );
 		$message = json_decode( (string) get_post_meta( $jobs[0], '_linker_mail_message', true ), true );
 		$this->assertSame( array( ( new \Linker\Commerce\Settings\Options() )->notify_to() ), $message['to'] );
 		$this->assertNotContains( $email, $message['to'] );
+		$orders[0]->read_meta_data( true );
 		$this->assertSame( 'daily_cap', $orders[0]->get_meta( '_linker_receipt_skipped' ) );
 		if ( 'contact' === $door ) {
-			$this->assertSame( 'sent_no_receipt', $result );
+			$this->assertSame( 'sent', $result, 'Saving returns before the optional receipt is decided.' );
 			$previous = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- retain and restore the display state in this test.
 			try {
-				$_GET[ \Linker\Commerce\Contact\Form::STATE_PARAM ] = $result;
+				$_GET[ \Linker\Commerce\Contact\Form::STATE_PARAM ] = 'sent_no_receipt';
 				$html = ( new \Linker\Commerce\Contact\Form() )->render();
 			} finally {
 				$_GET = $previous; }
@@ -245,6 +278,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 				$order->delete( true );
 			}
 		);
+		$this->authorization->drain();
 		$rows     = array_map( static fn ( int $id ): array => json_decode( (string) get_post_meta( $id, '_linker_mail_message', true ), true ), self::mail_jobs_after( $marker ) );
 		$receipts = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $email ) === $row['to'] ) );
 		$team     = array_values( array_filter( $rows, static fn ( array $row ): bool => array( $email ) !== $row['to'] ) );

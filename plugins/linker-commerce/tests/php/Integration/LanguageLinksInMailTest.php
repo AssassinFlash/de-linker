@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
@@ -36,6 +37,11 @@ use WC_Order;
  * @coversNothing
  */
 final class LanguageLinksInMailTest extends IntegrationTestCase {
+	/** Real classification and native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 
 	/**
 	 * Captured outgoing mail calls, in send order.
@@ -57,6 +63,12 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		WC()->mailer();
 		foreach ( array( ApprovedEmail::ID, InquiryReceivedEmail::ID, ProformaIssuedEmail::ID ) as $id ) {
 			$name                    = 'woocommerce_' . $id . '_settings';
@@ -152,6 +164,8 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		$email = new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
 		$email->trigger( $order->get_id(), $order );
+		$this->assertSame( array(), $this->to_address( (string) $order->get_billing_email() ), 'Saved inquiry waits for a bound normal verdict.' );
+		$this->authorization->process( $order, true );
 
 		$messages = $this->to_address( (string) $order->get_billing_email() );
 		$this->assertCount( 1, $messages, 'One German receipt.' );
@@ -179,8 +193,13 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		( new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->trigger( $order->get_id(), $order );
 
-		$jobs = self::mail_jobs_after( $marker );
-		$this->assertCount( 1, $jobs, 'The German receipt is queued.' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'No content job before classification.' );
+		$state = $this->authorization->process( $order );
+		$jobs  = array( $state['jobs']['receipt']['id'] );
+		$this->assertCount( 2, self::mail_jobs_after( $marker ), 'One team notification and one German receipt are queued after the normal verdict.' );
+		$stored = ( new JobStore() )->load( $jobs[0] );
+		$this->assertNotNull( $stored );
+		$this->assertSame( array( $order->get_billing_email() ), $stored['message']->to );
 
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
@@ -244,6 +263,23 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'href="' . $this->german_page_url( 'shop' ) . '"', $german_mail[0]['body'] );
 	}
 
+	/** Native workers can classify English and German sources in one PHP process. */
+	public function test_bound_inquiry_batch_keeps_each_recorded_language(): void {
+		$this->ensure_languages();
+		foreach ( array( 'en_US', 'de_DE_formal', 'en_US' ) as $locale ) {
+			$order = $this->german_inquiry();
+			$order->update_meta_data( '_linker_locale', $locale );
+			$order->save_meta_data();
+			( new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->trigger( $order->get_id(), $order );
+			$state   = $this->authorization->process( $order );
+			$receipt = ( new JobStore() )->load( $state['jobs']['receipt']['id'] );
+			$this->assertNotNull( $receipt );
+			$subject = 'de_DE_formal' === $locale ? 'Ihre Anfrage #' . $order->get_order_number() . ' ist eingegangen' : 'Your inquiry #' . $order->get_order_number() . ' has been received';
+			$this->assertSame( $subject, $receipt['message']->subject );
+			$this->assertStringContainsString( 'de_DE_formal' === $locale ? 'Dank für Ihre Anfrage' : 'Thank you for your inquiry', $receipt['message']->body );
+		}
+	}
+
 	/**
 	 * Records every wp_mail() call. The queue's own delivery passes the
 	 * recipients as a list; the chain's first call passes the recipient as a
@@ -271,6 +307,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	/**
 	 * The calls the chain handed over for an address (the first leg).
 	 *
+	 * @phpstan-impure Captured mail changes after native background consumers.
 	 * @param string $address Recipient address.
 	 * @return list<array{to: string, recipients: list<string>, subject: string, body: string}>
 	 */
