@@ -18,8 +18,10 @@ losing measured peaks. This is not restored measurement precision.
 The fixes normalize these errors and retain input-document/target-axis hashes,
 input/output interval durations, exact-copy status, effective coarsest interval
 and whether any reconstruction occurred. New regressions cover both UTC
-boundaries, truncated TZif, and coarse→fine peak loss. Reconfirmation is pending
-on the repaired fixed commit.
+boundaries, truncated TZif, and coarse→fine peak loss. Standards rechecked fixed
+`0d5ff89058eedae32bf44bc11a52f6ab95668795` from a separate `git archive` export,
+excluding uncommitted files, and closed both P2 findings and the judgement.
+All 27 time tests and additional boundary/precision probes passed.
 
 ## Spec
 
@@ -32,7 +34,9 @@ from captured TZif after OS file reads were disabled.
 
 This initial pass does not overrule the Standards error-boundary findings.
 The time contract has been sharpened to require intermediate precision history;
-the repaired increment will be independently rechecked.
+Spec independently rechecked the same fixed commit: 27 tests passed, additional
+15-minute→hour→15-minute→exact-copy precision/hash checks passed, frozen TZif
+replay and typed error probes passed. Both axes report no remaining blockers.
 
 Initial totals: Standards 2 P2 plus 1 adopted judgement; Spec 0. These are time
 input results, not full annual PV/storage, equipment or production acceptance.

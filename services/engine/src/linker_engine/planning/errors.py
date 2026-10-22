@@ -35,3 +35,9 @@ class InvalidInput(PlanningError):
     """The command is not finite JSON or has an invalid lifecycle parameter."""
 
     code = "invalid_input"
+
+
+class NumericalFailure(PlanningError):
+    """A calculation produced values outside finite numerical representation."""
+
+    code = "numerical_failure"
