@@ -87,3 +87,10 @@ allowing a changed request under the old UUID. One new native script message
 was generated and checked; EN/DE 390px rendered evidence is retained.
 Independent editorial review of this increment remains pending alongside
 the new fixed code review.
+
+Independent Spec/copy review at aefd6f26 accepted this pair as final. The
+reviewer confirmed that it identifies unknown creation acknowledgement,
+with no account-approval or commercial-inquiry meaning. The actual generated
+module catalogue contains all 99 application messages including this German
+label. Browser restoration and exact-wire retries were verified as described
+in APP-REVIEW.md; the wording does not hide an unimplemented recovery action.

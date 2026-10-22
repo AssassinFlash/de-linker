@@ -172,3 +172,16 @@ This correction and queue increment still require both independent axes at
 the new fixed source. Guest/account browser claim, cross-identity unknown
 creation reconciliation, CSV intake, maps/2D/3D, calculations, equipment and
 all site/release consumers remain required within the active overall goal.
+
+## Independent acceptance at aefd6f26
+
+Both axes passed fixed aefd6f260bdaaefce50d8fa85e72f01f3fc25714.
+Standards independently closed the original same-scope close probe and found
+no remaining hard-standard issue or separate smell. Spec independently
+confirmed the same close, retained note/URL, successful retry, all four
+native-focus scope-window paths and explicit exact-wire creation recovery.
+Each ran 25 Node and 15 DOM tests plus strict types and source/build checks;
+the fixed bundle was independently reproduced. Spec checked all 99 actual
+module messages and passed the new EN/DE copy. Native IndexedDB and the
+real p548 multi-tab execution evidence above remains the implementer's CUA
+record; component acceptance does not claim complete A or production release.
