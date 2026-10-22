@@ -1,26 +1,28 @@
 {
-  "observed_at": "2026-10-22T14:00:21+00:00",
-  "production_source": "af41f307091fb3a72246d12cf726223878139caf",
+  "observed_at": "2026-10-22T16:25:51+00:00",
+  "production_source": "3c3c3c25fff1d6b6f1aed8a990a410cfd9149577",
   "critical_source_hashes_verified": 10,
-  "confirmed_campaign_requests": 324,
+  "confirmed_campaign_requests": 456,
   "complete_campaign_samples": 3,
-  "additional_grouped_requests": 321,
+  "additional_grouped_requests": 453,
   "sample_assessment_wakes": 0,
   "sample_notification_jobs": 0,
   "old_private_held_mail_jobs": 38,
-  "ordinary_pending_review": 0,
+  "ordinary_pending_review": 77,
   "reminder_jobs_created": 0,
   "assessment_enabled": true,
-  "independent_recovery_heartbeat": "1792677602.5131",
+  "independent_recovery_heartbeat": "1792686302.0805",
   "public_mode": "enforce",
   "public_ready": true,
   "limits": [
     "Counts describe the human-confirmed exact campaign, not all rejected HTTP attempts or genuine customers.",
     "No new normal inquiry has been observed since this release; no production conversion or false-refusal rate is established.",
-    "Earlier zero-mail/zero-HTTP callback and ledger readback is a separate timed observation, not a later inbox-delivery test."
+    "Earlier zero-mail/zero-HTTP callback and ledger readback is a separate timed observation, not a later inbox-delivery test.",
+    "The 77 pending verification records are not all classified as spam. A separate earlier snapshot confirmed only its exact 24 whole-message samples; originals remain intact."
   ],
-  "production_manifest": "20261022T122802818764Z-af41f307",
+  "production_manifest": "20261022T161243470627Z-3c3c3c25",
   "production_manifest_state": "archived",
   "protection_source_baseline": "003cedd399fc4781f8fe31f9896ea9d2a9c87282",
-  "manifest_stable_across_read": true
+  "manifest_stable_across_read": true,
+  "campaign_rule": "transfer-confirmed-20261022-v2"
 }
