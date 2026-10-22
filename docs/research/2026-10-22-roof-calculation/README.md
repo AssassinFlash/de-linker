@@ -19,6 +19,8 @@
 
 指定 Claude 审读没有完成。首次 CLI 实际路由到 `ccs-claude-deepseek--deepseek-flash[1m]`，以 `error_during_execution` 结束且无研究文本，未采用其结论；协调者尝试真实 Claude 通道时又遇到 OAuth 会话失效。本报告是可重跑计算审计及官方原文核查，不声称完成了独立 Claude 评审。执行元数据留在 `raw/claude-result.json`、`raw/claude-stderr.txt`。
 
+2026-10-22，用户当期授权：“不必理会claude，全权交给你来负责。”据此，本地图的 Claude 研究/审读前置要求已解除，事实研究可由 Codex 负责核对并收口；上述调用失败保留为历史记录，不再构成研究收口的阻碍。这项授权没有补齐工程证据：设备原始手册逐项复核、独立现场与计算基准、国家/DSO规则及地域精度等缺口仍按本报告保留，不能记为已验证。
+
 ## 当前真实的数据链
 
 ```text
