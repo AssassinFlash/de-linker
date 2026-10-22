@@ -1,6 +1,6 @@
 # 导航图片加载与键盘展开
 
-状态：本地实现和相关单元测试完成；浏览器优化后、原生消费者、双评审、CI 与线上验收待完成。不代表全站性能交付。
+状态：本地实现、完整静态检查、相关单元测试和固定 660fe136 的双轴源码评审完成；原生重新编译后已实走英德桌面键盘、鼠标和手机抽屉。手机抽屉检查新发现的联系按钮宽度缺陷已修复并原生读回。最终范围评审、完整视觉门、CI 与线上验收仍待完成，不代表全站性能交付。
 
 ## 问题与依据
 
@@ -17,6 +17,7 @@
 - WindPress 的关闭 mega panel 为 display:none，aria-expanded=true 时 display:block。现有脚本继续决定展开状态，桌面布局、尺寸、颜色和点击去向保留；本次明确让关闭面板不再生成布局盒子，首次展开即时显示。
 - 首次方向键展开后直接聚焦对应链接。去掉原先等待 visibility transition/250 ms 回调的路径，避免旧回调覆盖后续键盘选择；继续验证上下方向、Home/End、Escape 返回触发器、鼠标、外部点击与手机抽屉原生 details。
 - 风格属于 LC partial 与 WindPress，披露状态属于现有 header-menu.js；没有 PHP 布局、Snippet 或第三方图片工具。
+- 实际手机截图另发现抽屉联系按钮的 content-box 将 padding 和 border 加在 100% 宽度之外。仅对 `.tv-mobile-cta` 使用 border-box，保留现有颜色、文案与去向；修复抽屉本身的横向溢出，保留方案卡片原生横向滚动。
 
 ## 备份、安装与读回
 
@@ -31,3 +32,15 @@
 原始事件中关闭菜单不再启动菜单图片请求；展开时实际照片完整出现且所有链接与键盘/鼠标/触摸动作正常；EN/DE 与 1440/390 均留证。实际前后 FCP、load 和图片请求分别报告，不以节省的字节换算生产提速百分比。关闭视图和打开视图的几何、字体、颜色与布局需要独立视觉审查；回归 account 菜单和响应式收纳。
 
 证据根：`/Users/chesterjohn/de-linker-data/privacy-visual-20261021/menu-image-loading-20261022T1053Z/`。冻结六份源码/测试 aggregate `ab2ed107c92478401c7afe165f9be8c626ca9c1d4fa886783c16c27a652fc793`。本批不改变 WindPress 预设开关、隐私正文、营销文案、模型或通知逻辑。本地验证阶段尚未写入生产。
+
+## 原生消费者与新增缺陷读回
+
+最终 660fe136 在原生 present 时被旧缓存门正确拦住；WindPress 官方 Generate 后于 11:37:10 UTC 落盘，709,814 字节，SHA 与原实验缓存一致，原生 present 再次成功。其后均明确原生退出管理员，匿名再验证。
+
+`final-660-runtime/` 保存英德 1440 的六个披露菜单与账户菜单首次 ArrowDown、后续方向键、Home/End、Escape、首次 ArrowUp 和快速 next/Escape 的实际焦点与 expanded 状态。产品和方案菜单的七张照片实际 complete/naturalWidth>0，其他关闭菜单不提前加载。鼠标真实 pointerenter/pointerleave、按钮点击和真正位于菜单之外的点击另留证。EN 的早期“outside-close”记录实际点中了覆盖标题的方案链接，已按最终 URL 判为驱动目标错误，不能作为外部关闭 PASS。
+
+英德 390 五组原生 details 均实际展开/收起、照片完整出现，Escape 返回菜单按钮。新增 CTA 缺陷修复前 panel client=343、scroll=377，按钮宽377且右端393超过 panel 右端359；修复后英德 panel client=scroll=343，按钮宽343、44高、右端359。内部方案 rail 仍为 client343/scroll440，可真实横向滚至97，最后卡片完整落入视口并进入 `/solution/utility-storage/`。11:46:44 UTC 的原生缓存编译与 present 均完成。没有通过隐藏 panel overflow 来掩盖缺陷。
+
+IAB 不支持 Input.dispatchTouchEvent；该尝试明确失败，已立即恢复 touch emulation=false，不能把鼠标点击当作真实触屏硬件验证。响应式额外发现：在已加载字体的 1366 视口，EN 保留桌面导航、DE 进入折叠菜单；这项英德收纳差异需要继续查明。不得把额外宽度检查写为 parity PASS。
+
+24 次关闭菜单性能原始采样由独立 Spec 重算：12 次 AFTER 的 requestWillBeSent 也为零，并非只没有响应。局部 FCP 中位数减少45.6–47.3%，load减少42.1–49.8%。这些数字仅绑定原始本地六文件 aggregate，不将后来 CTA 盒模型修复、更新后的后端、生产或完整用户链路混进同一百分比。三组关闭截图完全一致；EN1440 仍有33像素差异，位于账户图标头部附近，最大通道差4，未证明成因，不能掩膜或签像素零差异。

@@ -235,7 +235,7 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all{border-color:rgba(12,127,115,.35);background:var(--proto-teal-50)}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-text{min-height:0;padding:9px 12px}
 #tv-header-v2 .tv-mobile-link.tv-mobile-link--all .tv-mobile-link-title{color:var(--proto-teal-600);font-weight:700}
-#tv-header-v2 .tv-mobile-cta{margin-top:10px;width:100%}
+#tv-header-v2 .tv-mobile-cta{box-sizing:border-box;margin-top:10px;width:100%}
 #tv-header-v2 .tv-mobile-utility-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
 #tv-header-v2 .tv-mobile-utility{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;min-height:44px;border-radius:8px;border:1px solid var(--proto-neutral-200);background:#ffffff;color:var(--proto-ink);font-family:inherit;font-size:13px;font-weight:700;text-decoration:none;touch-action:manipulation}
 #tv-header-v2 .tv-mobile-utility:hover{border-color:var(--proto-teal-600);color:var(--proto-teal-600)}
