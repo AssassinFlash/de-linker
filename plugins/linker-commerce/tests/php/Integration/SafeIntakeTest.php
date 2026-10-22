@@ -168,6 +168,16 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 	}
 
+	/** Native field limits are UTF-8 characters, not JSON escape sequences. */
+	public function test_valid_full_length_unicode_message_is_completely_saved(): void {
+		$post            = $this->post();
+		$post['message'] = str_repeat( '🔋', \Linker\Commerce\Contact\Submission::MAX_MESSAGE );
+		$order           = ( new Handler() )->process( $post );
+		self::assertInstanceOf( WC_Order::class, $order );
+		self::assertSame( $post['message'], $order->get_customer_note() );
+		self::assertTrue( NotificationHold::held( $order ) );
+	}
+
 	/** Both storage lanes are finite; verified acceptance ignores review fullness. */
 	public function test_review_fullness_survives_days_and_does_not_consume_verified_capacity(): void {
 		$entries = array();
