@@ -17,6 +17,7 @@ namespace Linker\Commerce\Mail;
  */
 final class Message {
 
+
 	/**
 	 * Explicit internal routing marker, persisted by Outbox (#297).
 	 */
@@ -25,7 +26,7 @@ final class Message {
 	/**
 	 * Marks either native wp_mail header form as an internal notification.
 	 *
-	 * @param string|string[] $headers Original headers.
+	 * @param  string|string[] $headers Original headers.
 	 * @return ($headers is string ? string : string[])
 	 */
 	public static function mark_internal( array|string $headers ): array|string {
@@ -44,14 +45,17 @@ final class Message {
 	 * @param string   $body        Body.
 	 * @param string[] $headers     Header lines, "Name: value".
 	 * @param string[] $attachments Paths of attached files.
+	 * @param bool     $critical    Server-owned producer priority.
 	 */
 	public function __construct(
 		public readonly array $to,
 		public readonly string $subject,
 		public readonly string $body,
 		public readonly array $headers,
-		public readonly array $attachments
-	) {}
+		public readonly array $attachments,
+		public readonly bool $critical = false
+	) {
+	}
 
 	/**
 	 * Whether the producer marked this as an internal notification.
@@ -103,16 +107,24 @@ final class Message {
 		}
 
 		// The same defaults and filters as wp_mail() (wp-includes/pluggable.php), applied now.
-		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's own filters, applied as wp_mail() applies them.
-		/** This filter is documented in wp-includes/pluggable.php */
+     // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's own filters, applied as wp_mail() applies them.
+		/**
+	* This filter is documented in wp-includes/pluggable.php
+*/
 		$from_email = (string) apply_filters( 'wp_mail_from', '' !== $from_email ? $from_email : self::default_from() );
-		/** This filter is documented in wp-includes/pluggable.php */
+		/**
+	* This filter is documented in wp-includes/pluggable.php
+*/
 		$from_name = (string) apply_filters( 'wp_mail_from_name', '' !== $from_name ? $from_name : 'WordPress' );
-		/** This filter is documented in wp-includes/pluggable.php */
+		/**
+	* This filter is documented in wp-includes/pluggable.php
+*/
 		$content_type = (string) apply_filters( 'wp_mail_content_type', '' !== $content_type ? $content_type : 'text/plain' );
-		/** This filter is documented in wp-includes/pluggable.php */
+		/**
+	* This filter is documented in wp-includes/pluggable.php
+*/
 		$charset = (string) apply_filters( 'wp_mail_charset', '' !== $charset ? $charset : get_bloginfo( 'charset' ) );
-		// phpcs:enable
+     // phpcs:enable
 
 		$headers[] = sprintf( 'From: %s <%s>', $from_name, $from_email );
 		$headers[] = sprintf( 'Content-Type: %s; charset=%s', $content_type, $charset );
@@ -124,14 +136,15 @@ final class Message {
 			is_string( $subject ) ? $subject : '',
 			is_string( $body ) ? $body : '',
 			$headers,
-			self::lines( $atts['attachments'] ?? array() )
+			self::lines( $atts['attachments'] ?? array() ),
+			Producer::priority( $atts )
 		);
 	}
 
 	/**
 	 * The message as a JSON-ready array, for the queue.
 	 *
-	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[]}
+	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[], critical: bool}
 	 */
 	public function to_array(): array {
 		return array(
@@ -140,6 +153,7 @@ final class Message {
 			'body'        => $this->body,
 			'headers'     => $this->headers,
 			'attachments' => $this->attachments,
+			'critical'    => $this->critical,
 		);
 	}
 
@@ -156,15 +170,16 @@ final class Message {
 			is_string( $subject ) ? $subject : '',
 			is_string( $body ) ? $body : '',
 			self::lines( $data['headers'] ?? array() ),
-			self::lines( $data['attachments'] ?? array() )
+			self::lines( $data['attachments'] ?? array() ),
+			true === ( $data['critical'] ?? false )
 		);
 	}
 
 	/**
 	 * A string or list of strings as a list of non-empty strings.
 	 *
-	 * @param mixed            $value     Value.
-	 * @param non-empty-string $separator Separator of a string value ("\n" for headers, "," for recipients).
+	 * @param  mixed            $value     Value.
+	 * @param  non-empty-string $separator Separator of a string value ("\n" for headers, "," for recipients).
 	 * @return list<string>
 	 */
 	private static function lines( $value, string $separator = "\n" ): array {

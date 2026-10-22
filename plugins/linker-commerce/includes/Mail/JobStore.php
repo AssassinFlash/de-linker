@@ -18,6 +18,7 @@ namespace Linker\Commerce\Mail;
  */
 final class JobStore {
 
+
 	/**
 	 * Post type of the queued messages.
 	 */
@@ -36,6 +37,30 @@ final class JobStore {
 	 * Post status of a message that failed every attempt.
 	 */
 	public const FAILED_STATUS = 'draft';
+
+	/**
+	 * Private priority, written only by an authenticated staff release.
+	 */
+	public const PRIORITY_META = '_linker_mail_critical_release';
+
+	/**
+	 * Promote an original job explicitly restored by staff.
+	 *
+	 * @param int $id Original job explicitly restored by staff.
+	 */
+	public function promote( int $id ): void {
+		update_post_meta( $id, self::PRIORITY_META, 'yes' );
+	}
+
+	/**
+	 * Read a private staff-release priority.
+	 *
+	 * @param int $id Original job.
+	 */
+	public function critical( int $id ): bool {
+		wp_cache_delete( $id, 'post_meta' );
+		return 'yes' === get_post_meta( $id, self::PRIORITY_META, true );
+	}
 
 	/**
 	 * Registers the post type; runs on init.
@@ -58,8 +83,8 @@ final class JobStore {
 	/**
 	 * Stores a message.
 	 *
-	 * @param Message $message Message.
-	 * @param int     $inquiry Native inquiry owning this original notification.
+	 * @param  Message $message Message.
+	 * @param  int     $inquiry Native inquiry owning this original notification.
 	 * @return int Job id, 0 when the post could not be written.
 	 */
 	public function create( Message $message, int $inquiry = 0 ): int {
@@ -86,7 +111,7 @@ final class JobStore {
 	/**
 	 * A stored message and its attempts so far.
 	 *
-	 * @param int $id Job id.
+	 * @param  int $id Job id.
 	 * @return array{message: Message, attempts: int}|null Null when there is no such job.
 	 */
 	public function load( int $id ): ?array {

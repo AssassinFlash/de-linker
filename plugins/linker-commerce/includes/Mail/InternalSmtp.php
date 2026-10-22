@@ -22,6 +22,7 @@ use PHPMailer\PHPMailer\PHPMailer;
  */
 final class InternalSmtp {
 
+
 	/**
 	 * Fixed public diagnostic; server responses must never enter logs or jobs.
 	 */
@@ -40,7 +41,8 @@ final class InternalSmtp {
 	 * @param string  $path    Fake env file in tests, otherwise the default path.
 	 * @param Options $options Internal sender settings.
 	 */
-	public function __construct( private readonly string $path = '', private readonly Options $options = new Options() ) {}
+	public function __construct( private readonly string $path = '', private readonly Options $options = new Options() ) {
+	}
 
 	/**
 	 * Whether internal mail has complete configuration matching its sender.
@@ -49,6 +51,13 @@ final class InternalSmtp {
 	public function authenticated(): bool {
 		$config = $this->configuration();
 		return null !== $config && $this->options->notify_sender()->email === $config['user'];
+	}
+
+	/**
+	 * Configuration exists; identity is still enforced in configure() before sending.
+	 */
+	public function available(): bool {
+		return null !== $this->configuration();
 	}
 
 	/**
@@ -61,8 +70,8 @@ final class InternalSmtp {
 	/**
 	 * Configure WordPress's native mailer for this Outbox attempt alone.
 	 *
-	 * @param PHPMailer $mailer   WordPress's reusable mailer.
-	 * @param bool      $internal The queued message's explicit internal marker.
+	 * @param  PHPMailer $mailer   WordPress's reusable mailer.
+	 * @param  bool      $internal The queued message's explicit internal marker.
 	 * @throws Exception When a queued sender no longer matches the auth identity.
 	 */
 	public function configure( PHPMailer $mailer, bool $internal ): bool {

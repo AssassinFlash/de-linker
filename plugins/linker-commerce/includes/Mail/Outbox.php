@@ -31,6 +31,7 @@ use PHPMailer\PHPMailer\Exception;
 	 */
 final class Outbox {
 
+
 	/**
 	 * Action Scheduler hook and group of the attempts.
 	 */
@@ -101,13 +102,14 @@ final class Outbox {
 		private readonly TestMode $test_mode = new TestMode(),
 		private readonly InternalSmtp $smtp = new InternalSmtp(),
 		private readonly SmtpOutcome $outcome = new SmtpOutcome()
-	) {}
+	) {
+	}
 
 	/**
 	 * Takes over a wp_mail() call; runs on pre_wp_mail.
 	 *
-	 * @param null|bool            $pre  Value from an earlier filter, null to send.
-	 * @param array<string, mixed> $atts The call's arguments.
+	 * @param  null|bool            $pre  Value from an earlier filter, null to send.
+	 * @param  array<string, mixed> $atts The call's arguments.
 	 * @return null|bool Null to let wp_mail() send (our own attempt), true once the message is sent or queued.
 	 */
 	public function intercept( $pre, array $atts ) {
@@ -129,9 +131,18 @@ final class Outbox {
 			if ( NotificationHold::job_held( $job_id ) ) {
 				return;
 			}
-			$job = $this->jobs->load( $job_id );
-			if ( null !== $job ) {
-				$this->attempt( $job['message'], $job['attempts'], $job_id );
+			$locked = Lock::run(
+				'mail-job-' . $job_id,
+				function () use ( $job_id ): void {
+					clean_post_cache( $job_id );
+					$job = $this->jobs->load( $job_id );
+					if ( null !== $job ) {
+						$this->attempt( $job['message'], $job['attempts'], $job_id );
+					}
+				}
+			);
+			if ( ! $locked ) {
+				as_schedule_single_action( time() + 1, self::HOOK, array( $job_id ), self::GROUP, true );
 			}
 		};
 		if ( $inquiry > 0 ) {
@@ -160,39 +171,43 @@ final class Outbox {
 	 * Native phpmailer_init hook, scoped to an active Outbox attempt.
 	 *
 	 * @param PHPMailer $mailer WordPress's reusable mailer.
+	 * @throws Exception When selected SMTP configuration disappears before setup.
 	 */
 	public function configure_mailer( PHPMailer $mailer ): void {
 		if ( $this->delivering ) {
 			$this->smtp_attempt = $this->internal && ! $this->fallback;
-			$this->smtp_attempt = $this->smtp->configure( $mailer, $this->smtp_attempt );
+			if ( ! $this->smtp->configure( $mailer, $this->smtp_attempt ) && $this->smtp_attempt ) {
+				throw new Exception( esc_html( InternalSmtp::FAILURE_MESSAGE ) );
+			}
 		}
 	}
 
 	/**
 	 * Sends a message now, or queues it for its next slot or retry.
 	 *
-	 * @param Message $message  Message.
-	 * @param int     $attempts Failed attempts so far.
-	 * @param int     $job_id   Job id, 0 while the message is not queued.
+	 * @param  Message $message  Message.
+	 * @param  int     $attempts Failed attempts so far.
+	 * @param  int     $job_id   Job id, 0 while the message is not queued.
 	 * @return bool Whether the message was sent in this attempt.
 	 */
 	private function attempt( Message $message, int $attempts, int $job_id ): bool {
-		$now  = time();
-		$slot = $this->throttle->next_slot( $now );
+		$now       = time();
+		$critical  = $message->critical || ( $job_id > 0 && $this->jobs->critical( $job_id ) );
+		$transport = $message->is_internal() && $this->smtp->available() ? Throttle::SMTP : Throttle::PHP;
+		$slot      = $this->throttle->reserve( $now, $transport, $critical );
 		if ( $slot > $now ) {
 			$this->schedule( $job_id > 0 ? $job_id : $this->jobs->create( $message ), $slot );
 			return false;
 		}
 
-			$this->throttle->record( $now );
-			$this->delivering = true;
-			$this->error      = '';
-			$this->internal   = $message->is_internal();
-			// Test mode rewrites the recipients on the way out alone. $message is
-			// what was queued, and it keeps the recipients the routing data names
-			// (Mail\TestMode); only this attempt's copy is redirected.
-			$delivery   = $this->test_mode->redirect( $message );
-		$this->fallback = false;
+		$this->delivering = true;
+		$this->error      = '';
+		$this->internal   = $message->is_internal();
+		// Test mode rewrites the recipients on the way out alone. $message is
+		// what was queued, and it keeps the recipients the routing data names
+		// (Mail\TestMode); only this attempt's copy is redirected.
+		$delivery       = $this->test_mode->redirect( $message );
+		$this->fallback = Throttle::PHP === $transport;
 		try {
 			$sent = $this->deliver( $delivery );
 			if ( $this->smtp_attempt ) {
@@ -200,11 +215,15 @@ final class Outbox {
 				$this->outcome->record( $sent, $reason );
 				if ( ! $sent ) {
 					wc_get_logger()->warning(
-						'Internal SMTP failed; attempting PHP mail fallback. Reason: ' . $reason . '.',
+						'Internal SMTP failed; PHP fallback requires its own available budget. Reason: ' . $reason . '.',
 						array( 'source' => self::LOG_SOURCE )
 					);
-					$this->fallback = true;
-					$sent           = $this->deliver( $delivery );
+						$fallback_now = time();
+						$wait_until   = $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical );
+					if ( $wait_until === $fallback_now ) {
+						$this->fallback = true;
+						$sent           = $this->deliver( $delivery );
+					}
 				}
 			}
 		} finally {
@@ -243,7 +262,7 @@ final class Outbox {
 		}
 		$this->jobs->record_failure( $job_id, $attempts, $this->error );
 		$delay = self::RETRY_DELAYS[ $attempts - 1 ];
-		$this->schedule( $job_id, $now + $delay );
+		$this->schedule( $job_id, $this->throttle->next_message_slot( $now + $delay, $message, $critical ) );
 		wc_get_logger()->warning(
 			sprintf( 'Email "%s" to %s failed (attempt %d: %s); next attempt in %d s.', $message->subject, implode( ', ', $message->to ), $attempts, $this->error, $delay ),
 			array( 'source' => self::LOG_SOURCE )
