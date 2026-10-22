@@ -116,7 +116,27 @@ final class Outbox {
 		if ( null !== $pre || $this->delivering ) {
 			return $pre;
 		}
-		$this->attempt( Message::from_wp_mail( $atts ), 0, 0 );
+		try {
+			$joined = Capacity::transaction_active();
+		} catch ( \Throwable $error ) {
+			CapacityHealth::failed();
+			return false;
+		}
+		$message = Prepared::current() ?? Message::from_wp_mail( $atts );
+		$reset   = ResetNotice::take( $atts );
+		$job     = '' !== $reset ? Capacity::within( $reset, fn (): int => $this->jobs->create( $message ) ) : $this->jobs->create( $message );
+		if ( $job < 1 ) {
+			CapacityHealth::failed();
+			return false;
+		}
+		if ( $joined ) {
+			// Job and action join the caller's transaction. No external mail can
+			// escape before commit; rollback removes both native pending rows.
+			$this->schedule( $job, time() + 1 );
+			return true;
+		}
+		$this->attempt( $message, 0, $job );
+		// A durable job owns the notification even when transport is deferred.
 		return true;
 	}
 
@@ -126,6 +146,10 @@ final class Outbox {
 	 * @param int $job_id Job id.
 	 */
 	public function retry( int $job_id ): void {
+		if ( Capacity::transaction_active() ) {
+			$this->schedule( $job_id, time() + 1 );
+			return;
+		}
 		$inquiry = NotificationHold::inquiry( $job_id );
 		$work    = function () use ( $job_id ): void {
 			if ( NotificationHold::job_held( $job_id ) ) {
