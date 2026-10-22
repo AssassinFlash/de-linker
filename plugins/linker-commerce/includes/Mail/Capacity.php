@@ -334,7 +334,7 @@ final class Capacity {
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Server-generated hexadecimal savepoint identifier, never public input.
 		if ( $own ) {
 			wc_transaction_query( 'start' );
-			if ( '' !== $wpdb->last_error || ! self::transaction_active() ) {
+			if ( self::database_error() || ! self::transaction_active() ) {
 				wc_transaction_query( 'rollback' );
 				throw new \RuntimeException( 'mail_capacity_transaction_start_failed' );
 			}
@@ -349,13 +349,11 @@ final class Capacity {
 			$result = $work();
 			if ( $own ) {
 				wc_transaction_query( 'commit' );
-				if ( '' !== $wpdb->last_error || self::transaction_active() ) {
+				if ( self::database_error() || self::transaction_active() ) {
 					throw new \RuntimeException( 'mail_capacity_commit_unconfirmed' );
 				}
-			} else {
-				if ( false === $wpdb->query( "RELEASE SAVEPOINT $name" ) ) {
+			} elseif ( false === $wpdb->query( "RELEASE SAVEPOINT $name" ) ) {
 					throw new \RuntimeException( 'mail_capacity_savepoint_unconfirmed' );
-				}
 			}
 			return $result;
 		} catch ( \Throwable $error ) {
@@ -372,6 +370,7 @@ final class Capacity {
 	/**
 	 * A joined Outbox must defer transport until an independent committed reader.
 	 *
+	 * @phpstan-impure
 	 * @throws \RuntimeException The DB connection cannot prove transaction state.
 	 */
 	public static function transaction_active(): bool {
@@ -385,11 +384,21 @@ final class Capacity {
 		$wpdb->query( "SAVEPOINT $name" );
 		$active = false !== $wpdb->query( "RELEASE SAVEPOINT $name" );
 		$wpdb->suppress_errors( $previous );
-		if ( '1' !== (string) $wpdb->get_var( 'SELECT 1' ) || '' !== $wpdb->last_error ) {
+		if ( '1' !== (string) $wpdb->get_var( 'SELECT 1' ) || self::database_error() ) {
 			throw new \RuntimeException( 'mail_capacity_transaction_unavailable' );
 		}
 		return $active;
 		// phpcs:enable
+	}
+
+	/**
+	 * The driver error changes across native transaction/commit calls.
+	 *
+	 * @phpstan-impure
+	 */
+	private static function database_error(): bool {
+		global $wpdb;
+		return '' !== $wpdb->last_error;
 	}
 
 	/** Fixed internal diagnostic; customer/account consumers retain native notices. */
