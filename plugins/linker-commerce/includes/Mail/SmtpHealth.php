@@ -54,9 +54,10 @@ final class SmtpHealth {
 		$configured = $this->smtp->authenticated();
 		return new WP_REST_Response(
 			array(
-				'smtp_configured' => $configured,
-				'label'           => $configured ? __( 'SMTP configured', 'linker-commerce' ) : __( 'SMTP not configured', 'linker-commerce' ),
-				'last_outcome'    => $this->outcome->last(),
+				'smtp_configured'  => $configured,
+				'label'            => $configured ? __( 'SMTP configured', 'linker-commerce' ) : __( 'SMTP not configured', 'linker-commerce' ),
+				'last_outcome'     => $this->outcome->last(),
+				'capacity_failure' => get_option( CapacityHealth::OPTION, null ),
 			)
 		);
 	}

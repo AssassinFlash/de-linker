@@ -113,8 +113,20 @@ final class OpenInquiryTest extends IntegrationTestCase {
 		$html = do_shortcode( '[linker_inquiry_form]' );
 		$this->assertStringNotContainsString( '[linker_inquiry_', $html );
 		$this->assertStringContainsString( 'id="inquiry-name" name="name"', $html );
-		// Woo posts to the draft route and redirects to this form through its native referer.
-		$this->assertStringContainsString( '<form method="post" action="' . wc_get_cart_url() . '">', $html );
+		// The current native draft form posts to the localized inquiry/checkout route.
+		$document = new \DOMDocument();
+		$document->loadHTML( '<?xml encoding="UTF-8">' . $html, LIBXML_NOERROR | LIBXML_NOWARNING );
+		$xpath = new \DOMXPath( $document );
+		$forms = $xpath->query( '//form[contains(concat(" ", normalize-space(@class), " "), " woocommerce-cart-form ")]' );
+		$this->assertNotFalse( $forms );
+		$this->assertSame( 1, $forms->length );
+		$form = $forms->item( 0 );
+		$this->assertInstanceOf( \DOMElement::class, $form );
+		$this->assertSame( 'post', $form->getAttribute( 'method' ) );
+		$this->assertSame( wc_get_checkout_url(), $form->getAttribute( 'action' ) );
+		$proceed = $xpath->query( './/input[@type="hidden" and @name="proceed" and @value="1"]', $form );
+		$this->assertNotFalse( $proceed );
+		$this->assertSame( 1, $proceed->length );
 		$this->assertStringContainsString( 'value="" required', $html );
 		$this->assertStringContainsString( 'action="' . admin_url( 'admin-post.php' ) . '"', $html );
 		$fields = WC()->session->get( 'linker_inquiry_fields' );
