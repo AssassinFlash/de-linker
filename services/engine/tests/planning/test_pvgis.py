@@ -20,6 +20,7 @@ from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.numerical_tolerance import Tolerance
 from linker_engine.planning.power_series import Measurement
 from linker_engine.planning.profile_import import ProfileImport
+from linker_engine.planning.profile_preview import ProfilePreview
 from linker_engine.planning.pvgis_import import PvgisImport, PvgisParseLimits
 from linker_engine.planning.pvgis_metadata import check_metadata
 from linker_engine.planning.pvgis_profile import PvgisInterpretation, pvgis_profile
@@ -304,6 +305,44 @@ def test_reconstructed_radiation_quality_and_mutable_capture_are_not_lost() -> N
     cap.source_identifiers["apify_run"] = "changed-after-parse"
     assert native.source_document() == before
     assert before["radiation_reconstructed_rows"] == 1
+
+
+@pytest.mark.parametrize("sarah,expected", [(False, 946.43692), (True, 979.72921)])
+def test_owned_preview_keeps_real_provider_resolution_and_reconstruction(
+    workspace: Workspace, owner: Actor, sarah: bool, expected: float
+) -> None:
+    project = workspace.create(owner, "PVGIS preview fixture", {}, key="create")
+    assets = Assets(workspace)
+    asset = PvgisImport(assets, LIMITS).system_profile(
+        owner,
+        project.id,
+        raw(sarah=sarah),
+        request("PVGIS-SARAH3" if sarah else "PVGIS-ERA5"),
+        capture(1 if sarah else 0),
+        interpretation(sarah=sarah),
+        PROVENANCE,
+        key="provider",
+    )
+    before = set(workspace.blobs.directory.rglob("*"))
+    document = ProfilePreview(assets).page(
+        owner, project.id, asset.id, offset=0, page_size=2
+    )
+    summary = cast(Object, document["summary"])
+    assert summary["energy_kwh"] == pytest.approx(expected, abs=1e-10)
+    assert summary["interval_count"] == 8784 and summary["span_seconds"] == 31_622_400
+    assert summary["gap_count"] == summary["gap_seconds"] == 0
+    assert (
+        summary["native_max_interval_seconds"]
+        == summary["effective_max_interval_seconds"]
+        == 3600
+    )
+    assert summary["reconstructed_means"] is sarah
+    assert len(cast(list[Object], document["transformations"])) == (1 if sarah else 0)
+    assert cast(Object, document["source"])["origin"] == "modelled"
+    assert (
+        len(cast(list[Object], document["rows"])) == 2 and document["next_offset"] == 2
+    )
+    assert set(workspace.blobs.directory.rglob("*")) == before
 
 
 def test_owned_import_receipt_freezes_raw_metadata_and_can_replay_without_tzif(

@@ -991,3 +991,201 @@ def test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication(
         and response.json()["error"]["code"] == "invalid_input"
     )
     assert set(rig.workspace.blobs.directory.rglob("*")) == initial
+
+
+def csv_preview_command(project_id: str, content: bytes, key: str) -> Object:
+    return {
+        "schema_version": 1,
+        "project_id": project_id,
+        "content_base64": base64.b64encode(content).decode(),
+        "mapping": CsvMapping(
+            "time",
+            "power",
+            "gross_load",
+            "interval_average_kw",
+            "start",
+            "Europe/Berlin",
+            "synthetic",
+            900,
+            ";",
+            ",",
+        ).document(),
+        "source_label": "Synthetic source for interpretation",
+        "rights_note": "Created by this test",
+        "key": key,
+    }
+
+
+@pytest.mark.parametrize(
+    ("raw", "issue", "row", "field"),
+    [
+        (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+        (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+        (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+        (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+        (
+            b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+            "number_format",
+            3,
+            "value",
+        ),
+        (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+        (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+        (
+            b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+            "interval_order",
+            3,
+            "timestamp",
+        ),
+        (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+        (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+        (b"time;power;power\n", "headers", 1, "header"),
+        (b"time;power\n", "empty", None, None),
+        (b"time;power\n\xff", "encoding", None, None),
+    ],
+)
+def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+    rig: Rig, raw: bytes, issue: str, row: int | None, field: str | None
+) -> None:
+    project_id = rig.create("csv-issues")
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    response = rig.client.post(
+        "/profiles/csv",
+        json=csv_preview_command(project_id, raw, "invalid"),
+        headers=headers(),
+    )
+    assert response.status_code == 422
+    assert response.json() == {
+        "error": {
+            "code": "invalid_input",
+            "profile_issue": {"issue": issue, "line": row, "field": field},
+        }
+    }
+    assert "PRIVATE-CELL" not in response.text and "Europe/Berlin" not in response.text
+    assert response.headers["cache-control"] == "no-store, private"
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+
+
+def test_profile_preview_uses_full_pinned_interpretation_and_pages_without_filling_gaps(
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    project_id = rig.create("preview")
+    content = b"time;power\n2024-01-01T00:00Z;4\n2024-01-01T00:15Z;8\n2024-01-01T01:00Z;12\n2024-01-01T01:30Z;16\n"
+    asset = rig.post("/profiles/csv", csv_preview_command(project_id, content, "valid"))
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    monkeypatch.setattr(timezone_rules, "installed_iana_names", lambda: frozenset())
+
+    def no_recapture(_name: str) -> None:
+        raise AssertionError("preview must use captured TZif bytes")
+
+    monkeypatch.setattr(timezone_rules, "load_timezone", no_recapture)
+    command: Object = {
+        "project_id": project_id,
+        "asset_id": asset["id"],
+        "offset": 0,
+        "page_size": 2,
+    }
+    first = rig.post("/profiles/preview", command)
+    assert first["content_sha256"] == asset["content_sha256"] == digest(content)
+    assert first["metadata_sha256"] == asset["metadata_sha256"]
+    assert first["evaluation_scope"] == "profile_interpretation"
+    assert first["summary"] == {
+        "start_utc": "2024-01-01T00:00:00+00:00",
+        "end_utc": "2024-01-01T01:45:00+00:00",
+        "interval_count": 4,
+        "covered_seconds": 3600.0,
+        "span_seconds": 6300.0,
+        "gap_seconds": 2700.0,
+        "gap_count": 2,
+        "energy_kwh": 10.0,
+        "min_interval_mean_kw": 4.0,
+        "max_interval_mean_kw": 16.0,
+        "native_max_interval_seconds": 900.0,
+        "effective_max_interval_seconds": 900.0,
+        "reconstructed_means": False,
+    }
+    assert [row["interval_mean_kw"] for row in cast(list[Object], first["rows"])] == [
+        4,
+        8,
+    ]
+    assert first["next_offset"] == 2 and first["gaps_truncated"] is False
+    tail = rig.post("/profiles/preview", {**command, "offset": 2})
+    assert tail["summary"] == first["summary"]
+    assert [row["interval_index"] for row in cast(list[Object], tail["rows"])] == [2, 3]
+    assert tail["next_offset"] is None
+    narrow = rig.post("/profiles/preview", {**command, "page_size": 1})
+    assert (
+        narrow["gaps_truncated"] is True
+        and len(cast(list[Object], narrow["first_gaps"])) == 1
+    )
+    assert rig.post("/profiles/preview", {**command, "offset": 99})["rows"] == []
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+
+
+def test_preview_does_not_relabel_signed_net_import_as_gross_consumption(
+    rig: Rig,
+) -> None:
+    project_id = rig.create("signed-preview")
+    command = csv_preview_command(
+        project_id, b"time;power\n2024-01-01T00:00Z;-4\n2024-01-01T00:15Z;8\n", "signed"
+    )
+    command["mapping"] = {
+        **cast(Object, command["mapping"]),
+        "measurement": "net_import",
+    }
+    asset = rig.post("/profiles/csv", command)
+    preview = rig.post(
+        "/profiles/preview",
+        {
+            "project_id": project_id,
+            "asset_id": asset["id"],
+            "offset": 0,
+            "page_size": 2,
+        },
+    )
+    assert preview["measurement"] == "net_import"
+    assert cast(Object, preview["summary"])["energy_kwh"] == 1
+    assert cast(Object, preview["summary"])["min_interval_mean_kw"] == -4
+    assert [row["interval_mean_kw"] for row in cast(list[Object], preview["rows"])] == [
+        -4,
+        8,
+    ]
+
+
+def test_profile_preview_checks_owner_before_parsing_and_enforces_wire_page_bounds(
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    project_id = rig.create("preview-owner")
+    asset = rig.post(
+        "/profiles/csv",
+        csv_preview_command(project_id, b"time;power\n2024-01-01T00:00Z;4\n", "valid"),
+    )
+
+    def forbidden_parse(*_args: object) -> None:
+        raise AssertionError("unauthorised preview reached source parsing")
+
+    monkeypatch.setattr(
+        "linker_engine.planning.frozen_profiles.read_profile", forbidden_parse
+    )
+    body: Object = {
+        "schema_version": 1,
+        "project_id": project_id,
+        "asset_id": asset["id"],
+        "offset": 0,
+        "page_size": 1,
+    }
+    foreign = rig.client.post("/profiles/preview", json=body, headers=headers(FOREIGN))
+    assert foreign.status_code == 404 and foreign.json() == {
+        "error": {"code": "not_found"}
+    }
+    for changed in (
+        {"offset": True},
+        {"offset": -1},
+        {"offset": 0.0},
+        {"page_size": 0},
+        {"page_size": 3},
+    ):
+        response = rig.client.post(
+            "/profiles/preview", json={**body, **changed}, headers=headers()
+        )
+        assert response.status_code == 422

@@ -9,6 +9,7 @@ import pytest
 
 from linker_engine.planning import timezone_rules
 from linker_engine.planning.canonical import digest, encode
+from linker_engine.planning.csv_issue import CsvIssue
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.errors import InvalidInput, VersionUnavailable
 from linker_engine.planning.interval import Interval, regular_intervals
@@ -347,3 +348,36 @@ def test_pv_and_load_align_without_claiming_finer_native_observations(
     assert aligned_pv.values_kw == (10, 10, 10, 10)
     assert aligned_load.total_kwh == aligned_pv.total_kwh == 10.0
     assert aligned_pv.source.native_max_interval_seconds == 3600
+
+
+def test_csv_interval_end_error_names_the_end_role_and_preserves_physical_line(
+    mapping: CsvMapping, rules: TimezoneRules
+) -> None:
+    with pytest.raises(CsvIssue) as captured:
+        read_profile(
+            b'time;value;end;note\n2024-01-01T00:00Z;1;PRIVATE-END;"two\nlines"\n',
+            replace(mapping, interval_seconds=None, end_timestamp_column="end"),
+            rules,
+        )
+    assert captured.value.document() == {
+        "issue": "timestamp_format",
+        "line": 2,
+        "field": "end_timestamp",
+    }
+    assert "PRIVATE-END" not in str(captured.value)
+
+
+def test_csv_energy_accumulation_overflow_is_a_typed_import_error(
+    mapping: CsvMapping, rules: TimezoneRules
+) -> None:
+    with pytest.raises(CsvIssue) as captured:
+        read_profile(
+            b"time;value\n2024-01-01T00:00Z;1e308\n2024-01-01T01:00Z;1e308\n",
+            replace(mapping, interval_seconds=3600),
+            rules,
+        )
+    assert captured.value.document() == {
+        "issue": "energy_range",
+        "line": None,
+        "field": "value",
+    }

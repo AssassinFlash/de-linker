@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from .canonical import digest, encode
+from .csv_issue import CsvField, CsvIssue
 from .csv_mapping import CsvMapping
 from .errors import InvalidInput
 from .interval import Interval, utc
@@ -18,40 +19,49 @@ from .series_source import SeriesSource
 from .timezone_rules import TimezoneRules
 
 
-def _timestamp(text: str, zone: ZoneInfo, fold: str | None, line: int) -> datetime:
+def _timestamp(
+    text: str,
+    zone: ZoneInfo,
+    fold: str | None,
+    line: int,
+    field: CsvField = "timestamp",
+) -> datetime:
     try:
         parsed = datetime.fromisoformat(text.strip())
     except ValueError as error:
-        raise InvalidInput(f"row {line}: ISO date/time required") from error
+        raise CsvIssue("timestamp_format", line=line, field=field) from error
     if fold is not None and fold not in ("0", "1"):
-        raise InvalidInput(f"row {line}: fold must be explicitly 0 or 1")
+        raise CsvIssue("fold_value", line=line, field=field)
     if parsed.tzinfo is not None and parsed.utcoffset() is not None:
         if fold is not None:
-            raise InvalidInput(f"row {line}: use an explicit offset or fold, not both")
-        return utc(parsed)
+            raise CsvIssue("offset_and_fold", line=line, field=field)
+        try:
+            return utc(parsed)
+        except InvalidInput as error:
+            raise CsvIssue("timestamp_range", line=line, field=field) from error
     # Round trips detect spring's nonexistent local times. Fall's repeated
     # local times keep two distinct UTC candidates and require a stated fold.
     candidates: dict[int, datetime] = {}
     for occurrence in (0, 1):
         aware = parsed.replace(tzinfo=zone, fold=occurrence)
-        instant = utc(aware)
         try:
+            instant = utc(aware)
             back = instant.astimezone(zone)
+        except InvalidInput as error:
+            raise CsvIssue("timestamp_range", line=line, field=field) from error
         except (OverflowError, ValueError) as error:
-            raise InvalidInput(
-                f"row {line}: local time exceeds supported domain"
-            ) from error
+            raise CsvIssue("local_time_range", line=line, field=field) from error
         if back.replace(tzinfo=None) == parsed and back.fold == occurrence:
             candidates[occurrence] = instant
     if not candidates:
-        raise InvalidInput(f"row {line}: local time does not exist in this timezone")
+        raise CsvIssue("local_time_nonexistent", line=line, field=field)
     if fold is not None:
         selected = candidates.get(int(fold))
         if selected is None:
-            raise InvalidInput(f"row {line}: fold does not identify this local time")
+            raise CsvIssue("fold_mismatch", line=line, field=field)
         return selected
     if len(candidates) != 1:
-        raise InvalidInput(f"row {line}: repeated local time requires offset or fold")
+        raise CsvIssue("local_time_ambiguous", line=line, field=field)
     return next(iter(candidates.values()))
 
 
@@ -61,12 +71,10 @@ def _number(text: str, decimal: str, line: int) -> float:
     if not re.fullmatch(
         rf"[+-]?(?:\d+(?:{separator}\d*)?|{separator}\d+)(?:[eE][+-]?\d+)?", value
     ):
-        raise InvalidInput(
-            f"row {line}: ungrouped number in the selected decimal convention required"
-        )
+        raise CsvIssue("number_format", line=line, field="value")
     parsed = float(value.replace(decimal, "."))
     if not math.isfinite(parsed):
-        raise InvalidInput(f"row {line}: finite number required")
+        raise CsvIssue("number_nonfinite", line=line, field="value")
     return parsed
 
 
@@ -78,13 +86,15 @@ def read_profile(
     try:
         text = content.decode("utf-8-sig")
     except UnicodeError as error:
-        raise InvalidInput("profile must use UTF-8 encoding") from error
+        raise CsvIssue("encoding") from error
     zone = rules.zone()
     reader = csv.reader(
         io.StringIO(text, newline=""), delimiter=mapping.delimiter, strict=True
     )
+    completed_line = 0
     try:
         header = next(reader, [])
+        completed_line = reader.line_num
         required = [mapping.timestamp_column, mapping.value_column]
         required.extend(
             value
@@ -98,16 +108,17 @@ def read_profile(
         if len(set(header)) != len(header) or any(
             value not in header for value in required
         ):
-            raise InvalidInput("CSV needs unique headers and every mapped column")
+            raise CsvIssue("headers", line=1, field="header")
         positions = {value: header.index(value) for value in required}
         intervals: list[Interval] = []
         powers: list[float] = []
         for values in reader:
-            line = reader.line_num
+            line = completed_line + 1
+            completed_line = reader.line_num
             if not values:
                 continue
             if len(values) != len(header):
-                raise InvalidInput(f"row {line}: value count differs from CSV headers")
+                raise CsvIssue("row_width", line=line)
             timestamp = _timestamp(
                 values[positions[mapping.timestamp_column]],
                 zone,
@@ -124,7 +135,12 @@ def read_profile(
                     if mapping.end_fold_column
                     else None,
                     line,
+                    "end_timestamp",
                 )
+                if end <= timestamp:
+                    raise CsvIssue(
+                        "interval_duration", line=line, field="end_timestamp"
+                    )
                 interval = Interval(timestamp, end)
             else:
                 if mapping.interval_seconds is None:
@@ -136,9 +152,9 @@ def read_profile(
                         if mapping.timestamp_role == "start"
                         else Interval(timestamp - step, timestamp)
                     )
-                except OverflowError as error:
-                    raise InvalidInput(
-                        f"row {line}: interval duration exceeds time domain"
+                except (OverflowError, InvalidInput) as error:
+                    raise CsvIssue(
+                        "interval_duration", line=line, field="timestamp"
                     ) from error
             number = _number(
                 values[positions[mapping.value_column]], mapping.decimal, line
@@ -148,12 +164,18 @@ def read_profile(
                 if mapping.value_kind == "interval_energy_kwh"
                 else number
             )
+            if not math.isfinite(power) or (
+                mapping.measurement != "net_import" and power < 0
+            ):
+                raise CsvIssue("value_sign", line=line, field="value")
+            if intervals and interval.start < intervals[-1].end:
+                raise CsvIssue("interval_order", line=line, field="timestamp")
             intervals.append(interval)
             powers.append(power)
     except csv.Error as error:
-        raise InvalidInput(f"invalid CSV at line {reader.line_num}") from error
+        raise CsvIssue("csv_syntax", line=completed_line + 1) from error
     if not intervals:
-        raise InvalidInput("profile contains no intervals")
+        raise CsvIssue("empty")
     source = SeriesSource(
         raw_sha256=digest(content),
         origin=mapping.origin,
@@ -164,4 +186,9 @@ def read_profile(
             {"csv_mapping": mapping.document(), "timezone_rules_sha256": rules.sha256}
         ),
     )
-    return PowerSeries(tuple(intervals), tuple(powers), mapping.measurement, source)
+    series = PowerSeries(tuple(intervals), tuple(powers), mapping.measurement, source)
+    try:
+        _ = series.total_kwh
+    except InvalidInput as error:
+        raise CsvIssue("energy_range", field="value") from error
+    return series

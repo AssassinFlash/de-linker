@@ -23,6 +23,7 @@ from starlette.types import ASGIApp
 from .access import active_actor, positive_integer
 from .assets import Assets
 from .canonical import Json, Object
+from .csv_issue import CsvIssue
 from .energy_service import EnergyService
 from .errors import (
     Conflict,
@@ -41,6 +42,7 @@ from .http_documents import (
     Command,
     CsvImport,
     EnergyEvaluate,
+    ProfilePreviewRead,
     ProjectCreate,
     ProjectList,
     ProjectRead,
@@ -52,6 +54,7 @@ from .http_documents import (
 from .http_index import project_page, run_page
 from .http_replay import HttpReplay
 from .http_views import asset_view, project_view, run_view
+from .profile_preview import ProfilePreview
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .workspace import Workspace
 
@@ -88,6 +91,7 @@ def create_private_app(
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
     intake = HttpAssetIntake(assets, max_csv_bytes=limits.max_csv_bytes)
+    previews = ProfilePreview(assets)
     replays = HttpReplay(workspace, energy, intake)
 
     @app.exception_handler(PlanningError)
@@ -96,12 +100,16 @@ def create_private_app(
             NotFound: 404,
             Conflict: 409,
             InvalidInput: 422,
+            CsvIssue: 422,
             VersionUnavailable: 503,
             LeaseLost: 409,
             NumericalFailure: 422,
         }.get(type(error), 500)
         # Private row/file values and exception traces are not returned.
-        return JSONResponse({"error": {"code": error.code}}, status_code=status)
+        detail: Object = {"code": error.code}
+        if isinstance(error, CsvIssue):
+            detail["profile_issue"] = error.document()
+        return JSONResponse({"error": detail}, status_code=status)
 
     @app.exception_handler(RequestValidationError)
     async def bad_command(
@@ -295,6 +303,18 @@ def create_private_app(
     def battery_scenario(body: BatteryScenario, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
         return asset_view(intake.battery(actor, body))
+
+    @app.post("/profiles/preview")
+    def profile_preview(body: ProfilePreviewRead, request: Request) -> Object:
+        if body.page_size > limits.max_page_size:
+            raise InvalidInput("profile page exceeds deployment limit")
+        return previews.page(
+            verified_actor(request.scope),
+            body.project_id,
+            body.asset_id,
+            offset=body.offset,
+            page_size=body.page_size,
+        )
 
     return ServiceBoundary(
         app,

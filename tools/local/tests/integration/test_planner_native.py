@@ -511,6 +511,41 @@ echo hash('sha256', wp_json_encode($state));
     assert browser.rpc("rpc/projects/create", command).status == 409
 
 
+def test_profile_preview_and_csv_issue_cross_the_real_native_gateway(local: tuple[Instance, WpCli]) -> None:
+    instance, _ = local
+    first, second = Browser(instance.url), Browser(instance.url)
+    first.bootstrap()
+    second.bootstrap()
+    project = first.create("Synthetic native profile interpretation")
+    mapping = {
+        "timestamp_column": "time", "value_column": "power", "measurement": "gross_load",
+        "value_kind": "interval_average_kw", "timestamp_role": "start", "timezone": "Europe/Oslo",
+        "origin": "synthetic", "interval_seconds": 900, "delimiter": ";", "decimal": ",",
+        "end_timestamp_column": None, "fold_column": None, "end_fold_column": None,
+        "offset_rule": "explicit_offset_precedes_naive_timezone", "within_interval_assumption": "constant_mean_no_new_observations",
+    }
+    raw = b"time;power\n2024-01-01T00:00Z;4\n2024-01-01T00:30Z;8\n"
+    command = {"schema_version": 1, "project_id": project["id"], "content_base64": base64.b64encode(raw).decode(), "mapping": mapping, "source_label": "Synthetic native fixture", "rights_note": "Generated in this local fixture", "key": str(uuid.uuid4())}
+    imported = first.rpc("rpc/profiles/csv", command)
+    assert imported.status == 200, imported.body
+    asset = imported.object()
+    request = {"schema_version": 1, "project_id": project["id"], "asset_id": asset["id"], "offset": 0, "page_size": 1}
+    preview = first.rpc("rpc/profiles/preview", request)
+    assert preview.status == 200, preview.body
+    document = preview.object()
+    assert document["content_sha256"] == asset["content_sha256"]
+    assert document["summary"]["gap_count"] == 1
+    assert document["summary"]["gap_seconds"] == 900
+    assert document["summary"]["energy_kwh"] == 3
+    assert document["summary"]["max_interval_mean_kw"] == 8
+    assert document["rows"][0]["interval_mean_kw"] == 4 and document["next_offset"] == 1
+    assert second.rpc("rpc/profiles/preview", request).status == 404
+    failed = first.rpc("rpc/profiles/csv", {**command, "key": str(uuid.uuid4()), "content_base64": base64.b64encode(b"time;power\nPRIVATE-CELL;4\n").decode()})
+    assert failed.status == 422
+    assert failed.object() == {"error": {"code": "invalid_input", "profile_issue": {"issue": "timestamp_format", "line": 2, "field": "timestamp"}}}
+    assert b"PRIVATE-CELL" not in failed.body
+
+
 def test_equivalent_wire_replay_settles_the_same_canonical_native_receipt(local: tuple[Instance, WpCli]) -> None:
     instance, wp = local
     browser = Browser(instance.url)

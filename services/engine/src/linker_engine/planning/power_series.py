@@ -89,10 +89,13 @@ class PowerSeries:
 
     @property
     def total_kwh(self) -> float:
-        total = math.fsum(
-            power * interval.hours
-            for power, interval in zip(self.values_kw, self.intervals, strict=True)
-        )
+        try:
+            total = math.fsum(
+                power * interval.hours
+                for power, interval in zip(self.values_kw, self.intervals, strict=True)
+            )
+        except OverflowError as error:
+            raise InvalidInput("integrated energy is not finite") from error
         if not math.isfinite(total):
             raise InvalidInput("integrated energy is not finite")
         return total

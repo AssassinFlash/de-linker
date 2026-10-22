@@ -47,6 +47,7 @@ export const RPC_PATHS = [
 	"assets/read",
 	"assets/content",
 	"profiles/csv",
+	"profiles/preview",
 	"battery/scenario",
 ] as const;
 export type RpcPath = (typeof RPC_PATHS)[number];

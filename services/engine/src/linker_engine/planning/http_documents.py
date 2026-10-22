@@ -91,6 +91,11 @@ class AssetRead(Command):
     asset_id: Id
 
 
+class ProfilePreviewRead(AssetRead):
+    offset: Annotated[int, Field(strict=True, ge=0)]
+    page_size: Annotated[int, Field(strict=True, gt=0)]
+
+
 class CsvImport(Command):
     project_id: Id
     content_base64: str
