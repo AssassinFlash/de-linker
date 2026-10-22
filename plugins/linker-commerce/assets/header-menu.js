@@ -7,6 +7,7 @@
 	const account = header.querySelector( '.tv-b2b-acct' );
 	const toggle = header.querySelector( '#tv-mobile-toggle' );
 	const panel = header.querySelector( '#tv-mobile-panel' );
+	const mobile = toggle?.closest( '.tv-mobile-navigation' );
 	const frame = header.querySelector( '.tv-nav-frame' );
 	const nav = header.querySelector( '.tv-desktop-nav' );
 	const german = document.documentElement.lang.startsWith( 'de' );
@@ -69,15 +70,24 @@
 			} );
 	} );
 	function setPanel( open ) {
+		if ( mobile ) mobile.open = open;
 		panel.dataset.open = String( open );
-		toggle.setAttribute( 'aria-expanded', String( open ) );
+		// A native summary exposes the details element's actual expanded state.
+		// Retain the button contract while an existing LC partial is replaced.
+		if ( ! mobile ) toggle.setAttribute( 'aria-expanded', String( open ) );
 		toggle.setAttribute( 'aria-label', german ? ( open ? 'Menü schließen' : 'Menü öffnen' ) : ( open ? 'Close menu' : 'Open menu' ) );
 	}
 	if ( toggle && panel ) {
 		toggle.setAttribute( 'aria-controls', panel.id );
+		if ( mobile ) {
+			// Adopt an opening made before this enhancement arrived. The browser
+			// already owns summary activation and the panel's first disclosure.
+			setPanel( mobile.open );
+			mobile.addEventListener( 'toggle', () => setPanel( mobile.open ) );
+		}
 		toggle.addEventListener( 'click', () => {
 			closeOthers( null );
-			setPanel( panel.dataset.open !== 'true' );
+			if ( ! mobile ) setPanel( panel.dataset.open !== 'true' );
 		} );
 	}
 	document.addEventListener( 'click', event => {
