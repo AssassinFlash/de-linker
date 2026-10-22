@@ -36,22 +36,24 @@
 | 优先级 / 层 | 具体交付 | 当前状态 | 完成的必要证据 |
 | --- | --- | --- | --- |
 | P0 证据与恢复点 | 当前全量增量备份、不可变活动清单、原始任务暂缓 | 已完成应急动作 | 39,130 文件清单、数据库 gzip/SHA、38 条原 job/private/held、恢复周期后无调度 |
-| P0 通知发送门 | 旧回调、手工 retry、恢复和模型前均执行暂缓；单条员工恢复原 job | [持久暂缓](https://github.com/AssassinFlash/de-linker/issues/537) 代码及独立评审通过，待上线 | 精确 head CI、备份与原子部署、38 条生产读回、真实原生后台可操作、额度未变 |
+| P0 通知发送门 | 旧回调、手工 retry、恢复和模型前均执行暂缓；单条员工恢复原 job | [持久暂缓](https://github.com/AssassinFlash/de-linker/issues/537#issuecomment-6336862708) 已上线并读回 | c0900e7e 精确 CI、自动 DB 快照及原子切换；38 条原 job/private/held/attempt0；真实回调邮件/HTTP 各 0、额度未变；生产 Woo 原生面板读回 |
 | P0 PHP | 核对真正承载 WordPress 的 Web SAPI 与供应商回补 | 厂商已宣布托管部署完成；Web 为 LiteSpeed 8.3.35 | 将本站托管账号/运行时与官方事件关联；独立包 EVR 尚未取得，不虚构二进制审计 |
 | P1 接收与活动隔离 | 上表的正常/待核验/已确认活动/满额恢复 | 有界接收票进行中 | 原生 DB 双连接容量、幂等、输入/草稿保留；EN/DE 1440/390 全状态与生产读回 |
-| P1 分类时效 | 独立有界后台消费，排队和推理分开计量 | 根因已查清，未修复派发时效 | 真实排队 p50/p95、模型时间、首次有效标签覆盖率；守原 10 秒绝对期限与客户不等待 |
-| P1 通知容量 | 原子节流、关键业务预留、攻击摘要、真实队列年龄与退信监测 | 暂缓保护了存量，尚无优先容量机制 | 实际 SMTP 套餐与 app 预算分别核实；并发不超额、未发送可恢复，队列/SMTP/收件分开取证 |
-| P1 旧转发 | 移除已弃用 SunRiver Electric 的转发依赖 | 未修改 | 规则及保留收件路由读回；下一封授权正常业务的主邮箱结果 |
-| P1 VPS | 私有 POST 早鉴权、工程 loopback、专用代理 6MiB/30MiB 正常信封 | [VPS 边界](https://github.com/AssassinFlash/de-linker/issues/539) 代码及两轴评审通过，待上线 | 精确 CI、配置备份、有效 unit/listener/代理读回、所有匿名 POST 401、正常工具路径 |
-| P2 边缘与源站 | 当前权威 DNS/邮件记录导出、可信代理 IP、源站绕过封堵后再代理 | 首选 Cloudflare 账户无 zone；Hostinger 为外部域名 | 真实 DNS 和 DS 事前快照、只代理 Web、Full strict、必要 API 无插页、直连/伪造头拒绝与回滚 |
-| P2 账号 | 高权限最小化、独立身份、MFA、应用密码和会话使用审计 | 账号列表已比对；登记和使用审计未完成 | 实际身份与恢复方法，设备持有人完成认证登记；不虚构设备 MFA 已启用 |
-| P2 共享 VPS 管理入口 | 先核对密钥/共享服务，再收窄 root 密码登录和必要网络面 | root 密码认证开启；本轮未改全局 SSH | 新密钥连接实证、sshd -t/-T、可用回滚、独立新连接，其他服务保持工作 |
+| P1 分类时效 | 独立有界后台消费，排队和推理分开计量 | [独立后台派发](https://github.com/AssassinFlash/de-linker/pull/546) 已双评审/CI 并合安全分支，未上线 | 原生 2s/8s 隔离 HTTP 夹具客户返回约 0.24–0.42s，排队约 0.10–0.27s；线上 LiteSpeed 和首次标签覆盖仍待组合验证；守原 10 秒绝对期限 |
+| P1 通知容量 | 原子节流、关键业务预留、攻击摘要、真实队列年龄与退信监测 | [原子预算与关键容量](https://github.com/AssassinFlash/de-linker/issues/545) 原生验证中，未上线 | SMTP 主账号套餐 1000/24h 已在面板核实，app 预算另留裕量；并发不超额、旧账不重置、跨运输失败和回滚账桥；队列/SMTP/收件分开取证 |
+| P1 旧转发 | 移除已弃用 SunRiver Electric 的转发依赖 | 已获业主临场确认并删除唯一旧转发；面板为空 | 主邮箱套餐有效至 2028-03-09、历史邮件保留；规则前后截图本机保存；旧下游重试是否终止与下一封业务收件尚未验证 |
+| P1 VPS | 私有 POST 早鉴权、工程 loopback、专用代理 6MiB/30MiB 正常信封 | [VPS 边界](https://github.com/AssassinFlash/de-linker/issues/539) 已上线，运行保护门及 WordPress TLS 读回通过 | 70b2845d 精确 CI、配置本机备份；6 文件 SHA 相同；4 服务 active；28 匿名 POST 401；严格 TLS/固定 CA 的 WordPress 原生读取成功；完整工具 UI 待组合复验 |
+| P2 边缘与源站 | 当前权威 DNS/邮件记录导出、可信代理 IP、源站绕过封堵后再代理 | 业主明确无法获取阿里云账号并要求停止此线；暂不接入边缘代理 | 真实 NS dns23/24.hichina.com、腾讯 MX 已留存；无完整区导出/DS，不改 DNS，不声称边缘 WAF 已启用 |
+| P2 账号 | 高权限最小化、独立身份、MFA、应用密码和会话使用审计 | 原生后台代码编辑已关闭，管理 Woo 权限保留；MFA/使用审计未完成 | DISALLOW_FILE_EDIT 私密配置先备份后读回，edit_plugins/edit_themes false；设备持有人完成认证登记；不虚构 MFA 已启用 |
+| P2 共享 VPS 管理入口 | 先核对密钥/共享服务，再收窄 root 密码登录和必要网络面 | root 已设 prohibit-password，原密钥保留 | 两轮独立审查后的单指令原子更改；候选 sshd -t/-T、先武装定向回退、reload 后独立新连接、回退静止后再次新连接/策略/SHA 通过，五服务 active；其他认证策略未改 |
 | P2 入口与成本 | 注册/登录/重置、Woo 别名、Genie/附件/工程各真实写边界清点 | 已有入口/资源守卫；全站最终复验未完成 | 逐动作权限/proof/幂等/预算/隐私/直达消费者证据；不以组件出现在页面上代替生效 |
 | P2 日志、告警与恢复 | 失败前的尝试漏斗、容量/队列/服务告警、恢复演练 | 现有诊断是局部数据 | 尝试→准入→保存→分类→队列→SMTP→收件各自口径；有界保留；恢复不覆盖新真询盘 |
 
 PHP 依据是 [运行时与厂商回补核实](https://github.com/AssassinFlash/de-linker/blob/5268d99c/docs/research/2026-10-22-incident-defense/RUNTIME-538.md)，以 [Hostinger 06:44 UTC 托管部署完成事件](https://statuspage.hostinger.com/incidents/pj2zs1lx3n9d) 为供应商确认。8.3.35 这个上游显示号不能独自证明有无 CloudLinux 回补。VPS 未安装 PHP；不在其上用 apt 去修另一台托管主机。
 
 ACF PRO 旧版风险按业主最新指示移出当前优先处置，停止追查登录和下载，不将其当作本次已证实表单滥用的解释。其未升级事实保留在 [组件调查](https://github.com/AssassinFlash/de-linker/blob/37bfea3e/docs/research/2026-10-22-plugin-security/DOSSIER.md)，不得标为风险已消除。
+
+边缘 DNS 访问按业主后续指示暂缓，应用和主机加固继续。Cloudflare 账号中的 Turnstile 不代表已代理网站；此项限制应一直随交付公开，不以应用防护替代已完成的边缘验收。
 
 ## 全公开入口的验收台账
 
