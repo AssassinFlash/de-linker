@@ -6,7 +6,7 @@
 
 采用 WordPress.org 的免费 **Two-Factor 0.17.0**，只为现有管理员登记 **TOTP 认证器 + 一次性恢复码**；Hostinger 托管账户单独启用认证器二步验证。客户的浏览、注册、登录、询盘不增加强制 MFA。WordPress 的邮件配额正在受保护，管理员第二因素优先使用离线生成的 TOTP 与恢复码，避免把登录可用性绑在网站邮件上。此处是经过官方机制与现状核实的推荐；本研究未安装或启用任何新机制。[S1–S4, N1, H1]
 
-现有 `terravolt` 应用密码保留到消费者迁移得到验证之后。它属于管理员的另一条 API 身份入口，启用网页 TOTP 后仍可工作，不能宣称整个管理员身份已由 MFA 覆盖。现有工程确有相关的文档索引读取配置与源代码，贸然撤销有中断该工程读取的风险；具体配置值与原生那一条密码的对应关系本轮未进行在线验证。[S1, S5–S7, N1–N3]
+现有 `terravolt` 应用密码保留到消费者迁移得到验证之后。它属于管理员的另一条 API 身份入口，启用网页 TOTP 后仍可工作，不能宣称整个管理员身份已由 MFA 覆盖。现有工程确有相关的文档索引读取配置与源代码，贸然撤销有中断该工程读取的风险；11:48:05 UTC 经协调者另行授权的原生只读 hash 比对，已证明 DE REST 配置唯一匹配这条应用密码；比对前后原生应用密码元数据完全一致，未进行 HTTP 认证重放或记录使用。[S1, S5–S7, N1–N3, N6]
 
 ## 已核实的实际状态
 
@@ -17,7 +17,8 @@
 | Hostinger 正确托管账户 | 独立 Chrome 标签，只读安全页面，约 11:35–11:40 UTC [H1] | 账户归属已私密核对。面板明确显示“双重身份验证：关闭”；另一个“新设备或共享设备验证：开启”。 | 两项是不同保护；没有点击开启/关闭，没有检查 Google 身份提供方自己的 MFA。 |
 | Hostinger 可选方法 | 同一安全页 [H1] | 面板介绍认证器或电子邮件，且一次只能激活一种方法。 | 未进入启用流程，因此账户具体恢复流程、恢复码是否已存在均未知。 |
 | 既有 API 凭证 | 原生元数据 [N2] | 管理员 user ID 1 有一条名称为 `terravolt` 的应用密码；创建记录 05-18 13:12:59 UTC，最后使用记录 10-18 16:36:54 UTC。 | 名称只是一项标签；不据此判断应删除、已泄漏、被攻击者使用或目前绝对闲置。原生仅每 24 小时更新一次使用记录，时间与 IP 不是逐请求审计。 |
-| 当前工程消费者 | 本地配置与当前仓库源代码 [N3, S7] | `services/genie/index/inventory.py` 默认读 `~/.config/terravolt-builder/rest-de.json`；目标为 de-linker.com，配置了应用密码，用户名与既有管理员配置一致。 | 没有回放密码、发起认证请求或比对生产密码 hash，因此没有证明该配置值就是 N2 的那一条，也没有观察到当前索引任务实际执行。 |
+| 当前工程消费者 | 本地配置与当前仓库源代码 [N3, S7] | `services/genie/index/inventory.py` 默认读 `~/.config/terravolt-builder/rest-de.json`；目标为 de-linker.com，配置了应用密码，用户名与既有管理员配置一致。 | 未进行 HTTP 认证请求；经后续 N6 已证明配置值与该原生凭证匹配，但没有观察到当前索引任务实际执行。 |
+| 配置→原生凭证绑定 | 原生只读比较，11:48:05 UTC [N6] | 配置用户名匹配原生管理员；用 WordPress 自身 `check_password()` 在内存比对，唯一匹配名称 `terravolt`；元数据前后完全一致。 | secret 经 SSH stdin 输入，不进 argv/文件；不输出 hash，不调用认证分发或 usage recording，不更新 last_used。 |
 
 所有账户地址、IP、密码值、会话原文都留在本机私密目录。报告不包含原始账号标识或凭证。
 
@@ -76,7 +77,7 @@ WordPress 原生应用密码通过 HTTPS Basic Auth 供 REST/XML-RPC 使用，�
 
 - 未证明 WordPress 的所有外部认证路径都没有 MFA；没有安全插件不等于所有层都没有 MFA。
 - 尚未安装或本地验证 Two-Factor，故本站兼容性仍只有官方支持声明，缺运行验收。
-- 既有 DE REST 配置与单条原生应用密码存在一致用途证据，但没有在线密码验证或 hash 绑定证据；不声称精确归属已经完成。
+- 既有 DE REST 配置与单条原生应用密码已由 N6 的只读原生 hash 比较精确绑定；这证明凭证对应关系，不证明当下任务已执行、当前网络可达性或每个 API endpoint 都可成功。
 - `last_used` 是约 24 小时粒度的原生记录，不能当作完整 API 调用历史或入侵证明。
 - 已证明的是索引 inventory 的源代码与本地配置用途；未核实当下 VPS 调度或具体执行进程，不能宣称每次 Genie 对话都会使用这把应用密码，或撤销后现有对话必然立即失效。
 - Hostinger 二步验证关闭、新设备验证开启已从实际面板确认；Google MFA、Hostinger 具体恢复步骤与现存恢复码未知。尝试的旧 Hostinger 帮助文章链接已 404，本报告不从旧 URL 推断恢复能力，也未进入产生凭证的开启流程。
@@ -95,9 +96,10 @@ WordPress 原生应用密码通过 HTTPS Basic Auth 供 REST/XML-RPC 使用，�
 - **S7**：[当前仓库的文档 inventory 消费者](https://github.com/AssassinFlash/de-linker/blob/2b2e826768aa640fca386289ef69dad6b0dc3b6b/services/genie/index/inventory.py)，默认配置、`RestClient`、媒体与产品 GET 的具体调用。
 - **N1**：协调者私密 `incident-20261022/account-audit/readback.json`；本研究摘取 `native-identity.sanitized.json`，09:37:47 UTC 的原生身份/插件/文件编辑状态快照。
 - **N2**：协调者私密 `account-audit/application-metadata-private.json`；只摘取数量、标签、UTC 日期，不公开应用 UUID、原始 IP 或密码。
-- **N3**：`config-purpose.sanitized.json`；仅记录目标、凭证存在布尔值、管理员配置用户名一致性、消费者路径和未进行在线认证的边界。未复制密码。
+- **N3**：`config-purpose.sanitized.json`；仅记录目标、凭证存在布尔值、管理员配置用户名一致性、消费者路径和没有 HTTP 认证重放的边界；后续绑定状态引用 N6。未复制密码。
 - **N4**：本机生产恢复快照 `wp-restore/wordpress/wp-includes/user.php` 的 `wp_authenticate_application_password()` 与 `class-wp-application-passwords.php` 的 `record_application_password_usage()`；版本与 SHA256 记录在 `native-core-source.sanitized.json`。
 - **N5**：基线 owned `plugins/`、`mu-plugins/` 中对 `wp_authenticate_application_password_errors`、`wp_is_application_passwords_available_for_user`、`application_password_is_api_request`、`two_factor_` 的只读静态查询无匹配；范围不扩展为所有已安装第三方运行时。
+- **N6**：`native-hash-comparison.sanitized.json`，11:48:05 UTC。协调者明确授权后，SSH stdin 将已有配置交给同一原生站点；直接只读获取 user ID 1 的应用密码元数据，在内存调用 `WP_Application_Passwords::check_password()`，仅输出匹配/名称等非秘密结论。为避免 `get_user_application_passwords()` 的缺 UUID 时惰性补写路径，比较使用原始只读 SELECT + 内存反序列化；未调用认证分发、usage recording、setter 或 HTTP。比较前后的原始元数据相等；secret/hash 未落盘、未进入命令参数或输出。
 - **H1**：实际 [Hostinger Security 页面](https://hpanel.hostinger.com/profile/security/two-factor-auth)。`hpanel-security.private.ax.txt`、`hpanel-security.private.png`、私密账户归属核对 AX；`hpanel-security.sanitized.json` 保存布尔结论及原始证据 hash。
 
 Apify 原始返回、URL/状态/抓取时间与每份抽取文本的 SHA256 在私密 `official-source-manifest.json`、`apify-official-run.json`、`apify-source-run.json` 中。首次默认文本抓取未保留部分插件元数据/GitHub 代码，随后用同一官方 crawler 的浏览器模式与不裁剪正文补足；另一 Cheerio actor 的启动返回 403，未购买/绕过，未用直接外网请求替代 Apify。
