@@ -574,3 +574,22 @@ def test_one_public_operation_key_cannot_meter_two_project_resources(local: tupl
         assert rejected.status == 409, rejected.body
         assert browser.rpc("rpc/" + path, command).object() == accepted.object()
     assert browser.read(second).object()["revision"] == 1
+
+
+def test_unrepresentable_numbers_are_rejected_without_changing_project_data(local: tuple[Instance, WpCli]) -> None:
+    instance, _ = local
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    for number in (2**53, 9223372036854775809, 10**400, 1e100):
+        reply = browser.rpc("rpc/projects/create", {
+            "schema_version": 1, "title": "Unsupported numeric fixture",
+            "inputs": {"nested": [{"number": number}]}, "key": str(uuid.uuid4()),
+        })
+        assert reply.status == 400, reply.body
+    projects = browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None})
+    assert projects.object()["items"] == []
+    command = {"schema_version": 1, "title": "Representable numeric fixture", "inputs": {"number": 2**53 - 1, "fraction": 0.125}, "key": str(uuid.uuid4())}
+    created = browser.rpc("rpc/projects/create", command)
+    assert created.status == 200 and created.object()["inputs"] == command["inputs"]
+    assert browser.read(created.object()).object() == created.object()
+    assert browser.rpc("rpc/projects/create", command).object() == created.object()

@@ -26,6 +26,12 @@ engineering reports, and does not replace any model channel.
    Its original refusal is reasserted afterward because installed ACF
    initialisation can discard a previously returned error. Accepted requests
    retain their original wire bytes. Core cookie authentication is unchanged.
+   Numeric JSON commands use finite binary64 values with absolute magnitude
+   at most 2**53 - 1, the shared exact integer representation window. This
+   is an explicit interoperability limit, not an engineering limit. The
+   private command DTO rejects larger values before any durable write; PHP
+   also rejects them before forwarding and before re-encoding a read/replay,
+   so broader trusted/internal CAS data cannot be silently rounded.
    Unsupported methods with bodies are subject to the same guard, because
    installed integrations may parse JSON before WordPress matches the route.
    Reusing a native Request cannot carry an earlier refusal into another route.

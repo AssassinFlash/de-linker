@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from pydantic import Field
+from pydantic import Field, field_validator, model_validator
 
+from .brief import PlanningBrief
 from .canonical import Object
 from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaVersion
+from .wire_numbers import check_wire_numbers
 
 # Protocol string limits, not engineering quantities; see 548-private-gateway.md.
 type Key = Annotated[str, Field(min_length=1, max_length=256)]
@@ -18,6 +20,12 @@ type Revision = Annotated[int, Field(strict=True, gt=0)]
 
 class Command(Document):
     schema_version: SchemaVersion
+
+    @model_validator(mode="before")
+    @classmethod
+    def interoperable_numbers(cls, value: object) -> object:
+        check_wire_numbers(value)
+        return value
 
 
 class SessionClaim(Command):
@@ -34,9 +42,19 @@ class ProjectList(Command):
     after: Cursor | None
 
 
-class ProjectCreate(Command):
-    title: Annotated[str, Field(min_length=1, max_length=256)]
+class ProjectInputs(Command):
     inputs: Object
+
+    @field_validator("inputs")
+    @classmethod
+    def validate_brief(cls, value: Object) -> Object:
+        if "brief" in value:
+            PlanningBrief.model_validate(value["brief"])
+        return value
+
+
+class ProjectCreate(ProjectInputs):
+    title: Annotated[str, Field(min_length=1, max_length=256)]
     key: Key
 
 
@@ -45,10 +63,9 @@ class ProjectRead(Command):
     revision: Revision | None
 
 
-class ProjectRevise(Command):
+class ProjectRevise(ProjectInputs):
     project_id: Id
     expected_revision: Revision
-    inputs: Object
     key: Key
 
 

@@ -247,7 +247,7 @@ final class Gateway {
 			);
 		}
 		$data = json_decode( $reply['body'], false, 64 );
-		if ( ! $data instanceof \stdClass || ! str_starts_with( $reply['type'], 'application/json' ) ) {
+		if ( ! $data instanceof \stdClass || ! JsonNumbers::supported( $data ) || ! str_starts_with( $reply['type'], 'application/json' ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		return new WP_REST_Response( $data, $reply['status'] );
@@ -319,6 +319,6 @@ final class Gateway {
 			return $checked;
 		}
 		$data = json_decode( (string) $request->get_body(), false, self::MAX_JSON_DEPTH + 1 );
-		return $data instanceof \stdClass ? get_object_vars( $data ) : Failure::make( 'input', 400 );
+		return $data instanceof \stdClass && JsonNumbers::supported( $data ) ? get_object_vars( $data ) : Failure::make( 'input', 400 );
 	}
 }

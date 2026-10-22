@@ -43,7 +43,7 @@ final class Admission {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		if ( 'replayed' === $known->status ) {
-			if ( ! ( $known->result ?? null ) instanceof \stdClass ) {
+			if ( ! ( $known->result ?? null ) instanceof \stdClass || ! JsonNumbers::supported( $known->result ) ) {
 				return Failure::make( 'invalid_reply', 502 );
 			}
 			$acknowledged = $this->acknowledge( $principal, $path, $command, $known->command_scope, $known->command_sha256 );

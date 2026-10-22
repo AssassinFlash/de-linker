@@ -175,6 +175,26 @@ def test_deep_small_json_is_rejected_before_recursive_union_error_amplification(
     assert rig.post("/projects/list", {"page_size": 2, "after": None})["items"] == []
 
 
+@pytest.mark.parametrize(
+    "number", [2**53, -(2**53), 9223372036854775809, 10**400, 1e100]
+)
+def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
+    rig: Rig, number: int | float
+) -> None:
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    command = {
+        "schema_version": 1,
+        "title": "Number fixture",
+        "inputs": {"n": number},
+        "key": "numeric",
+    }
+    for path in ("/projects/create", "/operations/replay/projects/create"):
+        response = rig.client.post(path, json=command, headers=headers())
+        assert response.status_code == 422
+    assert rig.post("/projects/list", {"page_size": 2, "after": None})["items"] == []
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+
+
 def test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings(
     rig: Rig,
 ) -> None:
