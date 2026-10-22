@@ -6,7 +6,7 @@ The live WordPress atomic manifest observed on 22 October 2026 was `20261022T122
 
 The earlier WordPress deployment guard expected the old manifest and stopped before `steps.deploy` or any production write. Publishing the isolated Genie source would have replaced newer visual/contact work. This integration instead merges reviewed Genie PR #566 (`033b74a6`) onto main `340a11a9`, producing source merge `16a8052f` without conflicts or manual runtime edits.
 
-[Source composition](source-composition.json) compares both parents against their shared base `1f054757`. The 33 runtime/test files changed on main and the 32 changed in the Genie branch do not overlap. All 65 final files match their corresponding parent exactly. The deployment-tool delta is empty. This proves source preservation, not combined execution, visual parity, CI or production acceptance.
+[Source composition](source-composition.json) compares both parents against their shared base `1f054757`. The 40 runtime/test files changed on current main and the 32 changed in the Genie branch do not overlap. All 72 final files match their corresponding parent exactly. The deployment-tool delta is empty. Main then advanced to `3bb95556` through reviewed navigation/image-loading PR #567 (functional `a975b7ca`). It was merged without conflicts at `fb5da4b3`; the proof above has been recomputed against this newer main and preserves its lazy-loading, focus, mobile CTA and print changes. At this point the other chat owns the next WordPress publication window; its resulting manifest is still required before this integration may publish. This proves source preservation, not combined execution, visual parity, CI or production acceptance.
 
 ## Existing execution evidence
 

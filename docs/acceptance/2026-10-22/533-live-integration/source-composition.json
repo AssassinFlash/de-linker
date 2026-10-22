@@ -1,18 +1,36 @@
 {
-  "merge_head": "16a8052fe948d18653ddc83958d5b6bae9a08b4d",
+  "merge_head": "fb5da4b3e20658e70171e27624fc538b7fbe3cdc",
   "comparison_base": "1f0547574a1a2582cf3ded2f6bf807dfc7284ea4",
   "parents": {
-    "production": "340a11a9",
+    "production": "3bb955569eecc972b71df7cf4d5df69eb6aac41c",
     "security": "033b74a6bb407e49c6bc7c934a60d972ea355b64"
   },
   "overlap": [],
-  "changed_runtime_or_test_files_preserved": 65,
+  "changed_runtime_or_test_files_preserved": 72,
   "files": [
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/assets/header-menu.js",
+      "exists": true,
+      "sha256": "a1a920cb5573c2b4c085b1629dce52809e6072a42f55f7adf95f93a3b5daccc5"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/livecanvas/partials/de/header.html",
+      "exists": true,
+      "sha256": "dc49e17311ab7c1be00774fb58fdff1423588b3aebbaca417e00e824b644eb5a"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/livecanvas/partials/header.html",
+      "exists": true,
+      "sha256": "8dd7890fe3a08f3e4fe7c13b576cda3bc3c1b2aae04d8ed3115817895fc9641a"
+    },
     {
       "origin": "production",
       "path": "plugins/linker-commerce/content/windpress/chrome.css",
       "exists": true,
-      "sha256": "a43202bb828ad63b0d7d49881af91be9bc42cd88c7bdd4aedb338d939aa905f9"
+      "sha256": "afc0986dbb137581b5838322c5b9654a6588038ec20d8d2fd9dddf376ac88a3a"
     },
     {
       "origin": "production",
@@ -37,6 +55,12 @@
       "path": "plugins/linker-commerce/content/windpress/products.css",
       "exists": true,
       "sha256": "a9bfe0748fe1ee9fd57d85c3257fce26ae62a2e73c19f62afafb1b879af40367"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/content/windpress/site-base.css",
+      "exists": true,
+      "sha256": "3089373560fcd168c946539e08ab49ff7b5c8af9647471b3478651d206f5d560"
     },
     {
       "origin": "production",
@@ -130,6 +154,18 @@
     },
     {
       "origin": "production",
+      "path": "plugins/linker-commerce/tests/js/header-images.test.mjs",
+      "exists": true,
+      "sha256": "56b070ede0541b7491ea4a7945b513837f5eeee040d5981cc9387165a5d1507b"
+    },
+    {
+      "origin": "production",
+      "path": "plugins/linker-commerce/tests/js/header-menu.test.mjs",
+      "exists": true,
+      "sha256": "bb206d232cc0d15292c989a0b9ac5b4a361548c6e4d5f88b1de4c6cbbde3c9c2"
+    },
+    {
+      "origin": "production",
       "path": "plugins/linker-commerce/tests/php/Doubles/wordpress.php",
       "exists": true,
       "sha256": "c938a91155517d217b60ce1d725eebe0803add1e9c7e0c3e1893599a9bf927af"
@@ -205,6 +241,12 @@
       "path": "plugins/linker-commerce/tests/php/Unit/Storefront/ProductFiltersTest.php",
       "exists": true,
       "sha256": "c740c122fc3fb38fe4df11ade0c8c088d361d719f0182808be6f2863e136bd2e"
+    },
+    {
+      "origin": "production",
+      "path": "tests/e2e/specs/contact-selection-continuity.spec.ts",
+      "exists": true,
+      "sha256": "738acb32a896e617a5958e62f76dad9f036a4a51708104384e61e2637a252320"
     },
     {
       "origin": "security",
