@@ -1,0 +1,29 @@
+[
+  {
+    "name": "opensolar-storage",
+    "url": "https://support.opensolar.com/hc/en-us/articles/12382460685455-How-OpenSolar-Models-Battery-Energy-Storage",
+    "source_commit": "ad782cba169d298a49c8e0794e941328f9aab611",
+    "source_file": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-europe-precedents-551/docs/research/2026-10-22-roof-europe-precedents/raw/official-final-items.json",
+    "runId": "tgo7ltkiuAUVG8LiD",
+    "datasetId": "nYgyb86mTKcm3POmX",
+    "sha256": "3ee65aade7bc9dd1b999ffdb895a1222a5f45e2960bb53b236d81237e26a5e7e"
+  },
+  {
+    "name": "sma-multiuse",
+    "url": "https://manuals.sma.de/SDesign/en-US/14444632075.html",
+    "source_commit": "ad782cba169d298a49c8e0794e941328f9aab611",
+    "source_file": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-europe-precedents-551/docs/research/2026-10-22-roof-europe-precedents/raw/official-system-detail-items.json",
+    "runId": "dgJXTTKbgB6fWLT5T",
+    "datasetId": "h9mEOTpJc4PUiEpE6",
+    "sha256": "36b6dae9482918dfbe27357f773201f5769cfb45572a60809e892989c49eb3d1"
+  },
+  {
+    "name": "sma-load-import",
+    "url": "https://manuals.sma.de/SDesign/en-US/14318222475.html",
+    "source_commit": "ad782cba169d298a49c8e0794e941328f9aab611",
+    "source_file": "/Users/chesterjohn/Documents/de-linker-worktrees/research-roof-europe-precedents-551/docs/research/2026-10-22-roof-europe-precedents/raw/official-system-detail-items.json",
+    "runId": "dgJXTTKbgB6fWLT5T",
+    "datasetId": "h9mEOTpJc4PUiEpE6",
+    "sha256": "3ea14f6cbe0a95cb03fa3f64b86e366fbc8dca0155aa81a37a58a06798cf2900"
+  }
+]

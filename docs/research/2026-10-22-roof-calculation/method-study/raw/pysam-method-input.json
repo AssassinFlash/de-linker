@@ -1,0 +1,23 @@
+{
+  "startUrls": [
+    {
+      "url": "https://nrel-pysam.readthedocs.io/en/main/installation.html"
+    },
+    {
+      "url": "https://nrel-pysam.readthedocs.io/en/main/modules/Battery.html"
+    },
+    {
+      "url": "https://nrel-pysam.readthedocs.io/en/main/modules/BatteryStateful.html"
+    },
+    {
+      "url": "https://samrepo.nlr.gov/help/grid_outage.html"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 4,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

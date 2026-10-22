@@ -1,0 +1,73 @@
+{
+  "cases": 17,
+  "results": [
+    {
+      "name": "midnight_42.600kwh",
+      "status": "infeasible_under_stated_model"
+    },
+    {
+      "name": "midnight_85.106kwh",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "recharge_room_10.000000",
+      "status": "infeasible_under_stated_model"
+    },
+    {
+      "name": "recharge_room_11.317338",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "low_pv_solar_bound",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "outage_power_5.0",
+      "status": "infeasible_under_stated_model"
+    },
+    {
+      "name": "outage_power_10.0",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "grid_charge_attribution",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "forced_grid_charge_ledger",
+      "status": "manual_schedule_replay_passed"
+    },
+    {
+      "name": "initial_terminal_0.0",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "initial_terminal_5.0",
+      "status": "infeasible_under_stated_model"
+    },
+    {
+      "name": "pv_losses_and_metric_definitions",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "reserve_partition",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "multiuse_soc_partition",
+      "status": "manual_schedule_replay_passed"
+    },
+    {
+      "name": "multiuse_soc_partition",
+      "status": "feasible_under_stated_model"
+    },
+    {
+      "name": "multiuse_with_backup_floor_6.0",
+      "status": "infeasible_under_stated_model"
+    },
+    {
+      "name": "multiuse_with_backup_floor_8.0",
+      "status": "feasible_under_stated_model"
+    }
+  ]
+}

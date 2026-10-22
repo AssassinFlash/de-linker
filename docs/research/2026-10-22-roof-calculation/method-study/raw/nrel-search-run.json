@@ -1,0 +1,9 @@
+{
+  "id": "ckLAuAIIU9nFbRxUG",
+  "status": "SUCCEEDED",
+  "defaultDatasetId": "Sy8KZnh0mJIx34uza",
+  "startedAt": "2026-10-22T10:39:00.706Z",
+  "finishedAt": "2026-10-22T10:40:05.968Z",
+  "usageTotalUsd": 0.009049999999999999,
+  "statusMessage": "Finished! Total 3 requests: 3 succeeded, 0 failed."
+}

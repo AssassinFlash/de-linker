@@ -1,0 +1,6 @@
+{
+  "queries": "SAM battery storage dispatch NREL technical report 64641\nSAM battery model state of charge minimum maximum initial dispatch behind meter\nNREL SSC lib_battery_powerflow.cpp github",
+  "resultsPerPage": 10,
+  "maxPagesPerQuery": 1,
+  "countryCode": "us"
+}

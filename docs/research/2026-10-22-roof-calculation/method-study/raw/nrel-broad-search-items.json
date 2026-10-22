@@ -1,0 +1,724 @@
+[
+  {
+    "searchQuery": {
+      "term": "SAM battery model state of charge minimum maximum initial dispatch behind meter",
+      "url": "http://www.google.com/search?q=SAM+battery+model+state+of+charge+minimum+maximum+initial+dispatch+behind+meter&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=SAM+battery+model+state+of+charge+minimum+maximum+initial+dispatch+behind+meter&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "L",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Battery Storage: Behind the Meter",
+        "websiteTitle": "nlr.gov",
+        "url": "https://samrepo.nlr.gov/help/battery_storage_btm.html",
+        "displayedUrl": "https://samrepo.nlr.gov › help › battery_storage_btm",
+        "description": "If the battery state of charge (SOC) is low when the availability loss period begins, the SOC could fall below the minimum SOC from the Battery Dispatch page.Read more",
+        "emphasizedKeywords": [
+          "battery state of charge",
+          "SOC",
+          "SOC",
+          "minimum SOC",
+          "Battery Dispatch"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Behind-the-meter Battery Dispatch in SAM",
+        "websiteTitle": "YouTube · System Advisor Model",
+        "url": "https://www.youtube.com/watch?v=KCzPGf_9YKQ",
+        "displayedUrl": "5.8K+ views  ·  3 years ago",
+        "description": "",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Technoeconomic modeling of battery energy storage in SAM",
+        "websiteTitle": "ResearchGate",
+        "url": "https://www.researchgate.net/publication/308100746_Technoeconomic_modeling_of_battery_energy_storage_in_SAM",
+        "displayedUrl": "https://www.researchgate.net › ... › Energy Storage",
+        "description": "The simulation model uses only the battery State-Of-Charge (SOC) as a state variable in order to avoid the algebraic loop problem.",
+        "emphasizedKeywords": [
+          "model",
+          "battery State-Of-Charge",
+          "SOC",
+          "state"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "20/80 Rule for Batteries: SOC Limits Explained for BESS",
+        "websiteTitle": "SunLith Energy",
+        "url": "https://sunlithenergy.com/20-80-rule-for-batteries/",
+        "displayedUrl": "https://sunlithenergy.com › ... › Energy Storage System",
+        "description": "The 20/80 rule for batteries keeps SOC between 20% and 80%. See how it affects lithium-ion degradation, usable capacity, and BESS sizing.",
+        "date": "2026-06-19T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "batteries",
+          "SOC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Heuristic Dispatch Based on Price Signals for Behind-the- ...",
+        "websiteTitle": "National Laboratory of the Rockies (NLR) (.gov)",
+        "url": "https://www.nrel.gov/docs/fy21osti/79575.pdf",
+        "displayedUrl": "https://www.nrel.gov › docs",
+        "description": "by BT Mirletz · 2020 · Cited by 16 — This paper presents price signals dispatch, System Advisor Model (SAM) tool. Battery state of charge and battery capacity … 13 possible dispatch profiles for ...",
+        "emphasizedKeywords": [
+          "dispatch",
+          "Model",
+          "SAM",
+          "Battery state of charge",
+          "battery",
+          "dispatch"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by BT Mirletz · 2020 · Cited by 16 — This paper presents price signals dispatch, System Advisor Model (SAM) tool. Battery state of charge and battery capacity … 13 possible dispatch profiles for ..."
+        },
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Generic battery model - State of Charge - MATLAB Answers",
+        "websiteTitle": "MathWorks",
+        "url": "https://www.mathworks.com/matlabcentral/answers/355310-generic-battery-model-state-of-charge",
+        "displayedUrl": "https://www.mathworks.com › matlabcentral › 355310-...",
+        "description": "At 20 % initial SOC the measured SOC is something around 17.28 % and at 90 measures 89.66 %. This issue appears to be caused by a bug of the  ...",
+        "date": "2017-09-05T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "initial SOC",
+          "SOC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "How to Model Batteries (with PV, Stand-Alone, or Hybrids) ...",
+        "websiteTitle": "OSTI.GOV (.gov)",
+        "url": "https://www.osti.gov/servlets/purl/2583476",
+        "displayedUrl": "https://www.osti.gov › servlets › purl",
+        "description": "by B Mirletz · 2025 — Behind The Meter Dispatch Modes. Latest version of SAM includes analytical models for cycles, storage state of charge, and temperature",
+        "emphasizedKeywords": [
+          "Behind",
+          "Meter Dispatch",
+          "SAM",
+          "state of charge"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by B Mirletz · 2025 — Behind The Meter Dispatch Modes. Latest version of SAM includes analytical models for cycles, storage state of charge, and temperature"
+        },
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Battery Dispatch BTM",
+        "websiteTitle": "nlr.gov",
+        "url": "https://samrepo.nlr.gov/help/battery_dispatch_btm.html",
+        "displayedUrl": "https://samrepo.nlr.gov › help › battery_dispatch_btm",
+        "description": "The default values state of charge range of 15% to 95% is reasonable for most Li-ion battery types. Initial state of charge, % The state of charge of the  ...",
+        "emphasizedKeywords": [
+          "state of charge",
+          "battery",
+          "Initial state of charge",
+          "state of charge"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Battery State of Charge Calculation",
+        "websiteTitle": "Epic Power Converters",
+        "url": "https://epicpowerconverters.com/wp-content/uploads/2020/08/AN026_State-Of-Charge-Calculation_v5.pdf",
+        "displayedUrl": "https://epicpowerconverters.com › 2020/08 › AN...",
+        "description": "The units of SoC are percentage points and it is calculated as the ratio between the remaining energy in the battery at a given time and the maximum possible ...Read more",
+        "emphasizedKeywords": [
+          "SoC",
+          "battery",
+          "maximum"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [
+      {
+        "answer": null,
+        "question": "What should battery state of charge be?",
+        "title": null,
+        "url": null,
+        "date": null
+      },
+      {
+        "answer": null,
+        "question": "What are the 7 stages of battery charging?",
+        "title": null,
+        "url": null,
+        "date": null
+      },
+      {
+        "answer": null,
+        "question": "What is the 40-80 rule for batteries?",
+        "title": null,
+        "url": null,
+        "date": null
+      },
+      {
+        "answer": null,
+        "question": "At what level of charge does the float stage of battery charging typically begin?",
+        "title": null,
+        "url": null,
+        "date": null
+      }
+    ],
+    "aiOverview": {
+      "type": "live",
+      "content": "In NREL's System Advisor Model (SAM), the State of Charge (SOC) parameters for a behind-the-meter (BTM) battery model manage how energy storage operates, bounds its capacity, and sets starting conditions.Minimum State of Charge (%):The lower boundary of the battery's operating window.The default value is typically 15% for most Li-ion battery types.SAM prevents the dispatch algorithm from discharging the battery below this percentage, preserving a reserve and protecting battery health.Maximum State of Charge (%):The upper boundary of the battery's operating window.The default value is typically 95% for most Li-ion battery types.SAM stops charging the battery once it reaches this level (unless specific grid or PV override rules apply).Initial State of Charge (%):The starting charge percentage of the battery at the very beginning of the simulation (Hour 0, Step 1).It dictates how much energy is immediately available before the first dispatch or charge cycle occurs.Dispatch Strategies (Behind-the-Meter):SAM controls BTM battery timing and power via heuristic or optimization dispatch modes, including:Manual dispatch: Time-based, user-specified charge and discharge schedules.Peak shaving dispatch: Automated control that discharges the battery to reduce demand charges based on forecasted load and PV generation.Price signals dispatch: Dispatches the battery based on time-of-use (TOU) or real-time electricity pricing tariffs.Look-ahead / Look-behind options: Uses perfect prediction or 24-hour historical data to optimize charging and discharging against PV and prices.You can review more detailed input definitions directly on the SAM Battery Dispatch BTM Help Page or the SAM Battery Storage BTM Overview.You can review more detailed input definitions directly on the SAM Battery Dispatch BTM Help Page or the SAM Battery Storage BTM Overview.If you are setting up a specific simulation, let me know:What battery chemistry you are using (e.g., Li-ion, lead-acid, flow)Your primary objective (e.g., peak shaving, bill minimization, self-consumption)I can help you dial in the appropriate SOC constraints and dispatch settings.If you are setting up a specific simulation, let me know:I can help you dial in the appropriate SOC constraints and dispatch settings.AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+      "sources": [
+        {
+          "url": "https://samrepo.nlr.gov/help/battery_dispatch_btm.html",
+          "title": "Battery Dispatch BTM",
+          "description": "Battery Dispatch BTM * The Battery Dispatch page for behind-the-meter (BTM) batteries displays inputs for controlling the timing o..."
+        },
+        {
+          "url": "https://docs.nlr.gov/docs/fy23osti/86194.pdf",
+          "title": "Impacts of Dispatch Strategies and Forecast Errors on the ...",
+          "description": "Page 4 II. METHODOLOGY This work combines two state-of-the-art techno-economic decision support tools developed at the National Re..."
+        },
+        {
+          "url": "https://samrepo.nlr.gov/help/battery_storage_btm.html",
+          "title": "Battery Storage: Behind the Meter",
+          "description": "Lead Acid and Lithium-ion Battery Parameters * Desired bank voltage * The battery bank voltage you are trying to achieve in your d..."
+        }
+      ]
+    },
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "SAM battery storage dispatch NREL technical report 64641",
+      "url": "http://www.google.com/search?q=SAM+battery+storage+dispatch+NREL+technical+report+64641&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=SAM+battery+storage+dispatch+NREL+technical+report+64641&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [
+      {
+        "title": "Sam battery storage dispatch nrel technical report 64641 pdf",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Sam+battery+storage+dispatch+nrel+technical+report+64641+pdf&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAgyEAE"
+      },
+      {
+        "title": "Sam battery storage dispatch nrel technical report 64641 free",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Sam+battery+storage+dispatch+nrel+technical+report+64641+free&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg6EAE"
+      },
+      {
+        "title": "System Advisor Model",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=System+Advisor+Model&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg7EAE"
+      },
+      {
+        "title": "Sam Department of Energy",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Sam+Department+of+Energy&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "SAM analysis",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=SAM+analysis&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg1EAE"
+      },
+      {
+        "title": "Solar Sam",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Solar+Sam&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg2EAE"
+      },
+      {
+        "title": "System advisor model download",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=System+advisor+model+download&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg0EAE"
+      },
+      {
+        "title": "Http SAM",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Http+SAM&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAgzEAE"
+      },
+      {
+        "title": "Sam battery storage dispatch nrel technical report 64641 pdf",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Sam+battery+storage+dispatch+nrel+technical+report+64641+pdf&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAgyEAE"
+      },
+      {
+        "title": "Sam battery storage dispatch nrel technical report 64641 free",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Sam+battery+storage+dispatch+nrel+technical+report+64641+free&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg6EAE"
+      },
+      {
+        "title": "System Advisor Model",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=System+Advisor+Model&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg7EAE"
+      },
+      {
+        "title": "Sam Department of Energy",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Sam+Department+of+Energy&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg5EAE"
+      },
+      {
+        "title": "SAM analysis",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=SAM+analysis&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg1EAE"
+      },
+      {
+        "title": "Solar Sam",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Solar+Sam&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg2EAE"
+      },
+      {
+        "title": "System advisor model download",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=System+advisor+model+download&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAg0EAE"
+      },
+      {
+        "title": "Http SAM",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQntXvGW3cMfNmGO57GcwdXajH5pqog:1792665896775&q=Http+SAM&sa=X&ved=2ahUKEwiCm-nvuM2XAxWHa2wGHV6IOhkQ1QJ6BAgzEAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Battery Storage Publications - System Advisor Model - SAM",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/battery-storage/battery-publications.html",
+        "displayedUrl": "https://sam.nlr.gov › Battery Storage",
+        "description": "This paper inlcudes a detailed description of the implementation of SAM's \"automated dispach\" option for front-of-meter batteries and an analysis case study ...Read more",
+        "emphasizedKeywords": [
+          "paper",
+          "SAM's"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "Technoeconomic modeling of battery energy storage in SAM",
+        "websiteTitle": "ResearchGate",
+        "url": "https://www.researchgate.net/publication/308100746_Technoeconomic_modeling_of_battery_energy_storage_in_SAM",
+        "displayedUrl": "https://www.researchgate.net › ... › Energy Storage",
+        "description": "Technoeconomic modeling of battery energy storage in SAM. August 2015. Report number: NREL ... Technical Report. NREL/TP-6A20-64641. September 2015. NOTICE. This ...Read more",
+        "emphasizedKeywords": [
+          "battery",
+          "storage",
+          "SAM",
+          "NREL",
+          "Technical Report",
+          "NREL",
+          "64641"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Improvement and Validation of the System Advisor Model ...",
+        "websiteTitle": "OSTI (.gov)",
+        "url": "https://www.osti.gov/servlets/purl/1495693",
+        "displayedUrl": "https://www.osti.gov › servlets › purl",
+        "description": "by JM Freeman · 2019 · Cited by 6 — In that report, it is illustrated that SAM's updated battery dispatch model improves the ... Studies of Battery Energy Storage with SAM NREL Technical Report,.Read more",
+        "emphasizedKeywords": [
+          "SAM's updated battery dispatch model"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by JM Freeman · 2019 · Cited by 6 — In that report, it is illustrated that SAM's updated battery dispatch model improves the ... Studies of Battery Energy Storage with SAM NREL Technical Report,.Read more"
+        },
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Solar Plus Storage Modeling with SAM: A Guide by Paul ...",
+        "websiteTitle": "Midwest Renewable Energy Association",
+        "url": "https://midwestrenew.org/guestpost-energystorage/",
+        "displayedUrl": "https://midwestrenew.org › guestpost-energystorage",
+        "description": "SAM integrates performance and financial modeling to evaluate the factors affecting battery storage. It calculates metrics like battery round- ...Read more",
+        "date": "2025-03-21T12:00:00.000Z",
+        "emphasizedKeywords": [
+          "SAM integrates performance and financial modeling"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Modeling PV-Battery Systems in SAM - PV 431",
+        "websiteTitle": "YouTube · Midwest Renewable Energy Association (MREA)",
+        "url": "https://www.youtube.com/watch?v=lQAzLZ9Y0lM",
+        "displayedUrl": "980+ views  ·  1 year ago",
+        "description": "",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "Release Notes — SAM Help",
+        "websiteTitle": "GitHub Pages documentation",
+        "url": "https://natlabrockies.github.io/SAM/doc/reference/release_notes.html",
+        "displayedUrl": "https://natlabrockies.github.io › SAM › doc › reference",
+        "description": "Implement NREL Solar Position Algorithm (SPA) for sun angle calculations for all solar performance models. Improved battery dispatch for both front-of-meter and ...Read more",
+        "emphasizedKeywords": [
+          "NREL",
+          "battery dispatch"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Heuristic Dispatch Based on Price Signals for Behind-the- ...",
+        "websiteTitle": "National Laboratory of the Rockies (NLR) (.gov)",
+        "url": "https://www.nrel.gov/docs/fy21osti/79575.pdf",
+        "displayedUrl": "https://www.nrel.gov › docs",
+        "description": "by BT Mirletz · 2020 · Cited by 16 — This paper presents price signals dispatch, a new algorithm for automated economic dispatch of BTM PV-battery systems, which utilizes 24-hour PV and load ...Read more",
+        "emphasizedKeywords": [
+          "paper",
+          "dispatch",
+          "dispatch",
+          "battery"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by BT Mirletz · 2020 · Cited by 16 — This paper presents price signals dispatch, a new algorithm for automated economic dispatch of BTM PV-battery systems, which utilizes 24-hour PV and load ...Read more"
+        },
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "NREL Demonstration: How SAM Can Be Useful to You and ...",
+        "websiteTitle": "Clean Energy States Alliance",
+        "url": "https://www.cesa.org/event/nrel-demonstration-how-sam-can-be-useful-to-you-and-how-to-use-it/",
+        "displayedUrl": "https://www.cesa.org · Mar 21, 2013",
+        "description": "",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "Behind-the-meter Battery Dispatch in SAM",
+        "websiteTitle": "YouTube · System Advisor Model",
+        "url": "https://www.youtube.com/watch?v=KCzPGf_9YKQ",
+        "displayedUrl": "5.8K+ views  ·  3 years ago",
+        "description": "",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "aiOverview": {
+      "type": "live",
+      "content": "NREL Technical Report NREL/TP-6A20-64641, published in September 2015, is titled \"Technoeconomic Modeling of Battery Energy Storage in SAM\".Core Focus: This report details the integration of comprehensive lead-acid and lithium-ion battery performance and economic models into NREL's System Advisor Model (SAM).System Applications: It evaluates behind-the-meter (BTM) storage systems—such as residential, commercial, and third-party ownership configurations—aimed at utility bill reduction via energy arbitrage and demand charge management.Battery Chemistries Supported: The original framework introduced modeling capabilities for lead-acid and lithium-ion battery technologies, with later SAM versions expanding to flow batteries.Performance & Degradation Modeling: The report outlines how SAM handles terminal voltage, battery capacity, temperature effects, and detailed degradation mechanics to track physical wear and schedule battery replacements.Dispatch Control Options: It covers initial dispatch controllers that allowed users to program manual schedules or basic target-based routines to manage charging and discharging relative to photovoltaic (PV) generation and utility rate structures. (Note: More advanced automated look-ahead and peak-shaving dispatch algorithms were added in subsequent NREL reports like NREL/TP-5B10-).If you are looking for specific equations, degradation parameters, or download access to the full text, let me know which section of NREL/TP-6A20-64641 you need help with.If you are looking for specific equations, degradation parameters, or download access to the full text, let me know which section of NREL/TP-6A20-64641 you need help with.AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+      "sources": [
+        {
+          "url": "https://www.researchgate.net/publication/308100746_Technoeconomic_modeling_of_battery_energy_storage_in_SAM",
+          "title": "Technoeconomic modeling of battery energy storage in SAM",
+          "description": "Technoeconomic modeling of battery energy storage in SAM. August 2015. Report number: NREL ... Technical Report. NREL/TP-6A20-6464..."
+        },
+        {
+          "url": "https://www.osti.gov/biblio/1225314",
+          "title": "Technoeconomic Modeling of Battery Energy Storage in SAM",
+          "description": "Citation Formats NREL), Golden, CO (United States)}, annote = {Detailed comprehensive lead-acid and lithium-ion battery models hav..."
+        },
+        {
+          "url": "https://docs.nlr.gov/docs/fy18osti/68614.pdf",
+          "title": "An Overview of the Automated Dispatch Controller Algorithms in the ...",
+          "description": "1 Introduction Other NREL tools perform battery modeling and dispatch with different objectives and use- cases. REopt [4] formulat..."
+        }
+      ]
+    },
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "NREL SSC lib_battery_powerflow.cpp github",
+      "url": "http://www.google.com/search?q=NREL+SSC+lib_battery_powerflow.cpp+github&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=NREL+SSC+lib_battery_powerflow.cpp+github&gl=us",
+    "hasNextPage": true,
+    "serpProviderCode": "OX",
+    "relatedQueries": [
+      {
+        "title": "NREL SAM download",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=NREL+SAM+download&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAgxEAE"
+      },
+      {
+        "title": "SAM System Advisor Model NREL",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=SAM+System+Advisor+Model+NREL&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg3EAE"
+      },
+      {
+        "title": "System advisor model download",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=System+advisor+model+download&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg5EAE"
+      },
+      {
+        "title": "Scc github",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=Scc+github&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg2EAE"
+      },
+      {
+        "title": "NREL GitHub",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=NREL+GitHub&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg0EAE"
+      },
+      {
+        "title": "SAM NREL tutorial",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=SAM+NREL+tutorial&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg1EAE"
+      },
+      {
+        "title": "NREL software",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=NREL+software&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAgzEAE"
+      },
+      {
+        "title": "Nrel financial model",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=Nrel+financial+model&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAgyEAE"
+      },
+      {
+        "title": "NREL SAM download",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=NREL+SAM+download&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAgxEAE"
+      },
+      {
+        "title": "SAM System Advisor Model NREL",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=SAM+System+Advisor+Model+NREL&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg3EAE"
+      },
+      {
+        "title": "System advisor model download",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=System+advisor+model+download&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg5EAE"
+      },
+      {
+        "title": "Scc github",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=Scc+github&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg2EAE"
+      },
+      {
+        "title": "NREL GitHub",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=NREL+GitHub&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg0EAE"
+      },
+      {
+        "title": "SAM NREL tutorial",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=SAM+NREL+tutorial&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAg1EAE"
+      },
+      {
+        "title": "NREL software",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=NREL+software&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAgzEAE"
+      },
+      {
+        "title": "Nrel financial model",
+        "url": "https://www.google.com/search?sca_esv=777550b987915464&gl=us&hl=en&sxsrf=APpeQnvCqHnomxZgwri2HhBYyqtS0jGXBw:1792665945837&q=Nrel+financial+model&sa=X&ved=2ahUKEwjUhJqHuc2XAxVMJEQIHVLhAG8Q1QJ6BAgyEAE"
+      }
+    ],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "SAM Simulation Core (SSC) contains the underlying ...",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/NREL/ssc",
+        "displayedUrl": "https://github.com › NREL › ssc",
+        "description": "The SSC Open Source Project repository contains the source code for the technology and financial models contained within the National Laboratory of the Rockies'",
+        "emphasizedKeywords": [
+          "SSC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      },
+      {
+        "title": "System Advisor Model (SAM)",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/NREL/SAM",
+        "displayedUrl": "https://github.com › NREL › SAM",
+        "description": "SSC is a set of \"compute modules\" that simulate different kinds of power systems and financial structures. It can be run directly using the SAM Software ...Read more",
+        "emphasizedKeywords": [
+          "SSC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 2
+      },
+      {
+        "title": "Activity · NatLabRockies/ssc",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/NREL/ssc/activity",
+        "displayedUrl": "https://github.com › NREL › ssc › activity",
+        "description": "SAM Simulation Core (SSC) contains the underlying performance and financial models for SAM. Fix exceptions generated in common.cpp and cmod_hybrid.cpp",
+        "emphasizedKeywords": [
+          "SSC",
+          "cpp",
+          "cpp"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 3
+      },
+      {
+        "title": "Off by 1 error in automated dispatch's dispatch hours variable",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/NREL/ssc/issues/865",
+        "displayedUrl": "https://github.com › NREL › ssc › issues",
+        "description": "Describe the bug. The \"dispatch hours\" parameter does not account for the zero index of ppa prices, and leads to the battery charging at times ...Read more",
+        "date": "2022-08-22T12:00:00.000Z",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 4
+      },
+      {
+        "title": "Recent updates to the System Advisor Model (SAM)",
+        "websiteTitle": "Sandia National Laboratories (.gov)",
+        "url": "https://pvpmc.sandia.gov/app/uploads/sites/243/2022/10/11_NickDiOrio_Recent-updates-to-the-System-Advisor-Model-SAM.pdf",
+        "displayedUrl": "https://pvpmc.sandia.gov › app › sites › 2022/10",
+        "description": "by N DiOrio · 2017 · Cited by 1 — NREL open sourced the SAM code in August 2017 on GitHub • SSC https://github.com/NREL/ssc. Battery Storage Financials … licenses (SSC and SAM)",
+        "emphasizedKeywords": [
+          "NREL",
+          "GitHub",
+          "SSC",
+          "github",
+          "NREL",
+          "ssc",
+          "SSC"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "personalInfo": {
+          "rawText": "by N DiOrio · 2017 · Cited by 1 — NREL open sourced the SAM code in August 2017 on GitHub • SSC https://github.com/NREL/ssc. Battery Storage Financials … licenses (SSC and SAM)"
+        },
+        "type": "organic",
+        "position": 5
+      },
+      {
+        "title": "nrel · GitHub Topics",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/topics/nrel",
+        "displayedUrl": "https://github.com › topics › nrel",
+        "description": "A collection of various resources, examples, and executables for the general NLR HPC",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 6
+      },
+      {
+        "title": "Integrate NREL NMC lifetime model · Issue #521",
+        "websiteTitle": "GitHub",
+        "url": "https://github.com/NatLabRockies/ssc/issues/521",
+        "displayedUrl": "https://github.com › NatLabRockies › ssc › issues",
+        "description": "Add lifetime model for Kokam NMC cells from Kandler Smith 2017 into battery_t. uses combined cycling and calendar effects. join this ...",
+        "date": "2021-01-27T12:00:00.000Z",
+        "emphasizedKeywords": [],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 7
+      },
+      {
+        "title": "Release Notes — SAM Help",
+        "websiteTitle": "GitHub Pages documentation",
+        "url": "https://natlabrockies.github.io/SAM/doc/reference/release_notes.html",
+        "displayedUrl": "https://natlabrockies.github.io › SAM › doc › reference",
+        "description": "SSC GitHub repositories. Fix issues with battery voltage model. Improved battery dispatch for both front-of-meter and behind-the-meter battery storage ...",
+        "emphasizedKeywords": [
+          "SSC GitHub"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 8
+      },
+      {
+        "title": "SAM Open Source - System Advisor Model",
+        "websiteTitle": "System Advisor Model - SAM (.gov)",
+        "url": "https://sam.nlr.gov/sam-open-source.html",
+        "displayedUrl": "https://sam.nlr.gov › sam-open-source",
+        "description": "SAM's source code is hosted on GitHub.com repositories. The main repository is at https://github.com/nrel/sam. See the README and Wiki pages for information ...Read more",
+        "emphasizedKeywords": [
+          "SAM's source code is hosted on GitHub.com repositories"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 9
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "aiOverview": {
+      "type": "live",
+      "content": "The lib_battery_powerflow.cpp file is a core source file in NREL's SAM Simulation Core (SSC) repository on GitHub. It contains the underlying mathematical algorithms for simulating battery dispatch, charge/discharge power flow constraints, and bi-directional inverter losses.You can find and view the source code directly within the repository using these locations:You can find and view the source code directly within the repository using these locations:Repository: NREL/ssc on GitHubFile Path: ssc/shared/lib_battery_powerflow.cpp🛠️ Purpose & Core FunctionsThis file manages how power flows between the solar/wind system, the battery, the grid, and the building load. It explicitly handles:This file manages how power flows between the solar/wind system, the battery, the grid, and the building load. It explicitly handles:Inverter Conversion & Losses: Tracking power conversions through a shared or bi-directional inverter.Power Constraints: Enforcing maximum charge and discharge limits based on current Battery State of Charge (SOC) and thermal behavior.System Interconnection: Dictating how \"clipped power\" from over-sized PV arrays can be routed to recharge the battery.If you are debugging or extending the code, are you trying to modify the dispatch logic, fix a power routing calculation, or compile the SSC library from source?If you are debugging or extending the code, are you trying to modify the dispatch logic, fix a power routing calculation, or compile the SSC library from source?AI responses may include mistakes. Learn moreCopied to clipboardFailed to copy to clipboard.  Try again later.CopiedFailed to copyCopyShare public linkThis public link is valid for 7 days and shares a thread, including any personal information you added. This link or copies made by others cannot be deleted. If you share with third parties, their policies apply.Can’t copy the link right now. Try again later.FacebookGmailXRedditWhatsAppShareGood responseBad responseMore",
+      "sources": [
+        {
+          "url": "https://github.com/NREL/ssc",
+          "title": "GitHub - NatLabRockies/ssc: SAM Simulation Core (SSC) contains the underlying performance and financial models for SAM · GitHub",
+          "description": "Repository: NatLabRockies/ssc (SAM Simulation Core) under BSD-3-Clause license. Purpose: Contains underlying technology and financ..."
+        },
+        {
+          "url": "https://github.com/NatLabRockies/SAM/issues/407",
+          "title": "Allow battery to charge from \"clipped power\" for manual dispatch ...",
+          "description": "Description Or, how can I order the dispatch not to work from 3 pm to 6 pm? Thinking about new markets, this option in software wo..."
+        },
+        {
+          "url": "https://sam.nlr.gov/forum/forum-sdk/4934-where-to-find-how-ssc-handles-bi-directional-inverters-in-the-source-code.html",
+          "title": "Where to find how ssc handles bi-directional inverters in the source ...",
+          "description": "... lib_battery_powerflow.cpp#L654 Specifically, for battery charging: github ... lib_battery_powerflow.cpp#L792 And, for discharg..."
+        }
+      ]
+    },
+    "customData": null
+  }
+]

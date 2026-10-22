@@ -1,0 +1,6 @@
+{
+  "queries": "site:sam.nrel.gov battery technoeconomic modeling 64641 state of charge dispatch\nsite:samrepo.nrelcloud.org help battery storage dispatch self consumption state of charge\nsite:github.com/NREL/ssc battery powerflow state of charge grid charge",
+  "resultsPerPage": 8,
+  "maxPagesPerQuery": 1,
+  "countryCode": "us"
+}

@@ -1,0 +1,29 @@
+{
+  "startUrls": [
+    {
+      "url": "https://samrepo.nlr.gov/help/battery_storage_btm.html"
+    },
+    {
+      "url": "https://samrepo.nlr.gov/help/battery_dispatch_btm.html"
+    },
+    {
+      "url": "https://samrepo.nlr.gov/help/battery_dispatch_fom.html"
+    },
+    {
+      "url": "https://sam.nlr.gov/battery-storage/battery-publications.html"
+    },
+    {
+      "url": "https://github.com/NatLabRockies/ssc/blob/develop/shared/lib_battery_powerflow.cpp"
+    },
+    {
+      "url": "https://github.com/NatLabRockies/ssc/blob/develop/shared/lib_battery_dispatch.cpp"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 6,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

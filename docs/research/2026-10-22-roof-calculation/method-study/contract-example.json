@@ -1,0 +1,144 @@
+{
+  "artifact_kind": "proposed-domain-contract-example-from-executed-research-fixture",
+  "is_production_api": false,
+  "project_revision": {
+    "id": "fixture-low-pv",
+    "input_sha256": "82f2e779b64cac18bca7de6db20ff61b3fa5a297d6eb2dffab99d8cb2bc9ea04",
+    "task": "solar_self_supply_on_explicit_ac_bus",
+    "case": {
+      "name": "low_pv_solar_bound",
+      "load": [
+        0.0,
+        4.0
+      ],
+      "pv": [
+        2.208,
+        0.0
+      ],
+      "dt_h": 1,
+      "energy_kwh": 2.5,
+      "charge_kw": 2.5,
+      "discharge_kw": 4.0,
+      "eta_charge": 1,
+      "eta_discharge": 1,
+      "initial_kwh": 0,
+      "terminal_min_kwh": 0,
+      "reserve_kwh": 0,
+      "grid_limit_kw": 1000,
+      "allow_grid_charge": false,
+      "export_limit_kw": 1000,
+      "start": "2026-01-01T00:00:00+00:00",
+      "grid_limits_kw": null
+    }
+  },
+  "compute_run": {
+    "idempotency_sha256": "4f1270118646b2d7be9ade3312e25f12afd876ed40e4c6395a3abae86923cdbc",
+    "input_sha256": "82f2e779b64cac18bca7de6db20ff61b3fa5a297d6eb2dffab99d8cb2bc9ea04",
+    "model_sha256": "55a748cc3deee6eb75be4316a2960e0c55481a9f299d18f536a24f44d5cb52c1",
+    "model_id": "independent-ideal-ac-research-reference",
+    "execution_state": "completed",
+    "claim_level": "model_feasibility_only",
+    "runtime": {
+      "python": "3.12.15 (main, Sep 30 2026, 22:04:19) [Clang 21.0.0 (clang-2100.3.34.2)]",
+      "numpy": "2.5.3",
+      "scipy": "1.18.1",
+      "platform": "macOS-26.6.2-arm64-arm-64bit",
+      "reference_sha256": "55a748cc3deee6eb75be4316a2960e0c55481a9f299d18f536a24f44d5cb52c1"
+    }
+  },
+  "stages": [
+    {
+      "stage": "normalize",
+      "state": "completed",
+      "output": "explicit synthetic 1-hour interval average power and internal energy basis"
+    },
+    {
+      "stage": "dispatch",
+      "state": "completed",
+      "output": "witness flows_kw and states_kwh in reference-results.json"
+    },
+    {
+      "stage": "verify_energy_and_origin",
+      "state": "passed_in_fixture_domain",
+      "output": {
+        "load_kwh": 4.0,
+        "available_pv_kwh": 2.208,
+        "curtailed_pv_kwh": 0.0,
+        "actual_generated_pv_kwh": 2.208,
+        "direct_pv_to_load_kwh": 0.0,
+        "pv_to_charge_ac_kwh": 2.208,
+        "battery_to_load_by_origin_kwh": {
+          "pv": 2.208,
+          "grid": 0.0,
+          "initial_unknown": 0.0
+        },
+        "remaining_internal_by_origin_kwh": {
+          "pv": 0.0,
+          "grid": 0.0,
+          "initial_unknown": 0.0
+        },
+        "solar_delivered_kwh": 2.208,
+        "solar_autarky": 0.552,
+        "pv_used_onsite_input_share": 1.0,
+        "pv_self_consumption_of_actual_generation": 1.0,
+        "delivered_solar_fraction_of_available_pv": 1.0,
+        "grid_import_kwh": 1.7919999999999998,
+        "peak_grid_kw": 1.7919999999999998,
+        "max_replay_balance_error": 0.0,
+        "first_interval": "2026-01-01T00:00:00+00:00",
+        "last_interval": "2026-01-01T01:00:00+00:00",
+        "end_internal_kwh": 0.0
+      }
+    },
+    {
+      "stage": "verify_real_hardware_and_site",
+      "state": "blocked_missing_evidence",
+      "issues": [
+        "MISSING_MODE_CAPABILITY",
+        "MISSING_REAL_SITE_DATA"
+      ]
+    }
+  ],
+  "model_result": {
+    "status": "feasible_under_stated_model",
+    "observed_solar_autarky": 0.552,
+    "analytic_lossless_upper_bound": 0.552,
+    "witness_file": "reference-results.json",
+    "witness_case": "low_pv_solar_bound"
+  },
+  "issues": [
+    {
+      "code": "MISSING_MODE_CAPABILITY",
+      "kind": "EvidenceMissing",
+      "affects_claim": "actual_device_can_deliver",
+      "required_context": [
+        "specific_configuration",
+        "ports",
+        "grid_connected_or_island_or_transition",
+        "voltage_current_temperature_soc",
+        "firmware_and_controller",
+        "document_version_page"
+      ]
+    },
+    {
+      "code": "MISSING_REAL_SITE_DATA",
+      "kind": "EvidenceMissing",
+      "affects_claim": "real_project_prediction",
+      "message": "Synthetic fixture establishes model behavior; no real weather/load/geometry or field accuracy evidence"
+    }
+  ],
+  "uncertainty": [
+    {
+      "kind": "model_structure",
+      "scope": "constant-efficiency AC-only; no thermal, ageing, auxiliary, DC coupling or per-phase model",
+      "quantified_error": null
+    },
+    {
+      "kind": "input_domain",
+      "scope": "synthetic two-interval fixture; no extrapolation to a real annual project",
+      "quantified_error": null
+    }
+  ],
+  "project_conclusion": "partial_computed_result_with_hardware_and_site_conclusions_unverified",
+  "consumer_rule": "Consumers reference these exact input/model/run hashes; editing inputs or using different data creates another run rather than silently replacing this result"
+}

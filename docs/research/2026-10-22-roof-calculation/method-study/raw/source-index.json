@@ -1,0 +1,102 @@
+[
+  {
+    "url": "https://samrepo.nlr.gov/help/battery_dispatch_btm.html",
+    "runId": "nx63eTzuUa5ucyJBR",
+    "datasetId": "GXeTNoqGwY2UiqZaM",
+    "finishedAt": "2026-10-22T10:48:31.197Z",
+    "text_chars": 6084,
+    "sha256": "f8e235887f141afd8df682ccf85ed6ba9121436c5bc2e2c371e66cd0cb762d4c",
+    "sourceItems": "sam-current-method-items.json",
+    "evidenceKind": "official full page body"
+  },
+  {
+    "url": "https://samrepo.nlr.gov/help/battery_storage_btm.html",
+    "runId": "nx63eTzuUa5ucyJBR",
+    "datasetId": "GXeTNoqGwY2UiqZaM",
+    "finishedAt": "2026-10-22T10:48:31.197Z",
+    "text_chars": 36317,
+    "sha256": "b42fb169fb891fe3f47f39e66c1b16467c2c3825e02c6c0ffbf040453535dbe5",
+    "sourceItems": "sam-current-method-items.json",
+    "evidenceKind": "official full page body"
+  },
+  {
+    "url": "https://samrepo.nlr.gov/help/battery_dispatch_fom.html",
+    "runId": "nx63eTzuUa5ucyJBR",
+    "datasetId": "GXeTNoqGwY2UiqZaM",
+    "finishedAt": "2026-10-22T10:48:31.197Z",
+    "text_chars": 5188,
+    "sha256": "2f59a4dd4882747f098c8fb5f9fc10f47a7899d31c227dfd8f558a9044cbec48",
+    "sourceItems": "sam-current-method-items.json",
+    "evidenceKind": "official full page body"
+  },
+  {
+    "url": "https://sam.nlr.gov/battery-storage/battery-publications.html",
+    "runId": "nx63eTzuUa5ucyJBR",
+    "datasetId": "GXeTNoqGwY2UiqZaM",
+    "finishedAt": "2026-10-22T10:48:31.197Z",
+    "text_chars": 4271,
+    "sha256": "31b01c98a2acc12e527744933307210767b7799992d2c499d13488cb56704a78",
+    "sourceItems": "sam-current-method-items.json",
+    "evidenceKind": "official full page body"
+  },
+  {
+    "url": "https://github.com/NatLabRockies/ssc/blob/develop/shared/lib_battery_powerflow.cpp",
+    "runId": "nx63eTzuUa5ucyJBR",
+    "datasetId": "GXeTNoqGwY2UiqZaM",
+    "finishedAt": "2026-10-22T10:48:31.197Z",
+    "text_chars": 308,
+    "sha256": "9df75bfc2fc09728e4086ac12df761fa24666c4d51bb85c16e5221eceb4c2e62",
+    "sourceItems": "sam-current-method-items.json",
+    "evidenceKind": "file metadata only; no source code body"
+  },
+  {
+    "url": "https://github.com/NatLabRockies/ssc/blob/develop/shared/lib_battery_dispatch.cpp",
+    "runId": "nx63eTzuUa5ucyJBR",
+    "datasetId": "GXeTNoqGwY2UiqZaM",
+    "finishedAt": "2026-10-22T10:48:31.197Z",
+    "text_chars": 307,
+    "sha256": "2cca07429fd06415e2be9630af199548c8ef651cd7fc6f80420655c8853c6628",
+    "sourceItems": "sam-current-method-items.json",
+    "evidenceKind": "file metadata only; no source code body"
+  },
+  {
+    "url": "https://nrel-pysam.readthedocs.io/en/main/installation.html",
+    "runId": "JYqy0v2gcTgLh9c61",
+    "datasetId": "EgAWFr42RZNOitzYO",
+    "finishedAt": "2026-10-22T10:52:24.008Z",
+    "text_chars": 633,
+    "sha256": "f3cc1e42ca8f33bd5936ca3f63323d385eec10a553f0620b41310c95b2efc11d",
+    "sourceItems": "pysam-method-items.json",
+    "evidenceKind": "official full page body"
+  },
+  {
+    "url": "https://samrepo.nlr.gov/help/grid_outage.html",
+    "runId": "JYqy0v2gcTgLh9c61",
+    "datasetId": "EgAWFr42RZNOitzYO",
+    "finishedAt": "2026-10-22T10:52:24.008Z",
+    "text_chars": 8290,
+    "sha256": "7d6a82b2353b9b00160a7a602eb455387426a8589dac33f90f610e219839f9fd",
+    "sourceItems": "pysam-method-items.json",
+    "evidenceKind": "official full page body"
+  },
+  {
+    "url": "https://nrel-pysam.readthedocs.io/en/main/modules/BatteryStateful.html",
+    "runId": "JYqy0v2gcTgLh9c61",
+    "datasetId": "EgAWFr42RZNOitzYO",
+    "finishedAt": "2026-10-22T10:52:24.008Z",
+    "text_chars": 48732,
+    "sha256": "70791b975f8855c3bd94b245d1c2eee115e3ad0ba6a9a6a155009eb412dfb489",
+    "sourceItems": "pysam-method-items.json",
+    "evidenceKind": "official full page body"
+  },
+  {
+    "url": "https://nrel-pysam.readthedocs.io/en/main/modules/Battery.html",
+    "runId": "JYqy0v2gcTgLh9c61",
+    "datasetId": "EgAWFr42RZNOitzYO",
+    "finishedAt": "2026-10-22T10:52:24.008Z",
+    "text_chars": 146750,
+    "sha256": "a0c39c836512114bf7a567bbff00cf781f97fe8a02bb376587e50d99e936f827",
+    "sourceItems": "pysam-method-items.json",
+    "evidenceKind": "official full page body"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "version": "8.0.0",
+  "checks": [
+    "official_current_charge_and_vi_power",
+    "official_25h_state_continuity",
+    "official_command_is_not_delivered_power",
+    "official_configuration_readback"
+  ],
+  "first_charge_residual_ah": 0.0,
+  "25h_residual_ah": 4.973799150320701e-14,
+  "requested_kw": 1000,
+  "actual_kw": 14.863500464695754,
+  "actual_soc": 15.000084861817301
+}

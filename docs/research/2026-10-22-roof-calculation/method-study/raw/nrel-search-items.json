@@ -1,0 +1,91 @@
+[
+  {
+    "searchQuery": {
+      "term": "site:sam.nrel.gov battery technoeconomic modeling 64641 state of charge dispatch",
+      "url": "http://www.google.com/search?q=site%3Asam.nrel.gov+battery+technoeconomic+modeling+64641+state+of+charge+dispatch&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asam.nrel.gov+battery+technoeconomic+modeling+64641+state+of+charge+dispatch&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "site:samrepo.nrelcloud.org help battery storage dispatch self consumption state of charge",
+      "url": "http://www.google.com/search?q=site%3Asamrepo.nrelcloud.org+help+battery+storage+dispatch+self+consumption+state+of+charge&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Asamrepo.nrelcloud.org+help+battery+storage+dispatch+self+consumption+state+of+charge&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [
+      {
+        "title": "Battery Storage: Front of Meter",
+        "websiteTitle": "nrelcloud.org",
+        "url": "https://samrepo.nrelcloud.org/help/battery_storage_fom.html",
+        "displayedUrl": "https://samrepo.nrelcloud.org › help › battery_storage_f...",
+        "description": "The default values state of charge range of 15% to 95% is reasonable for most Battery voltage varies with state of charge as the internal open circuit potential",
+        "emphasizedKeywords": [
+          "state of charge",
+          "Battery",
+          "state of charge"
+        ],
+        "siteLinks": [],
+        "productInfo": {},
+        "type": "organic",
+        "position": 1
+      }
+    ],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  },
+  {
+    "searchQuery": {
+      "term": "site:github.com/NREL/ssc battery powerflow state of charge grid charge",
+      "url": "http://www.google.com/search?q=site%3Agithub.com%2FNREL%2Fssc+battery+powerflow+state+of+charge+grid+charge&gl=us",
+      "device": "DESKTOP",
+      "page": 1,
+      "type": "SEARCH",
+      "domain": "google.com",
+      "countryCode": "US",
+      "languageCode": null,
+      "locationUule": null,
+      "resultsPerPage": 10
+    },
+    "url": "http://www.google.com/search?q=site%3Agithub.com%2FNREL%2Fssc+battery+powerflow+state+of+charge+grid+charge&gl=us",
+    "hasNextPage": false,
+    "serpProviderCode": "OX",
+    "relatedQueries": [],
+    "paidResults": [],
+    "paidProducts": [],
+    "organicResults": [],
+    "suggestedResults": [],
+    "peopleAlsoAsk": [],
+    "customData": null
+  }
+]

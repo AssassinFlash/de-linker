@@ -1,0 +1,32 @@
+{
+  "startUrls": [
+    {
+      "url": "https://samrepo.nrelcloud.org/help/battery_dispatch.html"
+    },
+    {
+      "url": "https://samrepo.nrelcloud.org/help/battery_storage_btm.html"
+    },
+    {
+      "url": "https://samrepo.nrelcloud.org/help/battery_storage.html"
+    },
+    {
+      "url": "https://sam.nrel.gov/battery-storage/battery-publications.html"
+    },
+    {
+      "url": "https://sam.nrel.gov/battery-storage.html"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/NREL/ssc/develop/shared/lib_battery_powerflow.cpp"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/NREL/ssc/develop/shared/lib_battery_dispatch.cpp"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 7,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

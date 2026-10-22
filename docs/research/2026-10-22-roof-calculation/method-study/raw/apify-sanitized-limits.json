@@ -1,0 +1,10 @@
+{
+  "limits": {
+    "maxActorMemoryGbytes": 16,
+    "maxConcurrentActorJobs": 5
+  },
+  "current": {
+    "actorMemoryGbytes": 0,
+    "activeActorJobCount": 0
+  }
+}
