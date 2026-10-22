@@ -18,7 +18,7 @@ from uuid import uuid4
 from .canonical import Object, decode_object, digest, encode
 from .dependencies import verify_dependencies
 from .errors import Conflict, InvalidInput, VersionUnavailable
-from .schema import SCHEMA_VERSION
+from .schema import READABLE_SCHEMA_VERSIONS
 from .storage import Blobs
 from .workspace import Workspace
 
@@ -26,7 +26,8 @@ from .workspace import Workspace
 def _check_database(path: Path, blobs: Blobs) -> None:
     connection = sqlite3.connect(f"{path.resolve().as_uri()}?mode=ro", uri=True)
     try:
-        if connection.execute("PRAGMA user_version").fetchone()[0] != SCHEMA_VERSION:
+        version = connection.execute("PRAGMA user_version").fetchone()[0]
+        if version not in READABLE_SCHEMA_VERSIONS:
             raise VersionUnavailable("unsupported archive schema")
         if connection.execute("PRAGMA integrity_check").fetchall() != [("ok",)]:
             raise VersionUnavailable("archive database integrity check failed")
@@ -46,6 +47,11 @@ def _check_database(path: Path, blobs: Blobs) -> None:
             "UNION SELECT content_sha256 FROM artifacts "
             "UNION SELECT branding_sha256 FROM artifacts WHERE branding_sha256 IS NOT NULL "
             "UNION SELECT snapshot_sha256 FROM handoffs"
+            + (
+                " UNION SELECT receipt_sha256 FROM principal_closures"
+                if version >= 2
+                else ""
+            )
         ).fetchall()
         for (sha256,) in references:
             blobs.read(sha256)
@@ -193,6 +199,10 @@ def restore(archive: Path, destination: Path) -> Workspace:
         if digest(database.read_bytes()) != manifest["database_sha256"]:
             raise VersionUnavailable("archive changed during restore")
         _check_database(database, blobs)
+        # Upgrade a verified legacy snapshot privately before publishing the
+        # restored directory. The source archive and its hash stay unchanged.
+        migrated = Workspace(temporary)
+        _check_database(migrated.database.path, migrated.blobs)
         descriptor = os.open(temporary, os.O_RDONLY)
         try:
             os.fsync(descriptor)

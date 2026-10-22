@@ -15,7 +15,7 @@ from typing import cast
 from uuid import uuid4
 
 from . import commands
-from .access import positive_integer, project_row
+from .access import active_actor, positive_integer, project_row
 from .canonical import Object, digest, encode
 from .errors import Conflict, InvalidInput, NotFound, VersionUnavailable
 from .records import Actor, Context, JobState, Project, Run
@@ -57,11 +57,14 @@ class Workspace:
         )
 
     def create(self, actor: Actor, title: str, inputs: Object, *, key: str) -> Project:
+        if actor.kind == "team":
+            raise NotFound("project not found")
         if not title.strip():
             raise InvalidInput("project title required")
         command = commands.command_hash({"title": title, "inputs": inputs}, key)
         content = self.blobs.put_object(inputs)
         with self.database.transaction() as connection:
+            active_actor(connection, actor)
             receipt = commands.replay(
                 connection, self.blobs, actor, "create", key, command
             )
@@ -104,6 +107,7 @@ class Workspace:
 
     def projects(self, actor: Actor) -> list[Project]:
         with self.database.read() as connection:
+            active_actor(connection, actor)
             rows = connection.execute(
                 "SELECT id FROM projects WHERE owner=? ORDER BY updated_at DESC, id",
                 (actor.key,),

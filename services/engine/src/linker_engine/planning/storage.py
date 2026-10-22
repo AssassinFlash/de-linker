@@ -17,7 +17,7 @@ from uuid import uuid4
 
 from .canonical import Object, decode_object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
-from .schema import SCHEMA, SCHEMA_VERSION
+from .schema import READABLE_SCHEMA_VERSIONS, SCHEMA, SCHEMA_VERSION
 
 
 def _sync_directory(directory: Path) -> None:
@@ -103,11 +103,20 @@ class Database:
         connection = self.connect()
         try:
             connection.execute("PRAGMA journal_mode=WAL")
+            connection.execute("BEGIN IMMEDIATE")
             current = connection.execute("PRAGMA user_version").fetchone()[0]
-            if current not in (0, SCHEMA_VERSION):
+            if current not in (0, *READABLE_SCHEMA_VERSIONS):
                 raise VersionUnavailable("unsupported planning database version")
-            connection.executescript(SCHEMA)
+            # Repository-owned CREATE TABLE/INDEX statements only. execute,
+            # rather than executescript, retains the migration's write lock.
+            for statement in SCHEMA.split(";"):
+                if statement.strip():
+                    connection.execute(statement)
             connection.execute(f"PRAGMA user_version={SCHEMA_VERSION}")
+            connection.commit()
+        except BaseException:
+            connection.rollback()
+            raise
         finally:
             connection.close()
         path.chmod(0o600)

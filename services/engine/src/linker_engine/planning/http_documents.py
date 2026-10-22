@@ -20,6 +20,10 @@ class Command(Document):
     schema_version: SchemaVersion
 
 
+class SessionClaim(Command):
+    key: Key
+
+
 class Cursor(Document):
     updated_at: Annotated[float, Field(allow_inf_nan=False)]
     id: Id

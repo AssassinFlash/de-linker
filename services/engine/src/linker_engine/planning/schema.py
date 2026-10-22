@@ -1,6 +1,7 @@
-"""Planning persistence, schema v1; no mutable physics in WordPress post metadata."""
+"""Versioned planning persistence; no mutable physics in WP post metadata."""
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
+READABLE_SCHEMA_VERSIONS = (1, 2)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS projects (
@@ -94,6 +95,12 @@ CREATE TABLE IF NOT EXISTS ownership_transfers (
     project_id TEXT PRIMARY KEY REFERENCES projects(id),
     previous_owner TEXT NOT NULL,
     new_owner TEXT NOT NULL,
+    created_at REAL NOT NULL
+);
+CREATE TABLE IF NOT EXISTS principal_closures (
+    guest TEXT PRIMARY KEY,
+    new_owner TEXT NOT NULL,
+    receipt_sha256 TEXT NOT NULL,
     created_at REAL NOT NULL
 );
 """

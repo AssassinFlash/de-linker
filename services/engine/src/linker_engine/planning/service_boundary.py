@@ -22,9 +22,11 @@ from .errors import NotFound
 from .records import Actor, ActorKind
 
 ACTOR_SCOPE = "linker.planning.verified_actor"
+PREVIOUS_GUEST_SCOPE = "linker.planning.verified_previous_guest"
 TOKEN_HEADER = b"x-linker-service-token"
 KIND_HEADER = b"x-linker-planner-principal-kind"
 SUBJECT_HEADER = b"x-linker-planner-principal-subject"
+PREVIOUS_GUEST_HEADER = b"x-linker-planner-previous-guest"
 logger = logging.getLogger(__name__)
 
 
@@ -123,6 +125,13 @@ class ServiceBoundary:
         actor = Actor(
             cast(ActorKind, kinds[0].decode("ascii")), subjects[0].decode("ascii")
         )
+        previous = headers.get(PREVIOUS_GUEST_HEADER, [])
+        if previous and (
+            len(previous) != 1
+            or re.fullmatch(rb"[a-zA-Z0-9][a-zA-Z0-9:_-]{0,255}", previous[0]) is None
+        ):
+            await answer(private_send, 400, "verified_previous_guest_required")
+            return
         declared = headers.get(b"content-length", [])
         if len(declared) > 1 or (
             declared and re.fullmatch(rb"[0-9]+", declared[0]) is None
@@ -172,6 +181,9 @@ class ServiceBoundary:
             return
         scope = dict(scope)
         scope[ACTOR_SCOPE] = actor
+        scope.pop(PREVIOUS_GUEST_SCOPE, None)
+        if previous:
+            scope[PREVIOUS_GUEST_SCOPE] = Actor("guest", previous[0].decode("ascii"))
         sent = False
 
         async def replay() -> Message:
@@ -224,4 +236,11 @@ def verified_actor(scope: Scope, *, write: bool = False) -> Actor:
         raise RuntimeError("private service identity boundary is absent")
     if write and actor.kind == "team":
         raise NotFound("project not found")
+    return actor
+
+
+def verified_previous_guest(scope: Scope) -> Actor:
+    actor = scope.get(PREVIOUS_GUEST_SCOPE)
+    if not isinstance(actor, Actor) or actor.kind != "guest":
+        raise NotFound("verified previous guest is absent")
     return actor

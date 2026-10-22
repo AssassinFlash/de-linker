@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from .access import positive_integer, project_row
+from .access import active_actor, positive_integer, project_row
 from .canonical import Json, Object
 from .errors import InvalidInput
 from .http_documents import Cursor
@@ -21,6 +21,7 @@ def project_page(
         parameters.extend((after.updated_at, after.updated_at, after.id))
     parameters.append(size + 1)
     with workspace.database.read() as connection:
+        active_actor(connection, actor)
         rows = connection.execute(
             "SELECT p.id, p.title, p.revision, p.updated_at, r.input_sha256 "
             "FROM projects p JOIN revisions r ON r.project_id=p.id AND r.number=p.revision "

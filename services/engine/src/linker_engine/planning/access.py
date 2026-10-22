@@ -9,6 +9,16 @@ from .errors import InvalidInput, NotFound
 from .records import Actor
 
 
+def active_actor(connection: sqlite3.Connection, actor: Actor) -> None:
+    if (
+        actor.kind == "guest"
+        and connection.execute(
+            "SELECT 1 FROM principal_closures WHERE guest=?", (actor.key,)
+        ).fetchone()
+    ):
+        raise NotFound("project not found")
+
+
 def project_row(
     connection: sqlite3.Connection,
     actor: Actor,
@@ -16,6 +26,9 @@ def project_row(
     *,
     write: bool = False,
 ) -> sqlite3.Row:
+    active_actor(connection, actor)
+    if write and actor.kind == "team":
+        raise NotFound("project not found")
     row = connection.execute(
         "SELECT * FROM projects WHERE id=?", (project_id,)
     ).fetchone()

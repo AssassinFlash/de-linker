@@ -33,6 +33,7 @@ from .errors import (
     PlanningError,
     VersionUnavailable,
 )
+from .guest_claims import GuestClaims
 from .http_documents import (
     AssetRead,
     BatteryScenario,
@@ -45,11 +46,12 @@ from .http_documents import (
     ProjectRevise,
     ProjectRuns,
     RunRead,
+    SessionClaim,
 )
 from .http_index import project_page, run_page
 from .http_views import asset_view, project_view, run_view
 from .profile_import import ProfileImport
-from .service_boundary import ServiceBoundary, verified_actor
+from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .workspace import Workspace
 
 logger = logging.getLogger(__name__)
@@ -83,6 +85,7 @@ def create_private_app(
         raise InvalidInput("HTTP and energy service must share the same authority")
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
+    claims = GuestClaims(workspace)
 
     @app.exception_handler(PlanningError)
     async def domain_error(_request: Request, error: PlanningError) -> JSONResponse:
@@ -146,6 +149,13 @@ def create_private_app(
             "runtime_sha256": energy.kernel.runtime.sha256,
             "models": dict(energy.kernel.models),
         }
+
+    @app.post("/identity/claim-session")
+    def claim_session(body: SessionClaim, request: Request) -> Object:
+        user = verified_actor(request.scope, write=True)
+        if user.kind != "user":
+            raise NotFound("verified account required")
+        return claims.claim(verified_previous_guest(request.scope), user, key=body.key)
 
     @app.post("/projects/create")
     def create(body: ProjectCreate, request: Request) -> Object:
