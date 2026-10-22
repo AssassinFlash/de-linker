@@ -229,9 +229,10 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Failed proof preserves a held inquiry; native nonce failures still create none.
+	 * Optional policy preserves a held inquiry; native nonce failures still create none.
 	 */
 	public function test_invalid_proofs_save_held_inquiry_while_bad_nonce_has_no_side_effects(): void {
+		$this->optional_business_verification();
 		$marker = self::newest_mail_job();
 		$post   = $this->post();
 		$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, array( 'linker_inquiry_nonce' => 'forged' ) ) ) );

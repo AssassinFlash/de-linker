@@ -43,6 +43,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		$settings = array(
 			'LINKER_PUBLIC_PROTECTION_MODE' => 'enforce',
+			'LINKER_BUSINESS_VERIFICATION'  => 'optional',
 			'LINKER_TURNSTILE_SITE_KEY'     => '1x00000000000000000000AA',
 			'LINKER_TURNSTILE_SECRET_KEY'   => '1x0000000000000000000000000000000AA',
 			'LINKER_TURNSTILE_HOSTNAME'     => 'localhost',
@@ -124,6 +125,111 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			}
 		);
 		return $post;
+	}
+
+	/** Required proof cannot enter either persistent review or grouping.
+	 *
+	 * @dataProvider required_failures
+	 * @param string $action Native door.
+	 * @param string $proof Invalid proof shape.
+	 * @param string $lane Content/individual variation.
+	 */
+	public function test_required_verification_rejects_before_any_native_record( string $action, string $proof, string $lane ): void {
+		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
+		$post = $this->post( 'wrong-scope' === $proof, 'contact' === $action ? 'inquiry' : 'contact' );
+		if ( 'signed-only' === $proof ) {
+			$identity = Identity::current();
+			self::assertInstanceOf( Identity::class, $identity );
+			$post['linker_proof'] = ( new Proof() )->issue( 'verified', $action, $identity, wp_generate_uuid4() );
+		} elseif ( 'wrong-scope' !== $proof ) {
+			$post['linker_proof'] = $proof;
+		}
+		if ( 'normal' !== $lane ) {
+			$post['message']                  = 'Вам перевод 100 руб. забрать тут https://fredmer.buzz/path';
+			$post['linker_individual_review'] = 'individual' === $lane ? '1' : '';
+		}
+		$jobs     = self::newest_mail_job();
+		$capacity = get_option( IntakeStore::OPTION );
+		$budget   = get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
+		$result   = 'contact' === $action ? ( new ContactHandler() )->process( $post ) : ( new Handler() )->process( $post );
+		if ( 'contact' === $action ) {
+			self::assertSame( 'verification_failed', $result );
+		} else {
+			self::assertInstanceOf( WP_Error::class, $result );
+			self::assertSame( 'linker_admission_proof', $result->get_error_code() );
+		}
+		self::assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
+		self::assertSame( $capacity, get_option( IntakeStore::OPTION ) );
+		self::assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+	}
+
+	/**
+	 * Missing/forged scripts exercise both doors and each old fallback.
+	 *
+	 * @return array<string,array{string,string,string}> Native cases.
+	 */
+	public static function required_failures(): array {
+		$cases = array();
+		foreach ( array( 'contact', 'inquiry' ) as $action ) {
+			foreach ( array( '', 'forged', 'wrong-scope', 'signed-only' ) as $proof ) {
+				foreach ( array( 'normal', 'campaign', 'individual' ) as $lane ) {
+					$cases[ $action . '/' . $proof . '/' . $lane ] = array( $action, $proof, $lane );
+				}
+			}
+		}
+		return $cases;
+	}
+
+	/** Valid customers retain their complete native result and safe UUID retries.
+	 *
+	 * @testWith ["contact"]
+	 *           ["inquiry"]
+	 * @param string $action Native door.
+	 */
+	public function test_required_valid_proof_saves_once_and_cannot_be_reused_for_new_input( string $action ): void {
+		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
+		$post = $this->post( true, $action );
+		$send = 'contact' === $action ? new ContactHandler() : new Handler();
+		$send->process( $post );
+		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $orders );
+		self::assertCount( 1, $orders );
+		$order = $orders[0];
+		self::assertSame( $post['message'], $order->get_customer_note() );
+		self::assertFalse( NotificationHold::held( $order ) );
+		$retry                 = $post;
+		$retry['linker_proof'] = '';
+		$send->process( $retry );
+		$retry_orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $retry_orders );
+		self::assertCount( 1, $retry_orders );
+		$retry['message'] .= ' changed';
+		$changed           = $send->process( $retry );
+		self::assertTrue( 'contact' === $action ? 'verification_failed' === $changed : $changed instanceof WP_Error );
+		$post['linker_request_id'] = wp_generate_uuid4();
+		$reused                    = $send->process( $post );
+		self::assertTrue( 'contact' === $action ? 'verification_failed' === $reused : $reused instanceof WP_Error );
+		$final_orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $final_orders );
+		self::assertCount( 1, $final_orders );
+	}
+
+	/** Service configuration failure retains a retry, never a new review record. */
+	public function test_required_configuration_outage_cannot_persist_an_unverified_inquiry(): void {
+		putenv( 'LINKER_BUSINESS_VERIFICATION=required' );
+		$post = $this->post( true );
+		$old  = getenv( 'LINKER_TURNSTILE_SECRET_KEY' );
+		putenv( 'LINKER_TURNSTILE_SECRET_KEY' );
+		try {
+			$result = ( new Handler() )->process( $post );
+		} finally {
+			putenv( false === $old ? 'LINKER_TURNSTILE_SECRET_KEY' : 'LINKER_TURNSTILE_SECRET_KEY=' . $old );
+		}
+		self::assertInstanceOf( WP_Error::class, $result );
+		self::assertSame( 'linker_admission_configuration', $result->get_error_code() );
+		self::assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+		self::assertFalse( get_option( IntakeStore::OPTION ) );
 	}
 
 	/** Missing proof saves complete data, no snapshot, mail, model or receipt budget. */

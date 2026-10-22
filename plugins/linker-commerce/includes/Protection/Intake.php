@@ -31,39 +31,51 @@ final class Intake {
 	 * @param string   $id Logical business request.
 	 */
 	public static function verified( string $proof, string $action, Identity $identity, string $id ): bool {
+		return null !== self::verified_proof( $proof, $action, $identity, $id );
+	}
+
+	/**
+	 * Keep the checked receipt reference for atomic consumption at review dispatch.
+	 *
+	 * @param string   $proof Browser proof.
+	 * @param string   $action Native door.
+	 * @param Identity $identity Native subject.
+	 * @param string   $id Logical business request.
+	 * @return array{id:string,binding:string,action:string,single:bool}|null
+	 */
+	public static function verified_proof( string $proof, string $action, Identity $identity, string $id ): ?array {
 		$checked = ( new Proof() )->read( $proof, 'verified', $action, $identity );
 		if ( null === $checked ) {
-			return false;
+			return null;
 		}
 		// A lookup checks the fingerprint; verification uses a private canonical
 		// fingerprint, so inspect through a dedicated journal validity check.
-		return ( new Ledger() )->proof_valid(
-			array(
-				'id'      => $checked['id'],
-				'binding' => $identity->binding(),
-				'action'  => $action,
-				'single'  => true,
-			),
-			$id
+		$reference = array(
+			'id'      => $checked['id'],
+			'binding' => $identity->binding(),
+			'action'  => $action,
+			'single'  => true,
 		);
+		return ( new Ledger() )->proof_valid( $reference, $id ) ? $reference : null;
 	}
 
 	/**
 	 * Native admission still enforces browser/account/connection dimensions.
 	 *
-	 * @param string                                         $lane Server-selected review class.
-	 * @param string                                         $action Native business action.
-	 * @param string                                         $id Stable request UUID.
-	 * @param string                                         $fingerprint Bound semantic HMAC.
-	 * @param Identity                                       $identity Native subject.
-	 * @param array<string,mixed>                            $payload Validated semantic input.
-	 * @param Allowance[]                                    $limits Existing sourced policy.
-	 * @param list<array{source:Allowance,target:Allowance}> $carry Existing account carry.
-	 * @param string[]                                       $owners Existing native privacy owners.
-	 * @param callable(): (WC_Order|WP_Error)                $work Native writer.
+	 * @param string                                                            $lane Server-selected review class.
+	 * @param string                                                            $action Native business action.
+	 * @param string                                                            $id Stable request UUID.
+	 * @param string                                                            $fingerprint Bound semantic HMAC.
+	 * @param Identity                                                          $identity Native subject.
+	 * @param array<string,mixed>                                               $payload Validated semantic input.
+	 * @param Allowance[]                                                       $limits Existing sourced policy.
+	 * @param list<array{source:Allowance,target:Allowance}>                    $carry Existing account carry.
+	 * @param string[]                                                          $owners Existing native privacy owners.
+	 * @param callable(): (WC_Order|WP_Error)                                   $work Native writer.
+	 * @param array{id:string,binding:string,action:string,single:bool}|array{} $proof Required checked reference; empty only for the private optional policy.
 	 * @return WC_Order|WP_Error
 	 */
-	public static function run( string $lane, string $action, string $id, string $fingerprint, Identity $identity, array $payload, array $limits, array $carry, array $owners, callable $work ): WC_Order|WP_Error {
+	public static function run( string $lane, string $action, string $id, string $fingerprint, Identity $identity, array $payload, array $limits, array $carry, array $owners, callable $work, array $proof = array() ): WC_Order|WP_Error {
 		if ( ! wp_is_uuid( $id, 4 ) || ! isset( IntakeStore::CAPACITY[ $lane ] ) ) {
 			return new WP_Error( 'linker_admission_input', __( 'Please check your entries and send the form again.', 'linker-commerce' ) );
 		}
@@ -72,9 +84,12 @@ final class Intake {
 			return new WP_Error( 'linker_intake_size', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) );
 		}
 		$result = IntakeStore::edit(
-			static function ( array &$state ) use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners, $work ): WC_Order|WP_Error {
+			static function ( array &$state ) use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners, $work, $proof ): WC_Order|WP_Error {
 				$ledger = new Ledger();
-				$entry  = $state['entries'][ $id ] ?? null;
+				if ( array() !== $proof && ! $ledger->proof_valid( $proof, $id ) ) {
+					return self::problem( new WP_Error( 'linker_admission_proof' ) );
+				}
+				$entry = $state['entries'][ $id ] ?? null;
 				if ( is_array( $entry ) ) {
 					if ( $entry['fingerprint'] !== $fingerprint || $entry['binding'] !== $identity->binding() || $entry['action'] !== $action ) {
 						return new WP_Error( 'linker_admission_payload_changed', __( 'Your entries changed. Please reload the form before sending a new request.', 'linker-commerce' ) );
@@ -94,7 +109,7 @@ final class Intake {
 						return self::problem( new WP_Error( 'linker_intake_pending' ) );
 					}
 					if ( 'reserved' === $receipt['status'] ) {
-						$dispatch = $ledger->dispatch( $id, $fingerprint );
+						$dispatch = $ledger->dispatch( $id, $fingerprint, $proof );
 						if ( is_wp_error( $dispatch ) ) {
 							return self::problem( $dispatch );
 						}
@@ -122,7 +137,7 @@ final class Intake {
 				if ( 'campaign' === $lane ) {
 					$state['campaign_count'] = min( PHP_INT_MAX - 1, (int) $state['campaign_count'] ) + 1;
 					if ( $used >= IntakeStore::CAPACITY[ $lane ] ) {
-						$sent = $ledger->dispatch( $id, $fingerprint );
+						$sent = $ledger->dispatch( $id, $fingerprint, $proof );
 						if ( is_wp_error( $sent ) ) {
 							return self::problem( $sent );
 						}
@@ -141,7 +156,7 @@ final class Intake {
 					'owners'      => array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ),
 				);
 				IntakeStore::save( $state );
-				$sent = $ledger->dispatch( $id, $fingerprint );
+				$sent = $ledger->dispatch( $id, $fingerprint, $proof );
 				if ( is_wp_error( $sent ) ) {
 					return self::problem( $sent );
 				}
