@@ -55,7 +55,11 @@ budget or status-driven listeners. A hold never arises from a Jev label. Held
 submissions have no immutable model snapshot, scheduled assessment or mail job.
 Staff release has capability and record-bound nonce checks; it creates exactly
 one internal job when there was no original job, otherwise #537 preserves the
-original message. Release schedules through the existing throttle and never
+original message. An explicit authenticated staff release promotes its immutable
+job into the reserved critical allocation through #545's private JobStore API;
+ordinary public submissions cannot promote themselves. The same transaction
+rolls back a failed capture, promotion, audit or schedule while preserving the
+hold and existing transport history. Release schedules through the existing throttle and never
 creates a customer acknowledgement. Registry entries contain HMACs and native IDs,
 not messages, email addresses or URLs. Native erasure covers the added metadata.
 

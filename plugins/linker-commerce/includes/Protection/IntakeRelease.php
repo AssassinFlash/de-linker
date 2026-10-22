@@ -61,7 +61,8 @@ final class IntakeRelease {
 					if ( $job <= 0 || null === ( new JobStore() )->load( $job ) ) {
 						throw new \RuntimeException( 'intake_notification_capture_failed' );
 					}
-					$action = as_schedule_single_action( max( time() + 2, ( new Throttle() )->next_slot( time() ) ), Outbox::HOOK, array( $job ), Outbox::GROUP, true );
+					( new JobStore() )->promote( $job );
+					$action = as_schedule_single_action( max( time() + 2, ( new Throttle() )->next_message_slot( time(), $message, true ) ), Outbox::HOOK, array( $job ), Outbox::GROUP, true );
 					$event  = array(
 						'at'            => time(),
 						'user'          => get_current_user_id(),
