@@ -293,7 +293,7 @@
 			} );
 		}
 
-		register.addEventListener( 'input', ( event ) => {
+		const clearEditedFeedback = ( event ) => {
 			const row = event.target.closest( '.form-row' );
 			if ( row ) {
 				mark( row, false );
@@ -314,13 +314,9 @@
 					oneof.hidden = one;
 				}
 			}
-		} );
-		register.addEventListener( 'change', ( event ) => {
-			const row = event.target.closest( '.form-row' );
-			if ( row ) {
-				mark( row, false );
-			}
-		} );
+		};
+		register.addEventListener( 'input', clearEditedFeedback );
+		register.addEventListener( 'change', clearEditedFeedback );
 
 		document.addEventListener(
 			'submit',

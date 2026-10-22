@@ -269,15 +269,15 @@ test('a malformed website keeps the company step open; a VAT ID alone satisfies 
  assert.equal(vatOnly.form.dataset.activeStep,'2');
 });
 
-for(const [name,value] of [['linker_company_website','example.test'],['billing_vat_id','DE123456789']]){
- test(`correcting ${name} clears the empty alternative's stale error`,()=>{
+for(const eventType of ['input','change']) for(const [name,value] of [['linker_company_website','example.test'],['billing_vat_id','DE123456789']]){
+ test(`correcting ${name} by ${eventType} clears the empty alternative's stale error`,()=>{
   const {win,form,field}=registerForm();
   completeCompany(form,{site:'',vat:''});
   form.querySelector('[data-next]').click();
   assert.equal(field('linker_company_website').getAttribute('aria-invalid'),'true');
   assert.equal(field('billing_vat_id').getAttribute('aria-invalid'),'true');
   field(name).value=value;
-  field(name).dispatchEvent(new win.Event('input',{bubbles:true}));
+  field(name).dispatchEvent(new win.Event(eventType,{bubbles:true}));
   for(const other of ['linker_company_website','billing_vat_id']) assert.equal(field(other).hasAttribute('aria-invalid'),false);
   form.querySelector('[data-next]').click();
   assert.equal(form.dataset.activeStep,'2');
