@@ -8,7 +8,8 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from linker_engine.planning.brief import PlanningBrief, brief_schema
+from linker_engine.planning.brief import PlanningBrief, brief_schema, validate_new_brief
+from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.http_documents import ProjectCreate
 
 
@@ -65,9 +66,10 @@ def test_timezone_and_country_are_not_selected_by_interface_language() -> None:
     )
     brief["site"] = site
     assert PlanningBrief.model_validate(brief).site.timezone == "Europe/Oslo"
+    validate_new_brief({"brief": brief})
     site["timezone"] = "Europe/Imaginary"
-    with pytest.raises(ValidationError):
-        PlanningBrief.model_validate(brief)
+    with pytest.raises(InvalidInput, match="known IANA"):
+        validate_new_brief({"brief": brief})
 
 
 @pytest.mark.parametrize(
@@ -78,8 +80,8 @@ def test_host_tzif_aliases_are_not_project_iana_names(name: str) -> None:
     site = dict(brief["site"])  # type: ignore[call-overload]
     site["timezone"] = name
     brief["site"] = site
-    with pytest.raises(ValidationError, match="known IANA"):
-        PlanningBrief.model_validate(brief)
+    with pytest.raises(InvalidInput, match="known IANA"):
+        validate_new_brief({"brief": brief})
 
 
 @pytest.mark.parametrize(

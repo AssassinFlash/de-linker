@@ -13,6 +13,7 @@ import pytest
 from fastapi.testclient import TestClient
 from starlette.types import Message, Receive, Scope, Send
 
+from linker_engine.planning import timezone_rules
 from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.energy_kernel import EnergyKernel
@@ -34,6 +35,26 @@ TOKEN = "synthetic-private-service-token"
 USER = Actor("user", "wordpress:17")
 FOREIGN = Actor("user", "wordpress:18")
 TEAM = Actor("team", "wordpress:auditor")
+
+
+def brief_inputs(timezone: str) -> Object:
+    return {
+        "brief": {
+            "schema_version": 1,
+            "project_use": "commercial",
+            "system_scope": None,
+            "site": {
+                "country_code": "NO",
+                "location_label": "Synthetic site",
+                "latitude": None,
+                "longitude": None,
+                "coordinate_basis": "not_provided",
+                "timezone": timezone,
+            },
+            "annual_load": {"kwh": None, "basis": None, "source_note": ""},
+            "project_note": "",
+        }
+    }
 
 
 def headers(actor: Actor = USER) -> dict[str, str]:
@@ -192,6 +213,68 @@ def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
         response = rig.client.post(path, json=command, headers=headers())
         assert response.status_code == 422
     assert rig.post("/projects/list", {"page_size": 2, "after": None})["items"] == []
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+
+
+def test_saved_intake_receipts_survive_an_installed_timezone_name_change(
+    rig: Rig, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    create: Object = {
+        "title": "Zone receipt fixture",
+        "inputs": brief_inputs("Europe/Berlin"),
+        "key": "create-zone",
+    }
+    original = rig.post("/projects/create", create)
+    revise: Object = {
+        "project_id": original["id"],
+        "expected_revision": 1,
+        "inputs": brief_inputs("Europe/Oslo"),
+        "key": "revise-zone",
+    }
+    revised = rig.post("/projects/revise", revise)
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    monkeypatch.setattr(
+        timezone_rules, "installed_iana_names", lambda: frozenset({"UTC"})
+    )
+    assert rig.post("/projects/create", create) == original
+    assert rig.post("/projects/revise", revise) == revised
+    assert rig.replay("/projects/create", create)["result"] == original
+    assert rig.replay("/projects/revise", revise)["result"] == revised
+    for path, command in (
+        ("/projects/create", {**create, "key": "new-create"}),
+        ("/projects/revise", {**revise, "expected_revision": 2, "key": "new-revise"}),
+    ):
+        assert rig.replay(path, command)["status"] == "absent"
+        response = rig.client.post(
+            path, json={"schema_version": 1, **command}, headers=headers()
+        )
+        assert response.status_code == 422
+        assert response.json() == {"error": {"code": "invalid_input"}}
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+    assert (
+        rig.post("/projects/read", {"project_id": original["id"], "revision": None})
+        == revised
+    )
+
+
+@pytest.mark.parametrize(
+    "zone",
+    ["posixrules", "localtime", "right/UTC", "posix/Europe/Oslo", "Europe/Imaginary"],
+)
+def test_new_brief_rejects_non_iana_names_before_publishing_any_bytes(
+    rig: Rig, zone: str
+) -> None:
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    body: Object = {
+        "title": "Invalid zone fixture",
+        "inputs": brief_inputs(zone),
+        "key": "new-zone",
+    }
+    assert rig.replay("/projects/create", body)["status"] == "absent"
+    response = rig.client.post(
+        "/projects/create", json={"schema_version": 1, **body}, headers=headers()
+    )
+    assert response.status_code == 422
     assert set(rig.workspace.blobs.directory.rglob("*")) == before
 
 

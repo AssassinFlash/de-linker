@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
+from linker_engine.planning import timezone_rules
 from linker_engine.planning.canonical import digest, encode
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.errors import InvalidInput, VersionUnavailable
@@ -249,6 +250,16 @@ def test_truncated_tzif_with_valid_magic_is_a_named_version_error() -> None:
 def test_timezone_intake_rejects_host_special_files(name: str) -> None:
     with pytest.raises(InvalidInput, match="known IANA"):
         load_timezone(name)
+
+
+def test_special_tzif_files_stay_invalid_when_an_installed_host_lists_them(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    aliases = frozenset({"localtime", "posixrules", "right/UTC", "posix/Europe/Oslo"})
+    monkeypatch.setattr(timezone_rules, "installed_iana_names", lambda: aliases)
+    for name in aliases:
+        with pytest.raises(InvalidInput, match="known IANA"):
+            timezone_rules.require_iana_timezone(name)
 
 
 def test_pinned_timezone_replay_does_not_require_a_current_host_name() -> None:

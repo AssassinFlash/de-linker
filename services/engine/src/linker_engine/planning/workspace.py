@@ -16,6 +16,7 @@ from uuid import uuid4
 
 from . import commands
 from .access import active_actor, positive_integer, project_row
+from .brief import validate_new_brief
 from .canonical import Object, digest, encode
 from .errors import Conflict, InvalidInput, NotFound, VersionUnavailable
 from .records import Actor, Context, JobState, Project, Run
@@ -62,7 +63,6 @@ class Workspace:
         if not title.strip():
             raise InvalidInput("project title required")
         command = commands.command_hash({"title": title, "inputs": inputs}, key)
-        content = self.blobs.put_object(inputs)
         with self.database.transaction() as connection:
             active_actor(connection, actor)
             receipt = commands.replay(
@@ -72,6 +72,8 @@ class Workspace:
                 return self._project(
                     connection, actor, commands.receipt_string(receipt, "project_id"), 1
                 )
+            validate_new_brief(inputs)
+            content = self.blobs.put_object(inputs)
             project_id = uuid4().hex
             now = self.clock()
             connection.execute(
@@ -127,7 +129,6 @@ class Workspace:
         command = commands.command_hash(
             {"expected_revision": expected_revision, "inputs": inputs}, key
         )
-        content = self.blobs.put_object(inputs)
         scope = f"revise:{project_id}"
         with self.database.transaction() as connection:
             project = project_row(connection, actor, project_id, write=True)
@@ -143,6 +144,8 @@ class Workspace:
                 )
             if project["revision"] != expected_revision:
                 raise Conflict("project inputs have changed")
+            validate_new_brief(inputs)
+            content = self.blobs.put_object(inputs)
             number = expected_revision + 1
             now = self.clock()
             connection.execute(

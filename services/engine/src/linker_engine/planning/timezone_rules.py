@@ -38,7 +38,12 @@ def installed_iana_names() -> frozenset[str]:
 
 def require_iana_timezone(name: str) -> None:
     validate_zone_name(name)
-    if name not in installed_iana_names():
+    # available_timezones excludes several special files, but localtime can
+    # still appear on some hosts. Never accept host-local rules or alternate
+    # leap/POSIX trees as a named project location, even if they contain TZif.
+    if name.split("/", 1)[0] in {"localtime", "posixrules", "posix", "right"} or (
+        name not in installed_iana_names()
+    ):
         raise InvalidInput("a known IANA timezone key is required")
 
 

@@ -9,11 +9,12 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import Field, field_validator
+from pydantic import Field, ValidationError, field_validator
 
+from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
 from .errors import InvalidInput
-from .timezone_rules import require_iana_timezone
+from .timezone_rules import require_iana_timezone, validate_zone_name
 
 type Text = Annotated[str, Field(max_length=4096)]
 type Country = Annotated[str, Field(pattern=r"^[A-Z]{2}$")]
@@ -29,12 +30,12 @@ class SiteBrief(Document):
 
     @field_validator("timezone")
     @classmethod
-    def known_timezone(cls, value: str | None) -> str | None:
+    def timezone_key(cls, value: str | None) -> str | None:
         if value is not None:
             try:
-                require_iana_timezone(value)
+                validate_zone_name(value)
             except InvalidInput as error:
-                raise ValueError("known IANA timezone required") from error
+                raise ValueError("IANA timezone key syntax required") from error
         return value
 
 
@@ -51,6 +52,23 @@ class PlanningBrief(Document):
     site: SiteBrief
     annual_load: AnnualLoadBrief
     project_note: Text
+
+
+def validate_new_brief(inputs: Object) -> None:
+    """Current intake policy, only after an existing command receipt is checked.
+
+    The stable wire schema describes immutable inputs and their command hash.
+    Installed names may change after acknowledgement, so they cannot prevent
+    recovery of that original receipt. Historical time-series use pinned TZif.
+    """
+    if "brief" not in inputs:
+        return
+    try:
+        brief = PlanningBrief.model_validate(inputs["brief"])
+    except ValidationError as error:
+        raise InvalidInput("invalid project brief") from error
+    if brief.site.timezone is not None:
+        require_iana_timezone(brief.site.timezone)
 
 
 def brief_schema() -> dict[str, object]:
