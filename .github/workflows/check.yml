@@ -252,7 +252,7 @@ jobs:
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest'
+            --filter 'InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest'
 
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.

@@ -103,6 +103,9 @@ final class Queue {
 		$data = self::data( $order );
 		as_schedule_single_action( (int) ceil( (float) $data['deadline'] ), self::EXPIRE, array( $order->get_id() ), Outbox::GROUP, true );
 		as_enqueue_async_action( self::PROCESS, array( $order->get_id() ), Outbox::GROUP, true );
+		if ( class_exists( \WP_Async_Request::class ) ) {
+			AsyncRunner::enqueue( $order->get_id() );
+		}
 		return true;
 	}
 
@@ -338,6 +341,9 @@ final class Queue {
 	/** Register background handlers without doing any work in a submit. */
 	public function register(): void {
 		( new RecoverySchedule() )->register();
+		if ( class_exists( \WP_Async_Request::class ) ) {
+			new AsyncRunner();
+		}
 		add_action( self::PROCESS, array( $this, 'process' ) );
 		add_action( self::EXPIRE, array( $this, 'expire' ) );
 		add_action( self::FINISH, array( $this, 'finish' ), 10, 2 );
