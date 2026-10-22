@@ -1,0 +1,85 @@
+{
+  "active": [],
+  "adminBar": false,
+  "css": [
+    "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626156"
+  ],
+  "first": {
+    "images": [
+      {
+        "loaded": true,
+        "src": "https://de-linker.com/wp-content/plugins/linker-commerce/assets/faq-thumbs/108e054e92978925fcba84fdec47c8de6ab0dc5b.webp"
+      }
+    ],
+    "rect": {
+      "bottom": 269.9609375,
+      "height": 91,
+      "left": 81,
+      "right": 1359,
+      "top": 178.9609375,
+      "width": 1278,
+      "x": 81,
+      "y": 178.9609375
+    },
+    "title": "SAJ eSolar AIO3 Datenblatt (Englisch)"
+  },
+  "focus": {
+    "id": "linker-library-tab-documents",
+    "tag": "A",
+    "text": "Dokumente 3"
+  },
+  "fonts": "loaded",
+  "height": 1000,
+  "host": {
+    "bottom": 511.2578125,
+    "height": 361.4453125,
+    "left": 80,
+    "right": 1360,
+    "top": 149.8125,
+    "width": 1280,
+    "x": 80,
+    "y": 149.8125
+  },
+  "observedAt": "2026-10-21T23:54:27.751Z",
+  "overflow": false,
+  "panels": [
+    {
+      "hidden": true,
+      "id": "linker-library-panel-faq",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "hidden": true,
+      "id": "linker-library-panel-documents",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "query": "AIO3",
+  "reduced": false,
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "documents",
+  "stickyBottom": 137,
+  "url": "https://de-linker.com/de/faq-dokumente/?tab=documents",
+  "width": 1440,
+  "y": 407
+}

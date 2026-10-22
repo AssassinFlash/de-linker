@@ -1,0 +1,62 @@
+{
+  "release": "20261021T233044862570Z-a33a0bce",
+  "commit": "a33a0bcec5b8067d81b2bd5071ae7435d85abe7b",
+  "manifest_state": "archived",
+  "native_finish": {
+    "actions": 41,
+    "notes": []
+  },
+  "native_before_after_equal": true,
+  "deployed_identities_match_manifest": 9,
+  "packages": {
+    "linker-commerce": {
+      "files": 834,
+      "tree_sha256": "3b8e0d9629c1dfc7848f3346e43c89688645bd04981bf159b065c1e5f6b6587c"
+    },
+    "linker-i18n": {
+      "files": 74,
+      "tree_sha256": "52b0bb3a2b180de5a9910baea2064a3df295382c93f6b718a994f38b60de95f9"
+    },
+    "linker-tools": {
+      "files": 243,
+      "tree_sha256": "50463dd78e234fe09b2385aa1667b6f79a77a5518952dcb57bd36a0048578b9e"
+    }
+  },
+  "total_files": 1151,
+  "native_css": {
+    "mtime": 1792626156,
+    "bytes": 701525,
+    "sha256": "4d6074dd98f7bd580671ddda12a60b35896d1b4a5449ae27bb5a8799c4320a3a",
+    "defect": null
+  },
+  "privacy": {
+    "1673": {
+      "sha256": "3fe2cbb8db0701c451a4a98959a08525dff4bb87db0996c6de0dd3ea38250b70",
+      "backslashes": 29
+    },
+    "6827": {
+      "sha256": "4afae354aa0a5e6e96581c74eea30e33b0b4651818a085e3b2c563a149da8fa2",
+      "backslashes": 29
+    }
+  },
+  "database_snapshot": {
+    "filename": "db-20261021T233044Z.sql.gz",
+    "bytes": 7079562,
+    "sha256": "3ec369e82c0fc3d8a09508078e221d75ab77bffb0772e5af2c9ba8333ef76cfe",
+    "scope": "Code deployment database snapshot; reproducible genie_chunks omitted."
+  },
+  "temporary_compile_session_revoked": true,
+  "preexisting_seed_auth": {
+    "originalSeedAuthCount": 2,
+    "originalSeedAuthExactlyRestored": true,
+    "revokedTemporarySessionPresent": false,
+    "noNewSessionCreated": true
+  },
+  "native_staff_persistent_cart_unchanged": true,
+  "ci": {
+    "pr_run": 39691967487,
+    "main_run": 39693009936,
+    "conclusion": "success"
+  },
+  "scope": "Scoped Library navigation source and live consumers only; not whole-site acceptance."
+}

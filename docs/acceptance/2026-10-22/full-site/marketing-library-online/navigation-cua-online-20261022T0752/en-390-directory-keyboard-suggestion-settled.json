@@ -1,0 +1,88 @@
+{
+  "active": [
+    {
+      "current": null,
+      "hidden": false,
+      "href": "#linker-library-zone-answers"
+    },
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-answers-saj"
+    },
+    {
+      "current": null,
+      "hidden": false,
+      "href": "#linker-library-zone-answers"
+    },
+    {
+      "current": "location",
+      "hidden": false,
+      "href": "#linker-library-answers-saj"
+    }
+  ],
+  "adminBar": false,
+  "css": [
+    "https://de-linker.com/wp-content/uploads/windpress/cache/tailwind.css?ver=1792626156"
+  ],
+  "first": null,
+  "focus": {
+    "id": "",
+    "tag": "SUMMARY",
+    "text": "SAJ eSolar AIO3 data collector (Wi-Fi/Ethernet/Bluetooth)Which SAJ inverters take the eSolar AIO3?In the answer"
+  },
+  "fonts": "loaded",
+  "height": 1000,
+  "host": {
+    "bottom": 0,
+    "height": 0,
+    "left": 0,
+    "right": 0,
+    "top": 0,
+    "width": 0,
+    "x": 0,
+    "y": 0
+  },
+  "observedAt": "2026-10-21T23:55:17.442Z",
+  "overflow": false,
+  "panels": [
+    {
+      "hidden": false,
+      "id": "linker-library-panel-faq",
+      "rect": {
+        "bottom": 2712.046875,
+        "height": 9836.78125,
+        "left": 20,
+        "right": 370,
+        "top": -7124.734375,
+        "width": 350,
+        "x": 20,
+        "y": -7124.734375
+      }
+    },
+    {
+      "hidden": true,
+      "id": "linker-library-panel-documents",
+      "rect": {
+        "bottom": 0,
+        "height": 0,
+        "left": 0,
+        "right": 0,
+        "top": 0,
+        "width": 0,
+        "x": 0,
+        "y": 0
+      }
+    }
+  ],
+  "query": "",
+  "reduced": false,
+  "scripts": [
+    "https://de-linker.com/wp-content/plugins/linker-commerce/assets/library-ui.js?ver=1792624197"
+  ],
+  "selected": "faq",
+  "stickyBottom": 192,
+  "url": "https://de-linker.com/faq-download/",
+  "width": 390,
+  "y": 7696.5
+}
