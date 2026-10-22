@@ -1,0 +1,56 @@
+{
+  "run": "20261022T042100704482Z",
+  "command": [
+    "/opt/homebrew/opt/php@8.3/bin/php",
+    "vendor/phpunit/phpunit/phpunit",
+    "-c",
+    "phpunit.integration.xml.dist",
+    "--filter",
+    "ContactSelectionTest"
+  ],
+  "env": {
+    "PHPRC": "/Users/chesterjohn/de-linker-local/sharedarchives/php.ini",
+    "LINKER_WP_ROOT": "/Users/chesterjohn/de-linker-local/sharedarchives/wordpress"
+  },
+  "exit": 0,
+  "comparisons": {
+    "options": true,
+    "queue": true,
+    "privacy": true,
+    "counts": true
+  },
+  "countsBefore": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "countsAfter": {
+    "product": 531,
+    "terms": 756,
+    "order": 66
+  },
+  "privacy": [
+    {
+      "ID": "1673",
+      "post_name": "privacy-policy",
+      "contentSha256": "8e00054bac129baa25deb66d81fd33f4028fdf0d09b69014eb392285c9e539c4",
+      "length": 68356,
+      "backslashes": 0
+    },
+    {
+      "ID": "6827",
+      "post_name": "datenschutz",
+      "contentSha256": "4a7e625341d90629c98677f60bf95521d5f32359e1f73fb6e14c8f2aa81720d2",
+      "length": 69333,
+      "backslashes": 0
+    }
+  ],
+  "queueRowsBefore": 0,
+  "queueRowsAfter": 0,
+  "log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/contact-native-20261022T042100704482Z/native.log",
+  "guard": "Each case asserts zero fallthrough to real mail transport at pre_wp_mail; normal queue interception returns true.",
+  "testSummary": "2 tests, 69 assertions, PASS",
+  "nativeLogSha256": "4beac22812ccb7b2abee49345a7bdc5f20e8847dcd8a9ffb6ecf828e5201a0df",
+  "nativeLogBase64": "UEhQVW5pdCA5LjYuMzggYnkgU2ViYXN0aWFuIEJlcmdtYW5uIGFuZCBjb250cmlidXRvcnMuCgouLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDIgLyAyICgxMDAlKQoKVGltZTogMDA6MDEuODgxLCBNZW1vcnk6IDE0MC4wMCBNQgoKT0sgKDIgdGVzdHMsIDY5IGFzc2VydGlvbnMpCg==",
+  "rawBeforeAfter": "Private only: full native option/queue/privacy bytes; public acceptance records equality and digests."
+}

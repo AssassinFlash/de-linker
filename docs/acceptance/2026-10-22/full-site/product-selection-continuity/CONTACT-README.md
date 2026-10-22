@@ -1,0 +1,11 @@
+# Contact source candidate
+
+The missing consumer is repaired in source: the archive invitation retains search/filters/sort, Contact visibly presents the current validated public selection, and a native unchecked checkbox omits that selection entirely from FormData. Customer message stays separate. Selection uses native Woo metadata/team email hooks, existing protected admission and native form recovery.
+
+- Source freeze: `928f70498d504ea470cabbffff4f90ad534bfdfbbb7d723948ed6faf29a5d4c6`. See `contact-source-files.json` for nine owned source files, the separately hashed `products_contact` method, and eight owned test files. The rest of `ProductShortcodes.php` belongs to the parent and can change independently.
+- Local native protected consumer: **2/2 PASS, 69 assertions**. Included/excluded metadata and team queue, fixed receipt, unchanged message, exact UUID replay, changed-payload refusal and native recovery were exercised. A Unicode product slug also uses native WordPress permalink resolution. No real mail attempt occurred; before/after cleanup comparisons all passed. Details: `native-acceptance.json`.
+- PHP unit: **1225 tests / 6329 assertions PASS** at the recorded shared-tree snapshot. Contact/Plugin/actual invitation subset: **71 tests / 354 assertions PASS**. Scoped PHPStan, PHPCS, E2E types, owned formatting and PO format checks passed. Raw exact logs are byte-preserved in `checks.json`, with private absolute source paths. WP_Mock present-command log text is not an instance `present` operation.
+- Copy: Spec gave a **copy/contract-only PASS** after two objections were resolved. See `contact-copy-review.md`. Full source Spec/Standards review has not been claimed by this child.
+- Browser fixture: `tests/e2e/specs/contact-selection-continuity.spec.ts` has **eight unrun cases**, EN/DE at 1440/390. It follows the actual archive link, exercises include/exclude and invalid-source state, checks actual FormData omits removed selection, preserves customer text and measures the 44px row/viewport boundary. No submit, mail, model or mocked consumer is involved in that visual fixture.
+
+The parent owns generated catalogs, official WindPress presentation/compile, browser review, integration with concurrent family-navigation work, CI and production readback. No commit, push, deployment or production write was made by this child.

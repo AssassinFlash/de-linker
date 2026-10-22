@@ -45,7 +45,9 @@
 /* The card box. The receipt state keeps the wrapper (the success panel's own
  * rules hang off `#contact-form .linker-contact-form .linker-form-success`)
  * but draws no second box around it. */
-#contact-form .linker-contact-card .linker-contact-form:not(.linker-contact-receipt) {
+#contact-form
+	.linker-contact-card
+	.linker-contact-form:not(.linker-contact-receipt) {
 	display: grid;
 	gap: var(--proto-space-5);
 	padding: var(--proto-space-6);
@@ -257,7 +259,9 @@
 	text-underline-offset: 3px;
 }
 
-#contact-form .linker-contact-card :where(a, button, input, textarea, select):focus-visible {
+#contact-form
+	.linker-contact-card
+	:where(a, button, input, textarea, select):focus-visible {
 	outline: var(--proto-focus-ring);
 	outline-offset: var(--proto-focus-offset);
 }
@@ -266,7 +270,9 @@
  * The card box keeps the receipt's `:not()` selector here: without it this
  * rule is one class lighter than the box rule above and loses. */
 @media (max-width: 800px) {
-	#contact-form .linker-contact-card .linker-contact-form:not(.linker-contact-receipt) {
+	#contact-form
+		.linker-contact-card
+		.linker-contact-form:not(.linker-contact-receipt) {
 		padding: var(--proto-space-5);
 	}
 
@@ -277,4 +283,112 @@
 	#contact-form .linker-contact-reply {
 		padding-top: var(--proto-space-5);
 	}
+}
+
+/* Optional public selection travels separately from the message. The native
+ * checkbox works without a binder: its unchecked state visibly excludes the
+ * summary and the POST carries 0. Minimum target follows the site's 44px
+ * control contract; spacing, colours and type use the existing contact tokens. */
+#contact-form .linker-contact-selection {
+	min-width: 0;
+	margin: 0;
+	padding: var(--proto-space-4);
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-card);
+	background: var(--proto-paper-mist);
+	color: var(--proto-ink-deep);
+}
+
+#contact-form .linker-contact-selection legend {
+	padding-inline: var(--proto-space-2);
+	font-size: var(--proto-size-sm);
+	font-weight: var(--proto-weight-semibold);
+}
+
+#contact-form .linker-contact-selection__toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--proto-space-3);
+	min-height: 44px;
+	cursor: pointer;
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+}
+
+#contact-form .linker-contact-selection__toggle input[type="checkbox"] {
+	flex: 0 0 20px;
+	width: 20px;
+	height: 20px;
+	margin: 0;
+	accent-color: var(--proto-accent);
+}
+
+#contact-form .linker-contact-selection__summary,
+#contact-form .linker-contact-selection__excluded {
+	margin: var(--proto-space-3) 0 0;
+	font-size: var(--proto-size-sm);
+	line-height: var(--proto-leading-body);
+	overflow-wrap: anywhere;
+}
+
+#contact-form .linker-contact-selection__summary p,
+#contact-form .linker-contact-selection__summary dl,
+#contact-form .linker-contact-selection__summary dd {
+	margin: 0;
+}
+
+#contact-form .linker-contact-selection__summary a {
+	display: inline-flex;
+	align-items: center;
+	/* Use the same 44px interaction target as the neighboring inclusion control. */
+	min-width: 44px;
+	min-height: 44px;
+	color: var(--proto-teal-700);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+#contact-form .linker-contact-selection__summary a:hover {
+	color: var(--proto-teal-900);
+}
+
+#contact-form .linker-contact-selection__summary a:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: 4px;
+}
+
+#contact-form .linker-contact-selection__summary dl {
+	display: grid;
+	gap: var(--proto-space-2);
+	margin-top: var(--proto-space-3);
+}
+
+#contact-form .linker-contact-selection__summary dl > div {
+	display: grid;
+	/* Equal columns keep the full German filter labels readable at 390px. */
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--proto-space-3);
+}
+
+#contact-form .linker-contact-selection__summary dt {
+	color: var(--proto-ink-muted-deep);
+}
+
+#contact-form .linker-contact-selection__excluded,
+#contact-form
+	.linker-contact-selection:has(input[type="checkbox"]:not(:checked))
+	.linker-contact-selection__summary {
+	display: none;
+}
+
+#contact-form
+	.linker-contact-selection:has(input[type="checkbox"]:not(:checked))
+	.linker-contact-selection__excluded {
+	display: block;
+}
+
+#contact-form
+	.linker-contact-selection--excluded
+	.linker-contact-selection__excluded {
+	display: block;
 }

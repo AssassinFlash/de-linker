@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-22T05:04:32.970Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "height": 1000,
+  "intent": "product",
+  "lang": "en-US",
+  "message": "Please check a compatible SAJ configuration. \\ Keep this question unchanged.",
+  "overflow": false,
+  "selection": {
+    "checked": true,
+    "excludedDisplay": "none",
+    "label": {
+      "bottom": 512.0703125,
+      "height": 44,
+      "left": 731.59375,
+      "right": 1342,
+      "top": 468.0703125,
+      "width": 610.40625,
+      "x": 731.59375,
+      "y": 468.0703125
+    },
+    "nativeControls": [
+      {
+        "checked": true,
+        "disabled": false,
+        "formAssociated": true,
+        "name": "linker_contact_selection",
+        "type": "checkbox"
+      }
+    ],
+    "rect": {
+      "bottom": 748.0546875,
+      "height": 320.484375,
+      "left": 714.59375,
+      "right": 1359,
+      "top": 427.5703125,
+      "width": 644.40625,
+      "x": 714.59375,
+      "y": 427.5703125
+    },
+    "summaryDisplay": "block",
+    "text": "Product selectionInclude this selection with my messageProductsBrandSAJPhase3-phaseMinimum power (kW)5.5SearchSAJSort productsName A-ZThis selection will not be sent.",
+    "value": "{\"source\":\"http:\\/\\/127.0.0.1:9290\\/products\\/\",\"selection\":{\"brand\":\"saj\",\"phase\":\"3\",\"kw_min\":5.5,\"q\":\"SAJ\",\"sort\":\"name\"}}"
+  },
+  "source": {
+    "color": "rgb(10, 102, 92)",
+    "focus": true,
+    "hover": false,
+    "href": "http://127.0.0.1:9290/products/?brand=saj&phase=3&kw_min=5.5&q=SAJ&sort=name",
+    "outline": {
+      "color": "rgb(12, 127, 115)",
+      "style": "solid",
+      "width": "2px"
+    },
+    "rect": {
+      "bottom": 568.0703125,
+      "height": 44,
+      "left": 731.59375,
+      "right": 792.8203125,
+      "top": 524.0703125,
+      "width": 61.2265625,
+      "x": 731.59375,
+      "y": 524.0703125
+    },
+    "text": "Products"
+  },
+  "url": "http://127.0.0.1:9290/contact/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fproducts%5C%2F%22%2C%22selection%22%3A%7B%22brand%22%3A%22saj%22%2C%22phase%22%3A%223%22%2C%22kw_min%22%3A5.5%2C%22q%22%3A%22SAJ%22%2C%22sort%22%3A%22name%22%7D%7D",
+  "width": 1440
+}

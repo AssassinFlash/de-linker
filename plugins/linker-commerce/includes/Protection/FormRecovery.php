@@ -20,8 +20,23 @@ final class FormRecovery {
 	public static function save( string $action, array $post ): void {
 		wc_load_cart();
 		$fields = array();
-		foreach ( array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id' ) as $key ) {
-			$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? mb_substr( sanitize_textarea_field( $post[ $key ] ), 0, 5000 ) : '';
+		foreach ( array( 'name', 'email', 'company', 'message', 'intent', 'consent', 'linker_request_id', \Linker\Commerce\Contact\SelectionContext::FIELD, \Linker\Commerce\Contact\SelectionContext::INCLUDE_FIELD ) as $key ) {
+			$value = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? $post[ $key ] : '';
+			if ( \Linker\Commerce\Contact\SelectionContext::FIELD === $key && '' !== $value ) {
+				$context = \Linker\Commerce\Contact\SelectionContext::normalize( json_decode( $value, true ) );
+				if ( array() !== $context ) {
+					// Re-encode the validated transport: unknown keys never consume the native recovery bound.
+					$fields[ $key ] = (string) wp_json_encode(
+						array(
+							'source'    => $context['source'],
+							'selection' => $context['selection'],
+						)
+					);
+					// URL percent escapes and JSON backslashes are structural, not textarea prose.
+					continue;
+				}
+			}
+			$fields[ $key ] = mb_substr( sanitize_textarea_field( $value ), 0, 5000 );
 		}
 		// Five-minute retry lifetime follows the shared proof window (#519).
 		WC()->session->set(

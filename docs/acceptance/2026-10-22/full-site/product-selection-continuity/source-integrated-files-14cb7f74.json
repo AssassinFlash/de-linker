@@ -1,0 +1,50 @@
+{
+  "frozen_at": "2026-10-22T04:58:00.756534+00:00",
+  "base": "03cb1a5cba8778fd4abdef72cbfee119e9f6a424",
+  "branch": "codex/product-selection-continuity",
+  "algorithm": "SHA256 of compact sorted-key JSON path-to-SHA256 mapping per category",
+  "product_source_aggregate": "14cb7f7438fd677721106aa37d0f6ae569e60b469240ec4fb9929feff67395e6",
+  "full_artifact_aggregate": "d9876d3b8274039718b85d605b46c0d70cccce867e30324f9d58dcd46cf417bc",
+  "product_sources": {
+    "plugins/linker-commerce/content/windpress/contact-card.css": "2357b84cb55556af15407f48a668660444128074eabd62b81d44517f1cc50c65",
+    "plugins/linker-commerce/content/windpress/products.css": "a9bfe0748fe1ee9fd57d85c3257fce26ae62a2e73c19f62afafb1b879af40367",
+    "plugins/linker-commerce/includes/Contact/Form.php": "365bb6faf2e94b9e8b82b79623d6ea1c704532a7069196938fb84ea0b21a2d8e",
+    "plugins/linker-commerce/includes/Contact/Handler.php": "83825b25e9147e1448574cf314e6b43f7acf0490df37b284f1c9922a758c5c5d",
+    "plugins/linker-commerce/includes/Contact/Module.php": "0cf1f856ee293ebf414723963883a4111551b075895e03be968960f54e6946d1",
+    "plugins/linker-commerce/includes/Contact/SelectionContext.php": "1efc949c963c0fd4eaeb08ae7235020d025dcbc6fae6330aca149143bc594a5b",
+    "plugins/linker-commerce/includes/Contact/SelectionView.php": "d0b3a88d2b82409f0570f0f00123ff0b8108aac91c733196c8073b2ae19878e6",
+    "plugins/linker-commerce/includes/Contact/Submission.php": "500a780d691cd329879799b6ced791b622f7096df485da37d4076ad618c2eeb3",
+    "plugins/linker-commerce/includes/Presentation/FamilyNavigation.php": "b56ffddea507b0fd5889e6cebdbdfdcc0732596a95c491342ab9444b6f722c3e",
+    "plugins/linker-commerce/includes/Presentation/FamilyPage.php": "6e78ee4c0d53ffc21502019ba3db6e1abd28a2c6bfeab31b806e97289c1215c8",
+    "plugins/linker-commerce/includes/Presentation/LanguageLinks.php": "9e3f83dee694bc6ae04c2b9d7109a322ed590bd9ceedc23877971a4aba19e58d",
+    "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php": "76c01acd5c74fc9b4d03d50a61e6d84011fca847ef998c951ef1557fdbd9b6f7",
+    "plugins/linker-commerce/includes/Protection/FormRecovery.php": "f6b2119e510fc7369d918d74fc387e6e0b726ebc5c03365a12813c3503834f0e",
+    "plugins/linker-commerce/includes/Storefront/ProductFilters.php": "881446da25aed48a931596cc50af2d1972a363f73447ce8ce5c0352c6c6b8b3b",
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po": "85528a09bafb835b79d677ae00f5207ef7d8221328dad2b467f8b335011e8205"
+  },
+  "test_sources": {
+    "plugins/linker-commerce/tests/php/Doubles/wordpress.php": "c938a91155517d217b60ce1d725eebe0803add1e9c7e0c3e1893599a9bf927af",
+    "plugins/linker-commerce/tests/php/Integration/ContactNavigationTest.php": "1cddb1dc5d61bb7a070f20b20390d61943bc4699ea863c35ccda3903438fdecf",
+    "plugins/linker-commerce/tests/php/Integration/ContactSelectionTest.php": "ad3fbff3ad731207b3b0cb8dc5eb50d5c0d7cfc1556e9fc9270493d8af560efc",
+    "plugins/linker-commerce/tests/php/Unit/Contact/FormTest.php": "aaa55e9d2178120e6b13b547f5996eb0c50fce69c4cfde44008fe2668955aac7",
+    "plugins/linker-commerce/tests/php/Unit/Contact/SelectionContextTest.php": "d0c7ac465b09e1fa47ed4b89efa58f3a3048b241855714d330656b077450ced9",
+    "plugins/linker-commerce/tests/php/Unit/Contact/SelectionLinkTest.php": "524886194e0d3ce51c40f998ed14bba44539ff19d5a0542755554d66f60a9c9e",
+    "plugins/linker-commerce/tests/php/Unit/Contact/SelectionViewTest.php": "1d84a78037d2350dbfa8430602bc4b7c226a2dc7366bd0f0909ec734984ced5a",
+    "plugins/linker-commerce/tests/php/Unit/PluginTest.php": "0c32c15fb115ee0d9680100430656a6d0390b397436ff18c9d7856d30615424b",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/FamilyNavigationTest.php": "58055fe76cabdca3aecaf4e8c2a60b6c696005f0c9a8847fb4e481c8c48f3a36",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/FamilyPageTest.php": "e6f653cac4ac476f09ed8a9e5c9fd08e961ac55733ef33518849cc6756d76f0b",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/ModuleTest.php": "5426c00d5b56084919f081efb87b51e8efcac69599dd735c6119b79f3ccc92a5",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/ProductShortcodesTest.php": "90008cbc952ab788ab4f69c0fab415685c825a06aa501c1971a699288a4fdf38",
+    "plugins/linker-commerce/tests/php/Unit/Storefront/ProductFiltersTest.php": "4842a608bc44162f462e36863ba07244fdfaa3789688559be22443ad6da5d32f",
+    "tests/e2e/specs/contact-selection-continuity.spec.ts": "738acb32a896e617a5958e62f76dad9f036a4a51708104384e61e2637a252320"
+  },
+  "generated_catalogs": {
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo": "8c8d36b4eba357ffbdbad28f4a93832d83165a62ff07b58a132a208617d009e2",
+    "plugins/linker-commerce/languages/linker-commerce.pot": "ea1a77f478e7d3195d71f542bdb6534a634fc81ce2349987ca0f41faf7475782"
+  },
+  "prior_candidate": "source-integrated-files-59c8bf40.json",
+  "changes_after_prior_freeze": [
+    "The same scoped source link now has minimum width as well as height of 44px, including short shared brand names."
+  ],
+  "browser_status": "Official WindPress Generate completed; final CUA acceptance in progress, no production claim."
+}

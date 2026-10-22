@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-22T05:15:00.994Z",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "height": 1000,
+  "intent": "product",
+  "lang": "de-DE",
+  "message": "",
+  "overflow": false,
+  "selection": {
+    "checked": true,
+    "excludedDisplay": "none",
+    "label": {
+      "bottom": 230.015625,
+      "height": 47.59375,
+      "left": 56,
+      "right": 334,
+      "top": 182.421875,
+      "width": 278,
+      "x": 56,
+      "y": 182.421875
+    },
+    "nativeControls": [
+      {
+        "checked": true,
+        "disabled": false,
+        "formAssociated": true,
+        "name": "linker_contact_selection",
+        "type": "checkbox"
+      }
+    ],
+    "rect": {
+      "bottom": 418.203125,
+      "height": 276.28125,
+      "left": 39,
+      "right": 351,
+      "top": 141.921875,
+      "width": 312,
+      "x": 39,
+      "y": 141.921875
+    },
+    "summaryDisplay": "block",
+    "text": "ProduktauswahlDiese Auswahl meiner Nachricht beifügenWechselrichter, Speicher und SystemeSuchenSAJ & GoodWe \"quoted\" \\ Rückfrage + 100%Produkte sortierenName A-ZDiese Auswahl wird nicht mitgesendet.",
+    "value": "{\"source\":\"http:\\/\\/127.0.0.1:9290\\/de\\/produkte\\/\",\"selection\":{\"q\":\"SAJ & GoodWe \\\"quoted\\\" \\\\ R\\u00fcckfrage + 100%\",\"sort\":\"name\"}}"
+  },
+  "source": {
+    "color": "rgb(10, 102, 92)",
+    "focus": false,
+    "hover": false,
+    "href": "http://127.0.0.1:9290/de/produkte/?q=SAJ%20%26%20GoodWe%20%22quoted%22%20%5C%20R%C3%BCckfrage%20%2B%20100%25&sort=name",
+    "outline": {
+      "color": "rgb(10, 102, 92)",
+      "style": "none",
+      "width": "3px"
+    },
+    "rect": {
+      "bottom": 286.015625,
+      "height": 44,
+      "left": 56,
+      "right": 310.5078125,
+      "top": 242.015625,
+      "width": 254.5078125,
+      "x": 56,
+      "y": 242.015625
+    },
+    "text": "Wechselrichter, Speicher und Systeme"
+  },
+  "url": "http://127.0.0.1:9290/de/kontakt/?intent=product&linker_contact_selection=%7B%22source%22%3A%22http%3A%5C%2F%5C%2F127.0.0.1%3A9290%5C%2Fde%5C%2Fprodukte%5C%2F%22%2C%22selection%22%3A%7B%22q%22%3A%22SAJ%20%26%20GoodWe%20%5C%22quoted%5C%22%20%5C%5C%20R%5Cu00fcckfrage%20%2B%20100%25%22%2C%22sort%22%3A%22name%22%7D%7D",
+  "width": 390
+}

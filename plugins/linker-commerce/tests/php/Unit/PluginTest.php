@@ -88,6 +88,9 @@ final class PluginTest extends TestCase {
 			WP_Mock::expectFilterAdded( 'the_content', array( new AnyInstance( ContactModule::class ), 'mount_form' ), 9 ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'admin_post_nopriv_linker_contact', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Contact\Handler::class ), 'handle' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'admin_post_linker_contact', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Contact\Handler::class ), 'handle' ) ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'woocommerce_admin_order_data_after_order_details', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'admin' ) ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
+		WP_Mock::expectActionAdded( 'woocommerce_email_order_meta', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'email' ), 10, 4 ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
+		WP_Mock::expectFilterAdded( 'woocommerce_privacy_remove_order_personal_data_meta', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'erase' ) ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
 		WP_Mock::expectActionAdded( 'pre_get_posts', array( $search_scope, 'scope' ) );
 
 		// AnyInstance matches the object the registration constructs.

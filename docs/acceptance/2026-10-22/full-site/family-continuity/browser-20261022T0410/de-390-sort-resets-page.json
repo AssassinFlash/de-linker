@@ -1,0 +1,91 @@
+{
+  "at": "2026-10-22T04:14:41.556Z",
+  "count": "1-24 / 65 Produktfamilien",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792640121"
+  ],
+  "fonts": "loaded",
+  "height": 844,
+  "lang": "de-DE",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name",
+      "language": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name",
+      "language": "de"
+    }
+  ],
+  "leads": [
+    "6720",
+    "6668",
+    "6595",
+    "6594",
+    "6593",
+    "6592",
+    "6591",
+    "6590",
+    "6691",
+    "6597",
+    "6596",
+    "6598",
+    "6670",
+    "6567",
+    "6690",
+    "6599",
+    "6580",
+    "6579",
+    "6578",
+    "6571",
+    "6577",
+    "6572",
+    "6570",
+    "6583"
+  ],
+  "overflow": false,
+  "pager": [
+    {
+      "current": "page",
+      "height": 44,
+      "href": null,
+      "text": "1",
+      "width": 44
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=2",
+      "text": "2",
+      "width": 44
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=3",
+      "text": "3",
+      "width": 44
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=2",
+      "text": "Weiter",
+      "width": 45.53125
+    }
+  ],
+  "search": "",
+  "selected": [],
+  "sort": "name",
+  "url": "http://127.0.0.1:9290/de/produkte/?sort=name",
+  "width": 390,
+  "y": 0
+}

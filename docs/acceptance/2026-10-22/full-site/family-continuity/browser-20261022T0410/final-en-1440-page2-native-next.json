@@ -1,0 +1,98 @@
+{
+  "at": "2026-10-22T05:07:37.278Z",
+  "count": "25-48 / 65 product families",
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792645324"
+  ],
+  "fonts": "loaded",
+  "height": 1000,
+  "lang": "en-US",
+  "languages": [
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name&product-page=2",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=2",
+      "language": "de"
+    },
+    {
+      "href": "http://127.0.0.1:9290/products/?sort=name&product-page=2",
+      "language": "en"
+    },
+    {
+      "href": "http://127.0.0.1:9290/de/produkte/?sort=name&product-page=2",
+      "language": "de"
+    }
+  ],
+  "leads": [
+    "6526",
+    "6513",
+    "6527",
+    "6514",
+    "2415",
+    "2394",
+    "2397",
+    "1948",
+    "6509",
+    "6510",
+    "1955",
+    "6511",
+    "3595",
+    "2403",
+    "1956",
+    "6529",
+    "6519",
+    "6521",
+    "3611",
+    "6530",
+    "1954",
+    "6520",
+    "6522",
+    "6507"
+  ],
+  "overflow": false,
+  "pager": [
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/products/?sort=name",
+      "text": "Previous",
+      "width": 58.96875
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/products/?sort=name",
+      "text": "1",
+      "width": 44
+    },
+    {
+      "current": "page",
+      "height": 44,
+      "href": null,
+      "text": "2",
+      "width": 44
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/products/?sort=name&product-page=3",
+      "text": "3",
+      "width": 44
+    },
+    {
+      "current": null,
+      "height": 44,
+      "href": "http://127.0.0.1:9290/products/?sort=name&product-page=3",
+      "text": "Next",
+      "width": 44
+    }
+  ],
+  "search": "",
+  "selected": [],
+  "sort": "name",
+  "url": "http://127.0.0.1:9290/products/?sort=name&product-page=2",
+  "width": 1440,
+  "y": 0
+}

@@ -33,6 +33,13 @@ final class ProductShortcodes {
 	public const PER_PAGE_FAMILIES = 24;
 
 	/**
+	 * One request-local grouping and page for grid, result line and navigation.
+	 *
+	 * @var FamilyPage|null
+	 */
+	private ?FamilyPage $family_page = null;
+
+	/**
 	 * The rows the rail's Category section prints inside a group's expansion
 	 * although the term is not one of that group's children, keyed by the
 	 * group's English slug.
@@ -72,6 +79,7 @@ final class ProductShortcodes {
 	 * Registers the shortcodes.
 	 */
 	public function register(): void {
+		( new FamilyNavigation( $this->family_page( ... ), $this->archive_base_url( ... ) ) )->register();
 		add_shortcode( 'linker_products_head', array( $this, 'products_head' ) );
 		add_shortcode( 'linker_products_filters', array( $this, 'products_filters' ) );
 		add_shortcode( 'linker_products_sort', array( $this, 'products_sort' ) );
@@ -157,6 +165,11 @@ final class ProductShortcodes {
 		// category's own description is not printed on the page.
 		$html .= '<p class="wb-intro">' . esc_html__( 'Search products or filter by category and project requirements.', 'linker-commerce' ) . '</p></div>';
 		$html .= '<form class="wb-search" method="get" action="' . esc_url( $action ) . '" role="search">';
+		foreach ( $this->selection_parameters() as $key => $value ) {
+			if ( 'q' !== $key ) {
+				$html .= '<input type="hidden" name="' . esc_attr( (string) $key ) . '" value="' . esc_attr( (string) $value ) . '">';
+			}
+		}
 		$html .= '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>';
 		$html .= '<input id="search-box" name="q" type="search" placeholder="' . esc_attr__( 'Search model or item number', 'linker-commerce' ) . '" value="' . esc_attr( $q ) . '" aria-label="' . esc_attr__( 'Search products', 'linker-commerce' ) . '">';
 		$html .= '<button type="submit" class="wb-go">' . esc_html__( 'Search', 'linker-commerce' ) . '</button>';
@@ -341,9 +354,10 @@ final class ProductShortcodes {
 	 * @param array<string, string|float> $selected   The request's selections.
 	 */
 	private function range_form( string $title, string $prefix, string $min_label, string $max_label, string $unit, array $selected ): string {
-		$html  = '<details class="filter-section fgroup" open>';
-		$html .= '<summary class="filter-title">' . esc_html( $title ) . '</summary>';
-		$html .= '<div class="filter-options"><form class="frange" method="get" action="">';
+		$html             = '<details class="filter-section fgroup" open>';
+		$html            .= '<summary class="filter-title">' . esc_html( $title ) . '</summary>';
+		$html            .= '<div class="filter-options"><form class="frange" method="get" action="' . esc_url( $this->archive_root_url() ) . '">';
+		$selected['sort'] = $this->filters->requested_sort();
 		foreach ( $selected as $key => $value ) {
 			if ( "{$prefix}_min" === $key || "{$prefix}_max" === $key ) {
 				continue;
@@ -365,11 +379,7 @@ final class ProductShortcodes {
 	 * @param string $value The facet's value.
 	 */
 	private function filter_url( string $facet, string $value ): string {
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- plain GET navigation.
-		$params = wp_unslash( $_GET );
-		unset( $params[ $facet ], $params['sort'] );
-		$params[ $facet ] = $value;
-		return add_query_arg( $params );
+		return (string) add_query_arg( $facet, rawurlencode( $value ), $this->archive_base_url() );
 	}
 
 	/**
@@ -389,11 +399,12 @@ final class ProductShortcodes {
 			'power-desc'  => __( 'Power high-low', 'linker-commerce' ),
 			'power-asc'   => __( 'Power low-high', 'linker-commerce' ),
 		);
-		$html     = '<form class="wbsort" method="get" action="">';
+		$html     = '<form class="wbsort woocommerce-ordering" method="get" action="' . esc_url( $this->archive_root_url() ) . '">';
 		foreach ( $selected as $key => $value ) {
 			$html .= '<input type="hidden" name="' . esc_attr( (string) $key ) . '" value="' . esc_attr( (string) $value ) . '" />';
 		}
-		$html .= '<select class="select-dropdown" id="sort-select" name="sort" aria-label="' . esc_attr__( 'Sort products', 'linker-commerce' ) . '">';
+		// Woo's already loaded ordering handler submits this native GET form on change.
+		$html .= '<select class="select-dropdown orderby" id="sort-select" name="sort" aria-label="' . esc_attr__( 'Sort products', 'linker-commerce' ) . '">';
 		foreach ( $labels as $value => $label ) {
 			$html .= '<option value="' . esc_attr( $value ) . '"' . selected( $sort, $value, false ) . '>' . esc_html( $label ) . '</option>';
 		}
@@ -519,16 +530,13 @@ final class ProductShortcodes {
 	}
 
 	/**
-	 * The current request's address with one facet (or a range's two bounds)
-	 * removed: remove_query_arg reads the request's own address, as the
-	 * facet links' one-argument form does, so the chip keeps the relative
-	 * address style the live rail's links print. Dropping the page number —
-	 * a narrower set starts on its first page.
+	 * Native archive root with one facet (or both range bounds) removed.
+	 * Other validated selections and sort remain; a changed set starts on page one.
 	 *
 	 * @param string ...$facets The query parameters to drop.
 	 */
 	private function facet_remove_url( string ...$facets ): string {
-		return remove_query_arg( array_merge( $facets, array( 'product-page' ) ) );
+		return (string) remove_query_arg( $facets, $this->archive_base_url() );
 	}
 
 	/**
@@ -1455,11 +1463,9 @@ final class ProductShortcodes {
 	 */
 	public function products_families( $atts = array() ): string {
 		unset( $atts );
-		$ids  = array_values( $this->filters->filtered_product_ids() );
-		$rows = $this->family_rows( $ids );
-		$page = max( 1, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
+		$page = $this->family_page();
 		$html = '';
-		foreach ( \array_slice( $rows, ( $page - 1 ) * self::PER_PAGE_FAMILIES, self::PER_PAGE_FAMILIES ) as $row ) {
+		foreach ( $page->rows as $row ) {
 			$lead = get_post( (int) $row['lead'] );
 			if ( ! $lead instanceof \WP_Post ) {
 				continue;
@@ -1481,10 +1487,10 @@ final class ProductShortcodes {
 	 */
 	public function products_family_count( $atts = array() ): string {
 		unset( $atts );
-		$total = \count( $this->family_rows( array_values( $this->filters->filtered_product_ids() ) ) );
-		$page  = max( 1, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
-		$from  = $total > 0 ? ( $page - 1 ) * self::PER_PAGE_FAMILIES + 1 : 0;
-		$to    = min( $total, $page * self::PER_PAGE_FAMILIES );
+		$state = $this->family_page();
+		$total = $state->total;
+		$from  = $state->from;
+		$to    = $state->to;
 		return '<b>' . esc_html( $from . '-' . $to ) . '</b> / ' . esc_html( sprintf( /* translators: %d: number of product families. */ _n( '%d product family', '%d product families', $total, 'linker-commerce' ), $total ) );
 	}
 
@@ -1496,21 +1502,20 @@ final class ProductShortcodes {
 	 */
 	public function products_family_pagination( $atts = array() ): string {
 		unset( $atts );
-		$total = \count( $this->family_rows( array_values( $this->filters->filtered_product_ids() ) ) );
-		$pages = (int) ceil( $total / self::PER_PAGE_FAMILIES );
+		$state = $this->family_page();
+		$pages = $state->last;
 		if ( $pages < 2 ) {
 			return '';
 		}
-		$page = max( 1, min( $pages, (int) wp_unslash( $_GET['product-page'] ?? 1 ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- a public catalogue page number, cast to int.
+		$page = $state->current;
 		$base = $this->archive_base_url();
 		$html = '<nav class="tv-woo-pagination" aria-label="' . esc_attr__( 'Product pagination', 'linker-commerce' ) . '">';
-		// The live page numbers every address, page one included, and adds the
-		// "Previous" step on the pages after it (measured 2026-10-12).
+		// Page one uses the native root; later slices retain product-page.
 		if ( $page > 1 ) {
-			$html .= '<a class="prev page-numbers" href="' . esc_url( add_query_arg( 'product-page', $page - 1, $base ) ) . '">' . esc_html__( 'Previous', 'linker-commerce' ) . '</a>';
+			$html .= '<a class="prev page-numbers" href="' . esc_url( $page > 2 ? add_query_arg( 'product-page', $page - 1, $base ) : $base ) . '">' . esc_html__( 'Previous', 'linker-commerce' ) . '</a>';
 		}
 		for ( $i = 1; $i <= $pages; $i++ ) {
-			$url   = add_query_arg( 'product-page', $i, $base );
+			$url   = $i > 1 ? add_query_arg( 'product-page', $i, $base ) : $base;
 			$html .= $i === $page
 				? '<span aria-current="page" class="page-numbers current">' . esc_html( (string) $i ) . '</span>'
 				: '<a class="page-numbers" href="' . esc_url( $url ) . '">' . esc_html( (string) $i ) . '</a>';
@@ -1556,7 +1561,7 @@ final class ProductShortcodes {
 				$filters[ $facet ] = $value;
 			}
 		}
-		$contact = array(
+		$contact           = array(
 			'kind'    => 'catalogue',
 			'title'   => $title,
 			'url'     => $source,
@@ -1564,13 +1569,19 @@ final class ProductShortcodes {
 			'filters' => $filters,
 			'intent'  => 'product',
 		);
-		$url     = (string) add_query_arg(
+		$selection         = $request;
+		$selection['sort'] = $this->filters->requested_sort();
+		$url               = (string) add_query_arg(
 			array(
 				'intent' => 'product',
-				'kind'   => 'catalogue',
-				'title'  => $title,
-				'search' => $search,
-				'source' => $source,
+				\Linker\Commerce\Contact\SelectionContext::FIELD => rawurlencode(
+					(string) wp_json_encode(
+						array(
+							'source'    => $source,
+							'selection' => $selection,
+						)
+					)
+				),
 			),
 			Shortcodes::contact_page_url()
 		);
@@ -1654,12 +1665,39 @@ final class ProductShortcodes {
 	/**
 	 * The address of the current catalogue view without its page number.
 	 */
-	private function archive_base_url(): string {
+	private function archive_root_url(): string {
 		$queried = get_queried_object();
-		$base    = $queried instanceof \WP_Term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
-		// The selected filters stay in the address; only the page number is
-		// rewritten per link.
-		return remove_query_arg( array( 'product-page' ), $base );
+		return $queried instanceof \WP_Term ? $this->term_link( $queried ) : (string) wc_get_page_permalink( 'shop' );
+	}
+
+	/** Native root with the request's validated selection and order. */
+	private function archive_base_url(): string {
+		$encoded = array_map( static fn( $value ): string => rawurlencode( (string) $value ), $this->selection_parameters() );
+		return (string) add_query_arg( $encoded, $this->archive_root_url() );
+	}
+
+	/**
+	 * Selection is shared by links and GET forms; a change starts at page one.
+	 *
+	 * @return array<string, string|float> Validated facets, search and sort.
+	 */
+	private function selection_parameters(): array {
+		$selected = $this->filters->requested();
+		$sort     = $this->filters->requested_sort();
+		if ( 'recommended' !== $sort ) {
+			$selected['sort'] = $sort;
+		}
+		return $selected;
+	}
+
+	/** One grouped family result, reused by every current request consumer. */
+	private function family_page(): FamilyPage {
+		if ( null === $this->family_page ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- FamilyPage validates the public page before arithmetic or output.
+			$requested         = array_key_exists( 'product-page', $_GET ) ? wp_unslash( $_GET['product-page'] ) : get_query_var( 'paged', 1 );
+			$this->family_page = new FamilyPage( $this->family_rows( array_values( $this->filters->filtered_product_ids() ) ), $requested, self::PER_PAGE_FAMILIES );
+		}
+		return $this->family_page;
 	}
 
 	/**

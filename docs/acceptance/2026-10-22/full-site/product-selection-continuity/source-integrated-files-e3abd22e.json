@@ -1,0 +1,50 @@
+{
+  "frozen_at": "2026-10-22T04:33:02.965814+00:00",
+  "base": "03cb1a5cba8778fd4abdef72cbfee119e9f6a424",
+  "branch": "codex/product-selection-continuity",
+  "algorithm": "SHA256 of compact sorted-key JSON path-to-SHA256 mapping per category",
+  "product_source_aggregate": "e3abd22e5f2cbfef35e25ca2519d76e24845f0a517d2c1f3209370689a58b812",
+  "full_artifact_aggregate": "8b53b354dfb489dd84aab9b75a2e23ea796a2e46b60321c77519cbd79a7b9669",
+  "product_sources": {
+    "plugins/linker-commerce/content/windpress/contact-card.css": "a2720c8f97f5b5f1cf275e06b98b7af34d3152a6d92c9640156cc2c68dce0b84",
+    "plugins/linker-commerce/content/windpress/products.css": "a9bfe0748fe1ee9fd57d85c3257fce26ae62a2e73c19f62afafb1b879af40367",
+    "plugins/linker-commerce/includes/Contact/Form.php": "365bb6faf2e94b9e8b82b79623d6ea1c704532a7069196938fb84ea0b21a2d8e",
+    "plugins/linker-commerce/includes/Contact/Handler.php": "4e997beab1ba50c544b658ea54fa2aac2eef019bef1d459fd2ef82f1c074466c",
+    "plugins/linker-commerce/includes/Contact/Module.php": "0cf1f856ee293ebf414723963883a4111551b075895e03be968960f54e6946d1",
+    "plugins/linker-commerce/includes/Contact/SelectionContext.php": "a8d740c882a0426a3f51f92e9015b6b20f8da4d4e61034d14d229765b0695a3f",
+    "plugins/linker-commerce/includes/Contact/SelectionView.php": "26a7915a84beaf1754121fec077221588f7ad770ee02415519d4989673acaa75",
+    "plugins/linker-commerce/includes/Contact/Submission.php": "500a780d691cd329879799b6ced791b622f7096df485da37d4076ad618c2eeb3",
+    "plugins/linker-commerce/includes/Presentation/FamilyNavigation.php": "b56ffddea507b0fd5889e6cebdbdfdcc0732596a95c491342ab9444b6f722c3e",
+    "plugins/linker-commerce/includes/Presentation/FamilyPage.php": "6e78ee4c0d53ffc21502019ba3db6e1abd28a2c6bfeab31b806e97289c1215c8",
+    "plugins/linker-commerce/includes/Presentation/LanguageLinks.php": "9b10dd9b5d7910c9a3789649b0c6886ba93e2f6dc38bed0a5ef918cd13c638df",
+    "plugins/linker-commerce/includes/Presentation/ProductShortcodes.php": "8da52f1a59e9979ced748e0d7636cbe34f7d68b397cfa13e966fb90e3b5b53bc",
+    "plugins/linker-commerce/includes/Protection/FormRecovery.php": "f6b2119e510fc7369d918d74fc387e6e0b726ebc5c03365a12813c3503834f0e",
+    "plugins/linker-commerce/includes/Storefront/ProductFilters.php": "881446da25aed48a931596cc50af2d1972a363f73447ce8ce5c0352c6c6b8b3b",
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po": "6d46310fe627ed8d581790f5f09cc98074dfd14647565cd6ff8d7d7ecb66ee83"
+  },
+  "test_sources": {
+    "plugins/linker-commerce/tests/php/Doubles/wordpress.php": "c938a91155517d217b60ce1d725eebe0803add1e9c7e0c3e1893599a9bf927af",
+    "plugins/linker-commerce/tests/php/Integration/ContactSelectionTest.php": "2ec00b6dcf3c775c70212d5e6a64ea053d73431ee7b9f727963e2cc05cbeb327",
+    "plugins/linker-commerce/tests/php/Unit/Contact/FormTest.php": "aaa55e9d2178120e6b13b547f5996eb0c50fce69c4cfde44008fe2668955aac7",
+    "plugins/linker-commerce/tests/php/Unit/Contact/SelectionContextTest.php": "131cd95740d8fed535d1c79aaadb724eab49adbd1e2f485ca34add2642075659",
+    "plugins/linker-commerce/tests/php/Unit/Contact/SelectionLinkTest.php": "73f77c5fa978c090cdecdbbc6346a29a58c8396d5ae4c289763fcb89bfd64836",
+    "plugins/linker-commerce/tests/php/Unit/Contact/SelectionViewTest.php": "cd44de11c2cbf6e81626a60abad2cac3689d1dff1777d6d12e97b34f0ce1a870",
+    "plugins/linker-commerce/tests/php/Unit/PluginTest.php": "0c32c15fb115ee0d9680100430656a6d0390b397436ff18c9d7856d30615424b",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/FamilyNavigationTest.php": "58055fe76cabdca3aecaf4e8c2a60b6c696005f0c9a8847fb4e481c8c48f3a36",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/FamilyPageTest.php": "e6f653cac4ac476f09ed8a9e5c9fd08e961ac55733ef33518849cc6756d76f0b",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/ModuleTest.php": "5426c00d5b56084919f081efb87b51e8efcac69599dd735c6119b79f3ccc92a5",
+    "plugins/linker-commerce/tests/php/Unit/Presentation/ProductShortcodesTest.php": "5b3708c4b8da9bae6a351c11af1a80353f4c354b3799e13567817a1634c3ccd6",
+    "plugins/linker-commerce/tests/php/Unit/Storefront/ProductFiltersTest.php": "4842a608bc44162f462e36863ba07244fdfaa3789688559be22443ad6da5d32f",
+    "tests/e2e/specs/contact-selection-continuity.spec.ts": "738acb32a896e617a5958e62f76dad9f036a4a51708104384e61e2637a252320"
+  },
+  "generated_catalogs": {
+    "plugins/linker-commerce/languages/linker-commerce-de_DE_formal.mo": "8c8d36b4eba357ffbdbad28f4a93832d83165a62ff07b58a132a208617d009e2",
+    "plugins/linker-commerce/languages/linker-commerce.pot": "8f3eb42b1fbcc95a2e68d6810dc1a4967909d13e4f99f110d7ae7e4d1d198edc"
+  },
+  "changes_after_contact_freeze": [
+    "Official i18n-commerce regenerated PO references/header and POT/MO; the original Contact map is historical.",
+    "Root extended SelectionLinkTest with a nonfinite-bound consumer case, retaining the strict original finite control.",
+    "Root guards native custom-term canonical and rejects nonfinite archive numeric bounds."
+  ],
+  "browser_status": "Official Generate completed; final CUA acceptance in progress. Source review pending."
+}
