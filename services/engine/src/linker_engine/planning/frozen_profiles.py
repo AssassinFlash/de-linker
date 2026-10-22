@@ -15,7 +15,8 @@ def frozen_profile(
 ) -> PowerSeries:
     metadata = blobs.object(metadata_sha256)
     if (
-        metadata.get("schema") != 1
+        type(metadata.get("schema")) is not int
+        or metadata.get("schema") != 1
         or metadata.get("timezone_rules_sha256") != timezone_sha256
         or metadata.get("retention") != "permanent"
     ):

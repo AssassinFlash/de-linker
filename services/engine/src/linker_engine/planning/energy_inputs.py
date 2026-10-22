@@ -20,6 +20,9 @@ from .series_source import Origin
 type PositiveEfficiency = Annotated[float, Field(gt=0, le=1, allow_inf_nan=False)]
 type Nonnegative = Annotated[float, Field(ge=0, allow_inf_nan=False)]
 type Identifier = Annotated[str, Field(min_length=1)]
+# Literal[1] uses equality, accepting True and 1.0 even under strict=True.
+# This wire version is an integer type as well as a value, never a coercion.
+type SchemaVersion = Annotated[int, Field(strict=True, ge=1, le=1)]
 
 
 class Document(BaseModel):
@@ -76,7 +79,7 @@ class MappingDocument(Document):
 
 
 class BatteryParameters(Document):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     model: Literal["constant_window_single_ac_bus_v1"]
     parameter_basis: Literal["explicit_scenario"]
     usable_window_kwh: Nonnegative
@@ -142,7 +145,7 @@ class ScheduleSegment(Document):
 
 
 class EnergyInputs(Document):
-    schema_version: Literal[1]
+    schema_version: SchemaVersion
     gross_load_asset_id: Identifier
     critical_load_asset_id: Identifier | None
     pv_available_asset_id: Identifier

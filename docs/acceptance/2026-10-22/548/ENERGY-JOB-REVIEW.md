@@ -11,8 +11,8 @@ artifact hashes, raw/mapping/TZif replay, operating-boundary refinement and load
 scope, explicit failure for wrong versions/missing bytes/invalid measurement,
 dependency-to-input asset binding, client retry identity, foreign references,
 concurrent import, team read-only authority, source retention and standalone
-backup/restore. Full planning is 129 passing tests; strict mypy, Ruff lint and
-format checks pass. The whole-engine regression is recorded after completion.
+backup/restore. Initial full planning was 129 passing tests; whole engine was
+286 passing in 18.27s. Strict mypy, Ruff lint and format checks passed.
 
 Fixtures are synthetic, labelled and bounded. No hardware/country/weather or
 frontend/production acceptance is claimed by these tests. The new handler is
@@ -20,12 +20,25 @@ not mounted publicly; old customer entry points still use the existing app.
 
 ## Standards
 
-Pending fixed-commit independent review. Review all new files plus changes to
-Workspace/Jobs/Worker/archive, including source snapshot and child references.
+Fixed `be0cd227`: one P2. Pydantic's strict model configuration did not prevent
+`Literal[1]` from accepting boolean true or float 1.0 as an integer version.
+Both parameter/scenario classes were affected; the reviewer also reproduced
+scenario true through the actual durable Worker to a satisfied result.
+No project/asset-ID/runtime binding or child-backup bypass was found.
 
 ## Spec
 
-Pending fixed-commit independent review against energy-job and the existing
-workspace/time/energy contracts. Check that source/identity boundaries, frozen
-dependencies, version failures, retries, resolution and output claims match the
-contract, and that no full-product scope is deleted by this internal increment.
+Fixed `be0cd227`: the same P2 was independently reproduced, including true in
+both persisted project and battery asset. Extra owner/initial/nonfinite/gap/
+TZif-substitution checks passed; finished result/trace backup was complete,
+insufficient terminal inventory remained succeeded+violated, and restored outage
+scope remained mixed. No scope creep was found.
+
+## Repair and fixed recheck
+
+Versions now require a strict integer of supported value; true, 1.0, strings,
+null and unsupported integer versions are rejected. Pinned metadata/manifest
+version guards also check integer identity. Ten direct/enqueue regressions and
+two actual malformed-durable-job Worker regressions cover the original cases.
+The repaired fixed commit will be rechecked by both independent axes. Full
+planning has 141 passing tests (6.66s), with strict mypy/Ruff/format checks.

@@ -25,6 +25,7 @@ def frozen_manifest(workspace: Workspace, lease: Lease, manifest_hash: str) -> O
                 for name in ("project_id", "revision", "input_sha256")
             )
             or row["manifest_sha256"] != manifest_hash
+            or type(manifest.get("schema")) is not int
             or manifest.get("schema") != 1
         ):
             raise VersionUnavailable("manifest does not belong to this frozen run")

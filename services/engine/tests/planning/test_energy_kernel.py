@@ -13,7 +13,7 @@ from linker_engine.planning import archive, timezone_rules
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import Json, Object, encode
 from linker_engine.planning.csv_mapping import CsvMapping
-from linker_engine.planning.energy_inputs import EnergyInputs
+from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.errors import (
@@ -557,3 +557,71 @@ def test_backup_detects_missing_profile_child_before_any_evaluation(
     with pytest.raises(VersionUnavailable):
         archive.backup(workspace, destination)
     assert not destination.exists()
+
+
+@pytest.mark.parametrize("version", [True, 1.0, "1", None, 2])
+def test_battery_schema_version_is_an_actual_supported_integer(version: Json) -> None:
+    with pytest.raises(InvalidInput, match="schema_version"):
+        BatteryParameters.read({**BATTERY, "schema_version": version})
+
+
+@pytest.mark.parametrize("version", [True, 1.0, "1", None, 2])
+def test_scenario_schema_version_wrong_type_is_rejected_before_queue(
+    workspace: Workspace,
+    owner: Actor,
+    version: Json,
+) -> None:
+    project = create_scenario(workspace, owner)
+    object_field(project.inputs, "energy_replay")["schema_version"] = version
+    project = workspace.revise(owner, project.id, 2, project.inputs, key="bad-version")
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
+    with pytest.raises(InvalidInput, match="schema_version"):
+        EnergyService(workspace, kernel, max_attempts=1).evaluate(
+            owner, project.id, 3, key="run"
+        )
+    assert not workspace.runs(owner, project.id)
+
+
+@pytest.mark.parametrize("version", [True, 1.0])
+def test_real_worker_also_rejects_wrong_battery_schema_types(
+    workspace: Workspace,
+    owner: Actor,
+    version: Json,
+) -> None:
+    project = create_scenario(workspace, owner)
+    kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
+    context = kernel.context(
+        owner, project.id, EnergyInputs.from_project(project.inputs)
+    )
+    bad = Assets(workspace).add(
+        owner,
+        project.id,
+        encode({**BATTERY, "schema_version": version}),
+        "application/json",
+        "battery_parameters_v1",
+        {"retention": "permanent", "provenance": PROVENANCE},
+        key="bad-battery",
+    )
+    object_field(project.inputs, "energy_replay")["battery_parameters_asset_id"] = (
+        bad.id
+    )
+    project = workspace.revise(
+        owner, project.id, 2, project.inputs, key="wrong-battery-schema"
+    )
+    context = replace(
+        context,
+        assets={
+            **context.assets,
+            "battery.raw": bad.content_sha256,
+            "battery.metadata": bad.metadata_sha256,
+        },
+    )
+    # Bypass only the trusted enqueue adapter to represent malformed durable
+    # work: the actual production worker must independently reject its asset.
+    run = workspace.evaluate(
+        owner, project.id, 3, context, key="worker-validation", max_attempts=1
+    )
+    assert worker(workspace, kernel).run_once()
+    failed = workspace.run(owner, run.id)
+    assert failed.error == {"code": "invalid_input", "retryable": False}
+    assert failed.result is None
