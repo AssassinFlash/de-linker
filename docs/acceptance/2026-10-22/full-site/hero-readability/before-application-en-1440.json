@@ -1,0 +1,57 @@
+{
+  "actions": [
+    {
+      "fontSize": "13px",
+      "href": "http://127.0.0.1:9290/solution/#arenas",
+      "rect": {
+        "height": 45.5,
+        "width": 235,
+        "x": 602.5,
+        "y": 617.5
+      },
+      "text": "View storage by scale ↓"
+    },
+    {
+      "fontSize": "12px",
+      "href": "http://127.0.0.1:9290/solution-configurator/",
+      "rect": {
+        "height": 28,
+        "width": 190.578125,
+        "x": 624.7109375,
+        "y": 675
+      },
+      "text": "Open the Solution Configurator →"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-746 page-parent wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas sol-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(7, 29, 52, 0.52), rgba(7, 29, 52, 0.08) 46%, rgba(3, 19, 34, 0.2) 62%, rgba(3, 19, 34, 0.82))",
+    "className": "lk-hero-sol sol-cover",
+    "rect": {
+      "height": 750,
+      "width": 1440,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "48.96px",
+    "lineHeight": "56.304px",
+    "rect": {
+      "height": 112.609375,
+      "width": 940,
+      "x": 250,
+      "y": 174.1484375
+    },
+    "text": "Storage systems built for how your sites run."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/solution/",
+  "viewport": [
+    1440,
+    1000
+  ]
+}

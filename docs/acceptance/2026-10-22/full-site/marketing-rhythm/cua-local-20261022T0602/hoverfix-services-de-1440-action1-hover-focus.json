@@ -1,0 +1,100 @@
+{
+  "at": "2026-10-22T08:23:30.439Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "gap": "12px",
+      "lineBreaks": [
+        "none"
+      ],
+      "links": [
+        {
+          "background": "rgb(255, 255, 255)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "className": "lk-btn-teal",
+          "color": "rgb(12, 127, 115)",
+          "focusVisible": true,
+          "focused": true,
+          "font": "14px",
+          "hovered": true,
+          "href": "http://127.0.0.1:9290/de/kontakt/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "outline": "rgb(12, 127, 115) solid 2px",
+          "outlineOffset": "2px",
+          "rect": {
+            "bottom": 524.1484375,
+            "height": 48,
+            "right": 319.1328125,
+            "width": 219.1328125,
+            "x": 100,
+            "y": 476.1484375
+          },
+          "text": "Support-Anfrage öffnen →",
+          "transitionDuration": "0.2s, 0.2s, 0.2s",
+          "transitionProperty": "border-color, box-shadow"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "1px solid rgb(160, 177, 164)",
+          "className": "lk-btn-outline",
+          "color": "rgb(23, 39, 33)",
+          "focusVisible": false,
+          "focused": false,
+          "font": "14px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 524.1484375,
+            "height": 48,
+            "right": 553.234375,
+            "width": 222.1015625,
+            "x": 331.1328125,
+            "y": 476.1484375
+          },
+          "text": "Auf Partnerportal zugreifen",
+          "transitionDuration": "0.2s, 0.2s, 0.2s",
+          "transitionProperty": "border-color, box-shadow"
+        }
+      ],
+      "paragraphGap": 32,
+      "previous": {
+        "font": "16px",
+        "lineHeight": "26.4px",
+        "rect": {
+          "bottom": 444.1484375,
+          "height": 79.1953125,
+          "right": 690,
+          "width": 590,
+          "x": 100,
+          "y": 364.953125
+        },
+        "tag": "P",
+        "text": "Unser Team in Deutschland bearbeitet Angebote, Produktunterlagen und technischen Support. Registrierte Fachpartner bestellen über das Partnerportal."
+      },
+      "rect": {
+        "bottom": 524.1484375,
+        "height": 48,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 476.1484375
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "stylesheets": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792656909"
+  ],
+  "url": "http://127.0.0.1:9290/de/kundendienst/",
+  "width": 1440,
+  "sourceAggregate": "00ae7fc26d8df2d5bc63c9e4ab99e7c82da7caf8e2e4fb8d261ad3e892e742ff"
+}

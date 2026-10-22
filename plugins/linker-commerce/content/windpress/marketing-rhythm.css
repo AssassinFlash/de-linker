@@ -1,0 +1,199 @@
+/* The installer footer uses lk-cta-actions; the old page rule styles only
+   lk-btn-row. Reuse site spacing tokens for the actual two-action group. */
+#installer-journal .lk-bottom-cta .lk-cta-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: stretch;
+	gap: var(--proto-space-3, 12px);
+	margin-top: var(--proto-space-6, 24px);
+}
+
+#installer-journal .lk-bottom-cta .lk-container p {
+	font-size: 16px;
+	line-height: 1.65;
+}
+
+#installer-journal .lk-bottom-cta h2 {
+	-webkit-hyphens: manual;
+	hyphens: manual;
+	overflow-wrap: normal;
+	text-wrap: balance;
+}
+
+#installer-journal .lk-bottom-cta .lk-cta-actions > a {
+	box-sizing: border-box;
+	min-height: 48px;
+	padding: 12px 18px;
+	font-size: 14px;
+	line-height: 1.4;
+	text-align: center;
+	text-decoration: none;
+	white-space: normal;
+	/* Keep text and background together during the native hover inversion. */
+	transition-property: border-color, box-shadow;
+}
+
+#installer-journal .lk-bottom-cta .lk-cta-actions > a:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+
+@media (max-width: 640px) {
+	#installer-journal .lk-bottom-cta .lk-cta-actions {
+		flex-direction: column;
+	}
+
+	#installer-journal .lk-bottom-cta .lk-cta-actions > a {
+		width: 100%;
+	}
+}
+
+/* Sibling service/application groups use the same native action classes. A
+   service-page line break used to create an empty third mobile grid item. */
+:is(#service-redesign #start, #tv-solution-v1 #contact) .lk-cta-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: stretch;
+	gap: var(--proto-space-3, 12px);
+	margin-top: var(--proto-space-6, 24px);
+}
+
+#service-redesign .lk-cta-actions > br {
+	display: none;
+}
+
+:is(#service-redesign #start, #tv-solution-v1 #contact) .lk-cta-actions > a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	min-height: 48px;
+	padding: 12px 18px;
+	font-size: 14px;
+	line-height: 1.4;
+	text-align: center;
+	text-decoration: none;
+	white-space: normal;
+	transition-property: border-color, box-shadow;
+}
+
+#tv-solution-v1 .lk-cta-actions > .lk-btn-outline {
+	border: 1px solid var(--proto-teal-600);
+}
+
+:is(#service-redesign #start, #tv-solution-v1 #contact)
+	.lk-cta-actions
+	> a:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+
+#service-redesign #start .lk-cta-bleed-inner > p,
+#tv-solution-v1 #contact .sol-cta-copy > p {
+	font-size: 16px;
+	line-height: 1.65;
+}
+
+/* The photo-cover state keeps its transparent header. Give the language
+   controls a solid surface instead of dark text over a changing photograph. */
+body:is(
+		.rs-at-cover,
+		.cs-at-cover,
+		.about-at-scene,
+		.us-at-cover,
+		.epc-at-cover,
+		.sol-at-cover
+	)
+	#tv-header-v2
+	.lnk-lang-toggle {
+	color: #fff;
+	background: #15352f;
+	border-radius: var(--proto-radius-md);
+}
+
+body:is(
+		.rs-at-cover,
+		.cs-at-cover,
+		.about-at-scene,
+		.us-at-cover,
+		.epc-at-cover,
+		.sol-at-cover
+	)
+	#tv-header-v2
+	.lnk-lang-half.is-active::after {
+	background: currentColor;
+}
+
+body:is(
+		.rs-at-cover,
+		.cs-at-cover,
+		.about-at-scene,
+		.us-at-cover,
+		.epc-at-cover,
+		.sol-at-cover
+	)
+	#tv-header-v2
+	.lnk-lang-half:focus-visible {
+	outline-color: currentColor;
+	outline-offset: -3px;
+}
+
+@media (max-width: 640px) {
+	:is(#service-redesign #start, #tv-solution-v1 #contact) .lk-cta-actions {
+		flex-direction: column;
+	}
+
+	:is(#service-redesign #start, #tv-solution-v1 #contact)
+		.lk-cta-actions
+		> a {
+		width: 100%;
+	}
+}
+
+/* A photographic cover keeps its white navigation until the white mobile
+   panel opens. Reset the visible controls along with that panel surface. */
+#lc-header:has(#tv-mobile-panel[data-open="true"]) {
+	background: #fff;
+	border-color: var(--proto-neutral-200);
+}
+
+#lc-header:has(#tv-mobile-panel[data-open="true"])
+	#tv-header-v2
+	.tv-brand-logo {
+	filter: none;
+}
+
+#lc-header:has(#tv-mobile-panel[data-open="true"]) #tv-header-v2 .tv-nav-link {
+	color: var(--proto-ink);
+}
+
+#lc-header:has(#tv-mobile-panel[data-open="true"])
+	#tv-header-v2
+	:is(.tv-header-utility, .tv-mobile-toggle) {
+	background: #fff;
+	border-color: var(--proto-neutral-200);
+	color: var(--proto-ink);
+}
+
+#lc-header:has(#tv-mobile-panel[data-open="true"])
+	#tv-header-v2
+	.tv-header-cta {
+	background: var(--proto-teal-600);
+	border-color: var(--proto-teal-600);
+	color: #fff;
+}
+
+/* White navigation needs a stable dark surface even over the lightest
+   photographic cover. Keep the photograph visible and the open panel white. */
+body[data-page]:is(
+		.rs-at-cover,
+		.cs-at-cover,
+		.about-at-scene,
+		.us-at-cover,
+		.epc-at-cover,
+		.sol-at-cover
+	)
+	#lc-header:not(:has(#tv-mobile-panel[data-open="true"]))
+	#tv-header-v2 {
+	background: rgba(21, 53, 47, 0.8);
+}

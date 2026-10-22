@@ -1,0 +1,270 @@
+{
+  "at": "2026-10-22T08:24:50.098198+00:00",
+  "sourceAggregate": "00ae7fc26d8df2d5bc63c9e4ab99e7c82da7caf8e2e4fb8d261ad3e892e742ff",
+  "cacheVersion": 1792656909,
+  "views": [
+    {
+      "view": "hoverfix-application-de-1440-action1-hover-focus",
+      "imageSha256": "2036ae62b0de4e52081cc73f68c19e72480902800d87fdcdf688bb958873510b",
+      "jsonSha256": "55edceab5d25f3a7269bb9e29bdaef66efa8444bc7b08e5ed0c605563e42e3b2",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-de-1440-action2-hover-focus",
+      "imageSha256": "072d637a8ca7c7013a24e2db4386dc53d88b014da62f5477eff7d67b796f2727",
+      "jsonSha256": "56215b0b2ce806a1ac6a3e42e407c7f10ed4dbd75a85c546f35673960f66242a",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-de-1440-normal",
+      "imageSha256": "c322418a25cfb064635b3aa33bb2879279ab7cb8e7a8b0424321aea2866d6347",
+      "jsonSha256": "3a29a5bb1d590ae4acbc3bb670dc8f3d7d12f500def995d061a8f0eb0edf5c4d",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-de-390-action1-hover-focus",
+      "imageSha256": "750382f548b79193ac19d491f4b076576dc6bd6fc5c9a0475b6bdd07bd69842a",
+      "jsonSha256": "b321db2145654890aa7ff177c5af6c581ad148317dd24192d8bd511bd960c50f",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-de-390-action2-hover-focus",
+      "imageSha256": "e14e440c88030858317301a29071e20f76f3d8383b50f581e6eed48482d0fe15",
+      "jsonSha256": "9eee3676beb58e443c767bf94b042b142f9d907d2915b6646917575c6ac162c2",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-de-390-normal",
+      "imageSha256": "064dd218ba09450dbec58c0145f4fe97ed8e3886f0b3940ac4ef41f19dc52195",
+      "jsonSha256": "f35725ae195060edf186dd97ea5262bbc40e94e72d1e82756cfbc124d196dff6",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-en-1440-action1-hover-focus",
+      "imageSha256": "974a3a8cdb80ea74d4d34aa108462d7b4c3a85fca01a01ae46695f1e4ba350dd",
+      "jsonSha256": "eb795b109618edc6db2e1a724013da7b0003f80c69dcfbcf9658cd64047f184b",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-en-1440-action2-hover-focus",
+      "imageSha256": "778ea20169c5f04b437dfe6028768a4446703033b8b065890fe18fe21569ff35",
+      "jsonSha256": "153395ba1ac569ff0e2fb6f61e95df654d0d0b56892e3d17257c68efddfb4fba",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-en-1440-normal",
+      "imageSha256": "4940164ce9e67b0123413fffc96931716cf74de368621bca0e8740b8ceecd3b6",
+      "jsonSha256": "194e555efd1bb7fd35349550582ea9bb0ed3dbe176c9646a835d6c4e5c5becdb",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-en-390-action1-hover-focus",
+      "imageSha256": "78f9d4c4fdfabae3e27af9544c70fa757302914112951f4bc922c535b7137a6f",
+      "jsonSha256": "70941ff9b7ed4550790f797df11ae73e2f97440c149c7d2e32e79a35796a129d",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-en-390-action2-hover-focus",
+      "imageSha256": "4976cba00f5a043fc0118853f77fa88a0ce0b59e5c87965cf538b1f95ee6069c",
+      "jsonSha256": "3c865150f077995b40f20f1a47d87e38d43f1892aaa6902dfa270a0fe4bd6d23",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-application-en-390-normal",
+      "imageSha256": "35b1a31ecc37397f427681d840ef801a515623ebecb716965ffa18c1d64ff553",
+      "jsonSha256": "840d9143ab85c8ca8d42c11ab1fbdc08ade6deb49411d0b0d36ec49ae72a45a2",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-de-1440-action1-hover-focus",
+      "imageSha256": "6a6920eae24713f7a4e2b3b98967c61ab8baf2a58295042951c679b2ffb3a21c",
+      "jsonSha256": "758a3b531c799a18495dbe0fe03cd93b2e529a1d87e9b394ca0fdf211a835dc0",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-de-1440-action2-hover-focus",
+      "imageSha256": "fb5b86590ffde5bb78c1404f1832c02c551b361240c74a63c636b7299f7b78a9",
+      "jsonSha256": "7399e1974e1cd987bc845c9bdc13df16d0650d73a228c4cd3046694635be7ddd",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-de-1440-normal",
+      "imageSha256": "45bc9d9c25b0873ea811fa390f4cb8c9353d19ccf0e7365164751b78b72606fa",
+      "jsonSha256": "601e5ee27e58f112b0b3598577012140c4e4c758c5c194d27f9b3b9126bbdf8e",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-de-390-action1-hover-focus",
+      "imageSha256": "842c0d679dbbab521aeacf2ace69c4edaaf9822f406718c1f401be0926eed44e",
+      "jsonSha256": "1652fcf8cb1ad829e32aa9136dfca46269deee015139c85a1350a5b8d8864b9b",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-de-390-action2-hover-focus",
+      "imageSha256": "9c68e3baabeba2105850645f7c5c13791f5f1eb2f90100cd1eea0d57b2a382d3",
+      "jsonSha256": "b2abcff8d406518c4d00824069857221f0143816870f85df0c8759f1d625e730",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-de-390-normal",
+      "imageSha256": "25d9b1d344e7e796a79e98a5443b444931f462f2a1b2569cd357e1340834aee5",
+      "jsonSha256": "755d0a9fa60e2c66b850bd06b3ab39736aeb9367e8eb9bab59a9a32c973b20a7",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-en-1440-action1-hover-focus",
+      "imageSha256": "73669b7a7e9da159be1a05230a84816225adbd6e923f71c8d1102f38ae66b48a",
+      "jsonSha256": "3143367bb618e80d5eebf7e4e6720b2755118acbdf4dcbd548bd3404826a4bf4",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-en-1440-action2-hover-focus",
+      "imageSha256": "1986eb253f0edb2530220bf2350e1d657567e523083daf9ff374ab0e902cf373",
+      "jsonSha256": "73e1319e9ffb2f28e7dacb37f12628a5f041c73b3a5f62dc83e033f54c1e5d17",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-en-1440-normal",
+      "imageSha256": "beacee3b008b308e9ca08cef551faec996523092250fa2d32b973dd14e28ca5b",
+      "jsonSha256": "9a2a7f95f6808ba4a1326c6a144d9dfdbda9ee1478728c62d46cf8fb56932fb1",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-en-390-action1-hover-focus",
+      "imageSha256": "b0d4b707821ea82ba3d2d6bb0cc417b7915139c02e22e29f427e47e94a261b9a",
+      "jsonSha256": "c576f45a2c89fd0c84ad1419a3830c2270a55aac1ec40e3fefc2dd567858ecbe",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-en-390-action2-hover-focus",
+      "imageSha256": "85ced074325c131ec90c933128cd94bbef9662dc307b01d9aa3bf83bb41fe8e0",
+      "jsonSha256": "22a3768bd7600511cff16a3bc30d9f261dd2e73b59f7d9a5e183e88f242fdb82",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-installer-en-390-normal",
+      "imageSha256": "afeeb99cbc1e0be26c231949e49cd93f3f461c4e14442f8d8eedf462498c4d70",
+      "jsonSha256": "713449e5750ecd65b84c10db0f1889ec253c9d6550ab6b0a85518eee3d78f7c3",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-de-1440-action1-hover-focus",
+      "imageSha256": "32548f771778f74c3f279419b14b2b713e7ae47f71ea0c4c37b0cf03b73101bf",
+      "jsonSha256": "dee0e76e72947864a434d1365e1e05513b5a62fd908a0e9413445f357a37a8dc",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-de-1440-action2-hover-focus",
+      "imageSha256": "1fa6e42722196082c36ff1a33e6ac914d69cf53768a3de1dac78d70782b09c16",
+      "jsonSha256": "7218ce9a54c7611496faa270e76cd3de1f8f9658686cd7bb70b3c131cbc98f92",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-de-1440-normal",
+      "imageSha256": "140da968ccb612a8c93c258f2c4e30214203acb4d7f36211158ae95b7c113da0",
+      "jsonSha256": "caa5eff3b6b99517121b55b1c8fd660a71e7672d25888251128fe87618c1f5fa",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-de-390-action1-hover-focus",
+      "imageSha256": "37e90102aac6a65b7f43ec56d7492271fb26c86c9a5c9d20f1162bc79b52a55c",
+      "jsonSha256": "d389e7e2e9bd88eb118f5728f0e6535a5791212469a0678a7e5bb78d4f4145b3",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-de-390-action2-hover-focus",
+      "imageSha256": "097b635b2623383904153a97bc9437f8fdb3ff726523dde8f487b71e59e046b9",
+      "jsonSha256": "0a04a274b8cf6fc0fe679595159a8e1be109767862d5d44e150420fe4160d442",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-de-390-normal",
+      "imageSha256": "454d0b9610ca7ef440ec838642c708e5a5e6b04c6006359bb699521341f270fd",
+      "jsonSha256": "c06d11073515e696a77ccb40d663255c9680fe46fb4930567063fc1f168a0c49",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-en-1440-action1-hover-focus",
+      "imageSha256": "6187fbf679902ecdfdea64b23768d5669935c2e890cb56ed75c2e042e4364409",
+      "jsonSha256": "01ff1cac730d7b57a494a9c5111d27502597d2b5acd68ce7d47e6babca4d1187",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-en-1440-action2-hover-focus",
+      "imageSha256": "552a2716eb10869c6040dee3dd321433020558a8b7fb6349e9755518ab46ecbd",
+      "jsonSha256": "183de487247c7345e2766ea1265cfaafaac5353e32cf0f8cbe9bccd32fec007c",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-en-1440-normal",
+      "imageSha256": "acdb829b95d42a7f1d0e9863dad40e1b8198790ec29bdef4951bf2ee9b5b7a0a",
+      "jsonSha256": "75d87fd578424cddb8ea17fcc9603afc8a7b3a035419fe00a7fe8c97dc7fbd49",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-en-390-action1-hover-focus",
+      "imageSha256": "5ab8476079ef710f665c6c923726a47f6827520a3b148a2c5c4a31b952544bae",
+      "jsonSha256": "8c6c2f38ff545c29df0748e563fc02924e361a257b651ffd68c6943478a5c60d",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-en-390-action2-hover-focus",
+      "imageSha256": "a6a004675d5c916e328d5f8a2abda4992b4c544b4be164a73bd60fa7af65bc19",
+      "jsonSha256": "97db74a71a12e47e0ab63ae23bdf82c551eb1e0663148806e2328b578dbb8854",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    },
+    {
+      "view": "hoverfix-services-en-390-normal",
+      "imageSha256": "6fa8866eb4e853de911a1e1bdc1462f93630231beaf968b4b9cca1b029e8883e",
+      "jsonSha256": "00037be2a0081fd3a1a4216b06785d18a50f9a649a2a92e2352c2fd7473852fd",
+      "stateChecks": "PASS",
+      "visualReview": "PASS - bounded independent saved-image review"
+    }
+  ],
+  "opaqueForegroundBackgroundChecks": {
+    "count": 48,
+    "minimumContrast": 4.884922606822291,
+    "transparentBackgroundsExcluded": 24
+  },
+  "scope": "Exact native style/state proof with actual opaque color-pair arithmetic. Transparent backgrounds are not treated as black. Saved-image visual review and destination-consumer acceptance remain separate.",
+  "independentVisualReport": {
+    "path": "visual-review-hoverfix-00ae7fc2.md",
+    "sha256": "bbda943fa37912cd00d334ac1e5cf6e229c230e0a8357378871fc10334621187",
+    "scope": "CTA spacing, visible styles and native recorded state; destination consumer/production/full site not closed"
+  }
+}

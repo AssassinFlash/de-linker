@@ -1,0 +1,81 @@
+{
+  "actions": [
+    {
+      "fontSize": "13px",
+      "href": "http://127.0.0.1:9290/contact/?intent=project&source=http%3A%2F%2F127.0.0.1%3A9290%2Ffor-epc%2F&kind=solution&source_id=842",
+      "rect": {
+        "height": 48,
+        "width": 225,
+        "x": 82.5,
+        "y": 555
+      },
+      "text": "Discuss a Project Scope →"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-842 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas epc-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(7, 29, 52, 0.64), rgba(7, 29, 52, 0.64) 62%, rgba(3, 19, 34, 0.82))",
+    "className": "lk-hero-split epc-cover",
+    "rect": {
+      "height": 650,
+      "width": 390,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "32px",
+    "lineHeight": "37.12px",
+    "rect": {
+      "height": 148.46875,
+      "width": 350,
+      "x": 20,
+      "y": 160.5
+    },
+    "text": "Project requirements, supplied as constructible storage systems."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/for-epc/",
+  "viewport": [
+    390,
+    844
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792655451"
+  ],
+  "fonts": "loaded",
+  "header": "rgba(21, 53, 47, 0.8)",
+  "images": [
+    {
+      "complete": true,
+      "naturalWidth": 1672
+    }
+  ],
+  "texts": [
+    {
+      "className": "lk-hero-badge",
+      "color": "rgb(238, 248, 255)",
+      "fontSize": "10px",
+      "opacity": "1",
+      "text": "FOR EPCS & PROJECT DEVELOPERS"
+    },
+    {
+      "className": "lk-hero-title",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "32px",
+      "opacity": "1",
+      "text": "Project requirements, supplied as constructible storage systems."
+    },
+    {
+      "className": "lk-intake-p",
+      "color": "rgb(255, 255, 255)",
+      "fontSize": "13px",
+      "opacity": "1",
+      "text": "Discuss your project parameters, capacity needs, or grid documentation requirements directly with our team."
+    }
+  ],
+  "sourceAggregate": "d69083aefc946cc4884e17d2774d9b503661f5e39cb151388649423791748661"
+}

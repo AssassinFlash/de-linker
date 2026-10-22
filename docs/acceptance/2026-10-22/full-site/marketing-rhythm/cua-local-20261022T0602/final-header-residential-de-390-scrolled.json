@@ -1,0 +1,94 @@
+{
+  "at": "2026-10-22T06:43:22.375Z",
+  "body": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6923 page-child parent-pageid-6871 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas",
+  "controls": [
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(12, 15, 15)",
+      "label": "Produkte suchen",
+      "rect": {
+        "bottom": 63,
+        "height": 46,
+        "width": 46,
+        "x": 172,
+        "y": 17
+      }
+    },
+    {
+      "background": "rgb(255, 255, 255)",
+      "color": "rgb(12, 15, 15)",
+      "label": "Menü öffnen",
+      "rect": {
+        "bottom": 62,
+        "height": 44,
+        "width": 44,
+        "x": 330,
+        "y": 18
+      }
+    }
+  ],
+  "css": [
+    "http://127.0.0.1:9290/wp-content/uploads/windpress/cache/tailwind.css?ver=1792651246"
+  ],
+  "expanded": [],
+  "fonts": "loaded",
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none",
+    "rect": {
+      "bottom": 81,
+      "height": 81,
+      "width": 390,
+      "x": 0,
+      "y": 0
+    }
+  },
+  "height": 844,
+  "lang": "de-DE",
+  "language": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/solution/residential-storage/",
+      "outline": "rgb(15, 23, 42) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "bottom": 62,
+        "height": 44,
+        "width": 44,
+        "x": 230,
+        "y": 18
+      },
+      "text": "EN",
+      "underline": "rgba(0, 0, 0, 0)"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "color": "rgb(15, 23, 42)",
+      "focused": false,
+      "hovered": false,
+      "href": "http://127.0.0.1:9290/de/loesung/heimspeicher/",
+      "outline": "rgb(15, 23, 42) none 3px",
+      "outlineOffset": "0px",
+      "parentBackground": "rgba(0, 0, 0, 0)",
+      "rect": {
+        "bottom": 62,
+        "height": 44,
+        "width": 44,
+        "x": 274,
+        "y": 18
+      },
+      "text": "DE",
+      "underline": "rgb(12, 127, 115)"
+    }
+  ],
+  "logoFilter": "none",
+  "overflow": false,
+  "scrollY": 1055,
+  "url": "http://127.0.0.1:9290/de/loesung/heimspeicher/",
+  "width": 390
+}

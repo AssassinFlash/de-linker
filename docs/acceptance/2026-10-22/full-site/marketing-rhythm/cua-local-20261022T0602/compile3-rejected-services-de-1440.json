@@ -1,0 +1,89 @@
+{
+  "at": "2026-10-22T06:19:04.876Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "10px",
+      "lineBreaks": [
+        "none"
+      ],
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "border": "1px solid rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "focused": false,
+          "font": "12px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/kontakt/?intent=support&source=http%3A%2F%2F127.0.0.1%3A9290%2Fservices-support%2F&kind=service&source_id=2748",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 443.140625,
+            "height": 43,
+            "right": 289.2578125,
+            "width": 189.2578125,
+            "x": 100,
+            "y": 400.140625
+          },
+          "text": "Support-Anfrage öffnen →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "border": "1px solid rgb(160, 177, 164)",
+          "color": "rgb(23, 39, 33)",
+          "focused": false,
+          "font": "12px",
+          "hovered": false,
+          "href": "http://127.0.0.1:9290/de/mein-konto/",
+          "outline": "rgb(23, 39, 33) none 3px",
+          "outlineOffset": "0px",
+          "rect": {
+            "bottom": 443.140625,
+            "height": 43,
+            "right": 491.0625,
+            "width": 191.8046875,
+            "x": 299.2578125,
+            "y": 400.140625
+          },
+          "text": "Auf Partnerportal zugreifen"
+        }
+      ],
+      "paragraphGap": 25,
+      "previous": {
+        "font": "14px",
+        "lineHeight": "23.1px",
+        "rect": {
+          "bottom": 375.140625,
+          "height": 46.1875,
+          "right": 690,
+          "width": 590,
+          "x": 100,
+          "y": 328.953125
+        },
+        "tag": "P",
+        "text": "Unser Team in Deutschland bearbeitet Angebote, Produktunterlagen und technischen Support. Registrierte Fachpartner bestellen über das Partnerportal."
+      },
+      "rect": {
+        "bottom": 443.140625,
+        "height": 43,
+        "right": 1340,
+        "width": 1240,
+        "x": 100,
+        "y": 400.140625
+      }
+    }
+  ],
+  "hasAdminBar": false,
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/kundendienst/",
+  "width": 1440
+}

@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-22T06:12:47.635Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "18px 25px",
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/de/loesungskonfigurator/",
+          "rect": {
+            "bottom": 462.1875,
+            "height": 46,
+            "right": 1081.453125,
+            "width": 265.8984375,
+            "x": 815.5546875,
+            "y": 416.1875
+          },
+          "text": "Mit dem Lösungskonfigurator planen →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "color": "rgb(12, 127, 115)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/de/kontakt/?intent=project&source=http%3A%2F%2F127.0.0.1%3A9290%2Fsolution%2F&kind=solution&source_id=746",
+          "rect": {
+            "bottom": 461.1875,
+            "height": 44,
+            "right": 1322.84375,
+            "width": 216.390625,
+            "x": 1106.453125,
+            "y": 417.1875
+          },
+          "text": "Sprechen Sie mit unseren Ingenieuren"
+        }
+      ],
+      "paragraphGap": 25,
+      "previous": {
+        "font": "14px",
+        "lineHeight": "25.2px",
+        "rect": {
+          "bottom": 391.1875,
+          "height": 50.390625,
+          "right": 1340,
+          "width": 524.4453125,
+          "x": 815.5546875,
+          "y": 340.796875
+        },
+        "tag": "P",
+        "text": "Von privaten Notstromversorgungspaketen bis zu Megawatt-Containerlieferungen verbindet Linker komplette Speicherlösungen für Sie."
+      },
+      "rect": {
+        "bottom": 462.1875,
+        "height": 46,
+        "right": 1340,
+        "width": 524.4453125,
+        "x": 815.5546875,
+        "y": 416.1875
+      }
+    }
+  ],
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "de-DE",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/de/loesung/",
+  "width": 1440
+}

@@ -1,0 +1,79 @@
+{
+  "actions": [
+    {
+      "fontSize": "14px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 44,
+        "width": 44,
+        "x": 313,
+        "y": 484.6328125
+      },
+      "text": "\n\n"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 35.59375,
+        "width": 318.3359375,
+        "x": 35.828125,
+        "y": 558.6328125
+      },
+      "text": "Finden Sie ein 10-kW-Dreiphasen-Heimspeichersystem"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 35.59375,
+        "width": 332.1171875,
+        "x": 28.9375,
+        "y": 602.2265625
+      },
+      "text": "Vergleichen Sie GoodWe- und SAJ-Heimspeicheroptionen"
+    },
+    {
+      "fontSize": "11px",
+      "href": "http://127.0.0.1:9290/de/genie/",
+      "rect": {
+        "height": 53.1875,
+        "width": 354,
+        "x": 18,
+        "y": 645.8203125
+      },
+      "text": "Welche Batterie funktioniert mit meinem Hybrid-Wechselrichter?"
+    }
+  ],
+  "bodyClasses": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-6923 page-child parent-pageid-6871 wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 lc-custom-header lc-custom-footer woocommerce-js is-using-livecanvas rs-at-cover",
+  "cover": {
+    "before": "linear-gradient(rgba(13, 29, 25, 0.5), rgba(13, 29, 25, 0.22) 35%, rgba(13, 29, 25, 0.55))",
+    "className": "lk-hero-cinematic",
+    "rect": {
+      "height": 793.3984375,
+      "width": 390,
+      "x": 0,
+      "y": 1
+    }
+  },
+  "fontStatus": "loaded",
+  "heading": {
+    "color": "rgb(255, 255, 255)",
+    "fontSize": "32px",
+    "lineHeight": "37.12px",
+    "rect": {
+      "height": 111.3515625,
+      "width": 354,
+      "x": 18,
+      "y": 162
+    },
+    "text": "Heimspeicher, verknüpft und geliefert von Linker."
+  },
+  "overflow": 0,
+  "scrollY": 0,
+  "url": "http://127.0.0.1:9290/de/loesung/heimspeicher/",
+  "viewport": [
+    390,
+    844
+  ]
+}

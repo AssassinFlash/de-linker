@@ -1,0 +1,75 @@
+{
+  "at": "2026-10-22T06:12:46.470Z",
+  "fonts": "loaded",
+  "groups": [
+    {
+      "direction": "row",
+      "display": "flex",
+      "gap": "18px 25px",
+      "links": [
+        {
+          "background": "rgb(12, 127, 115)",
+          "color": "rgb(255, 255, 255)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/solution-configurator/",
+          "rect": {
+            "bottom": 481.8125,
+            "height": 46,
+            "right": 1070.75,
+            "width": 255.1953125,
+            "x": 815.5546875,
+            "y": 435.8125
+          },
+          "text": "Plan with the Solution Configurator →"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "color": "rgb(12, 127, 115)",
+          "font": "12px",
+          "href": "http://127.0.0.1:9290/contact/?intent=project&source=http%3A%2F%2F127.0.0.1%3A9290%2Fsolution%2F&kind=solution&source_id=746",
+          "rect": {
+            "bottom": 480.8125,
+            "height": 44,
+            "right": 1216.1640625,
+            "width": 120.4140625,
+            "x": 1095.75,
+            "y": 436.8125
+          },
+          "text": "Talk to Our Engineers"
+        }
+      ],
+      "paragraphGap": 25,
+      "previous": {
+        "font": "14px",
+        "lineHeight": "25.2px",
+        "rect": {
+          "bottom": 410.8125,
+          "height": 50.390625,
+          "right": 1340,
+          "width": 524.4453125,
+          "x": 815.5546875,
+          "y": 360.421875
+        },
+        "tag": "P",
+        "text": "From residential backup packages to megawatt container deliveries, Linker links complete storage solutions for you."
+      },
+      "rect": {
+        "bottom": 481.8125,
+        "height": 46,
+        "right": 1340,
+        "width": 524.4453125,
+        "x": 815.5546875,
+        "y": 435.8125
+      }
+    }
+  ],
+  "header": {
+    "background": "rgb(255, 255, 255)",
+    "filter": "none"
+  },
+  "height": 1000,
+  "lang": "en-US",
+  "overflow": false,
+  "url": "http://127.0.0.1:9290/solution/",
+  "width": 1440
+}
