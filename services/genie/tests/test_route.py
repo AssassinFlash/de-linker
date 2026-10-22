@@ -64,6 +64,12 @@ def _model(value: str, *ids: int) -> Match:
             False,
         ),
         ("How do I set the export limit on B2-10.0-HV1?", "en", False),
+        ("Show me datasheets for B2-10.0-HV1 and B2-15.0-HV1 products.", "en", False),
+        (
+            "Zeigen Sie mir Datenblätter für B2-10.0-HV1 und B2-15.0-HV1 Produkte.",
+            "de",
+            False,
+        ),
     ],
 )
 def test_documents_keep_an_explicit_product_request(

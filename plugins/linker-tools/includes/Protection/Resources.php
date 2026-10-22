@@ -13,6 +13,7 @@ use Linker\Commerce\Protection\Admission;
 use Linker\Commerce\Protection\Allowance;
 use Linker\Commerce\Protection\Configuration;
 use Linker\Commerce\Protection\Identity;
+use Linker\Commerce\Protection\Ledger;
 use Linker\Commerce\Protection\Fingerprint;
 use Linker\Tools\Genie\Attachments;
 use Linker\Tools\Genie\Conversations;
@@ -55,6 +56,36 @@ final class Resources {
 	/** Only the successfully dispatched enforce callback can skip legacy limits. */
 	public static function verified(): bool {
 		return null !== self::$context && ! empty( self::$context['enforced'] );
+	}
+
+	/** Completion identity for this verified Genie callback; never authorization. */
+	public static function genie_operation(): string {
+		return self::verified() && 'genie' === ( self::$context['action'] ?? '' ) ? (string) ( self::$context['id'] ?? '' ) : '';
+	}
+
+	/** Internal body fingerprint from the same trusted permit, never a client field. */
+	public static function genie_fingerprint(): string {
+		return '' !== self::genie_operation() ? (string) ( self::$context['fingerprint'] ?? '' ) : '';
+	}
+
+	/**
+	 * A saved completion is usable only while its native result still exists.
+	 * Privacy erasure, expiry and unresolved dispatches cannot become success.
+	 * Ownership is checked by the existing conversation route, not by this ID.
+	 *
+	 * @param string $id Trusted completion ID stored with the answer.
+	 * @param string $fingerprint Internal native input fingerprint.
+	 */
+	public static function completed_genie_operation( string $id, string $fingerprint ): bool {
+		if ( ! class_exists( Configuration::class ) || 'enforce' !== Configuration::active_mode() || '' === $id || '' === $fingerprint ) {
+			return false;
+		}
+		$receipt = ( new Ledger() )->lookup( $id, $fingerprint );
+		if ( is_wp_error( $receipt ) || 'genie' !== $receipt['purpose'] || 'completed' !== $receipt['status'] || $receipt['outcome'] < 1 ) {
+			return false;
+		}
+		$reply = ( new Replies() )->read( $receipt['outcome'], $receipt['binding'] );
+		return ! is_wp_error( $reply ) && $reply->get_status() < 400;
 	}
 
 	/** Expected snapshot for the trusted currently running native engine callback. */

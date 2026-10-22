@@ -185,6 +185,7 @@ test( 'the disclosure is spoken once and a prompt sends the first turn', async (
 
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		onOperation: expect.any( Function ),
 		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
@@ -252,6 +253,9 @@ test( 'a failed proxy call shows the retry sentence, not a fake answer', async (
 test.each( [
 	'completed',
 	'other-conversation',
+	'other-operation-attachment',
+	'other-operation-context',
+	'missing-operation',
 	'missing-id',
 	'changed-prefix',
 	'historical',
@@ -267,9 +271,10 @@ test.each( [
 		messages: before,
 		turn: null,
 	} );
-	vi.mocked( sendTurn ).mockRejectedValue(
-		new Error( 'network result unknown' )
-	);
+	vi.mocked( sendTurn ).mockImplementation( async ( request ) => {
+		request.onOperation?.( '56300000-0000-4000-8000-000000000001' );
+		throw new Error( 'network result unknown' );
+	} );
 	render( <App config={ config() } /> );
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );
 	fireEvent.change( screen.getByLabelText( 'Ask Genie' ), {
@@ -286,6 +291,9 @@ test.each( [
 	const actual =
 		await vi.importActual< typeof import( './api/turn' ) >( './api/turn' );
 	const recoveredId = scenario === 'other-conversation' ? 564 : 563;
+	const operationId = scenario.startsWith( 'other-operation' )
+		? '56300000-0000-4000-8000-000000000002'
+		: '56300000-0000-4000-8000-000000000001';
 	const stored = await actual.readThread(
 		'/thread',
 		'n',
@@ -294,6 +302,10 @@ test.each( [
 				JSON.stringify( {
 					conversation_id:
 						scenario === 'missing-id' ? undefined : recoveredId,
+					operation_id:
+						scenario === 'missing-operation'
+							? undefined
+							: operationId,
 					messages: [
 						...( scenario === 'changed-prefix'
 							? [
@@ -650,6 +662,7 @@ test( 'a conflicting turn re-reads, keeps the question and refreshes the rail', 
 	).toBeNull();
 	expect( sendTurn ).toHaveBeenCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		onOperation: expect.any( Function ),
 		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',
@@ -2285,6 +2298,7 @@ test( 'a request for a person shows the contact card, and Genie keeps answering'
 	).toBeInTheDocument();
 	expect( sendTurn ).toHaveBeenLastCalledWith( {
 		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		onOperation: expect.any( Function ),
 		restUrl: '/wp-json/',
 		nonce: 'n',
 		locale: 'en',

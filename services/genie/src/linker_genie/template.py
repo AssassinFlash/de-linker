@@ -657,7 +657,7 @@ def fallback(
         refs = _document_refs(facts)
         # A separately requested product keeps only this turn's qualified
         # cards. A document owner / page product alone is not qualification.
-        ids = sorted(facts.qualified_ids)[:SEARCH_LIMIT] if route.show_products else []
+        ids = _card_ids(facts, route)[:SEARCH_LIMIT]
         document_blocks: list[Block] = [
             TextBlock(
                 text=DOCUMENTS[language], refs=[*refs, *(str(pid) for pid in ids)]
@@ -732,7 +732,13 @@ def _clarify(
     reported = any(outcome[note.code] in ("products", "empty") for note in notes)
     if failed and not missed and not reported:
         return None
-    qualified = facts.qualified_ids
+    # Clarification must share the document card policy too, while retaining
+    # existing unsearched/unknown-model explanations. Other routes are unchanged.
+    qualified = (
+        set(_card_ids(facts, route))
+        if route.name == "documents"
+        else facts.qualified_ids
+    )
     outage = _outage_line(failed, facts, language)
     missed_lines = _missed_sentences(missed, language)
 
@@ -881,11 +887,15 @@ def _document_refs(facts: TurnFacts) -> list[str]:
 def _card_ids(facts: TurnFacts, route: Route | None) -> list[int]:
     """Ids a fallback may show. The card block caps them at the route's six.
 
-    Qualified ids first. A products search that qualified nothing does not
+    Documents show only separately requested, qualified products, whether
+    documents were found or not. Other routes keep qualified ids first.
+    A products search that qualified nothing does not
     borrow `facts.product_ids` (#366): those are a series hit, a page, or a
     get-product, not the model the customer asked for.
     """
     qualified = sorted(facts.qualified_ids)
+    if route is not None and route.name == "documents":
+        return qualified if route.show_products else []
     if qualified:
         return qualified
     if route is not None and route.name == "products":
@@ -907,10 +917,9 @@ def _degraded_keeping_findings(
     if route is not None and route.name == "documents" and facts.documents:
         blocks: list[Block] = [HandoffBlock(summary=DEGRADED[language])]
         blocks.extend(DocumentBlock(ref=ref) for ref in _document_refs(facts))
-        if route.show_products and facts.qualified_ids:
-            blocks.append(
-                CardsBlock(product_ids=sorted(facts.qualified_ids)[:SEARCH_LIMIT])
-            )
+        ids = _card_ids(facts, route)[:SEARCH_LIMIT]
+        if ids:
+            blocks.append(CardsBlock(product_ids=ids))
         return hydrate(TurnOutput(language=language, blocks=blocks), facts, language)
     ids = _card_ids(facts, route)[:SEARCH_LIMIT]
     if not ids:

@@ -586,22 +586,29 @@ export function App( { config }: { config: GenieConfig } ) {
 					];
 					currentThread.current = next;
 					setThread( next );
-					requestWitness.current = stored.conversationId
-						? {
-								conversationId: stored.conversationId,
-								epoch: historyEpoch,
-								messages: next,
-								uploads,
-							}
-						: null;
+					const postedPage = pageRef.current;
+					const pageWitness = JSON.stringify( postedPage );
 					const answer = await sendTurn( {
 						turnUrl: config.turnUrl,
 						restUrl: config.restUrl,
 						nonce: config.restNonce,
 						locale: config.locale,
 						messages: next,
-						page: pageRef.current,
+						page: postedPage,
 						uploads,
+						onOperation: ( operationId ) => {
+							requestWitness.current = stored.conversationId
+								? {
+										conversationId: stored.conversationId,
+										operationId,
+										epoch: historyEpoch,
+										messages: next,
+										uploads,
+										locale: config.locale,
+										page: pageWitness,
+									}
+								: null;
+						},
 					} );
 					if ( ! entryId ) {
 						filesRef.current.clear();
@@ -695,7 +702,9 @@ export function App( { config }: { config: GenieConfig } ) {
 						witness,
 						stored,
 						payload.question,
-						payload.uploads
+						payload.uploads,
+						config.locale,
+						pageRef.current
 					)
 				) {
 					// readThread appends an assistant only after parseStream saw
@@ -712,22 +721,30 @@ export function App( { config }: { config: GenieConfig } ) {
 				const next = payload.messages;
 				currentThread.current = next;
 				setThread( next );
-				requestWitness.current = stored.conversationId
-					? {
-							conversationId: stored.conversationId,
-							epoch: historyEpoch,
-							messages: next,
-							uploads: payload.uploads,
-						}
-					: null;
+				requestWitness.current = null;
+				const postedPage = pageRef.current;
+				const pageWitness = JSON.stringify( postedPage );
 				const answer = await sendTurn( {
 					turnUrl: config.turnUrl,
 					restUrl: config.restUrl,
 					nonce: config.restNonce,
 					locale: config.locale,
 					messages: next,
-					page: pageRef.current,
+					page: postedPage,
 					uploads: payload.uploads,
+					onOperation: ( operationId ) => {
+						requestWitness.current = stored.conversationId
+							? {
+									conversationId: stored.conversationId,
+									operationId,
+									epoch: historyEpoch,
+									messages: next,
+									uploads: payload!.uploads,
+									locale: config.locale,
+									page: pageWitness,
+								}
+							: null;
+					},
 				} );
 				filesRef.current.clear();
 				commitFailure( { type: 'answered' } );

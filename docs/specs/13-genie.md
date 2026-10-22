@@ -276,11 +276,11 @@ dock 的 mount 以 `data-page` 打印整份上下文，应用逐轮原样发回�
 
 ## 正常请求的文档与失败恢复（#563，2026-10-22）
 
-- 客户用 EN/DE 明确要求展示产品并给出数据手册或手册时，两个 documents 路由入口都记录既有 `show_products`。纯文档、否定或引述不据此要求卡片。文档兜底保持原文档块与顺序，另外保留本轮 qualified 产品卡（最多既有 `SEARCH_LIMIT`），正文 refs 包含所展示产品；没有 qualified 时不借用 page/get-product 的 ID。致命失败仍使用既有降级声明，其下也可保留这组已确认的卡和文档。卡价仍走 `prices.fill` 与当前客户的商品能力。
+- 客户用 EN/DE 明确要求展示产品并给出数据手册或手册时，两个 documents 路由入口都记录既有 `show_products`。纯文档、否定或引述不据此要求卡片。有文档与空文档的普通、型号澄清和致命失败路径遵守同一张卡门槛，保留既有未知型号/未搜索说明。文档兜底保持原文档块与顺序，另外保留本轮 qualified 产品卡（最多既有 `SEARCH_LIMIT`），正文 refs 包含所展示产品；没有 qualified 时不借用 page/get-product 的 ID。致命失败仍使用既有降级声明，其下也可保留这组已确认的卡和文档。卡价仍走 `prices.fill` 与当前客户的商品能力。
 - 语言核验里的大写 `CAN` 只在协议语境（如 `über CAN und RS485`、`CAN-Protokoll`）不作英语 can 投票。小写 can、`CAN YOU` 和其余英德混杂句仍被原 guard 拒绝；不改变模型、工具预算或一次语言重问。
-- 工作区/dock 与首页 Hero 的 Retry 都先读取 Thread。只在本次挂载实际发送时保存的同会话 ID、完整发送消息前缀、本次用户消息与附件均相同，并读回恰好一条完整助手结果时，恢复结果并清除失败状态，不再 POST 模型请求。会话 ID 取自 Thread 原有 `conversation_id`，没有客户端自定身份。工作区还核对会话切换 epoch；营销入口的归属复核保留。
-- 失败记录没有上述身份与前缀，所以 reload、缺 ID、其他会话、历史同文或部分结果均不据问句猜测已完成。旧 `reconcile` 仅按同文助手消息清失败记录的行为已收窄：未知时保留失败与输入，由客户明确重试或发新问题。输入同一句作为新问题仍是新轮次。
-- 复刻依据：本规格的既有 Route、qualified、文档水合、账号填价与 Thread 协议；`2026-10-19-genie-campaign-gaps/DOSSIER.md` §1.13 的问什么语言答什么语言，§1.15 的恢复路径匹配失败模式。竞品没有公开的 SSE 完成身份语义，本票以完整发送前缀与服务器会话 ID 设计窄恢复条件。证据见 `docs/acceptance/2026-10-22/563/`。
+- 工作区/dock 与首页 Hero 的 Retry 都先读取 Thread。只在本次挂载实际发送时保存的同会话 ID、既有 resource operation UUID、完整发送消息前缀、本次用户消息、附件、语言和 page context 均相同，并读回恰好一条完整助手结果时，恢复结果并清除失败状态，不再 POST 模型请求。会话 ID 取自 Thread 原有 `conversation_id`；operation UUID 必须来自实际发送的 enforce 请求，并与服务端 Thread 返回的完成 UUID 相同。服务端仅从既有可信 admission permit 记录 UUID 与输入指纹，在 Thread 原生锁/回滚里与 messages、stream 的摘要绑定；读回还必须经原生 Ledger completed 与未过期/删除/擦除的 Replies 结果核验。仅向既有 ownership 保护的 Thread 返回 UUID，内部指纹不返回。UUID 不充当授权，既有同 UUID 异 body 拒绝规则保留。工作区还核对会话切换 epoch；营销入口的归属复核保留。
+- 失败记录没有上述身份与前缀，所以 reload、缺 ID/完成 receipt、off/observe、其他会话或 operation、历史同文、不同附件或页面上下文、部分结果均不据问句猜测已完成。旧 `reconcile` 仅按同文助手消息清失败记录的行为已收窄：未知时保留失败与输入，由客户明确重试或发新问题。输入同一句作为新问题仍是新轮次。
+- 复刻依据：本规格的既有 Route、qualified、文档水合、账号填价与 Thread 协议；`2026-10-19-genie-campaign-gaps/DOSSIER.md` §1.13 的问什么语言答什么语言，§1.15 的恢复路径匹配失败模式。竞品没有公开的 SSE 完成身份语义，本票复用既有原生幂等 UUID/输入指纹，并以完整发送前缀与服务器会话 ID 设计窄恢复条件。证据见 `docs/acceptance/2026-10-22/563/`。
 
 ## 理解层（#233，实现目标第 2 条）
 

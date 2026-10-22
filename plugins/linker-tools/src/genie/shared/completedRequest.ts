@@ -3,18 +3,28 @@
 /**
  * Internal dependencies
  */
-import { assistantMessage, type Turn, type TurnMessage } from '../api/turn';
+import {
+	assistantMessage,
+	type PageContext,
+	type Turn,
+	type TurnMessage,
+} from '../api/turn';
+import type { Locale } from '../../configurator/types';
 import type { Upload } from '../attachments/prepare';
 
 /** In-memory evidence from an actual send; never inferred from a saved question. */
 export interface RequestWitness {
 	conversationId: number;
+	operationId: string;
+	locale: Locale;
+	page: string;
 	messages: TurnMessage[];
 	uploads: Upload[];
 }
 
 interface StoredThread {
 	conversationId?: number;
+	operationId?: string;
 	messages: TurnMessage[];
 	turn: Turn | null;
 }
@@ -27,16 +37,24 @@ interface StoredThread {
  * @param stored   The native Thread reader's fresh result.
  * @param question The question this retry would send.
  * @param uploads  The files this retry would send.
+ * @param locale   Language of the retry.
+ * @param page     Page context of the retry.
  */
 export function completedRequest(
 	witness: RequestWitness | null,
 	stored: StoredThread,
 	question: string,
-	uploads: Upload[]
+	uploads: Upload[],
+	locale: Locale,
+	page: PageContext
 ): boolean {
 	if (
 		! witness ||
 		! stored.turn ||
+		! witness.operationId ||
+		witness.operationId !== stored.operationId ||
+		witness.locale !== locale ||
+		witness.page !== JSON.stringify( page ) ||
 		witness.conversationId !== stored.conversationId
 	) {
 		return false;

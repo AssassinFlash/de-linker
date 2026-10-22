@@ -272,9 +272,8 @@ def _show_product_with_documents(message: str) -> bool:
         re.IGNORECASE,
     ):
         return False
-    if not re.search(
-        r"\b(?:show|display|zeige[n]?|anzeigen)\b", message, re.IGNORECASE
-    ):
+    display = re.compile(r"\b(?:show|display|zeige[n]?|anzeigen)\b", re.IGNORECASE)
+    if not display.search(message):
         return False
     parts = re.split(r"\b(?:and|und|sowie|plus)\b", message, flags=re.IGNORECASE)
     document = re.compile(
@@ -283,9 +282,22 @@ def _show_product_with_documents(message: str) -> bool:
         re.IGNORECASE,
     )
     product = re.compile(r"\b(?:products?|models?|produkte?|modelle?)\b", re.IGNORECASE)
-    return any(document.search(part) for part in parts) and any(
-        product.search(part) and not document.search(part) for part in parts
-    )
+    if not any(document.search(part) for part in parts):
+        return False
+    for index, part in enumerate(parts):
+        if not product.search(part) or document.search(part):
+            continue
+        # "datasheets for A and B products" coordinates document owners,
+        # not a separately requested product. A fresh display verb can
+        # explicitly start a second request after that ownership phrase.
+        owners = any(
+            document.search(earlier)
+            and re.search(r"\b(?:for|of|für|fuer|von)\b", earlier, re.IGNORECASE)
+            for earlier in parts[:index]
+        )
+        if display.search(part) or not owners:
+            return True
+    return False
 
 
 # The three obligations for a message that names models (#363, #364, #367).

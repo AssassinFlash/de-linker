@@ -62,6 +62,7 @@ export class HeroSession {
 	private loading: Promise< void > | null = null;
 	private conversationId: number | undefined;
 	private requestWitness: RequestWitness | null = null;
+	private operationId?: string;
 
 	/**
 	 * @param config The mount's routes, nonce, language and page context.
@@ -122,6 +123,7 @@ export class HeroSession {
 			{ restUrl: this.config.restUrl, locale: this.config.locale }
 		).then( ( stored ) => {
 			this.conversationId = stored.conversationId;
+			this.operationId = stored.operationId;
 			this.messagesValue = stored.messages;
 			this.turnValue = stored.turn;
 			this.contactsValue = stored.contacts ?? [];
@@ -196,9 +198,12 @@ export class HeroSession {
 				{
 					...this.snapshot(),
 					conversationId: this.conversationId,
+					operationId: this.operationId,
 				},
 				text,
-				uploads
+				uploads,
+				this.config.locale,
+				this.config.page
 			)
 		) {
 			await assertEntryScope(
@@ -237,21 +242,28 @@ export class HeroSession {
 			{ restUrl: this.config.restUrl, restNonce: this.config.nonce },
 			entryScope
 		);
-		this.requestWitness = this.conversationId
-			? {
-					conversationId: this.conversationId,
-					messages: next,
-					uploads,
-				}
-			: null;
+		this.requestWitness = null;
+		const page = this.config.page;
 		const answer = await this.send( {
 			turnUrl: this.config.turnUrl,
 			restUrl: this.config.restUrl,
 			nonce: this.config.nonce,
 			locale: this.config.locale,
 			messages: next,
-			page: this.config.page,
+			page,
 			uploads,
+			onOperation: ( operationId ) => {
+				this.requestWitness = this.conversationId
+					? {
+							conversationId: this.conversationId,
+							operationId,
+							messages: next,
+							uploads,
+							locale: this.config.locale,
+							page: JSON.stringify( page ),
+						}
+					: null;
+			},
 		} );
 		this.messagesValue = next.concat( assistantMessage( answer ) );
 		this.requestWitness = null;
