@@ -64,7 +64,24 @@ final class Privacy {
 		if ( is_wp_error( $result ) ) {
 			throw new \RuntimeException( 'public_admission_export_unavailable' );
 		}
+		$review = IntakeStore::privacy( self::owners( $email ), false );
+		if ( is_wp_error( $review ) ) {
+			throw new \RuntimeException( 'public_review_export_unavailable' );
+		}
 		$data = array();
+		foreach ( $review['data'] as $record ) {
+			$data[] = array(
+				'group_id'    => 'linker-public-protection',
+				'group_label' => __( 'Public request protection', 'linker-commerce' ),
+				'item_id'     => 'review-capacity-' . $record['id'],
+				'data'        => array(
+					array(
+						'name'  => __( 'Public request review', 'linker-commerce' ),
+						'value' => (string) wp_json_encode( $record, JSON_UNESCAPED_UNICODE ),
+					),
+				),
+			);
+		}
 		foreach ( $result['data'] as $record ) {
 			$data[] = array(
 				'group_id'    => 'linker-public-protection',
@@ -118,11 +135,16 @@ final class Privacy {
 		if ( is_wp_error( $result ) ) {
 			throw new \RuntimeException( 'public_admission_erasure_unavailable' );
 		}
-		$removed = $result['removed'] > 0;
+		$review = IntakeStore::privacy( self::owners( $email ), true );
+		if ( is_wp_error( $review ) ) {
+			throw new \RuntimeException( 'public_review_erasure_unavailable' );
+		}
+		$removed = $result['removed'] > 0 || $review['removed'] > 0;
+
 		return array(
 			'items_removed'  => $removed,
 			'items_retained' => $removed,
-			'messages'       => $removed ? array( __( 'Linked request data was removed. Minimal duplicate-request markers remain until their original retry window ends.', 'linker-commerce' ) ) : array(),
+			'messages'       => $review['removed'] > 0 ? array( __( 'Linked request data was removed. Minimal review-capacity markers remain until the saved request is resolved or its native data is erased.', 'linker-commerce' ) ) : ( $removed ? array( __( 'Linked request data was removed. Minimal duplicate-request markers remain until their original retry window ends.', 'linker-commerce' ) ) : array() ),
 			'done'           => true,
 		);
 	}

@@ -27,6 +27,8 @@ $linker_commerce_id      = (int) ( $argv[1] ?? 0 );
 $linker_commerce_token   = (string) ( $argv[2] ?? '' );
 $linker_commerce_barrier = (string) ( $argv[3] ?? '' );
 $linker_commerce_mode    = (string) ( $argv[4] ?? 'run' );
+require_once __DIR__ . '/AssessmentFixtureEnvironment.php';
+\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
 if ( 'busy' === $linker_commerce_mode ) {
 	Lock::run(
 		'async-worker',

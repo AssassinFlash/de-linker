@@ -117,7 +117,7 @@ final class BusinessRecord {
 	 * @param string   $binding Current subject.
 	 */
 	private static function matches( WC_Order $order, string $id, string $fingerprint, string $binding ): bool {
-		return $order->has_status( array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ) )
+		return ( $order->has_status( array( Statuses::RECEIVED, Statuses::PROFORMA, 'completed', 'cancelled' ) ) || ( $order->has_status( 'pending' ) && $order->get_meta( Intake::META ) && \Linker\Commerce\Mail\NotificationHold::held( $order ) ) )
 			&& $id === $order->get_meta( self::REQUEST ) && $fingerprint === $order->get_meta( self::INPUT ) && $binding === $order->get_meta( self::SUBJECT );
 	}
 }
