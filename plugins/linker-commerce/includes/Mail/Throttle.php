@@ -107,10 +107,12 @@ final class Throttle {
 							$entries[] = array(
 								'time'      => $time,
 								'transport' => self::PHP,
+								'origin'    => 'legacy',
 							);
 							$entries[] = array(
 								'time'      => $time,
 								'transport' => self::SMTP,
+								'origin'    => 'legacy',
 							);
 						}
 					}
@@ -122,7 +124,7 @@ final class Throttle {
 				$minute = array_values( array_filter( $times, static fn ( int $time ): bool => $time > $now - MINUTE_IN_SECONDS ) );
 				$limit  = self::SMTP === $transport ? self::SMTP_PER_DAY : self::PER_DAY;
 				$limit -= $critical ? 0 : ( self::SMTP === $transport ? self::SMTP_RESERVE : self::PHP_RESERVE );
-				$slot   = $now;
+				$slot   = true === ( $state['paused'] ?? false ) ? $now + MINUTE_IN_SECONDS : $now;
 				if ( count( $minute ) >= self::PER_MINUTE ) {
 					$slot = max( $slot, $minute[ count( $minute ) - self::PER_MINUTE ] + MINUTE_IN_SECONDS );
 				}
@@ -133,13 +135,22 @@ final class Throttle {
 					$entries[] = array(
 						'time'      => $now,
 						'transport' => $transport,
+						'origin'    => 'attempt',
+						'id'        => $state['next_id'] ?? 1,
 					);
 				}
 				return array(
-					'state' => array( 'entries' => $reserve ? $entries : $all_entries ),
+					'state' => array_merge(
+						$state,
+						array(
+							'entries' => $reserve ? $entries : $all_entries,
+							'next_id' => ( $state['next_id'] ?? 1 ) + ( $reserve && $slot === $now ? 1 : 0 ),
+						)
+					),
 					'slot'  => $slot,
 				);
-			}
+			},
+			$reserve
 		);
 		return $result ?? $now + 1;
 	}

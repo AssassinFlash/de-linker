@@ -44,9 +44,11 @@ final class MailChainTest extends IntegrationTestCase {
 		// Fill the minute quota so this call is stored instead of sent at once.
 		// A call that goes out immediately never becomes a queue row, and the
 		// assertion below is about that row.
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$this->later(
 			static function (): void {
+				delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 				delete_option( Throttle::OPTION );
 			}
 		);
@@ -57,6 +59,7 @@ final class MailChainTest extends IntegrationTestCase {
 		$this->assertSame( array( 'sales@de-linker.com' ), $queued[0]['to'], 'The queue keeps the recipient the caller named, not the tester address.' );
 		$this->assertContains( 'Bcc: archive@example.test', $queued[0]['headers'], 'The queue keeps the blind copy the caller named.' );
 
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$this->assertTrue( wp_mail( array( 'sales@de-linker.com' ), $subject, 'A Linker partner VAT check needs review.' ) );
 		$sent = $this->files_naming( $tag );

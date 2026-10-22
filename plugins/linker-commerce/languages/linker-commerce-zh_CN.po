@@ -97,3 +97,28 @@ msgstr[0] "%d 小时前"
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] "%d 天前"
+
+
+msgid "No saved inquiry is awaiting staff review."
+msgstr "目前没有等待人工复核的已保存询盘。"
+
+msgid "%d saved inquiries need staff review."
+msgstr "%d 条已保存的询盘需要人工复核。"
+
+msgid "%1$d saved inquiries need verification or staff review.\nOldest inquiry: %2$s ago.\nCount checked: %3$s.\nReview saved inquiries: %4$s\n\nThese inquiries are saved. Their individual team notifications have not been released."
+msgstr "%1$d 条已保存的询盘需要核验或人工复核。\n最早一条询盘保存于 %2$s 前。\n统计时间：%3$s。\n查看并复核已保存的询盘：%4$s\n\n这些询盘已保存。它们各自的团队通知仍在暂缓状态。"
+
+msgid "Saved inquiries need staff review"
+msgstr "有已保存的询盘等待人工复核"
+
+msgid "Inquiries awaiting staff review"
+msgstr "等待人工复核的询盘"
+
+msgid "Oldest inquiry: %s ago."
+msgstr "最早一条询盘保存于 %s 前。"
+
+msgid "Pending inquiry counts are unavailable."
+msgstr "暂时无法核实待复核询盘的数量。"
+
+msgid "Review saved inquiries"
+msgstr "查看并复核已保存的询盘"

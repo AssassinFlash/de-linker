@@ -89,6 +89,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$german = $this->customer();
 		update_user_meta( $german->get_id(), 'locale', 'de_DE_formal' );
 
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$this->as_user( 1 );
 		$email = new ApprovedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
@@ -119,6 +120,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->ensure_languages();
 		$order = $this->german_inquiry();
 
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$this->as_user( 1 );
 		$email = new ProformaIssuedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
@@ -145,6 +147,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->ensure_languages();
 		$order = $this->german_inquiry();
 
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$this->as_user( 0 );
 		$email = new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
@@ -171,6 +174,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$marker = self::newest_mail_job();
 
 		// A full minute quota makes the call a queue row instead of a send.
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$this->as_user( 0 );
 		( new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->trigger( $order->get_id(), $order );
@@ -178,6 +182,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$jobs = self::mail_jobs_after( $marker );
 		$this->assertCount( 1, $jobs, 'The German receipt is queued.' );
 
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		/**
 		 * The queue's own retry hook, fired the way Action Scheduler fires it.
@@ -215,6 +220,7 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$german = $this->customer();
 		update_user_meta( $german->get_id(), 'locale', 'de_DE_formal' );
 
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$this->as_user( 1 );
 		$email = new ApprovedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );

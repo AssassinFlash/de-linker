@@ -85,6 +85,7 @@ final class NotificationHoldTest extends IntegrationTestCase {
 		$evidence  = Queue::data( $order );
 		$reference = NotificationHold::reference( $order );
 		$budget    = array_fill( 0, Throttle::PER_DAY, time() );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, $budget, false );
 		$released = NotificationHold::release( $order->get_id(), $reference );
 		$this->assertIsArray( $released );
@@ -271,13 +272,14 @@ final class NotificationHoldTest extends IntegrationTestCase {
 		);
 		$this->assertIsArray( NotificationHold::release( $order->get_id(), $basis ) );
 		// Run the registered native delivery owner twice: only the original job can send.
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array(), false );
 		/** This action is documented in Mail\Module::register(). */
 		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Outbox::HOOK is the fixed native linker_commerce_mail_attempt hook.
 		/** This action is documented in Mail\Module::register(). */
 		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Outbox::HOOK is the fixed native linker_commerce_mail_attempt hook.
 		$this->assertNull( ( new JobStore() )->load( $id ) );
-		$this->assertCount( 1, get_option( Throttle::OPTION, array() ) );
+		$this->assertCount( 1, json_decode( (string) get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), true )['entries'] );
 	}
 
 	/** An invalid or cross-record nonce never reaches the staff release operation. */

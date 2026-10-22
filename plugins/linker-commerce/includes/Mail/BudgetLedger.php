@@ -17,8 +17,10 @@ interface BudgetLedger {
 	/**
 	 * Run one atomic budget operation.
 	 *
-	 * @param  callable(array<string, mixed>): array{state: array<string, mixed>, slot: int} $work Mutation.
+	 * @param callable $work Mutation.
+	 * @param bool     $write Whether to commit a change, or only inspect a fresh snapshot.
+	 * @phpstan-param callable(array<string, mixed>): array{state: array<string, mixed>, slot: int} $work
 	 * @return int|null Result, or null when storage cannot be locked or written.
 	 */
-	public function transact( callable $work ): ?int;
+	public function transact( callable $work, bool $write = true ): ?int;
 }

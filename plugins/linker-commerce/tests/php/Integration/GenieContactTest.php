@@ -137,6 +137,7 @@ final class GenieContactTest extends IntegrationTestCase {
 		delete_option( 'woocommerce_' . NewInquiryEmail::ID . '_settings' );
 		delete_option( 'woocommerce_' . InquiryReceivedEmail::ID . '_settings' );
 		update_option( Options::NOTIFY_BCC, 'copy-' . self::tag() . '@example.test' );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$_SERVER['REMOTE_ADDR'] = $address;
 		unset( $_COOKIE[ Conversations::COOKIE ], $_COOKIE[ Conversations::BROWSER_COOKIE ] );

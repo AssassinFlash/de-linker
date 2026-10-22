@@ -1,88 +1,59 @@
 <?php
-/**
- * Tests for the sending rate.
+/** Tests of transport and priority rolling windows.
  *
  * @package Linker\Commerce
  */
 
 declare( strict_types = 1 );
-
 namespace Linker\Commerce\Tests\Unit\Mail;
 
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Mail\OptionBudgetLedger;
+use Linker\Commerce\Tests\Fixtures\BudgetMemory;
 use Linker\Commerce\Tests\TestCase;
-use WP_Mock;
 
-/**
- * Tests for Throttle.
+/** Pure window evidence.
  *
  * @covers \Linker\Commerce\Mail\Throttle
  */
 final class ThrottleTest extends TestCase {
-
 	private const NOW = 1_760_000_000;
-
-	/**
-	 * The stored send times.
+	/** Fixture ledger.
 	 *
-	 * @var mixed
+	 * @var array<string, mixed>
 	 */
-	private $stored = array();
+	private array $options = array();
 
-	/**
-	 * The options get_option() and update_option() work on $stored.
-	 */
-	public function setUp(): void {
-		parent::setUp();
-		WP_Mock::userFunction( 'get_option', array( 'return' => fn () => $this->stored ) );
-		WP_Mock::userFunction(
-			'update_option',
-			array(
-				'return' => function ( string $name, $value ): bool {
-					$this->stored = $value;
-					return true;
-				},
-			)
-		);
+	/** Both pools inherit old attempts exactly once, preserving the legacy option. */
+	public function test_legacy_and_reserved_capacity(): void {
+		$legacy                            = array_fill( 0, 80, self::NOW - 120 );
+		$this->options[ Throttle::OPTION ] = $legacy;
+		$t                                 = new Throttle( new BudgetMemory( $this->options ) );
+		$this->assertSame( self::NOW, $t->reserve( self::NOW, Throttle::SMTP ) );
+		$this->assertSame( self::NOW - 120 + DAY_IN_SECONDS, $t->next_slot( self::NOW, Throttle::PHP, true ) );
+		$this->assertSame( $legacy, $this->options[ Throttle::OPTION ] );
+		$this->assertCount( 161, $this->options[ OptionBudgetLedger::OPTION ]['entries'] );
+		$t->next_slot( self::NOW );
+		$this->assertCount( 161, $this->options[ OptionBudgetLedger::OPTION ]['entries'] );
 	}
 
-	/**
-	 * Under both limits, a send may go now.
-	 */
-	public function test_free_slot_is_now(): void {
-		$this->stored = array_map( static fn ( int $i ): int => self::NOW - 120 - $i * 60, range( 0, 70 ) );
-
-		$this->assertSame( self::NOW, ( new Throttle() )->next_slot( self::NOW ) );
+	/** Standard traffic cannot consume the last 16 PHP slots. */
+	public function test_critical_reserve_and_minute_limits(): void {
+		$this->options[ Throttle::OPTION ] = array_fill( 0, 64, self::NOW - 120 );
+		$t                                 = new Throttle( new BudgetMemory( $this->options ) );
+		$this->assertGreaterThan( self::NOW, $t->reserve( self::NOW ) );
+		for ( $i = 0; $i < Throttle::PER_MINUTE; ++$i ) {
+			$this->assertSame( self::NOW, $t->reserve( self::NOW, Throttle::PHP, true ) );
+		}
+		$this->assertSame( self::NOW + MINUTE_IN_SECONDS, $t->reserve( self::NOW, Throttle::PHP, true ) );
 	}
 
-	/**
-	 * After 8 sends within a minute, the next waits until the oldest of them is a minute old
-	 * (docs/research/2026-10-09/mail-root-cause.md §9: at most 8 per minute).
-	 */
-	public function test_minute_limit(): void {
-		$this->stored = range( self::NOW - 50, self::NOW - 43 );
-
-		$this->assertSame( self::NOW - 50 + 60, ( new Throttle() )->next_slot( self::NOW ) );
-	}
-
-	/**
-	 * After 80 sends within 24 hours, the next waits until the oldest of them is 24 hours old
-	 * (mail-root-cause.md §9: at most 80 per rolling 24 hours).
-	 */
-	public function test_day_limit(): void {
-		$this->stored = array_map( static fn ( int $i ): int => self::NOW - 80_000 + $i * 900, range( 0, 79 ) );
-
-		$this->assertSame( self::NOW - 80_000 + 86_400, ( new Throttle() )->next_slot( self::NOW ) );
-	}
-
-	/**
-	 * Recording keeps the last 24 hours and drops junk.
-	 */
-	public function test_record_prunes(): void {
-		$this->stored = array( self::NOW - 90_000, 'junk', self::NOW - 10 );
-
-		( new Throttle() )->record( self::NOW );
-
-		$this->assertSame( array( self::NOW - 10, self::NOW ), $this->stored );
+	/** Future scheduling reads never expire actual recent charges in storage. */
+	public function test_future_next_slot_does_not_refund_history(): void {
+		$t = new Throttle( new BudgetMemory( $this->options ) );
+		$this->assertSame( self::NOW, $t->reserve( self::NOW ) );
+		$before = $this->options;
+		$this->assertSame( self::NOW + DAY_IN_SECONDS, $t->next_slot( self::NOW + DAY_IN_SECONDS ) );
+		$this->assertSame( $before, $this->options );
 	}
 }

@@ -32,6 +32,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		wc_load_cart();
 		WC()->cart->empty_cart();
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
 		$stamp = (string) ( time() - 5 );
 		$post  = array(
@@ -72,6 +73,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 
 	/** Eight independent requests share three slots across both doors. */
 	public function test_parallel_public_requests_accept_exactly_three_and_queue_no_rejected_mail(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
 		$email = 'tester246-parallel-' . self::tag() . '@example.test';
 		$this->later(
@@ -139,6 +141,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$this->as_user( 0 );
 		wc_load_cart();
 		WC()->cart->empty_cart();
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
 		$seed_email = 'tester246-seed-' . self::tag() . '@example.test';
 		$details    = \Linker\Commerce\Contact\Submission::from_handoff(
@@ -223,6 +226,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 	 */
 	public function test_nameless_handoff_has_complete_customer_and_team_letters( string $language, string $greeting ): void {
 		$this->as_user( 0 );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_DAY, time() ) );
 		$email   = 'tester246-nameless-' . self::tag() . '@example.test';
 		$details = \Linker\Commerce\Contact\Submission::from_handoff(
