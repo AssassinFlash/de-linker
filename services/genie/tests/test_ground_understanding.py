@@ -35,6 +35,47 @@ SIZE = Route(
 DOCS = Route("documents", no_handoff=True)
 
 
+@pytest.mark.parametrize("locale", ["en", "de"])
+def test_documents_fallback_keeps_requested_qualified_cards(locale: str) -> None:
+    facts = _facts()
+    documents_only = fallback(facts, locale, DOCS)
+    route = Route("documents", show_products=True, no_handoff=True)
+    output = fallback(facts, locale, route)
+    cards = [block for block in output.blocks if isinstance(block, CardsBlock)]
+    assert len(cards) == 1
+    assert cards[0].product_ids == [4107, 4109]
+    text = output.blocks[0]
+    assert isinstance(text, TextBlock)
+    assert {"4107", "4109"} <= set(text.refs)
+    assert [block for block in output.blocks if isinstance(block, DocumentBlock)] == [
+        block for block in documents_only.blocks if isinstance(block, DocumentBlock)
+    ]
+
+
+def test_documents_do_not_borrow_unqualified_products() -> None:
+    facts = _facts()
+    facts.qualified_ids.clear()
+    output = fallback(facts, "de", Route("documents", show_products=True))
+    assert not any(isinstance(block, CardsBlock) for block in output.blocks)
+    assert any(isinstance(block, DocumentBlock) for block in output.blocks)
+
+
+def test_a_document_outage_keeps_requested_findings_under_the_existing_degradation() -> (
+    None
+):
+    facts = _facts()
+    output = fallback(
+        facts, "de", Route("documents", show_products=True), failure_class="model"
+    )
+    assert output.blocks[0].type == "handoff"
+    assert [
+        block.product_ids for block in output.blocks if isinstance(block, CardsBlock)
+    ] == [[4107, 4109]]
+    assert (
+        len([block for block in output.blocks if isinstance(block, DocumentBlock)]) == 1
+    )
+
+
 def _facts() -> TurnFacts:
     facts = TurnFacts()
     facts.product_ids = {4107, 4109}
