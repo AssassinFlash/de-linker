@@ -46,9 +46,10 @@ final class IntakeStore {
 	 * Serialize capacity decisions and first native save across DB connections.
 	 *
 	 * @param callable(array<string,mixed>&):(WC_Order|WP_Error|array<string,mixed>) $work Native work.
+	 * @param int                                                                    $wait_seconds Optional bounded native business/mail wait; review stays zero.
 	 * @return WC_Order|WP_Error|array<string,mixed>
 	 */
-	public static function edit( callable $work ): WC_Order|WP_Error|array {
+	public static function edit( callable $work, int $wait_seconds = 0 ): WC_Order|WP_Error|array {
 		if ( self::$editing && null !== self::$active ) {
 			return $work( self::$active );
 		}
@@ -81,7 +82,8 @@ final class IntakeStore {
 					self::$active   = null;
 					self::clear_cache();
 				}
-			}
+			},
+			$wait_seconds
 		);
 		return $result;
 	}

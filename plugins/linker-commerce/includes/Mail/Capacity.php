@@ -78,7 +78,8 @@ final class Capacity {
 					'key'       => $key,
 					'remaining' => $count,
 				);
-			}
+			},
+			1
 		);
 		return is_array( $result ) || $result instanceof WP_Error ? $result : self::problem();
 	}
@@ -122,7 +123,8 @@ final class Capacity {
 				unset( $state['mail_capacity']['reservations'][ $key ] );
 				IntakeStore::save( $state );
 				return array();
-			}
+			},
+			1
 		);
 		return is_array( $result );
 	}
@@ -171,7 +173,8 @@ final class Capacity {
 						return array( 'job' => $id );
 					}
 				);
-			}
+			},
+			1
 		);
 		return is_array( $result ) ? (int) ( $result['job'] ?? 0 ) : 0;
 	}
@@ -199,7 +202,8 @@ final class Capacity {
 						return array();
 					}
 				);
-			}
+			},
+			1
 		);
 		if ( $result instanceof WP_Error ) {
 			throw new \RuntimeException( 'mail_critical_capacity_unavailable' );
@@ -209,9 +213,15 @@ final class Capacity {
 	/**
 	 * Release only after actual native deletion, not a failed/held/timed-out job.
 	 *
-	 * @param int $id Native deleted job.
+	 * @param int           $id Native deleted job.
+	 * @param \WP_Post|null $post Optional native deleted row, before cache cleanup.
 	 */
-	public static function deleted( int $id ): void {
+	public static function deleted( int $id, ?\WP_Post $post = null ): void {
+		if ( null !== $post && JobStore::POST_TYPE !== $post->post_type ) {
+			return;
+		}
+		// WordPress fires deleted_post before its own cache cleanup.
+		clean_post_cache( $id );
 		if ( get_post( $id ) ) {
 			return;
 		}
@@ -222,7 +232,8 @@ final class Capacity {
 					IntakeStore::save( $state );
 				}
 				return array();
-			}
+			},
+			1
 		);
 	}
 
