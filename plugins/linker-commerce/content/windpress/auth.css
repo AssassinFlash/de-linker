@@ -224,10 +224,13 @@
 
 /* ── The guest chain: the frame ────────────────────────────────────────── */
 .linker-auth {
+	font-family: var(--proto-font-sans);
 	display: grid;
 	place-items: center;
 	padding: clamp(20px, 4vw, 48px) 0;
 }
+
+.linker-auth :is(h1, h2) { font-family: inherit; }
 
 .linker-auth-inner {
 	display: grid;
@@ -610,6 +613,16 @@
 	cursor: pointer;
 }
 
+/* Woo's option label shares the component library's radio class. Its
+ * generated disc becomes an extra flex item and pushes the label text aside;
+ * the native input below already owns the complete choice hit area. */
+.linker-auth .form-row label.radio::before { content: none; }
+
+.linker-auth .form-row label.radio:hover {
+	border-color: var(--proto-teal-600);
+	background: var(--acct-fill-hover);
+}
+
 /* The pill's whole area is the input's own box: focusable, clickable, and
  * large enough to be a 44px touch target. Its focus ring is the label's
  * (below) because the generic field focus rule above resets the outline of
@@ -638,6 +651,10 @@
 /* WooCommerce prints one form row per field, and the name pair stands side by
  * side on a wide screen (the field ids are WooCommerce's own). */
 .linker-auth-fields { display: grid; gap: 0 14px; grid-template-columns: minmax(0, 1fr); }
+
+/* Native first/last rows keep a 47% width for Woo's float layout. The grid
+ * already places them, so each row must fill its assigned track. */
+.linker-auth .linker-auth-fields > .form-row { width: auto; }
 
 @media (min-width: 560px) {
 	.linker-auth-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
