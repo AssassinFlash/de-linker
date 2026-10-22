@@ -29,6 +29,12 @@ final class IntakeStore {
 	 * @var bool
 	 */
 	private static bool $editing = false;
+	/**
+	 * A nested native consumer joins the same locked snapshot, never a stale copy.
+	 *
+	 * @var array<string,mixed>|null
+	 */
+	private static ?array $active = null;
 	// Initial operating allocation and separate lanes: docs/specs/542-safe-intake.md.
 	public const CAPACITY = array(
 		'verification' => 128,
@@ -43,6 +49,9 @@ final class IntakeStore {
 	 * @return WC_Order|WP_Error|array<string,mixed>
 	 */
 	public static function edit( callable $work ): WC_Order|WP_Error|array {
+		if ( self::$editing && null !== self::$active ) {
+			return $work( self::$active );
+		}
 		$result = new WP_Error( 'linker_intake_busy', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 		Lock::run(
 			self::MUTEX,
@@ -60,6 +69,7 @@ final class IntakeStore {
 					}
 					self::$snapshot = $raw;
 					self::$editing  = true;
+					self::$active   =& $state;
 					$result         = $work( $state );
 				} catch ( \Throwable $error ) {
 					// Native checkout may have started an unfinished transaction.
@@ -68,6 +78,7 @@ final class IntakeStore {
 				} finally {
 					self::$snapshot = $previous;
 					self::$editing  = $editing;
+					self::$active   = null;
 					self::clear_cache();
 				}
 			}
