@@ -499,6 +499,7 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 			$until = microtime( true ) + 12;
 			do {
 				wp_cache_delete( $key, 'options' );
+				wp_cache_delete( 'notoptions', 'options' );
 				$event = get_option( $key );
 				usleep( 20000 );
 			} while ( ( ! is_array( $event ) || ! isset( $event['completed_at'] ) ) && microtime( true ) < $until );

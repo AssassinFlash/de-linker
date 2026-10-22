@@ -254,6 +254,21 @@ jobs:
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter 'InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest|SafeIntakeTest'
 
+      # Official dependency only; test users/factors are synthetic and deleted.
+      # Native wp-login + Woo EN/DE, TOTP/recovery replay, customer and API lanes.
+      - name: administrator MFA without mandatory customer factors
+        run: |
+          if ! command -v msgcat >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y gettext
+          fi
+          uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
+          uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
+          uv run --locked --project tools/local mypy --strict tools/checks/admin-mfa.py
+          uv run --locked --project tools/local pytest -q tools/local/tests/test_admin_mfa.py
+          php plugins/linker-commerce/vendor/bin/phpcs --standard=plugins/linker-commerce/phpcs.xml.dist tests/e2e/fixtures/admin-mfa.php tests/e2e/fixtures/admin-mfa-public.php
+          just admin-mfa smoke --prepare
+
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.
       - name: stop the instance
