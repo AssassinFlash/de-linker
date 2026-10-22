@@ -466,16 +466,17 @@ export function HeroConversation( {
 			// A newly accepted next question is a different editor from this turn.
 			draftContext.checkpoint();
 			if ( 'resource' === settled.action ) {
-				commitFailure( { type: 'upstream' } );
-				if ( draftContext.editor ) {
-					parkFailure();
-					setPhase( 'ask' );
-					return;
-				}
-				placeChips( draft.uploads );
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: draft.uploads,
+					missing: draft.omitted,
+				} );
 				setThread( before );
-				setPrompt( settled.field );
-				setRefused( settled.reason );
+				if ( returned ) {
+					placeChips( draft.uploads );
+					setPrompt( settled.field );
+					setRefused( settled.reason );
+				}
 				setPhase( 'ask' );
 				return;
 			}
@@ -1118,12 +1119,24 @@ export function HeroConversation( {
 							{ ' ' }
 							<a
 								href={ config.requestPageUrl }
-								onClick={ () =>
-									rememberInquiry(
-										config.requestPageUrl!,
-										readPrompt().text
-									)
-								}
+								onClick={ () => {
+									// The hero field lives outside React. Read its
+									// current bytes with its accepted editor.
+									const owner = draftContext.editor;
+									const prompt = readPrompt();
+									if (
+										owner &&
+										draftContext.editor === owner &&
+										draftContext.capture()?.scope ===
+											owner.scope
+									) {
+										rememberInquiry(
+											config.requestPageUrl!,
+											prompt.text,
+											owner.scope
+										);
+									}
+								} }
 							>
 								{ __( 'Send an inquiry', 'linker-tools' ) }
 							</a>

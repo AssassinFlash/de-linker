@@ -2,9 +2,13 @@
 import { restoreInquiry } from './inquiryHandoff';
 
 if ( document.readyState === 'loading' ) {
-	document.addEventListener( 'DOMContentLoaded', restoreInquiry, {
-		once: true,
-	} );
+	document.addEventListener(
+		'DOMContentLoaded',
+		() => {
+			void restoreInquiry();
+		},
+		{ once: true }
+	);
 } else {
-	restoreInquiry();
+	void restoreInquiry();
 }

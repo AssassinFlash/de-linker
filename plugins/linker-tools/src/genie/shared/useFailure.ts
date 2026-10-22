@@ -28,7 +28,11 @@ import {
 	type FailureMessage,
 	type FailureState,
 } from './failure';
-import { preserveEditing, type EditingSnapshot } from './editingDraft';
+import {
+	preserveEditing,
+	type EditingSnapshot,
+	type EditingAuthority,
+} from './editingDraft';
 import type { DraftContext } from './draftContext';
 import {
 	FailureJournal,
@@ -69,6 +73,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 	filesRef.current = files;
 
 	const cursor = useRef< FailureCursor | null >( null );
+	const editingCursor = useRef< FailureCursor | null >( null );
 	const [ unsaved, setUnsaved ] = useState( false );
 	const [ deferredFailure, setDeferredFailure ] =
 		useState< FailureCandidate | null >( null );
@@ -81,28 +86,70 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			const journal = new FailureJournal( pageFailureStore(), identity );
 			if ( next.phase === 'clear' ) {
 				if ( cursor.current ) {
-					if ( ! journal.consume( cursor.current ) ) {
+					if ( ! journal.consume( cursor.current, true ) ) {
 						setUnsaved( true );
 						return failureState.current;
 					}
 				}
 				cursor.current = null;
-				setUnsaved( false );
+				try {
+					setUnsaved( !! journal.candidate()?.cursor.memory );
+				} catch {
+					setUnsaved( true );
+				}
 				return next;
 			}
-			const result =
-				start || ! cursor.current
-					? journal.begin( next, context.editor ?? undefined )
-					: journal.save( next, cursor.current );
+			const editor = context.editor;
+			const checkpoint = editingCursor.current;
+			const promoting =
+				start &&
+				editor &&
+				checkpoint?.owner.scope === editor.scope &&
+				checkpoint.owner.attempt === editor.attempt;
+			const checked = promoting ? journal.rebase( checkpoint ) : null;
+			if (
+				promoting &&
+				( ! checked ||
+					! journal.sameCheckpoint( checkpoint, checked.cursor ) )
+			) {
+				setUnsaved( true );
+				const newer = journal.editing( editor );
+				if ( newer ) {
+					setDeferredFailure( newer );
+				}
+				return failureState.current;
+			}
+			let result;
+			if ( checked ) {
+				result = journal.save(
+					{
+						...next,
+						draft: next.draft
+							? { ...next.draft, owner: editor! }
+							: null,
+					},
+					checked.cursor
+				);
+			} else if ( start || ! cursor.current ) {
+				result = journal.begin( next, editor ?? undefined );
+			} else {
+				result = journal.save( next, cursor.current );
+			}
 			if ( result.conflict ) {
 				setUnsaved( true );
 				return failureState.current;
 			}
 			cursor.current = result.cursor;
+			if ( result.state.phase === 'editing' ) {
+				editingCursor.current = result.cursor;
+			}
 			if ( start ) {
 				context.releaseEditor();
 			}
-			setUnsaved( ! result.durable );
+			setUnsaved(
+				! result.durable ||
+					!! journal.alternative( result.cursor )?.cursor.memory
+			);
 			return result.state;
 		},
 		[ context ]
@@ -128,6 +175,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			failureState.current = stored;
 			if ( stored.phase === 'editing' && stored.draft?.owner ) {
 				context.adoptEditor( stored.draft.owner );
+				editingCursor.current = cursor.current;
 			}
 			return stored;
 		},
@@ -140,19 +188,118 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 		setOmitted( [] );
 		setUnsaved( false );
 		setDeferredFailure( null );
+		editingCursor.current = null;
 	}, [] );
 
+	const exposeAlternative = useCallback( () => {
+		const current = editingCursor.current;
+		const identity = context.identity;
+		if (
+			! current ||
+			context.phase !== 'ready' ||
+			! identity ||
+			context.editor?.scope !== current.owner.scope ||
+			context.editor.attempt !== current.owner.attempt ||
+			identity.scope !== current.owner.scope
+		) {
+			return;
+		}
+		const other = new FailureJournal(
+			pageFailureStore(),
+			identity
+		).alternative( current );
+		if ( other ) {
+			setDeferredFailure( other );
+			setUnsaved( !! current.memory || !! other.cursor.memory );
+		}
+	}, [ context ] );
+	useEffect(
+		() => context.subscribe( exposeAlternative ),
+		[ context, exposeAlternative ]
+	);
+
 	const preserveEditor = useCallback(
-		( snapshot: EditingSnapshot ) => {
-			const result = preserveEditing( context, snapshot );
+		( snapshot: EditingSnapshot, accepted?: EditingAuthority ) => {
+			const identity = accepted?.identity ?? context.identity;
+			const owner = accepted?.owner ?? context.editor;
+			const original = editingCursor.current;
+			const authority =
+				accepted ??
+				( owner &&
+				identity &&
+				original?.owner.scope === owner.scope &&
+				original.owner.attempt === owner.attempt
+					? { owner, identity, cursor: original }
+					: undefined );
+			let result = preserveEditing( context, snapshot, authority );
+			if (
+				result?.conflict &&
+				! accepted &&
+				authority?.cursor &&
+				identity &&
+				owner
+			) {
+				const journal = new FailureJournal(
+					pageFailureStore(),
+					identity
+				);
+				const acknowledged = journal.acknowledged( authority.cursor );
+				const occupied =
+					!! snapshot.text ||
+					!! snapshot.uploads.length ||
+					!! snapshot.missing.length;
+				const unchanged =
+					acknowledged &&
+					acknowledged.text === snapshot.text &&
+					JSON.stringify( acknowledged.uploads ) ===
+						JSON.stringify( snapshot.uploads ) &&
+					JSON.stringify( acknowledged.omitted ) ===
+						JSON.stringify( snapshot.missing );
+				if ( occupied && ! unchanged ) {
+					result = journal.retain(
+						{
+							phase: 'editing',
+							kind: null,
+							draft: {
+								owner,
+								editing: true,
+								text: snapshot.text,
+								question:
+									buildQuestion(
+										snapshot.text,
+										snapshot.uploads
+									) || snapshot.missing.join( '\n' ),
+								uploads: snapshot.uploads,
+								omitted: snapshot.missing,
+							},
+						},
+						authority.cursor
+					);
+				} else {
+					// A newer same-copy record is recovery evidence, never permission
+					// for this stale editor to overwrite or delete that version.
+					const newer = journal.editing( owner );
+					if ( newer ) {
+						setDeferredFailure( newer );
+					}
+					if ( ! occupied && context.editor === owner ) {
+						context.releaseEditor();
+						editingCursor.current = null;
+					}
+				}
+			}
 			if ( result ) {
 				setUnsaved( ! result.durable );
+				if ( ! result.conflict && result.state.phase === 'editing' ) {
+					editingCursor.current = result.cursor;
+					exposeAlternative();
+				}
 				// Only our own synchronous checkpoint can advance the pending cursor
 				// over a different editor's write. Late callbacks never rebase it.
-				if ( ! result.conflict && cursor.current && context.identity ) {
+				if ( ! result.conflict && cursor.current && identity ) {
 					const current = new FailureJournal(
 						pageFailureStore(),
-						context.identity
+						identity
 					).rebase( cursor.current );
 					if ( current ) {
 						cursor.current = current.cursor;
@@ -161,7 +308,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			}
 			return result;
 		},
-		[ context ]
+		[ context, exposeAlternative ]
 	);
 
 	/** Keep a settled earlier turn reachable without taking a newly accepted editor. */
@@ -216,6 +363,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				return false;
 			}
 			context.adoptEditor( stored.draft.owner );
+			editingCursor.current = cursor.current;
 			setOmitted( stored.draft.omitted );
 			return true;
 		},
@@ -240,7 +388,7 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				pageFailureStore(),
 				context.identity
 			);
-			let target = journal.rebase( candidate.cursor );
+			let target = journal.variant( candidate.cursor );
 			if ( ! target ) {
 				return null;
 			}
@@ -251,38 +399,87 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 					displaced.draft.uploads.length ||
 					displaced.draft.omitted.length )
 			) {
-				const saved = journal.begin(
-					displaced,
-					context.editor ?? undefined
-				);
-				setUnsaved( ! saved.durable );
-				if (
-					saved.conflict ||
-					( ! saved.durable && ! saved.cursor.memory ) ||
-					! saved.state.draft
-				) {
-					return null;
+				const owner = context.editor;
+				const expected = editingCursor.current;
+				if ( ! owner ) {
+					// An automatically restored failure already has an exact stored
+					// record. It is not a newly accepted editing owner to reassign.
+					parked = cursor.current
+						? journal.variant( cursor.current )
+						: null;
+					if (
+						! parked ||
+						parked.record.text !== displaced.draft.text ||
+						JSON.stringify( parked.record.uploads ) !==
+							JSON.stringify( displaced.draft.uploads ) ||
+						JSON.stringify( parked.record.omitted ) !==
+							JSON.stringify( displaced.draft.omitted )
+					) {
+						return null;
+					}
+				} else {
+					const state = {
+						...displaced,
+						draft: { ...displaced.draft, owner },
+					};
+					let saved =
+						expected?.owner.scope === owner.scope &&
+						expected.owner.attempt === owner.attempt
+							? journal.checkpoint( state, expected )
+							: journal.begin( state, owner );
+					if ( saved.conflict && expected ) {
+						const acknowledged = journal.acknowledged( expected );
+						const same =
+							acknowledged?.text === state.draft.text &&
+							JSON.stringify( acknowledged.uploads ) ===
+								JSON.stringify( state.draft.uploads ) &&
+							JSON.stringify( acknowledged.omitted ) ===
+								JSON.stringify( state.draft.omitted );
+						if ( same ) {
+							const newer = journal.editing( owner );
+							if ( newer ) {
+								parked = newer;
+							}
+						} else {
+							saved = journal.retain( state, expected );
+						}
+					}
+					setUnsaved( ! saved.durable );
+					if (
+						( saved.conflict && ! parked ) ||
+						( ! saved.durable &&
+							! saved.cursor.memory &&
+							! parked ) ||
+						! saved.state.draft
+					) {
+						return null;
+					}
+					parked ??= {
+						record: {
+							...saved.state.draft,
+							v: 1,
+							kind: saved.state.kind,
+						},
+						cursor: saved.cursor,
+					};
 				}
-				parked = {
-					record: {
-						...saved.state.draft,
-						v: 1,
-						kind: saved.state.kind,
-					},
-					cursor: saved.cursor,
-				};
-				target = journal.rebase( candidate.cursor );
+				target = journal.variant( candidate.cursor );
 				if ( ! target ) {
 					return null;
 				}
 			}
+			target = journal.select( target.cursor );
+			if ( ! target ) {
+				return null;
+			}
 			const state = reconcile( target.record, messages );
 			if ( state.phase === 'clear' ) {
-				if ( ! journal.consume( target.cursor ) ) {
+				if ( ! journal.consume( target.cursor, true ) ) {
 					setUnsaved( true );
 				}
 				setDeferredFailure(
-					parked ? journal.rebase( parked.cursor ) : null
+					journal.alternative( target.cursor ) ??
+						( parked ? journal.variant( parked.cursor ) : null )
 				);
 				return state;
 			}
@@ -292,10 +489,19 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 				( ! saved.durable && ! saved.cursor.memory )
 			) {
 				setUnsaved( true );
+				if ( parked ) {
+					journal.select( parked.cursor );
+				}
 				return null;
 			}
-			setUnsaved( ! saved.durable );
+			setUnsaved(
+				! saved.durable ||
+					!! parked?.cursor.memory ||
+					!! journal.alternative( saved.cursor )?.cursor.memory
+			);
 			cursor.current = saved.cursor;
+			editingCursor.current =
+				saved.state.phase === 'editing' ? saved.cursor : null;
 			failureState.current = saved.state;
 			if ( saved.state.phase === 'editing' && saved.state.draft?.owner ) {
 				context.adoptEditor( saved.state.draft.owner );
@@ -304,7 +510,8 @@ export function useFailure( files: FailureFiles, context: DraftContext ) {
 			}
 			// Rebase the parked record over the activation write without consuming either owner.
 			setDeferredFailure(
-				parked ? journal.rebase( parked.cursor ) : null
+				journal.alternative( saved.cursor ) ??
+					( parked ? journal.variant( parked.cursor ) : null )
 			);
 			return saved.state;
 		},

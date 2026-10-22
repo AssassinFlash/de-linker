@@ -2746,7 +2746,7 @@ test( 'a resource refusal retains the question and file and offers native inquir
 	vi.mocked( sendTurn ).mockRejectedValue(
 		new TurnError( 429, 'linker_admission_quota' )
 	);
-	render(
+	await renderOwned(
 		<App config={ { ...config(), requestPageUrl: '/proforma-request/' } } />
 	);
 	fireEvent.click( screen.getByRole( 'button', { name: 'Open' } ) );

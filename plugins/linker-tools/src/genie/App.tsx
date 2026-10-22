@@ -30,9 +30,12 @@ import {
 	retryMessages,
 	settleTurnFailure,
 	type FailureDraft,
+	type FailureOwner,
 } from './shared/failure';
 import { useFailure } from './shared/useFailure';
 import type { DraftLease } from './shared/draftContext';
+import type { NativeScope } from './shared/nativeScope';
+import type { FailureCursor } from './shared/ownedFailure';
 import { useDraftContext } from './shared/useDraftContext';
 import { startDictation, type DictationSession } from './shared/dictation';
 import {
@@ -238,6 +241,16 @@ export function App( { config }: { config: GenieConfig } ) {
 		( open || config.surface === 'workspace' ) && ! dockHistory
 	);
 	const dictation = useRef< DictationSession | null >( null );
+	const dictationOwner = useRef< {
+		lease: DraftLease;
+		owner: FailureOwner;
+		identity: NativeScope;
+		checkpoint: FailureCursor | null;
+		queuedText: string | null;
+		queuedInsertion: number;
+		ended: boolean;
+		pending: number;
+	} | null >( null );
 	const ownerCleanup = useRef< () => void >( () => undefined );
 	const draftContext = useDraftContext( config, () =>
 		ownerCleanup.current()
@@ -259,6 +272,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// picker is offered for a CSV, an Excel file or a photo of the list.
 	const [ listPrompt, setListPrompt ] = useState( false );
 	const [ dictating, setDictating ] = useState( false );
+
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
 	const {
@@ -280,12 +294,51 @@ export function App( { config }: { config: GenieConfig } ) {
 		openRetry,
 		payloadOrRestore,
 	} = useFailure( files, draftContext );
+	const stopDictation = useCallback(
+		( cancel = true ) => {
+			const voice = dictationOwner.current;
+			dictationOwner.current = null;
+			if ( cancel && voice?.checkpoint && voice.pending > 0 ) {
+				// Only this token's exact checkpoint may remove its undisplayed words.
+				// Already displayed text, files and reselection names stay editable.
+				const canceled = preserveEditor(
+					{
+						text: inputRef.current,
+						uploads: filesRef.current.uploads,
+						missing: [
+							...editingMissing.current,
+							...filesRef.current.picked
+								.filter( ( item ) => item.state !== 'ready' )
+								.map( ( item ) => item.name ),
+						],
+					},
+					{
+						owner: voice.owner,
+						identity: voice.identity,
+						cursor: voice.checkpoint,
+					}
+				);
+				if (
+					canceled?.conflict &&
+					draftContext.editor === voice.owner
+				) {
+					draftContext.releaseEditor();
+				}
+			}
+			const session = dictation.current;
+			dictation.current = null;
+			session?.stop();
+			setDictating( false );
+		},
+		[ preserveEditor, draftContext ]
+	);
+
 	ownerCleanup.current = () => {
 		detachEntryInbox.current();
 		detachFailure();
 		setInput( '' );
 		filesRef.current.clear();
-		dictation.current?.stop();
+		stopDictation( false );
 		sending.current = false;
 		setPhase( 'ask' );
 		setRefused( '' );
@@ -306,6 +359,21 @@ export function App( { config }: { config: GenieConfig } ) {
 	useEffect(
 		() =>
 			draftContext.beforeLeave( () => {
+				const pendingVoice = dictationOwner.current;
+				if (
+					pendingVoice &&
+					draftContext.editor === pendingVoice.owner &&
+					( pendingVoice.pending > 0 ||
+						( ! pendingVoice.ended &&
+							! inputRef.current &&
+							! filesRef.current.uploads.length &&
+							! filesRef.current.picked.length &&
+							! editingMissing.current.length ) )
+				) {
+					// Native dictation has an accepted owner before its first transcript.
+					// Revalidation of that empty snapshot is not an explicit clear.
+					return;
+				}
 				preserveEditor( {
 					text: inputRef.current,
 					uploads: filesRef.current.uploads,
@@ -318,6 +386,20 @@ export function App( { config }: { config: GenieConfig } ) {
 				} );
 			} ),
 		[ draftContext, preserveEditor ]
+	);
+	useEffect(
+		() =>
+			draftContext.subscribe( () => {
+				const voice = dictationOwner.current;
+				if (
+					voice &&
+					( ! draftContext.owns( voice.lease ) ||
+						draftContext.editor !== voice.owner )
+				) {
+					stopDictation( false );
+				}
+			} ),
+		[ draftContext, stopDictation ]
 	);
 
 	// The conversation on screen, for the lane jobs: a delete that clears
@@ -648,17 +730,18 @@ export function App( { config }: { config: GenieConfig } ) {
 			// A newly accepted next question is a different editor from this turn.
 			draftContext.checkpoint();
 			if ( 'resource' === settled.action ) {
-				commitFailure( { type: 'upstream' } );
-				if ( draftContext.editor ) {
-					parkFailure();
-					setPhase( 'ask' );
-					return;
-				}
-				placeChips( draft.uploads );
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: draft.uploads,
+					missing: draft.omitted,
+				} );
 				setThread( before );
 				currentThread.current = before;
-				setInput( settled.field );
-				setRefused( settled.reason );
+				if ( returned ) {
+					placeChips( draft.uploads );
+					setInput( settled.field );
+					setRefused( settled.reason );
+				}
 				setPhase( 'ask' );
 				return;
 			}
@@ -1120,6 +1203,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			// Before the job, not inside it: a list already queued behind
 			// this switch captured the old epoch and must drop itself.
 			historyEpoch += 1;
+			stopDictation();
 			draftContext.invalidate();
 			setInput( '' );
 			setOmitted( [] );
@@ -1167,6 +1251,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			commitFailure,
 			draftContext,
 			setOmitted,
+			stopDictation,
 		]
 	);
 
@@ -1177,6 +1262,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		( id: number ): Promise< boolean > => {
 			historyEpoch += 1;
 			if ( id === shownId.current ) {
+				stopDictation();
 				draftContext.invalidate();
 				setInput( '' );
 				setOmitted( [] );
@@ -1228,6 +1314,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			commitFailure,
 			draftContext,
 			setOmitted,
+			stopDictation,
 		]
 	);
 
@@ -1268,8 +1355,8 @@ export function App( { config }: { config: GenieConfig } ) {
 	// has none, the button says so and stays. The recognition lives for the
 	// mount; stopping it on unmount is what a second mount must not inherit.
 	const dictate = useCallback( () => {
-		if ( dictating ) {
-			dictation.current?.stop();
+		if ( dictationOwner.current && ! dictationOwner.current.ended ) {
+			stopDictation();
 			return;
 		}
 		setVoiceError( false );
@@ -1278,44 +1365,151 @@ export function App( { config }: { config: GenieConfig } ) {
 		if ( ! lease ) {
 			return;
 		}
-		draftContext.acceptEditor();
+		if ( dictationOwner.current ) {
+			stopDictation();
+		}
+		const owner = draftContext.acceptEditor();
+		if ( ! owner ) {
+			return;
+		}
+		const voice = {
+			lease,
+			owner,
+			identity: { ...draftContext.identity! },
+			ended: false,
+			pending: 0,
+			checkpoint: null as FailureCursor | null,
+			queuedText: null as string | null,
+			queuedInsertion: insertion,
+		};
+		dictationOwner.current = voice;
 		const session = startDictation(
 			window,
 			config.locale,
 			( heard ) => {
-				if ( ! draftContext.valid( lease ) ) {
+				if (
+					dictationOwner.current !== voice ||
+					! draftContext.owns( lease ) ||
+					draftContext.editor !== owner
+				) {
 					return;
 				}
-				setInput( ( text ) => {
+				voice.pending += 1;
+				if ( ! draftContext.valid( lease ) ) {
+					const text = voice.queuedText ?? inputRef.current;
+					const at = Math.min(
+						voice.queuedText === null
+							? insertion
+							: voice.queuedInsertion,
+						text.length
+					);
+					const before = text.slice( 0, at );
+					const after = text.slice( at );
+					const added = `${ before && ! /\s$/.test( before ) ? ' ' : '' }${ heard }${ after && ! /^\s/.test( after ) ? ' ' : '' }`;
+					voice.queuedText = before + added + after;
+					voice.queuedInsertion = at + added.length;
+					// Acceptance happened at voice start. This write grants no display
+					// authority and never takes the principal returned by a later check.
+					const saved = preserveEditor(
+						{
+							text: voice.queuedText,
+							uploads: filesRef.current.uploads,
+							missing: [
+								...editingMissing.current,
+								...filesRef.current.picked
+									.filter(
+										( item ) => item.state !== 'ready'
+									)
+									.map( ( item ) => item.name ),
+							],
+						},
+						{
+							owner,
+							identity: voice.identity,
+							cursor: voice.checkpoint ?? undefined,
+						}
+					);
+					if ( saved?.conflict ) {
+						// A newer accepted revision has superseded this token. Neither
+						// its next phrase nor a later blank checkpoint may replace it.
+						stopDictation( false );
+						if ( draftContext.editor === owner ) {
+							draftContext.releaseEditor();
+						}
+						return;
+					}
+					if ( saved ) {
+						voice.checkpoint = saved.cursor;
+					}
+				}
+				const deliver = ( permitted: boolean ) => {
+					voice.pending -= 1;
+					if (
+						! permitted ||
+						dictationOwner.current !== voice ||
+						! draftContext.valid( lease ) ||
+						draftContext.editor !== owner
+					) {
+						return;
+					}
+					// Checkpoints can run before React commits this accepted transcript.
+					const text = inputRef.current;
 					const at = Math.min( insertion, text.length );
 					const before = text.slice( 0, at );
 					const after = text.slice( at );
 					const added = `${ before && ! /\s$/.test( before ) ? ' ' : '' }${ heard }${ after && ! /^\s/.test( after ) ? ' ' : '' }`;
 					insertion = at + added.length;
-					return before + added + after;
-				} );
+					inputRef.current = before + added + after;
+					setInput( inputRef.current );
+					if ( voice.pending === 0 ) {
+						voice.queuedText = null;
+						voice.checkpoint = null;
+					}
+				};
+				if ( draftContext.valid( lease ) ) {
+					deliver( true );
+				} else {
+					void draftContext.whenVerified( lease ).then( deliver );
+				}
 			},
 			() => {
+				if ( dictationOwner.current !== voice ) {
+					return;
+				}
+				// Natural end does not cancel words already awaiting native authority.
+				voice.ended = true;
+				dictation.current = null;
 				if ( draftContext.owns( lease ) ) {
 					setDictating( false );
 				}
 			},
 			() => {
-				if ( draftContext.valid( lease ) ) {
+				if (
+					dictationOwner.current === voice &&
+					draftContext.valid( lease )
+				) {
 					setVoiceError( true );
 				}
 			}
 		);
-		if ( ! session ) {
+		if ( ! session || dictationOwner.current !== voice ) {
+			if ( dictationOwner.current === voice ) {
+				dictationOwner.current = null;
+			}
 			return;
 		}
-		dictation.current = session;
-		setDictating( true );
-	}, [ config.locale, dictating, input.length, field, draftContext ] );
+		dictation.current = voice.ended ? null : session;
+		setDictating( ! voice.ended );
+	}, [
+		config.locale,
+		input.length,
+		field,
+		draftContext,
+		stopDictation,
+		preserveEditor,
+	] );
 
-	// The mount's own cleanup, not a reaction to a render; the ref is the
-	// one thing the deps rule treats as stable, so the list stays empty.
-	useEffect( () => () => dictation.current?.stop(), [] );
+	useEffect( () => () => stopDictation( false ), [ stopDictation ] );
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
@@ -1365,10 +1559,9 @@ export function App( { config }: { config: GenieConfig } ) {
 	const receiveEntry = entryInbox.receive;
 	useEffect( () => {
 		if ( ! open ) {
-			dictation.current?.stop();
-			setDictating( false );
+			stopDictation();
 		}
-	}, [ open ] );
+	}, [ open, stopDictation ] );
 
 	const helperDialog = useHelperDialog( {
 		open,
@@ -1531,6 +1724,9 @@ export function App( { config }: { config: GenieConfig } ) {
 			onSent={ inquirySent }
 		/>
 	);
+	// The rendered text and its accepted editor belong together. An old link
+	// must not bind that text to a principal verified before React commits.
+	const inquiryEditor = draftContext.editor;
 	return (
 		<section
 			ref={ helperDialog.panel }
@@ -2229,12 +2425,24 @@ export function App( { config }: { config: GenieConfig } ) {
 										{ ' ' }
 										<a
 											href={ config.requestPageUrl }
-											onClick={ () =>
-												rememberInquiry(
-													config.requestPageUrl!,
-													input
-												)
-											}
+											onClick={ () => {
+												if (
+													inquiryEditor &&
+													draftContext.editor ===
+														inquiryEditor &&
+													draftContext.capture()
+														?.scope ===
+														inquiryEditor.scope &&
+													field.current?.value ===
+														input
+												) {
+													rememberInquiry(
+														config.requestPageUrl!,
+														input,
+														inquiryEditor.scope
+													);
+												}
+											} }
 										>
 											{ __(
 												'Send an inquiry',
@@ -2385,10 +2593,16 @@ export function App( { config }: { config: GenieConfig } ) {
 											: ''
 									}
 									disabled={ draftContext.phase !== 'ready' }
-									onChange={ ( event ) =>
-										draftContext.acceptEditor() &&
-										setInput( event.target.value )
-									}
+									onChange={ ( event ) => {
+										if ( ! event.target.value ) {
+											stopDictation();
+										}
+										if ( draftContext.acceptEditor() ) {
+											inputRef.current =
+												event.target.value;
+											setInput( event.target.value );
+										}
+									} }
 									onKeyDown={ ( event ) => {
 										// Enter sends, Shift+Enter is a new line:
 										// a pasted parts list (#251) needs its

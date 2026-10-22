@@ -2166,6 +2166,6 @@ msgstr "Anfrage senden"
 #: includes/Protection/ReplyPrivacy.php
 msgid "Response"
 msgstr "Antwort"
-#: src/genie/App.tsx src/hero/Hero.tsx
+#: src/genie/App.tsx src/hero/Hero.tsx build/genie.js build/hero.js
 msgid "This question could not be saved. It may be lost if you refresh or leave this page."
 msgstr "Ihre Frage konnte nicht gespeichert werden. Wenn Sie diese Seite neu laden oder verlassen, kann sie verloren gehen."

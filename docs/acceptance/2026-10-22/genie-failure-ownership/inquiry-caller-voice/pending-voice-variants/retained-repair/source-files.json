@@ -1,0 +1,79 @@
+{
+  "frozen_at": "2026-10-22T06:39:22.077599+00:00",
+  "source_aggregate": "b472f3259aeb32e17419745942c5653ffbbe82e1332914e385929300290dfb1a",
+  "aggregate_algorithm": "SHA256(sorted SHA256 + two spaces + repo relative path + LF)",
+  "product_sources": {
+    "plugins/linker-tools/src/genie/App.tsx": "e287fdd29f30ea2f97599cc3a477c0c197454c2d18eb7b547a3cd42e1ef5cbf8",
+    "plugins/linker-tools/src/genie/attachments/useAttachments.ts": "74be02ac17a0c200373af6fb73950d48d1f6af269c622f578662f6f93cd6c535",
+    "plugins/linker-tools/src/genie/components/MissingFiles.tsx": "4e4d8e762847889f092364de3727bff49cb496c08f1e7d380d5cc7b0c364371f",
+    "plugins/linker-tools/src/genie/components/OwnedRecovery.tsx": "f7db83df3e5f0fbeeb31c00ed76027ffed85b7fbb0db1aec459d229707ba4aee",
+    "plugins/linker-tools/src/genie/shared/draftContext.ts": "5ef9f23b98d873e920ceccfd68f1c774626516b213b8a26ce29dfe6fc3bba1e1",
+    "plugins/linker-tools/src/genie/shared/editingDraft.ts": "cd51e791ee2177ee795f50d3646d5fa8e2c29af4fdbb97298c9d938962b49dc3",
+    "plugins/linker-tools/src/genie/shared/entryDraft.ts": "b910ad5ea9191f93a3e13e4234cf570c031a5e6e6e7162e826359d2bde57e118",
+    "plugins/linker-tools/src/genie/shared/entryFailure.ts": "133109837f7f952f3f47fcf0cb51d11daea4878e1ebc2fa73cb109b6bf069e37",
+    "plugins/linker-tools/src/genie/shared/failure.ts": "24ab6436b6d1361ef1f7d9c54677d4f5c0adf50ea2016b353af91dc54cb0239f",
+    "plugins/linker-tools/src/genie/shared/nativeScope.ts": "05015ff55511eb21eb5209854cd1b993a62d0f5c110f1ad4a3a142f5180d4975",
+    "plugins/linker-tools/src/genie/shared/ownedFailure.ts": "b77fa2274da4735490fd940b4c790cdbe33b13f6f70e284dc9b94e424aeebb17",
+    "plugins/linker-tools/src/genie/shared/useDraftContext.ts": "4d2d6b741d113e885c7d07ab75649f4ea818fa0043006d2c43fe47853e8a7a28",
+    "plugins/linker-tools/src/genie/shared/useEntryInbox.ts": "8a82679061b0bbbf2a6595a898bb9e5b1c0bd240e03a6b482ad2bab2a2db8591",
+    "plugins/linker-tools/src/genie/shared/useFailure.ts": "50d3d6e25862be5ff61e706b267cee3c21546663bf4f1ab3a9e0548951c87bb3",
+    "plugins/linker-tools/src/hero/Hero.tsx": "556aa7294dd8687f08b0ad5c812071f649fc4e113243a1a61381202d41ff3713",
+    "plugins/linker-tools/src/hero/controller.tsx": "b292667edb0ab609b18a909f9b725530a6950c1d6b7c96100a3c49c7dd1975e4",
+    "plugins/linker-tools/src/hero/session.ts": "6010e3b15e7303891cffd641582185684e2f4a921029c7aec33d8490bc25ce46",
+    "plugins/linker-tools/src/protection/inquiryHandoff.ts": "0f19094fe93b88c4009c96e26b9ac319bb0813b6f0a5709caa49fd35fe8e4398",
+    "plugins/linker-tools/src/protection/inquiryEntry.ts": "4b99ba51d5a35fa37b97491db9c95e0e0618222056b13078558862502d972441"
+  },
+  "source_delta_from_fd04": {
+    "plugins/linker-tools/src/genie/shared/editingDraft.ts": {
+      "before": "4a9b843effde8cdac9caca22e2503bfa452b18e52a2e3b3696626a2ffb6cc623",
+      "after": "cd51e791ee2177ee795f50d3646d5fa8e2c29af4fdbb97298c9d938962b49dc3"
+    },
+    "plugins/linker-tools/src/genie/shared/ownedFailure.ts": {
+      "before": "17c9cbb3265dc0ba0b15680246c233d19e3c95b7b7949b42517c53bff58f78c5",
+      "after": "b77fa2274da4735490fd940b4c790cdbe33b13f6f70e284dc9b94e424aeebb17"
+    },
+    "plugins/linker-tools/src/genie/shared/useFailure.ts": {
+      "before": "403fb399a4da3d6a1f8b46d71b8ffc1ed92649a5d0b630f045deda2b49bfcf70",
+      "after": "50d3d6e25862be5ff61e706b267cee3c21546663bf4f1ab3a9e0548951c87bb3"
+    }
+  },
+  "unchanged_product_sources": 16,
+  "test_sources": {
+    "plugins/linker-tools/src/genie/App.test.tsx": "2cbe480120abb1644e01dc716b6400a11630850f8bf862938308c6a38234b997",
+    "plugins/linker-tools/src/genie/CardPrice.test.tsx": "33e4af714ef664f64529dbef8134ed39a39e992654295cf61fb18ac75158606e",
+    "plugins/linker-tools/src/genie/CardStates.test.tsx": "49e8fc0999ba923d4b05a877295b1088553fcfffdd876c8b2068f1ced516abbf",
+    "plugins/linker-tools/src/genie/PartsApp.test.tsx": "3caa45a147dc1443a62010ea031e1d310ca1758c51cdb96392086dded926134f",
+    "plugins/linker-tools/src/genie/Race.test.tsx": "8d82b585e0f06ac4112c36953c5af4824be80f582dcccbdd34077797cbb0499c",
+    "plugins/linker-tools/src/genie/failureOwnership.consumer.test.tsx": "5d3c5eec75b253120e2a351b91fb0a0da11af1ed3874b5ea24eb78f446e831b4",
+    "plugins/linker-tools/src/genie/shared/draftContext.test.ts": "f05cae72db622b1652c369a77ea930137227aa278d461aec2869137cbc8b2dd1",
+    "plugins/linker-tools/src/genie/shared/entryFailure.test.ts": "5665a18bb6a296fa4feea77f165aacf91022acf202597514b1a444b99651d09a",
+    "plugins/linker-tools/src/genie/shared/nativeScope.test.ts": "d211f2e450da6bbaef73d4f8abad1814d173bcccccf32d544b9e222cbd38c212",
+    "plugins/linker-tools/src/genie/shared/ownedFailure.test.ts": "70dda43a6484ac6376a60a2179ea3f8eb49e4018b5f31331ff020b90f7122e3e",
+    "plugins/linker-tools/src/genie/shared/useFailure.test.tsx": "8b15e2581c285fe6f9ef65e0500d35c891cdd448bfc62f9ab7072ef9040de884",
+    "plugins/linker-tools/src/genie/testing/nativeIdentity.tsx": "6219143f1b87c5097338b17d2e389616508f61d1cab141e87d4d8fe2efd0c0b8",
+    "plugins/linker-tools/src/hero/Hero.test.tsx": "2ac8c671eba6b6ce7c69dca12eab4f584e84c338d43a7213916bdbe40720c173",
+    "plugins/linker-tools/src/hero/controller.test.tsx": "1432ce3faae244f203f6141b831b09b15a99f9ae5d656b3120a1d68869b602f0",
+    "plugins/linker-tools/src/hero/session.test.ts": "862750b387963d09aa4341cf0f5ba04ce9c29e9da287ae6dbc81059f83e9c19c",
+    "plugins/linker-tools/src/marketing/entries.test.tsx": "83a1600b8907462b9fa91db9a3847b2af7d9a1dc9ca6c13670cd2791c840a987",
+    "plugins/linker-tools/src/protection/inquiryHandoff.test.ts": "ee36e0c9b6c44251b92823585ac82e0d952cea154bde76849ce7583c468b7a97",
+    "plugins/linker-tools/src/protection/inquiryHandoff.ownership.test.ts": "39bac7af6fc30bf4f59641b2f2700d61bffe3a57058b5067fcf22462a4eb53be",
+    "plugins/linker-tools/src/genie/resourceOwnership.consumer.test.tsx": "ebf3b8c9c24274ba05cb24b20012b2cb5249b309c437f5f338e725867a6836f3",
+    "plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx": "8828fa93f44350893a3543f1a3206a9111f9d83bcc5c6818f5d25a85441dcbd2",
+    "plugins/linker-tools/src/genie/shared/editingAuthority.test.ts": "26d3421931f6e4c87d134dd03aadee48797bb907f4d81e01c16922aa4abf8706",
+    "plugins/linker-tools/src/protection/inquiryHandoff.consumer.test.tsx": "28cc4cea8f01a38b6f3bf0137c6087752058a7b1d9db6cc3594fc9f1ea2e8c8f"
+  },
+  "auxiliary_sha256": {
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po": "f72310a2be2ee19dd905eca63897964f89779c4b6433ab33f6c483040c046b2a",
+    "docs/specs/13-genie.md": "cb4cef0aed86343a27925581e0511ff0d59b7e0800292aad13426c04ccb94dc7",
+    "tests/e2e/specs/genie-failure-ownership.spec.ts": "1b6d3f1ba8f5ce56f9d3581c6a0974c7e68c61009465f18a4ed85385b72df54e"
+  },
+  "owned_tests": {
+    "plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx": "8828fa93f44350893a3543f1a3206a9111f9d83bcc5c6818f5d25a85441dcbd2",
+    "plugins/linker-tools/src/genie/shared/editingAuthority.test.ts": "26d3421931f6e4c87d134dd03aadee48797bb907f4d81e01c16922aa4abf8706",
+    "plugins/linker-tools/src/protection/inquiryHandoff.consumer.test.tsx": "28cc4cea8f01a38b6f3bf0137c6087752058a7b1d9db6cc3594fc9f1ea2e8c8f"
+  },
+  "before_source_aggregate": "fd04d0ae887a2bcd4eb1fa75cb68aa1a8d60958dba31a5d987c95ab6bb0bfa2a",
+  "before_tree": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z",
+  "private_frozen_source": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-final-20261022T063922077599Z/frozen",
+  "scope": "Exact mounted editor checkpoints and finite actual retained window entries; only editingDraft comment, ownedFailure and useFailure changed from fd04. App/Hero/native identity/inquiry/resource/PO/spec/e2e unchanged. No build/instance/browser/model/mail/production operation. Full JS has one already known generated-catalog failure; no broader PASS claimed."
+}

@@ -1312,6 +1312,7 @@ for ( const surface of [ 'dock', 'home' ] as const ) {
 		'refusal',
 		'conflict',
 		'upstream',
+		'resource',
 	] as const ) {
 		test( `review repair: ${ surface } A1 ${ outcome } preserves the accepted A2 text and actually prepared PDF`, async () => {
 			let resolve!: ( value: typeof answer ) => void;
@@ -1358,6 +1359,8 @@ for ( const surface of [ 'dock', 'home' ] as const ) {
 			await act( async () => {
 				if ( outcome === 'success' ) {
 					resolve( answer );
+				} else if ( outcome === 'resource' ) {
+					reject( new TurnError( 429, 'linker_admission_quota' ) );
 				} else {
 					reject(
 						outcome === 'upstream'
@@ -1405,11 +1408,17 @@ for ( const surface of [ 'dock', 'home' ] as const ) {
 				drafts.find( ( item ) => item.text === 'A1 submitted original' )
 					?.editing
 			).toBe(
-				outcome === 'refusal' || outcome === 'conflict'
+				outcome === 'refusal' ||
+					outcome === 'conflict' ||
+					outcome === 'resource'
 					? true
 					: undefined
 			);
-			if ( outcome === 'refusal' || outcome === 'conflict' ) {
+			if (
+				outcome === 'refusal' ||
+				outcome === 'conflict' ||
+				outcome === 'resource'
+			) {
 				await verifyReturnedEditorExchange( ui.field );
 			}
 		} );
