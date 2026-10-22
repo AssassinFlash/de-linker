@@ -135,7 +135,12 @@ final class Outbox {
 			$this->schedule( $job, time() + 1 );
 			return true;
 		}
-		$this->attempt( $message, 0, $job );
+		Lock::run(
+			'mail-job-' . $job,
+			function () use ( $message, $job ): void {
+				$this->attempt( $message, 0, $job );
+			}
+		);
 		// A durable job owns the notification even when transport is deferred.
 		return true;
 	}
@@ -323,7 +328,16 @@ final class Outbox {
 	 */
 	private function schedule( int $job_id, int $time ): void {
 		if ( $job_id > 0 ) {
-			as_schedule_single_action( $time, self::HOOK, array( $job_id ), self::GROUP );
+			NativeTransaction::run(
+				static function () use ( $job_id, $time ): void {
+					// Replace only this original job's pending recovery, atomically.
+					as_unschedule_all_actions( self::HOOK, array( $job_id ), self::GROUP );
+					$action = as_schedule_single_action( $time, self::HOOK, array( $job_id ), self::GROUP, true );
+					if ( $action < 1 || ! as_has_scheduled_action( self::HOOK, array( $job_id ), self::GROUP ) ) {
+						throw new \RuntimeException( 'notification_retry_not_persisted' );
+					}
+				}
+			);
 		}
 	}
 
