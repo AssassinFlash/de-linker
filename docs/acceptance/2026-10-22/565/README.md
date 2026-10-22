@@ -103,13 +103,13 @@ to MFA or called pixel-perfect acceptance.
 
 | State | Browser evidence |
 |---|---|
-| Admin factor / incorrect code / recovery input | `en-*admin-{factor,invalid,recovery}.png`, `de-*admin-{factor,invalid,recovery}.png` |
-| Missing DE vendor notice fixed | `de-*admin-warning-translated.png`, `de-*admin-recovery-translated.png`; singular and plural actually rendered |
-| Customer login under enforce | EN approved account `en-*customer-enforce-signed-in.png`; DE pending account `de-*pending-enforce-signed-in.png` |
-| Registration under enforce | Two-step EN/DE forms create pending accounts directly: `*-registration-enforce-complete.png`; native user has no factor |
-| Reset under enforce | EN request succeeds; DE outage preserves input and displays retry, then the same page succeeds after recovery: `*-reset-enforce-*.png` |
-| Guest contact/inquiry | Actual native confirmations under enforce: `*-contact-enforce-sent.png`, `*-inquiry-enforce-sent.png`; no account/TOTP |
-| Verification outage contact | DE `*-contact-outage-review.png`: native record8239 saved awaiting staff review, no confirmation email claim |
+| Admin factor / incorrect code / recovery input | `en-*admin-{factor,invalid,recovery}.jpg`, `de-*admin-{factor,invalid,recovery}.jpg` |
+| Missing DE vendor notice fixed | `de-*admin-warning-translated.jpg`, `de-*admin-recovery-translated.jpg`; singular and plural actually rendered |
+| Customer login under enforce | EN approved account `en-*customer-enforce-signed-in.jpg`; DE pending account `de-*pending-enforce-signed-in.jpg` |
+| Registration under enforce | Two-step EN/DE forms create pending accounts directly: `*-registration-enforce-complete.jpg`; native user has no factor |
+| Reset under enforce | EN request succeeds; DE outage preserves input and displays retry, then the same page succeeds after recovery: `*-reset-enforce-*.jpg` |
+| Guest contact/inquiry | Actual native confirmations under enforce: `*-contact-enforce-sent.jpg`, `*-inquiry-enforce-sent.jpg`; no account/TOTP |
+| Verification outage contact | DE `*-contact-outage-review.jpg`: native record8239 saved awaiting staff review, no confirmation email claim |
 
 The normal enforce records are contact8227/8230 and inquiry8233/8236, all
 `customer_id=0`, `inquiry-received`, no review hold, native Ledger completed with
@@ -125,7 +125,7 @@ The initial mode-off experiment used the preserved legacy shared connection
 limit3/UTC-hour. Two registrations plus one EN contact spent that bucket in the
 12:00–13:00UTC window; DE contact was then refused. A fresh cookie jar on the
 same connection at12:32:42UTC reproduced the refusal without an MFA challenge.
-The red screenshots remain `de-*contact-rate-limit.png`. This is a quota result,
+The red screenshots remain `de-*contact-rate-limit.jpg`. This is a quota result,
 not an MFA regression. ReceiptLimit is separately the customer-receipt budget.
 No ledger was reset or policy relaxed to make the tests pass.
 
@@ -239,3 +239,10 @@ The full hosted assessment scope also passes locally: **75 tests /856 assertions
 The next exact hosted head remains an explicit gate. An independent Spec and
 Standards review of this one-line polling change passes without findings; it
 does not replace the exact-head CI gate.
+
+### Capture file format
+
+All82 original browser captures are JPEG/JFIF bytes. Their public filenames now
+use `.jpg`; the raw images were not transcoded and all82 SHA256 values match the
+original capture manifest. The format correction changes evidence filenames and
+references only, without runtime, fixture or assertion changes.
