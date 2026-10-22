@@ -25,6 +25,48 @@ use WC_Order;
  * @coversNothing
  */
 final class NotificationHoldTest extends IntegrationTestCase {
+	/** The final writer must honor an already held native source before arming recovery. */
+	public function test_new_original_job_bound_to_a_held_source_is_retained_without_an_action(): void {
+		[ $order, $previous ] = $this->held_inquiry();
+		$jobs                 = new JobStore();
+		$jobs->delete( $previous );
+		$budget = get_option( Throttle::OPTION, array() );
+		$id     = $jobs->create( new Message( array( self::TESTER ), 'Synthetic bound held source', 'Original body remains retained.', array( Message::INTERNAL_HEADER ), array() ), $order->get_id() );
+		self::assertGreaterThan( 0, $id );
+		self::assertTrue( NotificationHold::job_held( $id ) );
+		self::assertNotNull( $jobs->load( $id ) );
+		self::assertSame( 0, $jobs->load( $id )['attempts'] );
+		$entry = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION )['mail_capacity']['entries'][ $id ];
+		self::assertSame( 'ordinary', $entry['pool'], 'A held job still consumes its original persistent pool.' );
+		self::assertGreaterThan( 0, $entry['bytes'] );
+		self::assertSame( $budget, get_option( Throttle::OPTION, array() ) );
+		self::assertFalse( as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) );
+	}
+
+	/** A caller transaction does not turn a definite hold into a new recovery action. */
+	public function test_outer_transaction_retry_of_a_held_job_never_arms_or_spends(): void {
+		[ $order, $id ] = $this->held_inquiry();
+		as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
+		$jobs   = new JobStore();
+		$before = $jobs->load( $id );
+		self::assertNotNull( $before );
+		$budget = get_option( Throttle::OPTION, array() );
+		global $wpdb;
+		$wpdb->query( 'START TRANSACTION' );
+		try {
+			( new Outbox( $jobs, new Throttle() ) )->retry( $id );
+			self::assertTrue( \Linker\Commerce\Mail\Capacity::transaction_active() );
+			self::assertFalse( as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) );
+			$after = $jobs->load( $id );
+			self::assertNotNull( $after );
+			self::assertSame( $before['message']->to_array(), $after['message']->to_array() );
+			self::assertSame( $before['attempts'], $after['attempts'] );
+			self::assertSame( $budget, get_option( Throttle::OPTION, array() ) );
+		} finally {
+			$wpdb->query( 'ROLLBACK' );
+		}
+	}
+
 	/** Manual callbacks must honor the incident hold already stored in production. */
 	public function test_manual_retry_of_existing_held_job_spends_no_mail_budget(): void {
 		[ $order, $id ] = $this->held_inquiry();
@@ -434,6 +476,12 @@ final class NotificationHoldTest extends IntegrationTestCase {
 		$order->update_meta_data( Queue::PENDING, 'held' );
 		$order->save_meta_data();
 		update_post_meta( $id, '_linker_incident_hold', $hold );
+		// This fixture represents the preserved incident jobs, whose pending AS
+		// actions were cancelled when staff established the hold. The modern
+		// writer automatically arms new jobs, so reproduce that native state
+		// explicitly; all callbacks above must continue leaving it unarmed.
+		as_unschedule_all_actions( Outbox::HOOK, array( $id ), Outbox::GROUP );
+		self::assertFalse( as_has_scheduled_action( Outbox::HOOK, array( $id ), Outbox::GROUP ) );
 		return array( $order, $id );
 	}
 }

@@ -53,6 +53,8 @@ final class NotificationHold {
 	/**
 	 * Whether the persistent job or its source inquiry is held.
 	 *
+	 * @phpstan-impure
+	 *
 	 * @param int $job Original notification job.
 	 */
 	public static function job_held( int $job ): bool {
