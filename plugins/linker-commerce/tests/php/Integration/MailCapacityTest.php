@@ -37,6 +37,18 @@ final class MailCapacityTest extends IntegrationTestCase {
 		);
 	}
 
+	/** Core deletion hooks run before native cache cleanup; real absence frees space. */
+	public function test_native_core_deletion_releases_occupancy_despite_a_cached_post(): void {
+		$this->seed_jobs( 0 );
+		$id = ( new JobStore() )->create( new Message( array( self::TESTER ), 'Synthetic native deletion', 'No transport.', array(), array() ) );
+		self::assertGreaterThan( 0, $id );
+		self::assertInstanceOf( \WP_Post::class, get_post( $id ) );
+		self::assertArrayHasKey( $id, get_option( IntakeStore::OPTION )['mail_capacity']['entries'] );
+		wp_delete_post( $id, true );
+		self::assertNull( get_post( $id ) );
+		self::assertArrayNotHasKey( $id, get_option( IntakeStore::OPTION )['mail_capacity']['entries'] );
+	}
+
 	/** A full ordinary queue cannot grow or consume the independent critical reserve. */
 	public function test_native_job_creation_is_bounded_and_preserves_critical_capacity(): void {
 		$store    = new JobStore();

@@ -117,7 +117,7 @@ final class Outbox {
 			return $pre;
 		}
 		try {
-			$joined = Capacity::transaction_active();
+			$joined = $this->jobs->transaction_active();
 		} catch ( \Throwable $error ) {
 			CapacityHealth::failed();
 			return false;
@@ -146,7 +146,7 @@ final class Outbox {
 	 * @param int $job_id Job id.
 	 */
 	public function retry( int $job_id ): void {
-		if ( Capacity::transaction_active() ) {
+		if ( $this->jobs->transaction_active() ) {
 			$this->schedule( $job_id, time() + 1 );
 			return;
 		}

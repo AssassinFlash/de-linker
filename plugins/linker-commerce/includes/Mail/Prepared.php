@@ -16,6 +16,16 @@ final class Prepared {
 	 * @var Message|null
 	 */
 	private static ?Message $message = null;
+	/** True only while native templates render without transport.
+	 *
+	 * @var bool
+	 */
+	private static bool $preview = false;
+
+	/** Native observers can distinguish a template preview from a real handoff. */
+	public static function is_preview(): bool {
+		return self::$preview;
+	}
 
 	/**
 	 * Capture the actual final native template, locale, routing and sender filters.
@@ -34,9 +44,12 @@ final class Prepared {
 		$logging = static fn (): bool => false;
 		add_filter( 'pre_wp_mail', $capture, 9, 2 );
 		add_filter( 'woocommerce_email_log_enabled', $logging );
+		$previous      = self::$preview;
+		self::$preview = true;
 		try {
 			$render();
 		} finally {
+			self::$preview = $previous;
 			remove_filter( 'pre_wp_mail', $capture, 9 );
 			remove_filter( 'woocommerce_email_log_enabled', $logging );
 		}

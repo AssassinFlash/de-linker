@@ -17,6 +17,17 @@ namespace Linker\Commerce\Mail;
  * that failed every attempt stays, marked as failed.
  */
 final class JobStore {
+	/**
+	 * The default is always the shared production envelope, including cron calls.
+	 *
+	 * @param JobCapacity $capacity Native queue admission and transaction boundary.
+	 */
+	public function __construct( private readonly JobCapacity $capacity = new NativeJobCapacity() ) {}
+
+	/** An outer native writer has not committed its own job/source yet. */
+	public function transaction_active(): bool {
+		return $this->capacity->transaction_active();
+	}
 
 
 	/**
@@ -50,7 +61,7 @@ final class JobStore {
 	 * @throws \RuntimeException When the priority cannot be persisted.
 	 */
 	public function promote( int $id ): void {
-		Capacity::promote(
+		$this->capacity->promote(
 			$id,
 			function () use ( $id ): void {
 				update_post_meta( $id, self::PRIORITY_META, 'yes' );
@@ -98,7 +109,7 @@ final class JobStore {
 	 * @return int Job id, 0 when the post could not be written.
 	 */
 	public function create( Message $message, int $inquiry = 0, ?callable $accepted = null ): int {
-		return Capacity::create( $message, fn (): int => $this->write( $message, $inquiry, $accepted ) );
+		return $this->capacity->create( $message, fn (): int => $this->write( $message, $inquiry, $accepted ) );
 	}
 
 	/**
@@ -239,6 +250,6 @@ final class JobStore {
 	 */
 	public function delete( int $id ): void {
 		wp_delete_post( $id, true );
-		Capacity::deleted( $id );
+		$this->capacity->deleted( $id );
 	}
 }

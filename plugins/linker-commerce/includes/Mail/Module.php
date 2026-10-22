@@ -42,7 +42,7 @@ final class Module {
 	public function register(): void {
 		add_action( 'rest_api_init', array( $this->health, 'register_routes' ) );
 		add_action( 'init', array( $this->jobs, 'register_post_type' ) );
-		add_action( 'deleted_post', array( Capacity::class, 'deleted' ) );
+		add_action( 'deleted_post', array( Capacity::class, 'deleted' ), 10, 2 );
 		add_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, array( new \Linker\Commerce\Health\ReviewReminder(), 'tick' ), 20 );
 				add_filter( 'woocommerce_mail_callback', array( $this->producer, 'woocommerce' ), 10, 2 );
 		add_filter( 'retrieve_password_notification_email', array( $this->producer, 'password_reset' ), PHP_INT_MAX, 4 );
