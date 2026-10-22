@@ -35,3 +35,12 @@ Final local results:
 - Legacy identifier additions: zero; source changes are one new native runner and six Queue registration/defer lines. The existing classifier, model channel, provider-budget contract, snapshot and Outbox are reused.
 
 Exact-head CI is recorded in the PR/issue. Deployment, managed-host FPM/LiteSpeed behavior, customer EN/DE paths and inbox acceptance are still required at release. This worktree does not merge or deploy.
+
+
+## Fresh-snapshot fixture correction
+
+Combination testing on a fresh snapshot exposed a fixture precondition: the original a543 run had a manually configured local synthetic service token, while the fresh instance had none. Both instances actually loaded `WP_Async_Request` and registered the callback. Without a configured service, the unchanged production `Queue::defer()` correctly produced `service_unavailable` and the normal notification, so the fixture's expected wake-up was absent.
+
+Removed the manually seeded token from the owned a543 configuration after a private backup. With no configured token, the original native dispatch test reproduced RED (`dispatches=0`). The fixture correction generates a synthetic token only inside a local PHPUnit/HTTP/worker PHP process when the constant is absent. It does not write WordPress configuration, replace an existing token, change the production configured guard, or contact a provider. Each temporary HTTP loader has a distinct filename and is removed on teardown. A separate unconfigured-service test verifies `uncertain/service_unavailable`, ordinary notification handoff and zero wake-ups.
+
+On this token-free snapshot, all **8 Async tests / 150 assertions** pass, including independent PHP/database workers, disconnected customer HTTP and actual two/eight-second classification simulation. Representative customer responses: **0.352/0.637 seconds**; queue starts **0.139/0.269 seconds**; assessment completion **2.285/8.291 seconds**. An independent `wp` process afterwards reads `token_defined=false`, while the native callback remains registered. Combined release-tree results are attached to the follow-up PR/issue; no production setting was changed.

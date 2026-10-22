@@ -25,6 +25,8 @@ final class AssessmentHttpFixture {
 		if ( 'local' !== wp_get_environment_type() ) {
 			return;
 		}
+		require_once __DIR__ . '/AssessmentFixtureEnvironment.php';
+		AssessmentFixtureEnvironment::configure();
 		add_filter( 'action_scheduler_allow_async_request_runner', '__return_false' );
 		add_filter( 'pre_http_request', array( self::class, 'provider' ), 10, 3 );
 		add_action( 'wp_ajax_nopriv_linker_assessment_fixture', array( self::class, 'submit' ) );

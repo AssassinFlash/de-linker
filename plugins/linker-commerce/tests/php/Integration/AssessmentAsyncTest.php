@@ -34,6 +34,10 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 	/** Restore configuration and capture only the new native loopback. */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/AssessmentFixtureEnvironment.php';
+		\Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
+		$this->assertTrue( class_exists( \WP_Async_Request::class ), 'Woo native async library must actually be loaded.' );
+		$this->assertNotFalse( has_action( 'wp_ajax_nopriv_' . AsyncRunner::ACTION ), 'The native HTTP callback must be registered.' );
 		foreach ( array( Queue::ENABLED, Queue::HEARTBEAT, 'linker_genie_url' ) as $name ) {
 			$old = get_option( $name );
 			$this->later(
@@ -97,6 +101,22 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 				$order->delete( true );
 			}
 		);
+	}
+
+	/** A real unconfigured service still queues the ordinary unknown notification with no wake. */
+	public function test_unconfigured_service_preserves_normal_unknown_handoff(): void {
+		update_option( 'linker_genie_url', '' );
+		$this->assertFalse( \Linker\Commerce\Inquiry\Assessment\Client::configured() );
+		$order = $this->inquiry();
+		$this->assertTrue( Queue::defer( $order ) );
+		$order->read_meta_data( true );
+		$data = Queue::data( $order );
+		$this->assertSame( 'service_unavailable', $data['initial_result']['reason'] );
+		$this->assertSame( 'uncertain', $data['initial_result']['label'] );
+		$this->assertTrue( $data['inline_delivery'] );
+		$this->assertGreaterThan( 0, $data['notification_job'] );
+		$this->assertSame( '', $order->get_meta( AsyncRunner::META ) );
+		$this->assertCount( 0, $this->dispatches );
 	}
 
 	/** One capability is persisted before dispatch, without cookies, content or service credentials. */
@@ -279,9 +299,10 @@ final class AssessmentAsyncTest extends IntegrationTestCase {
 	 * Install a guarded fixture only into this local WordPress process's instance.
 	 */
 	private function http_fixture(): string {
-		$path = WPMU_PLUGIN_DIR . '/999-linker-assessment-http-fixture.php';
-		$this->assertFileDoesNotExist( $path );
 		$secret = bin2hex( random_bytes( 24 ) );
+		// Each HTTP capability owns its loader; never replace a previous fixture's path.
+		$path = WPMU_PLUGIN_DIR . '/999-linker-assessment-http-fixture-' . hash( 'sha256', $secret ) . '.php';
+		$this->assertFileDoesNotExist( $path );
 		$source = dirname( __DIR__, 2 ) . '/fixtures/assessment_http.php';
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- PHP literal for an ephemeral local fixture, not debug output.
 		file_put_contents( $path, '<?php define("LINKER_ASSESSMENT_HTTP_FIXTURE", ' . var_export( $secret, true ) . '); require ' . var_export( $source, true ) . ';' );
