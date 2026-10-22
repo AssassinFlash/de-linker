@@ -34,9 +34,10 @@ final class BusinessRecord {
 		return array_merge(
 			$fields,
 			array(
-				self::REQUEST => 'text',
-				self::INPUT   => 'text',
-				self::SUBJECT => 'text',
+				self::REQUEST         => 'text',
+				self::INPUT           => 'text',
+				self::SUBJECT         => 'text',
+				BusinessCapacity::KEY => 'text',
 			)
 		);
 	}

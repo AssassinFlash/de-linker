@@ -40,9 +40,10 @@ final class Queue {
 	 *
 	 * @param WC_Order             $order Inquiry before received status.
 	 * @param array<string, mixed> $context Trusted current source link.
+	 * @param bool                 $notification_fallback Freeze a recovery source even with classification off.
 	 */
-	public static function prepare( WC_Order $order, array $context = array() ): void {
-		if ( ! self::enabled() || $order->get_meta( Reviews::ERASED ) || is_array( $order->get_meta( self::META ) ) ) {
+	public static function prepare( WC_Order $order, array $context = array(), bool $notification_fallback = false ): void {
+		if ( ( ! self::enabled() && ! $notification_fallback ) || $order->get_meta( Reviews::ERASED ) || is_array( $order->get_meta( self::META ) ) ) {
 			return;
 		}
 		$now      = microtime( true );
@@ -64,14 +65,52 @@ final class Queue {
 			$order,
 			self::META,
 			array(
-				'accepted_at'      => $now,
-				'deadline'         => $now + self::WAIT_SECONDS,
-				'snapshot'         => $snapshot,
-				'result'           => Result::unknown( 'pending' ),
-				'notification_job' => 0,
+				'accepted_at'       => $now,
+				'deadline'          => $now + self::WAIT_SECONDS,
+				'snapshot'          => $snapshot,
+				'result'            => Result::unknown( 'pending' ),
+				'notification_job'  => 0,
+				'notification_only' => ! self::enabled(),
 			)
 		);
 		$order->update_meta_data( self::PENDING, 'yes' );
+	}
+
+	/**
+	 * Before first save, replace only the generated summary in the frozen evidence.
+	 * Customer fields, history and account evidence never change during model work.
+	 *
+	 * @param WC_Order $order Unsaved prepared inquiry.
+	 * @param bool     $clock Whether to start the native assessment wait now.
+	 */
+	public static function refresh_summary( WC_Order $order, bool $clock = true ): void {
+		if ( $order->get_id() > 0 ) {
+			return;
+		}
+		$legacy  = $order->get_data_store() instanceof \WC_Data_Store && is_a( $order->get_data_store()->get_current_class_name(), \WC_Order_Data_Store_CPT::class, true );
+		$summary = $order->get_meta( \Linker\Commerce\Inquiry\Sender::SUMMARY_META );
+		$summary = $legacy && is_array( $summary ) ? wp_unslash( $summary ) : $summary;
+		$now     = microtime( true );
+		foreach ( array( self::META, CustomerEvidence::META ) as $key ) {
+			$data = $order->get_meta( $key );
+			if ( ! is_array( $data ) ) {
+				continue;
+			}
+			$data = $legacy ? wp_unslash( $data ) : $data;
+			if ( self::META === $key ) {
+				$data['snapshot']['submission']['summary'] = $summary;
+				if ( $clock ) {
+					$data['accepted_at'] = $now;
+					$data['deadline']    = $now + self::WAIT_SECONDS;
+				}
+			} else {
+				$data['request']['summary'] = $summary;
+				if ( $clock ) {
+					$data['captured_at'] = $now;
+				}
+			}
+			StructuredMeta::update( $order, $key, $data );
+		}
 	}
 
 	/**
@@ -84,7 +123,17 @@ final class Queue {
 			return true;
 		}
 		if ( ! self::enabled() ) {
-			return false;
+			$data = self::data( $order );
+			if ( empty( $data['notification_only'] ) ) {
+				return false;
+			}
+			$data['inline_delivery'] = true;
+			$data['deadline']        = microtime( true ) - 1;
+			StructuredMeta::update( $order, self::META, $data );
+			$order->update_meta_data( self::PENDING, 'yes' );
+			$order->save_meta_data();
+			( new self() )->finish( $order->get_id(), Result::unknown( 'disabled' ) );
+			return true;
 		}
 		self::prepare( $order );
 		$order->save_meta_data();
@@ -138,14 +187,14 @@ final class Queue {
 						}
 						$order->read_meta_data( true );
 						$data = self::data( $order );
-						if ( NotificationHold::held( $order ) || array() === $data || (int) ( $data['notification_job'] ?? 0 ) !== 0 ) {
+						if ( NotificationHold::held( $order ) || array() === $data || ! self::recovery_ready( $order, $data ) || (int) ( $data['notification_job'] ?? 0 ) !== 0 ) {
 							return;
 						}
 						$deadline = (float) $data['deadline'];
 						$now      = microtime( true );
 						$reason   = match ( true ) {
 							$now >= $deadline => 'deadline',
-							! self::enabled() => 'disabled',
+							! empty( $data['notification_only'] ) || ! self::enabled() => 'disabled',
 							! Client::configured() => 'service_unavailable',
 							$now - (float) get_option( self::HEARTBEAT, 0 ) > self::RECOVERY_STALE => 'recovery_unavailable',
 							default => '',
@@ -176,7 +225,7 @@ final class Queue {
 				}
 				$order->read_meta_data( true );
 				$data = self::data( $order );
-				if ( NotificationHold::held( $order ) || array() === $data ) {
+				if ( NotificationHold::held( $order ) || array() === $data || ! self::recovery_ready( $order, $data ) ) {
 					return;
 				}
 				$now                  = microtime( true );
@@ -209,6 +258,28 @@ final class Queue {
 	}
 
 	/**
+	 * A notification-only recovery cannot revive cancelled/unreceived data.
+	 * The frozen native source must still be shaped like a complete submission.
+	 *
+	 * @param WC_Order            $order Fresh native source.
+	 * @param array<string,mixed> $data Existing Queue state.
+	 */
+	private static function recovery_ready( WC_Order $order, array $data ): bool {
+		if ( empty( $data['notification_only'] ) || 0 !== (int) ( $data['notification_job'] ?? 0 ) ) {
+			return true;
+		}
+		$snapshot = $data['snapshot'] ?? null;
+		return $order->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED )
+			&& is_array( $snapshot ) && is_array( $snapshot['submission'] ?? null )
+			&& is_array( $snapshot['products'] ?? null ) && is_array( $snapshot['context'] ?? null )
+			&& is_array( $snapshot['submission']['billing'] ?? null )
+			&& is_string( $snapshot['submission']['message'] ?? null )
+			&& in_array( $snapshot['submission']['source'] ?? '', array( 'contact', 'proforma' ), true )
+			&& is_string( $snapshot['submission']['billing']['email'] ?? null )
+			&& is_email( $snapshot['submission']['billing']['email'] );
+	}
+
+	/**
 	 * Deadline/recovery path never calls a model.
 	 *
 	 * @param int $id Inquiry id.
@@ -220,7 +291,7 @@ final class Queue {
 		}
 		$order->read_meta_data( true );
 		$data = self::data( $order );
-		if ( NotificationHold::held( $order ) || array() === $data ) {
+		if ( NotificationHold::held( $order ) || array() === $data || ! self::recovery_ready( $order, $data ) ) {
 			return;
 		}
 		if ( 0 !== (int) $data['notification_job'] ) {
@@ -251,29 +322,37 @@ final class Queue {
 		if ( ! $email instanceof NewInquiryEmail ) {
 			return;
 		}
-		wc_transaction_query( 'start' );
 		try {
-			$order->update_meta_data( self::META, $data );
+			StructuredMeta::update( $order, self::META, $data );
 			$message = $email->capture( $order );
-			$job     = null === $message ? -1 : ( new JobStore() )->create( $message, $order->get_id() );
-			if ( 0 === $job ) {
+			if ( null === $message ) {
+				// Explicit native disabled/no-recipient policy, not a successful send.
+				$data['notification_job'] = -1;
+				StructuredMeta::update( $order, self::META, $data );
+				$order->update_meta_data( self::PENDING, 'no' );
+				$order->save_meta_data();
+				return;
+			}
+			$job = ( new JobStore() )->create(
+				$message,
+				$order->get_id(),
+				static function ( int $id ) use ( $order, &$data ): void {
+					$data['notification_job'] = $id;
+					StructuredMeta::update( $order, self::META, $data );
+					$order->update_meta_data( self::PENDING, 'yes' );
+					$order->save_meta_data();
+					$order->read_meta_data( true );
+					if ( self::data( $order ) !== $data || 'yes' !== $order->get_meta( self::PENDING ) ) {
+						throw new \RuntimeException( 'assessment_ledger_readback_failed' );
+					}
+				}
+			);
+			if ( $job < 1 ) {
 				throw new \RuntimeException( 'assessment_outbox_write_failed' );
 			}
-			$stored = $job > 0 ? ( new JobStore() )->load( $job ) : null;
-			if ( $job > 0 && ( null === $stored || $stored['message']->to_array() !== $message->to_array() ) ) {
-				throw new \RuntimeException( 'assessment_outbox_readback_failed' );
-			}
-			$data['notification_job'] = $job;
-			$order->update_meta_data( self::META, $data );
-			$order->save_meta_data();
-			$order->read_meta_data( true );
-			if ( self::data( $order ) !== $data ) {
-				throw new \RuntimeException( 'assessment_ledger_readback_failed' );
-			}
-			wc_transaction_query( 'commit' );
 		} catch ( \Throwable $error ) {
-			wc_transaction_query( 'rollback' );
 			$order->read_meta_data( true );
+			\Linker\Commerce\Mail\CapacityHealth::failed();
 			wc_get_logger()->error( 'Inquiry assessment notification could not be queued.', array( 'source' => 'linker-inquiry-assessment' ) );
 			return;
 		}
@@ -292,14 +371,14 @@ final class Queue {
 		}
 		$job = (int) $data['notification_job'];
 		if ( $job > 0 && null !== ( new JobStore() )->load( $job ) && JobStore::FAILED_STATUS !== get_post_status( $job ) ) {
-			if ( function_exists( 'as_has_scheduled_action' ) && as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) ) {
-				return;
-			}
 			if ( ! empty( $data['inline_delivery'] ) ) {
 				/** This action is documented in Mail\Module::register(). */
 				do_action( Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Outbox::HOOK is linker_commerce_mail_attempt.
 				return;
+			}           if ( function_exists( 'as_has_scheduled_action' ) && as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) ) {
+				return;
 			}
+
 			$scheduled = as_enqueue_async_action( Outbox::HOOK, array( $job ), Outbox::GROUP, true );
 			if ( 0 === $scheduled && ! as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) ) {
 				return;
@@ -317,6 +396,8 @@ final class Queue {
 	 * @return int Number of pending inquiries examined.
 	 */
 	public function recover(): int {
+		\Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::recover();
+		\Linker\Commerce\Registration\VatNotice::recover();
 		update_option( self::HEARTBEAT, microtime( true ), false );
 		// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Native Woo pending-only recovery query; supports classic and HPOS storage.
 		$orders = wc_get_orders(

@@ -88,6 +88,78 @@ final class ReviewReminderTest extends IntegrationTestCase {
 		$this->assertCount( 24, json_decode( get_option( ReviewReminder::OPTION ), true )['events'] );
 	}
 	/** Missing or failed aggregate data stays visible in the digest and creates no bogus message. */
+	public function test_reminder_original_job_ack_and_action_roll_back_with_the_outer_owner(): void {
+		global $wpdb;
+		$other   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$summary = new ReviewSummary(
+			static fn (): array => array(
+				'count'  => 1,
+				'oldest' => time() - 60,
+				'url'    => admin_url( 'edit.php?post_type=shop_order' ),
+			)
+		);
+		$wpdb->query( 'START TRANSACTION' );
+		$job = 0;
+		try {
+			( new ReviewReminder( $summary ) )->tick();
+			self::assertTrue( \Linker\Commerce\Mail\Capacity::transaction_active() );
+			$state = json_decode( get_option( ReviewReminder::OPTION ), true );
+			$job   = (int) $state['job'];
+			self::assertGreaterThan( 0, $job );
+			self::assertSame( '1', $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE ID=%d', $wpdb->posts, $job ) ) );
+			self::assertSame( '0', $other->get_var( $other->prepare( 'SELECT COUNT(*) FROM %i WHERE ID=%d', $wpdb->posts, $job ) ) );
+			self::assertNull( $other->get_var( $other->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, ReviewReminder::OPTION ) ) );
+			self::assertCount(
+				1,
+				as_get_scheduled_actions(
+					array(
+						'hook'   => Outbox::HOOK,
+						'args'   => array( $job ),
+						'group'  => Outbox::GROUP,
+						'status' => 'pending',
+					),
+					'ids'
+				)
+			);
+		} finally {
+			$wpdb->query( 'ROLLBACK' );
+			$other->close();
+			clean_post_cache( $job );
+			wp_cache_delete( $job, 'post_meta' );
+			foreach ( array( ReviewReminder::OPTION, \Linker\Commerce\Protection\IntakeStore::OPTION, 'notoptions' ) as $key ) {
+				wp_cache_delete( $key, 'options' ); }
+		}
+		self::assertNull( ( new JobStore() )->load( $job ) );
+		self::assertFalse( get_option( ReviewReminder::OPTION ) );
+		self::assertFalse( as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) );
+	}
+
+	/** An acknowledged native state write must be read back, not inferred from a non-error query. */
+	public function test_reminder_state_write_failure_does_not_leave_a_job_or_recovery_action(): void {
+		global $wpdb;
+		$summary = new ReviewSummary(
+			static fn (): array => array(
+				'count'  => 1,
+				'oldest' => time() - 60,
+				'url'    => admin_url( 'edit.php?post_type=shop_order' ),
+			)
+		);
+		$fail    = static function ( string $sql ): string {
+			return str_starts_with( $sql, 'INSERT INTO' ) && str_contains( $sql, ReviewReminder::OPTION ) ? 'SELECT 0' : $sql;
+		};
+		$before  = self::newest_mail_job();
+		add_filter( 'query', $fail, 998 );
+		try {
+			( new ReviewReminder( $summary ) )->tick(); } finally {
+			remove_filter( 'query', $fail, 998 ); }
+			self::assertSame( $before, self::newest_mail_job() );
+			wp_cache_delete( ReviewReminder::OPTION, 'options' );
+			wp_cache_delete( 'notoptions', 'options' );
+			self::assertFalse( get_option( ReviewReminder::OPTION ) );
+			self::assertFalse( \Linker\Commerce\Mail\Capacity::transaction_active() );
+	}
+
+	/** Missing or failed aggregate data stays visible in the digest and creates no bogus message. */
 	public function test_failed_summary_does_not_mean_zero_or_spend_a_reminder(): void {
 		$summary = new ReviewSummary( static fn () => new \WP_Error( 'fixture', 'Unavailable.' ) );
 		$marker  = self::newest_mail_job();

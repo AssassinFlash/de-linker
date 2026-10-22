@@ -21,8 +21,9 @@ use WP_REST_Request;
  * The two routes a visitor uses on one conversation of the list (ticket
  * #235): DELETE clears it, POST …/email sends it to the visitor's own
  * address. The email goes through the site's real mail chain as far as
- * wp_mail(); the call is recorded there and stopped before the Outbox, so
- * a run writes no mail (AGENTS.md §5, test mail).
+ * wp_mail(); the call is recorded there. Confirmation now proves its real
+ * original Outbox job and ACK; the fixture's full transport quota stops delivery,
+ * while other calls stop before Outbox. No outgoing mail (AGENTS.md §5, test mail).
  *
  * @coversNothing
  */
@@ -81,7 +82,9 @@ final class ConversationRoutesTest extends TestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$this->mail    = array();
+		$this->mail             = array();
+		$this->held['throttle'] = get_option( \Linker\Commerce\Mail\Throttle::OPTION );
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
 		$this->created = array(
 			'posts' => array(),
 			'users' => array(),
@@ -130,10 +133,17 @@ final class ConversationRoutesTest extends TestCase {
 		} else {
 			$_SERVER['REMOTE_ADDR'] = $this->held['limit'];
 		}
+		if ( false === $this->held['throttle'] ) {
+			delete_option( \Linker\Commerce\Mail\Throttle::OPTION );
+		} else {
+			update_option( \Linker\Commerce\Mail\Throttle::OPTION, $this->held['throttle'], false ); }
 		$this->held = array();
 		wp_set_current_user( 0 );
 		$_COOKIE = array();
 		foreach ( $this->created['posts'] as $id ) {
+			if ( \Linker\Commerce\Mail\JobStore::POST_TYPE === get_post_type( $id ) ) {
+				as_unschedule_all_actions( \Linker\Commerce\Mail\Outbox::HOOK, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP );
+			}
 			wp_delete_post( $id, true );
 		}
 		require_once ABSPATH . 'wp-admin/includes/user.php';
@@ -163,9 +173,8 @@ final class ConversationRoutesTest extends TestCase {
 	 *
 	 * @param null|bool $pre Earlier answer.
 	 */
-	public function stop( $pre ): bool {
-		unset( $pre );
-		return true;
+	public function stop( $pre ): ?bool {
+		return \Linker\Commerce\Mail\Prepared::is_preview() ? $pre : true;
 	}
 
 	/**
@@ -221,6 +230,12 @@ final class ConversationRoutesTest extends TestCase {
 
 		$mail = new ConversationMail( new Conversations(), new Thread() );
 		$this->assertSame( 'sent', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
+		$receipt = get_post_meta( $id, ConversationMail::ACCEPTED, true );
+		$this->assertIsArray( $receipt );
+		$this->created['posts'][] = $receipt['job'];
+		$native                   = ( new \Linker\Commerce\Mail\JobStore() )->load( $receipt['job'] );
+		$this->assertNotNull( $native );
+		$this->assertSame( $this->mail[1]['message'], $native['message']->body );
 		$this->assertCount( 2, $this->mail );
 		$this->assertSame( array( 'tester@example.test' ), (array) $this->mail[1]['to'] );
 		$this->assertSame( 'Your conversation with Genie', $this->mail[1]['subject'] );

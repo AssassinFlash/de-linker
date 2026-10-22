@@ -109,7 +109,7 @@ final class FieldsTest extends TestCase {
 	 * name; the address is collected by the Proforma request page, not here.
 	 */
 	public function test_fields(): void {
-		$fields = ( new Fields( new VatProfile( new ViesClient() ) ) )->fields( 'DE' );
+		$fields = ( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->fields( 'DE' );
 
 		$this->assertSame(
 			array( 'billing_company', CustomerRole::META, 'billing_country', Website::META, VatProfile::VAT_META, 'billing_first_name', 'billing_last_name' ),
@@ -146,7 +146,7 @@ final class FieldsTest extends TestCase {
 			)
 		);
 
-		( new Fields( new VatProfile( new ViesClient() ) ) )->render();
+		( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->render();
 
 		$this->assertSame( 'Solarbau GmbH', $rendered['billing_company'] );
 		$this->assertSame( 'DE', $rendered['billing_country'] );
@@ -163,7 +163,7 @@ final class FieldsTest extends TestCase {
 			CustomerRole::META => 'wholesaler',
 			'billing_country'  => 'FR',
 		);
-		$errors = ( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() );
+		$errors = ( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->validate( new WP_Error() );
 
 		foreach ( array( 'billing_company', 'billing_first_name', 'billing_last_name', CustomerRole::META ) as $key ) {
 			$this->assertContains( $key, $errors->get_error_codes(), $key );
@@ -185,18 +185,18 @@ final class FieldsTest extends TestCase {
 			'billing_first_name' => 'Maria',
 			'billing_last_name'  => 'Beispiel',
 		);
-		$fields = new Fields( new VatProfile( new ViesClient() ) );
+		$fields = new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) );
 		$errors = $fields->validate( new WP_Error() );
 		$this->assertContains( 'linker_website_or_vat', $errors->get_error_codes() );
 
 		$_POST[ VatProfile::VAT_META ] = 'DE 143 454 214';
-		$this->assertFalse( ( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() )->has_errors() );
+		$this->assertFalse( ( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->validate( new WP_Error() )->has_errors() );
 
 		$_POST[ Website::META ] = 'not a site';
-		$this->assertContains( Website::META, ( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() )->get_error_codes() );
+		$this->assertContains( Website::META, ( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->validate( new WP_Error() )->get_error_codes() );
 
 		$_POST[ Website::META ] = 'example.com';
-		$this->assertFalse( ( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() )->has_errors() );
+		$this->assertFalse( ( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->validate( new WP_Error() )->has_errors() );
 	}
 
 	/**
@@ -211,7 +211,7 @@ final class FieldsTest extends TestCase {
 			'billing_last_name'  => 'Beispiel',
 			Website::META        => 'example.com',
 		);
-		$errors = ( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() );
+		$errors = ( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->validate( new WP_Error() );
 
 		$this->assertContains( 'billing_country', $errors->get_error_codes() );
 	}
@@ -229,10 +229,10 @@ final class FieldsTest extends TestCase {
 			'billing_first_name' => 'Maria',
 			'billing_last_name'  => 'Beispiel',
 		);
-		$fields = new Fields( new VatProfile( new ViesClient() ) );
+		$fields = new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) );
 
 		$this->assertFalse( $fields->validate( new WP_Error() )->has_errors() );
-		( new Fields( new VatProfile( new ViesClient() ) ) )->save( 7 );
+		( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->save( 7 );
 		$this->assertConditionsMet();
 	}
 
@@ -249,7 +249,7 @@ final class FieldsTest extends TestCase {
 			'billing_first_name' => 'Maria',
 			'billing_last_name'  => 'Beispiel',
 		);
-		( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() );
+		( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->validate( new WP_Error() );
 		$this->assertSame( 1, Fields::active_step() );
 
 		$_POST['billing_company'] = 'Solarbau GmbH';
@@ -257,7 +257,7 @@ final class FieldsTest extends TestCase {
 		$_POST[ VatProfile::VAT_META ] = 'DE 143 454 214';
 		// The step-1 fields are complete now; the page stays on step 2.
 		$_POST['register'] = 'Register';
-		( new Fields( new VatProfile( new ViesClient() ) ) )->validate( new WP_Error() );
+		( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) )->validate( new WP_Error() );
 		$this->assertSame( 2, Fields::active_step() );
 	}
 }

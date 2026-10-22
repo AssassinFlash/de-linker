@@ -13,6 +13,10 @@ use DateTimeImmutable;
 use Linker\Commerce\Account\DocumentDownload;
 use Linker\Commerce\Inquiry\Statuses;
 use Linker\Commerce\Mail\CustomerOrderEmail;
+use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Mail\Prepared;
+use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Proforma\Document;
 use Linker\Commerce\Proforma\Issuer;
 use Linker\Commerce\Vocabulary\LocaleFormat;
@@ -25,18 +29,28 @@ use WC_Order;
  * (docs/specs/11-commerce.md, journey step 5; account-workspace.md §0.2).
  */
 final class ProformaIssuedEmail extends CustomerOrderEmail {
+	/** Short native writer; unit template tests supply an explicit memory callback.
+	 *
+	 * @var \Closure(callable():void):mixed
+	 */
+	private readonly \Closure $write;
 
 	/**
 	 * Email id.
 	 */
-	public const ID = 'linker_proforma_issued';
+	public const ID       = 'linker_proforma_issued';
+	public const PENDING  = Issuer::NOTICE_PENDING_META;
+	public const ACCEPTED = '_linker_proforma_notice_number';
+	public const JOB      = '_linker_proforma_notice_job';
 
 	/**
 	 * Sets up the email.
 	 *
-	 * @param string $plugin_file Absolute path of the main plugin file.
+	 * @param string        $plugin_file Absolute path of the main plugin file.
+	 * @param \Closure|null $write Native transaction, or an explicit unit memory writer.
 	 */
-	public function __construct( string $plugin_file ) {
+	public function __construct( string $plugin_file, ?\Closure $write = null ) {
+		$this->write         = $write ?? static fn ( callable $work ): mixed => \Linker\Commerce\Mail\NativeTransaction::run( $work );
 		$this->id            = self::ID;
 		$this->title         = __( 'Proforma invoice issued', 'linker-commerce' );
 		$this->description   = __( 'Sent to the customer when staff issue the Proforma invoice of an inquiry.', 'linker-commerce' );
@@ -64,16 +78,117 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 	 * @param WC_Order|false|int $order    Order, when the caller has it.
 	 */
 	public function trigger( $order_id, $order = false ): void {
-		$order = $order instanceof WC_Order ? $order : wc_get_order( (int) $order_id );
-		if ( ! $order instanceof WC_Order ) {
+		unset( $order ); // A callback's object may predate another accepted handoff.
+		$job = 0;
+		Lock::run(
+			'release-' . (int) $order_id,
+			function () use ( $order_id, &$job ): void {
+				( $this->write )(
+					function () use ( $order_id, &$job ): void {
+						$order = wc_get_order( (int) $order_id );
+						if ( ! $order instanceof WC_Order ) {
+							return;
+						}
+						$order->read_meta_data( true );
+						$number = (string) $order->get_meta( Issuer::NUMBER_META );
+						if ( ! $order->has_status( Statuses::PROFORMA ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number === $order->get_meta( self::ACCEPTED ) ) {
+							// Retire only a definite terminal/erased/already-ACKed index row.
+							// This does not mark a new message sent or free its original job.
+							if ( 'yes' === $order->get_meta( self::PENDING ) ) {
+								$order->update_meta_data( self::PENDING, 'no' );
+								$order->save_meta_data();
+							}
+							return;
+						}
+						if ( '' === $number ) {
+							return;
+						}
+						$this->placeholders['{proforma_number}'] = $number;
+						$order->update_meta_data( self::PENDING, 'yes' );
+						$order->save_meta_data();
+						$message = Prepared::capture( fn () => parent::trigger( $order_id, $order ) );
+						if ( null === $message ) {
+							// Native disabled/no-recipient policy explicitly skipped this notice.
+							$order->update_meta_data( self::PENDING, 'no' );
+							$order->update_meta_data( self::ACCEPTED, $number );
+							$order->save_meta_data();
+							return;
+						}
+						$job = ( new JobStore() )->create(
+							$message,
+							0,
+							static function ( int $id ) use ( $order, $number ): void {
+								$fresh = wc_get_order( $order->get_id() );
+								if ( ! $fresh instanceof WC_Order ) {
+									throw new \RuntimeException( 'proforma_notice_source_missing' );
+								}
+								$fresh->read_meta_data( true );
+								if ( ! $fresh->has_status( Statuses::PROFORMA ) || $fresh->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number !== $fresh->get_meta( Issuer::NUMBER_META ) || $number === $fresh->get_meta( self::ACCEPTED ) ) {
+									throw new \RuntimeException( 'proforma_notice_source_changed' );
+								}
+								$fresh->update_meta_data( self::PENDING, 'no' );
+								$fresh->update_meta_data( self::ACCEPTED, $number );
+								$fresh->update_meta_data( self::JOB, (string) $id );
+								$fresh->save_meta_data();
+								$fresh->read_meta_data( true );
+								if ( $number !== $fresh->get_meta( self::ACCEPTED ) || $id !== (int) $fresh->get_meta( self::JOB ) || 'no' !== $fresh->get_meta( self::PENDING ) ) {
+									throw new \RuntimeException( 'proforma_notice_readback_failed' );
+								}
+							}
+						);
+					}
+				);
+			}
+		);
+		if ( $job > 0 ) {
+			$deliver = static function () use ( $job ): void {
+				/** This action is documented in Mail\Module::register(). */
+				do_action( Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Existing same-job consumer, outside the source lock and only after committed ownership.
+			};
+			if ( ! \Linker\Commerce\Mail\NativeTransaction::after_commit( $deliver ) && ! \Linker\Commerce\Mail\Capacity::transaction_active() ) {
+				$deliver();
+			}
+		}
+	}
+
+	/** Rebuild only explicitly pending new notices, never historical held jobs. */
+	public static function recover(): void {
+		$emails = WC()->mailer()->get_emails();
+		$email  = $emails[ self::class ] ?? null;
+		if ( ! $email instanceof self ) {
 			return;
 		}
-		$number = (string) $order->get_meta( Issuer::NUMBER_META );
-		if ( '' === $number ) {
-			return;
+		// One critical-pool-sized batch per existing minute recovery heartbeat.
+		$orders = wc_get_orders(
+			array(
+				'limit'      => 64,
+				'status'     => Statuses::PROFORMA,
+				'orderby'    => 'ID',
+				'order'      => 'ASC',
+				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Bounded native pending-only source query.
+					array(
+						'key'   => self::PENDING,
+						'value' => 'yes',
+					),
+					array(
+						'relation' => 'OR',
+						array(
+							'key'     => \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED,
+							'compare' => 'NOT EXISTS',
+						),
+						array(
+							'key'   => \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED,
+							'value' => '',
+						),
+					),
+				),
+			)
+		); // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Native pending source query supports HPOS and classic storage.
+		foreach ( is_array( $orders ) ? $orders : array() as $order ) {
+			if ( $order->has_status( Statuses::PROFORMA ) ) {
+				$email->trigger( $order->get_id(), $order );
+			}
 		}
-		$this->placeholders['{proforma_number}'] = $number;
-		parent::trigger( $order_id, $order );
 	}
 
 	/**

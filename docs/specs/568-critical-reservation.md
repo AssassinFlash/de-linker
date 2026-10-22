@@ -75,6 +75,12 @@ For ordinary calls outside a transaction, Outbox still attempts synchronous
 delivery after durable handoff. The original job is retained for throttled,
 failed or unknown attempts and deleted only after confirmed success.
 
+The unique native Action Scheduler recovery action belongs to the same JobStore
+owner transaction as original job, capacity and source ACK. It is not added only
+after commit: a killed producer between commit and immediate delivery must leave
+the original committed consumer. Only successful deletion of that original job
+cancels its own pending action. Held historical jobs are not armed by import.
+
 If the native producer already has an outer transaction, job, capacity and AS
 action join it; transport is deferred to an independent committed reader.
 Rolling back the outer transaction must remove job, AS action and capacity
@@ -83,6 +89,18 @@ transaction. The local MySQL 8 server does not expose `@@in_transaction`, so
 transaction detection uses a uniquely named SAVEPOINT/RELEASE probe that
 does not commit an existing transaction. Two-connection native tests verify
 visibility and rollback, not merely a mocked transaction variable.
+
+`NativeTransaction` and `ConnectionFence` retain the original mysqli client,
+native thread identity, strict error mode and zero reconnect retries for short
+DB-only writer scopes. WordPress's ordinary reconnect-and-replay behavior cannot
+be used inside them: a successful query on a new autocommit client would not
+preserve atomicity. Cross-hook native reset/registration consumers may retain a
+scope until their final native writer; joined scopes use their own savepoint and
+never commit the caller. Paid summary/VIES/provider HTTP and SMTP are outside the
+shared site mutex. Transport runs only after a confirmed owned commit, or through
+the original AS consumer when a caller-owned transaction must commit separately.
+Native KILL, two-client visibility, outer rollback, unknown commit and producer
+SIGKILL tests prove the real writer boundary.
 
 ## Recovery responsibilities
 
@@ -98,6 +116,11 @@ visibility and rollback, not merely a mocked transaction variable.
   key generation and email consumers; the 20-character alphanumeric native
   key shape has equal encoded size in native reset URLs. Native tests compare
   preview and actual messages and protect the previous key on full capacity.
+  A short original-client transaction begins at the native generated-key hook,
+  before key persistence. Exact server reservation, key mutation, original job
+  and AS commit together. A false Woo handoff cannot follow its otherwise
+  unconditional success redirect: it returns to the native lost-password form
+  with the reviewed unavailable notice and only the username/email retained.
 - Proforma notices use an explicit durable pending marker on their native
   issued order/PDF source. The job and accepted-number marker commit together.
   The existing independent minute recovery retries pending source handoffs,

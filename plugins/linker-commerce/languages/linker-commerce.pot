@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-22T17:34:00+00:00\n"
+"POT-Creation-Date: 2026-10-22T17:41:06+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -846,19 +846,19 @@ msgstr ""
 msgid "Explore with Genie"
 msgstr ""
 
-#: includes/Contact/Form.php:281 includes/Protection/Intake.php:72
+#: includes/Contact/Form.php:282 includes/Protection/Intake.php:73
 msgid ""
 "This request is too large to save for review. Your entries and solution "
 "draft are still here. Please email sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:282 includes/Protection/Intake.php:287
+#: includes/Contact/Form.php:283 includes/Protection/Intake.php:329
 msgid ""
 "Your request has not been saved because the review queue is full. Your "
 "entries are still here. Please try again later or email sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:283 includes/Protection/Intake.php:296
+#: includes/Contact/Form.php:284 includes/Protection/Intake.php:338
 msgid ""
 "This message matches a repeated spam submission. We have not saved a "
 "separate inquiry or sent an email. Your entries are still here. For an "
@@ -866,47 +866,47 @@ msgid ""
 "linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:284
+#: includes/Contact/Form.php:285
 msgid ""
 "Thank you. Your message is with the Linker team. We have not sent a "
 "confirmation email. We reply within one business day."
 msgstr ""
 
-#: includes/Contact/Form.php:285
+#: includes/Contact/Form.php:286
 msgid "Thank you. Your message is with the Linker team."
 msgstr ""
 
-#: includes/Contact/Form.php:286 includes/Inquiry/Form.php:85
-#: includes/Inquiry/Handler.php:51 includes/Protection/Intake.php:68
+#: includes/Contact/Form.php:287 includes/Inquiry/Form.php:85
+#: includes/Inquiry/Handler.php:51 includes/Protection/Intake.php:69
 msgid "Please check your entries and send the form again."
 msgstr ""
 
-#: includes/Contact/Form.php:287 includes/Protection/Intake.php:230
+#: includes/Contact/Form.php:288 includes/Protection/Intake.php:272
 msgid ""
 "The message limit has been reached. Your entries are still here. You can try "
 "again later or email sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:288
+#: includes/Contact/Form.php:289
 msgid ""
 "Verification expired or could not be confirmed. Your entries are still here. "
 "Please try again."
 msgstr ""
 
-#: includes/Contact/Form.php:289
+#: includes/Contact/Form.php:290
 msgid ""
 "Verification is temporarily unavailable. Your entries are still here. Please "
 "try again or email sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:290 includes/Protection/Admission.php:194
-#: includes/Protection/Business.php:93
+#: includes/Contact/Form.php:291 includes/Protection/Admission.php:194
+#: includes/Protection/Business.php:97
 msgid ""
 "The request status could not be confirmed. Please check before sending it "
 "again."
 msgstr ""
 
-#: includes/Contact/Form.php:306
+#: includes/Contact/Form.php:307
 msgid "Send another message"
 msgstr ""
 
@@ -1202,7 +1202,7 @@ msgstr ""
 
 #: includes/Genie/GenieEmail.php:97 includes/Mail/CustomerOrderEmail.php:89
 #: includes/Mail/TeamEmail.php:125
-#: includes/Registration/Emails/CustomerApprovalEmail.php:130
+#: includes/Registration/Emails/CustomerApprovalEmail.php:174
 msgid "HTML"
 msgstr ""
 
@@ -1315,12 +1315,12 @@ msgstr ""
 msgid "No saved inquiry is awaiting staff review."
 msgstr ""
 
-#: includes/Health/ReviewReminder.php:104
+#: includes/Health/ReviewReminder.php:119
 msgid "Saved inquiries need staff review"
 msgstr ""
 
 #. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
-#: includes/Health/ReviewReminder.php:106
+#: includes/Health/ReviewReminder.php:121
 #, php-format
 msgid ""
 "Saved inquiries awaiting staff review: %1$d.\n"
@@ -1882,7 +1882,7 @@ msgstr ""
 
 #: includes/Inquiry/Checkout.php:121
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:35
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:73
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:83
 #: includes/Protection/IntakeAdmin.php:45 includes/Vocabulary/Labels.php:97
 #: includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
@@ -1923,7 +1923,7 @@ msgid "Sent to the customer when an inquiry is received."
 msgstr ""
 
 #. translators: {order_number} is replaced by the inquiry number.
-#: includes/Inquiry/Emails/InquiryReceivedEmail.php:66
+#: includes/Inquiry/Emails/InquiryReceivedEmail.php:76
 msgid "Your inquiry #{order_number} has been received"
 msgstr ""
 
@@ -2112,17 +2112,28 @@ msgstr ""
 msgid "Website"
 msgstr ""
 
-#: includes/Inquiry/Sender.php:83
+#: includes/Inquiry/Sender.php:95
 msgid "Please try sending your inquiry again."
 msgstr ""
 
-#: includes/Inquiry/Sender.php:97
+#: includes/Inquiry/Sender.php:130
 msgid "Please add a product or write a message."
 msgstr ""
 
-#: includes/Inquiry/Sender.php:104 includes/Protection/Business.php:61
+#: includes/Inquiry/Sender.php:137 includes/Protection/Business.php:61
 msgid ""
 "Your solution draft changed. Please review it and send your inquiry again."
+msgstr ""
+
+#: includes/Inquiry/Sender.php:276 includes/Protection/BusinessCapacity.php:167
+#: includes/Protection/BusinessCapacity.php:173
+#: includes/Protection/Intake.php:207 includes/Protection/Intake.php:273
+#: includes/Protection/IntakeStore.php:56
+#: includes/Protection/IntakeStore.php:71
+#: includes/Protection/IntakeStore.php:93
+msgid ""
+"The request status could not be confirmed. Your entries are still here. "
+"Please check before sending a new request."
 msgstr ""
 
 #: includes/Inquiry/Statuses.php:45 includes/Inquiry/Statuses.php:80
@@ -2190,10 +2201,16 @@ msgid "Notification released by staff."
 msgstr ""
 
 #: includes/Mail/NotificationHold.php:180
-#: includes/Protection/IntakeRelease.php:123
+#: includes/Protection/IntakeRelease.php:139
 msgid ""
 "The notification could not be released. Reload the inquiry before trying "
 "again."
+msgstr ""
+
+#: includes/Mail/ResetNotice.php:122 includes/Protection/Accounts.php:407
+msgid ""
+"Password reset is temporarily unavailable. Please try again later or email "
+"sales@de-linker.com."
 msgstr ""
 
 #: includes/Mail/SmtpHealth.php:58
@@ -2555,7 +2572,7 @@ msgid "Account under review"
 msgstr ""
 
 #: includes/Presentation/LoginGate.php:55
-#: includes/Registration/Approval.php:229
+#: includes/Registration/Approval.php:277
 msgid "Restricted"
 msgstr ""
 
@@ -3587,59 +3604,59 @@ msgstr ""
 msgid "Proforma"
 msgstr ""
 
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:41
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:55
 msgid "Proforma invoice issued"
 msgstr ""
 
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:42
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:56
 msgid ""
 "Sent to the customer when staff issue the Proforma invoice of an inquiry."
 msgstr ""
 
 #. translators: {proforma_number}: Proforma number, {order_number}: inquiry number.
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:84
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:199
 msgid "Your Proforma invoice {proforma_number} for inquiry #{order_number}"
 msgstr ""
 
-#: includes/Proforma/Emails/ProformaIssuedEmail.php:91
+#: includes/Proforma/Emails/ProformaIssuedEmail.php:206
 msgid "Your Proforma invoice is ready"
 msgstr ""
 
-#: includes/Proforma/Issuer.php:134
+#: includes/Proforma/Issuer.php:136
 msgid "This inquiry already has a Proforma invoice."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:137
+#: includes/Proforma/Issuer.php:139
 msgid "Only a received inquiry gets a Proforma invoice."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:156
+#: includes/Proforma/Issuer.php:158
 msgid "The inquiry has no products."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:159
+#: includes/Proforma/Issuer.php:161
 msgid "Set a price for every product before issuing the Proforma invoice."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:162
+#: includes/Proforma/Issuer.php:164
 msgid ""
 "Enter the bank account under WooCommerce → Settings → Inquiries before "
 "issuing a Proforma invoice."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:183
+#: includes/Proforma/Issuer.php:185
 msgid ""
 "This inquiry is being issued a Proforma invoice right now; please reload the "
 "page in a moment."
 msgstr ""
 
 #. translators: %s: Proforma number.
-#: includes/Proforma/Issuer.php:218
+#: includes/Proforma/Issuer.php:223
 #, php-format
 msgid "Proforma invoice %s issued."
 msgstr ""
 
-#: includes/Proforma/Issuer.php:233
+#: includes/Proforma/Issuer.php:238
 msgid "No Proforma number could be reserved; please try again."
 msgstr ""
 
@@ -3674,12 +3691,19 @@ msgid ""
 "without an account."
 msgstr ""
 
-#: includes/Protection/Accounts.php:397
+#: includes/Protection/Accounts.php:398
 msgid "Please verify your request and try again."
 msgstr ""
 
 #: includes/Protection/Admission.php:194
 msgid "Your request could not be processed. Please try again."
+msgstr ""
+
+#: includes/Protection/BusinessCapacity.php:413
+msgid ""
+"Your request has not been saved. We cannot accept new requests on this "
+"website right now. Your entries and solution draft are still here. Please "
+"try again later or email sales@de-linker.com."
 msgstr ""
 
 #: includes/Protection/Comments.php:58
@@ -3860,18 +3884,9 @@ msgid ""
 "midnight."
 msgstr ""
 
-#: includes/Protection/Intake.php:80
+#: includes/Protection/Intake.php:87
 msgid ""
 "Your entries changed. Please reload the form before sending a new request."
-msgstr ""
-
-#: includes/Protection/Intake.php:180 includes/Protection/Intake.php:231
-#: includes/Protection/IntakeStore.php:56
-#: includes/Protection/IntakeStore.php:71
-#: includes/Protection/IntakeStore.php:93
-msgid ""
-"The request status could not be confirmed. Your entries are still here. "
-"Please check before sending a new request."
 msgstr ""
 
 #. translators: %d is the number of complete inquiries awaiting staff review.
@@ -3942,11 +3957,11 @@ msgstr ""
 msgid "Enable this rule"
 msgstr ""
 
-#: includes/Protection/IntakeRelease.php:82
+#: includes/Protection/IntakeRelease.php:98
 msgid "Review completed by staff; one internal notification queued."
 msgstr ""
 
-#: includes/Protection/Module.php:121
+#: includes/Protection/Module.php:123
 msgid "This verification request is too large. Please try again."
 msgstr ""
 
@@ -4080,27 +4095,27 @@ msgstr ""
 msgid "All accounts"
 msgstr ""
 
-#: includes/Registration/Approval.php:101
+#: includes/Registration/Approval.php:116
 msgid "The username or the password is not correct."
 msgstr ""
 
-#: includes/Registration/Approval.php:227
+#: includes/Registration/Approval.php:275
 msgid "Pending review"
 msgstr ""
 
-#: includes/Registration/Approval.php:228
+#: includes/Registration/Approval.php:276
 msgid "Approved"
 msgstr ""
 
-#: includes/Registration/Approval.php:230
+#: includes/Registration/Approval.php:278
 msgid "Rejected"
 msgstr ""
 
-#: includes/Registration/Approval.php:232
+#: includes/Registration/Approval.php:280
 msgid "No decision yet"
 msgstr ""
 
-#: includes/Registration/Approval.php:248
+#: includes/Registration/Approval.php:296
 msgid ""
 "This account is not approved for sign-in. We have emailed you the reason. "
 "Write to sales@de-linker.com and we will look at it again."
@@ -4248,19 +4263,19 @@ msgstr ""
 msgid "Access limited"
 msgstr ""
 
-#: includes/Registration/Emails/VatReviewEmail.php:46
-#: includes/Registration/Emails/VatReviewEmail.php:86
+#: includes/Registration/Emails/VatReviewEmail.php:47
+#: includes/Registration/Emails/VatReviewEmail.php:96
 msgid "VAT check changed"
 msgstr ""
 
-#: includes/Registration/Emails/VatReviewEmail.php:47
+#: includes/Registration/Emails/VatReviewEmail.php:48
 msgid ""
 "Sent to the internal notification address, with blind copies, when the VIES "
 "verdict of a customer changes."
 msgstr ""
 
 #. translators: {company}: the customer's company.
-#: includes/Registration/Emails/VatReviewEmail.php:79
+#: includes/Registration/Emails/VatReviewEmail.php:89
 msgid "VAT check changed: {company}"
 msgstr ""
 
@@ -4451,23 +4466,23 @@ msgstr ""
 msgid "Registration notification data could not be read. Please try again."
 msgstr ""
 
-#: includes/Registration/VatProfile.php:128
+#: includes/Registration/VatProfile.php:120
 msgid "Valid (VIES)"
 msgstr ""
 
-#: includes/Registration/VatProfile.php:129
+#: includes/Registration/VatProfile.php:121
 msgid "Not valid according to VIES – review"
 msgstr ""
 
-#: includes/Registration/VatProfile.php:130
+#: includes/Registration/VatProfile.php:122
 msgid "Not checked (VIES unavailable or not an EU VAT ID) – review"
 msgstr ""
 
-#: includes/Registration/VatProfile.php:131
+#: includes/Registration/VatProfile.php:123
 msgid "No VAT ID given"
 msgstr ""
 
-#: includes/Registration/VatProfile.php:133
+#: includes/Registration/VatProfile.php:125
 msgid "Not checked yet"
 msgstr ""
 

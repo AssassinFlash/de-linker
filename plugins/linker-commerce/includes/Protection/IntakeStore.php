@@ -178,9 +178,10 @@ final class IntakeStore {
 					static function ( array &$state ) use ( $order ): array {
 						$order->read_meta_data( true );
 						$request = $order->get_meta( BusinessRecord::REQUEST );
-						if ( ! \Linker\Commerce\Mail\BudgetTransaction::begin() ) {
+						if ( \Linker\Commerce\Mail\Capacity::transaction_active() ) {
 							throw new \RuntimeException( 'intake_erasure_transaction_unavailable' );
 						}
+						$transaction = new \Linker\Commerce\Mail\NativeTransaction();
 						try {
 							$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' );
 							$order->delete_meta_data( Intake::META );
@@ -198,10 +199,10 @@ final class IntakeStore {
 							self::save( $state );
 							// Native erasure continues outside these locks. Its durable
 							// tombstone already prevents any later notification capture.
-							wc_transaction_query( 'commit' );
+							$transaction->commit();
 							return array();
 						} catch ( \Throwable $error ) {
-							wc_transaction_query( 'rollback' );
+							$transaction->rollback();
 							throw $error;
 						}
 					}

@@ -43,7 +43,7 @@ final class Admin {
 		NotificationHoldView::render( $order );
 		EvidenceView::render( $order );
 		$data = Queue::data( $order );
-		if ( array() === $data ) {
+		if ( array() === $data || ! empty( $data['notification_only'] ) ) {
 			echo '<p>' . esc_html__( 'No assessment was requested.', 'linker-commerce' ) . '</p>';
 			return;
 		}

@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Private fixture configuration is restored, never production.
+
 // phpcs:disable WordPress.Security.NonceVerification -- Fixture snapshots and posted data are intentionally sent to the actual native nonce/proof validators.
 // phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv -- Isolated private env fixtures are restored in cleanup.
 
@@ -37,6 +39,12 @@ use WP_Error;
  * @coversNothing
  */
 final class BusinessAdmissionTest extends IntegrationTestCase {
+	/** The native key row was written before the next native profile callback.
+	 *
+	 * @var bool
+	 */
+	private bool $reset_key_written = false;
+
 
 	/**
 	 * Private fixtures never use live keys or send customer mail.
@@ -47,6 +55,18 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$old    = get_option( Ledger::OPTION );
 		$review = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
 		delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		// These proof/receipt cases need available normal reception, independently
+		// of the loaded snapshot's history. The capacity/disposition suites exercise
+		// native history debt; do not delete that history to make this fixture pass.
+		$this->assertIsArray(
+			\Linker\Commerce\Protection\IntakeStore::edit(
+				static function ( array &$state ): array {
+					$state['business'] = array();
+					\Linker\Commerce\Protection\IntakeStore::save( $state );
+					return array();
+				}
+			)
+		);
 		delete_option( Ledger::OPTION );
 		$cookie                      = $_COOKIE; // phpcs:ignore WordPress.Security.NonceVerification -- Restore the fixture request.
 		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'b', 32 );
@@ -123,6 +143,109 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 				putenv( false === $old ? 'LINKER_BUSINESS_VERIFICATION' : 'LINKER_BUSINESS_VERIFICATION=' . $old );
 			}
 		);
+	}
+
+	/** A refused browser submission retains only an explicitly checked prior consent. */
+	public function test_native_inquiry_flash_preserves_checked_consent_without_checking_fresh_visitors(): void {
+		foreach ( array( null, '1', '0', 'unexpected' ) as $previous ) {
+			WC()->session->set( 'linker_inquiry_fields', null === $previous ? null : array( 'consent' => $previous ) );
+			$html   = ( new \Linker\Commerce\Inquiry\Form() )->render();
+			$dom    = new \DOMDocument();
+			$errors = libxml_use_internal_errors( true );
+			$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $html );
+			libxml_clear_errors();
+			libxml_use_internal_errors( $errors );
+			$inputs = ( new \DOMXPath( $dom ) )->query( '//input[@name="consent"]' );
+			self::assertInstanceOf( \DOMNodeList::class, $inputs );
+			$input = $inputs->item( 0 );
+			self::assertInstanceOf( \DOMElement::class, $input );
+			self::assertTrue( $input->hasAttribute( 'required' ) );
+			self::assertSame( '1' === $previous, $input->hasAttribute( 'checked' ), 'Only this browser\'s confirmed previous choice is restored.' );
+		}
+	}
+
+	/** Real verified contact/inquiry consumers share site use despite rotated cheap identities. */
+	public function test_rotated_verified_native_writers_share_sixteen_slots_and_keep_staff_reserve(): void {
+		$option = \Linker\Commerce\Inquiry\Assessment\Queue::ENABLED;
+		$old    = get_option( $option );
+		update_option( $option, 'no' );
+		$this->later(
+			static function () use ( $option, $old ): void {
+				if ( false === $old ) {
+					delete_option( $option );
+				} else {
+					update_option( $option, $old, false );
+				} }
+		);
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
+		unset( $_COOKIE[ \Linker\Tools\Genie\Conversations::COOKIE ], $_COOKIE[ \Linker\Tools\Genie\Conversations::BROWSER_COOKIE ] );
+		$http    = 0;
+		$observe = static function () use ( &$http ): WP_Error {
+			++$http;
+			return new WP_Error( 'synthetic_no_network' );
+		};
+		add_filter( 'pre_http_request', $observe, 1 );
+		$this->later(
+			static function () use ( $observe ): void {
+				remove_filter( 'pre_http_request', $observe, 1 );
+			}
+		);
+		// Isolate this throughput fixture from the imported snapshot's historical
+		// persistent debt; history/migration has its own exact-snapshot rehearsal.
+		\Linker\Commerce\Protection\IntakeStore::edit(
+			static function ( array &$state ): array {
+				$state['business']              = array();
+				$state['business_dispositions'] = array();
+				\Linker\Commerce\Protection\IntakeStore::save( $state );
+				return array();
+			}
+		);
+		for ( $i = 0; $i < 17; ++$i ) {
+			$_SERVER['REMOTE_ADDR']      = '192.0.2.' . ( 10 + $i );
+			$_COOKIE[ Identity::COOKIE ] = md5( 'synthetic-native-568-' . $i );
+			$action                      = 0 === $i % 2 ? 'contact' : 'inquiry';
+			$post                        = $this->post( $action );
+			$post['email']               = 'synthetic-' . $i . '@installer-' . $i . '.example.test';
+			$post['message']             = 'Synthetic legitimate product request number ' . $i . '.';
+			$jobs                        = self::newest_mail_job();
+			$result                      = 'contact' === $action ? ( new ContactHandler() )->process( $post ) : ( new Handler() )->process( $post );
+			$orders                      = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+			self::assertIsArray( $orders );
+			if ( $i < 16 ) {
+				self::assertCount( 1, $orders, $action . ' native attempt ' . $i . ': ' . (string) wp_json_encode( $result ) );
+				$order = $orders[0];
+				$this->later(
+					static function () use ( $order ): void {
+						$order->delete( true );
+					}
+				);
+				self::assertSame( Statuses::RECEIVED, $order->get_status() );
+				self::assertFalse( (bool) $order->get_meta( \Linker\Commerce\Protection\Intake::META ), 'Valid proof uses normal acceptance, not a review shortcut.' );
+				self::assertSame( $post['message'], $order->get_customer_note() );
+			} else {
+				self::assertSame( 'throttled', $result );
+				self::assertSame( array(), $orders );
+				self::assertSame( $jobs, self::newest_mail_job() );
+			}
+		}
+		self::assertSame( 0, $http, 'No model/VIES/siteverify work is hidden in the last native refusal.' );
+		$customer = $this->customer();
+		update_user_meta( $customer->get_id(), \Linker\Commerce\Registration\Approval::CHANGED_BY_META, 1 );
+		update_user_meta( $customer->get_id(), \Linker\Commerce\Registration\Approval::CHANGED_AT_META, time() );
+		$this->as_user( $customer->get_id() );
+		self::assertTrue( \Linker\Commerce\Protection\TrustedCustomer::current() );
+		$post = $this->post( 'contact' );
+		self::assertContains( ( new ContactHandler() )->process( $post ), array( 'sent', 'sent_no_receipt' ) );
+		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+		self::assertIsArray( $orders );
+		self::assertCount( 1, $orders );
+		$order = $orders[0];
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		self::assertSame( Statuses::RECEIVED, $order->get_status() );
 	}
 
 	/** Both actual business writers remain idempotent without any widget/key. */
@@ -460,6 +583,236 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		$this->assertInstanceOf( \WP_User::class, $loaded );
 		$this->assertNotSame( $before, $loaded->user_activation_key );
 		$this->assertFalse( \WC_Shortcode_My_Account::retrieve_password(), 'Repeated UUID cannot generate another reset key/email.' );
+	}
+
+	/** A full critical queue refuses both native reset paths before changing keys. */
+	public function test_full_critical_notification_capacity_stops_native_reset_before_key_creation(): void {
+		$customer = $this->customer();
+		$user     = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( \WP_User::class, $user );
+		$before   = $user->user_activation_key;
+		$old_post = $_POST;
+		$this->later(
+			static function () use ( $old_post ): void {
+				$_POST = $old_post;
+			}
+		);
+		$this->assertIsArray( \Linker\Commerce\Mail\Capacity::reserve_critical( 'synthetic-full-reset-' . self::tag(), 64, 1 ) );
+		$marker = self::newest_mail_job();
+		$budget = get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
+		foreach ( array( 'woo', 'core' ) as $native ) {
+			$_POST = array_merge(
+				$this->post( 'password_reset' ),
+				array(
+					'user_login'                  => $user->user_email,
+					'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
+				)
+			);
+			if ( 'woo' === $native ) {
+				$this->assertFalse( \WC_Shortcode_My_Account::retrieve_password() );
+			} else {
+				$result = retrieve_password( $user->user_email );
+				$this->assertInstanceOf( WP_Error::class, $result );
+				$this->assertSame( 'linker_reset_capacity', $result->get_error_code() );
+			}
+			$fresh = get_userdata( $user->ID );
+			$this->assertInstanceOf( \WP_User::class, $fresh );
+			$this->assertSame( $before, $fresh->user_activation_key );
+		}
+		$this->assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ), 'Template preview spends no transport budget.' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
+	}
+
+	/**
+	 * Real native key writes cannot reconnect/replay or leave a partial reset.
+	 *
+	 * @testWith ["woo", false]
+	 *           ["woo", true]
+	 *           ["core", false]
+	 *           ["core", true]
+	 * @param string $native Actual native consumer.
+	 * @param bool   $partial Kill after the key UPDATE, before profile/audit completion.
+	 */
+	public function test_real_reset_connection_loss_preserves_original_key_and_has_no_job( string $native, bool $partial ): void {
+		global $wpdb;
+		$customer = $this->customer();
+		$user     = get_userdata( $customer->get_id() );
+		self::assertInstanceOf( \WP_User::class, $user );
+		$old_key  = $user->user_activation_key;
+		$old_post = $_POST;
+		$this->later(
+			static function () use ( $old_post ): void {
+				$_POST = $old_post;
+			}
+		);
+		$_POST   = array_merge(
+			$this->post( 'password_reset' ),
+			array(
+				'user_login'                  => $user->user_email,
+				'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
+			)
+		);
+		$other   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$marker  = self::newest_mail_job();
+		$killed  = false;
+		$written = function ( int $id ) use ( $user ): void {
+			if ( $id === $user->ID ) {
+				$this->reset_key_written = true;
+			} };
+		$kill    = function ( string $sql ) use ( $other, $partial, &$killed ): string {
+			global $wpdb;
+			$target = $partial ? ( $this->reset_key_written && str_contains( $sql, Ledger::OPTION ) ) : ( str_contains( $sql, $wpdb->users ) && str_contains( $sql, 'user_activation_key' ) );
+			if ( ! $killed && $target && str_starts_with( ltrim( $sql ), 'UPDATE' ) ) {
+				$killed = true;
+				$other->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+			}
+			return $sql;
+		};
+		add_action( 'profile_update', $written, PHP_INT_MIN );
+		add_filter( 'query', $kill, 999 );
+		try {
+			'woo' === $native ? \WC_Shortcode_My_Account::retrieve_password() : retrieve_password( $user->user_email );
+		} catch ( \mysqli_sql_exception $error ) {
+			self::assertContains( $error->getCode(), array( 2006, 2013 ) );
+		} finally {
+			remove_action( 'profile_update', $written, PHP_INT_MIN );
+			remove_filter( 'query', $kill, 999 );
+		}
+		self::assertTrue( $killed );
+		$scope = \Linker\Commerce\Mail\ResetNotice::scope( $user->ID );
+		self::assertIsArray( $scope );
+		self::assertFalse( \Linker\Commerce\Mail\ResetNotice::finish( $scope['key'], false ) );
+		self::assertTrue( hash_equals( $old_key, (string) $other->get_var( $wpdb->prepare( 'SELECT user_activation_key FROM %i WHERE ID=%d', $wpdb->users, $user->ID ) ) ) );
+		self::assertTrue( $wpdb->db_connect( false ) );
+		clean_user_cache( $user->ID );
+		self::assertSame( $marker, self::newest_mail_job() );
+		wp_cache_delete( \Linker\Commerce\Protection\IntakeStore::OPTION, 'options' );
+		$state = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		self::assertSame( 1, $state['mail_capacity']['reservations'][ $scope['key'] ]['remaining'], 'Unknown original native writes do not refund reserved mail space.' );
+		$other->close();
+	}
+
+	/**
+	 * A failed actual handoff restores the old key and Woo cannot show a sent redirect.
+	 *
+	 * @testWith ["woo"]
+	 *           ["core"]
+	 * @param string $native Existing native reset consumer.
+	 */
+	public function test_native_reset_handoff_failure_restores_key_and_preserves_retry_input( string $native ): void {
+		$customer = $this->customer();
+		$user     = get_userdata( $customer->get_id() );
+		self::assertInstanceOf( \WP_User::class, $user );
+		$old_key  = $user->user_activation_key;
+		$old_post = $_POST;
+		$this->later(
+			static function () use ( $old_post ): void {
+				$_POST = $old_post;
+				wc_clear_notices();
+			}
+		);
+		$_POST      = array_merge(
+			$this->post( 'password_reset' ),
+			array(
+				'user_login'                  => $user->user_email,
+				'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
+			)
+		);
+		$marker     = self::newest_mail_job();
+		$budget     = get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
+		$fail       = static fn ( $pre, $id, $key ) => '_linker_mail_message' === $key ? false : $pre;
+		$redirected = '';
+		$redirect   = static function ( string $url, int $status ) use ( &$redirected ): string {
+			self::assertSame( 303, $status );
+			$redirected = $url;
+			if ( '' !== $url ) {
+				throw new \RuntimeException( 'fixture_native_reset_redirect' );
+			}
+			return $url;
+		};
+		add_filter( 'add_post_metadata', $fail, 10, 3 );
+		add_filter( 'wp_redirect', $redirect, 10, 2 );
+		try {
+			$result = 'woo' === $native ? \WC_Shortcode_My_Account::retrieve_password() : retrieve_password( $user->user_email );
+		} catch ( \RuntimeException $error ) {
+			self::assertSame( 'fixture_native_reset_redirect', $error->getMessage() );
+			$result = false;
+		} finally {
+			remove_filter( 'add_post_metadata', $fail, 10 );
+			remove_filter( 'wp_redirect', $redirect, 10 );
+		}
+		if ( 'woo' === $native ) {
+			self::assertFalse( $result );
+			self::assertSame( wc_lostpassword_url(), $redirected );
+			self::assertStringNotContainsString( 'reset-link-sent', $redirected );
+			self::assertTrue( wc_has_notice( __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ), 'error' ) );
+		} else {
+			self::assertInstanceOf( WP_Error::class, $result );
+			self::assertSame( 'retrieve_password_email_failure', $result->get_error_code() );
+			self::assertSame( '', $redirected );
+		}
+		clean_user_cache( $user->ID );
+		$current = get_userdata( $user->ID );
+		self::assertInstanceOf( \WP_User::class, $current );
+		self::assertTrue( hash_equals( $old_key, $current->user_activation_key ) );
+		self::assertSame( $marker, self::newest_mail_job() );
+		self::assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		self::assertFalse( \Linker\Commerce\Mail\Capacity::transaction_active() );
+		ob_start();
+		wc_get_template( 'myaccount/form-lost-password.php' );
+		$html     = (string) ob_get_clean();
+		$fields   = new \WP_HTML_Tag_Processor( $html );
+		$restored = null;
+		while ( $fields->next_tag( array( 'tag_name' => 'INPUT' ) ) ) {
+			if ( 'user_login' === $fields->get_attribute( 'name' ) ) {
+				$restored = $fields->get_attribute( 'value' );
+				break;
+			}
+		}
+		self::assertSame( $user->user_email, $restored );
+	}
+
+	/** Actual EN/DE native reset jobs fit the exact configured-template reservation.
+	 *
+	 * @testWith ["woo", "en_US"]
+	 *           ["woo", "de_DE_formal"]
+	 *           ["core", "en_US"]
+	 *           ["core", "de_DE_formal"]
+	 * @param string $native Original native reset consumer.
+	 * @param string $locale Native account language.
+	 */
+	public function test_actual_native_reset_job_fits_its_complete_preview_envelope( string $native, string $locale ): void {
+		$customer = $this->customer();
+		update_user_meta( $customer->get_id(), 'locale', $locale );
+		$user = get_userdata( $customer->get_id() );
+		$this->assertInstanceOf( \WP_User::class, $user );
+		$old_post = $_POST;
+		$this->later(
+			static function () use ( $old_post ): void {
+				$_POST = $old_post;
+			}
+		);
+		$_POST = array_merge(
+			$this->post( 'password_reset' ),
+			array(
+				'user_login'                  => $user->user_email,
+				'linker_password_reset_nonce' => wp_create_nonce( 'linker_password_reset' ),
+			)
+		);
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
+		$marker = self::newest_mail_job();
+		$result = 'woo' === $native ? \WC_Shortcode_My_Account::retrieve_password() : retrieve_password( $user->user_email );
+		$this->assertTrue( $result );
+		$jobs = self::mail_jobs_after( $marker );
+		$this->assertCount( 1, $jobs );
+		$job = ( new \Linker\Commerce\Mail\JobStore() )->load( $jobs[0] );
+		$this->assertNotNull( $job );
+		$this->assertTrue( $job['message']->critical );
+		$scope = \Linker\Commerce\Mail\ResetNotice::scope( $user->ID );
+		$this->assertIsArray( $scope );
+		$entry = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION )['mail_capacity']['reservations'][ $scope['key'] ];
+		$this->assertSame( 0, $entry['remaining'] );
+		$this->assertLessThanOrEqual( $entry['max_bytes'], strlen( (string) wp_json_encode( $job['message']->to_array() ) ) );
 	}
 
 	/**

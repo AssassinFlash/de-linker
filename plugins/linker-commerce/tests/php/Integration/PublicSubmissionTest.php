@@ -20,6 +20,18 @@ use WC_Order;
  * @coversNothing
  */
 final class PublicSubmissionTest extends IntegrationTestCase {
+	/** This existing connection/receipt fixture drives the immediate notice path. */
+	protected function setUp(): void {
+		parent::setUp();
+		$before = get_option( \Linker\Commerce\Inquiry\Assessment\Queue::ENABLED );
+		update_option( \Linker\Commerce\Inquiry\Assessment\Queue::ENABLED, 'no' );
+		$this->later(
+			static function () use ( $before ): void {
+				false === $before ? delete_option( \Linker\Commerce\Inquiry\Assessment\Queue::ENABLED ) : update_option( \Linker\Commerce\Inquiry\Assessment\Queue::ENABLED, $before, false );
+			}
+		);
+	}
+
 
 	/**
 	 * Round-one decision: three accepted messages per connection per hour,
@@ -155,6 +167,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$before = self::newest_mail_job();
 		for ( $i = 0; $i < 10; ++$i ) {
 			$order = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+			$this->assertInstanceOf( \WC_Order::class, $order );
 			$this->assertSame( '', $order->get_billing_first_name(), 'A hand-off name is optional.' );
 			$this->later(
 				static function () use ( $order ): void {
@@ -240,6 +253,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$this->assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
 		$marker = self::newest_mail_job();
 		$order  = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+		$this->assertInstanceOf( \WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
 				$order->delete( true );

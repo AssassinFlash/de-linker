@@ -98,7 +98,7 @@ final class NewCustomerEmailTest extends TestCase {
 	 * The email with the same field reader the accounts page uses.
 	 */
 	private static function email(): NewCustomerEmail {
-		return new NewCustomerEmail( '/plugin/linker-commerce.php', new Options(), new RegistrationInformation( new Fields( new VatProfile( new ViesClient() ) ) ) );
+		return new NewCustomerEmail( '/plugin/linker-commerce.php', new Options(), new RegistrationInformation( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) ) );
 	}
 
 	/**
