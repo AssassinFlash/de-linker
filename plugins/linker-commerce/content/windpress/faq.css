@@ -275,6 +275,15 @@
 	#linker-faq-page .linker-library-hero { padding-top: 24px; }
 	#linker-faq-page .linker-library-title { font-size: 32px; }
 	#linker-faq-page .linker-library-search { height: 52px; }
+	/* Keep the localized count out of the input row. Its existing 28px line
+	 * has the existing 8px gap above and below (28 + 8 + 8 = 44px).
+	 * The suggestion box still starts below the unchanged 52px search row. */
+	#linker-faq-page.is-enhanced .linker-library-searchbox { margin-bottom: 44px; }
+	#linker-faq-page .linker-library-count { position: absolute; top: calc(100% + 8px); right: 0; padding: 0; background: transparent; color: var(--ll-muted); }
+	/* The wrapper already spaces the icon and text. The clear target matches
+	 * the library's existing 44px pager and Genie controls. */
+	#linker-faq-page .linker-library-search .linker-library-q { padding-inline: 0; }
+	#linker-faq-page .linker-library-clear { width: 44px; height: 44px; }
 	#linker-faq-page .linker-library-tab { padding-inline: 12px; }
 	#linker-faq-page .linker-library-suggest { max-height: 46vh; }
 }
