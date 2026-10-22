@@ -1,0 +1,14 @@
+{
+  "startUrls": [
+    {
+      "url": "https://codeload.github.com/Institute-for-Future-Intelligence/aladdin/zip/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 1,
+  "saveContentTypes": "application/zip, application/octet-stream",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 1,
+  "maxRequestRetries": 1
+}

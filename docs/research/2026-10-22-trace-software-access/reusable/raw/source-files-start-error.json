@@ -1,0 +1,5 @@
+{
+  "httpStatus": 403,
+  "type": "full-permission-actor-not-approved",
+  "message": "This Actor requires full access to your account. You must approve its permissions before running it: https://console.apify.com/actors/YrQuEkowkNCLdk4j2?approvePermissions=true"
+}

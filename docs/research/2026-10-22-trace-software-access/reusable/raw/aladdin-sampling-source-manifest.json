@@ -1,0 +1,106 @@
+[
+  {
+    "repositoryPath": "src/analysis/solarPanelSimulation.tsx",
+    "file": "aladdin-source-src__analysis__solarPanelSimulation.tsx",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 52087,
+    "sha256": "d734be994a8eb4b36484abf660eb5d015de7dcc5c678e9661e3261bb951407e9"
+  },
+  {
+    "repositoryPath": "src/panels/yearlyPvYieldPanel.tsx",
+    "file": "aladdin-source-src__panels__yearlyPvYieldPanel.tsx",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 23058,
+    "sha256": "686d5f61a31e319c01470af4b1cdefc393b0bca56e585c7918fc53762c2c77c4"
+  },
+  {
+    "repositoryPath": "src/stores/commonData.ts",
+    "file": "aladdin-source-src__stores__commonData.ts",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 18878,
+    "sha256": "38c2505e9b4c8f242b156e9d3e4178c55fcf9835207bbb8e0f4370b5aea15c50"
+  },
+  {
+    "repositoryPath": "src/analysis/analysisConstants.ts",
+    "file": "aladdin-source-src__analysis__analysisConstants.ts",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 1408,
+    "sha256": "7726663dc8c30e1d61a8661985f3156def61cf2e59f99df7f39306b1c02f367d"
+  },
+  {
+    "repositoryPath": "src/stores/DefaultWorldModel.ts",
+    "file": "aladdin-source-src__stores__DefaultWorldModel.ts",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 8470,
+    "sha256": "4f5dbbd8f9dc91a35b44e8863096f0b514cb9777323f38bbdd85aeb45731fcdf"
+  },
+  {
+    "repositoryPath": "src/components/mainMenu/simulationSamplingDaysSelect.tsx",
+    "file": "aladdin-source-src__components__mainMenu__simulationSamplingDaysSelect.tsx",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 3260,
+    "sha256": "c2e17c1ef679a5e873a39715d60b5fdd8c8054f4dd5e3944dc189289860fe692"
+  },
+  {
+    "repositoryPath": "src/hooks.tsx",
+    "file": "aladdin-source-src__hooks.tsx",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 651,
+    "sha256": "016624a50cc4290de7596a3d8ba267de0fff1ba26fd8df276e336c9d1d96a4c4"
+  },
+  {
+    "repositoryPath": "src/models/WeatherModel.ts",
+    "file": "aladdin-source-src__models__WeatherModel.ts",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 296,
+    "sha256": "603fdd7f3f9776e270209f78b72dfdeac81eecc288803be884b8b87bcf52b8d1"
+  },
+  {
+    "repositoryPath": "src/stores/common.ts",
+    "file": "aladdin-source-src__stores__common.ts",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 239576,
+    "sha256": "643876d22b5be499479372216c0413a0efff699facfafe87da94f72f379db428"
+  },
+  {
+    "repositoryPath": "src/resources/weather.csv",
+    "file": "aladdin-source-src__resources__weather.csv",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 294335,
+    "sha256": "fa5acd81329387e657dfde22c3b042bb80e34d709436cf7addab607588133f03"
+  },
+  {
+    "repositoryPath": "src/analysis/sunTools.ts",
+    "file": "aladdin-source-src__analysis__sunTools.ts",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 5503,
+    "sha256": "12bf371a745008cb2d99d1cbe0bd3d745591c8746f53a80b09fda6520a755bf3"
+  },
+  {
+    "repositoryPath": "src/helpers.tsx",
+    "file": "aladdin-source-src__helpers.tsx",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 5754,
+    "sha256": "b953b4211ccc8229797a435eea22389a6398f1290cbd2c1ebb87ab9ca8fb963c"
+  },
+  {
+    "repositoryPath": "src/contentUtil.ts",
+    "file": "aladdin-source-src__contentUtil.ts",
+    "sourceArchiveSha256": "1441ac0f978a12d2930d390e22c195b338f35cb64bb8005e3aacd6f437bfb40a",
+    "commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "bytes": 90177,
+    "sha256": "ff359075acc1a519654096847c3c23267b198ba7d3216a7780924f84d4cb0aa8"
+  }
+]

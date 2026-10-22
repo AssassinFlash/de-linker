@@ -1,0 +1,32 @@
+{
+  "startUrls": [
+    {
+      "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/package.json"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/README.md"
+    },
+    {
+      "url": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/git/trees/master?recursive=1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE"
+    }
+  ],
+  "pageFunction": "async function pageFunction(context) { const {request,$} = context; const text = context.body ? context.body.toString('utf8') : $.root().text(); if(request.url.includes('/git/trees/')) { const obj = JSON.parse(text); return {url:request.url,loadedUrl:request.loadedUrl,sha:obj.sha,truncated:obj.truncated,tree:obj.tree.filter(x => /(^package.json$|^LICENSE|^README|example|model|store|menu|import|export|file|solar)/i.test(x.path))}; } return {url:request.url,loadedUrl:request.loadedUrl,body:text}; }",
+  "additionalMimeTypes": [
+    "text/plain",
+    "application/json"
+  ],
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  },
+  "linkSelector": "",
+  "maxPagesPerCrawl": 5,
+  "maxConcurrency": 2,
+  "maxRequestRetries": 1,
+  "respectRobotsTxtFile": true
+}

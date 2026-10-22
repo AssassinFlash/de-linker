@@ -1,0 +1,29 @@
+{
+  "startUrls": [
+    {
+      "url": "https://intofuture.org/aladdin-pv.html"
+    },
+    {
+      "url": "https://institute-for-future-intelligence.github.io/aladdin/"
+    },
+    {
+      "url": "https://samrepo.nlr.gov/help/file_menu.html"
+    },
+    {
+      "url": "https://samrepo.nlr.gov/help/pv_shading.html"
+    },
+    {
+      "url": "https://developers.opensolar.com/"
+    },
+    {
+      "url": "https://developers.opensolar.com/reference/"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 6,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

@@ -1,0 +1,212 @@
+[
+  {
+    "sourceUrl": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+    "file": "access-01.md",
+    "runId": "TSqrgbdkMiwgZPxhN",
+    "datasetId": "beOYff462OPhW18IS",
+    "sha256": "43e2ec9c6c3b7323f4ed1e574229211f3f7396f06b53da8be564c04fbd893765",
+    "capturedTextCharacters": 7378,
+    "title": "archelios PRO - Solar PV Design Software - Trace Software",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://www.archelios.com/help/help_template.php",
+    "file": "access-02.md",
+    "runId": "TSqrgbdkMiwgZPxhN",
+    "datasetId": "beOYff462OPhW18IS",
+    "sha256": "d8636e3aa2207fbff120a47ebba942e81df8d13b557512792bf2f0efb4a8b1ce",
+    "capturedTextCharacters": 137,
+    "title": "Archelios F.A.Q.",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://www.3e.eu/resources/news/trace-software-partnership-3e-solar-irradiation-data-compatible-with-archelios-pro",
+    "file": "access-03.md",
+    "runId": "TSqrgbdkMiwgZPxhN",
+    "datasetId": "beOYff462OPhW18IS",
+    "sha256": "0ae2dfcb8b72c0d015ce37e0658dfb7da65b4bd7cd0fd609ae638c42230cf587",
+    "capturedTextCharacters": 3696,
+    "title": "3E and Trace Software partnership: 3E Solar Irradiation Data now compatible with archelios™ PRO",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://sam.nlr.gov/download.html",
+    "file": "access-04.md",
+    "runId": "TSqrgbdkMiwgZPxhN",
+    "datasetId": "beOYff462OPhW18IS",
+    "sha256": "f8b9e30625ca2dc13be1044e9db7703581b423593b8f9a138e356d2e40d9d90f",
+    "capturedTextCharacters": 1494,
+    "title": "Download - System Advisor Model - SAM",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://sam.nlr.gov/sam-open-source.html",
+    "file": "access-05.md",
+    "runId": "TSqrgbdkMiwgZPxhN",
+    "datasetId": "beOYff462OPhW18IS",
+    "sha256": "d4cb5af92ecfe4710d6d886de26a33da5eeec04b97fc4b896e34bda40c8a8caf",
+    "capturedTextCharacters": 4133,
+    "title": "SAM Open Source - System Advisor Model - SAM",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+    "file": "access-06.md",
+    "runId": "TSqrgbdkMiwgZPxhN",
+    "datasetId": "beOYff462OPhW18IS",
+    "sha256": "c5a4823fbf082e478e82e1494ddfffd332f110afd41dbaa7f427cad4d7a20744",
+    "capturedTextCharacters": 301,
+    "title": "archelios PRO: a new version focused on reliability, bankability and automation - Trace Software",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://github.com/NREL/SAM",
+    "file": "access-07.md",
+    "runId": "TSqrgbdkMiwgZPxhN",
+    "datasetId": "beOYff462OPhW18IS",
+    "sha256": "aa24816551923dd3622700187f29ea6a6bff452372ca8e1443ed81f546f27082",
+    "capturedTextCharacters": 5273,
+    "title": "GitHub - NatLabRockies/SAM: System Advisor Model (SAM) · GitHub",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://intofuture.org/aladdin.html",
+    "file": "platform-01.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "3be117c950c352f1de5f7e4b36e0e71807d5d1da70e65a270a75f1fc55a4f40a",
+    "capturedTextCharacters": 8650,
+    "title": "Aladdin — Institute for Future Intelligence",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin",
+    "file": "platform-02.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "6e971d442df1deac7b8ed69829451a43391204fd6f9ba260190f2dc89cced7be",
+    "capturedTextCharacters": 832,
+    "title": "GitHub - Institute-for-Future-Intelligence/aladdin: A Design Platform Powered by AI · GitHub",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/master/LICENSE",
+    "file": "platform-03.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "421cb13b4cd76475a41b15f4b25b4c5b555e62fb494e4d57a08ebead94254cc8",
+    "capturedTextCharacters": 280,
+    "title": "aladdin/LICENSE at master · Institute-for-Future-Intelligence/aladdin · GitHub",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions",
+    "file": "platform-04.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "11eb77d4a74c4185755116d459a86259611e3824ece8e268c77c1e1433816fdd",
+    "capturedTextCharacters": 19059,
+    "title": "Mac Build Instructions · NatLabRockies/SAM Wiki · GitHub",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://sam.nlr.gov/software-development-kit-sdk.html",
+    "file": "platform-05.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "5a413ae2c00c48c2bece8e982ae7e137e9f723567e830e3aee4bdafd38b4d8ab",
+    "capturedTextCharacters": 9295,
+    "title": "Software Development Kit (SDK) - System Advisor Model - SAM",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://github.com/NatLabRockies/SAM/blob/develop/LICENSE",
+    "file": "platform-06.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "62609ce1c17a4e94ee1662245d34ebfd9f50c7d6209792315913bc65c78bd544",
+    "capturedTextCharacters": 230,
+    "title": "SAM/LICENSE at develop · NatLabRockies/SAM · GitHub",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://sam.nlr.gov/download/system-requirements.html",
+    "file": "platform-07.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "8a1266b07e616f5ca25d6183cd106a3d011331417d41c33a352065e36180e34f",
+    "capturedTextCharacters": 495,
+    "title": "Error: 404",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://samrepo.nlr.gov/help/case_menu.html",
+    "file": "platform-08.md",
+    "runId": "8d3GJKBUzh7ue93yQ",
+    "datasetId": "VDg6Z46Toy1ES4fcf",
+    "sha256": "8f9feaaaace3dbf8af05eeb345db593a4de48ae075f22d896118a44d1bb4c998",
+    "capturedTextCharacters": 1910,
+    "title": "Case Menu",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://institute-for-future-intelligence.github.io/aladdin/",
+    "file": "interface-01.md",
+    "runId": "2Y6847qWlofLCZKWB",
+    "datasetId": "ngYoaD7tkVI3mCo9W",
+    "sha256": "5ecf4af6e3affe7dbc004f5343ba4d6580030fe07385e865f7753be253c00c85",
+    "capturedTextCharacters": 207,
+    "title": "Aladdin",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://intofuture.org/aladdin-pv.html",
+    "file": "interface-02.md",
+    "runId": "2Y6847qWlofLCZKWB",
+    "datasetId": "ngYoaD7tkVI3mCo9W",
+    "sha256": "5d23e61e8fac5bf751d0e5fcbaa74564c5da7194202f4a10aaac5769b68ef0e7",
+    "capturedTextCharacters": 1549,
+    "title": "Photovoltaic Solar Power — Institute for Future Intelligence",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://samrepo.nlr.gov/help/pv_shading.html",
+    "file": "interface-03.md",
+    "runId": "2Y6847qWlofLCZKWB",
+    "datasetId": "ngYoaD7tkVI3mCo9W",
+    "sha256": "a9c963d1e3981e4418be51f76e9ab73c9768024c7bde27ee1582115430d24bd2",
+    "capturedTextCharacters": 5069,
+    "title": "Shading and Layout",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://samrepo.nlr.gov/help/file_menu.html",
+    "file": "interface-04.md",
+    "runId": "2Y6847qWlofLCZKWB",
+    "datasetId": "ngYoaD7tkVI3mCo9W",
+    "sha256": "9cedd17e7a92078b58128b2bf93ff694e27a9a750600f2dcb18f6ca5f56622e3",
+    "capturedTextCharacters": 1679,
+    "title": "File Menu",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://developers.opensolar.com/",
+    "file": "interface-05.md",
+    "runId": "2Y6847qWlofLCZKWB",
+    "datasetId": "ngYoaD7tkVI3mCo9W",
+    "sha256": "e87511b3e76e63de1e24c5bdd2847f207a08092df056f2c9718ff73153c2d460",
+    "capturedTextCharacters": 1466,
+    "title": "Developer Documentation | OpenSolar",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  },
+  {
+    "sourceUrl": "https://developers.opensolar.com/reference/",
+    "file": "interface-06.md",
+    "runId": "2Y6847qWlofLCZKWB",
+    "datasetId": "ngYoaD7tkVI3mCo9W",
+    "sha256": "88d7a240e417539abca235dfe9c4f0f135f1782bab9a1bdd9697b045e08adffb",
+    "capturedTextCharacters": 261,
+    "title": "404 Not Found",
+    "scope": "web-page capture; see README for complete-body vs framework/404 distinction"
+  }
+]

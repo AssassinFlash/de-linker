@@ -1,0 +1,13 @@
+{
+  "jsonFilesParsed": 43,
+  "missingRelativeLinks": [],
+  "fileOrArchiveHashMismatches": [],
+  "sameBytesExampleAliases": 4,
+  "sensitiveCredentialOrSignedLinkFiles": [],
+  "sourceArchiveTrackedBlobVerification": {
+    "files": 1168,
+    "mismatches": [],
+    "missing": []
+  },
+  "verificationType": "artifact integrity and arithmetic only; no app installation or model validation"
+}

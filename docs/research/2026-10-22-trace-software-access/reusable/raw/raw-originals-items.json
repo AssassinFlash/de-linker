@@ -1,0 +1,121 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE",
+    "crawl": {
+      "loadedUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE",
+      "loadedTime": "2026-10-22T12:20:32.923Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 659,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "html": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "LICENSE"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-2b13fc1-LICENSE"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/package.json",
+    "crawl": {
+      "loadedUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/package.json",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/package.json",
+      "loadedTime": "2026-10-22T12:20:54.130Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 1274,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "html": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/package.json",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "package.json"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-b9b8a57-package.json"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/README.md",
+    "crawl": {
+      "loadedUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/README.md",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/README.md",
+      "loadedTime": "2026-10-22T12:21:17.621Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 522,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "html": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/README.md",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "README.md"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-58b3213-README.md"
+  },
+  {
+    "url": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/git/trees/master?recursive=1",
+    "crawl": {
+      "loadedUrl": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/git/trees/master?recursive=1",
+      "depth": 0,
+      "referrerUrl": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/git/trees/master?recursive=1",
+      "loadedTime": "2026-10-22T12:21:39.321Z",
+      "httpStatusCode": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    "html": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/git/trees/master?recursive=1",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "master?recursive=1"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-b79df16-master"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE",
+    "crawl": {
+      "loadedUrl": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE",
+      "depth": 0,
+      "referrerUrl": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE",
+      "loadedTime": "2026-10-22T12:22:02.122Z",
+      "httpStatusCode": 200,
+      "contentLengthBytes": 830,
+      "contentType": "text/plain; charset=utf-8"
+    },
+    "html": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "LICENSE"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-3cfb3f2-LICENSE"
+  }
+]

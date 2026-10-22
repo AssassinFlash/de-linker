@@ -1,0 +1,9 @@
+{
+  "id": "ux9vrhe2vntSLTReO",
+  "status": "SUCCEEDED",
+  "defaultDatasetId": "fUPxz2TXEsQ4c1gwu",
+  "startedAt": "2026-10-22T12:12:22.785Z",
+  "finishedAt": "2026-10-22T12:12:57.284Z",
+  "usageTotalUsd": 0.009049999999999999,
+  "statusMessage": "Processed 3 queries on 3 pages. Extracted: 27 organicResults, 32 relatedQueries, 3 aiOverviews, 3 itemsPushed"
+}

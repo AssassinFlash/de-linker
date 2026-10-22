@@ -1,0 +1,119 @@
+[
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/examples/rooftop_solar_panels.json",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/examples/rooftop_solar_panels.json",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-9100b10-rooftop_solar_panels.json",
+    "repositoryPath": "src/examples/rooftop_solar_panels.json",
+    "file": "aladdin-example-rooftop_solar_panels.json",
+    "bytes": 10500,
+    "sha256": "41cc3b8409231642eb8e3fbc13058a9494b6367ee64730b8f849904b073e4956",
+    "gitBlobSha": "ff914724c8a765a61a9c31b5863ecdc9cf7a6a8e",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/commits/master",
+    "file": "aladdin-commit-metadata.json",
+    "sha": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "treeSha": "d955264bb16cad159a290a510999f2d0300abc03",
+    "htmlUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin/commit/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "commitTime": "2026-04-28T16:27:36Z",
+    "originalResponseSha256": "9e21f73af717484368b5a12a274447285d67fdb458c27c0160f906dcc6ad09d4"
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/examples/solar_panel_array_auto_layout.json",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/examples/solar_panel_array_auto_layout.json",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-a678684-solar_panel_array_auto_layout.json",
+    "repositoryPath": "src/examples/solar_panel_array_auto_layout.json",
+    "file": "aladdin-example-solar_panel_array_auto_layout.json",
+    "bytes": 26838,
+    "sha256": "f1692704d3193e0b0350de13d6dfeffe772c0e6a806617406b9a4c477c123f79",
+    "gitBlobSha": "1d8a2155ef4dc1dd83fd31579497d062e8eede0e",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/examples/inter_row_spacing.json",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/examples/inter_row_spacing.json",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-5057f43-inter_row_spacing.json",
+    "repositoryPath": "src/examples/inter_row_spacing.json",
+    "file": "aladdin-example-inter_row_spacing.json",
+    "bytes": 6677,
+    "sha256": "92836bbf1b378614d6890945315caf7593dbbdb43da3efa447f40b3abb10cd62",
+    "gitBlobSha": "150cab62e6f4ebc382cbaa9c41944f38b4b85f63",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/examples/home_solar_energy_storage.json",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/examples/home_solar_energy_storage.json",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-d71ad85-home_solar_energy_storage.json",
+    "repositoryPath": "src/examples/home_solar_energy_storage.json",
+    "file": "aladdin-example-home_solar_energy_storage.json",
+    "bytes": 8549,
+    "sha256": "1674d3da8fc9013a77f742af0551b7e1f6a8ffafc5da7b31408325884b804a51",
+    "gitBlobSha": "c04c345f826c277ba19725006aefe79d51257a4e",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/localFileManager.tsx",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/localFileManager.tsx",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-1e32e5e-localFileManager.tsx",
+    "repositoryPath": "src/localFileManager.tsx",
+    "file": "aladdin-source-src__localFileManager.tsx",
+    "bytes": 9069,
+    "sha256": "8070a59869b227729581be58dcf8f958ef37ec6718f775f4d3997a635a21fc5d",
+    "gitBlobSha": "b0a8c49dc7f76e3df10e9a5477995cfeda62a7b0",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/components/mainMenu/fileMenu.tsx",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/components/mainMenu/fileMenu.tsx",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-b4475d2-fileMenu.tsx",
+    "repositoryPath": "src/components/mainMenu/fileMenu.tsx",
+    "file": "aladdin-source-src__components__mainMenu__fileMenu.tsx",
+    "bytes": 6370,
+    "sha256": "0c4c6d6e5bb7e6aeb94dd412c09acb9c1c5ef7b15644e12e959c279a6f67a14b",
+    "gitBlobSha": "f5cea34fcaa01d88a604c320aaf84eaebdab2b00",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/examples.ts",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/examples.ts",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-fa0a59f-examples.ts",
+    "repositoryPath": "src/examples.ts",
+    "file": "aladdin-source-src__examples.ts",
+    "bytes": 20514,
+    "sha256": "8b856181f8fc7c0c4ee8d9ad611a639e62d52e1260f3a95318c574bc2a665b55",
+    "gitBlobSha": "5709bb0ff96da49837b6d025e05f2b7ae6e92880",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/vite.config.ts",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/vite.config.ts",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-b677ce1-vite.config.ts",
+    "repositoryPath": "vite.config.ts",
+    "file": "aladdin-source-vite.config.ts",
+    "bytes": 438,
+    "sha256": "0d498013022277f2159c4af5b6614dff74e3e18664de134d67e7b1a5b5e6fe85",
+    "gitBlobSha": "6f6f316daa915806b0a8c6eb1a49b0f00d31f29c",
+    "matchesCapturedTree": true
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/src/constants.ts",
+    "fixedSourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa/src/constants.ts",
+    "captureRun": "c6RiUeByI2TyysGsP",
+    "keyValueRecord": "/v2/key-value-stores/pK71rA7xKRcHeNjoR/records/file-214bc69-constants.ts",
+    "repositoryPath": "src/constants.ts",
+    "file": "aladdin-source-src__constants.ts",
+    "bytes": 23015,
+    "sha256": "70b3bd7acc8808cc37d2fd4ae7d7167f53b9fbf31dc96fcda839a6186d6438a6",
+    "gitBlobSha": "ce04438b88d7a53cdb4f1c3f4a2466a3ac8be06f",
+    "matchesCapturedTree": true
+  }
+]

@@ -1,0 +1,601 @@
+[
+  {
+    "url": "https://intofuture.org/aladdin.html",
+    "crawl": {
+      "loadedUrl": "https://intofuture.org/aladdin.html",
+      "loadedTime": "2026-10-22T12:15:35.292Z",
+      "referrerUrl": "https://intofuture.org/aladdin.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 6124,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://intofuture.org/aladdin.html",
+      "title": "Aladdin — Institute for Future Intelligence",
+      "description": "Aladdin — an AI-enhanced CAD/CAE platform for reimagining engineering design in civil and energy engineering.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "alt-svc": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400",
+        "cache-control": "public, max-age=300, must-revalidate",
+        "content-encoding": "br",
+        "content-length": "6124",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:15:35 GMT",
+        "etag": "\"af08591fa684bec5a08d23968fe8f3c9c6aab4d7fc6060fdfb94bcc4c79a9b71-br\"",
+        "last-modified": "Mon, 19 Oct 2026 23:53:29 GMT",
+        "strict-transport-security": "max-age=31556926",
+        "vary": "x-fh-requested-host, accept-encoding",
+        "x-cache": "MISS",
+        "x-cache-hits": "0",
+        "x-served-by": "cache-yyz-cyyz770053-YYZ",
+        "x-timer": "S1792671335.072015,VS0,VE140"
+      }
+    },
+    "text": "Aladdin — Institute for Future Intelligence\nWhat is Aladdin\nArtificial intelligence is changing the way people think and work. As a manifestation of human ingenuity, design is a vital testbed for studying how we may meet the opportunities and challenges posed by AI. Based on the fusion of CAD, CAE, and LLM, Aladdin is an experimental platform for engineering design in the AI era, with a current focus on energy and civil engineering. a \nLive model — view fullscreen. The Golden Gate Bridge. \nDesign, simulation, and analysis\nAladdin is an integrated CAD/CAE platform that lets you design a structure and simulate its function within a single system. This eliminates complicated toolchains needed in traditional engineering design software and reduces the difficulty of implementing automatic design with AI. \nBuilding design\nA building can be drawn wall by wall, or stated parametrically — a footprint, a height, a storey count, a window-to-wall ratio for each facade — so that a whole block can be massed in minutes and still be handed to the same thermal engine as a hand-drawn house. Simulations are driven by real weather: an hourly typical meteorological year for the site, so a design is tested against the climate it will actually stand in. \nComputational building-energy analysis with Aladdin (see more information). \nAccuracy matters more than appearance in a tool meant for engineering, so Aladdin's building-energy simulation is checked against the ASHRAE BESTEST benchmarks, the standard suite of test cases for validating building-energy software. \nSolar power\nPhotovoltaic arrays can be laid out on roofs, facades, and open ground, with real module specifications, trackers that follow the sun, and bifacial panels that harvest the light reflected off the ground beneath them. Concentrated solar power is here as well — heliostat fields around a power tower, parabolic troughs and dishes, and linear Fresnel reflectors — and each is simulated with the same solar-radiation engine that shades a window or heats a wall. \nPhotovoltaic solar design with Aladdin (see more examples). \nWind power\nA wind farm can be built from real machines or from imagined ones. Every turbine carries a power curve — the relationship between wind speed and electric output — which may be the manufacturer's, read straight off a datasheet by Aladdin, or one you invent for a rotor that does not exist yet. The wind itself comes from the site's typical meteorological year: an hourly record of speed and direction, gathered into a wind rose that shows where the year's energy actually blows from. \nYield is computed turbine by turbine across the year, with wakes accounted for — a rotor standing downstream of another meets slower air and earns less — so the farm's capacity factor depends on how the machines are arranged and not merely on how many there are. The terrain counts too: elevation data is fetched for the site, so the turbines stand on the real hills rather than on a flat abstraction of them. \nThe wind rose of a site, drawn from hourly weather records (see the power in the hills). \nA wind farm is more than its yield, however, and Aladdin also maps what the neighbors will ask about: the noise it radiates and the shadow flicker its blades cast. And the layout itself can be searched rather than guessed — a genetic algorithm moves the turbines within the site boundary, weighing wake losses against the wind resource until it finds an arrangement that harvests more than the one you drew by hand. \nBridge design\nA bridge is assembled as a three-dimensional frame of deck, towers, cables, and piers, and solved with finite element analysis. A static analysis reports the deflection under dead and traffic loads, the axial force and bending moment in every member, and how close each member runs to its capacity. A modal analysis extracts the natural frequencies and mode shapes — the ways the structure prefers to move. \nThe vibration modes of a bridge (see the bridge that bends). \nFrom there the questions get harder. A seismic analysis shakes the structure, either against a design response spectrum or with a recorded ground motion such as El Centro. A wind analysis hunts for the speed at which the deck starts to shed vortices or to flutter — the mechanism that tore down the Tacoma Narrows Bridge. And a pushover analysis raises the load until members yield one after another and the structure comes down, a collapse you can replay to see which member went first. An optimizer can then search the design space for the cheapest structure that still keeps deflection and member utilization inside their limits. \nArtificial intelligence\nAladdin's intelligence comes in two forms: an assistant that designs alongside you, and an evolutionary search that designs on its own. \nThe AI assistant\nAll of this is also available to an AI assistant that lives inside the application and works the software the way a person does. Ask it for a house with dormers and a front porch and it builds the thing element by element while you watch. Ask what the house would cost to heat and it runs the simulation and reads the answer back. Ask it to align the dormer ridges with the roof, to add a chimney, to tilt the panels toward the winter sun, to test the bridge in an earthquake, or to optimize the wind farm's layout, and it reaches for the same tools you would. \nIt is not a chatbot bolted to the side of the program. It reads the live scene — including the change you just made by hand — and when a question is better answered by showing than by telling, it can open the very dialog you would have opened yourself, which makes it a tutor as much as a builder. Its purpose is not to take the design away from the designer but to remove the tedium between having an idea and seeing whether it works. \nArchitectural design with Aladdin (see more examples). \nGenerative design\nAladdin's other AI capability is agentic generative design, a tabula rasa methodology inspired by biological evolution. Once the design criteria and constraints of a product are specified, generative design uses evolutionary computation to efficiently explore the entire parameter space supported by the software to find optimal solutions. \nDuring the iterative search, the software automatically constructs a vast number of forms at each step, tests their functions with numerical simulations, evaluates their quality against the given criteria, and selects those closer to the goal for the next step. By repeating these routines many times, a variety of designs that meet the goal gradually emerge. Engineers then review these outputs — often with the aid of interactive visual analytics for intuitive evaluation and comparison — and choose one or more for prototyping. This paradigm shift entails a fundamental change of mindset for design thinking that must be addressed in the engineering education of the future workforce. \nHow to cite Aladdin\nCharles Xie, Xiaotong Ding, & Rundong Jiang, Using Computer Graphics to Make Science Visible in Engineering Education, IEEE Computer Graphics and Applications, 43(5), 99–106, 2023. DOI:10.1109/MCG.2023.3298386",
+    "html": null,
+    "markdown": "# Aladdin — Institute for Future Intelligence\n\n## What is Aladdin\n\nArtificial intelligence is changing the way people think and work. As a manifestation of human ingenuity, design is a vital testbed for studying how we may meet the opportunities and challenges posed by AI. Based on the fusion of [CAD](https://en.wikipedia.org/wiki/Computer-aided_design), [CAE](https://en.wikipedia.org/wiki/Computer-aided_engineering), and [LLM](https://en.wikipedia.org/wiki/Large_language_model), Aladdin is an experimental platform for engineering design in the AI era, with a current focus on energy and civil engineering. a\n\nLive model — [view fullscreen](https://intofuture.org/aladdin.html#). The Golden Gate Bridge.\n\n## Design, simulation, and analysis\n\nAladdin is an integrated CAD/CAE platform that lets you design a structure and simulate its function _within a single system_. This eliminates complicated [toolchains](https://en.wikipedia.org/wiki/Toolchain) needed in traditional engineering design software and reduces the difficulty of implementing automatic design with AI.\n\n### Building design\n\nA building can be drawn wall by wall, or stated _parametrically_ — a footprint, a height, a storey count, a window-to-wall ratio for each facade — so that a whole block can be massed in minutes and still be handed to the same thermal engine as a hand-drawn house. Simulations are driven by real weather: an hourly [typical meteorological year](https://en.wikipedia.org/wiki/Typical_meteorological_year) for the site, so a design is tested against the climate it will actually stand in.\n\n![Computational building-energy analysis with Aladdin](https://intofuture.org/image/aladdin-four-season-heatmap.png)\n\nComputational building-energy analysis with Aladdin (see [more information](https://intofuture.org/aladdin-building-energy-2.html)).\n\nAccuracy matters more than appearance in a tool meant for engineering, so Aladdin's building-energy simulation is checked against the [ASHRAE BESTEST benchmarks](https://intofuture.org/aladdin-bestest-validation.html), the standard suite of test cases for validating building-energy software.\n\n### Solar power\n\nPhotovoltaic arrays can be laid out on roofs, facades, and open ground, with real module specifications, trackers that follow the sun, and bifacial panels that harvest the light reflected off the ground beneath them. [Concentrated solar power](https://en.wikipedia.org/wiki/Concentrated_solar_power) is here as well — heliostat fields around a power tower, parabolic troughs and dishes, and linear Fresnel reflectors — and each is simulated with the same solar-radiation engine that shades a window or heats a wall.\n\n![Photovoltaic solar design with Aladdin](https://intofuture.org/image/aladdin-pv-design.png)\n\nPhotovoltaic solar design with Aladdin (see [more examples](https://intofuture.org/aladdin-pv.html)).\n\n### Wind power\n\nA wind farm can be built from real machines or from imagined ones. Every turbine carries a _power curve_ — the relationship between wind speed and electric output — which may be the manufacturer's, read straight off a datasheet by Aladdin, or one you invent for a rotor that does not exist yet. The wind itself comes from the site's typical meteorological year: an hourly record of speed and direction, gathered into a wind rose that shows where the year's energy actually blows from.\n\nYield is computed turbine by turbine across the year, with wakes accounted for — a rotor standing downstream of another meets slower air and earns less — so the farm's capacity factor depends on how the machines are arranged and not merely on how many there are. The terrain counts too: elevation data is fetched for the site, so the turbines stand on the real hills rather than on a flat abstraction of them.\n\n![Wind rose for a wind farm site in Aladdin](https://intofuture.org/image/aladdin-wind-turbines-on-hills-windrose.png)\n\nThe wind rose of a site, drawn from hourly weather records (see [the power in the hills](https://intofuture.org/aladdin-wind-turbines-on-hills.html)).\n\nA wind farm is more than its yield, however, and Aladdin also maps what the neighbors will ask about: the noise it radiates and the shadow flicker its blades cast. And the layout itself can be searched rather than guessed — a genetic algorithm moves the turbines within the site boundary, weighing wake losses against the wind resource until it finds an arrangement that harvests more than the one you drew by hand.\n\n### Bridge design\n\nA bridge is assembled as a three-dimensional frame of deck, towers, cables, and piers, and solved with [finite element analysis](https://en.wikipedia.org/wiki/Finite_element_method). A static analysis reports the deflection under dead and traffic loads, the axial force and bending moment in every member, and how close each member runs to its capacity. A modal analysis extracts the natural frequencies and mode shapes — the ways the structure prefers to move.\n\n![Vibration modes of a bridge computed in Aladdin](https://intofuture.org/image/aladdin-bridge-design-modes.gif)\n\nThe vibration modes of a bridge (see [the bridge that bends](https://intofuture.org/aladdin-bridge-design.html)).\n\nFrom there the questions get harder. A seismic analysis shakes the structure, either against a design response spectrum or with a recorded ground motion such as El Centro. A wind analysis hunts for the speed at which the deck starts to shed vortices or to flutter — the mechanism that tore down the Tacoma Narrows Bridge. And a pushover analysis raises the load until members yield one after another and the structure comes down, a collapse you can replay to see which member went first. An optimizer can then search the design space for the cheapest structure that still keeps deflection and member utilization inside their limits.\n\n## Artificial intelligence\n\nAladdin's intelligence comes in two forms: an assistant that designs alongside you, and an evolutionary search that designs on its own.\n\n### The AI assistant\n\nAll of this is also available to an AI assistant that lives inside the application and works the software the way a person does. Ask it for a house with dormers and a front porch and it builds the thing element by element while you watch. Ask what the house would cost to heat and it runs the simulation and reads the answer back. Ask it to align the dormer ridges with the roof, to add a chimney, to tilt the panels toward the winter sun, to test the bridge in an earthquake, or to optimize the wind farm's layout, and it reaches for the same tools you would.\n\nIt is not a chatbot bolted to the side of the program. It reads the live scene — including the change you just made by hand — and when a question is better answered by showing than by telling, it can open the very dialog you would have opened yourself, which makes it a tutor as much as a builder. Its purpose is not to take the design away from the designer but to remove the tedium between having an idea and seeing whether it works.\n\n![Architectural design with Aladdin](https://intofuture.org/image/aladdin-building-design.png)\n\nArchitectural design with Aladdin (see [more examples](https://intofuture.org/aladdin-building-energy.html)).\n\n### Generative design\n\nAladdin's other AI capability is agentic generative design, a _tabula rasa_ methodology inspired by biological evolution. Once the design criteria and constraints of a product are specified, generative design uses evolutionary computation to efficiently explore the entire parameter space supported by the software to find optimal solutions.\n\nDuring the iterative search, the software automatically constructs a vast number of forms at each step, tests their functions with numerical simulations, evaluates their quality against the given criteria, and selects those closer to the goal for the next step. By repeating these routines many times, a variety of designs that meet the goal gradually emerge. Engineers then review these outputs — often with the aid of [interactive visual analytics](https://intofuture.org/aladdin-generative-design-1.html) for intuitive evaluation and comparison — and choose one or more for prototyping. This paradigm shift entails a fundamental change of mindset for [design thinking](https://en.wikipedia.org/wiki/Design_thinking) that must be addressed in the engineering education of the future workforce.\n\n## How to cite Aladdin\n\nCharles Xie, Xiaotong Ding, & Rundong Jiang, [Using Computer Graphics to Make Science Visible in Engineering Education](https://ieeexplore.ieee.org/document/10251686), _IEEE Computer Graphics and Applications_, 43(5), 99–106, 2023. DOI:10.1109/MCG.2023.3298386"
+  },
+  {
+    "url": "https://github.com/Institute-for-Future-Intelligence/aladdin",
+    "crawl": {
+      "loadedUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin",
+      "loadedTime": "2026-10-22T12:15:35.568Z",
+      "referrerUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 297470,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin",
+      "title": "GitHub - Institute-for-Future-Intelligence/aladdin: A Design Platform Powered by AI · GitHub",
+      "description": "A Design Platform Powered by AI. Contribute to Institute-for-Future-Intelligence/aladdin development by creating an account on GitHub.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://opengraph.githubassets.com/f5afef5b58235f3f310cdd32a572eaeab8fc0584065fed3b961d9af3d3f1f1c8/Institute-for-Future-Intelligence/aladdin"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "A Design Platform Powered by AI. Contribute to Institute-for-Future-Intelligence/aladdin development by creating an account on GitHub."
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "600"
+        },
+        {
+          "property": "og:site_name",
+          "content": "GitHub"
+        },
+        {
+          "property": "og:type",
+          "content": "object"
+        },
+        {
+          "property": "og:title",
+          "content": "GitHub - Institute-for-Future-Intelligence/aladdin: A Design Platform Powered by AI"
+        },
+        {
+          "property": "og:url",
+          "content": "https://github.com/Institute-for-Future-Intelligence/aladdin"
+        },
+        {
+          "property": "og:description",
+          "content": "A Design Platform Powered by AI. Contribute to Institute-for-Future-Intelligence/aladdin development by creating an account on GitHub."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "cache-control": "max-age=0, private, must-revalidate",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'none'; base-uri 'self'; child-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/; connect-src 'self' uploads.github.com www.githubstatus.com collector.github.com raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com wss://production-copilot-host.webpubsub.azure.com wss://production-copilot-host-centralus.webpubsub.azure.com wss://production-copilot-host-centralus-02.webpubsub.azure.com wss://production-copilot-host-westus.webpubsub.azure.com api.github.com/cmc_internal/api/; font-src github.githubassets.com; form-action 'self' github.com gist.github.com copilot-workspace.githubnext.com objects-origin.githubusercontent.com; frame-ancestors 'none'; frame-src viewscreen.githubusercontent.com notebooks.githubusercontent.com; img-src 'self' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com secured-user-images.githubusercontent.com user-images.githubusercontent.com private-user-images.githubusercontent.com opengraph.githubassets.com repository-images.githubusercontent.com marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/ github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com spotlights-feed.github.com explore-feed.github.com *.googleusercontent.com objects-origin.githubusercontent.com *.githubusercontent.com; manifest-src 'self'; media-src github.com user-images.githubusercontent.com secured-user-images.githubusercontent.com private-user-images.githubusercontent.com github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com; script-src github.githubassets.com 'sha256-tSjmyPUky1KbRZ0fw9VUil3wFEbeM82rtbJDygGJAXw='; style-src 'unsafe-inline' github.githubassets.com; upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:15:35 GMT",
+        "etag": "W/\"e34d30e2514f3c928d423bbd1b91a61c\"",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "github.com",
+        "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+        "vary": "X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, X-GitHub-Client-Version, Sec-Fetch-Site,Accept-Encoding, Accept, X-Requested-With",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "deny",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "8EFB:8D586:121F5F:194A16:6AD9FE66",
+        "x-xss-protection": "0",
+        "set-cookie": [
+          "_gh_sess=%2FqGlgixEBDIO4neQLaAN%2FW3CcuWDMCG4y1WUw5Fal1%2F7zUkqzxR%2BvdmMKtLy7S%2FS%2F8NAFepIRWES%2BsLoIvnwk9EzXITKtcTnvxZej3VnzmsYDXXA%2FwSqLVGuwLRpz94EFsTiXlYCGlli%2BsBQtt3uoKceL7Zru%2BLS1CG%2BM7qh5p5ZhtLCf7QQa1wpLXEhDoR%2Bv6aTweM1YYIF8%2BJxPZrvvoqfODVIxt4R5KZHpyGeJxwHQWnwM7Zk4GSGx%2FxYjK0q6q38V6vop5WJjC12DqL7iQ%3D%3D--twhOAsEg9iFClmzg--RZeDKiHEeFUiSdAjHOMXvQ%3D%3D; path=/; HttpOnly; secure; SameSite=Lax",
+          "_octo=GH1.1.247761452.1792671335; expires=Fri, 22 Oct 2027 12:15:35 GMT; domain=.github.com; path=/; secure; SameSite=Lax",
+          "logged_in=no; expires=Fri, 22 Oct 2027 12:15:35 GMT; domain=.github.com; path=/; HttpOnly; secure; SameSite=Lax"
+        ]
+      }
+    },
+    "text": "Institute-for-Future-Intelligence/aladdin: A Design Platform Powered by AI · GitHub\nThis project is supported by the National Science Foundation (NSF) under grant numbers #2105695, #2131097, and #2301164. Any opinions, findings, and conclusions or recommendations expressed in this material, however, are those of the authors and do not necessarily reflect the views of NSF.\nThe context is in the field of engineering design for renewable energy and building energy.\nThe app is published at: https://institute-for-future-intelligence.github.io/aladdin/\nCharles Xie, Xiaotong Ding, & Rundong Jiang, Using Computer Graphics to Make Science Visible in Engineering Education, IEEE Computer Graphics and Applications, 43(5), 99-106, 2023. DOI:10.1109/MCG.2023.3298386",
+    "html": null,
+    "markdown": "# Institute-for-Future-Intelligence/aladdin: A Design Platform Powered by AI · GitHub\n\nThis project is supported by the National Science Foundation (NSF) under grant numbers #2105695, #2131097, and #2301164. Any opinions, findings, and conclusions or recommendations expressed in this material, however, are those of the authors and do not necessarily reflect the views of NSF.\n\nThe context is in the field of engineering design for renewable energy and building energy.\n\nThe app is published at: [https://institute-for-future-intelligence.github.io/aladdin/](https://institute-for-future-intelligence.github.io/aladdin/)\n\nCharles Xie, Xiaotong Ding, & Rundong Jiang, Using Computer Graphics to Make Science Visible in Engineering Education, IEEE Computer Graphics and Applications, 43(5), 99-106, 2023. DOI:10.1109/MCG.2023.3298386"
+  },
+  {
+    "url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/master/LICENSE",
+    "crawl": {
+      "loadedUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/master/LICENSE",
+      "loadedTime": "2026-10-22T12:15:36.437Z",
+      "referrerUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/master/LICENSE",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 220070,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/master/LICENSE",
+      "title": "aladdin/LICENSE at master · Institute-for-Future-Intelligence/aladdin · GitHub",
+      "description": "A Design Platform Powered by AI. Contribute to Institute-for-Future-Intelligence/aladdin development by creating an account on GitHub.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://opengraph.githubassets.com/f5afef5b58235f3f310cdd32a572eaeab8fc0584065fed3b961d9af3d3f1f1c8/Institute-for-Future-Intelligence/aladdin"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "A Design Platform Powered by AI. Contribute to Institute-for-Future-Intelligence/aladdin development by creating an account on GitHub."
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "600"
+        },
+        {
+          "property": "og:site_name",
+          "content": "GitHub"
+        },
+        {
+          "property": "og:type",
+          "content": "object"
+        },
+        {
+          "property": "og:title",
+          "content": "aladdin/LICENSE at master · Institute-for-Future-Intelligence/aladdin"
+        },
+        {
+          "property": "og:url",
+          "content": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/master/LICENSE"
+        },
+        {
+          "property": "og:description",
+          "content": "A Design Platform Powered by AI. Contribute to Institute-for-Future-Intelligence/aladdin development by creating an account on GitHub."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "cache-control": "max-age=0, private, must-revalidate",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'none'; base-uri 'self'; child-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/; connect-src 'self' uploads.github.com www.githubstatus.com collector.github.com raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com wss://production-copilot-host.webpubsub.azure.com wss://production-copilot-host-centralus.webpubsub.azure.com wss://production-copilot-host-centralus-02.webpubsub.azure.com wss://production-copilot-host-westus.webpubsub.azure.com api.github.com/cmc_internal/api/; font-src github.githubassets.com; form-action 'self' github.com gist.github.com copilot-workspace.githubnext.com objects-origin.githubusercontent.com; frame-ancestors 'none'; frame-src viewscreen.githubusercontent.com notebooks.githubusercontent.com; img-src 'self' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com secured-user-images.githubusercontent.com user-images.githubusercontent.com private-user-images.githubusercontent.com opengraph.githubassets.com repository-images.githubusercontent.com marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/ github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com spotlights-feed.github.com explore-feed.github.com *.googleusercontent.com objects-origin.githubusercontent.com *.githubusercontent.com; manifest-src 'self'; media-src github.com user-images.githubusercontent.com secured-user-images.githubusercontent.com private-user-images.githubusercontent.com github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com; script-src github.githubassets.com 'sha256-tSjmyPUky1KbRZ0fw9VUil3wFEbeM82rtbJDygGJAXw='; style-src 'unsafe-inline' github.githubassets.com; upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:15:36 GMT",
+        "etag": "W/\"f9a3a4fa6fed9ceaa0c4d3bd1717c059\"",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "github.com",
+        "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+        "vary": "X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, X-GitHub-Client-Version, Sec-Fetch-Site,Accept-Encoding, Accept, X-Requested-With",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "deny",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "E61E:6A129:12E272:1A3A4A:6AD9FE67",
+        "x-raw-download": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE",
+        "x-repository-download": "git clone https://github.com/Institute-for-Future-Intelligence/aladdin.git",
+        "x-xss-protection": "0",
+        "set-cookie": [
+          "_gh_sess=pZIhl3stWve2EgNs8GozivDmUFzSZhPkB5%2F8ra9SiW8%2Br3emwAnqBvr7TlYXssOBOxx6zX8wXBd1OY8ulzyWG%2B%2B0VBJaF531cNHLJp3xjumdB9iavUCJ2Vfbk30FnOPDKXKySDq0l3fmT%2BcNSjYgvcBewAjop9nnon2JAbLTSX8wyAye4F25zCOtxjJvH7wSBhIQ3cXK5izEZyHh6%2FOfkAMT8JI%2FlYXc3kQvSTjc6FKWJmnGSiGrWIp0DvAIBHqBVDF67z21egMQiuTeSc%2BgBg%3D%3D--YqnS0Jn3j5BEKFJ9--vwoS%2Bl5BFikveK5hiJmLSA%3D%3D; path=/; HttpOnly; secure; SameSite=Lax",
+          "_octo=GH1.1.910141189.1792671335; expires=Fri, 22 Oct 2027 12:15:35 GMT; domain=.github.com; path=/; secure; SameSite=Lax",
+          "logged_in=no; expires=Fri, 22 Oct 2027 12:15:35 GMT; domain=.github.com; path=/; HttpOnly; secure; SameSite=Lax"
+        ]
+      }
+    },
+    "text": "aladdin/LICENSE at master · Institute-for-Future-Intelligence/aladdin · GitHub\n21 lines (17 loc) · 1.06 KB\nLICENSE\nFile metadata and controls\n21 lines (17 loc) · 1.06 KB\nRaw",
+    "html": null,
+    "markdown": "# aladdin/LICENSE at master · Institute-for-Future-Intelligence/aladdin · GitHub\n\n21 lines (17 loc) · 1.06 KB\n\n## LICENSE\n\n## File metadata and controls\n\n21 lines (17 loc) · 1.06 KB\n\n[Raw](https://github.com/Institute-for-Future-Intelligence/aladdin/raw/refs/heads/master/LICENSE)"
+  },
+  {
+    "url": "https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions",
+    "crawl": {
+      "loadedUrl": "https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions",
+      "loadedTime": "2026-10-22T12:15:37.491Z",
+      "referrerUrl": "https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 262650,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions",
+      "title": "Mac Build Instructions · NatLabRockies/SAM Wiki · GitHub",
+      "description": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://opengraph.githubassets.com/17d29c6202325261f8b073326403e5f49b096263af351422e26905c820fa3ba4/NatLabRockies/SAM"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub."
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "600"
+        },
+        {
+          "property": "og:site_name",
+          "content": "GitHub"
+        },
+        {
+          "property": "og:type",
+          "content": "object"
+        },
+        {
+          "property": "og:title",
+          "content": "Mac Build Instructions"
+        },
+        {
+          "property": "og:url",
+          "content": "https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions"
+        },
+        {
+          "property": "og:description",
+          "content": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "cache-control": "max-age=0, private, must-revalidate",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'none'; base-uri 'self'; child-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/; connect-src 'self' uploads.github.com www.githubstatus.com collector.github.com raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com wss://production-copilot-host.webpubsub.azure.com wss://production-copilot-host-centralus.webpubsub.azure.com wss://production-copilot-host-centralus-02.webpubsub.azure.com wss://production-copilot-host-westus.webpubsub.azure.com api.github.com/cmc_internal/api/; font-src github.githubassets.com; form-action 'self' github.com gist.github.com copilot-workspace.githubnext.com objects-origin.githubusercontent.com; frame-ancestors 'none'; frame-src viewscreen.githubusercontent.com notebooks.githubusercontent.com; img-src 'self' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com secured-user-images.githubusercontent.com user-images.githubusercontent.com private-user-images.githubusercontent.com opengraph.githubassets.com repository-images.githubusercontent.com marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/ github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com spotlights-feed.github.com explore-feed.github.com *.googleusercontent.com objects-origin.githubusercontent.com *.githubusercontent.com; manifest-src 'self'; media-src github.com user-images.githubusercontent.com secured-user-images.githubusercontent.com private-user-images.githubusercontent.com github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com; script-src github.githubassets.com 'sha256-tSjmyPUky1KbRZ0fw9VUil3wFEbeM82rtbJDygGJAXw='; style-src 'unsafe-inline' github.githubassets.com; upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:15:37 GMT",
+        "etag": "W/\"92005910dc3ec34e95211d00b5236e66\"",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "github.com",
+        "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+        "vary": "X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, X-GitHub-Client-Version, Sec-Fetch-Site,Accept-Encoding, Accept, X-Requested-With",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "deny",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "8AB7:188CB6:108D3A:171B3C:6AD9FE68",
+        "x-robots-tag": "none",
+        "x-xss-protection": "0",
+        "set-cookie": [
+          "_gh_sess=XEY4lYO5ddC6edXZiIQL0POTHTgHe8eSED4I6H4LbIlWFysNf%2FiL0JU1CB4TFN8eOGqDiFlDRKLbaPIc0hUu64su9pfDBXdASVbDc4VAn2rzInq1KuDcAcAkQ6m870zbhXNYCerNpWfmZYCONk4ViQic7krDTwus9cbMEGnTSLViFjzIDvCXxXzrkOVNpTZCwDrokWRDJF5k74dvOykGhLamHFd9sPqW9eBywc6nqaZ7vSw%2FP4iGXssUFjUzX2nVs%2FEwJ72ApLjh6NG35vLJlg%3D%3D--NgQCtfsJDVQHhTIY--NMvVmzewTWzy3jjBUL%2BaSQ%3D%3D; path=/; HttpOnly; secure; SameSite=Lax",
+          "_octo=GH1.1.1753741434.1792671336; expires=Fri, 22 Oct 2027 12:15:36 GMT; domain=.github.com; path=/; secure; SameSite=Lax",
+          "logged_in=no; expires=Fri, 22 Oct 2027 12:15:36 GMT; domain=.github.com; path=/; HttpOnly; secure; SameSite=Lax"
+        ]
+      }
+    },
+    "text": "Mac Build Instructions · NatLabRockies/SAM Wiki · GitHub\nThese instructions were last tested in October 2024 on macOS 15.1 Sequoia using the following:\nXcode 16.1\nCMake 3.30.5 (minimum CMake 3.24)\nwxWidgets 3.2.8.1\nGoogleTest 1.14.0\nOR-Tools v9.14\nGit 2.39.2\nGNU Make 3.81\nBuilds should work on computers running macOS 12 or later with either Apple Silicon or Intel processors.\nBefore building SAM, you must build GoogleTest and wxWidgets from source.\nNote These instructions place code repositories in your mac's Home directory using the $HOME environment variable. This makes it possible for you to copy and paste commands from the instructions to your Terminal. If you want to use different directories for your installation, replace \"$HOME\" in the instructions with a different directory path.\nTo install Command Line Tools, open a terminal window, and type the following command:\nxcode-select --install \nIf Command Line Developer tools is not installed, you should see a message asking if you want to install them. Click Install.\nThe SAM build uses CMAKE to generate makefiles.\nDownload the appropriate pre-compiled binary distribution appropriate for your Mac and copy CMake.app to the Applications directory.\nAdd a symbolic link to /usr/local/bin (assuming you copied CMake to your Applications directory) to make CMake available for the command line.\n/Applications/CMake.app/Contents/bin/cmake-gui --install \nTo see other ways to enable CMake for the command line, in the CMake application, go to Tools, How to Install for Command Line Use.\nSAM builds require at least the version of wxWidgets shown above, it may work with more recent versions.\nDownload source code for macOS from https://www.wxwidgets.org/downloads/.\nIf the latest version available for download is newer than the one SAM requires, follow the link under \"Other Downloads\" at the bottom of the page to find the source code for the older version.\nExtract the downloaded archive with Finder or the following command:\ntar xvfj $HOME/Downloads/wxWidgets-3.2.8.1.tar.bz2 $HOME/ \nThis example extracts the source code to a wxWidgets-3.2.8.1 directory in your Home directory, but you can put it in a directory other than your Home directory.\nThe $HOME/wxWidgets-3.2.8.1 directory should contain several files and folders including CMakeLists.txt, README.md, and a build directory.\nGo to the build directory.\ncd $HOME/wxWidgets-3.2.8.1/build \nRun configure to generate makefiles.\n../configure --prefix=$HOME/local/wx-3.2.8.1/Release --enable-stl=yes --enable-shared=no --disable-debug_flag --with-cocoa --enable-universal_binary=x86_64,arm64 --enable-unicode --enable-webview --disable-mediactrl --with-cxx=11 --with-macosx-version-min=12 --with-libjpeg=builtin --with-libpng=builtin --with-regex=builtin --with-libtiff=builtin --with-zlib=builtin --with-expat=builtin \nIf you are having trouble finding the correct MacOSX SDK, which results in C++ stdlib headers such as <string> not being found, try specifying the location of the MacOSX SDK that is compatible with MacOSX version 12:\nexport SDKPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk ../configure \\ --prefix=$HOME/local/wx-3.2.8.1/Release \\ --enable-stl=yes --enable-shared=no --disable-debug_flag \\ --with-cocoa --enable-universal_binary=x86_64,arm64 \\ --enable-unicode --enable-webview --disable-mediactrl \\ --with-cxx=17 --with-macosx-version-min=12 \\ --with-libjpeg=builtin --with-libpng=builtin --with-regex=builtin \\ --with-libtiff=builtin --with-zlib=builtin --with-expat=builtin \\ CXXFLAGS=\"-isysroot $SDKPATH -isystem $SDKPATH/usr/include/c++/v1\" \\ CFLAGS=\"-isysroot $SDKPATH\" \\ OBJCXXFLAGS=\"-isysroot $SDKPATH -isystem $SDKPATH/usr/include/c++/v1\" \\ LDFLAGS=\"-isysroot $SDKPATH\" \nRun make to generate non-source files and install wxWidgets.\n$ make clean $ make $ make install \nThis installs wxWidgets in ~/local/wx-3.2.8.1.\nNote. Use make -j'nproc' to run jobs in parallel for a faster build. See this StackExchange discussion for details.\nCreate a symbolic link to the wxWidgets installation directory so that the SAM build process can find the files it needs.\nln -s ~/local/wx-3.2.8.1/Release/bin/wx-config /usr/local/bin/wx-config-3 \nUse -sf to overwrite an existing symoblic link.\nTest the installation.\nwx-config-3 --cflags \nIf the installation was successful, you should see:\n-I/Users/[user]/local/wx-3.2.8.1/lib/wx/include/osx_cocoa-unicode-static-3.2 -I/Users/[user]/local/wx-3.2.8.1/include/wx-3.2 -D_FILE_OFFSET_BITS=64 -DwxDEBUG_LEVEL=0 -D__WXMAC__ -D__WXOSX__ -D__WXOSX_COCOA__ \nSAM's repositories depend on Google's C++ unit-test framework Google Test.\nClone the GoogleTest repository into a directory of your choice. This example uses the Home directory, but you can choose a different one.\ncd $HOME && git clone https://github.com/google/googletest.git \nThis creates the $HOME/googletest directory containing files from the GitHub repository.\nCreate a directory for the build in the googletest directory.\ncd $HOME/googletest && mkdir build && cd build \nRun CMake from the build directory to generate the build files.\ncmake .. -DCMAKE_BUILD_TYPE=Release \nRun make to install GoogleTest.\nmake \nIf the builds succeed, you should see a lib directory in $HOME/googletest/build that contains the libgtest.a file.\nSAM requires Google's OR-Tools v9.14 for mixed-integer linear optimization.\nDownload OR-Tools (v9.14) binaries for macOS from GitHub assets\nExtract binaries files:\ntar xvzf or-tools_x86_64_macOS-15.5_cpp_v9.14.6206.tar.gz \nFile name length can be a problem, if files are extracted in a deep directory.\nSAM's build process assumes that directories for the code repositories are in the same directory.\nmkdir $HOME/sam_dev \nThis example creates the sam_dev directory in your $HOME directory, but you can create it in a different directory or use a different name.\nThe four SAM code repositories are on GitHub.com:\nhttps://github.com/NREL/SAM/\nhttps://github.com/NREL/ssc/\nhttps://github.com/NREL/wex/\nhttps://github.com/NREL/lk/\nClone each repository into a separate directory in $HOME/sam_dev.\nGo to the directory you created for the SAM source code.\ncd $HOME/sam_dev \nClone the repositories.\nfor repo in lk wex ssc SAM ; do git clone https://github.com/nrel/$repo.git ; done \nThis should create four folders in $HOME/sam_dev, each containing files downloaded from GitHub.com.\nDepending on NLR's development schedule, by default git clone downloads either the Develop or Patch branch of each repository. The latest code is in the Develop branch. If you are contributing code, you should work with this branch. The code for the most recent version of SAM is in the Patch branch so Develop is likely to be ahead of Patch.\nTo build a specific version of SAM, you can check out a tag for that version. See List of Tags for SAM Versions for a list of tags for different versions of SAM, SSC, WEX and LK.\nIf you have access to the SAM-private repository to build offical NLR versions of SAM, clone it. You may need to use GitHub CLI (sudo apt install gh) to clone the private repository.\ngit clone https://github.com/NREL/SAM-private.git \nThe SAM build process use five environment variables to determine where the files it needs are stored on your computer. Before building SAM, set the following environment variables to point to each of the project folders.\nTo make these environment variables permanent, set them in your shell startup script ($HOME/.zshrc for zsh on newer macs or $HOME/.bash_profile for sh on older ones) and then close and reopen Terminal to update the environment variables. For example to use the nano text editor to open the shell startup script for zsh: nano $HOME/.zshrc.\nexport GTEST=$HOME/googletest export LKDIR=$HOME/sam_dev/lk export WEXDIR=$HOME/sam_dev/wex export SSCDIR=$HOME/sam_dev/ssc export SAMNTDIR=$HOME/sam_dev/SAM export RAPIDJSONDIR=$HOME/sam_dev/ssc export ORTOOLSDIR=$HOME/or-tools_x86_64_macOS-15.5_cpp_v9.14.6206 \nIf you have access to the SAM-private repository and plan to build official NLR versions of SAM, set the environment variable for SAM-private:\nexport SAMNRELDIR=$HOME/sam_dev/SAM-private \nTo verify that the environment variables are set:\nprintenv \nThe CMakeLists.txt file contains instructions for CMake. Use a text editor to create $HOME/sam_dev/CMakeLists.txt and copy the following text into the file and save it:\ncmake_minimum_required(VERSION 3.24) set(CMAKE_OSX_DEPLOYMENT_TARGET \"12\" CACHE STRING \"Minimum OS X deployment version\") if (UNIX AND NOT CMAKE_C_COMPILER) set(CMAKE_C_COMPILER gcc) set(CMAKE_CXX_COMPILER g++) endif() if(MSVC) set(CMAKE_CONFIGURATION_TYPES \"Debug;Release;RelWithDebInfo\" CACHE STRING \"Debug and Release Builds Configured\" FORCE) endif() Project(system_advisor_model CXX) set(CMAKE_CXX_STANDARD 20) set(CMAKE_CXX_STANDARD_REQUIRED ON) set(CMAKE_CXX_EXTENSIONS OFF) option(SAM_SKIP_TOOLS \"Skips the SDKtool and TCSconsole builds\" ON) option(SAM_SKIP_TESTS \"Skips building tests\" ON) option(SAMAPI_EXPORT \"Exports of ssc binaries to the SAM_api directory; for Unix, also compiles ssc libraries for SAM_api. Required to build PySAM.\" OFF) option(SAM_SKIP_AUTOGEN \"Skips the generating SAMAPI files from export_config required for PySAM builds.\" ON) add_subdirectory(lk) add_subdirectory(wex) add_subdirectory(ssc) add_subdirectory(SAM) if (SAMPRIVATE) add_subdirectory(SAM-private) add_subdirectory(SAM-private/webupd) endif() \nThe four CMake options control what projects are included in the build. The default options above are to build SAM without auxiliary tools tcsconsole and SDKtool and without generating files for building the PySAM Python package. To minimize the time it takes for builds and to avoid build errors, use these default options unless you have a reason to change them.\nThe build folder contains executable and runtime files generated by the build process.\nmkdir -p $HOME/sam_dev/build/Release \nIf you plan to debug SAM, create a separate directory for a Debug version:\nmkdir -p $HOME/sam_dev/build/Debug \nIf you are building SAM after changing environment variables, making code changes across different repositories, switching between GitHub branches, or other major changes, removing the existing build before starting a new one may prevent link and build errors.\nrm -rf $HOME/sam_dev/build \nBuild SAM in XCode to use the XCode IDE to explore or modify SAM's source code, and to build SAM for both Intel and Apple architectures.\nRun CMake to generate an XCode project.\nFor a Release build:\ncd $HOME/sam_dev/build/Release \ncmake ../.. -GXcode -T buildsystem=12 -DSAMAPI_EXPORT=0 -DSAM_SKIP_AUTOGEN=1 -DCMAKE_BUILD_TYPE=\"Release\" \"-DCMAKE_OSX_DEPLOYMENT_TARGET=12\" \"-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64\" -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_SYSTEM_PREFIX_PATH=${ORTOOLSDIR} -Dabsl_DIR=${ORTOOLSDIR}\\lib\\cmake\\absl\" -Dutf8_range_DIR=${ORTOOLSDIR}\\lib\\cmake\\utf8_range\" \nFor a Debug build, use cd $HOME/sam_dev/build/Debug and set -DCMAKE_BUILD_TYPE=\"Debug\".\nFor a build of an official NLR version of SAM, use -DSAM_SKIP_TOOLS=0 because the official NLR version's build process below requires SDKtool.\nCMake should create a system_advisor_model.xcodeproj file in the $HOME/sam_dev/build/Release directory, and if you built a Debug version, a separate system_advisor_model.xcodeproj file in the $HOME/sam_dev/build/Debug folder.\nIf you are building SAM after changing environment variables, making code changes across different repositories, switching between GitHub branches, or other major changes, removing the XCode DerivedData folder before running cmake may prevent link and build errors.\nrm -rf $HOME/Library/Developer/Xcode/DerivedData/ \nStart XCode and open the system_advisor_model project for either the Release or Debug build.\nopen system_advisor_model.xcodeproj \nChoose the SAMOS scheme (SAMOSd for Debug builds): Product, Scheme, Choose Scheme, SAMOS.\nChoose the Release or Debug build configuration: Product, Scheme, Edit Scheme, Info, Build Configuration, [Debug/Release].\nBe sure to choose the configuration that matches the project: A \"Command PhaseScriptExecution failed with a nonzero exit code\" error toward the end of the build may indicate that you chose the Debug configuration for the Release project or vice versa.\nBuild the project: Product, Build.\nThe build takes a few minutes. When the build finishes, you should see \"Build Succeeded.\"\nRun SAM: Product, Run.\nIf you have access to the SAM-private repository to build official NLR versions, you can build SAM to test features specific to the official version such as weather file downloads and other API integrations, software registration, and updates.\nBuild the open source version of SAM (SAMOS) in XCode as described above, but with the \"Build for any Mac\" option: Product, Destination, Any Mac (x86_64, arm64). Do not use Product, Run to build the project. Use Product, Build (⌘B) instead.\nAlso in Xcode, build SDKtool with \"Build for any Mac\" ⌘B. Be sure to edit the scheme to build either Release or Debug to match the SAMOS build.\nUse make to build SAM from SAM-private:\ncd path/to/SAM-private/build_osx \nmake clean \nmake setup \nmake makes \nmake app \nRun SAM:\nSAM's Help system is HTML that opens in the computer's default web browser when you click Help or press the F1 key in the SAM user interface.\nImportant\nThe Safari web browser will only load CSS and Javascript elements from local files in developer mode. To display SAM Help correctly in Safari, go to Settings, Advanced Settings, and enable Show features for web developers.\nFiles to build SAM's Help system are in the path/to/sam_dev/SAM/doc folder. To build Help, run the Sphinx Python package to convert the source files to HTML, and then copy the HTML files to the path/to/sam_dev/SAM/deploy/runtime/help/html folder.\nBuilding SAM's Help system requires:\nPython\nA virtual environment like venv or conda (recommended)\nThe Sphinx Python packages listed in path/to/sam_dev/SAM/doc/requirements.txt.\nMake (optional)\nFor detailed build instructions and information about the Help system, see path/to/sam_dev/SAM/doc/readme.\nGo to the Help folder.\ncd path/to/sam_dev/SAM/doc \nActivate the virtual environment. For example, to activate a venv environment named \"samdoc\":\nsource path/to/venvs/samdoc/bin/activate \nIf you need to create the virtual environment, run python3 -m venv path/to/venvs/samdoc to create the environment. The first time you activate the environment, install the required Python packages by running pip install -r path/to/sam_dev/SAM/doc/requirements.txt.\nBuild Help.\nYou can build Help by running Sphinx directly, or by using Make.\nTo run Sphinx directly:\nsphinx-build -M html source build \nTo use Make:\nmake html \nTo clean the build first, either delete the path/to/sam_dev/SAM/doc/build folder, or run make clean.\nCopy HTML files to deploy folder.\nCopy the entire contents of the path/to/sam_dev/SAM/doc/build/html folder to path/to/sam_dev/SAM/deploy/runtime/help/html. (Do not copy the doc/build/doctrees folder.)\ncp -R -f ./build/html ../deploy/runtime/help \nThe Welcome page of open-source builds of SAM displays \"Please setup API keys, see private.h for details...\". The private.h file contains credentials for several APIs used by NLR versions of SAM to access online databases such as for weather file downloads. It is not necessary to modifiy private.h to run and test SAM.\nWhen SAM starts, click Start a new project, and then click Photovoltaic (detailed) and Residential (distributed), and OK.\nOn the Location and Resource page, click View data. That should open a DView window with data from the weather file selected on the Location and Resource page. DView is from WEX, so that confirms that WEX built correctly.\nClose the DView window.\nClick through the input pages to see that they display correctly. The user interface uses libraries from wxWidgets and WEX.\nClick Simulate in the bottom left corner of the SAM window. SAM should run a simulation and display results on the Results page. The results page also uses DView from WEX, and displays data generated by SSC.\nClick Macros (under the Simulate button), and click the Inverter Sizing Information button. Click Run macro at the top of the window. The macro should run and display a window with information about the inverter's performance. That confirms that LK (also from WEX) is working.\nOn any input page, click Help or press the F1 key to verify that the correct Help topic opens in the default web browser.",
+    "html": null,
+    "markdown": "# Mac Build Instructions · NatLabRockies/SAM Wiki · GitHub\n\nThese instructions were last tested in October 2024 on macOS 15.1 Sequoia using the following:\n\n*   Xcode 16.1\n*   CMake 3.30.5 (minimum CMake 3.24)\n*   wxWidgets 3.2.8.1\n*   GoogleTest 1.14.0\n*   OR-Tools v9.14\n*   Git 2.39.2\n*   GNU Make 3.81\n\nBuilds should work on computers running macOS 12 or later with either Apple Silicon or Intel processors.\n\nBefore building SAM, you must build GoogleTest and wxWidgets from source.\n\n> **Note** These instructions place code repositories in your mac's Home directory using the `$HOME` environment variable. This makes it possible for you to copy and paste commands from the instructions to your Terminal. If you want to use different directories for your installation, replace \"$HOME\" in the instructions with a different directory path.\n\nTo [install Command Line Tools](https://mac.install.guide/commandlinetools/4.html), open a terminal window, and type the following command:\n\n```\nxcode-select --install\n```\n\nIf Command Line Developer tools is not installed, you should see a message asking if you want to install them. Click **Install**.\n\nThe SAM build uses [CMAKE](https://cmake.org/install/) to generate makefiles.\n\n1.  Download the appropriate pre-compiled binary distribution appropriate for your Mac and copy `CMake.app` to the Applications directory.\n    \n2.  Add a symbolic link to `/usr/local/bin` (assuming you copied CMake to your Applications directory) to make CMake available for the command line.\n    \n    ```\n    /Applications/CMake.app/Contents/bin/cmake-gui --install\n    ```\n    \n\nTo see other ways to enable CMake for the command line, in the CMake application, go to **Tools, How to Install for Command Line Use**.\n\nSAM builds require at least the version of wxWidgets shown above, it may work with more recent versions.\n\n1.  Download source code for macOS from [https://www.wxwidgets.org/downloads/](https://www.wxwidgets.org/downloads/).\n    \n    If the latest version available for download is newer than the one SAM requires, follow the link under \"Other Downloads\" at the bottom of the page to find the source code for the older version.\n    \n2.  [Extract](https://www.thegeekstuff.com/2010/04/unix-tar-command-examples/) the downloaded archive with Finder or the following command:\n    \n    ```\n    tar xvfj $HOME/Downloads/wxWidgets-3.2.8.1.tar.bz2 $HOME/\n    ```\n    \n    This example extracts the source code to a `wxWidgets-3.2.8.1` directory in your Home directory, but you can put it in a directory other than your Home directory.\n    \n    The `$HOME/wxWidgets-3.2.8.1` directory should contain several files and folders including `CMakeLists.txt`, `README.md`, and a `build` directory.\n    \n3.  Go to the `build` directory.\n    \n    ```\n    cd $HOME/wxWidgets-3.2.8.1/build\n    ```\n    \n4.  Run `configure` to generate makefiles.\n    \n    ```\n    ../configure --prefix=$HOME/local/wx-3.2.8.1/Release --enable-stl=yes --enable-shared=no --disable-debug_flag --with-cocoa --enable-universal_binary=x86_64,arm64 --enable-unicode --enable-webview --disable-mediactrl --with-cxx=11 --with-macosx-version-min=12  --with-libjpeg=builtin --with-libpng=builtin --with-regex=builtin --with-libtiff=builtin --with-zlib=builtin --with-expat=builtin\n    ```\n    \n    If you are having trouble finding the correct MacOSX SDK, which results in C++ stdlib headers such as `<string>` not being found, try specifying the location of the MacOSX SDK that is compatible with MacOSX version 12:\n    \n    ```\n    export SDKPATH=/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk\n    \n    ../configure \\\n      --prefix=$HOME/local/wx-3.2.8.1/Release \\\n      --enable-stl=yes --enable-shared=no --disable-debug_flag \\\n      --with-cocoa --enable-universal_binary=x86_64,arm64 \\\n      --enable-unicode --enable-webview --disable-mediactrl \\\n      --with-cxx=17 --with-macosx-version-min=12 \\\n      --with-libjpeg=builtin --with-libpng=builtin --with-regex=builtin \\\n      --with-libtiff=builtin --with-zlib=builtin --with-expat=builtin \\\n      CXXFLAGS=\"-isysroot $SDKPATH -isystem $SDKPATH/usr/include/c++/v1\" \\\n      CFLAGS=\"-isysroot $SDKPATH\" \\\n      OBJCXXFLAGS=\"-isysroot $SDKPATH -isystem $SDKPATH/usr/include/c++/v1\" \\\n      LDFLAGS=\"-isysroot $SDKPATH\"\n    ```\n    \n5.  Run `make` to generate non-source files and install wxWidgets.\n    \n    ```\n    $ make clean\n    $ make\n    $ make install\n    ```\n    \n    This installs wxWidgets in `~/local/wx-3.2.8.1`.\n    \n    > **Note.** Use `make -j'nproc'` to run jobs in parallel for a faster build. See [this StackExchange discussion for details](https://unix.stackexchange.com/questions/208568/how-to-determine-the-maximum-number-to-pass-to-make-j-option).\n    \n6.  Create a symbolic link to the wxWidgets installation directory so that the SAM build process can find the files it needs.\n    \n    ```\n    ln -s ~/local/wx-3.2.8.1/Release/bin/wx-config /usr/local/bin/wx-config-3\n    ```\n    \n    Use `-sf` to overwrite an existing symoblic link.\n    \n7.  Test the installation.\n    \n    ```\n    wx-config-3 --cflags\n    ```\n    \n    If the installation was successful, you should see:\n    \n    ```\n    -I/Users/[user]/local/wx-3.2.8.1/lib/wx/include/osx_cocoa-unicode-static-3.2 -I/Users/[user]/local/wx-3.2.8.1/include/wx-3.2 -D_FILE_OFFSET_BITS=64 -DwxDEBUG_LEVEL=0 -D__WXMAC__ -D__WXOSX__ -D__WXOSX_COCOA__ \n    ```\n    \n\nSAM's repositories depend on Google's C++ unit-test framework [Google Test](https://github.com/google/googletest).\n\n1.  Clone the GoogleTest repository into a directory of your choice. This example uses the Home directory, but you can choose a different one.\n    \n    ```\n    cd $HOME && git clone https://github.com/google/googletest.git\n    ```\n    \n    This creates the `$HOME/googletest` directory containing files from the GitHub repository.\n    \n2.  Create a directory for the build in the `googletest` directory.\n    \n    ```\n    cd $HOME/googletest && mkdir build && cd build\n    ```\n    \n3.  Run CMake from the `build` directory to generate the build files.\n    \n    ```\n    cmake .. -DCMAKE_BUILD_TYPE=Release\n    ```\n    \n4.  Run `make` to install GoogleTest.\n    \n    ```\n    make\n    ```\n    \n    If the builds succeed, you should see a `lib` directory in `$HOME/googletest/build` that contains the `libgtest.a` file.\n    \n\nSAM requires Google's [OR-Tools v9.14](https://github.com/google/or-tools/releases/tag/v9.14) for mixed-integer linear optimization.\n\n1.  Download OR-Tools (v9.14) binaries for macOS from [GitHub assets](https://github.com/google/or-tools/releases/download/v9.14/or-tools_x86_64_macOS-15.5_cpp_v9.14.6206.tar.gz)\n    \n2.  Extract binaries files:\n    \n\n```\ntar xvzf or-tools_x86_64_macOS-15.5_cpp_v9.14.6206.tar.gz\n```\n\n*   File name length can be a problem, if files are extracted in a deep directory.\n\nSAM's build process assumes that directories for the code repositories are in the same directory.\n\n```\nmkdir $HOME/sam_dev\n```\n\nThis example creates the `sam_dev` directory in your $HOME directory, but you can create it in a different directory or use a different name.\n\nThe four SAM code repositories are on GitHub.com:\n\n*   [https://github.com/NREL/SAM/](https://github.com/NREL/SAM/)\n*   [https://github.com/NREL/ssc/](https://github.com/NREL/ssc/)\n*   [https://github.com/NREL/wex/](https://github.com/NREL/wex/)\n*   [https://github.com/NREL/lk/](https://github.com/NREL/lk/)\n\nClone each repository into a separate directory in `$HOME/sam_dev`.\n\n1.  Go to the directory you created for the SAM source code.\n    \n    ```\n    cd $HOME/sam_dev\n    ```\n    \n2.  Clone the repositories.\n    \n    ```\n    for repo in lk wex ssc SAM ; do git clone https://github.com/nrel/$repo.git ; done\n    ```\n    \n    This should create four folders in `$HOME/sam_dev`, each containing files downloaded from GitHub.com.\n    \n\nDepending on NLR's development schedule, by default `git clone` downloads either the `Develop` or `Patch` branch of each repository. The latest code is in the `Develop` branch. If you are contributing code, you should work with this branch. The code for the most recent version of SAM is in the `Patch` branch so `Develop` is likely to be ahead of `Patch`.\n\nTo build a specific version of SAM, you can check out a tag for that version. See [List of Tags for SAM Versions](https://github.com/NREL/SAM/wiki/List-of-Tags-for-SAM-Versions) for a list of tags for different versions of SAM, SSC, WEX and LK.\n\nIf you have access to the SAM-private repository to build offical NLR versions of SAM, clone it. You may need to use GitHub CLI (sudo apt install gh) to clone the private repository.\n\n```\ngit clone https://github.com/NREL/SAM-private.git\n```\n\nThe SAM build process use five environment variables to determine where the files it needs are stored on your computer. Before building SAM, set the following environment variables to point to each of the project folders.\n\nTo make these environment variables permanent, set them in your shell startup script (`$HOME/.zshrc` for zsh on newer macs or `$HOME/.bash_profile` for sh on older ones) and then close and reopen Terminal to update the environment variables. For example to use the nano text editor to open the shell startup script for zsh: `nano $HOME/.zshrc`.\n\n```\nexport GTEST=$HOME/googletest\nexport LKDIR=$HOME/sam_dev/lk\nexport WEXDIR=$HOME/sam_dev/wex\nexport SSCDIR=$HOME/sam_dev/ssc\nexport SAMNTDIR=$HOME/sam_dev/SAM\nexport RAPIDJSONDIR=$HOME/sam_dev/ssc\nexport ORTOOLSDIR=$HOME/or-tools_x86_64_macOS-15.5_cpp_v9.14.6206\n```\n\nIf you have access to the SAM-private repository and plan to build official NLR versions of SAM, set the environment variable for SAM-private:\n\n```\nexport SAMNRELDIR=$HOME/sam_dev/SAM-private\n```\n\nTo verify that the environment variables are set:\n\n```\nprintenv\n```\n\nThe CMakeLists.txt file contains instructions for CMake. Use a text editor to create `$HOME/sam_dev/CMakeLists.txt` and copy the following text into the file and save it:\n\n```\ncmake_minimum_required(VERSION 3.24)\n\nset(CMAKE_OSX_DEPLOYMENT_TARGET \"12\" CACHE STRING \"Minimum OS X deployment version\")\n\nif (UNIX AND NOT CMAKE_C_COMPILER)\n    set(CMAKE_C_COMPILER gcc)\n    set(CMAKE_CXX_COMPILER g++)\nendif()\n\nif(MSVC)\n    set(CMAKE_CONFIGURATION_TYPES \"Debug;Release;RelWithDebInfo\" CACHE STRING \"Debug and Release Builds Configured\" FORCE)\nendif()\n\nProject(system_advisor_model CXX)\n\nset(CMAKE_CXX_STANDARD 20)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\nset(CMAKE_CXX_EXTENSIONS OFF)\n\noption(SAM_SKIP_TOOLS \"Skips the SDKtool and TCSconsole builds\" ON)\noption(SAM_SKIP_TESTS \"Skips building tests\" ON)\noption(SAMAPI_EXPORT \"Exports of ssc binaries to the SAM_api directory; for Unix, also compiles ssc libraries for SAM_api. Required to build PySAM.\" OFF)\noption(SAM_SKIP_AUTOGEN \"Skips the generating SAMAPI files from export_config required for PySAM builds.\" ON) \n\nadd_subdirectory(lk)\nadd_subdirectory(wex)\nadd_subdirectory(ssc)\nadd_subdirectory(SAM)\nif (SAMPRIVATE)\n    add_subdirectory(SAM-private)\n    add_subdirectory(SAM-private/webupd)\nendif()\n```\n\nThe four CMake options control what projects are included in the build. The default options above are to build SAM without auxiliary tools tcsconsole and SDKtool and without generating files for [building the PySAM Python package](https://github.com/NREL/pysam/wiki/Building,-Packaging-and-Distributing). To minimize the time it takes for builds and to avoid build errors, use these default options unless you have a reason to change them.\n\nThe build folder contains executable and runtime files generated by the build process.\n\n```\nmkdir -p $HOME/sam_dev/build/Release\n```\n\nIf you plan to debug SAM, create a separate directory for a Debug version:\n\n```\n mkdir -p $HOME/sam_dev/build/Debug\n```\n\nIf you are building SAM after changing environment variables, making code changes across different repositories, switching between GitHub branches, or other major changes, removing the existing build before starting a new one may prevent link and build errors.\n\n```\nrm -rf $HOME/sam_dev/build\n```\n\nBuild SAM in XCode to use the XCode IDE to explore or modify SAM's source code, and to build SAM for both Intel and Apple architectures.\n\n1.  Run CMake to generate an XCode project.\n    \n    For a Release build:\n    \n    ```\n    cd $HOME/sam_dev/build/Release\n    ```\n    \n    ```\n    cmake ../.. -GXcode -T buildsystem=12 -DSAMAPI_EXPORT=0 -DSAM_SKIP_AUTOGEN=1 -DCMAKE_BUILD_TYPE=\"Release\" \"-DCMAKE_OSX_DEPLOYMENT_TARGET=12\" \"-DCMAKE_OSX_ARCHITECTURES=x86_64;arm64\" -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_SYSTEM_PREFIX_PATH=${ORTOOLSDIR} -Dabsl_DIR=${ORTOOLSDIR}\\lib\\cmake\\absl\" -Dutf8_range_DIR=${ORTOOLSDIR}\\lib\\cmake\\utf8_range\"\n    ```\n    \n    For a Debug build, use `cd $HOME/sam_dev/build/Debug` and set `-DCMAKE_BUILD_TYPE=\"Debug\"`.\n    \n    For a build of an official NLR version of SAM, use `-DSAM_SKIP_TOOLS=0` because the official NLR version's build process below requires SDKtool.\n    \n    CMake should create a `system_advisor_model.xcodeproj` file in the `$HOME/sam_dev/build/Release` directory, and if you built a Debug version, a separate `system_advisor_model.xcodeproj` file in the `$HOME/sam_dev/build/Debug` folder.\n    \n    If you are building SAM after changing environment variables, making code changes across different repositories, switching between GitHub branches, or other major changes, removing the XCode DerivedData folder before running `cmake` may prevent link and build errors.\n    \n    ```\n    rm -rf $HOME/Library/Developer/Xcode/DerivedData/\n    ```\n    \n2.  Start XCode and open the system\\_advisor\\_model project for either the Release or Debug build.\n    \n    ```\n    open system_advisor_model.xcodeproj\n    ```\n    \n3.  Choose the SAMOS scheme (SAMOSd for Debug builds): **Product, Scheme, Choose Scheme, SAMOS**.\n    \n4.  Choose the Release or Debug build configuration: **Product, Scheme, Edit Scheme, Info, Build Configuration, \\[Debug/Release\\]**.\n    \n    Be sure to choose the configuration that matches the project: A \"Command PhaseScriptExecution failed with a nonzero exit code\" error toward the end of the build may indicate that you chose the Debug configuration for the Release project or vice versa.\n    \n5.  Build the project: **Product, Build**.\n    \n    The build takes a few minutes. When the build finishes, you should see \"Build Succeeded.\"\n    \n6.  Run SAM: **Product, Run**.\n    \n\nIf you have access to the SAM-private repository to build official NLR versions, you can build SAM to test features specific to the official version such as weather file downloads and other API integrations, software registration, and updates.\n\n1.  Build the open source version of SAM (SAMOS) in XCode as described above, but with the \"Build for any Mac\" option: **Product**, **Destination**, **Any Mac (x86\\_64, arm64)**. _Do not use_ **Product**, **Run** _to build the project. Use_ **Product**, **Build** (⌘B) _instead._\n    \n2.  Also in Xcode, build SDKtool with \"Build for any Mac\" ⌘B. Be sure to edit the scheme to build either Release or Debug to match the SAMOS build.\n    \n3.  Use make to build SAM from SAM-private:\n    \n    ```\n    cd path/to/SAM-private/build_osx\n    ```\n    \n    ```\n    make clean\n    ```\n    \n    ```\n    make setup\n    ```\n    \n    ```\n    make makes\n    ```\n    \n    ```\n    make app\n    ```\n    \n4.  Run SAM:\n    \n\nSAM's Help system is HTML that opens in the computer's default web browser when you click **Help** or press the F1 key in the SAM user interface.\n\nImportant\n\nThe Safari web browser will only load CSS and Javascript elements from local files in developer mode. To display SAM Help correctly in Safari, go to Settings, Advanced Settings, and enable **Show features for web developers**.\n\nFiles to build SAM's Help system are in the `path/to/sam_dev/SAM/doc` folder. To build Help, run the Sphinx Python package to convert the source files to HTML, and then copy the HTML files to the `path/to/sam_dev/SAM/deploy/runtime/help/html` folder.\n\nBuilding SAM's Help system requires:\n\n*   Python\n    \n*   A virtual environment like `venv` or `conda` (recommended)\n    \n*   The Sphinx Python packages listed in `path/to/sam_dev/SAM/doc/requirements.txt`.\n    \n*   Make (optional)\n    \n\nFor detailed build instructions and information about the Help system, see `path/to/sam_dev/SAM/doc/readme`.\n\n1.  Go to the Help folder.\n    \n    ```\n    cd path/to/sam_dev/SAM/doc\n    ```\n    \n2.  Activate the virtual environment. For example, to activate a `venv` environment named \"samdoc\":\n    \n    ```\n    source  path/to/venvs/samdoc/bin/activate\n    ```\n    \n    If you need to create the virtual environment, run `python3 -m venv path/to/venvs/samdoc` to create the environment. The first time you activate the environment, install the required Python packages by running `pip install -r path/to/sam_dev/SAM/doc/requirements.txt`.\n    \n3.  Build Help.\n    \n    You can build Help by running Sphinx directly, or by using Make.\n    \n    To run Sphinx directly:\n    \n    ```\n    sphinx-build -M html source build\n    ```\n    \n    To use Make:\n    \n    ```\n    make html\n    ```\n    \n    To clean the build first, either delete the `path/to/sam_dev/SAM/doc/build` folder, or run `make clean`.\n    \n4.  Copy HTML files to deploy folder.\n    \n    Copy the entire contents of the `path/to/sam_dev/SAM/doc/build/html` folder to `path/to/sam_dev/SAM/deploy/runtime/help/html`. (Do not copy the `doc/build/doctrees` folder.)\n    \n    ```\n    cp -R -f ./build/html ../deploy/runtime/help\n    ```\n    \n\nThe Welcome page of open-source builds of SAM displays \"Please setup API keys, see private.h for details...\". The `private.h` file contains credentials for several APIs used by NLR versions of SAM to access online databases such as for weather file downloads. It is not necessary to modifiy `private.h` to run and test SAM.\n\n1.  When SAM starts, click **Start a new project**, and then click **Photovoltaic (detailed)** and **Residential (distributed)**, and **OK**.\n    \n2.  On the Location and Resource page, click **View data**. That should open a DView window with data from the weather file selected on the Location and Resource page. DView is from WEX, so that confirms that WEX built correctly.\n    \n3.  Close the DView window.\n    \n4.  Click through the input pages to see that they display correctly. The user interface uses libraries from wxWidgets and WEX.\n    \n5.  Click **Simulate** in the bottom left corner of the SAM window. SAM should run a simulation and display results on the Results page. The results page also uses DView from WEX, and displays data generated by SSC.\n    \n6.  Click **Macros** (under the **Simulate** button), and click the **Inverter Sizing Information** button. Click **Run macro** at the top of the window. The macro should run and display a window with information about the inverter's performance. That confirms that LK (also from WEX) is working.\n    \n7.  On any input page, click **Help** or press the F1 key to verify that the correct Help topic opens in the default web browser."
+  },
+  {
+    "url": "https://sam.nlr.gov/software-development-kit-sdk.html",
+    "crawl": {
+      "loadedUrl": "https://sam.nlr.gov/software-development-kit-sdk.html",
+      "loadedTime": "2026-10-22T12:15:38.102Z",
+      "referrerUrl": "https://sam.nlr.gov/software-development-kit-sdk.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 10237,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://sam.nlr.gov/software-development-kit-sdk.html",
+      "title": "Software Development Kit (SDK) - System Advisor Model - SAM",
+      "description": "The System Advisor Model (SAM) is a performance and financial model designed to estimate the cost of energy for grid-connected power projects.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-gb",
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "@id": "https://sam.nlr.gov/#/schema/BreadcrumbList/17",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@id": "https://sam.nlr.gov/",
+                "name": "home"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@id": "https://sam.nlr.gov/software-development-kit-sdk.html",
+                "name": "SDK/PySAM"
+              }
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://sam.nlr.gov/#/schema/Organization/base",
+              "name": "System Advisor Model - SAM",
+              "url": "https://sam.nlr.gov/"
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://sam.nlr.gov/#/schema/WebSite/base",
+              "url": "https://sam.nlr.gov/",
+              "name": "System Advisor Model - SAM",
+              "publisher": {
+                "@id": "https://sam.nlr.gov/#/schema/Organization/base"
+              },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://sam.nlr.gov/component/finder/search.html?q={search_term_string}&amp;Itemid=101",
+                "query-input": "required name=search_term_string"
+              }
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://sam.nlr.gov/#/schema/WebPage/base",
+              "url": "https://sam.nlr.gov/software-development-kit-sdk.html",
+              "name": "Software Development Kit (SDK) - System Advisor Model - SAM",
+              "description": "The System Advisor Model (SAM) is a performance and financial model designed to estimate the cost of energy for grid-connected power projects.",
+              "isPartOf": {
+                "@id": "https://sam.nlr.gov/#/schema/WebSite/base"
+              },
+              "about": {
+                "@id": "https://sam.nlr.gov/#/schema/Organization/base"
+              },
+              "inLanguage": "en-GB",
+              "breadcrumb": {
+                "@id": "https://sam.nlr.gov/#/schema/BreadcrumbList/17"
+              }
+            },
+            {
+              "@type": "Article",
+              "@id": "https://sam.nlr.gov/#/schema/com_content/article/19",
+              "name": "Software Development Kit (SDK)",
+              "headline": "Software Development Kit (SDK)",
+              "inLanguage": "en-GB",
+              "isPartOf": {
+                "@id": "https://sam.nlr.gov/#/schema/WebPage/base"
+              }
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "10237",
+        "content-security-policy": "frame-ancestors 'self';",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:15:37 GMT",
+        "expect-ct": "max-age=0",
+        "expires": "Wed, 17 Aug 2005 00:00:00 GMT",
+        "last-modified": "Thu, 22 Oct 2026 12:15:37 GMT",
+        "pragma": "no-cache",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-powered-by": "PHP/8.3.36",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": [
+          "AWSALB=RwmJ3TgzNdDy/j6JCzqT8lOsYhWZ+ABhVZRP6ek+GV4vsZCov/yISSSm90+slUpD0xd1xxFO5dSqix/ieoNAiueKJKhrHfOxEx3K3L01nwJpNqEd9RJhEmu1e/mq; Expires=Thu, 29 Oct 2026 12:15:37 GMT; Path=/",
+          "AWSALBCORS=RwmJ3TgzNdDy/j6JCzqT8lOsYhWZ+ABhVZRP6ek+GV4vsZCov/yISSSm90+slUpD0xd1xxFO5dSqix/ieoNAiueKJKhrHfOxEx3K3L01nwJpNqEd9RJhEmu1e/mq; Expires=Thu, 29 Oct 2026 12:15:37 GMT; Path=/; SameSite=None; Secure",
+          "8f0bf3ddf81023c57c78625a439f654d=0acd240c7feca718bb321fe883ca3905; path=/; secure; HttpOnly"
+        ]
+      }
+    },
+    "text": "Software Development Kit (SDK) - System Advisor Model\nThe SAM Simulation Core (SSC) software development kit (SDK) is a collection of developer tools and documentation including the PySAM Python package for creating renewable energy system models using the SSC library. SAM is a desktop application that provides a user-friendly front end for the SSC library. The SDK allows you to create your own applications using the SSC library.\nIf you are using the SDK for the first time, please download and read the SSC guide (PDF 650 KB) to familiarize yourself with the SSC API, SSC simulation modules, and SDKtool.\nBecause the SSC simulation modules have a large number of inputs and outputs, we recommend generating your first SSC program from the code generator in SAM's user interface as demonstrated in this video and described below. The code generator creates a complete set of files for a ready-to-run program written in one of the supported languages and platforms listed below.\nWhere are the language wrappers?\nThe code generator replaces the language wrappers and examples in older versions of the SDK because it can create a complete set of files for a ready-to-run program for any type of renewable energy project SAM can model, and in any language or operating system supported by the SDK. The old examples were for a limited set of SAM's modeling capabilities and were difficult for us to keep up to date for all operating systems, languages, and platforms.\nPySAM\nIf you are developing applications in Python, you might want to use PySAM for your work. PySAM provides a more robust set of functions for interacting with SSC than are provided by Python code created by SAM's code generator described below.\nDocumentation\nThe SSC Guide explaining how to use the tools in the SDK (PDF 650 KB).\nThe LK Guide describing the SDKtool scripting language (PDF 272 KB)\nUse SDKtool or the API functions described in Section 3.4 of the SSC Guide to explore a simulation module's input and output variables.\nThe SSC API\nThe SSC API, or application programming interface, defines the functions you use in your code to interact with the SSC library. The functions are defined in the sscapi.h file. When you use SAM's code generator, SAM includes a copy of the SSC API with the files it generates.\nIf you generate code in a language other than C, SAM includes a wrapper written in the language that translates the C functions into that language.\nThe SSC library\nThe SSC library is a compiled dynamic library that comes with SAM that you can access from your programs using the SSC API. You can use the SDKtool or the function described in Section 5 of the SDK Guide to determine the version number of the SSC library you are using.\nWhen you create a program using SAM's code generator, it makes a copy of the SSC library to include in the set of files it generates. You can also find the SSC library in the following default locations for each operating system in case you need to find the file yourself:\nWindows: c:/SAM/2026.7.3/x64/ssc.dll\nmacOS: /Applications/SAM_2026.7.3/ssc.dylib (See this forum post for details)\nLinux: /home/[username]/SAM/2026.7.3/ssc.so\nSDKtool\nSDKtool is an application that comes with SAM that you can use to explore SSC simulation modules and to write test programs in the LK scripting language. See Chapter 6 of the SSC Guide (PDF 650 KB) for a description of SDKtool with examples.\nThe SDKtool is a stand-alone application in your SAM installation folder. You can run it directly from that folder, or move it to a different folder and run it from there.\nWindows: c:/SAM/2026.7.3/x64/sdktool.exe\nmacOS: /Applications/SAM_2026.7.3/SDKtool (Use the Finder to open the app.)\nLinux: /home/[username]/SAM/2026.7.3/linux_64/SDKtool\nThe SAM Code Generator\nSAM's code generator generates ready-to-run programs in the languages and platforms listed below from the inputs in a SAM case. Use the code generator to start your programming project to ensure that you use the correct set of simulation modules and set values for all of the inputs they require for your modeling scenario. You can then modify the code to customize the scenario.\nJSON for inputs\nPySAM JSON\nLK for SDKtool\nC\nMATLAB\nJava\nC#\nVBA\nIf you need an SSC interface for the Julia programming language, you can see how we built one for NLR's REopt model in the 'get_production_factor()' function in \"src/core/production_factor.jl\": https://github.com/natlabrockies/REopt.jl/blob/e0917a05b304a05deeb1d6ba5b60ccffda698806/src/core/production_factor.jl#L129.\nWe have removed support for Android and iOS from SAM's code generator, but you may be able to build your own libraries to integrate SAM with applications for those platforms using the following instructions:\nAndroid Studio\nXCode Swift for iOS\nGetting Help\nIf you have questions or comments about the SDK, please let us know by posting a comment on the SDK support forum.\nRelease Notes\nThe notes below describe changes to SAM, the SSC, or documentation that are specifically relevant to the SDK.\nFor descriptions of changes to performance or financial models, see the SAM release notes.\nFor PySAM, see the PySAM documentation.\nThe list below is for older releases with changes that may not be documented in the current SAM, SSC, or PySAM release notes.\nDecember 2021\nRemove out-of-date Android and iOS from SAM's code generator. (See note above under \"The SAM Code Generator.\")\nNovember 11, 2018\nRemove language wrappers from SDK package to encourage use of SAM's code generator. This should help resolve version compatibility issues, and help users choose the correct set of simulation modules and variables.\nUpdates to simulation modules as documented in release notes for SAM 2018.11.11.\nJune 30, 2015\nNew PHP 5.4 extension module source code and example PVWatts website HTML code.\nUpdated examples and instructions.\nJanuary 30, 2015\nUpdated examples and instructions, including LK script and .c files.\nNovember 24, 2014\nWe've updated the examples since the original release on November 24, 2014. The examples should now work with the new simulation modules (as of December 3, 2014).\nUpdates to simulation modules as documented in release notes for SAM 2014.11.24.\nLK script updates.\nFebruary 5, 2014 (No version number changes)\nResolved SDKtool Windows library depedency issues.\nJanuary 31, 2014 (No version number changes)\nAdded the msvcp120.dll and msvcr120.dll files required to run SDKtool on Windows 8.1.\nJanuary 21, 2014: SDK 2014-1-21, SSC 36\nThis is a major update that adds preliminary versions of the concentrating solar power (CSP) modules to the SDK.\nRevise SSC Guide.\nSeptember 20, 2013: SDK 2013-9-20, SSC 33\nUpdate sample scripts and wrappers to work with SSC 33.\nMay 3, 2013: Update to First Release\nAdded three new modules: CSV weather file reader and converter, plane-of-array calibration, utility rate 2 for new OpenEI utility rate database version 2\nUpdates to support Linux CentOS6.3 and OS X 10.8.\nUpdate MATLAB, Java, Python, and LK script examples.\nImproved the MATLAB wrapper with new classes, SSC package, and a MATLAB GUIDE example.\nImproved the Python wrapper with new classes, and several examples including flat plate PV with residential and commercial markets.\nFixed various issues with the MATLAB and Java wrappers. They have been tested in Windows 32-bit and 64-bit, OS X 10.8, and CentOS 6.3.\nUpdated all wrapper examples to include flat plate PV with residential and commercial markets. They have been tested in Windows 32-bit and 64-bit, OS X 10.8, and CentOS 6.3.\nFebruary 8, 2013: First Release\nThe first version of the SDK was called Version 0.9.",
+    "html": null,
+    "markdown": "# Software Development Kit (SDK) - System Advisor Model\n\nThe SAM Simulation Core (SSC) software development kit (SDK) is a collection of developer tools and documentation including the [PySAM](https://sam.nlr.gov/index.php?option=com_content&view=article&id=104&Itemid=399 \"Link to PySAM page\") Python package for creating renewable energy system models using the SSC library. SAM is a desktop application that provides a user-friendly front end for the SSC library. The SDK allows you to create your own applications using the SSC library.\n\nIf you are using the SDK for the first time, please download and read the SSC guide ([PDF 650 KB](https://sam.nlr.gov/images/web_page_files/ssc_guide.pdf \"SSC Guide\")) to familiarize yourself with the SSC API, SSC simulation modules, and SDKtool.\n\nBecause the SSC simulation modules have a large number of inputs and outputs, we recommend generating your first SSC program from the code generator in SAM's user interface as demonstrated in [this video](https://youtu.be/UUHEoWeJ_L8 \"Link to YouTube video demonstrating SAM Code Generator\") and described below. The code generator creates a complete set of files for a ready-to-run program written in one of the supported languages and platforms listed below.\n\n#### Where are the language wrappers?\n\nThe code generator replaces the language wrappers and examples in older versions of the SDK because it can create a complete set of files for a ready-to-run program for any type of renewable energy project SAM can model, and in any language or operating system supported by the SDK. The old examples were for a limited set of SAM's modeling capabilities and were difficult for us to keep up to date for all operating systems, languages, and platforms.\n\n#### PySAM\n\nIf you are developing applications in Python, you might want to use [PySAM](https://sam.nlr.gov/index.php?option=com_content&view=article&id=104&Itemid=399 \"Link to PySAM page\") for your work. PySAM provides a more robust set of functions for interacting with SSC than are provided by Python code created by SAM's code generator described below.\n\n### Documentation\n\n*   The SSC Guide explaining how to use the tools in the SDK ([PDF 650 KB](https://sam.nlr.gov/images/web_page_files/ssc_guide.pdf \"SSC Guide\")).\n*   The LK Guide describing the SDKtool scripting language ([PDF 272 KB](https://sam.nlr.gov/images/web_page_files/lk_guide.pdf \"LK Guide\"))\n*   Use SDKtool or the API functions described in Section 3.4 of the SSC Guide to explore a simulation module's input and output variables.\n\n### The SSC API\n\nThe SSC API, or application programming interface, defines the functions you use in your code to interact with the SSC library. The functions are defined in the `sscapi.h` file. When you use SAM's code generator, SAM includes a copy of the SSC API with the files it generates.\n\nIf you generate code in a language other than C, SAM includes a wrapper written in the language that translates the C functions into that language.\n\n### The SSC library\n\nThe SSC library is a compiled dynamic library that comes with SAM that you can access from your programs using the SSC API. You can use the SDKtool or the function described in Section 5 of the SDK Guide to determine the version number of the SSC library you are using.\n\nWhen you create a program using SAM's code generator, it makes a copy of the SSC library to include in the set of files it generates. You can also find the SSC library in the following default locations for each operating system in case you need to find the file yourself:\n\n*   Windows: `c:/SAM/2026.7.3/x64/ssc.dll`\n*   macOS: `/Applications/SAM_2026.7.3/ssc.dylib` (See [this forum post](https://sam.nlr.gov/forum/forum-sdk/3271-sdktool-in-sam-2020-11-29-mac-distribution-will-not-start.html \"SAM forum post on SDKtool for macOS\") for details)\n*   Linux: `/home/[username]/SAM/2026.7.3/ssc.so`\n\n### SDKtool\n\nSDKtool is an application that comes with SAM that you can use to explore SSC simulation modules and to write test programs in the LK scripting language. See Chapter 6 of the SSC Guide ([PDF 650 KB](https://sam.nlr.gov/images/web_page_files/ssc_guide.pdf \"SSC Guide\")) for a description of SDKtool with examples.\n\nThe SDKtool is a stand-alone application in your SAM installation folder. You can run it directly from that folder, or move it to a different folder and run it from there.\n\n*   Windows: `c:/SAM/2026.7.3/x64/sdktool.exe`\n*   macOS: `/Applications/SAM_2026.7.3/SDKtool` (Use the Finder to open the app.)\n*   Linux: `/home/[username]/SAM/2026.7.3/linux_64/SDKtool`\n\n### The SAM Code Generator\n\n![SAM Code Generator](https://sam.nlr.gov/images/web_page_files/code-generator.png)\n\nSAM's code generator generates ready-to-run programs in the languages and platforms listed below from the inputs in a SAM case. Use the code generator to start your programming project to ensure that you use the correct set of simulation modules and set values for all of the inputs they require for your modeling scenario. You can then modify the code to customize the scenario.\n\n*   JSON for inputs\n*   PySAM JSON\n*   LK for SDKtool\n*   C\n*   MATLAB\n*   Java\n*   C#\n*   VBA\n\nIf you need an SSC interface for the Julia programming language, you can see how we built one for NLR's REopt model in the 'get\\_production\\_factor()' function in \"src/core/production\\_factor.jl\": [https://github.com/natlabrockies/REopt.jl/blob/e0917a05b304a05deeb1d6ba5b60ccffda698806/src/core/production\\_factor.jl#L129](https://github.com/natlabrockies/REopt.jl/blob/e0917a05b304a05deeb1d6ba5b60ccffda698806/src/core/production_factor.jl#L129).\n\nWe have removed support for Android and iOS from SAM's code generator, but you may be able to build your own libraries to integrate SAM with applications for those platforms using the following instructions:\n\n*   [Android Studio](https://sam.nlr.gov/11/115 \"Link to instructions for SDK for Android Studio\")\n*   [XCode Swift for iOS](https://sam.nlr.gov/11/116 \"Link to instructions for SDK for iOS with XCode and Swift\")\n\n### Getting Help\n\nIf you have questions or comments about the SDK, please let us know by posting a comment on the [SDK support forum](https://sam.nlr.gov/forum/forum-sdk.html \"SDK Support Forum\").\n\n## Release Notes\n\nThe notes below describe changes to SAM, the SSC, or documentation that are specifically relevant to the SDK.\n\n*   For descriptions of changes to performance or financial models, see the [SAM release notes](https://natlabrockies.github.io/SAM/doc/reference/release_notes.html \"SAM Release Notes\").\n*   For PySAM, see the [PySAM documentation](https://nlr-pysam.readthedocs.io/en/main/versions.html \"Link to PySAM documentation\").\n\nThe list below is for older releases with changes that may not be documented in the current SAM, SSC, or PySAM release notes.\n\n**December 2021**\n\n*   Remove out-of-date Android and iOS from SAM's code generator. (See note above under \"The SAM Code Generator.\")\n\n**November 11, 2018**\n\n*   Remove language wrappers from SDK package to encourage use of SAM's code generator. This should help resolve version compatibility issues, and help users choose the correct set of simulation modules and variables.\n*   Updates to simulation modules as documented in release notes for SAM 2018.11.11.\n\n**June 30, 2015**\n\n*   New PHP 5.4 extension module source code and example PVWatts website HTML code.\n*   Updated examples and instructions.\n\n**January 30, 2015**\n\n*   Updated examples and instructions, including LK script and .c files.\n\n**November 24, 2014**\n\nWe've updated the examples since the original release on November 24, 2014. The examples should now work with the new simulation modules (as of December 3, 2014).\n\n*   Updates to simulation modules as documented in release notes for SAM 2014.11.24.\n*   LK script updates.\n\n**February 5, 2014 (No version number changes)**\n\n*   Resolved SDKtool Windows library depedency issues.\n\n**January 31, 2014 (No version number changes)**\n\n*   Added the msvcp120.dll and msvcr120.dll files required to run SDKtool on Windows 8.1.\n\n**January 21, 2014: SDK 2014-1-21, SSC 36**\n\n*   This is a major update that adds preliminary versions of the concentrating solar power (CSP) modules to the SDK.\n*   Revise SSC Guide.\n\n**September 20, 2013: SDK 2013-9-20, SSC 33**\n\n*   Update sample scripts and wrappers to work with SSC 33.\n\n**May 3, 2013: Update to First Release**\n\n*   Added three new modules: CSV weather file reader and converter, plane-of-array calibration, utility rate 2 for new OpenEI utility rate database version 2\n*   Updates to support Linux CentOS6.3 and OS X 10.8.\n*   Update MATLAB, Java, Python, and LK script examples.\n*   Improved the MATLAB wrapper with new classes, SSC package, and a MATLAB GUIDE example.\n*   Improved the Python wrapper with new classes, and several examples including flat plate PV with residential and commercial markets.\n*   Fixed various issues with the MATLAB and Java wrappers. They have been tested in Windows 32-bit and 64-bit, OS X 10.8, and CentOS 6.3.\n*   Updated all wrapper examples to include flat plate PV with residential and commercial markets. They have been tested in Windows 32-bit and 64-bit, OS X 10.8, and CentOS 6.3.\n\n**February 8, 2013: First Release**\n\n*   The first version of the SDK was called Version 0.9."
+  },
+  {
+    "url": "https://github.com/NatLabRockies/SAM/blob/develop/LICENSE",
+    "crawl": {
+      "loadedUrl": "https://github.com/NatLabRockies/SAM/blob/develop/LICENSE",
+      "loadedTime": "2026-10-22T12:15:38.855Z",
+      "referrerUrl": "https://github.com/NatLabRockies/SAM/blob/develop/LICENSE",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 223369,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://github.com/NatLabRockies/SAM/blob/develop/LICENSE",
+      "title": "SAM/LICENSE at develop · NatLabRockies/SAM · GitHub",
+      "description": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://opengraph.githubassets.com/17d29c6202325261f8b073326403e5f49b096263af351422e26905c820fa3ba4/NatLabRockies/SAM"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub."
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "600"
+        },
+        {
+          "property": "og:site_name",
+          "content": "GitHub"
+        },
+        {
+          "property": "og:type",
+          "content": "object"
+        },
+        {
+          "property": "og:title",
+          "content": "SAM/LICENSE at develop · NatLabRockies/SAM"
+        },
+        {
+          "property": "og:url",
+          "content": "https://github.com/NatLabRockies/SAM/blob/develop/LICENSE"
+        },
+        {
+          "property": "og:description",
+          "content": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "cache-control": "max-age=0, private, must-revalidate",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'none'; base-uri 'self'; child-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/; connect-src 'self' uploads.github.com www.githubstatus.com collector.github.com raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com wss://production-copilot-host.webpubsub.azure.com wss://production-copilot-host-centralus.webpubsub.azure.com wss://production-copilot-host-centralus-02.webpubsub.azure.com wss://production-copilot-host-westus.webpubsub.azure.com api.github.com/cmc_internal/api/; font-src github.githubassets.com; form-action 'self' github.com gist.github.com copilot-workspace.githubnext.com objects-origin.githubusercontent.com; frame-ancestors 'none'; frame-src viewscreen.githubusercontent.com notebooks.githubusercontent.com; img-src 'self' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com secured-user-images.githubusercontent.com user-images.githubusercontent.com private-user-images.githubusercontent.com opengraph.githubassets.com repository-images.githubusercontent.com marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/ github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com spotlights-feed.github.com explore-feed.github.com *.googleusercontent.com objects-origin.githubusercontent.com *.githubusercontent.com; manifest-src 'self'; media-src github.com user-images.githubusercontent.com secured-user-images.githubusercontent.com private-user-images.githubusercontent.com github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com; script-src github.githubassets.com 'sha256-tSjmyPUky1KbRZ0fw9VUil3wFEbeM82rtbJDygGJAXw='; style-src 'unsafe-inline' github.githubassets.com; upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:15:38 GMT",
+        "etag": "W/\"2c4e5eda8cd18e590f68b091bb689e1f\"",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "github.com",
+        "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+        "vary": "X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, X-GitHub-Client-Version, Sec-Fetch-Site,Accept-Encoding, Accept, X-Requested-With",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "deny",
+        "x-github-edge-region": "iad",
+        "x-github-request-id": "9428:C16A6:109ED9:170EF3:6AD9FE69",
+        "x-raw-download": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE",
+        "x-repository-download": "git clone https://github.com/NatLabRockies/SAM.git",
+        "x-xss-protection": "0",
+        "set-cookie": [
+          "_gh_sess=gdHQz%2F4xBQ05bvntAVjatHAxeHpc1isQ85QAZgiWcUsLgGDw9BoP1r%2BV85N2%2FkD%2FvHNu9YoPPX%2FwLFp5kR%2BZhbd2DNFK7ioRzC3ZjtLTjUClu6IOdSCa9HsM7y5piuN9lq3eMoskpEcTvQbahqV2uBpATu0s6HHoIn0AOVCQEHuLvdXR1PS7wr0ysNF%2FiFvGfNje7gG%2FOiu4C6HgUMtN%2B22b5Cb3mNsGb3P%2BpTqAWPZK%2BxldNXsEcyQnOMkIYfripUbj1fxIMA0R6pvijtv0Bg%3D%3D--xu%2BcllEWQz2WfGI1--6f3jSx7TTjmzDtzx12FQ1A%3D%3D; path=/; HttpOnly; secure; SameSite=Lax",
+          "_octo=GH1.1.913960082.1792671338; expires=Fri, 22 Oct 2027 12:15:38 GMT; domain=.github.com; path=/; secure; SameSite=Lax",
+          "logged_in=no; expires=Fri, 22 Oct 2027 12:15:38 GMT; domain=.github.com; path=/; HttpOnly; secure; SameSite=Lax"
+        ]
+      }
+    },
+    "text": "SAM/LICENSE at develop · NatLabRockies/SAM · GitHub\n29 lines (23 loc) · 1.51 KB\nLICENSE\nFile metadata and controls\n29 lines (23 loc) · 1.51 KB\nRaw",
+    "html": null,
+    "markdown": "# SAM/LICENSE at develop · NatLabRockies/SAM · GitHub\n\n29 lines (23 loc) · 1.51 KB\n\n## LICENSE\n\n## File metadata and controls\n\n29 lines (23 loc) · 1.51 KB\n\n[Raw](https://github.com/NatLabRockies/SAM/raw/refs/heads/develop/LICENSE)"
+  },
+  {
+    "url": "https://sam.nlr.gov/download/system-requirements.html",
+    "crawl": {
+      "loadedUrl": "https://sam.nlr.gov/download/system-requirements.html",
+      "loadedTime": "2026-10-22T12:15:39.960Z",
+      "referrerUrl": "https://sam.nlr.gov/download/system-requirements.html",
+      "httpStatusCode": 404,
+      "depth": 0,
+      "contentLengthBytes": 13881,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://sam.nlr.gov/download/system-requirements.html",
+      "title": "Error: 404",
+      "description": null,
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-gb",
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-store, no-cache, must-revalidate, post-check=0, pre-check=0",
+        "connection": "keep-alive",
+        "content-encoding": "br",
+        "content-security-policy": "frame-ancestors 'self';",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:15:39 GMT",
+        "expect-ct": "max-age=0",
+        "expires": "Wed, 17 Aug 2005 00:00:00 GMT",
+        "last-modified": "Thu, 22 Oct 2026 12:15:39 GMT",
+        "pragma": "no-cache",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "transfer-encoding": "chunked",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-powered-by": "PHP/8.3.36",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": [
+          "AWSALB=rxFc/+oqUHujcA8V1t8rEXAcHQpgGwmCH4Of4n944NmvBO6ZeJCDJg2k0lPL0iyFXPpIaYRCfhacfpibRonnj9XZzx8YJLPSep9+dbc7Oi52mrefpoExKy+NvrIX; Expires=Thu, 29 Oct 2026 12:15:39 GMT; Path=/",
+          "AWSALBCORS=rxFc/+oqUHujcA8V1t8rEXAcHQpgGwmCH4Of4n944NmvBO6ZeJCDJg2k0lPL0iyFXPpIaYRCfhacfpibRonnj9XZzx8YJLPSep9+dbc7Oi52mrefpoExKy+NvrIX; Expires=Thu, 29 Oct 2026 12:15:39 GMT; Path=/; SameSite=None; Secure",
+          "8f0bf3ddf81023c57c78625a439f654d=51a8494964b236ea98148015bb29eb3c; path=/; secure; HttpOnly"
+        ]
+      }
+    },
+    "text": "Error: 404\nAn error has occurred while processing your request.\nYou may not be able to visit this page because of:\nan out-of-date bookmark/favourite\na mistyped address\na search engine that has an out-of-date listing for this site\nyou have no access to this page\nGo to the Home Page\nHome Page\nIf difficulties persist, please contact the website administrator and report the error below.\n404 Category not found",
+    "html": null,
+    "markdown": "# Error: 404\n\n**An error has occurred while processing your request.**\n\nYou may not be able to visit this page because of:\n\n*   an **out-of-date bookmark/favourite**\n*   a **mistyped address**\n*   a search engine that has an **out-of-date listing for this site**\n*   you have **no access** to this page\n\nGo to the Home Page\n\n[Home Page](https://sam.nlr.gov/index.php)\n\n* * *\n\nIf difficulties persist, please contact the website administrator and report the error below.\n\n> 404 Category not found"
+  },
+  {
+    "url": "https://samrepo.nlr.gov/help/case_menu.html",
+    "crawl": {
+      "loadedUrl": "https://samrepo.nlr.gov/help/case_menu.html",
+      "loadedTime": "2026-10-22T12:15:40.105Z",
+      "referrerUrl": "https://samrepo.nlr.gov/help/case_menu.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 53591,
+      "contentType": "text/html"
+    },
+    "metadata": {
+      "canonicalUrl": "https://sam.nrel.gov/help/case_menu.html",
+      "title": "Case Menu",
+      "description": "The case menu displays commands for the current case. Click the  arrow on the case tab to display the menu. See Keyboard Shortcuts for additional functions.",
+      "author": "National Renewable Energy Laboratory",
+      "keywords": "",
+      "languageCode": "en-us",
+      "jsonLd": null,
+      "headers": {
+        "content-encoding": "gzip",
+        "content-type": "text/html",
+        "date": "Thu, 22 Oct 2026 12:15:39 GMT",
+        "etag": "W/\"bfb632ddbd94e5a42b5e651e11681eab\"",
+        "last-modified": "Thu, 12 Dec 2024 21:22:53 GMT",
+        "server": "AmazonS3",
+        "vary": "Accept-Encoding",
+        "via": "1.1 1114c486390e3f2314e8a70eb58e5d3c.cloudfront.net (CloudFront)",
+        "x-amz-cf-id": "FR1nPCmyIt87vbR3i88bUmV5RuPogm9750nqCD8_TFXSgDvZ-uonRA==",
+        "x-amz-cf-pop": "JFK52-P10",
+        "x-amz-server-side-encryption": "AES256",
+        "x-amz-version-id": "j8Ch1TUKQzbY2r_VJFR27gRfX3H6oiyw",
+        "x-cache": "Miss from cloudfront"
+      }
+    },
+    "text": "Case Menu\nSimulate\nRuns a simulation for the current case. Equivalent to clicking the Simulate button.\nCreate report\nRun the report generator to create a PDF report for the current case. When you create a report, SAM first runs a simulation to be sure there are results to include in the report.\nClear all results\nClears results from the current case. SAM removes any graphs you may have created for the case.\nRename\nChange the name of the current case.\nDuplicate\nCreate a copy of the current case.\nDelete\nDelete the current case.\nMove left\nMove the current case's tab to the left in the toolbar.\nMove right\nMove the current case's tab to the right in the toolbar.\nChange model\nChange the performance model, financial model, or both for the current case.\nWhen you change one model, SAM retains the input values of the other model and assigns default values to the inputs of the model you changed. For example, if you change a PVWatts/Residential case to Detailed Photovoltaic/Residential, SAM keeps the Residential financial model's inputs, and changes the performance model to detailed photovoltaic with its default values.\nNote. Change Model does not preserve inputs between hybrid and non-hybrid, or between hybrid models because of the way input variables are defined for hybrid models. This will be fixed in an update.\nReset inputs to default values\nReplaces all inputs variable values with default values.\nExcel exchange\nConfigure the case for Excel Exchange to exchange input variable values with a Microsoft Excel workbook.\nGenerate Code\nExport the input variables for the current case to a text file containing code in one of the languages supported by the Software Development Kit.",
+    "html": null,
+    "markdown": "# Case Menu\n\nSimulate\n\n[Runs a simulation](https://samrepo.nlr.gov/help/run_simulations.html) for the current case. Equivalent to clicking the Simulate button.\n\nCreate report\n\nRun the [report generator](https://samrepo.nlr.gov/help/reports.html) to create a PDF report for the current case. When you create a report, SAM first runs a simulation to be sure there are results to include in the report.\n\nClear all results\n\nClears results from the current case. SAM removes any graphs you may have created for the case.\n\nRename\n\nChange the name of the current case.\n\nDuplicate\n\nCreate a copy of the current case.\n\nDelete\n\nDelete the current case.\n\nMove left\n\nMove the current case's tab to the left in the toolbar.\n\nMove right\n\nMove the current case's tab to the right in the toolbar.\n\nChange model\n\nChange the performance model, financial model, or both for the current case.\n\nWhen you change one model, SAM retains the input values of the other model and assigns default values to the inputs of the model you changed. For example, if you change a PVWatts/Residential case to Detailed Photovoltaic/Residential, SAM keeps the Residential financial model's inputs, and changes the performance model to detailed photovoltaic with its default values.\n\nNote. Change Model does not preserve inputs between hybrid and non-hybrid, or between hybrid models because of the way input variables are defined for hybrid models. This will be fixed in an update.\n\nReset inputs to default values\n\nReplaces all inputs variable values with default values.\n\nExcel exchange\n\nConfigure the case for [Excel Exchange](https://samrepo.nlr.gov/help/excel_exchange.html) to exchange input variable values with a Microsoft Excel workbook.\n\nGenerate Code\n\nExport the input variables for the current case to a text file containing code in one of the languages supported by the [Software Development Kit](https://samrepo.nlr.gov/help/sdk.html)."
+  }
+]

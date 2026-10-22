@@ -1,0 +1,851 @@
+[
+  {
+    "url": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+    "crawl": {
+      "loadedUrl": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+      "loadedTime": "2026-10-22T12:13:56.112Z",
+      "referrerUrl": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 24114,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+      "title": "archelios PRO - Solar PV Design Software - Trace Software",
+      "description": "archelios PRO is a professional software for photovoltaic design, simulate, yield forecast, and 3D design for solar PV installations.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-GB",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_GB"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "fr_FR"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "de_DE"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "es_ES"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "archelios PRO - Solar PV Design Software - Trace Software"
+        },
+        {
+          "property": "og:description",
+          "content": "archelios PRO is a professional software for photovoltaic design, simulate, yield forecast, and 3D design for solar PV installations."
+        },
+        {
+          "property": "og:url",
+          "content": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Trace Software"
+        },
+        {
+          "property": "article:modified_time",
+          "content": "2026-09-15T14:19:46+00:00"
+        },
+        {
+          "property": "og:image",
+          "content": "https://www.trace-software.com/wp-content/uploads/2024/08/Badge-ENG-Solaire.svg"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "WebPage",
+              "@id": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+              "url": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/",
+              "name": "archelios PRO - Solar PV Design Software - Trace Software",
+              "isPartOf": {
+                "@id": "https://www.trace-software.com/en/#website"
+              },
+              "primaryImageOfPage": {
+                "@id": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/#primaryimage"
+              },
+              "image": {
+                "@id": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/#primaryimage"
+              },
+              "thumbnailUrl": "https://www.trace-software.com/wp-content/uploads/2024/08/Badge-ENG-Solaire.svg",
+              "datePublished": "2024-09-02T12:56:47+00:00",
+              "dateModified": "2026-09-15T14:19:46+00:00",
+              "description": "archelios PRO is a professional software for photovoltaic design, simulate, yield forecast, and 3D design for solar PV installations.",
+              "breadcrumb": {
+                "@id": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/#breadcrumb"
+              },
+              "inLanguage": "en-GB",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "ImageObject",
+              "inLanguage": "en-GB",
+              "@id": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/#primaryimage",
+              "url": "https://www.trace-software.com/wp-content/uploads/2024/08/Badge-ENG-Solaire.svg",
+              "contentUrl": "https://www.trace-software.com/wp-content/uploads/2024/08/Badge-ENG-Solaire.svg"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.trace-software.com/en/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Our Solutions",
+                  "item": "https://www.trace-software.com/en/our-solutions/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "Product archelios PRO"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.trace-software.com/en/#website",
+              "url": "https://www.trace-software.com/en/",
+              "name": "Trace Software",
+              "description": "",
+              "publisher": {
+                "@id": "https://www.trace-software.com/en/#organization"
+              },
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://www.trace-software.com/en/?s={search_term_string}"
+                  },
+                  "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "search_term_string"
+                  }
+                }
+              ],
+              "inLanguage": "en-GB"
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.trace-software.com/en/#organization",
+              "name": "Trace Software",
+              "url": "https://www.trace-software.com/en/",
+              "logo": {
+                "@type": "ImageObject",
+                "inLanguage": "en-GB",
+                "@id": "https://www.trace-software.com/en/#/schema/logo/image/",
+                "url": "https://www.trace-software.com/wp-content/uploads/2024/06/trace-software-logo-long-color-default-1.svg",
+                "contentUrl": "https://www.trace-software.com/wp-content/uploads/2024/06/trace-software-logo-long-color-default-1.svg",
+                "width": 218,
+                "height": 32,
+                "caption": "Trace Software"
+              },
+              "image": {
+                "@id": "https://www.trace-software.com/en/#/schema/logo/image/"
+              }
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "accept-ranges": "bytes",
+        "age": "2502",
+        "cache-control": "max-age=3600, public",
+        "content-encoding": "gzip",
+        "content-length": "24114",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 11:32:13 GMT",
+        "etag": "\"8ac20b2bff66b82c3be9238e028c720c\"",
+        "last-modified": "Thu, 22 Oct 2026 11:32:13 GMT",
+        "link": "<https://www.trace-software.com/wp-json/>; rel=\"https://api.w.org/\", <https://www.trace-software.com/wp-json/wp/v2/pages/5151>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.trace-software.com/?p=5151>; rel=shortlink",
+        "permissions-policy": "private-state-token-redemption=(self \"https://www.google.com\" \"https://www.gstatic.com\" \"https://recaptcha.net\" \"https://challenges.cloudflare.com\" \"https://hcaptcha.com\"), private-state-token-issuance=(self \"https://www.google.com\" \"https://www.gstatic.com\" \"https://recaptcha.net\" \"https://challenges.cloudflare.com\" \"https://hcaptcha.com\")",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnu3.phpnet.org (Varnish/7.7)",
+        "x-cache": "HIT",
+        "x-cacheable": ":perhaps:",
+        "x-cachettl": "1097s",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-varnish": "2130548628 2097263290",
+        "x-varnutype": "5",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": "WEBMO-VNU=3|atn+B|atn+B; path=/; HttpOnly; SameSite=Strict"
+      }
+    },
+    "text": "archelios PRO - Solar PV Design Software\nSOLUTIONS\nDesign, simulate, and analyse your photovoltaic projects with archelios PRO \nWith the archelios PRO web application, you can design any type of photovoltaic project: from rooftop projects to large solar power plants. Feasibility and profitability studies, simulations, production calculations, the application is intended for all types of projects. \nAccess the archelios PRO application:\nThe promises of archelios PRO\nLayout\nLocation and 3D modelling of the installation.\nConfiguration\nLayout, choice of inverter and automatic wiring of the tables.\nPre-sizing\nQuick estimation of the output. (P50-P90) \nProject design\nDetailed study and full report customization. \nSelf-consumption\nSupports all types of load curves.\nTechnical-economic study\nComplete analysis with calculation of the return and payback time. (VAN/LCOE/TRI) \nExecution\nSingle-line schematics and execution plans. \nFeatures \n3D Conception \nLayout and automatic layout\nInverter configuration and automatic string wiring \nSimulation and production calculation \nSelf-consumption analysis and energy storage\nEconomic analysis\nSizing Report\nProject deliverables \nBrochure\narchelios pro\nReferences\narchelios PRO is recognised by the following training organisations: \nINES / OPQIBI / FORMAPELEC \nIntegration of more than 100 manufacturer catalogues\nA range of photovoltaic software adapted to your activity\nDepending on whether you’re a craftsman, small project installer, solar power plant developer, or occasional user, you won’t always need the same features. With the archelios PRO range, you have an ergonomic and high-performance tool, adapted to the size of your projects with features tailored to your needs. \narchelios PRO Free\nPower limit of 9kWp/project\nFree \nFeatures (limited)\nDescription\nDimensioning of modules, inverters and optimizers \nCalculation of output \nEconomic calculation of the project \nFind out more\narchelios PRO Silver\nPower limit of 100kWp/project (Or Projects up to 100kWp)\n990 € excl. tax / year\nFeatures \nDescription\nBuilt-in 3D modelling \nDimensioning of modules, inverters and optimizers \nCalculation of output P50\nEconomic calculation of the project \nSelf-consumption analysis with battery storage system\nManagement of solar pumping installations\nAdding hardware references\nAccess to the BIM&CO module database\nProject import – Sunny design / K2 Base\narchelios plugin for SketchUp \n3D wiring of modules and channels\nProject export to elec calc and archelios CALC (partial)\nSubscribe\narchelios PRO Gold\nPower limit of 1MWp /project (Or Projects up to 1MWp)\n1 490 € excl. tax / year\nAdditional features\nDescription\nUse of P50, P75, P90 probability indicators - NEW\nDetailed production analysis\nImport consumption profile from the Enedis API\nSelf-consumption analysis with virtual battery\nEdit PDF and CSV reports\nImport weather data\n3D dxf export (AutoCAD)\nExport GeoJSON data\nKML export (Google Earth)\nImport horizon files\nTracker compatibility\nCompare projects\nProject export to elec calc and archelios CALC (complete)\nSubscribe\narchelios PRO Platinum\nUnlimited power\n1 990 € excl. tax / year\nAdditional features\nDescription\nUse of custom probability indicators - NEW\nImport weather data (TMY 365 days taken into account) \nImport 3E weather data via an API tool \n3D earthmoving tool (SketchUp plugin)\nOptimise clipping\narchelios plugin for Revit®\nAdvanced battery storage settings\nSubscribe\nThey chose archelios PRO\nCompatibility\nGoing further",
+    "html": null,
+    "markdown": "# archelios PRO - Solar PV Design Software\n\n## SOLUTIONS\n\n![Logo](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-ENG-Solaire.svg)\n\n![Logo formation](https://www.trace-software.com/wp-content/uploads/2024/08/archelios-pro-dark-1.png)\n\nDesign, simulate, and analyse your photovoltaic projects with archelios PRO\n\nWith the archelios PRO web application, you can design any type of photovoltaic project: from rooftop projects to large solar power plants. Feasibility and profitability studies, simulations, production calculations, the application is intended for all types of projects.\n\nAccess the archelios PRO application:\n\n## The promises of archelios PRO\n\n![trace-offre-complete](https://www.trace-software.com/wp-content/uploads/2024/08/trace-offre-complete-1.svg)\n\n### Layout\n\nLocation and 3D modelling of the installation.\n\n![trace-settings](https://www.trace-software.com/wp-content/uploads/2024/08/trace-settings-1.svg)\n\n### Configuration\n\nLayout, choice of inverter and automatic wiring of the tables.\n\n![illustration1-1](https://www.trace-software.com/wp-content/uploads/2024/08/illustration1-1.svg)\n\n### Pre-sizing\n\nQuick estimation of the output. (P50-P90)\n\n![trace-list-simple-](https://www.trace-software.com/wp-content/uploads/2024/08/trace-list-simple-1.svg)\n\n### Project design\n\nDetailed study and full report customization.\n\n![trace-design](https://www.trace-software.com/wp-content/uploads/2024/08/trace-design.svg)\n\n### Self-consumption\n\nSupports all types of load curves.\n\n![trace-predimensionnement](https://www.trace-software.com/wp-content/uploads/2024/08/trace-predimensionnement-1.svg)\n\n### Technical-economic study\n\nComplete analysis with calculation of the return and payback time. (VAN/LCOE/TRI)\n\n![illustration2-1](https://www.trace-software.com/wp-content/uploads/2024/08/illustration2-1.svg)\n\n### Execution\n\nSingle-line schematics and execution plans.\n\n## Features\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration1.svg)![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration-1-1.svg)\n\n3D Conception\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration1-2.svg)![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration-3.svg)\n\nLayout and automatic layout\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration5-1.svg)![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration4-1.svg)\n\nInverter configuration and automatic string wiring\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration3-2.svg)![](https://www.trace-software.com/wp-content/uploads/2024/07/trace-offre-complete-lg-1.svg)\n\nSimulation and production calculation\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration7.svg)![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration6.svg)\n\nSelf-consumption analysis and energy storage\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration-1.svg)![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration1-4.svg)\n\nEconomic analysis\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration3-1.svg)![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration2-2.svg)\n\nSizing Report\n\n![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration5.svg)![](https://www.trace-software.com/wp-content/uploads/2024/08/illustration4.svg)\n\nProject deliverables\n\n![trace-print-lg](https://www.trace-software.com/wp-content/uploads/2024/08/trace-print-lg-1.svg)\n\n## Brochure\n\n> archelios pro\n\n![trace-cloud-lg](https://www.trace-software.com/wp-content/uploads/2024/08/trace-cloud-lg-1-1.svg)\n\n### References\n\narchelios PRO is recognised by the following training organisations:  \nINES / OPQIBI / FORMAPELEC\n\n## Integration of more than 100 manufacturer catalogues\n\n## A range of photovoltaic software adapted to your activity\n\nDepending on whether you’re a craftsman, small project installer, solar power plant developer, or occasional user, you won’t always need the same features. With the archelios PRO range, you have an ergonomic and high-performance tool, adapted to the size of your projects with features tailored to your needs.\n\n![archelios PRO Free Badge](https://www.trace-software.com/wp-content/uploads/2024/08/Badge1.svg)\n\n### archelios PRO Free\n\nPower limit of 9kWp/project\n\n**Free**\n\n#### Features (limited)\n\nDescription\n\n*   Dimensioning of modules, inverters and optimizers\n*   Calculation of output\n*   Economic calculation of the project\n\n[Find out more](https://www.trace-software.com/en/our-solutions/archelios-pro-free-free-pv-design-software/)\n\n![archelios PRO Silver Badge](https://www.trace-software.com/wp-content/uploads/2024/08/Badge2.svg)\n\n### archelios PRO Silver\n\nPower limit of 100kWp/project (Or Projects up to 100kWp)\n\n**990 € excl. tax** / year\n\n#### Features\n\nDescription\n\n*   Built-in 3D modelling\n*   Dimensioning of modules, inverters and optimizers\n*   Calculation of output P50\n*   Economic calculation of the project\n*   Self-consumption analysis with battery storage system\n*   Management of solar pumping installations\n*   Adding hardware references\n*   Access to the BIM&CO module database\n*   Project import – Sunny design / K2 Base\n*   archelios plugin for SketchUp\n*   3D wiring of modules and channels\n*   Project export to elec calc and archelios CALC (partial)\n\n[Subscribe](https://www.trace-software.com/en/product/archelios-pro-silver/)\n\n![archelios PRO Gold Badge](https://www.trace-software.com/wp-content/uploads/2024/08/Badge3.svg)\n\n### archelios PRO Gold\n\nPower limit of 1MWp /project (Or Projects up to 1MWp)\n\n**1 490 € excl. tax** / year\n\n#### Additional features\n\nDescription\n\n*   Use of P50, P75, P90 probability indicators - NEW\n*   Detailed production analysis\n*   Import consumption profile from the Enedis API\n*   Self-consumption analysis with virtual battery\n*   Edit PDF and CSV reports\n*   Import weather data\n*   3D dxf export (AutoCAD)\n*   Export GeoJSON data\n*   KML export (Google Earth)\n*   Import horizon files\n*   Tracker compatibility\n*   Compare projects\n*   Project export to elec calc and archelios CALC (complete)\n\n[Subscribe](https://www.trace-software.com/en/product/archelios-pro-gold/)\n\n![archelios PRO Platinum Badge](https://www.trace-software.com/wp-content/uploads/2024/08/Badge.svg)\n\n### archelios PRO Platinum\n\nUnlimited power\n\n**1 990 € excl. tax** / year\n\n#### Additional features\n\nDescription\n\n*   Use of custom probability indicators - NEW\n*   Import weather data (TMY 365 days taken into account)\n*   Import 3E weather data via an API tool\n*   3D earthmoving tool (SketchUp plugin)\n*   Optimise clipping\n*   archelios plugin for Revit®\n*   Advanced battery storage settings\n\n[Subscribe](https://www.trace-software.com/en/product/archelios-pro-platinum/)\n\n## They chose archelios PRO\n\n## Compatibility\n\n## Going further\n\n![](https://www.trace-software.com/wp-content/uploads/2024/09/Interface-aCALC-site-web-e1725977391842.png)\n\n![Badge](https://www.trace-software.com/wp-content/uploads/2024/08/Badge-ENG-Solaire.svg)![Produit](https://www.trace-software.com/wp-content/uploads/2024/08/Frame-Default-Size.svg)[](https://www.trace-software.com/en/our-solutions/archelios-calc/)[](https://www.trace-software.com/en/product/archelios-calc-software-annual-subscription/)"
+  },
+  {
+    "url": "https://www.archelios.com/help/help_template.php",
+    "crawl": {
+      "loadedUrl": "https://www.archelios.com/help/help_template.php",
+      "loadedTime": "2026-10-22T12:13:56.572Z",
+      "referrerUrl": "https://www.archelios.com/help/help_template.php",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 1887,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.archelios.com/help/help_template.php",
+      "title": "Archelios F.A.Q.",
+      "description": "",
+      "author": "",
+      "keywords": null,
+      "languageCode": "en-us",
+      "jsonLd": null,
+      "headers": {
+        "cache-control": "no-store, no-cache, must-revalidate",
+        "content-encoding": "gzip",
+        "content-length": "1887",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:13:56 GMT",
+        "expires": "Thu, 19 Nov 1981 08:52:00 GMT",
+        "p3p": "CP=\"CAO PSA OUR\"",
+        "pragma": "no-cache",
+        "server": "Apache/2.4.38 (Debian)",
+        "vary": "Accept-Encoding",
+        "x-powered-by": "PHP/7.2.34",
+        "set-cookie": "PHPSESSID=q2cuei0if8b7srfq03p1nofg8b; path=/"
+      }
+    },
+    "text": "",
+    "html": null,
+    "markdown": "Archelios F.A.Q.\n\n![Archelios PRO](../online/bin/img/logo-pro.png)  \n\n![me](../online/bin/img/avatars/sunny.png)[](javascript:void\\(0\\);)"
+  },
+  {
+    "url": "https://www.3e.eu/resources/news/trace-software-partnership-3e-solar-irradiation-data-compatible-with-archelios-pro",
+    "crawl": {
+      "loadedUrl": "https://www.3e.eu/resources/news/trace-software-partnership-3e-solar-irradiation-data-compatible-with-archelios-pro",
+      "loadedTime": "2026-10-22T12:13:57.519Z",
+      "referrerUrl": "https://www.3e.eu/resources/news/trace-software-partnership-3e-solar-irradiation-data-compatible-with-archelios-pro",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 116455,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.3e.eu/resources/news/trace-software-partnership-3e-solar-irradiation-data-compatible-with-archelios-pro",
+      "title": "3E and Trace Software partnership: 3E Solar Irradiation Data now compatible with archelios™ PRO",
+      "description": "3E Solar Irradiation Data are now accessible through an API in the archelios™ PRO application. This API integration enables the automatic importation of 3E’s TMY (Typical Meteorological Year) data when designing a photovoltaic project in Trace Software’s app.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:title",
+          "content": "3E and Trace Software partnership: 3E Solar Irradiation Data now compatible with archelios™ PRO"
+        },
+        {
+          "property": "og:description",
+          "content": "3E Solar Irradiation Data are now accessible through an API in the archelios™ PRO application. This API integration enables the automatic importation of 3E’s TMY (Typical Meteorological Year) data when designing a photovoltaic project in Trace Software’s app."
+        },
+        {
+          "property": "og:image",
+          "content": "https://cdn.prod.website-files.com/643e7088504dc004b334f04f/662695fc8ef3cd0faf314131_Preview%20Partnership%20Trace%20Software%202024%2004%209.avif"
+        },
+        {
+          "property": "og:type",
+          "content": "website"
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cf-cache-status": "HIT",
+        "cf-ray": "a4e86b41cd4990bd-ORD",
+        "content-encoding": "gzip",
+        "content-security-policy": "frame-ancestors 'self'",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:13:57 GMT",
+        "last-modified": "Thu, 22 Oct 2026 12:13:57 GMT",
+        "link": "<https://cdn.prod.website-files.com>; rel=preconnect; crossorigin, <https://cdn.prod.website-files.com/64245edd9d9f3b2cf51a7b21/css/3e-synaptiq.webflow.shared.f412b7d7e.css>; rel=preload; as=style; crossorigin; integrity=\"sha384-9BK31+VUcwyvGvAgpDlW3tVRNGvHk8GFHB2O1PnGbmD1NA81PdkShRSzbD1DVJkU\", <https://fonts.googleapis.com>; rel=preconnect, <https://fonts.gstatic.com>; rel=preconnect; crossorigin, <https://js.hs-scripts.com>; rel=preconnect; crossorigin, <https://js.hsforms.net>; rel=preconnect; crossorigin, <https://www.googletagmanager.com>; rel=preconnect; crossorigin, <https://static.hotjar.com>; rel=preconnect; crossorigin",
+        "server": "cloudflare",
+        "strict-transport-security": "max-age=31536000",
+        "surrogate-control": "max-age=432000",
+        "surrogate-key": "www.3e.eu 64245edd9d9f3b2cf51a7b21 pageId:643e708a5aa71768355e9d90 643e708a5aa717c6785e9d8e 644889abc5a8a119fcb88875 643e708a5aa717c6785e9d8e 64523cda59d1f88942683cae 645527f246c3797f274db974 6458fe1c94a94b71c60151ad 645aa85017ffc83caea91ac1 647787ff3515210ecd59427f",
+        "vary": "accept-encoding",
+        "x-frame-options": "SAMEORIGIN",
+        "x-lambda-id": "fa1ab5e6-b092-4cc7-877f-5d4fe7a3b157",
+        "x-wf-region": "us-east-1",
+        "set-cookie": "_cfuvid=nvTe8OB2ZawnRRaXUeb7aJ7ng1UO99AYb_qeVVcC3rY-1792671237.4129722-1.0.1.1-ODXG0m7WMbMbcLG.CwTkKpi5f.waFz2l.QsD9H6u8Pk; HttpOnly; SameSite=None; Secure; Path=/; Domain=www.3e.eu"
+      }
+    },
+    "text": "3E and Trace Software partnership: 3E Solar Irradiation Data now compatible with archelios™ PRO\n3E Solar Irradiation Data are now accessible through an API in the archelios™ PRO application. This API integration enables the automatic importation of 3E’s TMY (Typical Meteorological Year) data when designing a photovoltaic project in Trace Software’s app.\nHigh accuracy in irradiance data\nThe use of quality meteorological data to assess the insolation of a photovoltaic project is as essential as the system definition (environment, modules, inverters, etc.). Irradiance data is in fact the first input in the chain of algorithms used to calculate the solar yield.\nPreviously, this data was based on monthly averages for previous years. TMY data is now widely used, as it enables the behaviour of a power plant to be simulated for a 'typical' year, i.e. a year made up of real data rather than averages. This improves the accuracy of the energy yield assessment.\nWhat is a TMY file?\nA TMY file is constructed from a series of data over a long period, generally more than 10 years, and is made up by selecting the most typical months in the data series. For example, for the 2005-2020 timeseries, January will be taken from 2009, February from 2015, and so on.\nThe most typical months are selected based on statistical criteria such as the deviation from the monthly average and the distribution of data throughout the month. This selection process considers not only irradiation variables (global and diffuse horizontal irradiation) but also temperature, assigning specific weights to each factor.\nTogether with the software used and the justification of the simulation assumptions, the use of data from a recognised supplier is part of the 'bankability' criteria for a solar yield study.\nImporting TMY data from 3E with archelios™ PRO: speed and accuracy \nArchelios™ PRO enables the import of meteorological data from several data providers renowned for the accuracy oftheir data. The latest version of the software now makes it possible to use those from the 3E service, which provides TMY weather files whose accuracy has been assessed by independent studies.\nThere are two options available to archelios™ PRO users:\n1. Import a 3E TMY file\n2. Use the API to query the 3E service directly\nA time saver in conception\n- Automatic data import from the 3E API or from a TMY file supplied by 3E \n- No need to edit data after import \nAbout Trace Software International\nTrace Software International develops software for electrical and photovoltaic installations for building and industry. Their solutions are designed for installers and operators, as well as engineering consultants and quality control organisations.\nAfter 30 years of experience, Trace Software has made a name for itself offering innovative solutions and services adapted to the use of each of our software packages.\nArchelios™ is designed for solar installations. Feasibility studies, 3D modelling, yield calculations, detailed design reports, and electrical sizing with editable normative diagrams and reports. With their web application, design your PV projects quickly and easily wherever you are. \nElec calc™ is dedicated to electrical calculation and sizing. Thanks to Intellisense, calculating your installations has never been easier. Whether it be High or Low Voltage, Elec calc™ is the solution for any type of installation; multi-source, EV charging, or even BIM. \nTrace Software also offers a range of services to help you get to grips with our software and provide access to a dedicated technical support. All their software is multi-manufacturer and multi-standard.",
+    "html": null,
+    "markdown": "# 3E and Trace Software partnership: 3E Solar Irradiation Data now compatible with archelios™ PRO\n\n3E Solar Irradiation Data are now accessible through an API in the archelios™ PRO application. This API integration enables the automatic importation of 3E’s TMY (Typical Meteorological Year) data when designing a photovoltaic project in Trace Software’s app.\n\n## High accuracy in irradiance data\n\nThe use of quality meteorological data to assess the insolation of a photovoltaic project is as essential as the system definition (environment, modules, inverters, etc.). Irradiance data is in fact the first input in the chain of algorithms used to calculate the solar yield.\n\nPreviously, this data was based on monthly averages for previous years. TMY data is now widely used, as it enables the behaviour of a power plant to be simulated for a 'typical' year, i.e. a year made up of real data rather than averages. This improves the accuracy of the energy yield assessment.\n\n## What is a TMY file?\n\nA TMY file is constructed from a series of data over a long period, generally more than 10 years, and is made up by selecting the most typical months in the data series. For example, for the 2005-2020 timeseries, January will be taken from 2009, February from 2015, and so on.\n\nThe most typical months are selected based on statistical criteria such as the deviation from the monthly average and the distribution of data throughout the month. This selection process considers not only irradiation variables (global and diffuse horizontal irradiation) but also temperature, assigning specific weights to each factor.\n\nTogether with the software used and the justification of the simulation assumptions, the use of data from a recognised supplier is part of the 'bankability' criteria for a solar yield study.\n\n## Importing TMY data from 3E with archelios™ PRO: speed and accuracy\n\nArchelios™ PRO enables the import of meteorological data from several data providers renowned for the accuracy oftheir data. The latest version of the software now makes it possible to use those from the 3E service, which provides TMY weather files whose accuracy has been assessed by independent studies.\n\nThere are two options available to archelios™ PRO users:\n\n1.    Import a 3E TMY file\n\n2.    Use the API to query the 3E service directly\n\n## A time saver in conception\n\n\\- Automatic data import from the 3E API or from a TMY file supplied by 3E\n\n\\- No need to edit data after import\n\n### **About Trace Software International**\n\nTrace Software International develops software for electrical and photovoltaic installations for building and industry. Their solutions are designed for installers and operators, as well as engineering consultants and quality control organisations.\n\nAfter 30 years of experience, Trace Software has made a name for itself offering innovative solutions and services adapted to the use of each of our software packages.  \nArchelios™ is designed for solar installations. Feasibility studies, 3D modelling, yield calculations, detailed design reports, and electrical sizing with editable normative diagrams and reports. With their web application, design your PV projects quickly and easily wherever you are. \n\nElec calc™ is dedicated to electrical calculation and sizing. Thanks to Intellisense, calculating your installations has never been easier. Whether it be High or Low Voltage, Elec calc™ is the solution for any type of installation; multi-source, EV charging, or even BIM. \n\nTrace Software also offers a range of services to help you get to grips with our software and provide access to a dedicated technical support. All their software is multi-manufacturer and multi-standard."
+  },
+  {
+    "url": "https://sam.nlr.gov/download.html",
+    "crawl": {
+      "loadedUrl": "https://sam.nlr.gov/download.html",
+      "loadedTime": "2026-10-22T12:13:59.341Z",
+      "referrerUrl": "https://sam.nlr.gov/download.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 10863,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://sam.nlr.gov/download.html",
+      "title": "Download - System Advisor Model - SAM",
+      "description": "The System Advisor Model (SAM) is a performance and financial model designed to estimate the cost of energy for grid-connected power projects.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-gb",
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "@id": "https://sam.nlr.gov/#/schema/BreadcrumbList/17",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@id": "https://sam.nlr.gov/",
+                "name": "home"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@id": "https://sam.nlr.gov/download.html",
+                "name": "Download"
+              }
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "no-cache",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "10863",
+        "content-security-policy": "frame-ancestors 'self';",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:13:58 GMT",
+        "etag": "\"5ab58dfa666dea3f361b06003caf5900-gzip\"",
+        "expect-ct": "max-age=0",
+        "expires": "Thu, 22 Oct 2026 12:25:20 GMT",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-powered-by": "PHP/8.3.36",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": [
+          "AWSALB=kkSq/iixllZcjsOxlWvhLOs084h6jgGaCDoQ5xtC9A36pxbLatcnFAgt6uXak+/YRbhZRpVg8+fd9FreC0jDODhF/SoCVLX6/53pdxreXoU/w2qL31Wz0nudsiNt; Expires=Thu, 29 Oct 2026 12:13:58 GMT; Path=/",
+          "AWSALBCORS=kkSq/iixllZcjsOxlWvhLOs084h6jgGaCDoQ5xtC9A36pxbLatcnFAgt6uXak+/YRbhZRpVg8+fd9FreC0jDODhF/SoCVLX6/53pdxreXoU/w2qL31Wz0nudsiNt; Expires=Thu, 29 Oct 2026 12:13:58 GMT; Path=/; SameSite=None; Secure",
+          "8f0bf3ddf81023c57c78625a439f654d=e42f294cd4e2727cfc626d56e4caef0c; path=/; secure; HttpOnly"
+        ]
+      }
+    },
+    "text": "Download - System Advisor Model\nSAM Downloads\nThe current version of SAM™ is SAM 2026.7.3, SSC 308. Use the Download buttons below to download the current version for Windows, Mac, or Linux.\nWhen you first run SAM, you will need to register SAM: Type your email address and, if you are new to SAM, click Register to receive a free software key, or paste your existing key and click Confirm to confirm your existing key. (If you lost your key, either copy it from the Registration page of an older version of SAM, or click Confirm without typing a key to have it automatically emailed to you.)\nIf you have an older version of SAM on your computer, when you install the new version, it will install side-by-side with older versions(s). Different versions of SAM are independent of each other, so you can install and run different versions simultaneously for comparisons. You can remove (uninstall) older versions of SAM when you are finished using them.\nIf you need to download an older version of SAM, use the list at left to find the version you need.\nDView is SAM's data viewer that displays hourly and subhourly time series data in graphs and tables. Legacy versions of DView as a standalone application are available from the BEopt website.",
+    "html": null,
+    "markdown": "# Download - System Advisor Model\n\n## SAM Downloads\n\n![SAM Logo](https://sam.nlr.gov/images/images_dir/web_page_images/SAM-logo-horizontal.png)\n\nThe current version of SAM™ is SAM 2026.7.3, SSC 308. Use the Download buttons below to download the current version for Windows, Mac, or Linux.\n\nWhen you first run SAM, you will need to [register SAM](https://sam.nlr.gov/forum/forum-general/1046): Type your email address and, if you are new to SAM, click **Register** to receive a free software key, or paste your existing key and click **Confirm** to confirm your existing key. (If you lost your key, either copy it from the Registration page of an older version of SAM, or click **Confirm** without typing a key to have it automatically emailed to you.)\n\nIf you have an older version of SAM on your computer, when you install the new version, it will install side-by-side with older versions(s). Different versions of SAM are independent of each other, so you can install and run different versions simultaneously for comparisons. You can remove (uninstall) older versions of SAM when you are finished using them.\n\nIf you need to download an older version of SAM, use the list at left to find the version you need.\n\nDView is SAM's data viewer that displays hourly and subhourly time series data in graphs and tables. Legacy versions of DView as a standalone application are available from the [BEopt website](https://www.nlr.gov/buildings/beopt.html \"Link to BEopt website for DView downloads\")."
+  },
+  {
+    "url": "https://sam.nlr.gov/sam-open-source.html",
+    "crawl": {
+      "loadedUrl": "https://sam.nlr.gov/sam-open-source.html",
+      "loadedTime": "2026-10-22T12:14:00.111Z",
+      "referrerUrl": "https://sam.nlr.gov/sam-open-source.html",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 8674,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://sam.nlr.gov/sam-open-source.html",
+      "title": "SAM Open Source - System Advisor Model - SAM",
+      "description": "The System Advisor Model (SAM) is a performance and financial model designed to estimate the cost of energy for grid-connected power projects.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en-gb",
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "@id": "https://sam.nlr.gov/#/schema/BreadcrumbList/17",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "item": {
+                "@id": "https://sam.nlr.gov/",
+                "name": "home"
+              }
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "item": {
+                "@id": "https://sam.nlr.gov/sam-open-source.html",
+                "name": "SAM Open Source"
+              }
+            }
+          ]
+        },
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://sam.nlr.gov/#/schema/Organization/base",
+              "name": "System Advisor Model - SAM",
+              "url": "https://sam.nlr.gov/"
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://sam.nlr.gov/#/schema/WebSite/base",
+              "url": "https://sam.nlr.gov/",
+              "name": "System Advisor Model - SAM",
+              "publisher": {
+                "@id": "https://sam.nlr.gov/#/schema/Organization/base"
+              },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://sam.nlr.gov/component/finder/search.html?q={search_term_string}&amp;Itemid=101",
+                "query-input": "required name=search_term_string"
+              }
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://sam.nlr.gov/#/schema/WebPage/base",
+              "url": "https://sam.nlr.gov/sam-open-source.html",
+              "name": "SAM Open Source - System Advisor Model - SAM",
+              "description": "The System Advisor Model (SAM) is a performance and financial model designed to estimate the cost of energy for grid-connected power projects.",
+              "isPartOf": {
+                "@id": "https://sam.nlr.gov/#/schema/WebSite/base"
+              },
+              "about": {
+                "@id": "https://sam.nlr.gov/#/schema/Organization/base"
+              },
+              "inLanguage": "en-GB",
+              "breadcrumb": {
+                "@id": "https://sam.nlr.gov/#/schema/BreadcrumbList/17"
+              }
+            },
+            {
+              "@type": "Article",
+              "@id": "https://sam.nlr.gov/#/schema/com_content/article/105",
+              "name": "SAM Open Source",
+              "headline": "SAM Open Source",
+              "inLanguage": "en-GB",
+              "isPartOf": {
+                "@id": "https://sam.nlr.gov/#/schema/WebPage/base"
+              }
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "cache-control": "no-cache",
+        "connection": "keep-alive",
+        "content-encoding": "gzip",
+        "content-length": "8674",
+        "content-security-policy": "frame-ancestors 'self';",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:14:00 GMT",
+        "etag": "\"efeb56971e87ae0f4745016492ac70ca-gzip\"",
+        "expect-ct": "max-age=0",
+        "expires": "Wed, 17 Aug 2005 00:00:00 GMT",
+        "last-modified": "Thu, 22 Oct 2026 12:03:15 GMT",
+        "pragma": "no-cache",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "Accept-Encoding",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-powered-by": "PHP/8.3.36",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": [
+          "AWSALB=DBdoIRI3lgKRV3ygNsFthxQhf31Avphabfqz15ZxJ275JGKw7rcfWhWk5dzkhX48V83lrb8X6ZdFVfeKKw7+jB52W2GOjqoZkGpOH6tIs5fW4zjKL+IyD/7kMvoa; Expires=Thu, 29 Oct 2026 12:13:59 GMT; Path=/",
+          "AWSALBCORS=DBdoIRI3lgKRV3ygNsFthxQhf31Avphabfqz15ZxJ275JGKw7rcfWhWk5dzkhX48V83lrb8X6ZdFVfeKKw7+jB52W2GOjqoZkGpOH6tIs5fW4zjKL+IyD/7kMvoa; Expires=Thu, 29 Oct 2026 12:13:59 GMT; Path=/; SameSite=None; Secure",
+          "8f0bf3ddf81023c57c78625a439f654d=5f63775016f2f5058b6ee6de9e1696b4; path=/; secure; HttpOnly"
+        ]
+      }
+    },
+    "text": "SAM Open Source - System Advisor Model\nAll of the source code and tools required to build SAM are available to the public on the SAM GitHub repositories. NLR will continue to maintain and update the code, and to release NLR versions of SAM for Windows, Mac and Linux with new features and updates.\nSAM Open Source is the latest addition to the suite of ways you can use SAM for your research and analysis. It provides:\nTransparency: Explore the source code to find equations and algorithms so you can see exactly how the models work.\nFlexibility: Change the code and build your own versions of SAM to add your own features and capabilities.\nCollaboration: Contribute new models, fix bugs, or work with NLR to implement new features that can be added to the NLR versions of SAM.\nTo learn more, watch a recording of the SAM Open Source webinar from September 2017.\nAre you ready to dig in? Check it out at https://github.com/NREL/SAM.\nDo you have a question or suggestion about the open source code? Post a question or comment on the SAM Open Source Forum.\nDo you love SAM? Are you super excited that it is now open source? This email address is being protected from spambots. You need JavaScript enabled to view it. what you are doing with it and how it has helped you! Testimonials like yours help us secure funding to continue to develop this great tool.\nFAQs\nAre you new to SAM? Check out our home page or download the desktop version to learn more about the many other ways that SAM can help you in your research, analysis, and development!\nWhere do I find SAM's source code? \nSAM's source code is hosted on GitHub.com repositories. The main repository is at https://github.com/nrel/sam. See the README and Wiki pages for information about the code repositories and instructions for building and contributing to the project.\nWhat computer language is SAM written in? \nMost of SAM is written in C++, and some of the user interface elements are written in LK script. SAM's code uses standard C libraries along with WxWidgets and WEX (an extension of WXWidgets written for SAM) libraries for the user interface, and LK libraries for scripting functionality. See this SAM Open Source wiki page for more about software dependencies.\nHow is SAM licensed? \nSAM's open source code is copyrighted by the Alliance for Sustainable Energy and licensed under a BSD-3 clause license. It allows for-profit and not-for-profit organizations to develop and redistribute software based on SAM under the terms of a BSD-3 license.\nWill NLR continue to maintain the source code? \nYes. NLR will continue to maintain the source code and to release NLR versions of SAM. NLR will also review contributions before accepting them as part of the open source code base.\nCan I build and distribute my own version of SAM? \nYes, as long as you follow the terms of the SAM license. \nWhat other ways can I extend SAM's functionality? \nThe desktop version of SAM includes tools for more advanced analysis, including parametric and stochastic simulations, P50/P90 analysis, and the built-in LK scripting language for full automated control over assigning inputs, running simulations, reading outputs, and reading and writing data to files. You can also use the SAM API that comes with the SAM SDK to access the SAM Simulation Core (SSC) library and run SAM from your own applications written in C/C++, Python, VBA, MATLAB, PHP, and other languages.",
+    "html": null,
+    "markdown": "# SAM Open Source - System Advisor Model\n\n![sam open source banner](https://sam.nlr.gov/images/web_page_files/sam_open_source_banner.png)\n\nAll of the source code and tools required to build SAM are available to the public on the [SAM GitHub repositories](https://github.com/nrel/sam). NLR will continue to maintain and update the code, and to release NLR versions of [SAM for Windows, Mac and Linux](https://sam.nlr.gov/download) with new features and updates.\n\nSAM Open Source is the latest addition to the suite of ways you can use SAM for your research and analysis. It provides:\n\n*   **Transparency:** Explore the source code to find equations and algorithms so you can see exactly how the models work.\n*   **Flexibility:** Change the code and build your own versions of SAM to add your own features and capabilities.\n*   **Collaboration:** Contribute new models, fix bugs, or work with NLR to implement new features that can be added to the NLR versions of SAM.\n\nTo learn more, watch a recording of the [SAM Open Source webinar](https://youtu.be/3EmTMyJUjas) from September 2017.\n\nAre you ready to dig in? Check it out at [https://github.com/NREL/SAM](https://github.com/NREL/SAM).\n\nDo you have a question or suggestion about the open source code? Post a question or comment on the [SAM Open Source Forum](https://sam.nlr.gov/forum/forum-open-source.html \"Link to SAM Open Source forum\").\n\nDo you love SAM? Are you super excited that it is now open source? This email address is being protected from spambots. You need JavaScript enabled to view it. what you are doing with it and how it has helped you! Testimonials like yours help us secure funding to continue to develop this great tool.\n\n## FAQs\n\nAre you new to SAM? Check out our [home page](https://sam.nlr.gov/) or [download](https://sam.nlr.gov/download) the desktop version to learn more about the many other ways that SAM can help you in your research, analysis, and development!\n\n**Where do I find SAM's source code?**  \nSAM's source code is hosted on GitHub.com repositories. The main repository is at  [https://github.com/nrel/sam](https://github.com/nrel/sam). See the README and Wiki pages for information about the code repositories and instructions for building and contributing to the project.\n\n**What computer language is SAM written in?**  \nMost of SAM is written in C++, and some of the user interface elements are written in LK script. SAM's code uses standard C libraries along with WxWidgets and WEX (an extension of WXWidgets written for SAM) libraries for the user interface, and LK libraries for scripting functionality. See this [SAM Open Source wiki page](https://github.com/NREL/SAM/wiki/Software-Dependencies) for more about software dependencies.\n\n**How is SAM licensed?**  \nSAM's open source code is copyrighted by the Alliance for Sustainable Energy and licensed under a BSD-3 clause [license](https://github.com/NREL/SAM/blob/develop/LICENSE). It allows for-profit and not-for-profit organizations to develop and redistribute software based on SAM under the terms of a BSD-3 license.\n\n**Will NLR continue to maintain the source code?**  \nYes. NLR will continue to maintain the source code and to release [NLR versions of SAM](http://sam.nlr.gov/download). NLR will also review contributions before accepting them as part of the open source code base.\n\n**Can I build and distribute my own version of SAM?**  \nYes, as long as you follow the terms of the [SAM license](https://github.com/NREL/SAM/blob/develop/LICENSE). \n\n**What other ways can I extend SAM's functionality?**  \nThe desktop version of SAM includes tools for more advanced analysis, including parametric and stochastic simulations, P50/P90 analysis, and the built-in LK scripting language for full automated control over assigning inputs, running simulations, reading outputs, and reading and writing data to files. You can also use the SAM API that comes with the [SAM SDK](https://sam.nlr.gov/software-development-kit-sdk.html) to access the SAM Simulation Core (SSC) library and run SAM from your own applications written in C/C++, Python, VBA, MATLAB, PHP, and other languages."
+  },
+  {
+    "url": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+    "crawl": {
+      "loadedUrl": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+      "loadedTime": "2026-10-22T12:14:00.578Z",
+      "referrerUrl": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 108319,
+      "contentType": "text/html; charset=UTF-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+      "title": "archelios PRO: a new version focused on reliability, bankability and automation - Trace Software",
+      "description": "Discover what’s new in archelios PRO 2025.1. A new version focused on reliability, bankability and automation.",
+      "author": "charlotte",
+      "keywords": null,
+      "languageCode": "en-GB",
+      "openGraph": [
+        {
+          "property": "og:locale",
+          "content": "en_GB"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "fr_FR"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "de_DE"
+        },
+        {
+          "property": "og:locale:alternate",
+          "content": "es_ES"
+        },
+        {
+          "property": "og:type",
+          "content": "article"
+        },
+        {
+          "property": "og:title",
+          "content": "archelios PRO: a new version focused on reliability, bankability and automation - Trace Software"
+        },
+        {
+          "property": "og:description",
+          "content": "Discover what’s new in archelios PRO 2025.1. A new version focused on reliability, bankability and automation."
+        },
+        {
+          "property": "og:url",
+          "content": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/"
+        },
+        {
+          "property": "og:site_name",
+          "content": "Trace Software"
+        },
+        {
+          "property": "article:published_time",
+          "content": "2025-11-21T08:00:21+00:00"
+        },
+        {
+          "property": "og:image",
+          "content": "https://www.trace-software.com/wp-content/uploads/2024/09/icon-archelios-pro-light.png"
+        },
+        {
+          "property": "og:image:width",
+          "content": "512"
+        },
+        {
+          "property": "og:image:height",
+          "content": "512"
+        },
+        {
+          "property": "og:image:type",
+          "content": "image/png"
+        }
+      ],
+      "jsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Article",
+              "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/#article",
+              "isPartOf": {
+                "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/"
+              },
+              "author": {
+                "name": "charlotte",
+                "@id": "https://www.trace-software.com/en/#/schema/person/e2daa5cf292f9c2842d87c90e52965a7"
+              },
+              "headline": "archelios PRO: a new version focused on reliability, bankability and automation",
+              "datePublished": "2025-11-21T08:00:21+00:00",
+              "mainEntityOfPage": {
+                "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/"
+              },
+              "wordCount": 699,
+              "publisher": {
+                "@id": "https://www.trace-software.com/en/#organization"
+              },
+              "image": {
+                "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/#primaryimage"
+              },
+              "thumbnailUrl": "https://www.trace-software.com/wp-content/uploads/2024/09/icon-archelios-pro-light.png",
+              "articleSection": [
+                "Product News"
+              ],
+              "inLanguage": "en-GB"
+            },
+            {
+              "@type": "WebPage",
+              "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+              "url": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/",
+              "name": "archelios PRO: a new version focused on reliability, bankability and automation - Trace Software",
+              "isPartOf": {
+                "@id": "https://www.trace-software.com/en/#website"
+              },
+              "primaryImageOfPage": {
+                "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/#primaryimage"
+              },
+              "image": {
+                "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/#primaryimage"
+              },
+              "thumbnailUrl": "https://www.trace-software.com/wp-content/uploads/2024/09/icon-archelios-pro-light.png",
+              "datePublished": "2025-11-21T08:00:21+00:00",
+              "description": "Discover what’s new in archelios PRO 2025.1. A new version focused on reliability, bankability and automation.",
+              "breadcrumb": {
+                "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/#breadcrumb"
+              },
+              "inLanguage": "en-GB",
+              "potentialAction": [
+                {
+                  "@type": "ReadAction",
+                  "target": [
+                    "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/"
+                  ]
+                }
+              ]
+            },
+            {
+              "@type": "ImageObject",
+              "inLanguage": "en-GB",
+              "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/#primaryimage",
+              "url": "https://www.trace-software.com/wp-content/uploads/2024/09/icon-archelios-pro-light.png",
+              "contentUrl": "https://www.trace-software.com/wp-content/uploads/2024/09/icon-archelios-pro-light.png",
+              "width": 512,
+              "height": 512,
+              "caption": "icon-archelios-pro"
+            },
+            {
+              "@type": "BreadcrumbList",
+              "@id": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/#breadcrumb",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://www.trace-software.com/en/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Blog &#038; News",
+                  "item": "https://www.trace-software.com/en/blog-news/"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": "archelios PRO: a new version focused on reliability, bankability and automation"
+                }
+              ]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://www.trace-software.com/en/#website",
+              "url": "https://www.trace-software.com/en/",
+              "name": "Trace Software",
+              "description": "",
+              "publisher": {
+                "@id": "https://www.trace-software.com/en/#organization"
+              },
+              "potentialAction": [
+                {
+                  "@type": "SearchAction",
+                  "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://www.trace-software.com/en/?s={search_term_string}"
+                  },
+                  "query-input": {
+                    "@type": "PropertyValueSpecification",
+                    "valueRequired": true,
+                    "valueName": "search_term_string"
+                  }
+                }
+              ],
+              "inLanguage": "en-GB"
+            },
+            {
+              "@type": "Organization",
+              "@id": "https://www.trace-software.com/en/#organization",
+              "name": "Trace Software",
+              "url": "https://www.trace-software.com/en/",
+              "logo": {
+                "@type": "ImageObject",
+                "inLanguage": "en-GB",
+                "@id": "https://www.trace-software.com/en/#/schema/logo/image/",
+                "url": "https://www.trace-software.com/wp-content/uploads/2024/06/trace-software-logo-long-color-default-1.svg",
+                "contentUrl": "https://www.trace-software.com/wp-content/uploads/2024/06/trace-software-logo-long-color-default-1.svg",
+                "width": 218,
+                "height": 32,
+                "caption": "Trace Software"
+              },
+              "image": {
+                "@id": "https://www.trace-software.com/en/#/schema/logo/image/"
+              }
+            },
+            {
+              "@type": "Person",
+              "@id": "https://www.trace-software.com/en/#/schema/person/e2daa5cf292f9c2842d87c90e52965a7",
+              "name": "charlotte",
+              "image": {
+                "@type": "ImageObject",
+                "inLanguage": "en-GB",
+                "@id": "https://secure.gravatar.com/avatar/5152bbdb87df04ae0f18bf9b6d1f4773b67f9bab526931dd5534b4360709a23f?s=96&d=mm&r=g",
+                "url": "https://secure.gravatar.com/avatar/5152bbdb87df04ae0f18bf9b6d1f4773b67f9bab526931dd5534b4360709a23f?s=96&d=mm&r=g",
+                "contentUrl": "https://secure.gravatar.com/avatar/5152bbdb87df04ae0f18bf9b6d1f4773b67f9bab526931dd5534b4360709a23f?s=96&d=mm&r=g",
+                "caption": "charlotte"
+              },
+              "url": "https://www.trace-software.com/en/author/charlotte/"
+            }
+          ]
+        }
+      ],
+      "headers": {
+        "accept-ranges": "bytes",
+        "age": "0",
+        "cache-control": "max-age=3600, public",
+        "content-encoding": "gzip",
+        "content-type": "text/html; charset=UTF-8",
+        "date": "Thu, 22 Oct 2026 12:13:59 GMT",
+        "etag": "\"adee5130accb14d803153833187094ff\"",
+        "last-modified": "Thu, 22 Oct 2026 12:13:59 GMT",
+        "link": "<https://www.trace-software.com/wp-json/>; rel=\"https://api.w.org/\", <https://www.trace-software.com/wp-json/wp/v2/posts/26762>; rel=\"alternate\"; title=\"JSON\"; type=\"application/json\", <https://www.trace-software.com/?p=26762>; rel=shortlink",
+        "permissions-policy": "private-state-token-redemption=(self \"https://www.google.com\" \"https://www.gstatic.com\" \"https://recaptcha.net\" \"https://challenges.cloudflare.com\" \"https://hcaptcha.com\"), private-state-token-issuance=(self \"https://www.google.com\" \"https://www.gstatic.com\" \"https://recaptcha.net\" \"https://challenges.cloudflare.com\" \"https://hcaptcha.com\")",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "nginx",
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "vary": "Accept-Encoding",
+        "via": "1.1 varnu3.phpnet.org (Varnish/7.7)",
+        "x-cache": "MISS",
+        "x-cacheable": ":perhaps:",
+        "x-cachettl": "3600s",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "SAMEORIGIN",
+        "x-varnish": "2132055262",
+        "x-varnutype": "5",
+        "x-xss-protection": "1; mode=block",
+        "set-cookie": "WEBMO-VNU=3|atn+C|atn+C; path=/; HttpOnly; SameSite=Strict"
+      }
+    },
+    "text": "archelios PRO: a new version focused on reliability, bankability and automation\nWith archelios PRO 2025.1, Trace Software confirms its commitment to offer the most complete and reliable photovoltaic simulation solution on the market, for all your self-consumption, total sales and storage projects.",
+    "html": null,
+    "markdown": "# archelios PRO: a new version focused on reliability, bankability and automation\n\nWith archelios PRO 2025.1, Trace Software confirms its commitment to offer the most complete and reliable photovoltaic simulation solution on the market, for all your self-consumption, total sales and storage projects."
+  },
+  {
+    "url": "https://github.com/NREL/SAM",
+    "crawl": {
+      "loadedUrl": "https://github.com/NatLabRockies/SAM",
+      "loadedTime": "2026-10-22T12:14:01.352Z",
+      "referrerUrl": "https://github.com/NREL/SAM",
+      "httpStatusCode": 200,
+      "depth": 0,
+      "contentLengthBytes": 311319,
+      "contentType": "text/html; charset=utf-8"
+    },
+    "metadata": {
+      "canonicalUrl": "https://github.com/NatLabRockies/SAM",
+      "title": "GitHub - NatLabRockies/SAM: System Advisor Model (SAM) · GitHub",
+      "description": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub.",
+      "author": null,
+      "keywords": null,
+      "languageCode": "en",
+      "openGraph": [
+        {
+          "property": "og:image",
+          "content": "https://opengraph.githubassets.com/17d29c6202325261f8b073326403e5f49b096263af351422e26905c820fa3ba4/NatLabRockies/SAM"
+        },
+        {
+          "property": "og:image:alt",
+          "content": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub."
+        },
+        {
+          "property": "og:image:width",
+          "content": "1200"
+        },
+        {
+          "property": "og:image:height",
+          "content": "600"
+        },
+        {
+          "property": "og:site_name",
+          "content": "GitHub"
+        },
+        {
+          "property": "og:type",
+          "content": "object"
+        },
+        {
+          "property": "og:title",
+          "content": "GitHub - NatLabRockies/SAM: System Advisor Model (SAM)"
+        },
+        {
+          "property": "og:url",
+          "content": "https://github.com/NatLabRockies/SAM"
+        },
+        {
+          "property": "og:description",
+          "content": "System Advisor Model (SAM). Contribute to NatLabRockies/SAM development by creating an account on GitHub."
+        }
+      ],
+      "jsonLd": null,
+      "headers": {
+        "accept-ranges": "bytes",
+        "cache-control": "max-age=0, private, must-revalidate",
+        "content-encoding": "gzip",
+        "content-security-policy": "default-src 'none'; base-uri 'self'; child-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/; connect-src 'self' uploads.github.com www.githubstatus.com collector.github.com raw.githubusercontent.com api.github.com github-cloud.s3.amazonaws.com github-production-repository-file-5c1aeb.s3.amazonaws.com github-production-upload-manifest-file-7fdce7.s3.amazonaws.com github-production-user-asset-6210df.s3.amazonaws.com *.rel.tunnels.api.visualstudio.com wss://*.rel.tunnels.api.visualstudio.com github.githubassets.com objects-origin.githubusercontent.com copilot-proxy.githubusercontent.com proxy.individual.githubcopilot.com proxy.business.githubcopilot.com proxy.enterprise.githubcopilot.com *.actions.githubusercontent.com wss://*.actions.githubusercontent.com productionresultssa0.blob.core.windows.net productionresultssa1.blob.core.windows.net productionresultssa2.blob.core.windows.net productionresultssa3.blob.core.windows.net productionresultssa4.blob.core.windows.net productionresultssa5.blob.core.windows.net productionresultssa6.blob.core.windows.net productionresultssa7.blob.core.windows.net productionresultssa8.blob.core.windows.net productionresultssa9.blob.core.windows.net productionresultssa10.blob.core.windows.net productionresultssa11.blob.core.windows.net productionresultssa12.blob.core.windows.net productionresultssa13.blob.core.windows.net productionresultssa14.blob.core.windows.net productionresultssa15.blob.core.windows.net productionresultssa16.blob.core.windows.net productionresultssa17.blob.core.windows.net productionresultssa18.blob.core.windows.net productionresultssa19.blob.core.windows.net github-production-repository-image-32fea6.s3.amazonaws.com github-production-release-asset-2e65be.s3.amazonaws.com insights.github.com wss://alive.github.com wss://alive-staging.github.com api.githubcopilot.com api.individual.githubcopilot.com api.business.githubcopilot.com api.enterprise.githubcopilot.com wss://production-copilot-host.webpubsub.azure.com wss://production-copilot-host-centralus.webpubsub.azure.com wss://production-copilot-host-centralus-02.webpubsub.azure.com wss://production-copilot-host-westus.webpubsub.azure.com api.github.com/cmc_internal/api/; font-src github.githubassets.com; form-action 'self' github.com gist.github.com copilot-workspace.githubnext.com objects-origin.githubusercontent.com; frame-ancestors 'none'; frame-src viewscreen.githubusercontent.com notebooks.githubusercontent.com; img-src 'self' data: blob: github.githubassets.com media.githubusercontent.com camo.githubusercontent.com identicons.github.com avatars.githubusercontent.com private-avatars.githubusercontent.com github-cloud.s3.amazonaws.com objects.githubusercontent.com release-assets.githubusercontent.com secured-user-images.githubusercontent.com user-images.githubusercontent.com private-user-images.githubusercontent.com opengraph.githubassets.com repository-images.githubusercontent.com marketplace-screenshots.githubusercontent.com copilotprodattachments.blob.core.windows.net/github-production-copilot-attachments/ github-production-user-asset-6210df.s3.amazonaws.com customer-stories-feed.github.com spotlights-feed.github.com explore-feed.github.com *.googleusercontent.com objects-origin.githubusercontent.com *.githubusercontent.com; manifest-src 'self'; media-src github.com user-images.githubusercontent.com secured-user-images.githubusercontent.com private-user-images.githubusercontent.com github-production-user-asset-6210df.s3.amazonaws.com gist.github.com github.githubassets.com; script-src github.githubassets.com 'sha256-tSjmyPUky1KbRZ0fw9VUil3wFEbeM82rtbJDygGJAXw='; style-src 'unsafe-inline' github.githubassets.com; upgrade-insecure-requests; worker-src github.githubassets.com github.com/assets-cdn/worker/ github.com/assets/ gist.github.com/assets-cdn/worker/",
+        "content-type": "text/html; charset=utf-8",
+        "date": "Thu, 22 Oct 2026 12:14:01 GMT",
+        "etag": "W/\"a06b1ede8cfc52d752ac5c7ffdc68309\"",
+        "referrer-policy": "no-referrer-when-downgrade",
+        "server": "github.com",
+        "strict-transport-security": "max-age=31536000; includeSubdomains; preload",
+        "vary": "X-PJAX, X-PJAX-Container, Turbo-Visit, Turbo-Frame, X-Requested-With, X-GitHub-Client-Version, Sec-Fetch-Site,Accept-Encoding, Accept, X-Requested-With",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "deny",
+        "x-github-edge-region": "westus3",
+        "x-github-request-id": "DB0D:1C0587:53B52C:67613C:6AD9FE08",
+        "x-xss-protection": "0"
+      }
+    },
+    "text": "NatLabRockies/SAM: System Advisor Model (SAM) · GitHub\nThe SAM Open Source Project repository contains the source code, tools, and instructions to build a desktop version of the National Laboratory of the Rockies' System Advisor Model™ (SAM™). SAM is a simulation program for electricity generation projects. It has models for different kinds of renewable energy systems and financial models for residential, commercial, and utility-scale projects. For more details about SAM's capabilities, see the SAM website at https://sam.nlr.gov/.\nFor a short video describing the SAM repositories, see https://youtu.be/E5z1iiZfZ3M.\nThe SAM release notes are in https://github.com/NatLabRockies/SAM/blob/gh-pages/doc/releasenotes.html.\nThe desktop version of SAM for Windows, Mac, or Linux builds from the following open source projects:\nSSC is a set of \"compute modules\" that simulate different kinds of power systems and financial structures. It can be run directly using the SAM Software Development Kit. This is the source code for SAM's models, and is the repository to use for researching the algorithms underlying the models.\nLK is a scripting language that is integrated into SAM. SAM's user interface uses LK to calculate values to display on input pages. The user interface includes a script editor that allows users to write their own scripts from the user interface.\nwxWidgets is a cross-platform graphical user interface platform used for SAM's user interface, and for the development tools included with SSC (SDKtool) and LK (LKscript).\nWEX is a set of extensions to wxWidgets for custom user-interface elements developed specifically for SAM, LK script, and DView.\nGoogle Test is a C++ test framework that enables comprehensive unit-testing of software. Contributions to the project will eventually be required to have associated unit tests written in this framework.\nGoogle OR-Tools is a software suite for optimization, including vehicle routing, flows, integer and linear programming, and contraint programming.\njsoncpp is a C++ library that allows manipulating JSON values, including serialization and deserialization to and from strings.\nThis repository, SAM, contains the code for SAM's user interface that assigns values to inputs of the SSC compute modules, runs the modules in the correct order, and displays simulation results. It also includes tools for editing LK scripts, viewing time series results, and generating shade data from a 3-dimensional representation of a photovoltaic array or solar hot water collector and nearby shading objects.\nThe SAM repository also includes two libraries from Sandia National Laboratories, stepwise, and LHS, which are distributed as part of the Dakota platform, licensed under LGPL.\nFor build instructions see the wiki with specific instructions for:\nWindows\nMac\nLinux\nIf you would like to report an issue with SAM or make a feature request, please let us know by adding a new issue on the issues page.\nIf you would like to submit code to fix an issue or add a feature, you can use GitHub to do so. Please see Contributing for instructions.\nSAM's open source code is copyrighted by the Alliance for Energy Innovation and licensed with BSD-3-Clause terms, found here.\nThe stepwise and LHS LGPL licensed libraries from Sandia National Laboratories are pre-compiled Fortran libraries that are included in the SAM repository as binaries in the Sandia folder. You can replace the binaries with different versions by compiling your own version and replacing the binary/executable viles in the Sandia folder.\nSystem Advisor Model Version 2026.7.3 (2026). SAM source code. National Laboratory of the Rockies. Golden, CO. Accessed July 8, 2026. https://github.com/NatLabRockies/SAM",
+    "html": null,
+    "markdown": "# NatLabRockies/SAM: System Advisor Model (SAM) · GitHub\n\n[![Build](https://github.com/NatLabRockies/SAM/actions/workflows/ci.yml/badge.svg)](https://github.com/NatLabRockies/SAM/actions/workflows/ci.yml/badge.svg)\n\nThe SAM Open Source Project repository contains the source code, tools, and instructions to build a desktop version of the National Laboratory of the Rockies' System Advisor Model™ (SAM™). SAM is a simulation program for electricity generation projects. It has models for different kinds of renewable energy systems and financial models for residential, commercial, and utility-scale projects. For more details about SAM's capabilities, see the SAM website at [https://sam.nlr.gov/](https://sam.nlr.gov/).\n\nFor a short video describing the SAM repositories, see [https://youtu.be/E5z1iiZfZ3M](https://youtu.be/E5z1iiZfZ3M).\n\nThe [SAM release notes](https://natlabrockies.github.io/SAM/doc/releasenotes.html) are in [https://github.com/NatLabRockies/SAM/blob/gh-pages/doc/releasenotes.html](https://github.com/NatLabRockies/SAM/blob/gh-pages/doc/releasenotes.html).\n\nThe desktop version of SAM for Windows, Mac, or Linux builds from the following open source projects:\n\n*   [SSC](https://github.com/NatLabRockies/ssc) is a set of \"compute modules\" that simulate different kinds of power systems and financial structures. It can be run directly using the [SAM Software Development Kit](https://sam.nlr.gov/sdk). **This is the source code for SAM's models, and is the repository to use for researching the algorithms underlying the models.**\n    \n*   [LK](https://github.com/NatLabRockies/lk) is a scripting language that is integrated into SAM. SAM's user interface uses LK to calculate values to display on input pages. The user interface includes a script editor that allows users to write their own scripts from the user interface.\n    \n*   [wxWidgets](https://www.wxwidgets.org/) is a cross-platform graphical user interface platform used for SAM's user interface, and for the development tools included with SSC (SDKtool) and LK (LKscript).\n    \n*   [WEX](https://github.com/NatLabRockies/wex) is a set of extensions to wxWidgets for custom user-interface elements developed specifically for SAM, LK script, and DView.\n    \n*   [Google Test](https://github.com/google/googletest) is a C++ test framework that enables comprehensive unit-testing of software. Contributions to the project will eventually be required to have associated unit tests written in this framework.\n    \n*   [Google OR-Tools](https://github.com/google/or-tools) is a software suite for optimization, including vehicle routing, flows, integer and linear programming, and contraint programming.\n    \n*   [jsoncpp](https://github.com/open-source-parsers/jsoncpp) is a C++ library that allows manipulating JSON values, including serialization and deserialization to and from strings.\n    \n\nThis repository, **SAM**, contains the code for SAM's user interface that assigns values to inputs of the SSC compute modules, runs the modules in the correct order, and displays simulation results. It also includes tools for editing LK scripts, viewing time series results, and generating shade data from a 3-dimensional representation of a photovoltaic array or solar hot water collector and nearby shading objects.\n\nThe SAM repository also includes [two libraries](https://github.com/NatLabRockies/SAM/tree/develop/Sandia) from Sandia National Laboratories, [stepwise](https://dakota.sandia.gov/content/packages/stepwise), and [LHS](https://dakota.sandia.gov/content/packages/lhs), which are distributed as part of the Dakota platform, licensed under [LGPL](https://www.gnu.org/licenses/lgpl-3.0.en.html).\n\nFor build instructions see the [wiki](https://github.com/NatLabRockies/SAM/wiki) with specific instructions for:\n\n*   [Windows](https://github.com/NatLabRockies/SAM/wiki/Windows-Build-Instructions)\n*   [Mac](https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions)\n*   [Linux](https://github.com/NatLabRockies/SAM/wiki/Linux-Build-Instructions)\n\nIf you would like to report an issue with SAM or make a feature request, please let us know by adding a new issue on the [issues page](https://github.com/NatLabRockies/SAM/issues).\n\nIf you would like to submit code to fix an issue or add a feature, you can use GitHub to do so. Please see [Contributing](https://github.com/NatLabRockies/SAM/blob/patch/CONTRIBUTING.md) for instructions.\n\nSAM's open source code is copyrighted by the Alliance for Energy Innovation and licensed with BSD-3-Clause terms, found [here](https://github.com/NatLabRockies/SAM/blob/develop/LICENSE).\n\nThe stepwise and LHS [LGPL](https://www.gnu.org/licenses/lgpl-3.0.en.html) licensed libraries from Sandia National Laboratories are pre-compiled Fortran libraries that are included in the SAM repository as binaries in the [Sandia folder](https://github.com/NatLabRockies/SAM/tree/develop/Sandia). You can replace the binaries with different versions by compiling your own version and replacing the binary/executable viles in the Sandia folder.\n\nSystem Advisor Model Version 2026.7.3 (2026). SAM source code. National Laboratory of the Rockies. Golden, CO. Accessed July 8, 2026. [https://github.com/NatLabRockies/SAM](https://github.com/NatLabRockies/SAM)"
+  }
+]

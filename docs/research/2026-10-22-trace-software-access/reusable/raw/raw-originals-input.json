@@ -1,0 +1,31 @@
+{
+  "startUrls": [
+    {
+      "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/package.json"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/README.md"
+    },
+    {
+      "url": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/git/trees/master?recursive=1"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE"
+    }
+  ],
+  "crawlerType": "playwright:firefox",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 5,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": false,
+  "htmlTransformer": "none",
+  "removeElementsCssSelector": "dummy_keep_everything",
+  "saveContentTypes": "text/plain, application/json",
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 1,
+  "maxRequestRetries": 1
+}

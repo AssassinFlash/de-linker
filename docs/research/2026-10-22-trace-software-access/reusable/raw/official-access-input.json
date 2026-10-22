@@ -1,0 +1,32 @@
+{
+  "startUrls": [
+    {
+      "url": "https://www.archelios.com/help/help_template.php"
+    },
+    {
+      "url": "https://www.trace-software.com/en/our-solutions/solar-pv-design-software/"
+    },
+    {
+      "url": "https://www.trace-software.com/en/archelios-pro-a-new-version-focused-on-reliability-bankability-and-automation/"
+    },
+    {
+      "url": "https://www.3e.eu/resources/news/trace-software-partnership-3e-solar-irradiation-data-compatible-with-archelios-pro"
+    },
+    {
+      "url": "https://sam.nlr.gov/download.html"
+    },
+    {
+      "url": "https://sam.nlr.gov/sam-open-source.html"
+    },
+    {
+      "url": "https://github.com/NREL/SAM"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 7,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

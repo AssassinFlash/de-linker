@@ -1,0 +1,42 @@
+[
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/LICENSE",
+    "captureRun": "Rw91OkoAG4Iigitvu",
+    "keyValueRecord": "/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-2b13fc1-LICENSE",
+    "file": "aladdin-LICENSE.txt",
+    "bytes": 1090,
+    "sha256": "fce4189743362fb435286d656f72ea761d1b332517ddc53740a9074279772e38"
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/package.json",
+    "captureRun": "Rw91OkoAG4Iigitvu",
+    "keyValueRecord": "/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-b9b8a57-package.json",
+    "file": "aladdin-package.json",
+    "bytes": 3460,
+    "sha256": "e4b981fdaf2a8836f53c25dbf19f92978cacdddcc9d18c394f0ca8d590606766"
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/Institute-for-Future-Intelligence/aladdin/master/README.md",
+    "captureRun": "Rw91OkoAG4Iigitvu",
+    "keyValueRecord": "/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-58b3213-README.md",
+    "file": "aladdin-README.md",
+    "bytes": 826,
+    "sha256": "15ad4ed5effc1e9458f7b14782b68f707bb51da3ab73a315838499919c15e750"
+  },
+  {
+    "sourceUrl": "https://api.github.com/repos/Institute-for-Future-Intelligence/aladdin/git/trees/master?recursive=1",
+    "captureRun": "Rw91OkoAG4Iigitvu",
+    "keyValueRecord": "/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-b79df16-master",
+    "file": "aladdin-tree.json",
+    "bytes": 409136,
+    "sha256": "247da5322c62fcf35418f5d120aaf410f72110db9fe91adda72dd8ff879b0227"
+  },
+  {
+    "sourceUrl": "https://raw.githubusercontent.com/NatLabRockies/SAM/develop/LICENSE",
+    "captureRun": "Rw91OkoAG4Iigitvu",
+    "keyValueRecord": "/v2/key-value-stores/8YBrBh6SiWRgCVw5t/records/file-3cfb3f2-LICENSE",
+    "file": "sam-LICENSE.txt",
+    "bytes": 1548,
+    "sha256": "22b6f0585f60c136d6d3d196acf1cea2e69b9d84ac860125f9401960a7ef5a14"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "source": "aladdin-example-home_solar_energy_storage.json",
+    "sameBytesAlias": "aladdin-example-home_solar_energy_storage.ala",
+    "sha256": "1674d3da8fc9013a77f742af0551b7e1f6a8ffafc5da7b31408325884b804a51",
+    "conversion": "none; extension-only alias based on native JSON reader/writer; UI import not executed by this researcher"
+  },
+  {
+    "source": "aladdin-example-inter_row_spacing.json",
+    "sameBytesAlias": "aladdin-example-inter_row_spacing.ala",
+    "sha256": "92836bbf1b378614d6890945315caf7593dbbdb43da3efa447f40b3abb10cd62",
+    "conversion": "none; extension-only alias based on native JSON reader/writer; UI import not executed by this researcher"
+  },
+  {
+    "source": "aladdin-example-rooftop_solar_panels.json",
+    "sameBytesAlias": "aladdin-example-rooftop_solar_panels.ala",
+    "sha256": "41cc3b8409231642eb8e3fbc13058a9494b6367ee64730b8f849904b073e4956",
+    "conversion": "none; extension-only alias based on native JSON reader/writer; UI import not executed by this researcher"
+  },
+  {
+    "source": "aladdin-example-solar_panel_array_auto_layout.json",
+    "sameBytesAlias": "aladdin-example-solar_panel_array_auto_layout.ala",
+    "sha256": "f1692704d3193e0b0350de13d6dfeffe772c0e6a806617406b9a4c477c123f79",
+    "conversion": "none; extension-only alias based on native JSON reader/writer; UI import not executed by this researcher"
+  }
+]

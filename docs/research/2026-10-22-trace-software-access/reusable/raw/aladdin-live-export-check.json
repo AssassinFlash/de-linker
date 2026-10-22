@@ -1,0 +1,58 @@
+{
+  "provenance": "coordinator CUA-exported live artifacts; arithmetic only; not running source or verifying physics",
+  "files": [
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-trace-software-access/docs/research/2026-10-22-trace-software-access/coordinator/artifacts/linker-study-aladdin-garage.ala",
+      "bytes": 21624,
+      "sha256": "63c05cc45dc546e3417aea729bdd2e475be41d824e6157c8322331b6b04edeb5"
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/research-trace-software-access/docs/research/2026-10-22-trace-software-access/coordinator/artifacts/yearly-pv-yield.csv",
+      "bytes": 118,
+      "sha256": "0e1cee3579713fe089cf0776f5ddee07c943c690de692d817da3043da496d223"
+    }
+  ],
+  "exportedProjectVersion": "2.0.7",
+  "worldFields": {
+    "date": "6/22/2022, 12:00:00 PM",
+    "latitude": 33.74249063340524,
+    "longitude": -84.41325446099088,
+    "timesPerHour": 2,
+    "daysPerYear": 4,
+    "dustLoss": 0.05,
+    "monthlyIrradianceLosses": null,
+    "noAnimationForSolarPanelSimulation": true
+  },
+  "csvHeaders": [
+    "Month",
+    "Total",
+    ""
+  ],
+  "rows": [
+    {
+      "label": "Jan",
+      "sumNumericYieldColumns": 11236.995290894363
+    },
+    {
+      "label": "Apr",
+      "sumNumericYieldColumns": 30052.097890206765
+    },
+    {
+      "label": "Jul",
+      "sumNumericYieldColumns": 32480.078839119233
+    },
+    {
+      "label": "Oct",
+      "sumNumericYieldColumns": 20318.24041335162
+    }
+  ],
+  "sampledMonthSum": 94087.41243357198,
+  "scaleFactorTwelveOverDaysPerYear": 3.0,
+  "scaledAnnualTotal": 282262.23730071593,
+  "roundedScaledAnnualTotal": 282262.24,
+  "coordinatorObservedGraphTotal": 282262.24,
+  "matchesObservedTwoDecimals": true,
+  "publicSourceVersion": "2.0.6",
+  "liveUiVersionReportedByCoordinator": "2.0.7",
+  "versionEquivalenceNotProven": true
+}

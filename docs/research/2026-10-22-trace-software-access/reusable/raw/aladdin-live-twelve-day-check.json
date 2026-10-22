@@ -1,0 +1,19 @@
+{
+  "sourcePath": "/Users/chesterjohn/Documents/de-linker-worktrees/research-trace-software-access/docs/research/2026-10-22-trace-software-access/coordinator/artifacts/yearly-pv-yield-12-days.csv",
+  "sourceSha256": "a9e51d71e4f71bf00fb4a4eb9458e58c455c51e3f971e4c1c22d33ea1aaea843",
+  "rows": 12,
+  "sumAllYieldColumns": 281869.30259735853,
+  "rounded": 281869.3,
+  "coordinatorObservedDaysPerYear": 12,
+  "relativeDifferenceFromFourRepresentativeDayAnnual": -0.0013920909403788838,
+  "interpretation": "sampling-sensitivity observation for one unchanged example; not external accuracy or 8760 equivalence",
+  "project": {
+    "sourcePath": "/Users/chesterjohn/Documents/de-linker-worktrees/research-trace-software-access/docs/research/2026-10-22-trace-software-access/coordinator/artifacts/linker-study-aladdin-garage-12-days.ala",
+    "sourceSha256": "70eaeaee2a4b51c81efdb1a7534ed70a69985727bbd0c37e71c448b102455f3d",
+    "version": "2.0.7",
+    "daysPerYearKeyPresent": false,
+    "timesPerHour": 2,
+    "sourceDefaultExpansionDaysPerYear": 12,
+    "defaultExpansionEvidence": "2.0.6 contentUtil.ts:599,669 and constants.ts:251; live UI12 setting independently observed by coordinator"
+  }
+}

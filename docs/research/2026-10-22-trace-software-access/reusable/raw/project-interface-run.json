@@ -1,0 +1,9 @@
+{
+  "id": "2Y6847qWlofLCZKWB",
+  "status": "SUCCEEDED",
+  "defaultDatasetId": "ngYoaD7tkVI3mCo9W",
+  "startedAt": "2026-10-22T12:18:49.585Z",
+  "finishedAt": "2026-10-22T12:18:58.512Z",
+  "usageTotalUsd": 0.0015453165594372486,
+  "statusMessage": "Finished! Total 6 requests: 6 succeeded, 0 failed."
+}

@@ -1,0 +1,35 @@
+{
+  "startUrls": [
+    {
+      "url": "https://github.com/Institute-for-Future-Intelligence/aladdin"
+    },
+    {
+      "url": "https://intofuture.org/aladdin.html"
+    },
+    {
+      "url": "https://github.com/Institute-for-Future-Intelligence/aladdin/blob/master/LICENSE"
+    },
+    {
+      "url": "https://sam.nlr.gov/software-development-kit-sdk.html"
+    },
+    {
+      "url": "https://github.com/NatLabRockies/SAM/wiki/Mac-Build-Instructions"
+    },
+    {
+      "url": "https://github.com/NatLabRockies/SAM/blob/develop/LICENSE"
+    },
+    {
+      "url": "https://samrepo.nlr.gov/help/case_menu.html"
+    },
+    {
+      "url": "https://sam.nlr.gov/download/system-requirements.html"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 8,
+  "saveMarkdown": true,
+  "saveText": true,
+  "respectRobotsTxtFile": true,
+  "maxConcurrency": 2
+}

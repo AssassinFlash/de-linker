@@ -1,0 +1,25 @@
+[
+  {
+    "url": "https://codeload.github.com/Institute-for-Future-Intelligence/aladdin/zip/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+    "crawl": {
+      "loadedUrl": "https://codeload.github.com/Institute-for-Future-Intelligence/aladdin/zip/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+      "depth": 0,
+      "referrerUrl": "https://codeload.github.com/Institute-for-Future-Intelligence/aladdin/zip/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+      "loadedTime": "2026-10-22T12:27:16.958Z",
+      "httpStatusCode": 200,
+      "contentType": "application/zip"
+    },
+    "html": null,
+    "text": null,
+    "markdown": null,
+    "metadata": {
+      "author": null,
+      "canonicalUrl": "https://codeload.github.com/Institute-for-Future-Intelligence/aladdin/zip/7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+      "description": null,
+      "keywords": null,
+      "languageCode": null,
+      "title": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa"
+    },
+    "fileUrl": "https://api.apify.com/v2/key-value-stores/cCEDHU7flyIziRsKX/records/file-c203eb3-7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa"
+  }
+]
