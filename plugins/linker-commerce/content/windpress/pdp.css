@@ -1768,6 +1768,8 @@
 		z-index: 60;
 		left: 12px;
 		right: 12px;
+		/* Match both 12px insets even if a mobile layout viewport expands. */
+		max-width: calc(100vw - 24px);
 		bottom: calc(12px + env(safe-area-inset-bottom));
 		display: flex;
 		align-items: center;

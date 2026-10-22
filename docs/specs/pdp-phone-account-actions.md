@@ -20,6 +20,12 @@ account actions perceptible. No new copy, route, JS, PHP layout, dependency or
 Snippet is needed. This is the explicit owner-authorized visual bug exception
 to unchanged product-page parity.
 
+Keep the fixed dock within the device's CSS viewport: its maximum width is
+100vw less the existing two 12px insets. A native DE320 sample has a 351px
+layout viewport despite a 320px visual viewport, which otherwise puts the
+fixed dock's right edge at339px. The initial cause of that expansion remains
+unproven; this bounds the dock without hiding page overflow or its content.
+
 Remove the blanket phone price clamp as well: a logged-in pending/restricted
 account's status must remain readable. Approved prices retain the existing
 compact arrangement unless their real content requires additional height.
