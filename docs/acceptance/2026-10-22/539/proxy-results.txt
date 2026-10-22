@@ -1,0 +1,79 @@
+{
+  "candidate_sha256": "429b0505e291fe79351ae6476120c73196c8d5c38a268d44e385741ca633d2eb",
+  "ports": {
+    "engine": 49123,
+    "genie": 46611,
+    "proxy": 60497
+  },
+  "candidate_syntax": "pass",
+  "checks": [
+    {
+      "service": "engine",
+      "case": "unauthorized headers only, zero body sent",
+      "status": 401,
+      "seconds": 0.0016
+    },
+    {
+      "service": "engine",
+      "case": "declared cap+1, zero body sent",
+      "status": 413
+    },
+    {
+      "service": "engine",
+      "case": "within public proxy cap",
+      "bytes": 4194305,
+      "status": 200,
+      "native_seen": 4194305
+    },
+    {
+      "service": "engine",
+      "case": "within public proxy cap",
+      "bytes": 6291456,
+      "status": 200,
+      "native_seen": 6291456
+    },
+    {
+      "service": "engine",
+      "case": "chunked cap+1",
+      "status": 413
+    },
+    {
+      "service": "genie",
+      "case": "unauthorized headers only, zero body sent",
+      "status": 401,
+      "seconds": 0.0023
+    },
+    {
+      "service": "genie",
+      "case": "declared cap+1, zero body sent",
+      "status": 413
+    },
+    {
+      "service": "genie",
+      "case": "within public proxy cap",
+      "bytes": 4194305,
+      "status": 200,
+      "native_seen": 4194305
+    },
+    {
+      "service": "genie",
+      "case": "within public proxy cap",
+      "bytes": 31457280,
+      "status": 200,
+      "native_seen": 31457280
+    },
+    {
+      "service": "genie",
+      "case": "chunked cap+1",
+      "status": 413
+    },
+    {
+      "service": "genie",
+      "case": "direct native chunked cap+1",
+      "native_cap": 33659180,
+      "status": 413
+    }
+  ],
+  "spool_files": 0
+}
+{"cleanup": "own processes stopped and temporary tree removed"}

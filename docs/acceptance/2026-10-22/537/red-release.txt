@@ -1,0 +1,17 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+..E                                                                 3 / 3 (100%)
+
+Time: 00:00.838, Memory: 99.00 MB
+
+There was 1 error:
+
+1) Linker\Commerce\Tests\Integration\NotificationHoldTest::test_staff_release_is_idempotent_and_uses_original_job_with_throttle
+Error: Call to undefined method Linker\Commerce\Mail\NotificationHold::reference()
+
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/tests/php/Integration/NotificationHoldTest.php:77
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+ERRORS!
+Tests: 3, Assertions: 15, Errors: 1.

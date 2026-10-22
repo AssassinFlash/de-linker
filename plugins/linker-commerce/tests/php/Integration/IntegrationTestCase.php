@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Integration;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Mail\OptionBudgetLedger;
 use Linker\Commerce\Mail\TestMode;
 use PHPUnit\Framework\TestCase;
 use WC_Customer;
@@ -75,6 +76,18 @@ abstract class IntegrationTestCase extends TestCase {
 		parent::setUp();
 		$this->isolate_mail();
 		$this->isolate_public_connection();
+		// In-process fixtures drive their own consumer. Do not let a separate HTTP
+		// request consume them before that test installs its simulated provider.
+		$wake = static function ( $pre, $args, $url ) {
+			return false === $pre && str_contains( $url, 'action=linker_inquiry_assessment_wake' )
+				? new \WP_Error( 'fixture_async_blocked' ) : $pre;
+		};
+		add_filter( 'pre_http_request', $wake, 999, 3 );
+		$this->later(
+			static function () use ( $wake ): void {
+				remove_filter( 'pre_http_request', $wake, 999 );
+			}
+		);
 	}
 
 	/** Each test has its own public connection window, restored on exit. */
@@ -116,11 +129,18 @@ abstract class IntegrationTestCase extends TestCase {
 	private function isolate_mail(): void {
 		$test_to = get_option( TestMode::OPTION );
 		( new TestMode() )->enable( self::TESTER );
+		$ledger = get_option( OptionBudgetLedger::OPTION );
+		delete_option( OptionBudgetLedger::OPTION );
 		$sends  = get_option( Throttle::OPTION );
 		$marker = self::newest_mail_job();
 		delete_option( Throttle::OPTION );
 		$this->later(
-			static function () use ( $sends, $marker, $test_to ): void {
+			static function () use ( $sends, $marker, $test_to, $ledger ): void {
+				if ( false === $ledger ) {
+					delete_option( OptionBudgetLedger::OPTION );
+				} else {
+					update_option( OptionBudgetLedger::OPTION, $ledger, false );
+				}
 				if ( false === $test_to ) {
 					delete_option( TestMode::OPTION );
 				} else {

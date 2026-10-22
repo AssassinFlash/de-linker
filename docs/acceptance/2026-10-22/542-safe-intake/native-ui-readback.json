@@ -1,0 +1,16 @@
+{
+  "environment": "isolated local i542, production snapshot 20261022-0018",
+  "model_calls": 0,
+  "external_mail_deliveries": 0,
+  "records": [
+    {"id":8328,"status":"inquiry-received","lane":"verification","held":false,"job":8413},
+    {"id":8329,"status":"inquiry-received","lane":"verification","held":false,"job":8414},
+    {"id":8330,"status":"inquiry-received","lane":"verification","held":true,"job":0},
+    {"id":8331,"status":"inquiry-received","lane":"verification","held":true,"job":0},
+    {"id":8444,"status":"inquiry-received","lane":"individual","held":true,"job":0},
+    {"id":8445,"status":"inquiry-received","lane":"individual","held":true,"job":0}
+  ],
+  "occupancy":{"verification":2,"campaign":3,"individual":2},
+  "campaign_count":5,
+  "pending_summary":{"count":4,"oldest":1792658383,"url":"http://127.0.0.1:9308/wp-admin/admin.php?page=wc-orders&linker_intake_review=1"}
+}

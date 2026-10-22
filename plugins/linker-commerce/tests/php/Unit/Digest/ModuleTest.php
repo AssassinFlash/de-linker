@@ -87,6 +87,16 @@ final class ModuleTest extends TestCase {
 		$this->allow_locale_switch( 'en_US' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
 		$this->filter_returns( 'linker_commerce_digest_blocks', null );
+		$this->filter_returns(
+			'linker_commerce_pending_review_summary',
+			array(
+				'count'  => 0,
+				'oldest' => 0,
+				'url'    => 'https://example.test/wp-admin/',
+			)
+		);
+		WP_Mock::userFunction( 'admin_url', array( 'return' => 'https://example.test/wp-admin/' ) );
+		WP_Mock::userFunction( 'is_wp_error', array( 'return' => static fn ( $value ): bool => $value instanceof \WP_Error ) );
 		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array() ) );
 		WP_Mock::userFunction( 'get_posts', array( 'return' => array() ) );
 		WP_Mock::userFunction(

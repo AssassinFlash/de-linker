@@ -18,6 +18,7 @@ namespace Linker\Commerce\Mail;
  */
 final class JobStore {
 
+
 	/**
 	 * Post type of the queued messages.
 	 */
@@ -26,6 +27,8 @@ final class JobStore {
 	/**
 	 * Post meta: the message, its attempts so far, the last error.
 	 */
+	public const INQUIRY_META = '_linker_mail_inquiry';
+
 	private const MESSAGE_META  = '_linker_mail_message';
 	private const ATTEMPTS_META = '_linker_mail_attempts';
 	private const ERROR_META    = '_linker_mail_error';
@@ -34,6 +37,34 @@ final class JobStore {
 	 * Post status of a message that failed every attempt.
 	 */
 	public const FAILED_STATUS = 'draft';
+
+	/**
+	 * Private priority, written only by an authenticated staff release.
+	 */
+	public const PRIORITY_META = '_linker_mail_critical_release';
+
+	/**
+	 * Promote an original job explicitly restored by staff.
+	 *
+	 * @param int $id Original job explicitly restored by staff.
+	 * @throws \RuntimeException When the priority cannot be persisted.
+	 */
+	public function promote( int $id ): void {
+		update_post_meta( $id, self::PRIORITY_META, 'yes' );
+		if ( ! $this->critical( $id ) ) {
+			throw new \RuntimeException( esc_html( 'notification_priority_write_failed' ) );
+		}
+	}
+
+	/**
+	 * Read a private staff-release priority.
+	 *
+	 * @param int $id Original job.
+	 */
+	public function critical( int $id ): bool {
+		wp_cache_delete( $id, 'post_meta' );
+		return 'yes' === get_post_meta( $id, self::PRIORITY_META, true );
+	}
 
 	/**
 	 * Registers the post type; runs on init.
@@ -56,10 +87,11 @@ final class JobStore {
 	/**
 	 * Stores a message.
 	 *
-	 * @param Message $message Message.
+	 * @param  Message $message Message.
+	 * @param  int     $inquiry Native inquiry owning this original notification.
 	 * @return int Job id, 0 when the post could not be written.
 	 */
-	public function create( Message $message ): int {
+	public function create( Message $message, int $inquiry = 0 ): int {
 		$id = wp_insert_post(
 			array(
 				'post_type'   => self::POST_TYPE,
@@ -74,13 +106,16 @@ final class JobStore {
 		// The body lives in meta, which no content filter rewrites.
 		update_post_meta( $id, self::MESSAGE_META, wp_slash( (string) wp_json_encode( $message->to_array() ) ) );
 		update_post_meta( $id, self::ATTEMPTS_META, 0 );
+		if ( $inquiry > 0 ) {
+			update_post_meta( $id, self::INQUIRY_META, $inquiry );
+		}
 		return $id;
 	}
 
 	/**
 	 * A stored message and its attempts so far.
 	 *
-	 * @param int $id Job id.
+	 * @param  int $id Job id.
 	 * @return array{message: Message, attempts: int}|null Null when there is no such job.
 	 */
 	public function load( int $id ): ?array {

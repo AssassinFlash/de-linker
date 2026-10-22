@@ -12,6 +12,7 @@ const API_SCRIPT =
 	'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
 interface Attempt {
+	token?: string;
 	promise: Promise< string >;
 	container: HTMLElement;
 	expires: number;
@@ -108,6 +109,13 @@ export class ProtectionClient implements PublicProtection {
 			clearTimeout( timer );
 		}
 		return result;
+	}
+
+	ready( action: string, container: HTMLElement ): string {
+		const attempt = this.attempts.get( action );
+		return attempt?.container === container && attempt.expires > Date.now()
+			? attempt.token || ''
+			: '';
 	}
 
 	warm( action: string, container: HTMLElement ): Promise< string > {
@@ -213,6 +221,7 @@ export class ProtectionClient implements PublicProtection {
 		// Local clock skew cannot invalidate a genuine customer challenge.
 		// The server still enforces the original signed absolute expiry.
 		attempt.expires = Date.now() + Math.min( result.ttl, 300 ) * 1000;
+		attempt.token = result.proof;
 		this.state( attempt.container, action, 'ready' );
 		return result.proof;
 	}

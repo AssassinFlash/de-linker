@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-22T04:49:58+00:00\n"
+"POT-Creation-Date: 2026-10-22T10:58:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -565,7 +565,7 @@ msgid "Documents"
 msgstr ""
 
 #: includes/Account/Menu.php:52 includes/Account/Menu.php:88
-#: includes/Contact/Form.php:167
+#: includes/Contact/Form.php:168
 #: includes/Inquiry/Assessment/EvidenceView.php:57
 #: includes/Inquiry/Assessment/EvidenceView.php:71
 #: includes/Registration/AccountsTable.php:43
@@ -725,168 +725,188 @@ msgid ""
 "the page it is printed on."
 msgstr ""
 
-#: includes/Contact/Form.php:137
+#: includes/Contact/Form.php:138
 #: includes/Presentation/ProductShortcodes.php:1591
 #: includes/Presentation/Shortcodes.php:278
 msgid "CONTACT LINKER"
 msgstr ""
 
-#: includes/Contact/Form.php:138
+#: includes/Contact/Form.php:139
 msgid "What can we help with?"
 msgstr ""
 
-#: includes/Contact/Form.php:139
+#: includes/Contact/Form.php:140
 msgid "Tell us what you need. We’ll use the email below for your reply."
 msgstr ""
 
-#: includes/Contact/Form.php:150
+#: includes/Contact/Form.php:151
 msgid "Your question"
 msgstr ""
 
-#: includes/Contact/Form.php:151
+#: includes/Contact/Form.php:152
 msgid "What would you like to know?"
 msgstr ""
 
-#: includes/Contact/Form.php:155
+#: includes/Contact/Form.php:156
 #: includes/Inquiry/Assessment/EvidenceView.php:49
 msgid "This is about"
 msgstr ""
 
-#: includes/Contact/Form.php:160
+#: includes/Contact/Form.php:161
 msgid "Where can we reply?"
 msgstr ""
 
-#: includes/Contact/Form.php:162
+#: includes/Contact/Form.php:163
 #: includes/Inquiry/Assessment/EvidenceView.php:55
 #: includes/Inquiry/Form.php:159 includes/Settings/SettingsTab.php:137
 msgid "Name"
 msgstr ""
 
-#: includes/Contact/Form.php:164 includes/Inquiry/Form.php:160
+#: includes/Contact/Form.php:165 includes/Inquiry/Form.php:160
 msgid "Reply email"
 msgstr ""
 
-#: includes/Contact/Form.php:167
+#: includes/Contact/Form.php:168
 msgid "optional"
 msgstr ""
 
-#: includes/Contact/Form.php:169
+#: includes/Contact/Form.php:170
 msgid "No account or Project is needed to ask a question."
 msgstr ""
 
-#: includes/Contact/Form.php:175 includes/Inquiry/Form.php:162
+#: includes/Contact/Form.php:176 includes/Inquiry/Form.php:162
 msgid "I agree that my details may be used to respond to this message."
 msgstr ""
 
-#: includes/Contact/Form.php:177 includes/Inquiry/Form.php:163
+#: includes/Contact/Form.php:178 includes/Inquiry/Form.php:163
 #: templates/myaccount/auth/form-register.php:144
 msgid "Privacy"
 msgstr ""
 
-#: includes/Contact/Form.php:180
+#: includes/Contact/Form.php:181
 msgid "Send message"
 msgstr ""
 
-#: includes/Contact/Form.php:181
+#: includes/Contact/Form.php:182
 msgid ""
 "Your message goes to the Linker team. We reply to the address you give here."
 msgstr ""
 
-#: includes/Contact/Form.php:229
+#: includes/Contact/Form.php:230
 msgid "Product guidance"
 msgstr ""
 
-#: includes/Contact/Form.php:230
+#: includes/Contact/Form.php:231
 msgid "Price & availability"
 msgstr ""
 
-#: includes/Contact/Form.php:231
+#: includes/Contact/Form.php:232
 msgid "Product documents"
 msgstr ""
 
-#: includes/Contact/Form.php:232
+#: includes/Contact/Form.php:233
 msgid "Discuss a project"
 msgstr ""
 
-#: includes/Contact/Form.php:233
+#: includes/Contact/Form.php:234
 msgid "Support for an order"
 msgstr ""
 
-#: includes/Contact/Form.php:234
+#: includes/Contact/Form.php:235
 msgid "Work with Linker"
 msgstr ""
 
-#: includes/Contact/Form.php:235
+#: includes/Contact/Form.php:236
 msgid "A question"
 msgstr ""
 
-#: includes/Contact/Form.php:249
+#: includes/Contact/Form.php:250
 msgid "Prefer email?"
 msgstr ""
 
-#: includes/Contact/Form.php:251
+#: includes/Contact/Form.php:252
 msgid ""
 "Send your question directly to our team. Opening your email app does not "
 "send a message."
 msgstr ""
 
-#: includes/Contact/Form.php:254
+#: includes/Contact/Form.php:255
 msgid "Still exploring?"
 msgstr ""
 
-#: includes/Contact/Form.php:255
+#: includes/Contact/Form.php:256
 msgid "Take your time."
 msgstr ""
 
-#: includes/Contact/Form.php:256
+#: includes/Contact/Form.php:257
 msgid "Use Genie to explore the options, then return to your question."
 msgstr ""
 
-#: includes/Contact/Form.php:257
+#: includes/Contact/Form.php:258
 msgid "Explore with Genie"
 msgstr ""
 
-#: includes/Contact/Form.php:279
+#: includes/Contact/Form.php:281 includes/Protection/Intake.php:72
+msgid ""
+"This request is too large to save for review. Your entries and solution "
+"draft are still here. Please email sales@de-linker.com."
+msgstr ""
+
+#: includes/Contact/Form.php:282 includes/Protection/Intake.php:287
+msgid ""
+"Your request has not been saved because the review queue is full. Your "
+"entries are still here. Please try again later or email sales@de-linker.com."
+msgstr ""
+
+#: includes/Contact/Form.php:283 includes/Protection/Intake.php:296
+msgid ""
+"This message matches a repeated spam submission. We have not saved a "
+"separate inquiry or sent an email. Your entries are still here. For an "
+"individual review, select the review option in this form or email sales@de-"
+"linker.com."
+msgstr ""
+
+#: includes/Contact/Form.php:284
 msgid ""
 "Thank you. Your message is with the Linker team. We have not sent a "
 "confirmation email. We reply within one business day."
 msgstr ""
 
-#: includes/Contact/Form.php:280
+#: includes/Contact/Form.php:285
 msgid "Thank you. Your message is with the Linker team."
 msgstr ""
 
-#: includes/Contact/Form.php:281 includes/Inquiry/Form.php:85
-#: includes/Inquiry/Handler.php:49
+#: includes/Contact/Form.php:286 includes/Inquiry/Form.php:85
+#: includes/Inquiry/Handler.php:51 includes/Protection/Intake.php:68
 msgid "Please check your entries and send the form again."
 msgstr ""
 
-#: includes/Contact/Form.php:282
+#: includes/Contact/Form.php:287 includes/Protection/Intake.php:230
 msgid ""
 "The message limit has been reached. Your entries are still here. You can try "
 "again later or email sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:283
+#: includes/Contact/Form.php:288
 msgid ""
 "Verification expired or could not be confirmed. Your entries are still here. "
 "Please try again."
 msgstr ""
 
-#: includes/Contact/Form.php:284
+#: includes/Contact/Form.php:289
 msgid ""
 "Verification is temporarily unavailable. Your entries are still here. Please "
 "try again or email sales@de-linker.com."
 msgstr ""
 
-#: includes/Contact/Form.php:285 includes/Protection/Admission.php:193
-#: includes/Protection/Business.php:75
+#: includes/Contact/Form.php:290 includes/Protection/Admission.php:194
+#: includes/Protection/Business.php:93
 msgid ""
 "The request status could not be confirmed. Please check before sending it "
 "again."
 msgstr ""
 
-#: includes/Contact/Form.php:301
+#: includes/Contact/Form.php:306
 msgid "Send another message"
 msgstr ""
 
@@ -1223,38 +1243,38 @@ msgid "SMTP configured; no SMTP attempt has been recorded."
 msgstr ""
 
 #. translators: %s: option name.
-#: includes/Health/Monitor.php:119
+#: includes/Health/Monitor.php:122
 #, php-format
 msgid "the address option %s is empty"
 msgstr ""
 
 #. translators: %d: HTTP status code.
-#: includes/Health/Monitor.php:131
+#: includes/Health/Monitor.php:134
 #, php-format
 msgid "the service answered HTTP %d instead of 200"
 msgstr ""
 
-#: includes/Health/Monitor.php:145
+#: includes/Health/Monitor.php:148
 #: templates/emails/linker-genie-conversation.php:37
 msgid "Genie"
 msgstr ""
 
-#: includes/Health/Monitor.php:145
+#: includes/Health/Monitor.php:148
 msgid "engine"
 msgstr ""
 
-#: includes/Health/Monitor.php:154
+#: includes/Health/Monitor.php:157
 msgid "The Solution Configurator"
 msgstr ""
 
 #. translators: %s: service name (Genie or engine).
-#: includes/Health/Monitor.php:166
+#: includes/Health/Monitor.php:169
 #, php-format
 msgid "The %s service failed its health check"
 msgstr ""
 
 #. translators: 1: service name, 2: address, 3: reason, 4: UTC time, 5: what uses the service.
-#: includes/Health/Monitor.php:171
+#: includes/Health/Monitor.php:174
 #, php-format
 msgid ""
 "The daily health check could not reach the %1$s service.\n"
@@ -1267,52 +1287,100 @@ msgid ""
 "on every failure."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:27
+#: includes/Health/PendingReviews.php:25
+msgid "Inquiries awaiting staff review"
+msgstr ""
+
+#: includes/Health/PendingReviews.php:36
+msgid "Pending inquiry counts are unavailable."
+msgstr ""
+
+#. translators: %d: saved inquiries awaiting staff review.
+#: includes/Health/PendingReviews.php:48
+#, php-format
+msgid "Saved inquiries awaiting staff review: %d."
+msgstr ""
+
+#: includes/Health/PendingReviews.php:50
+msgid "Review saved inquiries"
+msgstr ""
+
+#. translators: %s: age of the oldest saved inquiry.
+#: includes/Health/PendingReviews.php:52
+#, php-format
+msgid "Oldest inquiry: %s ago."
+msgstr ""
+
+#: includes/Health/PendingReviews.php:58
+msgid "No saved inquiry is awaiting staff review."
+msgstr ""
+
+#: includes/Health/ReviewReminder.php:104
+msgid "Saved inquiries need staff review"
+msgstr ""
+
+#. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
+#: includes/Health/ReviewReminder.php:106
+#, php-format
+msgid ""
+"Saved inquiries awaiting staff review: %1$d.\n"
+"Oldest inquiry: %2$s ago.\n"
+"Count checked: %3$s.\n"
+"Review saved inquiries: %4$s\n"
+"\n"
+"These inquiries are saved. Their individual team notifications have not been "
+"released."
+msgstr ""
+
+#: includes/Inquiry/Assessment/Admin.php:29
 msgid "Inquiry review"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:44
+#: includes/Inquiry/Assessment/Admin.php:47
 msgid "No assessment was requested."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:48
+#: includes/Inquiry/Assessment/Admin.php:51
 #: templates/emails/linker-new-inquiry.php:49
 msgid "Jev initial assessment"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:50
-msgid "Initial guidance only. Every inquiry is accepted and notified."
+#: includes/Inquiry/Assessment/Admin.php:53
+msgid "Model labels do not reject inquiries or stop team notifications."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:51
+#: includes/Inquiry/Assessment/Admin.php:54
 msgid "Diagnostic"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:51
+#: includes/Inquiry/Assessment/Admin.php:54
 msgid "Elapsed time"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:51
+#: includes/Inquiry/Assessment/Admin.php:54
 msgid "Model / rubric"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:52
+#: includes/Inquiry/Assessment/Admin.php:55
 msgid "Original model result"
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:62
+#: includes/Inquiry/Assessment/Admin.php:78
+#: includes/Inquiry/Assessment/Admin.php:137
+#: includes/Inquiry/Assessment/Reviews.php:103
+#: includes/Inquiry/Assessment/Reviews.php:108
+#: includes/Mail/NotificationHold.php:101
+msgid "This inquiry is unavailable."
+msgstr ""
+
+#: includes/Inquiry/Assessment/Admin.php:90
 #: includes/Inquiry/Assessment/Reviews.php:89
+#: includes/Protection/IntakeAdmin.php:198
 msgid "You cannot review this inquiry."
 msgstr ""
 
-#: includes/Inquiry/Assessment/Admin.php:75
+#: includes/Inquiry/Assessment/Admin.php:103
 msgid "Reload this inquiry before saving a review."
-msgstr ""
-
-#: includes/Inquiry/Assessment/Admin.php:109
-#: includes/Inquiry/Assessment/Reviews.php:103
-#: includes/Inquiry/Assessment/Reviews.php:108
-msgid "This inquiry is unavailable."
 msgstr ""
 
 #: includes/Inquiry/Assessment/EvidencePrivacy.php:36
@@ -1592,6 +1660,55 @@ msgstr ""
 msgid "Not recorded"
 msgstr ""
 
+#: includes/Inquiry/Assessment/NotificationHoldView.php:27
+#: includes/Inquiry/Assessment/NotificationHoldView.php:35
+msgid "Internal notification"
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:27
+msgid "Released for delivery"
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:35
+msgid "Notification on hold"
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:36
+msgid ""
+"The complete inquiry is saved for review. Releasing it queues one internal "
+"notification. No customer acknowledgement will be sent."
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:36
+msgid ""
+"The inquiry and its original notification are retained. Releasing the "
+"notification queues the same message for delivery."
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Confirmed abuse campaign"
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Held since"
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Hold reason"
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:37
+msgid "Original notification ID"
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:39
+msgid "The original notification is unavailable. It has not been recreated."
+msgstr ""
+
+#: includes/Inquiry/Assessment/NotificationHoldView.php:44
+msgid "Release this notification"
+msgstr ""
+
 #: includes/Inquiry/Assessment/Result.php:110
 msgid "Likely genuine"
 msgstr ""
@@ -1759,36 +1876,45 @@ msgid "Staff review recorded."
 msgstr ""
 
 #: includes/Inquiry/Checkout.php:27 includes/Inquiry/Checkout.php:54
-#: includes/Inquiry/Checkout.php:165 includes/Protection/Draft.php:108
+#: includes/Inquiry/Checkout.php:166 includes/Protection/Draft.php:108
 msgid "Please use the inquiry form to send your inquiry."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:120
+#: includes/Inquiry/Checkout.php:121
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:35
 #: includes/Inquiry/Emails/InquiryReceivedEmail.php:73
-#: includes/Vocabulary/Labels.php:97 includes/Vocabulary/Terms.php:107
+#: includes/Protection/IntakeAdmin.php:45 includes/Vocabulary/Labels.php:97
+#: includes/Vocabulary/Terms.php:107
 msgid "Inquiry received"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:121 includes/Inquiry/Form.php:165
+#: includes/Inquiry/Checkout.php:121 includes/Protection/IntakeAdmin.php:45
+msgid "Inquiry saved for review"
+msgstr ""
+
+#: includes/Inquiry/Checkout.php:122 includes/Inquiry/Form.php:165
 #: templates/emails/linker-inquiry-received.php:49
 msgid "We reply within one business day."
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:123
+#: includes/Inquiry/Checkout.php:124
 msgid "Create an account with this email"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:123
+#: includes/Inquiry/Checkout.php:124
 msgid "View inquiries"
 msgstr ""
 
-#: includes/Inquiry/Checkout.php:124
+#: includes/Inquiry/Checkout.php:125
 #: templates/emails/linker-inquiry-received.php:49
 msgid "The Linker team will reply to the email address you provided."
 msgstr ""
 
 #: includes/Inquiry/Checkout.php:126
+msgid "You can also email sales@de-linker.com and quote this inquiry number."
+msgstr ""
+
+#: includes/Inquiry/Checkout.php:127
 msgid "We have not sent a confirmation email."
 msgstr ""
 
@@ -1813,12 +1939,12 @@ msgid ""
 msgstr ""
 
 #. translators: {order_number}: inquiry number, {company}: customer's company.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:109
+#: includes/Inquiry/Emails/NewInquiryEmail.php:115
 msgid "New inquiry #{order_number} from {company}"
 msgstr ""
 
 #. translators: {order_number}: inquiry number.
-#: includes/Inquiry/Emails/NewInquiryEmail.php:117
+#: includes/Inquiry/Emails/NewInquiryEmail.php:123
 msgid "New inquiry #{order_number}"
 msgstr ""
 
@@ -1894,7 +2020,7 @@ msgstr ""
 msgid "You can send a message without products."
 msgstr ""
 
-#: includes/Inquiry/Handler.php:56
+#: includes/Inquiry/Handler.php:58
 msgid ""
 "We received several messages from this connection. Please try again later or "
 "write to sales@de-linker.com."
@@ -1994,7 +2120,7 @@ msgstr ""
 msgid "Please add a product or write a message."
 msgstr ""
 
-#: includes/Inquiry/Sender.php:104 includes/Protection/Business.php:56
+#: includes/Inquiry/Sender.php:104 includes/Protection/Business.php:61
 msgid ""
 "Your solution draft changed. Please review it and send your inquiry again."
 msgstr ""
@@ -2042,8 +2168,32 @@ msgctxt "Inquiry status"
 msgid "Cancelled"
 msgstr ""
 
-#: includes/Mail/JobStore.php:45
+#: includes/Mail/JobStore.php:76
 msgid "Queued emails"
+msgstr ""
+
+#: includes/Mail/NotificationHold.php:93
+msgid "You cannot release this notification."
+msgstr ""
+
+#: includes/Mail/NotificationHold.php:95
+msgid ""
+"This notification is being processed. Reload the inquiry before trying again."
+msgstr ""
+
+#: includes/Mail/NotificationHold.php:117
+msgid "This notification has changed. Reload the inquiry before trying again."
+msgstr ""
+
+#: includes/Mail/NotificationHold.php:144
+msgid "Notification released by staff."
+msgstr ""
+
+#: includes/Mail/NotificationHold.php:180
+#: includes/Protection/IntakeRelease.php:123
+msgid ""
+"The notification could not be released. Reload the inquiry before trying "
+"again."
 msgstr ""
 
 #: includes/Mail/SmtpHealth.php:58
@@ -3501,7 +3651,7 @@ msgstr ""
 msgid "Please verify your request and try again."
 msgstr ""
 
-#: includes/Protection/Admission.php:193
+#: includes/Protection/Admission.php:194
 msgid "Your request could not be processed. Please try again."
 msgstr ""
 
@@ -3517,10 +3667,20 @@ msgstr ""
 msgid "Please sign in to use your saved solution."
 msgstr ""
 
-#: includes/Protection/FormFields.php:26
+#: includes/Protection/FormFields.php:28
+msgid ""
+"If verification is unavailable, you can submit your inquiry for staff "
+"review. No confirmation email will be sent."
+msgstr ""
+
+#: includes/Protection/FormFields.php:28
 msgid ""
 "Please enable JavaScript to verify this request, or email sales@de-"
 "linker.com."
+msgstr ""
+
+#: includes/Protection/FormFields.php:31
+msgid "Request individual review of this message"
 msgstr ""
 
 #: includes/Protection/HealthPage.php:26 includes/Protection/HealthPage.php:60
@@ -3575,105 +3735,190 @@ msgstr ""
 msgid "Validation keys"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:61
+#: includes/Protection/HealthPage.php:62
 msgid "Connected handlers"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:61
+#: includes/Protection/HealthPage.php:62
 msgid ""
 "The mode and keys do not prove that every entry is protected. Check the "
 "connected handlers and observed results below."
 msgstr ""
 
-#: includes/Protection/HealthPage.php:63
+#: includes/Protection/HealthPage.php:64
 msgid ""
 "No business or resource handlers have been connected to this shared service."
 msgstr ""
 
-#: includes/Protection/HealthPage.php:71
+#: includes/Protection/HealthPage.php:72
 msgid "Check verification"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:71
+#: includes/Protection/HealthPage.php:72
 msgid ""
 "This checks the shared verification service. It does not create an inquiry, "
 "send mail or call a model."
 msgstr ""
 
-#: includes/Protection/HealthPage.php:71
+#: includes/Protection/HealthPage.php:72
 msgid "Verification check"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:72
+#: includes/Protection/HealthPage.php:73
 msgid ""
 "Counts cover receipts still in the retry window. They are not a complete "
 "traffic history or an exact cost report."
 msgstr ""
 
-#: includes/Protection/HealthPage.php:72
+#: includes/Protection/HealthPage.php:73
 msgid "Observed processing"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:74
+#: includes/Protection/HealthPage.php:75
 msgid ""
 "The admission journal is unavailable. No successful protection check can be "
 "inferred from this page."
 msgstr ""
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "Count"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "Operation"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "State"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:76
+#: includes/Protection/HealthPage.php:77
 msgid "Stored receipts"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:82
+#: includes/Protection/HealthPage.php:83
 msgid "Current allowance windows"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:82
+#: includes/Protection/HealthPage.php:83
 msgid ""
 "Remaining units are the minimum in one active bucket of each dimension, not "
 "a site-wide allowance. Recovery can happen sooner when work finishes."
 msgstr ""
 
-#: includes/Protection/HealthPage.php:84
+#: includes/Protection/HealthPage.php:85
 msgid "Active buckets"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:84
+#: includes/Protection/HealthPage.php:85
 msgid "Latest reset or recovery (UTC)"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:84
+#: includes/Protection/HealthPage.php:85
 msgid "Minimum remaining"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:86
+#: includes/Protection/HealthPage.php:87
 msgid "Daily admission reasons"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:86
+#: includes/Protection/HealthPage.php:87
 msgid "Policy source version"
 msgstr ""
 
-#: includes/Protection/HealthPage.php:86
+#: includes/Protection/HealthPage.php:87
 msgid ""
 "These bounded aggregate counts distinguish admitted requests, retries and "
 "quota refusals. Observe-mode results are advisory. Counters reset at UTC "
 "midnight."
 msgstr ""
 
-#: includes/Protection/Module.php:117
+#: includes/Protection/Intake.php:80
+msgid ""
+"Your entries changed. Please reload the form before sending a new request."
+msgstr ""
+
+#: includes/Protection/Intake.php:180 includes/Protection/Intake.php:231
+#: includes/Protection/IntakeStore.php:46
+#: includes/Protection/IntakeStore.php:67
+msgid ""
+"The request status could not be confirmed. Your entries are still here. "
+"Please check before sending a new request."
+msgstr ""
+
+#. translators: %d is the number of complete inquiries awaiting staff review.
+#: includes/Protection/IntakeAdmin.php:71
+#, php-format
+msgid ""
+"%d public requests are waiting for staff review. No individual notification "
+"has been sent for these requests."
+msgstr ""
+
+#. translators: %d is the number of complete inquiries awaiting staff review.
+#: includes/Protection/IntakeAdmin.php:71
+msgid "View saved requests"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:124
+#: includes/Protection/IntakeAdmin.php:227 includes/Protection/Privacy.php:79
+msgid "Public request review"
+msgstr ""
+
+#. translators: %s is the native inquiry number saved for this browser.
+#: includes/Protection/IntakeAdmin.php:149
+msgid "Please check the status of your inquiry before sending it again."
+msgstr ""
+
+#. translators: %s is the native inquiry number saved for this browser.
+#: includes/Protection/IntakeAdmin.php:149
+#, php-format
+msgid ""
+"Your inquiry #%s is saved and waiting for review. We have not sent a "
+"confirmation email."
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:164
+msgid "Review class"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:164
+#: includes/Protection/IntakeAdmin.php:182
+msgid "Rule version"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:164
+msgid "Saved for staff review"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:174
+msgid "Unresolved review capacity"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:179
+msgid "Confirmed activity attempts"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:182
+msgid "Confirmed activity rule disabled"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:182
+msgid "Confirmed activity rule enabled"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:183
+msgid "Disable this rule"
+msgstr ""
+
+#: includes/Protection/IntakeAdmin.php:183
+msgid "Enable this rule"
+msgstr ""
+
+#: includes/Protection/IntakeRelease.php:82
+msgid "Review completed by staff; one internal notification queued."
+msgstr ""
+
+#: includes/Protection/Module.php:121
 msgid "This verification request is too large. Please try again."
 msgstr ""
 
@@ -3684,22 +3929,29 @@ msgid ""
 msgstr ""
 
 #: includes/Protection/Privacy.php:28 includes/Protection/Privacy.php:42
-#: includes/Protection/Privacy.php:71 includes/Protection/Privacy.php:84
+#: includes/Protection/Privacy.php:75 includes/Protection/Privacy.php:88
+#: includes/Protection/Privacy.php:101
 msgid "Public request protection"
 msgstr ""
 
-#: includes/Protection/Privacy.php:75
+#: includes/Protection/Privacy.php:92
 msgid "Request processing record"
 msgstr ""
 
-#: includes/Protection/Privacy.php:88
+#: includes/Protection/Privacy.php:105
 msgid "Request allowance counter"
 msgstr ""
 
-#: includes/Protection/Privacy.php:125
+#: includes/Protection/Privacy.php:147
 msgid ""
 "Linked request data was removed. Minimal duplicate-request markers remain "
 "until their original retry window ends."
+msgstr ""
+
+#: includes/Protection/Privacy.php:147
+msgid ""
+"Linked request data was removed. Minimal review-capacity markers remain "
+"until the saved request is resolved or its native data is erased."
 msgstr ""
 
 #. translators: %s: email domain.

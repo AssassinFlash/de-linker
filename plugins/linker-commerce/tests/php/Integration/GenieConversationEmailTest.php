@@ -53,6 +53,7 @@ final class GenieConversationEmailTest extends IntegrationTestCase {
 		);
 		update_option( 'woocommerce_email_from_name', 'Linker' );
 		update_option( 'woocommerce_email_from_address', 'sales@de-linker.com' );
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 	}
 

@@ -44,7 +44,9 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->as_user( 0 );
-		$old = get_option( Ledger::OPTION );
+		$old    = get_option( Ledger::OPTION );
+		$review = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
 		delete_option( Ledger::OPTION );
 		$cookie                      = $_COOKIE; // phpcs:ignore WordPress.Security.NonceVerification -- Restore the fixture request.
 		$_COOKIE[ Identity::COOKIE ] = str_repeat( 'b', 32 );
@@ -60,13 +62,17 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 			putenv( $key . '=' . $value );
 		}
 		$this->later(
-			static function () use ( $env, $old, $cookie ): void {
+			static function () use ( $env, $old, $cookie, $review ): void {
 				foreach ( $env as $key => $value ) {
 					putenv( false === $value ? $key : $key . '=' . $value );
 				}
 				delete_option( Ledger::OPTION );
 				if ( false !== $old ) {
 					update_option( Ledger::OPTION, $old, false );
+				}
+				delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+				if ( false !== $review ) {
+					update_option( \Linker\Commerce\Protection\IntakeStore::OPTION, $review, false );
 				}
 				$_COOKIE = $cookie;
 			}
@@ -170,7 +176,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 		);
 		$first                 = $this->post( 'contact' );
 		$first['linker_proof'] = '';
-		$this->assertSame( 'sent', ( new ContactHandler() )->process( $first ) );
+		$this->assertSame( 'saved_review', ( new ContactHandler() )->process( $first ) );
 		$orders = wc_get_orders( array( 'billing_email' => $first['email'] ) );
 		$this->assertIsArray( $orders );
 		$order = $orders[0];
@@ -223,23 +229,31 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	}
 
 	/**
-	 * Missing proof and native nonce failures create neither an inquiry nor mail.
+	 * Failed proof preserves a held inquiry; native nonce failures still create none.
 	 */
-	public function test_invalid_proofs_and_nonces_have_zero_business_side_effects(): void {
+	public function test_invalid_proofs_save_held_inquiry_while_bad_nonce_has_no_side_effects(): void {
 		$marker = self::newest_mail_job();
 		$post   = $this->post();
-		foreach ( array( array( 'linker_proof' => '' ), array( 'linker_proof' => 'forged' ), array( 'linker_inquiry_nonce' => 'forged' ) ) as $bad ) {
-			$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, $bad ) ) );
+		$this->assertInstanceOf( WP_Error::class, ( new Handler() )->process( array_replace( $post, array( 'linker_inquiry_nonce' => 'forged' ) ) ) );
+		$this->assertSame( array(), wc_get_orders( array( 'billing_email' => $post['email'] ) ) );
+		foreach ( array( '', 'forged' ) as $proof ) {
+			$order = ( new Handler() )->process( array_replace( $post, array( 'linker_proof' => $proof ) ) );
+			$this->assertInstanceOf( WC_Order::class, $order );
+			$this->assertTrue( \Linker\Commerce\Mail\NotificationHold::held( $order ) );
+			$this->later(
+				static function () use ( $order ): void {
+					$order->delete( true );
+				}
+			);
 		}
-		$this->assertSame(
-			array(),
-			wc_get_orders(
-				array(
-					'billing_email' => $post['email'],
-					'return'        => 'ids',
-				)
+		$orders = wc_get_orders(
+			array(
+				'billing_email' => $post['email'],
+				'limit'         => 10,
 			)
 		);
+		$this->assertIsArray( $orders );
+		$this->assertCount( 1, $orders );
 		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 	}
 
@@ -516,6 +530,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 */
 	public function test_target_receipt_cap_retains_business_and_team_with_no_reflected_spam(): void {
 		$target = 'same-target@example.test';
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		$store = new \Linker\Commerce\Mail\JobStore();
 		for ( $i = 0; $i < 3; ++$i ) {
@@ -556,6 +571,7 @@ final class BusinessAdmissionTest extends IntegrationTestCase {
 	 * Login succeeds normally; only repeated failed use needs a scoped proof.
 	 */
 	public function test_genie_native_handoffs_report_all_suppressed_receipts(): void {
+		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_MINUTE, time() ), false );
 		foreach ( array( 'contact', 'inquiry' ) as $door ) {
 			foreach ( array( 'target_cap', 'unavailable' ) as $reason ) {

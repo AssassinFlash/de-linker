@@ -193,6 +193,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 
 		wc_load_cart();
 		$_COOKIE['wp_woocommerce_session_context_fixture'] = 'native-presence';
+		$post['linker_individual_review']                  = '1';
 		FormRecovery::save( 'contact', $post );
 		$recovered = FormRecovery::consume( 'contact' );
 		if ( $included ) {
@@ -210,6 +211,7 @@ final class ContactSelectionTest extends IntegrationTestCase {
 		$this->assertSame( $post[ SelectionContext::INCLUDE_FIELD ], $recovered[ SelectionContext::INCLUDE_FIELD ] );
 		$this->assertSame( $post['message'], $recovered['message'] );
 		$this->assertSame( $post['linker_request_id'], $recovered['linker_request_id'] );
+		$this->assertSame( '1', $recovered['linker_individual_review'], 'Selection and the individual-review request survive the same native recovery.' );
 		$this->assertArrayNotHasKey( 'linker_proof', $recovered );
 		FormRecovery::save( 'contact', $post );
 		$html = ( new Form() )->render();

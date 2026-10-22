@@ -12,6 +12,7 @@ namespace Linker\Commerce\Inquiry\Assessment;
 use Linker\Commerce\Inquiry\Emails\NewInquiryEmail;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
+use Linker\Commerce\Mail\NotificationHold;
 use WC_Order;
 
 /** Woo stores evidence; Action Scheduler runs it; Outbox owns delivery. */
@@ -79,6 +80,9 @@ final class Queue {
 	 * @param WC_Order $order Received inquiry.
 	 */
 	public static function defer( WC_Order $order ): bool {
+		if ( NotificationHold::held( $order ) ) {
+			return true;
+		}
 		if ( ! self::enabled() ) {
 			return false;
 		}
@@ -99,6 +103,9 @@ final class Queue {
 		$data = self::data( $order );
 		as_schedule_single_action( (int) ceil( (float) $data['deadline'] ), self::EXPIRE, array( $order->get_id() ), Outbox::GROUP, true );
 		as_enqueue_async_action( self::PROCESS, array( $order->get_id() ), Outbox::GROUP, true );
+		if ( class_exists( \WP_Async_Request::class ) ) {
+			AsyncRunner::enqueue( $order->get_id() );
+		}
 		return true;
 	}
 
@@ -122,28 +129,33 @@ final class Queue {
 		Lock::run(
 			'process-' . $id,
 			function () use ( $id ): void {
-				$order = wc_get_order( $id );
-				if ( ! $order instanceof WC_Order ) {
-					return;
-				}
-				$order->read_meta_data( true );
-				$data = self::data( $order );
-				if ( array() === $data || (int) ( $data['notification_job'] ?? 0 ) !== 0 ) {
-					return;
-				}
-				$deadline = (float) $data['deadline'];
-				$now      = microtime( true );
-				$reason   = match ( true ) {
-					$now >= $deadline => 'deadline',
-					! self::enabled() => 'disabled',
-					! Client::configured() => 'service_unavailable',
-					$now - (float) get_option( self::HEARTBEAT, 0 ) > self::RECOVERY_STALE => 'recovery_unavailable',
-					default => '',
-				};
-				$result                  = '' !== $reason ? Result::unknown( $reason ) : ( new Client() )->assess( (array) $data['snapshot'], $deadline );
-				$result['started_at']    = $now;
-				$result['queue_seconds'] = max( 0.0, $now - (float) $data['accepted_at'] );
-				$this->finish( $id, $result );
+				Lock::run(
+					'release-' . $id,
+					function () use ( $id ): void {
+						$order = wc_get_order( $id );
+						if ( ! $order instanceof WC_Order ) {
+							return;
+						}
+						$order->read_meta_data( true );
+						$data = self::data( $order );
+						if ( NotificationHold::held( $order ) || array() === $data || (int) ( $data['notification_job'] ?? 0 ) !== 0 ) {
+							return;
+						}
+						$deadline = (float) $data['deadline'];
+						$now      = microtime( true );
+						$reason   = match ( true ) {
+							$now >= $deadline => 'deadline',
+							! self::enabled() => 'disabled',
+							! Client::configured() => 'service_unavailable',
+							$now - (float) get_option( self::HEARTBEAT, 0 ) > self::RECOVERY_STALE => 'recovery_unavailable',
+							default => '',
+						};
+						$result                  = '' !== $reason ? Result::unknown( $reason ) : ( new Client() )->assess( (array) $data['snapshot'], $deadline );
+						$result['started_at']    = $now;
+						$result['queue_seconds'] = max( 0.0, $now - (float) $data['accepted_at'] );
+						$this->finish( $id, $result );
+					}
+				);
 			}
 		);
 	}
@@ -164,7 +176,7 @@ final class Queue {
 				}
 				$order->read_meta_data( true );
 				$data = self::data( $order );
-				if ( array() === $data ) {
+				if ( NotificationHold::held( $order ) || array() === $data ) {
 					return;
 				}
 				$now                  = microtime( true );
@@ -183,6 +195,13 @@ final class Queue {
 			}
 		);
 		if ( ! $done && function_exists( 'as_schedule_single_action' ) ) {
+			$order = wc_get_order( $id );
+			if ( $order instanceof WC_Order ) {
+				$order->read_meta_data( true );
+				if ( NotificationHold::held( $order ) ) {
+					return;
+				}
+			}
 			// Retry a small typed result next second after a release/deadline race;
 			// do not call a model or renew the original classification deadline.
 			as_schedule_single_action( time() + 1, self::FINISH, array( $id, $result ), Outbox::GROUP, true );
@@ -201,7 +220,7 @@ final class Queue {
 		}
 		$order->read_meta_data( true );
 		$data = self::data( $order );
-		if ( array() === $data ) {
+		if ( NotificationHold::held( $order ) || array() === $data ) {
 			return;
 		}
 		if ( 0 !== (int) $data['notification_job'] ) {
@@ -236,7 +255,7 @@ final class Queue {
 		try {
 			$order->update_meta_data( self::META, $data );
 			$message = $email->capture( $order );
-			$job     = null === $message ? -1 : ( new JobStore() )->create( $message );
+			$job     = null === $message ? -1 : ( new JobStore() )->create( $message, $order->get_id() );
 			if ( 0 === $job ) {
 				throw new \RuntimeException( 'assessment_outbox_write_failed' );
 			}
@@ -268,6 +287,9 @@ final class Queue {
 	 * @param array<string, mixed> $data Stored ledger.
 	 */
 	private function dispatch( WC_Order $order, array $data ): void {
+		if ( NotificationHold::held( $order ) ) {
+			return;
+		}
 		$job = (int) $data['notification_job'];
 		if ( $job > 0 && null !== ( new JobStore() )->load( $job ) && JobStore::FAILED_STATUS !== get_post_status( $job ) ) {
 			if ( function_exists( 'as_has_scheduled_action' ) && as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) ) {
@@ -319,6 +341,9 @@ final class Queue {
 	/** Register background handlers without doing any work in a submit. */
 	public function register(): void {
 		( new RecoverySchedule() )->register();
+		if ( class_exists( \WP_Async_Request::class ) ) {
+			new AsyncRunner();
+		}
 		add_action( self::PROCESS, array( $this, 'process' ) );
 		add_action( self::EXPIRE, array( $this, 'expire' ) );
 		add_action( self::FINISH, array( $this, 'finish' ), 10, 2 );

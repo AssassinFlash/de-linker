@@ -38,6 +38,7 @@ final class Blocks {
 			new ProformasAwaitingReply(),
 			new FailedEmails( $this->jobs ),
 			new InternalMail(),
+			new \Linker\Commerce\Health\PendingReviews(),
 		);
 		/**
 		 * The approval ticket adds the pending-accounts block here, unshifted

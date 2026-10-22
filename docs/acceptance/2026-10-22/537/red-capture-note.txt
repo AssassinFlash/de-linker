@@ -1,0 +1,17 @@
+PHPUnit 9.6.38 by Sebastian Bergmann and contributors.
+
+F                                                                   1 / 1 (100%)
+
+Time: 00:00.196, Memory: 138.00 MB
+
+There was 1 failure:
+
+1) Linker\Commerce\Tests\Integration\NotificationHoldTest::test_capturing_notification_does_not_record_a_false_delivery_note
+Failed asserting that actual size 1 matches expected size 0.
+
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/tests/php/Integration/NotificationHoldTest.php:364
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:146
+/Users/chesterjohn/.codex/worktrees/notification-hold-537/de-linker/plugins/linker-commerce/vendor/phpunit/phpunit/src/TextUI/Command.php:99
+
+FAILURES!
+Tests: 1, Assertions: 3, Failures: 1.
