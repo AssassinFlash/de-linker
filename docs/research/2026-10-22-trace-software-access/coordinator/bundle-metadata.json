@@ -1,0 +1,11 @@
+{
+  "bundle": "/Users/chesterjohn/Documents/de-linker-worktrees/research-trace-software-access/docs/research/2026-10-22-trace-software-access/coordinator/downloads/roof-software-study-pack-2026-10-22.zip",
+  "bytes": 26312896,
+  "sha256": "98f18b93f4ff8cd733473204f59fb550e6017d930913ea7a70e6caf146524cbf",
+  "files": 32,
+  "archive_crc_and_file_sha256": "passed",
+  "source_commit": "7b939ab115ca6d78bafc274b07e0bd9cbb5b36aa",
+  "source_ui_version": "2.0.6",
+  "live_ui_and_runtime_project_version": "2.0.7",
+  "included": "Source ZIP with MIT license, four public source example aliases, two actual exported projects, two actual CSVs, screenshots, UI records and research. Reference PDFs linked rather than duplicated in this bundle."
+}

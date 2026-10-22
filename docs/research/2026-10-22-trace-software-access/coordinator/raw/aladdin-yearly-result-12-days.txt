@@ -1,0 +1,60 @@
+- generic "Visit Aladdin Homepage":
+  - generic: Aladdin
+- img "IFI Logo"
+- generic: ©2026 Institute for Future Intelligence V2.0.7. All Rights Reserved.
+- img "double-right":
+- button:
+- button:
+- button:
+- button:
+- button:
+- button:
+- button:
+- button:
+- img "Click to open main menu"
+- generic: Main Menu
+- generic: ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯ ❯
+- img "Select"
+- img "Group"
+- img "Foundation"
+- text: ▼
+- img "Wall"
+- text: ▼
+- img "Solar Panel"
+- text: ▼
+- img "Clear"
+- img "Spatial analysis"
+- img "Heliodon"
+- button "Sign In":
+  - generic: Sign In
+- generic: Note
+- generic: Close
+- textbox: Hypothetical solar canopies for a garage
+- img "Location"
+- generic: 350 Spelman Ln SW, Atlanta, GA 30314, USA (33.74°N, 84.41°W)
+- img "Date"
+- generic: 06/22 12:00 PM
+- img "Temperature"
+- generic: "29.0°C (Low:20.5°C, High: 30.5°C)"
+- img "Solar panel count"
+- generic: "584"
+- img "Diameter"
+- generic: 194 m
+- generic: "Solar Panel Yearly Yield: Weather Data from Atlanta GA, USA | 2022"
+- generic: Close
+- img "bars":
+- generic: "Yearly Total: 281869.30 kWh"
+- button "More Results":
+  - generic: More Results
+- switch "unordered-list unordered-list":
+  - img "unordered-list":
+  - img "unordered-list":
+- button "reload":
+  - img "reload":
+- button "bar-chart":
+  - img "bar-chart":
+- button "camera":
+  - img "camera":
+- button "save":
+  - img "save":
+- generic: "36000"

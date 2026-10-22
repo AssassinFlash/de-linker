@@ -1,0 +1,97 @@
+[
+  {
+    "path": "artifacts/linker-study-aladdin-garage-12-days.ala",
+    "bytes": 21616,
+    "sha256": "70eaeaee2a4b51c81efdb1a7534ed70a69985727bbd0c37e71c448b102455f3d"
+  },
+  {
+    "path": "artifacts/linker-study-aladdin-garage.ala",
+    "bytes": 21624,
+    "sha256": "63c05cc45dc546e3417aea729bdd2e475be41d824e6157c8322331b6b04edeb5"
+  },
+  {
+    "path": "artifacts/yearly-pv-yield-12-days.csv",
+    "bytes": 324,
+    "sha256": "a9e51d71e4f71bf00fb4a4eb9458e58c455c51e3f971e4c1c22d33ea1aaea843"
+  },
+  {
+    "path": "artifacts/yearly-pv-yield.csv",
+    "bytes": 118,
+    "sha256": "0e1cee3579713fe089cf0776f5ddee07c943c690de692d817da3043da496d223"
+  },
+  {
+    "path": "check_runtime_artifacts.py",
+    "bytes": 3395,
+    "sha256": "0bedab35a70bcc78868c5ce7198aa3995197ea7c4731d5547ba9feccdbf502a1"
+  },
+  {
+    "path": "raw/aladdin-default-analysis-options.txt",
+    "bytes": 3171,
+    "sha256": "91b7bbfb5f66a4c4e78ec7c0fc1300282fd54aae49b9a26006e31ab7d4e353f2"
+  },
+  {
+    "path": "raw/aladdin-project-reopened-result.txt",
+    "bytes": 1854,
+    "sha256": "65f25fa3963a8dd0520f8ab51b50e53e46e5b61ff94dd56c69bf79d7f9f46a50"
+  },
+  {
+    "path": "raw/aladdin-yearly-result-12-days.txt",
+    "bytes": 1446,
+    "sha256": "4415c64492954c6d1cef40ac85dcb3fa3c71430939c1916ec2ee8ff864b87668"
+  },
+  {
+    "path": "raw/aladdin-yearly-result.txt",
+    "bytes": 1446,
+    "sha256": "225aa276357301a4a8759a7c281bef81a0837aeb93f16998221be0f798845a0f"
+  },
+  {
+    "path": "raw/archelios-cn-login.txt",
+    "bytes": 7261,
+    "sha256": "f2deb3905d58cb21618b6bd043140ccff92c3a0c02ec0175108f676b9d4980ef"
+  },
+  {
+    "path": "raw/pvsol-configured.txt",
+    "bytes": 6929,
+    "sha256": "b5fd1bed9f156ebdf91ed21c80f448321920d8cb0e147a7122da0cc6333fc0b2"
+  },
+  {
+    "path": "runtime-comparison.json",
+    "bytes": 1399,
+    "sha256": "7615b8029e7d6a843a1638c0403e5a2b78243eb806c439ec79d1e588e3973cbd"
+  },
+  {
+    "path": "screens/aladdin-default-analysis-options.jpg",
+    "bytes": 131019,
+    "sha256": "975c22437735365eb4f3e5f793812927607b90a11c5621dcc5beb66082044332"
+  },
+  {
+    "path": "screens/aladdin-garage-example.jpg",
+    "bytes": 139987,
+    "sha256": "e73d61bd2932e7f00183d0dbd8b19251bb982289a18704d187d5cfd2b9bf81ed"
+  },
+  {
+    "path": "screens/aladdin-project-reopened-result.jpg",
+    "bytes": 129013,
+    "sha256": "1cd8d75f8abf96ab264cefa19828a8e022b79488a71d8dcf3d2c4cebbf767f6d"
+  },
+  {
+    "path": "screens/aladdin-yearly-result-12-days.jpg",
+    "bytes": 124597,
+    "sha256": "c17d1bfd5f92d67b9b73399d0461fa81655cda5f32937d0eaff86ad02372b4c0"
+  },
+  {
+    "path": "screens/aladdin-yearly-result.jpg",
+    "bytes": 122364,
+    "sha256": "71e68d98290757b9fe4f449c59d70d7e0b213ab81bf5a5e2424adde9373982ef"
+  },
+  {
+    "path": "screens/archelios-cn-login.jpg",
+    "bytes": 32672,
+    "sha256": "5ef2e4fcbb03bff751330eaecfe368d9fc224c349cf27041492fe5b92e86c090"
+  },
+  {
+    "path": "screens/pvsol-real-configuration.jpg",
+    "bytes": 251242,
+    "sha256": "01f0bfd958340575f083552bc12e46f1d85ca120ba263cacea9d4faec1287926"
+  }
+]

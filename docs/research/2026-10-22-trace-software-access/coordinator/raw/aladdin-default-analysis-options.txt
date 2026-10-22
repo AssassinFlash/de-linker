@@ -1,0 +1,110 @@
+- generic "Visit Aladdin Homepage":
+  - generic: Aladdin
+- img "IFI Logo"
+- generic: ©2026 Institute for Future Intelligence V2.0.7. All Rights Reserved.
+- img "double-right":
+- button:
+- button:
+- button:
+- button:
+- button:
+- button:
+- button:
+- button:
+- img "Click to open main menu"
+- generic: Main Menu
+- menu "Menu":
+  - menuitem "File ❯"
+  - menuitem "View ❯"
+  - menuitem "Settings ❯"
+  - menuitem "Accessories ❯"
+  - menuitem "Analysis ❯" [expanded]
+  - menu "Analysis":
+    - menuitem "Physics ❯"
+    - menuitem "Building ❯"
+    - menuitem "Solar Panel ❯" [expanded]
+    - menu "Solar Panel":
+      - menuitem "Analyze Daily Yield":
+        - generic: Analyze Daily Yield
+      - menuitem "Analyze Yearly Yield":
+        - generic: Analyze Yearly Yield
+      - menuitem "Energy Analysis Options ❯" [expanded]
+      - menu "Energy Analysis Options" [active]:
+        - 'menuitem "Sampling Frequency: 2 Times per Hour"':
+          - generic: "Sampling Frequency:"
+          - combobox
+          - generic "2"
+          - generic: Times per Hour
+        - menuitem "4 Days per Year":
+          - combobox
+          - generic "4"
+          - generic: Days per Year
+        - 'menuitem "Panel Discretization: Approximate"':
+          - generic: "Panel Discretization:"
+          - combobox
+          - generic "Approximate"
+        - 'menuitem "Grid Cell Size: Increase Value Decrease Value 0.5 m"':
+          - generic: "Grid Cell Size:"
+          - button "Increase Value":
+            - img "up":
+          - button "Decrease Value":
+            - img "down":
+          - spinbutton: "0.50"
+          - generic: m
+        - menuitem "No Animation for Solar Panel Simulation:":
+          - generic: "No Animation for Solar Panel Simulation:"
+          - switch [checked]
+      - menuitem "Analyze Visibility":
+        - generic: Analyze Visibility
+      - menuitem "Visibility Analysis Options ❯"
+  - menuitem "Tutorials ❯"
+  - menuitem "Examples ❯"
+  - text: ❯ ❯ ❯ ❯ ❯ ❯ ❯
+  - menuitem "Public ❯"
+  - menuitem "Language ❯"
+  - menuitem "About Us...":
+    - generic: About Us...
+- img "Select"
+- img "Group"
+- img "Foundation"
+- text: ▼
+- img "Wall"
+- text: ▼
+- img "Solar Panel"
+- text: ▼
+- img "Clear"
+- img "Spatial analysis"
+- img "Heliodon"
+- button "Sign In":
+  - generic: Sign In
+- generic: Note
+- generic: Close
+- textbox: Hypothetical solar canopies for a garage
+- img "Location"
+- generic: 350 Spelman Ln SW, Atlanta, GA 30314, USA (33.74°N, 84.41°W)
+- img "Date"
+- generic: 06/22 12:00 PM
+- img "Temperature"
+- generic: "29.0°C (Low:20.5°C, High: 30.5°C)"
+- img "Solar panel count"
+- generic: "584"
+- img "Diameter"
+- generic: 194 m
+- generic: "Solar Panel Yearly Yield: Weather Data from Atlanta GA, USA | 2022"
+- generic: Close
+- img "bars":
+- generic: "Yearly Total: 282262.24 kWh"
+- button "More Results":
+  - generic: More Results
+- switch "unordered-list unordered-list":
+  - img "unordered-list":
+  - img "unordered-list":
+- button "reload":
+  - img "reload":
+- button "bar-chart":
+  - img "bar-chart":
+- button "camera":
+  - img "camera":
+- button "save":
+  - img "save":
+- generic: "34000"

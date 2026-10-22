@@ -1,0 +1,39 @@
+{
+  "verified_at": "2026-10-22",
+  "comparison": [
+    {
+      "project": "linker-study-aladdin-garage.ala",
+      "csv": "yearly-pv-yield.csv",
+      "app_version": "2.0.7",
+      "days_per_year_explicit_in_file": 4,
+      "days_per_year_effective_and_ui_observed": 4,
+      "times_per_hour": 2,
+      "dust_loss": 0.05,
+      "csv_rows": 4,
+      "csv_sum": 94087.41243357198,
+      "annual_scale": 3.0,
+      "annual_from_csv": 282262.23730071593,
+      "ui_annual_kwh": 282262.24,
+      "within_display_rounding": true
+    },
+    {
+      "project": "linker-study-aladdin-garage-12-days.ala",
+      "csv": "yearly-pv-yield-12-days.csv",
+      "app_version": "2.0.7",
+      "days_per_year_explicit_in_file": null,
+      "days_per_year_effective_and_ui_observed": 12,
+      "times_per_hour": 2,
+      "dust_loss": 0.05,
+      "csv_rows": 12,
+      "csv_sum": 281869.30259735853,
+      "annual_scale": 1.0,
+      "annual_from_csv": 281869.30259735853,
+      "ui_annual_kwh": 281869.3,
+      "within_display_rounding": true
+    }
+  ],
+  "same_geometry_and_other_world_settings": true,
+  "difference_kwh": -392.9400000000023,
+  "difference_percent": -0.1392109692036736,
+  "interpretation": "Same public vendor example and geometry. Only daysPerYear was changed through the real UI. Neither run is a simulation of every hour of 365 days. Difference is sampling sensitivity, not ground-truth error."
+}

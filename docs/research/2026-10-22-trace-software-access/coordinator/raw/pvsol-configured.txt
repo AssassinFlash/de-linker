@@ -1,0 +1,192 @@
+- text: PV*SOL online
+- banner:
+  - generic: English | Deutsch | Polski | Español | Português
+  - link "PV*SOL online is a free tool for the calculation of PV systems. Learn more »":
+    - /url: ""
+    - heading "PV*SOL online is a free tool for the calculation of PV systems. Learn more »" [level=4]:
+      - generic: 
+      - text: PV*SOL online is a free tool for the calculation of PV systems.
+      - generic: Learn more »
+- 'link "Location: (52.5087 13.43245), (n/a)"':
+  - /url: ""
+  - 'heading "Location: (52.5087 13.43245), (n/a)" [level=4]':
+    - generic: 
+    - text: "Location: (52.5087 13.43245), (n/a)"
+- paragraph:
+  - text: This would be an interactive map, if you
+  - link "consent to using MapBox.com":
+    - /url: javascript:window.CCM.openControlPanel()
+  - text: as a third party service.
+- paragraph:
+  - text: Please find MapBox.com integration in the "Other" section. Use the
+  - generic: 
+  - text: icon if you do not consent to using all of the services in that section.
+- generic: Address Search
+- textbox "Address Search"
+- button "Search"
+- generic: Country
+- generic: (n/a)
+- generic: City
+- generic: (52.5087 13.43245)
+- generic: Address
+- generic: (52.5087 13.43245)
+- paragraph:
+  - text: This would be a section offering address search and location details if you
+  - link "consent to using OpenStreetMap":
+    - /url: javascript:window.CCM.openControlPanel()
+  - text: ", more specific their Nominatim service."
+- paragraph:
+  - text: Please find OpenStreetMap integration in the "Other" section. Use the
+  - generic: 
+  - text: icon if you do not consent to using all of the services in that section.
+- heading "Location" [level=5]:
+  - generic: 
+  - text: Location
+- generic: Latitude; Longitude
+- generic: 52.5087°; 13.43245°
+- button "":
+  - generic: 
+- generic: Annual global irradiation
+- generic: 1050.9 kWh/m²
+- generic: Average temperature
+- generic: 11 °C
+- iframe
+- 'link "Consumption: 80000 kWh"':
+  - /url: ""
+  - 'heading "Consumption: 80000 kWh" [level=4]':
+    - generic: 
+    - text: "Consumption: 80000 kWh"
+- generic: Load profile
+- combobox:
+  - option "1-person household"
+  - option "2-person household with 2 children"
+  - option "2-person household with 1 child"
+  - option "2-person household"
+  - option "BDEW load profile business (G1)" [selected]
+  - option "BDEW load profile business (G2)"
+  - option "BDEW load profile business (G3)"
+  - option "BDEW load profile business (G4)"
+  - option "BDEW load profile business (G5)"
+  - option "BDEW load profile business (G6)"
+  - option "BDEW load profile business (G∅ - weighted mean of G1-G6)"
+  - option "BDEW load profile household (H0)"
+  - option "BDEW load profile agriculture (L0)"
+  - option "BDEW load profile agriculture (L1)"
+  - option "BDEW load profile agriculture (L2)"
+  - option "Household - seasonal course, comparable with standard profile"
+  - option "Household - load profile with high night proportion"
+  - option "Household - load profile with high summer proportion"
+  - option "Household - load profile with high percentage of morning hours"
+  - option "Household - load profile with low percentage of night hours"
+  - option "Household - load profile with low summer proportion"
+  - option "Household - load profile with low percentage of morning hours"
+  - option "Household - diurnal course, comparable with standard profile"
+  - option "Profile with constant load"
+  - option "Heat pump"
+- generic: Annual consumption
+- generic: kWh
+- spinbutton "Load profile Annual consumption": "80000"
+- alert
+- iframe
+- 'link "PV modules: 42.32 kWp"':
+  - /url: ""
+  - 'heading "PV modules: 42.32 kWp" [level=4]':
+    - generic: 
+    - text: "PV modules: 42.32 kWp"
+- combobox
+- combobox "Trina Solar":
+  - generic "Trina Solar"
+- combobox
+- combobox "TSM-460 NEG9R.28 Vertex S+":
+  - generic "TSM-460 NEG9R.28 Vertex S+"
+- generic: 
+- text: "P: 460 Wp, η: 23.04 %, Type: mono"
+- generic: No. of Modules
+- spinbutton "No. of Modules": "92"
+- alert
+- generic: Total PV power
+- generic: 42.32 kWp
+- generic: Inclination
+- generic: °
+- spinbutton "Inclination": "10"
+- alert
+- generic: Orientation
+- generic: °
+- spinbutton "Orientation": "180"
+- generic: Installation type
+- combobox:
+  - option "Roof parallel - good rear ventilation"
+  - option "Roof integrated - rear ventilation"
+  - option "Roof integrated - no rear ventilation"
+  - option "Mounted - roof" [selected]
+  - option "Mounted - open space"
+- generic: Albedo
+- generic: "%"
+- spinbutton "Albedo": "20"
+- generic: Shadowing
+- generic: "%"
+- spinbutton "Shadowing": "0"
+- generic: Soiling
+- generic: "%"
+- spinbutton "Soiling": "0"
+- link "Inverter":
+  - /url: ""
+  - heading "Inverter" [level=4]:
+    - generic: 
+    - text: Inverter
+- generic: Manufacturer
+- combobox
+- combobox "GoodWe Technologies Co.,Ltd.":
+  - generic "GoodWe Technologies Co.,Ltd."
+- generic: 
+- text: You have selected 162 inverters of GoodWe Technologies Co.,Ltd.
+- button "Get best configuration":
+  - generic: 
+  - text: Get best configuration
+- heading "Configuration info" [level=5]:
+  - generic: 
+  - text: Configuration info
+- text: 
+- text: 2 x GW20KLV-MT (GoodWe Technologies Co.,Ltd.)
+- generic: 
+- text: "MPP 1: 2 x 8 - MPP 2: 2 x 8 - MPP 3: 2 x 7"
+- generic: "Dimensioning factor:"
+- generic: 105.8 %
+- generic: "80"
+- generic: "90"
+- generic: "100"
+- generic: "110"
+- generic: "120"
+- generic: "130"
+- generic: "140"
+- generic: "150"
+- iframe [name="a-fxn53twg9ue"]:
+  - checkbox "进行人机身份验证"
+  - generic: 进行人机身份验证
+  - generic: reCAPTCHA
+- button "Simulate PV system":
+  - generic: 
+  - text: Simulate PV system
+- contentinfo:
+  - link:
+    - /url: https://valentin-software.com/en/products/pvsol-premium?utm_source=pvsol-online&utm_medium=referral&utm_campaign=product_marketing&utm_content=footer-links
+  - paragraph: Do you want more?
+  - paragraph:
+    - link "Download a full-featured version of PV*SOL premium here":
+      - /url: https://valentin-software.com/en/products/pvsol-premium?utm_source=pvsol-online&utm_medium=referral&utm_campaign=product_marketing&utm_content=footer-links
+      - strong: Download a full-featured version of PV*SOL premium here
+  - link:
+    - /url: https://valentin-software.com/en?utm_source=pvsol-online&utm_medium=referral&utm_campaign=product_marketing&utm_content=footer-links
+  - text: © Valentin Software GmbH • 2023 •
+  - link "Imprint":
+    - /url: https://valentin-software.com/en/imprint/
+  - text: •
+  - link "Privacy policy":
+    - /url: https://valentin-software.com/en/privacy-policy?utm_source=pvsol-online&utm_medium=referral&utm_campaign=product_marketing&utm_content=footer-links
+  - text: •
+  - link "Changelog":
+    - /url: "#/changelog"
+  - generic: "Build: 0.16.8591.27438 - 4361852"
+- complementary "Zustimmung ändern":
+  - button "Zustimmung ändern":
+    - img "Zustimmung ändern"

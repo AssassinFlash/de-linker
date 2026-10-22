@@ -1,0 +1,150 @@
+- banner:
+  - link "Trace Software International":
+    - /url: http://www.tracesoftware.cn/archelios-pro/solar-design-software/
+    - img "Trace Software International"
+- main:
+  - form:
+    - heading "Archelios PRO" [level=1]:
+      - img "Archelios PRO"
+    - heading "登录" [level=1]
+    - generic: 用户名
+    - generic: 
+    - textbox "  请输入用户名"
+    - generic: 
+    - text: 请输入用户名
+    - generic: 密码
+    - generic: 
+    - textbox "  输入密码"
+    - generic: 
+    - text: 输入密码
+    - link "忘记密码？":
+      - /url: Archelios-forgot-password.php?lang=cn
+    - button "登录"
+    - link "试用archelios Pro":
+      - /url: http://www.tracesoftware.cn/archelios-pro/free-pv-design-software/#freeversion
+  - iframe [id="frameTSI"]:
+    - main:
+      - heading "archelios PRO 项目无缝对接 elec calc SOLAR，一键完成整套光伏电站电气设计校核" [level=2]
+      - paragraph:
+        - iframe:
+          - generic "哔哩哔哩播放器":
+            - text: 进入哔哩哔哩，观看更高清
+      - paragraph:
+        - strong: elec calc SOLAR 一站式光伏电气设计软件，覆盖光伏直流组串、交流配电、充电桩及负荷一体化电气设计与计算选型校验。
+      - paragraph:
+        - img "✅"
+        - text: 直流侧单线图建模与电气选型合规校验
+      - paragraph:
+        - img "✅"
+        - text: 交流配电 + 充电桩负载一体化网侧设计
+      - paragraph:
+        - img "✅"
+        - text: 内置万余件光伏设备、电缆、开关数据库
+      - paragraph:
+        - img "✅"
+        - text: 一键导入 archelios PRO 项目，无需重复建模
+      - paragraph:
+        - img "✅"
+        - text: 批量输出计算书、原理图、BOM 物料清单
+      - paragraph
+      - paragraph
+      - link "elec calc SOLAR 官网":
+        - /url: https://tracesoftware.cn/products-2/software-for-sizing-elec-calc-solar/
+        - text: elec calc SOLAR 官网
+        - generic: 
+      - article:
+        - link "":
+          - /url: https://tracesoftware.cn/overseas-new-energy-project-electrical-design-tools/
+          - generic: 
+        - heading "出海新能源项目，电气设计工具应用要点" [level=3]:
+          - link "出海新能源项目，电气设计工具应用要点":
+            - /url: https://tracesoftware.cn/overseas-new-energy-project-electrical-design-tools/
+        - time: October 20, 2026
+      - article:
+        - link "":
+          - /url: https://tracesoftware.cn/%e6%96%b0%e5%9e%8b%e7%94%b5%e5%8a%9b%e7%b3%bb%e7%bb%9f%e4%b8%8e%e7%bb%bc%e5%90%88%e8%83%bd%e6%ba%90%e5%b7%a5%e7%a8%8b%e5%ae%9e%e8%b7%b5%e8%83%bd%e5%8a%9b%e7%a0%94%e4%bf%ae%e7%8f%ad-2/
+          - generic: 
+        - heading "关于举办新型电力系统和综合能源工程实践能力提升研修班（第一期）的通知" [level=3]:
+          - link "关于举办新型电力系统和综合能源工程实践能力提升研修班（第一期）的通知":
+            - /url: https://tracesoftware.cn/%e6%96%b0%e5%9e%8b%e7%94%b5%e5%8a%9b%e7%b3%bb%e7%bb%9f%e4%b8%8e%e7%bb%bc%e5%90%88%e8%83%bd%e6%ba%90%e5%b7%a5%e7%a8%8b%e5%ae%9e%e8%b7%b5%e8%83%bd%e5%8a%9b%e7%a0%94%e4%bf%ae%e7%8f%ad-2/
+        - time: September 20, 2026
+      - article:
+        - link "":
+          - /url: https://tracesoftware.cn/5th-electrical-teaching-competition-solar-training-02/
+          - generic: 
+        - heading "以赛促教，深耕教研｜源网荷储数字化竞赛第二期赛前培训圆满举办" [level=3]:
+          - link "以赛促教，深耕教研｜源网荷储数字化竞赛第二期赛前培训圆满举办":
+            - /url: https://tracesoftware.cn/5th-electrical-teaching-competition-solar-training-02/
+        - time: August 21, 2026
+      - link:
+        - /url: "#prev"
+        - text:  Previous
+      - link:
+        - /url: "#next"
+        - text:  Next
+    - heading "行业" [level=3]
+    - list:
+      - link "能源行业":
+        - /url: https://tracesoftware.cn/industries-2/energy-efficiency-electrical-calculation-solutions/
+      - link "医疗行业":
+        - /url: https://tracesoftware.cn/industries-2/hospitals-electrical-calculation-software/
+      - link "电气装置":
+        - /url: https://www.tracesoftware.cn/industries/lv-installation-electrical-calculation-software/
+      - link "光伏发电":
+        - /url: https://www.tracesoftware.cn/products-2/archelios-calc/
+      - link "工程行业":
+        - /url: https://www.tracesoftware.cn/industries/electrical-engineering-design-calculation/
+    - heading "解决方案" [level=3]
+    - list:
+      - link "智能电网电力系统仿真":
+        - /url: https://www.tracesoftware.cn/products-2/software-for-sizing-and-simulation-of-multi-source-grid-power-networks/
+      - link "低压/高压供配电计算":
+        - /url: https://www.tracesoftware.cn/elec-calc-2/hv-lv-calculations-in-one-solution/
+      - link "供配电计算与BIM集成":
+        - /url: https://www.tracesoftware.cn/products-2/open-bim-for-electrical-calculation/
+      - link "光伏电站三维设计仿真":
+        - /url: https://www.tracesoftware.cn/archelios/photovoltaic-pv-simulation-software/
+      - link "光伏电站发电量与收益计算":
+        - /url: https://www.tracesoftware.cn/archelios-pro/solar-pv-design-software/
+    - heading "Trace Software" [level=3]
+    - list:
+      - link "关于Trace Software":
+        - /url: https://tracesoftware.cn/trace-software/our-company/
+      - link "联系我们":
+        - /url: https://tracesoftware.cn/trace-software/contact-us/
+      - link "新闻&博客":
+        - /url: https://tracesoftware.cn/trace-software/news-blog/
+      - link "活动日程":
+        - /url: https://tracesoftware.cn/trace-software/calendar/
+      - link "代理合作":
+        - /url: https://tracesoftware.cn/trace-software/resellers/
+    - heading "官方微信公众号" [level=3]
+    - contentinfo:
+      - text: © 2025 Trace Software International
+      - link "沪公网安备31011302005445":
+        - /url: " https://beian.mps.gov.cn/#/query/webSearch?code=31011302005445"
+      - navigation:
+        - menu:
+          - menuitem "沪ICP备12039655号-3":
+            - link "沪ICP备12039655号-3":
+              - /url: https://beian.miit.gov.cn
+          - menuitem "行业":
+            - link "行业":
+              - /url: https://tracesoftware.cn/industries-2/
+          - menuitem "解决方案":
+            - link "解决方案":
+              - /url: https://tracesoftware.cn/products-2/
+          - menuitem "服务":
+            - link "服务":
+              - /url: https://tracesoftware.cn/services/
+          - menuitem "用户专区":
+            - link "用户专区":
+              - /url: https://tracesoftware.cn/support/
+          - menuitem "Trace Software":
+            - link "Trace Software":
+              - /url: https://tracesoftware.cn/trace-software/our-company/
+          - menuitem "使用条款和隐私政策":
+            - link "使用条款和隐私政策":
+              - /url: https://tracesoftware.cn/conditions-of-use-and-privacy/
+    - emphasis
+- text:       
