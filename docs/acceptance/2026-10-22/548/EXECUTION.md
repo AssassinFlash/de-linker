@@ -37,7 +37,9 @@
 
 业主补充：允许现代架构与新库，先正确使用，再采用当前稳定现代技术；并明确不能只考虑3D。新局部前端决定见docs/adr/0002-isolated-planner-runtime.md，整套应用合同见docs/specs/548-workbench-application.md。能力映射2026-10-23-modern-workbench/CAPABILITY-MAP.md覆盖W01–W22及A–D真实路径，区分实操、源码、官方描述与本站推导。React19/Fiber9/Drei10/Three/Vite与Query/ECharts/Ajv官方证据均经Apify取得；旧站wp.element保持隔离，WindPress仍是唯一样式编译管线。
 
-apps/planner当前只有开发中的独立包/锁文件、严格类型、米制几何/组件姿态、wire校验与编辑history基础；依赖已安装、类型检查和9项解析几何/拒绝输入/撤销分支夹具通过。尚无入口/构建manifest、实际3D renderer、WordPress mount或浏览器验收。这是未完成的同次实施工作，不能描述成已可用的新工作台或现代化完成。8794原型仍是纯示意，不会因安装新库自动变成正式实现。
+apps/planner已进入真实本地应用实现：独立React19构建、原生WP module/gettext挂载、同一WindPress编译管线、项目列表/创建、brief编辑、不可变保存意图、修订确认与IndexedDB恢复。24项前端/协议/几何/历史/恢复夹具与严格类型通过。p548的独立EN/DE审查页已建立，未替换正式工具入口；真实浏览器已完成挪威工商业项目输入、保存到修订3、刷新恢复、未保存内容离开再重开及撤销到已存版本。实测页头遮挡保存栏和语言切换丢项目引用已修；新版恢复、冲突比较和手机/德语仍继续验收。实际地图/3D renderer、CSV intake UI、计算/设备资格与全站交接尚在同次实施中。8794原型保持独立。
+
+原生网关、永久回执与brief输入边界最终ca4918ef通过两轮独立评审，planning294项通过。前序失败、修复及限制见NATIVE-GATEWAY-REVIEW.md。WP/Woo原生会话、登录hook、耐久认领outbox、Origin/nonce与实际服务已接通；原生夹具与浏览器工作分别记录，不能把后端组件通过当完整工具或生产验收。
 
 继续落实几何/详细PV链/设备条件/国家包与报告、统一React工作台、WP身份/上传网关、Genie与Woo交接及全站入口/旧资料迁移。输入修改不能覆盖旧结果，任务成功不能等同工程放行，所有消费者读取同一冻结运行。每部分纳入同次验收，不以组件完成结案。
 
