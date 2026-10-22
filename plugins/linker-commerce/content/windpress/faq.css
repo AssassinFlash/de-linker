@@ -279,7 +279,9 @@
 	 * has the existing 8px gap above and below (28 + 8 + 8 = 44px).
 	 * The suggestion box still starts below the unchanged 52px search row. */
 	#linker-faq-page.is-enhanced .linker-library-searchbox { margin-bottom: 44px; }
-	#linker-faq-page .linker-library-count { position: absolute; top: calc(100% + 8px); right: 0; padding: 0; background: transparent; color: var(--ll-muted); }
+	/* The filtered search is the containing block: include its 1px bottom
+	 * border so the visible outer-edge gap is the intended 8px. */
+	#linker-faq-page .linker-library-count { position: absolute; top: calc(100% + 8px + 1px); right: 0; padding: 0; background: transparent; color: var(--ll-muted); }
 	/* The wrapper already spaces the icon and text. The clear target matches
 	 * the library's existing 44px pager and Genie controls. */
 	#linker-faq-page .linker-library-search .linker-library-q { padding-inline: 0; }

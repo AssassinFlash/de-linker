@@ -18,6 +18,11 @@ aria-live and unique ID. A suggestion popup may cover this noninteractive
 metadata while open, as it covers other content below the input; dismissing
 it must reveal the unchanged current count.
 
+The native filtered search establishes the counter's containing block. Add
+its existing 1px bottom border to the 8px offset, so measurement from the
+search's visible outer edge is 8px rather than 7px. The first candidate's
+7px measurement is retained as rejected spacing evidence.
+
 The wrapper already spaces the icon and input, so remove the input's extra
 horizontal padding at that breakpoint. Enlarge the native clear button to
 44 by 44px, matching the library's existing pager and Genie targets. Keep
