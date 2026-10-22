@@ -1,7 +1,11 @@
 {
-  "captured_utc": "2026-10-22T15:52:12.320061+00:00",
+  "captured_utc": "2026-10-22T16:30:25.836380+00:00",
   "instance": "i574",
   "checks": [
+    {
+      "case": "attachment_deletion_paths_are_durably_fixture_owned",
+      "passed": true
+    },
     {
       "case": "installed_without_binding_is_unconfigured",
       "passed": true
@@ -231,7 +235,19 @@
       "passed": true
     },
     {
+      "case": "native_credential_revoked_between_error_and_success_hooks",
+      "passed": true
+    },
+    {
+      "case": "revoked_mid_authentication_keeps_selected_scope",
+      "passed": true
+    },
+    {
       "case": "all_owned_resources_deleted",
+      "passed": true
+    },
+    {
+      "case": "owned_upload_file_and_directory_deleted",
       "passed": true
     }
   ],
@@ -247,7 +263,7 @@
         "total": 202,
         "pages": 3,
         "synthetic_count": 201,
-        "sha256": "ce74b339e90e79e36144ee89e6871f93df3b82375d6e62d4a357d419ba45e550",
+        "sha256": "a876d8fb7e8e225dc4a5dba2054c42fb3223dfaef7a03c709d91197cddb62f71",
         "metadata_complete": true
       },
       "products": {
@@ -255,7 +271,7 @@
         "total": 202,
         "pages": 3,
         "synthetic_count": 201,
-        "sha256": "2b0d336558d38ac8e7004a1c3613d9a631cd7af1f84c6374fb6cdab0ebabff77",
+        "sha256": "20641f2a10eb757d49e4b0dc2f5f50866f08b712effe0ab00279f72a76f1e558",
         "metadata_complete": true
       }
     },
@@ -265,7 +281,7 @@
         "total": 202,
         "pages": 3,
         "synthetic_count": 201,
-        "sha256": "ce74b339e90e79e36144ee89e6871f93df3b82375d6e62d4a357d419ba45e550",
+        "sha256": "a876d8fb7e8e225dc4a5dba2054c42fb3223dfaef7a03c709d91197cddb62f71",
         "metadata_complete": true
       },
       "products": {
@@ -273,16 +289,21 @@
         "total": 202,
         "pages": 3,
         "synthetic_count": 201,
-        "sha256": "2b0d336558d38ac8e7004a1c3613d9a631cd7af1f84c6374fb6cdab0ebabff77",
+        "sha256": "20641f2a10eb757d49e4b0dc2f5f50866f08b712effe0ab00279f72a76f1e558",
         "metadata_complete": true
       }
     }
   },
-  "passed": true,
   "native_credential_usage_after": {
     "credentials": 3,
     "used": 3
   },
+  "native_revocation": {
+    "deleted": true,
+    "core_success": true,
+    "forbidden_route_status": 403
+  },
+  "passed": true,
   "cleanup": {
     "fixture_absent": true,
     "binding_status": "unconfigured",

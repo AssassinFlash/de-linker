@@ -30,6 +30,13 @@ final class InventoryAccess {
 	 */
 	private bool $selected = false;
 
+	/**
+	 * Binding matched after core checked the password; keep it through usage writes.
+	 *
+	 * @var array{state:string,user_id?:int,uuid?:string}|null
+	 */
+	private ?array $candidate = null;
+
 	/** Registers constraints without changing roles, credentials or cookies. */
 	public function register(): void {
 		add_action( 'wp_authenticate_application_password_errors', array( $this, 'authentication_errors' ), 10, 3 );
@@ -72,11 +79,11 @@ final class InventoryAccess {
 	/**
 	 * Only core's validated user/item pair can match the private binding.
 	 *
-	 * @param WP_User              $user The natively authenticated user.
-	 * @param array<string, mixed> $item The native application-password item.
+	 * @param WP_User                                       $user    The natively authenticated user.
+	 * @param array<string, mixed>                          $item    The native application-password item.
+	 * @param array{state:string,user_id?:int,uuid?:string} $binding The request's already-resolved private binding.
 	 */
-	private static function matches( WP_User $user, array $item ): bool {
-		$binding = self::binding();
+	private static function matches( WP_User $user, array $item, array $binding ): bool {
 		return 'active' === $binding['state'] && ( $binding['user_id'] ?? 0 ) === $user->ID && ( $item['uuid'] ?? null ) === ( $binding['uuid'] ?? null );
 	}
 
@@ -88,8 +95,13 @@ final class InventoryAccess {
 	 * @param array<string, mixed> $item  The native application-password item.
 	 */
 	public function authentication_errors( WP_Error $error, WP_User $user, array $item ): void {
+		$binding = self::binding();
+		$matches = self::matches( $user, $item, $binding );
+		if ( $matches ) {
+			$this->candidate = $binding;
+		}
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput, WordPress.Security.NonceVerification.Recommended -- Native Basic authentication, not a form; compare the exact raw method and alias presence, never output or use them as identity.
-		if ( 'invalid' === self::status() || ( self::matches( $user, $item ) && ( ! defined( 'REST_REQUEST' ) || true !== REST_REQUEST || 'GET' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || isset( $_GET['_method'] ) || isset( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ) ) ) ) {
+		if ( 'invalid' === $binding['state'] || ( $matches && ( ! defined( 'REST_REQUEST' ) || true !== REST_REQUEST || 'GET' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || isset( $_GET['_method'] ) || isset( $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ) ) ) ) {
 			$error->add( 'rest_forbidden', __( 'Sorry, you are not allowed to do that.' ), array( 'status' => 403 ) );
 		}
 	}
@@ -101,7 +113,7 @@ final class InventoryAccess {
 	 * @param array<string, mixed> $item Core's successful credential item.
 	 */
 	public function authenticated( WP_User $user, array $item ): void {
-		$this->selected = $this->selected || self::matches( $user, $item );
+		$this->selected = $this->selected || ( null !== $this->candidate && self::matches( $user, $item, $this->candidate ) );
 	}
 
 	/**

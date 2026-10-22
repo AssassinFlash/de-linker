@@ -197,6 +197,7 @@ def main() -> int:
     }
     owned_users: list[int] = []
     owned_posts: list[int] = []
+    owned_paths: list[Path] = []
 
     def check(name: str, condition: bool) -> None:
         report["checks"].append({"case": name, "passed": condition})
@@ -233,6 +234,16 @@ def main() -> int:
         state = json.loads(wp.run("eval-file", str(FIXTURE), "setup", str(COUNT)))
         owned_users = [record["id"] for record in state["users"].values()]
         owned_posts = state["posts"]
+        if "file" in state and "directory" in state:
+            owned_paths = [Path(state["file"]), Path(state["directory"])]
+        check(
+            "attachment_deletion_paths_are_durably_fixture_owned",
+            wp.run(
+                "eval",
+                "$s=get_option('linker_inventory_fixture');$f=$s['file']??'';$ok=is_string($f)&&is_file($f)&&1234===filesize($f)&&dirname($f)===($s['directory']??'');foreach($s['posts'] as $id){if('attachment'===get_post_type($id)&&get_post_meta($id,'_wp_attached_file',true)){$ok=$ok&&get_attached_file($id)===$f;}}echo wp_json_encode($ok);",
+            )
+            == "true",
+        )
         report["native_credential_usage_before"] = usage()
         shutil.copyfile(
             REPO / "mu-plugins/linker-inventory-access.php",
@@ -582,8 +593,30 @@ def main() -> int:
                 )[0]
                 in (401, 403),
             )
-            report["passed"] = True
             report["native_credential_usage_after"] = usage()
+            revoked = fetch(
+                instance.url,
+                "/wp-json/wp/v2/users/me",
+                selected,
+                headers={"X-Inventory-Fixture-Revoke": "1"},
+            )[0]
+            revocation = json.loads(
+                wp.run(
+                    "eval",
+                    "echo wp_json_encode(get_option('linker_inventory_fixture_revocation'));",
+                )
+            )
+            report["native_revocation"] = {
+                **revocation,
+                "forbidden_route_status": revoked,
+            }
+            check(
+                "native_credential_revoked_between_error_and_success_hooks",
+                revocation == {"deleted": True, "core_success": True}
+                and status() == "invalid",
+            )
+            check("revoked_mid_authentication_keeps_selected_scope", revoked == 403)
+            report["passed"] = True
     except (RuntimeError, ValueError, OSError, xmlrpc.client.Error) as error:
         report["passed"] = False
         report["failure"] = str(error)
@@ -611,6 +644,11 @@ def main() -> int:
     )
     report["cleanup"]["remaining_owned_resources"] = remaining
     check("all_owned_resources_deleted", remaining == {"users": 0, "posts": 0})
+    if owned_paths:
+        check(
+            "owned_upload_file_and_directory_deleted",
+            all(not path.exists() for path in owned_paths),
+        )
     if args.evidence:
         args.evidence.parent.mkdir(parents=True, exist_ok=True)
         args.evidence.write_text(json.dumps(report, indent=2) + "\n")

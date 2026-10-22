@@ -112,6 +112,42 @@ if ( ! isset( $args ) || ! is_array( $args ) ) {
 		if ( $count < 1 || $count > 201 ) {
 			throw new RuntimeException( 'Use the bounded synthetic inventory count.' );
 		}
+		$uploads   = wp_upload_dir();
+		$directory = $uploads['basedir'] . '/inventory574-' . wp_generate_uuid4();
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir -- Exclusive local fixture namespace; never reuse an existing directory.
+		if ( $uploads['error'] || ! mkdir( $directory, 0700 ) ) {
+			throw new RuntimeException( 'Exclusive local upload directory creation failed.' );
+		}
+		$state['directory'] = $directory;
+		$state['file']      = $directory . '/fixture.pdf';
+		try {
+			$save( $state ); // Own the exclusive namespace before creating its only file.
+		} catch ( Throwable $error ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Only the empty directory just created by this run.
+			rmdir( $directory );
+			if ( is_dir( $directory ) ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Causal Throwable in local CLI only; no customer HTML.
+				throw new RuntimeException( 'New local upload directory needs manual cleanup.', 0, $error );
+			}
+			throw $error;
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Exclusive file inside the durably owned local namespace.
+		$handle = fopen( $state['file'], 'x' );
+		if ( false === $handle ) {
+			throw new RuntimeException( 'Exclusive local upload file creation failed.' );
+		}
+		try {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- Private synthetic local fixture.
+			chmod( $state['file'], 0600 );
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Synthetic bytes, not a downloaded or customer document.
+			if ( 1234 !== fwrite( $handle, str_pad( "%PDF-1.4\n", 1234 ) ) ) {
+				throw new RuntimeException( 'Synthetic local upload could not be written.' );
+			}
+		} finally {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Close only this fixture's handle.
+			fclose( $handle );
+		}
+		$relative = basename( $directory ) . '/fixture.pdf';
 		// One additional row per collection lacks document metadata, like data
 		// left by another native smoke test. It stays in the full-response hash.
 		foreach ( range( 1, $count + 1 ) as $number ) {
@@ -127,7 +163,7 @@ if ( ! isset( $args ) || ! is_array( $args ) ) {
 						'post_author'    => $state['users']['admin']['id'],
 						'post_status'    => 'attachment' === $type ? 'inherit' : ( 'product' === $type ? array( 'publish', 'draft', 'private' )[ $number % 3 ] : 'publish' ),
 						'post_mime_type' => 'attachment' === $type ? 'application/pdf' : '',
-						'guid'           => 'attachment' === $type ? home_url( '/wp-content/uploads/inventory574.pdf' ) : '',
+						'guid'           => 'attachment' === $type ? $uploads['baseurl'] . '/' . $relative : '',
 					),
 					true
 				);
@@ -158,7 +194,7 @@ if ( ! isset( $args ) || ! is_array( $args ) ) {
 					$state['sentinel'] = $id;
 				} elseif ( 'attachment' === $type ) {
 					$attachment = $id;
-					update_post_meta( $id, '_wp_attached_file', 'inventory574.pdf' );
+					update_post_meta( $id, '_wp_attached_file', $relative );
 					wp_update_attachment_metadata( $id, array( 'filesize' => 1234 ) );
 				} else {
 					pll_set_post_language( $id, 'en' );
@@ -214,7 +250,18 @@ if ( ! isset( $args ) || ! is_array( $args ) ) {
 				throw new RuntimeException( 'Owned local record was not deleted.' );
 			}
 		}
+		if ( isset( $state['file'], $state['directory'] ) ) {
+			wp_delete_file( $state['file'] ); // Also handles failure before the first attachment.
+			if ( file_exists( $state['file'] ) ) {
+				throw new RuntimeException( 'Owned local upload file was not deleted.' );
+			}
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- Remove only the owned, now-empty namespace; never recurse into unexpected files.
+			if ( is_dir( $state['directory'] ) && ! rmdir( $state['directory'] ) ) {
+				throw new RuntimeException( 'Owned local upload directory was not deleted.' );
+			}
+		}
 		delete_option( 'linker_inventory_fixture_mutations' );
+		delete_option( 'linker_inventory_fixture_revocation' );
 		delete_option( $key );
 		return;
 	}

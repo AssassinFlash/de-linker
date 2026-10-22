@@ -18,7 +18,12 @@ WordPress 7.1.3 verifies the password before
 usage recording. `application_password_did_authenticate` supplies the trusted
 user and native credential UUID only after successful authentication. These
 native hooks identify the selected credential; no request parameter/header
-chooses the binding. `rest_pre_dispatch` checks each effective request, including
+chooses the binding. The error hook reads the binding once and retains a
+request-local candidate after core validates the password. The success hook
+matches the trusted user/UUID against that candidate without another mutable
+credential lookup. A revoke between those callbacks cannot discard the scope
+and restore broad access for the already-authenticated request.
+`rest_pre_dispatch` checks each effective request, including
 internal dispatch and batch subrequests. The raw HTTP method and method override
 parameters/headers are also checked; HEAD/POST-to-GET aliases do not become GET
 permission. Exact effective collection routes only; media requires the native
@@ -68,6 +73,10 @@ The issue/coordinator already chose these seams; no new owner decision is needed
 All synthetic resources have immediately persisted cleanup ownership, and private
 directories/files use 0700/0600. No production key use, new production credential, real mail,
 paid model, global config change, merge or deployment is authorized to this worker.
+The media fixture exclusively creates a unique upload directory, persists that
+namespace and its intended file before writing bytes or attachment metadata,
+and registers only that owned path. Cleanup removes the owned file and empty
+directory; it never reuses a fixed potentially existing upload path.
 
 ## Authenticated redirect boundary
 

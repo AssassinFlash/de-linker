@@ -51,6 +51,13 @@ compensates only the just-created record and reads its absence back. The outer
 temporary binding and loader. Cleanup failures retain durable ownership for
 explicit recovery rather than discarding it.
 
+The upload fixture also creates an exclusive directory using a fresh UUID and
+persists that namespace plus its intended file before file creation, writing or
+attachment metadata. Its synthetic bytes and all deletable attachment paths stay
+inside that directory. Native cleanup and a filesystem readback verify that the
+owned file and empty directory are gone. No fixed preexisting-capable upload is
+registered for deletion.
+
 The native language setup is meaningful: an initial bare instance had no
 Polylang languages, so products were absent from the consumer's default-language
 collection even though an explicit all-language diagnostic could find them.
@@ -135,6 +142,48 @@ remaining owned users/posts, no fixture/binding/loader, and status `unconfigured
 - Runner Ruff, format and strict mypy: pass.
 - CI includes this native runner after its native EN/DE setup; hosted CI remains
   an independent gate after the fixed head is pushed.
+
+## Review findings and defensive correction
+
+Independent Standards review of `be262db2` found two defects. The fixes and
+separate offline/native red-green evidence are summarized in
+[evidence/review-fix.json](evidence/review-fix.json).
+
+The first defect was a mutable second lookup of the credential between native
+authentication hooks. The reviewer's isolated PHP doubles made the binding
+disappear between callbacks and showed `forbidden_users_route_blocked=false`.
+Replaying the same doubles against the correction produces true. This is an
+offline reproduction, not WordPress HTTP acceptance.
+
+The separate native local test revokes only the fixture-owned synthetic selected
+credential at error-hook priority 20, after the scope callback at priority 10 and
+before core's usage write and success action. It records both native deletion
+and the later core success event. With the old MU implementation, those events
+are true and the expected 403 assertion fails; the first runner did not retain
+the exact response status. With the correction, both events remain true and
+`GET /wp/v2/users/me` returns 403. The error hook now snapshots the matched binding
+once, and the success hook validates the same trusted tuple against that snapshot
+instead of querying mutable credential metadata again. Scope remains sticky for
+the effective dispatch. This is deterministic native event-order injection,
+not a claim of reproducing a concurrent production request.
+
+The second defect was the fixture's unowned fixed upload path. A native ownership
+assertion fails against the original fixture; its fixed path was absent in this
+isolated instance, so the red run did not delete a preexisting upload. The new
+fixture creates its own physical file in a durably recorded exclusive namespace.
+The native regression checks every deletable attachment path belongs to that
+file, then verifies native cleanup removed the file/directory and all owned
+users/posts. It does not test deletion against a real existing customer upload.
+
+The final expanded native matrix passes 62/62. It retains the original
+administrator/customer/unrelated-credential, protocol, alias, concurrent-request
+and full actual-consumer checks: both collections remain 202 rows across three
+pages with equal complete-response hashes. Usage metadata (three credentials,
+used 0 to 3) is sampled before the intentional synthetic revocation at the end.
+This correction changes no customer-facing copy, client query or production
+configuration. MU WPCS/PHPStan, PHPUnit 12 tests/40 assertions and runner
+Ruff/format/strict mypy pass after the correction; earlier unchanged Genie and
+transport checks remain as recorded above.
 
 ## Production handoff and rollback
 

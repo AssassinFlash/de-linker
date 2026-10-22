@@ -19,6 +19,47 @@ if ( is_file( $linker_inventory_binding_file ) ) {
 }
 unset( $linker_inventory_binding_file, $linker_inventory_raw );
 
+// Revoke only this fixture's synthetic credential after the scope error hook,
+// before core's usage write and success hook. No external credential is touched.
+$linker_inventory_revocation_subject = static function ( WP_User $user, array $item ): bool {
+	$state = get_option( 'linker_inventory_fixture' );
+	return '1' === sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_INVENTORY_FIXTURE_REVOKE'] ?? '' ) ) && is_array( $state ) && ( $state['users']['admin']['id'] ?? null ) === $user->ID && ( $item['uuid'] ?? null ) === ( $state['applications']['selected']['uuid'] ?? null );
+};
+add_action(
+	'wp_authenticate_application_password_errors',
+	static function ( WP_Error $error, WP_User $user, array $item ) use ( $linker_inventory_revocation_subject ): void {
+		if ( $error->has_errors() || ! $linker_inventory_revocation_subject( $user, $item ) ) {
+			return;
+		}
+		update_option(
+			'linker_inventory_fixture_revocation',
+			array(
+				'deleted'      => true === WP_Application_Passwords::delete_application_password( $user->ID, $item['uuid'] ),
+				'core_success' => false,
+			),
+			false
+		);
+	},
+	20,
+	3
+);
+add_action(
+	'application_password_did_authenticate',
+	static function ( WP_User $user, array $item ) use ( $linker_inventory_revocation_subject ): void {
+		if ( ! $linker_inventory_revocation_subject( $user, $item ) ) {
+			return;
+		}
+		$record = get_option( 'linker_inventory_fixture_revocation' );
+		if ( is_array( $record ) ) {
+			$record['core_success'] = true;
+			update_option( 'linker_inventory_fixture_revocation', $record, false );
+		}
+	},
+	20,
+	2
+);
+unset( $linker_inventory_revocation_subject );
+
 // A local probe deliberately exposes a non-REST application-auth consumer.
 // The selected credential must still be rejected by core's error hook.
 add_filter(
