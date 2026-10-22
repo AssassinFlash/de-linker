@@ -74,10 +74,10 @@ body.admin-bar header#lc-header{top:32px}
 #tv-header-v2 .tv-nav-link:active{transform:translateY(1px)}
 #tv-header-v2 .tv-nav-chevron{width:14px;height:14px;transition:transform 200ms cubic-bezier(.2,0,0,1);flex-shrink:0}
 #tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-nav-chevron{transform:rotate(180deg)}
-#tv-header-v2 .tv-mega-menu{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-6px);opacity:0;visibility:hidden;transition:opacity 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),visibility 200ms;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:20px;box-shadow:var(--proto-shadow-3);padding:22px;width:860px;max-width:calc(100vw - 40px);z-index:50;pointer-events:none}
+#tv-header-v2 .tv-mega-menu{display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(-6px);opacity:0;visibility:hidden;transition:opacity 200ms cubic-bezier(.2,0,0,1),transform 200ms cubic-bezier(.2,0,0,1),visibility 200ms;background:#ffffff;border:1px solid var(--proto-neutral-200);border-radius:20px;box-shadow:var(--proto-shadow-3);padding:22px;width:860px;max-width:calc(100vw - 40px);z-index:50;pointer-events:none}
 #tv-header-v2 .tv-mega-menu--compact{width:400px;padding:12px}
 #tv-header-v2 .tv-mega-menu::before{content:"";position:absolute;top:-12px;left:0;right:0;height:12px}
-#tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
+#tv-header-v2 .tv-nav-item:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{display:block;opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);pointer-events:auto}
 #tv-header-v2 .tv-mega-grid{display:grid;grid-template-columns:260px 1fr;gap:24px}
 #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"] .tv-mega-menu{left:0;box-sizing:border-box;width:min(1120px,calc(100vw - 180px));transform:translateY(-6px)}
 #tv-header-v2 .tv-nav-item[data-tv-nav-primary="products"]:has(> .tv-nav-link[aria-expanded="true"]) .tv-mega-menu{transform:translateY(0)}
