@@ -246,7 +246,12 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 		$post['name'] = 'Installer recovery fixture';
 		$product      = $this->product( '10' );
-		$post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] = (string) wp_json_encode( array( 'source' => get_permalink( $product->get_id() ), 'selection' => array( 'q' => $activity ) ) );
+		$post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] = (string) wp_json_encode(
+			array(
+				'source'    => get_permalink( $product->get_id() ),
+				'selection' => array( 'q' => $activity ),
+			)
+		);
 		\Linker\Commerce\Protection\FormRecovery::save( 'contact', $post );
 		self::assertSame( $old, WC()->session->get( $key ) );
 		unset( $post[ \Linker\Commerce\Contact\SelectionContext::FIELD ] );
