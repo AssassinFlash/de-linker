@@ -30,8 +30,12 @@ It is part of the same active full delivery, not an alternative product scope.
    covers the first input's entire horizon using all source boundaries.
 8. Refinement is a piecewise-constant reconstruction, not a new observation.
    Source origin and maximum native interval duration survive regridding,
-   along with the named transformation. Later peak/forecast/evidence checks
-   must consume this resolution instead of treating finer bins as measured.
+   along with each transformation's input document hash, target axis hash,
+   input/output interval durations and exact-copy flag. The effective coarsest
+   interval and reconstruction flag survive intermediate aggregation as well:
+   quarter-hour → hour → quarter-hour cannot recover measured peaks. Later
+   peak/forecast/evidence checks must consume this history, rather than treating
+   finer bins or original raw resolution alone as current measured precision.
 9. Source/mapping and transformed interval/measurement details can be serialized
    as finite JSON and pinned as run inputs. The numerical dispatch layer must
    only accept appropriate physical measurement types.

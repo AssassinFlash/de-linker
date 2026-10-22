@@ -4,15 +4,18 @@ from __future__ import annotations
 
 import math
 
+from .canonical import Json, digest, encode
 from .errors import InvalidInput
 from .interval import Interval, microseconds
 from .power_series import PowerSeries, check_intervals
+from .series_transform import SeriesTransform
 
 
 def regrid(source: PowerSeries, target: tuple[Interval, ...]) -> PowerSeries:
     check_intervals(target)
     powers: list[float] = []
     first = 0
+    exact_copy = True
     for interval in target:
         while (
             first < len(source.intervals)
@@ -37,13 +40,28 @@ def regrid(source: PowerSeries, target: tuple[Interval, ...]) -> PowerSeries:
                 "source does not cover target interval "
                 f"{interval.start.isoformat()} to {interval.end.isoformat()}"
             )
+        if first >= len(source.intervals) or source.intervals[first] != interval:
+            exact_copy = False
         powers.append(math.fsum(weighted))
+    axis: list[Json] = [
+        {"start_utc": item.start.isoformat(), "end_utc": item.end.isoformat()}
+        for item in target
+    ]
+    transformation = SeriesTransform(
+        input_document_sha256=digest(encode(source.document())),
+        target_axis_sha256=digest(encode({"intervals": axis})),
+        input_max_interval_seconds=max(item.duration_us for item in source.intervals)
+        / 1_000_000,
+        output_max_interval_seconds=max(item.duration_us for item in target)
+        / 1_000_000,
+        exact_interval_copy=exact_copy,
+    )
     return PowerSeries(
         target,
         tuple(powers),
         source.measurement,
         source.source,
-        (*source.transformations, "energy_preserving_overlap_of_interval_means"),
+        (*source.transformations, transformation),
     )
 
 

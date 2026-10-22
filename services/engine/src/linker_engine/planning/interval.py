@@ -11,7 +11,12 @@ from .errors import InvalidInput
 def utc(value: datetime) -> datetime:
     if value.tzinfo is None or value.utcoffset() is None:
         raise InvalidInput("an explicit offset or resolved local timezone is required")
-    return value.astimezone(UTC)
+    try:
+        return value.astimezone(UTC)
+    except (OverflowError, ValueError) as error:
+        raise InvalidInput(
+            "instant is outside the supported UTC date/time domain"
+        ) from error
 
 
 def microseconds(value: timedelta) -> int:

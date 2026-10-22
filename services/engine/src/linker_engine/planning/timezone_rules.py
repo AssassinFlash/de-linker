@@ -11,6 +11,7 @@ import io
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from struct import error as StructError
 from zoneinfo import TZPATH, ZoneInfo
 
 from .canonical import digest
@@ -40,7 +41,7 @@ class TimezoneRules:
     def zone(self) -> ZoneInfo:
         try:
             return ZoneInfo.from_file(io.BytesIO(self.content), key=self.name)
-        except (ValueError, EOFError) as error:
+        except (ValueError, EOFError, StructError, UnicodeError) as error:
             raise VersionUnavailable(
                 "pinned timezone rules are not a valid TZif"
             ) from error

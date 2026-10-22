@@ -10,6 +10,7 @@ from .canonical import Json, Object
 from .errors import InvalidInput
 from .interval import Interval
 from .series_source import SeriesSource
+from .series_transform import SeriesTransform
 
 type Measurement = Literal[
     "gross_load",
@@ -43,7 +44,7 @@ class PowerSeries:
     values_kw: tuple[float, ...]
     measurement: Measurement
     source: SeriesSource
-    transformations: tuple[str, ...] = ()
+    transformations: tuple[SeriesTransform, ...] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "intervals", tuple(self.intervals))
@@ -65,6 +66,25 @@ class PowerSeries:
         object.__setattr__(
             self, "values_kw", tuple(float(value) for value in self.values_kw)
         )
+
+    @property
+    def effective_max_interval_seconds(self) -> float:
+        return max(
+            [
+                self.source.native_max_interval_seconds,
+                *(
+                    max(
+                        item.input_max_interval_seconds,
+                        item.output_max_interval_seconds,
+                    )
+                    for item in self.transformations
+                ),
+            ]
+        )
+
+    @property
+    def reconstructed_means(self) -> bool:
+        return any(not item.exact_interval_copy for item in self.transformations)
 
     @property
     def total_kwh(self) -> float:
@@ -92,5 +112,7 @@ class PowerSeries:
             "intervals": intervals,
             "values": list(self.values_kw),
             "source": self.source.document(),
-            "transformations": list(self.transformations),
+            "effective_max_interval_seconds": self.effective_max_interval_seconds,
+            "reconstructed_means": self.reconstructed_means,
+            "transformations": [item.document() for item in self.transformations],
         }

@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from linker_engine.planning.canonical import digest
+from linker_engine.planning.canonical import digest, encode
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.errors import InvalidInput, VersionUnavailable
 from linker_engine.planning.interval import Interval, regular_intervals
@@ -224,6 +224,54 @@ def test_source_timezone_is_pinned_and_cannot_be_substituted(
         load_timezone("../../etc/passwd")
 
 
+@pytest.mark.parametrize(
+    "timestamp",
+    [
+        "0001-01-01T00:00:00+01:00",
+        "9999-12-31T23:59:59-01:00",
+    ],
+)
+def test_offset_conversion_outside_utc_domain_is_a_named_input_error(
+    mapping: CsvMapping, rules: TimezoneRules, timestamp: str
+) -> None:
+    with pytest.raises(InvalidInput, match="supported UTC"):
+        read_profile(f"time;value\n{timestamp};1\n".encode(), mapping, rules)
+
+
+def test_truncated_tzif_with_valid_magic_is_a_named_version_error() -> None:
+    with pytest.raises(VersionUnavailable, match="TZif"):
+        TimezoneRules("UTC", b"TZif" + b"\0" * 10)
+
+
+def test_averaging_then_refining_does_not_recover_measured_peaks(
+    mapping: CsvMapping, rules: TimezoneRules
+) -> None:
+    raw = read_profile(
+        b"time;value\n2024-01-01T00:00Z;100\n2024-01-01T00:15Z;0\n"
+        b"2024-01-01T00:30Z;100\n2024-01-01T00:45Z;0\n",
+        mapping,
+        rules,
+    )
+    coarse_axis = (Interval(raw.intervals[0].start, raw.intervals[-1].end),)
+    coarse = regrid(raw, coarse_axis)
+    refined = regrid(coarse, raw.intervals)
+    assert refined.values_kw == (50, 50, 50, 50)
+    assert refined.total_kwh == raw.total_kwh == 50
+    assert refined.source.native_max_interval_seconds == 900
+    assert refined.effective_max_interval_seconds == 3600
+    assert refined.reconstructed_means and not raw.reconstructed_means
+    assert refined.transformations[0].input_document_sha256 == digest(
+        encode(raw.document())
+    )
+    assert refined.transformations[1].input_document_sha256 == digest(
+        encode(coarse.document())
+    )
+    assert all(not item.exact_interval_copy for item in refined.transformations)
+    copied = regrid(raw, raw.intervals)
+    assert not copied.reconstructed_means
+    assert copied.effective_max_interval_seconds == 900
+
+
 def test_leap_year_and_refinement_keep_original_energy_and_resolution(
     mapping: CsvMapping, rules: TimezoneRules
 ) -> None:
@@ -240,7 +288,13 @@ def test_leap_year_and_refinement_keep_original_energy_and_resolution(
     assert len(quarters.values_kw) == 35136
     assert hourly.total_kwh == quarters.total_kwh == 8784.0
     assert quarters.source.native_max_interval_seconds == 3600
-    assert quarters.transformations == ("energy_preserving_overlap_of_interval_means",)
+    assert len(quarters.transformations) == 1
+    assert (
+        quarters.transformations[0].method
+        == "energy_preserving_overlap_of_interval_means"
+    )
+    assert quarters.reconstructed_means
+    assert quarters.effective_max_interval_seconds == 3600
 
 
 def test_pv_and_load_align_without_claiming_finer_native_observations(

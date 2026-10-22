@@ -6,13 +6,13 @@ import csv
 import io
 import math
 import re
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from .canonical import digest, encode
 from .csv_mapping import CsvMapping
 from .errors import InvalidInput
-from .interval import Interval
+from .interval import Interval, utc
 from .power_series import PowerSeries
 from .series_source import SeriesSource
 from .timezone_rules import TimezoneRules
@@ -28,14 +28,19 @@ def _timestamp(text: str, zone: ZoneInfo, fold: str | None, line: int) -> dateti
     if parsed.tzinfo is not None and parsed.utcoffset() is not None:
         if fold is not None:
             raise InvalidInput(f"row {line}: use an explicit offset or fold, not both")
-        return parsed.astimezone(UTC)
+        return utc(parsed)
     # Round trips detect spring's nonexistent local times. Fall's repeated
     # local times keep two distinct UTC candidates and require a stated fold.
     candidates: dict[int, datetime] = {}
     for occurrence in (0, 1):
         aware = parsed.replace(tzinfo=zone, fold=occurrence)
-        instant = aware.astimezone(UTC)
-        back = instant.astimezone(zone)
+        instant = utc(aware)
+        try:
+            back = instant.astimezone(zone)
+        except (OverflowError, ValueError) as error:
+            raise InvalidInput(
+                f"row {line}: local time exceeds supported domain"
+            ) from error
         if back.replace(tzinfo=None) == parsed and back.fold == occurrence:
             candidates[occurrence] = instant
     if not candidates:
