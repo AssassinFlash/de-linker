@@ -15,18 +15,63 @@ the same private local backup if present; record absence if this is first instal
 No backup belongs on the web host or in Git.
 
 ```python
-# Read before writing; if an unexpected version/state exists, review it.
-target.wp("plugin", "get", "two-factor", "--fields=name,status,version", "--format=json")
-# For first installation, or a reviewed update to the pinned stable version:
-target.wp("plugin", "install", "two-factor", "--version=0.17.0", "--activate")
+pinned = "0.17.0"
+installed = target.wp_json("plugin", "list", "--fields=name,status,version")
+if not isinstance(installed, list):
+    raise RuntimeError("Plugin inventory read failed; do not write.")
+matching = [row for row in installed if row["name"] == "two-factor"]
+if len(matching) > 1:
+    raise RuntimeError("Unexpected plugin inventory; review before writing.")
+
+if not matching:
+    # Absent: first installation from the official stable package.
+    target.wp("plugin", "install", "two-factor", "--version=" + pinned, "--activate")
+elif matching[0]["version"] == pinned:
+    # Already installed at the pin: activation is a separate native operation.
+    target.wp("plugin", "activate", "two-factor")
+else:
+    # Match local prepare(): a different version is never silently replaced.
+    raise RuntimeError("Different installed version; review replacement scope and backup first.")
+
+actual = target.wp_json("plugin", "get", "two-factor", "--fields=name,status,version")
+if actual["version"] != pinned or actual["status"] != "active":
+    raise RuntimeError("Require exact version 0.17.0 AND active status; stop handoff.")
 target.wp("plugin", "verify-checksums", "two-factor", "--strict")
-target.wp("plugin", "get", "two-factor", "--fields=name,status,version", "--format=json")
 target.wp("language", "plugin", "install", "two-factor", "de_DE_formal")
 ```
 
-An absent-plugin read returns nonzero and is expected only when confirming first
-install. Do not mask a different read failure. Do not run the synthetic test
-recipe against production; it explicitly accepts only native local instances.
+A failed inventory read is not evidence of an absent plugin. The default branch
+above deliberately stops on a different installed version, matching the local
+`prepare()` implementation. Native `plugin install` without `--force` skips an
+already-installed plugin; `--activate` on that skipped install does not serve as
+an upgrade or activation operation.
+
+For a **reviewed different-version replacement only**, first record the installed
+version/state and confirm the recoverable database, plugin-files and language
+backups. Determine whether the specific version change is covered by the already
+authorized security upgrade. An upgrade from an older version may be within that
+scope after compatibility/changelog review; an unexpected newer version must not
+be silently downgraded to the pin. If the version change is outside the existing
+authorization, resolve that scope before writing. Preserve factor metadata,
+current sessions and the existing application password. Immediately re-read the
+installed version and stop if it differs from the reviewed source version. Once
+that concrete replacement is authorized, use the explicit native overwrite:
+
+```python
+# Only after the reviewed-version and verified-backup checks above.
+target.wp("plugin", "install", "two-factor", "--version=0.17.0", "--force", "--activate")
+```
+
+Then rerun the first block: it must now take the current-version activation branch,
+assert **version0.17.0 AND active**, and pass strict official file checksums.
+Checksum success alone does not prove either the requested version or activation;
+it verifies files against the installed version's published checksums. Do not
+proceed to owner enrolment unless all three conditions pass.
+
+Do not run the synthetic test recipe against production; it explicitly accepts
+only native local instances. This is a dependency/language handoff against the
+current approved production checkout, not permission to deploy this branch's
+older `1f054757` application snapshot over subsequent production changes.
 
 Official stable archive:
 `https://downloads.wordpress.org/plugin/two-factor.0.17.0.zip`, SHA256
