@@ -11,7 +11,9 @@ use Linker\Commerce\Health\ReviewReminder;
 use Linker\Commerce\Health\ReviewSummary;
 use Linker\Commerce\Inquiry\Assessment\Queue;
 use Linker\Commerce\Inquiry\Assessment\RecoverySchedule;
+use Linker\Commerce\Mail\Capture;
 use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\NativeOrigin;
 use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\NotificationHold;
 use Linker\Commerce\Mail\OptionBudgetLedger;
@@ -201,10 +203,90 @@ final class ReviewReminderTest extends IntegrationTestCase {
 	 * @param bool $critical Normal notification priority.
 	 */
 	public function test_normal_mail_still_uses_the_existing_native_transport( bool $critical ): void {
+		$emails = WC()->mailer()->get_emails();
+		$email  = $emails[ $critical ? \Linker\Commerce\Registration\Emails\ApprovedEmail::class : \Linker\Commerce\Digest\DigestEmail::class ];
+		$this->assertInstanceOf( \WC_Email::class, $email );
+		$budget  = get_option( OptionBudgetLedger::OPTION );
+		$marker  = self::newest_mail_job();
+		$message = Capture::run(
+			$email,
+			function () use ( $email ): void {
+				// WC_Email::send invokes the registered native producer wrapper and capture seam.
+				$this->assertTrue( $email->send( self::TESTER, 'Synthetic normal notification', 'Normal original notification.', '', array() ) );
+			}
+		);
+		$this->assertInstanceOf( Message::class, $message );
+		$this->assertSame( $critical, $message->critical );
+		$this->assertSame( $critical ? 'security' : 'transaction', $message->origin['kind'] );
+		$this->assertSame( $email->id, $message->origin['producer'] );
+		$this->assertTrue( NativeOrigin::valid( $message ) );
+		$this->assertSame( array( self::TESTER ), $message->to );
+		$this->assertSame( 'Synthetic normal notification', $message->subject );
+		$this->assertStringContainsString( 'Normal original notification.', $message->body );
+		$this->assertSame( $budget, get_option( OptionBudgetLedger::OPTION ), 'Native capture does not debit transport.' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ) );
 		$jobs = new JobStore();
-		$id   = $jobs->create( new Message( array( self::TESTER ), 'Synthetic normal notification', 'Normal original notification.', array(), array(), $critical ) );
-		do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual native consumer.
+		$id   = $jobs->create( $message );
+		$this->assertGreaterThan( 0, $id );
+		$stored = $jobs->load( $id );
+		$this->assertNotNull( $stored );
+		$this->assertSame( $critical, $stored['message']->critical );
+		$this->assertFalse( $jobs->critical( $id ), 'Native producer priority is distinct from a private staff-release marker.' );
+		$delivered = array();
+		$observe   = static function ( array $mail ) use ( &$delivered ): void {
+			$delivered[] = $mail;
+		};
+		add_action( 'wp_mail_succeeded', $observe );
+		try {
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual native consumer.
+		} finally {
+			remove_action( 'wp_mail_succeeded', $observe );
+		}
 		$this->assertNull( $jobs->load( $id ) );
+		$this->assertCount( 1, $delivered );
+		$this->assertSame( array( self::TESTER ), $delivered[0]['to'] );
+		$this->assertSame( $message->subject, $delivered[0]['subject'] );
+		$this->assertSame( $message->body, $delivered[0]['message'] );
 		$this->assertNotFalse( get_option( OptionBudgetLedger::OPTION ) );
+	}
+
+	/** Public priority or producer fields cannot replace a complete native witness.
+	 *
+	 * @testWith ["unclassified"]
+	 *           ["priority"]
+	 *           ["origin"]
+	 * @param string $forgery The untrusted fixture fields.
+	 */
+	public function test_unclassified_or_forged_priority_retains_job_without_transport_or_budget( string $forgery ): void {
+		$critical = 'unclassified' !== $forgery;
+		$origin   = 'origin' === $forgery ? array(
+			'kind'     => 'security',
+			'producer' => 'linker_approval_approved',
+			'seal'     => str_repeat( 'a', 64 ),
+		) : array();
+		$message  = new Message( array( self::TESTER ), 'Synthetic unclassified notification', 'Unclassified content stays retained.', array(), array(), $critical, Message::STANDARD, $origin );
+		$this->assertFalse( NativeOrigin::valid( $message ) );
+		$jobs = new JobStore();
+		$id   = $jobs->create( $message );
+		$this->assertGreaterThan( 0, $id );
+		$budget   = get_option( OptionBudgetLedger::OPTION );
+		$legacy   = get_option( Throttle::OPTION );
+		$attempts = 0;
+		$observe  = static function () use ( &$attempts ): void {
+			++$attempts;
+		};
+		add_action( 'phpmailer_init', $observe, PHP_INT_MAX );
+		try {
+			do_action( Outbox::HOOK, $id ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- Actual native consumer.
+		} finally {
+			remove_action( 'phpmailer_init', $observe, PHP_INT_MAX );
+		}
+		$this->assertSame( 0, $attempts );
+		$this->assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+		$this->assertSame( $legacy, get_option( Throttle::OPTION ) );
+		$retained = $jobs->load( $id );
+		$this->assertNotNull( $retained );
+		$this->assertSame( $message->to_array(), $retained['message']->to_array() );
+		$this->assertSame( 0, $retained['attempts'] );
 	}
 }
