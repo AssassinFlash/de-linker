@@ -80,6 +80,16 @@ class ProfileImport:
             "csv_mapping": mapping.document(),
         }
 
+    @classmethod
+    def command(cls, content: bytes, mapping: CsvMapping, provenance: Object) -> Object:
+        """Same declared intent for intake, permanent replay and native quota."""
+        return {
+            "content_sha256": digest(content),
+            "media_type": "text/csv; charset=utf-8",
+            "purpose": "csv_profile_v1",
+            "metadata": cls.logical(mapping, provenance),
+        }
+
     def previous(
         self,
         actor: Actor,
@@ -95,10 +105,5 @@ class ProfileImport:
             actor,
             project_id,
             key,
-            {
-                "content_sha256": digest(content),
-                "media_type": "text/csv; charset=utf-8",
-                "purpose": "csv_profile_v1",
-                "metadata": self.logical(mapping, provenance),
-            },
+            self.command(content, mapping, provenance),
         )

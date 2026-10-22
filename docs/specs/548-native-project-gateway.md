@@ -26,6 +26,9 @@ engineering reports, and does not replace any model channel.
    Its original refusal is reasserted afterward because installed ACF
    initialisation can discard a previously returned error. Accepted requests
    retain their original wire bytes. Core cookie authentication is unchanged.
+   Unsupported methods with bodies are subject to the same guard, because
+   installed integrations may parse JSON before WordPress matches the route.
+   Reusing a native Request cannot carry an earlier refusal into another route.
 4. The native `woocommerce_guest_session_to_user_id` event records a complete
    private claim command in one native post insert. It verifies the old
    presented native cookie against the event and current user; copied data
@@ -66,6 +69,11 @@ engineering reports, and does not replace any model channel.
    not publicly allowlisted and cannot claim sessions or invoke other commands.
    An uncertain native receipt still present is completed from confirmed
    engine evidence; its absence after 24 hours does not authorise another debit.
+   The private response supplies the hash of the validated canonical domain
+   command used by that same permanent receipt. Native admission uses this
+   hash, owner and operation, rather than implementing a second JSON
+   canonicalisation rule. Equivalent wire formatting can recover and settle
+   the same receipt; a changed domain intent conflicts.
 
 Acceptance requires real HTTP cookies/nonces and a running local site, not
 only mocks: two isolated guests, reload, native login/registration and logout,
@@ -84,8 +92,11 @@ and 30/120 calculation submissions per hour. Corresponding site ceilings are
 500/day, 5000/hour, 500/day and 500/hour. These are initial local operational
 policy, not production workload evidence or physical scope; load acceptance
 and matching ingress settings remain part of the full delivery. The journal
-reuses completed/uncertain command keys without another debit; JSON bytes of a
-retry must remain the same. Long-running work is governed by durable worker
+reuses completed/uncertain command keys without another debit. The browser
+retains the original command snapshot, key and wire bytes for retries, so
+an edit cannot change an in-flight save. Server idempotency follows canonical
+domain intent, including declared CSV provenance and mapping, rather than
+insignificant JSON whitespace or key order. Long-running work is governed by durable worker
 leases rather than a WordPress request lease.
 
 ## Current increment evidence

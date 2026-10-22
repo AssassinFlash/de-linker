@@ -85,10 +85,15 @@ final class Gateway {
 	 */
 	public function before_parse( mixed $result, mixed $server, WP_REST_Request $request ): mixed {
 		unset( $server );
-		if ( ! self::in_scope( $request ) || 'POST' !== $request->get_method() ) {
+		unset( $this->refusals[ $request ] );
+		if ( ! self::in_scope( $request ) ) {
 			return $result;
 		}
-		unset( $this->refusals[ $request ] );
+		// Native pre-dispatch integrations can parse even unsupported methods
+		// before route matching. Every planner body needs the same bound.
+		if ( 'POST' !== $request->get_method() && '' === (string) $request->get_body() ) {
+			return $result;
+		}
 		$checked = ( new BodyGate() )->check( $request );
 		if ( is_wp_error( $checked ) ) {
 			// WP filters all continue after a returned error. Installed native
@@ -111,7 +116,7 @@ final class Gateway {
 	 */
 	public function retain_refusal( mixed $result, mixed $server, WP_REST_Request $request ): mixed {
 		unset( $server );
-		return $this->refusals[ $request ] ?? $result;
+		return self::in_scope( $request ) ? ( $this->refusals[ $request ] ?? $result ) : $result;
 	}
 
 	/**

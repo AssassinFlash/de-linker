@@ -195,12 +195,13 @@ def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
         "key": "permanent",
     }
     before = set(rig.workspace.blobs.directory.rglob("*"))
-    assert rig.replay("/projects/create", command) == {
-        "schema_version": 1,
-        "status": "absent",
-    }
+    pending = rig.replay("/projects/create", command)
+    assert pending["schema_version"] == 1 and pending["status"] == "absent"
+    command_hash = pending["command_sha256"]
+    assert isinstance(command_hash, str) and len(command_hash) == 64
     assert set(rig.workspace.blobs.directory.rglob("*")) == before
     created = rig.post("/projects/create", command)
+    assert rig.replay("/projects/create", command)["command_sha256"] == command_hash
     revision_command: Object = {
         "project_id": created["id"],
         "expected_revision": 1,

@@ -432,6 +432,60 @@ echo wp_json_encode($result);
     assert cases[3]["status"] == 400 and cases[3]["largest_parser_input"] > 1000
 
 
+def test_native_parser_limits_cover_unsupported_methods_and_reused_requests(local: tuple[Instance, WpCli]) -> None:
+    _, wp = local
+    result = wp.run("eval", '''
+class LinkerPlannerMethodProbe extends WP_REST_Request {
+    public array $parser_bytes = array();
+    protected function parse_json_params() {
+        $this->parser_bytes[] = strlen((string) $this->get_body());
+        return parent::parse_json_params();
+    }
+}
+$server = rest_get_server();
+$result = array();
+foreach (array('GET', 'HEAD', 'PUT', 'PATCH', 'DELETE', 'OPTIONS') as $method) {
+    foreach (array(
+        '{"schema_version":' . str_repeat('[', 100) . '1' . str_repeat(']', 100) . '}',
+        '{"blob":"' . str_repeat('x', 16 * 1024 * 1024) . '"}',
+    ) as $index => $body) {
+        $request = new LinkerPlannerMethodProbe($method, '/linker/v1/planner/not-a-route');
+        $request->set_header('content-type', 'application/json');
+        $request->set_body($body);
+        $response = $server->dispatch($request);
+        $result[] = array('status' => $response->get_status(), 'largest_parser_input' => $request->parser_bytes ? max($request->parser_bytes) : 0);
+    }
+}
+// A subrequest object can be reused by native integrations in one PHP request.
+// Neither changing its route nor dispatching it again may revive a refusal.
+$request = new LinkerPlannerMethodProbe('POST', '/linker/v1/planner/bootstrap');
+$request->set_header('content-type', 'application/json');
+$request->set_body(str_repeat('[', 100) . '1' . str_repeat(']', 100));
+$server->dispatch($request);
+$request->set_route('/wp/v2/types');
+$request->set_method('GET');
+$request->set_body('');
+$response = $server->dispatch($request);
+$result[] = array('status' => $response->get_status());
+$request->set_route('/linker/v1/planner/bootstrap');
+$request->set_method('POST');
+$request->set_header('origin', home_url());
+$request->set_body('{"schema_version":"invalid-but-bounded"}');
+$request->parser_bytes = array();
+$response = $server->dispatch($request);
+$result[] = array('status' => $response->get_status(), 'largest_parser_input' => $request->parser_bytes ? max($request->parser_bytes) : 0);
+echo wp_json_encode($result);
+''')
+    cases = json.loads(result)
+    assert cases[:12] == [
+        {"status": status, "largest_parser_input": 0}
+        for _ in range(6)
+        for status in (400, 413)
+    ]
+    assert cases[12] == {"status": 200}
+    assert cases[13] == {"status": 400, "largest_parser_input": 40}
+
+
 def test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting(local: tuple[Instance, WpCli]) -> None:
     instance, wp = local
     browser = Browser(instance.url)
@@ -454,3 +508,35 @@ echo hash('sha256', wp_json_encode($state));
     assert before == after, "permanent replay must not reserve a new quota receipt"
     command["inputs"] = {"changed": True}
     assert browser.rpc("rpc/projects/create", command).status == 409
+
+
+def test_equivalent_wire_replay_settles_the_same_canonical_native_receipt(local: tuple[Instance, WpCli]) -> None:
+    instance, wp = local
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    key = str(uuid.uuid4())
+    command = {"schema_version": 1, "title": "Canonical native receipt", "inputs": {"object": {}, "array": [], "one": 1.0}, "key": key}
+    created = browser.rpc("rpc/projects/create", command)
+    assert created.status == 200, created.body
+    before = json.loads(wp.run("eval", '''
+$name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+$state = json_decode(get_option($name), true);
+$id = getenv('LINKER_PLANNER_FIXTURE_OPERATION');
+$state['receipts'][$id]['status'] = 'unresolved';
+update_option($name, wp_json_encode($state), false);
+echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": key}))
+    reply = browser.http(ROOT + "rpc/projects/create", body=json.dumps(command, indent=2, sort_keys=True).encode(), headers={
+        "Content-Type": "application/json", "Origin": instance.url,
+        "X-Linker-Planner-Nonce": browser.context["nonce"],
+    })
+    assert reply.status == 200 and reply.object() == created.object()
+    after = json.loads(wp.run("eval", '''
+$state = json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true);
+$id = getenv('LINKER_PLANNER_FIXTURE_OPERATION');
+echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": key}))
+    assert after["receipt"]["status"] == "completed"
+    assert before["count"] == after["count"] and before["buckets"] == after["buckets"]
+    assert before["receipt"]["fingerprint"] == after["receipt"]["fingerprint"]
+    assert before["receipt"]["debits"] == after["receipt"]["debits"]

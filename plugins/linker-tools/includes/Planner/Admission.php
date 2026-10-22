@@ -39,14 +39,14 @@ final class Admission {
 			return $previous;
 		}
 		$known = json_decode( $previous['body'] );
-		if ( ! $known instanceof \stdClass || 1 !== ( $known->schema_version ?? null ) || ! in_array( $known->status ?? null, array( 'absent', 'replayed' ), true ) || ! str_starts_with( $previous['type'], 'application/json' ) ) {
+		if ( ! $known instanceof \stdClass || 1 !== ( $known->schema_version ?? null ) || ! in_array( $known->status ?? null, array( 'absent', 'replayed' ), true ) || ! is_string( $known->command_sha256 ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $known->command_sha256 ) || ! str_starts_with( $previous['type'], 'application/json' ) ) {
 			return Failure::make( 'invalid_reply', 502 );
 		}
 		if ( 'replayed' === $known->status ) {
 			if ( ! ( $known->result ?? null ) instanceof \stdClass ) {
 				return Failure::make( 'invalid_reply', 502 );
 			}
-			$acknowledged = $this->acknowledge( $principal, $path, $command, $body );
+			$acknowledged = $this->acknowledge( $principal, $path, $command, $known->command_sha256 );
 			if ( is_wp_error( $acknowledged ) ) {
 				return $acknowledged;
 			}
@@ -77,7 +77,7 @@ final class Admission {
 			);
 		}
 		$id          = $command['key'];
-		$fingerprint = $this->fingerprint( $principal, $path, $body );
+		$fingerprint = $this->fingerprint( $principal, $path, $known->command_sha256 );
 		$ledger      = new Ledger();
 		// This lease covers only bounded RPC dispatch, not queued numerical work.
 		$receipt = $ledger->reserve( $id, $fingerprint, $limits, 30, $carry, 'planner_write', $quota->binding(), $quota->owners() );
@@ -112,16 +112,16 @@ final class Admission {
 	 * @param Principal           $principal Verified owner.
 	 * @param string              $path Server-selected command.
 	 * @param array<string,mixed> $command Parsed command.
-	 * @param string              $body Exact retry bytes.
+	 * @param string              $command_hash Private engine's canonical intent.
 	 * @return true|WP_Error Native acknowledgement or explicit journal failure.
 	 */
-	private function acknowledge( Principal $principal, string $path, array $command, string $body ): bool|WP_Error {
+	private function acknowledge( Principal $principal, string $path, array $command, string $command_hash ): bool|WP_Error {
 		$id = $command['key'] ?? null;
 		if ( ! class_exists( Ledger::class ) || ! is_string( $id ) || ! wp_is_uuid( $id, 4 ) || false === get_option( Ledger::OPTION ) ) {
 			return true;
 		}
 		$ledger      = new Ledger();
-		$fingerprint = $this->fingerprint( $principal, $path, $body );
+		$fingerprint = $this->fingerprint( $principal, $path, $command_hash );
 		$receipt     = $ledger->lookup( $id, $fingerprint );
 		if ( is_wp_error( $receipt ) ) {
 			return 'linker_admission_unknown_receipt' === $receipt->get_error_code() ? true : Failure::make( 'receipt_persistence', 503 );
@@ -133,14 +133,14 @@ final class Admission {
 	}
 
 	/**
-	 * Scope native quota receipts to the owner and exact public command bytes.
+	 * Scope native quota to the same canonical intent as its permanent receipt.
 	 *
 	 * @param Principal $principal Verified owner.
 	 * @param string    $path Server-selected command.
-	 * @param string    $body Exact input bytes.
+	 * @param string    $command_hash Private engine's validated canonical hash.
 	 */
-	private function fingerprint( Principal $principal, string $path, string $body ): string {
-		return wp_hash( 'linker-planner-admission:v1|' . $principal->kind . '|' . $principal->subject . '|' . $path . '|' . hash( 'sha256', $body ), 'nonce', 'sha256' );
+	private function fingerprint( Principal $principal, string $path, string $command_hash ): string {
+		return wp_hash( 'linker-planner-admission:v1|' . $principal->kind . '|' . $principal->subject . '|' . $path . '|' . $command_hash, 'nonce', 'sha256' );
 	}
 
 	/**

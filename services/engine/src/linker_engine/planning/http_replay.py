@@ -39,7 +39,7 @@ class HttpReplay:
         result: Object | None
         if path == "projects/create":
             create = ProjectCreate.model_validate(value)
-            receipt = self.receipt(
+            receipt, command_sha256 = self.receipt(
                 actor,
                 "create",
                 create.key,
@@ -58,7 +58,7 @@ class HttpReplay:
             )
         elif path == "projects/revise":
             revise = ProjectRevise.model_validate(value)
-            receipt = self.receipt(
+            receipt, command_sha256 = self.receipt(
                 actor,
                 f"revise:{revise.project_id}",
                 revise.key,
@@ -81,7 +81,7 @@ class HttpReplay:
             )
         elif path == "runs/energy":
             evaluate = EnergyEvaluate.model_validate(value)
-            receipt = self.receipt(
+            receipt, command_sha256 = self.receipt(
                 actor,
                 f"evaluate:{evaluate.project_id}",
                 evaluate.key,
@@ -102,20 +102,27 @@ class HttpReplay:
             )
         elif path == "profiles/csv":
             csv = CsvImport.model_validate(value)
-            asset = self.intake.previous_csv(actor, csv)
+            command = self.intake.csv_command(actor, csv)
+            command_sha256 = commands.command_hash(command, csv.key)
+            asset = self.intake.assets.receipt(actor, csv.project_id, csv.key, command)
             result = None if asset is None else asset_view(asset)
         elif path == "battery/scenario":
             battery = BatteryScenario.model_validate(value)
-            asset = self.intake.previous_battery(actor, battery)
+            command = self.intake.battery_command(battery)
+            command_sha256 = commands.command_hash(command, battery.key)
+            asset = self.intake.assets.receipt(
+                actor, battery.project_id, battery.key, command
+            )
             result = None if asset is None else asset_view(asset)
         else:
             raise NotFound("mutation receipt not found")
         return (
-            {"schema_version": 1, "status": "absent"}
+            {"schema_version": 1, "status": "absent", "command_sha256": command_sha256}
             if result is None
             else {
                 "schema_version": 1,
                 "status": "replayed",
+                "command_sha256": command_sha256,
                 "result": result,
             }
         )
@@ -128,16 +135,18 @@ class HttpReplay:
         command: Object,
         *,
         project_id: str | None = None,
-    ) -> Object | None:
+    ) -> tuple[Object | None, str]:
+        command_sha256 = commands.command_hash(command, key)
         with self.workspace.database.read() as connection:
             active_actor(connection, actor)
             if project_id is not None:
                 project_row(connection, actor, project_id, write=True)
-            return commands.replay(
+            receipt = commands.replay(
                 connection,
                 self.workspace.blobs,
                 actor,
                 scope,
                 key,
-                commands.command_hash(command, key),
+                command_sha256,
             )
+            return receipt, command_sha256

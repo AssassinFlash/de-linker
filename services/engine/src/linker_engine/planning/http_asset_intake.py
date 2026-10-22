@@ -48,13 +48,15 @@ class HttpAssetIntake:
         )
 
     def previous_csv(self, actor: Actor, body: CsvImport) -> Asset | None:
-        return ProfileImport(self.assets).previous(
-            actor,
-            body.project_id,
+        return self.assets.receipt(
+            actor, body.project_id, body.key, self.csv_command(actor, body)
+        )
+
+    def csv_command(self, actor: Actor, body: CsvImport) -> Object:
+        return ProfileImport.command(
             self.csv_content(actor, body),
             body.mapping.mapping(),
             self.csv_provenance(body),
-            key=body.key,
         )
 
     @staticmethod
@@ -85,13 +87,14 @@ class HttpAssetIntake:
 
     def previous_battery(self, actor: Actor, body: BatteryScenario) -> Asset | None:
         return self.assets.receipt(
-            actor,
-            body.project_id,
-            body.key,
-            {
-                "content_sha256": digest(self.battery_content(body)),
-                "media_type": "application/json",
-                "purpose": "battery_parameters_v1",
-                "metadata": self.battery_metadata(body),
-            },
+            actor, body.project_id, body.key, self.battery_command(body)
         )
+
+    @classmethod
+    def battery_command(cls, body: BatteryScenario) -> Object:
+        return {
+            "content_sha256": digest(cls.battery_content(body)),
+            "media_type": "application/json",
+            "purpose": "battery_parameters_v1",
+            "metadata": cls.battery_metadata(body),
+        }
