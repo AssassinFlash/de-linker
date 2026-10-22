@@ -1,7 +1,9 @@
 """Safety regressions for the actual MFA runner and PHP fixture, fully offline."""
 
+import base64
 import importlib.util
 import json
+import quopri
 import subprocess
 import sys
 from pathlib import Path
@@ -9,7 +11,6 @@ from types import ModuleType, SimpleNamespace
 from typing import Any
 
 import pytest
-
 from linker_local.cli import require_php
 
 REPO = Path(__file__).resolve().parents[3]
@@ -122,3 +123,61 @@ def test_partial_php_setup_failure_finally_cleans_only_owned_objects(
     assert all(case["passed"] and case["preexisting_preserved"] for case in cases)
     assert sum(case["baseline_restored"] for case in cases) == 9
     assert cases[-1]["manual_cleanup_required_reported"] is True
+
+
+@pytest.mark.parametrize("encoding", ["7bit", "8bit", "quoted-printable", "base64"])
+@pytest.mark.parametrize("prefix", ["ab", "gh"])
+def test_actual_reset_fixture_reads_declared_mail_encoding(
+    tmp_path: Path, encoding: str, prefix: str
+) -> None:
+    key = prefix + "SyntheticOnlyNoRealCredential"
+    url = f"http://127.0.0.1:9999/my-account/lost-password/?key={key}&id=42"
+    result = captured_reset(tmp_path, encoding, url, key)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == url
+
+
+@pytest.mark.parametrize("invalid", ["key", "origin", "user"])
+def test_decoded_reset_still_requires_native_key_same_user_and_local_origin(
+    tmp_path: Path, invalid: str
+) -> None:
+    key = "abSyntheticOnlyNoRealCredential"
+    origin = "https://example.test" if invalid == "origin" else "http://127.0.0.1:9999"
+    url = f"{origin}/my-account/lost-password/?key={key}&id=42"
+    result = captured_reset(
+        tmp_path,
+        "quoted-printable",
+        url,
+        "different-native-key" if invalid == "key" else key,
+        7 if invalid == "user" else 42,
+    )
+    assert result.returncode == 1
+    assert result.stdout == ""
+    assert "not captured or queued" in result.stderr
+
+
+def captured_reset(
+    directory: Path, encoding: str, url: str, key: str, user_id: int = 42
+) -> subprocess.CompletedProcess[str]:
+    payload = f'<a href="{url}">Reset password</a>'.encode()
+    if encoding == "quoted-printable":
+        payload = quopri.encodestring(payload)
+    elif encoding == "base64":
+        payload = base64.encodebytes(payload)
+    (directory / "synthetic.eml").write_bytes(
+        f"Content-Type: text/html; charset=UTF-8\r\nContent-Transfer-Encoding: {encoding}\r\n\r\n".encode()
+        + payload
+    )
+    return subprocess.run(
+        [
+            str(require_php()),
+            str(Path(__file__).parent / "fixtures/admin_mfa_capture.php"),
+            str(REPO / "tests/e2e/fixtures/admin-mfa.php"),
+            str(directory),
+            key,
+            str(user_id),
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
