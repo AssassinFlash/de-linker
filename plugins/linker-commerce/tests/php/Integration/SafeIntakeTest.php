@@ -312,7 +312,16 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$user->set_role( 'shop_manager' );
 		$this->as_user( $staff->get_id() );
 		$legacy = array( time() - 120 );
-		$state  = wp_json_encode( array( 'entries' => array( array( 'time' => time() - 120, 'transport' => Throttle::PHP ) ) ) );
+		$state  = wp_json_encode(
+			array(
+				'entries' => array(
+					array(
+						'time'      => time() - 120,
+						'transport' => Throttle::PHP,
+					),
+				),
+			)
+		);
 		update_option( Throttle::OPTION, $legacy, false );
 		update_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION, $state, false );
 		$marker = self::newest_mail_job();
