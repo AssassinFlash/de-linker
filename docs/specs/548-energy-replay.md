@@ -98,6 +98,14 @@ or a reduced end-to-end delivery. It is not yet mounted as a public API.
     Local float64 ULP budgets are propagated through those comparisons, exposed
     separately in each check's arithmetic allowance, and never added as a
     physical capacity/power margin or a minimum time interval.
+    The three pre-charge proportional withdrawals also retain their source
+    mixing meaning in kW; a small amount cannot be relabelled from grid to PV
+    merely because its kWh residual is small. Charging requires actual local
+    headroom at its interval power. Auxiliary shortage has independent signed
+    account and nonnegative power checks. The first state must exactly match
+    the separately supplied frozen initial input, and each subsequent source
+    state exactly inherits the previous after-state: assignment/JSON round-trip
+    introduces no new arithmetic and receives no energy tolerance budget.
 15. Numerical tolerances are explicit, serialized software parameters. They do
     not represent field precision or engineering safety margins. Task execution,
     replay constraint satisfaction, equipment evidence and model applicability

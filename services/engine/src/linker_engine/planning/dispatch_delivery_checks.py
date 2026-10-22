@@ -41,6 +41,15 @@ def delivery_checks(flow: Flows, model: BatteryModel) -> tuple[DeliveryCheck, ..
         _ulp(flow.discharge_kw * dt) + _ulp(removed * model.eta_discharge),
     )
     power("internal_aux_supplied_kw", flow.internal_aux_unserved_kwh)
+    power("internal_aux_shortage_nonnegative_kw", -flow.internal_aux_unserved_kwh)
+    aux_demand = model.internal_aux_kw * dt
+    power(
+        "internal_aux_account_kw",
+        abs(aux_demand - flow.internal_aux.total - flow.internal_aux_unserved_kwh),
+        _ulp(aux_demand)
+        + _ulp(flow.internal_aux.total)
+        + _ulp(flow.internal_aux_unserved_kwh),
+    )
     standing = flow.before.total * -math.expm1(-model.standing_loss_rate_per_hour * dt)
     power(
         "standing_loss_model_kw",
@@ -62,6 +71,7 @@ def delivery_checks(flow: Flows, model: BatteryModel) -> tuple[DeliveryCheck, ..
     availability_roundoff: list[float] = []
     for origin in ("pv_kwh", "grid_kwh", "initial_unknown_kwh"):
         before = getattr(flow.before, origin)
+        share = before / flow.before.total if flow.before.total else 0.0
         loss = getattr(flow.standing_loss, origin)
         auxiliary = getattr(flow.internal_aux, origin)
         withdrawal = getattr(flow.discharged_internal, origin)
@@ -120,6 +130,23 @@ def delivery_checks(flow: Flows, model: BatteryModel) -> tuple[DeliveryCheck, ..
             abs(expected_load - actual_load),
             _ulp(expected_load) + _ulp(actual_load),
         )
+        # All three withdrawals precede charging and preserve source shares.
+        # The invariant initial share avoids subtracting nearly equal stocks
+        # to reconstruct a tiny post-loss denominator. Step counts reflect
+        # one, two, three consecutive proportional withdrawals, respectively.
+        for step_count, label, account in (
+            (1, "standing", flow.standing_loss),
+            (2, "aux", flow.internal_aux),
+            (3, "discharge", flow.discharged_internal),
+        ):
+            expected = share * account.total
+            actual = getattr(account, origin)
+            power(
+                f"{label}_mixing_kw_{origin}",
+                abs(expected - actual),
+                step_count
+                * (_ulp(expected) + _ulp(actual) + _ulp(share) * account.total),
+            )
     stock = math.fsum(available)
     reserve = flow.frame.limits.reserve_kwh
     available_above_reserve = max(stock - reserve, 0.0)
@@ -130,5 +157,20 @@ def delivery_checks(flow: Flows, model: BatteryModel) -> tuple[DeliveryCheck, ..
         "discharge_available_above_reserve_kw",
         (removed - available_above_reserve) * model.eta_discharge,
         stock_roundoff * model.eta_discharge,
+    )
+    headroom = max(math.fsum((model.usable_window_kwh, -stock, removed)), 0.0)
+    headroom_roundoff = math.fsum(
+        (
+            *availability_roundoff,
+            _ulp(stock),
+            _ulp(model.usable_window_kwh),
+            _ulp(removed),
+            _ulp(headroom),
+        )
+    )
+    power(
+        "charge_available_headroom_kw",
+        (flow.charge_kw * model.eta_charge * dt - headroom) / model.eta_charge,
+        headroom_roundoff / model.eta_charge,
     )
     return tuple(result)

@@ -14,6 +14,7 @@ from .canonical import Json, Object
 from .dispatch_delivery_checks import delivery_checks
 from .dispatch_frame import Flows
 from .dispatch_priorities import priority_residuals
+from .energy_origins import EnergyOrigins
 from .errors import InvalidInput, NumericalFailure
 from .numerical_tolerance import Tolerance
 
@@ -63,6 +64,7 @@ def verify(
     model: BatteryModel,
     tolerance: Tolerance,
     *,
+    initial: EnergyOrigins,
     terminal_min_kwh: float | None,
 ) -> Verification:
     if not flows:
@@ -78,13 +80,19 @@ def verify(
         index: int,
         scale: float,
         arithmetic_allowance: float = 0.0,
+        *,
+        exact: bool = False,
     ) -> None:
         if not math.isfinite(violation) or not math.isfinite(scale):
             raise NumericalFailure("replay verification received nonfinite arithmetic")
         absolute = tolerance.absolute_kwh if unit == "kWh" else tolerance.absolute_kw
         if not math.isfinite(arithmetic_allowance) or arithmetic_allowance < 0:
             raise NumericalFailure("invalid arithmetic allowance")
-        allowance = absolute + tolerance.relative * abs(scale) + arithmetic_allowance
+        allowance = (
+            0.0
+            if exact
+            else absolute + tolerance.relative * abs(scale) + arithmetic_allowance
+        )
         if not math.isfinite(allowance):
             raise NumericalFailure(
                 "verification tolerance exceeds finite numerical domain"
@@ -125,6 +133,16 @@ def verify(
             )
         )
         energy_scale = max(model.usable_window_kwh, flow.before.total, flow.after.total)
+        if index == 0:
+            for origin in ("pv_kwh", "grid_kwh", "initial_unknown_kwh"):
+                record(
+                    f"initial_{origin}",
+                    abs(getattr(flow.before, origin) - getattr(initial, origin)),
+                    "kWh",
+                    index,
+                    energy_scale,
+                    exact=True,
+                )
         for code, residual in priority_residuals(flow).items():
             record(code, residual, "kW", index, power_scale)
         for check in delivery_checks(flow, model):
@@ -530,6 +548,7 @@ def verify(
                     "kWh",
                     index,
                     energy_scale,
+                    exact=True,
                 )
     if terminal_min_kwh is not None:
         record(

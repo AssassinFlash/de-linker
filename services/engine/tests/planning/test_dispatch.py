@@ -111,7 +111,9 @@ def run(
 def checks(
     flows: tuple[Flows, ...], model: BatteryModel, terminal: float | None = None
 ) -> Verification:
-    return verify(flows, model, TOLERANCE, terminal_min_kwh=terminal)
+    return verify(
+        flows, model, TOLERANCE, initial=flows[0].before, terminal_min_kwh=terminal
+    )
 
 
 def ratio(result: Object, name: str) -> float:
@@ -645,3 +647,115 @@ def test_internal_auxiliary_shortage_retains_its_power_meaning() -> None:
         check.code for check in checks((flow,), model).checks if not check.passed
     }
     assert "internal_aux_supplied_kw" in failures
+
+
+def test_short_interval_cannot_relabel_grid_withdrawal_as_solar() -> None:
+    model = battery(1, 10)
+    item = frame(0, load=10)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flow = run((item,), model, EnergyOrigins(0.5, 0.5, 0))[0]
+    energy = 10 * item.interval.hours
+    forged = replace(
+        flow,
+        discharged_internal=EnergyOrigins(energy, 0, 0),
+        discharged_to_load_ac=EnergyOrigins(energy, 0, 0),
+        after=EnergyOrigins(0.5 - energy, 0.5, 0),
+    )
+    assert ratio(metrics((flow,), model), "solar_autarky") == pytest.approx(0.5)
+    assert ratio(metrics((forged,), model), "solar_autarky") == pytest.approx(1)
+    failures = {
+        check.code for check in checks((forged,), model).checks if not check.passed
+    }
+    assert {"discharge_mixing_kw_pv_kwh", "discharge_mixing_kw_grid_kwh"} <= failures
+
+
+def test_continuity_cannot_inject_energy_between_short_intervals() -> None:
+    model = battery(1, 10)
+    start = frame(0, load=0).interval.start
+    first = replace(
+        frame(0, load=0), interval=Interval(start, start + timedelta(microseconds=1))
+    )
+    second = replace(
+        frame(0, load=10),
+        interval=Interval(first.interval.end, start + timedelta(microseconds=2)),
+    )
+    empty = EnergyOrigins(0, 0, 0)
+    first_flow = run((first,), model, empty)[0]
+    injected = EnergyOrigins(0, 0, 10 * second.interval.hours)
+    second_flow = run((second,), model, injected)[0]
+    verification = verify(
+        (first_flow, second_flow), model, TOLERANCE, initial=empty, terminal_min_kwh=0
+    )
+    boundary = next(
+        check
+        for check in verification.checks
+        if check.code == "continuous_initial_unknown_kwh"
+    )
+    assert not boundary.passed and boundary.allowance == 0
+
+
+def test_first_inventory_must_exactly_match_the_frozen_input() -> None:
+    model = battery(1, 10)
+    flow = run((frame(0, load=0),), model, EnergyOrigins(0, 0, 1e-10))[0]
+    verification = verify(
+        (flow,), model, TOLERANCE, initial=EnergyOrigins(0, 0, 0), terminal_min_kwh=0
+    )
+    boundary = next(
+        check
+        for check in verification.checks
+        if check.code == "initial_initial_unknown_kwh"
+    )
+    assert not boundary.passed and boundary.allowance == 0
+
+
+@pytest.mark.parametrize("reported_shortage", [0, -10])
+def test_auxiliary_shortage_cannot_be_hidden_in_a_short_interval(
+    reported_shortage: float,
+) -> None:
+    model = battery(1, 10, internal_aux=10)
+    item = frame(0, load=0)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flow = run((item,), model, EnergyOrigins(0, 0, 0))[0]
+    forged = replace(
+        flow, internal_aux_unserved_kwh=reported_shortage * item.interval.hours
+    )
+    failures = {
+        check.code for check in checks((forged,), model).checks if not check.passed
+    }
+    assert "internal_aux_account_kw" in failures
+    if reported_shortage < 0:
+        assert "internal_aux_shortage_nonnegative_kw" in failures
+
+
+def test_short_interval_cannot_charge_an_already_full_battery() -> None:
+    model = battery(1, 10)
+    item = frame(0, load=0, pv=10)
+    item = replace(
+        item,
+        interval=Interval(
+            item.interval.start, item.interval.start + timedelta(microseconds=1)
+        ),
+    )
+    flow = run((item,), model, EnergyOrigins(0, 0, 1))[0]
+    forged = replace(
+        flow,
+        command=Command(10, 0),
+        charge_kw=10,
+        pv_charge_kw=10,
+        curtailed_kw=0,
+        after=EnergyOrigins(10 * item.interval.hours, 0, 1),
+    )
+    failures = {
+        check.code for check in checks((forged,), model).checks if not check.passed
+    }
+    assert "charge_available_headroom_kw" in failures

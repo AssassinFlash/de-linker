@@ -82,6 +82,14 @@ future-inventory creation and actual internal auxiliary shortage. Their local
 roundoff budgets derive from ULPs of the paired-withdrawal/transition operands;
 each check exposes its arithmetic allowance separately. The 1 ms / 1000 kWh
 valid case remains. Four additional cases bring planning to 95 passing tests.
+Both axes then challenged the remaining energy-only semantics: source mixing,
+between-interval continuity, full-battery charging headroom and signed auxiliary
+shortage. Each had a 1 µs counterexample. The full verifier now preserves power
+meaning in those source/account/headroom checks and exact state inheritance.
+Its initial inventory is also supplied separately from the trace and compared
+exactly. Six additional cases bring planning to 101 passing tests. The initial
+whole-engine regression after 8f253d9b had 248 passes in 13.71s; it will be
+repeated after these additional fixes.
 Both independent axes will recheck this fixed increment. The full
 physical configuration/Genie/Woo/UI integration and live acceptance remain
 active, not delivered by this component review.
