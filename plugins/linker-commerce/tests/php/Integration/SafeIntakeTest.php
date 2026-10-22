@@ -214,7 +214,8 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		for ( $i = 0; $i < 6; ++$i ) {
 			$_COOKIE[ Identity::COOKIE ] = str_pad( dechex( $i + 1 ), 32, '0', STR_PAD_LEFT );
 			$post                        = $this->post( true );
-			$post['message']             = 'Вам перевод ' . ( 100 + $i ) . ' руб. забрать тут https://fredmer.buzz/path';
+			$host                        = $i < 3 ? 'fredmer.buzz' : 'xtimex.buzz';
+			$post['message']             = 'Вам перевод ' . ( 100 + $i ) . ' руб. забрать тут https://' . $host . '/path';
 			$result                      = ( new Handler() )->process( $post );
 			if ( $i < 3 ) {
 				self::assertInstanceOf( WC_Order::class, $result );
@@ -240,7 +241,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 
 	/** Technical Russian, quotations, normal links and domain substrings stay normal. */
 	public function test_campaign_rule_does_not_generalize_language_or_links(): void {
-		$messages = array( 'Нужна батарея 10 кВт·ч https://fredmer.buzz/manual', 'Вам перевод 100 руб. забрать тут https://fredmer.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://example.test/fredmer.buzz', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://fredmer.buzz/x', "Вам перевод 100 руб. забрать тут https://fredmer.buzz/x\nPlease quote an inverter." );
+		$messages = array( 'Нужна батарея 10 кВт·ч https://fredmer.buzz/manual', 'Вам перевод 100 руб. забрать тут https://fredmer.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://example.test/fredmer.buzz', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://fredmer.buzz/x', "Вам перевод 100 руб. забрать тут https://fredmer.buzz/x\nPlease quote an inverter.", 'Нужна батарея 10 кВт·ч https://xtimex.buzz/manual', 'Вам перевод 100 руб. забрать тут https://xtimex.buzz.evil.test/x', 'Вам перевод 100 руб. забрать тут https://xtimex.buzz@example.test/x', 'Please investigate this scam: Вам перевод 100 руб. забрать тут https://xtimex.buzz/x', "Вам перевод 100 руб. забрать тут https://xtimex.buzz/x\nPlease quote an inverter." );
 		foreach ( $messages as $message ) {
 			self::assertFalse( Campaign::matches( $message ) );
 			$post            = $this->post( true );
@@ -250,8 +251,11 @@ final class SafeIntakeTest extends IntegrationTestCase {
 			self::assertFalse( NotificationHold::held( $order ) );
 		}
 		self::assertTrue( Campaign::matches( 'Вам перевод 100 руб. получить тут https://fredmer.buzz/x' ) );
+		self::assertTrue( Campaign::matches( 'Вам перевод 100 руб. забрать тут https://xtimex.buzz/x' ) );
+		self::assertTrue( Campaign::matches( 'Вам перевод 100 руб. получить тут https://xtimex.buzz/x' ) );
 		update_option( Campaign::DISABLED, 'yes', false );
 		self::assertFalse( Campaign::matches( 'Вам перевод 100 руб. получить тут https://fredmer.buzz/x' ) );
+		self::assertFalse( Campaign::matches( 'Вам перевод 100 руб. получить тут https://xtimex.buzz/x' ) );
 	}
 
 	/** The original-job-absent case hands off exactly once, preserving all content. */
