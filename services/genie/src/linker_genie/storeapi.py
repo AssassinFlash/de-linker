@@ -21,7 +21,7 @@ from typing import Any
 import httpx
 
 from linker_genie.lexicon import Category, Product, Vocabulary, build
-from linker_genie.publication import PublicationClient, PublicationUnavailable
+from linker_genie.publication import PublicationClient, PublicationUnavailable, Snapshot
 
 # Store API's own page size ceiling (WooCommerce Store API, `per_page` maximum 100).
 PAGE_SIZE = 100
@@ -67,29 +67,31 @@ class StoreVocabulary:
     def close(self) -> None:
         self._client.close()
 
-    def get(self) -> Vocabulary:
+    def get(self, permission: Snapshot | None = None) -> Vocabulary:
+        """Use a turn's captured permission, or freshly read it for a standalone call.
+
+        Permission stays local to this call. The cache and its revision are
+        committed together under the lock only after the native listings load.
+        """
         with self._lock:
             now = self._clock()
             try:
                 source = (
                     self._publication.snapshot()
-                    if self._publication is not None
-                    else None
+                    if permission is None and self._publication is not None
+                    else permission
                 )
             except PublicationUnavailable as error:
                 raise VocabularyError(str(error)) from error
-            changed = (
-                source is not None and self._source_revision != source.source_revision
-            )
+            revision = source.source_revision if source is not None else ""
+            changed = self._source_revision != revision
             if self._cached is None or changed or now - self._loaded_at >= self._ttl:
-                self._cached = self._load()
+                self._cached = self._load(source)
                 self._loaded_at = now
-                if source is not None:
-                    self._source_revision = source.source_revision
+                self._source_revision = revision
             return self._cached
 
-    def _load(self) -> Vocabulary:
-        permit = self._publication.snapshot() if self._publication is not None else None
+    def _load(self, permit: Snapshot | None) -> Vocabulary:
         english = [
             _product(item)
             for item in self._pages("/products", {})

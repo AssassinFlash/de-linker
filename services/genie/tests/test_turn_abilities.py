@@ -18,6 +18,7 @@ from fastapi.testclient import TestClient
 
 from linker_genie.abilities import Abilities, AbilityClient, AbilityError, gather
 from linker_genie.facts import Document, TurnFacts
+from linker_genie.lexicon import Vocabulary
 from linker_genie.log import TurnLog
 from linker_genie.prices import Lookup, commerce_lookup
 from linker_genie.publication import PublicationClient, Snapshot
@@ -332,7 +333,13 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
             }
         return {"qualified": [{"product_id": 1}]}
 
-    def prepare(body: TurnRequest, tools: Abilities) -> Prepared:
+    def prepare(
+        body: TurnRequest,
+        tools: Abilities,
+        *,
+        get_vocabulary: Callable[[], Vocabulary] | None = None,
+    ) -> Prepared:
+        assert get_vocabulary is not None
         seen.append(tools)
         result = nothing(body)
         _payload, result.facts = tools.record(

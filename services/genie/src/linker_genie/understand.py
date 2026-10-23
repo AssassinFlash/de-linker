@@ -126,7 +126,13 @@ class Understander:
         self._see = see
         self._publication = publication
 
-    def prepare(self, request: TurnRequest, client: Abilities) -> Prepared:
+    def prepare(
+        self,
+        request: TurnRequest,
+        client: Abilities,
+        *,
+        get_vocabulary: Callable[[], Vocabulary] | None = None,
+    ) -> Prepared:
         messages = customer_messages(request)
         message = messages[-1] if messages else ""
         # Route calls, fact collection and attachment decimals follow the
@@ -158,7 +164,7 @@ class Understander:
                 timing=clock,
             )
         with timing.phase(clock, timing.VOCABULARY):
-            vocabulary = self._load_vocabulary(log)
+            vocabulary = self._load_vocabulary(log, get_vocabulary)
         matches = vocabulary.match(message) if vocabulary else []
         log["matches"] = [
             {"kind": m.kind, "value": m.value, "words": m.words} for m in matches
@@ -301,11 +307,16 @@ class Understander:
         )
         return prepared
 
-    def _load_vocabulary(self, log: dict[str, Any]) -> Vocabulary | None:
-        if self._vocabulary is None:
+    def _load_vocabulary(
+        self,
+        log: dict[str, Any],
+        getter: Callable[[], Vocabulary] | None = None,
+    ) -> Vocabulary | None:
+        get_vocabulary = getter if getter is not None else self._vocabulary
+        if get_vocabulary is None:
             return None
         try:
-            return self._vocabulary()
+            return get_vocabulary()
         except VocabularyError as error:
             log["vocabulary_error"] = str(error)
             logger.warning("genie vocabulary unavailable: %s", error)
