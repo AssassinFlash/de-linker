@@ -402,10 +402,7 @@ test( 'German wording comes from the translation file', async () => {
 } );
 
 test.each( [
-	[
-		'unverified',
-		'Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf.',
-	],
+	[ 'unverified', 'Hinzufügen nicht bestätigt.' ],
 	[ 'retry', 'Nicht hinzugefügt. Versuchen Sie es erneut.' ],
 ] as const )(
 	'German configurator keeps its wording alongside Genie (%s)',
@@ -997,49 +994,105 @@ test( 'an Ask started before a recalculation does not hand over the previous des
 	asks.stop();
 } );
 
-
 const CHANGED = 'This solution needs a new calculation before the next step.';
-const CURRENT_UNAVAILABLE = 'The current product data could not be checked. Your entries are still here.';
+const CURRENT_UNAVAILABLE =
+	'The current product data could not be checked. Your entries are still here.';
 
-test.each( [ [ 'stale', CHANGED ], [ 'publication', CURRENT_UNAVAILABLE ] ] as const )( 'current-product %s failure keeps entries and does not blame the yield service', async ( outcome, message ) => {
-    const { engine } = fakeEngine( { locale: 'en', residential: outcome } );
-    render( <App config={ config( 'en' ) } engine={ engine } store={ fakeStore().store } /> );
-    await calculate();
-    expect( await screen.findByText( message ) ).toBeInTheDocument();
-    expect( screen.getByLabelText( 'Postcode of the site' ) ).toHaveValue( '80538' );
-    expect( screen.queryByText( 'The yield service did not answer. Try again in a minute.' ) ).toBeNull();
-} );
+test.each( [
+	[ 'stale', CHANGED ],
+	[ 'publication', CURRENT_UNAVAILABLE ],
+] as const )(
+	'current-product %s failure keeps entries and does not blame the yield service',
+	async ( outcome, message ) => {
+		const { engine } = fakeEngine( { locale: 'en', residential: outcome } );
+		render(
+			<App
+				config={ config( 'en' ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		await calculate();
+		expect( await screen.findByText( message ) ).toBeInTheDocument();
+		expect( screen.getByLabelText( 'Postcode of the site' ) ).toHaveValue(
+			'80538'
+		);
+		expect(
+			screen.queryByText(
+				'The yield service did not answer. Try again in a minute.'
+			)
+		).toBeNull();
+	}
+);
 
 test( 'an old result rejected by atomic add asks for a new calculation and adds nothing', async () => {
-    const { engine, calls } = fakeEngine( { locale: 'en' } );
-    const { store, added } = fakeStore( 'stale' );
-    render( <App config={ config( 'en' ) } engine={ engine } store={ store } /> );
-    await calculate();
-    await act( async () => fireEvent.click( screen.getByRole( 'button', { name: 'Add all to solution draft' } ) ) );
-    expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
-    expect( added ).toEqual( [] );
-    expect( calls.filter( call => call.name === 'residential' ) ).toHaveLength( 1 );
-    expect( screen.queryByText( 'All products are in your solution draft.' ) ).toBeNull();
+	const { engine, calls } = fakeEngine( { locale: 'en' } );
+	const { store, added } = fakeStore( 'stale' );
+	render(
+		<App config={ config( 'en' ) } engine={ engine } store={ store } />
+	);
+	await calculate();
+	const add = await screen.findByRole( 'button', {
+		name: 'Add all to solution draft',
+	} );
+	await act( async () => fireEvent.click( add ) );
+	expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+	expect( added ).toEqual( [] );
+	expect(
+		calls.filter( ( call ) => call.name === 'residential' )
+	).toHaveLength( 1 );
+	expect(
+		screen.queryByText( 'All products are in your solution draft.' )
+	).toBeNull();
 } );
 
 test( 'a save refused for publication displays re-selection without replacing the screen', async () => {
-    vi.mocked( saveSolution ).mockRejectedValue( new SolutionWriteError( true ) );
-    const { engine, calls } = fakeEngine( { locale: 'en' } );
-    render( <App config={ config( 'en' ) } engine={ engine } store={ fakeStore().store } /> );
-    await calculate();
-    await act( async () => fireEvent.click( screen.getByRole( 'button', { name: 'Save solution' } ) ) );
-    expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
-    expect( calls.filter( call => call.name === 'residential' ) ).toHaveLength( 1 );
-    expect( screen.queryByText( 'The solution could not be saved. Try again.' ) ).toBeNull();
+	vi.mocked( saveSolution ).mockRejectedValue(
+		new SolutionWriteError( true )
+	);
+	const { engine, calls } = fakeEngine( { locale: 'en' } );
+	render(
+		<App
+			config={ config( 'en' ) }
+			engine={ engine }
+			store={ fakeStore().store }
+		/>
+	);
+	await calculate();
+	const save = await screen.findByRole( 'button', { name: 'Save solution' } );
+	await act( async () => fireEvent.click( save ) );
+	expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+	expect(
+		calls.filter( ( call ) => call.name === 'residential' )
+	).toHaveLength( 1 );
+	expect(
+		screen.queryByText( 'The solution could not be saved. Try again.' )
+	).toBeNull();
 } );
 
-test.each( [ 'Download PDF', 'Ask Genie' ] )( '%s on a stale screen preserves it and asks for re-selection', async ( action ) => {
-    const { engine, calls } = fakeEngine( { locale: 'en' } );
-    engine.reportPdf = vi.fn().mockRejectedValue( new EngineError( 'stale' ) );
-    render( <App config={ config( 'en' ) } engine={ engine } store={ fakeStore().store } /> );
-    await calculate();
-    await act( async () => fireEvent.click( screen.getByRole( 'button', { name: action } ) ) );
-    expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
-    expect( calls.filter( call => call.name === 'residential' ) ).toHaveLength( 1 );
-    expect( screen.queryByText( 'The PDF could not be created. Try again.' ) ).toBeNull();
-} );
+test.each( [ 'Download PDF', 'Ask Genie' ] )(
+	'%s on a stale screen preserves it and asks for re-selection',
+	async ( action ) => {
+		const { engine, calls } = fakeEngine( { locale: 'en' } );
+		engine.reportPdf = vi
+			.fn()
+			.mockRejectedValue( new EngineError( 'stale' ) );
+		render(
+			<App
+				config={ config( 'en' ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		await calculate();
+		const button = await screen.findByRole( 'button', { name: action } );
+		await act( async () => fireEvent.click( button ) );
+		expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+		expect(
+			calls.filter( ( call ) => call.name === 'residential' )
+		).toHaveLength( 1 );
+		expect(
+			screen.queryByText( 'The PDF could not be created. Try again.' )
+		).toBeNull();
+	}
+);

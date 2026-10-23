@@ -24,7 +24,12 @@ import type {
 	StoreProduct,
 	Verdict,
 } from '../types';
-import { selectionChangedText, additionUnconfirmedText } from '../publication';
+import {
+	selectionChangedText,
+	additionUnconfirmedText,
+	additionStatusText,
+	newCalculationStatusText,
+} from '../publication';
 import { Documents } from './Documents';
 
 export type SaveState = 'idle' | 'saving' | 'saved' | 'failed' | 'changed';
