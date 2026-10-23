@@ -8,9 +8,12 @@ Actual browser inspection of all twenty articles at 1440px identifies this
 article; English remains within its rail. The German defect also reproduces at
 1120px. Phone contents disclosure already opens and fits at 390px and 320px.
 
-Reuse the existing WindPress rule for contents anchors. Add `overflow-wrap:
-anywhere` so long labels can wrap and contribute a small enough native CSS grid
-minimum size. This is the same emergency wrapping policy as article prose. Keep
+Reuse the existing WindPress rule for contents anchors. Use native `hyphens:
+auto` with `overflow-wrap: anywhere` so labels can follow their document
+language's hyphenation and contribute a small enough native CSS grid minimum
+size. Emergency wrapping alone left a final German letter on its own line in
+the actual 1440px candidate; it is retained as rejected visual evidence.
+Article prose already uses emergency wrapping. Keep
 all labels, native heading IDs, links, disclosure behavior, reading dimensions,
 typography, spacing, scroll offset and active-location behavior. Do not clip or
 hide overflow, abbreviate labels, or introduce PHP/JavaScript or another layout.
