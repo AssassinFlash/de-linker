@@ -41,7 +41,9 @@ width. Keep the three-card solutions rail horizontally browsable. Reserve the
 existing outline's 4px footprint inside the scrollport, offsetting that reserve
 at its sides so card alignment stays unchanged. The card outline must be fully
 visible, including its top and left edges; use the existing 12px card corner
-radius and teal title on hover or keyboard focus. Verify both rails, first/last
+radius and teal title on hover or keyboard focus. Give native scroll snapping
+the same 4px inset so aligning a card does not consume its focus space.
+Verify both rails, first/last
 card focus, true third-card scrolling and category consumers in EN/DE.
 
 If someone has already opened the native panel at a desktop width while the
