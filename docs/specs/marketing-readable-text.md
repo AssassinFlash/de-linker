@@ -7,13 +7,16 @@ heading breaks its 22-letter `Speicherlösungspartner` into `Speicherlö-` and
 `sungspartner`. Current heading font sizes, text, emphasis and hierarchy stay
 unchanged; these are wrapping corrections in the existing design.
 
-Use native heading hyphenation limits within the ten existing marketing roots
-only. Require two fragments of at least six letters, giving a minimum word
+Use native hyphenation limits within the ten existing marketing roots only.
+Require two fragments of at least six letters, giving a minimum word
 length of12. This protects the six-letter Linker brand and short prefixes
 while allowing long German compounds to wrap. For the current Installer H1,
 use its actual compound boundary `Speicher` (8) plus `lösungspartner` (14),
-22letters in total. Keep existing explicit hyphens, manual-hyphenation rules,
-body prose, product names outside these roots, and all customer-visible words.
+22letters in total. The first native preview also shows short fragments in
+Installer prose and its prompt, such as `Be-/stellung` and `Batte-/riekapazität`.
+Apply the same limit to inherited marketing prose and captions, retaining
+their existing automatic/manual hyphenation modes. Keep explicit hyphens,
+product names outside these roots, and all customer-visible words.
 Actual browser layout and dictionary behavior must prove the intended result;
 the presence of the CSS property is not acceptance.
 
@@ -22,7 +25,9 @@ German placeholder has scrollHeight68px inside clientHeight60px, cutting off
 the bottom of its third line. Use native `field-sizing:content` and automatic
 height so both placeholder and entered text fit. Retain the existing minimum,
 padding, typography, manual vertical resizing, controls, binding and delivery
-mechanism. Where native content sizing is unavailable, reuse the existing
+mechanism. Give its previously outline-free keyboard focus the existing
+site focus-ring and offset tokens, within the card's existing padding.
+Where native content sizing is unavailable, reuse the existing
 account/inquiry textarea minimum of6.5rem from `auth.css`. No script, input
 submission, assistant/model route, page content or translation data changes.
 

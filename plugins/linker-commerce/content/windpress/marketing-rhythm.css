@@ -5,9 +5,9 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
 	hyphens: manual;
 }
 
-/* Keep short German heading words whole, including the six-letter Linker
+/* Keep short German marketing words whole, including the six-letter Linker
    brand. Two six-letter fragments give a 12-letter minimum for auto breaks;
-   prose retains its existing hyphenation and heading font sizes stay intact. */
+   the existing automatic/manual modes and font sizes stay intact. */
 html[lang^="de"]
 	:is(
 		#home-a,
@@ -20,8 +20,7 @@ html[lang^="de"]
 		#about-journal,
 		#tv-utility-page-v1,
 		#service-redesign
-	)
-	:is(h1, h2, h3) {
+	) {
 	hyphenate-limit-chars: 12 6 6;
 }
 
@@ -36,6 +35,11 @@ html[lang^="de"] #installer-journal .lk-hero-title {
 #installer-journal .installer-mobile-assistant > textarea {
 	field-sizing: content;
 	height: auto;
+}
+
+#installer-journal .installer-mobile-assistant > textarea:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
 }
 
 @supports not (field-sizing: content) {
