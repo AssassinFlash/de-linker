@@ -1,0 +1,173 @@
+{
+  "before": {
+    "details": true,
+    "entry": [
+      "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b"
+    ],
+    "fields": [],
+    "fonts": "loaded",
+    "identity": "Solution Configurator\nby Linker\n\nLinker brings your inputs into an editable project for solar and storage planning.\n\nAbout this tool\n\nLinker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.\n\nAll design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.\n\nSoftware and data credits\n\nInterface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS.\n\nStreet map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors.\n\nOpenFreeMap privacy policy",
+    "identityBox": {
+      "bottom": 982.203125,
+      "height": 363.015625,
+      "left": 0,
+      "right": 1440,
+      "top": 619.1875,
+      "width": 1440,
+      "x": 0,
+      "y": 619.1875
+    },
+    "links": [
+      {
+        "href": "https://react.dev/",
+        "label": "React",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://tanstack.com/query",
+        "label": "TanStack Query",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://ajv.js.org",
+        "label": "Ajv",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://threejs.org/",
+        "label": "Three.js",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+        "label": "React Three Fiber",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://maplibre.org/maplibre-gl-js/docs/",
+        "label": "MapLibre GL JS",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/",
+        "label": "OpenFreeMap",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openmaptiles.org/",
+        "label": "© OpenMapTiles",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openstreetmap.org/copyright",
+        "label": "© OpenStreetMap contributors",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/privacy/",
+        "label": "OpenFreeMap privacy policy",
+        "rel": "noopener noreferrer"
+      }
+    ],
+    "mapFont": null,
+    "scroll": [
+      0,
+      794
+    ],
+    "url": "http://127.0.0.1:9347/planning-workspace-review/",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "widths": [
+      1440,
+      1440
+    ]
+  },
+  "after": {
+    "details": true,
+    "entry": [
+      "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=590f6efccb8f8b4e8937a8c481df7fea9a19b440fd37eee575aa12453fadbf1b"
+    ],
+    "fields": [],
+    "fonts": "loaded",
+    "identity": "Solution Configurator\nby Linker\n\nLinker brings your inputs into an editable project for solar and storage planning.\n\nAbout this tool\n\nLinker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts.\n\nAll design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval.\n\nSoftware and data credits\n\nInterface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS.\n\nStreet map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors.\n\nOpenFreeMap privacy policy",
+    "identityBox": {
+      "bottom": 982.203125,
+      "height": 363.015625,
+      "left": 0,
+      "right": 1440,
+      "top": 619.1875,
+      "width": 1440,
+      "x": 0,
+      "y": 619.1875
+    },
+    "links": [
+      {
+        "href": "https://react.dev/",
+        "label": "React",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://tanstack.com/query",
+        "label": "TanStack Query",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://ajv.js.org",
+        "label": "Ajv",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://threejs.org/",
+        "label": "Three.js",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://r3f.docs.pmnd.rs/getting-started/introduction",
+        "label": "React Three Fiber",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://maplibre.org/maplibre-gl-js/docs/",
+        "label": "MapLibre GL JS",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/",
+        "label": "OpenFreeMap",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openmaptiles.org/",
+        "label": "© OpenMapTiles",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://www.openstreetmap.org/copyright",
+        "label": "© OpenStreetMap contributors",
+        "rel": "noopener noreferrer"
+      },
+      {
+        "href": "https://openfreemap.org/privacy/",
+        "label": "OpenFreeMap privacy policy",
+        "rel": "noopener noreferrer"
+      }
+    ],
+    "mapFont": null,
+    "scroll": [
+      0,
+      794
+    ],
+    "url": "http://127.0.0.1:9347/planning-workspace-review/",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "widths": [
+      1440,
+      1440
+    ]
+  },
+  "captureBeyondViewport": false
+}

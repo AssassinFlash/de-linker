@@ -55,9 +55,9 @@ PHP 类按 PSR-4 一类一文件，测试在各插件的 `tests/php/`。各插�
 
 ### 包管理器：npm
 
-`plugins/linker-tools` 是仓库里唯一的 npm 包，用 npm 与 `package-lock.json`。依据（framework-choice.md §9.2）：WordPress 的插件脚手架与 Gutenberg 都用 npm；这里没有跨包共享的 JS，pnpm 工作区的好处用不上；`@wordpress/build` 将来的接入方式是 npm workspaces。
+各前端包用 npm 与各自的 `package-lock.json`。既有 WordPress 工具入口在 `plugins/linker-tools`；统一配置器使用隔离的 `apps/planner` 包，不升级 WordPress 的全局 React，边界见 [统一配置器独立运行环境](docs/adr/0002-isolated-planner-runtime.md)。`plugins/linker-commerce` 的呈现工具也保留自己的包。WordPress 的插件脚手架与 Gutenberg 都用 npm；当前没有需要另设包管理器工作区的共享运行时。
 
-`package-lock.json` 里的下载地址写 `registry.npmjs.org`。插件目录的 `.npmrc` 设 `replace-registry-host=always`，npm 一律从当前机器配置的源下载（本机是 npmmirror，CI 是 npmjs），与锁文件里写的主机无关。
+`package-lock.json` 里的下载地址写 `registry.npmjs.org`。各包目录的 `.npmrc` 设 `replace-registry-host=always`，npm 一律从当前机器配置的源下载（本机是 npmmirror，CI 是 npmjs），与锁文件里写的主机无关。
 
 ### PHP 8.3
 

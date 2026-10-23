@@ -1,0 +1,169 @@
+{
+  "pin": "81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "full_diff": "git diff be5711bf...81cd1c5b1a7d5ff5592131602c12d642d13c162b",
+  "commits": [
+    "81cd1c5b Add Linker identity across the planning application and guard map precision",
+    "f40db1d6 Retain map build checks and test-boundary evidence",
+    "910b4751 Add a shared-project map view with bounded provider requests"
+  ],
+  "changed_files": [
+    "M\tapps/planner/package-lock.json",
+    "M\tapps/planner/package.json",
+    "A\tapps/planner/src/components/CreditText.tsx",
+    "M\tapps/planner/src/components/ProjectEditor.tsx",
+    "A\tapps/planner/src/components/ToolIdentity.tsx",
+    "M\tapps/planner/src/components/design/DesignEditor.tsx",
+    "A\tapps/planner/src/components/design/LazyMapViewport.tsx",
+    "M\tapps/planner/src/components/design/LazySceneViewport.tsx",
+    "A\tapps/planner/src/components/design/MapViewport.tsx",
+    "A\tapps/planner/src/components/design/ViewportBoundary.tsx",
+    "M\tapps/planner/src/data/config.ts",
+    "A\tapps/planner/src/data/mapModule.ts",
+    "A\tapps/planner/src/data/mapRequests.test.ts",
+    "A\tapps/planner/src/data/mapRequests.ts",
+    "A\tapps/planner/src/data/retryableModule.ts",
+    "M\tapps/planner/src/data/sceneModule.ts",
+    "A\tapps/planner/src/domain/mapGeometry.test.ts",
+    "A\tapps/planner/src/domain/mapGeometry.ts",
+    "M\tapps/planner/src/main.tsx",
+    "M\tapps/planner/tests/built-modules.mjs",
+    "M\tapps/planner/tests/config.test.mjs",
+    "M\tapps/planner/tests/design-lazy-failure.test.mjs",
+    "A\tapps/planner/tests/map-library-fixture.mjs",
+    "A\tapps/planner/tests/map-library-loader.mjs",
+    "A\tapps/planner/tests/map-lifecycle.test.mjs",
+    "A\tapps/planner/tests/map-vendor.test.mjs",
+    "M\tapps/planner/tests/scene-failure-loader.mjs",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/COPY-REVIEW.md",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/build-check-pinned.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/build-pinned.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/copy-draft.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/copy-feedback.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/copy-final.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/emitted-dom-missing-blob-url.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/format-pinned.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/i18n-coverage.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/lifecycle-dom-css-inheritance.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/local-csp-readback.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/local-csp-refresh.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/native-before-provider.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/native-manifest-phpunit.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/native-provider-csp-corrected.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/native-provider-initial-refusal.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/phpcs-pinned.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/phpstan-pinned.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/request-policy.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/REVIEW.md",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/evidence-index.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/probe.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/review-spec-f40db1d6/probe.mjs",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/source-checkpoint.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity-copy/COPY-REVIEW.md",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity-copy/copy-draft.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity-copy/copy-final.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity-copy/copy-review.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity/build-check.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity/build.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity/format.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity/locale-readback.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity/tests.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/system-identity/windpress-volume.json",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/tests-pinned.log",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/windpress-native.png",
+    "A\tdocs/acceptance/2026-10-22/548/map-display/windpress-native.txt",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/MAP-DISPLAY.md",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/map-display-primary/apify-results.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/map-display-primary/input.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/map-display-primary/run.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/map-display-primary/source-manifest.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-openfreemap/apify-results.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-openfreemap/run.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/apify-results.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/approved-actor-input-schema.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/input-approved.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/input.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/liberty-style.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/run.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/start-refusal.json",
+    "A\tdocs/research/2026-10-23-map-workbench-integration/provider-style/style-manifest.json",
+    "A\tdocs/specs/548-map-display.md",
+    "A\tdocs/specs/548-product-identity.md",
+    "A\tplugins/linker-commerce/content/windpress/planner-maplibre.css",
+    "M\tplugins/linker-commerce/content/windpress/planner.css",
+    "A\tplugins/linker-tools/build/planner/assets/MapViewport-DOKp8Xb1.js",
+    "R084\tplugins/linker-tools/build/planner/assets/SceneViewport-744Cecd-.js\tplugins/linker-tools/build/planner/assets/SceneViewport-VJ3GRgC6.js",
+    "D\tplugins/linker-tools/build/planner/assets/planner-core-CDGLxH3H.js",
+    "A\tplugins/linker-tools/build/planner/assets/planner-core-DnhRbFyr.js",
+    "M\tplugins/linker-tools/build/planner/assets/planner.js",
+    "M\tplugins/linker-tools/build/planner/source-manifest.json",
+    "M\tplugins/linker-tools/build/planner/vite-manifest.json",
+    "M\tplugins/linker-tools/build/planner/windpress.scan.txt",
+    "M\tplugins/linker-tools/includes/Planner/Application.php",
+    "M\tplugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+    "M\tplugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+    "M\tplugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+    "M\tplugins/linker-tools/tests/php/Unit/PlannerApplicationTest.php",
+    "M\ttools/local/mu/000-linker-local-isolation.php",
+    "M\ttools/local/tests/test_stack.py"
+  ],
+  "review_words": 297,
+  "checks": {
+    "domain-checks.log": {
+      "pass": 7,
+      "fail": 0
+    },
+    "focused-checks.log": {
+      "pass": 5,
+      "fail": 0
+    },
+    "build-check.log": {
+      "pass": 1,
+      "fail": 0
+    }
+  },
+  "resources_created": {
+    "instance": 0,
+    "worktree": 0,
+    "backup": 0,
+    "source_or_dependency_copy": 0
+  },
+  "files": {
+    "REVIEW.md": {
+      "bytes": 2581,
+      "sha256": "3315339e6278c7cd3431ff7ac9868338411d55fc2c1f969532ef3f15439e597e"
+    },
+    "build-check.log": {
+      "bytes": 944,
+      "sha256": "6d10f069c2c2f78ba791e8d7f8ae686d4718f46826e43b8261db9c1c6f6f0141"
+    },
+    "domain-checks.log": {
+      "bytes": 888,
+      "sha256": "b9096edd08feb8bed06d9e266c0f846099338155c1bda9d5a102b1ef89a690fd"
+    },
+    "focused-checks.log": {
+      "bytes": 638,
+      "sha256": "fc78b447d11700345f7e292944581df917a2de1a50089dc196f0c93770ff3675"
+    },
+    "locale-probe.json": {
+      "bytes": 1546,
+      "sha256": "7df3f29265176f546b4fd9483eb260d913d462d1d2ba560b2ef9b60dca91f9ca"
+    },
+    "probe.json": {
+      "bytes": 42647,
+      "sha256": "feb05f84c3130c355c4c646c55415b55519ec36ff7b2e986b1f700b987744802"
+    },
+    "probe.mjs": {
+      "bytes": 5034,
+      "sha256": "060dbe4475649490db4dda33704a4d655f4d555d5c7e7cefe8e5a23b22f3a2ca"
+    },
+    "ui-probe.json": {
+      "bytes": 4404,
+      "sha256": "9e58646c5572d70487a4b6cb56e5b0ab16a365f86a002f98e536832f9beb9e15"
+    },
+    "ui-probe.mjs": {
+      "bytes": 4708,
+      "sha256": "d78043082ba836311f5c7db3b91ae724583f37ef50111608d1247755e27407bf"
+    }
+  },
+  "native_acceptance": "Ongoing with parent; not claimed passed by this review."
+}

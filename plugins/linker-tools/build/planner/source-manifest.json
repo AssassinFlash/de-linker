@@ -1,7 +1,8 @@
 {
   "sources": {
-    "bin/build-manifest.mjs": "a8c5702e1e4a42900c46aa625c94c3efa911f6966c3f66e1d6bac49dfc81be84",
-    "package-lock.json": "e177845d57b15d2ef654aa3e2a6c7725198c54393aa37f69dfd9b8525ec49a3a",
+    ".npmrc": "c9b895efe52b39cfceea5880df005fb028f2a272aaa2e932526ecd40b284c165",
+    "bin/build-manifest.mjs": "cf65239450811e6b0b39a0efc1ad717cc5cc19613e289cd124a804909def6e97",
+    "package-lock.json": "2b46e5d07ab9e412f10e6b68aa8c0fd8148d66621c260404b9f096309a2d2ff2",
     "package.json": "b7640607d7d9196f960700c2987991d892d9481a9559866340fcd8180c588fb7",
     "src/components/BriefForm.tsx": "12d39f2743b37c531be5ff9f1801e739fa1ce7a2d2bb2880dfbb85c4087f0f97",
     "src/components/CreditText.tsx": "a2e029484473c16a10bc0ed04a88907d04e382d738f920666eee94c5210f1acb",

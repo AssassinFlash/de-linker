@@ -27,6 +27,7 @@ const sources = [
 	),
 	...files(resolve(root, "bin")),
 	...[
+		".npmrc",
 		"package.json",
 		"package-lock.json",
 		"tsconfig.json",
