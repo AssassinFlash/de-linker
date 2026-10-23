@@ -164,6 +164,11 @@ mock-erp name:
     trap cleanup EXIT
     python3 "{{ justfile_directory() }}/tools/mock_erp.py" --base "$base" --key "$key" --payload "$payload"
 
+# Native synthetic credential authentication and complete inventory pagination.
+[positional-arguments]
+inventory-access name *options:
+    PHP={{ php }} uv run --locked --project tools/local python tools/checks/inventory-access.py "$@"
+
 # docs/specs/10-knowledge-index.md; `just index --help` lists the options.
 # Build Genie's document index on this Mac: hosted PDFs, Docling, chunks, vectors, SQLite.
 [working-directory("services/genie")]

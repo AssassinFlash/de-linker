@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Any
 
 from index.paths import INVENTORY_PATH, PDF_DIR
+from index.rest_transport import SameOriginRedirect
 from linker_genie.embedding import sha256_of
 
 DEFAULT_REST_CONFIG = Path("~/.config/terravolt-builder/rest-de.json").expanduser()
@@ -109,6 +110,7 @@ class RestClient:
         self.base = str(config["site_url"]).rstrip("/")
         token = f"{config['username']}:{config['application_password']}".encode()
         self._auth = "Basic " + base64.b64encode(token).decode()
+        self._opener = urllib.request.build_opener(SameOriginRedirect(self.base))
 
     def get(self, path: str, params: Mapping[str, str | int]) -> tuple[Any, int, int]:
         """One page: the decoded body, X-WP-Total and X-WP-TotalPages."""
@@ -117,7 +119,7 @@ class RestClient:
             url,
             headers={"Authorization": self._auth, "User-Agent": "linker-genie-index"},
         )
-        with urllib.request.urlopen(request, timeout=120) as response:
+        with self._opener.open(request, timeout=120) as response:
             body = json.load(response)
             total = int(response.headers.get("X-WP-Total", "0"))
             pages = int(response.headers.get("X-WP-TotalPages", "0"))
