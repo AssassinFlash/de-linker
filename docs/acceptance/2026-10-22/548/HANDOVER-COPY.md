@@ -26,3 +26,49 @@ are retained; project saves remain available. New creation waits until discovery
 can be checked. The message promises neither successful new browser persistence
 nor automatic replay. Source/PO application is done; fixed-source/native render
 acceptance is recorded with the implementation increment, not assumed here.
+
+## Original settings review: draft
+
+Native CUA exposed a usability gap: the pending request's only settings view
+was raw JSON. The replacement uses read-only semantic facts from the exact
+frozen command: column names, measurement, unit, delimiter/decimal, origin,
+interval boundaries/duration, time zone/repeated-time columns and source/rights.
+Existing independently reviewed EN/DE field labels and choices are reused.
+No browser form state, new default or retranslation becomes the saved intent.
+
+One new explanatory sentence is needed for the fixed interpretation assumption:
+
+EN draft: “For this interpretation, average power is treated as constant within
+each original interval. No additional measurements are created.”
+
+DE draft: “Bei dieser Interpretation wird die mittlere Leistung innerhalb jedes
+ursprünglichen Intervalls als konstant behandelt. Es werden keine zusätzlichen
+Messwerte erzeugt.”
+
+The existing explicit-UTC-offset precedence sentence is reused. The new sentence
+describes piecewise constant interval means, including energy-to-mean conversion;
+it does not imply filling gaps, actual meter resolution or instantaneous peaks.
+Dimension: checking a frozen import before explicit recovery. Encyclopedia tool
+and Lastgang vocabulary consulted; no new product category or commercial claim.
+Parent preflight: Hard Stops1–9, actor/future/weight/duration, no slogan, no
+unattested brand or fabricated quote all checked. Sentence cleanup keeps the
+technical condition and avoids a marketing claim. Independent opposition and
+final selection are still pending; this draft has not been rebuilt for native use.
+
+Independent opposition found no false statement but required the kWh-to-mean
+step to be explicit: otherwise a user who selected interval energy suddenly
+sees an unexplained average-power assumption. Parent selected the reviewer's
+complete pair without adding claims about missing intervals or instantaneous
+power:
+
+EN final: “If the file contains energy per interval, average power is calculated
+using the interval duration. For this interpretation, average power is treated
+as constant within each original interval. No additional measurements are created.”
+
+DE final: “Bei Energiemengen je Intervall wird die mittlere Leistung anhand der
+jeweiligen Intervalldauer berechnet. Für diese Interpretation wird sie innerhalb
+jedes ursprünglichen Intervalls als konstant angenommen. Es entstehen keine
+zusätzlichen Messwerte.”
+
+The parent applied this final pair. Fixed-source and native rendered readback
+remain distinct acceptance gates below; the initial draft is kept as history.

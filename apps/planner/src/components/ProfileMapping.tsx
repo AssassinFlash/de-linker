@@ -3,7 +3,12 @@ import type { ReactNode } from "react";
 import { MEASUREMENTS } from "../domain/profiles.ts";
 import type { CsvMapping } from "../domain/profiles.ts";
 import { __ } from "../i18n.ts";
-import { measurementLabel, originLabel } from "./ProfileLabels.ts";
+import {
+	measurementLabel,
+	originLabel,
+	timestampRoleLabel,
+	valueKindLabel,
+} from "./ProfileLabels.ts";
 import { NumberField } from "./NumberField.tsx";
 
 export interface MappingFields {
@@ -198,10 +203,10 @@ export function ProfileMapping({
 				)}
 			>
 				<option value="interval_average_kw">
-					{__("Average power over each interval · kW", "linker-tools")}
+					{valueKindLabel("interval_average_kw")}
 				</option>
 				<option value="interval_energy_kwh">
-					{__("Energy within each interval · kWh", "linker-tools")}
+					{valueKindLabel("interval_energy_kwh")}
 				</option>
 			</Choice>
 			<Choice
@@ -246,12 +251,8 @@ export function ProfileMapping({
 						value={fields.timeRole}
 						onChange={(value) => set("timeRole", value)}
 					>
-						<option value="start">
-							{__("The start of the interval", "linker-tools")}
-						</option>
-						<option value="end">
-							{__("The end of the interval", "linker-tools")}
-						</option>
+						<option value="start">{timestampRoleLabel("start")}</option>
+						<option value="end">{timestampRoleLabel("end")}</option>
 					</Choice>
 					<NumberField
 						label={__("Interval duration", "linker-tools")}

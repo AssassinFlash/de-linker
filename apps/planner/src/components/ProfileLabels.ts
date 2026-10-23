@@ -2,6 +2,30 @@ import type { Measurement } from "../domain/profiles.ts";
 import type { ProfileIssue } from "../data/profileIssue.ts";
 import { __ } from "../i18n.ts";
 
+export function valueKindLabel(kind: unknown): string {
+	return kind === "interval_average_kw"
+		? __("Average power over each interval · kW", "linker-tools")
+		: kind === "interval_energy_kwh"
+			? __("Energy within each interval · kWh", "linker-tools")
+			: __("Not specified", "linker-tools");
+}
+export function timestampRoleLabel(role: unknown): string {
+	return role === "start"
+		? __("The start of the interval", "linker-tools")
+		: role === "end"
+			? __("The end of the interval", "linker-tools")
+			: __("Not specified", "linker-tools");
+}
+export function delimiterLabel(delimiter: string): string {
+	const labels: Record<string, string> = {
+		";": __("Semicolon", "linker-tools"),
+		",": __("Comma", "linker-tools"),
+		"\t": __("Tab", "linker-tools"),
+		"|": __("Vertical bar", "linker-tools"),
+	};
+	return labels[delimiter] ?? delimiter;
+}
+
 export function measurementLabel(role: Measurement): string {
 	const labels = {
 		gross_load: __("Total site load", "linker-tools"),

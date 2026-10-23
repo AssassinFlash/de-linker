@@ -25,6 +25,11 @@ automatically resubmitted on login.
    the current owner's project read succeed. Retry requires an explicit action
    and uses the original request. Exact conditional cleanup targets the original
    record; other scopes/parallel requests survive.
+   Original import settings are readable as labelled facts with units, column
+   roles, time conventions and provenance from this exact frozen command. A
+   raw JSON view alone does not satisfy settings review. The interpretation
+   explains energy-to-mean conversion and its constant-within-interval
+   assumption without implying new observations, gap filling or peak accuracy.
 5. Permanent receipts survive guest claim. For supported project/asset/run
    command scopes, the verified account can replay its own receipt or a receipt
    from a guest retired to that account. Receipt lookup never moves a project,

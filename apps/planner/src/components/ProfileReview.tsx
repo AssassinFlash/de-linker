@@ -1,7 +1,12 @@
 import type { Ref } from "react";
 import type { ProfileAsset, ProfilePreview } from "../domain/profiles.ts";
 import { __ } from "../i18n.ts";
-import { measurementLabel, originLabel } from "./ProfileLabels.ts";
+import {
+	measurementLabel,
+	originLabel,
+	timestampRoleLabel,
+	valueKindLabel,
+} from "./ProfileLabels.ts";
 import { Notice } from "./Notice.tsx";
 import { readObject } from "../data/readProtocol.ts";
 
@@ -47,16 +52,12 @@ export function ProfileReview({
 			? ([
 					[
 						__("Original value meaning", "linker-tools"),
-						mapping.value_kind === "interval_average_kw"
-							? __("Average power over each interval · kW", "linker-tools")
-							: __("Energy within each interval · kWh", "linker-tools"),
+						valueKindLabel(mapping.value_kind),
 					],
 					[__("Source time zone", "linker-tools"), String(mapping.timezone)],
 					[
 						__("The timestamp identifies…", "linker-tools"),
-						mapping.timestamp_role === "start"
-							? __("The start of the interval", "linker-tools")
-							: __("The end of the interval", "linker-tools"),
+						timestampRoleLabel(mapping.timestamp_role),
 					],
 				] as [string, string][])
 			: []),

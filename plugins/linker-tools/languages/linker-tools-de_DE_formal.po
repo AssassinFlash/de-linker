@@ -3483,3 +3483,9 @@ msgstr "Diese Profilauswahl ist im Projekt gespeichert."
 #: build/planner/assets/planner.js
 msgid "Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged."
 msgstr "Unbestätigte Projekterstellungen und CSV-Importe aus früheren Sitzungen konnten nicht geprüft werden. Bereits in diesem Browser gespeicherte Wiederherstellungsdaten bleiben unverändert."
+
+
+#: ../../apps/planner/src/components/ProfileImportSettings.tsx
+#: build/planner/assets/planner.js
+msgid "If the file contains energy per interval, average power is calculated using the interval duration. For this interpretation, average power is treated as constant within each original interval. No additional measurements are created."
+msgstr "Bei Energiemengen je Intervall wird die mittlere Leistung anhand der jeweiligen Intervalldauer berechnet. Für diese Interpretation wird sie innerhalb jedes ursprünglichen Intervalls als konstant angenommen. Es entstehen keine zusätzlichen Messwerte."

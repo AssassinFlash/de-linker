@@ -174,3 +174,33 @@ now proves32-layer confirmed200/no mutation/no charge/unchanged records, while
 absent still503. Five-layer expired/cancelled create one new attempt; erased
 absent refuses and confirmed succeeds without changing the tombstone. All six
 outcomes were asserted. WPCS and PHPStan pass. Final fixed-source axes follow.
+
+## Accepted recovery core 01ac29ea
+
+Spec PASS and Standards PASS independently cover the complete dee1aaac→01ac29ea
+increment. Both reran the last bounded-chain counterexample unchanged, original
+legacy probes, terminal successors, erasure and confirmed-result precedence.
+Spec injected an actual CAS persistence failure, Standards a corrupt journal;
+both still failed explicitly503 without changing old data, proving that the
+capacity exception does not hide storage failure. Spec's two real PHP-process
+concurrency evidence remains distinct from native database acceptance. These
+axes retain the earlier330 planning/31 Node/42 DOM and no-old-symbol evidence.
+
+Native CUA has now completed unknown creation→actual Woo login→explicit retry:
+the already-created71325bf40adb441ca7696896828857e3 remained revision1 and was
+not duplicated. Unknown CSV import has survived EN/DE×1440/390 and actual login,
+preserving its original file, mapping and request; its final explicit retry,
+selection and saved readback are still being completed.
+
+Expanding its original settings exposed an interface defect: only program JSON
+was offered for review. The new read-only ProfileImportSettings consumes the
+strictly parsed frozen command and reuses labelled input vocabulary/units,
+including start/end, fractional duration, repeated-time columns and provenance.
+It cannot mutate the pending intent or substitute mutable form values. Unknown
+external unit/timestamp labels remain Not specified instead of falling through
+to an incorrect kWh/end label. The fixed interpretation sentence passed the
+independent opposition/parent selection recorded in HANDOVER-COPY.md.
+31 Node/45 DOM, strict TS, build/manifest and targeted three settings cases pass;
+the188-module build is486.80kB/gzip143.13kB. Existing WindPress classes are reused.
+This rendered-settings correction still needs its own fixed-source axes and
+native readback; neither accepted recovery core nor this status closes path A.

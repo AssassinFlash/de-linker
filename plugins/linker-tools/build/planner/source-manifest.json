@@ -10,10 +10,11 @@
     "src/components/NumberField.tsx": "ac4c7b88bd98a6c353a0b32c5982fe227a1d61224ce0f8066f4d807192b95e4b",
     "src/components/OwnedProfile.tsx": "0052418a52e3fb33aec24ce8cb9990837c69bcf5c04234963353dd607342d19c",
     "src/components/ProfileError.tsx": "ddc8d77da0a59d8cac0e400562c0e0fb8bd9f9745127061aa56f97077f7ee0cd",
-    "src/components/ProfileIntake.tsx": "5ab291f871da2aca3497b751449fb26355f471372a8572f24ab67069306ca584",
-    "src/components/ProfileLabels.ts": "d6cf646c7ba6f54bd71b17498bd0eb69d899232ec6cdb3d01f9f8c5b0be60368",
-    "src/components/ProfileMapping.tsx": "afc3566bf546e75a8318d29e14d137cabe89d70834545aaa507a9120dab216f9",
-    "src/components/ProfileReview.tsx": "9898e9976d74652edbf455d5b0e81e92b352963de9c031a0778cebd957d84090",
+    "src/components/ProfileImportSettings.tsx": "582920b30e22ebdf243a1d2a9d9612169c1363f32d0af723b83eb4004f55fb12",
+    "src/components/ProfileIntake.tsx": "d750ec44baf16e105dac2546566e56fd456cfb9d55f21473882d6d328a2f23b6",
+    "src/components/ProfileLabels.ts": "7a1e87b612300751cbb54463453a33118f11a3dbac2fedd82b159c4a5573341a",
+    "src/components/ProfileMapping.tsx": "c60b9615ee146cd4aee4af95073cda0a66dadcf8f1dcb5ea970266c51cc030d0",
+    "src/components/ProfileReview.tsx": "34b3918d0dd5403658e1daf726b93739325cf1201c5ffcdf602f33e167168e3f",
     "src/components/ProjectEditor.tsx": "c5aa5212cfc1316f4a1c739ed52423da16de1815100f0457e7e35834462eb49c",
     "src/components/RevisionComparison.tsx": "0a5de456a0e2e46e68099f96a05f4ce1398e3c069765411b3390bf15074f5b44",
     "src/components/SessionBoundary.tsx": "f76d1019895130fd24bb87848968074379e4f46f7c5f575caceb66f3b79aed11",
@@ -52,7 +53,7 @@
     "vite.config.ts": "a9c99cf04c71606380d2f00f9dcd1c4b9245193a5652429d99ee37b6c72d9099"
   },
   "build": {
-    "assets/planner.js": "c423b8a43406eff736f057c8c19ddd3045800d8347850645cf6da3594691992d",
+    "assets/planner.js": "f9e71051f4be59e3686869e9ac17bde121322e0b0faee397efd825142351b396",
     "vite-manifest.json": "cccc8dc021bafcf5f4c568db7ac0921dd3e9fd0eeac4347fe8b21d8e7babcee1",
     "windpress.scan.txt": "68c8377a164e8f53d750e9bcd91c8cecde4d58da5c2e1c9a8badb2592f0ac495"
   }

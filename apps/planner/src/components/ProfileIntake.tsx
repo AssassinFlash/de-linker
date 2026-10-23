@@ -27,6 +27,7 @@ import {
 import { Notice } from "./Notice.tsx";
 import { OwnedProfile } from "./OwnedProfile.tsx";
 import { ProfileError } from "./ProfileError.tsx";
+import { ProfileImportSettings } from "./ProfileImportSettings.tsx";
 import { revealActionResult } from "./revealActionResult.ts";
 
 export function ProfileIntake({
@@ -566,17 +567,10 @@ export function ProfileIntake({
 					</p>
 					<details className="lp-comparison">
 						<summary>{__("Original import settings", "linker-tools")}</summary>
-						<pre>
-							{JSON.stringify(
-								{
-									mapping: readImport(JSON.parse(pending)).mapping,
-									source_label: label,
-									rights_note: rights,
-								},
-								null,
-								2,
-							)}
-						</pre>
+						<ProfileImportSettings
+							command={readImport(JSON.parse(pending))}
+							locale={locale}
+						/>
 					</details>
 					{!asset && (
 						<button
