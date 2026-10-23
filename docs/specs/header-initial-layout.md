@@ -60,6 +60,20 @@ Solutions, preserving every link, label and attribute. Native Tab, Shift+Tab
 and reading order must follow the unchanged visual sequence; no positive
 tabindex or JS keyboard reordering is needed.
 
+The real native Tab sequence at 320px exposes another clipping case: after all
+product links, the third solution card's border box ends at 899.0625px in the
+900px viewport, cutting off its 2px outline plus 2px offset. Reserve that same
+4px footprint with block scroll margins on the existing panel links and group
+summaries. Verify the actual scrollport's inner edges with native keys, without
+programmatically focusing each target. Keep the failed original evidence.
+
+The secondary product and all-items rows override the generic link text's
+existing 44px minimum with zero, rendering 36.5px and 40.796875px anchors.
+Restore that existing minimum with border-box sizing on those text containers;
+retain their padding, typography and centred labels. This is an explicit
+opened-panel target-size fix. Verify actual anchor boxes of at least 44px,
+the complete native Tab sequence and scroll-end contact after the extra height.
+
 If someone has already opened the native panel at a desktop width while the
 enhancement is pending, keep it available until they close it. A fit that has
 room for the ordinary row must not dismiss that active menu. After it closes,
