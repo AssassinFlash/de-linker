@@ -636,11 +636,9 @@ msgstr "Wird hinzugefügt …"
 msgid "In your solution draft."
 msgstr "Im Lösungsentwurf."
 
-#: build/genie.js src/genie/shared/cardActions.ts build/hero.js
 msgid "Sent, but the draft does not show it yet. Please check."
 msgstr "Gesendet, aber der Entwurf zeigt es noch nicht. Bitte prüfen."
 
-#: build/genie.js src/genie/components/PartsCard.tsx
 msgid "Not everything was added. Try again."
 msgstr "Nicht alles wurde hinzugefügt. Bitte erneut versuchen."
 
@@ -1432,7 +1430,6 @@ msgstr "Alles zum Lösungsentwurf hinzufügen"
 msgid "All products are in your solution draft."
 msgstr "Alle Produkte sind in Ihrem Lösungsentwurf."
 
-#: src/configurator/solution/Solution.tsx:345 build/configurator.js
 msgid "Some products are not confirmed in your solution draft. See the cards above."
 msgstr "Einige Produkte sind in Ihrem Lösungsentwurf nicht bestätigt. Einzelheiten stehen in den Karten oben."
 
@@ -1601,7 +1598,6 @@ msgid "Draw the plane on one roof: this one is too large or outside Germany."
 msgstr "Zeichnen Sie die Fläche auf einem einzelnen Dach ein: Diese ist zu groß oder liegt außerhalb Deutschlands."
 
 #. #302: retain the configurator wording independently of Genie.
-#: src/configurator/solution/Solution.tsx build/configurator.js build/hero.js
 msgctxt "configurator"
 msgid "Sent, but the draft does not show it yet. Please check."
 msgstr "Gesendet, aber im Entwurf noch nicht sichtbar. Bitte prüfen Sie den Entwurf."
@@ -2028,7 +2024,6 @@ msgstr "Welches Modell ist mit dieser Zeile gemeint?"
 msgid "This line needs your confirmation."
 msgstr "Diese Zeile braucht Ihre Bestätigung."
 
-#: build/genie.js
 msgid "Sent, but the solution draft does not show the change yet."
 msgstr "Gesendet, aber der Lösungsentwurf zeigt die Änderung noch nicht."
 
