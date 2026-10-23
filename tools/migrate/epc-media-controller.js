@@ -45,7 +45,8 @@
           if (!video) return;
           if (!canObserveMedia || manualVideos.has(video)) {
             // Keep the selected native controls usable; never start them here.
-            if (index !== currentIndex || document.hidden || userPaused) video.pause();
+            if (index !== currentIndex || document.hidden || userPaused ||
+                (canObserveMedia && !galleryVisible)) video.pause();
             return;
           }
           if (index !== currentIndex || !videoAllowed()) {

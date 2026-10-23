@@ -207,3 +207,19 @@ test('declined autoplay becomes native manual playback and does not undo native 
   assert.equal(f.videos[0].plays, plays);
   assert.equal(f.videos[0].paused, true);
 });
+
+test('manual fallback pauses offscreen and does not restart on gallery re-entry', async () => {
+  const f = fixture({ declinesAutoplay: true }); f.show(true);
+  await Promise.resolve();
+  assert.equal(f.videos[0].controls, true);
+  f.videos[0].decline = false;
+  await f.videos[0].play();
+  assert.equal(f.videos[0].paused, false);
+  const plays = f.videos[0].plays;
+  f.show(false);
+  assert.equal(f.videos[0].paused, true);
+  assert.equal(f.timers.size, 0);
+  f.show(true);
+  assert.equal(f.videos[0].paused, true);
+  assert.equal(f.videos[0].plays, plays);
+});
