@@ -21,9 +21,11 @@ application; customer scenario/result work continues in the same goal.
   become a failed calculation merely because the newest worker saw it.
 - A derived routing index is an additive, rebuildable cache in the existing
   database, not another project authority. New jobs route in the enqueue
-  transaction. Old rows without an index are routed from their hash-verified
-  immutable manifests in bounded batches outside numerical execution. Corrupt
-  bytes fail explicitly; a wrong cached route is repaired before leasing.
+  transaction. A rotating bounded scan verifies pending/expired rows, including
+  present cache entries, from their hash-verified immutable manifests outside
+  numerical execution. Missing and wrong routes are rebuilt; a cached key with
+  no active worker cannot strand valid tasks. Corrupt bytes fail explicitly;
+  execution identity is also checked before leasing.
   Core project/revision/run/job document formats remain readable unchanged.
 - Existing lease, heartbeat, cancellation, retry policy and final publication
   fencing remain effective. HTTP response completion and browser disconnection

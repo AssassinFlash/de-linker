@@ -38,6 +38,7 @@ class Jobs:
 
     def __init__(self, workspace: Workspace) -> None:
         self.workspace = workspace
+        self._routes = EvaluationRoutes(workspace)
 
     def claim(
         self,
@@ -55,7 +56,7 @@ class Jobs:
             raise InvalidInput("worker and supported job kinds required")
         _duration(lease_seconds, "lease duration")
         workspace = self.workspace
-        routes = EvaluationRoutes(workspace) if routing is not None else None
+        routes = self._routes if routing is not None else None
         if routes is not None:
             if kinds != ("evaluate",):
                 raise InvalidInput("execution routing currently covers evaluation only")

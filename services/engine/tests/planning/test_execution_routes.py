@@ -67,15 +67,18 @@ def test_unindexed_v2_jobs_are_routed_in_batches_without_changing_frozen_bytes(
     workspace: Workspace,
     owner: Actor,
     context: Context,
+    clock,
 ) -> None:
     foreign = replace(context, code_sha256=digest(b"retained-old-release"))
     old = enqueue(workspace, owner, foreign, "old-first")
+    clock.advance(1)
     own = enqueue(workspace, owner, context, "own-last")
     with workspace.database.transaction() as connection:
         connection.execute("DELETE FROM evaluation_routes")
     key = execution_key(context.document())
+    jobs = Jobs(workspace)
     assert (
-        Jobs(workspace).claim(
+        jobs.claim(
             "current",
             kinds=("evaluate",),
             lease_seconds=30,
@@ -83,7 +86,7 @@ def test_unindexed_v2_jobs_are_routed_in_batches_without_changing_frozen_bytes(
         )
         is None
     )
-    lease = Jobs(workspace).claim(
+    lease = jobs.claim(
         "current",
         kinds=("evaluate",),
         lease_seconds=30,
@@ -91,6 +94,46 @@ def test_unindexed_v2_jobs_are_routed_in_batches_without_changing_frozen_bytes(
     )
     assert lease is not None and lease.run_id == own.id
     assert workspace.run(owner, old.id).manifest_sha256 == old.manifest_sha256
+    assert workspace.run(owner, own.id).manifest_sha256 == own.manifest_sha256
+
+
+def test_unknown_cached_key_is_repaired_after_bounded_rotation_past_foreign_rows(
+    workspace: Workspace, owner: Actor, context: Context, clock
+) -> None:
+    other = replace(context, code_sha256=digest(b"other-retained-release"))
+    foreign = []
+    for index in range(5):
+        foreign.append(enqueue(workspace, owner, other, f"foreign-{index}"))
+        clock.advance(1)
+    own = enqueue(workspace, owner, context, "stranded-cache")
+    with workspace.database.transaction() as connection:
+        connection.execute(
+            "UPDATE evaluation_routes SET execution_sha256=? WHERE job_id IN "
+            "(SELECT id FROM jobs WHERE run_id=?)",
+            (digest(b"nonexistent-worker"), own.id),
+        )
+    jobs = Jobs(workspace)
+    routing = EvaluationRouting(execution_key(context.document()), 1)
+    for _ in range(5):
+        assert (
+            jobs.claim(
+                "current", kinds=("evaluate",), lease_seconds=30, routing=routing
+            )
+            is None
+        )
+    lease = jobs.claim(
+        "current", kinds=("evaluate",), lease_seconds=30, routing=routing
+    )
+    assert lease is not None and lease.run_id == own.id
+    for run in foreign:
+        assert workspace.run(owner, run.id).state == "queued"
+    with workspace.database.read() as connection:
+        assert (
+            connection.execute("SELECT COUNT(*) FROM jobs WHERE attempt=0").fetchone()[
+                0
+            ]
+            == 5
+        )
     assert workspace.run(owner, own.id).manifest_sha256 == own.manifest_sha256
 
 

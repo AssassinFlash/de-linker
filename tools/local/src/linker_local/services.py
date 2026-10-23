@@ -137,15 +137,20 @@ def _serve(
     )
     token = service_token(wp)
     worker: PlannerWorker | None = None
+    engine_synced = False
     if any(service.name == "engine" for service in selected):
-        # First startup also needs the existing engine environment before its
-        # private control CLI can inspect or drain the workspace.
-        subprocess.run(
-            [str(uv), "sync", "--locked", "--project", str(checkout.service("engine"))],
-            check=True,
-        )
+        project = checkout.service("engine")
         planner_environment(instance)
-        worker = PlannerWorker(instance, checkout.service("engine"), uv)
+        worker = PlannerWorker(instance, project, uv)
+        # First startup needs an environment for the private control CLI.
+        # Never sync dependencies underneath an existing numerical process.
+        if not (project / ".venv/bin/python").is_file():
+            if worker.process.pid() is not None:
+                raise ProcessError("live worker has no retained engine environment")
+            subprocess.run(
+                [str(uv), "sync", "--locked", "--project", str(project)], check=True
+            )
+            engine_synced = True
         worker.ensure_policy()
         worker.drain()
         worker.stop()
@@ -153,7 +158,7 @@ def _serve(
     for service in selected:
         project = checkout.service(service.name)
         port = service.port(instance)
-        if service.name != "engine":
+        if service.name != "engine" or not engine_synced:
             subprocess.run(
                 [str(uv), "sync", "--locked", "--project", str(project)], check=True
             )
