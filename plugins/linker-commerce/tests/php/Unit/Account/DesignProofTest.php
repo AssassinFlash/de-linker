@@ -154,6 +154,44 @@ final class DesignProofTest extends TestCase {
 		$this->assertTrue( ( new DesignProof( static fn (): array => array( 'valid' => true ) ) )->is_current( $result ) );
 	}
 
+	/** The native engine BOM serializes whole piece counts as JSON 1.0. */
+	public function test_native_engine_float_piece_counts_keep_a_verified_complete_bom(): void {
+		$result                                     = self::result();
+		$result['selected']['lines'][0]['quantity'] = 1.0;
+		$result['selected']['lines'][]              = array(
+			'product'  => array( 'id' => 10 ),
+			'quantity' => 2.0,
+		);
+		$proof                                      = new DesignProof( static fn (): array => array( 'valid' => true ), static fn (): array => array( 200, (string) json_encode( $result, JSON_PRESERVE_ZERO_FRACTION ) ) );
+		$verified                                   = $proof->verify( 'residential', array( 'plz' => '80538' ), str_repeat( 'a', 64 ) );
+		$this->assertIsArray( $verified );
+		$this->assertSame(
+			array(
+				array(
+					'product_id' => 10,
+					'quantity'   => 3,
+				),
+			),
+			DesignProof::items( $verified )
+		);
+	}
+
+	/** Piece counts cannot become fractional, coerced, non-finite or overflowed. */
+	public function test_invalid_piece_counts_and_overflow_reject_the_entire_bom(): void {
+		foreach ( array( 1.5, 0.0, -1.0, '1', true, INF, NAN, (float) PHP_INT_MAX ) as $quantity ) {
+			$result                                     = self::result();
+			$result['selected']['lines'][0]['quantity'] = $quantity;
+			$this->assertSame( array(), DesignProof::items( $result ) );
+		}
+		$result                                     = self::result();
+		$result['selected']['lines'][0]['quantity'] = PHP_INT_MAX;
+		$result['selected']['lines'][]              = array(
+			'product'  => array( 'id' => 10 ),
+			'quantity' => 1,
+		);
+		$this->assertSame( array(), DesignProof::items( $result ) );
+	}
+
 	/**
 	 * A selected product and a second candidate are separate dependencies.
 	 *

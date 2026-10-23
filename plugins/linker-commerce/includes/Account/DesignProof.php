@@ -177,7 +177,15 @@ final class DesignProof {
 			}
 			$id       = $line['product']['id'] ?? null;
 			$quantity = $line['quantity'] ?? null;
+			// Engine BOM quantities are floats (including measured installer parts).
+			// Woo pieces must be exactly integral and fit PHP's native integer range.
+			if ( is_float( $quantity ) && is_finite( $quantity ) && floor( $quantity ) === $quantity && $quantity >= 1 && $quantity < PHP_INT_MAX ) {
+				$quantity = (int) $quantity;
+			}
 			if ( ! is_int( $id ) || $id < 1 || ! is_int( $quantity ) || $quantity < 1 ) {
+				return array();
+			}
+			if ( $quantity > PHP_INT_MAX - ( $totals[ $id ] ?? 0 ) ) {
 				return array();
 			}
 			$totals[ $id ] = ( $totals[ $id ] ?? 0 ) + $quantity;
