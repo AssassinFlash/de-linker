@@ -143,4 +143,5 @@ def read_chunks(directory: Path) -> Iterator[tuple[Chunk, bytes | None]]:
     """Every chunk with its vector, or None when the corpus has no vectors."""
     for row in _read_lines(directory / "chunks.jsonl"):
         encoded = row.pop("vector", None)
+        row["preceding_text"] = tuple(row.get("preceding_text", ()))
         yield Chunk(**row), base64.b64decode(encoded) if encoded is not None else None

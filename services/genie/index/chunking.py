@@ -67,6 +67,8 @@ class Chunk:
     text: str
     lang: str
     tokens: int
+    source_table: str = ""
+    preceding_text: tuple[str, ...] = ()
 
 
 def context_header(meta: DocumentMeta, section: str, page: int) -> str:
@@ -106,12 +108,19 @@ class _Chunker:
         self.max_tokens = max_tokens
         self.chunks: list[Chunk] = []
         self._ids: set[str] = set()
+        self._preceding_text: list[str] = []
 
     def _tokens(self, header: str, lines: Sequence[str]) -> int:
         return self.tokenizer.count(header + "\n" + "\n".join(lines))
 
     def _emit(
-        self, page: int, section: str, kind: ChunkKind, lines: Sequence[str]
+        self,
+        page: int,
+        section: str,
+        kind: ChunkKind,
+        lines: Sequence[str],
+        source_table: str = "",
+        preceding_text: tuple[str, ...] = (),
     ) -> None:
         header = context_header(self.meta, section, page)
         text = "\n".join(lines)
@@ -136,6 +145,8 @@ class _Chunker:
                 text=text,
                 lang=lang,
                 tokens=self._tokens(header, lines),
+                source_table=source_table,
+                preceding_text=preceding_text,
             )
         )
 
@@ -162,6 +173,8 @@ class _Chunker:
         kind: ChunkKind,
         fixed: list[str],
         lines: list[str],
+        source_table: str = "",
+        preceding_text: tuple[str, ...] = (),
     ) -> None:
         """`lines` into as few chunks as fit; every chunk starts with the `fixed` lines."""
         header = context_header(self.meta, section, page)
@@ -176,28 +189,54 @@ class _Chunker:
                     and self._tokens(header, [*fixed, *current, piece])
                     > self.max_tokens
                 ):
-                    self._emit(page, section, kind, [*fixed, *current])
+                    self._emit(
+                        page,
+                        section,
+                        kind,
+                        [*fixed, *current],
+                        source_table,
+                        preceding_text,
+                    )
                     current = []
                 current.append(piece)
         if current or fixed:
-            self._emit(page, section, kind, [*fixed, *current])
+            self._emit(
+                page, section, kind, [*fixed, *current], source_table, preceding_text
+            )
+
+    def _text(self, page: int, section: str, texts: list[str]) -> None:
+        start = len(self.chunks)
+        self._pack(page, section, "text", [], texts)
+        self._preceding_text.extend(chunk.id for chunk in self.chunks[start:])
 
     def add_page(self, page: Page, section: str) -> str:
         """The chunks of one page; returns the section in force at its end."""
         texts: list[str] = []
-        for block in page.blocks:
+        for block_index, block in enumerate(page.blocks):
             if block.kind != "text" and texts:
-                self._pack(page.number, section, "text", [], texts)
+                self._text(page.number, section, texts)
                 texts = []
             if block.kind == "heading":
                 section = block.text
+                self._preceding_text = []
             elif block.kind == "text":
                 texts.append(block.text)
             else:
                 header_rows, rows = table_lines(block)
-                self._pack(page.number, section, "table", header_rows, rows)
+                self._pack(
+                    page.number,
+                    section,
+                    "table",
+                    header_rows,
+                    rows,
+                    f"{page.source}:p{page.number}:"
+                    + (block.source_id or f"block{block_index}"),
+                    tuple(self._preceding_text),
+                )
+                # The next independent TableItem needs its own original header.
+                self._preceding_text = []
         if texts:
-            self._pack(page.number, section, "text", [], texts)
+            self._text(page.number, section, texts)
         return section
 
 

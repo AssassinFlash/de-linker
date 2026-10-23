@@ -54,3 +54,47 @@ def authorize_chunk(
     if {item["product_id"] for item in available} != wanted:
         return []
     return sorted(available, key=binding)
+
+
+def table_header(
+    scope: Mapping[str, Any] | None,
+    product_ids: Sequence[int],
+    products: Mapping[int, Mapping[str, Any]],
+) -> str | None:
+    """Restore the proven original table columns in order, or refuse invalid proof."""
+    if scope is None:
+        return ""
+    if "table_columns" not in scope:
+        return None if scope.get("basis") == "table_columns" else ""
+    columns = scope["table_columns"]
+    if not isinstance(columns, dict):
+        return None
+    ids, labels, heading = (
+        columns.get("product_ids"),
+        columns.get("labels"),
+        columns.get("heading"),
+    )
+    if (
+        not isinstance(ids, list)
+        or len(ids) < 2
+        or not all(type(pid) is int for pid in ids)
+        or len(ids) != len(set(ids))
+        or set(ids) != set(product_ids)
+        or not isinstance(labels, list)
+        or len(labels) != len(ids)
+        or not isinstance(heading, str)
+        or heading.casefold() not in {"technical data", "technische daten"}
+        or not columns.get("source_table")
+        or not columns.get("header_chunk_ids")
+    ):
+        return None
+    for pid, label in zip(ids, labels, strict=True):
+        if (
+            pid not in products
+            or not isinstance(label, str)
+            or "|" in label
+            or " ".join(label.split()).casefold()
+            != " ".join(str(products[pid].get("model", "")).split()).casefold()
+        ):
+            return None
+    return "| " + " | ".join([heading, *labels]) + " |"

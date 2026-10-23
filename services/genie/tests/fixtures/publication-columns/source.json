@@ -1,0 +1,18 @@
+{
+  "source_manifest_sha256": "88ebe244f924ebe9f59ade9540a9be17421bd305b865b0074844ebe38818b2f8",
+  "source": "read-only Docling cache and native Woo publication manifest captured 2026-10-23",
+  "documents": [
+    {
+      "blob_sha256": "0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178",
+      "docling_sha256": "7b70cc42ce7e80453a3f259e477013d61c4edd9a3b0281ec9b1db51013c8bf58",
+      "bytes": 87764,
+      "fixture_bytes": 8897
+    },
+    {
+      "blob_sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+      "docling_sha256": "ea4cd70fdff97ce7253d84fc890e5ea0e8721f595ac030e9be3d88a59d6cde46",
+      "bytes": 112019,
+      "fixture_bytes": 19332
+    }
+  ]
+}

@@ -12,7 +12,7 @@ import tempfile
 import urllib.request
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import Any, NotRequired, TypedDict
 
 from index.chunking import Chunk
 from index.inventory import doc_type_of, document_kind_of, lang_of
@@ -48,6 +48,19 @@ PARAMETER_PROSE = re.compile(
     r"|\d\s*[°℃]",
     re.IGNORECASE,
 )
+TECHNICAL_DATA = re.compile(
+    r"\b(?:Technical\s+Data|Technische\s+Daten)\b", re.IGNORECASE
+)
+
+
+class TableColumns(TypedDict):
+    """Original ordered column labels for one native parsed TableItem."""
+
+    source_table: str
+    header_chunk_ids: list[str]
+    product_ids: list[int]
+    labels: list[str]
+    heading: str
 
 
 class ScopeProof(TypedDict):
@@ -58,6 +71,102 @@ class ScopeProof(TypedDict):
     source_chunk_ids: list[str]
     document_ids: list[str]
     associations: list[dict[str, Any]]
+    table_columns: NotRequired[TableColumns]
+
+
+def _table_columns(
+    chunks: list[Chunk],
+    models: dict[int, str],
+    patterns: dict[str, re.Pattern[str]],
+    statuses: dict[str, str],
+    shapes: set[str],
+    observed: dict[str, tuple[set[int], bool]],
+) -> dict[str, TableColumns]:
+    """A source column heading authorizes only the immediately following TableItem.
+
+    The chunker records native reading-order provenance. No page radius, generated
+    header or repeated generic section name can join independent tables together.
+    All fragments of this table retain all columns in their original order.
+    """
+    by_id = {chunk.id: chunk for chunk in chunks}
+    positions = {chunk.id: i for i, chunk in enumerate(chunks)}
+    groups: dict[tuple[str, str], list[Chunk]] = {}
+    for chunk in chunks:
+        if chunk.kind == "table" and chunk.source_table and chunk.preceding_text:
+            groups.setdefault((chunk.doc_sha256, chunk.source_table), []).append(chunk)
+    labels_to_ids = {model.casefold(): pid for pid, model in models.items() if model}
+    output: dict[str, TableColumns] = {}
+    for (_, table_id), parts in groups.items():
+        first = parts[0]
+        preceding = [by_id[cid] for cid in first.preceding_text if cid in by_id]
+        if (
+            len(preceding) != len(first.preceding_text)
+            or any(
+                part.preceding_text != first.preceding_text
+                or part.section != first.section
+                or observed[part.id][1]
+                for part in parts
+            )
+            or any(
+                chunk.kind != "text"
+                or chunk.doc_sha256 != first.doc_sha256
+                or chunk.section != first.section
+                or positions[chunk.id] >= positions[first.id]
+                for chunk in preceding
+            )
+        ):
+            continue
+        text = "\n".join(chunk.text for chunk in preceding)
+        headings = list(TECHNICAL_DATA.finditer(text))
+        if not headings:
+            continue
+        heading = headings[-1]
+        tail = text[heading.end() :]
+        written = sorted(
+            (match.start(), label, match.group())
+            for label, pattern in patterns.items()
+            for match in pattern.finditer(tail)
+        )
+        labels = {label for _, label, _ in written}
+        if (
+            len(labels) < 2
+            or any(statuses.get(label) != "published" for label in labels)
+            or not labels.issubset(labels_to_ids)
+            # This is an explicit model-column axis; unresolved codes here are
+            # model candidates even when their family is absent from Woo.
+            or _unknown_models(tail, labels, shapes, section=True)
+        ):
+            continue
+        ordered = list(dict.fromkeys(label for _, label, _ in written))
+        ids = [labels_to_ids[label] for label in ordered]
+        if any(not observed[part.id][0].issubset(ids) for part in parts):
+            continue
+        rows = [line for part in parts for line in part.text.splitlines()]
+        if not rows or any(
+            not line.startswith("|")
+            or not line.endswith("|")
+            or len(line.split("|")) - 2 != len(ids) + 1
+            for line in rows
+        ):
+            continue
+        offset = 0
+        sources = []
+        for chunk in preceding:
+            if offset + len(chunk.text) > heading.start():
+                sources.append(chunk.id)
+            offset += len(chunk.text) + 1
+        columns: TableColumns = {
+            "source_table": table_id,
+            "header_chunk_ids": sources,
+            "product_ids": ids,
+            "labels": [
+                next(value for _, key, value in written if key == label)
+                for label in ordered
+            ],
+            "heading": " ".join(heading.group().split()),
+        }
+        output.update({part.id: columns for part in parts})
+    return output
 
 
 def codes(text: str) -> list[str]:
@@ -351,6 +460,7 @@ def scope_proofs(
         if blocked:
             ambiguous.add(chunk.doc_sha256)
             ambiguous_sections.add(section_key)
+    columns = _table_columns(relevant, models, patterns, statuses, shapes, observed)
     result: dict[str, ScopeProof] = {}
     for chunk in relevant:
         matched, blocked = observed[chunk.id]
@@ -369,6 +479,13 @@ def scope_proofs(
                 patterns[models[pid].casefold()].search(chunk.text) for pid in matched
             ):
                 basis = "section"
+        elif chunk.id in columns:
+            matched = set(columns[chunk.id]["product_ids"])
+            if not matched.issubset(
+                pid for doc in relations for pid in doc["product_ids"]
+            ):
+                continue
+            basis, origin = "table_columns", columns[chunk.id]["header_chunk_ids"]
         elif (
             chunk.section
             and (chunk.doc_sha256, chunk.section) not in ambiguous_sections
@@ -429,4 +546,6 @@ def scope_proofs(
                     if pid in doc["product_ids"]
                 ],
             }
+            if basis == "table_columns":
+                result[chunk.id]["table_columns"] = columns[chunk.id]
     return result

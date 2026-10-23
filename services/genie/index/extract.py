@@ -29,6 +29,8 @@ class Block:
     text: str = ""
     rows: tuple[tuple[str, ...], ...] = ()
     header_rows: int = 0
+    # Native Docling identity; equality of the extracted body remains textual.
+    source_id: str = field(default="", compare=False)
 
 
 @dataclass
@@ -69,7 +71,12 @@ def _blocks(document: DoclingDocument) -> Iterable[tuple[int, Block]]:
             if rows:
                 yield (
                     item.prov[0].page_no,
-                    Block(kind="table", rows=rows, header_rows=header_rows),
+                    Block(
+                        kind="table",
+                        rows=rows,
+                        header_rows=header_rows,
+                        source_id=item.self_ref,
+                    ),
                 )
         elif isinstance(item, TextItem) and item.prov:
             text = clean(item.text)
@@ -77,7 +84,11 @@ def _blocks(document: DoclingDocument) -> Iterable[tuple[int, Block]]:
                 heading = isinstance(item, (SectionHeaderItem, TitleItem))
                 yield (
                     item.prov[0].page_no,
-                    Block(kind="heading" if heading else "text", text=text),
+                    Block(
+                        kind="heading" if heading else "text",
+                        text=text,
+                        source_id=item.self_ref,
+                    ),
                 )
 
 

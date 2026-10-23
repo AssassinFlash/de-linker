@@ -21,7 +21,7 @@ import sqlite_vec
 
 from index import corpus
 from linker_genie.publication import Snapshot
-from linker_genie.publication_scope import authorize_chunk
+from linker_genie.publication_scope import authorize_chunk, table_header
 from linker_genie.retrieval import SCHEMA_VERSION, is_passage
 
 SCHEMA = """
@@ -144,6 +144,7 @@ def export(directory: Path, path: Path) -> None:
         revisions = {
             p["product_id"]: p["product_revision"] for p in manifest.get("products", [])
         }
+        products = {p["product_id"]: p for p in manifest.get("products", [])}
         links = [
             {
                 "document_id": d["document_id"],
@@ -159,9 +160,10 @@ def export(directory: Path, path: Path) -> None:
         for cid, ids in proof.get("chunk_products", {}).items():
             chunk = chunks_by_id.get(cid)
             if chunk is not None and ids and is_passage(chunk.text):
-                supported = authorize_chunk(
-                    chunk.doc_sha256, ids, links, proof.get("chunk_scopes", {}).get(cid)
-                )
+                scope = proof.get("chunk_scopes", {}).get(cid)
+                if table_header(scope, ids, products) is None:
+                    continue
+                supported = authorize_chunk(chunk.doc_sha256, ids, links, scope)
                 for item in supported:
                     covered.setdefault(item["product_id"], set()).add(
                         item["document_id"]
