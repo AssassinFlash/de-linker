@@ -89,7 +89,7 @@ final class RegistrationNotices {
 	 */
 	public static function cancel_uncreated( array $plans ): void {
 		foreach ( $plans as $plan ) {
-			if ( is_array( $plan ) && is_string( $plan['reservation'] ?? null ) ) {
+			if ( is_array( $plan ) && RegistrationMessage::uncreated( $plan ) ) {
 				Capacity::cancel_before_side_effect( $plan['reservation'] );
 			}
 		}
@@ -225,7 +225,7 @@ final class RegistrationNotices {
 			$id,
 			$state,
 			static function () use ( $id, $kind, $state, $scope ): bool {
-				if ( ! Capacity::cancel_before_side_effect( $scope ) ) {
+				if ( ! RegistrationMessage::owned( $state[ $kind ], $id ) || ! Capacity::cancel_before_side_effect( $scope ) ) {
 					return false;
 				}
 				$state[ $kind ] = array(
@@ -308,6 +308,11 @@ final class RegistrationNotices {
 							}
 							if ( count( $state ) > 2 || array() !== array_diff( array_keys( $state ), array( 'team', 'received' ) ) ) {
 								return;
+							}
+							foreach ( $state as $plan ) {
+								if ( ( 'pending' === $plan['state'] || isset( $plan['reservation'] ) ) && ! RegistrationMessage::owned( $plan, $id ) ) {
+									return;
+								}
 							}
 							$jobs = array_values( array_filter( array_map( static fn ( array $plan ): int => (int) ( $plan['job'] ?? 0 ), $state ), static fn ( int $job ): bool => $job > 0 ) );
 							$done = self::with_jobs(
@@ -437,12 +442,39 @@ final class RegistrationNotices {
 		if ( '' !== $wpdb->last_error ) {
 			throw new \RuntimeException( 'registration_notice_read_failed' );
 		}
-		if ( is_array( $state ) ) {
+		if ( is_array( $state ) && self::source_shape( $state ) ) {
 			return $state; }
 		if ( '' !== $state || metadata_exists( 'user', $id, self::META ) ) {
 			throw new \RuntimeException( 'registration_notice_source_invalid' );
 		}
 		return null;
+	}
+
+	/** Exactly two bounded native notice kinds, with known terminal and accepted shapes.
+	 *
+	 * @param array<string,mixed> $state Native metadata, possibly corrupt.
+	 */
+	private static function source_shape( array $state ): bool {
+		if ( array() === $state || count( $state ) > 2 || array() !== array_diff( array_keys( $state ), array( 'team', 'received' ) ) ) {
+			return false; }
+		foreach ( $state as $plan ) {
+			if ( ! is_array( $plan ) ) {
+				return false; }
+			$status = $plan['state'] ?? '';
+			if ( 'accepted' === $status ) {
+				if ( ! is_int( $plan['job'] ?? null ) || $plan['job'] < 1 || count( $plan ) !== 2 ) {
+					return false; }
+			} elseif ( 'erased' === $status ) {
+				if ( count( $plan ) !== 1 ) {
+					return false; }
+			} elseif ( 'skipped' === $status && ! isset( $plan['reservation'] ) ) {
+				if ( count( $plan ) !== 2 || ! in_array( $plan['reason'] ?? '', array( 'disabled', 'daily_cap', 'target_cap' ), true ) ) {
+					return false; }
+			} elseif ( 'pending' !== $status && 'skipped' !== $status ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

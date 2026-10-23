@@ -292,6 +292,14 @@ final class RegistrationMessage {
 		return $plan;
 	}
 
+	/** Only this authenticated preview's never-started native reservation may be canceled.
+	 *
+	 * @param array<string,mixed> $plan Private pre-account source.
+	 */
+	public static function uncreated( array $plan ): bool {
+		return self::valid( $plan ) && 'reserved' === $plan['binding']['stage'] && 0 === $plan['binding']['account'] && '' === $plan['binding']['slot'] && is_string( $plan['reservation'] ?? null ) && 1 === preg_match( '/^[a-f0-9]{64}$/D', $plan['reservation'] );
+	}
+
 	/** An explicit native policy skip keeps a verifiable owner until its scope cancellation ACK.
 	 *
 	 * @param array<string,mixed> $plan Verified bound pending plan.

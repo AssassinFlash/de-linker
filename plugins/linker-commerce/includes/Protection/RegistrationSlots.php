@@ -339,7 +339,16 @@ final class RegistrationSlots {
 			}
 			$transaction = new \Linker\Commerce\Mail\NativeTransaction();
 		} catch ( \Throwable $error ) {
-			$fence->close();
+			try {
+				$fence->assert_current();
+				if ( $locked ) {
+					// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Only this still-live original connection may release its just-acquired mutex.
+					$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::lock_name() ) );
+				}
+			} catch ( \Throwable $release_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Unknown original connection: never compensate on a replacement.
+			} finally {
+				$fence->close();
+			}
 			return self::unavailable();
 		}
 		$context = array(

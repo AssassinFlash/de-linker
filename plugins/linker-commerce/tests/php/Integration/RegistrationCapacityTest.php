@@ -45,10 +45,26 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	 */
 	private int $mail_marker = 0;
 
+	/** Authoritative native values survive deliberate connection loss and Redis rollback cache.
+	 *
+	 * @var array<string,array{option_value:string,autoload:string}|null>
+	 */
+	private array $original_options = array();
+
 	/**
 	 * Keep all test-owned protection state in this isolated instance.
+	 *
+	 * @throws \RuntimeException The original native state cannot be captured.
 	 */
 	protected function setUp(): void {
+		global $wpdb;
+		foreach ( array( IntakeStore::OPTION, Ledger::OPTION, RegistrationSlots::OPTION, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) as $name ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Capture exact pre-fixture state, not a rollback-stale object-cache value.
+			$row = $wpdb->get_row( $wpdb->prepare( 'SELECT option_value,autoload FROM %i WHERE option_name=%s', $wpdb->options, $name ), ARRAY_A );
+			if ( '' !== $wpdb->last_error ) {
+				throw new \RuntimeException( 'registration_fixture_original_read_failed' ); }
+			$this->original_options[ $name ] = $row;
+		}
 		parent::setUp();
 		$this->mail_marker = self::newest_mail_job();
 		$this->as_user( 0 );
@@ -103,6 +119,38 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 				$_COOKIE = $cookie;
 			}
 		);
+	}
+
+	/** Restore only the exclusive instance's exact pre-fixture options after all native cleanup.
+	 *
+	 * @throws \RuntimeException An unclosed native scope or failed raw readback cannot count as clean.
+	 */
+	protected function tearDown(): void {
+		try {
+			parent::tearDown(); } finally {
+			if ( Capacity::transaction_active() ) {
+				throw new \RuntimeException( 'registration_fixture_transaction_still_open' ); }
+			\Linker\Commerce\Mail\NativeTransaction::run(
+				function (): void {
+					global $wpdb;
+					foreach ( $this->original_options as $name => $row ) {
+						// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Exact raw compensation of this fixture's isolated state; no history reset or production access.
+						if ( null === $row ) {
+							$wpdb->delete( $wpdb->options, array( 'option_name' => $name ) );
+						} else {
+							$wpdb->query( $wpdb->prepare( 'INSERT INTO %i (option_name,option_value,autoload) VALUES (%s,%s,%s) ON DUPLICATE KEY UPDATE option_value=VALUES(option_value),autoload=VALUES(autoload)', $wpdb->options, $name, $row['option_value'], $row['autoload'] ) );
+						}
+						$actual = $wpdb->get_row( $wpdb->prepare( 'SELECT option_value,autoload FROM %i WHERE option_name=%s', $wpdb->options, $name ), ARRAY_A );
+						// phpcs:enable WordPress.DB.DirectDatabaseQuery
+						if ( '' !== $wpdb->last_error || $actual !== $row ) {
+							throw new \RuntimeException( 'registration_fixture_original_readback_failed' ); }
+						wp_cache_delete( $name, 'options' );
+					}
+					wp_cache_delete( 'alloptions', 'options' );
+					wp_cache_delete( 'notoptions', 'options' );
+				}
+			);
+			}
 	}
 
 	/**
@@ -468,6 +516,175 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			RegistrationNotices::deliver( $id, 'team' );
 			$this->assertSame( 'accepted', $this->notices( $id )['team']['state'] );
 			$this->assertCount( 1, self::mail_jobs_after( $this->mail_marker ) );
+	}
+
+	/** Erasure authenticates both owned sources before any cancellation or job deletion. */
+	public function test_erasure_cannot_refund_another_registration_reservation(): void {
+		$post = $this->public_post( 72 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$first = $this->committed_pending_registration( $post );
+		$post  = $this->public_post( 73 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$second                            = $this->committed_pending_registration( $post );
+		$original                          = $this->notices( $first );
+		$other                             = $this->notices( $second );
+		$forged                            = $original;
+		$forged['received']['reservation'] = $other['received']['reservation'];
+		update_user_meta( $first, RegistrationNotices::META, wp_slash( $forged ) );
+		$capacity = get_option( IntakeStore::OPTION );
+		$ledger   = get_option( Ledger::OPTION );
+		try {
+			$this->assertFalse( RegistrationNotices::erase( $first ) );
+			$this->assertSame( $forged, $this->notices( $first ) );
+			$this->assertSame( $other, $this->notices( $second ) );
+			$this->assertSame( $capacity, get_option( IntakeStore::OPTION ) );
+			$this->assertSame( $ledger, get_option( Ledger::OPTION ) );
+			$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		} finally {
+			update_user_meta( $first, RegistrationNotices::META, wp_slash( $original ) ); }
+		$this->assertTrue( RegistrationNotices::erase( $first ) );
+	}
+
+	/** A healthy connection that fails native TX construction must release this acquired mutex. */
+	public function test_failed_profile_transaction_constructor_releases_its_original_mutex(): void {
+		global $wpdb;
+		$customer = $this->customer();
+		$this->as_user( $customer->get_id() );
+		$hit    = false;
+		$fault  = static function ( string $sql ) use ( &$hit ): string {
+			if ( ! $hit && str_starts_with( $sql, 'SAVEPOINT linker_native_' ) ) {
+				$hit = true;
+				return 'SELECT * FROM linker_missing_registration_constructor_table'; }
+			return $sql;
+		};
+		$report = $wpdb->suppress_errors( true );
+		add_filter( 'query', $fault );
+		try {
+			$result = RegistrationSlots::begin_change( $customer->get_id(), array(), array() ); } finally {
+			remove_filter( 'query', $fault );
+			$wpdb->suppress_errors( $report ); }
+			$this->assertTrue( $hit );
+			$this->assertInstanceOf( WP_Error::class, $result );
+			$name = ( new \ReflectionMethod( RegistrationSlots::class, 'lock_name' ) )->invoke( null );
+			$peer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+			try {
+				$this->assertSame( '1', (string) $peer->get_var( $peer->prepare( 'SELECT GET_LOCK(%s,0)', $name ) ) ); } finally {
+						$peer->get_var( $peer->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
+						$peer->close();
+						$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) ); }
+	}
+
+	/** True Woo handlers preserve normal notices and canonical input on their first protected read loss.
+	 *
+	 * @testWith ["account"]
+	 *           ["billing"]
+	 * @param string $form Native Woo writer.
+	 */
+	public function test_native_profile_handlers_report_first_read_loss_without_fatal( string $form ): void {
+		global $wpdb, $wp;
+		$customer = $this->customer();
+		$id       = $customer->get_id();
+		update_user_meta( $id, Approval::STATUS_META, Approval::PENDING );
+		$this->as_user( $id );
+		$user        = $this->native_user( $id );
+		$old_request = $_REQUEST;
+		$query_vars  = $wp->query_vars;
+		$this->later(
+			static function () use ( $old_request ): void {
+				$_REQUEST = $old_request;
+				wc_clear_notices();
+			}
+		);
+		wc_clear_notices();
+		if ( 'account' === $form ) {
+			$_POST                                  = array(
+				'action'               => 'save_account_details',
+				'account_first_name'   => 'Maria retained read failure',
+				'account_last_name'    => 'Beispiel',
+				'account_display_name' => $user->display_name,
+				'account_email'        => $user->user_email,
+			);
+			$_REQUEST['save-account-details-nonce'] = wp_create_nonce( 'save_account_details' );
+		} else {
+			$_POST                                      = array(
+				'action'             => 'edit_address',
+				'billing_country'    => 'DE',
+				'billing_first_name' => 'Maria',
+				'billing_last_name'  => 'Beispiel',
+				'billing_company'    => 'Retained read failure GmbH',
+				'billing_address_1'  => 'Teststrasse 1',
+				'billing_city'       => 'Cologne',
+				'billing_postcode'   => '50667',
+				'billing_email'      => $customer->get_email(),
+			);
+			$_REQUEST['woocommerce-edit-address-nonce'] = wp_create_nonce( 'woocommerce-edit_address' );
+			$wp->query_vars['edit-address']             = 'billing';
+		}
+		$expected = $_POST;
+		$peer     = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$before   = $peer->get_row( $peer->prepare( 'SELECT display_name,user_email FROM %i WHERE ID=%d', $wpdb->users, $id ), ARRAY_A );
+		$armed    = false;
+		$killed   = false;
+		$arm      = static function () use ( $id, &$armed ): void {
+			clean_user_cache( $id );
+			wp_cache_delete( $id, 'user_meta' );
+			$armed = true;
+		};
+		$hook     = 'account' === $form ? 'woocommerce_save_account_details_errors' : 'woocommerce_after_save_address_validation';
+		add_action( $hook, $arm, PHP_INT_MAX - 1 );
+		$fault = static function ( string $sql ) use ( $peer, &$armed, &$killed ): string {
+			global $wpdb;
+			if ( $armed && ! $killed && str_starts_with( $sql, 'SELECT ' ) ) {
+				$killed = true;
+				$peer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+			}return $sql;
+		};
+		add_filter( 'query', $fault );
+		$escaped = false;
+		try {
+			'account' === $form ? \WC_Form_Handler::save_account_details() : \WC_Form_Handler::save_address();
+		} catch ( \Throwable $error ) {
+			$escaped = true;
+		} finally {
+			remove_filter( 'query', $fault );
+			remove_action( $hook, $arm, PHP_INT_MAX - 1 );
+			$wp->query_vars = $query_vars;}
+			$after = $peer->get_row( $peer->prepare( 'SELECT display_name,user_email FROM %i WHERE ID=%d', $wpdb->users, $id ), ARRAY_A );
+			$this->assertTrue( $wpdb->db_connect( false ) );
+			$peer->close();
+			$this->assertTrue( $killed );
+			$this->assertFalse( $escaped, 'Native validation must return a normal notice instead of an uncaught connection exception.' );
+			$this->assertSame( 1, wc_notice_count( 'error' ) );
+			$this->assertSame( $expected, $_POST );
+			$this->assertSame( $before, $after );
+		if ( 'account' === $form ) {
+			$this->assertSame( $_POST['account_first_name'], \Linker\Commerce\Registration\PendingProfileCapacity::account_value( 'account_first_name', 'OLD' ) );}
+	}
+
+	/** A malformed accepted pointer cannot erase its still-retained original Message. */
+	public function test_invalid_accepted_source_retains_its_owned_native_jobs(): void {
+		$post = $this->public_post( 74 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$original = $this->notices( $id );
+		$jobs     = self::mail_jobs_after( $this->mail_marker );
+		$privacy  = new RegistrationPrivacy();
+		foreach ( array( 0, '1' )as$bad ) {
+			$changed                = $original;
+			$changed['team']['job'] = $bad;
+			update_user_meta( $id, RegistrationNotices::META, wp_slash( $changed ) );
+			try {
+				$this->assertInstanceOf( WP_Error::class, $privacy->export( $post['email'] ) );
+				$result = $privacy->erase( $post['email'] );
+				$this->assertFalse( $result['done'] );
+				$this->assertTrue( $result['items_retained'] );
+				$this->assertSame( $changed, get_user_meta( $id, RegistrationNotices::META, true ) );
+				$this->assertSame( $jobs, self::mail_jobs_after( $this->mail_marker ) );
+			} finally {
+				update_user_meta( $id, RegistrationNotices::META, wp_slash( $original ) );}
+		}
 	}
 
 	/** Corrupt private source data is retained with an explicit retryable failure, never reported as erased. */

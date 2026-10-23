@@ -31,3 +31,14 @@ LINKER_COMMERCE_TEST_SITE=http://127.0.0.1:9416 \
 ```
 
 测试使用原生JobStore/ActionScheduler和final permit，transport仅本机pre_wp_mail合成捕获；正常注册不增加步骤、密码不入恢复/日志/队列/指纹。原38held不重签、不解锁、不补任务，不重置生产或历史额度。源码/数据回退由协调者另行守备份与读回，本候选执行者不部署。
+
+
+## 3852 后的消费者与 fixture 收口
+
+独立 Spec 对固定 `3852f490` 补审发现：erase遗漏 pending reservation 认证、健康连接上NativeTransaction构造失败后未释放本次mutex、两个Woo真实handler首读断线逃出正常错误边界。实际 native **4 tests/33 assertions 全红 → 4/48 全绿**，包含两个真实注册的不同 reservation、独立连接 mutex 竞争和真正 WC_Form_Handler。修后 canonical账户四字段保留，billing返回正常notice，原native数据不写入；unknown使用已有approved文案，没有新增步骤或客户文案。
+
+随后 accepted坏job指针的真实原生控制先红；现在 read精确核 accepted正int及已定义的终态shape，export错误/erase retained，原有两job完整保留。最终相邻门 **5 tests/65 assertions PASS**，完整commerce PHPStan8与本轮5个PHP文件WPCS PASS。强缓存的81项checkpoint中仅此新增坏指针控制失败，日志原样保留；连接helper之后的新完整结果另行记录，不重标旧失败。
+
+最终副作用点已逐一核对：prepare仅取消刚取得的可信本地scope；cancel_uncreated先验HMAC及未建户stage；bind先验完整plan；deliver在ReceiptBudget前核exact current owned source；policy skip和cancel_skipped保留认证直到同事务ACK；erase在任何job删除或容量取消前先验证所有pending/reserved source，accepted再按原job/user归属；JobStore create继续与exact-source ACK/原AS同事务。未知、损坏或跨账号reservation保持原资料及容量，不因隐私请求退款另一账号。
+
+本机故障测试曾留下mail ledger缺行和admission合成state。已保留原raw现场，既有私密 `owned-ui-options-before.serialized` 的两项字节SHA均先核到原 `rehearsal-before.json`，再仅恢复本机这两项到原字节，原38job/postmeta聚合始终与local rehearsal完全相同。原因是旧fixture依赖缓存get_option快照和update_option恢复，没有raw readback；本类现在在parent setUp前保存确切原生option presence/value/autoload，在所有native清理之后短事务精确恢复4个本票option、失效对应options/alloptions/notoptions cache并核SQL逐字节。没有生产操作、清空真实quota、全库恢复或新快照；最初失败不删除。

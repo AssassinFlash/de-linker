@@ -100,6 +100,9 @@ final class PendingProfileCapacity {
 				$this->active['source'] = 'billing'; }
 		} catch ( \WC_Data_Exception $error ) {
 			wc_add_notice( $error->getMessage(), 'error' );
+		} catch ( \Throwable $error ) {
+			$this->unfinished();
+			wc_add_notice( self::message( true ), 'error' );
 		}
 	}
 
@@ -113,44 +116,51 @@ final class PendingProfileCapacity {
 		self::$account_input = array();
 		self::$account_owner = 0;
 		$id                  = (int) ( $user->ID ?? 0 );
-		if ( null !== $this->active || $errors->has_errors() || 0 < wc_notice_count( 'error' ) || ! $this->eligible( $id ) ) {
-			return; }
-		[ $columns, $meta ] = self::prepared( $user );
-		$input              = array(
+		$input               = array(
 			'account_first_name'   => (string) ( $user->first_name ?? '' ),
 			'account_last_name'    => (string) ( $user->last_name ?? '' ),
 			'account_display_name' => (string) ( $user->display_name ?? '' ),
 			'account_email'        => (string) ( $user->user_email ?? '' ),
 		);
-		$before             = RegistrationSlots::native_profile( $id );
-		if ( is_wp_error( $before ) ) {
+		try {
+			if ( null !== $this->active || $errors->has_errors() || 0 < wc_notice_count( 'error' ) || ! $this->eligible( $id ) ) {
+				return; }
+			[ $columns, $meta ] = self::prepared( $user );
+
+			$before = RegistrationSlots::native_profile( $id );
+			if ( is_wp_error( $before ) ) {
+				self::remember_account( $id, $input );
+				$errors->add( 'linker_registration_profile_capacity', self::message() );
+				return; }
+			$changed = false;
+			foreach ( $columns as $key => $value ) {
+				$changed = $changed || ( $before['columns'][ $key ] ?? '' ) !== $value; }
+			foreach ( $meta as $key => $value ) {
+				$changed = $changed || ( $before['meta'][ $key ] ?? '' ) !== $value; }
+			if ( ! $changed ) {
+				return; } // Password-only saves retain their existing native path.
+			foreach ( array( 'first_name', 'last_name' ) as $key ) {
+				if ( isset( $meta[ $key ] ) && ( $before['meta'][ $key ] ?? '' ) !== $meta[ $key ] ) {
+					$meta[ 'billing_' . $key ] = $meta[ $key ]; }
+			}
+			if ( isset( $columns['user_email'] ) && $before['columns']['user_email'] !== $columns['user_email'] ) {
+				$meta['billing_email'] = $columns['user_email']; }
+			$context = RegistrationSlots::begin_change( $id, $columns, $meta );
+			if ( is_wp_error( $context ) ) {
+				self::remember_account( $id, $input );
+				$errors->add( 'linker_registration_profile_capacity', self::message() );
+				return; }
+			$this->active = $context + array(
+				'source'          => 'account',
+				'armed'           => true,
+				'profile_written' => false,
+				'account_input'   => $input,
+			);
+		} catch ( \Throwable $error ) {
+			$this->unfinished();
 			self::remember_account( $id, $input );
-			$errors->add( 'linker_registration_profile_capacity', self::message() );
-			return; }
-		$changed = false;
-		foreach ( $columns as $key => $value ) {
-			$changed = $changed || ( $before['columns'][ $key ] ?? '' ) !== $value; }
-		foreach ( $meta as $key => $value ) {
-			$changed = $changed || ( $before['meta'][ $key ] ?? '' ) !== $value; }
-		if ( ! $changed ) {
-			return; } // Password-only saves retain their existing native path.
-		foreach ( array( 'first_name', 'last_name' ) as $key ) {
-			if ( isset( $meta[ $key ] ) && ( $before['meta'][ $key ] ?? '' ) !== $meta[ $key ] ) {
-				$meta[ 'billing_' . $key ] = $meta[ $key ]; }
+			$errors->add( 'linker_registration_profile_capacity', self::message( true ) );
 		}
-		if ( isset( $columns['user_email'] ) && $before['columns']['user_email'] !== $columns['user_email'] ) {
-			$meta['billing_email'] = $columns['user_email']; }
-		$context = RegistrationSlots::begin_change( $id, $columns, $meta );
-		if ( is_wp_error( $context ) ) {
-			self::remember_account( $id, $input );
-			$errors->add( 'linker_registration_profile_capacity', self::message() );
-			return; }
-		$this->active = $context + array(
-			'source'          => 'account',
-			'armed'           => true,
-			'profile_written' => false,
-			'account_input'   => $input,
-		);
 	}
 
 	/**

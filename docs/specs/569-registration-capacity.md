@@ -97,3 +97,6 @@ Woo/WordPress 原生 validation、users/meta、账户 writer、审批审计、pr
 verified-email exporter 除 pending source 外，还核实 accepted job 的 `_linker_registration_user` 归属并导出其完整 immutable Message；已消费删除的 job 不重建副本，读失败/归属不明返回可重试错误。当前 MU 基线对普通客户 Users REST 路径返回403；本票保留该守卫。底层 self-controller 字节门使用仅有原生 list_users 能力且无 edit_users 的受限合成账号验证，没有开放默认客户路由。
 
 历史候选的截图与测试仍保留其原 head/实例说明，不能冒充此移植候选的新验收。当前原生结果和剩余门见 [2026-10-23 移植记录](../acceptance/2026-10-23/569-current/README.md)。
+
+
+当前消费者复核进一步收窄：eraser必须在删除任何一个原job或取消任何scope前，验证本用户所有pending/reserved plans，不能用A的verified-email请求取消B的reservation。accepted source只允许正int job，erased/最终skip仅允许定义的shape；损坏指针是unknown，不清source。健康连接上NativeTransaction构造失败时只释放这次已取得且原identity仍可确认的mutex；断线不在替代连接补偿。Woo account/billing首读失败返回既有正常unknown notice；account只保留本次native owner/nonce验证后的canonical非密码字段，不把底层mysqli异常当成功或fatal页面。
