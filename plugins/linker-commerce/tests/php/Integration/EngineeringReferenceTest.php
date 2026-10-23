@@ -27,6 +27,31 @@ use WP_REST_Request;
  * @coversNothing
  */
 final class EngineeringReferenceTest extends IntegrationTestCase {
+	/** Feed metadata is canonical while native Woo facts and proof versions are retained. */
+	public function test_legacy_document_metadata_is_derived_without_rewriting_woo(): void {
+		$input                                       = $this->input();
+		$input['overlay'][0]['documents'][0]['lang'] = 'MULTI';
+		$input['overlay'][0]['documents'][0]['type'] = 'Datenblatt';
+		$input['overlay'][0]['documents'][1]['lang'] = '';
+		$input['overlay'][0]['documents'][1]['type'] = 'Handbuch';
+		$result                                      = ReferenceMigration::run( $input, false );
+		$id = $result['product_id'];
+		$this->retain_fixture_product( $id );
+		$reference = $this->reference( EngineeringFeed::feed(), $id );
+		$this->assertNotNull( $reference );
+		$documents = array_column( $reference['documents'], null, 'document_id' );
+		$manifest  = array_column( Publication::manifest()['documents'], null, 'document_id' );
+		foreach ( $input['overlay'][0]['documents'] as $index => $source ) {
+			$document_id = \Linker\Commerce\Products\Publication\DocumentFiles::id( $source['url'] );
+			$this->assertSame( 0 === $index ? 'mul' : 'und', $documents[ $document_id ]['lang'] );
+			$this->assertSame( 0 === $index ? 'datasheet' : 'manual', $documents[ $document_id ]['type'] );
+			$this->assertSame( $source['lang'], $manifest[ $document_id ]['lang'] );
+			$this->assertSame( $source['type'], $manifest[ $document_id ]['type'] );
+			$this->assertSame( $manifest[ $document_id ]['document_revision'], $documents[ $document_id ]['document_revision'] );
+			$this->assertSame( $manifest[ $document_id ]['blob_sha256'], $documents[ $document_id ]['blob_sha256'] );
+		}
+	}
+
 	/** Native Woo attribute options use term IDs even when taxonomy IDs diverge. */
 	public function test_migration_preserves_attributes_with_distinct_term_and_taxonomy_ids(): void {
 		$input    = $this->input();

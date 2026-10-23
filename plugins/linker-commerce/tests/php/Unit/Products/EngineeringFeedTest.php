@@ -348,6 +348,52 @@ final class EngineeringFeedTest extends TestCase {
 	}
 
 	/**
+	 * Legacy metadata is normalized only in the derived feed, preserving evidence.
+	 *
+	 * @dataProvider document_metadata
+	 * @param string $language Stored source label.
+	 * @param string $type Stored source type.
+	 * @param string $expected_language Canonical feed language.
+	 * @param string $expected_type Canonical document kind.
+	 * @param string $role Optional established document role.
+	 */
+	public function test_document_metadata_is_normalized_without_changing_woo( string $language, string $type, string $expected_language, string $expected_type, string $role = '' ): void {
+		$this->mock_query();
+		$this->mock_meta( 4107, array(), 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf', $type, $language, $role );
+		$item = EngineeringFeed::item( 4107 );
+		$this->assertNotNull( $item );
+		$document = $item['documents'][0];
+		$this->assertSame( $expected_language, $document['lang'] );
+		$this->assertSame( $expected_type, $document['type'] );
+		$manifest = \Linker\Commerce\Products\Publication::manifest();
+		$this->assertSame( $manifest['documents'][0]['document_revision'], $document['document_revision'] );
+		$this->assertSame( $manifest['documents'][0]['blob_sha256'], $document['blob_sha256'] );
+		$this->assertSame( $language, $manifest['documents'][0]['lang'] );
+		$this->assertSame( $type, $manifest['documents'][0]['type'] );
+	}
+
+	/**
+	 * Observed EN/DE legacy labels and unknown values retain honest semantics.
+	 *
+	 * @return array<string,array{string,string,string,string,string}>
+	 */
+	public static function document_metadata(): array {
+		return array(
+			'en'             => array( 'EN', 'Datasheet', 'en', 'datasheet', '' ),
+			'de'             => array( 'DE', 'Handbuch', 'de', 'manual', '' ),
+			'mul'            => array( 'MUL', 'Kompatibilität', 'mul', 'compatibility', '' ),
+			'multi'          => array( 'MULTI', 'Dokument', 'mul', 'document', '' ),
+			'en_de'          => array( 'EN/DE', 'Datenblatt', 'mul', 'datasheet', '' ),
+			'de_en'          => array( 'DE/EN', 'Datasheet', 'mul', 'datasheet', '' ),
+			'current'        => array( 'en', 'manual', 'en', 'manual', '' ),
+			'empty'          => array( '', '', 'und', 'document', '' ),
+			'unknown'        => array( 'not-known', 'Other source type', 'und', 'other source type', '' ),
+			'other_language' => array( 'fr', 'document', 'fr', 'document', '' ),
+			'role'           => array( 'mul', 'document', 'mul', 'datasheet', 'datasheet' ),
+		);
+	}
+
+	/**
 	 * With `since` only the products modified after it are asked for: the
 	 * query carries the modified-after condition on the GMT column.
 	 */
@@ -525,8 +571,11 @@ final class EngineeringFeedTest extends TestCase {
 	 * @param int                                 $id           Product ID.
 	 * @param array<string, array<string, mixed>> $figures      Figure entries.
 	 * @param string                              $document_url Document URL the migration wrote.
+	 * @param string                              $type Source document type.
+	 * @param string                              $language Source language tag.
+	 * @param string                              $role Explicit source document role.
 	 */
-	private function mock_meta( int $id, array $figures, string $document_url = 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ): void {
+	private function mock_meta( int $id, array $figures, string $document_url = 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf', string $type = 'datasheet', string $language = 'en', string $role = '' ): void {
 		$bindings = array();
 		foreach ( $figures as $key => $entry ) {
 			if ( is_string( $entry['citation']['url'] ?? null ) ) {
@@ -557,8 +606,9 @@ final class EngineeringFeedTest extends TestCase {
 						array(
 							'url'   => $document_url,
 							'title' => 'SAJ H2-10-30K-T2-T3 Datasheet (EN, BEU)',
-							'type'  => 'datasheet',
-							'lang'  => 'en',
+							'type'  => $type,
+							'lang'  => $language,
+							'role'  => $role,
 						),
 					)
 				),
