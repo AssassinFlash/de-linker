@@ -24,6 +24,15 @@ import { RevisionComparison } from "./RevisionComparison.tsx";
 import { ProfileIntake } from "./ProfileIntake.tsx";
 import { OwnedProfile } from "./OwnedProfile.tsx";
 import { measurementLabel } from "./ProfileLabels.ts";
+import { DesignEditor } from "./design/DesignEditor.tsx";
+import {
+	applyGeometryCommand,
+	emptyGeometry,
+} from "../domain/geometryCommands.ts";
+import type { GeometryCommand } from "../domain/geometryCommands.ts";
+import { readGeometry } from "../domain/validateGeometry.ts";
+import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
+import { readObject } from "../data/readProtocol.ts";
 
 export function ProjectEditor({
 	project,
@@ -60,7 +69,31 @@ export function ProjectEditor({
 		recoveries,
 		restore,
 	} = useProjectDraft(project, session, client, store, recheck);
-	const [valid, setValid] = useState(true);
+	const [briefValid, setBriefValid] = useState(true);
+	const [designValid, setDesignValid] = useState(true);
+	const valid = briefValid && designValid;
+	const editGeometry = useCallback(
+		(command: GeometryCommand): boolean => {
+			if (!client.isCurrentScope(session.query_scope)) return false;
+			try {
+				update((previous) => {
+					const current = previous.history.current;
+					const geometry =
+						current.geometry === undefined
+							? emptyGeometry()
+							: readGeometry(current.geometry, geometryPolicy);
+					return editDraft(previous, {
+						...current,
+						geometry: readObject(applyGeometryCommand(geometry, command)),
+					});
+				});
+				return true;
+			} catch {
+				return false;
+			}
+		},
+		[client, session.query_scope, update],
+	);
 	const profileGuard = useRef<() => boolean>(() => true);
 	const registerProfileGuard = useCallback((guard: () => boolean) => {
 		profileGuard.current = guard;
@@ -104,12 +137,17 @@ export function ProjectEditor({
 	const dirty = isDirty(draft);
 	let brief;
 	let selections;
+	let geometry;
 	try {
 		brief =
 			draft.history.current.brief === undefined
 				? emptyBrief()
 				: readBrief(draft.history.current.brief);
 		selections = readSelections(draft.history.current.profile_selections);
+		geometry =
+			draft.history.current.geometry === undefined
+				? emptyGeometry()
+				: readGeometry(draft.history.current.geometry, geometryPolicy);
 	} catch {
 		return (
 			<Notice error>
@@ -155,7 +193,7 @@ export function ProjectEditor({
 						className="lp-icon-button"
 						title={__("Undo", "linker-tools")}
 						aria-label={__("Undo", "linker-tools")}
-						disabled={!draft.history.past.length}
+						disabled={!valid || !draft.history.past.length}
 						onClick={() => update(undoDraft)}
 					>
 						<Icon name="undo" />
@@ -164,7 +202,7 @@ export function ProjectEditor({
 						className="lp-icon-button"
 						title={__("Redo", "linker-tools")}
 						aria-label={__("Redo", "linker-tools")}
-						disabled={!draft.history.future.length}
+						disabled={!valid || !draft.history.future.length}
 						onClick={() => update(redoDraft)}
 					>
 						<Icon name="redo" />
@@ -194,7 +232,7 @@ export function ProjectEditor({
 					<h1>{project.title}</h1>
 					<p>
 						{__(
-							"Site data is saved with your project. A roof layout can be added later.",
+							"Site data and roof layouts are saved in the same project.",
 							"linker-tools",
 						)}
 					</p>
@@ -215,6 +253,10 @@ export function ProjectEditor({
 							<Icon name="layers" />
 							{__("Interval data", "linker-tools")}
 						</a>
+						<a href="#lp-design">
+							<Icon name="layers" />
+							{__("Roof design", "linker-tools")}
+						</a>
 					</nav>
 					<div className="lp-source-note">
 						<Icon name="check" />
@@ -226,7 +268,7 @@ export function ProjectEditor({
 						</span>
 					</div>
 				</aside>
-				<div className="lp-editor-main">
+				<div className="lp-editor-main lp-editor-with-design">
 					{discoveryFailed && (
 						<Notice error>
 							<p>
@@ -338,7 +380,7 @@ export function ProjectEditor({
 						<BriefForm
 							brief={brief}
 							config={config}
-							onValidity={setValid}
+							onValidity={setBriefValid}
 							onChange={(next) =>
 								update((previous) =>
 									editDraft(previous, {
@@ -459,6 +501,16 @@ export function ProjectEditor({
 								}}
 							/>
 						</section>
+						<DesignEditor
+							geometry={geometry}
+							commit={editGeometry}
+							locale={config.locale}
+							projectId={project.id}
+							session={session}
+							client={client}
+							recheck={recheck}
+							onValidity={setDesignValid}
+						/>
 					</fieldset>
 				</div>
 			</div>

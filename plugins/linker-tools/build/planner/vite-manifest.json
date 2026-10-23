@@ -1,8 +1,20 @@
 {
+  "src/components/design/SceneViewport.tsx": {
+    "file": "assets/SceneViewport-Couc0oyU.js",
+    "name": "SceneViewport",
+    "src": "src/components/design/SceneViewport.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.tsx"
+    ]
+  },
   "src/main.tsx": {
     "file": "assets/planner.js",
     "name": "main",
     "src": "src/main.tsx",
-    "isEntry": true
+    "isEntry": true,
+    "dynamicImports": [
+      "src/components/design/SceneViewport.tsx"
+    ]
   }
 }
