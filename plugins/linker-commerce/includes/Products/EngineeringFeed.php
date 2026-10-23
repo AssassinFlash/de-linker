@@ -56,6 +56,7 @@ final class EngineeringFeed {
 	 * @param string|null $since GMT moment (anything strtotime() reads); only
 	 *                             products modified after it, all when null.
 	 * @return array<string, mixed>
+	 * @phpstan-impure
 	 */
 	public static function feed( ?string $since = null ): array {
 		$publication = Publication::manifest();
@@ -65,7 +66,7 @@ final class EngineeringFeed {
 			'schema_version'         => self::SCHEMA_VERSION,
 			'generated_at'           => gmdate( 'c' ),
 			'compatibility_version'  => EngineeringData::compatibility_version(),
-			'overlay'                => EngineeringData::json( EngineeringData::OVERLAY_FILE )['overlay'] ?? array(),
+			'overlay'                => self::references( $publication ),
 			'products'               => array(),
 		);
 		// The contract itself, so the engine's sync refreshes its copy from the
@@ -98,7 +99,7 @@ final class EngineeringFeed {
 	 * @return array<string, mixed>|null
 	 */
 	public static function item( int $product_id, ?array $publication = null ): ?array {
-		if ( ! Publication::is_published( $product_id ) || Publication::canonical_id( $product_id ) !== $product_id ) {
+		if ( ! Publication::is_published( $product_id ) || Publication::canonical_id( $product_id ) !== $product_id || EngineeringReference::is_reference( $product_id ) ) {
 			return null;
 		}
 		$publication ??= Publication::manifest();
@@ -131,6 +132,38 @@ final class EngineeringFeed {
 		}
 
 		return $item;
+	}
+
+	/**
+	 * Reference inputs are ordinary current Woo records with bound evidence.
+	 *
+	 * @param array<string,mixed> $publication Current authority read.
+	 * @return list<array<string,mixed>>
+	 */
+	private static function references( array $publication ): array {
+		$references = array();
+		foreach ( $publication['products'] as $product ) {
+			if ( EngineeringReference::PV_MODULE !== ( $product['engineering_role'] ?? '' ) || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
+				continue;
+			}
+			$id      = $product['product_id'];
+			$figures = self::figures( $id, $publication );
+			if ( ! EngineeringReference::ready( $figures ) ) {
+				continue;
+			}
+			$references[] = array(
+				'id'                   => $product['engineering_id'],
+				'kind'                 => 'pv_module',
+				'brand'                => $product['brand'],
+				'model'                => $product['model'],
+				'canonical_product_id' => $id,
+				'product_revision'     => $product['product_revision'],
+				'reference_revision'   => $product['product_revision'],
+				'figures'              => (object) $figures,
+				'documents'            => self::documents( $id, $publication ),
+			);
+		}
+		return $references;
 	}
 
 	/**

@@ -135,7 +135,8 @@ final class PreparationJobs {
 					unset( $job['lease_token'] );
 					if ( 'ready' === $job['status'] ) {
 						$job['loaded_revision'] = $request['loaded_revision'];
-						$expected               = array_column( $manifest['products'], 'product_revision', 'product_id' );
+						$expected_products      = 'knowledge' === $consumer ? array_filter( $manifest['products'], static fn ( array $product ): bool => \Linker\Commerce\Products\EngineeringReference::PV_MODULE !== ( $product['engineering_role'] ?? '' ) ) : $manifest['products'];
+						$expected               = array_column( $expected_products, 'product_revision', 'product_id' );
 						$prepared               = $request['prepared_products'] ?? ( 'engineering' === $consumer ? $manifest['products'] : null );
 						if ( ! is_array( $prepared ) || ! array_is_list( $prepared ) ) {
 							$result = new WP_Error( 'invalid_job_ack', 'Knowledge acknowledgement requires actual prepared product revisions.', array( 'status' => 400 ) );
@@ -153,6 +154,19 @@ final class PreparationJobs {
 						if ( count( $loaded ) !== count( $expected ) ) {
 							$job['status'] = 'pending';
 						}
+						if ( 'knowledge' === $consumer ) {
+							$diagnostics = self::unprepared_documents( $request['unprepared_documents'] ?? array(), $manifest );
+							if ( $diagnostics instanceof WP_Error ) {
+								$result = $diagnostics;
+								return;
+							}
+							$job['unprepared_documents'] = $diagnostics;
+							$job['preparation_complete'] = true === ( $request['preparation_complete'] ?? false ) && array() === $diagnostics && count( $loaded ) === count( $expected );
+							if ( ! $job['preparation_complete'] ) {
+								$job['status'] = 'pending';
+								$job['error']  = 'Some current document associations still lack proven passages.';
+							}
+						}
 					}
 					$state[ $consumer ] = $job;
 					update_option( self::OPTION, $state, false );
@@ -165,5 +179,32 @@ final class PreparationJobs {
 			}
 		);
 		return $result;
+	}
+
+	/**
+	 * Retain bounded source identities for missing passages, without source text.
+	 *
+	 * @param mixed               $rows Worker diagnostics.
+	 * @param array<string,mixed> $manifest Current source read.
+	 * @return list<array{document_id:string,product_id:int,reason:string}>|WP_Error
+	 */
+	private static function unprepared_documents( mixed $rows, array $manifest ): array|WP_Error {
+		if ( ! is_array( $rows ) || ! array_is_list( $rows ) ) {
+			return new WP_Error( 'invalid_job_ack', 'Unprepared documents must be a list of current source associations.', array( 'status' => 400 ) );
+		}
+		$documents = array_column( $manifest['documents'], null, 'document_id' );
+		$result    = array();
+		foreach ( $rows as $row ) {
+			$id = is_array( $row ) && is_string( $row['document_id'] ?? null ) ? $row['document_id'] : '';
+			if ( ! is_array( $row ) || ! is_int( $row['product_id'] ?? null ) || ! isset( $documents[ $id ] ) || ! in_array( $row['product_id'], $documents[ $id ]['product_ids'], true ) || ! in_array( $row['reason'] ?? null, array( 'no_proven_passage', 'document_unparsed' ), true ) ) {
+				return new WP_Error( 'invalid_job_ack', 'Unprepared documents must name current document/product associations.', array( 'status' => 400 ) );
+			}
+			$result[ $id . '/' . $row['product_id'] ] = array(
+				'document_id' => $id,
+				'product_id'  => $row['product_id'],
+				'reason'      => $row['reason'],
+			);
+		}
+		return array_values( $result );
 	}
 }

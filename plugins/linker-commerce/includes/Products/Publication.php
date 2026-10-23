@@ -206,7 +206,7 @@ final class Publication {
 		unset( $product );
 		$manifest                    = array(
 			'schema_version'         => 1,
-			'compatibility_revision' => self::revision( array( EngineeringData::json( EngineeringData::COMPATIBILITY_FILE ), EngineeringData::json( EngineeringData::OVERLAY_FILE ) ) ),
+			'compatibility_revision' => self::revision( EngineeringData::json( EngineeringData::COMPATIBILITY_FILE ) ),
 			'products'               => array_values( $products ),
 			'documents'              => array_values( $documents ),
 		);
@@ -248,6 +248,8 @@ final class Publication {
 			'title'                => $post->post_title,
 			'model'                => implode( ', ', $terms['pa_model'] ?? array() ),
 			'brand'                => implode( ', ', $terms['pa_brand'] ?? array() ),
+			'engineering_role'     => EngineeringReference::role( $id ),
+			'engineering_id'       => is_string( get_post_meta( $id, EngineeringReference::ID_META_KEY, true ) ) ? get_post_meta( $id, EngineeringReference::ID_META_KEY, true ) : '',
 			'locale_product_ids'   => array(),
 			'published_locale_ids' => array(),
 			'documents'            => array(),

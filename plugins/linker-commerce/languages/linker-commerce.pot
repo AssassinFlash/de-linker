@@ -3174,8 +3174,19 @@ msgid ""
 msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:136
-msgid ""
-"Engineering components that are not products (data/engineering-overlay.json)."
+msgid "Current Woo engineering reference records with bound document evidence."
+msgstr ""
+
+#: includes/Products/EngineeringReference.php:74
+msgid "Engineering role"
+msgstr ""
+
+#: includes/Products/EngineeringReference.php:77
+msgid "Reference PV module"
+msgstr ""
+
+#: includes/Products/EngineeringReference.php:84
+msgid "Engineering ID"
 msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:171

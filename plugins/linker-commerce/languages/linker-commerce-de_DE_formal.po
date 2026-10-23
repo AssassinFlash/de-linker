@@ -3432,12 +3432,20 @@ msgstr ""
 "nicht lesen kann."
 
 #: includes/Products/EngineeringFeedController.php:136
-msgid ""
-"Engineering components that are not products (data/engineering-"
-"overlay.json)."
-msgstr ""
-"Technische Komponenten, die keine Produkte sind (data/engineering-"
-"overlay.json)."
+msgid "Current Woo engineering reference records with bound document evidence."
+msgstr "Aktuelle Woo-Referenzdatensätze für die Systemauslegung mit gebundenen Dokumentnachweisen."
+
+#: includes/Products/EngineeringReference.php:74
+msgid "Engineering role"
+msgstr "Verwendung im Systementwurf"
+
+#: includes/Products/EngineeringReference.php:77
+msgid "Reference PV module"
+msgstr "PV-Referenzmodul"
+
+#: includes/Products/EngineeringReference.php:84
+msgid "Engineering ID"
+msgstr "Referenzkennung"
 
 #: includes/Products/EngineeringFeedController.php:171
 msgid "One entry per published product."

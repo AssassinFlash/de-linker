@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Products\Publication;
 
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\EngineeringReference;
 use WP_Error;
 use WP_REST_Request;
 use WP_Query;
@@ -33,6 +34,8 @@ final class Visibility {
 		add_action( 'woocommerce_cart_loaded_from_session', array( $this, 'prune' ), 1 );
 		add_action( 'woocommerce_before_calculate_totals', array( $this, 'prune' ), 1 );
 		add_filter( 'woocommerce_product_is_visible', array( $this, 'visible' ), 10, 2 );
+		// Run after PriceDisplay's native unpriced-inquiry permission at priority 10.
+		add_filter( 'woocommerce_is_purchasable', array( $this, 'purchasable' ), 20, 2 );
 	}
 
 	/**
@@ -45,8 +48,8 @@ final class Visibility {
 	 * @return mixed
 	 */
 	public function enter( mixed $response, array $handler, WP_REST_Request $request ): mixed {
-		$this->store_products = 'GET' === $request->get_method() && 1 === preg_match( '#^/wc/store/v[0-9]+/products(?:/[^/]+)?$#D', $request->get_route() );
-		if ( $this->store_products && preg_match( '#/products/([0-9]+)$#D', $request->get_route(), $matches ) && ! Publication::is_published( (int) $matches[1] ) ) {
+		$this->store_products = in_array( $request->get_method(), array( 'GET', 'HEAD' ), true ) && 1 === preg_match( '#^/wc/store/v[0-9]+/products(?:/[^/]+)?$#D', $request->get_route() );
+		if ( $this->store_products && preg_match( '#/products/([0-9]+)$#D', $request->get_route(), $matches ) && ! self::sales_product( (int) $matches[1] ) ) {
 			return new WP_Error( 'woocommerce_rest_product_invalid_id', 'Invalid product ID.', array( 'status' => 404 ) );
 		}
 		return $response;
@@ -65,7 +68,7 @@ final class Visibility {
 		unset( $handler, $request );
 		if ( $this->store_products && $response instanceof \WP_REST_Response ) {
 			$data = $response->get_data();
-			if ( is_array( $data ) && isset( $data['id'] ) && ! Publication::is_published( (int) $data['id'] ) ) {
+			if ( is_array( $data ) && isset( $data['id'] ) && ! self::sales_product( (int) $data['id'] ) ) {
 				$response = new WP_Error( 'woocommerce_rest_product_invalid_id', 'Invalid product ID.', array( 'status' => 404 ) );
 			}
 		}
@@ -94,7 +97,7 @@ final class Visibility {
 				'linker_publication_internal' => true,
 			)
 		);
-		$allowed = array_values( array_filter( array_map( 'intval', $ids ), array( Publication::class, 'is_published' ) ) );
+		$allowed = array_values( array_filter( array_map( 'intval', $ids ), array( self::class, 'sales_product' ) ) );
 		$include = $query->get( 'post__in' );
 		if ( is_array( $include ) && array() !== $include ) {
 			$allowed = array_values( array_intersect( $include, $allowed ) );
@@ -104,7 +107,7 @@ final class Visibility {
 
 	/** A locale mirror cannot expose a withdrawn canonical product page. */
 	public function single_product(): void {
-		if ( ! is_singular( 'product' ) || ( is_preview() && current_user_can( 'edit_post', get_queried_object_id() ) ) || Publication::is_published( get_queried_object_id() ) ) {
+		if ( ! is_singular( 'product' ) || ( is_preview() && current_user_can( 'edit_post', get_queried_object_id() ) ) || self::sales_product( get_queried_object_id() ) ) {
 			return;
 		}
 		global $wp_query;
@@ -120,7 +123,7 @@ final class Visibility {
 	 */
 	public function prune( WC_Cart $cart ): void {
 		foreach ( $cart->get_cart_contents() as $key => $line ) {
-			if ( ! Publication::is_published( (int) ( $line['product_id'] ?? 0 ) ) ) {
+			if ( ! self::sales_product( (int) ( $line['product_id'] ?? 0 ) ) ) {
 				$cart->remove_cart_item( $key );
 			}
 		}
@@ -133,6 +136,26 @@ final class Visibility {
 	 * @param int  $id Product ID.
 	 */
 	public function visible( bool $visible, int $id ): bool {
-		return $visible && Publication::is_published( $id );
+		return $visible && self::sales_product( $id );
+	}
+
+	/**
+	 * Keep reference records out of native cart additions even if priced later.
+	 *
+	 * @param bool        $purchasable Native permission.
+	 * @param \WC_Product $product Product or variation.
+	 */
+	public function purchasable( bool $purchasable, \WC_Product $product ): bool {
+		$id = $product->get_parent_id() > 0 ? $product->get_parent_id() : $product->get_id();
+		return $purchasable && self::sales_product( $id );
+	}
+
+	/**
+	 * Public commerce scope, narrower than engineering publication.
+	 *
+	 * @param int $id Locale or source product.
+	 */
+	private static function sales_product( int $id ): bool {
+		return Publication::is_published( $id ) && ! EngineeringReference::is_reference( $id );
 	}
 }
