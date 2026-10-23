@@ -49,7 +49,13 @@
 #tv-blog-single-v1 .reader-meta { display: grid; gap: var(--proto-space-3); margin-top: var(--proto-space-7); padding-top: var(--proto-space-5); border-top: 1px solid var(--proto-neutral-200); color: var(--proto-neutral-500); font-size: .75rem; }
 #tv-blog-single-v1 .reader-actions { display: flex; flex-wrap: wrap; gap: var(--proto-space-4); margin-top: var(--proto-space-5); font-size: .8125rem; font-weight: 500; }
 #tv-blog-single-v1 .reader-adjacent { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--proto-space-5); margin-top: var(--proto-space-7); padding-top: var(--proto-space-5); border-top: 1px solid var(--proto-neutral-200); font-size: .8125rem; line-height: 1.6; }
-#tv-blog-single-v1 .reader-adjacent span { display: block; margin-bottom: var(--proto-space-3); color: var(--proto-neutral-500); font-size: .6875rem; }
+#tv-blog-single-v1 .reader-adjacent:not(:has(a)) { display: none; }
+#tv-blog-single-v1 .reader-adjacent > a { display: grid; gap: var(--proto-space-3); align-content: start; min-height: var(--proto-control-height); padding: var(--proto-space-4); border: 1px solid var(--proto-neutral-200); border-radius: var(--proto-radius-card); color: var(--proto-ink-deep); text-decoration: none; }
+#tv-blog-single-v1 .reader-adjacent > a:only-child { grid-column: 1 / -1; }
+#tv-blog-single-v1 .reader-adjacent-label { color: var(--proto-ink-muted-deep); font-size: var(--proto-size-micro); }
+#tv-blog-single-v1 .reader-adjacent-title { font-size: var(--proto-size-sm); line-height: 1.6; overflow-wrap: anywhere; hyphens: manual; }
+#tv-blog-single-v1 .reader-adjacent > a:hover { border-color: var(--proto-teal-600); background: var(--proto-teal-50); color: var(--proto-teal-700); }
+#tv-blog-single-v1 .reader-adjacent > a:focus-visible { outline: var(--proto-focus-ring); outline-offset: var(--proto-focus-offset); }
 #tv-blog-single-v1 .reader-right h2 { margin-bottom: var(--proto-space-4); font-size: .875rem; font-weight: 600; }
 #tv-blog-single-v1 .reader-share { padding-bottom: var(--proto-space-6); margin-bottom: var(--proto-space-5); border-bottom: 1px solid var(--proto-neutral-200); }
 /* Keep LC's native share URLs and accessible brand labels. Four equal targets
@@ -73,6 +79,7 @@
   #tv-blog-single-v1 .tv-blog-single-related-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 @media (max-width:999px) {
+  #tv-blog-single-v1 .reader-adjacent { grid-template-columns: minmax(0,1fr); }
   #tv-blog-single-v1 .reader-topbar { padding: var(--proto-space-4); }
   #tv-blog-single-v1 .reader-layout { display: flex; flex-direction: column; gap: 0; padding: 0 0 var(--proto-space-7); }
   #tv-blog-single-v1 .reader-left { position: static; order: 0; width: 100%; max-height: none; padding-inline: var(--proto-space-4); }
