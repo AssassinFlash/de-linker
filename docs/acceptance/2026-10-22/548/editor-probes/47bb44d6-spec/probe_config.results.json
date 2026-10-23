@@ -1,0 +1,140 @@
+[
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "accepted",
+    "actual": "https://fixture.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js"
+  },
+  {
+    "input": "https://fixture.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "accepted",
+    "actual": "https://fixture.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js"
+  },
+  {
+    "input": null,
+    "expected": "accepted",
+    "actual": null
+  },
+  {
+    "input": null,
+    "expected": "accepted",
+    "actual": null
+  },
+  {
+    "input": "https://foreign.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "http://fixture.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "https://fixture.invalid:444/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "https://user@fixture.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "https://user:password@fixture.invalid/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "javascript:alert(1)",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "data:text/javascript,export default 1",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "blob:https://fixture.invalid/id",
+    "expected": "refused",
+    "error": "Invalid URL"
+  },
+  {
+    "input": "/uploads/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/uploads/build/planner/assets/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/nested/SceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/%53ceneViewport-hash_1.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.mjs",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js?x=1",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js#fragment",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1%2Fother.js",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": 3,
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": {},
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": [],
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "",
+    "expected": "refused",
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js?",
+    "expected": "query-free/fragment-free",
+    "actual": null,
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js#",
+    "expected": "query-free/fragment-free",
+    "actual": null,
+    "error": "invalid_planner_scene_module"
+  },
+  {
+    "input": "/wp-content/plugins/linker-tools/build/planner/assets/SceneViewport-hash_1.js?#",
+    "expected": "query-free/fragment-free",
+    "actual": null,
+    "error": "invalid_planner_scene_module"
+  }
+]

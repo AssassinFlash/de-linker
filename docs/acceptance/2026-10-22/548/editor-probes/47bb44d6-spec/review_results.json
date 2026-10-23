@@ -1,0 +1,72 @@
+{
+  "axis": "Spec",
+  "target": "47bb44d6ca2ff664d0bf638e394ab6fa842ac2fd",
+  "correction_base": "8e11c7c3dfbcf658765b53b5f7fa4074e03ed560",
+  "full_base": "8a4a80b132f692062125807e509a57926fb0f518",
+  "verdict": "PASS",
+  "findings": {
+    "missing_partial": [],
+    "scope_creep": [],
+    "incorrect": []
+  },
+  "resolved": {
+    "previous": "empty_executable_url_delimiters",
+    "priority": 3,
+    "change": "config.ts now requires asset.href === asset.origin + asset.pathname, in addition to same origin/directory, credential and exact scene-name checks",
+    "original_probe_unchanged": true,
+    "probe_sha256": "10c59be342579733f83d1bc6d430e5e159fc89550093bc5079ca83e2ee0f89ad",
+    "original_results": "three red ?/#/?# cases on8e11 now three green; full original matrix + targetconfig5tests passed"
+  },
+  "additional": {
+    "canonical_valid_variants": 4,
+    "actual_typescript_vite_rebuild": true,
+    "generated_artifacts_byte_match_target": 7,
+    "fixed_emitted_module_graph_passed": true,
+    "independent_cached_failure_queried_scene_graph_passed": true,
+    "entry_mount_scan": 1
+  },
+  "reused_unchanged_evidence": {
+    "report": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/review_results.json",
+    "unchanged_hashes": {
+      "apps/planner/src/data/sceneModule.ts": {
+        "same_as_8e11": true,
+        "sha256": "bdf17108cdf5e21dd228b64e9c8729d26ba505e420ab63d8ba748811fbe928a5"
+      },
+      "apps/planner/src/components/design/LazySceneViewport.tsx": {
+        "same_as_8e11": true,
+        "sha256": "32da11a88a9458b0c4738b41ab5537becad71f783e4b79cefe4eba80118fd6ee"
+      },
+      "apps/planner/src/components/design/DesignEditor.tsx": {
+        "same_as_8e11": true,
+        "sha256": "d42f3cf44c2a94b3340d6f3f35aba1d5f04ab75562983401be9085d379904b72"
+      },
+      "apps/planner/src/components/design/PlanViewport.tsx": {
+        "same_as_8e11": true,
+        "sha256": "ba9ccd1cef4e7441d028c9877457b686cf7a1a1767441fcc9f7a52de3cb8095c"
+      },
+      "plugins/linker-tools/includes/Planner/Application.php": {
+        "same_as_8e11": true,
+        "sha256": "99610a162c886e48f298204848917687b6572ad9512dabbaf21eaf7c59371a0c"
+      }
+    },
+    "includes": [
+      "source loader concurrency/retry1→2/success reuse",
+      "actual React raw2.5+3view changes",
+      "PHP Application14manifest variants",
+      "SVG ordering/routing",
+      "52 targetDOM pass"
+    ],
+    "not_repeated": "accepted maths/geometry/native matrix"
+  },
+  "limits": [
+    "Real emitted ESM graph evaluated in JSDOM, first bare scene failure injected; no application mount/GPU/native assertion",
+    "Extra query2 after success is an artificial graph challenge; normal source loader success reuse is preserved",
+    "No parent source/native/p548/production edits or operations",
+    "Full A-D/map/drawing/import/task/engineering/report/site goal remains active"
+  ],
+  "previous_fixed_outcome": {
+    "target": "8e11c7c3dfbcf658765b53b5f7fa4074e03ed560",
+    "verdict": "FAIL P3",
+    "report": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/REPRODUCE.md"
+  }
+}

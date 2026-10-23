@@ -1,0 +1,12 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import React,{act}from'react';
+import {setupDom,enter,until}from'./dom-fixture.mjs';import flat from '../../../fixtures/planning/geometry-flat.json' with{type:'json'};
+test('independent: failed transport recovers without raw edit loss and successful module survives view remounts',async t=>{
+ const urls=[];globalThis.__specSceneEvaluate=async url=>{urls.push(url);if(!new URL(url).search)throw new Error('controlled-module-failure')};
+ const env=setupDom(),{createRoot}=await import('react-dom/client'),{DesignEditor}=await import('../src/components/design/DesignEditor.tsx');const caught=[];const root=createRoot(env.element,{onCaughtError:e=>caught.push(e)});t.after(()=>env.dispose(root));
+ const button=text=>[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===text);const click=async text=>{assert.ok(button(text),text);await act(async()=>button(text).click())};let commits=0;const data=structuredClone(flat),wire=JSON.stringify(data);
+ await act(async()=>root.render(React.createElement(React.StrictMode,null,React.createElement(DesignEditor,{geometry:data,sceneModuleUrl:new URL('../src/components/design/SceneViewport.tsx',import.meta.url).href,commit(){commits++;return false},locale:'en-GB',projectId:'1'.repeat(32),session:{query_scope:'2'.repeat(64)},client:{isCurrentScope:()=>true},recheck(){},onValidity(){}}))));
+ await click(flat.arrays[0].name);await click('Edit numeric properties');await enter(document.querySelector('[name="rows"]'),'2.5');await click('3D');await until(()=>button('Retry loading 3D'));assert.equal(document.querySelector('[name="rows"]').value,'2.5');await click('Retry loading 3D');await until(()=>document.querySelector('[data-spec-recovered-scene]'));assert.equal(document.querySelector('[name="rows"]').value,'2.5');
+ for(let i=0;i<3;i++){await click('Plan');assert.ok(document.querySelector('svg.lp-plan-svg'));await click('3D');await until(()=>document.querySelector('[data-spec-recovered-scene]'))}
+ assert.equal(urls.length,2);assert.equal(new URL(urls[1]).search,'?planner_retry=1');assert.equal(commits,0);assert.equal(JSON.stringify(data),wire);assert.equal(document.querySelector('[name="rows"]').value,'2.5');assert.equal(caught.length,1);
+ fs.writeFileSync(new URL('../../../probe_view.results.json',import.meta.url),JSON.stringify({requests:urls,caught:1,raw:'2.5',viewRemounts:3,commits,geometryUnchanged:true},null,2)+'\n');
+});

@@ -204,3 +204,14 @@ All three cases are added to the negative matrix. Strict build/source and real
 emitted graph checks plus the configuration/raw-input retry regressions pass.
 The independent fixed-source result and corrective recheck are recorded
 separately; no native screenshot is retroactively assigned to this correction.
+
+Fixed8e11c7c3 finished Standards PASS and Spec FAIL/P3; the corrective fixed
+47bb44d6ca2ff664d0bf638e394ab6fa842ac2fd finished both axes PASS. Their unique
+reports/probes/logs are preserved in editor-probes/{8e11c7c3,47bb44d6}-{spec,standards}.
+The original three red assertions are retained unchanged and now pass against
+47bb. Both independently checked the actual queried scene retry/entry identity;
+Spec rebuilt all7 assets byte-for-byte. Unchanged high-risk loader/cache/raw-form,
+PHP and draw-order evidence is explicitly inherited from their8e11 probes.
+No new public copy changed. This closes the reviewed manual-editor source
+increment; native touch, device-loss/capacity and the complete A–D integration
+gates remain active, as described above.

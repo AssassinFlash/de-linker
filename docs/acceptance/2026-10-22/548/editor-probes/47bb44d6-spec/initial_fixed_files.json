@@ -1,0 +1,326 @@
+{
+  "repo": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548",
+  "target": "47bb44d6ca2ff664d0bf638e394ab6fa842ac2fd",
+  "files": [
+    {
+      "path": "apps/planner/bin/build-manifest.mjs",
+      "bytes": 3470
+    },
+    {
+      "path": "apps/planner/package-lock.json",
+      "bytes": 72168
+    },
+    {
+      "path": "apps/planner/package.json",
+      "bytes": 1185
+    },
+    {
+      "path": "apps/planner/src/components/BriefForm.tsx",
+      "bytes": 10396
+    },
+    {
+      "path": "apps/planner/src/components/Icon.tsx",
+      "bytes": 823
+    },
+    {
+      "path": "apps/planner/src/components/NewProject.tsx",
+      "bytes": 6804
+    },
+    {
+      "path": "apps/planner/src/components/Notice.tsx",
+      "bytes": 290
+    },
+    {
+      "path": "apps/planner/src/components/NumberField.tsx",
+      "bytes": 2528
+    },
+    {
+      "path": "apps/planner/src/components/OwnedProfile.tsx",
+      "bytes": 4536
+    },
+    {
+      "path": "apps/planner/src/components/ProfileError.tsx",
+      "bytes": 1990
+    },
+    {
+      "path": "apps/planner/src/components/ProfileImportSettings.tsx",
+      "bytes": 3014
+    },
+    {
+      "path": "apps/planner/src/components/ProfileIntake.tsx",
+      "bytes": 24610
+    },
+    {
+      "path": "apps/planner/src/components/ProfileLabels.ts",
+      "bytes": 4434
+    },
+    {
+      "path": "apps/planner/src/components/ProfileMapping.tsx",
+      "bytes": 8910
+    },
+    {
+      "path": "apps/planner/src/components/ProfileReview.tsx",
+      "bytes": 6197
+    },
+    {
+      "path": "apps/planner/src/components/ProjectEditor.tsx",
+      "bytes": 15083
+    },
+    {
+      "path": "apps/planner/src/components/RevisionComparison.tsx",
+      "bytes": 4550
+    },
+    {
+      "path": "apps/planner/src/components/SessionBoundary.tsx",
+      "bytes": 3481
+    },
+    {
+      "path": "apps/planner/src/components/Workspace.tsx",
+      "bytes": 10788
+    },
+    {
+      "path": "apps/planner/src/components/design/ArrayForm.tsx",
+      "bytes": 5389
+    },
+    {
+      "path": "apps/planner/src/components/design/CoordinatesForm.tsx",
+      "bytes": 3821
+    },
+    {
+      "path": "apps/planner/src/components/design/DesignEditor.tsx",
+      "bytes": 20667
+    },
+    {
+      "path": "apps/planner/src/components/design/GeometryForm.tsx",
+      "bytes": 5842
+    },
+    {
+      "path": "apps/planner/src/components/design/LayoutReviewPanel.tsx",
+      "bytes": 8940
+    },
+    {
+      "path": "apps/planner/src/components/design/LayoutRulesForm.tsx",
+      "bytes": 2393
+    },
+    {
+      "path": "apps/planner/src/components/design/LazySceneViewport.tsx",
+      "bytes": 1604
+    },
+    {
+      "path": "apps/planner/src/components/design/ModuleForm.tsx",
+      "bytes": 3694
+    },
+    {
+      "path": "apps/planner/src/components/design/PlanViewport.tsx",
+      "bytes": 11122
+    },
+    {
+      "path": "apps/planner/src/components/design/RoofForm.tsx",
+      "bytes": 6147
+    },
+    {
+      "path": "apps/planner/src/components/design/SceneControls.tsx",
+      "bytes": 4184
+    },
+    {
+      "path": "apps/planner/src/components/design/SceneViewport.tsx",
+      "bytes": 17077
+    },
+    {
+      "path": "apps/planner/src/components/design/ShapeForm.tsx",
+      "bytes": 4878
+    },
+    {
+      "path": "apps/planner/src/components/design/SourceForm.tsx",
+      "bytes": 3178
+    },
+    {
+      "path": "apps/planner/src/components/revealActionResult.ts",
+      "bytes": 410
+    },
+    {
+      "path": "apps/planner/src/contracts/brief.schema.json",
+      "bytes": 3840
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-numerics.json",
+      "bytes": 35
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry-policy.json",
+      "bytes": 73
+    },
+    {
+      "path": "apps/planner/src/contracts/geometry.schema.json",
+      "bytes": 14696
+    },
+    {
+      "path": "apps/planner/src/contracts/profile-import.schema.json",
+      "bytes": 3511
+    },
+    {
+      "path": "apps/planner/src/contracts/profile-selections.schema.json",
+      "bytes": 711
+    },
+    {
+      "path": "apps/planner/src/data/DraftStore.ts",
+      "bytes": 18906
+    },
+    {
+      "path": "apps/planner/src/data/PlannerClient.ts",
+      "bytes": 6929
+    },
+    {
+      "path": "apps/planner/src/data/boundedBody.ts",
+      "bytes": 1317
+    },
+    {
+      "path": "apps/planner/src/data/config.ts",
+      "bytes": 1852
+    },
+    {
+      "path": "apps/planner/src/data/geometryReview.ts",
+      "bytes": 2969
+    },
+    {
+      "path": "apps/planner/src/data/inspectJson.ts",
+      "bytes": 2517
+    },
+    {
+      "path": "apps/planner/src/data/profileIssue.ts",
+      "bytes": 1278
+    },
+    {
+      "path": "apps/planner/src/data/projectIndex.ts",
+      "bytes": 1611
+    },
+    {
+      "path": "apps/planner/src/data/protocol.ts",
+      "bytes": 1827
+    },
+    {
+      "path": "apps/planner/src/data/readProtocol.ts",
+      "bytes": 3081
+    },
+    {
+      "path": "apps/planner/src/data/recoveryIntents.ts",
+      "bytes": 1886
+    },
+    {
+      "path": "apps/planner/src/data/recoveryScopes.ts",
+      "bytes": 1513
+    },
+    {
+      "path": "apps/planner/src/data/sceneModule.ts",
+      "bytes": 1351
+    },
+    {
+      "path": "apps/planner/src/data/useProjectBar.ts",
+      "bytes": 712
+    },
+    {
+      "path": "apps/planner/src/data/useProjectDraft.ts",
+      "bytes": 6757
+    },
+    {
+      "path": "apps/planner/src/data/useSiteIntegration.ts",
+      "bytes": 1731
+    },
+    {
+      "path": "apps/planner/src/domain/brief.ts",
+      "bytes": 1512
+    },
+    {
+      "path": "apps/planner/src/domain/coordinates.ts",
+      "bytes": 1772
+    },
+    {
+      "path": "apps/planner/src/domain/decimal.ts",
+      "bytes": 1131
+    },
+    {
+      "path": "apps/planner/src/domain/draft.ts",
+      "bytes": 4375
+    },
+    {
+      "path": "apps/planner/src/domain/geometry.ts",
+      "bytes": 3491
+    },
+    {
+      "path": "apps/planner/src/domain/geometryCommands.ts",
+      "bytes": 7791
+    },
+    {
+      "path": "apps/planner/src/domain/geometryEditing.ts",
+      "bytes": 2471
+    },
+    {
+      "path": "apps/planner/src/domain/geometryNumerics.ts",
+      "bytes": 1404
+    },
+    {
+      "path": "apps/planner/src/domain/geometrySchema.ts",
+      "bytes": 185
+    },
+    {
+      "path": "apps/planner/src/domain/history.ts",
+      "bytes": 1249
+    },
+    {
+      "path": "apps/planner/src/domain/panelPoses.ts",
+      "bytes": 5006
+    },
+    {
+      "path": "apps/planner/src/domain/profiles.ts",
+      "bytes": 9012
+    },
+    {
+      "path": "apps/planner/src/domain/renderGeometry.ts",
+      "bytes": 4542
+    },
+    {
+      "path": "apps/planner/src/domain/renderLifetime.ts",
+      "bytes": 1381
+    },
+    {
+      "path": "apps/planner/src/domain/validateGeometry.ts",
+      "bytes": 7817
+    },
+    {
+      "path": "apps/planner/src/i18n.ts",
+      "bytes": 688
+    },
+    {
+      "path": "apps/planner/src/main.tsx",
+      "bytes": 2284
+    },
+    {
+      "path": "apps/planner/tests/built-modules.mjs",
+      "bytes": 1951
+    },
+    {
+      "path": "apps/planner/tests/config.test.mjs",
+      "bytes": 1519
+    },
+    {
+      "path": "apps/planner/tsconfig.json",
+      "bytes": 632
+    },
+    {
+      "path": "apps/planner/vite.config.ts",
+      "bytes": 894
+    },
+    {
+      "path": "docs/specs/548-design-geometry.md",
+      "bytes": 6233
+    },
+    {
+      "path": "docs/specs/548-interactive-design.md",
+      "bytes": 8689
+    },
+    {
+      "path": "docs/specs/548-workbench-application.md",
+      "bytes": 8372
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "case": "concurrency_failures_success",
+    "requests": [
+      "file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/apps/planner/src/components/design/SceneViewport.tsx",
+      "file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/apps/planner/src/components/design/SceneViewport.tsx?planner_retry=1",
+      "file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-editor-8e11-ug7iol_l/apps/planner/src/components/design/SceneViewport.tsx?planner_retry=2"
+    ],
+    "firstShared": true,
+    "retryShared": true,
+    "successPromiseReused": true
+  },
+  {
+    "case": "missing_native_metadata",
+    "newModuleEvaluations": 0,
+    "refusal": "scene_module_url_missing"
+  }
+]

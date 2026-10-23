@@ -1,0 +1,1 @@
+export async function load(url,context,nextLoad){const u=new URL(url);if(/\/build\/planner\/assets\/SceneViewport-[a-zA-Z0-9_-]+\.js$/.test(u.pathname)&&!u.search)return{format:'module',shortCircuit:true,source:`globalThis.__specBuiltFailures.push(import.meta.url);throw new Error('controlled-built-first-url-failure');`};return nextLoad(url,context)}

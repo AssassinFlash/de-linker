@@ -1,0 +1,22 @@
+[
+  {
+    "entry": "https://FIXTURE.invalid:443/plugin/assets/planner.js?ver=hash",
+    "scene": "https://fixture.invalid/plugin/assets/SceneViewport-valid.js",
+    "accepted": "https://fixture.invalid/plugin/assets/SceneViewport-valid.js"
+  },
+  {
+    "entry": "http://127.0.0.1:5173/plugin/assets/planner.js?ver=hash",
+    "scene": "http://127.0.0.1:5173/plugin/assets/SceneViewport-valid.js",
+    "accepted": "http://127.0.0.1:5173/plugin/assets/SceneViewport-valid.js"
+  },
+  {
+    "entry": "https://fixture.invalid/Linker%20Tools/assets/planner.js?ver=hash",
+    "scene": "https://fixture.invalid/Linker%20Tools/assets/SceneViewport-valid.js",
+    "accepted": "https://fixture.invalid/Linker%20Tools/assets/SceneViewport-valid.js"
+  },
+  {
+    "entry": "https://fixture.invalid/plugin/assets/planner.js?ver=hash",
+    "scene": "https://fixture.invalid/plugin/assets/x/../SceneViewport-valid.js",
+    "accepted": "https://fixture.invalid/plugin/assets/SceneViewport-valid.js"
+  }
+]
