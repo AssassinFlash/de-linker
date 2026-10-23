@@ -53,7 +53,10 @@ def documents_of(product: Product | PvModule, kind: str, locale: Locale) -> list
     """A product's documents of one kind as answer objects, in the report's
     language when the product data carries it (the feed marks each document's
     language; a language the product data has no document for keeps what there
-    is, so an answer never loses its evidence)."""
+    is, so an answer never loses its evidence). Canonical `mul` and `und` do not
+    claim a locale: an exact-language document wins, otherwise the existing
+    fallback retains the available multilingual or unknown-language evidence.
+    """
     found = [document for document in product.documents if document.type == kind]
     matching = [document for document in found if document.lang == locale]
     return [Doc(url=document.url) for document in matching or found]

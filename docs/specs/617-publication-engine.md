@@ -18,6 +18,8 @@
 
 线上 feed URL 与 manifest URL 一致。本地快照保留本地 uploads origin，而现有 feed producer 将当前站点 URL 归一为 `https://de-linker.com`；Python 只按 `LINKER_PUBLICATION_URL` 所指定的同一精确 origin 做对应归一，保持路径、query、fragment 不变，且身份/修订/SHA/关联仍须全通过。任意其他主机即使路径或内容相同也不能通过。
 
+原生 Woo 文档可携带 `aliases`（明确托管 URL 列表），图值 `citation.doc` 保留原始来源文件名；schema 与 typed model 明确接收这两项，其他未声明键仍拒绝。文件名只作来源标签，不授予许可。引用允许使用当前同一文档的明确 URL 别名；所有已加载别名仍须属于新读到的许可 URL 集合，资料身份/修订/关联也须有效。producer 将历史语言标签派生为小写双字母、`mul`（明确多语言）或 `und`（未说明/未识别），不改 Woo 原值或其证明；资料类型复用现有产品资料的 EN/DE 映射。报告优先用匹配语言，缺少匹配时保留既有可用资料回退，不将未知语言假定为英文。
+
 新结果 `publication.engineering_contract=2`，且显式携带 `reference_inputs`。每个参考项为 `{reference_input_id,reference_revision,product_id,product_revision}`；其 source 产品依赖与全部文档依赖同时列入普通 `products` / `documents`，文档额外携带 `blob_sha256`。参考信息因此参与选择指纹及 Woo 最后校验。屋顶结果只列实际使用的参考及资料，不再清空依赖，也不附带无关销售候选。
 
 旧 receipt 没有这一版本标记、遗漏参考身份或不含其完整产品/文档证明时，后续保存、确认与新 PDF 拒绝为 409。资料或源在途撤回/更新同样拒绝 409；计算开始前参考未准备/不可用，返回 503 `publication_unavailable`，明确 `reason=reference_evidence_unavailable`。客户拥有的历史快照和已生成 PDF 原件仍保留。

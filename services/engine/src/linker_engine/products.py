@@ -45,6 +45,7 @@ def validate(document: Any, schema_name: str) -> None:
 class Citation:
     url: str
     page: int | None = None
+    doc: str | None = None
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,7 @@ class Document:
     product_ids: list[int] | None = None
     role: str | None = None
     citation_aliases: list[str] | None = None
+    aliases: list[str] | None = None
 
 
 def _known(value: Any) -> Any:
@@ -78,7 +80,11 @@ def _figures(raw: dict[str, Any]) -> dict[str, Figure]:
         key: Figure(
             value=str(entry["value"]),
             unit=entry.get("unit"),
-            citation=Citation(entry["citation"]["url"], entry["citation"].get("page")),
+            citation=Citation(
+                entry["citation"]["url"],
+                entry["citation"].get("page"),
+                entry["citation"].get("doc"),
+            ),
             value_de=entry.get("value_de"),
         )
         for key, entry in raw.items()
