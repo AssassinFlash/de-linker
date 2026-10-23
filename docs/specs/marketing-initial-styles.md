@@ -73,6 +73,11 @@ brand palette. Change both colors together without a background interpolation
 that briefly leaves white text on white. Keep geometry, labels and hrefs
 unchanged. Preserve the existing 2px focus ring and 5px offset, with white ink
 and a dark underlay so the focus remains distinct across the photograph.
+Native EN320 without scripts places the final focused anchor's bottom at
+899.8984375px in a900px viewport, clipping its otherwise visible 7px focus
+footprint. Give these native anchors8px block scroll margin: the existing
+2px ring plus5px offset and1px for native integer scroll rounding. Preserve
+every rejected frame and verify the entire ring after native Tab scrolling.
 These explicit interaction-state corrections are declared visual bug fixes;
 they do not waive normal resting-page parity or the independent header gate.
 

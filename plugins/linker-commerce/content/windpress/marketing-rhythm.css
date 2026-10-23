@@ -89,6 +89,9 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
    foreground/background pair instantaneous, using the existing brand palette. */
 #tv-utility-page-v1 .lk-hero-cta-row > a {
 	transition-property: box-shadow;
+	/* The 2px ring plus 5px offset needs one more pixel for native scroll
+	   rounding: EN320 no-script focus left the element bottom at899.898px. */
+	scroll-margin-block: 8px;
 }
 
 #tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-teal:is(:hover, :focus-visible) {
