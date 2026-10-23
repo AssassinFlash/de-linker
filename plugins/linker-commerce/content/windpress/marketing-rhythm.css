@@ -85,6 +85,32 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
 	display: none;
 }
 
+/* The saved hero surfaces override its earlier generic hover rules. Keep the
+   foreground/background pair instantaneous, using the existing brand palette. */
+#tv-utility-page-v1 .lk-hero-cta-row > a {
+	transition-property: box-shadow;
+}
+
+#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-teal:is(:hover, :focus-visible) {
+	color: #fff;
+	background: var(--proto-teal-700);
+	border-color: var(--proto-teal-700);
+}
+
+#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-hero-ghost:is(:hover, :focus-visible) {
+	color: var(--us-ink);
+	background: #fff;
+	border-color: #fff;
+}
+
+/* Preserve the native hero's 2px ring and 5px offset; a dark underlay keeps
+   that white ring visible against both light and dark areas of the photo. */
+#tv-utility-page-v1 .lk-hero-cta-row > a:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 5px;
+	box-shadow: 0 0 0 5px var(--us-ink);
+}
+
 /* Match the saved utility page's existing 600px hero-icon breakpoint. */
 @media (max-width: 600px) {
 	#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-hero-ghost {

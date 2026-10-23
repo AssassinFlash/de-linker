@@ -43,6 +43,17 @@ This button geometry/readability change and the script-disabled presentation
 correction are declared visual bug fixes. Normal enhanced pages outside the
 utility row keep their visual parity gate.
 
+Native mouse input additionally reproduces no visible hover change on all
+three utility hero anchors: the later saved hero surfaces override their
+earlier generic hover rules at equal specificity. Supply scoped hover and
+keyboard-focus foreground/background pairs in WindPress, using the existing
+brand palette. Change both colors together without a background interpolation
+that briefly leaves white text on white. Keep geometry, labels and hrefs
+unchanged. Preserve the existing 2px focus ring and 5px offset, with white ink
+and a dark underlay so the focus remains distinct across the photograph.
+These explicit interaction-state corrections are declared visual bug fixes;
+they do not waive normal resting-page parity or the independent header gate.
+
 Acceptance uses the same owned Chrome session and actual native PNG at1440
 and390 for all20 pages, with and without script execution. Verify current
 compiled CSS source/readback, heading font/color, no document overflow, normal
