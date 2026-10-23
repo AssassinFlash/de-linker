@@ -3,6 +3,8 @@ import type { SVGProps } from "react";
 const paths = {
 	plus: "M12 5v14M5 12h14",
 	folder: "M3 7V5h6l2 2h10v13H3V7Z",
+	overview: "M3 3h7v7H3V3Zm11 0h7v7h-7V3ZM3 14h7v7H3v-7Zm11 0h7v7h-7v-7Z",
+	energy: "m13 2-9 12h7l-1 8 10-13h-7l1-7Z",
 	arrow: "M5 12h14m-5-5 5 5-5 5",
 	undo: "M8 5 3 10l5 5M3 10h10a7 7 0 0 1 7 7",
 	redo: "m16 5 5 5-5 5m5-5H11a7 7 0 0 0-7 7",

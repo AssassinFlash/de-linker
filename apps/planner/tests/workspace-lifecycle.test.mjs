@@ -200,6 +200,45 @@ test("same identity rechecks retain delayed edits and invalid raw numeric text",
 	);
 });
 
+test("Journal workspaces show one task while retaining real input nodes, values and undo history", async (t) => {
+	const app = await workspaceFixture(t, "available");
+	const nav = (label) =>
+		[...document.querySelectorAll('nav[aria-label="Project sections"] a')].find(
+			(link) => link.textContent.trim() === label,
+		);
+	assert.equal(
+		document.querySelector(".lp-project").dataset.workspace,
+		"overview",
+	);
+	assert.equal(document.querySelector("#lp-site").hidden, true);
+	assert.equal(document.querySelector(".lp-design-panel").hidden, true);
+	await act(async () => nav("Energy inputs").click());
+	assert.equal(document.querySelector("#lp-load").hidden, false);
+	assert.equal(nav("Energy inputs").getAttribute("aria-current"), "page");
+	const annual = app.annual();
+	await enter(annual, "25");
+	await act(async () => nav("Roof design").click());
+	assert.equal(document.querySelector("#lp-load").hidden, true);
+	assert.equal(document.querySelector(".lp-design-panel").hidden, false);
+	assert.equal(annual, app.annual());
+	await act(async () => nav("Energy inputs").click());
+	assert.equal(app.annual().value, "25");
+	await act(async () =>
+		document.querySelector('button[aria-label="Undo"]').click(),
+	);
+	assert.equal(app.annual().value, "10");
+	await enter(app.annual(), "1,");
+	await act(async () => nav("Site and project").click());
+	assert.equal(
+		document.querySelector(".lp-project").dataset.workspace,
+		"energy",
+	);
+	assert.equal(app.annual().value, "1,");
+	assert.ok(
+		document.body.textContent.includes("Correct the highlighted input"),
+	);
+});
+
 test("failed storage and failed identity refresh preserve hidden edits until same owner returns", async (t) => {
 	const app = await workspaceFixture(t, "unavailable");
 	await enter(document.querySelector("textarea"), "UNSAVED SYNTHETIC NOTE");

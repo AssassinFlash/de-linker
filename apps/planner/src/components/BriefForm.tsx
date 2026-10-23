@@ -9,11 +9,13 @@ export function BriefForm({
 	config,
 	onChange,
 	onValidity,
+	workspace,
 }: {
 	brief: Brief;
 	config: Configuration;
 	onChange: (brief: Brief) => void;
 	onValidity: (valid: boolean) => void;
+	workspace?: "overview" | "site" | "energy" | "design";
 }) {
 	const id = useId();
 	const [invalid, setInvalid] = useState<Readonly<Record<string, boolean>>>({});
@@ -59,6 +61,7 @@ export function BriefForm({
 			<section
 				className="lp-section"
 				id="lp-brief-use"
+				hidden={workspace !== undefined && workspace !== "site"}
 				tabIndex={-1}
 				aria-labelledby="lp-brief-use-heading"
 			>
@@ -135,6 +138,7 @@ export function BriefForm({
 			<section
 				className="lp-section"
 				id="lp-site"
+				hidden={workspace !== undefined && workspace !== "site"}
 				tabIndex={-1}
 				aria-labelledby="lp-site-heading"
 			>
@@ -275,6 +279,7 @@ export function BriefForm({
 			<section
 				className="lp-section"
 				id="lp-load"
+				hidden={workspace !== undefined && workspace !== "energy"}
 				tabIndex={-1}
 				aria-labelledby="lp-load-heading"
 			>
@@ -363,6 +368,7 @@ export function BriefForm({
 			<section
 				className="lp-section"
 				id="lp-notes"
+				hidden={workspace !== undefined && workspace !== "site"}
 				tabIndex={-1}
 				aria-labelledby="lp-notes-heading"
 			>

@@ -40,6 +40,7 @@ export function PlanViewport({
 	select,
 	commit,
 	disabled,
+	previewOnly = false,
 }: {
 	document: GeometryDocument;
 	roof: RoofFace;
@@ -48,6 +49,7 @@ export function PlanViewport({
 	select: (id: string) => void;
 	commit: (command: GeometryCommand) => boolean;
 	disabled: boolean;
+	previewOnly?: boolean;
 }) {
 	const svg = useRef<SVGSVGElement>(null),
 		gesture = useRef<Gesture | null>(null);
@@ -149,7 +151,7 @@ export function PlanViewport({
 		return [point.x, -point.y];
 	}
 	function down(event: PointerEvent<SVGSVGElement>) {
-		if (disabled || event.button !== 0) return;
+		if (disabled || previewOnly || event.button !== 0) return;
 		const point = at(event);
 		if (!point) return;
 		const target = (event.target as Element).closest<SVGElement>(
@@ -240,54 +242,56 @@ export function PlanViewport({
 	}
 	return (
 		<div className="lp-plan-view">
-			<div
-				className="lp-canvas-tools"
-				role="group"
-				aria-label={__("Plan view controls", "linker-tools")}
-			>
-				<button
-					type="button"
-					className="lp-tool-button"
-					aria-pressed={tool === "select"}
-					onClick={() => setTool("select")}
+			{!previewOnly && (
+				<div
+					className="lp-canvas-tools"
+					role="group"
+					aria-label={__("Plan view controls", "linker-tools")}
 				>
-					{__("Select / move array", "linker-tools")}
-				</button>
-				<button
-					type="button"
-					className="lp-tool-button"
-					aria-pressed={tool === "pan"}
-					onClick={() => setTool("pan")}
-				>
-					{__("Pan view", "linker-tools")}
-				</button>
-				<button
-					type="button"
-					className="lp-tool-button"
-					onClick={() => zoom(0.8)}
-					aria-label={__("Zoom in", "linker-tools")}
-				>
-					+
-				</button>
-				<button
-					type="button"
-					className="lp-tool-button"
-					onClick={() => zoom(1.25)}
-					aria-label={__("Zoom out", "linker-tools")}
-				>
-					−
-				</button>
-				<button
-					type="button"
-					className="lp-tool-button"
-					onClick={() => {
-						abort();
-						setView(null);
-					}}
-				>
-					{__("Fit view", "linker-tools")}
-				</button>
-			</div>
+					<button
+						type="button"
+						className="lp-tool-button"
+						aria-pressed={tool === "select"}
+						onClick={() => setTool("select")}
+					>
+						{__("Select / move array", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						className="lp-tool-button"
+						aria-pressed={tool === "pan"}
+						onClick={() => setTool("pan")}
+					>
+						{__("Pan view", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						className="lp-tool-button"
+						onClick={() => zoom(0.8)}
+						aria-label={__("Zoom in", "linker-tools")}
+					>
+						+
+					</button>
+					<button
+						type="button"
+						className="lp-tool-button"
+						onClick={() => zoom(1.25)}
+						aria-label={__("Zoom out", "linker-tools")}
+					>
+						−
+					</button>
+					<button
+						type="button"
+						className="lp-tool-button"
+						onClick={() => {
+							abort();
+							setView(null);
+						}}
+					>
+						{__("Fit view", "linker-tools")}
+					</button>
+				</div>
+			)}
 			<svg
 				ref={svg}
 				className="lp-plan-svg"
@@ -380,16 +384,20 @@ export function PlanViewport({
 					</g>
 				))}
 			</svg>
-			<div className="lp-canvas-caption">
-				<span>{__("Roof plane · metres", "linker-tools")}</span>
-				<span>U → · V ↑</span>
-			</div>
-			<p className="lp-profile-help">
-				{__(
-					"Dragging a module moves its array in this roof plane. Numeric properties provide the same operation. Pan and zoom change only the view.",
-					"linker-tools",
-				)}
-			</p>
+			{!previewOnly && (
+				<>
+					<div className="lp-canvas-caption">
+						<span>{__("Roof plane · metres", "linker-tools")}</span>
+						<span>U → · V ↑</span>
+					</div>
+					<p className="lp-profile-help">
+						{__(
+							"Dragging a module moves its array in this roof plane. Numeric properties provide the same operation. Pan and zoom change only the view.",
+							"linker-tools",
+						)}
+					</p>
+				</>
+			)}
 		</div>
 	);
 }

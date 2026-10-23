@@ -3,8 +3,8 @@
     "bin/build-manifest.mjs": "a8c5702e1e4a42900c46aa625c94c3efa911f6966c3f66e1d6bac49dfc81be84",
     "package-lock.json": "04384148d98a70d68c83b406644901a7da09588deea73bae038b03ce2632074d",
     "package.json": "690db498dbcaf2ead35cf45145bed67cb3c941d8dfdd9ec7e29838223f9843b7",
-    "src/components/BriefForm.tsx": "557965836361d7920f4ee57884394a930f10c632950518c6a12a303035760cf3",
-    "src/components/Icon.tsx": "af6f28e985d9dc7954a2a4ba397f16e0b547f05b9594694343afb967832588de",
+    "src/components/BriefForm.tsx": "12d39f2743b37c531be5ff9f1801e739fa1ce7a2d2bb2880dfbb85c4087f0f97",
+    "src/components/Icon.tsx": "5fb1a5cf6f923cf912566766de791230d74d2525a77bbf8f6e88b25844159620",
     "src/components/NewProject.tsx": "5c3b5af949fa5196dc42fd01fa6e75fb088d2a61c27b160b82c5a67176b1bf8a",
     "src/components/Notice.tsx": "29194bbbf88789c66bf1f3fcc8cb1c6634b587971d26fc303429bd654653d4cb",
     "src/components/NumberField.tsx": "ac4c7b88bd98a6c353a0b32c5982fe227a1d61224ce0f8066f4d807192b95e4b",
@@ -15,7 +15,8 @@
     "src/components/ProfileLabels.ts": "7a1e87b612300751cbb54463453a33118f11a3dbac2fedd82b159c4a5573341a",
     "src/components/ProfileMapping.tsx": "c60b9615ee146cd4aee4af95073cda0a66dadcf8f1dcb5ea970266c51cc030d0",
     "src/components/ProfileReview.tsx": "34b3918d0dd5403658e1daf726b93739325cf1201c5ffcdf602f33e167168e3f",
-    "src/components/ProjectEditor.tsx": "7fd19509477b57184fec50a6791f15ebd0c3414d6cdad731e1fb74511adf730a",
+    "src/components/ProjectEditor.tsx": "94181fab5f3d3b0a282017389b135cdeeeeb2af060e3f17daba77b9b6cfbb574",
+    "src/components/ProjectOverview.tsx": "60d6b51f1ce743b8ab2a5cae651f066efbec4a8e4d748774441ab792cf20016d",
     "src/components/RevisionComparison.tsx": "0a5de456a0e2e46e68099f96a05f4ce1398e3c069765411b3390bf15074f5b44",
     "src/components/SessionBoundary.tsx": "f76d1019895130fd24bb87848968074379e4f46f7c5f575caceb66f3b79aed11",
     "src/components/Workspace.tsx": "a7c3b5d29ce8320e513ec10e6d1a3eec035e50f043cd18c7303a9a4a5db434dd",
@@ -27,7 +28,7 @@
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazySceneViewport.tsx": "32da11a88a9458b0c4738b41ab5537becad71f783e4b79cefe4eba80118fd6ee",
     "src/components/design/ModuleForm.tsx": "dd202ffac649f8e0aed2fe27375bd36b40d8d8acd1dd52dc3a8e9901053e3b90",
-    "src/components/design/PlanViewport.tsx": "ba9ccd1cef4e7441d028c9877457b686cf7a1a1767441fcc9f7a52de3cb8095c",
+    "src/components/design/PlanViewport.tsx": "2084f36da7a99854dc8a75d498dd1fa9f481884313532647d1703d56ec1b7dab",
     "src/components/design/RoofForm.tsx": "b1d510ddc44106ebf5dce4de3d2cddf9ad9fbbc31404a2b1edf0160a47b6f23b",
     "src/components/design/SceneControls.tsx": "9486b3527e1526f2eea27caeb810767febeec6676d998e21c0956179efc533be",
     "src/components/design/SceneViewport.tsx": "38fc13ab53ff720ce074c69c4ae0f323addb0b13a7071b6014804caabde92399",
@@ -84,11 +85,11 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/SceneViewport-ANJZ71fv.js": "7c27e6ad10770c79130ba78f0f92a866cae26af3d19bb28630ef42e7e4f5bf30",
-    "assets/planner-core-BRyS3-DG.js": "693e9246544298617b82707556e294008466791d9e5171942a755832043d9fc4",
-    "assets/planner.js": "65f3dd418b74902419febcbfbb2bfe699be9a2f3ba1c295915f0a572a0364d5e",
+    "assets/SceneViewport-DXwDHSMz.js": "75031c298ca59dc37e425837be6a331781e2976b5e8f0b2ba4c3aeed10c8a66b",
+    "assets/planner-core-BhCBya5L.js": "4a3ea621f57450eb1d68fd4c8739ce0c12dbdf426a671979316bc75400b2a174",
+    "assets/planner.js": "03cfc2dd157812c701c0da32ab2cae28004b67475027d8afb7a19a3238c12478",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "6ca5f572f4f6052b2b66197d4e0076f02609c90671ba13c19ffa5c08ea61ce47",
-    "windpress.scan.txt": "2da4fe9c74d140865a5a63ef4ee4914efee27ac9008ccd744666ebb567c32d1d"
+    "vite-manifest.json": "211a0b893e130b36b87049e94f46539c3d893250ac191bef5754e5bce79a4b17",
+    "windpress.scan.txt": "dd06ba450e9778c3faaed192c47fea4746d64d29aba1fa396ea4384666956800"
   }
 }

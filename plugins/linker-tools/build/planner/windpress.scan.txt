@@ -12,6 +12,7 @@ lp-comparison
 lp-data-table
 lp-design-canvas
 lp-design-empty
+lp-design-panel
 lp-design-properties
 lp-design-quantities
 lp-design-section
@@ -39,6 +40,7 @@ lp-inline-actions
 lp-keepout-shape
 lp-layout-review
 lp-module-table
+lp-nav-mark
 lp-new-project
 lp-notice
 lp-object-actions
@@ -47,6 +49,15 @@ lp-object-child
 lp-object-inspector
 lp-object-tree
 lp-obstacle-shape
+lp-overview
+lp-overview-basis
+lp-overview-empty
+lp-overview-intro
+lp-overview-metrics
+lp-overview-next
+lp-overview-preview
+lp-overview-preview-title
+lp-overview-work
 lp-page
 lp-panel-shape
 lp-plan-svg
@@ -62,9 +73,11 @@ lp-project-aside
 lp-project-bar
 lp-project-index
 lp-project-layout
+lp-project-nav-title
 lp-project-row
 lp-project-row-icon
 lp-project-rows
+lp-project-title
 lp-rail-caption
 lp-rail-current
 lp-rail-session

@@ -4393,3 +4393,79 @@ msgstr "Erlaubt"
 #: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:105
 msgid "Prohibited"
 msgstr "Untersagt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:121
+msgid "A place for the roof and its layout"
+msgstr "Hier entsteht Ihre Dachplanung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:78
+msgid "Across the current roof layouts"
+msgstr "Aus den aktuellen Dachbelegungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:174
+msgid "Annual consumption and interval data"
+msgstr "Jahresverbrauch und Zeitreihendaten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:72
+msgid "Basis not specified"
+msgstr "Grundlage nicht angegeben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:144
+msgid "Continue your project"
+msgstr "Projekt weiterbearbeiten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:97
+msgid "Current layout"
+msgstr "Aktuelle Belegung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectEditor.tsx:270 ../../apps/planner/src/components/ProjectEditor.tsx:331
+msgid "Current project"
+msgstr "Aktuelles Projekt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:172 ../../apps/planner/src/components/ProjectEditor.tsx:315
+msgid "Energy inputs"
+msgstr "Energiedaten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:152
+msgid "Location, system scope and site conditions"
+msgstr "Standort, Systemumfang und Bedingungen vor Ort"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:86
+msgid "Module count and declared specifications"
+msgstr "Modulanzahl und angegebene Spezifikationen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:113 ../../apps/planner/src/components/ProjectOverview.tsx:134
+msgid "Open roof workspace"
+msgstr "Dachplanung öffnen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:36 ../../apps/planner/src/components/ProjectEditor.tsx:282
+msgid "Project overview"
+msgstr "Projektübersicht"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:142
+msgid "Project workspaces"
+msgstr "Projektbereiche"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:125
+msgid "Roof design is optional. A measured roof can be added here while the project information and energy inputs remain available in their workspaces."
+msgstr "Die Dachplanung ist optional. Sie können hier ein vermessenes Dach anlegen; Projektangaben und Energiedaten bleiben in ihren Arbeitsbereichen erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:164
+msgid "Roof faces, obstacles and module layout"
+msgstr "Dachflächen, Hindernisse und Modulbelegung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:148 ../../apps/planner/src/components/ProjectEditor.tsx:293
+msgid "Site and project"
+msgstr "Standort und Projekt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:43
+msgid "Site information, roof layouts and energy inputs share this project. Each workspace can be completed as the design develops."
+msgstr "Standort, Dachplanung und Energiedaten gehören zu demselben Projekt. Sie können die Angaben in den jeweiligen Arbeitsbereichen nach und nach ergänzen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:181
+msgid "The overview describes the current inputs. Energy yield, equipment suitability and engineering release require their respective calculations and evidence."
+msgstr "Die Übersicht zeigt Ihre aktuellen Eingaben. Für Ertrag, Geräteeignung und technische Freigabe sind die jeweiligen Berechnungen und Nachweise erforderlich."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:39
+msgid "Your project at a glance"
+msgstr "Ihr Projekt im Überblick"

@@ -34,6 +34,23 @@ import { readGeometry } from "../domain/validateGeometry.ts";
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
 import { readObject } from "../data/readProtocol.ts";
 import { readGeometryImports } from "../domain/geometryImports.ts";
+import { ProjectOverview } from "./ProjectOverview.tsx";
+import { revealActionResult } from "./revealActionResult.ts";
+
+type ProjectWorkspace = "overview" | "site" | "energy" | "design";
+const workspaceHash = {
+	overview: "lp-overview",
+	site: "lp-site",
+	energy: "lp-load",
+	design: "lp-design",
+} as const;
+function workspaceFromHash(): ProjectWorkspace {
+	if (["#lp-site", "#lp-brief-use", "#lp-notes"].includes(window.location.hash))
+		return "site";
+	if (["#lp-load", "#lp-profiles"].includes(window.location.hash))
+		return "energy";
+	return window.location.hash === "#lp-design" ? "design" : "overview";
+}
 
 export function ProjectEditor({
 	project,
@@ -73,6 +90,40 @@ export function ProjectEditor({
 	const [briefValid, setBriefValid] = useState(true);
 	const [designValid, setDesignValid] = useState(true);
 	const valid = briefValid && designValid;
+	const [workspace, setWorkspace] =
+		useState<ProjectWorkspace>(workspaceFromHash);
+	const workspaceFocus = useRef(false);
+	useEffect(() => {
+		if (!workspaceFocus.current) return;
+		if (
+			revealActionResult(
+				document.querySelector<HTMLElement>(
+					"[data-linker-planner] #" + workspaceHash[workspace],
+				),
+				() => client.isCurrentScope(session.query_scope),
+			)
+		)
+			workspaceFocus.current = false;
+	}, [workspace, client, session.query_scope]);
+	function chooseWorkspace(next: ProjectWorkspace) {
+		if (!client.isCurrentScope(session.query_scope)) return;
+		if (!valid) {
+			setCloseBlocked("invalid");
+			return;
+		}
+		if (next === workspace) {
+			revealActionResult(
+				document.querySelector<HTMLElement>(
+					"[data-linker-planner] #" + workspaceHash[next],
+				),
+				() => client.isCurrentScope(session.query_scope),
+			);
+			return;
+		}
+		workspaceFocus.current = true;
+		setWorkspace(next);
+		window.history.replaceState(null, "", "#" + workspaceHash[next]);
+	}
 	const editGeometry = useCallback(
 		(command: GeometryCommand): boolean => {
 			if (!client.isCurrentScope(session.query_scope)) return false;
@@ -164,7 +215,7 @@ export function ProjectEditor({
 		);
 	}
 	return (
-		<div className="lp-project">
+		<div className="lp-project" data-workspace={workspace}>
 			<header className="lp-project-bar" ref={bar}>
 				<div className="lp-breadcrumb">
 					<button
@@ -233,34 +284,59 @@ export function ProjectEditor({
 			</header>
 			<div className="lp-project-layout">
 				<aside className="lp-project-aside">
-					<span className="lp-eyebrow">{__("Project", "linker-tools")}</span>
-					<h1>{project.title}</h1>
-					<p>
-						{__(
-							"Site data and roof layouts are saved in the same project.",
-							"linker-tools",
-						)}
-					</p>
+					<div className="lp-project-nav-title">
+						<span className="lp-nav-mark" aria-hidden="true">
+							L
+						</span>
+						<span>{__("Solution Configurator", "linker-tools")}</span>
+					</div>
+					<span className="lp-eyebrow">
+						{__("Current project", "linker-tools")}
+					</span>
 					<nav aria-label={__("Project sections", "linker-tools")}>
-						<a href="#lp-brief-use">
-							<Icon name="folder" />
-							{__("Project brief", "linker-tools")}
+						<a
+							href="#lp-overview"
+							aria-current={workspace === "overview" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("overview");
+							}}
+						>
+							<Icon name="overview" />
+							{__("Project overview", "linker-tools")}
 						</a>
-						<a href="#lp-site">
+						<a
+							href="#lp-site"
+							aria-current={workspace === "site" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("site");
+							}}
+						>
 							<Icon name="location" />
-							{__("Project location", "linker-tools")}
+							{__("Site and project", "linker-tools")}
 						</a>
-						<a href="#lp-load">
-							<Icon name="layers" />
-							{__("Electricity consumption", "linker-tools")}
-						</a>
-						<a href="#lp-profiles">
-							<Icon name="layers" />
-							{__("Interval data", "linker-tools")}
-						</a>
-						<a href="#lp-design">
+						<a
+							href="#lp-design"
+							aria-current={workspace === "design" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("design");
+							}}
+						>
 							<Icon name="layers" />
 							{__("Roof design", "linker-tools")}
+						</a>
+						<a
+							href="#lp-load"
+							aria-current={workspace === "energy" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("energy");
+							}}
+						>
+							<Icon name="energy" />
+							{__("Energy inputs", "linker-tools")}
 						</a>
 					</nav>
 					<div className="lp-source-note">
@@ -274,6 +350,18 @@ export function ProjectEditor({
 					</div>
 				</aside>
 				<div className="lp-editor-main lp-editor-with-design">
+					<header className="lp-project-title">
+						<span className="lp-eyebrow">
+							{__("Current project", "linker-tools")}
+						</span>
+						<h1>{project.title}</h1>
+						<p>
+							{__(
+								"Site data and roof layouts are saved in the same project.",
+								"linker-tools",
+							)}
+						</p>
+					</header>
 					{discoveryFailed && (
 						<Notice error>
 							<p>
@@ -382,8 +470,17 @@ export function ProjectEditor({
 						disabled={recoveries.length > 0}
 						className="lp-brief-fields"
 					>
+						<div hidden={workspace !== "overview"}>
+							<ProjectOverview
+								brief={brief}
+								geometry={geometry}
+								config={config}
+								choose={chooseWorkspace}
+							/>
+						</div>
 						<BriefForm
 							brief={brief}
+							workspace={workspace}
 							config={config}
 							onValidity={setBriefValid}
 							onChange={(next) =>
@@ -398,6 +495,7 @@ export function ProjectEditor({
 						<section
 							className="lp-section"
 							id="lp-profiles"
+							hidden={workspace !== "energy"}
 							tabIndex={-1}
 							aria-labelledby="lp-profiles-heading"
 						>
@@ -506,18 +604,20 @@ export function ProjectEditor({
 								}}
 							/>
 						</section>
-						<DesignEditor
-							geometry={geometry}
-							geometryImports={geometryImports}
-							sceneModuleUrl={config.sceneModuleUrl ?? null}
-							commit={editGeometry}
-							locale={config.locale}
-							projectId={project.id}
-							session={session}
-							client={client}
-							recheck={recheck}
-							onValidity={setDesignValid}
-						/>
+						<div className="lp-design-panel" hidden={workspace !== "design"}>
+							<DesignEditor
+								geometry={geometry}
+								geometryImports={geometryImports}
+								sceneModuleUrl={config.sceneModuleUrl ?? null}
+								commit={editGeometry}
+								locale={config.locale}
+								projectId={project.id}
+								session={session}
+								client={client}
+								recheck={recheck}
+								onValidity={setDesignValid}
+							/>
+						</div>
 					</fieldset>
 				</div>
 			</div>
