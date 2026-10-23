@@ -43,10 +43,12 @@ at its sides so card alignment stays unchanged. The card outline must be fully
 visible, including its top and left edges; use the existing 12px card corner
 radius and teal title on hover or keyboard focus. Give native scroll snapping
 the same 4px inset so aligning a card does not consume its focus space.
-When a card has keyboard focus, make it the rail's native snap target rather
-than keeping a different card aligned while the focused one is only partly
-visible. Give the target the same 4px scroll margin; preserve ordinary touch
-scrolling and restore all card snap targets when focus leaves the rail.
+While a card retains focus, let native focus scrolling reveal it without snap
+alignment overriding the focused target. Suspend snapping on that focused
+rail; keep every card's snap target and the same 4px scroll margin. Retained
+focus must also allow a subsequent finger swipe in either direction, including
+when the browser still marks the link focus-visible. Restore ordinary snapping
+when focus leaves the rail.
 Verify both rails, first/last
 card focus, true third-card scrolling and category consumers in EN/DE.
 
