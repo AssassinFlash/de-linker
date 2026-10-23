@@ -1467,7 +1467,10 @@ def seal(
     not print, exactly as a page's are. The configurator's page type is
     `other`, so the generic strip below would cut the answer's figures back to
     the question's own digits. The clearance and document branches keep their
-    own allowances and still run.
+    own allowances and still run. A text block citing a customer attachment
+    keeps the reading's figure facts as well as the question's figures. This
+    happens after grounding and hydration: a filename or an unrelated file
+    must not license numbers, nor may another block borrow that citation.
     """
     if route is None or page_type not in (None, "other"):
         return output
@@ -1491,10 +1494,43 @@ def seal(
         and not route.stock_beside
         and "solution" not in facts.facts
     ):
-        return grounding.strip_unlicensed_numbers(
-            output, grounding.question_allowance(question)
-        )
+        return _seal_attachment_figures(output, facts, question)
     return output
+
+
+def _seal_attachment_figures(
+    output: TurnOutput, facts: TurnFacts, question: str
+) -> TurnOutput:
+    """Keep only question numbers and each text block's cited reading figures.
+
+    The earlier grounding check still requires numeric placeholders and
+    rejects unknown facts and attachment amounts. This final seal must not
+    erase those hydrated figures simply because the question omitted them.
+    A file ref licenses that file's figures; a figure ref licenses only that
+    figure. Raw reading text and the filename are not numerical allowances.
+    """
+    from linker_genie import ground as grounding
+
+    question_numbers = grounding.question_allowance(question)
+    blocks: list[Block] = []
+    for block in output.blocks:
+        allowed = set(question_numbers)
+        if isinstance(block, TextBlock):
+            for fact_id, fact in facts.facts.items():
+                match = re.fullmatch(r"(att[1-9][0-9]{0,5})\.n[1-9][0-9]*", fact_id)
+                if match is None or fact.source != "read-attachment":
+                    continue
+                reading_id = match.group(1)
+                reading = facts.facts.get(reading_id)
+                if reading is None or reading.source != "read-attachment":
+                    continue
+                if reading_id in block.refs or fact_id in block.refs:
+                    allowed.update(grounding.question_allowance(fact.value))
+        sealed = grounding.strip_unlicensed_numbers(
+            output.model_copy(update={"blocks": [block]}), allowed
+        )
+        blocks.extend(sealed.blocks)
+    return output.model_copy(update={"blocks": blocks})
 
 
 def _clearance_question(question: str) -> bool:
