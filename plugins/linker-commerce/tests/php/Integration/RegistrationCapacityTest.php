@@ -308,12 +308,13 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		foreach ( array( 'en_US', 'de_DE_formal' ) as $locale ) {
 			foreach ( array( $emails[ NewCustomerEmail::class ], $emails[ RegistrationReceivedEmail::class ] ) as $email ) {
 				$this->assertTrue( $email instanceof NewCustomerEmail || $email instanceof RegistrationReceivedEmail );
-				$plan = RegistrationMessage::prepare( $email, $user, array( 'billing_company' => str_repeat( 'Full & \" ü ', 2000 ) ), $locale );
+				$plan = RegistrationMessage::prepare( $email, $user, array( 'billing_company' => str_repeat( 'Full & \" ü ', 2000 ) ), $locale, wp_generate_uuid4() );
 				$this->assertIsArray( $plan );
 				foreach ( array( 1, 999999999, PHP_INT_MAX ) as $id ) {
 					foreach ( array( '', VatProfile::NONE, VatProfile::VALID, VatProfile::INVALID, VatProfile::UNVERIFIED ) as $vat ) {
-						$message = RegistrationMessage::complete( $plan, $id, $vat );
+						$message = ( new \ReflectionMethod( RegistrationMessage::class, 'build' ) )->invoke( null, $plan, $id, $vat );
 						$this->assertInstanceOf( Message::class, $message );
+						$this->assertFalse( \Linker\Commerce\Mail\NativeOrigin::valid( $message ), 'Projected IDs prove the byte bound without authorizing an uncreated account.' );
 						$this->assertLessThanOrEqual( $plan['max_bytes'], strlen( (string) wp_json_encode( $message->to_array() ) ) );
 						$this->assertStringNotContainsString( 'registration.invalid', $message->body );
 						if ( $email instanceof NewCustomerEmail ) {
@@ -324,6 +325,258 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 				$this->assertSame( '', $plan['message']['body'], 'Exactly one bounded body copy, held in structural parts.' );
 			}
 		}
+	}
+
+	/** Disabled native notices still reserve their complete pending source bytes. */
+	public function test_disabled_notice_source_has_a_complete_json_capacity_bound(): void {
+		$emails = WC()->mailer()->get_emails();
+		$email  = $emails[ NewCustomerEmail::class ];
+		$this->assertInstanceOf( NewCustomerEmail::class, $email );
+		$enabled        = $email->enabled;
+		$email->enabled = 'no';
+		try {
+			$plan = RegistrationMessage::prepare( $email, new \WP_User( (object) array( 'user_email' => self::TESTER ) ), array(), 'en_US', wp_generate_uuid4() );
+			$this->assertIsArray( $plan );
+			$bound = RegistrationMessage::reserved( $plan, str_repeat( 'a', 64 ) );
+			$this->assertIsArray( $bound );
+			$this->assertLessThanOrEqual( $bound['max_bytes'], strlen( (string) wp_json_encode( $bound ) ) );
+		} finally {
+			$email->enabled = $enabled; }
+	}
+
+	/** No frozen plan may be edited, transferred to another account or reservation, or re-signed by from_array. */
+	public function test_final_native_registration_witness_requires_exact_account_slot_and_plan(): void {
+		$post = $this->public_post( 69 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$fail = static fn ( $old, $id, $key ) => RegistrationNotices::META === $key ? false : $old;
+		add_filter( 'update_user_metadata', $fail, 10, 3 );
+		try {
+			$id = wc_create_new_customer( $post['email'], '', $post['password'] ); } finally {
+			remove_filter( 'update_user_metadata', $fail, 10 ); }
+			$this->assertIsInt( $id );
+			$this->own_user( $id );
+			$state  = $this->notices( $id );
+			$other  = $this->customer()->get_id();
+			$ledger = get_option( Ledger::OPTION );
+			$jobs   = self::mail_jobs_after( $this->mail_marker );
+			foreach ( $state as $plan ) {
+				$this->assertSame( 'pending', $plan['state'] );
+				$this->assertLessThanOrEqual( $plan['max_bytes'], strlen( (string) wp_json_encode( $plan ) ) );
+				$message = RegistrationMessage::complete( $plan, $id, VatProfile::NONE );
+				$this->assertInstanceOf( Message::class, $message );
+				$this->assertTrue( \Linker\Commerce\Mail\NativeOrigin::valid( $message ) );
+				$this->assertNull( RegistrationMessage::complete( $plan, $other, VatProfile::NONE ) );
+				foreach ( array( 'policy', 'operation', 'owner', 'kind', 'account', 'slot' ) as $field ) {
+					$changed                      = $plan;
+					$changed['binding'][ $field ] = 'account' === $field ? $other : 'changed';
+					$this->assertNull( RegistrationMessage::complete( $changed, $id, VatProfile::NONE ), $field );
+				}
+				foreach ( array( 'reservation', 'witness', 'max_bytes', 'parts', 'message' ) as $field ) {
+					$changed           = $plan;
+					$changed[ $field ] = match ( $field ) {
+						'max_bytes' => PHP_INT_MAX,
+						'parts' => array( array( 'text' => 'Changed complete prose' ) ),
+						'message' => array_replace( $plan['message'], array( 'to' => array( 'other@example.test' ) ) ),
+						default => str_repeat( 'b', 64 ),
+					};
+					$this->assertNull( RegistrationMessage::complete( $changed, $id, VatProfile::NONE ), $field );
+				}
+			}
+			$this->assertSame( $jobs, self::mail_jobs_after( $this->mail_marker ) );
+			$this->assertSame( $ledger, get_option( Ledger::OPTION ) );
+	}
+
+	/** Unauthenticated pending plans cannot spend quota or cancel scope before witness validation.
+	 *
+	 * @testWith ["to"]
+	 *           ["parts"]
+	 *           ["witness"]
+	 *           ["skipped"]
+	 *           ["reservation"]
+	 * @param string $field Unauthenticated stored-field mutation.
+	 */
+	public function test_tampered_pending_plan_spends_no_receipt_policy_or_mail_capacity( string $field ): void {
+		$post = $this->public_post( 70 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id       = $this->committed_pending_registration( $post );
+		$state    = $this->notices( $id );
+		$original = $state;
+		switch ( $field ) {
+			case 'to':
+				$state['received']['message']['to'] = array( 'tampered-recipient@example.test' );
+				break;
+			case 'parts':
+				$state['received']['parts'] = array( array( 'text' => 'Changed prose' ) );
+				break;
+			case 'skipped':
+				$state['received']['state'] = 'skipped';
+				break;
+			default:
+				$state['received'][ $field ] = str_repeat( 'b', 64 );
+		}
+		update_user_meta( $id, RegistrationNotices::META, wp_slash( $state ) );
+		$this->assertSame( array(), array_values( array_filter( json_decode( (string) get_option( Ledger::OPTION ), true )['receipts'], static fn ( array $r ): bool => 'customer_receipt' === $r['purpose'] ) ) );
+		$ledger   = get_option( Ledger::OPTION );
+		$capacity = get_option( IntakeStore::OPTION );
+		RegistrationNotices::deliver( $id, 'received' );
+		$this->assertSame( $ledger, get_option( Ledger::OPTION ), 'Plan authentication precedes any optional receipt quota side effect.' );
+		$this->assertSame( $capacity, get_option( IntakeStore::OPTION ) );
+		$this->assertSame( $state, $this->notices( $id ) );
+		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		update_user_meta( $id, RegistrationNotices::META, wp_slash( $original ) );
+	}
+
+	/** The restored notice consumer refuses its very first lock loss before any ACK, policy or new job. */
+	public function test_notice_first_mutex_loss_preserves_pending_source_and_caller(): void {
+		$post = $this->public_post( 71 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id     = $this->committed_pending_registration( $post );
+		$before = $this->notices( $id );
+		$ledger = get_option( Ledger::OPTION );
+		global $wpdb;
+		$observer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$marker   = 'registration_notice_first_' . self::tag();
+		$wpdb->query( 'START TRANSACTION' );
+		$wpdb->insert(
+			$wpdb->options,
+			array(
+				'option_name'  => $marker,
+				'option_value' => 'uncommitted',
+				'autoload'     => 'off',
+			)
+		);
+		$killed = false;
+		$fault  = static function ( string $sql ) use ( $observer, &$killed ): string {
+			global $wpdb;
+			if ( ! $killed && str_starts_with( $sql, 'SELECT GET_LOCK(' ) ) {
+				$killed = true;
+				$observer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+			}
+			return $sql;
+		};
+		add_filter( 'query', $fault );
+		try {
+			RegistrationNotices::deliver( $id, 'team' ); } finally {
+			remove_filter( 'query', $fault ); }
+			$this->assertTrue( $wpdb->db_connect( false ) );
+			$this->assertTrue( $killed );
+			$this->assertNull( $observer->get_var( $observer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, $marker ) ) );
+			$observer->close();
+			$this->assertSame( $before, $this->notices( $id ) );
+			$this->assertSame( $ledger, get_option( Ledger::OPTION ) );
+			$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+			RegistrationNotices::deliver( $id, 'team' );
+			$this->assertSame( 'accepted', $this->notices( $id )['team']['state'] );
+			$this->assertCount( 1, self::mail_jobs_after( $this->mail_marker ) );
+	}
+
+	/** Corrupt private source data is retained with an explicit retryable failure, never reported as erased. */
+	public function test_malformed_registration_source_is_not_privacy_absence(): void {
+		$customer = $this->customer();
+		$id       = $customer->get_id();
+		$email    = $this->native_user( $id )->user_email;
+		update_user_meta( $id, RegistrationNotices::META, 'nonempty-corrupt-private-payload' );
+		update_user_meta( $id, RegistrationNotices::OWNER, Identity::recipient( $email ) );
+		$privacy = new RegistrationPrivacy();
+		$this->assertInstanceOf( WP_Error::class, $privacy->export( $email ) );
+		$result = $privacy->erase( $email );
+		$this->assertTrue( $result['items_retained'] );
+		$this->assertFalse( $result['done'] );
+		$this->assertSame( 'nonempty-corrupt-private-payload', get_user_meta( $id, RegistrationNotices::META, true ) );
+		delete_user_meta( $id, RegistrationNotices::META );
+		$this->assertTrue( RegistrationNotices::erase( $id ) );
+	}
+
+	/** The first native statement cannot reconnect and silently discard a caller's transaction.
+	 *
+	 * @testWith ["profile_lock"]
+	 *           ["profile_read"]
+	 *           ["orphan_read"]
+	 * @param string $entry Actual native entry boundary.
+	 */
+	public function test_first_native_statement_loss_refuses_registration_profile_or_disposition( string $entry ): void {
+		global $wpdb;
+		$customer = $this->customer();
+		$id       = $customer->get_id();
+		update_user_meta( $id, Approval::STATUS_META, Approval::PENDING );
+		$this->as_user( $id );
+		$slot = array();
+		if ( 'orphan_read' === $entry ) {
+			$slot = RegistrationSlots::reserve( wp_generate_uuid4(), 2048 );
+			$this->assertIsArray( $slot );
+			$staff = get_users(
+				array(
+					'role'   => 'administrator',
+					'number' => 1,
+					'fields' => 'ID',
+				)
+			);
+			$this->as_user( (int) $staff[0] );
+		}
+		$observer = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$before   = $observer->get_var( $observer->prepare( 'SELECT display_name FROM %i WHERE ID=%d', $wpdb->users, $id ) );
+		$marker   = 'registration_first_sql_' . self::tag();
+		$wpdb->query( 'START TRANSACTION' );
+		$wpdb->insert(
+			$wpdb->options,
+			array(
+				'option_name'  => $marker,
+				'option_value' => 'uncommitted',
+				'autoload'     => 'off',
+			)
+		);
+		clean_user_cache( $id );
+		wp_cache_delete( $id, 'user_meta' );
+		$killed = false;
+		$fault  = static function ( string $sql ) use ( $observer, $entry, &$killed ): string {
+			global $wpdb;
+			$match = match ( $entry ) {
+				'profile_lock' => str_starts_with( $sql, 'SELECT GET_LOCK(' ),
+				'orphan_read' => str_starts_with( $sql, 'SELECT IS_USED_LOCK(' ),
+				default => str_starts_with( $sql, 'SELECT ' ),
+			};
+			if ( ! $killed && $match ) {
+				$killed = true;
+				$observer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id ); }
+			return $sql;
+		};
+		add_filter( 'query', $fault );
+		$accepted = false;
+		try {
+			if ( 'orphan_read' === $entry ) {
+				$accepted = RegistrationSlots::resolve_interrupted( $slot['key'], 'Synthetic first-statement loss.' );
+			} elseif ( 'profile_lock' === $entry ) {
+				$context = RegistrationSlots::begin_change( $id, array( 'display_name' => 'Lost caller transaction' ), array() );
+				if ( is_array( $context ) ) {
+					$wpdb->update( $wpdb->users, array( 'display_name' => 'Lost caller transaction' ), array( 'ID' => $id ) );
+					$accepted = true === RegistrationSlots::end_change( $context, true );
+				}
+			} else {
+				$customer->set_display_name( 'Lost caller transaction' );
+				$customer->save();
+				$accepted = true;
+			}
+		} catch ( \Throwable $error ) {
+			$accepted = false; } finally {
+			remove_filter( 'query', $fault );
+			foreach ( $GLOBALS['wp_filter']['woocommerce_before_customer_object_save']->callbacks as $callbacks ) {
+				foreach ( $callbacks as $callback ) {
+					$f = $callback['function'];
+					if ( is_array( $f ) && $f[0] instanceof \Linker\Commerce\Registration\PendingProfileCapacity ) {
+						$f[0]->unfinished(); }
+				}
+			}
+			}
+			$actual   = $observer->get_var( $observer->prepare( 'SELECT display_name FROM %i WHERE ID=%d', $wpdb->users, $id ) );
+			$sentinel = $observer->get_var( $observer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, $marker ) );
+			$this->assertTrue( $wpdb->db_connect( false ) );
+			$observer->close();
+			$this->assertTrue( $killed );
+			$this->assertNull( $sentinel, 'The killed original caller rolls back its uncommitted marker.' );
+			$this->assertFalse( $accepted, 'The original connection loss must not become an accepted new transaction.' );
+			$this->assertSame( $before, $actual );
+			if ( 'orphan_read' === $entry ) {
+				$this->assertSame( 1, $this->summary()['interrupted'] ); }
 	}
 
 	/**
@@ -395,6 +648,12 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$export  = $privacy->export( $post['email'] );
 		$this->assertIsArray( $export );
 		$this->assertNotEmpty( $export['data'] );
+		$exported = json_decode( $export['data'][0]['data'][0]['value'], true );
+		foreach ( $this->notices( $id ) as $kind => $plan ) {
+			$stored = ( new \Linker\Commerce\Mail\JobStore() )->load( $plan['job'] );
+			$this->assertNotNull( $stored );
+			$this->assertSame( $stored['message']->to_array(), $exported[ $kind ]['message'] );
+		}
 		$this->assertStringNotContainsString( $post['password'], (string) wp_json_encode( $privacy->export( $post['email'] ) ) );
 		$this->assertCount( 2, self::mail_jobs_after( $this->mail_marker ) );
 		$this->assertTrue( $privacy->erase( $post['email'] )['items_removed'] );
@@ -562,6 +821,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$before = $this->summary();
 		$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), RegistrationSlots::MAX_BYTES - $before['business_bytes'] ) );
 		$name    = $this->native_user( $customer->get_id() )->display_name;
+		$guarded = rest_do_request( new \WP_REST_Request( 'POST', '/wp/v2/users/me' ) );
+		$this->assertSame( 403, $guarded->get_status(), 'Current site baseline closes this route for ordinary customers.' );
+		wp_get_current_user()->add_cap( 'list_users' );
 		$request = new \WP_REST_Request( 'POST', '/wp/v2/users/me' );
 		$request->set_param( 'name', $name . ' extra growth' );
 		$response = rest_do_request( $request );
@@ -910,6 +1172,21 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 	public function test_unknown_registration_commit_keeps_native_account_and_pending_notifications(): void {
 		$post = $this->public_post( 52 );
 		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id = $this->committed_pending_registration( $post );
+		$this->assertSame( 'pending', $this->notices( $id )['team']['state'] );
+		$this->assertSame( 'pending', $this->notices( $id )['received']['state'] );
+		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		do_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK );
+		$this->assertSame( 'accepted', $this->notices( $id )['team']['state'] );
+		$this->assertSame( 'accepted', $this->notices( $id )['received']['state'] );
+		$this->assertCount( 2, self::mail_jobs_after( $this->mail_marker ) );
+	}
+
+	/** Native COMMIT succeeds but its caller loses ACK before either notice policy or handoff.
+	 *
+	 * @param array<string,mixed> $post Already native-admitted fixture input.
+	 */
+	private function committed_pending_registration( array $post ): int {
 		global $wpdb;
 		$before_suppress = $wpdb->suppress_errors( true );
 		$lose_ack        = null;
@@ -941,13 +1218,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$id = email_exists( $post['email'] );
 		$this->assertIsInt( $id );
 		$this->own_user( $id );
-		$this->assertSame( 'pending', $this->notices( $id )['team']['state'] );
-		$this->assertSame( 'pending', $this->notices( $id )['received']['state'] );
-		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
-		do_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK );
-		$this->assertSame( 'accepted', $this->notices( $id )['team']['state'] );
-		$this->assertSame( 'accepted', $this->notices( $id )['received']['state'] );
-		$this->assertCount( 2, self::mail_jobs_after( $this->mail_marker ) );
+		return $id;
 	}
 
 	/** Native explicit staff dispositions, not a customer/default label, release real users from the pending pool. */
@@ -1378,7 +1649,13 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$this->assertArrayNotHasKey( 'parts', $plan );
 			$this->assertNotFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $plan['job'] ), \Linker\Commerce\Mail\Outbox::GROUP ) );
 		}
-		$job       = $state['team']['job'];
+		$jobs = array_column( $state, 'job' );
+		foreach ( $jobs as $job ) {
+			$stored = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
+			$this->assertNotNull( $stored );
+			$this->assertTrue( \Linker\Commerce\Mail\NativeOrigin::valid( $stored['message'] ) );
+			$this->assertSame( $id, $stored['message']->origin['account'] );
+		}
 		$calls     = 0;
 		$transport = static function () use ( &$calls ) {
 			++$calls;
@@ -1386,13 +1663,17 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		};
 		add_filter( 'pre_wp_mail', $transport, -1000 );
 		try {
-			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
-			do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+			foreach ( $jobs as $job ) {
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+			}
 		} finally {
 			remove_filter( 'pre_wp_mail', $transport, -1000 ); }
-		$this->assertSame( 1, $calls, 'The original native job consumes once; the transport is synthetic and sends no email.' );
-		$this->assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
-		$this->assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		$this->assertSame( 2, $calls, 'Both original native jobs consume once; the transport is synthetic and sends no email.' );
+		foreach ( $jobs as $job ) {
+			$this->assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
+			$this->assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		}
 		RegistrationNotices::recover();
 		$this->assertSame( $state, $this->notices( $id ), 'A consumed job is never recreated from the cleared source.' );
 	}
@@ -1542,6 +1823,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$id       = $customer->get_id();
 		update_user_meta( $id, Approval::STATUS_META, Approval::PENDING );
 		$this->as_user( $id );
+		wp_get_current_user()->add_cap( 'list_users' ); // Exercise the native self-controller without removing the site-wide user-list guard.
 		$before = $this->summary();
 		$this->assertIsArray( RegistrationSlots::reserve( wp_generate_uuid4(), RegistrationSlots::MAX_BYTES - $before['business_bytes'] - 1 ) );
 		foreach ( array( 'x', 'xx' ) as $index => $value ) {

@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Registration;
 
 use Linker\Commerce\Protection\RegistrationSlots;
+use Linker\Commerce\Mail\ConnectionFence;
 use WC_Customer;
 use WP_Error;
 use WP_REST_Request;
@@ -379,6 +380,14 @@ final class PendingProfileCapacity {
 	 * @param int $id Native user.
 	 */
 	private function eligible( int $id ): bool {
+		return ConnectionFence::run( fn (): bool => $this->eligible_owned( $id ) );
+	}
+
+	/** Only short native eligibility reads, before a profile scope is created.
+	 *
+	 * @param int $id Native target account.
+	 */
+	private function eligible_owned( int $id ): bool {
 		if ( 'enforce' !== \Linker\Commerce\Protection\Configuration::active_mode() || $id < 1 || current_user_can( 'edit_users' ) || ( get_current_user_id() > 0 && get_current_user_id() !== $id ) ) {
 			return false;
 		}

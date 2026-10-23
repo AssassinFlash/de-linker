@@ -13,6 +13,7 @@ use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Registration\Approval;
 use WP_Error;
 use Linker\Commerce\Mail\Capacity;
+use Linker\Commerce\Mail\ConnectionFence;
 
 /**
  * Native users own account data; interrupted creation keeps its reserved slot.
@@ -133,6 +134,14 @@ final class RegistrationSlots {
 	 * @param string $key Server-owned placeholder HMAC.
 	 */
 	public static function hold( string $key ): bool {
+		return ConnectionFence::run( static fn () => self::hold_owned( $key ) );
+	}
+
+	/** Original native creator mutex under its first-statement fence.
+	 *
+	 * @param string $key Server placeholder HMAC.
+	 */
+	private static function hold_owned( string $key ): bool {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- A staff orphan disposition must never race a still-running native creator.
 		return '1' === (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', self::operation_lock( $key ) ) );
@@ -144,9 +153,20 @@ final class RegistrationSlots {
 	 * @param string $key Server-owned placeholder.
 	 */
 	public static function release( string $key ): void {
+		ConnectionFence::run( static fn () => self::release_owned( $key ) );
+	}
+
+	/** Release only on a live original native connection.
+	 *
+	 * @param string $key Server placeholder HMAC.
+	 * @throws \RuntimeException The original mutex release cannot be confirmed.
+	 */
+	private static function release_owned( string $key ): void {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- MySQL enforces connection ownership.
-		$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::operation_lock( $key ) ) );
+		if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::operation_lock( $key ) ) ) ) {
+			throw new \RuntimeException( 'registration_creator_release_unknown' );
+		}
 	}
 
 	/**
@@ -156,6 +176,19 @@ final class RegistrationSlots {
 	 * @param string $reason Staff's explicit evidence/reason.
 	 */
 	public static function resolve_interrupted( string $key, string $reason ): bool {
+		try {
+			return ConnectionFence::run( static fn () => self::resolve_owned( $key, $reason ) );
+		} catch ( \Throwable $error ) {
+			return false;
+		}
+	}
+
+	/** Native staff disposition under its first-statement fence.
+	 *
+	 * @param string $key Interrupted placeholder.
+	 * @param string $reason Staff evidence.
+	 */
+	private static function resolve_owned( string $key, string $reason ): bool {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- A live creator, including this connection, must not be resolved by staff.
 		$creator = $wpdb->get_var( $wpdb->prepare( 'SELECT IS_USED_LOCK(%s)', self::operation_lock( $key ) ) );
@@ -294,38 +327,47 @@ final class RegistrationSlots {
 	 */
 	public static function begin_change( int $id, array $columns, array $meta, bool $protect_extensions = false ): array|WP_Error {
 		global $wpdb;
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- New registration and pending profile growth share exactly one connection mutex.
-		$locked = '1' === (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', self::lock_name() ) );
-		if ( ! $locked && ! $protect_extensions ) {
-			return self::unavailable();
-		}
+		$fence       = ConnectionFence::enter();
+		$locked      = false;
+		$transaction = null;
 		try {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- The original connection is fenced before this first mutex query.
+			$locked = '1' === (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 0)', self::lock_name() ) );
+			if ( ! $locked && ! $protect_extensions ) {
+				$fence->close();
+				return self::unavailable();
+			}
 			$transaction = new \Linker\Commerce\Mail\NativeTransaction();
 		} catch ( \Throwable $error ) {
-			if ( $locked ) {
-				$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::lock_name() ) ); }
+			$fence->close();
 			return self::unavailable();
 		}
 		$context = array(
 			'id'          => $id,
+			'fence'       => $fence,
 			'locked'      => $locked,
 			'transaction' => $transaction,
 		);
 		if ( ! $locked ) {
 			return $context + array( 'rejected' => true );
 		}
-		$before = self::native_profile( $id );
-		if ( is_wp_error( $before ) ) {
-			self::end_change( $context, false );
-			return $before;
-		}
-		$context['old_bytes'] = $before['bytes'];
-		$result               = self::check_change( $context, $columns, $meta );
-		if ( ! $result ) {
+		try {
+			$before = self::native_profile( $id );
+			if ( is_wp_error( $before ) ) {
+				self::end_change( $context, false );
+				return $before;
+			}
+			$context['old_bytes'] = $before['bytes'];
+			$result               = self::check_change( $context, $columns, $meta );
+			if ( ! $result ) {
+				self::end_change( $context, false );
+				return self::unavailable();
+			}
+			return $context;
+		} catch ( \Throwable $error ) {
 			self::end_change( $context, false );
 			return self::unavailable();
 		}
-		return $context;
 	}
 
 	/**
@@ -367,28 +409,33 @@ final class RegistrationSlots {
 	 *
 	 * @param array<string,mixed> $context Native owner/savepoint.
 	 * @param bool                $commit  Whether the native writer reached its verified after hook.
+	 * @throws \RuntimeException Original mutex release cannot be confirmed inside the native scope.
 	 */
 	public static function end_change( array $context, bool $commit ): bool|WP_Error {
 		global $wpdb;
-		$confirmed = false;
 		try {
 			$okay = $commit && self::check_change( $context );
 			if ( $okay ) {
 				$context['transaction']->commit();
 			} else {
-				$context['transaction']->rollback(); }
-			$confirmed = true;
+				$context['transaction']->rollback();
+			}
+			$context['fence']->assert_current();
+			if ( ! empty( $context['locked'] ) ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Release only the same connection after confirmed native commit/rollback.
+				if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::lock_name() ) ) ) {
+					throw new \RuntimeException( 'registration_profile_release_unknown' );
+				}
+			}
+			$context['fence']->assert_current();
 			return $okay;
 		} catch ( \Throwable $error ) {
 			try {
-				$context['transaction']->rollback(); } catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- No compensation on a lost original connection.
-				/* Unknown original owner: no compensation. */ }
+				$context['transaction']->rollback(); } catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- The lost original connection cannot compensate on a new client.
+				/* A lost original connection cannot compensate. */ }
 				return new WP_Error( 'linker_registration_profile_unknown', 'Native profile transaction could not be confirmed.' );
 		} finally {
-			if ( $confirmed && ! empty( $context['locked'] ) ) {
-				// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- The confirmed original native owner releases its mutex.
-				$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', self::lock_name() ) );
-			}
+			$context['fence']->close();
 			clean_user_cache( $context['id'] );
 			wp_cache_delete( $context['id'], 'user_meta' );
 		}
@@ -401,6 +448,15 @@ final class RegistrationSlots {
 	 * @return array<string,mixed>|WP_Error Exact native logical bytes and values.
 	 */
 	public static function native_profile( int $id ): array|WP_Error {
+		return ConnectionFence::run( static fn () => self::profile_owned( $id ) );
+	}
+
+	/** Native business data inside its first-statement connection fence.
+	 *
+	 * @param int $id Native owner.
+	 * @return array<string,mixed>|WP_Error Actual profile or unavailable.
+	 */
+	private static function profile_owned( int $id ): array|WP_Error {
 		global $wpdb;
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.NotPrepared -- Capacity must inspect this writer connection, not object-cache snapshots.
 		$columns      = $wpdb->get_row( $wpdb->prepare( "SELECT user_login, user_nicename, user_email, user_url, display_name FROM {$wpdb->users} WHERE ID = %d", $id ), ARRAY_A );
@@ -517,6 +573,19 @@ final class RegistrationSlots {
 	 * @return array<string,mixed>|WP_Error Durable result.
 	 */
 	private static function edit( callable $work ): array|WP_Error {
+		try {
+			return ConnectionFence::run( static fn () => self::edit_owned( $work ) );
+		} catch ( \Throwable $error ) {
+			return self::unavailable();
+		}
+	}
+
+	/** DB-only capacity edit; no provider or transport can enter this scope.
+	 *
+	 * @param callable(array<string,mixed>&):(array<string,mixed>|WP_Error) $work Exact registry edit.
+	 * @return array<string,mixed>|WP_Error Native durable result.
+	 */
+	private static function edit_owned( callable $work ): array|WP_Error {
 		$result = self::unavailable();
 		Lock::run(
 			self::MUTEX,

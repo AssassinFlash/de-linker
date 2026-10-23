@@ -61,6 +61,13 @@ final class NewCustomerEmailTest extends TestCase {
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		// Legacy/unmanaged native users do not have a registration handoff source.
 		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'metadata_exists',
+			array(
+				'args'   => array( 'user', WP_Mock\Functions::type( 'int' ), \Linker\Commerce\Registration\RegistrationNotices::META ),
+				'return' => false,
+			)
+		);
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => $email ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		$this->options(

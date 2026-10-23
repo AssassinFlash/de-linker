@@ -12,6 +12,9 @@ namespace Linker\Commerce\Registration;
 use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Mail\Message;
 use Linker\Commerce\Mail\Producer;
+use Linker\Commerce\Mail\NativeOrigin;
+use Linker\Commerce\Protection\Identity;
+use Linker\Commerce\Protection\RegistrationSlots;
 use Linker\Commerce\Registration\Emails\NewCustomerEmail;
 use Linker\Commerce\Registration\Emails\RegistrationReceivedEmail;
 use WP_Error;
@@ -21,6 +24,7 @@ use WP_User;
  * Arbitrary settings/filters are captured once; customer prose is never replaced.
  */
 final class RegistrationMessage {
+	public const POLICY = 'registration-native-plan-v1';
 
 	/**
 	 * Capture the actual configured native notification without user/VIES/mail writes.
@@ -29,14 +33,29 @@ final class RegistrationMessage {
 	 * @param  WP_User                                    $user   Password-free prospective user.
 	 * @param  array<string,string>                       $values Native business values.
 	 * @param  string                                     $locale Native customer locale.
+	 * @param string                                     $operation Native admitted operation UUID.
 	 * @return array<string,mixed>|WP_Error Frozen native message and complete JSON bound.
 	 */
-	public static function prepare( NewCustomerEmail|RegistrationReceivedEmail $email, WP_User $user, array $values, string $locale ): array|WP_Error {
+	public static function prepare( NewCustomerEmail|RegistrationReceivedEmail $email, WP_User $user, array $values, string $locale, string $operation ): array|WP_Error {
+		if ( ! wp_is_uuid( $operation, 4 ) ) {
+			return self::problem(); }
+		$binding = array(
+			'policy'    => self::POLICY,
+			'operation' => $operation,
+			'owner'     => Identity::recipient( $user->user_email ),
+			'kind'      => $email instanceof NewCustomerEmail ? 'team' : 'received',
+			'account'   => 0,
+			'slot'      => '',
+			'stage'     => 'prepared',
+		);
 		if ( ! $email->is_enabled() ) {
-			return array(
-				'state'     => 'skipped',
-				'reason'    => 'disabled',
-				'max_bytes' => 1,
+			return self::bounded_source(
+				array(
+					'state'   => 'skipped',
+					'reason'  => 'disabled',
+					'binding' => $binding,
+				),
+				0
 			);
 		}
 		$nonce   = bin2hex( random_bytes( 32 ) );
@@ -47,15 +66,34 @@ final class RegistrationMessage {
 		$message = Producer::critical(
 			static fn (): ?Message => $email instanceof NewCustomerEmail ? $email->preview( $user, $values, $tokens ) : $email->preview( $user, $locale )
 		);
-		if ( ! $message instanceof Message || array() === $message->to ) {
+		if ( ! $message instanceof Message || array() === $message->to || ! NativeOrigin::valid( $message ) ) {
 			return self::problem();
 		}
-		$plan = array(
+		$plan                       = array(
 			'state'       => 'pending',
 			'message'     => $message->to_array(),
 			'parts'       => array( array( 'text' => $message->body ) ),
 			'account_url' => AccountsAdmin::url(),
 			'vat_labels'  => array(),
+		);
+		$plan['binding']            = $binding;
+		$plan['reservation']        = '';
+		$plan['attachments_sha256'] = array();
+		foreach ( $message->attachments as $path ) {
+			$digest = is_file( $path ) ? hash_file( 'sha256', $path ) : false;
+			if ( ! is_string( $digest ) ) {
+				return self::problem(); }
+			$plan['attachments_sha256'][] = $digest;
+		}
+		$plan['message']['origin'] = array(
+			'kind'        => 'transaction',
+			'producer'    => $email->id,
+			'policy'      => self::POLICY,
+			'operation'   => $operation,
+			'purpose'     => $plan['binding']['kind'],
+			'account'     => 0,
+			'reservation' => str_repeat( 'f', 64 ),
+			'seal'        => str_repeat( 'f', 64 ),
 		);
 		if ( $email instanceof NewCustomerEmail ) {
 			$body = $message->body;
@@ -116,14 +154,34 @@ final class RegistrationMessage {
 		}
 		// The bounded native pending source stores one body copy, not a second queue.
 		$plan['message']['body'] = '';
-		$plan['reservation']     = str_repeat( 'f', 64 );
-		$plan['max_bytes']       = PHP_INT_MAX;
-		$source                  = wp_json_encode( $plan );
+		return self::bounded_source( $plan, $maximum );
+	}
+
+	/** Complete pending source shape, including MAC, bound identity and reservation.
+	 *
+	 * @param array<string,mixed> $plan Authenticated native preview or disabled notice.
+	 * @param int                 $message_maximum Complete final Message bound, zero when no message exists.
+	 * @return array<string,mixed>|WP_Error Complete native source bound.
+	 */
+	private static function bounded_source( array $plan, int $message_maximum ): array|WP_Error {
+		// PHP's positive account ID has at most strlen(PHP_INT_MAX) digits;
+		// SHA256/MAC/slot/reservation fields have exactly 64 ASCII bytes.
+		// Prepared/reserved are the longest stage values (eight ASCII bytes).
+		$plan['reservation']        = str_repeat( 'f', 64 );
+		$plan['binding']['account'] = PHP_INT_MAX;
+		$plan['binding']['slot']    = str_repeat( 'f', 64 );
+		$plan['binding']['stage']   = 'reserved';
+		$plan['witness']            = str_repeat( 'f', 64 );
+		$plan['max_bytes']          = PHP_INT_MAX;
+		$source                     = wp_json_encode( $plan );
 		if ( ! is_string( $source ) ) {
-			return self::problem();
-		}
-		$plan['max_bytes'] = max( $maximum, strlen( $source ) );
-		unset( $plan['reservation'] );
+			return self::problem(); }
+		$plan['max_bytes']          = max( $message_maximum, strlen( $source ) );
+		$plan['reservation']        = '';
+		$plan['binding']['account'] = 0;
+		$plan['binding']['slot']    = '';
+		$plan['binding']['stage']   = 'prepared';
+		$plan['witness']            = self::signature( $plan );
 		return $plan;
 	}
 
@@ -135,8 +193,36 @@ final class RegistrationMessage {
 	 * @param string              $vat  Native verdict.
 	 */
 	public static function complete( array $plan, int $id, string $vat ): ?Message {
+		if ( ! self::owned( $plan, $id ) ) {
+			return null; }
 		$message = self::build( $plan, $id, $vat );
-		return null !== $message && strlen( (string) wp_json_encode( $message->to_array() ) ) <= (int) ( $plan['max_bytes'] ?? 0 ) ? $message : null;
+		if ( null === $message ) {
+			return null; }
+		$message = NativeOrigin::seal( $message );
+		return strlen( (string) wp_json_encode( $message->to_array() ) ) <= (int) $plan['max_bytes'] ? $message : null;
+	}
+
+	/** Authenticate the complete frozen plan before any optional quota side effect.
+	 *
+	 * @param array<string,mixed> $plan Private typed native plan.
+	 * @param int                 $id Actual created native owner.
+	 */
+	public static function owned( array $plan, int $id ): bool {
+		clean_user_cache( $id );
+		if ( ! self::valid( $plan ) || 'bound' !== $plan['binding']['stage'] || $plan['binding']['account'] !== $id || ! get_userdata( $id ) ) {
+			return false; }
+		wp_cache_delete( $id, 'user_meta' );
+		if ( get_user_meta( $id, RegistrationSlots::META, true ) !== $plan['binding']['slot'] || get_user_meta( $id, RegistrationNotices::OWNER, true ) !== $plan['binding']['owner'] ) {
+			return false; }
+		$stored = RegistrationNotices::read( $id );
+		if ( ! is_array( $stored ) || ( $stored[ $plan['binding']['kind'] ] ?? null ) !== $plan ) {
+			return false; }
+		$attachments = $plan['message']['attachments'] ?? array();
+		foreach ( $attachments as $index => $path ) {
+			if ( ! is_string( $path ) || ! is_file( $path ) || hash_file( 'sha256', $path ) !== ( $plan['attachments_sha256'][ $index ] ?? null ) ) {
+				return false; }
+		}
+		return true;
 	}
 
 	/**
@@ -162,9 +248,87 @@ final class RegistrationMessage {
 				return null;
 			}
 		}
-		$data         = $plan['message'];
-		$data['body'] = $body;
+		$data                          = $plan['message'];
+		$data['body']                  = $body;
+		$data['origin']['account']     = $id;
+		$data['origin']['reservation'] = '' !== $plan['reservation'] ? $plan['reservation'] : str_repeat( 'f', 64 );
 		return Message::from_array( $data );
+	}
+
+
+	/** Bind only the existing native reservation to its authenticated preview.
+	 *
+	 * @param array<string,mixed> $plan Frozen native producer.
+	 * @param string              $reservation Actual count-one reservation HMAC.
+	 * @return array<string,mixed>|WP_Error Bound source.
+	 */
+	public static function reserved( array $plan, string $reservation ): array|WP_Error {
+		if ( ! self::valid( $plan ) || 'prepared' !== $plan['binding']['stage'] || 1 !== preg_match( '/^[a-f0-9]{64}$/', $reservation ) ) {
+			return self::problem(); }
+		$plan['reservation']      = $reservation;
+		$plan['binding']['stage'] = 'reserved';
+		$plan['witness']          = self::signature( $plan );
+		return $plan;
+	}
+
+	/** Earliest native insert binds the final identity before the first meta write.
+	 *
+	 * @param array<string,mixed> $plan Reserved native producer.
+	 * @param int                 $id Actual new account.
+	 * @param string              $slot Current server registration slot.
+	 * @return array<string,mixed>|WP_Error Identity-bound source.
+	 */
+	public static function bind( array $plan, int $id, string $slot ): array|WP_Error {
+		if ( ! self::valid( $plan ) || 'reserved' !== $plan['binding']['stage'] || $id < 1 || 1 !== preg_match( '/^[a-f0-9]{64}$/', $slot ) ) {
+			return self::problem(); }
+		clean_user_cache( $id );
+		$user = get_userdata( $id );
+		if ( ! $user instanceof WP_User || Identity::recipient( $user->user_email ) !== $plan['binding']['owner'] ) {
+			return self::problem(); }
+		$plan['binding']['account'] = $id;
+		$plan['binding']['slot']    = $slot;
+		$plan['binding']['stage']   = 'bound';
+		$plan['witness']            = self::signature( $plan );
+		return $plan;
+	}
+
+	/** An explicit native policy skip keeps a verifiable owner until its scope cancellation ACK.
+	 *
+	 * @param array<string,mixed> $plan Verified bound pending plan.
+	 * @param string              $reason Native fixed skip reason.
+	 * @return array<string,mixed>|WP_Error Authenticated bounded cancellation source.
+	 */
+	public static function skipped( array $plan, string $reason ): array|WP_Error {
+		if ( ! self::valid( $plan ) || 'bound' !== $plan['binding']['stage'] || ! in_array( $reason, array( 'disabled', 'daily_cap', 'target_cap' ), true ) ) {
+			return self::problem(); }
+		$next            = array(
+			'state'       => 'skipped',
+			'reason'      => $reason,
+			'reservation' => $plan['reservation'],
+			'binding'     => $plan['binding'],
+			'max_bytes'   => $plan['max_bytes'],
+		);
+		$next['witness'] = self::signature( $next );
+		return strlen( (string) wp_json_encode( $next ) ) <= $plan['max_bytes'] ? $next : self::problem();
+	}
+
+	/** Authenticated typed plan, never a browser-origin/category permission.
+	 *
+	 * @param array<string,mixed> $plan Frozen source.
+	 */
+	private static function valid( array $plan ): bool {
+		$binding = $plan['binding'] ?? null;
+		return is_array( $binding ) && ( $binding['policy'] ?? '' ) === self::POLICY && in_array( $binding['kind'] ?? '', array( 'team', 'received' ), true ) && is_string( $plan['witness'] ?? null ) && strlen( $plan['witness'] ) === 64 && hash_equals( self::signature( $plan ), $plan['witness'] );
+	}
+
+	/** Purpose/version domain separation; the salt and password never enter storage.
+	 *
+	 * @param array<string,mixed> $plan Frozen source without caller-owned secrets.
+	 */
+	private static function signature( array $plan ): string {
+		unset( $plan['witness'] );
+		$json = wp_json_encode( $plan );
+		return is_string( $json ) ? hash_hmac( 'sha256', self::POLICY . '|' . $json, wp_salt( 'auth' ) ) : '';
 	}
 
 	/**

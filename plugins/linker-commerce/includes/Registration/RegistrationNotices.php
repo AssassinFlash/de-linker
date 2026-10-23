@@ -61,7 +61,7 @@ final class RegistrationNotices {
 				self::cancel_uncreated( $result );
 				return self::problem();
 			}
-			$plan = RegistrationMessage::prepare( $producer, $user, $values, $locale );
+			$plan = RegistrationMessage::prepare( $producer, $user, $values, $locale, $operation );
 			if ( is_wp_error( $plan ) ) {
 				self::cancel_uncreated( $result );
 				return $plan;
@@ -71,8 +71,13 @@ final class RegistrationNotices {
 				self::cancel_uncreated( $result );
 				return self::problem();
 			}
-			$plan['reservation'] = $scope['key'];
-			$result[ $kind ]     = $plan;
+			$bound = RegistrationMessage::reserved( $plan, $scope['key'] );
+			if ( is_wp_error( $bound ) ) {
+				Capacity::cancel_before_side_effect( $scope['key'] );
+				self::cancel_uncreated( $result );
+				return $bound;
+			}
+			$result[ $kind ] = $bound;
 		}
 		return $result;
 	}
@@ -96,7 +101,7 @@ final class RegistrationNotices {
 	 * @param int $id Native user.
 	 */
 	public static function owns( int $id ): bool {
-		return '' !== get_user_meta( $id, \Linker\Commerce\Protection\RegistrationSlots::META, true ) || is_array( self::read( $id ) );
+		return '' !== get_user_meta( $id, \Linker\Commerce\Protection\RegistrationSlots::META, true ) || metadata_exists( 'user', $id, self::META );
 	}
 
 	/**
@@ -117,6 +122,8 @@ final class RegistrationNotices {
 						return;
 					}
 					$plan = $state[ $kind ];
+					if ( ! RegistrationMessage::owned( $plan, $id ) ) {
+						return; }
 					if ( 'skipped' === ( $plan['state'] ?? '' ) ) {
 						self::cancel_skipped( $id, $kind, $state );
 						return;
@@ -131,12 +138,11 @@ final class RegistrationNotices {
 						$reason = ReceiptBudget::reason( Message::from_array( $plan['message'] )->to, $id, 'registration' );
 					}
 					if ( in_array( $reason, array( 'disabled', 'daily_cap', 'target_cap' ), true ) ) {
-						$next          = $state;
-						$next[ $kind ] = array(
-							'state'       => 'skipped',
-							'reason'      => $reason,
-							'reservation' => $plan['reservation'],
-						);
+						$next    = $state;
+						$skipped = RegistrationMessage::skipped( $plan, $reason );
+						if ( is_wp_error( $skipped ) ) {
+							return; }
+						$next[ $kind ] = $skipped;
 						if ( self::transition(
 							$id,
 							$state,
@@ -193,7 +199,9 @@ final class RegistrationNotices {
 					} finally {
 						wp_cache_delete( $id, 'user_meta' );
 					}
-				}
+				},
+				0,
+				true
 			);
 		} catch ( \Throwable $error ) {
 			// The account already exists; its durable pending source remains the recovery authority.
@@ -220,7 +228,10 @@ final class RegistrationNotices {
 				if ( ! Capacity::cancel_before_side_effect( $scope ) ) {
 					return false;
 				}
-				unset( $state[ $kind ]['reservation'], $state[ $kind ]['max_bytes'] );
+				$state[ $kind ] = array(
+					'state'  => 'skipped',
+					'reason' => $state[ $kind ]['reason'],
+				);
 				self::write( $id, $state );
 				return true;
 			}
@@ -241,7 +252,9 @@ final class RegistrationNotices {
 			'registration-notices-' . $id,
 			static function () use ( $id, $expected, $work, &$done ): void {
 				$done = self::acknowledge( static fn (): bool => self::read( $id ) === $expected && $work() );
-			}
+			},
+			0,
+			true
 		);
 		return $done;
 	}
@@ -408,13 +421,28 @@ final class RegistrationNotices {
 	 * @throws \RuntimeException A failed native read is never absence.
 	 */
 	public static function read( int $id ): ?array {
+		return ConnectionFence::run( static fn (): ?array => self::read_owned( $id ) );
+	}
+
+	/** A failed or malformed native source is never an absent record.
+	 *
+	 * @param int $id Native owner.
+	 * @return array<string,mixed>|null Exact native source.
+	 * @throws \RuntimeException Failed or malformed private source cannot mean absence.
+	 */
+	private static function read_owned( int $id ): ?array {
 		wp_cache_delete( $id, 'user_meta' );
 		$state = get_user_meta( $id, self::META, true );
 		global $wpdb;
 		if ( '' !== $wpdb->last_error ) {
 			throw new \RuntimeException( 'registration_notice_read_failed' );
 		}
-		return is_array( $state ) ? $state : null;
+		if ( is_array( $state ) ) {
+			return $state; }
+		if ( '' !== $state || metadata_exists( 'user', $id, self::META ) ) {
+			throw new \RuntimeException( 'registration_notice_source_invalid' );
+		}
+		return null;
 	}
 
 	/**

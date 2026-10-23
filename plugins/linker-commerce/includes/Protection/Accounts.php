@@ -299,6 +299,7 @@ final class Accounts {
 	 * @param  bool                $update   Native update flag.
 	 * @param  array<string,mixed> $userdata Native caller; no password retained.
 	 * @return array<string,mixed> Native fields plus trusted association and notices.
+	 * @throws \RuntimeException A frozen notification cannot bind to this created account.
 	 */
 	public function stamp( array $meta, WP_User $user, bool $update, array $userdata ): array {
 		unset( $userdata );
@@ -310,6 +311,12 @@ final class Accounts {
 		) || empty( $this->registration['started'] ) || 0 !== $this->registration['id']
 		) {
 			return $meta;
+		}
+		foreach ( $this->registration['notices'] as $kind => $plan ) {
+			$bound = \Linker\Commerce\Registration\RegistrationMessage::bind( $plan, $user->ID, $this->registration['slot'] );
+			if ( is_wp_error( $bound ) ) {
+				throw new \RuntimeException( 'registration_native_notice_binding_failed' ); }
+			$this->registration['notices'][ $kind ] = $bound;
 		}
 		$this->registration['id']                  = $user->ID;
 		$values                                    = $this->registration['values'];

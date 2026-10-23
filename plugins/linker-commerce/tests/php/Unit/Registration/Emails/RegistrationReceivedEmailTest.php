@@ -57,6 +57,13 @@ final class RegistrationReceivedEmailTest extends TestCase {
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		// Legacy/unmanaged native users do not have a registration handoff source.
 		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'metadata_exists',
+			array(
+				'args'   => array( 'user', WP_Mock\Functions::type( 'int' ), \Linker\Commerce\Registration\RegistrationNotices::META ),
+				'return' => false,
+			)
+		);
 		WP_Mock::userFunction( 'get_user_meta', array( 'return' => '' ) );
 	}
 

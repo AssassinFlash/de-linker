@@ -80,3 +80,20 @@ Woo/WordPress 原生 validation、users/meta、账户 writer、审批审计、pr
 通知policy/provider阶段可以先读状态；真正写skip、accepted、取消预留或erase时必须在原owner锁和原NativeTransaction内重读完全一致的source。已擦除、已变化或无法确认的source不能被旧快照覆盖。verified-email原owner查询失败不是空集：export原生错误、erase retained/done=false，拒绝失败空结果缓存，也不借当前邮箱fallback伪称完成。健康重试仍使用原有owner关联，不复制新的隐私队列。
 
 后续完整复审确认：erase的第一次source读取也必须在原连接范围内。整个owner GET_LOCK、首读、既有job锁、原事务中的fresh比较/删除/取消/ACK、解锁现在共用同一ConnectionFence；首读2006不能重连后借新连接继续。原始staff audit也使用带owner核验的cache-free native读取，真实读取失败不是空列表。owner audit与interrupted owner关联的擦除使用同一NativeTransaction/savepoint，任一最后ACK失败都回滚本轮，其他owner记录与调用者无关事务不变。原生staff追加审计复用相同权威读回；不改共享API或建立新的通用数据层。
+
+
+## 当前保护基线移植（2026-10-23）
+
+完整基线是生产 tracking `1949064118a8744a27427595d2aadab788a7ed9a`，邮件/容量运行源为 `a50751df`；此注册候选尚未发布。沿用当前强制发送前授权，不将 critical、category、preview 或 accepted job ID 当作可消费许可，不重签旧38条任务。
+
+注册 preview 的 NativeOrigin 仅证明捕获来自真实原生 producer；typed holes 完成后不能沿用该旧 seal。冻结 source 使用 `registration-native-plan-v1` 域分离的本机 auth-salt HMAC，覆盖完整 parts/Message 路由、附件内容摘要、locale、operation UUID、原始 recipient HMAC、team/received 用途、reservation、实际 account/slot 和完整 bytes 界。第一笔原生 account 插入后、第一笔 meta 前，由可信 producer 将真实 account ID 与 slot 绑定并重新认证此 source。恢复只消费该账号当前持久 source，不能凭临时 caller 数据补造身份/计划。
+
+最终原生 Message 仅在 HMAC、真实账号、原始 owner、当前 slot、用途对应的 exact stored plan 和附件摘要全部相符后，由该 producer 生成最终 NativeOrigin seal；`Message::from_array` 不重新签名。跨账号/operation/reservation/purpose、修改正文/收件人/bytes/witness 均不可获得许可。完整最终 JSON 包括最终 origin/account/seal；完整 pending source 包括所有 HMAC/binding 元数据。边界来自 `PHP_INT_MAX` 的原生 ID 字长、固定 SHA256 字长、实际所有 VAT label 和实际 JSON，不加猜测固定余量。disabled source 同样按完整身份绑定与 reservation 的最大 JSON 计字节，不视为1字节。
+
+在任何 ReceiptBudget 或取消 critical reservation 前，pending 和 disabled/policy-skipped source 都先通过完整认证；合法 policy skip 保留认证见证到 cancellation/source ACK 同事务完成，之后只保留终态 reason。损坏或改写的 skipped 标记不能触发退款。unknown 不发信、也不默认变成 skip。
+
+所有本票新增容量和资料入口从首条 SQL 起保护原连接；profile 的跨 hooks 范围延续至原生 writer 完成与同连接 mutex 释放。notices 外层 mutex 只保护 acquire/release 的 SQL 及其原身份，回调中的 VIES 不置于数据库事务。实际 DB-only ACK、erase、slot/audit 写入继续使用现有 NativeTransaction/ConnectionFence。native read 的非空损坏 source 是显性失败，不当成无资料/已擦除。
+
+verified-email exporter 除 pending source 外，还核实 accepted job 的 `_linker_registration_user` 归属并导出其完整 immutable Message；已消费删除的 job 不重建副本，读失败/归属不明返回可重试错误。当前 MU 基线对普通客户 Users REST 路径返回403；本票保留该守卫。底层 self-controller 字节门使用仅有原生 list_users 能力且无 edit_users 的受限合成账号验证，没有开放默认客户路由。
+
+历史候选的截图与测试仍保留其原 head/实例说明，不能冒充此移植候选的新验收。当前原生结果和剩余门见 [2026-10-23 移植记录](../acceptance/2026-10-23/569-current/README.md)。

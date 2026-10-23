@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Registration;
 
+use Linker\Commerce\Mail\ConnectionFence;
+use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\RegistrationSlots;
 use WP_Error;
@@ -69,7 +71,10 @@ final class RegistrationPrivacy {
 			return $users;
 		}
 		foreach ( $users as $id ) {
-			$state = RegistrationNotices::read( $id );
+			try {
+				$state = self::export_state( $id );
+			} catch ( \Throwable $error ) {
+				return self::read_problem(); }
 			if ( null === $state ) {
 				continue;
 			}
@@ -107,6 +112,38 @@ final class RegistrationPrivacy {
 		return array(
 			'data' => $data,
 			'done' => count( $users ) < 128,
+		);
+	}
+
+	/** Export the actual owning queued Message as well as its source acknowledgement.
+	 *
+	 * @param int $id Native verified owner.
+	 * @return array<string,mixed>|null Exact source and still-retained native content.
+	 * @throws \RuntimeException Unknown/foreign jobs cannot be exported as this owner's data.
+	 */
+	private static function export_state( int $id ): ?array {
+		return ConnectionFence::run(
+			static function () use ( $id ): ?array {
+				$state = RegistrationNotices::read( $id );
+				if ( null === $state ) {
+					return null; }
+				foreach ( $state as &$plan ) {
+					$job = $plan['job'] ?? 0;
+					if ( 'accepted' !== ( $plan['state'] ?? '' ) || ! is_int( $job ) || $job < 1 ) {
+						continue; }
+					clean_post_cache( $job );
+					wp_cache_delete( $job, 'post_meta' );
+					if ( ! get_post( $job ) ) {
+						continue; } // A consumed job has already removed this copy.
+					$stored = ( new JobStore() )->load( $job );
+					if ( null === $stored || (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
+						throw new \RuntimeException( 'registration_privacy_job_owner_unknown' );
+					}
+					$plan['message'] = $stored['message']->to_array();
+				}
+				unset( $plan );
+				return $state;
+			}
 		);
 	}
 
@@ -151,6 +188,18 @@ final class RegistrationPrivacy {
 	 * @return list<int>|WP_Error Bounded native IDs or explicit unknown, never cached failed emptiness.
 	 */
 	private static function users( string $email, int $page ): array|WP_Error {
+		try {
+			return ConnectionFence::run( static fn () => self::users_owned( $email, $page ) ); } catch ( \Throwable $error ) {
+			return self::read_problem(); }
+	}
+
+	/** Exact native owner lookup inside its first-statement fence.
+	 *
+	 * @param string $email Verified owner.
+	 * @param int    $page Native bounded page.
+	 * @return list<int>|WP_Error Native IDs or retryable failure.
+	 */
+	private static function users_owned( string $email, int $page ): array|WP_Error {
 		$ids = array_map(
 			'intval',
 			get_users(
