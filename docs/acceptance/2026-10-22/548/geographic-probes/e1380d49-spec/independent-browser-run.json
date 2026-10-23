@@ -1,0 +1,10 @@
+{
+  "command": [
+    "node",
+    "--test",
+    "independent-browser.test.mjs"
+  ],
+  "cwd": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/spec-geographic-e138-7isdp4ep",
+  "exit_code": 0,
+  "log_sha256": "6466352d002f6cb4b5c920d877d1121645de36c3f2a7ace9efb5222687700450"
+}

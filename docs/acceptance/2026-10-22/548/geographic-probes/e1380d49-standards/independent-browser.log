@@ -1,0 +1,11 @@
+✔ both polar branches refuse unsupported computed heights and retain valid negative heights (0.904709ms)
+✔ large absolute Up does not change local horizontal slope and geographic branch remains distinct (0.738ms)
+✔ legacy method declaration is never defaulted into a newly attachable result (5.4735ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 218.516334

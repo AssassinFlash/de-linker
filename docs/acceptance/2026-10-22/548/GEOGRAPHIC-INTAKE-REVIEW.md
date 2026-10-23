@@ -84,6 +84,18 @@ This correction still requires its own fixed independent review. No import/map
 UI, Computer Use of the new imported-source field, or full-goal acceptance is
 claimed from these checks.
 
+### e1380d49 fixed correction: both source axes PASS
+
+Spec independently passed115 focused backend,8 domain,6 React DOM,24 new
+Python analytic/actual-ASGI cases and4 new browser cases. Standards independently
+passed115 backend,9 new ASGI/storage cases,8 domain,3 new browser cases,6 DOM
+and1 emitted-graph check. Both reproduced the previous failures against the
+correction and challenged actual pre-upgrade receipt migration. Their complete
+reports, original probes, exact commands/logs and SHA cleanup receipts are under
+`geographic-probes/e1380d49-{spec,standards}`. This accepts the fixed geographic
+source/API/domain correction only. Import UI/recovery, maps/providers and the
+whole A–D/site acceptance remain active work.
+
 ## Open acceptance in the same goal
 
 Independent source review must still challenge parsing, numerical conditioning,

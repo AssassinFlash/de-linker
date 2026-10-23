@@ -1,0 +1,9 @@
+{
+  "python": "3.12.15 (main, Sep 30 2026, 22:04:19) [Clang 21.0.0 (clang-2100.3.34.2)]",
+  "python_executable": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine/.venv/bin/python",
+  "geographic_module": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/spec-geographic-e138-7isdp4ep/services/engine/src/linker_engine/planning/geographic.py",
+  "pyproj": "3.8.0",
+  "proj": "9.8.1",
+  "shapely": "2.2.0",
+  "fixed_intake_module": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/spec-geographic-e138-7isdp4ep/services/engine/src/linker_engine/planning/geometry_import.py"
+}
