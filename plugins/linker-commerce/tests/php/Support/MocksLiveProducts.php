@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Support;
 
 use Linker\Commerce\Gating\CommerceState;
+use Linker\Commerce\Abilities\PublicationData;
+use Linker\Commerce\Products\Compatibility;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Registration\Approval;
 use Mockery;
@@ -23,6 +25,12 @@ use WP_Mock;
  * slugs, so a small map restores the names Compatibility matches.
  */
 trait MocksLiveProducts {
+	/** Whether the cited-facts fixture migration is active.
+	 *
+	 * @var bool
+	 */
+	private bool $publication_migrated = false;
+
 
 	/**
 	 * Model slugs of the fixture mapped to the names the compatibility contract uses.
@@ -52,7 +60,29 @@ trait MocksLiveProducts {
 	 * @throws \LogicException When WP_Mock answers with another responder.
 	 */
 	protected function mock_live_products( array $ids, bool $migrated = false, bool $sees_prices = false ): void {
-		$products = LiveProducts::products( $migrated );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value, int $flags = 0 ): string|false => json_encode( $value, $flags ) ) );
+		WP_Mock::userFunction( 'wp_cache_supports', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_cache_flush_runtime', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $part = -1 ) => parse_url( $url, $part ) ) );
+		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://de-linker.com' ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) )->byDefault();
+		$this->publication_migrated = $migrated;
+		$products                   = LiveProducts::products( $migrated );
+		$bindings                   = array();
+		foreach ( $products as $id => $product ) {
+			$figures = json_decode( $product['figures'], true );
+			foreach ( is_array( $figures ) ? $figures : array() as $field => $entry ) {
+				$citation = $entry['citation'] ?? array();
+				$url      = $citation['url'] ?? ( isset( $citation['doc'] ) ? 'https://de-linker.com/wp-content/uploads/fixture/' . $citation['doc'] : null );
+				if ( is_string( $url ) ) {
+					$bindings[ $id ][ $field ] = array(
+						'document_id'     => hash( 'sha256', $url ),
+						'blob_sha256'     => hash( 'sha256', $url ),
+						'figure_revision' => \Linker\Commerce\Products\Publication::revision( $entry ),
+					);
+				}
+			}
+		}
 		// No language layer swaps a product: SelectionFacts asks has_filter()
 		// first, and a test class earlier in the run may already have made
 		// WP_Mock define the function for the rest of the process
@@ -95,13 +125,16 @@ trait MocksLiveProducts {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ) use ( $products ) {
+				'return' => static function ( int $id, string $key ) use ( $products, $bindings ) {
 					$product = $products[ $id ] ?? null;
 					if ( null === $product ) {
 						return '';
 					}
 					if ( SelectionFacts::FIGURES_META_KEY === $key ) {
 						return $product['figures'];
+					}
+					if ( \Linker\Commerce\Products\Publication\EvidenceBindings::META_KEY === $key ) {
+						return $bindings[ $id ] ?? array();
 					}
 					if ( CommerceState::MODE_META === $key ) {
 						return '';
@@ -118,7 +151,7 @@ trait MocksLiveProducts {
 					return $products[ $id ]['name'] ?? '';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction(
 			'get_permalink',
 			array(
@@ -126,7 +159,7 @@ trait MocksLiveProducts {
 					return 'https://de-linker.com/product/' . $id . '/';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -134,7 +167,7 @@ trait MocksLiveProducts {
 					return isset( $products[ $id ] ) ? 'product' : '';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction(
 			'get_post_status',
 			array(
@@ -142,7 +175,7 @@ trait MocksLiveProducts {
 					return $products[ $id ]['status'] ?? '';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $sees_prices ) );
 		if ( $sees_prices ) {
 			// Customer 7 is an approved account, so CommerceState shows prices.
@@ -184,6 +217,71 @@ trait MocksLiveProducts {
 				'return' => '',
 				'times'  => '0+',
 			)
+		);
+	}
+
+	/** Synthetic permission for isolated qualification tests, without a filesystem copy.
+	 * These aliases are test inputs, never a production citation migration.
+	 *
+	 * @return PublicationData
+	 */
+	protected function publication_data(): PublicationData {
+		return new PublicationData(
+			function (): array {
+				$products  = array();
+				$documents = array();
+				$fixture   = LiveProducts::published( $this->publication_migrated );
+				foreach ( $fixture as $id => $product ) {
+						$products[] = array(
+							'product_id'           => $id,
+							'product_revision'     => (string) $id,
+							'published_locale_ids' => array( $id ),
+						);
+						$figures    = json_decode( $product['figures'], true );
+					foreach ( is_array( $figures ) ? $figures : array() as $entry ) {
+						$citation = is_array( $entry ) ? ( $entry['citation'] ?? array() ) : array();
+						$url      = $citation['url'] ?? ( isset( $citation['doc'] ) ? 'https://de-linker.com/wp-content/uploads/fixture/' . $citation['doc'] : null );
+						if ( is_string( $url ) ) {
+							$key                                = hash( 'sha256', $url );
+							$documents[ $key ]                ??= array(
+								'document_id'       => $key,
+								'document_revision' => $key,
+								'blob_sha256'       => $key,
+								'url'               => $url,
+								'aliases'           => array( $url ),
+								'product_ids'       => array(),
+								'title'             => basename( $url ),
+								'type'              => 'datasheet',
+								'lang'              => 'en',
+							);
+							$documents[ $key ]['product_ids'][] = $id;
+						}
+					}
+				}
+				foreach ( Compatibility::pairs() as $pair ) {
+					foreach ( (array) ( $pair['documents'] ?? array() ) as $document ) {
+						$url               = $document['url'];
+						$key               = hash( 'sha256', $url );
+						$documents[ $key ] = array(
+							'document_id'       => $key,
+							'document_revision' => $key,
+							'blob_sha256'       => $key,
+							'url'               => $url,
+							'aliases'           => array( $url ),
+							'product_ids'       => array_keys( $fixture ),
+							'title'             => basename( $url ),
+							'type'              => 'compatibility',
+							'lang'              => 'en',
+						);
+					}
+				}
+				return array(
+					'source_revision'        => 'fixture',
+					'compatibility_revision' => 'fixture',
+					'products'               => $products,
+					'documents'              => array_values( $documents ),
+				);
+			}
 		);
 	}
 

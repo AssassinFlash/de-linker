@@ -36,7 +36,7 @@ final class CompareProductsTest extends TestCase {
 	 */
 	public function test_inverters_do_not_mix_in_a_battery_energy_row(): void {
 		$this->mock_live_products( array( 4107, 3556 ) );
-		$result = ( new CompareProducts() )->execute(
+		$result = ( new CompareProducts( null, $this->publication_data() ) )->execute(
 			array(
 				'product_ids' => array( 4107, 3556 ),
 				'lang'        => 'en',
@@ -48,7 +48,7 @@ final class CompareProductsTest extends TestCase {
 		$this->assertContains( 'ac_power_kw', $fields );
 		$this->assertContains( 'pv_input_kw', $fields );
 		$this->assertNotContains( 'usable_kwh', $fields );
-		$this->assertTrue( ( new CompareProducts() )->can_execute() );
+		$this->assertTrue( ( new CompareProducts( null, $this->publication_data() ) )->can_execute() );
 	}
 
 	/**
@@ -56,13 +56,13 @@ final class CompareProductsTest extends TestCase {
 	 */
 	public function test_mixed_pair_keeps_energy_and_output_apart(): void {
 		$this->mock_live_products( array( 4107, 1832 ) );
-		$result = ( new CompareProducts() )->execute( array( 'product_ids' => array( 4107, 1832 ) ) );
+		$result = ( new CompareProducts( null, $this->publication_data() ) )->execute( array( 'product_ids' => array( 4107, 1832 ) ) );
 		$fields = array_column( $result['rows'], 'field' );
 
 		$this->assertContains( 'ac_power_kw', $fields );
 		$this->assertContains( 'usable_kwh', $fields );
 		$this->assertNotContains( 'power', $fields );
-		$schema = ( new CompareProducts() )->args()['output_schema'];
+		$schema = ( new CompareProducts( null, $this->publication_data() ) )->args()['output_schema'];
 		$this->assertSame( array( 'products', 'rows' ), $schema['required'] );
 	}
 }

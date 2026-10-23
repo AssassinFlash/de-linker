@@ -17,6 +17,7 @@ POSTS = {
     "/summary",
     "/assistant/conversation/{conversation_id}/forget",
     "/pages/invalidate",
+    "/knowledge/loaded",
     "/inquiries/assess",
 }
 

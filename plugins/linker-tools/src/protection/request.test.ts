@@ -258,3 +258,18 @@ test( 'failed verification never creates a live send witness', async () => {
 	expect( sent ).not.toHaveBeenCalled();
 	expect( fetcher ).not.toHaveBeenCalled();
 } );
+
+test( 'signed Genie product-list writes retain the native draft and save admission scopes', () => {
+	expect(
+		resourceAction(
+			'https://site.test/wp-json/linker-ai/v1/genie/draft',
+			'POST'
+		)
+	).toBe( 'draft_write' );
+	expect(
+		resourceAction(
+			'https://site.test/wp-json/linker-ai/v1/genie/solution',
+			'POST'
+		)
+	).toBe( 'solution_save' );
+} );

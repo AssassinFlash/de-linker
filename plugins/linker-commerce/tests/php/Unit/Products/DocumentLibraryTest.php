@@ -20,6 +20,22 @@ use WP_Mock;
  * @covers \Linker\Commerce\Products\DocumentLibrary
  */
 final class DocumentLibraryTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\PublishedDocumentView;
+	use \Linker\Commerce\Tests\Support\BoundFaqFixture;
+
+	/**
+	 * Only the declared prepared answers receive fixture evidence bindings.
+	 *
+	 * @var array<int,array<string,array{document_id:string,blob_sha256:string,figure_revision:string}>>
+	 */
+	private array $current_faq_bindings = array();
+
+	/**
+	 * Explicitly maintained FAQ source records of this fixture.
+	 *
+	 * @var array<int,string>
+	 */
+	private array $managed_faqs = array();
 
 	/**
 	 * Two products of one brand: their download entries and their FAQ field.
@@ -122,6 +138,12 @@ final class DocumentLibraryTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' )->byDefault();
+		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' )->byDefault();
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( mixed $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) )->byDefault();
+		$this->current_faq_bindings = array( 6521 => self::bound_faqs( self::PRODUCTS[6521]['faqs'], 'fixture-manual', hash( 'sha256', 'fixture manual bytes' ) ) );
 		WP_Mock::userFunction( 'wp_specialchars_decode', array( 'return' => static fn ( string $value ): string => $value ) );
 		WP_Mock::userFunction(
 			'has_filter',
@@ -173,7 +195,7 @@ final class DocumentLibraryTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ) {
+				'return' => function ( int $id, string $key ) {
 					$product = self::PRODUCTS[ $id ];
 					return match ( $key ) {
 						'_tv_legacy_acf_json' => (string) json_encode(
@@ -183,6 +205,8 @@ final class DocumentLibraryTest extends TestCase {
 							)
 						),
 						'_linker_faqs'        => (string) json_encode( $product['faqs'] ),
+						'_linker_faqs_managed' => $this->managed_faqs[ $id ] ?? '',
+						\Linker\Commerce\Products\Publication\EvidenceBindings::FAQ_META_KEY => $this->current_faq_bindings[ $id ] ?? array(),
 						default               => '',
 					};
 				},
@@ -191,11 +215,77 @@ final class DocumentLibraryTest extends TestCase {
 	}
 
 	/**
+	 * Current authoritative products and document relations of the fixture.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function manifest(): array {
+		return array(
+			'products'  => array_map(
+				static fn ( int $id ): array => array(
+					'product_id'           => $id,
+					'published_locale_ids' => array( $id ),
+				),
+				array_keys( self::PRODUCTS )
+			),
+			'documents' => array(
+				array(
+					'product_ids' => array( 6521 ),
+					'document_id' => 'fixture-manual',
+					'blob_sha256' => hash( 'sha256', 'fixture manual bytes' ),
+					'aliases'     => array( 'https://de-linker.test/media/901.pdf' ),
+				),
+			),
+		);
+	}
+
+	/** Native published translations do not override canonical withdrawal. */
+	public function test_library_omits_a_product_without_current_publication_permission(): void {
+		$manifest             = $this->manifest();
+		$manifest['products'] = array( $manifest['products'][1] );
+		$library              = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
+		$this->assertSame( array(), $library->answers() );
+		foreach ( $library->documents() as $document ) {
+			$this->assertNotContains( 'GoodWe GW5.1-BAT-D-G21', $document['covers'] );
+		}
+	}
+
+	/** Withdrawing cited evidence suppresses its answer without a legacy fallback. */
+	public function test_library_omits_answers_whose_cited_document_is_withdrawn(): void {
+		$manifest              = $this->manifest();
+		$manifest['documents'] = array();
+		$library               = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
+		$this->assertSame( array(), $library->answers() );
+	}
+
+	/** A current URL alone does not grant an unprepared answer its current evidence. */
+	public function test_cited_answer_requires_an_explicit_current_binding(): void {
+		$this->current_faq_bindings = array();
+		$library                    = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
+		$this->assertSame( array(), $library->answers() );
+	}
+
+	/** Replacement bytes invalidate old answer text and the page URL together. */
+	public function test_same_url_replacement_omits_old_answer_and_source_page(): void {
+		$manifest                                = $this->manifest();
+		$manifest['documents'][0]['blob_sha256'] = hash( 'sha256', 'replacement manual bytes' );
+		$library                                 = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
+		$this->assertSame( array(), $library->answers() );
+	}
+
+	/** An intentionally emptied FAQ field cannot restore an older ACF answer. */
+	public function test_maintained_empty_faq_list_cannot_fall_back_to_old_answers(): void {
+		$this->managed_faqs[6522] = '1';
+		$library                  = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
+		$this->assertSame( array( 'Is the module stackable?' ), array_column( $library->answers(), 'question' ) );
+	}
+
+	/**
 	 * One row per file even when several products state it, and the row says
 	 * which products it covers.
 	 */
 	public function test_documents_are_deduplicated_by_file_and_count_their_products(): void {
-		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents(), null, 'title' );
 
 		$this->assertCount( 7, $documents, 'eight entries, one file stated by both products' );
 		$this->assertSame(
@@ -212,7 +302,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * an absent one `EN`.
 	 */
 	public function test_type_and_language_are_normalised(): void {
-		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents(), null, 'title' );
 
 		$this->assertSame( 'manual', $documents['ESA battery manual (DE)']['type'] );
 		$this->assertSame( 'DE', $documents['ESA battery manual (DE)']['language'] );
@@ -230,7 +320,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * the type chips had nothing to tell apart.
 	 */
 	public function test_german_rows_read_the_same_type_as_their_english_twin(): void {
-		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents(), null, 'title' );
 
 		$this->assertSame( 'datasheet', $documents['ESA-Batterie-Datenblatt (DE)']['type'] );
 		$this->assertSame( 'compatibility', $documents['ESA-Batterie-Kompatibilitätsliste (DE)']['type'] );
@@ -246,7 +336,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * live register used.
 	 */
 	public function test_the_register_is_ordered_by_type(): void {
-		$documents = ( new DocumentLibrary() )->documents();
+		$documents = ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents();
 
 		$this->assertSame(
 			array( 'datasheet', 'datasheet', 'manual', 'certificate', 'compatibility', 'brochure', 'document' ),
@@ -261,11 +351,11 @@ final class DocumentLibraryTest extends TestCase {
 	}
 
 	/**
-	 * The #15 FAQ field answers where it is filled, the legacy product FAQ
-	 * until then; German reads the German words of the field.
+	 * Cited current answers use their requested language. Unbound old metadata
+	 * never provides a fallback when a maintained answer is absent.
 	 */
-	public function test_answers_prefer_the_faq_field_and_fall_back_to_the_legacy_list(): void {
-		$library = new DocumentLibrary();
+	public function test_answers_require_current_citations_without_unbound_fallbacks(): void {
+		$library = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
 		$english = $library->answers( 'en' );
 		$german  = $library->answers( 'de' );
 
@@ -274,7 +364,7 @@ final class DocumentLibraryTest extends TestCase {
 		$this->assertSame( 'GoodWe', $english[0]['brand'], 'the row names its product brand, so the register files it' );
 		$this->assertSame( 'Ist das Modul stapelbar?', $german[0]['question'] );
 		$this->assertSame( 'ESA battery manual, p. 12', $english[0]['source'], 'the answer cites the document it came from' );
-		$this->assertSame( 'Legacy question?', $english[1]['question'], 'the field is empty, so the product FAQ answers' );
-		$this->assertSame( '', $english[1]['source'], 'a legacy answer cites no page' );
+		$this->assertCount( 1, $english );
+		$this->assertCount( 1, $german );
 	}
 }

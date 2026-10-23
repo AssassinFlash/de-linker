@@ -253,6 +253,10 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
         "LINKER_ENGINE_FEED": str(feed),
         "LINKER_ENGINE_CACHE": str(directory / "cache"),
         "LINKER_ENGINE_COMPATIBILITY": str(compatibility),
+        # The local engine must verify this instance's Woo authority, including
+        # withdrawals made by its isolated acceptance fixtures.
+        "LINKER_PUBLICATION_URL": instance.url
+        + "/wp-json/linker/v1/publication/manifest",
         # The configurator calls the engine cross-origin from the page; without
         # this allowance the browser blocks every call (the roof step first).
         "LINKER_ENGINE_CORS_ORIGINS": instance.url,

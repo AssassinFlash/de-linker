@@ -24,6 +24,7 @@ import time
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 from index import corpus, extract, inventory, mariadb, parse, store
 from index.chunking import MAX_TOKENS, Chunk, DocumentMeta, Tokenizer, chunk_document
@@ -317,6 +318,7 @@ def embed_corpus(
         meta.parser,
         meta.max_tokens,
         embedding=embedder.fingerprint,
+        publication=meta.publication,
     )
     products = corpus.read_products(source)
     corpus.write(corpus_dir, new_meta, documents, products, chunks, vectors)
@@ -355,8 +357,9 @@ def build(
     tokenizer: Tokenizer,
     detect_lang: Callable[[str], str],
     mariadb_prefix: str | None = None,
+    on_created: Callable[[Path], None] | None = None,
 ) -> Path:
-    """Chunk, embed (unless `embedder` is None) and store; returns the build directory."""
+    """Chunk, embed and store; report the newly created generation before writing it."""
     started = time.monotonic()
     chunked = chunk_all(inventory_path, pdf_dir, parsed_dir, tokenizer, detect_lang)
     after_chunking = time.monotonic()
@@ -381,6 +384,28 @@ def build(
     version = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     build_dir = out_root / "builds" / version
     build_dir.mkdir(parents=True)
+    if on_created is not None:
+        on_created(build_dir)
+    source = json.loads(inventory_path.read_text(encoding="utf-8"))
+    proof: dict[str, Any] = {}
+    if "publication_manifest" in source:
+        from index.publication import scope_proofs
+        from linker_genie.publication import PublicationClient
+
+        authority = PublicationClient(str(source["source"]))
+        try:
+            scopes = scope_proofs(
+                chunked.chunks, source["publication_manifest"], authority
+            )
+            proof = {
+                "manifest": source["publication_manifest"],
+                "chunk_products": {
+                    cid: scope["product_ids"] for cid, scope in scopes.items()
+                },
+                "chunk_scopes": scopes,
+            }
+        finally:
+            authority.close()
     meta = corpus.Meta(
         version=version,
         embedding_model=model_identity(embedder) if embedder else None,
@@ -388,6 +413,7 @@ def build(
         parser=", ".join(sorted(chunked.parsers)),
         max_tokens=MAX_TOKENS,
         embedding=embedder.fingerprint if embedder else None,
+        publication=proof,
     )
     corpus_dir = build_dir / "corpus"
     corpus.write(
@@ -403,6 +429,13 @@ def build(
     failed = [asdict(item) for item in coverage if item.status == "failed"]
     manifest = {
         "version": version,
+        "source_revision": str(
+            source.get("publication_manifest", {}).get("source_revision", "")
+        ),
+        "permission_coverage": {
+            "proven_chunks": len(proof.get("chunk_products", {})),
+            "total_chunks": len(chunked.chunks),
+        },
         "file": {
             "name": INDEX_FILE,
             "bytes": index_path.stat().st_size,

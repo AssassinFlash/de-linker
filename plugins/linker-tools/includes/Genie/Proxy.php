@@ -88,6 +88,7 @@ class Proxy {
 	 * @param ConversationMail|null                                                                       $mail          Sends a conversation to the visitor; a default one is built when omitted.
 	 * @param Attachments|null                                                                            $attachments   Checks a turn's files; a default one is built when omitted.
 	 * @param string|null                                                                                 $token         The shared service token; read from TOKEN_CONSTANT when null (tests pass one).
+	 * @param PublicationGuard|null                                                                       $publication Current publication source.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
@@ -97,15 +98,24 @@ class Proxy {
 		?PageContext $pages = null,
 		?ConversationMail $mail = null,
 		?Attachments $attachments = null,
-		?string $token = null
+		?string $token = null,
+		?PublicationGuard $publication = null
 	) {
 		$this->thread       = $thread ?? new Thread();
 		$this->user_context = $user_context ?? new UserContext();
 		$this->pages        = $pages ?? new PageContext();
 		$this->mail         = $mail ?? new ConversationMail( $conversations, $this->thread );
 		$this->attachments  = $attachments ?? new Attachments();
+		$this->publication  = $publication ?? new PublicationGuard();
 		$this->token        = $token ?? ( defined( self::TOKEN_CONSTANT ) ? (string) constant( self::TOKEN_CONSTANT ) : '' );
 	}
+
+	/**
+	 * Current publication permission at preparation and release.
+	 *
+	 * @var PublicationGuard
+	 */
+	private readonly PublicationGuard $publication;
 
 	/**
 	 * The shared service token; '' when the site has none.
@@ -153,6 +163,8 @@ class Proxy {
 	 * Registers the routes; runs on rest_api_init.
 	 */
 	public function register(): void {
+		( new DraftActions() )->register();
+		add_filter( 'linker_tools_restored_reply', array( PublicationGuard::class, 'restored' ), 10, 2 );
 		register_rest_route(
 			self::NAMESPACE,
 			self::ROUTE,
@@ -505,10 +517,18 @@ class Proxy {
 		if ( array() !== $readings ) {
 			$body['readings'] = $readings;
 		}
+		$publication = $this->publication->dependencies();
+		if ( is_wp_error( $publication ) ) {
+			return $publication;
+		}
 		$started = microtime( true );
 		$stream  = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return $stream;
+		}
+		$permitted = $this->publication->validate( $publication );
+		if ( is_wp_error( $permitted ) ) {
+			return $permitted;
 		}
 		// An answered turn is the conversation's record, kept so a reload
 		// restores it. A second turn that snapped the same history is
@@ -543,12 +563,23 @@ class Proxy {
 				array( 'status' => 409 )
 			);
 		}
-		return new WP_REST_Response(
+		// Action tokens are issued only for this live checked answer; history stays unsigned.
+		$action_stream = ( new DraftProof() )->stream( $split['stream'], $publication );
+		if ( $action_stream instanceof WP_Error ) {
+			return $action_stream;
+		}
+		$permitted = $this->publication->validate( $publication );
+		if ( is_wp_error( $permitted ) ) {
+			return $permitted;
+		}
+		$reply = new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,
-				'stream'          => $split['stream'],
+				'stream'          => $action_stream,
 			)
 		);
+		$this->publication->remember( $reply, $publication );
+		return $reply;
 	}
 
 	/**
@@ -669,6 +700,13 @@ class Proxy {
 			return $response;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( in_array( $code, array( 409, 503 ), true ) ) {
+			$failure  = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+			$expected = 409 === $code ? 'publication_changed' : 'publication_unavailable';
+			if ( is_array( $failure ) && isset( $failure['detail'] ) && $failure['detail'] === $expected ) {
+				return PublicationGuard::refused( $code );
+			}
+		}
 		if ( in_array( $code, array( 429, 503 ), true ) ) {
 			$failure = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 			if ( is_array( $failure ) && ( str_starts_with( (string) ( $failure['code'] ?? '' ), 'provider_budget_' ) || str_starts_with( (string) ( $failure['code'] ?? '' ), 'genie_resource_' ) ) ) {

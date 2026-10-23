@@ -60,7 +60,8 @@ export const fixtures = {
 
 export interface FakeEngineOptions {
 	locale: Locale;
-	residential?: 'solution' | 'none' | 'unavailable' | 'never';
+	residential?:
+		'solution' | 'none' | 'unavailable' | 'never' | 'stale' | 'publication';
 	commercial?: 'sized' | 'indicative';
 	delay?: number;
 }
@@ -82,6 +83,14 @@ export function fakeEngine( options: FakeEngineOptions ) {
 			await wait( delay );
 			if ( options.residential === 'never' ) {
 				return new Promise( () => undefined );
+			}
+			if (
+				options.residential === 'stale' ||
+				options.residential === 'publication'
+			) {
+				const { EngineError } =
+					await import( '../../src/configurator/api/engine' );
+				throw new EngineError( options.residential );
 			}
 			if ( options.residential === 'unavailable' ) {
 				const { EngineError } =
@@ -117,7 +126,7 @@ export function fakeEngine( options: FakeEngineOptions ) {
 }
 
 export function fakeStore(
-	outcome: 'added' | 'unverified' | 'retry' = 'added',
+	outcome: 'added' | 'unverified' | 'retry' | 'stale' = 'added',
 	/** Products WooCommerce would report as currently unavailable. */
 	outOfStock: number[] = []
 ) {
@@ -140,7 +149,9 @@ export function fakeStore(
 		) {
 			lines.forEach( ( line ) => onStatus( line.productId, 'pending' ) );
 			await wait( 0 );
-			added.push( ...lines );
+			if ( outcome !== 'stale' ) {
+				added.push( ...lines );
+			}
 			lines.forEach( ( line ) => onStatus( line.productId, outcome ) );
 			return outcome === 'added';
 		},

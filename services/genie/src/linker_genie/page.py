@@ -57,6 +57,7 @@ import httpx
 from linker_genie import facts
 from linker_genie.facts import TurnFacts
 from linker_genie.figures import tag
+from linker_genie.publication import PublicationClient
 from linker_genie.schema import CACHE_SIZE, DraftLine, PageContext
 from linker_genie.tools import READ_PAGE
 
@@ -441,7 +442,10 @@ class PageReader:
         transport: httpx.BaseTransport | None = None,
         clock: Callable[[], float] = time.monotonic,
         ttl: float = TTL_SECONDS,
+        publication: PublicationClient | None = None,
     ) -> None:
+        self._publication = publication
+        self._source_revision = ""
         self._base = base_url.rstrip("/")
         self._origin = _origin(self._base)
         # Every read is an anonymous visitor's: the jar's policy accepts no cookie
@@ -465,6 +469,7 @@ class PageReader:
         # A read that started before the bump does not store its body afterwards:
         # that body is the page from before the save (#405).
         self._epoch: dict[str, int] = {}
+        self._publication_epoch = 0
 
     def close(self) -> None:
         self._client.close()
@@ -499,6 +504,16 @@ class PageReader:
 
         Raises `PageUnavailable` when the page cannot be read.
         """
+        if self._publication is not None:
+            current = self._publication.snapshot()
+            current.require_products(
+                [pid for pid in [page.product_id, *(page.draft_ids or [])] if pid]
+            )
+            with self._lock:
+                if self._source_revision != current.source_revision:
+                    self._cache.clear()
+                    self._publication_epoch += 1
+                    self._source_revision = current.source_revision
         result: dict[str, Any] = {"type": page.type, "title": page.title or ""}
         if page.type == "draft":
             products = self._draft(page.draft_ids or [], page.draft_lines)
@@ -523,6 +538,7 @@ class PageReader:
         path = page_path(page.url, keep_query=page.post_id is None)
         if path is None:
             raise PageUnavailable(f"no page address to read: {page.url!r}")
+        # Publication changes also invalidate the cache, even if a hook was missed.
         found = self._cached(f"page:{path}", lambda: passages(self._html(path)))
         if not found:
             raise PageUnavailable(f"page {path} shows no text in <main>")
@@ -559,6 +575,7 @@ class PageReader:
             if hit is not None and now - hit[0] < self._ttl:
                 self._cache.move_to_end(key)
                 return hit[1]
+            publication_epoch = self._publication_epoch
             epoch = self._epoch.get(key, 0)
             draft_epoch = (
                 self._epoch.get(DRAFT_EPOCH, 0) if key.startswith("draft:") else None
@@ -568,9 +585,13 @@ class PageReader:
             # A save landed while this page was being fetched. Keep the value for
             # this caller and leave the cache empty, so the next read fetches again.
             # A draft watches the namespace epoch too: the save does not name its key.
-            if self._epoch.get(key, 0) != epoch or (
-                draft_epoch is not None
-                and self._epoch.get(DRAFT_EPOCH, 0) != draft_epoch
+            if (
+                self._publication_epoch != publication_epoch
+                or self._epoch.get(key, 0) != epoch
+                or (
+                    draft_epoch is not None
+                    and self._epoch.get(DRAFT_EPOCH, 0) != draft_epoch
+                )
             ):
                 return value
             self._cache[key] = (self._clock(), value)

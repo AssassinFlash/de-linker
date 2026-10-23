@@ -56,14 +56,18 @@ final class EngineeringFeed {
 	 * @param string|null $since GMT moment (anything strtotime() reads); only
 	 *                             products modified after it, all when null.
 	 * @return array<string, mixed>
+	 * @phpstan-impure
 	 */
 	public static function feed( ?string $since = null ): array {
-		$feed = array(
-			'schema_version'        => self::SCHEMA_VERSION,
-			'generated_at'          => gmdate( 'c' ),
-			'compatibility_version' => EngineeringData::compatibility_version(),
-			'overlay'               => EngineeringData::json( EngineeringData::OVERLAY_FILE )['overlay'] ?? array(),
-			'products'              => array(),
+		$publication = Publication::manifest();
+		$feed        = array(
+			'source_revision'        => $publication['source_revision'],
+			'compatibility_revision' => $publication['compatibility_revision'],
+			'schema_version'         => self::SCHEMA_VERSION,
+			'generated_at'           => gmdate( 'c' ),
+			'compatibility_version'  => EngineeringData::compatibility_version(),
+			'overlay'                => self::references( $publication ),
+			'products'               => array(),
 		);
 		// The contract itself, so the engine's sync refreshes its copy from the
 		// same fetch; a broken file stays out of the feed (it reads as null),
@@ -78,7 +82,7 @@ final class EngineeringFeed {
 		update_postmeta_cache( $ids );
 		update_object_term_cache( $ids, 'product' );
 		foreach ( $ids as $id ) {
-			$item = self::item( $id );
+			$item = self::item( $id, $publication );
 			if ( null !== $item ) {
 				$feed['products'][] = $item;
 			}
@@ -90,29 +94,38 @@ final class EngineeringFeed {
 	/**
 	 * One feed item, null when the post is not a published product anymore.
 	 *
-	 * @param int $product_id Product ID.
+	 * @param int                      $product_id Product ID.
+	 * @param array<string,mixed>|null $publication Current authority snapshot.
 	 * @return array<string, mixed>|null
 	 */
-	public static function item( int $product_id ): ?array {
-		if ( 'product' !== get_post_type( $product_id ) || 'publish' !== get_post_status( $product_id ) ) {
+	public static function item( int $product_id, ?array $publication = null ): ?array {
+		if ( ! Publication::is_published( $product_id ) || Publication::canonical_id( $product_id ) !== $product_id || EngineeringReference::is_reference( $product_id ) ) {
 			return null;
 		}
-		$facts   = SelectionFacts::for_product( $product_id )->to_array();
-		$product = wc_get_product( $product_id );
-		$item    = array(
-			'id'           => $product_id,
-			'sku'          => $product instanceof \WC_Product ? $product->get_sku() : '',
-			'device_class' => $facts['device_class'],
-			'application'  => $facts['application'],
-			'phase'        => $facts['phase'],
+		$publication ??= Publication::manifest();
+		$permission    = array_column( $publication['products'], null, 'product_id' )[ $product_id ] ?? null;
+		if ( null === $permission ) {
+			return null;
+		}
+		$authorized_figures = self::figures( $product_id, $publication );
+		$facts              = SelectionFacts::from_figures( $product_id, $authorized_figures )->to_array();
+		$product            = wc_get_product( $product_id );
+		$item               = array(
+			'id'                   => $product_id,
+			'canonical_product_id' => $product_id,
+			'product_revision'     => $permission['product_revision'],
+			'sku'                  => $product instanceof \WC_Product ? $product->get_sku() : '',
+			'device_class'         => $facts['device_class'],
+			'application'          => $facts['application'],
+			'phase'                => $facts['phase'],
 			// The five #7 facts the feed schema requires; kwh_range is null when the figures state no range.
-			'ac_power_kw'  => $facts['ac_power_kw'],
-			'pv_input_kw'  => $facts['pv_input_kw'],
-			'usable_kwh'   => $facts['usable_kwh'],
-			'nominal_kwh'  => $facts['nominal_kwh'],
-			'kwh_range'    => $facts['kwh_range'] ?? null,
-			'figures'      => (object) self::figures( $product_id ),
-			'documents'    => self::documents( $product_id ),
+			'ac_power_kw'          => $facts['ac_power_kw'],
+			'pv_input_kw'          => $facts['pv_input_kw'],
+			'usable_kwh'           => $facts['usable_kwh'],
+			'nominal_kwh'          => $facts['nominal_kwh'],
+			'kwh_range'            => $facts['kwh_range'] ?? null,
+			'figures'              => (object) $authorized_figures,
+			'documents'            => self::documents( $product_id, $publication ),
 		);
 		foreach ( self::NAME_TAXONOMIES as $field => $taxonomy ) {
 			$item[ $field ] = self::term_name( $product_id, $taxonomy );
@@ -122,28 +135,50 @@ final class EngineeringFeed {
 	}
 
 	/**
+	 * Reference inputs are ordinary current Woo records with bound evidence.
+	 *
+	 * @param array<string,mixed> $publication Current authority read.
+	 * @return list<array<string,mixed>>
+	 */
+	private static function references( array $publication ): array {
+		$references = array();
+		foreach ( $publication['products'] as $product ) {
+			if ( EngineeringReference::PV_MODULE !== ( $product['engineering_role'] ?? '' ) || ! is_string( $product['engineering_id'] ?? null ) || '' === $product['engineering_id'] ) {
+				continue;
+			}
+			$id      = $product['product_id'];
+			$figures = self::figures( $id, $publication );
+			if ( ! EngineeringReference::ready( $figures ) ) {
+				continue;
+			}
+			$references[] = array(
+				'id'                   => $product['engineering_id'],
+				'kind'                 => 'pv_module',
+				'brand'                => $product['brand'],
+				'model'                => $product['model'],
+				'canonical_product_id' => $id,
+				'product_revision'     => $product['product_revision'],
+				'reference_revision'   => $product['product_revision'],
+				'figures'              => (object) $figures,
+				'documents'            => self::documents( $id, $publication ),
+			);
+		}
+		return $references;
+	}
+
+	/**
 	 * The figure entries that carry a citation of a document we host
 	 * (docs/specs/8-engineering-data.md: a value without one does not enter
 	 * the feed). Everything else about the entry travels as it is stored.
 	 *
-	 * @param int $product_id Product ID.
+	 * @param int                 $product_id Product ID.
+	 * @param array<string,mixed> $publication Current authority snapshot.
 	 * @return array<string, array<string, mixed>> Keyed by figure key; the item casts it so an empty set serializes as {} (feed.schema.json), never [].
 	 */
-	private static function figures( int $product_id ): array {
-		$figures = get_post_meta( $product_id, SelectionFacts::FIGURES_META_KEY, true );
-		if ( is_string( $figures ) ) {
-			$figures = json_decode( $figures, true );
-		}
-		if ( ! is_array( $figures ) ) {
-			return array();
-		}
+	private static function figures( int $product_id, array $publication ): array {
 		$cited = array();
-		foreach ( $figures as $key => $entry ) {
-			if ( ! is_array( $entry ) || ! self::is_hosted_citation( $entry['citation'] ?? null ) ) {
-				continue;
-			}
-			// The feed names the value, its unit and its citation; the storage's own fields stay storage-side.
-			$cited[ (string) $key ] = array(
+		foreach ( Publication::figures_for( $product_id, $publication ) as $key => $entry ) {
+			$cited[ $key ] = array(
 				'value'    => $entry['value'] ?? null,
 				'unit'     => $entry['unit'] ?? null,
 				'citation' => self::feed_citation( $entry['citation'] ),
@@ -151,36 +186,6 @@ final class EngineeringFeed {
 		}
 
 		return $cited;
-	}
-
-	/**
-	 * Whether a citation names a document we host.
-	 *
-	 * On production that is a URL on de-linker.com or www.de-linker.com.
-	 * Pull load rewrites every live address to the instance
-	 * (tools/pull/src/linker_pull/load.py replacements()) and then requires
-	 * none of those addresses left, so a local citation cannot keep the
-	 * production host. The same path on this site is the same document.
-	 *
-	 * @param mixed $citation The citation of a figure entry.
-	 */
-	private static function is_hosted_citation( mixed $citation ): bool {
-		$url = self::citation_url( $citation );
-
-		return null !== $url && ( self::is_production_url( $url ) || self::is_this_site( $url ) );
-	}
-
-	/**
-	 * The citation URL, or null when the entry does not name one.
-	 *
-	 * @param mixed $citation The citation of a figure entry.
-	 */
-	private static function citation_url( mixed $citation ): ?string {
-		if ( ! is_array( $citation ) || ! is_string( $citation['url'] ?? null ) || '' === $citation['url'] ) {
-			return null;
-		}
-
-		return $citation['url'];
 	}
 
 	/**
@@ -327,26 +332,35 @@ final class EngineeringFeed {
 	 * The product's documents, as the migration wrote them. An instance
 	 * address is named on the canonical origin, the same way a figure is.
 	 *
-	 * @param int $product_id Product ID.
+	 * @param int                 $product_id Product ID.
+	 * @param array<string,mixed> $publication Current authority snapshot.
 	 * @return list<array<string, mixed>>
 	 */
-	private static function documents( int $product_id ): array {
-		$documents = get_post_meta( $product_id, EngineeringData::DOCUMENTS_META_KEY, true );
-		if ( is_string( $documents ) ) {
-			$documents = json_decode( $documents, true );
-		}
-		if ( ! is_array( $documents ) ) {
-			return array();
-		}
+	private static function documents( int $product_id, array $publication ): array {
 		$listed = array();
-		foreach ( array_values( $documents ) as $document ) {
-			if ( is_array( $document ) && is_string( $document['url'] ?? null ) ) {
-				$document['url'] = self::feed_url( $document['url'] );
+		foreach ( $publication['documents'] as $document ) {
+			if ( in_array( $product_id, $document['product_ids'], true ) ) {
+				$document['url']     = self::feed_url( $document['url'] );
+				$document['aliases'] = array_map( array( self::class, 'feed_url' ), $document['aliases'] );
+				$document['lang']    = self::document_language( $document['lang'] );
+				$document['type']    = Materials::document_kind( $document['role'] ?? '', $document['type'] );
+				$listed[]            = $document;
 			}
-			$listed[] = $document;
 		}
-
 		return $listed;
+	}
+
+	/**
+	 * Canonical language tags for the engine; unknown remains undetermined.
+	 *
+	 * @param string $label Stored Woo document language, left unchanged at source.
+	 */
+	private static function document_language( string $label ): string {
+		$language = strtolower( trim( $label ) );
+		if ( in_array( $language, array( 'mul', 'multi', 'en/de', 'de/en' ), true ) ) {
+			return 'mul';
+		}
+		return 1 === preg_match( '/^[a-z]{2}$/D', $language ) ? $language : 'und';
 	}
 
 	/**
@@ -387,12 +401,13 @@ final class EngineeringFeed {
 	 */
 	private static function product_ids( ?string $since ): array {
 		$args = array(
-			'post_type'      => 'product',
-			'post_status'    => 'publish',
-			'fields'         => 'ids',
-			'posts_per_page' => -1,
-			'orderby'        => 'ID',
-			'order'          => 'ASC',
+			'post_type'        => 'product',
+			'post_status'      => 'publish',
+			'fields'           => 'ids',
+			'posts_per_page'   => -1,
+			'orderby'          => 'ID',
+			'order'            => 'ASC',
+			'suppress_filters' => true,
 		);
 		if ( null !== $since ) {
 			$args['date_query'] = array(

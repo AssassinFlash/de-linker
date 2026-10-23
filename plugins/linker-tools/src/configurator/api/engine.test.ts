@@ -24,6 +24,21 @@ const input = {
 };
 
 test.each( [
+	[ 409, { code: 'linker_admission_conflict' }, 'network', undefined ],
+	[ 409, { detail: { error: 'selection_changed' } }, 'stale', undefined ],
+	[
+		503,
+		{ detail: { error: 'publication_unavailable' } },
+		'publication',
+		undefined,
+	],
+	[
+		422,
+		{ detail: { error: 'invalid_input', field: 'battery_id' } },
+		'stale',
+		'battery_id',
+	],
+	[ 409, { detail: { error: 'publication_changed' } }, 'stale', undefined ],
 	[
 		422,
 		{ detail: { error: 'invalid_input', field: 'plz' } },
@@ -74,4 +89,22 @@ test( 'requests go to the engine paths', async () => {
 		'https://engine.test/design/residential',
 		'https://engine.test/roof/outline',
 	] );
+} );
+
+test( 'a new PDF carries the fingerprint of the confirmed screen', async () => {
+	const fetcher = vi.fn< typeof fetch >(
+		async () => new Response( '%PDF-test' )
+	);
+	await engineClient( 'https://engine.test', fetcher ).reportPdf(
+		input,
+		null,
+		'a'.repeat( 64 )
+	);
+	expect(
+		JSON.parse( String( fetcher.mock.calls[ 0 ][ 1 ]?.body ) )
+	).toEqual( {
+		input,
+		logo: null,
+		selection_fingerprint: 'a'.repeat( 64 ),
+	} );
 } );

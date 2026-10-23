@@ -59,6 +59,8 @@ export interface CardsBlock {
 	type: 'cards';
 	product_ids: number[];
 	prices?: CardPrice[] | null;
+	/** Exact live action proofs, signed by WordPress after current validation. */
+	draft_proofs?: Record< string, string >;
 }
 
 /** A comparison of two to four products. */
@@ -97,6 +99,8 @@ export interface HandoffBlock {
 export interface DocumentBlock {
 	type: 'document';
 	ref: string;
+	document_id?: string;
+	document_revision?: string;
 	label: string | null;
 	url: string | null;
 	/** Original document title, preserved when history UI is localized. */
@@ -131,6 +135,7 @@ export interface PartsRow {
 
 /** The one solution-draft write: every confirmed row, merged by product. */
 export interface PartsAdd {
+	proof?: string;
 	items: { product_id: number; quantity: number }[];
 	products: number;
 	rows: number;

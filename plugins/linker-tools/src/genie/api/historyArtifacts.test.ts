@@ -17,6 +17,8 @@ const blocks = [
 	{
 		type: 'document',
 		ref: 'p3573.document.0',
+		document_id: 'doc',
+		document_revision: 'revision-1',
 		label: 'SAJ eSolar AIO3 Datenblatt (EN), Seite 1',
 		url: PDF,
 	},
@@ -49,18 +51,39 @@ const product = {
 	},
 };
 
+const permission = {
+	schema_version: 1,
+	products: [
+		{ product_id: 3573, published_locale_ids: [ 3573 ] },
+		{ product_id: 1, published_locale_ids: [ 1 ] },
+		{ product_id: 2, published_locale_ids: [ 2 ] },
+	],
+	documents: [
+		{
+			document_id: 'doc',
+			document_revision: 'revision-1',
+			url: PDF.split( '#' )[ 0 ],
+		},
+	],
+};
+
 function fetchWith( current: unknown = product, ok = true ) {
 	return vi.fn( async ( url: RequestInfo | URL ) => ( {
 		ok: String( url ) === '/thread' || ok,
-		json: async () =>
-			String( url ) === '/thread'
-				? {
-						messages: [
-							{ role: 'user', content: 'Bitte das Datenblatt.' },
-						],
-						stream,
-					}
-				: current,
+		json: async () => {
+			if ( String( url ) === '/thread' ) {
+				return {
+					messages: [
+						{ role: 'user', content: 'Bitte das Datenblatt.' },
+					],
+					stream,
+				};
+			}
+			if ( String( url ).endsWith( '/publication/manifest' ) ) {
+				return permission;
+			}
+			return current;
+		},
 	} ) ) as unknown as typeof fetch;
 }
 
@@ -162,8 +185,7 @@ test.each( [
 			'Hier ist Ihr Datenblatt.'
 		);
 		expect( restored.turn?.blocks[ 2 ] ).toMatchObject( {
-			url: PDF,
-			sourceTitle: 'SAJ eSolar AIO3 Datenblatt (EN)',
+			url: ok ? PDF : null,
 		} );
 		expect( JSON.stringify( restored.turn ) ).not.toContain( '1.680' );
 	}
@@ -178,6 +200,8 @@ test( 'document-only history matches authoritative metadata by ref and retains e
 				{
 					type: 'document',
 					ref: 'p3573.document.0',
+					document_id: 'doc',
+					document_revision: 'revision-1',
 					label: 'SAJ eSolar AIO3 Datasheet (EN) · pp. 1, 3, 7',
 					url: PDF,
 				},
@@ -194,7 +218,7 @@ test( 'document-only history matches authoritative metadata by ref and retains e
 	} );
 } );
 
-test( 'unknown metadata is not guessed or translated; current Document UI preserves the original title and URL', async () => {
+test( 'unproven historical content identity keeps the transcript but removes its active URL', async () => {
 	setLocaleData( { Document: [ 'Dokument' ] }, 'linker-tools' );
 	const original = {
 		type: 'document' as const,
@@ -210,14 +234,13 @@ test( 'unknown metadata is not guessed or translated; current Document UI preser
 		fetcher
 	);
 	expect( restored.blocks[ 0 ] ).toMatchObject( {
-		label: 'Dokument · specialist-file_en.pdf · S.\u00a02, 5',
-		url: original.url,
-		sourceTitle: 'An unnamed specialist certificate',
+		label: original.label,
+		url: null,
 	} );
 	expect( original.label ).toBe(
 		'An unnamed specialist certificate · pp. 2, 5'
 	);
-	expect( fetcher ).not.toHaveBeenCalled();
+	expect( fetcher ).toHaveBeenCalledTimes( 1 );
 } );
 
 test.each( [ undefined, 'false', true ] )(
@@ -248,6 +271,8 @@ test( 'a shared series PDF is attributed to the document ref product rather than
 			{
 				type: 'document' as const,
 				ref: 'p2.document.0',
+				document_id: 'doc',
+				document_revision: 'revision-1',
 				label: 'Series manual · p. 1',
 				url: PDF,
 			},
@@ -255,13 +280,18 @@ test( 'a shared series PDF is attributed to the document ref product rather than
 	};
 	const fetcher = vi.fn( async ( url: RequestInfo | URL ) => ( {
 		ok: true,
-		json: async () => ( {
-			...product,
-			product_id: String( url ).includes( 'product_id]=2' ) ? 2 : 1,
-			model: String( url ).includes( 'product_id]=2' )
-				? 'Model B'
-				: 'Model A',
-		} ),
+		json: async () =>
+			String( url ).endsWith( '/publication/manifest' )
+				? permission
+				: {
+						...product,
+						product_id: String( url ).includes( 'product_id]=2' )
+							? 2
+							: 1,
+						model: String( url ).includes( 'product_id]=2' )
+							? 'Model B'
+							: 'Model A',
+					},
 	} ) ) as unknown as typeof fetch;
 	const restored = await restoreArtifacts( turn, context, 'n', fetcher );
 	expect( restored.blocks[ 1 ] ).toMatchObject( {

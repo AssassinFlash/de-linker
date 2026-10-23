@@ -1,0 +1,130 @@
+{
+  "checks": [
+    {
+      "case": "REST authority preserves all-language server scope"
+    },
+    {
+      "case": "Client marker cannot bypass native en language scope",
+      "status": 200
+    },
+    {
+      "case": "Client marker cannot bypass native de language scope",
+      "status": 200
+    },
+    {
+      "case": "Current original/alias shared GET",
+      "status": 200,
+      "bytes": 35
+    },
+    {
+      "case": "Current PDF response has no public cache grant"
+    },
+    {
+      "case": "Current original/alias shared HEAD",
+      "status": 200,
+      "bytes": 0
+    },
+    {
+      "case": "Current PDF response has no public cache grant"
+    },
+    {
+      "case": "Current original/alias shared GET",
+      "status": 206,
+      "bytes": 5
+    },
+    {
+      "case": "Current PDF response has no public cache grant"
+    },
+    {
+      "case": "Current original/alias alias GET",
+      "status": 200,
+      "bytes": 35
+    },
+    {
+      "case": "Current PDF response has no public cache grant"
+    },
+    {
+      "case": "Current original/alias alias HEAD",
+      "status": 200,
+      "bytes": 0
+    },
+    {
+      "case": "Current PDF response has no public cache grant"
+    },
+    {
+      "case": "Current original/alias alias GET",
+      "status": 206,
+      "bytes": 5
+    },
+    {
+      "case": "Current PDF response has no public cache grant"
+    },
+    {
+      "case": "Equal-SHA unassociated path is denied",
+      "status": 410
+    },
+    {
+      "case": "Anonymous build-worker claim is denied",
+      "status": 401
+    },
+    {
+      "case": "Separate HTTP worker withdraws document"
+    },
+    {
+      "case": "Primed Redis/request cache sees external document withdrawal",
+      "status": 200
+    },
+    {
+      "case": "Separate HTTP worker withdraws product"
+    },
+    {
+      "case": "Primed Redis/request cache sees external product withdrawal",
+      "status": 200
+    },
+    {
+      "case": "Native cart adds a current product",
+      "status": 201
+    },
+    {
+      "case": "Native direct ID read denies withdrawn canonical source",
+      "status": 404
+    },
+    {
+      "case": "Native direct ID read denies withdrawn canonical source",
+      "status": 404
+    },
+    {
+      "case": "Native collection cannot restore published DE mirror with client marker",
+      "status": 200
+    },
+    {
+      "case": "Native saved cart reveals no current withdrawn product facts",
+      "status": 200
+    },
+    {
+      "case": "Withdrawn original/alias shared GET",
+      "status": 410
+    },
+    {
+      "case": "Withdrawn original/alias shared HEAD",
+      "status": 410
+    },
+    {
+      "case": "Withdrawn original/alias shared GET",
+      "status": 410
+    },
+    {
+      "case": "Withdrawn original/alias alias GET",
+      "status": 410
+    },
+    {
+      "case": "Withdrawn original/alias alias HEAD",
+      "status": 410
+    },
+    {
+      "case": "Withdrawn original/alias alias GET",
+      "status": 410
+    }
+  ],
+  "count": 32
+}

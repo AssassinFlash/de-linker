@@ -36,7 +36,7 @@ final class GetProductTest extends TestCase {
 	 */
 	public function test_published_product(): void {
 		$this->mock_live_products( array( 4107 ) );
-		$result = ( new GetProduct() )->execute(
+		$result = ( new GetProduct( $this->publication_data() ) )->execute(
 			array(
 				'product_id' => 4107,
 				'lang'       => 'en',
@@ -52,8 +52,8 @@ final class GetProductTest extends TestCase {
 		$this->assertSame( 3, $result['facts']['phase'] );
 		$this->assertFalse( $result['commerce']['price_visible'] );
 		$this->assertTrue( $result['commerce']['in_stock'] );
-		$this->assertTrue( ( new GetProduct() )->can_execute() );
-		$schema = ( new GetProduct() )->args()['output_schema'];
+		$this->assertTrue( ( new GetProduct( $this->publication_data() ) )->can_execute() );
+		$schema = ( new GetProduct( $this->publication_data() ) )->args()['output_schema'];
 		$this->assertContains( 'facts', $schema['required'] );
 		$this->assertContains( 'documents', $schema['required'] );
 		$this->assertContains( 'faq', $schema['required'] );
@@ -66,7 +66,7 @@ final class GetProductTest extends TestCase {
 	 */
 	public function test_missing_product_fits_the_schema(): void {
 		$this->mock_live_products( array() );
-		$result = ( new GetProduct() )->execute( array( 'product_id' => 1 ) );
+		$result = ( new GetProduct( $this->publication_data() ) )->execute( array( 'product_id' => 1 ) );
 
 		$this->assertSame( '', $result['title'] );
 		$this->assertSame( '', $result['url'] );

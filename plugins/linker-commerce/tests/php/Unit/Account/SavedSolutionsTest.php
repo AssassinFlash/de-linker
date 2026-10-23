@@ -166,7 +166,7 @@ final class SavedSolutionsTest extends TestCase {
 	/**
 	 * "Add to solution draft" puts the products into the current draft for the owner only, after the nonce check.
 	 */
-	public function test_add_to_draft(): void {
+	public function test_legacy_solution_without_snapshot_cannot_be_added_as_a_current_design(): void {
 		$this->meta = array(
 			SavedSolutions::ITEMS_META => json_encode(
 				array(
@@ -194,11 +194,17 @@ final class SavedSolutionsTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::passthruFunction( '__' );
 		$cart = Mockery::mock();
-		$cart->expects( 'add_to_cart' )->with( 4107, 2 )->andReturn( 'key' );
+		$cart->expects( 'add_to_cart' )->never();
 		$woocommerce       = new \stdClass();
 		$woocommerce->cart = $cart;
 		WP_Mock::userFunction( 'WC', array( 'return' => $woocommerce ) );
-		WP_Mock::userFunction( 'wc_add_notice', array( 'times' => 1 ) );
+		WP_Mock::userFunction(
+			'wc_add_notice',
+			array(
+				'times' => 1,
+				'args'  => array( 'This solution needs a new calculation before it can be saved or added to your solution draft.', 'error' ),
+			)
+		);
 		WP_Mock::userFunction( 'wc_get_cart_url', array( 'return' => 'https://example.test/cart/' ) );
 		WP_Mock::userFunction(
 			'wp_safe_redirect',

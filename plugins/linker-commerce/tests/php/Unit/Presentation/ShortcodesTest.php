@@ -23,6 +23,14 @@ require_once dirname( __DIR__, 4 ) . '/includes/Presentation/template-functions.
  * @covers \Linker\Commerce\Presentation\Shortcodes
  */
 final class ShortcodesTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\CurrentFaqProduct;
+
+	/** Remove only the generated hosted fixture bytes. */
+	public function tearDown(): void {
+		$this->remove_managed_documents();
+		parent::tearDown();
+	}
+
 
 	/**
 	 * Translation and escaping return their input.
@@ -191,7 +199,7 @@ final class ShortcodesTest extends TestCase {
 							'question_de' => 'Welchen Strom führt die ATS1-T63-A?',
 							'answer_de'   => 'Der Nennstrom beträgt 50 A.',
 							'citation'    => array(
-								'url'   => 'https://de-linker.com/manual.pdf',
+								'url'   => 'https://de-linker.com/wp-content/uploads/2026/manual.pdf',
 								'page'  => 31,
 								'title' => 'ATS1 manual',
 							),
@@ -200,6 +208,7 @@ final class ShortcodesTest extends TestCase {
 				),
 			)
 		);
+		$this->current_faq_product( 1178, \Linker\Commerce\Products\Faqs::of( 1178 ) );
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'en' ) );
 		WP_Mock::passthruFunction( 'wpautop' );
 
@@ -233,7 +242,7 @@ final class ShortcodesTest extends TestCase {
 							'question_de' => 'Welchen Strom führt die ATS1-T63-A?',
 							'answer_de'   => 'Der Nennstrom beträgt 50 A.',
 							'citation'    => array(
-								'url'  => 'https://de-linker.com/manual.pdf',
+								'url'  => 'https://de-linker.com/wp-content/uploads/2026/manual.pdf',
 								'page' => 31,
 							),
 						),
@@ -241,6 +250,7 @@ final class ShortcodesTest extends TestCase {
 				),
 			)
 		);
+		$this->current_faq_product( 1178, \Linker\Commerce\Products\Faqs::of( 1178 ) );
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
 		WP_Mock::passthruFunction( 'wpautop' );
 
@@ -273,7 +283,7 @@ final class ShortcodesTest extends TestCase {
 							'question_de' => 'Welchen Strom führt die ATS1-T63-A?',
 							'answer_de'   => '',
 							'citation'    => array(
-								'url'  => 'https://de-linker.com/manual.pdf',
+								'url'  => 'https://de-linker.com/wp-content/uploads/2026/manual.pdf',
 								'page' => 31,
 							),
 						),
@@ -281,6 +291,7 @@ final class ShortcodesTest extends TestCase {
 				),
 			)
 		);
+		$this->current_faq_product( 1178, \Linker\Commerce\Products\Faqs::of( 1178 ) );
 		WP_Mock::userFunction( 'pll_current_language', array( 'return' => 'de' ) );
 		WP_Mock::passthruFunction( 'wpautop' );
 

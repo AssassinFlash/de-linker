@@ -66,15 +66,26 @@ def test_invalid_input_is_refused_by_field(client: TestClient) -> None:
 
 
 def test_report_pdf(client: TestClient) -> None:
+    fingerprint = client.post("/design/residential", json=RESIDENTIAL).json()[
+        "selection_fingerprint"
+    ]
     response = client.post(
-        "/report/pdf", json={"input": {**RESIDENTIAL, "locale": "en"}}
+        "/report/pdf",
+        json={
+            "input": {**RESIDENTIAL, "locale": "en"},
+            "selection_fingerprint": fingerprint,
+        },
     )
     assert response.status_code == 200
     assert response.headers["content-type"] == "application/pdf"
     assert response.content.startswith(b"%PDF")
     bad = client.post(
         "/report/pdf",
-        json={"input": RESIDENTIAL, "logo": "data:text/plain;base64,eA=="},
+        json={
+            "input": RESIDENTIAL,
+            "logo": "data:text/plain;base64,eA==",
+            "selection_fingerprint": fingerprint,
+        },
     )
     assert bad.status_code == 422
 

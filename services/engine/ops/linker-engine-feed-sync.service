@@ -1,11 +1,4 @@
-# Refreshes state/feed.json and state/compatibility.json from the site's
-# engineering feed (#354, #493). The script keeps each previous file on its
-# own failure, so a bad night costs nothing; on success it restarts
-# linker-engine once (the engine loads both files at start). Hardening
-# mirrors the material-registry sync this replaces, plus the paths the new
-# script needs: state/ for the atomic swaps, /var/log for the sync log,
-# /run/systemd because systemctl restart speaks to the manager's private
-# socket.
+# Publish a complete immutable generation and acknowledge actual loaded data.
 [Unit]
 Description=Refresh the Linker design engine's product feed and compatibility contract
 After=network-online.target
@@ -13,7 +6,12 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
+Environment=LINKER_ENGINE_CACHE=/opt/linker-engine/state/cache
+EnvironmentFile=/etc/linker-engine.env
+# main records GC errors, still prepares Woo jobs and returns failure visibly.
 ExecStart=/usr/bin/python3 /opt/linker-engine/ops/sync-feed.py
+StandardOutput=journal
+StandardError=journal
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=true

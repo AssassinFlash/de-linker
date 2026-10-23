@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 
 import pytest
-from conftest import FIXTURES
+from conftest import FIXTURES, publication_feed
 from fastapi.testclient import TestClient
 
 from linker_engine.app import SOURCE, Services, Settings, create_app
@@ -29,7 +29,14 @@ def test_private_version_is_loaded_data_not_later_disk_bytes(
     monkeypatch.setenv("LINKER_ENGINE_GATE_MODE", "enforce")
     monkeypatch.setenv("LINKER_ENGINE_CACHE", str(tmp_path / "cache"))
     feed, contract = tmp_path / "feed.json", tmp_path / "compatibility.json"
-    shutil.copyfile(FIXTURES / "feed.json", feed)
+    feed.write_text(
+        json.dumps(
+            publication_feed(
+                json.loads((FIXTURES / "feed.json").read_text()),
+                json.loads((FIXTURES / "compatibility.json").read_text()),
+            )
+        )
+    )
     shutil.copyfile(FIXTURES / "compatibility.json", contract)
     settings = Settings(feed, contract, tmp_path / "cache")
     feed_a, contract_a = feed.read_bytes(), contract.read_bytes()
@@ -45,6 +52,10 @@ def test_private_version_is_loaded_data_not_later_disk_bytes(
         document = json.loads(contract_a)
         document["version"] = "synthetic-nightly-rotation"
         contract.write_text(json.dumps(document))
+        revised = json.loads(feed.read_text())
+        revised["compatibility"] = document
+        revised["compatibility_version"] = document["version"]
+        feed.write_text(json.dumps(revised))
         assert (
             before.get("/resource/version", headers=TOKEN).json()["version"]
             == version_a

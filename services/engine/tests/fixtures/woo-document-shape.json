@@ -1,0 +1,26 @@
+{
+  "source_note": "Representative of the 2026-10-23 native Woo validation input: explicit document aliases, citation.doc, canonical language tags. Identifiers, labels and URLs are synthetic; no full product or owner dataset is copied.",
+  "document": {
+    "url": "https://de-linker.com/wp-content/uploads/fixtures/engineering-datasheet-en.pdf",
+    "aliases": [
+      "https://de-linker.com/wp-content/uploads/fixtures/engineering-datasheet-en.pdf",
+      "https://de-linker.com/wp-content/uploads/fixtures/engineering-datasheet-alias.pdf"
+    ],
+    "title": "Representative datasheet",
+    "type": "datasheet",
+    "lang": "en",
+    "role": "datasheet",
+    "citation_aliases": ["engineering-datasheet-en.pdf"],
+    "document_id": "1111111111111111111111111111111111111111111111111111111111111111",
+    "document_revision": "2222222222222222222222222222222222222222222222222222222222222222",
+    "blob_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "product_ids": [101]
+  },
+  "citation": {
+    "url": "https://de-linker.com/wp-content/uploads/fixtures/engineering-datasheet-alias.pdf",
+    "doc": "engineering-datasheet-en.pdf",
+    "page": 2
+  },
+  "canonical_languages": ["en", "de", "mul", "und"],
+  "observed_editorial_languages": ["EN", "DE", "MUL", "", "EN/DE", "MULTI", "DE/EN"]
+}

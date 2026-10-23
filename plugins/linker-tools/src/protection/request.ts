@@ -41,6 +41,12 @@ export function resourceAction(
 		parsed.searchParams.get( 'rest_route' ) ??
 		parsed.pathname.replace( /^.*\/wp-json/i, '' )
 	).toLowerCase();
+	if ( path.endsWith( '/genie/draft' ) ) {
+		return 'draft_write';
+	}
+	if ( path.endsWith( '/genie/solution' ) ) {
+		return 'solution_save';
+	}
 	if ( path.endsWith( '/genie/turn' ) ) {
 		return 'genie';
 	}
@@ -76,6 +82,9 @@ export function resourceAction(
 	}
 	if ( path.endsWith( '/engine/report/pdf' ) ) {
 		return 'report_pdf';
+	}
+	if ( path.endsWith( '/linker/v1/solutions/draft' ) ) {
+		return 'draft_write';
 	}
 	if ( path.endsWith( '/linker/v1/solutions' ) ) {
 		return 'solution_save';

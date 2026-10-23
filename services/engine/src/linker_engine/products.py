@@ -45,6 +45,7 @@ def validate(document: Any, schema_name: str) -> None:
 class Citation:
     url: str
     page: int | None = None
+    doc: str | None = None
 
 
 @dataclass(frozen=True)
@@ -61,6 +62,13 @@ class Document:
     title: str
     type: str
     lang: str
+    document_id: str | None = None
+    document_revision: str | None = None
+    blob_sha256: str | None = None
+    product_ids: list[int] | None = None
+    role: str | None = None
+    citation_aliases: list[str] | None = None
+    aliases: list[str] | None = None
 
 
 def _known(value: Any) -> Any:
@@ -72,7 +80,11 @@ def _figures(raw: dict[str, Any]) -> dict[str, Figure]:
         key: Figure(
             value=str(entry["value"]),
             unit=entry.get("unit"),
-            citation=Citation(entry["citation"]["url"], entry["citation"].get("page")),
+            citation=Citation(
+                entry["citation"]["url"],
+                entry["citation"].get("page"),
+                entry["citation"].get("doc"),
+            ),
             value_de=entry.get("value_de"),
         )
         for key, entry in raw.items()
@@ -248,19 +260,28 @@ class Products:
     generated_at: str
     compatibility_version: str
     products: tuple[Product, ...]
-    module: PvModule
+    reference_module: PvModule | None
+
+    @property
+    def module(self) -> PvModule:
+        """Only paths that actually need a prepared reference may read it.
+
+        A withdrawn reference does not prevent loading unrelated saleable
+        products. HTTP consumers establish its current Woo evidence first.
+        """
+        if self.reference_module is None:
+            raise FeedError("feed has no prepared reference PV module")
+        return self.reference_module
 
     @classmethod
     def from_feed(cls, feed: dict[str, Any]) -> Products:
         validate(feed, "feed.schema.json")
         modules = [item for item in feed["overlay"] if item["kind"] == "pv_module"]
-        if not modules:
-            raise FeedError("feed overlay has no reference PV module")
         return cls(
             generated_at=feed["generated_at"],
             compatibility_version=feed["compatibility_version"],
             products=tuple(Product.from_feed(raw) for raw in feed["products"]),
-            module=PvModule.from_overlay(modules[0]),
+            reference_module=PvModule.from_overlay(modules[0]) if modules else None,
         )
 
     @classmethod

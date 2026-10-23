@@ -4,8 +4,10 @@ The stories and unit tests of plugins/linker-tools answer with the files in its
 tests/fixtures/configurator: each is this engine's response to the request the
 story sends, with the inputs the story types (App.stories.tsx,
 roof/RoofStep.stories.tsx). This test sends every request again on the test
-feed and fails when an answer changed, so the screens never show a wording or
-a figure the engine no longer produces. To record them again:
+feed and fails when a presented answer changed, so the screens never show a wording or
+a figure the engine no longer produces. Server dependency metadata is checked by
+test_publication.py; the presentation fixtures retain the actual selection fingerprint.
+To record them again:
 
     UPDATE_UI_FIXTURES=1 uv run pytest tests/test_ui_fixtures.py
 """
@@ -171,5 +173,19 @@ def test_each_recorded_answer_is_the_engines_answer(
     method, url, body = requests()[name]
     response = client.request(method, url, json=body)
     assert response.status_code == 200, response.text
-    written = json.dumps(response.json(), ensure_ascii=False, indent="\t") + "\n"
+
+    def presented(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {
+                key: presented(item)
+                for key, item in value.items()
+                if key != "publication"
+            }
+        if isinstance(value, list):
+            return [presented(item) for item in value]
+        return value
+
+    written = (
+        json.dumps(presented(response.json()), ensure_ascii=False, indent="\t") + "\n"
+    )
     compare(UI_FIXTURES / f"{name}.json", written)
