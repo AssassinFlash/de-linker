@@ -218,6 +218,71 @@ def test_document_inputs_and_alias_outputs_use_the_same_bound_permission() -> No
     assert len(requests) == 1
 
 
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {"product_ids": ["1", "2"]},
+        {"product_ids": (1, 2)},
+        {"inverter_id": "1", "battery_id": "2"},
+        {"product_id": "2"},
+        {"product_ids": [True, "2"]},
+        {"product_id": 1.0},
+        {"product_ids": [1, 2.0]},
+        {"product_ids": [1, ["2"]]},
+        {"product_ids": [1, {"id": "2"}]},
+        {"product_ids": {"0": "1", "1": "2"}},
+        {"product_ids": None},
+        {"battery_id": False},
+        {"product_ids[0]": 1, "product_ids[1]": 2},
+        {"product_ids][0": 1, "product_ids][1": 2},
+        {"product.ids": ["1", "2"]},
+        {"product ids": ["1", "2"]},
+        {"product_id\x00": "2"},
+    ],
+)
+def test_ambiguous_id_inputs_never_reach_a_verdict_only_php_response(
+    arguments: dict[str, Any],
+) -> None:
+    raw = manifest()
+    permission = Snapshot.read(raw)
+    # Woo may have published a second member after the turn captured S0.
+    raw["products"].extend(manifest(2)["products"])
+    with clients(raw, {"verdict": "released", "conditions": []}) as (
+        client,
+        _authority,
+        requests,
+    ):
+        with pytest.raises(AbilityError):
+            client.for_turn(permission).run("linker/check-compatibility", arguments)
+    assert requests == []
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        {"product_ids": [1, 102]},
+        {"inverter_id": 1, "battery_id": 102},
+    ],
+)
+def test_native_integer_ids_and_published_locale_ids_allow_verdict_only_responses(
+    arguments: dict[str, Any],
+) -> None:
+    raw = manifest()
+    raw["products"].extend(manifest(2)["products"])
+    with clients(raw, {"verdict": "released", "conditions": []}) as (
+        client,
+        _authority,
+        requests,
+    ):
+        result = client.for_turn(Snapshot.read(raw)).run(
+            "linker/check-compatibility", arguments
+        )
+    assert result["verdict"] == "released"
+    assert len(requests) == 1
+    sent = dict(requests[0].url.params)
+    assert "102" in sent.values() and "1" in sent.values()
+
+
 @pytest.mark.parametrize("failure", [None, "draft", "bytes", "outage"])
 def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_changes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str | None
