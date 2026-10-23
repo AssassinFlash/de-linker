@@ -272,9 +272,11 @@ export function ResidentialPanel( {
 				selection_fingerprint: result?.selection_fingerprint,
 			}
 		);
-		setAddOutcome(
-			complete ? 'complete' : stale ? 'changed' : 'unverified'
-		);
+		if ( complete ) {
+			setAddOutcome( 'complete' );
+		} else {
+			setAddOutcome( stale ? 'changed' : 'unverified' );
+		}
 		setAdding( false );
 	}
 
@@ -330,18 +332,21 @@ export function ResidentialPanel( {
 					setSaveState( 'saved' );
 				}
 				return record;
-			} catch ( error ) {
+			} catch ( failure ) {
 				const changed =
-					( error instanceof EngineError &&
-						error.kind === 'stale' ) ||
-					( error instanceof SolutionWriteError && error.changed );
+					( failure instanceof EngineError &&
+						failure.kind === 'stale' ) ||
+					( failure instanceof SolutionWriteError &&
+						failure.changed );
 				askFailure.current = changed ? 'changed' : 'failed';
 				// One failure sentence: the Save button's own status for its
 				// click, the report's Ask status when Ask started the save.
 				if ( designEpoch.current === epoch ) {
-					setSaveState(
-						fromAsk ? 'idle' : changed ? 'changed' : 'failed'
-					);
+					if ( fromAsk ) {
+						setSaveState( 'idle' );
+					} else {
+						setSaveState( changed ? 'changed' : 'failed' );
+					}
 				}
 				return null;
 			}

@@ -32,7 +32,11 @@ final class EnginePublication {
 		if ( ! class_exists( Publication::class ) ) {
 			return self::failure( 503 );
 		}
-		$result = Publication::validate( $dependencies );
+		try {
+			$result = Publication::validate( $dependencies );
+		} catch ( \RuntimeException $exception ) {
+			return self::failure( 503 );
+		}
 		return ! empty( $result['valid'] ) ? true : self::failure();
 	}
 

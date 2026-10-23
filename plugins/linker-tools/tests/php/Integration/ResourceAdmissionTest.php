@@ -33,6 +33,11 @@ use WP_REST_Response;
  * @coversNothing
  */
 final class ResourceAdmissionTest extends TestCase {
+	/** Synthetic transport fixtures contain no product-derived facts. */
+	private const PUBLICATION = array(
+		'products'  => array(),
+		'documents' => array(),
+	);
 	/**
 	 * Saved local journal.
 	 *
@@ -466,13 +471,20 @@ final class ResourceAdmissionTest extends TestCase {
 		$handler = array(
 			'callback' => static function () use ( &$calls ): WP_REST_Response {
 				++$calls;
-				return new WP_REST_Response( array( 'synthetic' => 'design' ) );
+				return new WP_REST_Response(
+					array(
+						'synthetic'   => 'design',
+						'publication' => self::PUBLICATION,
+					)
+				);
 			},
 		);
 		$a       = $resources->dispatch( null, $first, '', $handler );
 		$b       = $resources->dispatch( null, $second, '', $handler );
 		$this->assertInstanceOf( WP_REST_Response::class, $a );
 		$this->assertInstanceOf( WP_REST_Response::class, $b );
+		$this->assertSame( 200, $a->get_status() );
+		$this->assertSame( 200, $b->get_status() );
 		$this->assertSame( $a->get_data(), $b->get_data() );
 		$this->assertSame( 1, $calls );
 		$nested = array( 'value' => 'synthetic' );
@@ -652,7 +664,13 @@ final class ResourceAdmissionTest extends TestCase {
 		$handler   = array(
 			'callback' => static function () use ( &$calls ): WP_REST_Response {
 				++$calls;
-				return new WP_REST_Response( array( 'synthetic' => true ), 1 === $calls ? 503 : 200 );
+				return new WP_REST_Response(
+					array(
+						'synthetic'   => true,
+						'publication' => self::PUBLICATION,
+					),
+					1 === $calls ? 503 : 200
+				);
 			},
 		);
 		$failed    = $resources->dispatch( null, $request, '', $handler );
@@ -687,7 +705,12 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ), $args['headers']['X-Linker-Service-Token'] );
 			return array(
 				'response' => array( 'code' => 1 === $calls ? 503 : 200 ),
-				'body'     => '{"synthetic":true}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => true,
+						'publication' => self::PUBLICATION,
+					)
+				),
 				'headers'  => array( 'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'] ),
 			);
 		};
@@ -764,9 +787,9 @@ final class ResourceAdmissionTest extends TestCase {
 	}
 
 	/**
-	 * Unavailable live version is advisory in observe; private service auth still applies.
+	 * A private native call still needs actual loaded-version readback in observe.
 	 */
-	public function test_observe_native_saved_design_does_not_require_live_version_readback(): void {
+	public function test_observe_native_saved_design_requires_live_version_readback(): void {
 		$user = wp_insert_user(
 			array(
 				'user_login' => 'g521-' . wp_generate_uuid4(),
@@ -787,7 +810,12 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' ), $args['headers']['X-Linker-Service-Token'] );
 			return array(
 				'response' => array( 'code' => 200 ),
-				'body'     => '{"synthetic":true}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => true,
+						'publication' => self::PUBLICATION,
+					)
+				),
 				'headers'  => array( 'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'] ),
 			);
 		};
@@ -795,10 +823,10 @@ final class ResourceAdmissionTest extends TestCase {
 		try {
 			$engine = new \Linker\Tools\Protection\NativeEngine( new \Linker\Tools\Protection\EngineVersion( static fn(): string => '' ) );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
-			$this->assertSame( array( 200, '{"synthetic":true}' ), $engine->request( null, $url, '{"synthetic":true}' ) );
+			$this->assertInstanceOf( WP_Error::class, $engine->request( null, $url, '{"synthetic":true}' ) );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
 			$this->assertInstanceOf( WP_Error::class, $engine->request( null, $url, '{"synthetic":true}' ) );
-			$this->assertSame( 1, $calls );
+			$this->assertSame( 0, $calls );
 		} finally {
 			remove_filter( 'pre_http_request', $fixture, 0 );
 			wp_set_current_user( 0 );
@@ -917,7 +945,12 @@ final class ResourceAdmissionTest extends TestCase {
 			$invalid = isset( $input['_route'] ) || isset( $input['started_nonce'] );
 			return array(
 				'response' => array( 'code' => $invalid ? 422 : 200 ),
-				'body'     => '{"synthetic":"native-engine"}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => 'native-engine',
+						'publication' => self::PUBLICATION,
+					)
+				),
 				'headers'  => array(
 					'content-type'            => 'application/json',
 					'x-linker-engine-version' => $args['headers']['X-Linker-Engine-Version'],
@@ -988,7 +1021,12 @@ final class ResourceAdmissionTest extends TestCase {
 			'callback' => function () use ( &$calls ): WP_REST_Response {
 						++$calls;
 						$this->assertSame( $this->running_version, Resources::engine_version() );
-						return new WP_REST_Response( array( 'snapshot' => $this->running_version ) );
+						return new WP_REST_Response(
+							array(
+								'snapshot'    => $this->running_version,
+								'publication' => self::PUBLICATION,
+							)
+						);
 			},
 		);
 		$input     = array(
@@ -1014,8 +1052,17 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( 503, $failed->get_error_data()['status'] );
 			$this->assertSame( 2, $calls, 'Even a known cached result requires current live readback.' );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=observe' );
-			$native = array( 'callback' => static fn(): WP_REST_Response => new WP_REST_Response( array( 'native' => true ) ) );
-			$this->assertInstanceOf( WP_REST_Response::class, $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $native ) );
+			$native   = array(
+				'callback' => static fn(): WP_REST_Response => new WP_REST_Response(
+					array(
+						'native'      => true,
+						'publication' => self::PUBLICATION,
+					)
+				),
+			);
+			$observed = $resources->dispatch( null, $this->request( '/linker-ai/v1/engine/design/residential', $input, 'design' ), '', $native );
+			$this->assertInstanceOf( WP_Error::class, $observed );
+			$this->assertSame( 503, $observed->get_error_data()['status'] );
 		} finally {
 			remove_filter( 'pre_http_request', $unavailable, 999 );
 			putenv( 'LINKER_PUBLIC_PROTECTION_MODE=enforce' );
@@ -1057,7 +1104,12 @@ final class ResourceAdmissionTest extends TestCase {
 			return array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array( 'x-linker-engine-version' => $state->wrong ? str_repeat( 'f', 64 ) : $this->running_version ),
-				'body'     => wp_json_encode( array( 'snapshot' => $this->running_version ) ),
+				'body'     => wp_json_encode(
+					array(
+						'snapshot'    => $this->running_version,
+						'publication' => self::PUBLICATION,
+					)
+				),
 			);
 		};
 		add_filter( 'pre_http_request', $fixture, 0, 3 );
@@ -1111,7 +1163,12 @@ final class ResourceAdmissionTest extends TestCase {
 			return array(
 				'response' => array( 'code' => 200 ),
 				'headers'  => array( 'x-linker-engine-version' => $state->wrong ? str_repeat( 'f', 64 ) : $args['headers']['X-Linker-Engine-Version'] ),
-				'body'     => '{"synthetic":"actual-worker-result"}',
+				'body'     => wp_json_encode(
+					array(
+						'synthetic'   => 'actual-worker-result',
+						'publication' => self::PUBLICATION,
+					)
+				),
 			);
 		};
 		add_filter( 'pre_http_request', $fixture, 0, 3 );

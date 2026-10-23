@@ -436,6 +436,11 @@ test.each( [
 		expect(
 			( await screen.findAllByText( wording ) ).length
 		).toBeGreaterThan( 0 );
+		expect(
+			screen.getByText(
+				'Das Hinzufügen konnte nicht bestätigt werden. Die Produkte können bereits im Lösungsentwurf stehen.'
+			)
+		).toBeInTheDocument();
 		await act( async () => {
 			fireEvent.click(
 				screen.getByRole( 'button', { name: 'Lösung speichern' } )
@@ -1024,6 +1029,78 @@ test.each( [
 		).toBeNull();
 	}
 );
+
+test.each( [
+	[
+		'stale',
+		'Für den nächsten Schritt muss diese Lösung neu berechnet werden.',
+	],
+	[
+		'publication',
+		'Die aktuellen Produktdaten konnten nicht geprüft werden. Ihre Angaben bleiben erhalten.',
+	],
+] as const )(
+	'German current-product %s uses the shipped locale and preserves entries',
+	async ( outcome, message ) => {
+		setLocaleData( german.locale_data.messages, 'linker-tools' );
+		const { engine } = fakeEngine( {
+			locale: 'de',
+			residential: outcome,
+		} );
+		render(
+			<App
+				config={ config( 'de' ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		fill( /Postleitzahl des Standorts/, '80538' );
+		fill( /Jahresverbrauch des Haushalts/, '5000' );
+		fill( /PV-Leistung/, '10' );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'System berechnen' } )
+			)
+		);
+		expect( await screen.findByText( message ) ).toBeInTheDocument();
+		expect(
+			screen.getByLabelText( 'Postleitzahl des Standorts' )
+		).toHaveValue( '80538' );
+	}
+);
+
+test( 'German refused atomic add keeps its new-calculation status in the shipped locale', async () => {
+	setLocaleData( german.locale_data.messages, 'linker-tools' );
+	const { engine, calls } = fakeEngine( { locale: 'de' } );
+	const { store, added } = fakeStore( 'stale' );
+	render(
+		<App config={ config( 'de' ) } engine={ engine } store={ store } />
+	);
+	fill( /Postleitzahl des Standorts/, '80538' );
+	fill( /Jahresverbrauch des Haushalts/, '5000' );
+	fill( /PV-Leistung/, '10' );
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'System berechnen' } )
+		)
+	);
+	const add = await screen.findByRole( 'button', {
+		name: 'Alles zum Lösungsentwurf hinzufügen',
+	} );
+	await act( async () => fireEvent.click( add ) );
+	expect(
+		await screen.findByText(
+			'Für den nächsten Schritt muss diese Lösung neu berechnet werden.'
+		)
+	).toBeInTheDocument();
+	expect(
+		screen.getAllByText( 'Neue Berechnung erforderlich.' )
+	).toHaveLength( 2 );
+	expect( added ).toEqual( [] );
+	expect(
+		calls.filter( ( call ) => call.name === 'residential' )
+	).toHaveLength( 1 );
+} );
 
 test( 'an old result rejected by atomic add asks for a new calculation and adds nothing', async () => {
 	const { engine, calls } = fakeEngine( { locale: 'en' } );

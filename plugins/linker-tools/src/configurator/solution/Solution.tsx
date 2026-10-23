@@ -375,12 +375,13 @@ export function Solution( props: SolutionProps ) {
 					) : null }
 					{ props.saveState === 'changed'
 						? selectionChangedText()
-						: props.saveState === 'failed'
-							? __(
-									'The solution could not be saved. Try again.',
-									'linker-tools'
-								)
-							: null }
+						: null }
+					{ props.saveState === 'failed'
+						? __(
+								'The solution could not be saved. Try again.',
+								'linker-tools'
+							)
+						: null }
 				</p>
 			</div>
 			<h3 className="linker-section__subtitle">

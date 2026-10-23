@@ -237,3 +237,55 @@ def test_confirm_pdf_and_save_do_not_recompute(
     )
     assert pdf.status_code == 200
     assert pdf.content.startswith(b"%PDF")
+
+
+@pytest.mark.parametrize("path", ["/selection/validate", "/report/pdf"])
+def test_confirmed_actions_distinguish_source_outage_from_withdrawal(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, path: str
+) -> None:
+    result = client.post("/design/residential", json=INPUT).json()
+    monkeypatch.setenv("GENIE_SERVICE_TOKEN", "confirmed-test")
+
+    def unavailable(self: Publication) -> NoReturn:
+        raise PublicationUnavailable("synthetic source outage")
+
+    monkeypatch.setattr(Publication, "read", unavailable)
+    reply = client.post(
+        path,
+        json={
+            **({"kind": "residential"} if path == "/selection/validate" else {}),
+            "input": INPUT,
+            "selection_fingerprint": result["selection_fingerprint"],
+        },
+        headers={"X-Linker-Service-Token": "confirmed-test"},
+    )
+    assert reply.status_code == 503
+    assert reply.json()["detail"]["error"] == "publication_unavailable"
+
+
+def test_source_outage_after_pdf_render_refuses_bytes_as_unavailable(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    result = client.post("/design/residential", json=INPUT).json()
+    rendered = False
+
+    def render(*args: Any, **kwargs: Any) -> bytes:
+        nonlocal rendered
+        rendered = True
+        return b"%PDF-synthetic"
+
+    def current(self: Publication) -> dict[str, Any]:
+        if rendered:
+            raise PublicationUnavailable("synthetic source outage after rendering")
+        return publication_manifest(self.feed)
+
+    monkeypatch.setattr("linker_engine.pdf.render", render)
+    monkeypatch.setattr(Publication, "read", current)
+    reply = client.post(
+        "/report/pdf",
+        json={"input": INPUT, "selection_fingerprint": result["selection_fingerprint"]},
+    )
+    assert rendered
+    assert reply.status_code == 503
+    assert reply.json()["detail"]["error"] == "publication_unavailable"
+    assert not reply.content.startswith(b"%PDF")
