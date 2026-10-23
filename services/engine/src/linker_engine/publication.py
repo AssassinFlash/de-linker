@@ -279,6 +279,14 @@ class Publication:
                 ):
                     permitted = False
                     break
+                current_urls = {
+                    self._feed_url(url)
+                    for url in [doc.get("url"), *doc.get("aliases", [])]
+                    if isinstance(url, str)
+                }
+                if not {document["url"], *document.get("aliases", [])} <= current_urls:
+                    permitted = False
+                    break
                 refs.append(
                     {
                         "document_id": doc_id,
@@ -286,7 +294,11 @@ class Publication:
                         "product_id": canonical,
                     }
                 )
-            urls = {d["url"] for d in raw["documents"]}
+            urls = {
+                url
+                for document in raw["documents"]
+                for url in [document["url"], *document.get("aliases", [])]
+            }
             if any(f["citation"]["url"] not in urls for f in raw["figures"].values()):
                 permitted = False
             if not permitted:
@@ -306,9 +318,10 @@ class Publication:
         for product in allowed:
             raw = loaded[product.id]
             for doc in raw["documents"]:
-                permitted_urls.setdefault(doc["url"], set()).add(
-                    raw["canonical_product_id"]
-                )
+                for url in [doc["url"], *doc.get("aliases", [])]:
+                    permitted_urls.setdefault(url, set()).add(
+                        raw["canonical_product_id"]
+                    )
         contract = self.feed.get("compatibility")
         if not isinstance(contract, dict):
             raise PublicationUnavailable(

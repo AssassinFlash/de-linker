@@ -68,3 +68,13 @@ Python 消费者已落实：参考角色/工程 ID 与源修订一致，所有�
 本地未启动新实例、复制依赖或全站备份；继续复用现有 venv 和两条共享依赖软链，未把软链加进 Git。工作树仍服务当前集成/复核，唯一代码和证据保留，依赖原件由原任务拥有；新增测试仅使用自动保留边界内的 pytest 临时目录。按已读本地存储规则，没有可独立认定过时的本任务运行副本可删除。
 
 **集成仍需证明**：组合基础 producer、Python consumer 和 PHP 新 proof marker 检查；先备份并预览/执行一次 Woo 参考迁移，核真实记录、当前 30 项图值及两 PDF，而非采用测试用 synthetic ID；核其不进入商店/Genie/整套加入销售候选；在组合真实 WP 验证事前/在途/旧成功回执及 origin 对应；读回实际 engine 加载 source/compatibility/prepared reference，复核 EcoFlow 原有保护；完成全量双评审、EN/DE 390/1440 状态验收与此前记录的真实 systemd/定时清理证明。详见 ops/PUBLICATION.md。以上待办属于本地图同轮集成门，本增量不将其宣称完成，也没有部署、生产数据写入或改动另一工作台的 source/运行实例。
+
+## 原生完整 feed 的资料格式回归
+
+集成第一次实际 queue build 在原生 loader 处拒绝，未重启也未成功 ack。只读核本实例 `engine/validation-input.json`，1433 项 schema 错误分为：610 个文档的明确 `aliases`、378 个图值的 `citation.doc` 来源文件名、445 个历史语言标签。准确位置是 `citation.doc`，不是额外的 sources 数组。本增量不全局放开 additionalProperties，也没有将原始全量 owner 数据提交。
+
+schema 与 typed `Document/Citation` 明确保留这两项；别名必须为托管 URL，候选的已加载别名在每次入口还须属于当前文档的许可 URL 集合。来源文件名和同 SHA 不授予新许可。基础模块 producer 独立提交 `a425071349a0b40c67cfa11889cc7142872a5f75` 将 EN/DE 大小写、MUL/MULTI/EN/DE/DE/EN 和空/未知标签派生为 canonical 语言；合法双字母保持对应小写，多语言 `mul`、未知 `und`，不猜测 en/de。资料 type 复用已有 `Materials::document_kind`，解决历史 German type 标签被报告精确匹配漏掉的问题；Woo 原值与 publication proof 保留。
+
+本地互操作证明使用上述私有原始输入（SHA `a36f4146d8f0be26153f8c12d4d57f739113535439b861dd84bf9c81698d4f92`），仅 stdin/stdout 调用基础模块该精确提交的原生 PHP `document_language()` 与 `Materials::document_kind()`，不是 Python 另造转换表；接着本树 `Products.from_feed` 原生加载成功：**85 产品、1 Trina reference、610 项 aliases、378 项来源标签完整保留**，语言为 en 296 / de 138 / mul 155 / und 21。空 object 形状保持，原始输入 hash 前后相同，没有改写共享实例或重启进程。这是实际输入与两端 source 的本地互操作预验，未将其称为重新生成的 HTTP feed 或已经 loaded/ack 的运行证据；主线合入两端后须重跑真实队列。
+
+新增小型匿名形状夹具 `woo-document-shape.json` 和 21 个针对性用例，覆盖字段保留、canonical 语言、拒绝未投影/未知原始标签、拒绝任意新键与外站别名、EN/DE 报告优先语言及 mul/und 回退，以及移除当前别名后该产品不再进入候选。完整 engine **259 passed in 43.29s**；Ruff lint/format（59 文件）、mypy（58 source files）和 diff 检查通过。既有 EN/DE 展示夹具原值仍通过，没有修改客户文案或报告结果。没有执行共享 WP mutation、claim/restart 或生产写入。

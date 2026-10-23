@@ -131,6 +131,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"url": { "$ref": "#/$defs/hostedUrl" },
+				"doc": { "type": "string", "description": "Original source-document label, retained as provenance. Permission requires the cited hosted URL and current Woo evidence; the label does not authorize use." },
 				"page": { "type": "integer", "minimum": 1 }
 			}
 		},
@@ -140,6 +141,7 @@
 			"additionalProperties": false,
 			"properties": {
 				"role": { "type": "string" },
+				"aliases": { "type": "array", "items": { "$ref": "#/$defs/hostedUrl" }, "description": "Explicit hosted aliases of this versioned document, still subject to current source-product permission." },
 				"citation_aliases": { "type": "array", "items": { "type": "string" } },
 				"document_id": { "type": "string" },
 				"document_revision": { "type": "string" },
@@ -148,7 +150,7 @@
 				"url": { "$ref": "#/$defs/hostedUrl" },
 				"title": { "type": "string" },
 				"type": { "type": "string" },
-				"lang": { "type": "string", "pattern": "^[a-z]{2}$" }
+				"lang": { "type": "string", "pattern": "^(?:[a-z]{2}|mul|und)$", "description": "Producer-normalized language: a lowercase two-letter language, mul for explicitly multilingual material, und when unstated or unrecognized. Woo's editorial value remains unchanged; unknown does not imply English or German." }
 			}
 		},
 		"hostedUrl": {
