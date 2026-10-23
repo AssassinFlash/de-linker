@@ -70,7 +70,11 @@ PHOTO_SIZES = (
     (1774, 887),
 )
 PHOTO_DIMENSIONS = dict(
-    zip(("/wp-content/uploads/" + name for name in PHOTO_PATHS), PHOTO_SIZES, strict=True)
+    zip(
+        ("/wp-content/uploads/" + name for name in PHOTO_PATHS),
+        PHOTO_SIZES,
+        strict=True,
+    )
 )
 
 

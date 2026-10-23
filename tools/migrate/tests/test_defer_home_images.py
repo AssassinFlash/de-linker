@@ -54,10 +54,10 @@ def test_preserves_copy_scripts_styles_escapes_and_sources() -> None:
         homepage().replace(
             '<img alt="EN &amp; Grüße > photo"', '<img src="/ambiguous"', 1
         ),
-        homepage().replace('<img ', '<img width="1599" ', 1),
-        homepage().replace('<img ', '<img height="0" ', 1),
-        homepage().replace('<img ', '<img width="100%" ', 1),
-        homepage().replace('<img ', '<img height ', 1),
+        homepage().replace("<img ", '<img width="1599" ', 1),
+        homepage().replace("<img ", '<img height="0" ', 1),
+        homepage().replace("<img ", '<img width="100%" ', 1),
+        homepage().replace("<img ", "<img height ", 1),
         homepage().replace("</main>", '<img src="/extra.webp"></main>'),
         homepage().replace("</main>", f'<img src="{SOURCES[0]}"></main>'),
     ],
@@ -77,9 +77,9 @@ def test_preserves_quote_case_and_self_closing_spelling() -> None:
 
 
 def test_intrinsic_sizes_match_each_source_and_preserve_existing_attributes() -> None:
-    before = homepage().replace('<img ', "<img WIDTH='1600' ", 1)
+    before = homepage().replace("<img ", "<img WIDTH='1600' ", 1)
     after = repair.defer_images(before)
-    assert after.startswith('<main id="home-a">\n<img WIDTH=\'1600\' ')
+    assert after.startswith("<main id=\"home-a\">\n<img WIDTH='1600' ")
     parser = repair.HomeImages(after)
     parser.feed(after)
     parser.close()
