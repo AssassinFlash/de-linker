@@ -169,12 +169,13 @@ jobs:
       # Current #568 composition keeps the mandatory pre-send gate while adding
       # persistent reception/job occupancy. Both native stores run the same real
       # connection, source ACK, critical/reset/VAT, held-job and classifier fixtures.
+      # Registration adds its real SQL/ACK/erasure guards to each existing store run.
       - name: business and native notification capacity in both stores
         run: |
           cd plugins/linker-commerce
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
+            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|RegistrationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
           cd ../..
           just wp smoke wc hpos sync --user=1
           just wp smoke option update woocommerce_custom_orders_table_enabled yes
@@ -183,7 +184,7 @@ jobs:
           cd plugins/linker-commerce
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
+            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|RegistrationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
 
       # #414: the abilities route, including the customer token. The test
 

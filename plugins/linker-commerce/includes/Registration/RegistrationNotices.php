@@ -174,20 +174,17 @@ final class RegistrationNotices {
 							static function () use ( $message, $plan, $id, $kind, $state ): bool {
 								$job = Capacity::within(
 									$plan['reservation'],
-									static function () use ( $message, $id, $kind, $state ): int {
+									static function () use ( $message, $id, $kind, $state, $plan ): int {
 										return ( new JobStore() )->create(
 											$message,
 											0,
-											static function ( int $job ) use ( $id, $kind, $state ): void {
+											static function ( int $job ) use ( $id, $kind, $state, $message, $plan ): void {
 												update_post_meta( $job, '_linker_registration_user', $id );
 												if ( (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
 													throw new \RuntimeException( 'registration_notice_owner_failed' );
 												}
 												$next          = $state;
-												$next[ $kind ] = array(
-													'state' => 'accepted',
-													'job' => $job,
-												);
+												$next[ $kind ] = RegistrationMessage::accepted( $plan, $id, $job, $message );
 												self::write( $id, $next );
 											}
 										);
@@ -228,10 +225,7 @@ final class RegistrationNotices {
 				if ( ! RegistrationMessage::owned( $state[ $kind ], $id ) || ! Capacity::cancel_before_side_effect( $scope ) ) {
 					return false;
 				}
-				$state[ $kind ] = array(
-					'state'  => 'skipped',
-					'reason' => $state[ $kind ]['reason'],
-				);
+				$state[ $kind ] = RegistrationMessage::terminal( $state[ $kind ], $id, $kind, 'skipped' );
 				self::write( $id, $state );
 				return true;
 			}
@@ -325,23 +319,24 @@ final class RegistrationNotices {
 												if ( self::read( $id ) !== $state ) {
 													return false;
 												}
+												$retained = array();
+												foreach ( $state as $kind => $plan ) {
+													$retained[ $kind ] = 'accepted' === $plan['state'] ? self::retained_message( $id, $kind, $plan ) : null;
+												}
 												foreach ( $state as $kind => $plan ) {
 													$job = (int) ( $plan['job'] ?? 0 );
-													if ( 0 < $job && get_post( $job ) ) {
-														if ( (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
-															return false;
-														}
+													if ( 0 < $job && null !== $retained[ $kind ] ) {
 														as_unschedule_all_actions( Outbox::HOOK, array( $job ), Outbox::GROUP );
 														( new JobStore() )->delete( $job );
 														clean_post_cache( $job );
-														if ( null !== ( new JobStore() )->load( $job ) ) {
+														if ( null !== self::retained_message( $id, $kind, $plan ) ) {
 															return false;
 														}
 													}
 													if ( '' !== $wpdb->last_error ) {
 														return false;
 													}
-													$state[ $kind ] = array( 'state' => 'erased' );
+													$state[ $kind ] = RegistrationMessage::terminal( $plan, $id, $kind, 'erased' );
 													if ( isset( $plan['reservation'] ) && ! Capacity::cancel_before_side_effect( $plan['reservation'] ) ) {
 														return false;
 													}
@@ -355,6 +350,8 @@ final class RegistrationNotices {
 									} finally {
 										// These connection-owned mail locks stay held through COMMIT/ROLLBACK.
 										foreach ( $jobs as $job ) {
+											wp_cache_delete( $job, 'posts' );
+											wp_cache_delete( $job, 'post_meta' );
 											clean_post_cache( $job );
 										}
 										wp_cache_set_posts_last_changed();
@@ -371,6 +368,54 @@ final class RegistrationNotices {
 			wp_cache_delete( $id, 'user_meta' );
 		}
 		return $done;
+	}
+
+	/** Read the exact ACK-owned native copy; healthy SQL absence proves only copy removal.
+	 *
+	 * @param int                 $id Actual account.
+	 * @param string              $kind Exact native purpose.
+	 * @param array<string,mixed> $ack Authenticated original handoff.
+	 * @return Message|null Retained exact copy, or confirmed absence of post and all metadata.
+	 * @throws \RuntimeException Unknown, orphaned, foreign or changed copies remain unresolved.
+	 */
+	public static function retained_message( int $id, string $kind, array $ack ): ?Message {
+		return ConnectionFence::run(
+			static function () use ( $id, $kind, $ack ): ?Message {
+				if ( ! RegistrationMessage::acknowledged( $ack, $id, $kind ) || 'accepted' !== $ack['state'] ) {
+					throw new \RuntimeException( 'registration_notice_ack_invalid' );
+				}
+				global $wpdb;
+				$job  = $ack['job'];
+				$post = $wpdb->get_row( $wpdb->prepare( 'SELECT post_type FROM %i WHERE ID=%d', $wpdb->posts, $job ), ARRAY_A );
+				if ( self::database_error() ) {
+					throw new \RuntimeException( 'registration_notice_job_read_failed' );
+				}
+				$meta = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE post_id=%d', $wpdb->postmeta, $job ) );
+				if ( self::database_error() || ! is_numeric( $meta ) ) {
+					throw new \RuntimeException( 'registration_notice_meta_read_failed' );
+				}
+				if ( null === $post && '0' === (string) $meta ) {
+					return null;
+				}
+				wp_cache_delete( $job, 'posts' );
+				wp_cache_delete( $job, 'post_meta' );
+				$stored  = ( new JobStore() )->load( $job );
+				$message = $stored['message'] ?? null;
+				if ( ! is_array( $post ) || JobStore::POST_TYPE !== $post['post_type'] || ! $message instanceof Message || (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id || ! \Linker\Commerce\Mail\NativeOrigin::valid( $message ) || ( $message->origin['policy'] ?? '' ) !== RegistrationMessage::POLICY || ( $message->origin['account'] ?? null ) !== $id || ( $message->origin['purpose'] ?? '' ) !== $kind || ! hash_equals( $ack['message_sha256'], hash( 'sha256', (string) wp_json_encode( $message->to_array() ) ) ) ) {
+					throw new \RuntimeException( 'registration_notice_job_owner_unknown' );
+				}
+				return $message;
+			}
+		);
+	}
+
+	/** Each native SELECT can independently replace the driver's last error.
+	 *
+	 * @phpstan-impure
+	 */
+	private static function database_error(): bool {
+		global $wpdb;
+		return '' !== $wpdb->last_error;
 	}
 
 	/**
@@ -442,7 +487,7 @@ final class RegistrationNotices {
 		if ( '' !== $wpdb->last_error ) {
 			throw new \RuntimeException( 'registration_notice_read_failed' );
 		}
-		if ( is_array( $state ) && self::source_shape( $state ) ) {
+		if ( is_array( $state ) && self::source_shape( $state, $id ) ) {
 			return $state; }
 		if ( '' !== $state || metadata_exists( 'user', $id, self::META ) ) {
 			throw new \RuntimeException( 'registration_notice_source_invalid' );
@@ -453,25 +498,29 @@ final class RegistrationNotices {
 	/** Exactly two bounded native notice kinds, with known terminal and accepted shapes.
 	 *
 	 * @param array<string,mixed> $state Native metadata, possibly corrupt.
+	 * @param int                 $id Actual account authenticated by each terminal ACK.
 	 */
-	private static function source_shape( array $state ): bool {
-		if ( array() === $state || count( $state ) > 2 || array() !== array_diff( array_keys( $state ), array( 'team', 'received' ) ) ) {
-			return false; }
-		foreach ( $state as $plan ) {
+	private static function source_shape( array $state, int $id ): bool {
+		if ( count( $state ) !== 2 || array() !== array_diff( array( 'team', 'received' ), array_keys( $state ) ) ) {
+			return false;
+		}
+		$jobs = array();
+		foreach ( $state as $kind => $plan ) {
 			if ( ! is_array( $plan ) ) {
-				return false; }
-			$status = $plan['state'] ?? '';
-			if ( 'accepted' === $status ) {
-				if ( ! is_int( $plan['job'] ?? null ) || $plan['job'] < 1 || count( $plan ) !== 2 ) {
-					return false; }
-			} elseif ( 'erased' === $status ) {
-				if ( count( $plan ) !== 1 ) {
-					return false; }
-			} elseif ( 'skipped' === $status && ! isset( $plan['reservation'] ) ) {
-				if ( count( $plan ) !== 2 || ! in_array( $plan['reason'] ?? '', array( 'disabled', 'daily_cap', 'target_cap' ), true ) ) {
-					return false; }
-			} elseif ( 'pending' !== $status && 'skipped' !== $status ) {
 				return false;
+			}
+			$status = $plan['state'] ?? '';
+			if ( 'pending' === $status || ( 'skipped' === $status && isset( $plan['reservation'] ) ) ) {
+				continue; // Authentication of the full frozen plan precedes every side effect.
+			}
+			if ( ! RegistrationMessage::acknowledged( $plan, $id, $kind ) ) {
+				return false;
+			}
+			if ( 'accepted' === $status ) {
+				if ( in_array( $plan['job'], $jobs, true ) ) {
+					return false;
+				}
+				$jobs[] = $plan['job'];
 			}
 		}
 		return true;

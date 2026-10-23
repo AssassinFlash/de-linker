@@ -41,4 +41,12 @@ LINKER_COMMERCE_TEST_SITE=http://127.0.0.1:9416 \
 
 最终副作用点已逐一核对：prepare仅取消刚取得的可信本地scope；cancel_uncreated先验HMAC及未建户stage；bind先验完整plan；deliver在ReceiptBudget前核exact current owned source；policy skip和cancel_skipped保留认证直到同事务ACK；erase在任何job删除或容量取消前先验证所有pending/reserved source，accepted再按原job/user归属；JobStore create继续与exact-source ACK/原AS同事务。未知、损坏或跨账号reservation保持原资料及容量，不因隐私请求退款另一账号。
 
-本机故障测试曾留下mail ledger缺行和admission合成state。已保留原raw现场，既有私密 `owned-ui-options-before.serialized` 的两项字节SHA均先核到原 `rehearsal-before.json`，再仅恢复本机这两项到原字节，原38job/postmeta聚合始终与local rehearsal完全相同。原因是旧fixture依赖缓存get_option快照和update_option恢复，没有raw readback；本类现在在parent setUp前保存确切原生option presence/value/autoload，在所有native清理之后短事务精确恢复4个本票option、失效对应options/alloptions/notoptions cache并核SQL逐字节。没有生产操作、清空真实quota、全库恢复或新快照；最初失败不删除。
+本机故障测试曾留下mail ledger缺行和admission合成state。已保留原raw现场，既有私密 `owned-ui-options-before.serialized` 的两项字节SHA均先核到原 `rehearsal-before.json`，再仅恢复本机这两项到原字节，原38job/postmeta聚合始终与local rehearsal完全相同。已确认旧fixture存在缓存get_option快照且缺raw readback的隔离缺口；具体最后写入来源尚未唯一归因，原raw及进程退出后的独立读回均保留。本类现在在parent setUp前保存确切原生option presence/value/autoload，在所有native清理之后短事务精确恢复4个本票option、失效对应options/alloptions/notoptions cache并核SQL逐字节。没有生产操作、清空真实quota、全库恢复或新快照；最初失败不删除。
+
+
+## 原生交接 ACK 与隐私完整性
+
+独立 Spec 的 accepted alias、缺 kind、跨 purpose 与伪造 erased 反例已加真正原生 RED：4 tests/32 assertions 全失败，旧源误称隐私完成。新源要求完整两种用途，各自持久 HMAC 绑定 account/kind/真实 job 与完整 Message SHA256；合法 disabled/policy skip及擦除终态也持有认证见证。实际 transport 后的源仍仅表示曾被队列接受，不冒称 delivered；post 与全部 meta 的健康 SQL 双 absence 才允许清理指针。原生扩展包含跨账号、实际 body 改写、合法消费后擦除、孤立 meta 和真正 SELECT 故障。最终测试计数以本轮固定头原始输出为准，不把早期 disabled 旧 shape 断言失败或原 228/3861 的健康重试失败改标绿色。
+
+
+本次 ACK 收口的实际结果：注册全类 **90 tests/2033 assertions PASS**（MySQL9.6、HPOS、原生订单/商品两cache及Redis均开启）；完整 Commerce unit **1856 tests/6368 assertions/479 native-only skips PASS**；完整 Commerce PHPStan8、4个相关PHP文件WPCS及diff check PASS。此前组合237/4024仅一个旧daily_cap终态数组断言未包含认证witness，已保留该失败并改为断言原reason与真实ACK认证；原228中的健康erase重试在该组合与注册全类均通过，但旧一次失败尚未唯一归因，不倒推为已证明缓存是唯一原因。最终精确提交的强组合、CI、双评审和CUA另行读回。两条现有CI native filter均加入本注册全类，原classic及HPOS强缓存门全部保留。

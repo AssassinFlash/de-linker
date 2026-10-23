@@ -148,6 +148,12 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 					}
 					wp_cache_delete( 'alloptions', 'options' );
 					wp_cache_delete( 'notoptions', 'options' );
+					foreach ( $this->original_options as $name => $row ) {
+						$expected = null === $row ? false : maybe_unserialize( $row['option_value'] );
+						if ( get_option( $name ) !== $expected ) {
+							throw new \RuntimeException( 'registration_fixture_cached_readback_failed' );
+						}
+					}
 				}
 			);
 			}
@@ -687,6 +693,147 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		}
 	}
 
+	/** Every original kind needs its own authenticated ACK, before either job can be erased.
+	 *
+	 * @testWith ["alias"]
+	 *           ["cross_account"]
+	 *           ["changed_message"]
+	 *           ["missing_kind"]
+	 *           ["forged_erased"]
+	 *           ["swapped_kind"]
+	 * @param string $change Corruption of the native handoff acknowledgement.
+	 */
+	public function test_corrupt_notice_ack_retains_both_original_messages( string $change ): void {
+		$post = $this->public_post( 75 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$original        = $this->notices( $id );
+		$changed         = $original;
+		$restore_message = null;
+		if ( 'cross_account' === $change ) {
+			$other = $this->public_post( 76 );
+			$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $other['password'], $other['email'] )->has_errors() );
+			$other_id = wc_create_new_customer( $other['email'], '', $other['password'] );
+			$this->assertIsInt( $other_id );
+			$this->own_user( $other_id );
+			$changed['received'] = $this->notices( $other_id )['received'];
+		} elseif ( 'changed_message' === $change ) {
+			$job             = $original['received']['job'];
+			$restore_message = get_post_meta( $job, '_linker_mail_message', true );
+			$data            = json_decode( $restore_message, true );
+			$data['body']   .= ' changed after the authenticated handoff';
+			update_post_meta( $job, '_linker_mail_message', wp_slash( wp_json_encode( $data ) ) );
+		}
+		$jobs = self::mail_jobs_after( $this->mail_marker );
+		if ( 'alias' === $change ) {
+			$changed['received']['job'] = $changed['team']['job'];
+		} elseif ( 'missing_kind' === $change ) {
+			unset( $changed['received'] );
+		} elseif ( 'forged_erased' === $change ) {
+			$changed['received'] = array( 'state' => 'erased' );
+		} elseif ( 'swapped_kind' === $change ) {
+			$changed = array(
+				'team'     => $original['received'],
+				'received' => $original['team'],
+			);
+		}
+		update_user_meta( $id, RegistrationNotices::META, wp_slash( $changed ) );
+		try {
+			$this->assertFalse( RegistrationNotices::erase( $id ), 'Corrupt source must retain both original messages, not report privacy completion.' );
+			$this->assertInstanceOf( WP_Error::class, ( new RegistrationPrivacy() )->export( $post['email'] ) );
+			$this->assertSame( $jobs, self::mail_jobs_after( $this->mail_marker ) );
+			$this->assertSame( $changed, get_user_meta( $id, RegistrationNotices::META, true ) );
+		} finally {
+			update_user_meta( $id, RegistrationNotices::META, wp_slash( $original ) );
+			if ( null !== $restore_message ) {
+				update_post_meta( $original['received']['job'], '_linker_mail_message', wp_slash( $restore_message ) );
+			}
+		}
+		$this->assertTrue( RegistrationNotices::erase( $id ) );
+		foreach ( array_column( $original, 'job' ) as $job ) {
+			$this->assertNull( ( new \Linker\Commerce\Mail\JobStore() )->load( $job ) );
+			$this->assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		}
+		$calls   = 0;
+		$capture = static function () use ( &$calls ): bool {
+			++$calls;
+			return true;
+		};
+		add_filter( 'pre_wp_mail', $capture, -1000 );
+		try {
+			foreach ( array_column( $original, 'job' ) as $job ) {
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job );
+			}
+		} finally {
+			remove_filter( 'pre_wp_mail', $capture, -1000 ); }
+		$this->assertSame( 0, $calls );
+	}
+
+	/** Consumed native jobs need healthy post-and-meta absence, never a fabricated delivery ACK.
+	 *
+	 * @testWith ["healthy"]
+	 *           ["orphan"]
+	 *           ["read_failure"]
+	 * @param string $boundary Native retained-copy boundary.
+	 */
+	public function test_consumed_notice_privacy_requires_confirmed_native_absence( string $boundary ): void {
+		global $wpdb;
+		$post = $this->public_post( 77 );
+		$this->assertFalse( apply_filters( 'woocommerce_process_registration_errors', new WP_Error(), '', $post['password'], $post['email'] )->has_errors() );
+		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
+		$this->assertIsInt( $id );
+		$this->own_user( $id );
+		$state   = $this->notices( $id );
+		$calls   = 0;
+		$capture = static function () use ( &$calls ): bool {
+			++$calls;
+			return true;
+		};
+		add_filter( 'pre_wp_mail', $capture, -1000 );
+		try {
+			foreach ( $state as $plan ) {
+				do_action( \Linker\Commerce\Mail\Outbox::HOOK, $plan['job'] );
+			}
+		} finally {
+			remove_filter( 'pre_wp_mail', $capture, -1000 ); }
+		$this->assertSame( 2, $calls );
+		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
+		$job = $state['received']['job'];
+		if ( 'orphan' === $boundary ) {
+			$this->assertIsInt( add_post_meta( $job, '_linker_mail_message', 'synthetic orphan private copy' ) );
+			try {
+				$this->assertFalse( RegistrationNotices::erase( $id ) );
+				$this->assertSame( $state, $this->notices( $id ) );
+				$this->assertSame( 'synthetic orphan private copy', get_post_meta( $job, '_linker_mail_message', true ) );
+			} finally {
+				delete_post_meta( $job, '_linker_mail_message' ); }
+		} elseif ( 'read_failure' === $boundary ) {
+			$hit   = 0;
+			$fault = static function ( string $sql ) use ( &$hit, $job ): string {
+				if ( str_starts_with( $sql, 'SELECT COUNT(*) FROM ' ) && str_contains( $sql, 'post_id=' . $job ) ) {
+					++$hit;
+					return 'SELECT * FROM linker_synthetic_missing_notice_table';
+				} return $sql;
+			};
+			$old   = $wpdb->suppress_errors( true );
+			add_filter( 'query', $fault );
+			try {
+				$this->assertFalse( RegistrationNotices::erase( $id ) ); } finally {
+				remove_filter( 'query', $fault );
+				$wpdb->suppress_errors( $old ); }
+				$this->assertSame( 1, $hit );
+				$this->assertSame( $state, $this->notices( $id ) );
+		}
+		$this->assertTrue( RegistrationNotices::erase( $id ) );
+		foreach ( $this->notices( $id ) as $kind => $ack ) {
+			$this->assertSame( 'erased', $ack['state'] );
+			$this->assertTrue( RegistrationMessage::acknowledged( $ack, $id, $kind ) );
+			$this->assertArrayNotHasKey( 'job', $ack );
+		}
+	}
+
 	/** Corrupt private source data is retained with an explicit retryable failure, never reported as erased. */
 	public function test_malformed_registration_source_is_not_privacy_absence(): void {
 		$customer = $this->customer();
@@ -875,7 +1022,8 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$this->assertCount( 2, self::mail_jobs_after( $this->mail_marker ) );
 		$this->assertTrue( $privacy->erase( $post['email'] )['items_removed'] );
 		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
-		$this->assertSame( array( 'state' => 'erased' ), $this->notices( $id )['team'] );
+		$this->assertSame( 'erased', $this->notices( $id )['team']['state'] );
+		$this->assertTrue( RegistrationMessage::acknowledged( $this->notices( $id )['team'], $id, 'team' ) );
 		RegistrationNotices::recover();
 		$this->assertCount( 0, self::mail_jobs_after( $this->mail_marker ) );
 	}
@@ -896,13 +1044,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$this->own_user( $id );
 			$state = $this->notices( $id );
 			$this->assertSame( 'accepted', $state['team']['state'] );
-			$this->assertSame(
-				array(
-					'state'  => 'skipped',
-					'reason' => 'disabled',
-				),
-				$state['received']
-			);
+			$this->assertSame( 'skipped', $state['received']['state'] );
+			$this->assertSame( 'disabled', $state['received']['reason'] );
+			$this->assertTrue( RegistrationMessage::acknowledged( $state['received'], $id, 'received' ) );
 			$this->assertCount( 1, self::mail_jobs_after( $this->mail_marker ) );
 			RegistrationNotices::recover();
 			$this->assertSame( $state, $this->notices( $id ) );
@@ -923,13 +1067,10 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		$id = wc_create_new_customer( $post['email'], '', $post['password'] );
 		$this->assertIsInt( $id );
 		$this->own_user( $id );
-		$this->assertSame(
-			array(
-				'state'  => 'skipped',
-				'reason' => 'daily_cap',
-			),
-			$this->notices( $id )['received']
-		);
+		$receipt = $this->notices( $id )['received'];
+		$this->assertSame( 'skipped', $receipt['state'] );
+		$this->assertSame( 'daily_cap', $receipt['reason'] );
+		$this->assertTrue( RegistrationMessage::acknowledged( $receipt, $id, 'received' ) );
 		$this->assertSame( 'accepted', $this->notices( $id )['team']['state'] );
 		$state = get_option( IntakeStore::OPTION );
 		$this->assertSame( 0, array_sum( array_column( $state['mail_capacity']['reservations'], 'remaining' ) ) );

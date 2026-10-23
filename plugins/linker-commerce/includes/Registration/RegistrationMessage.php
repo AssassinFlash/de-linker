@@ -24,7 +24,8 @@ use WP_User;
  * Arbitrary settings/filters are captured once; customer prose is never replaced.
  */
 final class RegistrationMessage {
-	public const POLICY = 'registration-native-plan-v1';
+	public const POLICY      = 'registration-native-plan-v1';
+	private const ACK_POLICY = 'registration-native-ack-v1';
 
 	/**
 	 * Capture the actual configured native notification without user/VIES/mail writes.
@@ -176,7 +177,14 @@ final class RegistrationMessage {
 		$source                     = wp_json_encode( $plan );
 		if ( ! is_string( $source ) ) {
 			return self::problem(); }
-		$plan['max_bytes']          = max( $message_maximum, strlen( $source ) );
+		// A final native ACK retains no body, but includes its exact job and full Message hash.
+		$ack                        = array(
+			'state'          => 'accepted',
+			'job'            => PHP_INT_MAX,
+			'message_sha256' => str_repeat( 'f', 64 ),
+			'witness'        => str_repeat( 'f', 64 ),
+		);
+		$plan['max_bytes']          = max( $message_maximum, strlen( $source ), strlen( (string) wp_json_encode( $ack ) ) );
 		$plan['reservation']        = '';
 		$plan['binding']['account'] = 0;
 		$plan['binding']['slot']    = '';
@@ -318,6 +326,91 @@ final class RegistrationMessage {
 		);
 		$next['witness'] = self::signature( $next );
 		return strlen( (string) wp_json_encode( $next ) ) <= $plan['max_bytes'] ? $next : self::problem();
+	}
+
+	/** A real native handoff binds its exact immutable job, never a delivery claim.
+	 *
+	 * @param array<string,mixed> $plan Current authenticated native source.
+	 * @param int                 $id Actual account.
+	 * @param int                 $job Actual durably read-back job.
+	 * @param Message             $message Exact native Message.
+	 * @return array<string,mixed> Bounded authenticated source acknowledgement.
+	 * @throws \RuntimeException An unverified handoff cannot mint an ACK.
+	 */
+	public static function accepted( array $plan, int $id, int $job, Message $message ): array {
+		$kind = $plan['binding']['kind'] ?? '';
+		if ( ! self::owned( $plan, $id ) || $job < 1 || ! NativeOrigin::valid( $message ) || ( $message->origin['account'] ?? null ) !== $id || ( $message->origin['purpose'] ?? '' ) !== $kind ) {
+			throw new \RuntimeException( 'registration_notice_handoff_invalid' );
+		}
+		$stored = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
+		if ( null === $stored || $stored['message']->to_array() !== $message->to_array() || (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
+			throw new \RuntimeException( 'registration_notice_native_handoff_unconfirmed' );
+		}
+
+		$ack            = array(
+			'state'          => 'accepted',
+			'job'            => $job,
+			'message_sha256' => hash( 'sha256', (string) wp_json_encode( $message->to_array() ) ),
+		);
+		$ack['witness'] = self::ack_signature( $ack, $id, $kind );
+		if ( strlen( (string) wp_json_encode( $ack ) ) > $plan['max_bytes'] ) {
+			throw new \RuntimeException( 'registration_notice_ack_bound_failed' );
+		}
+		return $ack;
+	}
+
+	/** A terminal acknowledgement has no customer content and cannot be forged from a status string.
+	 *
+	 * @param array<string,mixed> $plan Verified original source or native ACK.
+	 * @param int                 $id Actual account.
+	 * @param string              $kind One native purpose.
+	 * @param string              $state Explicit erased or completed policy skip.
+	 * @return array<string,mixed> Authenticated terminal state.
+	 * @throws \RuntimeException Unknown source cannot become a successful terminal state.
+	 */
+	public static function terminal( array $plan, int $id, string $kind, string $state ): array {
+		$native = ( $plan['binding']['kind'] ?? '' ) === $kind && self::owned( $plan, $id );
+		if ( ! in_array( $state, array( 'erased', 'skipped' ), true ) || ( ! $native && ! self::acknowledged( $plan, $id, $kind ) ) || ( 'skipped' === $state && ( ! $native || 'skipped' !== $plan['state'] ) ) ) {
+			throw new \RuntimeException( 'registration_notice_terminal_invalid' );
+		}
+		$ack = array( 'state' => $state );
+		if ( 'skipped' === $state ) {
+			$ack['reason'] = $plan['reason'];
+		}
+		$ack['witness'] = self::ack_signature( $ack, $id, $kind );
+		return $ack;
+	}
+
+	/** Authenticate a complete, purpose-specific native ACK without retaining email or body.
+	 *
+	 * @param array<string,mixed> $ack Native accepted or terminal state.
+	 * @param int                 $id Actual owner.
+	 * @param string              $kind Exact source purpose.
+	 */
+	public static function acknowledged( array $ack, int $id, string $kind ): bool {
+		if ( $id < 1 || ! in_array( $kind, array( 'team', 'received' ), true ) || ! is_string( $ack['witness'] ?? null ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $ack['witness'] ) ) {
+			return false;
+		}
+		$status = $ack['state'] ?? '';
+		if ( 'accepted' === $status ) {
+			$valid = count( $ack ) === 4 && is_int( $ack['job'] ?? null ) && $ack['job'] > 0 && is_string( $ack['message_sha256'] ?? null ) && 1 === preg_match( '/^[a-f0-9]{64}$/D', $ack['message_sha256'] );
+		} elseif ( 'skipped' === $status ) {
+			$valid = count( $ack ) === 3 && in_array( $ack['reason'] ?? '', array( 'disabled', 'daily_cap', 'target_cap' ), true );
+		} else {
+			$valid = 'erased' === $status && count( $ack ) === 2;
+		}
+		return $valid && hash_equals( self::ack_signature( $ack, $id, $kind ), $ack['witness'] );
+	}
+
+	/** Version/account/purpose domain separation survives original email deletion.
+	 *
+	 * @param array<string,mixed> $ack Native ACK without secret data.
+	 * @param int                 $id Actual owner.
+	 * @param string              $kind Exact purpose.
+	 */
+	private static function ack_signature( array $ack, int $id, string $kind ): string {
+		unset( $ack['witness'] );
+		return hash_hmac( 'sha256', self::ACK_POLICY . '|' . $id . '|' . $kind . '|' . (string) wp_json_encode( $ack ), wp_salt( 'auth' ) );
 	}
 
 	/** Authenticated typed plan, never a browser-origin/category permission.

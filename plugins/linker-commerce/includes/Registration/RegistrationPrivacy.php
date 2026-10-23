@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Registration;
 
 use Linker\Commerce\Mail\ConnectionFence;
-use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Protection\Identity;
 use Linker\Commerce\Protection\RegistrationSlots;
 use WP_Error;
@@ -127,19 +126,14 @@ final class RegistrationPrivacy {
 				$state = RegistrationNotices::read( $id );
 				if ( null === $state ) {
 					return null; }
-				foreach ( $state as &$plan ) {
-					$job = $plan['job'] ?? 0;
-					if ( 'accepted' !== ( $plan['state'] ?? '' ) || ! is_int( $job ) || $job < 1 ) {
-						continue; }
-					clean_post_cache( $job );
-					wp_cache_delete( $job, 'post_meta' );
-					if ( ! get_post( $job ) ) {
-						continue; } // A consumed job has already removed this copy.
-					$stored = ( new JobStore() )->load( $job );
-					if ( null === $stored || (int) get_post_meta( $job, '_linker_registration_user', true ) !== $id ) {
-						throw new \RuntimeException( 'registration_privacy_job_owner_unknown' );
+				foreach ( $state as $kind => &$plan ) {
+					if ( 'accepted' !== $plan['state'] ) {
+						continue;
 					}
-					$plan['message'] = $stored['message']->to_array();
+					$message = RegistrationNotices::retained_message( $id, $kind, $plan );
+					if ( null !== $message ) {
+						$plan['message'] = $message->to_array();
+					}
 				}
 				unset( $plan );
 				return $state;

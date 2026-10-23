@@ -100,3 +100,8 @@ verified-email exporter 除 pending source 外，还核实 accepted job 的 `_li
 
 
 当前消费者复核进一步收窄：eraser必须在删除任何一个原job或取消任何scope前，验证本用户所有pending/reserved plans，不能用A的verified-email请求取消B的reservation。accepted source只允许正int job，erased/最终skip仅允许定义的shape；损坏指针是unknown，不清source。健康连接上NativeTransaction构造失败时只释放这次已取得且原identity仍可确认的mutex；断线不在替代连接补偿。Woo account/billing首读失败返回既有正常unknown notice；account只保留本次native owner/nonce验证后的canonical非密码字段，不把底层mysqli异常当成功或fatal页面。
+
+
+注册通知的最终 source ACK 使用独立 `registration-native-ack-v1` 域、真实 account ID 与固定 team/received 用途生成 HMAC。真实 JobStore 创建/完整 readback及 owner 写入成功后，才保留 accepted/job ID/完整 Message SHA256/认证见证；两种用途必须完整，各自签名且原 job 不同。最终 skipped/erased 也有同一用途认证，不保留原邮箱、正文或收件人。最坏 ACK 的完整 JSON 与待处理 source、最终 Message 一起计入原始预留上界，job ID 按 PHP_INT_MAX 计，不增加未来源常数。
+
+隐私删除或导出前，存在的每一份原 job 都要核实际 owner、NativeOrigin、用途和完整 Message hash；任一种源缺失、alias、跨账号/用途替换或改写终态均显性未完成。合法消费后原 job 已消失时，只在同一健康 fenced 连接以 SQL 确认精确 post 及其全部 postmeta 均不存在，才能清理这份指针；这只证明已无该副本，从不称 sent/delivered。读取失败、孤立 metadata 或未知 Message 保留 unresolved，不自动删孤儿来制造成功。共享 NativeOrigin/Outbox 不变。
