@@ -1,0 +1,49 @@
+{
+  "version": "156be14b796a2db747dc1626e72eadab82ffc7396a6d09c3922d08489a0f9e62",
+  "checks": [
+    {
+      "route": "/roof/outline",
+      "status": 200,
+      "seconds": 6.349,
+      "source_revision": "04a8e966a46143279a81c6db3b30bbc1df45252a4f83aa8d1cc61c4339c41268",
+      "result_source": "existing real LoD2 cache; current API and publication",
+      "engineering_contract": 2,
+      "reference_inputs": [
+        {
+          "reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
+          "reference_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2",
+          "product_id": 8369,
+          "product_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2"
+        }
+      ],
+      "products": 1,
+      "documents": 2,
+      "found": true,
+      "modules": 14,
+      "kwp": 6.44,
+      "building_id": "DEBY_LOD2_5006493"
+    },
+    {
+      "route": "/design/residential",
+      "status": 200,
+      "seconds": 5.975,
+      "source_revision": "04a8e966a46143279a81c6db3b30bbc1df45252a4f83aa8d1cc61c4339c41268",
+      "result_source": "current Woo feed; current API and publication",
+      "engineering_contract": 2,
+      "reference_inputs": [
+        {
+          "reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
+          "reference_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2",
+          "product_id": 8369,
+          "product_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2"
+        }
+      ],
+      "products": 86,
+      "documents": 610,
+      "found": null,
+      "modules": null,
+      "kwp": null,
+      "building_id": null
+    }
+  ]
+}

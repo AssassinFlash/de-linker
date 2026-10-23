@@ -1,0 +1,56 @@
+{
+  "measurements": [
+    {
+      "status": 200,
+      "seconds": 0.6411,
+      "result": {
+        "models": [
+          {
+            "model": "PowerOcean",
+            "status": "unknown"
+          },
+          {
+            "model": "GW10K-ETA-G20",
+            "status": "published",
+            "product_id": 3556
+          }
+        ]
+      }
+    },
+    {
+      "status": 200,
+      "seconds": 0.2464,
+      "result": {
+        "models": [
+          {
+            "model": "PowerOcean",
+            "status": "unknown"
+          },
+          {
+            "model": "GW10K-ETA-G20",
+            "status": "published",
+            "product_id": 3556
+          }
+        ]
+      }
+    },
+    {
+      "status": 200,
+      "seconds": 0.2346,
+      "result": {
+        "models": [
+          {
+            "model": "PowerOcean",
+            "status": "unknown"
+          },
+          {
+            "model": "GW10K-ETA-G20",
+            "status": "published",
+            "product_id": 3556
+          }
+        ]
+      }
+    }
+  ],
+  "fixture_route_after_cleanup": 404
+}

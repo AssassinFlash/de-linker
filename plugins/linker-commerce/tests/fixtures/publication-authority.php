@@ -315,7 +315,7 @@ $linker_commerce_publication_ready       = $linker_commerce_publication_jobs->ac
 		'source_revision'   => $linker_commerce_publication_current_job['source_revision'],
 		'loaded_revision'   => 'fixture-current-loaded',
 		'status'            => 'ready',
-		'prepared_products' => $linker_commerce_publication_current_job['manifest']['products'],
+		'prepared_products' => array_values( array_filter( $linker_commerce_publication_current_job['manifest']['products'], static fn ( array $product ): bool => $linker_commerce_publication_a === $product['product_id'] ) ),
 	)
 );
 $linker_commerce_publication_check( ! is_wp_error( $linker_commerce_publication_ready ) && ( Publication::product( $linker_commerce_publication_a )['ready']['knowledge'] ?? false ), 'current loaded receipt enables matching preparation state without changing permission' );
