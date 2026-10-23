@@ -246,8 +246,9 @@ use Linker\Commerce\Mail\TestMode;
 			}
 			$headers = preg_replace( '/\r?\n[ \t]+/', ' ', $parts[0] );
 			if ( preg_match( '~^Content-Type:\s*multipart/[^\r\n]*\bboundary=(?:"([^"]+)"|([^\s;]+))~mi', $headers, $boundary ) ) {
-				$decoded = array();
-				foreach ( preg_split( '~(?:^|\r?\n)--' . preg_quote( $boundary[1] ?: $boundary[2], '~' ) . '(?:--)?[ \t]*(?:\r?\n|$)~', $parts[1] ) as $part ) {
+				$decoded   = array();
+				$delimiter = '' !== $boundary[1] ? $boundary[1] : $boundary[2];
+				foreach ( preg_split( '~(?:^|\r?\n)--' . preg_quote( $delimiter, '~' ) . '(?:--)?[ \t]*(?:\r?\n|$)~', $parts[1] ) as $part ) {
 					array_push( $decoded, ...$decode_message( $part ) );
 				}
 				return $decoded;
@@ -257,7 +258,7 @@ use Linker\Commerce\Mail\TestMode;
 				case 'quoted-printable':
 					return array( quoted_printable_decode( $parts[1] ) );
 				case 'base64':
-					$decoded = base64_decode( $parts[1], true );
+					$decoded = base64_decode( $parts[1], true ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Decode only the declared native MIME transfer encoding.
 					return false === $decoded ? array() : array( $decoded );
 				default:
 					// Native 7bit/8bit messages already contain the original URL.
