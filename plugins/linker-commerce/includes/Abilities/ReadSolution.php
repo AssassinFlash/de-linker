@@ -179,6 +179,9 @@ final class ReadSolution {
 		if ( null === $result ) {
 			return new WP_Error( 'linker_solution_snapshot_missing', __( 'This saved solution has no recorded design details. Its saved documents are still available in your account.', 'linker-commerce' ), array( 'status' => 422 ) );
 		}
+		if ( ! is_array( $result['yield'] ?? null ) || ! is_array( $result['storage'] ?? null ) ) {
+			return new WP_Error( 'linker_solution_unsupported', __( 'These saved design details are not available in Genie. Your saved solution and documents remain in your account.', 'linker-commerce' ), array( 'status' => 422 ) );
+		}
 		return $this->output( $id, $result );
 	}
 

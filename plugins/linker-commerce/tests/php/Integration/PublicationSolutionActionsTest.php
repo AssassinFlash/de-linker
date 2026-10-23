@@ -16,7 +16,11 @@ use Linker\Commerce\Products\Publication;
 use WC_Product_Simple;
 use WP_Error;
 
-/** @coversNothing */
+/**
+ * Native writes preserve the complete confirmed design or the prior draft.
+ *
+ * @coversNothing
+ */
 final class PublicationSolutionActionsTest extends IntegrationTestCase {
 	/** A refused later line restores existing lines and their prior quantities. */
 	public function test_native_failure_rolls_back_the_complete_operation(): void {
@@ -178,7 +182,11 @@ final class PublicationSolutionActionsTest extends IntegrationTestCase {
 		);
 	}
 
-	/** @return array<int,int> The actual native Woo draft. */
+	/**
+	 * The actual native Woo draft.
+	 *
+	 * @return array<int,int>
+	 */
 	private function quantities(): array {
 		$quantities = array();
 		foreach ( WC()->cart->get_cart() as $line ) {

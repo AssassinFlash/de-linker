@@ -14,7 +14,11 @@ use Linker\Commerce\Tests\TestCase;
 use WP_Error;
 use WP_Mock;
 
-/** @covers \Linker\Commerce\Account\DesignProof */
+/**
+ * Complete current scopes and trusted engine receipts.
+ *
+ * @covers \Linker\Commerce\Account\DesignProof
+ */
 final class DesignProofTest extends TestCase {
 	/** No network: the owning service and source are explicit fixture transports. */
 	public function setUp(): void {
@@ -50,22 +54,54 @@ final class DesignProofTest extends TestCase {
 		$result = self::result();
 		unset( $result['selected'] );
 		$result['systems'] = array(
-			array( 'lines' => array( array( 'product' => array( 'id' => 10 ), 'quantity' => 2 ) ) ),
-			array( 'lines' => array( array( 'product' => array( 'id' => 20 ), 'quantity' => 3 ) ) ),
+			array(
+				'lines' => array(
+					array(
+						'product'  => array( 'id' => 10 ),
+						'quantity' => 2,
+					),
+				),
+			),
+			array(
+				'lines' => array(
+					array(
+						'product'  => array( 'id' => 20 ),
+						'quantity' => 3,
+					),
+				),
+			),
 		);
-		$proof = new DesignProof( static fn (): array => array( 'valid' => true ), static fn (): array => array( 200, (string) json_encode( $result ) ) );
+		$proof             = new DesignProof( static fn (): array => array( 'valid' => true ), static fn (): array => array( 200, (string) json_encode( $result ) ) );
 		$this->assertInstanceOf( WP_Error::class, $proof->verify( 'commercial', array( 'plz' => '39179' ), str_repeat( 'a', 64 ) ) );
 		$this->assertInstanceOf( WP_Error::class, $proof->verify( 'commercial', array( 'plz' => '39179' ), str_repeat( 'a', 64 ), 2 ) );
 		$verified = $proof->verify( 'commercial', array( 'plz' => '39179' ), str_repeat( 'a', 64 ), 1 );
 		$this->assertIsArray( $verified );
-		$this->assertSame( array( array( 'product_id' => 20, 'quantity' => 3 ) ), DesignProof::items( $verified ) );
+		$this->assertSame(
+			array(
+				array(
+					'product_id' => 20,
+					'quantity'   => 3,
+				),
+			),
+			DesignProof::items( $verified )
+		);
 	}
 
 	/** Missing or empty publication evidence cannot become a current write. */
 	public function test_missing_scope_is_refused_even_if_the_external_validator_returns_true(): void {
 		$proof = new DesignProof( static fn (): array => array( 'valid' => true ) );
 		$this->assertFalse( $proof->is_current( array() ) );
-		$this->assertFalse( $proof->is_current( array( 'publication' => array( 'products' => array(), 'documents' => array(), 'compatibility_revision' => 'x' ) ) ) );
+		$this->assertFalse(
+			$proof->is_current(
+				array(
+					'publication' => array(
+						'products'               => array(),
+						'documents'              => array(),
+						'compatibility_revision' => 'x',
+					),
+				)
+			)
+		);
 	}
 
 	/**
@@ -76,15 +112,28 @@ final class DesignProofTest extends TestCase {
 	private static function result(): array {
 		return array(
 			'selection_fingerprint' => str_repeat( 'a', 64 ),
-			'publication' => array(
-				'products' => array(
-					array( 'product_id' => 10, 'product_revision' => str_repeat( 'b', 64 ) ),
-					array( 'product_id' => 20, 'product_revision' => str_repeat( 'c', 64 ) ),
+			'publication'           => array(
+				'products'               => array(
+					array(
+						'product_id'       => 10,
+						'product_revision' => str_repeat( 'b', 64 ),
+					),
+					array(
+						'product_id'       => 20,
+						'product_revision' => str_repeat( 'c', 64 ),
+					),
 				),
-				'documents' => array(),
+				'documents'              => array(),
 				'compatibility_revision' => str_repeat( 'd', 64 ),
 			),
-			'selected' => array( 'lines' => array( array( 'product' => array( 'id' => 10 ), 'quantity' => 1 ) ) ),
+			'selected'              => array(
+				'lines' => array(
+					array(
+						'product'  => array( 'id' => 10 ),
+						'quantity' => 1,
+					),
+				),
+			),
 		);
 	}
 }
