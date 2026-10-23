@@ -20,6 +20,8 @@ use WP_Error;
  */
 final class AtomicSolutionDraft {
 	/**
+	 * Uses the same current authority at every stage of the write.
+	 *
 	 * @param DesignProof $proof Current publication checks.
 	 */
 	public function __construct( private readonly DesignProof $proof = new DesignProof() ) {}

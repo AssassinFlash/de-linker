@@ -154,5 +154,5 @@ test( 'a refused save throws instead of reporting a saved solution', async () =>
 			'en',
 			fetcher
 		)
-	).rejects.toThrow( 'save 403' );
+	).rejects.toThrow( 'solution_write_failed' );
 } );

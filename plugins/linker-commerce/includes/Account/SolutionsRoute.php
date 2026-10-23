@@ -57,6 +57,10 @@ final class SolutionsRoute {
 				// Guests may save too: their solution waits in their session until they log in.
 				'permission_callback' => '__return_true',
 				'args'                => array(
+					'system_index'          => array(
+						'type'    => 'integer',
+						'minimum' => 0,
+					),
 					'kind'                  => array(
 						'type'     => 'string',
 						'enum'     => self::KINDS,
@@ -113,7 +117,7 @@ final class SolutionsRoute {
 	public function create( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$kind   = (string) $request->get_param( 'kind' );
 		$input  = (array) $request->get_param( 'input' );
-		$result = $this->proof->verify( $kind, $input, (string) $request->get_param( 'selection_fingerprint' ) );
+		$result = $this->proof->verify( $kind, $input, (string) $request->get_param( 'selection_fingerprint' ), is_int( $request->get_param( 'system_index' ) ) ? $request->get_param( 'system_index' ) : null );
 		if ( $result instanceof WP_Error ) {
 			return $result;
 		}
@@ -140,11 +144,16 @@ final class SolutionsRoute {
 
 		$customer_id = get_current_user_id();
 		if ( 0 === $customer_id ) {
-			$this->solutions->keep_for_guest( $title, $items, $design );
+			$slot = $this->solutions->keep_for_guest( $title, $items, $design );
+			if ( ! $this->proof->is_current( $result ) ) {
+				$this->solutions->discard_guest( $slot, (string) $result['selection_fingerprint'] );
+				return DesignProof::unavailable();
+			}
 			return new WP_REST_Response(
 				array(
-					'id'  => 0,
-					'url' => SavedSolutions::url( 0 ),
+					'id'          => 0,
+					'url'         => SavedSolutions::url( 0 ),
+					'publication' => $result['publication'],
 				),
 				202
 			);
@@ -159,8 +168,9 @@ final class SolutionsRoute {
 		}
 		return new WP_REST_Response(
 			array(
-				'id'  => $id,
-				'url' => SavedSolutions::url( $id ),
+				'id'          => $id,
+				'url'         => SavedSolutions::url( $id ),
+				'publication' => $result['publication'],
 			),
 			201
 		);

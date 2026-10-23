@@ -31,6 +31,13 @@ export interface SavedSolution {
 	url: string;
 }
 
+export class SolutionWriteError extends Error {
+	constructor( public readonly changed: boolean ) {
+		super( changed ? 'solution_changed' : 'solution_write_failed' );
+		this.name = 'SolutionWriteError';
+	}
+}
+
 export interface SolutionBody {
 	kind: 'residential';
 	title: string;
@@ -98,7 +105,10 @@ export async function saveSolution(
 		} ),
 	} );
 	if ( ! response.ok ) {
-		throw new Error( `save ${ response.status }` );
+		const error = await response.json().catch( () => null );
+		throw new SolutionWriteError(
+			response.status === 409 && error?.code === 'linker_solution_changed'
+		);
 	}
 	return response.json();
 }

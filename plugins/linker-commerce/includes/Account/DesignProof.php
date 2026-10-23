@@ -32,9 +32,10 @@ final class DesignProof {
 	 * @param string               $kind        Configurator kind.
 	 * @param array<string, mixed> $input       Original design input.
 	 * @param string               $fingerprint Result confirmed by the customer.
+	 * @param int|null             $system_index Explicit commercial system choice.
 	 * @return array<string, mixed>|WP_Error
 	 */
-	public function verify( string $kind, array $input, string $fingerprint ): array|WP_Error {
+	public function verify( string $kind, array $input, string $fingerprint, ?int $system_index = null ): array|WP_Error {
 		if ( ! in_array( $kind, SolutionsRoute::KINDS, true ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $fingerprint ) || array() === $input ) {
 			return self::unavailable();
 		}
@@ -57,11 +58,23 @@ final class DesignProof {
 		 */
 		$reply = is_callable( $this->fetch ) ? ( $this->fetch )( $url, $body ) : apply_filters( 'linker_tools_engine_request', self::unavailable(), $url, $body ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared server-only Tools seam.
 		if ( $reply instanceof WP_Error || ! is_array( $reply ) || count( $reply ) !== 2 ) {
-			return self::unavailable();
+			return self::verification_failed();
 		}
 		[ $status, $payload ] = $reply;
-		$result               = is_string( $payload ) ? json_decode( $payload, true ) : null;
-		if ( $status < 200 || $status >= 300 || ! is_array( $result ) || ( $result['selection_fingerprint'] ?? '' ) !== $fingerprint || array() === self::items( $result ) ) {
+		if ( $status >= 500 || in_array( $status, array( 401, 403 ), true ) ) {
+			return self::verification_failed();
+		}
+		$result = is_string( $payload ) ? json_decode( $payload, true ) : null;
+		if ( $status < 200 || $status >= 300 || ! is_array( $result ) || ( $result['selection_fingerprint'] ?? '' ) !== $fingerprint ) {
+			return self::unavailable();
+		}
+		if ( 'commercial' === $kind ) {
+			if ( null === $system_index || $system_index < 0 || ! is_array( $result['systems'][ $system_index ] ?? null ) ) {
+				return self::unavailable();
+			}
+			$result['selected_system_index'] = $system_index;
+		}
+		if ( array() === self::items( $result ) ) {
 			return self::unavailable();
 		}
 		if ( ! $this->is_current( $result ) ) {
@@ -94,7 +107,10 @@ final class DesignProof {
 	 */
 	public static function items( array $result ): array {
 		$selected = $result['selected'] ?? null;
-		$lines    = is_array( $selected ) ? ( $selected['lines'] ?? null ) : null;
+		if ( null === $selected && is_int( $result['selected_system_index'] ?? null ) ) {
+			$selected = $result['systems'][ $result['selected_system_index'] ] ?? null;
+		}
+		$lines = is_array( $selected ) ? ( $selected['lines'] ?? null ) : null;
 		if ( ! is_array( $lines ) ) {
 			return array();
 		}
@@ -128,5 +144,10 @@ final class DesignProof {
 			__( 'This solution needs a new calculation before it can be saved or added to your solution draft.', 'linker-commerce' ),
 			array( 'status' => 409 )
 		);
+	}
+
+	/** A verification outage is separate from a changed product or design. */
+	private static function verification_failed(): WP_Error {
+		return new WP_Error( 'linker_solution_verification', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
 	}
 }
