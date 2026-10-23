@@ -11,6 +11,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\Materials;
+use Linker\Commerce\Products\EngineeringReference;
+use Linker\Commerce\Products\Publication;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Storefront\ProductFilters;
@@ -38,6 +40,14 @@ final class ProductShortcodes {
 	 * @var FamilyPage|null
 	 */
 	private ?FamilyPage $family_page = null;
+
+	/**
+	 * One product-page presentation assembly; never used by business actions.
+	 * Native publication and role are read afresh before every shortcode release.
+	 *
+	 * @var array<int,array<string,mixed>>
+	 */
+	private array $product_views = array();
 
 	/**
 	 * The rows the rail's Category section prints inside a group's expansion
@@ -555,7 +565,7 @@ final class ProductShortcodes {
 		$parsed     = \is_array( $atts ) ? $atts : shortcode_parse_atts( (string) $atts );
 		$family     = isset( $parsed['family'] ) && \is_array( $parsed['family'] ) ? $parsed['family'] : null;
 		$product_id = (int) get_the_ID();
-		$card       = $this->views->fields( $product_id );
+		$card       = $this->views->card_fields( $product_id );
 		if ( array() === $card ) {
 			return '';
 		}
@@ -1871,7 +1881,7 @@ final class ProductShortcodes {
 	private function family_payload( array $ids ): array {
 		$payload = array();
 		foreach ( $ids as $id ) {
-			$card = $this->views->fields( (int) $id );
+			$card = $this->views->card_fields( (int) $id );
 			if ( array() === $card ) {
 				continue;
 			}
@@ -1921,7 +1931,7 @@ final class ProductShortcodes {
 		$html   .= '<summary><span class="card-selection-copy"><small>' . esc_html__( 'Selected model', 'linker-commerce' ) . '</small> <strong data-card-selection>' . esc_html( $selection ) . '</strong></span> <span class="card-selection-action">' . esc_html( $heading ) . '</span></summary>';
 		$html   .= '<div class="card-product-picker__list" data-picker-heading="' . esc_attr( $heading ) . '">';
 		foreach ( $ids as $id ) {
-			$row   = $this->views->fields( (int) $id );
+			$row   = $this->views->card_fields( (int) $id );
 			$html .= '<button type="button" class="sf-card-variant" data-linker-select-product="' . esc_attr( (string) $id ) . '"' . ( (int) $id === $current_id ? ' aria-current="true"' : '' ) . '><span>' . esc_html( (string) ( $row['model'] ?? '' ) ) . '</span> <small>' . esc_html__( 'Item no.', 'linker-commerce' ) . ' ' . esc_html( (string) ( $row['sku'] ?? '' ) ) . '</small></button>';
 		}
 		return $html . '</div></details>';
@@ -2276,7 +2286,13 @@ final class ProductShortcodes {
 		if ( ! $product instanceof WC_Product ) {
 			return null;
 		}
-		$view = $this->views->fields( (int) $product->get_id() );
+		$id = (int) $product->get_id();
+		if ( ! Publication::is_published( $id ) || EngineeringReference::is_reference( $id ) ) {
+			unset( $this->product_views[ $id ] );
+			return null;
+		}
+		$this->product_views[ $id ] ??= $this->views->fields( $id );
+		$view                         = $this->product_views[ $id ];
 		return array() === $view ? null : $view;
 	}
 }

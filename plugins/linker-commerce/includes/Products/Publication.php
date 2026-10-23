@@ -71,6 +71,17 @@ final class Publication {
 	}
 
 	/**
+	 * One fresh native permission read for a batch, without document bytes.
+	 *
+	 * @param int[] $ids Locale product IDs.
+	 * @return list<int>
+	 */
+	public static function published_ids( array $ids ): array {
+		self::refresh_runtime();
+		return array_values( array_filter( $ids, array( self::class, 'published_in_current_read' ) ) );
+	}
+
+	/**
 	 * Read within one explicit freshly opened authority assembly.
 	 *
 	 * The outer manifest already refreshed runtime copies; repeating that flush
