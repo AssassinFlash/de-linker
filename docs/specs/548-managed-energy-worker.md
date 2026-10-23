@@ -53,6 +53,10 @@ application; customer scenario/result work continues in the same goal.
   and preserves tasks; it cannot discard jobs, kill another instance or silently
   resume admission. Successful startup opens admission only after both process
   identity and execution settings agree. Stop/status include this owned role.
+- The private HTTP version response carries worker execution/storage identity.
+  Native WordPress bootstrap projects the stable browser runtime contract
+  (schema, runtime hash, models and limits), so private operational additions
+  cannot break strict browser session validation or expose operator fields.
 - Runtime files are private, created once and preserve subsequent operator
   settings. Existing Genie, PHP and site runtimes keep their identities and
   ports. Production units/configuration are reviewable here but installation,

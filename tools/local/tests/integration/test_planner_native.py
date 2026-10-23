@@ -200,6 +200,15 @@ def native_account(local: tuple[Instance, WpCli]) -> Iterator[Account]:
         wp.run("user", "delete", str(user), "--yes")
 
 
+def test_native_bootstrap_exposes_only_the_browser_runtime_contract(local: tuple[Instance, WpCli]) -> None:
+    instance, _ = local
+    context = Browser(instance.url).bootstrap()
+    assert set(context["runtime"]) == {"schema_version", "runtime_sha256", "models", "limits"}
+    assert set(context["runtime"]["limits"]) == {
+        "max_body_bytes", "max_csv_bytes", "max_page_size", "max_json_depth",
+    }
+
+
 def test_native_guest_save_replay_conflict_and_private_ownership(local: tuple[Instance, WpCli]) -> None:
     instance, _ = local
     first, second = Browser(instance.url), Browser(instance.url)

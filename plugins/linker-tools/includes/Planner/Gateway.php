@@ -199,6 +199,10 @@ final class Gateway {
 		}
 		$version['limits']['max_body_bytes'] = min( self::MAX_BODY_BYTES, $version['limits']['max_body_bytes'] );
 		$version['limits']['max_json_depth'] = min( self::MAX_JSON_DEPTH, $version['limits']['max_json_depth'] );
+		// Keep operator process/storage identities on the private protocol; the
+		// browser uses its stable, strict runtime view during normal bootstrap.
+		$version           = array_intersect_key( $version, array_flip( array( 'schema_version', 'runtime_sha256', 'models', 'limits' ) ) );
+		$version['limits'] = array_intersect_key( $version['limits'], array_flip( array( 'max_body_bytes', 'max_csv_bytes', 'max_page_size', 'max_json_depth' ) ) );
 		return new WP_REST_Response(
 			array(
 				'schema_version'   => 1,
