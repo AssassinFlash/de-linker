@@ -97,5 +97,17 @@ final class VisibilityReadTest extends TestCase {
 		$this->assertSame( 3, $refreshes );
 		$this->assertFalse( Publication::is_published( 12 ) );
 		$this->assertSame( 4, $refreshes, 'The independent single-product authority remains fresh.' );
+		$persisted[11]   = 'draft';
+		$candidate_reads = 0;
+		$ids             = Publication::published_ids(
+			static function () use ( &$runtime, &$candidate_reads ): array {
+				self::assertSame( 'draft', $runtime[11], 'The native candidate reader starts after runtime refresh.' );
+				++$candidate_reads;
+				return array( 11, 12 );
+			}
+		);
+		$this->assertSame( array(), $ids );
+		$this->assertSame( 1, $candidate_reads );
+		$this->assertSame( 5, $refreshes, 'Candidate selection and permission use one fresh assembly.' );
 	}
 }

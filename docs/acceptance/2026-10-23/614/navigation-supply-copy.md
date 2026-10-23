@@ -1,6 +1,6 @@
 # Navigation supply sentence review
 
-Scope: the existing energy-storage, home-battery and commercial-storage descriptions in the EN/DE header, each placed by LiveCanvas. This records the author draft and adversarial checks; the integration Spec/Standards reviewers still provide the independent review. No other marketing copy is reviewed or rewritten here.
+Scope: the existing energy-storage, home-battery and commercial-storage descriptions in the EN/DE header, each placed by LiveCanvas. This records the author draft, the independent Spec reviewer challenge, and the approved revision; the integration reviewers still assess the final fixed commit. No other marketing copy is reviewed or rewritten here.
 
 The one dimension is current supply within the linked product category. The category words Home Storage / Heimspeicher, Commercial Storage / Gewerbespeicher, All-in-One and batteries are already attested in the loaded Linker industry encyclopedia and the existing navigation. English and German sentence shapes remain those of the live header; proper brand names come only from Woo.
 
@@ -23,9 +23,15 @@ Braced labels describe the mechanism in this review; they are never customer pla
 5. Replacing only EcoFlow would retain another hand-maintained supply list in the same navigation. Apply the same current-Woo projection to the commercial description in desktop/mobile EN/DE too.
 6. The existing nav contains other copy outside these sentence fragments. Preserve that owner-limited scope; this review makes no claim that unrelated text has passed a fresh copy audit.
 
+## Independent Spec challenge and approved revision
+
+The independent Spec reviewer found that the commercial prefix claimed both All-in-One systems and battery systems even when only a published battery-system product remained. The owner of integration accepted the objection and approved the smallest correction: `Commercial storage from ` / `Gewerbespeicher von `. This names the linked category and keeps the original `from` / `von` brand sentence; no product-type detector or additional source is introduced. The four commercial desktop/mobile placements use this correction. Home and energy-storage wording had no copy blocker.
+
+The source fixture reads both real header templates with the commercial parent product withdrawn, leaving only a battery-system product, and asserts the full corrected EN/DE sentences. The same empty-set rule still removes the whole sentence.
+
 ## Final
 
-The draft sentence shapes are retained verbatim. Only the current category-specific name lists change with Woo. Brand names serve as factual identification of current category supply; no new endorsement, authorization, performance or logistics claim is added. The PHP fragment escapes every emitted character and provides no enclosing layout or style.
+Home and energy-storage sentence shapes are retained verbatim. Commercial storage uses the independently challenged and approved revision above. Only the current category-specific name lists change with Woo. Brand names serve as factual identification of current category supply; no new endorsement, authorization, performance or logistics claim is added. The PHP fragment escapes every emitted character and provides no enclosing layout or style.
 
 Pre-delivery, changed sentence fragments only:
 
@@ -35,6 +41,6 @@ Pre-delivery, changed sentence fragments only:
 - [x] Weight: the statement describes this category's supply. Duration: no ongoing claim.
 - [x] No slogan formula, invented quote, or static/banned-brand fallback.
 - [x] Humanizer check: no new dash, contrast formula, inflated claim or filler.
-- [x] EN/DE terminology and original sentence shapes preserved.
+- [x] EN/DE terminology and original sentence shape preserved, with the approved commercial category prefix correction.
 
 Validation: the unit fixture reads each real EN/DE header fragment, checks the resulting words, and changes the simulated native Woo category/status/brand state between independent reads. This proves source behavior only; native runtime and 390/1440 visual acceptance are owned by integration.

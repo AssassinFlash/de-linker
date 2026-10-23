@@ -39,42 +39,7 @@ final class SupplyBrands {
 		if ( array() === $categories ) {
 			return '';
 		}
-		$tax_query  = array(
-			array(
-				'taxonomy'         => 'product_cat',
-				'field'            => 'slug',
-				'terms'            => $categories,
-				'include_children' => true,
-			),
-		);
-		$visibility = wc_get_product_visibility_term_ids();
-		$hidden     = array( (int) ( $visibility['exclude-from-catalog'] ?? 0 ) );
-		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
-			$hidden[] = (int) ( $visibility['outofstock'] ?? 0 );
-		}
-		$hidden = array_filter( $hidden );
-		if ( array() !== $hidden ) {
-			$tax_query[] = array(
-				'taxonomy' => 'product_visibility',
-				'field'    => 'term_taxonomy_id',
-				'terms'    => $hidden,
-				'operator' => 'NOT IN',
-			);
-		}
-		$ids = get_posts(
-			array(
-				'post_type'                   => 'product',
-				'post_status'                 => 'publish',
-				'fields'                      => 'ids',
-				'posts_per_page'              => -1,
-				'suppress_filters'            => true,
-				'lang'                        => '',
-				'linker_publication_internal' => true,
-				'cache_results'               => false,
-				'tax_query'                   => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the native category/visibility intersection, one query per fragment.
-			)
-		);
-		$ids = array_values( array_filter( Publication::published_ids( array_map( 'intval', $ids ) ), static fn ( int $id ): bool => ! EngineeringReference::is_reference( $id ) ) );
+		$ids = array_values( array_filter( Publication::published_ids( fn (): array => $this->candidate_ids( $categories ) ), static fn ( int $id ): bool => ! EngineeringReference::is_reference( $id ) ) );
 		if ( array() === $ids ) {
 			return '';
 		}
@@ -98,5 +63,49 @@ final class SupplyBrands {
 		$last = array_pop( $names );
 		$list = array() === $names ? $last : implode( ', ', $names ) . ' ' . $atts['conjunction'] . ' ' . $last;
 		return esc_html( $atts['prefix'] . $list . $atts['suffix'] );
+	}
+
+	/**
+	 * Read native candidates only inside Publication's freshly opened batch.
+	 *
+	 * Visibility term names are Woo's own identifiers. Resolve them natively,
+	 * without wc_get_product_visibility_term_ids()'s unflushable static ID map.
+	 *
+	 * @param string[] $categories Native category branches.
+	 * @return int[]
+	 */
+	private function candidate_ids( array $categories ): array {
+		$tax_query = array(
+			array(
+				'taxonomy'         => 'product_cat',
+				'field'            => 'slug',
+				'terms'            => $categories,
+				'include_children' => true,
+			),
+		);
+		$hidden    = array( 'exclude-from-catalog' );
+		if ( 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ) ) {
+			$hidden[] = 'outofstock';
+		}
+		$tax_query[] = array(
+			'taxonomy' => 'product_visibility',
+			'field'    => 'name',
+			'terms'    => $hidden,
+			'operator' => 'NOT IN',
+		);
+		$ids         = get_posts(
+			array(
+				'post_type'                   => 'product',
+				'post_status'                 => 'publish',
+				'fields'                      => 'ids',
+				'posts_per_page'              => -1,
+				'suppress_filters'            => true,
+				'lang'                        => '',
+				'linker_publication_internal' => true,
+				'cache_results'               => false,
+				'tax_query'                   => $tax_query, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query -- the native category/visibility intersection, one query per fragment.
+			)
+		);
+		return array_map( 'intval', $ids );
 	}
 }
