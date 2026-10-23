@@ -389,4 +389,15 @@ final class LinkLocalizerTest extends TestCase {
 			}
 		}
 	}
+
+	/** The shop's legacy URI matching does not make a noncanonical contact source valid. */
+	public function test_shop_source_requires_the_canonical_path_of_its_own_language(): void {
+		$source = PolylangDouble::HOME . 'produkte/';
+		$html   = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
+		$this->assertSame( $html, $this->localizer()->localize( $html ) );
+		$this->assertSame( PolylangDouble::HOME . 'de/produkte/', $this->localizer()->url( $source ) );
+		$valid  = PolylangDouble::HOME . 'products/';
+		$target = PolylangDouble::HOME . 'de/produkte/';
+		$this->assertSame( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $target ) . '">Contact</a>', $this->localizer()->localize( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $valid ) . '">Contact</a>' ) );
+	}
 }

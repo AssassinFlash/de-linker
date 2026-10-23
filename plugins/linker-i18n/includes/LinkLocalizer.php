@@ -244,8 +244,12 @@ final class LinkLocalizer {
 
 		$shop = (int) get_option( 'woocommerce_shop_page_id' );
 		if ( $shop > 0 && $this->is_page_path( $shop, $unprefixed, $url_language ) ) {
-			if ( $public_source && null === $this->public_post( $this->languages->post_translation( $shop, $url_language ) ) ) {
-				return null;
+			if ( $public_source ) {
+				$original  = $this->languages->post_translation( $shop, $url_language );
+				$canonical = null === $original ? false : get_permalink( $original );
+				if ( null === $this->public_post( $original ) || ! is_string( $canonical ) || untrailingslashit( $path ) !== untrailingslashit( (string) wp_parse_url( $canonical, PHP_URL_PATH ) ) ) {
+					return null;
+				}
 			}
 			if ( $url_language === $language ) {
 				return null;
