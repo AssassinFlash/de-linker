@@ -72,6 +72,10 @@ final class PublicLedgerTest extends IntegrationTestCase {
 		$confirmed = $ledger->lookup_context( $id, $fp, 'planner_write', $binding );
 		$this->assertIsArray( $confirmed );
 		$this->assertSame( 'completed', $confirmed['status'] );
+		$this->assertIsArray( $ledger->privacy( array( $limits[0]->owner() ), true ) );
+		$erased = $ledger->lookup_context( $id, $fp, 'planner_write', $binding );
+		$this->assertInstanceOf( WP_Error::class, $erased );
+		$this->assertSame( 'linker_admission_erased', $erased->get_error_code() );
 	}
 
 	/** Denying the last dimension must leave all earlier dimensions untouched. */

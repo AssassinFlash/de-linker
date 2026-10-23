@@ -125,3 +125,32 @@ can be copied into a temporary directory with `plugins` symlinked to the fixed
 checkout, then run with PHP assertions enabled, with/without `replayed` argument.
 Final independent fixed-source review and remaining native CUA
 unknown-ack paths are still pending.
+
+## Rejected fixed source 07d616af
+
+Standards passed the full increment, including both unchanged legacy probes,
+full-bucket reuse and six context/confirmed-result precedence challenges. Spec
+found one P2: an unused legacy reservation could expire before dispatch. Its
+real Ledger clock-injected probe showed lookup correctly refunded it, but ID
+resolution still chose the terminal raw entry and returned409 indefinitely.
+The same latent boundary existed for a new-style attempt interrupted between
+reserve and dispatch, so the correction covers both representations.
+
+Only matched, definitely unused expired/cancelled entries can acquire stable
+successors. The original terminal receipt remains unchanged, while concurrent
+explicit retries select the same successor before atomic admission. No random
+or time-based retry key is generated, the engine body/key remain frozen, and
+dispatched/unresolved receipts remain charged and reusable. Erasure tombstones
+cannot restart admission. A bounded traversal refuses temporarily rather than
+discarding the original intent. The unchanged Spec expired probe now gives200,
+mutation1, used1→1, receipts1→2 and the original expired receipt unchanged;
+confirmed mismatch/binding probes retain200 with no mutation or extra charge.
+The [unchanged expired probe](handover-probes/probe-legacy-edges.original.php)
+uses the same temporary-directory launcher as the earlier probe, with `expired`.
+Native HTTP legacy/new-style × expired/cancelled cases and the two prior legacy
+paths pass6/17 deselected36.14s. They prove native refund+replacement consumes
+one attempt, preserves the complete original terminal record and exact business
+replay, and does not create a second project. The shared native database suite
+passes13 tests112 assertions1.989s, including erasure refusal. WPCS, PHPStan in
+both plugins and ruff pass. Unchanged browser/engine source retains previous
+evidence. Final independent review and remaining native CUA paths are pending.

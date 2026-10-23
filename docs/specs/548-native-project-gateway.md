@@ -103,6 +103,16 @@ engineering reports, and does not replace any model channel.
    a mismatched fingerprint is conservatively refused rather than reused.
    Already-confirmed permanent engine results remain recoverable; a mismatched
    legacy entry is never settled as that result's receipt.
+   A confirmed unused reservation refunded by native expiry/cancellation can
+   start a new transport attempt on explicit retry. The old receipt remains
+   terminal. Its successor ID is deterministic from the current principal,
+   quota binding, original key and preceding terminal ID, so parallel retries
+   converge before the journal's atomic reserve. Both legacy and new-style
+   receipts use this rule. Dispatched/unresolved/completed attempts are reused;
+   erasure tombstones cannot reopen admission. Resolving at most32 successor
+   entries per request is an initial operational bound, not an engineering or
+   business limit; exhaustion returns a temporary refusal with the original
+   frozen intent retained. Permanent engine replay always precedes this work.
 
 Acceptance requires real HTTP cookies/nonces and a running local site, not
 only mocks: two isolated guests, reload, native login/registration and logout,

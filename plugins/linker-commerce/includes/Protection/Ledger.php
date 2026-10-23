@@ -192,6 +192,9 @@ final class Ledger {
 		return $this->edit(
 			static function ( array &$state ) use ( $id, $fingerprint, $purpose, $binding ): array|WP_Error {
 				$receipt = $state['receipts'][ $id ] ?? null;
+				if ( is_array( $receipt ) && 'erased' === $receipt['status'] ) {
+					return self::error( 'erased' );
+				}
 				if ( ! is_array( $receipt ) || $receipt['purpose'] !== $purpose || $receipt['binding'] !== $binding ) {
 					return self::error( 'unknown_receipt' );
 				}

@@ -16,6 +16,8 @@ use WP_Error;
 
 /** Native quota identity never decides the project principal. */
 final class Admission {
+	// Bounded journal traversal per request; 548 native gateway resource policy.
+	private const MAX_ATTEMPT_CHAIN = 32;
 
 	/**
 	 * Admit a native write once and preserve uncertain dispatch receipts.
@@ -163,17 +165,44 @@ final class Admission {
 	 * @return string|WP_Error Existing or namespaced journal ID, or refusal.
 	 */
 	private function operation_id( Principal $principal, string $key, string $binding, string $fingerprint, bool $confirmed = false ): string|WP_Error {
-		$legacy = ( new Ledger() )->lookup_context( $key, $fingerprint, 'planner_write', $binding );
-		if ( ! is_wp_error( $legacy ) ) {
+		$ledger = new Ledger();
+		$legacy = $ledger->lookup_context( $key, $fingerprint, 'planner_write', $binding );
+		if ( ! is_wp_error( $legacy ) && ! in_array( $legacy['status'] ?? '', array( 'expired', 'cancelled' ), true ) ) {
 			return $key;
+		}
+		if ( is_wp_error( $legacy ) && 'linker_admission_erased' === $legacy->get_error_code() ) {
+			return $confirmed ? $key : $legacy;
 		}
 		// A confirmed permanent receipt remains recoverable even if an unrelated
 		// old entry shares its key. It cannot settle that mismatched entry.
-		if ( 'linker_admission_unknown_receipt' !== $legacy->get_error_code() && ! ( $confirmed && 'linker_admission_payload_changed' === $legacy->get_error_code() ) ) {
+		if ( is_wp_error( $legacy ) && 'linker_admission_unknown_receipt' !== $legacy->get_error_code() && ! ( $confirmed && 'linker_admission_payload_changed' === $legacy->get_error_code() ) ) {
 			return $legacy;
 		}
 		// Preserve exact key bytes, matching the engine's opaque Key contract.
-		$hash = wp_hash( 'linker-planner-quota:v2|' . $principal->kind . '|' . $principal->subject . '|' . $binding . '|' . $key, 'auth', 'sha256' );
+		$seed = 'linker-planner-quota:v2|' . $principal->kind . '|' . $principal->subject . '|' . $binding . '|' . $key;
+		$hash = wp_hash( $seed, 'auth', 'sha256' );
+		for ( $attempt = 0; $attempt < self::MAX_ATTEMPT_CHAIN; ++$attempt ) {
+			$id      = $this->uuid( $hash );
+			$receipt = $ledger->lookup_context( $id, $fingerprint, 'planner_write', $binding );
+			if ( is_wp_error( $receipt ) ) {
+				return 'linker_admission_unknown_receipt' === $receipt->get_error_code() || ( $confirmed && in_array( $receipt->get_error_code(), array( 'linker_admission_payload_changed', 'linker_admission_erased' ), true ) ) ? $id : $receipt;
+			}
+			if ( ! in_array( $receipt['status'] ?? '', array( 'expired', 'cancelled' ), true ) ) {
+				return $id;
+			}
+			// Only a proven unused, refunded attempt gets a stable successor.
+			// Concurrent retries converge; dispatched/erased entries never reopen.
+			$hash = wp_hash( $seed . '|after|' . $id, 'auth', 'sha256' );
+		}
+		return new WP_Error( 'linker_admission_capacity' );
+	}
+
+	/**
+	 * Format an internal journal ID; never replace the public business key.
+	 *
+	 * @param string $hash Server HMAC of the current attempt context.
+	 */
+	private function uuid( string $hash ): string {
 		// Ledger::reserve/transition accept a UUID4-shaped local identifier.
 		// These format bits are protocol representation, not a new client key.
 		return substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-4' . substr( $hash, 13, 3 ) . '-' . dechex( ( hexdec( $hash[16] ) & 3 ) | 8 ) . substr( $hash, 17, 3 ) . '-' . substr( $hash, 20, 12 );

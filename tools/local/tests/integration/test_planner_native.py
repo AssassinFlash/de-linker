@@ -672,6 +672,63 @@ echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count
     assert native_id not in native_operation_ids(wp)
 
 
+@pytest.mark.parametrize("legacy", [False, True])
+@pytest.mark.parametrize("terminal", ["expired", "cancelled"])
+def test_unused_native_attempts_can_continue_the_same_business_intent(
+    local: tuple[Instance, WpCli], legacy: bool, terminal: str,
+) -> None:
+    instance, wp = local
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    command = {"schema_version": 1, "title": "Synthetic unused reservation", "inputs": {}, "key": str(uuid.uuid4())}
+    preceding = native_operation_ids(wp)
+    with failed_native_dispatch(instance) as token:
+        assert browser.rpc("rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token}).status == 503
+    inserted = native_operation_ids(wp) - preceding
+    assert len(inserted) == 1
+    native_id = inserted.pop()
+    # Model the pre-dispatch crash in this one synthetic operation's journal.
+    # Native Ledger.cancel/recover perform the refund, not this fixture.
+    old_id = command["key"] if legacy else native_id
+    before = json.loads(wp.run("eval", '''
+$name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+$state = json_decode(get_option($name), true);
+$from = getenv('LINKER_PLANNER_FIXTURE_OPERATION');
+$id = getenv('LINKER_PLANNER_FIXTURE_OLD_ID');
+$receipt = $state['receipts'][$from];
+unset($state['receipts'][$from]);
+$receipt['status'] = 'reserved';
+if (getenv('LINKER_PLANNER_FIXTURE_TERMINAL') === 'expired') {
+    $receipt['created_at'] = time() - 31;
+    $receipt['lease_until'] = time() - 1;
+}
+$state['receipts'][$id] = $receipt;
+update_option($name, wp_json_encode($state), false);
+if (getenv('LINKER_PLANNER_FIXTURE_TERMINAL') === 'cancelled') {
+    $cancelled = (new \\Linker\\Commerce\\Protection\\Ledger())->cancel($id, $receipt['fingerprint']);
+    if (is_wp_error($cancelled)) { throw new Exception('fixture cancel failed'); }
+}
+echo wp_json_encode(array('receipt' => $receipt, 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id, "LINKER_PLANNER_FIXTURE_OLD_ID": old_id, "LINKER_PLANNER_FIXTURE_TERMINAL": terminal}))
+    assert browser.rpc("rpc/projects/create", {**command, "title": "Changed unused intent"}).status == 409
+    created = browser.rpc("rpc/projects/create", command)
+    assert created.status == 200, created.body
+    after = json.loads(wp.run("eval", '''
+$state = json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true);
+$id = getenv('LINKER_PLANNER_FIXTURE_OLD_ID');
+echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+''', env={"LINKER_PLANNER_FIXTURE_OLD_ID": old_id}))
+    assert after["receipt"]["status"] == terminal
+    assert before["buckets"] == after["buckets"], "refund plus replacement consumes one attempt, not two"
+    assert before["count"] + 1 == after["count"]
+    before_receipt = {**before["receipt"], "status": terminal}
+    assert before_receipt == after["receipt"], "the original terminal receipt is never rewritten"
+    assert browser.rpc("rpc/projects/create", command).object() == created.object()
+    assert len(native_operation_ids(wp)) == after["count"]
+    projects = browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}).object()
+    assert len(projects["items"]) == 1
+
+
 def test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting(local: tuple[Instance, WpCli]) -> None:
     instance, wp = local
     browser = Browser(instance.url)
