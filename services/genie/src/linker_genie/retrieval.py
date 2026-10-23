@@ -617,17 +617,29 @@ class DocumentIndex:
             if "chunk_scopes" in tables
             else {}
         )
-        for row, sha, raw_ids, cid in self._db.execute(
-            "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
+        for row, sha, raw_ids, cid, text in self._db.execute(
+            "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id, c.text FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
         ):
             ids = set(json.loads(raw_ids))
             if not ids or not ids.issubset(allowed) or not ids.intersection(wanted):
                 continue
             authorized = authorize_chunk(
-                sha, sorted(ids), associations.get(sha, []), scopes.get(cid)
+                sha,
+                sorted(ids),
+                associations.get(sha, []),
+                scopes.get(cid),
+                products=snapshot.products,
+                chunk_id=cid,
+                text=text,
             )
             if authorized:
-                header = table_header(scopes.get(cid), sorted(ids), snapshot.products)
+                header = table_header(
+                    scopes.get(cid),
+                    sorted(ids),
+                    snapshot.products,
+                    chunk_id=cid,
+                    text=text,
+                )
                 if header is None:
                     continue
                 association = authorized[0]

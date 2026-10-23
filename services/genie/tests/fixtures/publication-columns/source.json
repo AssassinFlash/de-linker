@@ -13,6 +13,18 @@
       "docling_sha256": "ea4cd70fdff97ce7253d84fc890e5ea0e8721f595ac030e9be3d88a59d6cde46",
       "bytes": 112019,
       "fixture_bytes": 19332
+    },
+    {
+      "blob_sha256": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+      "docling_sha256": "8baed6df4ee8e57e0c9137a7e0c98909186418ad0c643bbb10580c9f965b4ef2",
+      "bytes": 85731,
+      "fixture_bytes": 9077
+    },
+    {
+      "blob_sha256": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+      "docling_sha256": "fde33e7942303858169170b12fc60c8a78152da9c80cd32eff84a40802e77f02",
+      "bytes": 1975535,
+      "fixture_bytes": 201777
     }
   ]
 }

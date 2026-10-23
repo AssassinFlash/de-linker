@@ -27,13 +27,40 @@ Only an original Technical Data column declaration can supply the ordered
 model set to the immediately following TableItem. Every fragment must retain
 all original columns; the proof stores the original labels, column order and
 header source IDs. A new table or section ends propagation, and an unresolved
-model on the column axis or inside the table closes the group. Runtime returns
+model on the column axis closes the group. Runtime returns
 the proven column heading with each fragment, so alphabetic document metadata
 cannot reorder its values. Missing or inconsistent column proof is refused by
 both availability calculation and retrieval. Generic headings grant nothing.
 An original model axis inside that TableItem must also match the complete
 preceding column order; a partial, different or reversed local axis refuses
 the entire TableItem, even when its model set and column count are equal.
+
+One narrow exception concerns an original component property row, not a model
+axis. The source field `Pack Type / model` is isolated as its own complete row;
+an unknown or withdrawn pack row remains denied. Other native rows may use the
+original full current-system column axis only with their source TableItem,
+original row indices, literal text digest and the excluded role-row anchor in
+the proof. Every column stays in source order. Missing provenance, another
+unknown model row, a changed/local model axis or a partial column set still
+rejects the group. A legacy chunk containing the unknown row cannot use this
+exception. No source text or PDF is removed or edited.
+
+A manual's original declaration of the systems it covers can also prove a
+specific host compatibility sentence. A literal `meter <manufacturer>'s
+<model>` phrase supplies an external-device role; a bare code, product category
+or generated header cannot. The host subjects retain their own current manual
+associations. The externally named meter is recorded only as a
+`referenced_product`, with its current Woo revision and the literal role quote
+and source chunk ID. It gains no association to the host manual and cannot
+retrieve it when used as the requested product. Its withdrawal or revision
+change rejects the whole sentence. This applies only to the isolated original
+non-parameter prose, with the explicit manufacturer scope declaration and no
+local model override or unknown device. It does not release external-device
+specifications, another product's parameters or any table. These distinctions
+implement 609's requirement to retain valid current-A content in an original
+manual that also names unavailable B; neither B nor a referenced device borrows
+A's technical-fact permission. The existing full-source pre/output validation
+also includes every referenced Woo product.
 
 The build records the scope proof for each passage. A model is identified by Woo and authored model context; an ingress rating, frequency, standard or report number is not a product simply because it contains letters and digits. A single current model in an unambiguous authored section or document can supply its scope. Truly model-free warranty/certificate terms require the explicit Woo document purpose. Mixed files need a manufacturer-authored public-terms declaration and positive current-model evidence before model-free non-parameter prose can inherit a common scope. Mixed withdrawn/unknown-model tables and unnamed technical values remain denied. The generated context header grants no permission. `chunk_scopes` records the basis, source chunk IDs and authorizing document IDs; `manifest.json.permission_coverage` reports proven versus total chunks.
 

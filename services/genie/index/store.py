@@ -161,9 +161,20 @@ def export(directory: Path, path: Path) -> None:
             chunk = chunks_by_id.get(cid)
             if chunk is not None and ids and is_passage(chunk.text):
                 scope = proof.get("chunk_scopes", {}).get(cid)
-                if table_header(scope, ids, products) is None:
+                if (
+                    table_header(scope, ids, products, chunk_id=cid, text=chunk.text)
+                    is None
+                ):
                     continue
-                supported = authorize_chunk(chunk.doc_sha256, ids, links, scope)
+                supported = authorize_chunk(
+                    chunk.doc_sha256,
+                    ids,
+                    links,
+                    scope,
+                    products=products,
+                    chunk_id=cid,
+                    text=chunk.text,
+                )
                 for item in supported:
                     covered.setdefault(item["product_id"], set()).add(
                         item["document_id"]

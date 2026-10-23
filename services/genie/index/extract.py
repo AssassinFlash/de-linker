@@ -31,6 +31,7 @@ class Block:
     header_rows: int = 0
     # Native Docling identity; equality of the extracted body remains textual.
     source_id: str = field(default="", compare=False)
+    row_indices: tuple[int, ...] = field(default=(), compare=False)
 
 
 @dataclass
@@ -76,6 +77,11 @@ def _blocks(document: DoclingDocument) -> Iterable[tuple[int, Block]]:
                         rows=rows,
                         header_rows=header_rows,
                         source_id=item.self_ref,
+                        row_indices=tuple(
+                            i
+                            for i, row in enumerate(item.data.grid)
+                            if any(clean(cell.text) for cell in row)
+                        ),
                     ),
                 )
         elif isinstance(item, TextItem) and item.prov:

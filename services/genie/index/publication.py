@@ -6,6 +6,7 @@ separately: equal bytes do not merge Woo document permissions or product relatio
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import tempfile
@@ -18,6 +19,11 @@ from index.chunking import Chunk
 from index.inventory import doc_type_of, document_kind_of, lang_of
 from linker_genie.embedding import sha256_of
 from linker_genie.publication import PublicationClient, Snapshot
+from linker_genie.source_roles import (
+    manual_scope_models,
+    meter_references,
+    pack_model_row,
+)
 
 # Tokens are supplied to Woo for recognition; having letters and digits does not
 # by itself make a frequency, ingress rating, standard or report number a model.
@@ -61,6 +67,10 @@ class TableColumns(TypedDict):
     product_ids: list[int]
     labels: list[str]
     heading: str
+    source_rows: NotRequired[list[int]]
+    source_chunk_id: NotRequired[str]
+    text_sha256: NotRequired[str]
+    excluded_role_rows: NotRequired[list[dict[str, Any]]]
 
 
 class ScopeProof(TypedDict):
@@ -72,6 +82,8 @@ class ScopeProof(TypedDict):
     document_ids: list[str]
     associations: list[dict[str, Any]]
     table_columns: NotRequired[TableColumns]
+    referenced_products: NotRequired[list[dict[str, Any]]]
+    manual_scope: NotRequired[dict[str, Any]]
 
 
 def _table_columns(
@@ -105,7 +117,6 @@ def _table_columns(
             or any(
                 part.preceding_text != first.preceding_text
                 or part.section != first.section
-                or observed[part.id][1]
                 for part in parts
             )
             or any(
@@ -115,6 +126,15 @@ def _table_columns(
                 or positions[chunk.id] >= positions[first.id]
                 for chunk in preceding
             )
+        ):
+            continue
+        excluded = [part for part in parts if observed[part.id][1]]
+        # An explicit component property is not a replacement model-column
+        # axis. It remains denied. Only independent native rows with traceable
+        # indices can use the already-proven, complete current system columns.
+        if excluded and (
+            any(not pack_model_row(part.text) for part in excluded)
+            or any(not part.source_rows for part in parts)
         ):
             continue
         text = "\n".join(chunk.text for chunk in preceding)
@@ -140,7 +160,11 @@ def _table_columns(
             continue
         ordered = list(dict.fromkeys(label for _, label, _ in written))
         ids = [labels_to_ids[label] for label in ordered]
-        if any(not observed[part.id][0].issubset(ids) for part in parts):
+        if any(
+            not observed[part.id][0].issubset(ids)
+            for part in parts
+            if part not in excluded
+        ):
             conflicts.update(part.id for part in parts)
             continue
         rows = [line for part in parts for line in part.text.splitlines()]
@@ -156,6 +180,8 @@ def _table_columns(
         # TableItem when a local axis is partial, different or reversed.
         local_conflict = False
         for line in rows:
+            if excluded and pack_model_row(line):
+                continue
             cells = [cell.strip() for cell in line.split("|")[1:-1]]
             local = [
                 [label for label, pattern in patterns.items() if pattern.search(cell)]
@@ -186,8 +212,136 @@ def _table_columns(
             ],
             "heading": " ".join(heading.group().split()),
         }
-        output.update({part.id: columns for part in parts})
+        for part in parts:
+            if part in excluded:
+                continue
+            own_columns: TableColumns = {**columns}
+            if excluded:
+                own_columns["source_rows"] = list(part.source_rows)
+                own_columns["source_chunk_id"] = part.id
+                own_columns["text_sha256"] = hashlib.sha256(
+                    part.text.encode()
+                ).hexdigest()
+                own_columns["excluded_role_rows"] = [
+                    {
+                        "role": "pack_model",
+                        "source_chunk_id": p.id,
+                        "source_rows": list(p.source_rows),
+                        "quote": p.text,
+                    }
+                    for p in excluded
+                ]
+            output[part.id] = own_columns
     return output, conflicts
+
+
+def _manual_scopes(
+    chunks: list[Chunk],
+    documents: dict[str, list[dict[str, Any]]],
+    models: dict[int, str],
+) -> dict[str, dict[str, Any]]:
+    """The manufacturer's literal declaration, not a generated file header.
+
+    A declaration may also list unavailable models. Its positive, exact current
+    subjects retain only their own Woo manual associations; those other models
+    acquire no facts or permission (609, shared original A/B).
+    """
+    output: dict[str, dict[str, Any]] = {}
+    for chunk in chunks:
+        listed = manual_scope_models(chunk.text) if chunk.kind == "text" else set()
+        if not listed:
+            continue
+        associated = {
+            pid
+            for doc in documents[chunk.doc_sha256]
+            if document_kind_of(str(doc["type"]), str(doc.get("role", ""))) == "manual"
+            for pid in doc["product_ids"]
+        }
+        subjects = sorted(pid for pid in associated if models[pid].casefold() in listed)
+        if not subjects:
+            continue
+        # Competing declarations require a more specific source structure.
+        if chunk.doc_sha256 in output:
+            output[chunk.doc_sha256]["conflict"] = True
+        else:
+            output[chunk.doc_sha256] = {
+                "product_ids": subjects,
+                "source_chunk_ids": [chunk.id],
+                "quote": chunk.text,
+            }
+    return {sha: scope for sha, scope in output.items() if not scope.get("conflict")}
+
+
+def _manual_peripheral(
+    chunk: Chunk,
+    previous: list[Chunk],
+    declaration: dict[str, Any] | None,
+    source: Snapshot,
+    patterns: dict[str, re.Pattern[str]],
+    shapes: set[str],
+) -> list[dict[str, Any]]:
+    """A literal meter role can support host compatibility, never meter facts."""
+    if (
+        declaration is None
+        or chunk.kind != "text"
+        or PARAMETER_PROSE.search(chunk.text)
+    ):
+        return []
+    written = meter_references(chunk.text)
+    if not written:
+        return []
+    by_model = {
+        str(p.get("model", "")).casefold(): pid for pid, p in source.products.items()
+    }
+    references = []
+    for label, quote in written:
+        pid = by_model.get(label.casefold())
+        if pid is None or pid in declaration["product_ids"]:
+            return []
+        references.append(
+            {
+                "product_id": pid,
+                "product_revision": source.products[pid]["product_revision"],
+                "model": str(source.products[pid]["model"]),
+                "role": "meter",
+                "source_chunk_id": chunk.id,
+                "quote": quote,
+            }
+        )
+    reference_labels = {ref["model"].casefold() for ref in references}
+    # The same sentence explicitly labels METER.485 as a port, rather than a
+    # product. Preserve its literal text; this role only classifies that token.
+    port_labels = {
+        match.casefold()
+        for match in re.findall(
+            r"\b([A-Za-z][A-Za-z0-9.]*\d[A-Za-z0-9.]*)\s+port\b",
+            chunk.text,
+            re.IGNORECASE,
+        )
+    }
+    # No local product/model override, other model reference or unknown external
+    # device may inherit this compatibility statement's document-wide scope.
+    if any(
+        pattern.search(chunk.section + "\n" + chunk.text)
+        for label, pattern in patterns.items()
+        if label not in reference_labels
+    ) or _unknown_models(
+        chunk.section + "\n" + chunk.text,
+        reference_labels.union(port_labels),
+        shapes,
+        section=True,
+    ):
+        return []
+    for prior in previous:
+        if prior.id == chunk.id:
+            break
+        if prior.doc_sha256 != chunk.doc_sha256 or prior.section != chunk.section:
+            continue
+        if any(
+            pattern.search(prior.text) for pattern in patterns.values()
+        ) or _unknown_models(prior.text, set(), shapes, section=True):
+            return []
+    return references
 
 
 def codes(text: str) -> list[str]:
@@ -484,6 +638,7 @@ def scope_proofs(
     columns, table_conflicts = _table_columns(
         relevant, models, patterns, statuses, shapes, observed
     )
+    manual_scopes = _manual_scopes(relevant, documents, models)
     result: dict[str, ScopeProof] = {}
     for chunk in relevant:
         matched, blocked = observed[chunk.id]
@@ -495,9 +650,24 @@ def scope_proofs(
             in {"warranty", "certificate"}
         ]
         basis, origin = "passage", [chunk.id]
-        if blocked or chunk.id in table_conflicts:
+        declaration = manual_scopes.get(chunk.doc_sha256)
+        references = _manual_peripheral(
+            chunk, relevant, declaration, source, patterns, shapes
+        )
+        if references:
+            assert declaration is not None
+            matched = set(declaration["product_ids"])
+            relations = [
+                doc
+                for doc in relations
+                if document_kind_of(str(doc["type"]), str(doc.get("role", "")))
+                == "manual"
+            ]
+            basis = "manual_peripheral"
+            origin = [*declaration["source_chunk_ids"], chunk.id]
+        elif blocked or chunk.id in table_conflicts:
             continue
-        if matched:
+        elif matched:
             if not any(
                 patterns[models[pid].casefold()].search(chunk.text) for pid in matched
             ):
@@ -571,4 +741,8 @@ def scope_proofs(
             }
             if basis == "table_columns":
                 result[chunk.id]["table_columns"] = columns[chunk.id]
+            if basis == "manual_peripheral":
+                assert declaration is not None
+                result[chunk.id]["referenced_products"] = references
+                result[chunk.id]["manual_scope"] = declaration
     return result
