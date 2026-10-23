@@ -68,7 +68,7 @@ export function MapRoofWorkspace({
 	const [error, setError] = useState<string | null>(null),
 		[invalidField, setInvalidField] = useState<string | null>(null),
 		[busy, setBusy] = useState(false),
-		[applied, setApplied] = useState(false);
+		[completedApplications, setCompletedApplications] = useState(0);
 	const flight = useRef<AbortController | null>(null),
 		mounted = useRef(true),
 		result = useRef<HTMLElement>(null);
@@ -95,13 +95,12 @@ export function MapRoofWorkspace({
 		};
 	}, []);
 	useEffect(() => {
-		if (applied) revealActionResult(result.current);
-	}, [applied]);
+		if (completedApplications > 0) revealActionResult(result.current);
+	}, [completedApplications]);
 	function change(next: MapRoofDraft) {
 		if (busy || !client.isCurrentScope(session.query_scope)) return;
 		setError(null);
 		setInvalidField(null);
-		setApplied(false);
 		void journal.update(next).catch(() => undefined);
 	}
 	function field<K extends keyof MapRoofFields>(
@@ -268,7 +267,7 @@ export function MapRoofWorkspace({
 				return;
 			}
 			journal.deactivate();
-			setApplied(true);
+			setCompletedApplications((count) => count + 1);
 		} catch (cause) {
 			if (!mounted.current || controller.signal.aborted) return;
 			setError(
@@ -310,7 +309,6 @@ export function MapRoofWorkspace({
 								!geographicReady
 							}
 							onClick={() => {
-								setApplied(false);
 								setError(null);
 								journal.begin(null);
 							}}

@@ -35,7 +35,7 @@
     "src/components/design/LazyMapViewport.tsx": "2d4d7999253517cd9479573000377b8317c78e8dc680fce68fe10aa7eb67e042",
     "src/components/design/LazySceneViewport.tsx": "1f19dab63d5068c7c8f9e9d8da406dc9fffe7a356cd66c4ea8897dc301088998",
     "src/components/design/MapRoofProperties.tsx": "f50331991d2ba0f1c9f6b102614f03ac25ae5aa7a81c2549bb2b67bb9a8b94eb",
-    "src/components/design/MapRoofWorkspace.tsx": "d9370abd39e097371b7f26b988083a1db5cb3472c07378b539c8e2830f210cf6",
+    "src/components/design/MapRoofWorkspace.tsx": "58c1c2e9d458bf0a91726bd6990360220ced8ad0f7bcda494fa8b1d6d4fc9387",
     "src/components/design/MapViewport.tsx": "36f48712aa35998d0b4d7385214e75c1aedf796f4fb956d8d47b485df0ccb2fd",
     "src/components/design/ModuleForm.tsx": "dd202ffac649f8e0aed2fe27375bd36b40d8d8acd1dd52dc3a8e9901053e3b90",
     "src/components/design/PlanViewport.tsx": "2084f36da7a99854dc8a75d498dd1fa9f481884313532647d1703d56ec1b7dab",
@@ -116,12 +116,12 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-_fltUiPZ.js": "925adfdb54f0128c2131b6266bf899e7d0f2f3b42c90460bc6ec50c6af9c4e61",
-    "assets/SceneViewport-CEW7bxXh.js": "08e204581df5e102392a748a9912bf46dfd460f56554c350a72335e6a95c1c60",
-    "assets/planner-core-C7YEGgs8.js": "c9a57af1511c4440645dc619f695c484a4977380b432925e62b9d9640e5e0bb0",
-    "assets/planner.js": "0e21f025ad0bb5140804b6ea37e23fdd573701304711758a3ec814c3c7cbf74f",
+    "assets/MapViewport-DEU-DlpF.js": "0567451466db21493f5f9190beae71d8e3706384171ced1aa44c38d8c4bf7995",
+    "assets/SceneViewport-DNKhJOvs.js": "36e7e576adf0275ad015f5949523cc67ce7f53219f00174494e349aadcac4cd3",
+    "assets/planner-core-BH4esR2_.js": "c70f68ecd92df085cd3ed0744374ce1598d46270f8a2026ec6787304499d1c2a",
+    "assets/planner.js": "60102a96eb9944e47cfe303f50c6a11bb2620ebb9f4f0360993a76738fa0ce91",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "b4d0984bc420195717b305e2a49c6903f034cfbf6dbd0f0ba28e713df5c7a68f",
+    "vite-manifest.json": "62714dccdabfdc3e4f773839c199f8754818c220d8a63456525f839d568dbbf5",
     "windpress.scan.txt": "d33dd03364b62e8b88d31b820605062f2d188cafbe9c616a61b0177a72fd7ad7"
   }
 }

@@ -309,6 +309,12 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 		document.querySelector(".lp-drawing-status").textContent,
 		/Drawing paused and retained/,
 	);
+	await r.click("Resume drawing");
+	await submit();
+	await until(() => !r.active && r.commits.length === 2);
+	assert.ok(document.activeElement.classList.contains("lp-map-drawing"));
+	assert.deepEqual(r.geometry, appliedGeometry);
+	await r.replaceGeometry(geometry);
 	await r.replaceGeometry(appliedGeometry);
 	assert.match(
 		document.querySelector(".lp-drawing-status").textContent,
