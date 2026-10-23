@@ -27,6 +27,83 @@ use WP_REST_Request;
  * @coversNothing
  */
 final class EngineeringReferenceTest extends IntegrationTestCase {
+	/** Native Woo attribute options use term IDs even when taxonomy IDs diverge. */
+	public function test_migration_preserves_attributes_with_distinct_term_and_taxonomy_ids(): void {
+		$input    = $this->input();
+		$tag      = self::tag();
+		$taxonomy = 'ref_ids_' . $tag;
+		$this->assertFalse( taxonomy_exists( $taxonomy ) );
+		register_taxonomy(
+			$taxonomy,
+			array(),
+			array(
+				'public'  => false,
+				'rewrite' => false,
+			)
+		);
+		$this->later(
+			static function () use ( $taxonomy ): void {
+				unregister_taxonomy( $taxonomy );
+			}
+		);
+		$seed = wp_insert_term( 'Reference identity seed ' . $tag, $taxonomy );
+		$this->assertIsArray( $seed );
+		$this->later(
+			static function () use ( $seed, $taxonomy ): void {
+				wp_delete_term( $seed['term_id'], $taxonomy );
+			}
+		);
+		// The next taxonomy ID is one after the seed; choose term IDs beyond
+		// that slot through the scoped native insertion filter, without SQL.
+		$next_id      = max( $seed['term_id'], $seed['term_taxonomy_id'] ) + 2;
+		$identity     = array(
+			'pa_brand' => 'Reference brand ' . $tag,
+			'pa_model' => 'Reference model ' . $tag,
+		);
+		$distinct_ids = static function ( array $data, string $target_taxonomy, array $args ) use ( $identity, &$next_id ): array {
+			if ( ( $identity[ $target_taxonomy ] ?? null ) === ( $args['name'] ?? null ) ) {
+				$data['term_id'] = $next_id++;
+			}
+			return $data;
+		};
+		add_filter( 'wp_insert_term_data', $distinct_ids, 10, 3 );
+		$expected = array();
+		try {
+			foreach ( $identity as $target_taxonomy => $name ) {
+				$term = wp_insert_term( $name, $target_taxonomy );
+				$this->assertIsArray( $term );
+				$this->later(
+					static function () use ( $term, $target_taxonomy ): void {
+						wp_delete_term( $term['term_id'], $target_taxonomy );
+					}
+				);
+				$this->assertNotSame( $term['term_id'], $term['term_taxonomy_id'], 'The fixture must exercise different native IDs.' );
+				$expected[ $target_taxonomy ] = $term['term_id'];
+			}
+		} finally {
+			remove_filter( 'wp_insert_term_data', $distinct_ids, 10 );
+		}
+		$input['overlay'][0]['brand'] = $identity['pa_brand'];
+		$input['overlay'][0]['model'] = $identity['pa_model'];
+		$result                       = ReferenceMigration::run( $input, false );
+		$id                           = $result['product_id'];
+		$this->retain_fixture_product( $id );
+		$product = wc_get_product( $id );
+		$this->assertInstanceOf( WC_Product::class, $product );
+		$attributes = $product->get_attributes();
+		foreach ( $identity as $target_taxonomy => $name ) {
+			$this->assertArrayHasKey( $target_taxonomy, $attributes );
+			$this->assertSame( array( $expected[ $target_taxonomy ] ), $attributes[ $target_taxonomy ]->get_options() );
+			$terms = $attributes[ $target_taxonomy ]->get_terms();
+			$this->assertIsArray( $terms );
+			$this->assertSame( array( $name ), array_column( $terms, 'name' ) );
+		}
+		$reference = $this->reference( EngineeringFeed::feed(), $id );
+		$this->assertNotNull( $reference );
+		$this->assertSame( $identity['pa_brand'], $reference['brand'] );
+		$this->assertSame( $identity['pa_model'], $reference['model'] );
+	}
+
 	/** Dry runs write nothing; first adoption uses existing Woo fields and evidence. */
 	public function test_native_migration_is_hidden_non_purchasable_and_idempotent(): void {
 		$input = $this->input();
