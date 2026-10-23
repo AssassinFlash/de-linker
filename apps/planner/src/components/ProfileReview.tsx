@@ -1,3 +1,4 @@
+import type { Ref } from "react";
 import type { ProfileAsset, ProfilePreview } from "../domain/profiles.ts";
 import { __ } from "../i18n.ts";
 import { measurementLabel, originLabel } from "./ProfileLabels.ts";
@@ -232,4 +233,3 @@ export function ProfileReview({
 		</div>
 	);
 }
-import type { Ref } from "react";

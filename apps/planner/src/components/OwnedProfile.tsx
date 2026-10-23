@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { Session } from "../data/protocol.ts";
@@ -39,6 +39,10 @@ export function OwnedProfile({
 	const revealedAsset = useRef<string | null>(null);
 	const interactive = onSelect !== undefined;
 	const admitted = client.isCurrentScope(session.query_scope);
+	const canReveal = useCallback(
+		() => client.isCurrentScope(session.query_scope),
+		[client, session.query_scope],
+	);
 	const page = useQuery({
 		queryKey: [
 			session.query_scope,
@@ -103,13 +107,17 @@ export function OwnedProfile({
 			revealedAsset.current === assetId
 		)
 			return;
-		revealedAsset.current = assetId;
-		revealActionResult(reviewHeading.current);
-	}, [interactive, admitted, page.data, assetId]);
+		if (revealActionResult(reviewHeading.current, canReveal))
+			revealedAsset.current = assetId;
+	}, [interactive, admitted, page.data, assetId, canReveal]);
 	if (page.error)
 		return (
 			<>
-				<ProfileError error={page.error} focus={interactive && admitted} />
+				<ProfileError
+					error={page.error}
+					focus={interactive && admitted}
+					canReveal={canReveal}
+				/>
 				<button
 					className="lp-text-button"
 					type="button"

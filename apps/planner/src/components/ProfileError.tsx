@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { ApiError } from "../data/protocol.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Notice } from "./Notice.tsx";
@@ -7,14 +8,16 @@ import { revealActionResult } from "./revealActionResult.ts";
 export function ProfileError({
 	error,
 	focus = false,
+	canReveal,
 }: {
 	error: unknown;
 	focus?: boolean;
+	canReveal?: () => boolean;
 }) {
 	const notice = useRef<HTMLDivElement>(null);
 	useEffect(() => {
-		if (error && focus) revealActionResult(notice.current);
-	}, [error, focus]);
+		if (error && focus) revealActionResult(notice.current, canReveal);
+	}, [error, focus, canReveal]);
 	if (!error) return null;
 	const issue = error instanceof ApiError ? error.profileIssue : null;
 	return (
@@ -68,4 +71,3 @@ export function ProfileError({
 		</div>
 	);
 }
-import { useEffect, useRef } from "react";

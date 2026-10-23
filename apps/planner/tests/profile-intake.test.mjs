@@ -150,6 +150,7 @@ async function rig(
 		storageDown = false,
 		cleanupGate = null,
 		editor = false,
+		focusGate = null,
 	} = {},
 ) {
 	const dom = setupDom();
@@ -164,6 +165,7 @@ async function rig(
 		writeStarted = false,
 		attachConfirmed = false,
 		cleanupStarted = false,
+		delayedRevealScheduled = false,
 		durableDraft = null,
 		closes = 0,
 		guard = () => true;
@@ -194,7 +196,7 @@ async function rig(
 		},
 		async readProfileImports(verified, id) {
 			if (hydrationGate) await hydrationGate.promise;
-			return [...pending.values()]
+			const records = [...pending.values()]
 				.filter(
 					(body) => verified === scope && JSON.parse(body).project_id === id,
 				)
@@ -205,6 +207,20 @@ async function rig(
 					label: JSON.parse(body).source_label,
 					createdAt: 0,
 				}));
+			if (focusGate && cleanupStarted && !delayedRevealScheduled) {
+				delayedRevealScheduled = true;
+				// Native focus can invalidate admission after the awaited read's
+				// continuation but before React commits its completion feedback.
+				return {
+					then(resolve) {
+						resolve(records);
+						queueMicrotask(() =>
+							window.dispatchEvent(new window.Event("focus")),
+						);
+					},
+				};
+			}
+			return records;
 		},
 		async writeProfileImport(verified, body) {
 			assert.equal(verified, scope);
@@ -238,7 +254,10 @@ async function rig(
 			const path = new URL(url).pathname;
 			calls.push(path);
 			if (path === "/nonce") return new Response("abcdefghij");
-			if (path.endsWith("/bootstrap")) return json(owner);
+			if (path.endsWith("/bootstrap")) {
+				if (focusGate && cleanupStarted) await focusGate.promise;
+				return json(owner);
+			}
 			if (path.endsWith("/profiles/inspect"))
 				return json({
 					schema_version: 1,
@@ -794,6 +813,108 @@ test("an interactive result is revealed once; background reads and interval pagi
 	await act(async () => button("First intervals").click());
 	await until(() => button("Next intervals"));
 	assert.equal(document.activeElement, elsewhere);
+});
+
+test("same-identity verification consumes deferred completion before history can replay it", async (t) => {
+	const gate = deferred();
+	const fixture = await rig(t, {
+		bodies: [command()],
+		editor: true,
+		focusGate: gate,
+	});
+	await until(() => button("Check or retry this import"));
+	await act(async () => button("Check or retry this import").click());
+	await until(() => button("Use this profile in the open draft"));
+	await act(async () => button("Use this profile in the open draft").click());
+	await until(
+		() =>
+			button("Import interval data") && !fixture.client.isCurrentScope(scope),
+	);
+	await act(async () => gate.resolve());
+	await until(() => fixture.client.isCurrentScope(scope));
+	assert.ok(
+		document.activeElement.textContent.startsWith(
+			"The profile is selected in the open draft.",
+		),
+	);
+	button("Undo").focus();
+	await act(async () => button("Undo").click());
+	assert.equal(document.activeElement, button("Undo"));
+});
+
+test("native withdrawal between render and effects prevents cached-result and error focus", async (t) => {
+	for (const mode of ["preview", "error"])
+		await t.test(mode, async (st) => {
+			const dom = setupDom();
+			const { createRoot } = await import("react-dom/client");
+			const { QueryClient, QueryClientProvider } =
+				await import("@tanstack/react-query");
+			const { OwnedProfile } =
+				await import("../src/components/OwnedProfile.tsx");
+			const { ProfileError } =
+				await import("../src/components/ProfileError.tsx");
+			const { PlannerClient } = await import("../src/data/PlannerClient.ts");
+			const client = new PlannerClient({
+				origin: location.origin,
+				baseUrl: location.origin + "/rpc/",
+				nonceUrl: location.origin + "/nonce",
+				fetch: async (url) =>
+					String(url).endsWith("/nonce")
+						? new Response("abcdefghij")
+						: json(session),
+			});
+			await client.bootstrap();
+			const cache = new QueryClient({
+				defaultOptions: { queries: { staleTime: Infinity, retry: false } },
+			});
+			cache.setQueryData(
+				[scope, "profile", projectId, assetId, "unassigned", 0],
+				{ asset, preview },
+			);
+			const root = createRoot(dom.element);
+			st.after(async () => {
+				await dom.dispose(root);
+				cache.clear();
+			});
+			const elsewhere = document.createElement("input");
+			dom.element.before(elsewhere);
+			elsewhere.focus();
+			const focusDuringWithdrawal = [];
+			document.addEventListener("focusin", (event) => {
+				if (!client.isCurrentScope(scope))
+					focusDuringWithdrawal.push(event.target.tagName);
+			});
+			function Parent() {
+				React.useLayoutEffect(() => client.invalidate(), []);
+				return mode === "preview"
+					? React.createElement(OwnedProfile, {
+							projectId,
+							assetId,
+							session,
+							client,
+							locale: "en-GB",
+							recheck() {},
+							onSelect() {},
+						})
+					: React.createElement(ProfileError, {
+							error: new Error("private fixture exception"),
+							focus: true,
+							canReveal: () => client.isCurrentScope(scope),
+						});
+			}
+			await act(async () =>
+				root.render(
+					React.createElement(
+						QueryClientProvider,
+						{ client: cache },
+						React.createElement(Parent),
+					),
+				),
+			);
+			assert.equal(client.isCurrentScope(scope), false);
+			assert.deepEqual(focusDuringWithdrawal, []);
+			assert.equal(document.activeElement, elsewhere);
+		});
 });
 
 test("persistent profile authentication failure rechecks once and waits for an explicit session retry", async (t) => {

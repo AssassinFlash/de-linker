@@ -79,6 +79,11 @@ export function ProfileIntake({
 	const feedback = useRef<"selection" | "cancel" | null>(null);
 	const selectedInDraft =
 		selected !== null && currentAssetIds.includes(selected);
+	const canReveal = useCallback(
+		() => client.isCurrentScope(session.query_scope),
+		[client, session.query_scope],
+	);
+	const admitted = canReveal();
 	const lifetime = useRef(0),
 		flight = useRef(false),
 		form = useRef<HTMLDivElement>(null);
@@ -99,8 +104,16 @@ export function ProfileIntake({
 			feedback.current === "selection" && selectedInDraft
 				? selectionNotice.current
 				: importTrigger.current;
-		if (revealActionResult(target)) feedback.current = null;
-	}, [open, selected, selectedInDraft, client, session.query_scope]);
+		if (revealActionResult(target, canReveal)) feedback.current = null;
+	}, [
+		open,
+		selected,
+		selectedInDraft,
+		client,
+		session.query_scope,
+		canReveal,
+		admitted,
+	]);
 	function restore(body: string) {
 		const command = readImport(JSON.parse(body));
 		if (command.project_id !== projectId)
@@ -482,7 +495,7 @@ export function ProfileIntake({
 					)}
 				</Notice>
 			)}
-			<ProfileError error={error} focus />
+			<ProfileError error={error} focus={admitted} canReveal={canReveal} />
 			{pending ? (
 				<>
 					<p>
