@@ -405,5 +405,6 @@
   @media (max-width: 640px) {
     [data-linker-planner] .lp-map-host { height: 420px; }
     [data-linker-planner] .lp-map-heading { align-items: flex-start; }
+    [data-linker-planner] .lp-drawing-properties .lp-geometry-fields { grid-template-columns: minmax(0, 1fr); }
   }
 }
