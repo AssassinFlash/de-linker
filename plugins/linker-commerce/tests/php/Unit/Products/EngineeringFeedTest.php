@@ -540,7 +540,7 @@ final class EngineeringFeedTest extends TestCase {
 				);
 			}
 		}
-		WP_Mock::userFunction( 'get_post_meta' )->with( $id, \Linker\Commerce\Products\Publication\FigureBindings::META_KEY, true )->andReturn( $bindings );
+		WP_Mock::userFunction( 'get_post_meta' )->with( $id, \Linker\Commerce\Products\Publication\EvidenceBindings::META_KEY, true )->andReturn( $bindings );
 
 		WP_Mock::userFunction(
 			'get_post_meta',
