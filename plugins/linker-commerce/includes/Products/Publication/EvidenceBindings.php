@@ -19,6 +19,25 @@ final class EvidenceBindings {
 	public const FAQ_META_KEY = '_linker_publication_faqs';
 
 	/**
+	 * First publication adopts previously unbound drafts after Woo persists all fields.
+	 * Existing empty or stale metadata is history, never a request to renew evidence.
+	 *
+	 * @param int $id Saved locale product ID.
+	 */
+	public static function capture_missing( int $id ): void {
+		if ( ! Publication::is_published( $id ) ) {
+			return;
+		}
+		$id = Publication::canonical_id( $id );
+		if ( ! metadata_exists( 'post', $id, self::META_KEY ) ) {
+			self::capture( $id, true );
+		}
+		if ( ! metadata_exists( 'post', $id, self::FAQ_META_KEY ) ) {
+			self::capture_faqs( $id, true );
+		}
+	}
+
+	/**
 	 * Bind new/edited figure facts; unchanged fields never adopt replaced bytes.
 	 *
 	 * @param int  $id Canonical Woo product.
