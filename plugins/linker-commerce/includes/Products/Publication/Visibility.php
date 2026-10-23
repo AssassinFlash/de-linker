@@ -95,9 +95,10 @@ final class Visibility {
 				'suppress_filters'            => true,
 				'lang'                        => '',
 				'linker_publication_internal' => true,
+				'cache_results'               => false,
 			)
 		);
-		$allowed = array_values( array_filter( array_map( 'intval', $ids ), array( self::class, 'sales_product' ) ) );
+		$allowed = array_values( array_filter( Publication::published_ids( array_map( 'intval', $ids ) ), static fn ( int $id ): bool => ! EngineeringReference::is_reference( $id ) ) );
 		$include = $query->get( 'post__in' );
 		if ( is_array( $include ) && array() !== $include ) {
 			$allowed = array_values( array_intersect( $include, $allowed ) );

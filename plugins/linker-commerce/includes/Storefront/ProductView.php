@@ -47,44 +47,62 @@ final class ProductView {
 	 * @return array<string, mixed>
 	 */
 	public function fields( int $product_id ): array {
+		$fields  = $this->card_fields( $product_id );
+		$product = wc_get_product( $product_id );
+		if ( array() === $fields || ! $product instanceof \WC_Product ) {
+			return array();
+		}
+		return array_merge(
+			$fields,
+			array(
+				'designation' => Materials::apply_terms( $this->designation( $product->get_name(), $fields['brand'], $this->term_name( $product_id, 'pa_model' ) ) ),
+				'brand_logo'  => $this->brand_logo( $product_id ),
+				'cta_label'   => $this->cta_label(),
+				'cta_url'     => $this->cta_url( $product ),
+				'ask_url'     => $this->ask_url( $product ),
+				'intro'       => Materials::apply_terms( '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ) ),
+				'body'        => Materials::apply_terms( $product->get_description() ),
+				'spec_groups' => $this->spec_groups( $product_id ),
+				'attributes'  => $this->attributes( $product ),
+				'figures'     => $this->figures( $product_id ),
+				'features'    => $this->features( $product_id ),
+				'benefits'    => $this->benefits( $product_id ),
+				'stats_claim' => $this->stats_claim( $product_id ),
+				'scenarios'   => $this->scenarios( $product_id ),
+				'downloads'   => $this->downloads( $product_id ),
+				'faqs'        => $this->faqs( $product_id ),
+				'pairings'    => $this->pairings( $product_id ),
+				'crumbs'      => $this->crumbs( $product_id ),
+			)
+		);
+	}
+
+	/**
+	 * Catalogue cards and their model pickers do not display technical documents.
+	 *
+	 * @param int $product_id The English or German product ID.
+	 * @return array<string, mixed>
+	 */
+	public function card_fields( int $product_id ): array {
 		$product = wc_get_product( $product_id );
 		if ( ! $product instanceof \WC_Product ) {
 			return array();
 		}
 		$facts = SelectionFacts::for_product( $product_id );
-		$brand = $this->term_name( $product_id, 'pa_brand' );
 		$model = $this->term_name( $product_id, 'pa_model' );
 
 		return array(
 			'id'           => $product_id,
 			'title'        => Materials::apply_terms( $product->get_name() ),
 			'model'        => '' !== $model ? $model : $product->get_name(),
-			'designation'  => Materials::apply_terms( $this->designation( $product->get_name(), $brand, $model ) ),
-			'brand'        => $brand,
+			'brand'        => $this->term_name( $product_id, 'pa_brand' ),
 			'brand_slug'   => $this->term_slug( $product_id, 'pa_brand' ),
-			'brand_logo'   => $this->brand_logo( $product_id ),
 			'sku'          => $product->get_sku(),
 			'gallery'      => $this->gallery( $product ),
 			'stats'        => $this->key_numbers( $facts ),
 			'price'        => $this->price( $product ),
 			'availability' => $product->is_in_stock() ? __( 'In stock', 'linker-commerce' ) : __( 'Currently unavailable', 'linker-commerce' ),
-			'cta_label'    => $this->cta_label(),
-			'cta_url'      => $this->cta_url( $product ),
-			'ask_url'      => $this->ask_url( $product ),
-			'intro'        => Materials::apply_terms( '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ) ),
-			'body'         => Materials::apply_terms( $product->get_description() ),
 			'series'       => self::series_label( $this->legacy_field( $product_id, 'product_series' ), Materials::is_de() ),
-			'spec_groups'  => $this->spec_groups( $product_id ),
-			'attributes'   => $this->attributes( $product ),
-			'figures'      => $this->figures( $product_id ),
-			'features'     => $this->features( $product_id ),
-			'benefits'     => $this->benefits( $product_id ),
-			'stats_claim'  => $this->stats_claim( $product_id ),
-			'scenarios'    => $this->scenarios( $product_id ),
-			'downloads'    => $this->downloads( $product_id ),
-			'faqs'         => $this->faqs( $product_id ),
-			'pairings'     => $this->pairings( $product_id ),
-			'crumbs'       => $this->crumbs( $product_id ),
 		);
 	}
 
