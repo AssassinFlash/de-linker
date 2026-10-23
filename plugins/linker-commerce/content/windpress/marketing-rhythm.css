@@ -381,6 +381,14 @@ body[data-page]:is(
 	grid-template-columns: minmax(0, 1fr);
 	align-content: center;
 }
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-slide {
+	visibility: hidden;
+	pointer-events: none;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-slide.active {
+	visibility: visible;
+	pointer-events: auto;
+}
 #tv-solutions-developers-v1 #sp-workbench .lk-sp-pane {
 	display: flex;
 	grid-column: 1;

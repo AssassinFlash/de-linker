@@ -183,9 +183,9 @@ class EpcMedia(HTMLParser):
 
 def _pagination(language: str) -> str:
     pause, play, label = (
-        ("Pause slideshow", "Play slideshow", "Planning tools")
+        ("Pause slideshow", "Play slideshow", "Planning topics")
         if language == "en"
-        else ("Diashow pausieren", "Diashow abspielen", "Planungswerkzeuge")
+        else ("Diashow pausieren", "Diashow abspielen", "Planungsthemen")
     )
     parts = [
         '<div class="lk-sp-pagination">',
@@ -255,6 +255,10 @@ def _plan(content: str, language: str) -> tuple[str, str]:
         ]
         required.extend(
             f'<h2 class="lk-sp-h2" id="epc-media-title-{i}">' for i in range(3)
+        )
+        required.extend(
+            f'<div class="lk-sp-pane{" active" if i == 0 else ""}" id="sp-pane-{i}" role="tabpanel" aria-labelledby="epc-media-tab-{i}">'
+            for i in range(3)
         )
         if any(content.count(marker) != 1 for marker in required):
             raise ValueError("Final EPC controls or derived images are incomplete")

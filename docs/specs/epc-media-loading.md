@@ -45,8 +45,9 @@ the inoperative controls and show all three original descriptions in order.
 
 Approved action copy after adversarial review: **Play slideshow / Pause
 slideshow** and **Diashow abspielen / Diashow pausieren**. The native tab group
-adds **Planning tools / Planungswerkzeuge**; review this short group label with
-the fixed source. No other customer copy changes.
+adds **Planning topics / Planungsthemen**, describing the actual topic switch
+rather than implying that these buttons open tools. This wording also passed
+the adversarial copy review. No other customer copy changes.
 
 The pure planner only accepts a complete audited old or final EN/DE pair. Use
 the existing reviewed-pair writer and native translation-baseline adoption,

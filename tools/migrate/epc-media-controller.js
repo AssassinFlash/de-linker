@@ -16,10 +16,12 @@
       // Retain the existing page's five-second dwell; do not create a new interval.
       var slideDuration = 5000;
       var galleryVisible = false;
+      var canObserveMedia = typeof IntersectionObserver === 'function';
       var userPaused = false;
       var explicitPlay = false;
       var pointerInside = false;
       var focusWithin = false;
+      var manualVideos = new WeakSet();
 
       function rotationAllowed() {
         return galleryVisible && !document.hidden && !userPaused &&
@@ -41,6 +43,11 @@
         spSlides.forEach(function(slide, index) {
           var video = slide.querySelector('video');
           if (!video) return;
+          if (!canObserveMedia || manualVideos.has(video)) {
+            // Keep the selected native controls usable; never start them here.
+            if (index !== currentIndex || document.hidden || userPaused) video.pause();
+            return;
+          }
           if (index !== currentIndex || !videoAllowed()) {
             video.pause();
             return;
@@ -49,7 +56,10 @@
             var playing = video.play();
             if (playing) playing.catch(function(error) {
               // Native controls keep playback available if autoplay is declined.
-              if (error.name !== 'AbortError' && index === currentIndex && videoAllowed()) video.controls = true;
+              if (error.name !== 'AbortError' && index === currentIndex && videoAllowed()) {
+                manualVideos.add(video);
+                video.controls = true;
+              }
             });
           }
         });
@@ -92,6 +102,7 @@
         spSlides.forEach(function(slide, i) {
           slide.classList.toggle('active', i === index);
           slide.setAttribute('aria-hidden', String(i !== index));
+          slide.inert = i !== index;
         });
         spPanes.forEach(function(pane, i) {
           pane.classList.toggle('active', i === index);
@@ -157,9 +168,10 @@
         synchronize();
       });
       workbench.classList.add('epc-media-ready');
-      mediaTabs.hidden = motionButton.hidden = spCounter.hidden = false;
+      mediaTabs.hidden = spCounter.hidden = false;
+      motionButton.hidden = !canObserveMedia;
       activateSlide(0);
-      if (typeof IntersectionObserver === 'function') {
+      if (canObserveMedia) {
         var mediaObserver = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             if (galleryVisible === entry.isIntersecting) return;
