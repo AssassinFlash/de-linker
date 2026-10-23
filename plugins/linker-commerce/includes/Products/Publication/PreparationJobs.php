@@ -4,7 +4,9 @@
  *
  * @package Linker\Commerce
  */
+
 declare( strict_types = 1 );
+
 namespace Linker\Commerce\Products\Publication;
 
 use Linker\Commerce\Products\Publication;
@@ -13,12 +15,18 @@ use WP_Error;
 
 /** A bounded current job and last loaded receipt per consumer. */
 final class PreparationJobs {
-	public const OPTION = 'linker_publication_jobs';
+	public const OPTION    = 'linker_publication_jobs';
 	public const CONSUMERS = array( 'knowledge', 'engineering' );
 
-	/** @return array{knowledge:bool,engineering:bool} */
+	/**
+	 * Report only matching loaded product versions.
+	 *
+	 * @param int    $id Canonical product ID.
+	 * @param string $revision Current product revision.
+	 * @return array{knowledge:bool,engineering:bool}
+	 */
 	public static function readiness( int $id, string $revision ): array {
-		$state = get_option( self::OPTION, array() );
+		$state  = get_option( self::OPTION, array() );
 		$result = array();
 		foreach ( self::CONSUMERS as $consumer ) {
 			$result[ $consumer ] = is_array( $state ) && ( $state[ $consumer ]['loaded_products'][ $id ] ?? '' ) === $revision;
@@ -36,77 +44,126 @@ final class PreparationJobs {
 
 	/** Current reads remain authoritative if an event or process was lost. */
 	public function reconcile(): void {
-		Lock::run( 'publication-jobs', static function (): void {
-			$manifest = Publication::manifest();
-			$state = get_option( self::OPTION, array() );
-			$state = is_array( $state ) ? $state : array();
-			foreach ( self::CONSUMERS as $consumer ) {
-				if ( ( $state[ $consumer ]['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
-					$loaded = $state[ $consumer ]['loaded_products'] ?? array();
-					$state[ $consumer ] = array( 'job_id' => hash( 'sha256', $consumer . '/' . $manifest['source_revision'] ), 'consumer' => $consumer, 'source_revision' => $manifest['source_revision'], 'status' => 'pending', 'loaded_products' => $loaded, 'lease_expires_at' => 0, 'error' => '' );
+		Lock::run(
+			'publication-jobs',
+			static function (): void {
+				$manifest = Publication::manifest();
+				$state    = get_option( self::OPTION, array() );
+				$state    = is_array( $state ) ? $state : array();
+				foreach ( self::CONSUMERS as $consumer ) {
+					if ( ( $state[ $consumer ]['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
+						$loaded             = $state[ $consumer ]['loaded_products'] ?? array();
+						$state[ $consumer ] = array(
+							'job_id'           => hash( 'sha256', $consumer . '/' . $manifest['source_revision'] ),
+							'consumer'         => $consumer,
+							'source_revision'  => $manifest['source_revision'],
+							'status'           => 'pending',
+							'loaded_products'  => $loaded,
+							'lease_expires_at' => 0,
+							'error'            => '',
+						);
+					}
 				}
+				update_option( self::OPTION, $state, false );
+				delete_option( 'linker_publication_pending' );
 			}
-			update_option( self::OPTION, $state, false );
-			delete_option( 'linker_publication_pending' );
-		} );
+		);
 	}
 
-	/** @return array<string,mixed>|WP_Error */
+	/**
+	 * Claim the current source under a bounded worker lease.
+	 *
+	 * @param string $consumer Consumer identity.
+	 * @param string $worker_id Worker identity.
+	 * @param int    $lease_seconds Requested lease, bounded to WordPress one day.
+	 * @return array<string,mixed>|WP_Error
+	 */
 	public function claim( string $consumer, string $worker_id, int $lease_seconds ): array|WP_Error {
 		if ( ! in_array( $consumer, self::CONSUMERS, true ) || '' === $worker_id || $lease_seconds < 1 || $lease_seconds > DAY_IN_SECONDS ) {
 			return new WP_Error( 'invalid_job_request', 'Invalid consumer, worker or lease.', array( 'status' => 400 ) );
 		}
 		$this->reconcile();
 		$result = array( 'job' => null );
-		$taken = Lock::run( 'publication-jobs', static function () use ( $consumer, $worker_id, $lease_seconds, &$result ): void {
-			$manifest = Publication::manifest();
-			$state = get_option( self::OPTION, array() );
-			$job = $state[ $consumer ] ?? array();
-			if ( 'ready' === ( $job['status'] ?? '' ) || (int) ( $job['lease_expires_at'] ?? 0 ) > time() || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
-				return;
+		$taken  = Lock::run(
+			'publication-jobs',
+			static function () use ( $consumer, $worker_id, $lease_seconds, &$result ): void {
+				$manifest = Publication::manifest();
+				$state    = get_option( self::OPTION, array() );
+				$job      = $state[ $consumer ] ?? array();
+				if ( 'ready' === ( $job['status'] ?? '' ) || (int) ( $job['lease_expires_at'] ?? 0 ) > time() || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
+					return;
+				}
+				$job['lease_token']      = wp_generate_password( 64, false );
+				$job['lease_expires_at'] = time() + $lease_seconds;
+				$job['worker_id']        = $worker_id;
+				$job['status']           = 'preparing';
+				$state[ $consumer ]      = $job;
+				update_option( self::OPTION, $state, false );
+				unset( $job['loaded_products'], $job['error'], $job['worker_id'], $job['status'] );
+				$job['manifest'] = $manifest;
+				$result['job']   = $job;
 			}
-			$job['lease_token'] = wp_generate_password( 64, false );
-			$job['lease_expires_at'] = time() + $lease_seconds;
-			$job['worker_id'] = $worker_id;
-			$job['status'] = 'preparing';
-			$state[ $consumer ] = $job;
-			update_option( self::OPTION, $state, false );
-			unset( $job['loaded_products'], $job['error'], $job['worker_id'], $job['status'] );
-			$job['manifest'] = $manifest;
-			$result['job'] = $job;
-		} );
+		);
 		return $taken ? $result : new WP_Error( 'publication_busy', 'Preparation queue is busy.', array( 'status' => 503 ) );
 	}
 
-	/** @param array<string,mixed> $request @return array<string,mixed>|WP_Error */
+	/**
+	 * Confirm actual loaded state only while source and lease still match.
+	 *
+	 * @param array<string,mixed> $request Preparation receipt.
+	 * @return array<string,mixed>|WP_Error
+	 */
 	public function acknowledge( array $request ): array|WP_Error {
 		$result = new WP_Error( 'stale_job', 'The preparation lease or source has changed.', array( 'status' => 409 ) );
-		Lock::run( 'publication-jobs', static function () use ( $request, &$result ): void {
-			$manifest = Publication::manifest();
-			$state = get_option( self::OPTION, array() );
-			foreach ( self::CONSUMERS as $consumer ) {
-				$job = $state[ $consumer ] ?? array();
-				if ( ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
-					continue;
-				}
-				if ( ! in_array( $request['status'] ?? '', array( 'ready', 'failed' ), true ) || ( 'ready' === $request['status'] && ( ! is_string( $request['loaded_revision'] ?? null ) || '' === $request['loaded_revision'] ) ) ) {
-					$result = new WP_Error( 'invalid_job_ack', 'A ready job requires the actual loaded revision.', array( 'status' => 400 ) );
+		Lock::run(
+			'publication-jobs',
+			static function () use ( $request, &$result ): void {
+				$manifest = Publication::manifest();
+				$state    = get_option( self::OPTION, array() );
+				foreach ( self::CONSUMERS as $consumer ) {
+					$job = $state[ $consumer ] ?? array();
+					if ( ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
+						continue;
+					}
+					if ( ! in_array( $request['status'] ?? '', array( 'ready', 'failed' ), true ) || ( 'ready' === $request['status'] && ( ! is_string( $request['loaded_revision'] ?? null ) || '' === $request['loaded_revision'] ) ) ) {
+						$result = new WP_Error( 'invalid_job_ack', 'A ready job requires the actual loaded revision.', array( 'status' => 400 ) );
+						return;
+					}
+					$job['status']           = $request['status'];
+					$job['error']            = sanitize_text_field( (string) ( $request['error'] ?? '' ) );
+					$job['lease_expires_at'] = 0;
+					unset( $job['lease_token'] );
+					if ( 'ready' === $job['status'] ) {
+						$job['loaded_revision'] = $request['loaded_revision'];
+						$expected               = array_column( $manifest['products'], 'product_revision', 'product_id' );
+						$prepared               = $request['prepared_products'] ?? ( 'engineering' === $consumer ? $manifest['products'] : null );
+						if ( ! is_array( $prepared ) || ! array_is_list( $prepared ) ) {
+							$result = new WP_Error( 'invalid_job_ack', 'Knowledge acknowledgement requires actual prepared product revisions.', array( 'status' => 400 ) );
+							return;
+						}
+						$loaded = array();
+						foreach ( $prepared as $product ) {
+							if ( ! is_array( $product ) || ! is_int( $product['product_id'] ?? null ) || ! isset( $expected[ $product['product_id'] ] ) || ( $product['product_revision'] ?? '' ) !== $expected[ $product['product_id'] ] ) {
+								$result = new WP_Error( 'invalid_job_ack', 'Prepared products must match current source revisions.', array( 'status' => 400 ) );
+								return;
+							}
+							$loaded[ $product['product_id'] ] = $product['product_revision'];
+						}
+						$job['loaded_products'] = $loaded;
+						if ( count( $loaded ) !== count( $expected ) ) {
+							$job['status'] = 'pending';
+						}
+					}
+					$state[ $consumer ] = $job;
+					update_option( self::OPTION, $state, false );
+					$result = array(
+						'accepted' => true,
+						'complete' => 'ready' === $job['status'],
+					);
 					return;
 				}
-				$job['status'] = $request['status'];
-				$job['error'] = sanitize_text_field( (string) ( $request['error'] ?? '' ) );
-				$job['lease_expires_at'] = 0;
-				unset( $job['lease_token'] );
-				if ( 'ready' === $job['status'] ) {
-					$job['loaded_revision'] = $request['loaded_revision'];
-					$job['loaded_products'] = array_column( $manifest['products'], 'product_revision', 'product_id' );
-				}
-				$state[ $consumer ] = $job;
-				update_option( self::OPTION, $state, false );
-				$result = array( 'accepted' => true );
-				return;
 			}
-		} );
+		);
 		return $result;
 	}
 }

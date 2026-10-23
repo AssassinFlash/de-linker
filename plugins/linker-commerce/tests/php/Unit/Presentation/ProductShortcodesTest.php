@@ -29,6 +29,7 @@ use WP_Term;
  * @covers \Linker\Commerce\Presentation\ProductShortcodes
  */
 final class ProductShortcodesTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\PublishedDocumentView;
 
 	use MocksSelectionFacts;
 
@@ -1362,7 +1363,7 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 
-		return new ProductShortcodes( new ProductFilters(), new ProductView() );
+		return new ProductShortcodes( new ProductFilters(), $this->published_document_view() );
 	}
 
 	/**
