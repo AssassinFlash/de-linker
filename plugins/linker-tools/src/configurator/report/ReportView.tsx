@@ -104,14 +104,16 @@ export function ReportView( {
 			URL.revokeObjectURL( url );
 			setPdf( 'idle' );
 		} catch ( error ) {
-			setPdf(
-				error instanceof EngineError && error.kind === 'stale'
-					? 'changed'
-					: error instanceof EngineError &&
-						  error.kind === 'publication'
-						? 'publication'
-						: 'failed'
-			);
+			let next: PdfState = 'failed';
+			if ( error instanceof EngineError && error.kind === 'stale' ) {
+				next = 'changed';
+			} else if (
+				error instanceof EngineError &&
+				error.kind === 'publication'
+			) {
+				next = 'publication';
+			}
+			setPdf( next );
 		}
 	}
 
@@ -156,16 +158,16 @@ export function ReportView( {
 							: __( 'Download PDF', 'linker-tools' ) }
 					</button>
 					<p className="linker-report__status" role="status">
-						{ pdf === 'changed'
-							? selectionChangedText()
-							: pdf === 'publication'
-								? publicationUnavailableText()
-								: pdf === 'failed'
-									? __(
-											'The PDF could not be created. Try again.',
-											'linker-tools'
-										)
-									: '' }
+						{ pdf === 'changed' ? selectionChangedText() : '' }
+						{ pdf === 'publication'
+							? publicationUnavailableText()
+							: '' }
+						{ pdf === 'failed'
+							? __(
+									'The PDF could not be created. Try again.',
+									'linker-tools'
+								)
+							: '' }
 					</p>
 				</div>
 				<div className="linker-report__ask">
@@ -181,14 +183,13 @@ export function ReportView( {
 							: __( 'Ask Genie', 'linker-tools' ) }
 					</button>
 					<p className="linker-report__status" role="status">
-						{ askState === 'changed'
-							? selectionChangedText()
-							: askState === 'failed'
-								? __(
-										'The solution could not be saved. Try again.',
-										'linker-tools'
-									)
-								: '' }
+						{ askState === 'changed' ? selectionChangedText() : '' }
+						{ askState === 'failed'
+							? __(
+									'The solution could not be saved. Try again.',
+									'linker-tools'
+								)
+							: '' }
 					</p>
 					{ askState === 'signin' ? (
 						<p className="linker-report__ask-note" role="status">
