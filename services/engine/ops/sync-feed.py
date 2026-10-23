@@ -1,34 +1,27 @@
 #!/usr/bin/env python3
-"""Refresh the design engine's data from the site's engineering feed.
+"""Publish one validated Woo feed/contract generation, then verify the process.
 
-The engine loads LINKER_ENGINE_FEED (state/feed.json) and
-LINKER_ENGINE_COMPATIBILITY (state/compatibility.json) at start and refuses a
-file that does not match its schema. This sync keeps both current from one
-fetch of the engineering feed, which carries the compatibility contract
-beside the products: validate each file with the engine's own loader, atomic
-swap, restart once. The two fail independently — a rejected contract keeps
-the previous contract without rolling back a freshly swapped feed, and a
-rejected feed keeps the previous feed without touching the contract — and the
-log says which file kept its previous version, so a bad night costs nothing.
-
-Deployed by hand: this file goes to /opt/linker-engine/ops/sync-feed.py (a
-stable path outside the release symlink, like state/), the units beside this
-file go to /etc/systemd/system, `systemctl enable --now
-linker-engine-feed-sync.timer` once. `just cutover services` also ships a copy
-under current/ops/, but the unit runs the stable path so a release swap cannot
-change the sync; update the stable copy when this file changes, and note that
-it now owns both target paths: the feed and the compatibility contract.
+The existing timer is an automatic retry/reconciliation path. Revocation is
+independent: requests read current Woo permission before and after work.
+Two immutable generations are retained for rollback; no independent swaps.
 """
 
 from __future__ import annotations
 
+import base64
 import contextlib
 import datetime as dt
+import fcntl
+import hashlib
 import json
 import os
+import shutil
+import socket
+import sqlite3
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.request
 from collections.abc import Callable, Iterator
 from pathlib import Path
@@ -38,26 +31,13 @@ FEED_URL = "https://de-linker.com/wp-json/linker/v1/engineering-feed"
 TARGET = Path("/opt/linker-engine/state/feed.json")
 COMPATIBILITY_TARGET = Path("/opt/linker-engine/state/compatibility.json")
 STATE = Path("/var/log/linker-engine-feed-sync.log")
-# The engine's own loaders, run with the release venv, validate against the
-# shipped schemas — the same gate the engine applies at start.
-PROBE = (
-    "import pathlib, sys; "
-    "from linker_engine.products import Products; "
-    "Products.load(pathlib.Path(sys.argv[1])); "
-    "print('validated')"
-)
-COMPATIBILITY_PROBE = (
-    "import pathlib, sys; "
-    "from linker_engine.compatibility import Compatibility; "
-    "Compatibility.load(pathlib.Path(sys.argv[1])); "
-    "print('validated')"
-)
 PROBE_PYTHON = "/opt/linker-engine/current/.venv/bin/python"
+PROBE = "import pathlib,sys; from linker_engine.products import Products; Products.load(pathlib.Path(sys.argv[1])); print('validated')"
+COMPATIBILITY_PROBE = "import pathlib,sys; from linker_engine.compatibility import Compatibility; Compatibility.load(pathlib.Path(sys.argv[1])); print('validated')"
 
 
 def log(message: str) -> None:
-    stamp = dt.datetime.now(dt.UTC).isoformat(timespec="seconds")
-    line = f"{stamp} {message}"
+    line = f"{dt.datetime.now(dt.UTC).isoformat(timespec='seconds')} {message}"
     print(line)
     try:
         with STATE.open("a", encoding="utf-8") as handle:
@@ -68,7 +48,11 @@ def log(message: str) -> None:
 
 def fetch_feed(url: str) -> bytes:
     request = urllib.request.Request(
-        url, headers={"User-Agent": "linker-engine-feed-sync/1.0"}
+        url,
+        headers={
+            "User-Agent": "linker-engine-feed-sync/2.0",
+            "Cache-Control": "no-cache",
+        },
     )
     with urllib.request.urlopen(request, timeout=60) as response:
         return bytes(response.read())
@@ -85,9 +69,8 @@ def restart_engine() -> subprocess.CompletedProcess[str]:
 
 @contextlib.contextmanager
 def staged(directory: Path, prefix: str, raw: bytes) -> Iterator[Path]:
-    """The bytes in a file beside the target, removed when the block ends."""
     descriptor, name = tempfile.mkstemp(dir=directory, prefix=prefix, suffix=".json")
-    os.close(descriptor)  # The file is written through its own path below.
+    os.close(descriptor)
     temporary = Path(name)
     try:
         os.chmod(temporary, 0o644)
@@ -98,12 +81,8 @@ def staged(directory: Path, prefix: str, raw: bytes) -> Iterator[Path]:
 
 
 def probe(python: str, code: str, path: Path) -> tuple[bool, str]:
-    """The engine's loader on the staged file: (accepted, error detail)."""
     completed = subprocess.run(
-        [python, "-c", code, str(path)],
-        capture_output=True,
-        text=True,
-        check=False,
+        [python, "-c", code, str(path)], capture_output=True, text=True, check=False
     )
     return (
         completed.returncode == 0 and "validated" in completed.stdout,
@@ -111,72 +90,44 @@ def probe(python: str, code: str, path: Path) -> tuple[bool, str]:
     )
 
 
-def swap_feed(
-    raw: bytes,
-    target: Path,
-    probe_python: str,
-    log: Callable[[str], None],
-    *,
-    products: int,
-    generated: str,
-) -> bool:
-    """Atomically replace the feed; a rejected file leaves the old one."""
-    try:
-        with staged(target.parent, ".feed-", raw) as temporary:
-            accepted, detail = probe(probe_python, PROBE, temporary)
-            if not accepted:
-                log(
-                    "engine loader rejected the fetched feed; previous feed "
-                    f"preserved: {detail}"
-                )
-                return False
-            os.replace(temporary, target)
-    except OSError as error:
-        log(f"feed write failed; previous feed preserved: <{error!r}>")
-        return False
-    log(f"feed refreshed ({products} products, generated {generated})")
-    return True
+def atomic_link(target: Path, link: Path) -> None:
+    temporary = link.with_name(f".{link.name}-{os.getpid()}")
+    temporary.unlink(missing_ok=True)
+    temporary.symlink_to(target)
+    os.replace(temporary, link)
 
 
-def swap_compatibility(
-    document: dict[str, Any],
-    target: Path,
-    probe_python: str,
-    log: Callable[[str], None],
-) -> bool:
-    """Atomically replace the contract the feed carries; the old one on failure."""
-    compatibility = document.get("compatibility")
-    if compatibility is None:
-        log("feed carries no compatibility; previous contract preserved")
-        return False
-    if not isinstance(compatibility, dict):
-        log("feed's compatibility is not an object; previous contract preserved")
-        return False
-    version = compatibility.get("version")
-    if version != document.get("compatibility_version"):
-        log(
-            "feed's compatibility version does not match the contract it "
-            "carries; previous contract preserved"
-        )
-        return False
-    raw = (json.dumps(compatibility, ensure_ascii=False, indent=2) + "\n").encode()
-    try:
-        with staged(target.parent, ".compatibility-", raw) as temporary:
-            accepted, detail = probe(probe_python, COMPATIBILITY_PROBE, temporary)
-            if not accepted:
-                log(
-                    "engine loader rejected the fetched contract; previous "
-                    f"contract preserved: {detail}"
-                )
-                return False
-            os.replace(temporary, target)
-    except OSError as error:
-        log(f"contract write failed; previous contract preserved: <{error!r}>")
-        return False
-    pairs = compatibility.get("pairs")
-    count = len(pairs) if isinstance(pairs, list) else "?"
-    log(f"compatibility refreshed (version {version}, {count} pairs)")
-    return True
+def read_loaded() -> dict[str, Any]:
+    request = urllib.request.Request(
+        os.environ.get(
+            "LINKER_ENGINE_LOADED_URL", "http://127.0.0.1:8901/resource/version?ready=1"
+        ),
+        headers={"X-Linker-Service-Token": os.environ.get("GENIE_SERVICE_TOKEN", "")},
+    )
+    with urllib.request.urlopen(request, timeout=10) as reply:
+        return dict(json.load(reply))
+
+
+def job_request(action: str, body: dict[str, Any]) -> dict[str, Any]:
+    base = os.environ.get(
+        "LINKER_PUBLICATION_JOBS_URL",
+        "https://de-linker.com/wp-json/linker/v1/publication/jobs",
+    )
+    user = os.environ.get("LINKER_PUBLICATION_USER", "")
+    password = os.environ.get("LINKER_PUBLICATION_PASSWORD", "")
+    if not user or not password:
+        raise RuntimeError("publication worker credentials are not configured")
+    authorization = base64.b64encode(f"{user}:{password}".encode()).decode()
+    request = urllib.request.Request(
+        f"{base.rstrip('/')}/{action}",
+        data=json.dumps(body).encode(),
+        headers={
+            "Authorization": f"Basic {authorization}",
+            "Content-Type": "application/json",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return dict(json.load(response))
 
 
 def sync(
@@ -187,61 +138,207 @@ def sync(
     probe_python: str = PROBE_PYTHON,
     fetch: Callable[[str], bytes] = fetch_feed,
     restart: Callable[[], subprocess.CompletedProcess[str]] = restart_engine,
+    loaded: Callable[[], dict[str, Any]] = read_loaded,
     log: Callable[[str], None] = log,
+    jobs: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None,
 ) -> int:
-    """One run: fetch, validate and swap each file; 0 only when both swapped."""
-    try:
-        raw = fetch(feed_url)
-    except Exception as error:  # noqa: BLE001 — the log line is the contract.
-        log(f"fetch failed; previous feed and contract preserved: <{error!r}>")
+    """A single generation or none; an empty product set is a valid withdrawal."""
+    directory = feed_target.parent
+    if compatibility_target.parent != directory:
+        log("feed and compatibility must share the managed generation directory")
         return 1
-    try:
-        document = json.loads(raw)
-    except (json.JSONDecodeError, UnicodeDecodeError) as error:
-        log(f"fetch is not JSON; previous feed and contract preserved: <{error!r}>")
-        return 1
-    if not isinstance(document, dict) or document.get("schema_version") != 1:
-        log("fetch ok but shape unexpected; previous feed and contract preserved")
-        return 1
-    products = document.get("products")
-    if not isinstance(products, list) or not products:
-        log("feed carries no products; previous feed and contract preserved")
-        return 1
+    directory.mkdir(parents=True, exist_ok=True)
+    with (directory / ".publication-sync.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        generation: Path | None = None
+        job = None
+        previous: Path | None = None
+        try:
+            if jobs is not None:
+                job = jobs(
+                    "claim",
+                    {
+                        "consumer": "engineering",
+                        "worker_id": f"engine-{socket.gethostname()}",
+                        "lease_seconds": 300,
+                    },
+                ).get("job")
+                if job is None:
+                    log("no pending engineering preparation")
+                    return 0
+            raw = fetch(feed_url)
+            document = json.loads(raw)
+            contract = document.get("compatibility")
+            if (
+                job is not None
+                and document.get("source_revision") != job["source_revision"]
+            ):
+                raise ValueError("source changed after preparation claim")
+            if (
+                not isinstance(document.get("products"), list)
+                or not isinstance(contract, dict)
+                or contract.get("version") != document.get("compatibility_version")
+                or not document.get("source_revision")
+                or not document.get("compatibility_revision")
+            ):
+                raise ValueError("incomplete publication generation")
+            contract_raw = (
+                json.dumps(contract, ensure_ascii=False, indent=2) + "\n"
+            ).encode()
+            generation = Path(
+                tempfile.mkdtemp(dir=directory, prefix="publication-generation-")
+            )
+            feed_path = generation / "feed.json"
+            contract_path = generation / "compatibility.json"
+            feed_path.write_bytes(raw)
+            contract_path.write_bytes(contract_raw)
+            for code, path in (
+                (PROBE, feed_path),
+                (COMPATIBILITY_PROBE, contract_path),
+            ):
+                valid, detail = probe(probe_python, code, path)
+                if not valid:
+                    raise ValueError(f"loader rejected complete generation: {detail}")
+            manifest = {
+                "source_revision": document["source_revision"],
+                "compatibility_revision": document["compatibility_revision"],
+                "feed_sha256": hashlib.sha256(raw).hexdigest(),
+                "compatibility_sha256": hashlib.sha256(contract_raw).hexdigest(),
+            }
+            (generation / "manifest.json").write_text(json.dumps(manifest))
+            current = directory / "current"
+            previous = current.resolve() if current.is_symlink() else None
+            if (
+                previous is None
+                and feed_target.is_file()
+                and compatibility_target.is_file()
+            ):
+                # Preserve the initial legacy pair before replacing regular
+                # files with managed links. Code rollback may need this pair.
+                previous = Path(
+                    tempfile.mkdtemp(dir=directory, prefix="publication-generation-")
+                )
+                (previous / "feed.json").write_bytes(feed_target.read_bytes())
+                (previous / "compatibility.json").write_bytes(
+                    compatibility_target.read_bytes()
+                )
+            atomic_link(generation, current)
+            # Only the initial migration changes these links. The process pins
+            # the resolved feed generation, so it never reads a mixed contract.
+            for target, name in (
+                (feed_target, "feed.json"),
+                (compatibility_target, "compatibility.json"),
+            ):
+                atomic_link(current / name, target)
+            try:
+                restarted = restart()
+                if restarted.returncode != 0:
+                    raise RuntimeError("engine restart failed")
+                for attempt in range(5):
+                    try:
+                        actual = loaded()
+                        break
+                    except OSError:
+                        if attempt == 4:
+                            raise
+                        time.sleep(0.5)
+                if (
+                    actual.get("source_revision") != manifest["source_revision"]
+                    or actual.get("compatibility_revision")
+                    != manifest["compatibility_revision"]
+                ):
+                    raise RuntimeError(
+                        "process has not loaded the published generation"
+                    )
+            except Exception:
+                if previous is not None:
+                    atomic_link(previous, current)
+                    restart()
+                raise
+            if jobs is not None and job is not None:
+                jobs(
+                    "ack",
+                    {
+                        "job_id": job["job_id"],
+                        "lease_token": job["lease_token"],
+                        "source_revision": job["source_revision"],
+                        "loaded_revision": actual["source_revision"],
+                        "prepared_products": actual.get("prepared_products", []),
+                        "status": "ready",
+                    },
+                )
+            keep = {generation, previous}
+            for obsolete in directory.glob("publication-generation-*"):
+                if (
+                    obsolete not in keep
+                    and obsolete.is_dir()
+                    and not obsolete.is_symlink()
+                ):
+                    shutil.rmtree(obsolete)
+            log(
+                f"published and loaded source {manifest['source_revision']} ({len(document['products'])} products)"
+            )
+            return 0
+        except Exception as error:  # noqa: BLE001 -- timer retry records all failures.
+            if (
+                generation is not None
+                and generation.exists()
+                and not (
+                    (directory / "current").is_symlink()
+                    and (directory / "current").resolve() == generation
+                )
+            ):
+                shutil.rmtree(generation)
+            if (
+                generation is not None
+                and (directory / "current").is_symlink()
+                and (directory / "current").resolve() == generation
+            ):
+                for obsolete in directory.glob("publication-generation-*"):
+                    if (
+                        obsolete not in {generation, previous}
+                        and obsolete.is_dir()
+                        and not obsolete.is_symlink()
+                    ):
+                        shutil.rmtree(obsolete)
+            if jobs is not None and job is not None:
+                try:
+                    jobs(
+                        "ack",
+                        {
+                            "job_id": job["job_id"],
+                            "lease_token": job["lease_token"],
+                            "source_revision": job["source_revision"],
+                            "loaded_revision": "",
+                            "status": "failed",
+                            "error": type(error).__name__,
+                        },
+                    )
+                except Exception:  # noqa: BLE001 -- the lease remains retryable.
+                    pass
+            log(
+                f"publication sync did not complete; current Woo checks remain enforced: {type(error).__name__}: {error}"
+            )
+            return 1
 
-    feed_swapped = swap_feed(
-        raw,
-        feed_target,
-        probe_python,
-        log,
-        products=len(products),
-        generated=str(document.get("generated_at", "?")),
-    )
-    if feed_swapped:
-        compatibility_swapped = swap_compatibility(
-            document, compatibility_target, probe_python, log
+
+def cleanup_receipts() -> None:
+    directory = Path(
+        os.environ.get(
+            "LINKER_ENGINE_CACHE", str(Path.home() / ".cache" / "linker-engine")
         )
-    else:
-        # The contract came out of the same fetch; a feed the loader rejects
-        # leaves both files as they were.
-        compatibility_swapped = False
-        log("feed not refreshed; previous contract preserved")
-    if not feed_swapped:
-        return 1
-    # The engine loads both files at start; the restart makes them current now.
-    try:
-        restarted = restart()
-    except OSError as error:
-        log(f"data swapped but engine restart failed: <{error!r}>")
-        return 1
-    if restarted.returncode != 0:
-        log(f"data swapped but engine restart failed: {restarted.stderr.strip()}")
-        return 1
-    log("engine restarted on the fresh data")
-    return 0 if compatibility_swapped else 1
+    )
+    path = directory / "private" / "selections.sqlite"
+    if path.is_file():
+        with sqlite3.connect(f"file:{path}?mode=rw", uri=True) as database:
+            database.execute(
+                "DELETE FROM selections WHERE expires < ?", (int(time.time()),)
+            )
 
 
 def main() -> int:
-    return sync()
+    cleanup_receipts()
+    return sync(jobs=job_request)
 
 
 if __name__ == "__main__":

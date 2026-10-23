@@ -90,7 +90,7 @@ final class Resources {
 
 	/** Expected snapshot for the trusted currently running native engine callback. */
 	public static function engine_version(): string {
-		return self::verified() ? (string) ( self::$context['engine_version'] ?? '' ) : '';
+		return (string) ( self::$context['engine_version'] ?? '' );
 	}
 
 	/**
@@ -177,7 +177,7 @@ final class Resources {
 		$operation = (string) $request->get_header( 'X-Linker-Operation' );
 		$version   = '';
 		if ( in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) ) {
-			$version = 'enforce' === $configuration->mode ? $this->version->current( $request ) : '';
+			$version = $this->version->current( $request );
 			if ( is_wp_error( $version ) ) {
 				return $version;
 			}
@@ -200,7 +200,7 @@ final class Resources {
 		if ( ! empty( $permit['reused'] ) ) {
 			$old = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
 			if ( ! in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) || is_wp_error( $old ) || $old->get_status() < 400 ) {
-				return $old;
+				return $engineering ? EnginePublication::reply( $old ) : $old;
 			}
 			// A definite failed pure calculation can be attempted explicitly again.
 			// Unknown/dispatched operations and business writes never enter here.
@@ -212,7 +212,8 @@ final class Resources {
 				return $permit;
 			}
 			if ( ! empty( $permit['reused'] ) ) {
-				return $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
+				$retry_reply = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
+				return EnginePublication::reply( $retry_reply );
 			}
 		}
 
@@ -255,6 +256,12 @@ final class Resources {
 			}
 			$reply    = call_user_func( $callback, $request );
 			$response = is_wp_error( $reply ) ? rest_convert_error_to_response( $reply ) : rest_ensure_response( $reply );
+			if ( $engineering && $response->get_status() < 400 ) {
+				$checked = EnginePublication::reply( $response );
+				if ( is_wp_error( $checked ) ) {
+					$response = rest_convert_error_to_response( $checked );
+				}
+			}
 			$response->header( 'Cache-Control', 'private, no-store' );
 			if ( $engineering && $response->get_status() >= 400 ) {
 				// A native completed pure failure is safe to retry explicitly. A

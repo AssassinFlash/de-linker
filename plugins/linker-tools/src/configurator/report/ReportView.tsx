@@ -31,6 +31,7 @@ export type AskState = 'idle' | 'saving' | 'failed' | 'signin';
 
 export interface ReportViewProps {
 	report: Report;
+	selectionFingerprint?: string;
 	input: ResidentialInput;
 	engine: EngineClient;
 	/** Save the solution (once) and open Genie on it. */
@@ -51,6 +52,7 @@ function readLogo( file: File ): Promise< string > {
 
 export function ReportView( {
 	report,
+	selectionFingerprint,
 	input,
 	engine,
 	onAsk,
@@ -85,7 +87,11 @@ export function ReportView( {
 	async function download() {
 		setPdf( 'working' );
 		try {
-			const blob = await engine.reportPdf( input, logo?.data ?? null );
+			const blob = await engine.reportPdf(
+				input,
+				logo?.data ?? null,
+				selectionFingerprint
+			);
 			const url = URL.createObjectURL( blob );
 			const link = document.createElement( 'a' );
 			link.href = url;
