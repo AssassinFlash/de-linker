@@ -68,8 +68,15 @@ final class PendingApprovals implements Block {
 	 * Heading of the block.
 	 */
 	public function title(): string {
+		return __( 'Accounts waiting for approval', 'linker-commerce' ) . ' (' . number_format_i18n( $this->pending_count() ) . ')';
+	}
+
+	/**
+	 * Applications awaiting staff approval, excluding decorative summary rows.
+	 */
+	public function pending_count(): int {
 		$this->load();
-		return __( 'Accounts waiting for approval', 'linker-commerce' ) . ' (' . number_format_i18n( count( $this->pending ) ) . ')';
+		return count( $this->pending );
 	}
 
 	/**
