@@ -146,8 +146,9 @@ final class Resources {
 		if ( strlen( (string) $request->get_body() ) > $ceiling ) {
 			return 'observe' === $configuration->mode ? $result : self::error( 'body', 413 );
 		}
-		$engineering = in_array( $action, array( 'design', 'roof', 'report_pdf' ), true );
-		$payload     = $engineering ? array( 'input' => (array) $request->get_json_params() ) : $request->get_params();
+		$engineering        = in_array( $action, array( 'design', 'roof', 'report_pdf' ), true );
+		$publication_action = $engineering || in_array( $action, array( 'solution_save', 'draft_write' ), true );
+		$payload            = $engineering ? array( 'input' => (array) $request->get_json_params() ) : $request->get_params();
 		if ( ! $engineering ) {
 			foreach ( array( 'website', 'started', 'started_nonce', '_wpnonce' ) as $field ) {
 				unset( $payload[ $field ] );
@@ -200,7 +201,7 @@ final class Resources {
 		if ( ! empty( $permit['reused'] ) ) {
 			$old = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
 			if ( ! in_array( $action, array( 'design', 'roof', 'report_pdf' ), true ) || is_wp_error( $old ) || $old->get_status() < 400 ) {
-				return $engineering ? EnginePublication::reply( $old ) : $old;
+				return $publication_action ? EnginePublication::reply( $old ) : $old;
 			}
 			// A definite failed pure calculation can be attempted explicitly again.
 			// Unknown/dispatched operations and business writes never enter here.
@@ -256,7 +257,7 @@ final class Resources {
 			}
 			$reply    = call_user_func( $callback, $request );
 			$response = is_wp_error( $reply ) ? rest_convert_error_to_response( $reply ) : rest_ensure_response( $reply );
-			if ( $engineering && $response->get_status() < 400 ) {
+			if ( $publication_action && $response->get_status() < 400 ) {
 				$checked = EnginePublication::reply( $response );
 				if ( is_wp_error( $checked ) ) {
 					$response = rest_convert_error_to_response( $checked );

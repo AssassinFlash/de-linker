@@ -26,12 +26,16 @@ import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 import german from '../../languages/linker-tools-de_DE_formal-ff47dbd6ce1b77b210b406f2367c7ea7.json';
 import germanGenie from '../../languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json';
 import { fakeEngine, fakeStore } from '../../tests/configurator/fakes';
-import { saveSolution } from './api/solutions';
+import { SolutionWriteError, saveSolution } from './api/solutions';
 import { App } from './App';
+import { EngineError } from './api/engine';
 
 // The account's route (#11) is mocked: these tests assert the states around
 // the save, not the request itself (solutions.test.ts holds that contract).
-vi.mock( './api/solutions', () => ( { saveSolution: vi.fn() } ) );
+vi.mock( './api/solutions', async ( original ) => ( {
+	...( await original< typeof import( './api/solutions' ) >() ),
+	saveSolution: vi.fn(),
+} ) );
 import type { Config } from './config';
 import type { Locale } from './types';
 
@@ -274,7 +278,7 @@ test( 'a draft that does not confirm shows it in the cards', async () => {
 	} );
 	expect(
 		await screen.findByText(
-			'Some products are not confirmed in your solution draft. See the cards above.'
+			'The addition could not be confirmed. The solution draft may already contain these products.'
 		)
 	).toBeInTheDocument();
 } );
@@ -991,4 +995,51 @@ test( 'an Ask started before a recalculation does not hand over the previous des
 		] )
 	);
 	asks.stop();
+} );
+
+
+const CHANGED = 'This solution needs a new calculation before the next step.';
+const CURRENT_UNAVAILABLE = 'The current product data could not be checked. Your entries are still here.';
+
+test.each( [ [ 'stale', CHANGED ], [ 'publication', CURRENT_UNAVAILABLE ] ] as const )( 'current-product %s failure keeps entries and does not blame the yield service', async ( outcome, message ) => {
+    const { engine } = fakeEngine( { locale: 'en', residential: outcome } );
+    render( <App config={ config( 'en' ) } engine={ engine } store={ fakeStore().store } /> );
+    await calculate();
+    expect( await screen.findByText( message ) ).toBeInTheDocument();
+    expect( screen.getByLabelText( 'Postcode of the site' ) ).toHaveValue( '80538' );
+    expect( screen.queryByText( 'The yield service did not answer. Try again in a minute.' ) ).toBeNull();
+} );
+
+test( 'an old result rejected by atomic add asks for a new calculation and adds nothing', async () => {
+    const { engine, calls } = fakeEngine( { locale: 'en' } );
+    const { store, added } = fakeStore( 'stale' );
+    render( <App config={ config( 'en' ) } engine={ engine } store={ store } /> );
+    await calculate();
+    await act( async () => fireEvent.click( screen.getByRole( 'button', { name: 'Add all to solution draft' } ) ) );
+    expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+    expect( added ).toEqual( [] );
+    expect( calls.filter( call => call.name === 'residential' ) ).toHaveLength( 1 );
+    expect( screen.queryByText( 'All products are in your solution draft.' ) ).toBeNull();
+} );
+
+test( 'a save refused for publication displays re-selection without replacing the screen', async () => {
+    vi.mocked( saveSolution ).mockRejectedValue( new SolutionWriteError( true ) );
+    const { engine, calls } = fakeEngine( { locale: 'en' } );
+    render( <App config={ config( 'en' ) } engine={ engine } store={ fakeStore().store } /> );
+    await calculate();
+    await act( async () => fireEvent.click( screen.getByRole( 'button', { name: 'Save solution' } ) ) );
+    expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+    expect( calls.filter( call => call.name === 'residential' ) ).toHaveLength( 1 );
+    expect( screen.queryByText( 'The solution could not be saved. Try again.' ) ).toBeNull();
+} );
+
+test.each( [ 'Download PDF', 'Ask Genie' ] )( '%s on a stale screen preserves it and asks for re-selection', async ( action ) => {
+    const { engine, calls } = fakeEngine( { locale: 'en' } );
+    engine.reportPdf = vi.fn().mockRejectedValue( new EngineError( 'stale' ) );
+    render( <App config={ config( 'en' ) } engine={ engine } store={ fakeStore().store } /> );
+    await calculate();
+    await act( async () => fireEvent.click( screen.getByRole( 'button', { name: action } ) ) );
+    expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+    expect( calls.filter( call => call.name === 'residential' ) ).toHaveLength( 1 );
+    expect( screen.queryByText( 'The PDF could not be created. Try again.' ) ).toBeNull();
 } );

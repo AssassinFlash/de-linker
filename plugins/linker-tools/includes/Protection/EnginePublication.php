@@ -26,8 +26,11 @@ final class EnginePublication {
 	 * @param array<string,mixed> $dependencies Trusted service dependencies.
 	 */
 	public static function validate( array $dependencies ): true|WP_Error {
-		if ( ! class_exists( Publication::class ) || ! isset( $dependencies['products'], $dependencies['documents'] ) ) {
+		if ( ! isset( $dependencies['products'], $dependencies['documents'] ) ) {
 			return self::failure();
+		}
+		if ( ! class_exists( Publication::class ) ) {
+			return self::failure( 503 );
 		}
 		$result = Publication::validate( $dependencies );
 		return ! empty( $result['valid'] ) ? true : self::failure();
@@ -72,8 +75,12 @@ final class EnginePublication {
 		return is_wp_error( $valid ) ? $valid : $reply;
 	}
 
-	/** Reuse the established translated refusal surface. */
-	private static function failure(): WP_Error {
-		return new WP_Error( 'linker_publication_changed', __( 'Your request could not be completed. Your input is still here. Please try again.', 'linker-tools' ), array( 'status' => 409 ) );
+	/**
+	 * Reuse the established translated refusal surface.
+	 *
+	 * @param int $status A stale selection or unavailable authority.
+	 */
+	private static function failure( int $status = 409 ): WP_Error {
+		return new WP_Error( 503 === $status ? 'linker_publication_unavailable' : 'linker_publication_changed', __( 'Your request could not be completed. Your input is still here. Please try again.', 'linker-tools' ), array( 'status' => $status ) );
 	}
 }

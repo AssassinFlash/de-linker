@@ -191,8 +191,13 @@ final class EngineProxy {
 					)
 				)
 			);
-			if ( is_wp_error( $checked ) || $checked[0] >= 400 ) {
-				return new WP_Error( 'linker_publication_changed', __( 'Your request could not be completed. Your input is still here. Please try again.', 'linker-tools' ), array( 'status' => 409 ) );
+			if ( is_wp_error( $checked ) ) {
+				return $checked;
+			}
+			if ( $checked[0] >= 400 ) {
+				$failure = json_decode( $checked[2], true );
+				$changed = 409 === $checked[0] && in_array( $failure['detail']['error'] ?? '', array( 'publication_changed', 'selection_changed' ), true );
+				return new WP_Error( $changed ? 'linker_publication_changed' : 'linker_publication_unavailable', __( 'Your request could not be completed. Your input is still here. Please try again.', 'linker-tools' ), array( 'status' => $changed ? 409 : 503 ) );
 			}
 			$verified = json_decode( $checked[2], true );
 			$proof    = is_array( $verified['publication'] ?? null ) ? $verified['publication'] : array();

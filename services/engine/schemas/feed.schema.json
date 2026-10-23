@@ -136,6 +136,8 @@
 			"required": ["url", "title", "type", "lang"],
 			"additionalProperties": false,
 			"properties": {
+				"role": { "type": "string" },
+				"citation_aliases": { "type": "array", "items": { "type": "string" } },
 				"document_id": { "type": "string" },
 				"document_revision": { "type": "string" },
 				"blob_sha256": { "type": "string" },
