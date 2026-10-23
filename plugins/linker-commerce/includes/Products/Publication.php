@@ -11,6 +11,7 @@ namespace Linker\Commerce\Products;
 
 use Linker\Commerce\Products\Publication\DocumentFiles;
 use Linker\Commerce\Products\Publication\PreparationJobs;
+use Linker\Commerce\Products\Publication\FigureBindings;
 
 /** A current read; no TTL, index or preparation acknowledgement grants access. */
 final class Publication {
@@ -51,7 +52,11 @@ final class Publication {
 		if ( ! function_exists( 'has_filter' ) || ! has_filter( 'linker_commerce_facts_product_id' ) ) {
 			return $id;
 		}
-		/** Filter the canonical product identity through the language companion. */
+		/**
+		 * Filter the canonical product identity through the language companion.
+		 *
+		 * @since 0.1.0
+		 */
 		return (int) apply_filters( 'linker_commerce_facts_product_id', $id );
 	}
 
@@ -66,7 +71,11 @@ final class Publication {
 		return $id > 0 && 'product' === get_post_type( $id ) && 'publish' === get_post_status( $id ) && 'product' === get_post_type( $canonical ) && 'publish' === get_post_status( $canonical );
 	}
 
-	/** Drop only request-local object-cache copies before a new authority read. */
+	/**
+	 * Drop only request-local object-cache copies before a new authority read.
+	 *
+	 * @throws \RuntimeException When a cache drop-in cannot refresh runtime copies.
+	 */
 	private static function refresh_runtime(): void {
 		if ( ! wp_cache_supports( 'flush_runtime' ) || ! wp_cache_flush_runtime() ) {
 			throw new \RuntimeException( 'Current publication requires request-local cache refresh support.' );
@@ -103,6 +112,7 @@ final class Publication {
 				'orderby'                     => 'ID',
 				'order'                       => 'ASC',
 				'suppress_filters'            => true,
+				'lang'                        => 'all',
 				'linker_publication_internal' => true,
 				'cache_results'               => false,
 			)
@@ -139,14 +149,15 @@ final class Publication {
 							}
 						}
 						$documents[ $document_id ] = array(
-							'document_id' => $document_id,
-							'blob_sha256' => $file['blob_sha256'],
-							'url'         => $file['url'],
-							'aliases'     => array_values( array_unique( $aliases ) ),
-							'product_ids' => array(),
-							'title'       => (string) ( $row['title'] ?? '' ),
-							'type'        => (string) ( $row['type'] ?? 'document' ),
-							'lang'        => (string) ( $row['lang'] ?? '' ),
+							'document_id'      => $document_id,
+							'blob_sha256'      => $file['blob_sha256'],
+							'url'              => $file['url'],
+							'aliases'          => array_values( array_unique( $aliases ) ),
+							'product_ids'      => array(),
+							'title'            => (string) ( $row['title'] ?? '' ),
+							'type'             => (string) ( $row['type'] ?? 'document' ),
+							'lang'             => (string) ( $row['lang'] ?? '' ),
+							'role'             => (string) ( $row['role'] ?? '' ),
 							'citation_aliases' => array_values( array_filter( (array) ( $row['citation_aliases'] ?? array() ), 'is_string' ) ),
 						);
 					}
@@ -208,7 +219,7 @@ final class Publication {
 		}
 		$meta = get_post_meta( $id );
 		foreach ( array_keys( $meta ) as $key ) {
-			if ( str_starts_with( (string) $key, '_linker_publication_' ) || in_array( $key, array( '_edit_lock', '_edit_last' ), true ) ) {
+			if ( ( str_starts_with( (string) $key, '_linker_publication_' ) && FigureBindings::META_KEY !== $key ) || in_array( $key, array( '_edit_lock', '_edit_last' ), true ) ) {
 				unset( $meta[ $key ] );
 			}
 		}
@@ -338,14 +349,14 @@ final class Publication {
 		}
 		$id         = self::canonical_id( $id );
 		$manifest ??= self::manifest();
-		$allowed = array();
-		$names = array();
+		$allowed    = array();
+		$names      = array();
 		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;
 			}
 			foreach ( $document['aliases'] as $url ) {
-				$path = rawurldecode( (string) wp_parse_url( $url, PHP_URL_PATH ) );
+				$path             = rawurldecode( (string) wp_parse_url( $url, PHP_URL_PATH ) );
 				$allowed[ $path ] = $document;
 				$names[ strtolower( basename( $path ) ) ][ $document['document_id'] ] = $document;
 			}
@@ -353,17 +364,17 @@ final class Publication {
 				$names[ strtolower( $name ) ][ $document['document_id'] ] = $document;
 			}
 		}
-		$raw = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
-		$raw = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+		$raw    = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+		$raw    = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
 		$result = array();
 		foreach ( is_array( $raw ) ? $raw : array() as $key => $entry ) {
 			if ( ! is_array( $entry ) || ! is_array( $entry['citation'] ?? null ) ) {
 				continue;
 			}
 			$document = null;
-			$url = $entry['citation']['url'] ?? null;
+			$url      = $entry['citation']['url'] ?? null;
 			if ( is_string( $url ) ) {
-				$host = wp_parse_url( $url, PHP_URL_HOST );
+				$host  = wp_parse_url( $url, PHP_URL_HOST );
 				$hosts = array( wp_parse_url( home_url(), PHP_URL_HOST ), 'de-linker.com', 'www.de-linker.com' );
 				if ( is_string( $host ) && in_array( strtolower( $host ), $hosts, true ) ) {
 					$document = $allowed[ rawurldecode( (string) wp_parse_url( $url, PHP_URL_PATH ) ) ] ?? null;
@@ -374,9 +385,9 @@ final class Publication {
 					$document = reset( $matches );
 				}
 			}
-			if ( is_array( $document ) ) {
+			if ( is_array( $document ) && FigureBindings::matches( $id, (string) $key, $entry, $document ) ) {
 				$entry['citation']['url'] = $document['url'];
-				$result[ (string) $key ] = $entry;
+				$result[ (string) $key ]  = $entry;
 			}
 		}
 

@@ -13,13 +13,18 @@ use WP_Mock;
 
 /** Unit fixtures use the same path boundary and byte hashing as WordPress. */
 trait ManagedDocumentFixture {
-	/** Temporary uploads root, removed after each test. */
+	/**
+	 * Temporary uploads root, removed after each test.
+	 *
+	 * @var string
+	 */
 	private string $publication_uploads = '';
 
 	/**
 	 * Provide native upload/path helpers backed by real temporary files.
 	 *
-	 * @param list<string> $paths Relative PDF paths.
+	 * @param string[] $paths Relative PDF paths.
+	 * @phpstan-param list<string> $paths
 	 */
 	private function managed_documents( array $paths ): void {
 		$this->publication_uploads = sys_get_temp_dir() . '/linker-publication-' . bin2hex( random_bytes( 8 ) );

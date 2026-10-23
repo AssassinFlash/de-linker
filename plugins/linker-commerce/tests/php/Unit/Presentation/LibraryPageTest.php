@@ -24,6 +24,7 @@ use WP_Mock;
  * @covers \Linker\Commerce\Presentation\LibraryPage
  */
 final class LibraryPageTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\PublishedDocumentView;
 
 	/**
 	 * Post queries the fragments ran: the register's readings and the brand
@@ -374,6 +375,6 @@ final class LibraryPageTest extends TestCase {
 	 * The register the fragments describe: one product of one brand.
 	 */
 	private function library(): DocumentLibrary {
-		return new DocumentLibrary();
+		return new DocumentLibrary( $this->published_document_view() );
 	}
 }

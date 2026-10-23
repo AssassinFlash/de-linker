@@ -82,7 +82,7 @@ $linker_publication_row = array( 'url' => $linker_publication_urls['shared'], 't
 update_post_meta( $linker_publication_a, EngineeringData::DOCUMENTS_META_KEY, array( $linker_publication_row ) );
 update_post_meta( $linker_publication_b, EngineeringData::DOCUMENTS_META_KEY, array( $linker_publication_row ) );
 update_post_meta( $linker_publication_c, '_delinker_datasheet_url', $linker_publication_urls['legacy'] );
-update_post_meta( $linker_publication_c, \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, array( 'test' => array( 'value' => 1, 'citation' => array( 'url' => $linker_publication_urls['figure'], 'page' => 1 ) ) ) );
+update_post_meta( $linker_publication_c, \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, array( 'rated_ac_power_kw' => array( 'value' => 10, 'unit' => 'kW', 'citation' => array( 'url' => $linker_publication_urls['figure'], 'page' => 1 ) ) ) );
 $linker_publication_manifest = Publication::manifest();
 $linker_publication_products = array_column( $linker_publication_manifest['products'], null, 'product_id' );
 $linker_publication_documents = array_column( $linker_publication_manifest['documents'], null, 'document_id' );
@@ -100,6 +100,9 @@ $linker_publication_check( ! Publication::validate( array() )['valid'] && Public
 $linker_publication_check( ! Publication::validate( array( 'products' => array( array( 'product_id' => array(), 'product_revision' => '' ) ), 'documents' => array() ) )['valid'], 'malformed public dependency fails closed' );
 $linker_publication_access = new DocumentAccess();
 $linker_publication_file = DocumentFiles::resolve( $linker_publication_urls['shared'] );
+if ( null === $linker_publication_file ) {
+	throw new RuntimeException( 'Fixture PDF cannot be resolved.' );
+}
 $linker_publication_check( 200 === $linker_publication_access->response( $linker_publication_file, 'GET' )['status'] && 200 === $linker_publication_access->response( $linker_publication_file, 'HEAD' )['status'], 'GET and HEAD authorize current document' );
 $linker_publication_check( 206 === $linker_publication_access->response( $linker_publication_file, 'GET', 'bytes=0-4' )['status'] && 416 === $linker_publication_access->response( $linker_publication_file, 'GET', 'bytes=999999-' )['status'], 'single byte range supported and invalid range rejected' );
 $linker_publication_check( 200 === $linker_publication_access->response( DocumentFiles::resolve( $linker_publication_urls['alias'] ), 'GET' )['status'], 'explicit same-content alias is authorized' );
@@ -113,9 +116,13 @@ $linker_publication_check( Publication::validate( $linker_publication_dependenci
 $linker_publication_jobs = new PreparationJobs();
 $linker_publication_claim = $linker_publication_jobs->claim( 'knowledge', 'fixture-worker', 300 );
 $linker_publication_check( ! is_wp_error( $linker_publication_claim ) && is_array( $linker_publication_claim['job'] ), 'current source automatically produces a persistent preparation lease' );
+if ( is_wp_error( $linker_publication_claim ) ) {
+	throw new RuntimeException( $linker_publication_claim->get_error_message() );
+}
 $linker_publication_job = $linker_publication_claim['job'];
 $linker_publication_ack = array( 'job_id' => $linker_publication_job['job_id'], 'lease_token' => $linker_publication_job['lease_token'], 'source_revision' => $linker_publication_job['source_revision'], 'loaded_revision' => 'fixture-actually-loaded', 'status' => 'ready' );
-$linker_publication_check( ( $linker_publication_jobs->claim( 'knowledge', 'another-worker', 300 )['job'] ?? null ) === null, 'live preparation lease prevents double claim' );
+$linker_publication_second_claim = $linker_publication_jobs->claim( 'knowledge', 'another-worker', 300 );
+$linker_publication_check( ! is_wp_error( $linker_publication_second_claim ) && null === $linker_publication_second_claim['job'], 'live preparation lease prevents double claim' );
 wp_update_post( array( 'ID' => $linker_publication_a, 'post_status' => 'draft' ) );
 $linker_publication_check( ! Publication::is_published( $linker_publication_de ) && ! Publication::validate( $linker_publication_dependencies )['valid'], 'canonical withdrawal immediately blocks German mirror and old dependencies without a job' );
 $linker_publication_check( 410 === $linker_publication_access->response( $linker_publication_file, 'GET' )['status'], 'last live relation withdrawal denies original bytes immediately' );
@@ -134,11 +141,19 @@ $linker_publication_check( 410 === $linker_publication_access->response( $linker
 update_post_meta( $linker_publication_attachment, '_linker_document_public', '1' );
 $linker_publication_state['ids'][] = $linker_publication_attachment;
 update_option( 'linker_publication_fixture', $linker_publication_state, false );
+$linker_publication_check( 10.0 === EngineeringFeed::item( $linker_publication_c )['ac_power_kw'], 'current numeric fact uses its bound document bytes' );
+file_put_contents( $linker_publication_files[4], $linker_publication_bytes . 'updated figure PDF' );
+$linker_publication_check( 'unknown' === EngineeringFeed::item( $linker_publication_c )['ac_power_kw'], 'same URL replacement cannot reauthorize old scalar figure values' );
+update_post_meta( $linker_publication_c, \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, array( 'rated_ac_power_kw' => array( 'value' => 11, 'unit' => 'kW', 'citation' => array( 'url' => $linker_publication_urls['figure'], 'page' => 1 ) ) ) );
+$linker_publication_check( 11.0 === EngineeringFeed::item( $linker_publication_c )['ac_power_kw'], 'normal Woo fact correction binds the newly edited fact to current bytes' );
 $linker_publication_feed = EngineeringFeed::feed();
 $linker_publication_feed_ids = array_column( $linker_publication_feed['products'], 'id' );
 $linker_publication_check( in_array( $linker_publication_a, $linker_publication_feed_ids, true ) && ! in_array( $linker_publication_b, $linker_publication_feed_ids, true ) && ! in_array( $linker_publication_de, $linker_publication_feed_ids, true ), 'engineering feed emits one canonical published product and current document versions' );
 $linker_publication_current_claim = $linker_publication_jobs->claim( 'knowledge', 'fixture-worker', 300 );
+if ( is_wp_error( $linker_publication_current_claim ) ) {
+	throw new RuntimeException( $linker_publication_current_claim->get_error_message() );
+}
 $linker_publication_current_job = $linker_publication_current_claim['job'];
 $linker_publication_ready = $linker_publication_jobs->acknowledge( array( 'job_id' => $linker_publication_current_job['job_id'], 'lease_token' => $linker_publication_current_job['lease_token'], 'source_revision' => $linker_publication_current_job['source_revision'], 'loaded_revision' => 'fixture-current-loaded', 'status' => 'ready', 'prepared_products' => $linker_publication_current_job['manifest']['products'] ) );
-$linker_publication_check( ! is_wp_error( $linker_publication_ready ) && Publication::product( $linker_publication_a )['ready']['knowledge'], 'current loaded receipt enables matching preparation state without changing permission' );
+$linker_publication_check( ! is_wp_error( $linker_publication_ready ) && ( Publication::product( $linker_publication_a )['ready']['knowledge'] ?? false ), 'current loaded receipt enables matching preparation state without changing permission' );
 echo wp_json_encode( array( 'checks' => $linker_publication_checks, 'count' => count( $linker_publication_checks ), 'state' => $linker_publication_state, 'manifest' => Publication::manifest() ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );

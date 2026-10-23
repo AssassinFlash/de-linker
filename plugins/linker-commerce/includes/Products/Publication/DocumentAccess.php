@@ -27,7 +27,7 @@ final class DocumentAccess {
 		if ( '' !== $home && str_starts_with( $prefix, $home . '/' ) ) {
 			$prefix = substr( $prefix, strlen( $home ) + 1 );
 		}
-		$gate = 'RewriteRule ^' . preg_quote( $prefix, '#' ) . '/(.+\\.pdf)$ index.php?' . self::QUERY_VAR . '=$1 [END,NC]';
+		$gate     = 'RewriteRule ^' . preg_quote( $prefix, '#' ) . '/(.+\\.pdf)$ index.php?' . self::QUERY_VAR . '=$1 [END,NC]';
 		$no_cache = 'RewriteRule ^' . preg_quote( $prefix, '#' ) . '/(.+\\.pdf)$ - [E=Cache-Control:no-cache,NC]';
 		return str_replace( 'RewriteEngine On', "RewriteEngine On\n# Current Woo technical-document permission\n" . $no_cache . "\n" . $gate, $rules );
 	}
