@@ -19,16 +19,103 @@ final class Module {
 		$access = new DocumentAccess();
 		add_action( 'rest_api_init', array( new Controller(), 'register_routes' ) );
 		add_action( 'linker_publication_reconcile', array( $jobs, 'reconcile' ) );
-		foreach ( array( 'save_post_product', 'transition_post_status', 'deleted_post', 'set_object_terms', 'added_post_meta', 'updated_post_meta', 'deleted_post_meta', 'add_attachment', 'edit_attachment', 'delete_attachment', 'pll_save_post', 'edited_term', 'created_term', 'delete_term', 'woocommerce_update_product', 'wp_update_attachment_metadata' ) as $hook ) {
-			add_action( $hook, array( $jobs, 'changed' ) );
+		foreach ( array( 'save_post_product', 'set_object_terms', 'deleted_term_relationships', 'add_attachment', 'edit_attachment', 'delete_attachment', 'pll_save_post', 'woocommerce_update_product' ) as $hook ) {
+			add_action( $hook, array( $this, 'source_changed' ) );
+		}
+		add_action( 'transition_post_status', array( $this, 'status_changed' ), 10, 3 );
+		add_action( 'deleted_post', array( $this, 'source_deleted' ), 10, 2 );
+		foreach ( array( 'edited_term', 'created_term', 'delete_term' ) as $hook ) {
+			add_action( $hook, array( $this, 'term_changed' ), 10, 3 );
 		}
 		foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hook ) {
+			add_action( $hook, array( $this, 'metadata_changed' ), 10, 3 );
 			add_action( $hook, array( $this, 'managed_documents' ), 10, 3 );
 		}
 		add_action( 'template_redirect', array( $access, 'serve' ), 0 );
 		add_filter( 'mod_rewrite_rules', array( $access, 'rewrite_rules' ) );
 		add_filter( 'attachment_fields_to_edit', array( $this, 'attachment_fields' ), 10, 2 );
 		add_filter( 'attachment_fields_to_save', array( $this, 'save_attachment' ), 10, 2 );
+	}
+
+	/**
+	 * Product and technical-PDF events have their source ID as the first argument.
+	 *
+	 * @param int $id Native post identity.
+	 */
+	public function source_changed( int $id ): void {
+		$post = get_post( $id );
+		if ( $post instanceof \WP_Post && self::is_source( $post ) ) {
+			( new PreparationJobs() )->changed();
+		}
+	}
+
+	/**
+	 * Metadata actions identify their owning post in the second argument.
+	 * Attachment metadata is observed after persistence, never by replacing its filter value.
+	 *
+	 * @param int|array<int> $meta_id Native metadata identity or deleted identities.
+	 * @param int            $id Owning post.
+	 * @param string         $key Changed metadata key.
+	 */
+	public function metadata_changed( int|array $meta_id, int $id, string $key ): void {
+		unset( $meta_id );
+		$post = get_post( $id );
+		if ( ! $post instanceof \WP_Post || ! self::is_source( $post ) ) {
+			return;
+		}
+		if ( 'product' === $post->post_type || in_array( $key, array( '_wp_attached_file', '_wp_attachment_metadata', '_linker_document_public' ), true ) ) {
+			( new PreparationJobs() )->changed();
+		}
+	}
+
+	/**
+	 * Native status transitions pass the post third, rather than a post ID first.
+	 *
+	 * @param string   $new_status New post status.
+	 * @param string   $old_status Previous post status.
+	 * @param \WP_Post $post Changed source.
+	 */
+	public function status_changed( string $new_status, string $old_status, \WP_Post $post ): void {
+		unset( $new_status, $old_status );
+		if ( self::is_source( $post ) ) {
+			( new PreparationJobs() )->changed();
+		}
+	}
+
+	/**
+	 * After deletion, the supplied snapshot is authoritative for the source type.
+	 *
+	 * @param int      $id Deleted identity.
+	 * @param \WP_Post $post Native snapshot of the deleted source.
+	 */
+	public function source_deleted( int $id, \WP_Post $post ): void {
+		unset( $id );
+		if ( self::is_source( $post ) ) {
+			( new PreparationJobs() )->changed();
+		}
+	}
+
+	/**
+	 * Woo product taxonomies and attributes can change the current product facts.
+	 *
+	 * @param int    $id Native term ID.
+	 * @param int    $taxonomy_id Native term-taxonomy ID.
+	 * @param string $taxonomy Native taxonomy name.
+	 */
+	public function term_changed( int $id, int $taxonomy_id, string $taxonomy ): void {
+		unset( $id, $taxonomy_id );
+		if ( str_starts_with( $taxonomy, 'pa_' ) || str_starts_with( $taxonomy, 'product_' ) ) {
+			( new PreparationJobs() )->changed();
+		}
+	}
+
+	/**
+	 * Queued mail, inquiries, conversation history and ordinary posts are not product sources.
+	 *
+	 * @param \WP_Post $post Current post or native deletion snapshot.
+	 */
+	private static function is_source( \WP_Post $post ): bool {
+		return 'product' === $post->post_type || ( 'attachment' === $post->post_type && 'application/pdf' === $post->post_mime_type );
 	}
 
 	/**

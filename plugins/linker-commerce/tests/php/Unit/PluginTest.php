@@ -125,8 +125,14 @@ final class PluginTest extends TestCase {
 		foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hook ) {
 			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $publication ), 'managed_documents' ), 10, 3 ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}
-		foreach ( array( 'save_post_product', 'transition_post_status', 'deleted_post', 'set_object_terms', 'added_post_meta', 'updated_post_meta', 'deleted_post_meta', 'add_attachment', 'edit_attachment', 'delete_attachment', 'pll_save_post', 'edited_term', 'created_term', 'delete_term', 'woocommerce_update_product', 'wp_update_attachment_metadata' ) as $hook ) {
-			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $preparation ), 'changed' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
+		foreach ( array( 'save_post_product', 'set_object_terms', 'deleted_term_relationships', 'add_attachment', 'edit_attachment', 'delete_attachment', 'pll_save_post', 'woocommerce_update_product' ) as $hook ) {
+			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $publication ), 'source_changed' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
+		}
+		foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hook ) {
+			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $publication ), 'metadata_changed' ), 10, 3 ); // @phpstan-ignore argument.type (WP_Mock matcher)
+		}
+		foreach ( array( array( 'transition_post_status', 'status_changed', 3 ), array( 'deleted_post', 'source_deleted', 2 ), array( 'edited_term', 'term_changed', 3 ), array( 'created_term', 'term_changed', 3 ), array( 'delete_term', 'term_changed', 3 ) ) as [ $hook, $method, $args ] ) {
+			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $publication ), $method ), 10, $args ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}
 		foreach ( array( array( 'rest_request_before_callbacks', $visibility, 'enter', 1, 3 ), array( 'rest_request_after_callbacks', $visibility, 'leave', 1, 3 ), array( 'woocommerce_product_is_visible', $visibility, 'visible', 10, 2 ), array( 'mod_rewrite_rules', $access, 'rewrite_rules', 10, 1 ), array( 'attachment_fields_to_edit', $publication, 'attachment_fields', 10, 2 ), array( 'attachment_fields_to_save', $publication, 'save_attachment', 10, 2 ) ) as [ $hook, $class, $method, $priority, $args ] ) {
 			WP_Mock::expectFilterAdded( $hook, array( new AnyInstance( $class ), $method ), $priority, $args ); // @phpstan-ignore argument.type (WP_Mock matcher)

@@ -70,17 +70,20 @@ const permission = {
 function fetchWith( current: unknown = product, ok = true ) {
 	return vi.fn( async ( url: RequestInfo | URL ) => ( {
 		ok: String( url ) === '/thread' || ok,
-		json: async () =>
-			String( url ) === '/thread'
-				? {
-						messages: [
-							{ role: 'user', content: 'Bitte das Datenblatt.' },
-						],
-						stream,
-					}
-				: String( url ).endsWith( '/publication/manifest' )
-					? permission
-					: current,
+		json: async () => {
+			if ( String( url ) === '/thread' ) {
+				return {
+					messages: [
+						{ role: 'user', content: 'Bitte das Datenblatt.' },
+					],
+					stream,
+				};
+			}
+			if ( String( url ).endsWith( '/publication/manifest' ) ) {
+				return permission;
+			}
+			return current;
+		},
 	} ) ) as unknown as typeof fetch;
 }
 
