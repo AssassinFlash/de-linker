@@ -64,6 +64,10 @@ final class EngineeringReference {
 		add_action( 'woocommerce_product_options_general_product_data', array( $this, 'fields' ) );
 		add_action( 'woocommerce_admin_process_product_object', array( $this, 'save' ) );
 		add_action( 'woocommerce_after_product_object_save', array( $this, 'remove_category' ) );
+		// Woo's force_default_term runs at 10; its batch repair uses the same
+		// default-category schedule at 10. Preserve those for ordinary products.
+		add_action( 'set_object_terms', array( $this, 'assigned_categories' ), 20, 4 );
+		add_action( 'wc_schedule_update_product_default_cat', array( $this, 'remove_default_categories' ), 20 );
 	}
 
 	/** Role and stable engineering identity remain editable on the Woo product. */
@@ -132,7 +136,47 @@ final class EngineeringReference {
 	 */
 	public function remove_category( WC_Product $product ): void {
 		if ( self::is_reference( $product->get_id() ) ) {
-			wp_set_object_terms( $product->get_id(), array(), 'product_cat' );
+			// A set-to-empty immediately calls WC_Post_Data::force_default_term.
+			// Native unlink preserves cache/count hooks without another set event.
+			wp_delete_object_term_relationships( $product->get_id(), 'product_cat' );
+		}
+	}
+
+	/**
+	 * Normal taxonomy writers cannot classify a reference as a sale product.
+	 *
+	 * @param int               $id Product ID.
+	 * @param array<int|string> $terms Assigned terms.
+	 * @param array<int>        $term_ids Term taxonomy identities.
+	 * @param string            $taxonomy Changed taxonomy.
+	 */
+	public function assigned_categories( int $id, array $terms, array $term_ids, string $taxonomy ): void {
+		unset( $terms, $term_ids );
+		if ( 'product_cat' === $taxonomy && self::is_reference( $id ) ) {
+			wp_delete_object_term_relationships( $id, 'product_cat' );
+		}
+	}
+
+	/** Woo's native batch default repair uses SQL; unlink only reference records after it. */
+	public function remove_default_categories(): void {
+		$ids = get_posts(
+			array(
+				'post_type'                   => 'product',
+				'post_status'                 => array( 'publish', 'draft', 'pending', 'private', 'future', 'trash' ),
+				'fields'                      => 'ids',
+				'posts_per_page'              => -1,
+				'suppress_filters'            => true,
+				'lang'                        => '',
+				'linker_publication_internal' => true,
+				'cache_results'               => false,
+				'meta_key'                    => self::ROLE_META_KEY, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Native scheduled repair of reference records only.
+				'meta_value'                  => self::PV_MODULE, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- No public catalogue query.
+			)
+		);
+		foreach ( $ids as $id ) {
+			if ( self::is_reference( (int) $id ) ) {
+				wp_delete_object_term_relationships( (int) $id, 'product_cat' );
+			}
 		}
 	}
 }

@@ -112,7 +112,7 @@ final class ReferenceMigration {
 			$product->save();
 			// Woo assigns the default category to an empty list during create;
 			// remove that native default too. References have no product category.
-			wp_set_object_terms( $id, array(), 'product_cat' );
+			wp_delete_object_term_relationships( $id, 'product_cat' );
 			update_post_meta( $id, SelectionFacts::FIGURES_META_KEY, $entry['figures'] );
 			EvidenceBindings::capture( $id, true );
 			if ( function_exists( 'pll_set_post_language' ) ) {
@@ -120,7 +120,7 @@ final class ReferenceMigration {
 			}
 			$product->set_status( 'publish' );
 			$product->save();
-			wp_set_object_terms( $id, array(), 'product_cat' );
+			wp_delete_object_term_relationships( $id, 'product_cat' );
 			( new PreparationJobs() )->changed();
 		} catch ( \Throwable $error ) {
 			$product->set_status( 'draft' );
