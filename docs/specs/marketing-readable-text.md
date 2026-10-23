@@ -19,6 +19,14 @@ their existing automatic/manual hyphenation modes. Keep explicit hyphens,
 product names outside these roots, and all customer-visible words.
 Actual browser layout and dictionary behavior must prove the intended result;
 the presence of the CSS property is not acceptance.
+The first66-view runtime review found all six EPC configurations still using
+12 5 5 for headings:26 headings with scripts,21 without. Its later inline
+rule assigns the property directly, overriding the
+root's inherited value. Override that existing German-only heading rule with
+the native heading types. Keep the original failed0a1b evidence; recheck all
+six EPC viewport/script combinations and its two full-page views. Other roots
+cannot match this corrective selector, so their existing0a1b evidence retains
+its original source binding rather than being relabelled as the new source.
 
 The Installer mobile prompt is a native two-row textarea. At390 the actual
 German placeholder has scrollHeight68px inside clientHeight60px, cutting off

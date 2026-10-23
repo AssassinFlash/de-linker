@@ -24,6 +24,12 @@ html[lang^="de"]
 	hyphenate-limit-chars: 12 6 6;
 }
 
+/* The saved EPC page assigns 12 5 5 directly to its headings. Inheritance
+   cannot replace it; native heading types outrank that later :where rule. */
+#tv-solutions-developers-v1:lang(de) :is(h1, h2, h3, h4, h5, h6) {
+	hyphenate-limit-chars: 12 6 6;
+}
+
 /* The existing 22-letter compound is Speicher (8) + lösungspartner (14).
    Prefer that real compound boundary over the observed Speicherlö-/sungs… . */
 html[lang^="de"] #installer-journal .lk-hero-title {
