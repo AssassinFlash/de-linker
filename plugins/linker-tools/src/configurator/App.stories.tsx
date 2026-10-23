@@ -22,7 +22,8 @@ import { App, type AppProps } from './App';
 import type { Locale } from './types';
 
 type Args = {
-	outcome: 'solution' | 'none' | 'unavailable' | 'never' | 'stale' | 'publication';
+	outcome:
+		'solution' | 'none' | 'unavailable' | 'never' | 'stale' | 'publication';
 	commercial: 'sized' | 'indicative';
 	segment: AppProps[ 'initialSegment' ];
 	draft: 'added' | 'unverified' | 'retry' | 'stale';
@@ -199,14 +200,15 @@ export const DraftNotConfirmed: Story = {
 
 /** A later action discovers that the confirmed result is no longer current. */
 export const SelectionNoLongerCurrent: Story = {
-    ...AddedToDraft,
-    args: { draft: 'stale' },
+	...AddedToDraft,
+	args: { draft: 'stale' },
 };
 
 /** Current Woo permission cannot be checked, distinct from the yield service. */
 export const ProductDataUnavailable: Story = {
-    args: { outcome: 'publication' },
-    play: async ( { canvasElement, globals } ) => fillAndCalculate( canvasElement, globals.locale ),
+	args: { outcome: 'publication' },
+	play: async ( { canvasElement, globals } ) =>
+		fillAndCalculate( canvasElement, globals.locale ),
 };
 
 export const Computing: Story = {

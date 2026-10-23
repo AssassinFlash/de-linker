@@ -13,6 +13,7 @@ parameters:
 		- tests/php/Doubles
 	scanDirectories:
 		- ../linker-commerce/includes/Protection
+		- ../linker-commerce/includes/Products
 	scanFiles:
 		# The optional commerce digest boundary; no runtime dependency before
 		# the linker_commerce_digest_blocks filter runs.
