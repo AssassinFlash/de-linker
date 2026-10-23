@@ -17,15 +17,27 @@ use WP_REST_Response;
 /** History remains a snapshot; a replayed turn is a new current read. */
 class PublicationGuard {
 	/**
+	 * Real current source readers or explicit fixture transports.
+	 *
+	 * @param callable():array<string,mixed>|null                    $read Current manifest.
+	 * @param callable(array<string,mixed>):array<string,mixed>|null $check Fresh validation.
+	 */
+	public function __construct( private $read = null, private $check = null ) {}
+
+	/**
 	 * Every current candidate/evidence dependency, never a browser-supplied list.
 	 *
 	 * @return array<string,mixed>|WP_Error
 	 */
 	public function dependencies(): array|WP_Error {
 		if ( ! class_exists( Publication::class ) ) {
-			return self::refused();
+			return self::refused( 503 );
 		}
-		$manifest  = Publication::manifest();
+		try {
+			$manifest = is_callable( $this->read ) ? ( $this->read )() : Publication::manifest();
+		} catch ( \RuntimeException $error ) {
+			return self::refused( 503 );
+		}
 		$products  = array();
 		$documents = array();
 		foreach ( $manifest['products'] as $product ) {
@@ -57,7 +69,15 @@ class PublicationGuard {
 	 * @return true|WP_Error
 	 */
 	public function validate( array $dependencies ): true|WP_Error {
-		if ( ! class_exists( Publication::class ) || true !== ( Publication::validate( $dependencies )['valid'] ?? false ) ) {
+		if ( ! class_exists( Publication::class ) ) {
+			return self::refused( 503 );
+		}
+		try {
+			$result = is_callable( $this->check ) ? ( $this->check )( $dependencies ) : Publication::validate( $dependencies );
+		} catch ( \RuntimeException $error ) {
+			return self::refused( 503 );
+		}
+		if ( true !== ( $result['valid'] ?? false ) ) {
 			return self::refused();
 		}
 		return true;
@@ -88,8 +108,11 @@ class PublicationGuard {
 		return $reply;
 	}
 
-	/** A protocol error; the shell uses its existing failed-turn UI. */
-	private static function refused(): WP_Error {
-		return new WP_Error( 'linker_genie_publication_changed', 'Current product permission could not be confirmed.', array( 'status' => 409 ) );
+	/** A typed refusal; the shell preserves the message and names the actual reason.
+	 *
+	 * @param int $status Revocation or unavailable authority.
+	 */
+	public static function refused( int $status = 409 ): WP_Error {
+		return new WP_Error( 503 === $status ? 'linker_genie_publication_unavailable' : 'linker_genie_publication_changed', 503 === $status ? __( 'Genie is temporarily unavailable. Your message is still here. You can send an inquiry to our team.', 'linker-tools' ) : __( 'The product information changed while Genie was answering. Your message is still here.', 'linker-tools' ), array( 'status' => $status ) );
 	}
 }

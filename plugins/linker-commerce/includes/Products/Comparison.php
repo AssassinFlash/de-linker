@@ -135,7 +135,7 @@ final class Comparison {
 	public function of( array $ids, string $lang = 'en' ): array {
 		$lang                       = ProductText::lang( $lang );
 		$this->publication_snapshot = $this->publication->manifest();
-		$ids                        = $this->publication->published( self::published( $ids ), $this->publication_snapshot );
+		$ids                        = $this->publication->published( self::published( $ids ), $this->publication_snapshot, $lang );
 		$dependencies               = $this->publication->dependencies( $ids, $this->publication_snapshot );
 		$products                   = array();
 		$classes                    = array();

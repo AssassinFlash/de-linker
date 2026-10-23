@@ -23,6 +23,10 @@ class PublicationUnavailable(RuntimeError):
     failure_kind = "retrieval"
 
 
+class PublicationChanged(PublicationUnavailable):
+    """Woo answered authoritatively that a captured dependency was revoked."""
+
+
 @dataclass(frozen=True)
 class Snapshot:
     source_revision: str
@@ -83,7 +87,7 @@ class Snapshot:
 
     def require_products(self, product_ids: Sequence[int]) -> None:
         if any(self.canonical(pid) is None for pid in product_ids):
-            raise PublicationUnavailable("product is no longer published")
+            raise PublicationChanged("product is no longer published")
 
     def require_urls(self, urls: Sequence[str]) -> None:
         allowed = {
@@ -92,7 +96,7 @@ class Snapshot:
             for url in [d["url"], *d.get("aliases", [])]
         }
         if any(url.split("#")[0] not in allowed for url in urls):
-            raise PublicationUnavailable("document is no longer published")
+            raise PublicationChanged("document is no longer published")
 
 
 def product_ids(value: Any) -> Iterator[int]:
@@ -157,8 +161,10 @@ class PublicationClient:
 
     def validate(self, snapshot: Snapshot) -> None:
         response = self._request("POST", "/validate", snapshot.dependencies())
+        if isinstance(response, dict) and response.get("valid") is False:
+            raise PublicationChanged("Woo publication changed during the operation")
         if not isinstance(response, dict) or response.get("valid") is not True:
-            raise PublicationUnavailable("Woo publication changed during the operation")
+            raise PublicationUnavailable("invalid Woo publication validation")
 
     def identify(self, models: Sequence[str]) -> dict[str, str]:
         result: dict[str, str] = {}

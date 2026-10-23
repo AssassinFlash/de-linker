@@ -117,7 +117,12 @@ function documentLabel(
 	};
 }
 
-/** Current permission and content identity; settles even if a transport ignores abort. */
+/**
+ * Current permission and content identity; settles even if a transport ignores abort.
+ * @param context Current REST root and language.
+ * @param nonce   Native REST identity nonce.
+ * @param fetcher Authority transport.
+ */
 async function publicationManifest(
 	context: ArtifactContext,
 	nonce: string,

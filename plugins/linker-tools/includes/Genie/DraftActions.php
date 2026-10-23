@@ -65,6 +65,8 @@ final class DraftActions {
 	/**
 	 * Add the complete server-signed list atomically.
 	 *
+	 * @phpstan-impure Reads current owner/authority and writes the native cart.
+	 *
 	 * @param WP_REST_Request $request Signed artifact token only.
 	 */
 	public function draft( WP_REST_Request $request ): WP_REST_Response|WP_Error {

@@ -141,7 +141,7 @@ final class CompareProducts {
 		$lang                       = ProductText::lang( $input['lang'] ?? null );
 		$ids                        = array_values( array_unique( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) );
 		$this->publication_snapshot = $this->publication->manifest();
-		if ( $this->publication->published( $ids, $this->publication_snapshot ) !== $ids ) {
+		if ( $this->publication->published( $ids, $this->publication_snapshot, $lang ) !== $ids ) {
 			return array(
 				'products' => array(),
 				'rows'     => array(),

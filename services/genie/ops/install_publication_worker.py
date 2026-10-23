@@ -98,7 +98,8 @@ def run_private(path: Path, arguments: list[str]) -> int:
             sys.executable,
             str(Path(__file__).with_name("publication_worker.py")),
             *arguments,
-        ]
+        ],
+        cwd=Path(__file__).resolve().parents[1],
     )
 
 

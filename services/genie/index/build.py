@@ -357,8 +357,9 @@ def build(
     tokenizer: Tokenizer,
     detect_lang: Callable[[str], str],
     mariadb_prefix: str | None = None,
+    on_created: Callable[[Path], None] | None = None,
 ) -> Path:
-    """Chunk, embed (unless `embedder` is None) and store; returns the build directory."""
+    """Chunk, embed and store; report the newly created generation before writing it."""
     started = time.monotonic()
     chunked = chunk_all(inventory_path, pdf_dir, parsed_dir, tokenizer, detect_lang)
     after_chunking = time.monotonic()
@@ -383,6 +384,8 @@ def build(
     version = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     build_dir = out_root / "builds" / version
     build_dir.mkdir(parents=True)
+    if on_created is not None:
+        on_created(build_dir)
     source = json.loads(inventory_path.read_text(encoding="utf-8"))
     proof: dict[str, Any] = {}
     if "publication_manifest" in source:
