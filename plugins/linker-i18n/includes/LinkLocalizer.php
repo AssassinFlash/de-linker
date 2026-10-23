@@ -193,6 +193,9 @@ final class LinkLocalizer {
 		$url_language = $german ? Languages::TARGET : Languages::SOURCE;
 		if ( '' === trim( $unprefixed, '/' ) ) {
 			if ( $public_source ) {
+				if ( 'page' !== get_option( 'show_on_front' ) ) {
+					return null;
+				}
 				$front = $this->languages->post_translation( (int) get_option( 'page_on_front' ), $url_language );
 				$post  = $this->public_post( $front );
 				if ( null === $post || 'page' !== $post->post_type ) {

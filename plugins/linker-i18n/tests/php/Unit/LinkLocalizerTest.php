@@ -51,6 +51,13 @@ final class LinkLocalizerTest extends TestCase {
 	private string $page_password = '';
 
 	/**
+	 * A stale front ID does not make a posts homepage a static page.
+	 *
+	 * @var string
+	 */
+	private string $front_mode = 'page';
+
+	/**
 	 * The localizer on a site where /contact/ (33) has the German page
 	 * /de/kontakt/ (58), the category accessories (46) Zubehör (150), the
 	 * shop page products (15) produkte (42).
@@ -180,9 +187,10 @@ final class LinkLocalizerTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_option',
 			array(
-				'return' => static fn( string $name ) => array(
+				'return' => fn( string $name ) => array(
 					'woocommerce_shop_page_id' => '15',
 					'page_on_front'            => '11',
+					'show_on_front'            => $this->front_mode,
 				)[ $name ] ?? '',
 			)
 		);
@@ -399,5 +407,13 @@ final class LinkLocalizerTest extends TestCase {
 		$valid  = PolylangDouble::HOME . 'products/';
 		$target = PolylangDouble::HOME . 'de/produkte/';
 		$this->assertSame( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $target ) . '">Contact</a>', $this->localizer()->localize( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $valid ) . '">Contact</a>' ) );
+	}
+
+	/** A posts homepage cannot borrow the identity of an unused static front page. */
+	public function test_posts_home_does_not_convert_a_source_from_a_stale_front_option(): void {
+		$this->front_mode = 'posts';
+		$html             = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( PolylangDouble::HOME ) . '">Contact</a>';
+		$this->assertSame( $html, $this->localizer()->localize( $html ) );
+		$this->assertSame( PolylangDouble::HOME . 'de/', $this->localizer()->url( PolylangDouble::HOME ) );
 	}
 }
