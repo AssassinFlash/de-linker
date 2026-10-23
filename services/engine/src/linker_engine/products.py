@@ -61,6 +61,10 @@ class Document:
     title: str
     type: str
     lang: str
+    document_id: str | None = None
+    document_revision: str | None = None
+    blob_sha256: str | None = None
+    product_ids: list[int] | None = None
 
 
 def _known(value: Any) -> Any:

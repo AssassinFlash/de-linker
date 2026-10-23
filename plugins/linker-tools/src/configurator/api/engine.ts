@@ -62,7 +62,7 @@ async function call( response: Promise< Response > ): Promise< Response > {
 	if ( answer.status === 404 ) {
 		throw new EngineError( 'not_found', field );
 	}
-	if ( answer.status === 503 ) {
+	if ( answer.status === 503 || answer.status === 409 ) {
 		throw new EngineError( 'unavailable' );
 	}
 	throw new EngineError( 'network' );
@@ -85,7 +85,8 @@ export interface EngineClient {
 	) => Promise< RoofPlane >;
 	reportPdf: (
 		input: ResidentialInput,
-		logo: string | null
+		logo: string | null,
+		selectionFingerprint?: string
 	) => Promise< Blob >;
 }
 
@@ -128,7 +129,7 @@ export function engineClient(
 					azimuth_deg: azimuth,
 				} )
 			).json(),
-		reportPdf: async ( input, logo ) =>
-			( await post( '/report/pdf', { input, logo } ) ).blob(),
+		reportPdf: async ( input, logo, selectionFingerprint ) =>
+			( await post( '/report/pdf', { input, logo, selection_fingerprint: selectionFingerprint } ) ).blob(),
 	};
 }

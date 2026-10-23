@@ -12,14 +12,17 @@ they are first needed; an invalid one is refused, never patched.
 
 from __future__ import annotations
 
+import hashlib
 import hmac
 import json
 import os
 import threading
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from functools import cached_property
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,11 +43,20 @@ from .models import (
     RoofPlaneResult,
     RoofRequest,
     RoofResult,
+    SelectionRequest,
 )
 from .products import Products
+from .publication import (
+    Publication,
+    PublicationChanged,
+    PublicationUnavailable,
+    View,
+    fingerprint,
+)
 from .pvgis import Pvgis, YieldUnavailable
 from .roof import service as roof_service
 from .roof.lod2 import Lod2Unavailable
+from .selections import Selections
 
 
 @dataclass
@@ -77,13 +89,32 @@ class Services:
 
     def __init__(self, settings: Settings, source: tuple[bytes, ...]) -> None:
         self.settings = settings
-        feed = settings.feed.read_bytes()
-        compatibility = settings.compatibility.read_bytes()
+        feed_path = settings.feed.resolve()
+        manifest_path = feed_path.parent / "manifest.json"
+        feed = feed_path.read_bytes()
+        compatibility = (
+            feed_path.parent / "compatibility.json"
+            if manifest_path.exists()
+            else settings.compatibility
+        ).read_bytes()
+        if manifest_path.exists():
+            generation = json.loads(manifest_path.read_text())
+            if (
+                generation["feed_sha256"] != hashlib.sha256(feed).hexdigest()
+                or generation["compatibility_sha256"]
+                != hashlib.sha256(compatibility).hexdigest()
+            ):
+                raise ValueError("engineering generation bytes do not match manifest")
+        loaded_feed = json.loads(feed)
+        if loaded_feed.get("compatibility") != json.loads(compatibility):
+            raise ValueError("feed and compatibility are not one generation")
+        self.publication = Publication(loaded_feed)
         self.engine = Engine(
             products=Products.from_feed(json.loads(feed)),
             compatibility=Compatibility(json.loads(compatibility)),
             pvgis=Pvgis(settings.cache / "pvgis"),
         )
+        self.selections = Selections(settings.cache / "private")
         self.version = version.digest(source, feed, compatibility)
 
     @cached_property
@@ -141,16 +172,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             status_code=503, detail={"error": code, "message": str(error)}
         )
 
+    @app.middleware("http")
+    async def loaded_headers(
+        request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
+        response = await call_next(request)
+        if request.method == "POST" and response.status_code < 400:
+            response.headers["X-Linker-Engine-Version"] = services().version
+            response.headers["Cache-Control"] = "private, no-store"
+        return response
+
     @app.get("/health")
     def health() -> dict[str, str]:
         """Report that the service is up."""
         return {"status": "ok"}
 
     @app.get("/resource/version")
-    def resource_version(request: Request, response: Response) -> dict[str, str]:
+    def resource_version(request: Request, response: Response) -> dict[str, Any]:
         """Authenticated read of the loaded snapshot; never an anonymous proxy route."""
-        if os.environ.get("LINKER_ENGINE_GATE_MODE", "off") != "enforce":
-            raise HTTPException(status_code=503, detail="engine gate unavailable")
         expected = os.environ.get("GENIE_SERVICE_TOKEN", "")
         if not expected:
             raise HTTPException(status_code=503, detail="service token unavailable")
@@ -166,7 +205,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 status_code=503, detail="engine version unavailable"
             ) from error
         response.headers["Cache-Control"] = "private, no-store"
-        return {"version": current}
+        snapshot: dict[str, Any] = {
+            "version": current,
+            "source_revision": str(services().publication.feed.get("source_revision", "")),
+            "compatibility_revision": str(services().publication.feed.get("compatibility_revision", "")),
+        }
+        if request.query_params.get("ready") == "1":
+            try:
+                snapshot["prepared_products"] = services().publication.view(services().engine).dependencies["products"]
+            except PublicationUnavailable as error:
+                raise unavailable(error, "publication_unavailable") from error
+        return snapshot
 
     @app.get("/geo/plz/{plz}")
     def place(plz: str) -> PlaceResult:
@@ -186,51 +235,135 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             imagery=imagery.for_state(found.state),
         )
 
-    @app.post("/design/residential", response_model_by_alias=True)
-    def design_residential(request: ResidentialInput) -> ResidentialResult:
+    def compute(
+        request: ResidentialInput | CommercialInput,
+    ) -> ResidentialResult | CommercialResult:
+        loaded = services()
         try:
-            design = residential.design(services().engine, request)
+            view = loaded.publication.view(loaded.engine)
+            if isinstance(request, ResidentialInput):
+                design = residential.design(view.engine, request)
+                result: ResidentialResult | CommercialResult = residential.result(
+                    design, report.residential(design, now())
+                )
+            else:
+                result = commercial.design(view.engine, request, now())
+            loaded.publication.confirm(view)
+            result.publication = view.dependencies
+            result.selection_fingerprint = fingerprint(
+                request.model_dump(mode="json"),
+                result.model_dump(mode="json", by_alias=True),
+                view.dependencies,
+            )
+            loaded.selections.remember(request.model_dump(mode="json"), result)
+            return result
+        except PublicationChanged as error:
+            raise HTTPException(
+                status_code=409, detail={"error": "publication_changed"}
+            ) from error
+        except PublicationUnavailable as error:
+            raise unavailable(error, "publication_unavailable") from error
         except residential.DesignInputError as error:
             raise HTTPException(
                 status_code=422, detail={"error": "invalid_input", "field": error.field}
             ) from error
         except YieldUnavailable as error:
             raise unavailable(error, "yield_unavailable") from error
-        return residential.result(design, report.residential(design, now()))
-
-    @app.post("/design/commercial")
-    def design_commercial(request: CommercialInput) -> CommercialResult:
-        try:
-            return commercial.design(services().engine, request, now())
         except commercial.LoadProfileError as error:
             raise HTTPException(
                 status_code=422, detail={"error": "load_profile", "message": str(error)}
             ) from error
 
+    @app.post("/design/residential", response_model_by_alias=True)
+    def design_residential(
+        request: ResidentialInput,
+    ) -> ResidentialResult | CommercialResult:
+        return compute(request)
+
+    @app.post("/design/commercial")
+    def design_commercial(
+        request: CommercialInput,
+    ) -> ResidentialResult | CommercialResult:
+        return compute(request)
+
+    @app.post("/selection/validate", response_model_by_alias=True)
+    def selection_validate(
+        request: SelectionRequest, http: Request
+    ) -> ResidentialResult | CommercialResult:
+        expected = os.environ.get("GENIE_SERVICE_TOKEN", "")
+        if not expected or not hmac.compare_digest(
+            http.headers.get("x-linker-service-token", "").encode("latin-1", "ignore"),
+            expected.encode(),
+        ):
+            raise HTTPException(status_code=401, detail="unauthorized")
+        if (request.kind == "residential") != isinstance(
+            request.input, ResidentialInput
+        ):
+            raise HTTPException(
+                status_code=422, detail={"error": "invalid_input", "field": "kind"}
+            )
+        return confirmed(request.input, request.selection_fingerprint, request.kind)
+
+    def confirmed(
+        input_: ResidentialInput | CommercialInput,
+        selection_fingerprint: str,
+        kind: str,
+    ) -> ResidentialResult | CommercialResult:
+        loaded = services()
+        result = loaded.selections.read(
+            input_.model_dump(mode="json"), selection_fingerprint, kind
+        )
+        if result is None or not result.publication:
+            raise HTTPException(status_code=409, detail={"error": "selection_changed"})
+        try:
+            loaded.publication.confirm(View(loaded.engine, result.publication))
+        except PublicationUnavailable as error:
+            raise HTTPException(
+                status_code=409, detail={"error": "publication_changed"}
+            ) from error
+        return result
+
     @app.post("/roof/outline")
     def roof_outline(request: RoofRequest) -> RoofResult:
         try:
-            return services().roof.outline(request)
+            loaded = services()
+            view = loaded.publication.view(loaded.engine)
+            result = loaded.roof.outline(request)
+            loaded.publication.confirm(view)
+            result.publication = {**view.dependencies, "products": [], "documents": []}
+            return result
+        except PublicationUnavailable as error:
+            raise unavailable(error, "publication_unavailable") from error
         except Lod2Unavailable as error:
             raise unavailable(error, "lod2_unavailable") from error
 
     @app.post("/roof/pack")
     def roof_pack(request: RoofPackRequest) -> RoofPlaneResult:
         """Modules on a roof plane drawn by hand."""
-        return roof_service.pack_drawn(request, services().engine.products.module)
+        loaded = services()
+        try:
+            view = loaded.publication.view(loaded.engine)
+            result = roof_service.pack_drawn(request, loaded.engine.products.module)
+            loaded.publication.confirm(view)
+            result.publication = {**view.dependencies, "products": [], "documents": []}
+            return result
+        except PublicationUnavailable as error:
+            raise unavailable(error, "publication_unavailable") from error
 
     @app.post("/report/pdf")
     def report_pdf(request: ReportRequest) -> Response:
+        result = confirmed(request.input, request.selection_fingerprint, "residential")
+        if not isinstance(result, ResidentialResult):
+            raise HTTPException(status_code=409, detail={"error": "selection_changed"})
         try:
-            design = residential.design(services().engine, request.input)
-        except residential.DesignInputError as error:
+            document = pdf.render(result.report, request.logo)
+            # Rendering can take time: validate again immediately before bytes.
+            loaded = services()
+            loaded.publication.confirm(View(loaded.engine, result.publication or {}))
+        except PublicationUnavailable as error:
             raise HTTPException(
-                status_code=422, detail={"error": "invalid_input", "field": error.field}
+                status_code=409, detail={"error": "publication_changed"}
             ) from error
-        except YieldUnavailable as error:
-            raise unavailable(error, "yield_unavailable") from error
-        try:
-            document = pdf.render(report.residential(design, now()), request.logo)
         except pdf.LogoError as error:
             raise HTTPException(
                 status_code=422, detail={"error": "invalid_input", "field": "logo"}

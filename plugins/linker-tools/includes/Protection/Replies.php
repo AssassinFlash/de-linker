@@ -71,10 +71,11 @@ final class Replies {
 		}
 		$data    = $reply->get_data();
 		$stored  = array(
-			'status'  => $reply->get_status(),
-			'headers' => $reply->get_headers(),
-			'binary'  => is_string( $data ),
-			'data'    => is_string( $data ) ? base64_encode( $data ) : $data, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary PDF bytes inside a native JSON receipt.
+			'status'      => $reply->get_status(),
+			'headers'     => $reply->get_headers(),
+			'publication' => EnginePublication::dependencies( $reply ),
+			'binary'      => is_string( $data ),
+			'data'        => is_string( $data ) ? base64_encode( $data ) : $data, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary PDF bytes inside a native JSON receipt.
 		);
 		$updated = wp_update_post(
 			array(
@@ -100,8 +101,24 @@ final class Replies {
 		if ( ! is_array( $stored ) || ! isset( $stored['status'], $stored['headers'] ) || ! array_key_exists( 'data', $stored ) ) {
 			return new WP_Error( 'linker_resource_result', 'The saved result is unavailable.', array( 'status' => 409 ) );
 		}
+		$dependencies = is_array( $stored['publication'] ?? null ) ? $stored['publication'] : array();
+		if ( array() !== $dependencies ) {
+			$valid = EnginePublication::validate( $dependencies );
+			if ( is_wp_error( $valid ) ) {
+				return $valid;
+			}
+		}
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Restore the authenticated private PDF response, never executable code.
-		return new WP_REST_Response( ! empty( $stored['binary'] ) ? base64_decode( (string) $stored['data'], true ) : $stored['data'], (int) $stored['status'], (array) $stored['headers'] );
+		$reply = new WP_REST_Response( ! empty( $stored['binary'] ) ? base64_decode( (string) $stored['data'], true ) : $stored['data'], (int) $stored['status'], (array) $stored['headers'] );
+		if ( array() !== $dependencies ) {
+			EnginePublication::remember( $reply, $dependencies );
+		}
+		/**
+		 * Consumers can reject their older receipts that predate dependency proof.
+		 *
+		 * @since 0.1.0
+		 */
+		return apply_filters( 'linker_tools_restored_reply', $reply, $stored );
 	}
 
 	/** Expired receipts hold no reason to retain a copy of a customer's answer. */
