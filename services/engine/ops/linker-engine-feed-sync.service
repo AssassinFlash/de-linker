@@ -6,8 +6,12 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
+Environment=LINKER_ENGINE_CACHE=/opt/linker-engine/state/cache
 EnvironmentFile=/etc/linker-engine.env
+# main records GC errors, still prepares Woo jobs and returns failure visibly.
 ExecStart=/usr/bin/python3 /opt/linker-engine/ops/sync-feed.py
+StandardOutput=journal
+StandardError=journal
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectHome=true

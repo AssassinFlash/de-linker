@@ -4,7 +4,7 @@
 
 ## 已执行
 
-- `services/engine`: 最终完整 pytest 175 通过，真实 106 产品工程/PVGIS/LoD2 夹具；Ruff lint/format 通过，mypy 全目录 55 个文件（包括测试）通过。准备与发布专项 25 通过。
+- `services/engine`: 工程/发布基线完整 pytest 175 通过，真实 106 产品工程/PVGIS/LoD2 夹具；后续独立 ops 修复专项 20 通过（含已有同步用例），没有把两组重叠数字相加。Ruff lint/format 全目录通过，mypy 全目录 56 个文件（包括测试）通过。
 - 新发布专项含：异步未运行前排除草稿 EcoFlow、在途任一候选撤权、资料新修订、未准备新品、空集、权威不可读、明确旧电池/逆变器、私有可信结果验证、PDF 精确匹配。
 - enforce 真实工程路径先计算，之后把计算函数替换为“调用即失败”，连续两次确认验证和 PDF 均保持相同选型、成功且没有重算。
 - 自动 sync 用本地 HTTP 与引擎真实 schema loader 验证整代发布、空 products、任一部分错误保留旧数据、旧进程读回失败整代回滚、最多两代与作业确认。
@@ -20,6 +20,16 @@
 部署须带上 engine 的新原子 sync 与 timer/service 定义，既有 `/etc/linker-engine.env` 增加专用 Woo Application Password 环境变量（只保存在服务器秘密配置），配置站点相应 manifest/jobs URL，读回实际 loaded source/compatibility/prepared_products 并确认 ack。首次替换 regular feed/contract 时脚本保留旧数据对，恢复旧代码时配合旧数据；不得只切新软链后给旧进程贴新版本。
 
 第一阶段 EcoFlow 的草稿与资料 410 保护未改动；这份执行记录没有声称已重建知识库或通过实际公开 HTTP 撤权验收。
+
+## 定时回执清理与受限文件系统
+
+集成会话的生产只读检查发现，旧在用 cache 为 `/root/.cache/linker-engine`；新 sync unit 的 `ProtectHome=true` 隐藏该路径，且可写目录只有既有 state、日志与 systemd 目录。旧 `main()` 在 claim 前无保护地执行 GC：不可写 SQLite 会中断准备；未来数据库被隐藏时又会被误报成“没有文件，因此成功”。
+
+修复将 GC 和准备分开：GC 明确失败、记录 journal、最终返回非零，但本轮仍完成独立的 Woo claim/build/loaded-readback/ack。两 unit 默认统一到 `/opt/linker-engine/state/cache`；环境文件中的旧值必须显式迁移，不能靠 unit 默认值覆盖。没有放开 `/root`、关闭 ProtectHome，或新增会因 GC 故障阻断 engine 重启/准备的 ExecStartPre。`--cache-preflight` 提供真实 SQLite 建库/事务/回滚写检查，部署必须在实际 unit namespace 内执行；`--cleanup-receipts` 可独立诊断，不代替定时证据。
+
+本轮本地验证：9 个原生 SQLite/路径用例与 11 个原有同步用例共 20 通过，包括 readonly DELETE 失败时仍从本地 HTTP 取真实 feed、原生 loader 验证、发布并 ack 成功，最终返回 1；无 pending job 也清理；只删除到期行，保留边界/未到期行与原件；未来建库写检查及探针回收；拒绝缺省、相对、root 或逃逸 symlink 路径。CLI 对旧 root 路径的 preflight 实际返回 1 并打印原因，未访问/移动该目录。客户历史、Woo 草稿与托管资料原件不在本 GC 范围。
+
+完整部署、迁移、回滚与实际定时验收步骤见 [ops/PUBLICATION.md](../../../../services/engine/ops/PUBLICATION.md)。该步骤要求先备份、停写并完整复制旧 cache，保留源作有界回滚，更新既有 env，安装 stable worker 与两 unit；在实际保护边界写检查，读回 engine 进程实际 cache，再观察两次真实 timer 触发及路径/删除数。当前 macOS 无 systemd，本轮没有执行该完整 unit/namespace/定时验收，也没有移动生产数据；这些通过前不得将 24 小时定期清理宣称已在生产生效。没有过期生产行时应记录零，不编造实际删除。
 
 ## 与统一工作台的边界对齐
 
