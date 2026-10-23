@@ -50,6 +50,7 @@ final class Module {
 		$this->shortcodes->register();
 		( new AccountLinks() )->register();
 		LegalNavigation::register();
+		( new SupplyBrands() )->register();
 			( $this->products ?? new ProductShortcodes( new ProductFilters(), new ProductView() ) )->register();
 		$this->gate->register();
 		$this->windpress->register();

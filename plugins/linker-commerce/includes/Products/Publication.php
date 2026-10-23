@@ -73,11 +73,15 @@ final class Publication {
 	/**
 	 * One fresh native permission read for a batch, without document bytes.
 	 *
-	 * @param int[] $ids Locale product IDs.
+	 * A candidate reader executes after refresh, so native category/visibility
+	 * queries and options belong to the same fresh read as product permission.
+	 *
+	 * @param int[]|callable():int[] $ids Locale IDs or their native candidate reader.
 	 * @return list<int>
 	 */
-	public static function published_ids( array $ids ): array {
+	public static function published_ids( array|callable $ids ): array {
 		self::refresh_runtime();
+		$ids = is_callable( $ids ) ? $ids() : $ids;
 		return array_values( array_filter( $ids, array( self::class, 'published_in_current_read' ) ) );
 	}
 
