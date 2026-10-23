@@ -20,9 +20,11 @@ the native panel supplies the account and contact links. Hide the inactive
 desktop account disclosure until its enhancement runs. Use the existing1280px
 desktop breakpoint, not a new guessed fit threshold. The first ready fit uses
 an explicit false compact state to measure the same expanded action budget,
-then the existing compact/fold calculation. Normal enhanced geometry, text,
-links, desktop breakpoints, language-independent fit and the approved three-
-engine fold boundaries must remain unchanged.
+then the existing compact/fold calculation. Keep normal item sizes, relative
+spacing, text, links, desktop breakpoints, language-independent fit and the
+approved three-engine fold boundaries. The separately evidenced duplicate
+desktop inset correction below moves that row left by one existing gutter;
+record it as an explicit closed-header visual bug fix.
 
 Keep the older button partial's desktop data-open guard limited to its direct
 container-child panel. The native details panel must follow its parent's open
@@ -74,12 +76,30 @@ programmatically focusing each target. Keep the failed original evidence.
 
 At the1280px folded desktop boundary, Escape focuses the native summary at
 x1236px with width44px; its outline ends at1284px outside the1280px viewport.
-Give the desktop native disclosure the container's existing1rem end margin.
-This restores end breathing room and contains its focus ring, including before
-enhancement and after Escape. The disclosure is hidden while the ordinary
-desktop row is measured, so retain that row's geometry and fit boundaries.
-Recheck both languages, native initial opening and script adoption; preserve
-the recorded closed-state bug fix separately from unaffected pixel controls.
+The ordinary desktop Contact action also ends at the viewport edge between
+1283px and1300px; actual native Tab at1283px cuts off its4px focus footprint.
+Both arise from the same full-width content-box frame: the container already
+owns1rem gutters, while the frame adds another16px start padding and shifts
+the whole row into the end gutter. Remove the duplicate frame inline padding,
+using the existing container inset on both sides. Its old client width minus
+16px start padding equals the new client width minus zero padding, retaining
+the measured content width, item spacing and native fit budget. Remove the
+interim native-only end margin; the common gutter now contains both targets.
+The desktop row moves left16px as this explicit closed-header bug fix; mobile
+geometry stays unchanged. Verify both languages and the existing three-engine
+fold boundaries, native initial opening and script adoption. Keep the recorded
+bug delta distinct from unaffected pixel controls.
+
+When Products is open on desktop, the fixed50px Genie launcher overlaps the
+Services row's right end by50px by44.7109375px. Testing only the row's centre
+misses that blocked area. Temporarily hide the resting launcher while native
+navigation is open, using its existing aria-expanded=false state. The same
+menu still offers its Genie link; closing navigation restores the launcher,
+and an already open conversation is unchanged. Remove the special82px panel
+bottom padding that only protected Contact and keep the existing12px bottom
+breathing room. Verify the whole affected row's hit area, all group states,
+Contact at scroll end, and launcher restoration in both languages; do not
+start a model conversation for this navigation check.
 
 The secondary product and all-items rows override the generic link text's
 existing 44px minimum with zero, rendering 36.5px and 40.796875px anchors.

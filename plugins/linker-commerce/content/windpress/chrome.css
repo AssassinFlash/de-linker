@@ -45,11 +45,11 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 #tv-mobile-toggle{flex-shrink:0;position:relative;z-index:2}
 }
 @media (min-width:1280px){#tv-header-v2 .tv-nav-frame{min-height:72px}}
-/* The content-box frame already fills its container. Its end padding adds
-   16px outside that width and produces 1px of document overflow at 1280px.
-   Remove only the transparent end padding: the content width, left inset,
-   navigation spacing and native fit() budget remain unchanged. */
-@media (min-width:1280px){#tv-header-v2 .tv-nav-frame{padding-right:0}}
+/* The container already supplies both 1rem gutters. The full-width,
+   content-box frame's extra start padding shifts the row into the end
+   gutter, clipping Contact's focus ring at 1283px. Remove its duplicate
+   inline padding; the content width and native fit() budget stay equal. */
+@media (min-width:1280px){#tv-header-v2 .tv-nav-frame{padding-inline:0}}
 #tv-header-v2 .tv-desktop-nav{display:none}
 @media (min-width:1280px){#tv-header-v2 .tv-desktop-nav{display:flex;align-items:center;gap:4px;flex:0 0 auto}}
 /* #229: DE must fit beside the contact button AND share EN's fold state.
@@ -204,13 +204,11 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-toggle .tv-menu-close-icon{display:block}
 #tv-header-v2 .tv-mobile-navigation>.tv-mobile-panel{position:absolute;top:100%;left:0;right:0;box-sizing:border-box;max-height:calc(100dvh - var(--lk-header-h) - var(--lk-toolbar-offset,0px));padding-left:1rem;padding-right:1rem;background:#fff;border-bottom:1px solid var(--proto-neutral-200)}
 #tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-panel{display:flex;flex-direction:column}
-/* Genie is 50px high, 20px from the bottom above 860px (src/genie/genie.css).
-   Keep the panel's existing 12px breathing room above that floating control. */
-@media (min-width:861px){body:has(.linker-genie>.linker-genie-open) #tv-header-v2 .tv-mobile-navigation>.tv-mobile-panel{padding-bottom:calc(20px + 50px + 12px + env(safe-area-inset-bottom,0px))}}
-/* The desktop content-box frame ends at the viewport at the fold boundary.
-   Reuse its container's 1rem end gutter so the native summary's focus ring
-   stays visible. This disclosure is hidden during the ordinary fit budget. */
-@media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none;margin-inline-end:1rem}}
+/* The resting Genie bubble covers Services' right end in the open panel.
+   Temporarily hide only that collapsed launcher while native navigation is
+   open. Its existing menu link and an already open conversation stay usable. */
+body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie>.linker-genie-open[aria-expanded="false"]{visibility:hidden}
+@media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none}}
 #tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation{display:block}
 @media (min-width:1280px){#tv-header-v2 #tv-mobile-toggle{display:none!important}}
 #tv-header-v2[data-tv-nav-folded="true"] .tv-desktop-nav,
