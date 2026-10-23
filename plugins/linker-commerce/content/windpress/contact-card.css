@@ -374,6 +374,11 @@
 	color: var(--proto-ink-muted-deep);
 }
 
+#contact-form .linker-contact-selection__summary dd {
+	/* Keep selected product names intact; existing wrapping still handles long values. */
+	hyphens: none;
+}
+
 #contact-form .linker-contact-selection__excluded,
 #contact-form
 	.linker-contact-selection:has(input[type="checkbox"]:not(:checked))

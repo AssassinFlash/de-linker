@@ -123,6 +123,11 @@ final class SelectionContext {
 		if ( is_string( $query['sort'] ?? null ) ) {
 			$selection['sort'] = $query['sort'];
 		}
+		foreach ( array( 'platform', 'document' ) as $key ) {
+			if ( is_string( $query[ $key ] ?? null ) ) {
+				$selection[ $key ] = $query[ $key ];
+			}
+		}
 		return self::normalize(
 			array(
 				'source'    => $query['source'] ?? '',
@@ -261,10 +266,14 @@ final class SelectionContext {
 				$result[ $key ] = (float) $number;
 			}
 		}
-		if ( is_string( $input['q'] ?? null ) ) {
-			$q = sanitize_text_field( $input['q'] );
-			if ( '' !== $q ) {
-				$result['q'] = $q;
+		// These are customer request labels, like search text, never product authority.
+		foreach ( array( 'q', 'platform', 'document' ) as $key ) {
+			if ( ! is_string( $input[ $key ] ?? null ) ) {
+				continue;
+			}
+			$text = sanitize_text_field( $input[ $key ] );
+			if ( '' !== $text ) {
+				$result[ $key ] = $text;
 			}
 		}
 		if ( is_string( $input['sort'] ?? null ) && in_array( $input['sort'], array( 'recommended', 'newest', 'name', 'power-desc', 'power-asc' ), true ) ) {

@@ -240,6 +240,54 @@ final class SelectionContextTest extends TestCase {
 		);
 	}
 
+	/** A platform/documents CTA carries the customer's request through the native form boundary. */
+	public function test_platform_and_documents_survive_the_contact_submission(): void {
+		$query     = array(
+			'source'    => 'https://site.test/products/',
+			'title'     => 'FORGED PAGE TITLE',
+			'platform'  => 'CRRC 6.X Liquid-Cooled CESS',
+			'document'  => 'Datasheets & certificates',
+			'entry_ref' => 'untrusted-reference',
+			'token'     => 'secret',
+		);
+		$context   = SelectionContext::query( $query );
+		$selection = array(
+			'platform' => $query['platform'],
+			'document' => $query['document'],
+		);
+		$this->assertSame( 'Current products', $context['title'] );
+		$this->assertSame( $selection, $context['selection'] );
+		$post       = array(
+			'name'                  => 'Maria',
+			'email'                 => 'maria@example.test',
+			'message'               => 'Please send the listed documents.',
+			'consent'               => '1',
+			'intent'                => 'document',
+			SelectionContext::FIELD => json_encode(
+				array(
+					'source'    => $context['source'],
+					'selection' => $context['selection'],
+				)
+			),
+		);
+		$submission = Submission::from_post( $post );
+		$this->assertInstanceOf( Submission::class, $submission );
+		$this->assertSame( $selection, $submission->selection()['selection'] );
+		$this->assertSame( $post['message'], $submission->message );
+		$this->assertStringNotContainsString( 'secret', $context['url'] );
+		$this->assertStringNotContainsString( 'untrusted-reference', $context['url'] );
+		$invalid = SelectionContext::query(
+			array_replace(
+				$query,
+				array(
+					'platform' => array( 'invalid' ),
+					'document' => array( 'invalid' ),
+				)
+			)
+		);
+		$this->assertSame( array(), $invalid['selection'] );
+	}
+
 	/** A language-root collision must resolve the native static page and its actual title. */
 	public function test_static_home_pair_precedes_url_to_postid_and_language_taxonomy(): void {
 		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
@@ -288,16 +336,25 @@ final class SelectionContextTest extends TestCase {
 			WP_Mock::expectFilter( 'pll_translation_url', $source, $language );
 			$result = SelectionContext::language_query(
 				array(
-					'source' => 'https://site.test/',
-					'intent' => 'offer',
-					'search' => 'SAJ + 5',
+					'source'   => 'https://site.test/',
+					'intent'   => 'offer',
+					'search'   => 'SAJ + 5',
+					'platform' => 'CRRC 6.X Liquid-Cooled CESS',
+					'document' => 'Datasheets & certificates',
 				),
 				$language
 			);
 			$this->assertSame( 'offer', $result['intent'] );
 			$transport = json_decode( $result[ SelectionContext::FIELD ], true );
 			$this->assertSame( $source, $transport['source'] );
-			$this->assertSame( array( 'q' => 'SAJ + 5' ), $transport['selection'] );
+			$this->assertSame(
+				array(
+					'q'        => 'SAJ + 5',
+					'platform' => 'CRRC 6.X Liquid-Cooled CESS',
+					'document' => 'Datasheets & certificates',
+				),
+				$transport['selection']
+			);
 			$this->assertSame( 'page', SelectionContext::normalize( $transport )['type'] );
 		}
 	}
