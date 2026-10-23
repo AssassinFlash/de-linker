@@ -418,3 +418,46 @@ def test_extreme_uv_extent_and_ring_order_never_return_false_clear() -> None:
         )
         assert report["uv_resolution_m"] > report["limits"]["max_uv_resolution_m"]
         assert report["issues"][0]["category"] == "numerical_limit"
+
+
+@pytest.mark.parametrize("angle", [1, 15, 30, 31, 45, 60, 75, 89, 90])
+def test_rotated_shared_grid_edges_are_contacts_and_thick_rows_still_overlap(
+    angle: float,
+) -> None:
+    value = one_panel()
+    value["arrays"][0].update(
+        origin_uv=[5, 5], columns=2, column_gap_m=0, rotation_deg=angle
+    )
+    assert "panel_projected_overlap" not in kinds(review_geometry(value))
+    value["arrays"][0].update(rows=2, row_gap_m=0, mount_tilt_deg=30)
+    report = review_geometry(value)
+    overlaps = [
+        issue
+        for issue in report["issues"]
+        if issue["kind"] == "panel_projected_overlap"
+    ]
+    assert len(overlaps) == 2
+
+
+def test_numeric_gate_includes_full_corners_obstacle_top_and_clearance_search() -> None:
+    value = one_panel()
+    value["obstacles"] = [
+        {
+            "id": "tall",
+            "name": "Synthetic domain probe",
+            "source_id": "survey",
+            "roof_id": "roof",
+            "footprint_uv": [[4, 4], [5, 4], [5, 5], [4, 5]],
+            "extrusion_axis_enu": [0.6, 0, 0.8],
+            "height_m": 1e14,
+        }
+    ]
+    report = review_geometry(value)
+    assert not report["review_complete"] and report["uv_resolution_m"] >= 0.0078125
+    value["obstacles"] = []
+    value["arrays"][0]["origin_uv"] = [2**23 - 2, 0]
+    value["module_specs"][0]["width_m"] = 2
+    assert not review_geometry(value)["review_complete"]
+    value = one_panel()
+    value["layout_rules"][0]["obstacle_clearance_m"] = 1e14
+    assert not review_geometry(value)["review_complete"]

@@ -254,7 +254,9 @@ def create_private_app(
         # Ownership is checked before geometry work; this read-only review
         # never publishes a source blob or mutates the saved revision.
         workspace.get(verified_actor(request.scope), body.project_id)
-        return review_geometry(body.geometry)
+        reply = review_geometry(body.geometry)
+        reply["runtime_sha256"] = energy.kernel.runtime.sha256
+        return reply
 
     @app.post("/runs/read")
     def run_read(body: RunRead, request: Request) -> Object:

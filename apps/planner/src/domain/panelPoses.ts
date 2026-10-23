@@ -76,6 +76,26 @@ export function panelPoses(document: GeometryDocument): readonly PanelPose[] {
 					scale(localNormal, spec.thickness_m / 2),
 				);
 				const centre = add(roof.origin_enu, vectorFromRoof(roof, centreUVN));
+				const left = column * spec.width_m + column * array.column_gap_m;
+				const right = (column + 1) * spec.width_m + column * array.column_gap_m;
+				const lower =
+					row * (spec.length_m * cosTilt) +
+					row * array.row_gap_m -
+					spec.thickness_m * sinTilt;
+				const upper =
+					(row + 1) * (spec.length_m * cosTilt) + row * array.row_gap_m;
+				const footprint = [
+					[left, lower],
+					[right, lower],
+					[right, upper],
+					[left, upper],
+				].map(
+					([a, b]) =>
+						[
+							array.origin_uv[0] + a! * cosAngle - b! * sinAngle,
+							array.origin_uv[1] + a! * sinAngle + b! * cosAngle,
+						] as const,
+				);
 				poses.push({
 					id: panelId(array.id, row, column),
 					array_id: array.id,
@@ -87,6 +107,7 @@ export function panelPoses(document: GeometryDocument): readonly PanelPose[] {
 					u_axis_uvn: localU,
 					v_axis_uvn: localV,
 					normal_uvn: localNormal,
+					footprint_uv: footprint,
 					centre_enu: centre,
 					u_axis_enu: u,
 					v_axis_enu: v,
@@ -119,7 +140,11 @@ export function panelPositionRelative(
 	roof: RoofFace,
 	reference: Vec3,
 ): Vec3 {
-	requireUvResolution(pose.centre_uvn);
+	requireUvResolution([
+		...pose.centre_uvn,
+		...panelCornersUVN(pose).flat(),
+		...pose.footprint_uv.flat(),
+	]);
 	return add(
 		add(roof.origin_enu, scale(reference, -1)),
 		vectorFromRoof(roof, pose.centre_uvn),

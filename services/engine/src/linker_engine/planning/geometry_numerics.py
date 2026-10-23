@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 
-from .geometry import panel_poses
+from .geometry import dot, panel_poses, scale
 from .geometry_documents import GeometryDocument
 
 # Product computational policy (548-design-geometry §4), not a measurement,
@@ -29,9 +29,25 @@ def uv_resolution(document: GeometryDocument) -> float:
         for point in obstacle.footprint_uv
         for value in point
     )
-    coordinates.extend(
-        value for pose in panel_poses(document) for value in pose.centre_uvn[:2]
-    )
+    rules = {rule.roof_id: rule for rule in document.layout_rules}
+    for pose in panel_poses(document):
+        coordinates.extend(pose.centre_uvn[:2])
+        coordinates.extend(value for point in pose.corners_uvn() for value in point[:2])
+        coordinates.extend(value for point in pose.footprint_uv for value in point)
+        rule = rules.get(pose.roof_id)
+        clearance = rule.obstacle_clearance_m if rule is not None else None
+        if clearance is not None:
+            for axis in range(2):
+                values = [p[axis] for p in pose.footprint_uv]
+                coordinates.extend([min(values) - clearance, max(values) + clearance])
+    roofs = {roof.id: roof for roof in document.roofs}
+    for obstacle in document.obstacles:
+        roof = roofs[obstacle.roof_id]
+        extrusion = scale(obstacle.extrusion_axis_enu, obstacle.height_m)
+        du, dv = dot(extrusion, roof.u_axis_enu), dot(extrusion, roof.v_axis_enu)
+        coordinates.extend(
+            value for u, v in obstacle.footprint_uv for value in [u + du, v + dv]
+        )
     coordinates.extend(
         value
         for area in document.keepouts

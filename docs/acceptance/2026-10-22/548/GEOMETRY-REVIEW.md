@@ -87,3 +87,28 @@ precision refusal. This budget is not an installation/survey tolerance or
 an epsilon used to accept a near miss. Large ENU origins with ordinary local
 UV retain successful direct-UV review and rebased rendering. This avoids
 concealing unsupported precision behind a heuristically chosen frame.
+
+## Rejected fixed source d7deddf7
+
+Both axes confirmed the prior numeric limits/refusals, but FAIL remained:
+the budget scanned centres without all full corners, obstacle swept endpoints
+and clearance search bounds. Valid wire inputs could still send unsupported
+coordinates to GEOS while reporting only ordinary source granularity. Spec
+also found ordinary1/30/45/60/89-degree zero-gap adjacent columns produced
+fictitious floating slivers when polygons were rebuilt separately from centres.
+These are correctness defects, not a reason to relax an acceptance epsilon.
+
+The next version scans the actual full cuboid, shared projected footprint,
+obstacle top/swept vertices and clearance search extents. It constructs shared
+grid edges directly. Within an array, columns with nonnegative gaps cannot
+overlap; same-column rows are checked from projected module length, thickness
+and row separation. This retains real thick tilted-row overlap, even while
+ordinary shared edges remain contact. Between arrays, indexed GEOS checks
+remain active. The checker is `roof_plane_layout_v4`; actual native HTTP also
+returns the already-frozen runtime hash (including source/lock/platform).
+
+Current151 geometry/private HTTP cases pass2.32s, including both derived-budget
+counterexamples and nine ordinary rotations with real thick-row overlap.
+Native MySQL acceptance is temporarily paused for the separately coordinated
+compatible-database maintenance; no replacement instance is created. Parent
+continues editor implementation and SQLite/DOM checks while it is restored.

@@ -135,6 +135,7 @@ export interface PanelPose {
 	u_axis_uvn: Vec3;
 	v_axis_uvn: Vec3;
 	normal_uvn: Vec3;
+	footprint_uv: readonly Vec2[];
 	/** Derived absolute display point; use local frame for fit/rebased rendering. */
 	centre_enu: Vec3;
 	u_axis_enu: Vec3;

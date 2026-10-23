@@ -13,7 +13,7 @@ import shapely
 from shapely import STRtree
 from shapely.affinity import translate
 from shapely.errors import GEOSException
-from shapely.geometry import MultiPoint, Polygon, box
+from shapely.geometry import Polygon, box
 from shapely.geometry.base import BaseGeometry
 from shapely.ops import unary_union
 
@@ -25,6 +25,7 @@ from .geometry import (
     panel_poses,
     read_geometry,
     scale,
+    sin_cos_degrees,
 )
 from .geometry_documents import GeometryDocument
 from .geometry_numerics import MAX_UV_RESOLUTION_M, uv_resolution
@@ -93,7 +94,7 @@ def review_geometry(value: Json) -> Object:
         "schema_version": 1,
         "geometry_sha256": digest(encode(value)),
         "uv_resolution_m": uv_resolution(document),
-        "checker": "roof_plane_layout_v3",
+        "checker": "roof_plane_layout_v4",
         "libraries": {
             "shapely": shapely.__version__,
             "geos": shapely.geos_version_string,
@@ -222,15 +223,14 @@ def _review(document: GeometryDocument, result: Diagnostics) -> None:
         for pose in poses:
             if pose.roof_id != roof.id or not pose.included:
                 continue
-            footprint = MultiPoint(
-                [(point[0], point[1]) for point in pose.corners_uvn()]
-            ).convex_hull
+            footprint = Polygon(pose.footprint_uv)
             if (
                 not isinstance(footprint, Polygon)
                 or not footprint.is_valid
                 or footprint.area <= 0
             ):
-                result.add("invalid_panel_projection", pose.id, roof.id)
+                result.complete = False
+                result.add("invalid_panel_projection", pose.id, roof.id, numerical=True)
                 continue
             footprints.append(footprint)
             panel_ids.append(pose.id)
@@ -289,11 +289,51 @@ def _review(document: GeometryDocument, result: Diagnostics) -> None:
                             required_m=clearance,
                             actual_m=actual,
                         )
+        valid_ids = set(panel_ids)
+        specs = {spec.id: spec for spec in document.module_specs}
+        for array in document.arrays:
+            if array.roof_id != roof.id:
+                continue
+            spec = specs[array.module_spec_id]
+            sine, cosine = sin_cos_degrees(array.mount_tilt_deg)
+            for column in range(array.columns):
+                active = [
+                    p
+                    for p in poses
+                    if p.array_id == array.id
+                    and p.column == column
+                    and p.id in valid_ids
+                ]
+                for index, first_panel in enumerate(active):
+                    for second_panel in active[index + 1 :]:
+                        delta = second_panel.row - first_panel.row
+                        # Exact structural relation of one shared rectangular
+                        # grid: different columns cannot overlap for gaps>=0;
+                        # same-column rows overlap only by projected thickness.
+                        separation = (delta - 1) * (
+                            spec.length_m * cosine
+                        ) + delta * array.row_gap_m
+                        if spec.thickness_m * sine <= separation:
+                            break
+                        if not result.candidate():
+                            return
+                        result.add(
+                            "panel_projected_overlap",
+                            first_panel.id,
+                            roof.id,
+                            related_id=second_panel.id,
+                        )
+        pose_by_id = {p.id: p for p in poses}
         tree = STRtree(footprints)
         for index, footprint in enumerate(footprints):
             for candidate in sorted(tree.query(footprint)):
                 other = int(candidate)
                 if other <= index:
+                    continue
+                if (
+                    pose_by_id[panel_ids[index]].array_id
+                    == pose_by_id[panel_ids[other]].array_id
+                ):
                     continue
                 if not result.candidate():
                     return

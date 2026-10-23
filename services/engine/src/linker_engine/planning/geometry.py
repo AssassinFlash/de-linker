@@ -75,6 +75,7 @@ class PanelPose:
     u_axis_uvn: Vector
     v_axis_uvn: Vector
     normal_uvn: Vector
+    footprint_uv: list[list[float]]
     # Absolute display coordinates can lose local detail at huge origins.
     # Fit/rays/rebased rendering must use the retained local frame instead.
     centre_enu: Vector
@@ -193,6 +194,28 @@ def panel_poses(document: GeometryDocument) -> list[PanelPose]:
                 ),
                 scale(local_normal, spec.thickness_m / 2),
             )
+            # Shared grid edges retain analytic zero-gap contact, unlike
+            # separately rounded centres plus half-sizes for each polygon.
+            left = column * spec.width_m + column * array.column_gap_m
+            right = (column + 1) * spec.width_m + column * array.column_gap_m
+            lower = (
+                row * (spec.length_m * cos_tilt)
+                + row * array.row_gap_m
+                - spec.thickness_m * sin_tilt
+            )
+            upper = (row + 1) * (spec.length_m * cos_tilt) + row * array.row_gap_m
+            footprint = [
+                [
+                    array.origin_uv[0] + a * cos_angle - b * sin_angle,
+                    array.origin_uv[1] + a * sin_angle + b * cos_angle,
+                ]
+                for a, b in [
+                    (left, lower),
+                    (right, lower),
+                    (right, upper),
+                    (left, upper),
+                ]
+            ]
             centre = add(roof.origin_enu, vector_from_roof(roof, centre_uvn))
             poses.append(
                 PanelPose(
@@ -206,6 +229,7 @@ def panel_poses(document: GeometryDocument) -> list[PanelPose]:
                     local_u,
                     local_v,
                     local_normal,
+                    footprint,
                     centre,
                     u,
                     v,
