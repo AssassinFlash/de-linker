@@ -1,19 +1,19 @@
 {
-  "version": "156be14b796a2db747dc1626e72eadab82ffc7396a6d09c3922d08489a0f9e62",
+  "version": "96a3faf6c68de87ea1f5854d9b1068b664d325ff42570749bccd881777bf1779",
   "checks": [
     {
       "route": "/roof/outline",
       "status": 200,
-      "seconds": 6.349,
-      "source_revision": "04a8e966a46143279a81c6db3b30bbc1df45252a4f83aa8d1cc61c4339c41268",
+      "seconds": 6.235,
+      "source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
       "result_source": "existing real LoD2 cache; current API and publication",
       "engineering_contract": 2,
       "reference_inputs": [
         {
           "reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
-          "reference_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2",
+          "reference_revision": "750f6ee723c4fb2b0e818f7ee0f39234bf2772f7007f9b145ae97c5ada621760",
           "product_id": 8369,
-          "product_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2"
+          "product_revision": "750f6ee723c4fb2b0e818f7ee0f39234bf2772f7007f9b145ae97c5ada621760"
         }
       ],
       "products": 1,
@@ -26,16 +26,16 @@
     {
       "route": "/design/residential",
       "status": 200,
-      "seconds": 5.975,
-      "source_revision": "04a8e966a46143279a81c6db3b30bbc1df45252a4f83aa8d1cc61c4339c41268",
+      "seconds": 6.454,
+      "source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
       "result_source": "current Woo feed; current API and publication",
       "engineering_contract": 2,
       "reference_inputs": [
         {
           "reference_input_id": "mat_trina_solar_tsm_460neg9r_28",
-          "reference_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2",
+          "reference_revision": "750f6ee723c4fb2b0e818f7ee0f39234bf2772f7007f9b145ae97c5ada621760",
           "product_id": 8369,
-          "product_revision": "98f2ed95d61870b6881708e65b788cc823e7d56ce8b396bcf8d354a937d29de2"
+          "product_revision": "750f6ee723c4fb2b0e818f7ee0f39234bf2772f7007f9b145ae97c5ada621760"
         }
       ],
       "products": 86,

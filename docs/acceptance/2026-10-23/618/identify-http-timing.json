@@ -2,7 +2,7 @@
   "measurements": [
     {
       "status": 200,
-      "seconds": 0.6411,
+      "seconds": 0.4531,
       "result": {
         "models": [
           {
@@ -19,7 +19,7 @@
     },
     {
       "status": 200,
-      "seconds": 0.2464,
+      "seconds": 0.2403,
       "result": {
         "models": [
           {
@@ -36,7 +36,7 @@
     },
     {
       "status": 200,
-      "seconds": 0.2346,
+      "seconds": 0.2257,
       "result": {
         "models": [
           {
