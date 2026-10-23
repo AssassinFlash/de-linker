@@ -2,6 +2,7 @@ import { ApiError } from "../data/protocol.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Notice } from "./Notice.tsx";
 import { issueLabel } from "./ProfileLabels.ts";
+import { revealActionResult } from "./revealActionResult.ts";
 
 export function ProfileError({
 	error,
@@ -12,16 +13,14 @@ export function ProfileError({
 }) {
 	const notice = useRef<HTMLDivElement>(null);
 	useEffect(() => {
-		if (!error || !focus || !notice.current) return;
-		notice.current.focus({ preventScroll: true });
-		notice.current.scrollIntoView({ block: "start", behavior: "instant" });
+		if (error && focus) revealActionResult(notice.current);
 	}, [error, focus]);
 	if (!error) return null;
 	const issue = error instanceof ApiError ? error.profileIssue : null;
 	return (
 		<div
 			ref={notice}
-			className="lp-profile-error"
+			className="lp-focus-target"
 			tabIndex={focus ? -1 : undefined}
 		>
 			<Notice error>

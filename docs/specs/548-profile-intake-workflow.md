@@ -77,6 +77,11 @@ not features falsely attributed to the three documented competitors.
    retry. Owned queries consume cancellation signals and resume after confirmed
    same-scope verification. UI/error copy is EN/DE, independently reviewed,
    with site tokens and the native WindPress pipeline only.
+   Explicit import/retry results, actionable errors, completed selection and
+   cancellation keep the next step visible below the measured site/project
+   bars after long forms collapse. Background reads, interval paging and
+   history changes do not replay completion focus. Completing one import leaves
+   other pending requests for explicit selection/retry.
 
 Acceptance requires actual native HTTP and browser upload→mapping→safe refusal
 and correction→quality→selection→Save→refresh, EN/DE × 1440/390, plus native

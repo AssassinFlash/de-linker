@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { Session } from "../data/protocol.ts";
@@ -12,6 +12,7 @@ import { readAsset, readPreview } from "../domain/profiles.ts";
 import { __ } from "../i18n.ts";
 import { ProfileError } from "./ProfileError.tsx";
 import { ProfileReview } from "./ProfileReview.tsx";
+import { revealActionResult } from "./revealActionResult.ts";
 
 export function OwnedProfile({
 	projectId,
@@ -34,6 +35,10 @@ export function OwnedProfile({
 }) {
 	const [offset, setOffset] = useState(0);
 	const recoveringSession = useRef(false);
+	const reviewHeading = useRef<HTMLHeadingElement>(null);
+	const revealedAsset = useRef<string | null>(null);
+	const interactive = onSelect !== undefined;
+	const admitted = client.isCurrentScope(session.query_scope);
 	const page = useQuery({
 		queryKey: [
 			session.query_scope,
@@ -87,12 +92,24 @@ export function OwnedProfile({
 			}
 		},
 		retry: false,
-		enabled: client.isCurrentScope(session.query_scope),
+		enabled: admitted,
 	});
+	useEffect(() => {
+		if (
+			!interactive ||
+			!admitted ||
+			!page.data ||
+			!reviewHeading.current ||
+			revealedAsset.current === assetId
+		)
+			return;
+		revealedAsset.current = assetId;
+		revealActionResult(reviewHeading.current);
+	}, [interactive, admitted, page.data, assetId]);
 	if (page.error)
 		return (
 			<>
-				<ProfileError error={page.error} />
+				<ProfileError error={page.error} focus={interactive && admitted} />
 				<button
 					className="lp-text-button"
 					type="button"
@@ -126,6 +143,7 @@ export function OwnedProfile({
 				preview={page.data.preview}
 				locale={locale}
 				busy={page.isFetching}
+				headingRef={interactive ? reviewHeading : null}
 				loadMore={() => setOffset(page.data.preview.next_offset ?? 0)}
 			/>
 			{offset > 0 && (

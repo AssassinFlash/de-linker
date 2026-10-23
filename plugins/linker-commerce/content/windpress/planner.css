@@ -164,9 +164,9 @@
     [data-linker-planner] .lp-button { transition: none; }
   }
 }
-/* chrome.css gives every [id] an unlayered site-header offset. Override only
-   this application's actual anchor targets so both measured bars are included. */
+/* chrome.css gives every [id] an unlayered site-header offset. Actual anchor
+   targets and action results account for both measured application bars. */
 [data-linker-planner] .lp-section[id],
-[data-linker-planner] .lp-profile-error {
+[data-linker-planner] .lp-focus-target {
   scroll-margin-top: calc(var(--lp-site-header-height, 0px) + var(--lp-project-bar-height, 0px) + 16px);
 }

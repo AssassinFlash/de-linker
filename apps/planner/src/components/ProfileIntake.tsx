@@ -25,6 +25,7 @@ import {
 import { Notice } from "./Notice.tsx";
 import { OwnedProfile } from "./OwnedProfile.tsx";
 import { ProfileError } from "./ProfileError.tsx";
+import { revealActionResult } from "./revealActionResult.ts";
 
 export function ProfileIntake({
 	projectId,
@@ -73,6 +74,11 @@ export function ProfileIntake({
 	const [asset, setAsset] = useState<ProfileAsset | null>(null),
 		[durable, setDurable] = useState(false);
 	const [selected, setSelected] = useState<string | null>(null);
+	const importTrigger = useRef<HTMLButtonElement>(null);
+	const selectionNotice = useRef<HTMLDivElement>(null);
+	const feedback = useRef<"selection" | "cancel" | null>(null);
+	const selectedInDraft =
+		selected !== null && currentAssetIds.includes(selected);
 	const lifetime = useRef(0),
 		flight = useRef(false),
 		form = useRef<HTMLDivElement>(null);
@@ -82,6 +88,19 @@ export function ProfileIntake({
 	);
 	const current = (instance: number) =>
 		instance === lifetime.current && client.isCurrentScope(session.query_scope);
+	useEffect(() => {
+		if (
+			open ||
+			!feedback.current ||
+			!client.isCurrentScope(session.query_scope)
+		)
+			return;
+		const target =
+			feedback.current === "selection" && selectedInDraft
+				? selectionNotice.current
+				: importTrigger.current;
+		if (revealActionResult(target)) feedback.current = null;
+	}, [open, selected, selectedInDraft, client, session.query_scope]);
 	function restore(body: string) {
 		const command = readImport(JSON.parse(body));
 		if (command.project_id !== projectId)
@@ -157,6 +176,7 @@ export function ProfileIntake({
 		setInspection(null);
 		setAsset(null);
 		setDurable(false);
+		feedback.current = "selection";
 		setOpen(false);
 		void store.clearProfileImport(session.query_scope, body).catch(() => {
 			if (
@@ -374,8 +394,8 @@ export function ProfileIntake({
 			setRights("");
 			setFields(emptyMapping(timezone));
 			setDurable(false);
+			feedback.current = "selection";
 			setOpen(false);
-			if (remaining[0]) restore(remaining[0].body);
 		} catch (cause) {
 			failure(cause, instance);
 			if (current(instance)) setRecoveryFailed(true);
@@ -389,21 +409,24 @@ export function ProfileIntake({
 	if (!open)
 		return (
 			<>
-				{selected && currentAssetIds.includes(selected) && (
-					<Notice>
-						{confirmedAssetIds.includes(selected)
-							? __(
-									"This profile selection is saved with the project.",
-									"linker-tools",
-								)
-							: __(
-									"The profile is selected in the open draft. Save the project to record this selection.",
-									"linker-tools",
-								)}
-					</Notice>
+				{selected && selectedInDraft && (
+					<div ref={selectionNotice} tabIndex={-1} className="lp-focus-target">
+						<Notice>
+							{confirmedAssetIds.includes(selected)
+								? __(
+										"This profile selection is saved with the project.",
+										"linker-tools",
+									)
+								: __(
+										"The profile is selected in the open draft. Save the project to record this selection.",
+										"linker-tools",
+									)}
+						</Notice>
+					</div>
 				)}
 				<button
-					className="lp-button lp-button-secondary"
+					ref={importTrigger}
+					className="lp-button lp-button-secondary lp-focus-target"
 					type="button"
 					disabled={checking}
 					onClick={() => setOpen(true)}
@@ -586,6 +609,7 @@ export function ProfileIntake({
 								className="lp-text-button"
 								type="button"
 								onClick={() => {
+									feedback.current = "cancel";
 									setContent("");
 									setFileName("");
 									setInspection(null);

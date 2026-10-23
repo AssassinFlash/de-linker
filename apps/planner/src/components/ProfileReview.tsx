@@ -10,12 +10,14 @@ export function ProfileReview({
 	locale,
 	loadMore,
 	busy,
+	headingRef,
 }: {
 	asset: ProfileAsset;
 	preview: ProfilePreview;
 	locale: string;
 	loadMore: () => void;
 	busy: boolean;
+	headingRef?: Ref<HTMLHeadingElement>;
 }) {
 	const n = (value: number) =>
 		new Intl.NumberFormat(locale, { maximumSignificantDigits: 15 }).format(
@@ -90,7 +92,13 @@ export function ProfileReview({
 	];
 	return (
 		<div className="lp-profile-review">
-			<h3>{__("Data interpretation", "linker-tools")}</h3>
+			<h3
+				ref={headingRef}
+				tabIndex={headingRef ? -1 : undefined}
+				className="lp-focus-target"
+			>
+				{__("Data interpretation", "linker-tools")}
+			</h3>
 			<p className="lp-profile-range">
 				<time dateTime={s.start_utc}>{s.start_utc}</time> →{" "}
 				<time dateTime={s.end_utc}>{s.end_utc}</time> · UTC
@@ -224,3 +232,4 @@ export function ProfileReview({
 		</div>
 	);
 }
+import type { Ref } from "react";

@@ -393,6 +393,15 @@ test("unknown imports are explicitly selected and retried with frozen bytes befo
 	await until(() => fixture.pending.size === 1);
 	assert.deepEqual(fixture.attachments, [[assetId, "net_import"]]);
 	assert.deepEqual([...fixture.pending.values()], [a]);
+	assert.equal(button("Check or retry this import"), undefined);
+	await act(async () => button("Import interval data").click());
+	await choose("Imports to review", JSON.parse(a).key);
+	assert.ok(button("Check or retry this import"));
+	assert.deepEqual(
+		fixture.uploads,
+		[b, b],
+		"the next pending import still requires explicit retry",
+	);
 });
 
 async function prepareFile(t, options = {}) {
@@ -447,6 +456,8 @@ test("a new file needs explicit mapping and provenance, and closing is guarded u
 	await act(async () => button("Import and review data").click());
 	await until(() => button("Use this profile in the open draft"));
 	const uploaded = JSON.parse(fixture.uploads[0]);
+	assert.equal(document.activeElement.tagName, "H3");
+	assert.equal(document.activeElement.textContent, "Data interpretation");
 	assert.equal(uploaded.content_base64, btoa(source));
 	assert.deepEqual(uploaded.mapping, mapping);
 	assert.equal(fixture.guard(), true);
@@ -484,6 +495,7 @@ test("close and reload are guarded while selected file bytes are still being rea
 	await until(() => !field("Column delimiter").disabled);
 	await act(async () => button("Cancel").click());
 	assert.equal(fixture.guard(), true);
+	assert.equal(document.activeElement, button("Import interval data"));
 	assert.equal(
 		window.dispatchEvent(
 			new window.Event("beforeunload", { cancelable: true }),
@@ -596,14 +608,26 @@ test("selection notices follow current draft undo and redo independently of the 
 			"This profile selection is saved with the project.",
 		);
 	await until(draftNotice);
+	assert.ok(
+		document.activeElement.textContent.startsWith(
+			"The profile is selected in the open draft.",
+		),
+	);
 	assert.ok(button("Remove draft selection"));
+	button("Undo").focus();
 	await act(async () => button("Undo").click());
 	assert.equal(button("Remove draft selection"), undefined);
 	assert.equal(draftNotice(), false);
 	assert.equal(savedNotice(), false);
+	button("Redo").focus();
 	await act(async () => button("Redo").click());
 	assert.ok(button("Remove draft selection"));
 	assert.equal(draftNotice(), true);
+	assert.equal(
+		document.activeElement,
+		button("Redo"),
+		"history does not replay import-completion focus",
+	);
 	await act(async () => button("Save project").click());
 	await until(savedNotice);
 	await act(async () => button("Undo").click());
@@ -698,6 +722,78 @@ test("a rejected replacement file cannot leave an older file available for impor
 	);
 	assert.equal(button("Preview columns").disabled, true);
 	assert.equal(field("Timestamp column"), undefined);
+});
+
+test("an interactive result is revealed once; background reads and interval paging keep user focus", async (t) => {
+	const dom = setupDom();
+	const { createRoot } = await import("react-dom/client");
+	const { SessionBoundary } =
+		await import("../src/components/SessionBoundary.tsx");
+	const { OwnedProfile } = await import("../src/components/OwnedProfile.tsx");
+	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
+	const elsewhere = document.createElement("input");
+	elsewhere.setAttribute("aria-label", "Work elsewhere");
+	dom.element.before(elsewhere);
+	const client = new PlannerClient({
+		origin: location.origin,
+		baseUrl: location.origin + "/rpc/",
+		nonceUrl: location.origin + "/nonce",
+		fetch: async (url, init) => {
+			const path = new URL(url).pathname;
+			if (path === "/nonce") return new Response("abcdefghij");
+			if (path.endsWith("/bootstrap")) return json(session);
+			if (path.endsWith("/assets/read")) return json(asset);
+			assert.ok(path.endsWith("/profiles/preview"));
+			const { offset } = JSON.parse(init.body);
+			return json({
+				...preview,
+				offset,
+				rows: [preview.rows[offset]],
+				next_offset: offset === 0 ? 1 : null,
+			});
+		},
+	});
+	const root = createRoot(dom.element);
+	t.after(() => dom.dispose(root));
+	const render = async (interactive) =>
+		act(async () =>
+			root.render(
+				React.createElement(
+					React.StrictMode,
+					null,
+					React.createElement(
+						SessionBoundary,
+						{ client },
+						(confirmed, recheck) =>
+							React.createElement(OwnedProfile, {
+								projectId,
+								assetId,
+								session: confirmed,
+								client,
+								locale: "en-GB",
+								recheck,
+								onSelect: interactive ? () => {} : undefined,
+							}),
+					),
+				),
+			),
+		);
+	elsewhere.focus();
+	await render(false);
+	await until(() => button("Next intervals"));
+	assert.equal(document.activeElement, elsewhere);
+	await render(true);
+	await until(() => document.activeElement.tagName === "H3");
+	assert.equal(document.activeElement.textContent, "Data interpretation");
+	elsewhere.focus();
+	await render(true);
+	assert.equal(document.activeElement, elsewhere);
+	await act(async () => button("Next intervals").click());
+	await until(() => button("First intervals"));
+	assert.equal(document.activeElement, elsewhere);
+	await act(async () => button("First intervals").click());
+	await until(() => button("Next intervals"));
+	assert.equal(document.activeElement, elsewhere);
 });
 
 test("persistent profile authentication failure rechecks once and waits for an explicit session retry", async (t) => {
