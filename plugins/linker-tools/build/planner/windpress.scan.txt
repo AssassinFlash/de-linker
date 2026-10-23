@@ -24,6 +24,7 @@ lp-inline-actions
 lp-new-project
 lp-notice
 lp-page
+lp-profile-error
 lp-profile-facts
 lp-profile-help
 lp-profile-intake

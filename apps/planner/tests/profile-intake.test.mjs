@@ -502,6 +502,12 @@ test("typed input refusal permits correction despite failed local writes and cle
 	);
 	assert.equal(button("Check or retry this import"), undefined);
 	assert.ok(field("Measurement point"));
+	assert.ok(
+		document.activeElement.textContent.includes(
+			"Negative values are accepted only",
+		),
+		"user-triggered import errors receive focus after the correction form returns",
+	);
 	await act(async () => assert.equal(fixture.guard(), false));
 	fixture.setRefuse(false);
 	await choose("Measurement point", "net_import");

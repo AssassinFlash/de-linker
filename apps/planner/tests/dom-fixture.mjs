@@ -28,6 +28,9 @@ export function setupDom() {
 		'<!doctype html><header id="lc-header"></header><section data-linker-planner></section>',
 		{ url: "https://fixture.invalid/workspace/?project=" + "1".repeat(32) },
 	);
+	// JSDOM has no layout/scroll implementation. Actual sticky-header clearance
+	// and scrolling are independently verified in the native browser matrix.
+	dom.window.HTMLElement.prototype.scrollIntoView = function () {};
 	// Query's notification scheduler is separate from its cache timers. Bind
 	// notifications to this page so close() disposes pending native-event work
 	// rather than calling a React subscriber after its global DOM is removed.

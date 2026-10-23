@@ -166,6 +166,7 @@
 }
 /* chrome.css gives every [id] an unlayered site-header offset. Override only
    this application's actual anchor targets so both measured bars are included. */
-[data-linker-planner] .lp-section[id] {
+[data-linker-planner] .lp-section[id],
+[data-linker-planner] .lp-profile-error {
   scroll-margin-top: calc(var(--lp-site-header-height, 0px) + var(--lp-project-bar-height, 0px) + 16px);
 }

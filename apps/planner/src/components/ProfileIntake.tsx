@@ -459,7 +459,7 @@ export function ProfileIntake({
 					)}
 				</Notice>
 			)}
-			<ProfileError error={error} />
+			<ProfileError error={error} focus />
 			{pending ? (
 				<>
 					<p>
