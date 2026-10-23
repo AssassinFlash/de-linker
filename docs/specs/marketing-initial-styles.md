@@ -40,8 +40,30 @@ existing `--proto-size-xs` token instead of reducing it to10px. Keep the existin
 The native anchor type supplies the additional selector weight needed to
 outrank the saved page's later inline class rule; no important override is used.
 This button geometry/readability change and the script-disabled presentation
-correction are declared visual bug fixes. Normal enhanced pages outside the
-utility row keep their visual parity gate.
+correction are declared visual bug fixes. Normal enhanced pages other than
+Utility keep their full-image visual parity gate.
+
+Utility's existing hero uses a vertically centered flex container with a
+minimum height; its content includes the action row. Removing the extra row
+items and retaining readable labels changes that content's height and native
+wrapping. Consequently the existing centered heading, hero height and later
+content flow can move even though their own style rules remain unchanged.
+The frozen A2/C normal controls record the following H1 top and main-height
+deltas, in CSS pixels, with unchanged H1 size, width, font and text:
+
+| Control | H1 top, A2 to C | Main height delta |
+| --- | --- | --- |
+| EN390 | 208.6484375 to 221.625 | -3.546875 |
+| EN1440 | 251.25 to 261.046875 | 0 |
+| DE390 | 215.1640625 to 208.6484375 | +13.46875 |
+| DE1440 | 240.34375 to 246.25 | -7.78125 |
+
+These measured row and consequent flow changes belong to the declared button
+repair. Retain all four complete native image comparisons, including changed
+photo framing where the hero dimensions change. This is not a whole-Utility
+pixel exemption: do not mask, tolerate or attribute other raster differences
+to reflow without evidence. No new hero offset, width, padding or height rule
+is introduced. Existing unrelated pixel failures remain open.
 
 Native mouse input additionally reproduces no visible hover change on all
 three utility hero anchors: the later saved hero surfaces override their
