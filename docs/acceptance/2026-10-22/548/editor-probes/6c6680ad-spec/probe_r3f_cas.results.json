@@ -1,0 +1,103 @@
+[
+  {
+    "case": "array_changed_mid_drag",
+    "attempts": 1,
+    "commits": 0,
+    "array_name": "Newer array edit",
+    "origin": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "roof_changed_mid_drag",
+    "attempts": 1,
+    "commits": 1,
+    "original": [
+      1,
+      2
+    ],
+    "actual": [
+      11,
+      2
+    ]
+  },
+  {
+    "case": "reference_changed_mid_drag",
+    "attempts": 1,
+    "commits": 1,
+    "original": [
+      1,
+      2
+    ],
+    "actual": [
+      -9,
+      2
+    ]
+  },
+  {
+    "case": "cancel_routes_after_frame_change",
+    "outcomes": [
+      {
+        "route": "pointercancel",
+        "dragging": false,
+        "attempts": 0,
+        "commits": 0,
+        "array_origin": [
+          1,
+          2
+        ],
+        "group_position": [
+          22,
+          0,
+          -2
+        ]
+      },
+      {
+        "route": "lostpointercapture",
+        "dragging": false,
+        "attempts": 0,
+        "commits": 0,
+        "array_origin": [
+          1,
+          2
+        ],
+        "group_position": [
+          23,
+          0,
+          -2
+        ]
+      },
+      {
+        "route": "Escape",
+        "dragging": false,
+        "attempts": 0,
+        "commits": 0,
+        "array_origin": [
+          1,
+          2
+        ],
+        "group_position": [
+          24,
+          0,
+          -2
+        ]
+      },
+      {
+        "route": "blur",
+        "dragging": false,
+        "attempts": 0,
+        "commits": 0,
+        "array_origin": [
+          1,
+          2
+        ],
+        "group_position": [
+          25,
+          0,
+          -2
+        ]
+      }
+    ]
+  }
+]

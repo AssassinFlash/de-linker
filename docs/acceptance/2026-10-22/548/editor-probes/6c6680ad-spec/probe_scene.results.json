@@ -1,0 +1,41 @@
+[
+  {
+    "case": "supported_hole_float32",
+    "input_hole_edge_m": 0.01,
+    "buffer_type": "Float32Array",
+    "hole_vertex_entries": 4,
+    "distinct_hole_vertices": 4,
+    "hole_buffer_vertices": [
+      "[1000001,1000001,-8.881784197001252e-16]",
+      "[1000001.0099999905,1000001,-8.881784197001252e-16]",
+      "[1000001.0099999905,1000001.0099999905,-8.881784197001252e-16]",
+      "[1000001,1000001.0099999905,-8.881784197001252e-16]"
+    ]
+  },
+  {
+    "case": "obstacle_fit_camera",
+    "camera_position": [
+      19.079823007983236,
+      34.58647492531517,
+      20.09312684264711
+    ],
+    "target": [
+      1,
+      15,
+      -1
+    ],
+    "obstacle_top_camera_z": -25.326231463183564,
+    "top_ndc": [
+      -0.018139397305171414,
+      0.6300382490724672,
+      0.9997640406473005
+    ]
+  },
+  {
+    "case": "failed_renderer_lifecycle",
+    "actual_renderer_constructions": 2,
+    "dispose_calls": 2,
+    "typed_failure_shown": true,
+    "owner_unmounted": true
+  }
+]

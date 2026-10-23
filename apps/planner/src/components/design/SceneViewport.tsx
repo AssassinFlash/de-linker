@@ -210,6 +210,8 @@ function PanelBatch({
 }
 
 function Panels({
+	document,
+	frame,
 	poses,
 	array,
 	roof,
@@ -220,6 +222,8 @@ function Panels({
 	commit,
 	disabled,
 }: {
+	document: GeometryDocument;
+	frame: string;
 	poses: readonly PanelPose[];
 	array: PanelArray;
 	roof: RoofFace;
@@ -235,6 +239,8 @@ function Panels({
 		position: Vector3;
 		array: PanelArray;
 		roof: RoofFace;
+		document: GeometryDocument;
+		frame: string;
 	} | null>(null);
 	const { invalidate } = useThree();
 	const batches = useMemo(() => panelBatches(poses), [poses]);
@@ -263,22 +269,30 @@ function Panels({
 			{active && !disabled && (
 				<ArrayTransform
 					object={group}
+					frame={frame}
 					start={() => {
 						start.current = {
 							position: group.current.position.clone(),
 							array,
 							roof,
+							document,
+							frame,
 						};
 					}}
 					cancel={() => {
 						start.current = null;
-						group.current.position.set(...origin);
+						group.current?.position.set(...origin);
 						invalidate();
 					}}
 					finish={() => {
 						const before = start.current;
 						start.current = null;
 						if (!before) return;
+						if (before.frame !== frame) {
+							group.current.position.set(...origin);
+							invalidate();
+							return;
+						}
 						const delta = fromRender(
 							group.current.position.clone().sub(before.position).toArray() as [
 								number,
@@ -290,15 +304,21 @@ function Panels({
 							v = dot(delta, before.roof.v_axis_enu);
 						if (u !== 0 || v !== 0) {
 							const accepted = commit({
-								type: "put_array",
-								before: before.array,
-								value: {
-									...before.array,
-									origin_uv: [
-										before.array.origin_uv[0] + u,
-										before.array.origin_uv[1] + v,
-									],
-								},
+								type: "group",
+								before: before.document,
+								edits: [
+									{
+										type: "put_array",
+										before: before.array,
+										value: {
+											...before.array,
+											origin_uv: [
+												before.array.origin_uv[0] + u,
+												before.array.origin_uv[1] + v,
+											],
+										},
+									},
+								],
 							});
 							if (!accepted) group.current.position.set(...origin);
 						}
@@ -411,6 +431,7 @@ function RendererLifecycle({ fail }: { fail: () => void }) {
 
 /** Loaded only when 3D is opened. Geometry persists independently of this GPU tree. */
 export default function SceneViewport(props: SceneProps) {
+	const frame = useMemo(() => JSON.stringify(props.document), [props.document]);
 	const host = useRef<HTMLDivElement>(null);
 	const [palette, setPalette] = useState<Palette | null>(null),
 		[failed, setFailed] = useState(false),
@@ -515,6 +536,8 @@ export default function SceneViewport(props: SceneProps) {
 						failed={() => setFailed(true)}
 					>
 						<Canvas
+							role="img"
+							aria-label={__("Roof design", "linker-tools")}
 							frameloop="demand"
 							dpr={[1, 2]}
 							camera={camera}
@@ -560,14 +583,7 @@ export default function SceneViewport(props: SceneProps) {
 								);
 								return renderer;
 							}}
-							fallback={
-								<p>
-									{__(
-										"3D rendering is unavailable on this device.",
-										"linker-tools",
-									)}
-								</p>
-							}
+							fallback={<p>{__("Roof design", "linker-tools")}</p>}
 						>
 							<color attach="background" args={[palette.background]} />
 							<ambientLight intensity={1.4} />
@@ -584,6 +600,8 @@ export default function SceneViewport(props: SceneProps) {
 							{props.document.arrays.map((array) => (
 								<Panels
 									key={array.id}
+									document={props.document}
+									frame={frame}
 									array={array}
 									roof={props.document.roofs.find(
 										(roof) => roof.id === array.roof_id,

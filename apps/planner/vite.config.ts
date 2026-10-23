@@ -10,9 +10,23 @@ export default defineConfig({
 		outDir: "../../plugins/linker-tools/build/planner",
 		emptyOutDir: true,
 		manifest: "vite-manifest.json",
-		rollupOptions: {
+		rolldownOptions: {
 			input: "src/main.tsx",
-			output: { entryFileNames: "assets/planner.js" },
+			output: {
+				entryFileNames: "assets/planner.js",
+				// WP versions the entry URL. A lazy chunk must never import that
+				// entry without its query and execute a second React/root identity.
+				// Shared modules have one content-addressed URL for every consumer.
+				codeSplitting: {
+					groups: [
+						{
+							name: "planner-core",
+							tags: ["$initial"],
+							test: (id) => !id.endsWith("/src/main.tsx"),
+						},
+					],
+				},
+			},
 		},
 		sourcemap: false,
 	},

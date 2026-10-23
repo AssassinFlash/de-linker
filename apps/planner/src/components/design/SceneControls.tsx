@@ -40,11 +40,13 @@ export function OrbitController({ target }: { target: Vector3 }) {
 
 export function ArrayTransform({
 	object,
+	frame,
 	start,
 	finish,
 	cancel,
 }: {
 	object: RefObject<Group>;
+	frame: string;
 	start: () => void;
 	finish: () => void;
 	cancel: () => void;
@@ -93,6 +95,10 @@ export function ArrayTransform({
 		gl.domElement.addEventListener("pointercancel", abort);
 		gl.domElement.addEventListener("lostpointercapture", abort);
 		return () => {
+			// Selection, form opening, changed frame and unmount all cancel a
+			// preview before its controller disappears. Never leave an unrecorded
+			// transform on the still-mounted model group.
+			abort();
 			controls.removeEventListener("change", changed);
 			controls.removeEventListener("mouseDown", begin);
 			controls.removeEventListener("mouseUp", end);
@@ -105,6 +111,6 @@ export function ArrayTransform({
 			controls.dispose();
 			gl.domElement.dispatchEvent(new Event("planner-transform-end"));
 		};
-	}, [object, camera, gl, scene, invalidate]);
+	}, [object, frame, camera, gl, scene, invalidate]);
 	return null;
 }

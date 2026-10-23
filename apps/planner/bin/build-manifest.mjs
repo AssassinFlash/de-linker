@@ -74,6 +74,20 @@ function hash(paths, directory) {
 	);
 }
 function snapshot() {
+	const modules = JSON.parse(
+		readFileSync(resolve(output, "vite-manifest.json"), "utf8"),
+	);
+	// A versioned WP entry must stay a leaf for imports from generated chunks.
+	// Otherwise the browser executes it again under its unversioned identity.
+	for (const [key, module] of Object.entries(modules)) {
+		if (
+			key !== "src/main.tsx" &&
+			[...(module.imports ?? []), ...(module.dynamicImports ?? [])].includes(
+				"src/main.tsx",
+			)
+		)
+			throw new Error("Planner chunks must not import the versioned entry");
+	}
 	const built = files(output).filter(
 		(path) => relative(output, path) !== manifestName,
 	);

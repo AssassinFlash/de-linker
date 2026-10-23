@@ -38,7 +38,13 @@ export type GeometryEdit =
 	| { type: "delete_roof"; id: string; expected_dependents: readonly string[] }
 	| { type: "delete_object"; id: string };
 export type GeometryCommand =
-	GeometryEdit | { type: "group"; edits: readonly GeometryEdit[] };
+	| GeometryEdit
+	| {
+			type: "group";
+			/** A gesture depends on the whole frame, not only its edited object. */
+			before?: GeometryDocument;
+			edits: readonly GeometryEdit[];
+	  };
 
 export class GeometryCommandError extends Error {
 	constructor(code: string) {
@@ -78,6 +84,12 @@ export function applyGeometryCommand(
 	document: GeometryDocument,
 	command: GeometryCommand,
 ): GeometryDocument {
+	if (
+		command.type === "group" &&
+		command.before !== undefined &&
+		!sameJson(command.before, document)
+	)
+		throw new GeometryCommandError("geometry_frame_changed");
 	const edits = command.type === "group" ? command.edits : [command];
 	// Local editing resource policy, not a physical/site restriction.
 	if (edits.length > 256)

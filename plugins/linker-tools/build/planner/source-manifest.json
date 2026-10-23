@@ -1,8 +1,8 @@
 {
   "sources": {
-    "bin/build-manifest.mjs": "89a7e82dc4739d84ef183405493ff5b1f8f7dbd2a4c2721dc6cd6b75117d7f4f",
+    "bin/build-manifest.mjs": "a8c5702e1e4a42900c46aa625c94c3efa911f6966c3f66e1d6bac49dfc81be84",
     "package-lock.json": "04384148d98a70d68c83b406644901a7da09588deea73bae038b03ce2632074d",
-    "package.json": "9e01620c0a3ca8e28c38d6f93e1a789be8e619eb1b140a0070d42527317f3533",
+    "package.json": "690db498dbcaf2ead35cf45145bed67cb3c941d8dfdd9ec7e29838223f9843b7",
     "src/components/BriefForm.tsx": "557965836361d7920f4ee57884394a930f10c632950518c6a12a303035760cf3",
     "src/components/Icon.tsx": "af6f28e985d9dc7954a2a4ba397f16e0b547f05b9594694343afb967832588de",
     "src/components/NewProject.tsx": "5c3b5af949fa5196dc42fd01fa6e75fb088d2a61c27b160b82c5a67176b1bf8a",
@@ -27,10 +27,10 @@
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazySceneViewport.tsx": "6d572583199aac8c4eb0ad17cdc5df5f44bf7a359c96b546bb4add2e9fff3fc7",
     "src/components/design/ModuleForm.tsx": "dd202ffac649f8e0aed2fe27375bd36b40d8d8acd1dd52dc3a8e9901053e3b90",
-    "src/components/design/PlanViewport.tsx": "7f0d0edf5b21bee35e532cdbda580379e0cc9d500a01539dfc0199958f2a570c",
+    "src/components/design/PlanViewport.tsx": "1c29b9239c646cde78c5d06f5cac7c76dfb103c936b8f0d826c4d3701d612364",
     "src/components/design/RoofForm.tsx": "b1d510ddc44106ebf5dce4de3d2cddf9ad9fbbc31404a2b1edf0160a47b6f23b",
-    "src/components/design/SceneControls.tsx": "2aa6f3ca4917120a93bde6e335017ac69b859f880b5739edccf9d84225986d4d",
-    "src/components/design/SceneViewport.tsx": "012270f782b9fd7070a1e49d425ed61f7a4181af7e2b9a5fded58124c9996867",
+    "src/components/design/SceneControls.tsx": "9486b3527e1526f2eea27caeb810767febeec6676d998e21c0956179efc533be",
+    "src/components/design/SceneViewport.tsx": "38fc13ab53ff720ce074c69c4ae0f323addb0b13a7071b6014804caabde92399",
     "src/components/design/ShapeForm.tsx": "644f9d66062d5784203c953b6b43070c4b198de7d082f53a75193402a6c88b37",
     "src/components/design/SourceForm.tsx": "aae20de51c5a54e2112b9502b72a71d4e9e61d2c27aefe1cd7ef5c11e9c7ef13",
     "src/components/revealActionResult.ts": "573599ee99d6aa2051c23fbc23e9be7d898f64d9dbccbb2593b4ba4460168ff0",
@@ -60,7 +60,7 @@
     "src/domain/decimal.ts": "c111c90e416eec2d07cb39310e0d341e3c5524242df6eabaa977c7d5a6fbe18a",
     "src/domain/draft.ts": "b8630d317ecd746c4afe7783654601c646ccac6caff728f6af4f036464255d3a",
     "src/domain/geometry.ts": "ef8081325419c7cbb182fca2afb498cdf9db1ac00bcd4a2f4fade2031717e8bb",
-    "src/domain/geometryCommands.ts": "ab418ad4be8a1f14b53bba080e84aec0cfb2c767a9af9d92f89d5730f5c6d24c",
+    "src/domain/geometryCommands.ts": "865f9c036f860ae884e8e9c802e45776aa373a0306d3d794dc500f662cf8dfee",
     "src/domain/geometryEditing.ts": "9ce48d0f6314f159705ee3095bae74c8fd843b3a480773017e1d796bba90dccf",
     "src/domain/geometryNumerics.ts": "15c0936d81a3ada76c53881524e9cb38eba597947ee9a91b58e49b10066b39a2",
     "src/domain/geometrySchema.ts": "23c0df561b16a9146fc8fb7629fad5642a56c350aac066ce82addf2bc4dcbf01",
@@ -73,12 +73,14 @@
     "src/i18n.ts": "a47796f8ed800737cb256c481d6ea84e603c1e43ebff3c11324b1d6c6bb534de",
     "src/main.tsx": "3cf6feab5ad00a16db8a06929f6b32808bf7a3559d189d13eaaeac326351ebf4",
     "tsconfig.json": "8bf99f16740f30987aa8b59ce3d3c98bab67bbaf096e0e050bf428b9889accfd",
-    "vite.config.ts": "a9c99cf04c71606380d2f00f9dcd1c4b9245193a5652429d99ee37b6c72d9099"
+    "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/SceneViewport-Dd3wjxTp.js": "b5446a914241a4a677e687b961c0ea35e87ac0fb84accb12f22de6bac650d6a5",
-    "assets/planner.js": "1e70443ec6d124b0741c2efd2d7cf545f500ba34625605da6a647af4538ac6a0",
-    "vite-manifest.json": "891b8b4d61da1989f644063854d797bef9e11de6147973e964d909af283e8d73",
+    "assets/SceneViewport-Di0gnikq.js": "8fd3692e0e5d6e6af38b776534807795ad8c0352ad1cf293897f699a0abb8ede",
+    "assets/planner-core-DzWHVvdB.js": "1edccf166b1a8f645d6c7a23d28c372571a59fd51723de5204e94b8c5753d419",
+    "assets/planner.js": "5c6a0f622ae8d5f6f4569f961c05729e011dec8698b3c63d177d012d955c20c5",
+    "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+    "vite-manifest.json": "877a5db90b17ffedd7989b42fa763ea0eb2767ee0d00d1e614279daf44201898",
     "windpress.scan.txt": "2da4fe9c74d140865a5a63ef4ee4914efee27ac9008ccd744666ebb567c32d1d"
   }
 }

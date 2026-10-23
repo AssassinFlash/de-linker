@@ -1,11 +1,26 @@
 {
+  "_planner-core-DzWHVvdB.js": {
+    "file": "assets/planner-core-DzWHVvdB.js",
+    "name": "planner-core",
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js"
+    ],
+    "dynamicImports": [
+      "src/components/design/SceneViewport.tsx"
+    ]
+  },
+  "_rolldown-runtime-BWaJ3C7D.js": {
+    "file": "assets/rolldown-runtime-BWaJ3C7D.js",
+    "name": "rolldown-runtime"
+  },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-Dd3wjxTp.js",
+    "file": "assets/SceneViewport-Di0gnikq.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
-      "src/main.tsx"
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-DzWHVvdB.js"
     ]
   },
   "src/main.tsx": {
@@ -13,8 +28,9 @@
     "name": "main",
     "src": "src/main.tsx",
     "isEntry": true,
-    "dynamicImports": [
-      "src/components/design/SceneViewport.tsx"
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-DzWHVvdB.js"
     ]
   }
 }

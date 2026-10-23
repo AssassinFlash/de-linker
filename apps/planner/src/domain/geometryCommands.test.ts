@@ -115,6 +115,54 @@ test("excluded slots keep their identities and quantities derive from included p
 	);
 });
 
+test("a completed gesture rejects any changed coordinate or geometry frame atomically", () => {
+	const before = readGeometry(fixtureJson, policy),
+		array = before.arrays[0]!;
+	const command = {
+		type: "group" as const,
+		before,
+		edits: [
+			{
+				type: "put_array" as const,
+				before: array,
+				value: { ...array, origin_uv: [4, 5] as const },
+			},
+		],
+	};
+	assert.deepEqual(
+		applyGeometryCommand(before, command).arrays[0]!.origin_uv,
+		[4, 5],
+	);
+	for (const changed of [
+		{
+			...before,
+			roofs: before.roofs.map((roof) => ({ ...roof, origin_enu: [10, 0, 0] })),
+		},
+		{
+			...before,
+			module_specs: before.module_specs.map((module) => ({
+				...module,
+				length_m: 3,
+			})),
+		},
+		{
+			...before,
+			coordinate_system: {
+				...before.coordinate_system,
+				north_reference: "user_declared",
+				north_source_id: before.sources[0]!.id,
+			},
+		},
+	]) {
+		const current = readGeometry(changed, policy);
+		assert.throws(
+			() => applyGeometryCommand(current, command),
+			/geometry_frame_changed/,
+		);
+		assert.deepEqual(current.arrays[0], array);
+	}
+});
+
 test("manual roof frame has upward normal, declared pitch and clockwise bearing", () => {
 	for (const pitch of [0, 30, 90])
 		for (const bearing of [0, 90, 180, 270]) {

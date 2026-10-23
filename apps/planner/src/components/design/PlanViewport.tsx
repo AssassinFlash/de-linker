@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { PointerEvent } from "react";
 import type {
 	GeometryDocument,
@@ -20,6 +20,7 @@ interface View {
 	height: number;
 }
 interface Gesture {
+	document: GeometryDocument;
 	pointer: number;
 	start: Vec2;
 	client: Vec2;
@@ -55,6 +56,31 @@ export function PlanViewport({
 		[preview, setPreview] = useState<{ array: string; delta: Vec2 } | null>(
 			null,
 		);
+	function abort() {
+		const active = gesture.current;
+		gesture.current = null;
+		setPreview(null);
+		if (active && svg.current?.hasPointerCapture(active.pointer))
+			svg.current.releasePointerCapture(active.pointer);
+	}
+	useEffect(() => {
+		abort();
+	}, [geometry, disabled, tool]);
+	useEffect(() => {
+		const escape = (event: KeyboardEvent) => {
+			if (event.key === "Escape") abort();
+		};
+		window.addEventListener("keydown", escape);
+		window.addEventListener("blur", abort);
+		return () => {
+			window.removeEventListener("keydown", escape);
+			window.removeEventListener("blur", abort);
+			const active = gesture.current;
+			gesture.current = null;
+			if (active && svg.current?.hasPointerCapture(active.pointer))
+				svg.current.releasePointerCapture(active.pointer);
+		};
+	}, []);
 	const roofPoses = useMemo(
 		() => poses.filter((pose) => pose.roof_id === roof.id),
 		[poses, roof.id],
@@ -135,6 +161,7 @@ export function PlanViewport({
 			arrays.find((array) => array.id === target?.dataset.array) ?? null;
 		if (tool === "select" && !array) return;
 		gesture.current = {
+			document: geometry,
 			pointer: event.pointerId,
 			start: point,
 			client: [event.clientX, event.clientY],
@@ -181,15 +208,21 @@ export function PlanViewport({
 			) >= 3
 		) {
 			commit({
-				type: "put_array",
-				before: active.array,
-				value: {
-					...active.array,
-					origin_uv: [
-						active.array.origin_uv[0] + point[0] - active.start[0],
-						active.array.origin_uv[1] + point[1] - active.start[1],
-					],
-				},
+				type: "group",
+				before: active.document,
+				edits: [
+					{
+						type: "put_array",
+						before: active.array,
+						value: {
+							...active.array,
+							origin_uv: [
+								active.array.origin_uv[0] + point[0] - active.start[0],
+								active.array.origin_uv[1] + point[1] - active.start[1],
+							],
+						},
+					},
+				],
 			});
 		}
 		setPreview(null);
@@ -197,6 +230,7 @@ export function PlanViewport({
 			event.currentTarget.releasePointerCapture(event.pointerId);
 	}
 	function zoom(factor: number) {
+		abort();
 		setView({
 			x: current.x + (current.width * (1 - factor)) / 2,
 			y: current.y + (current.height * (1 - factor)) / 2,
@@ -246,7 +280,10 @@ export function PlanViewport({
 				<button
 					type="button"
 					className="lp-tool-button"
-					onClick={() => setView(null)}
+					onClick={() => {
+						abort();
+						setView(null);
+					}}
 				>
 					{__("Fit view", "linker-tools")}
 				</button>

@@ -81,3 +81,17 @@ Pointercancel, lost capture, Escape and blur abort a transform and restore orbit
 no cancellation writes a command. The renderer factory owns both attempted
 backends until handoff and uses the locked runtime's public cleanup methods.
 JSON signed-zero equivalence is required when acknowledging a saved document.
+
+The next independent review exposed cancellation when handles alone unmount,
+and a changed roof/reference frame during finish. Controller teardown must abort
+first. A gesture uses an atomic whole-document precondition, not only an array
+before-value; all geometry changes cancel its preview. Numeric edit and camera
+operations continue to use their own existing paths. This conservative gesture
+precondition also covers module/north/frame changes ahead of a child re-render.
+
+Native WordPress loading exposed a separate module-identity failure: a queried
+entry and an unqueried lazy back-import created two React/root identities.
+The current pinned Rolldown initial-module tag emits all static dependencies in
+a hashed core; the versioned WP entry owns the mount only. Generated chunks may
+never import the entry. Build checking executes that actual versioned ESM graph
+once before accepting assets. This does not upgrade or expose site-global React.
