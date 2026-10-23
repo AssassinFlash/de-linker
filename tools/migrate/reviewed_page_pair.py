@@ -29,9 +29,7 @@ def render(payload: dict[str, Any]) -> str:
         .read_text()
         .removeprefix("<?php")
         .replace("__REVIEWED_PAIR_PAYLOAD__", encoded)
-        .replace(
-            "throw new LogicException( '__REVIEWED_PAIR_CONTENT_WRITER__' );", writer
-        )
+        .replace("/* __REVIEWED_PAIR_CONTENT_WRITER__ */", writer)
     )
 
 
@@ -51,7 +49,7 @@ def invoke(prefix: str, payload: dict[str, Any]) -> dict[str, Any]:
         raise RuntimeError(
             f"WordPress failed ({result.returncode}): {result.stderr[:800]}"
         )
-    marker = "@@reviewed-pair@@" if payload["mode"] == "read" else "@@legal-script@@"
+    marker = "@@reviewed-pair@@"
     for line in result.stdout.splitlines():
         if line.startswith(marker):
             answer = json.loads(line[len(marker) :])

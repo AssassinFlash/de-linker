@@ -38,13 +38,24 @@ requires its native translation baseline to be current.
 `reviewed-page-pair.php` wraps the existing writer in CLI only. It verifies the
 explicit native EN/DE pair and InnoDB postmeta. The existing writer locks both
 post rows, validates backed-up content and preserves backslashes with `wp_slash`.
-A first `pre_post_update` hook locks the pair's metadata before native baseline
-priming and compares the four saved translation keys with the backup. The final
+A first `pre_post_update` hook locks the pair's complete metadata rows before
+native baseline priming and compares the four saved translation value lists
+directly with the locked current rows. Immediately before the existing writer's
+START TRANSACTION, a query hook sets SERIALIZABLE for that next transaction only,
+after its preflight reads. This prevents stale consistent snapshots and protects
+absent/duplicate-key insertions; session/global isolation defaults stay unchanged.
+The final
 German `post_updated` hook adopts the reviewed baseline before COMMIT; native
 `wp_update_post(..., true, false)` skips translation-queue after-insert hooks.
 The installed WordPress source fires `post_updated` before returning even with
 that flag false. A final COMMIT guard verifies adoption. A rejecting Client is
 used; reviewed copy must never call a model. Hooks are removed in `finally`.
+
+Observers capture the four native APIs' unslashed requested value lists, including
+requests rejected by another metadata filter. Both the post-adoption read and
+COMMIT check compare actual values with those requests; `current()` alone only
+proves the source hash. The receipt carries expected values for a fresh process
+to compare all four lists, without reimplementing native segment hashing.
 
 The baseline delta is limited to EN status/note and DE source hash/segment units.
 Rollback checks the installed pair and baseline against the saved successful
@@ -61,11 +72,21 @@ The application CLI is restricted to owned local `http://127.0.0.1:9410`, IDs
 Before local application, verify the retained recovery SQL and save a fresh exact
 content/baseline record; do not create another full instance or per-round SQL.
 Fresh independent readback must match both planned contents and native baseline.
+The exact pre-write JSON is immutable. The separate `.result.json` receipt stores
+its SHA and fresh result; `--rollback` takes that receipt, verifies the backup
+hash, and rejects any later content/baseline edit before restoring. An interrupted
+receipt write cannot truncate the original recovery point.
 
-Required isolated native fixtures: normal paired adoption and successful rollback;
-source drift; metadata drift; second-page write failure; and failure after
-adoption but before COMMIT. Every failure must preserve both original contents
-and all four original metadata value lists. Fixtures create/delete only their
+Required isolated native fixtures: normal adoption/rollback; source drift; a
+separate process's real metadata edit after backup; second-page failure; failure
+after adoption; silent rejection of units update/add, status, source hash and
+note deletion; a second connection's note update between native post read and
+the metadata hook; and missing/duplicate-key inserts after locking. A competing
+write either commits first and is preserved while our stale write is rejected,
+or is blocked by transaction locks before it commits. Native test connections
+use a one-second lock timeout and touch only their own fixture pair. Each failure
+preserves original contents and baseline plus any separately committed edit.
+Assert session isolation defaults unchanged. Fixtures create/delete only their
 own private language pair; no mail, model or inquiry submission is permitted.
 
 Browser checks after application: EN/DE × 1440/390/320, actual platform fonts,
@@ -75,5 +96,6 @@ scripts/quotes and privacy content, backslashes, translation queue and business
 counters independently. Source review, runtime fixtures, visual approval, CI and
 production readback are separate gates; source or copy PASS does not close them.
 
-Database maintenance currently prevents native fixtures and page application.
-No candidate content has been installed or deployed at this specification stage.
+Database maintenance has completed; candidate native fixtures and independent
+reviews are in progress. No candidate content has been installed or deployed
+at this specification stage.

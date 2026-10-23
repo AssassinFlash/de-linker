@@ -85,10 +85,17 @@ def main() -> None:
     before = tuple(current["pages"][str(i)] for i in (13, 6913))
     target_metadata = None
     if args.rollback:
-        saved = json.loads(args.rollback.read_text())
+        receipt = json.loads(args.rollback.read_text())
+        original = Path(receipt["backup"])
+        if (
+            hashlib.sha256(original.read_bytes()).hexdigest()
+            != receipt["backup_sha256"]
+        ):
+            raise ValueError("Original recovery record changed; refusing rollback")
+        saved = json.loads(original.read_text())
         if saved["before"]["home"] != current["home"]:
             raise ValueError("Rollback backup belongs to a different environment")
-        expected = saved["after"]
+        expected = receipt["after"]
         if (
             current["pages"] != expected["pages"]
             or current["metadata"] != expected["metadata"]
@@ -141,7 +148,7 @@ def main() -> None:
         }
         if target_metadata is not None:
             payload["metadata_restore"] = target_metadata
-        invoke(args.wp, payload)
+        write_receipt = invoke(args.wp, payload)
         observed = read(args.wp, 13, 6913)
         if observed["pages"] != {
             str(i): text for i, text in zip((13, 6913), after, strict=True)
@@ -152,11 +159,25 @@ def main() -> None:
                 raise RuntimeError(
                     f"Fresh rollback metadata readback failed; inspect {path}"
                 )
-        elif not observed["current"]:
+        elif (
+            not observed["current"]
+            or observed["metadata"] != write_receipt["expected_metadata"]
+        ):
             raise RuntimeError(f"Fresh baseline readback failed; inspect {path}")
-        record["after"] = observed
-        path.write_text(json.dumps(record, ensure_ascii=False, indent=2) + "\n")
+        result_path = path.with_suffix(".result.json")
+        result = {
+            "backup": str(path),
+            "backup_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+            "after": observed,
+            "write_receipt": write_receipt,
+        }
+        # Keep the only exact pre-write recovery point immutable. Failure or
+        # interruption writing this separate receipt cannot truncate it.
+        with result_path.open("x") as handle:
+            json.dump(result, handle, ensure_ascii=False, indent=2)
+        result_path.chmod(0o600)
         report["backup"] = str(path)
+        report["result"] = str(result_path)
     print(json.dumps(report, indent=2))
 
 

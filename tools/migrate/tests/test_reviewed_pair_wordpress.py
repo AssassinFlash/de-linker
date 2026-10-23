@@ -89,9 +89,27 @@ echo '@@fixture@@'.wp_json_encode(['ids'=>$ids]);
         "metadata_drift",
         "after_adoption_failure",
         "second_update_failure",
+        "silent_units_rejection",
+        "silent_units_add_rejection",
+        "silent_status_rejection",
+        "silent_hash_rejection",
+        "silent_note_delete_rejection",
+        "metadata_race",
+        "metadata_insert_after_lock",
+        "metadata_duplicate_after_lock",
     ],
 )
 def test_native_pair_and_baseline_commit_together(pages: list[int], case: str) -> None:
+    if case == "metadata_insert_after_lock":
+        php(
+            f"delete_post_meta({pages[0]},'_linker_i18n_note');"
+            "echo '@@fixture@@'.wp_json_encode(['ready'=>true]);"
+        )
+    if case == "silent_units_add_rejection":
+        php(
+            f"delete_post_meta({pages[1]},'_linker_i18n_units');"
+            "echo '@@fixture@@'.wp_json_encode(['ready'=>true]);"
+        )
     before = pair.read(WP, *pages)
     changes = [
         {
@@ -109,16 +127,18 @@ def test_native_pair_and_baseline_commit_together(pages: list[int], case: str) -
     if case == "source_drift":
         changes[0]["before"] += "Unreviewed concurrent edit."
     if case == "metadata_drift":
-        payload["metadata_before"] = json.loads(json.dumps(before["metadata"]))
-        payload["metadata_before"][str(pages[0])]["_linker_i18n_note"] = [
-            "Stale backup"
-        ]
+        php(
+            f"update_post_meta({pages[0]},'_linker_i18n_note','Concurrent external note.');"
+            "echo '@@fixture@@'.wp_json_encode(['changed'=>true]);"
+        )
     source = base64.b64encode(pair.render(payload).encode()).decode()
     config = base64.b64encode(
         json.dumps({"case": case, "ids": pages}).encode()
     ).decode()
     runner = r"""
-$cfg=json_decode(base64_decode('__CONFIG__'),true);$injected=false;
+global $wpdb;
+$cfg=json_decode(base64_decode('__CONFIG__'),true);$injected=false;$blocked=false;
+$session_before=$wpdb->get_var('SELECT @@session.transaction_isolation');
 $fault=static function($query)use($cfg,&$injected){
     global $wpdb;
     if($cfg['case']==='after_adoption_failure' && $query==='COMMIT'){
@@ -133,20 +153,87 @@ $fault=static function($query)use($cfg,&$injected){
     }
     return $query;
 };
+$deny=static function($check,$id,$key)use($cfg,&$injected){
+    $targets=[
+        'silent_units_rejection'=>['update_post_metadata','_linker_i18n_units'],
+        'silent_units_add_rejection'=>['add_post_metadata','_linker_i18n_units'],
+        'silent_status_rejection'=>['update_post_metadata','_linker_i18n_status'],
+        'silent_hash_rejection'=>['update_post_metadata','_linker_i18n_source_hash'],
+        'silent_note_delete_rejection'=>['delete_post_metadata','_linker_i18n_note']
+    ];
+    if(isset($targets[$cfg['case']]) && $targets[$cfg['case']]===[current_filter(),$key]){
+        $injected=true;return false;
+    }
+    return $check;
+};
+$race=static function($id)use($cfg,&$injected,&$blocked){
+    if($id!==$cfg['ids'][0] || $injected
+        || !in_array($cfg['case'],['metadata_race','metadata_insert_after_lock','metadata_duplicate_after_lock'],true))return;
+    global $wpdb;
+    // This connection writes only this test's new private fixture page.
+    $host=$wpdb->parse_db_host(DB_HOST);$other=mysqli_init();
+    mysqli_real_connect($other,$host[0],DB_USER,DB_PASSWORD,DB_NAME,$host[1]?:3306,$host[2]);
+    mysqli_query($other,'SET SESSION innodb_lock_wait_timeout=1');
+    $query=$cfg['case']==='metadata_race'
+        ?$wpdb->prepare('UPDATE %i SET meta_value=%s WHERE post_id=%d AND meta_key=%s',
+            $wpdb->postmeta,'Concurrent external note.',$id,'_linker_i18n_note')
+        :$wpdb->prepare('INSERT INTO %i (post_id,meta_key,meta_value) VALUES (%d,%s,%s)',
+            $wpdb->postmeta,$id,$cfg['case']==='metadata_duplicate_after_lock'?'_linker_i18n_status':'_linker_i18n_note','Concurrent external note.');
+    try{
+        mysqli_query($other,$query);
+        if(mysqli_affected_rows($other)!==1)throw new RuntimeException('Race changed no row');
+        $injected=true;
+    }catch(mysqli_sql_exception $error){
+        if($error->getCode()!==1205)throw $error;
+        $blocked=true;$injected=true;
+    }finally{mysqli_close($other);}
+};
+$race_priority=in_array($cfg['case'],['metadata_insert_after_lock','metadata_duplicate_after_lock'],true)?-PHP_INT_MAX+1:PHP_INT_MIN;
 add_filter('query',$fault,PHP_INT_MAX-2);
+add_filter('update_post_metadata',$deny,10,3);
+add_filter('add_post_metadata',$deny,10,3);
+add_filter('delete_post_metadata',$deny,10,3);
+add_action('pre_post_update',$race,$race_priority);
 ob_start();$error='';
 try{
 eval(base64_decode('__SOURCE__'));
 }catch(Throwable $e){$error=$e->getMessage();}
 $writer_output=ob_get_clean();remove_filter('query',$fault,PHP_INT_MAX-2);
-echo '@@fixture@@'.wp_json_encode(['error'=>$error,'injected'=>$injected]);
+remove_filter('update_post_metadata',$deny,10);
+remove_filter('add_post_metadata',$deny,10);
+remove_filter('delete_post_metadata',$deny,10);
+remove_action('pre_post_update',$race,$race_priority);
+echo '@@fixture@@'.wp_json_encode(['error'=>$error,'injected'=>$injected,'blocked'=>$blocked,
+    'writer_output'=>$writer_output,'session_before'=>$session_before,
+    'session_after'=>$wpdb->get_var('SELECT @@session.transaction_isolation')]);
 """.replace("__CONFIG__", config).replace("__SOURCE__", source)
     result = php(runner)
     observed = pair.read(WP, *pages)
-    if case == "normal_restore":
+    assert result["session_before"] == result["session_after"]
+    success = case in {
+        "normal_restore",
+        "metadata_insert_after_lock",
+        "metadata_duplicate_after_lock",
+    } or (case == "metadata_race" and result["blocked"])
+    if success:
         assert result["error"] == ""
         assert observed["pages"] == {str(c["id"]): c["after"] for c in changes}
         assert observed["current"] is True
+        receipt = json.loads(
+            next(
+                line.removeprefix("@@reviewed-pair@@")
+                for line in result["writer_output"].splitlines()
+                if line.startswith("@@reviewed-pair@@")
+            )
+        )
+        assert observed["metadata"] == receipt["expected_metadata"]
+        if case in {
+            "metadata_race",
+            "metadata_insert_after_lock",
+            "metadata_duplicate_after_lock",
+        }:
+            assert result["blocked"] is True
+            assert result["injected"] is True
         pair.invoke(
             WP,
             {
@@ -163,6 +250,16 @@ echo '@@fixture@@'.wp_json_encode(['error'=>$error,'injected'=>$injected]);
         assert restored == before
     else:
         assert result["error"]
-        assert observed == before
-        if case in {"after_adoption_failure", "second_update_failure"}:
+        expected = json.loads(json.dumps(before))
+        if case in {"metadata_race", "metadata_drift"}:
+            expected["metadata"][str(pages[0])]["_linker_i18n_note"] = [
+                "Concurrent external note."
+            ]
+        assert observed == expected
+        if case.startswith("silent_") or case in {
+            "after_adoption_failure",
+            "second_update_failure",
+            "silent_units_rejection",
+            "metadata_race",
+        }:
             assert result["injected"] is True

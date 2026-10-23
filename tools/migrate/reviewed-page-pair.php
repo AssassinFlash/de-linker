@@ -103,23 +103,51 @@ use Linker\I18n\Woo\Projection;
 			throw new RuntimeException( 'A write requires both pages to change; inspect no-op pairs separately.' );
 		}
 	}
-	$locked  = false;
-	$adopted = false;
-	$lock    = static function ( int $id ) use ( $en, $de, $pair, $read, &$locked, $wpdb ): void {
+	$locked         = false;
+	$adopted        = false;
+	$expected       = $pair['metadata_before'];
+	$observe_update = static function ( mixed $check, int $id, string $key, mixed $value ) use ( $keys, &$expected ): mixed {
+		if ( isset( $keys[ $id ] ) && in_array( $key, $keys[ $id ], true ) ) {
+			// Native metadata filters receive the unslashed requested value,
+			// even when another filter rejects it. Reuse native segment hashing.
+			$expected[ $id ][ $key ] = array_fill( 0, max( 1, count( $expected[ $id ][ $key ] ) ), $value );
+		}
+		return $check;
+	};
+	$observe_delete = static function ( mixed $check, int $id, string $key ) use ( $keys, &$expected ): mixed {
+		if ( isset( $keys[ $id ] ) && in_array( $key, $keys[ $id ], true ) ) {
+			$expected[ $id ][ $key ] = array();
+		}
+		return $check;
+	};
+	$lock           = static function ( int $id ) use ( $en, $de, $pair, $keys, &$locked, $wpdb ): void {
 		if ( $id !== $en && $id !== $de ) {
 			return;
 		}
 		if ( ! $locked ) {
 			// The content writer already holds both post locks on this connection.
 			// Lock their metadata before native pre-save baseline priming runs.
-			$wpdb->get_results( $wpdb->prepare( 'SELECT meta_id FROM %i WHERE post_id IN (%d, %d) ORDER BY post_id, meta_id FOR UPDATE', $wpdb->postmeta, $en, $de ) );
-			if ( $read() !== $pair['metadata_before'] ) {
+			$rows    = $wpdb->get_results( $wpdb->prepare( 'SELECT post_id, meta_key, meta_value FROM %i WHERE post_id IN (%d, %d) ORDER BY post_id, meta_id FOR UPDATE', $wpdb->postmeta, $en, $de ) );
+			$current = array();
+			foreach ( $keys as $post_id => $names ) {
+				wp_cache_delete( $post_id, 'post_meta' );
+				foreach ( $names as $name ) {
+					$current[ $post_id ][ $name ] = array();
+				}
+			}
+			foreach ( $rows as $row ) {
+				$post_id = (int) $row->post_id;
+				if ( isset( $current[ $post_id ] ) && array_key_exists( $row->meta_key, $current[ $post_id ] ) ) {
+					$current[ $post_id ][ $row->meta_key ][] = maybe_unserialize( $row->meta_value );
+				}
+			}
+			if ( $current !== $pair['metadata_before'] ) {
 				throw new RuntimeException( 'Translation metadata changed since backup.' );
 			}
 			$locked = true;
 		}
 	};
-	$adopt   = static function ( int $id ) use ( $en, $de, $pair, $keys, $read, $translator, &$adopted ): void {
+	$adopt          = static function ( int $id ) use ( $en, $de, $pair, $keys, $read, $translator, &$adopted, &$expected ): void {
 		if ( $id !== $de ) {
 			return;
 		}
@@ -142,16 +170,28 @@ use Linker\I18n\Woo\Projection;
 			if ( $read() !== $pair['metadata_restore'] ) {
 				throw new RuntimeException( 'Original translation values were not restored.' );
 			}
-		} elseif ( State::SYNCED !== $translator->adopt_current( State::POST, $en ) || ! $translator->current( State::POST, $en ) ) {
-			throw new RuntimeException( 'Reviewed translation baseline did not become current.' );
+		} else {
+			$expected = $read();
+			if ( State::SYNCED !== $translator->adopt_current( State::POST, $en ) || ! $translator->current( State::POST, $en ) || $read() !== $expected ) {
+				throw new RuntimeException( 'Reviewed baseline differs from native requested values.' );
+			}
 		}
 		$adopted = true;
 	};
-	$verify  = static function ( string $query ) use ( $en, $pair, $read, $translator, &$locked, &$adopted ): string {
+	$verify         = static function ( string $query ) use ( $en, $pair, $read, $translator, &$locked, &$adopted, &$expected, $wpdb ): string {
+		if ( 'START TRANSACTION' === $query ) {
+			// Limit this to the next transaction, after the writer's preflight.
+			// Native reads must see current locked values and protect absent keys;
+			// session and global isolation defaults remain unchanged.
+			if ( false === $wpdb->query( 'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE' ) ) {
+				throw new RuntimeException( 'Could not protect the reviewed baseline transaction.' );
+			}
+			return $query;
+		}
 		if ( 'COMMIT' !== $query ) {
 			return $query;
 		}
-		$valid = 'restore' === $pair['mode'] ? $read() === $pair['metadata_restore'] : $translator->current( State::POST, $en );
+		$valid = 'restore' === $pair['mode'] ? $read() === $pair['metadata_restore'] : $translator->current( State::POST, $en ) && $read() === $expected;
 		if ( ! $locked || ! $adopted || ! $valid ) {
 			throw new RuntimeException( 'Cannot commit an unadopted reviewed pair.' );
 		}
@@ -159,13 +199,18 @@ use Linker\I18n\Woo\Projection;
 	};
 	add_action( 'pre_post_update', $lock, -PHP_INT_MAX );
 	add_action( 'post_updated', $adopt, PHP_INT_MAX );
+	add_filter( 'update_post_metadata', $observe_update, PHP_INT_MAX, 4 );
+	add_filter( 'delete_post_metadata', $observe_delete, PHP_INT_MAX, 3 );
 	add_filter( 'query', $verify, PHP_INT_MAX - 1 );
-	try {
+	try { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedTry -- Trusted writer source replaces this template marker before CLI execution.
 		// Replaced only with the trusted, unchanged repository writer source.
-		throw new LogicException( '__REVIEWED_PAIR_CONTENT_WRITER__' );
+		/* __REVIEWED_PAIR_CONTENT_WRITER__ */
 	} finally {
 		remove_action( 'pre_post_update', $lock, -PHP_INT_MAX );
 		remove_action( 'post_updated', $adopt, PHP_INT_MAX );
+		remove_filter( 'update_post_metadata', $observe_update, PHP_INT_MAX );
+		remove_filter( 'delete_post_metadata', $observe_delete, PHP_INT_MAX );
 		remove_filter( 'query', $verify, PHP_INT_MAX - 1 );
 	}
+	echo PHP_EOL . '@@reviewed-pair@@' . wp_json_encode( array( 'expected_metadata' => 'restore' === $pair['mode'] ? $pair['metadata_restore'] : $expected ) );
 } )();
