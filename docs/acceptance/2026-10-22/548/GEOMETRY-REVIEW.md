@@ -68,3 +68,22 @@ the change. New local-frame/rebased tests and large-angle periodic cases are
 separate. Current geometry+private HTTP140 pass2.44s;10 Node geometry cases,
 strict TS, build and planning mypy70 modules pass. Final fixed-source axes and
 native current-checker readback still follow; this remains a service increment.
+
+## Rejected fixed source aead2014
+
+Both axes confirmed the previous fixes, but FAIL remains. Unconditional UV
+translation by the first roof vertex could itself turn small component UVs
+into huge coordinates and erase overlap. Spec independently showed the same
+polygon's cyclic start changed the answer. Spec also showed a large-UV helper
+had already lost half-module detail before ENU rebasing, including59.67mm error
+for a normal1.134×2.278m module.140 Python/10 Node plus independent ASGI and
+budget probes passed while those new counterexamples remained.
+
+The next correction removes automatic UV translation entirely. Binary64 UV
+granularity is reported with an explicit1e-9m internal computational support
+budget. Above it the original safe document remains saveable, review returns
+`incomplete` plus `numerical_limit`, and the render helper raises a typed
+precision refusal. This budget is not an installation/survey tolerance or
+an epsilon used to accept a near miss. Large ENU origins with ordinary local
+UV retain successful direct-UV review and rebased rendering. This avoids
+concealing unsupported precision behind a heuristically chosen frame.

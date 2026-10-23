@@ -371,7 +371,7 @@ def test_one_centimetre_overlap_survives_large_enu_translation() -> None:
         assert "panel_projected_overlap" in kinds(report)
 
 
-def test_review_rebases_large_uv_chart_before_constructing_small_panels() -> None:
+def test_large_uv_chart_is_explicitly_outside_numeric_review_support() -> None:
     value = one_panel()
     value["arrays"][0]["origin_uv"] = [1e15 + 1, 1e15 + 2]
     value["module_specs"][0].update(width_m=0.01, length_m=0.02)
@@ -381,7 +381,11 @@ def test_review_rebases_large_uv_chart_before_constructing_small_panels() -> Non
         [1e15 + 10, 1e15 + 10],
         [1e15, 1e15 + 10],
     ]
-    assert review_geometry(value)["conflict_count"] == 0
+    before = copy.deepcopy(value)
+    report = review_geometry(value)
+    assert report["geometry_status"] == "incomplete" and report["conflict_count"] == 0
+    assert "numeric_resolution_unsupported" in kinds(report)
+    assert value == before
 
 
 @pytest.mark.parametrize(
@@ -396,3 +400,21 @@ def test_rotation_reduces_before_trig_and_keeps_periodic_semantics(
     value["arrays"][0]["rotation_deg"] = math.fmod(degrees, 360)
     expected = panel_poses(read_geometry(value))[0]
     assert actual == expected
+
+
+def test_extreme_uv_extent_and_ring_order_never_return_false_clear() -> None:
+    value = one_panel()
+    value["module_specs"][0].update(width_m=2, length_m=2)
+    value["arrays"][0]["origin_uv"] = [1, 1]
+    value["arrays"].append(
+        {**value["arrays"][0], "id": "second", "origin_uv": [2.99, 1]}
+    )
+    ring = [[-9e15, -10], [10, -10], [10, 10], [-9e15, 10]]
+    for start in range(4):
+        value["roofs"][0]["boundary_uv"] = ring[start:] + ring[:start]
+        report = review_geometry(value)
+        assert (
+            report["geometry_status"] == "incomplete" and not report["review_complete"]
+        )
+        assert report["uv_resolution_m"] > report["limits"]["max_uv_resolution_m"]
+        assert report["issues"][0]["category"] == "numerical_limit"

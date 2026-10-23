@@ -248,3 +248,38 @@ test("source UTC semantics and duplicate excluded slots agree with the server", 
 		),
 	);
 });
+
+test("large UV charts are preserved as inputs but the render helper explicitly refuses lost precision", () => {
+	for (const [width_m, length_m] of [
+		[0.01, 0.02],
+		[1.134, 2.278],
+	]) {
+		const document = fixture();
+		const value = {
+			...document,
+			arrays: [
+				{
+					...document.arrays[0]!,
+					rows: 1,
+					columns: 1,
+					excluded_slots: [],
+					origin_uv: [1e15 + 1, 1e15 + 2] as const,
+				},
+			],
+			module_specs: [
+				{
+					...document.module_specs[0]!,
+					width_m: width_m!,
+					length_m: length_m!,
+				},
+			],
+		};
+		const parsed = readGeometry(value, geometryPolicy);
+		const pose = panelPoses(parsed)[0]!;
+		assert.throws(
+			() => panelPositionRelative(pose, parsed.roofs[0]!, [1e15, 1e15, 0]),
+			{ name: "GeometryPrecisionError" },
+		);
+		assert.equal(parsed, value);
+	}
+});

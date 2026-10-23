@@ -1,0 +1,257 @@
+[
+  {
+    "case": "bad_acquired_at_utc",
+    "value": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": "yesterday",
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            10,
+            -20,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 0,
+          "mount_tilt_deg": 0,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 2,
+          "columns": 3,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "1:2"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "python_accepted": false
+  },
+  {
+    "case": "duplicate_excluded_slot",
+    "value": {
+      "schema_version": 1,
+      "coordinate_system": {
+        "kind": "local_enu",
+        "unit": "m",
+        "height_reference": "relative_to_project_origin",
+        "north_reference": "unreferenced",
+        "north_source_id": null,
+        "anchor": null
+      },
+      "sources": [
+        {
+          "id": "survey",
+          "kind": "synthetic_fixture",
+          "note": "Analytic synthetic dimensions only",
+          "rights_note": "Owned test data, not a site survey or product datasheet",
+          "reference_url": null,
+          "reference_sha256": null,
+          "acquired_at_utc": null,
+          "spatial_precision_m": null,
+          "calibration_note": "Analytic metre-scale fixture; no real-world precision claim",
+          "rights_basis": "synthetic",
+          "permissions": {
+            "derive": "permitted",
+            "retain": "permitted",
+            "export": "permitted"
+          }
+        }
+      ],
+      "roofs": [
+        {
+          "id": "roof",
+          "name": "Fixture roof",
+          "source_id": "survey",
+          "origin_enu": [
+            10,
+            -20,
+            4
+          ],
+          "u_axis_enu": [
+            1,
+            0,
+            0
+          ],
+          "v_axis_enu": [
+            0,
+            1,
+            0
+          ],
+          "boundary_uv": [
+            [
+              0,
+              0
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              20
+            ],
+            [
+              0,
+              20
+            ]
+          ],
+          "holes_uv": []
+        }
+      ],
+      "module_specs": [
+        {
+          "id": "module",
+          "model": "Synthetic 1 x 2 m",
+          "width_m": 1,
+          "length_m": 2,
+          "thickness_m": 0.04,
+          "stc_power_w": 500,
+          "source": {
+            "kind": "user_declared",
+            "note": "Synthetic module, not a product release",
+            "document_sha256": null,
+            "url": null,
+            "page": null
+          }
+        }
+      ],
+      "arrays": [
+        {
+          "id": "array",
+          "name": "Fixture array",
+          "source_id": "survey",
+          "roof_id": "roof",
+          "module_spec_id": "module",
+          "origin_uv": [
+            1,
+            2
+          ],
+          "rotation_deg": 0,
+          "mount_tilt_deg": 0,
+          "lower_edge_clearance_m": 0.1,
+          "rows": 2,
+          "columns": 3,
+          "column_gap_m": 0.2,
+          "row_gap_m": 0.4,
+          "excluded_slots": [
+            "0:0",
+            "0:0"
+          ],
+          "mounting_note": "Synthetic dimensions, not mounting-system approval"
+        }
+      ],
+      "obstacles": [],
+      "keepouts": [],
+      "layout_rules": [
+        {
+          "roof_id": "roof",
+          "source_id": "survey",
+          "edge_clearance_m": 0,
+          "obstacle_clearance_m": 0,
+          "source_note": "Explicit zero for analytic fixture; not a recommended installation clearance"
+        }
+      ]
+    },
+    "python_accepted": false
+  }
+]

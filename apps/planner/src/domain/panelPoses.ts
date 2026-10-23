@@ -1,3 +1,4 @@
+import { requireUvResolution } from "./geometryNumerics.ts";
 import {
 	add,
 	cross,
@@ -118,6 +119,7 @@ export function panelPositionRelative(
 	roof: RoofFace,
 	reference: Vec3,
 ): Vec3 {
+	requireUvResolution(pose.centre_uvn);
 	return add(
 		add(roof.origin_enu, scale(reference, -1)),
 		vectorFromRoof(roof, pose.centre_uvn),

@@ -241,7 +241,7 @@ def test_geometry_review_and_saved_source_use_the_actual_native_gateway(local: t
     assert report.status == 200, report.body
     assert report.object()["module_count"] == 5
     assert report.object()["declared_stc_kwp"] == 2.5
-    assert report.object()["checker"] == "roof_plane_layout_v2"
+    assert report.object()["checker"] == "roof_plane_layout_v3"
     assert report.object()["engineering_status"] == "not_evaluated"
     assert owner.read(project).object()["inputs"] == {}
     assert foreign.rpc("rpc/geometry/review", {**review_body, "geometry": {}}).status == 404

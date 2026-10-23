@@ -35,6 +35,12 @@ service-only PASS does not assert those views or the full B path exist.
    coordinates and invalid bases are refused. Resource budgets are explicitly
    application policy, not European building limits. New saves check after
    owned permanent-receipt replay, preserving already-confirmed commands.
+   Safe wire inputs may exceed the review/render arithmetic support domain.
+   Its binary64 UV granularity budget is1e-9m (internal computational policy,
+   not survey accuracy or a fitting epsilon). The checker returns actual
+   granularity and its budget. Above it, review is explicitly incomplete with
+   a numerical-limit diagnostic; the render-position helper refuses instead
+   of returning an inaccurate position. Inputs and receipts are preserved.
 5. Euclidean panel placement is deterministic: array/row/column identifies
    each slot; excluded slots retain identity. Every tilted row starts at its
    own lower edge, not on one continuously rising grid. Rotation and actual
@@ -49,6 +55,12 @@ service-only PASS does not assert those views or the full B path exist.
    country/fire/wind rule. Exact declared boundaries apply without a hidden
    acceptance epsilon or geometry snapping. Edge contact is permitted at
    zero declared clearance; positive-area projected overlap is reported.
+   Layout uses roof-local UVN cuboid coordinates directly, without an ENU
+   roundtrip or a silent UV-chart translation. Rotation first takes signed
+   remainder360, then identical degree-to-radian operations; quadrants are
+   exact. Renderers rebase normal supported local coordinates before adding
+   large ENU origins. Unsupported UV charts require an explicit coordinate
+   reference change, not an assumed first-vertex offset.
 7. STRtree bounds candidate checks. Roof fit, openings, obstacle/keepout
    overlap and panel projected overlap are distinct diagnostics with stable
    object IDs. Projection overlap is a conservative plan-layout conflict,

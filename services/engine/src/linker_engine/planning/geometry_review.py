@@ -27,6 +27,7 @@ from .geometry import (
     scale,
 )
 from .geometry_documents import GeometryDocument
+from .geometry_numerics import MAX_UV_RESOLUTION_M, uv_resolution
 
 # Preview resource policy; exceeding either is explicit, never an all-clear.
 MAX_DIAGNOSTICS = 200
@@ -49,11 +50,12 @@ class Diagnostics:
         *,
         related_id: str | None = None,
         missing: bool = False,
+        numerical: bool = False,
         required_m: float | None = None,
         actual_m: float | None = None,
     ) -> None:
         self.issue_count += 1
-        self.conflict_count += not missing
+        self.conflict_count += not (missing or numerical)
         if len(self.issues) < MAX_DIAGNOSTICS:
             self.issues.append(
                 {
@@ -61,7 +63,11 @@ class Diagnostics:
                     "object_id": object_id,
                     "roof_id": roof_id,
                     "related_id": related_id,
-                    "category": "missing_input" if missing else "layout_conflict",
+                    "category": "numerical_limit"
+                    if numerical
+                    else "missing_input"
+                    if missing
+                    else "layout_conflict",
                     "required_m": required_m,
                     "actual_m": actual_m,
                 }
@@ -86,7 +92,8 @@ def review_geometry(value: Json) -> Object:
     return {
         "schema_version": 1,
         "geometry_sha256": digest(encode(value)),
-        "checker": "roof_plane_layout_v2",
+        "uv_resolution_m": uv_resolution(document),
+        "checker": "roof_plane_layout_v3",
         "libraries": {
             "shapely": shapely.__version__,
             "geos": shapely.geos_version_string,
@@ -105,6 +112,7 @@ def review_geometry(value: Json) -> Object:
         "limits": {
             "max_diagnostics": MAX_DIAGNOSTICS,
             "max_candidate_checks": MAX_CANDIDATE_CHECKS,
+            "max_uv_resolution_m": MAX_UV_RESOLUTION_M,
         },
         "module_count": len(included),
         "declared_stc_kwp": math.fsum(p.stc_power_w for p in included) / 1000,
@@ -128,7 +136,12 @@ def _polygon(
 
 
 def _review(document: GeometryDocument, result: Diagnostics) -> None:
-    document = _local_review_frame(document)
+    if uv_resolution(document) > MAX_UV_RESOLUTION_M:
+        result.complete = False
+        result.add(
+            "numeric_resolution_unsupported", "coordinate_system", None, numerical=True
+        )
+        return
     poses = panel_poses(document)
     rules = {r.roof_id: r for r in document.layout_rules}
     coordinate = document.coordinate_system
@@ -291,53 +304,3 @@ def _review(document: GeometryDocument, result: Diagnostics) -> None:
                         roof.id,
                         related_id=panel_ids[other],
                     )
-
-
-def _local_review_frame(document: GeometryDocument) -> GeometryDocument:
-    """Translate each UV chart near zero; never roundtrip through global ENU.
-
-    This temporary analysis frame changes no input, source or command hash.
-    It also preserves small modules when an imported UV chart has a huge offset.
-    """
-    offsets = {roof.id: roof.boundary_uv[0] for roof in document.roofs}
-
-    def ring(points: list[list[float]], offset: list[float]) -> list[list[float]]:
-        return [[p[0] - offset[0], p[1] - offset[1]] for p in points]
-
-    roofs = [
-        roof.model_copy(
-            update={
-                "boundary_uv": ring(roof.boundary_uv, offsets[roof.id]),
-                "holes_uv": [ring(hole, offsets[roof.id]) for hole in roof.holes_uv],
-            }
-        )
-        for roof in document.roofs
-    ]
-    arrays = [
-        array.model_copy(
-            update={"origin_uv": ring([array.origin_uv], offsets[array.roof_id])[0]}
-        )
-        for array in document.arrays
-    ]
-    obstacles = [
-        obstacle.model_copy(
-            update={
-                "footprint_uv": ring(obstacle.footprint_uv, offsets[obstacle.roof_id])
-            }
-        )
-        for obstacle in document.obstacles
-    ]
-    keepouts = [
-        area.model_copy(
-            update={"footprint_uv": ring(area.footprint_uv, offsets[area.roof_id])}
-        )
-        for area in document.keepouts
-    ]
-    return document.model_copy(
-        update={
-            "roofs": roofs,
-            "arrays": arrays,
-            "obstacles": obstacles,
-            "keepouts": keepouts,
-        }
-    )
