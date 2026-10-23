@@ -7,6 +7,7 @@ import {
 } from "../../domain/decimal.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { revealActionResult } from "../revealActionResult.ts";
 
 class InputError extends Error {
 	readonly field: string;
@@ -96,7 +97,9 @@ export function GeometryForm({
 	const [error, setError] = useState("");
 	const formRef = useRef<HTMLFormElement>(null);
 	useEffect(() => {
-		formRef.current?.querySelector<HTMLInputElement>("input")?.focus();
+		revealActionResult(
+			formRef.current?.querySelector<HTMLInputElement>("input") ?? null,
+		);
 	}, []);
 	function apply(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -117,7 +120,7 @@ export function GeometryForm({
 					input.setCustomValidity(error.message);
 					input.setAttribute("aria-invalid", "true");
 					input.reportValidity();
-					input.focus();
+					revealActionResult(input);
 				}
 				setError(error.message);
 			} else

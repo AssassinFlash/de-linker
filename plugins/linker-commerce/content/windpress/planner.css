@@ -204,6 +204,7 @@
   [data-linker-planner] .lp-geometry-form { display: grid; gap: 20px; }
   [data-linker-planner] .lp-geometry-form h3, [data-linker-planner] .lp-geometry-form p { margin: 0; }
   [data-linker-planner] .lp-geometry-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+  [data-linker-planner] .lp-import-panel .lp-geometry-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   [data-linker-planner] .lp-geometry-check { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; }
   [data-linker-planner] .lp-geometry-check input { margin-top: 4px; flex-shrink: 0; }
   [data-linker-planner] .lp-geometry-form .lp-inline-actions .lp-button { padding-inline: 12px; font-size: 12px; }
@@ -262,6 +263,7 @@
     [data-linker-planner] .lp-design-empty { min-height: 350px; padding: 24px; }
     [data-linker-planner] .lp-design-properties { padding: 24px 16px; }
     [data-linker-planner] .lp-geometry-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    [data-linker-planner] .lp-import-panel .lp-geometry-fields { grid-template-columns: minmax(0, 1fr); }
     [data-linker-planner] .lp-design-quantities > div { padding: 12px 8px; }
     [data-linker-planner] .lp-design-quantities dt { font-size: 9px; }
     [data-linker-planner] .lp-design-quantities dd { font-size: 22px; }

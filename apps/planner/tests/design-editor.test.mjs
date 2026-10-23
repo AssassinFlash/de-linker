@@ -119,6 +119,10 @@ test("measured roof intake preserves decimal locale, explicit source and one com
 
 test("invalid staged properties stay visible until corrected or cancelled", async (t) => {
 	const app = await mount(t, { initial: flat });
+	let revealed;
+	window.HTMLElement.prototype.scrollIntoView = function () {
+		revealed = this;
+	};
 	await click(flat.arrays[0].name);
 	await click("Edit numeric properties");
 	await enter(document.querySelector('[name="rows"]'), "2.5");
@@ -130,6 +134,9 @@ test("invalid staged properties stay visible until corrected or cancelled", asyn
 		document.querySelector('[name="rows"]').getAttribute("aria-invalid"),
 		"true",
 	);
+	const rows = document.querySelector('[name="rows"]');
+	assert.equal(document.activeElement, rows);
+	assert.equal(revealed, rows.closest("label"));
 	await click("Cancel properties");
 	assert.equal(app.valid, true);
 	assert.deepEqual(app.current, flat);
