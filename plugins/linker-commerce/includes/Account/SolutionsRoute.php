@@ -144,11 +144,16 @@ final class SolutionsRoute {
 
 		$customer_id = get_current_user_id();
 		if ( 0 === $customer_id ) {
-			$this->solutions->keep_for_guest( $title, $items, $design );
+			$slot = $this->solutions->keep_for_guest( $title, $items, $design );
+			if ( ! $this->proof->is_current( $result ) ) {
+				$this->solutions->discard_guest( $slot, (string) $result['selection_fingerprint'] );
+				return DesignProof::unavailable();
+			}
 			return new WP_REST_Response(
 				array(
-					'id'  => 0,
-					'url' => SavedSolutions::url( 0 ),
+					'id'          => 0,
+					'url'         => SavedSolutions::url( 0 ),
+					'publication' => $result['publication'],
 				),
 				202
 			);
@@ -163,8 +168,9 @@ final class SolutionsRoute {
 		}
 		return new WP_REST_Response(
 			array(
-				'id'  => $id,
-				'url' => SavedSolutions::url( $id ),
+				'id'          => $id,
+				'url'         => SavedSolutions::url( $id ),
+				'publication' => $result['publication'],
 			),
 			201
 		);

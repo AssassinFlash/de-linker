@@ -58,10 +58,13 @@ final class DesignProof {
 		 */
 		$reply = is_callable( $this->fetch ) ? ( $this->fetch )( $url, $body ) : apply_filters( 'linker_tools_engine_request', self::unavailable(), $url, $body ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared server-only Tools seam.
 		if ( $reply instanceof WP_Error || ! is_array( $reply ) || count( $reply ) !== 2 ) {
-			return self::unavailable();
+			return self::verification_failed();
 		}
 		[ $status, $payload ] = $reply;
-		$result               = is_string( $payload ) ? json_decode( $payload, true ) : null;
+		if ( $status >= 500 || in_array( $status, array( 401, 403 ), true ) ) {
+			return self::verification_failed();
+		}
+		$result = is_string( $payload ) ? json_decode( $payload, true ) : null;
 		if ( $status < 200 || $status >= 300 || ! is_array( $result ) || ( $result['selection_fingerprint'] ?? '' ) !== $fingerprint ) {
 			return self::unavailable();
 		}
@@ -141,5 +144,10 @@ final class DesignProof {
 			__( 'This solution needs a new calculation before it can be saved or added to your solution draft.', 'linker-commerce' ),
 			array( 'status' => 409 )
 		);
+	}
+
+	/** A verification outage is separate from a changed product or design. */
+	private static function verification_failed(): WP_Error {
+		return new WP_Error( 'linker_solution_verification', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
 	}
 }

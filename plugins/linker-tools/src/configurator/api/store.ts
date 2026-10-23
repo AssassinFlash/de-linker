@@ -16,7 +16,7 @@ import { resourceFetch } from '../../protection/request';
 
 type Fetch = typeof fetch;
 
-export type AddStatus = 'pending' | 'added' | 'unverified' | 'retry';
+export type AddStatus = 'pending' | 'added' | 'unverified' | 'retry' | 'stale';
 
 export type SelectionProof =
 	| {
@@ -95,11 +95,16 @@ export function storeClient(
 
 		async addAll( lines, onStatus, proof ) {
 			lines.forEach( ( line ) => onStatus( line.productId, 'pending' ) );
+			let submitted = false;
 			try {
 				if ( ! proof || lines.length === 0 ) {
-					throw new Error( 'selection_proof_required' );
+					lines.forEach( ( line ) =>
+						onStatus( line.productId, 'stale' )
+					);
+					return false;
 				}
 				const before = await cart();
+				submitted = true;
 				const response = await resourceFetch(
 					fetcher,
 					`${ restUrl }linker/v1/solutions/draft`,
@@ -115,6 +120,16 @@ export function storeClient(
 					}
 				);
 				if ( ! response.ok ) {
+					const error = await response.json().catch( () => null );
+					if (
+						response.status === 409 &&
+						error?.code === 'linker_solution_changed'
+					) {
+						lines.forEach( ( line ) =>
+							onStatus( line.productId, 'stale' )
+						);
+						return false;
+					}
 					throw new Error( `draft ${ response.status }` );
 				}
 				const body = await response.json();
@@ -132,7 +147,10 @@ export function storeClient(
 				return complete;
 			} catch {
 				lines.forEach( ( line ) =>
-					onStatus( line.productId, 'retry' )
+					onStatus(
+						line.productId,
+						submitted ? 'unverified' : 'retry'
+					)
 				);
 				return false;
 			}

@@ -238,8 +238,9 @@ final class SolutionsRouteTest extends TestCase {
 		$this->assertSame( 201, $response->get_status() );
 		$this->assertSame(
 			array(
-				'id'  => 45,
-				'url' => 'https://example.test/my-account/saved-solutions/#linker-solution-45',
+				'id'          => 45,
+				'url'         => 'https://example.test/my-account/saved-solutions/#linker-solution-45',
+				'publication' => self::result()['publication'],
 			),
 			$response->get_data()
 		);
@@ -283,8 +284,9 @@ final class SolutionsRouteTest extends TestCase {
 		$this->assertSame( 202, $response->get_status() );
 		$this->assertSame(
 			array(
-				'id'  => 0,
-				'url' => 'https://example.test/my-account/saved-solutions/',
+				'id'          => 0,
+				'url'         => 'https://example.test/my-account/saved-solutions/',
+				'publication' => self::result()['publication'],
 			),
 			$response->get_data()
 		);

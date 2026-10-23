@@ -119,8 +119,9 @@ final class SavedSolutions {
 	 * @param string                                      $title  Name of the solution.
 	 * @param list<array{product_id: int, quantity: int}> $items  Products and quantities.
 	 * @param array<string, mixed>                        $design Configurator kind and input.
+	 * @return int Slot of this newly kept record, for final-check compensation.
 	 */
-	public function keep_for_guest( string $title, array $items, array $design ): void {
+	public function keep_for_guest( string $title, array $items, array $design ): int {
 		// REST requests start without WooCommerce's session; this loads it from the guest's cookie.
 		wc_load_cart();
 		$kept   = (array) WC()->session->get( self::SESSION_KEY, array() );
@@ -134,6 +135,21 @@ final class SavedSolutions {
 		if ( $session instanceof \WC_Session_Handler ) {
 			// A guest without a solution draft has no session cookie yet.
 			$session->set_customer_session_cookie( true );
+		}
+		return (int) array_key_last( $kept );
+	}
+
+	/**
+	 * Compensate only the just-written guest record; prior history remains.
+	 *
+	 * @param int    $slot        Slot returned by keep_for_guest().
+	 * @param string $fingerprint Confirmed design identity.
+	 */
+	public function discard_guest( int $slot, string $fingerprint ): void {
+		$kept = WC()->session->get( self::SESSION_KEY, array() );
+		if ( is_array( $kept ) && ( $kept[ $slot ]['design']['selection_fingerprint'] ?? null ) === $fingerprint ) {
+			unset( $kept[ $slot ] );
+			WC()->session->set( self::SESSION_KEY, array_values( $kept ) );
 		}
 	}
 

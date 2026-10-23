@@ -75,6 +75,12 @@ final class SolutionDraftRoute {
 			return $result;
 		}
 		$items = ( new AtomicSolutionDraft() )->add( $result );
-		return $items instanceof WP_Error ? $items : new WP_REST_Response( array( 'items' => $items ), 200 );
+		return $items instanceof WP_Error ? $items : new WP_REST_Response(
+			array(
+				'items'       => $items,
+				'publication' => $result['publication'],
+			),
+			200
+		);
 	}
 }

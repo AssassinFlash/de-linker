@@ -129,7 +129,10 @@ test( 'withdrawal refuses the whole design and never falls back to individual wr
 	const fetcher = vi.fn< typeof fetch >( async ( input ) =>
 		String( input ).endsWith( '/cart' )
 			? json( { items: [] }, { Nonce: 'abc' } )
-			: new Response( '{}', { status: 409 } )
+			: new Response(
+					JSON.stringify( { code: 'linker_solution_changed' } ),
+					{ status: 409 }
+				)
 	);
 	const statuses = new Map< number, AddStatus >();
 	expect(
@@ -142,7 +145,7 @@ test( 'withdrawal refuses the whole design and never falls back to individual wr
 			proof
 		)
 	).toBe( false );
-	expect( [ ...statuses.values() ] ).toEqual( [ 'retry', 'retry' ] );
+	expect( [ ...statuses.values() ] ).toEqual( [ 'stale', 'stale' ] );
 	expect( fetcher ).toHaveBeenCalledTimes( 2 );
 	expect(
 		fetcher.mock.calls.some( ( [ input ] ) =>
@@ -161,7 +164,7 @@ test( 'missing proof cannot degrade to a subset of product IDs', async () => {
 		)
 	).toBe( false );
 	expect( fetcher ).not.toHaveBeenCalled();
-	expect( statuses.get( 7 ) ).toBe( 'retry' );
+	expect( statuses.get( 7 ) ).toBe( 'stale' );
 } );
 
 test( 'a short or unreadable response never reports partial success', async () => {

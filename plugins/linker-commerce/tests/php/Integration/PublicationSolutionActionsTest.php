@@ -108,7 +108,11 @@ final class PublicationSolutionActionsTest extends IntegrationTestCase {
 				'snapshot' => $result,
 			)
 		);
-		$this->later( static fn () => wp_delete_post( $id, true ) );
+		$this->later(
+			static function () use ( $id ): void {
+				wp_delete_post( $id, true );
+			}
+		);
 		$b->set_name( 'Changed after the customer saved' );
 		$b->set_status( 'draft' );
 		$b->save();
