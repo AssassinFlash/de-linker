@@ -169,6 +169,14 @@ final class SupplyBrandsTest extends TestCase {
 		WP_Mock::userFunction( 'get_posts' )->andReturnUsing( $this->native_products( ... ) );
 		WP_Mock::userFunction( 'get_terms' )->andReturnUsing(
 			function ( array $args ): array {
+				if ( 'product_cat' === $args['taxonomy'] ) {
+					self::assertSame( '', $args['lang'], 'Category identity lookup is explicit across frontend languages.' );
+					$ids = array(
+						'home-storage'       => 100,
+						'commercial-storage' => 200,
+					);
+					return array_values( array_intersect_key( $ids, array_flip( $args['slug'] ) ) );
+				}
 				self::assertSame( 'pa_brand', $args['taxonomy'] );
 				self::assertNotEmpty( $args['object_ids'], 'An empty object list would expose unrelated native brands.' );
 				$names = array_map( fn ( int $id ): string => $this->runtime[ $id ]['brand'], $args['object_ids'] );
@@ -225,8 +233,10 @@ final class SupplyBrandsTest extends TestCase {
 		if ( 'name' === ( $args['tax_query'][1]['field'] ?? '' ) ) {
 			$hidden = array_map( fn ( string $name ): int => $this->visibility[ $name ], $hidden );
 		}
-		$categories = $scope['terms'];
-		foreach ( $scope['terms'] as $root ) {
+		self::assertSame( 'term_id', $scope['field'], 'Native taxonomy expansion must not repeat a language-scoped slug lookup.' );
+		$roots      = array_map( static fn ( int $id ): string => 100 === $id ? 'home-storage' : 'commercial-storage', $scope['terms'] );
+		$categories = $roots;
+		foreach ( $roots as $root ) {
 			$categories = array_merge( $categories, $this->descendants( $root ) );
 		}
 		$ids = array();

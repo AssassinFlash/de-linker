@@ -80,9 +80,9 @@ function get_posts($args) {
     global $products, $runtime_visibility;
     $roots = ['home-storage' => 100, 'commercial-storage' => 200];
     $categories = [];
-    foreach ($args['tax_query'][0]['terms'] as $slug) {
-        if (isset($roots[$slug])) {
-            $root = $roots[$slug];
+    foreach ($args['tax_query'][0]['terms'] as $term) {
+        $root = ($args['tax_query'][0]['field'] ?? '') === 'term_id' ? $term : ($roots[$term] ?? null);
+        if ($root !== null) {
             $categories[] = $root;
             $categories = array_merge($categories, get_term_children($root, 'product_cat'));
         }
@@ -100,6 +100,11 @@ function get_posts($args) {
 }
 function get_terms($args) {
     global $products, $runtime_visibility;
+    if ($args['taxonomy'] === 'product_cat') {
+        return array_values(array_intersect_key(
+            ['home-storage' => 100, 'commercial-storage' => 200], array_flip($args['slug'])
+        ));
+    }
     if ($args['taxonomy'] === 'product_visibility') {
         $rows = [];
         foreach ($runtime_visibility as $name => $id) {

@@ -75,11 +75,25 @@ final class SupplyBrands {
 	 * @return int[]
 	 */
 	private function candidate_ids( array $categories ): array {
+		// Resolve outside WP_Tax_Query: Polylang otherwise scopes its internal
+		// English-slug lookup to the active German frontend language.
+		$terms = get_terms(
+			array(
+				'taxonomy'   => 'product_cat',
+				'slug'       => $categories,
+				'fields'     => 'ids',
+				'hide_empty' => false,
+				'lang'       => '',
+			)
+		);
+		if ( ! is_array( $terms ) || array() === $terms ) {
+			return array();
+		}
 		$tax_query = array(
 			array(
 				'taxonomy'         => 'product_cat',
-				'field'            => 'slug',
-				'terms'            => $categories,
+				'field'            => 'term_id',
+				'terms'            => array_map( 'intval', $terms ),
 				'include_children' => true,
 			),
 		);
