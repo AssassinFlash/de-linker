@@ -55,3 +55,12 @@ Pre-delivery:
 - [x] No slogan formulas.
 - [x] No banned brand in new customer copy.
 - [x] No invented quotes.
+
+
+A further state review found the former product-card success text “Saved to
+your account.” was also shown to guests whose record only lives in their Woo
+session. The new API's `id=0` outcome now uses EN “Saved in this browser for
+now.” DE is independently “Vorerst in diesem Browser gespeichert.” This names
+the actual temporary storage without promising it lasts indefinitely or
+claiming the visitor already owns an account record. The same pre-delivery
+checks above hold. Account success keeps its existing sentence.

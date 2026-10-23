@@ -224,7 +224,7 @@ final class ComparePageTest extends TestCase {
 	public function test_the_table_has_one_column_per_product(): void {
 		$_GET['ids'] = '4107,1832';
 
-		$html = ( new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) ) )->table();
+		$html = ( new ComparePage( $this->comparison() ) )->table();
 
 		$this->assertStringContainsString( 'data-compare-ids="4107,1832"', $html );
 		$this->assertStringContainsString( 'Inverter 4107', $html );
@@ -242,7 +242,7 @@ final class ComparePageTest extends TestCase {
 	 * Nothing selected: the empty state, and no table at all.
 	 */
 	public function test_an_empty_selection_shows_the_empty_state(): void {
-		$html = ( new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) ) )->table();
+		$html = ( new ComparePage( $this->comparison() ) )->table();
 
 		$this->assertStringContainsString( 'Choose products to compare their specifications.', $html );
 		$this->assertStringNotContainsString( '<table', $html );
@@ -256,7 +256,7 @@ final class ComparePageTest extends TestCase {
 		$_GET['ids']    = '1,2,3,4,5';
 		$_GET['capped'] = '1';
 
-		$page  = new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) );
+		$page  = new ComparePage( $this->comparison() );
 		$table = $page->table();
 
 		$this->assertStringContainsString( 'Only the first 4 products are shown.', $table );
@@ -273,7 +273,7 @@ final class ComparePageTest extends TestCase {
 		$_GET['ids']    = '4107,1832';
 		$this->language = 'de';
 
-		$german = ( new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) ) )->table();
+		$german = ( new ComparePage( $this->comparison() ) )->table();
 
 		$this->assertStringContainsString( 'Bemessungsleistung AC (kW)', $german );
 		$this->assertStringContainsString( 'Anwendung', $german );
@@ -288,7 +288,7 @@ final class ComparePageTest extends TestCase {
 	public function test_an_unknown_value_reads_as_a_dash(): void {
 		$_GET['ids'] = '4107,1832';
 
-		$html = ( new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) ) )->table();
+		$html = ( new ComparePage( $this->comparison() ) )->table();
 
 		$this->assertStringNotContainsString( '>unknown<', $html );
 		$this->assertStringContainsString( '—', $html );
@@ -299,7 +299,7 @@ final class ComparePageTest extends TestCase {
 	 * The page's address carries the selection; without one it is the page.
 	 */
 	public function test_the_page_address_carries_the_selection(): void {
-		$page = new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) );
+		$page = new ComparePage( $this->comparison() );
 
 		$this->assertSame( self::PAGE_URL, $page->page_url() );
 		$this->assertSame( self::PAGE_URL . '?ids=7,9', $page->page_url( array( 7, 9 ) ) );
@@ -313,7 +313,7 @@ final class ComparePageTest extends TestCase {
 	 */
 	public function test_the_german_page_address_is_the_german_page(): void {
 		$this->language = 'de';
-		$page           = new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) );
+		$page           = new ComparePage( $this->comparison() );
 
 		$this->assertSame( self::PAGE_URL_DE, $page->page_url() );
 		$this->assertSame( self::PAGE_URL_DE . '?ids=7,9', $page->page_url( array( 7, 9 ) ) );
@@ -329,7 +329,7 @@ final class ComparePageTest extends TestCase {
 		$_GET['ids']    = '4107,1832';
 		$this->language = 'de';
 
-		$page  = new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) );
+		$page  = new ComparePage( $this->comparison() );
 		$table = $page->table();
 		$chip  = $page->chip_shortcode();
 
@@ -347,12 +347,35 @@ final class ComparePageTest extends TestCase {
 	 * needs no configuration of its own.
 	 */
 	public function test_the_chip_carries_its_address_and_its_maximum(): void {
-		$chip = ( new ComparePage( new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ) ) ) )->chip_shortcode();
+		$chip = ( new ComparePage( $this->comparison() ) )->chip_shortcode();
 
 		$this->assertStringContainsString( 'data-compare-chip', $chip );
 		$this->assertStringContainsString( 'data-compare-page="' . self::PAGE_URL . '"', $chip );
 		$this->assertStringContainsString( 'data-compare-max="4"', $chip );
 		$this->assertStringContainsString( 'data-compare-count', $chip );
 		$this->assertStringContainsString( 'hidden', $chip );
+	}
+
+	/** Presentation fixtures inject their stated facts and an explicit source set. */
+	private function comparison(): \Linker\Commerce\Products\Comparison {
+		$source = new \Linker\Commerce\Abilities\PublicationData(
+			static function (): array {
+				$products = array();
+				foreach ( array_keys( self::PRODUCTS ) as $id ) {
+					$products[] = array(
+						'product_id'           => $id,
+						'product_revision'     => (string) $id,
+						'published_locale_ids' => array( $id ),
+					);
+				}
+				return array(
+					'source_revision'        => 'fixture',
+					'compatibility_revision' => 'fixture',
+					'products'               => $products,
+					'documents'              => array(),
+				);
+			}
+		);
+		return new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ), publication: $source );
 	}
 }

@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Products;
 
 use Linker\Commerce\Abilities\ProductText;
+use Linker\Commerce\Abilities\PublicationData;
 use Linker\Commerce\Gating\CommerceState;
 use Linker\Commerce\Storefront\ProductView;
 use WC_Product;
@@ -36,6 +37,12 @@ final class Comparison {
 	 * @var callable(int):SelectionFactSet
 	 */
 	private $facts_reader;
+
+	/** Current operation snapshot, never a retained permission cache.
+	 *
+	 * @var array<string,mixed>
+	 */
+	private array $publication_snapshot = array();
 
 
 	/**
@@ -105,9 +112,10 @@ final class Comparison {
 	 * @param ProductView|null                    $view  Technical-table reading; the default one otherwise.
 	 * @param CommerceState                       $state #11's price rule, shared with the view.
 	 * @param callable(int):SelectionFactSet|null $facts_reader Current authorized facts.
+	 * @param PublicationData                     $publication Current source and release validator.
 	 */
-	public function __construct( ?ProductView $view = null, private readonly CommerceState $state = new CommerceState(), ?callable $facts_reader = null ) {
-		$this->facts_reader = $facts_reader ?? static fn( int $id ): SelectionFactSet => SelectionFacts::from_figures( Publication::canonical_id( $id ), Publication::figures_for( $id ) );
+	public function __construct( ?ProductView $view = null, private readonly CommerceState $state = new CommerceState(), ?callable $facts_reader = null, private readonly PublicationData $publication = new PublicationData() ) {
+		$this->facts_reader = $facts_reader ?? fn( int $id ): SelectionFactSet => $this->publication->facts( $id, $this->publication_snapshot );
 		$this->view         = $view ?? new ProductView( $state );
 	}
 
@@ -125,16 +133,19 @@ final class Comparison {
 	 * }
 	 */
 	public function of( array $ids, string $lang = 'en' ): array {
-		$lang     = ProductText::lang( $lang );
-		$products = array();
-		$classes  = array();
-		foreach ( self::published( $ids ) as $id ) {
+		$lang                       = ProductText::lang( $lang );
+		$this->publication_snapshot = $this->publication->manifest();
+		$ids                        = $this->publication->published( self::published( $ids ), $this->publication_snapshot );
+		$dependencies               = $this->publication->dependencies( $ids, $this->publication_snapshot );
+		$products                   = array();
+		$classes                    = array();
+		foreach ( $ids as $id ) {
 			$facts      = ( $this->facts_reader )( $id );
 			$classes[]  = $facts->device_class;
 			$products[] = $this->column( $id, $lang, $facts );
 		}
 
-		return array(
+		$result = array(
 			'products' => $products,
 			'rows'     => array_values(
 				array_map(
@@ -143,6 +154,11 @@ final class Comparison {
 				)
 			),
 			'specs'    => $this->specs( $products ),
+		);
+		return $this->publication->unchanged( $dependencies ) ? $result : array(
+			'products' => array(),
+			'rows'     => array(),
+			'specs'    => array(),
 		);
 	}
 
