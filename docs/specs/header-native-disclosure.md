@@ -27,8 +27,12 @@ The existing Genie launcher is 50px high, 20px above the viewport bottom,
 and visible above 860px (`plugins/linker-tools/src/genie/genie.css`). Its
 footprint also overlaps the Services row before the panel reaches its end,
 so bottom padding alone cannot protect the menu's full hit areas. While the
-native panel is open, hide only the collapsed launcher through its existing
-aria-expanded=false state. Restore it when the panel closes; retain an
+native panel is open, hide the whole collapsed dock through its direct
+launcher's existing aria-expanded=false state and remove its pointer events.
+Hiding just the button leaves the fixed parent intercepting the Services
+arrow: a real native click closes the menu without following the link.
+Check that exact former obstruction and arrow position, then restore the
+dock when the panel closes; retain an
 already open conversation and the menu's Genie link. The independent fixed
 preview card is temporarily hidden by that same native open state; its timer,
 visit memory and hidden flag are unchanged. Verify both an already visible

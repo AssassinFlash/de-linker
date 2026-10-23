@@ -92,8 +92,14 @@ bug delta distinct from unaffected pixel controls.
 
 When Products is open on desktop, the fixed50px Genie launcher overlaps the
 Services row's right end by50px by44.7109375px. Testing only the row's centre
-misses that blocked area. Temporarily hide the resting launcher while native
-navigation is open, using its existing aria-expanded=false state. The same
+misses that blocked area. Temporarily hide the resting dock while native
+navigation is open, using its direct launcher's existing aria-expanded=false
+state. Hiding only the child leaves the fixed parent intercepting clicks:
+the actual click at1235,857.64453125 closes navigation but leaves Home instead
+of following Services. Hide the whole collapsed container and remove its
+pointer events. Verify the original positive-area intersection and arrow
+position with actual hit tests and native clicks; a95% row sample does not
+reach this former50px obstruction on a1248px row. The same
 menu still offers its Genie link; closing navigation restores the launcher,
 and an already open conversation is unchanged. The separately fixed preview
 card follows the same temporary visibility rule, including when its existing
