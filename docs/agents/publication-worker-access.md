@@ -27,7 +27,14 @@ route's native capability and payload validation:
 Every other route or method is refused, including source/manifest reads,
 user/settings access, inventory/media reads, batch, embeds, method overrides and
 internal `rest_do_request()` calls. A native HTTP authentication check permits
-one dispatch only; callbacks cannot reuse it for an internal jobs request.
+one dispatch only. The native root must have exactly one server `dispatch()` /
+`serve_request()` pair in the call stack, with the native `serve_request()` on
+the same server object directly calling `dispatch()`. An internal call before
+the scope filter or during authentication is refused without consuming the
+outer HTTP permission. A second server or nested `serve_request()` also fails.
+This small structural check is necessary because core provides no dispatch-begin
+hook that exposes the root request, and `is_dispatching()` is true for children
+too. The trace explicitly excludes arguments; it is neither logged nor retained.
 The restriction is applied at `rest_pre_dispatch` priority 20, after ACF's
 priority-10 initialization that can return null. The MU registers when its file
 loads, before regular plugins can determine the current user.
@@ -75,7 +82,8 @@ It creates owned synthetic administrator/reader identities and native purpose
 and ordinary keys. Temporary local-only callbacks provide native authenticated
 receipts for the jobs routes and count non-job reads/writes without claiming or
 acknowledging actual jobs. It checks concurrent credentials, cookie behavior,
-method/route aliases, internal children, ACF initialization, late authentication
+method/route aliases, internal children before/after dispatch and during HTTP
+authentication, other server instances, ACF initialization, late authentication
 on a genuinely public WC canary and Store API paths, and precise key
 retirement. It restores the exact previous MU files and removes its synthetic
 users/options on completion. It never installs on a non-local site. A terminated

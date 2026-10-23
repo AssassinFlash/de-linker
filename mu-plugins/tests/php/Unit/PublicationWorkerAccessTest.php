@@ -172,6 +172,77 @@ final class PublicationWorkerAccessTest extends TestCase {
 		);
 	}
 
+	/**
+	 * Internal calls before the main scope filter cannot spend its HTTP permission.
+	 *
+	 * @dataProvider early_children
+	 * @param array<string, mixed> $timing Native filter timing.
+	 */
+	public function test_early_internal_jobs_are_refused_without_blocking_the_http_job( array $timing ): void {
+		self::assertSame(
+			array(
+				'authentication_denied' => false,
+				'denied'                => array( false ),
+				'writes'                => 1,
+				'children_denied'       => array( true ),
+			),
+			self::run_scope( $timing + array( 'requests' => array( array( 'route' => '/linker/v1/publication/jobs/claim' ) ) ) )
+		);
+	}
+
+	/**
+	 * Native pre-dispatch and post-authentication entry timings.
+	 *
+	 * @return array<string, array{array<string, mixed>}>
+	 */
+	public static function early_children(): array {
+		return array(
+			'pre-dispatch at 15' => array(
+				array(
+					'early_phase'    => 'dispatch',
+					'early_priority' => 15,
+				),
+			),
+			'pre-dispatch at -1' => array(
+				array(
+					'early_phase'    => 'dispatch',
+					'early_priority' => -1,
+				),
+			),
+			'after auth at 115'  => array( array( 'early_phase' => 'authentication' ) ),
+			'same request'       => array(
+				array(
+					'early_phase' => 'dispatch',
+					'early_kind'  => 'same_request',
+				),
+			),
+			'new server'         => array(
+				array(
+					'early_phase' => 'dispatch',
+					'early_kind'  => 'new_server',
+				),
+			),
+			'nested serve'       => array(
+				array(
+					'early_phase' => 'dispatch',
+					'early_kind'  => 'nested_serve',
+				),
+			),
+			'auth new server'    => array(
+				array(
+					'early_phase' => 'authentication',
+					'early_kind'  => 'new_server',
+				),
+			),
+			'auth nested serve'  => array(
+				array(
+					'early_phase' => 'authentication',
+					'early_kind'  => 'nested_serve',
+				),
+			),
+		);
+	}
+
 	/** Unrelated native credentials/cookies retain their behavior, even with forged purpose input. */
 	public function test_scope_comes_only_from_the_native_successful_item(): void {
 		foreach ( array(

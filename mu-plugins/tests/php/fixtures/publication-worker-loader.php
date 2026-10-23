@@ -55,6 +55,20 @@ function linker_publication_fixture_canary( WP_REST_Request $request ): array {
 }
 
 /**
+ * Attempts internal jobs before the outer native dispatch reaches the scope.
+ *
+ * @return list<int> Native status of two ordinary and one other-server child.
+ */
+function linker_publication_fixture_early_children(): array {
+	$children = array();
+	foreach ( array( 'claim', 'ack' ) as $operation ) {
+		$children[] = rest_do_request( new WP_REST_Request( 'POST', '/linker/v1/publication/jobs/' . $operation ) )->get_status();
+	}
+	$children[] = ( new WP_REST_Server() )->dispatch( new WP_REST_Request( 'POST', '/linker/v1/publication/jobs/ack' ) )->get_status();
+	return $children;
+}
+
+/**
  * The callback replaces queue mutation with an authenticated native receipt.
  * Children deliberately exercise inherited native current-user authority.
  *
@@ -62,6 +76,7 @@ function linker_publication_fixture_canary( WP_REST_Request $request ): array {
  * @return array<string, mixed>
  */
 function linker_publication_fixture_job( WP_REST_Request $request ): array {
+	global $linker_publication_fixture_early;
 	$children = array();
 	if ( true === $request->get_param( 'probe_children' ) ) {
 		foreach ( array( array( 'GET', '/linker-publication-fixture/v1/canary' ), array( 'POST', '/linker-publication-fixture/v1/canary' ), array( 'POST', '/linker/v1/publication/jobs/ack' ) ) as $child ) {
@@ -73,8 +88,34 @@ function linker_publication_fixture_job( WP_REST_Request $request ): array {
 		'credential_uuid' => rest_get_authenticated_app_password(),
 		'route'           => $request->get_route(),
 		'children'        => $children,
+		'early_children'  => $linker_publication_fixture_early ?? array(),
 	);
 }
+
+add_filter(
+	'rest_pre_dispatch',
+	static function ( mixed $result, WP_REST_Server $server, WP_REST_Request $request ): mixed {
+		global $linker_publication_fixture_early;
+		unset( $server );
+		if ( 'dispatch' === $request->get_header( 'x-publication-fixture-early' ) && linker_publication_fixture_user() ) {
+			$linker_publication_fixture_early = linker_publication_fixture_early_children();
+		}
+		return $result;
+	},
+	15,
+	3
+);
+add_filter(
+	'rest_authentication_errors',
+	static function ( mixed $result ): mixed {
+		global $linker_publication_fixture_early;
+		if ( 'authentication' === sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_PUBLICATION_FIXTURE_EARLY'] ?? '' ) ) && linker_publication_fixture_user() ) {
+			$linker_publication_fixture_early = linker_publication_fixture_early_children();
+		}
+		return $result;
+	},
+	115
+);
 
 add_action(
 	'rest_api_init',

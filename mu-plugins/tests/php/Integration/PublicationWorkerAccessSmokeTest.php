@@ -41,7 +41,7 @@ final class PublicationWorkerAccessSmokeTest extends TestCase {
 			// Include preserves the file's leading strict-types declaration.
 			$output = self::wp( $wp, array( 'eval-file', dirname( __DIR__ ) . '/fixtures/publication-worker-access.php', '--use-include' ) );
 			$result = json_decode( trim( $output ), true, 512, JSON_THROW_ON_ERROR );
-			self::assertSame( 48, $result['checks'] ?? 0 );
+			self::assertSame( 52, $result['checks'] ?? 0 );
 			self::assertSame( 0, $result['purpose_non_job_reads'] ?? null );
 			self::assertSame( 0, $result['purpose_non_job_writes'] ?? null );
 			self::assertTrue( $result['synthetic_only'] ?? false );

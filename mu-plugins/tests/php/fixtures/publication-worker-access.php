@@ -176,6 +176,12 @@ if ( 'cleanup' === ( $args[0] ?? '' ) ) {
 			linker_publication_fixture_expect( array( 403, 403, 403 ) === ( $receipt['data']['children'] ?? null ), 'An internal read, write or job inherited purpose authority.' );
 			$linker_publication_checks += 2;
 		}
+		foreach ( array( 'dispatch', 'authentication' ) as $phase ) {
+			$receipt = linker_publication_fixture_request( '/linker/v1/publication/jobs/claim', $linker_publication_purpose, 'POST', array(), array( 'X-Publication-Fixture-Early' => $phase ) );
+			linker_publication_fixture_expect( 200 === $receipt['status'], 'An early internal request consumed the native HTTP job permission: ' . $phase . '.' );
+			linker_publication_fixture_expect( array( 403, 403, 403 ) === ( $receipt['data']['early_children'] ?? null ), 'An early or other-server internal job bypassed the native root boundary: ' . $phase . '.' );
+			$linker_publication_checks += 2;
+		}
 		foreach ( array( 'GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'DELETE' ) as $method ) {
 			$response = linker_publication_fixture_request( '/linker/v1/publication/jobs/claim', $linker_publication_purpose, $method );
 			linker_publication_fixture_expect( 403 === $response['status'], 'A disallowed raw HTTP method reached the endpoint.' );

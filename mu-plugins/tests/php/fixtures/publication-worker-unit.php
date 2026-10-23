@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals, WordPress.WP.AlternativeFunctions -- isolated process doubles for WordPress's public hook boundary.
 // phpcs:disable WooCommerce.Commenting.CommentHooks -- invokes existing core hooks in a boundary double, not new product hooks.
+// phpcs:disable Universal.Files.SeparateFunctionsFromOO.Mixed -- Isolated native framework types and hook functions share the process fixture.
 
 /**
  * Hooks registered by the actual module.
@@ -135,7 +136,41 @@ class_alias(
 	),
 	'WP_Error'
 );
-class_alias( get_class( new class() {} ), 'WP_REST_Server' );
+/** The native server entry/caller shape used by the public dispatch seam. */
+class WP_REST_Server {
+
+	/**
+	 * Native HTTP serving calls authentication, then dispatch directly.
+	 *
+	 * @param string|null $path Native route.
+	 * @return mixed
+	 */
+	public function serve_request( ?string $path = null ) {
+		global $linker_worker_effective;
+		unset( $path );
+		$this->check_authentication();
+		return $this->dispatch( $linker_worker_effective );
+	}
+
+	/**
+	 * Native HTTP authentication filter boundary.
+	 *
+	 * @return mixed
+	 */
+	public function check_authentication() {
+		return apply_filters( 'rest_authentication_errors', true );
+	}
+
+	/**
+	 * Native REST dispatch always invokes the public pre-dispatch filter.
+	 *
+	 * @param WP_REST_Request $request Effective request.
+	 * @return mixed
+	 */
+	public function dispatch( WP_REST_Request $request ) {
+		return apply_filters( 'rest_pre_dispatch', null, $this, $request );
+	}
+}
 class_alias(
 	get_class(
 		new class() {
@@ -260,9 +295,6 @@ if ( '' !== $linker_worker_error->get_error_code() && ! ( $linker_worker_config[
 if ( $linker_worker_config['native_success'] ?? true ) {
 	apply_filters( 'application_password_did_authenticate', $linker_worker_user, $linker_worker_item );
 }
-if ( $linker_worker_config['http_authentication'] ?? true ) {
-	apply_filters( 'rest_authentication_errors', true );
-}
 // ACF's priority-10 initialization deliberately returns null.
 add_filter(
 	'rest_pre_dispatch',
@@ -273,8 +305,57 @@ add_filter(
 	10,
 	3
 );
-$linker_worker_denied = array();
-$linker_worker_writes = 0;
+$linker_worker_denied   = array();
+$linker_worker_writes   = 0;
+$linker_worker_server   = new WP_REST_Server();
+$linker_worker_children = array();
+if ( isset( $linker_worker_config['early_phase'] ) ) {
+	$linker_worker_recursing = new class() {
+		/**
+		 * Recursion state of the framework callback.
+		 *
+		 * @var bool
+		 */
+		public bool $active = false;
+	};
+	$linker_worker_child     = static function () use ( &$linker_worker_recursing, &$linker_worker_children, $linker_worker_server ): void {
+		global $linker_worker_config, $linker_worker_effective;
+		if ( $linker_worker_recursing->active ) {
+			return;
+		}
+		$linker_worker_recursing->active = true;
+		$child                           = new WP_REST_Request( 'POST', '/linker/v1/publication/jobs/ack' );
+		$result                          = match ( $linker_worker_config['early_kind'] ?? '' ) {
+			'new_server'   => ( new WP_REST_Server() )->dispatch( $child ),
+			'nested_serve' => $linker_worker_server->serve_request( '/linker/v1/publication/jobs/ack' ),
+			'same_request' => $linker_worker_server->dispatch( $linker_worker_effective ),
+			default        => $linker_worker_server->dispatch( $child ),
+		};
+		$linker_worker_children[]        = $result instanceof WP_Error;
+		$linker_worker_recursing->active = false;
+	};
+	if ( 'authentication' === $linker_worker_config['early_phase'] ) {
+		add_filter(
+			'rest_authentication_errors',
+			static function ( mixed $result ) use ( $linker_worker_child ): mixed {
+				$linker_worker_child();
+				return $result;
+			},
+			115
+		);
+	} else {
+		add_filter(
+			'rest_pre_dispatch',
+			static function ( mixed $result, WP_REST_Server $server, WP_REST_Request $request ) use ( $linker_worker_child ): mixed {
+				unset( $server, $request );
+				$linker_worker_child();
+				return $result;
+			},
+			$linker_worker_config['early_priority'] ?? 15,
+			3
+		);
+	}
+}
 foreach ( $linker_worker_config['requests'] ?? array( array( 'route' => '/linker-test/v1/write' ) ) as $linker_worker_request ) {
 	if ( $linker_worker_request['reauthenticate'] ?? false ) {
 		apply_filters( 'rest_authentication_errors', true );
@@ -282,17 +363,21 @@ foreach ( $linker_worker_config['requests'] ?? array( array( 'route' => '/linker
 	$linker_worker_effective = new WP_REST_Request( $linker_worker_request['method'] ?? 'POST', $linker_worker_request['route'] );
 	$linker_worker_effective->set_query_params( $linker_worker_request['params'] ?? array() );
 	$linker_worker_effective->set_headers( $linker_worker_request['headers'] ?? array() );
-	$linker_worker_result   = apply_filters( 'rest_pre_dispatch', null, new WP_REST_Server(), $linker_worker_effective );
+	$linker_worker_result   = ( $linker_worker_config['http_authentication'] ?? true ) ? $linker_worker_server->serve_request( $linker_worker_request['route'] ) : $linker_worker_server->dispatch( $linker_worker_effective );
 	$linker_worker_denied[] = $linker_worker_result instanceof WP_Error;
 	if ( ! $linker_worker_result instanceof WP_Error ) {
 		++$linker_worker_writes;
 	}
 }
+$linker_worker_report = array(
+	'authentication_denied' => false,
+	'denied'                => $linker_worker_denied,
+	'writes'                => $linker_worker_writes,
+);
+if ( isset( $linker_worker_config['early_phase'] ) ) {
+	$linker_worker_report['children_denied'] = $linker_worker_children;
+}
 echo json_encode(
-	array(
-		'authentication_denied' => false,
-		'denied'                => $linker_worker_denied,
-		'writes'                => $linker_worker_writes,
-	),
+	$linker_worker_report,
 	JSON_THROW_ON_ERROR
 );

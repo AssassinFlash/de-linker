@@ -113,6 +113,33 @@ final class PublicationWorkerAccess {
 	}
 
 	/**
+	 * Core serve_request() directly calls dispatch() for the HTTP root request.
+	 * No native hook exposes that parent; is_dispatching() is true for children
+	 * too. Check only the native server frames and object identity. Never collect
+	 * arguments, log the trace, or retain any request/credential data from it.
+	 *
+	 * @param WP_REST_Server $server Native server handling this dispatch.
+	 */
+	private static function is_native_http_dispatch( WP_REST_Server $server ): bool {
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace -- Permission guard inspects native caller/object identity only; arguments excluded, trace never output or retained.
+		$trace     = debug_backtrace( DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS );
+		$positions = array();
+		foreach ( $trace as $position => $frame ) {
+			if ( ( $frame['object'] ?? null ) instanceof WP_REST_Server && in_array( $frame['function'], array( 'dispatch', 'serve_request' ), true ) ) {
+				$positions[] = $position;
+			}
+		}
+		// Exactly the one native dispatch/serve pair; another server also counts
+		// as nesting. Direct adjacency rules out children during authentication.
+		if ( 2 !== count( $positions ) || $positions[1] !== $positions[0] + 1 ) {
+			return false;
+		}
+		$dispatch = $trace[ $positions[0] ];
+		$serve    = $trace[ $positions[1] ];
+		return 'dispatch' === $dispatch['function'] && 'serve_request' === $serve['function'] && WP_REST_Server::class === ( $dispatch['class'] ?? null ) && WP_REST_Server::class === ( $serve['class'] ?? null ) && ( $dispatch['object'] ?? null ) === $server && ( $serve['object'] ?? null ) === $server;
+	}
+
+	/**
 	 * Limits the selected credential without granting any native capability.
 	 *
 	 * @param mixed           $result  Earlier dispatch result.
@@ -121,13 +148,15 @@ final class PublicationWorkerAccess {
 	 * @return mixed
 	 */
 	public function dispatch( $result, WP_REST_Server $server, WP_REST_Request $request ) {
-		unset( $server );
 		if ( ! $this->restricted ) {
 			return $result;
 		}
-		$http_dispatch                 = $this->http_dispatch_available;
-		$this->http_dispatch_available = false;
-		$this->dispatched              = true;
+		$native_http   = self::is_native_http_dispatch( $server );
+		$http_dispatch = $native_http && $this->http_dispatch_available;
+		if ( $native_http ) {
+			$this->http_dispatch_available = false;
+			$this->dispatched              = true;
+		}
 		if ( ! $http_dispatch || ! self::is_jobs_transport() || 'POST' !== $request->get_method() || ! in_array( $request->get_route(), array( '/linker/v1/publication/jobs/claim', '/linker/v1/publication/jobs/ack' ), true ) || $request->has_param( '_method' ) || $request->has_param( '_embed' ) || null !== $request->get_header( 'x-http-method-override' ) ) {
 			return new WP_Error( 'rest_forbidden', __( 'Sorry, you are not allowed to do that.' ), array( 'status' => 403 ) );
 		}
