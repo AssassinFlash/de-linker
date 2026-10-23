@@ -226,6 +226,34 @@ def test_actual_unknown_g11_cannot_supply_g10_current_table_values() -> None:
     assert all(c.id not in proof for c in ac)
 
 
+@pytest.mark.parametrize("reverse", [False, True])
+def test_original_table_model_axis_must_match_preceding_column_order(
+    reverse: bool,
+) -> None:
+    source = pages(HCA)
+    position = next(
+        i for i, block in enumerate(source[1].blocks) if block.kind == "table"
+    )
+    original = source[1].blocks[position]
+    local_labels = list(reversed(LABELS)) if reverse else LABELS
+    source[1].blocks[position] = replace(
+        original, rows=(("Model", *local_labels), *original.rows), header_rows=0
+    )
+    selected = chunks(source=source)
+    proof = scope_proofs(selected, manifest(), authority(manifest()))
+    tables = [c for c in selected if c.source_table == "docling:p2:#/tables/0"]
+    assert len(tables) > 1
+    if reverse:
+        assert all(c.id not in proof for c in tables)
+    else:
+        assert all(c.id in proof for c in tables)
+        continued = [c for c in tables if "table_columns" in proof[c.id]]
+        assert continued
+        assert all(
+            proof[c.id]["table_columns"]["product_ids"] == ORDER for c in continued
+        )
+
+
 def test_local_explicit_model_remains_narrower_than_the_previous_column_group() -> None:
     source = pages(HCA)
     source[1].blocks.append(
