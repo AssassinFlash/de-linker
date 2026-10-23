@@ -1,0 +1,31 @@
+✔ drawing journal uses exact CAS, refuses a stale tab, and never deletes its newer copy (84.730791ms)
+✔ the same journal restores unchanged v1 bytes and v2 coordinate pairs, then settles an uncertain ring write before newer edits (28.697959ms)
+✔ a separate ring copy keeps the same edited object and retires only its exact server-confirmed result (28.288375ms)
+✔ serialized writes preserve real new points and invalid fields through pause, hide and recovery (15.1025ms)
+✔ only native-granted prior scopes are exposed; identity changes fence late reads and callbacks (10.95125ms)
+✔ unknown local write outcomes remain retryable; a stale tab can explicitly fork without overwriting (15.318708ms)
+✔ a newer buffer settles exact uncertain bytes before advancing, including repeated lost acknowledgements (13.307041ms)
+✔ a pre-mutation refusal permits correction without retrying the refused bytes (10.908042ms)
+✔ explicit discard confirms an uncertain write before deleting its exact owned copy (13.684ms)
+✔ prepared geometry survives local application and clears only after an exact confirmed server geometry (23.04ms)
+✔ real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command (294.78325ms)
+✔ provider replacement restores an open prefix only after the new map loads and keeps its points (35.157083ms)
+✔ real roof_boundary UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (82.215792ms)
+✔ real roof_hole UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (70.523084ms)
+✔ real obstacle UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (115.160625ms)
+✔ real keepout UI keeps pointer edits through reload, refuses its invalid geometry and applies one exact project command (80.971042ms)
+✔ unchanged source-reviewed boundary adds no project command or calculation and keeps a visible result after raw retirement (34.919125ms)
+✔ obstacle cannot infer validation from a missing diagnostic when its invalid parent roof prevented the check (33.613959ms)
+✔ keepout cannot infer validation from a missing diagnostic when its invalid parent roof prevented the check (37.271083ms)
+✔ an unrelated invalid roof remains a layout conflict without blocking a checked edit on this roof (35.509209ms)
+✔ a geometry change while boundary review is pending cannot commit the obsolete result (38.866791ms)
+✔ a identity change while boundary review is pending cannot commit the obsolete result (35.772041ms)
+✔ an obsolete boundary result cannot commit after its prepared journal write was delayed (36.815709ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1651.357292

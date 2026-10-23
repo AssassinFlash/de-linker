@@ -1,0 +1,11 @@
+{
+  "removed": [
+    {
+      "file": "en-desktop-source-review.png",
+      "bytes": 134255,
+      "sha256": "6971b703e3d08cfdff89511e56d0dbae080b1cf8a518a90d5a809715bf2dbaed",
+      "reason": "misframed intermediate screenshot with stale backing-surface edges; current native phone source screenshot replaces it"
+    }
+  ],
+  "unique_failure_logs_and_ax_diffs_retained": true
+}

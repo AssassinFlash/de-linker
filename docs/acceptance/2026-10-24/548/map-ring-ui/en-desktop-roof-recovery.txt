@@ -1,0 +1,19 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 104
++					142 container Project map
++						143 heading Project map, Value: 3
++							144 text Project map
++						145 text PROJECT GEOMETRY
++						146 text The map, plan and 3D views use the same project geometry. Panning and zooming change the view. Boundary edits update the project when you apply them.
++						147 container Map controls
++							148 button Show full design
++							149 button Zoom in
++							150 button Zoom out
++							151 button North up
++						152 container
++							153 container Project map
++						154 text Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation.
++						155 button Load street map
++						156 link Description: OpenFreeMap privacy policy, Value: openfreemap.org/privacy/
+The focused UI element is 88 checkbox Map, Value: 1

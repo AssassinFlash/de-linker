@@ -1,0 +1,15 @@
+# Spec navigation addendum: 6b2a8a4c
+
+Previous pin: `f1a0dee90dd719ce5532724a9f6e9021f1555705`. New fixed pin: `6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100`. Reviewed `git diff f1a0dee90dd719ce5532724a9f6e9021f1555705...6b2a8a4cc43c95d4710fcb42f16d1bd1e4a8c100`: application repair `df750434d03f0fe8491360d718132069035dba39` and fixture-timer repair `6b2a8a4c`.
+
+**0 new Spec findings.** `ProjectEditor.tsx:53–65,670–672` admits both existing map-property fragments to Design and supplies their initial map-view choice. `DesignEditor.tsx:92–94` consumes that choice only for state initialization. Subsequent renders cannot reset a customer's chosen view; ordinary entry still defaults to Plan. The delta adds no geometry command, save, scope grant, raw-draft opening or automatic application.
+
+This implements the existing [map-ring SPEC:25–26](/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/map-ring-ui/SPEC.md:25), “Reload, pause, renderer replacement and interrupted edits retain working data,” and [workbench contract:100–102](/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/specs/548-workbench-application.md:100), which includes navigation and old deep links among the consumers to update and verify. No extra scope or newly missing requirement was identified in this narrow delta.
+
+Independent verification: **2/2 property-link tests pass** for `#lp-map-roof-properties` and `#lp-map-ring-properties`, using the actual Workspace/ProjectEditor consumer. A separate [actual DesignEditor probe](initial-view-probe.test.mjs) passes **1/1**: initial Map; switch to Plan; rerender with changed initial parameters and equivalent geometry; retain Plan; fresh normal entry defaults to Plan; **0 commands and 0 queries**. Outputs are retained beside this report. Renderer/layout ports remain fixtures.
+
+The initial `df750434` run genuinely failed: the retained log records seven React-fixture failures from binding missing JSDOM animation-frame APIs. The final pin supplies explicit test timers. The parent's final full-suite log records 92+141 passes; this review did **not** rerun that full suite. [Identity](identity.json) independently verifies **121 source/7 emitted files** against committed hashes and disk; read-only build-manifest check passes.
+
+Commands: from `apps/planner`, `node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test --test-name-pattern='reopening the #lp-map-(roof|ring)-properties' tests/workspace-lifecycle.test.mjs`; `node bin/build-manifest.mjs check`. From repository root, `node --no-warnings=ExperimentalWarning --loader ./apps/planner/tests/tsx-loader.mjs --test docs/acceptance/2026-10-24/548/map-ring-ui/review-spec-6b2a8a4c/initial-view-probe.test.mjs`.
+
+Standards remains separate. Supplied before/after text captures are identical URL/unchanged-AX records and alone do not establish the native state transition. No browser/instance was operated; this addendum grants no native matrix, engineering, production or whole-goal acceptance.

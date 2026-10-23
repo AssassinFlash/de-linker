@@ -1,0 +1,16 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~						199 heading Projektkarte, Value: 3
++							206 text Projektkarte
++						207 text PROJEKTGEOMETRIE
++						208 text Karten-, Plan- und 3D-Ansicht verwenden dieselbe Projektgeometrie. Verschieben und Zoomen ändern nur die Ansicht. Änderungen am Umriss wirken sich erst nach dem Übernehmen auf das Projekt aus.
++						209 container Bedienelemente der Karte
++							210 button Gesamte Planung anzeigen
++							211 button Vergrößern
++							212 button Verkleinern
++							213 button Norden oben
++							214 container Projektkarte
++						215 text Wenn Sie die Straßenkarte laden, erhalten OpenFreeMap und die beteiligten Dienste Ihre IP-Adresse und Angaben zum angezeigten Kartenausschnitt. Die Straßenkarte dient der Orientierung.
+~						201 button Straßenkarte laden
+~						202 link Description: Datenschutzhinweise von OpenFreeMap, Value: openfreemap.org/privacy/
+The focused UI element is 135 checkbox Karte, Value: 1

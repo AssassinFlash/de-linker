@@ -1,0 +1,40 @@
+{
+  "base": "252a022e41f8ca5426d6463206c8346eb89da5f1",
+  "pin": "f1a0dee90dd719ce5532724a9f6e9021f1555705",
+  "observed_head": "f1a0dee90dd719ce5532724a9f6e9021f1555705",
+  "review_scope": "full three-dot diff",
+  "legacy_pattern_hits": [],
+  "changed_source_files_scanned": 15,
+  "dependency_manifest_changed": false,
+  "manifest_sha256": "19292eaf02c52e06ebdd4fcb958b4b6717d193b980f214c3f8e389cbd98bbaab",
+  "entry_sha256": "acc14b46a9035814b39524b61e625c7d41e98f3c21448c0afa9330d5038cb7a3",
+  "source_files_match_pin": true,
+  "focused_checks": {
+    "build_check": {
+      "exit_code": 0,
+      "tests_passed": 1
+    },
+    "domain_mapRingDraft": {
+      "exit_code": 0,
+      "tests_passed": 4
+    },
+    "recovery_and_workspace": {
+      "exit_code": 0,
+      "tests_passed": 23
+    }
+  },
+  "runtime_or_browser_modified": false,
+  "new_runtime_backup_snapshot_worktree_dependency": false,
+  "limitations": [
+    "No native browser, GPU, touch, live identity, engineering or production acceptance performed by this reviewer.",
+    "Build test emits the existing Node MODULE_TYPELESS_PACKAGE_JSON warning for the deployed plugin module location; test passes."
+  ],
+  "copy_catalogue_parity": {
+    "reviewed_strings": 29,
+    "mo_matches": true,
+    "runtime_json_matches": true
+  },
+  "probe_corrections": [
+    "Initial catalogue probe assumed locale_data.linker-tools; inspected actual locale_data.messages and reran successfully."
+  ]
+}

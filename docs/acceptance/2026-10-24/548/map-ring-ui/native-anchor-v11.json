@@ -1,0 +1,9 @@
+{
+  "provenance": "current native read-only DOM after actual browser reload at public property fragment; full AX stored separately",
+  "observation": {
+    "bar": "Projekte\n/\nKöln · owned synthetic roof · acceptance\nGespeichert · Version 11\nProjekt speichern",
+    "design": true,
+    "drawing": "Zeichnen auf der Karte\nZeichnung beginnen\n\nAus Umriss und Dacheigenschaften entsteht eine bearbeitbare Dachfläche. Sie ist im Projekt in der Plan- und 3D-Ansicht verfügbar; ihre Quellenangaben und Nutzungsberechtigungen bleiben mit ihr verknüpft.\n\nWählen Sie auf der Karte oder in der Objektliste eine Dachfläche, ein Hindernis oder eine Sperrfläche aus. Bei einer Dachfläche können Sie den äußeren Umriss oder eine vorhandene Dachöffnung wählen.",
+    "hash": "#lp-map-ring-properties"
+  }
+}
