@@ -33,7 +33,7 @@ from linker_judges.budget import BudgetError, take
 from pydantic import BaseModel, ConfigDict
 
 from linker_genie import contact, ground, inquiry, jev, page, parts, summary, timing
-from linker_genie.abilities import AbilityClient
+from linker_genie.abilities import Abilities, AbilityClient
 from linker_genie.agent import (
     deepseek_access,
     make_generate,
@@ -251,12 +251,13 @@ def _compute_turn(
     # behind, so the unfinished turns the p95 tail must not silently omit are
     # countable (TurnLog.start; ops/turn_latency.py reports them).
     start_token = turn_log().start(body.conversation_id, body.locale)
+    abilities = ability_client().for_turn(original_permission)
     prepare = getattr(request.app.state, "prepare", None)
     with timing.phase(clock, timing.UNDERSTAND):
         prepared: Prepared = (
             prepare(body)
             if prepare is not None
-            else understander().prepare(body, ability_client())
+            else understander().prepare(body, abilities)
         )
     if prepared.timing is not None:
         clock.adopt(prepared.timing)
@@ -268,10 +269,12 @@ def _compute_turn(
     # The cards' price lookups end LOOKUP_DEADLINE s after the turn began, so the
     # turn stays inside the shell's timeout (prices.py).
     commerce = getattr(request.app.state, "commerce", None) or commerce_lookup(
-        ability_client(), body, started + LOOKUP_DEADLINE
+        abilities, body, started + LOOKUP_DEADLINE
     )
     try:
-        result, service_block = _answer(body, prepared, request, commerce, clock)
+        result, service_block = _answer(
+            body, prepared, request, commerce, clock, abilities=abilities
+        )
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         with timing.phase(clock, timing.LOG):
             turn_log().record(
@@ -456,6 +459,8 @@ def _answer(
     request: Request,
     commerce: Lookup,
     clock: timing.Timing | None = None,
+    *,
+    abilities: Abilities,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
     (contact.answer; #243); a short-code clarification (route.answer); a scripted
@@ -630,7 +635,7 @@ def _answer(
             None,
         )
     generate = getattr(request.app.state, "generate", None) or make_generate(
-        ability_client(), prepared=prepared, pages=page_reader().read, clock=clock
+        abilities, prepared=prepared, pages=page_reader().read, clock=clock
     )
     # The same list the model tools append to during `generate` (inside
     # `run`). A tuple taken here would miss a search-products 500 the model

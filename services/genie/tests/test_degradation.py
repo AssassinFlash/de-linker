@@ -14,14 +14,14 @@ import urllib.error
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import httpx
 import pytest
 from baseline.grade import NEXT_STEP_BLOCKS
 from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
 
-from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.abilities import Abilities, AbilityClient, AbilityError
 from linker_genie.cycle import TurnResult, fatal_class, run
 from linker_genie.embedding import EmbeddingError, GeminiEmbedder
 from linker_genie.facts import Document, Fact, TurnFacts, collect
@@ -884,6 +884,7 @@ def test_answer_passes_call_failures_into_the_run() -> None:
             prepared,
             Request(scope),
             lambda _ids: (TurnFacts(), []),
+            abilities=cast(Abilities, None),
         )
     finally:
         del app.state.generate

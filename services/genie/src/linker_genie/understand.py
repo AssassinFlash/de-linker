@@ -23,7 +23,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Protocol
 
 from linker_genie import attachments, contact, knowledge, page, parts, solution, timing
-from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.abilities import Abilities, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
@@ -126,7 +126,7 @@ class Understander:
         self._see = see
         self._publication = publication
 
-    def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
+    def prepare(self, request: TurnRequest, client: Abilities) -> Prepared:
         messages = customer_messages(request)
         message = messages[-1] if messages else ""
         # Route calls, fact collection and attachment decimals follow the
@@ -469,7 +469,7 @@ def no_pages(context: PageContext, question: str, logged_in: bool) -> dict[str, 
 def _run_calls(
     prepared: Prepared,
     request: TurnRequest,
-    client: AbilityClient,
+    client: Abilities,
     search: knowledge.Search = knowledge.SEARCH,
     pages: page.Reader = no_pages,
     clock: timing.Timing | None = None,

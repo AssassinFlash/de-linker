@@ -33,7 +33,8 @@ from __future__ import annotations
 
 import time
 from collections.abc import Callable
-from typing import Any
+from dataclasses import dataclass
+from typing import Any, Protocol
 from urllib.parse import quote
 
 import httpx
@@ -42,6 +43,7 @@ from linker_genie.facts import TurnFacts, collect, merge
 from linker_genie.publication import (
     PublicationClient,
     PublicationUnavailable,
+    Snapshot,
     document_urls,
     product_ids,
 )
@@ -99,6 +101,25 @@ class AbilityError(RuntimeError):
         self.fatal = fatal
 
 
+class Abilities(Protocol):
+    """The read-only tools used by understanding, price lookup and the model."""
+
+    def run(
+        self,
+        name: str,
+        arguments: dict[str, Any] | None = None,
+        user_context: str | None = None,
+    ) -> Any: ...
+
+    def record(
+        self,
+        name: str,
+        arguments: dict[str, Any] | None = None,
+        user_context: str | None = None,
+        locale: str = "en",
+    ) -> tuple[Any, TurnFacts]: ...
+
+
 class AbilityClient:
     """GET `/wp-json/wp-abilities/v1/abilities/{name}/run`, as the customer or a guest."""
 
@@ -127,11 +148,29 @@ class AbilityClient:
     def close(self) -> None:
         self._client.close()
 
+    def for_turn(self, permission: Snapshot) -> Abilities:
+        """Bind one service-owned input set without changing this shared client.
+
+        The turn service must freshly validate this original permission before
+        release. PHP abilities still perform their own fresh before/after reads.
+        Standalone run/record calls keep their independent authority checks.
+        """
+        return _TurnAbilities(self, permission)
+
     def run(
         self,
         name: str,
         arguments: dict[str, Any] | None = None,
         user_context: str | None = None,
+    ) -> Any:
+        return self._run(name, arguments, user_context)
+
+    def _run(
+        self,
+        name: str,
+        arguments: dict[str, Any] | None,
+        user_context: str | None,
+        permission: Snapshot | None = None,
     ) -> Any:
         if name not in ABILITY_NAMES:
             raise AbilityError(f"unknown ability {name}")
@@ -157,22 +196,21 @@ class AbilityClient:
         )
         # Product tools validate both their complete inputs and all returned candidates.
         authority = self._publication
-        snapshot = (
-            authority.snapshot()
-            if authority is not None
-            and name
-            in {
-                "linker/search-products",
-                "linker/get-product",
-                "linker/compare-products",
-                "linker/check-compatibility",
-                "linker/size-hint",
-            }
-            else None
-        )
+        snapshot = None
+        if name in {
+            "linker/search-products",
+            "linker/get-product",
+            "linker/compare-products",
+            "linker/check-compatibility",
+            "linker/size-hint",
+        }:
+            snapshot = permission
+            if snapshot is None and authority is not None:
+                snapshot = authority.snapshot()
         try:
             if snapshot is not None:
                 snapshot.require_products(list(product_ids(arguments)))
+                snapshot.require_urls(list(document_urls(arguments)))
         except PublicationUnavailable as error:
             raise AbilityError(str(error), fatal=True) from error
         response = self._get(name, path, params, headers)
@@ -192,11 +230,12 @@ class AbilityClient:
         payload = (
             body["result"] if isinstance(body, dict) and "result" in body else body
         )
-        if snapshot is not None and authority is not None:
+        if snapshot is not None:
             try:
                 snapshot.require_products(list(product_ids(payload)))
                 snapshot.require_urls(list(document_urls(payload)))
-                authority.validate(snapshot)
+                if permission is None and authority is not None:
+                    authority.validate(snapshot)
             except PublicationUnavailable as error:
                 raise AbilityError(str(error), fatal=True) from error
         return payload
@@ -238,15 +277,48 @@ class AbilityClient:
         locale: str = "en",
     ) -> tuple[Any, TurnFacts]:
         """Run the ability and collect its facts in the turn's language."""
-        payload = self.run(name, arguments, user_context)
-        gathered = collect(name, payload, locale)
-        # The result is logged with the call: the quality check judges the
-        # answer against what the model read, not against a later replay
-        # (stock, prices and a signed-in customer's inquiries change).
-        gathered.tool_calls.append(
-            {"name": name, "arguments": arguments or {}, "ok": True, "result": payload}
-        )
-        return payload, gathered
+        return _record(self, name, arguments, user_context, locale)
+
+
+@dataclass(frozen=True)
+class _TurnAbilities:
+    """One turn owns its permission; only the HTTP transport is shared."""
+
+    client: AbilityClient
+    permission: Snapshot
+
+    def run(
+        self,
+        name: str,
+        arguments: dict[str, Any] | None = None,
+        user_context: str | None = None,
+    ) -> Any:
+        return self.client._run(name, arguments, user_context, self.permission)
+
+    def record(
+        self,
+        name: str,
+        arguments: dict[str, Any] | None = None,
+        user_context: str | None = None,
+        locale: str = "en",
+    ) -> tuple[Any, TurnFacts]:
+        return _record(self, name, arguments, user_context, locale)
+
+
+def _record(
+    client: Abilities,
+    name: str,
+    arguments: dict[str, Any] | None,
+    user_context: str | None,
+    locale: str,
+) -> tuple[Any, TurnFacts]:
+    payload = client.run(name, arguments, user_context)
+    gathered = collect(name, payload, locale)
+    # The log records what this call actually read, never a later replay.
+    gathered.tool_calls.append(
+        {"name": name, "arguments": arguments or {}, "ok": True, "result": payload}
+    )
+    return payload, gathered
 
 
 def gather(parts: list[TurnFacts]) -> TurnFacts:

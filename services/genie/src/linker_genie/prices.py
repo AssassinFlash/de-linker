@@ -26,7 +26,7 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, wait
 from typing import Any, get_args
 
-from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.abilities import Abilities, AbilityError
 from linker_genie.facts import TurnFacts, merge
 from linker_genie.language import turn_language, with_tool_lang
 from linker_genie.schema import (
@@ -57,9 +57,7 @@ SHELL_TIMEOUT = 60.0
 LOOKUP_DEADLINE = 50.0
 
 
-def commerce_lookup(
-    client: AbilityClient, request: TurnRequest, deadline: float
-) -> Lookup:
+def commerce_lookup(client: Abilities, request: TurnRequest, deadline: float) -> Lookup:
     """get-product for each product, as the customer of this turn, side by side,
     until `deadline` (a `time.monotonic()` instant)."""
 
