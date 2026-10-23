@@ -1,0 +1,14 @@
+{
+  "provenance": "CUA screenshots/read-only DOM plus actual local server/build bytes. No browser application state was injected.",
+  "native_entry_sha256": "dec8b7a3214ae2d9260eed1112c6907002596e876a14d1f6bbca00258704c90d",
+  "native_entry_version_matches_current_file_bytes": true,
+  "post_touch_server_revision": 14,
+  "post_touch_input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288",
+  "touch_test_did_not_write_project": true,
+  "touch_interruption_screenshots_sha256": {
+    "de-phone-touch-edit-after.png": "242a071e628b125c2f1d0a50b5d7c4b60f8508ea4f3aa1bb2ba2d1ed151b2bc5",
+    "de-phone-touch-resumed-after-interruption.png": "242a071e628b125c2f1d0a50b5d7c4b60f8508ea4f3aa1bb2ba2d1ed151b2bc5"
+  },
+  "touch_interruption_entire_png_bytes_equal": true,
+  "touch_interruption_scope": "Native screenshots show the restored handle at its last completed drag position, with 3 corners. No private journal-byte or physical-device accuracy claim."
+}

@@ -1,0 +1,76 @@
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"hole","scenario":"valid_concave","commits":1,"expected_commits":1,"target_valid":true,"parent_valid":true,"active":false,"report_complete":true,"diagnostics_truncated":false,"issue_count":3,"diagnostic_count":3,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Feature added to the project draft. Choose Save project to save it."}
+✔ hole: valid_concave (548.973334ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"hole","scenario":"invalid_target","commits":0,"expected_commits":0,"target_valid":false,"parent_valid":false,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":2,"diagnostic_count":2,"issue_kinds":["source_precision_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 4"}
+✔ hole: invalid_target (182.850625ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"hole","scenario":"invalid_parent","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":false,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":2,"diagnostic_count":2,"issue_kinds":["source_precision_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 5"}
+✔ hole: invalid_parent (189.606416ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"hole","scenario":"unrelated_invalid_roof","commits":1,"expected_commits":1,"target_valid":true,"parent_valid":true,"active":false,"report_complete":true,"diagnostics_truncated":false,"issue_count":4,"diagnostic_count":4,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Feature added to the project draft. Choose Save project to save it."}
+✔ hole: unrelated_invalid_roof (231.07125ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"valid_concave","commits":1,"expected_commits":1,"target_valid":true,"parent_valid":true,"active":false,"report_complete":true,"diagnostics_truncated":false,"issue_count":3,"diagnostic_count":3,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Feature added to the project draft. Choose Save project to save it."}
+✔ obstacle: valid_concave (200.45375ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"invalid_target","commits":0,"expected_commits":0,"target_valid":false,"parent_valid":true,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":4,"diagnostic_count":4,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified","invalid_obstacle_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 4"}
+✔ obstacle: invalid_target (175.59225ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"invalid_parent","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":false,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":2,"diagnostic_count":2,"issue_kinds":["source_precision_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 5"}
+✔ obstacle: invalid_parent (198.875292ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"unrelated_invalid_roof","commits":1,"expected_commits":1,"target_valid":true,"parent_valid":true,"active":false,"report_complete":true,"diagnostics_truncated":false,"issue_count":4,"diagnostic_count":4,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Feature added to the project draft. Choose Save project to save it."}
+✔ obstacle: unrelated_invalid_roof (235.558333ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"keepout","scenario":"valid_concave","commits":1,"expected_commits":1,"target_valid":true,"parent_valid":true,"active":false,"report_complete":true,"diagnostics_truncated":false,"issue_count":3,"diagnostic_count":3,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Feature added to the project draft. Choose Save project to save it."}
+✔ keepout: valid_concave (189.51375ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"keepout","scenario":"invalid_target","commits":0,"expected_commits":0,"target_valid":false,"parent_valid":true,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":4,"diagnostic_count":4,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified","invalid_keepout_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 4"}
+✔ keepout: invalid_target (175.118708ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"keepout","scenario":"invalid_parent","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":false,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":2,"diagnostic_count":2,"issue_kinds":["source_precision_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 5"}
+✔ keepout: invalid_parent (172.29425ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"keepout","scenario":"unrelated_invalid_roof","commits":1,"expected_commits":1,"target_valid":true,"parent_valid":true,"active":false,"report_complete":true,"diagnostics_truncated":false,"issue_count":4,"diagnostic_count":4,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Feature added to the project draft. Choose Save project to save it."}
+✔ keepout: unrelated_invalid_roof (191.045833ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"incomplete_numerical_report","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":true,"active":true,"report_complete":false,"diagnostics_truncated":false,"issue_count":1,"diagnostic_count":1,"issue_kinds":["numeric_resolution_unsupported"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 5"}
+✔ obstacle: incomplete_numerical_report (218.150708ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"keepout","scenario":"truncated_report","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":true,"active":true,"report_complete":true,"diagnostics_truncated":true,"issue_count":204,"diagnostic_count":200,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified","invalid_roof_polygon"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 5"}
+✔ keepout: truncated_report (314.695125ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"stale_frame_reply","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":true,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":3,"diagnostic_count":3,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 5"}
+✔ obstacle: stale_frame_reply (325.59125ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"keepout","scenario":"changed_identity_reply","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":true,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":3,"diagnostic_count":3,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":false,"status":"Recorded corners: 5"}
+✔ keepout: changed_identity_reply (192.455459ms)
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"unknown_prepared_write","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":true,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":3,"diagnostic_count":3,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Recorded corners: 5"}
+✖ obstacle: unknown_prepared_write (185.56025ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 16
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4745.959541
+
+✖ failing tests:
+
+test at ../../docs/acceptance/2026-10-24/548/map-feature-creation/review-spec-55104bbd/engine-gate-probe.test.mjs:75:3
+✖ obstacle: unknown_prepared_write (185.56025ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    {
+      arrays: [],
+      coordinate_system: {
+        anchor: {
+          datum: 'EPSG:4326',
+  ...
+          extrusion_axis_enu: [
+  +         0,
+  -         -0,
+            0.6,
+            0.8
+          ],
+          footprint_uv: [
+            [
+  
+      at TestContext.<anonymous> (file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/map-feature-creation/review-spec-55104bbd/engine-gate-probe.test.mjs:175:55)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { arrays: [], coordinate_system: { anchor: [Object], height_reference: 'relative_to_project_origin', kind: 'local_enu', north_reference: 'true_north', north_source_id: 'source_22f5b02074242a360b1522d0f31469b5', unit: 'm' }, keepouts: [], layout_rules: [], module_specs: [], obstacles: [ [Object] ], roofs: [ [Object] ], schema_version: 1, sources: [ [Object], [Object] ] },
+    expected: { arrays: [], coordinate_system: { anchor: [Object], height_reference: 'relative_to_project_origin', kind: 'local_enu', north_reference: 'true_north', north_source_id: 'source_22f5b02074242a360b1522d0f31469b5', unit: 'm' }, keepouts: [], layout_rules: [], module_specs: [], obstacles: [ [Object] ], roofs: [ [Object] ], schema_version: 1, sources: [ [Object], [Object] ] },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

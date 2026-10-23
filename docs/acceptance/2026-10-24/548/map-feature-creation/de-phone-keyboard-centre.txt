@@ -1,0 +1,130 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design".
+1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			5 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			6 container Sprache
+				7 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+				8 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			9 button (collapsed) Description: Menü öffnen, ID: tv-mobile-toggle, Secondary Actions: Expand
+				10 image
+		11 container
+			51 button Projekte
+			52 pop up button (collapsed, settable) Description: Projektbereiche, Value: Dachplanung, Secondary Actions: Expand
+				53 menu
+					54 Projektübersicht
+					55 Standort und Projekt
+					56 (selected) Dachplanung
+					57 Energiedaten
+			58 text Dachbearbeitung läuft
+			59 button (disabled) Rückgängig
+			60 button (disabled) Wiederholen
+			61 button (disabled) Projekt speichern
+			62 text AKTUELLES PROJEKT
+			63 heading Köln · owned synthetic roof · acceptance, Value: 1
+				64 text Köln · owned synthetic roof · acceptance
+			65 text Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+			66 container Dachplanung, ID: lp-design
+				67 text 06
+				68 heading Dachplanung, Value: 2, ID: lp-design-heading
+					69 text Dachplanung
+				70 text Dachgeometrie und Modulspezifikationen bilden die Grundlage für eine bearbeitbare Belegung und eine nachvollziehbare Prüfung in der Dachfläche. Die Dachplanung ist bei jedem Projekttyp optional.
+				71 button (disabled) Dachfläche hinzufügen
+				72 button (disabled) Modulspezifikation hinzufügen
+				73 container Planungsansicht
+					74 checkbox (disabled) Draufsicht, Value: 0
+					75 checkbox (disabled) Karte, Value: 1
+					76 checkbox (disabled) 3D, Value: 0
+				77 button (disabled) Dachgeometrie importieren
+				78 button (collapsed) Importe zur Prüfung, Secondary Actions: Expand
+					79 text Importe zur Prüfung
+				80 container
+					135 container Zeichnen auf der Karte
+						136 heading Objekt auf der Dachfläche zeichnen, Value: 3
+							137 text Objekt auf der Dachfläche zeichnen
+						140 text Synthetic 3–4–5 roof · Köln · Dachöffnung
+						139 text Der Umriss liegt in der gewählten Dachebene. Prüfen Sie die Quellenangaben und Objekteigenschaften, bevor Sie das Objekt zum Projektentwurf hinzufügen.
+						141 text Erfasste Eckpunkte: 2
+						142 text Ein Kartenklick erfasst einen Eckpunkt. Beim Verschieben und Zoomen bleiben die erfassten Punkte erhalten. Zum Schließen des Umrisses sind mindestens drei Eckpunkte erforderlich.
+						143 button (disabled) Umriss schließen und prüfen
+						144 button Letzten Eckpunkt entfernen
+						145 button Zeichnung pausieren
+						146 button Zeichnung verwerfen
+					147 container Projektkarte
+						148 heading Projektkarte, Value: 3
+							149 text Projektkarte
+						150 text PROJEKTGEOMETRIE
+						151 text Karten-, Plan- und 3D-Ansicht verwenden dieselbe Projektgeometrie. Verschieben und Zoomen ändern nur die Ansicht. Änderungen am Umriss wirken sich erst nach dem Übernehmen auf das Projekt aus.
+						152 container Bedienelemente der Karte
+							153 button Gesamte Planung anzeigen
+							154 button Vergrößern
+							155 button Verkleinern
+							156 button Norden oben
+						157 container
+							158 container Projektkarte
+						159 button Eckpunkt in der Kartenmitte hinzufügen
+						160 text Wenn Sie die Straßenkarte laden, erhalten OpenFreeMap und die beteiligten Dienste Ihre IP-Adresse und Angaben zum angezeigten Kartenausschnitt. Die Straßenkarte dient der Orientierung.
+						161 button Straßenkarte laden
+						162 link Description: Datenschutzhinweise von OpenFreeMap, Value: openfreemap.org/privacy/
+					97 definition list
+						98 container Berücksichtigte Module
+							99 text Berücksichtigte Module
+						100 text 0
+						101 container Angegebene DC-Nennleistung
+							102 text Angegebene DC-Nennleistung
+						103 container
+							104 text 0 kWp
+						105 container Dachflächen
+							106 text Dachflächen
+						107 text 3
+				125 container Belegung prüfen
+					126 heading Belegung prüfen, Value: 3, ID: lp-layout-review-heading
+						127 text Belegung prüfen
+					128 button (disabled) Belegung prüfen
+					129 text Die Prüfung vergleicht vollständige Modulprojektionen, Dachränder und Öffnungen, Hindernisse, Sperrflächen und angegebene Abstände in der jeweiligen Dachfläche. Statik, Brandschutz, elektrische Auslegung und Verschattung werden gesondert beurteilt.
+			130 text Lösungskonfigurator
+			131 text von Linker
+			132 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+			133 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+				134 text Über dieses Werkzeug
+		13 container tv-footer-v2
+			14 image Linker
+			15 container
+				16 text Sprache
+				17 container Sprache
+					18 link Description: Englisch, Value: 127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+					19 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+			20 text WIR VERBINDEN
+			21 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			22 text ,
+			23 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			24 text und
+			25 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			26 text und schaffen 
+			27 text dauerhaften Wert
+			28 text  für Energiepartner in Europa.
+			29 tab group Fußzeilen-Navigation
+				30 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				31 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				32 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				33 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				34 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			35 container Description: Lösungen, ID: footer-panel-solutions
+				36 heading Lösungen, Value: 2
+					37 text Lösungen
+				38 content list
+					39 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					40 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					41 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			42 text © 2026 Linker. Alle Rechte vorbehalten.
+			43 container Rechtliches
+				44 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				45 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				46 button Cookie-Einstellungen
+				47 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				48 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			49 container
+				50 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+
+The focused UI element is 159 button Eckpunkt in der Kartenmitte hinzufügen

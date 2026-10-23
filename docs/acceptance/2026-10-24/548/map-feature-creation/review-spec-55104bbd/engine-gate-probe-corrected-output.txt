@@ -1,0 +1,10 @@
+REAL_ENGINE_SPEC {"pin":"55104bbdbbf9e694eba4785787daaaf109b99ed8","kind":"obstacle","scenario":"unknown_prepared_write","commits":0,"expected_commits":0,"target_valid":true,"parent_valid":true,"active":true,"report_complete":true,"diagnostics_truncated":false,"issue_count":3,"diagnostic_count":3,"issue_kinds":["source_precision_unspecified","edge_clearance_unspecified","obstacle_clearance_unspecified"],"shapely":"2.2.0","geos":"3.14.1","retained_original_locale":true,"source_plane_exact":true,"prepared":true,"status":"Recorded corners: 5"}
+✔ obstacle: unknown_prepared_write (400.2125ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1082.660625

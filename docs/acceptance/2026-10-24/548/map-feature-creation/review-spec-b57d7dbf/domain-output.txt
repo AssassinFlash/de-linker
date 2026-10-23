@@ -1,0 +1,19 @@
+✔ hole prefix reload, explicit command and independent journal identity preserve source/plane and other objects (17.280791ms)
+✔ obstacle prefix reload, explicit command and independent journal identity preserve source/plane and other objects (3.261375ms)
+✔ keepout prefix reload, explicit command and independent journal identity preserve source/plane and other objects (2.159333ms)
+✔ a feature vertex edit, prefix continuation and removal invalidate the source declaration and prepared result (0.693584ms)
+✔ strict feature recovery rejects unknown fields, target/source replacement, cross-kind properties and forged prepared output (1.743041ms)
+✔ obstacle properties require a positive locale-correct height and an explicit direction (0.75475ms)
+✔ one/two/three-point recovery continues the exact prefix and retains invalid property text (14.533125ms)
+✔ a frozen height reference survives reversed or deleted first vertices (3.280917ms)
+✔ explicit source/plane confirmation creates one whole-frame command and common undo/redo (0.979333ms)
+✔ raw recovery rejects corrupt versions, duplicate or nonquantized points and forged prepared results (1.531208ms)
+✔ required physical values have no flat/zero fallback and field-specific errors retain the buffer (1.249208ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 238.951042
