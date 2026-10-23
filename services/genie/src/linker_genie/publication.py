@@ -41,8 +41,25 @@ class Snapshot:
         if not isinstance(value.get("source_revision"), str):
             raise PublicationUnavailable("missing Woo publication revision")
         try:
-            products = {int(p["product_id"]): p for p in value["products"]}
-            documents = {str(d["document_id"]): d for d in value["documents"]}
+            if (
+                not isinstance(value["products"], list)
+                or not isinstance(value["documents"], list)
+                or not all(isinstance(p, dict) for p in value["products"])
+            ):
+                raise ValueError("invalid product/document entries")
+            products = {
+                int(p["product_id"]): p
+                for p in value["products"]
+                if p.get("engineering_role") != "reference_pv_module"
+            }
+            documents = {
+                str(d["document_id"]): {
+                    **d,
+                    "product_ids": [pid for pid in d["product_ids"] if pid in products],
+                }
+                for d in value["documents"]
+                if any(pid in products for pid in d["product_ids"])
+            }
             for product in products.values():
                 if not product["product_revision"]:
                     raise ValueError("empty product revision")
