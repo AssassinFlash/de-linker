@@ -22,6 +22,13 @@ use WP_Mock\Tools\TestCase;
  * @covers \Linker\Commerce\Products\EngineeringFeed
  */
 final class EngineeringFeedTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\ManagedDocumentFixture;
+
+	/** Release generated upload files after every unit case. */
+	public function tearDown(): void {
+		$this->remove_managed_documents();
+		parent::tearDown();
+	}
 
 	/**
 	 * A product with every reading mocked: categories, the three name
@@ -29,6 +36,26 @@ final class EngineeringFeedTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'pll_get_post_language' )->andReturn( 'en' )->byDefault();
+		$this->managed_documents( array( '2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ) );
+		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'get_object_taxonomies' )->andReturn( array() )->byDefault();
+		WP_Mock::userFunction( 'get_post' )->andReturn(
+			new \WP_Post(
+				(object) array(
+					'ID'           => 4107,
+					'post_title'   => 'H2-10K-T3',
+					'post_content' => '',
+					'post_excerpt' => '',
+					'post_name'    => 'h2',
+				)
+			)
+		)->byDefault();
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( static fn ( int $id, string $key = '' ) => '' === $key ? array() : '' )->byDefault();
+		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturn( 0 )->byDefault();
+		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) )->byDefault();
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -133,7 +160,7 @@ final class EngineeringFeedTest extends TestCase {
 		$this->assertSame( 3, $item['phase'] );
 		// The five #7 facts the feed schema requires (feed.schema.json); the
 		// mocked figures state ac_output_kw_nominal 10 kW, the rest is unknown.
-		$this->assertSame( 10.0, $item['ac_power_kw'] );
+		$this->assertSame( 'unknown', $item['ac_power_kw'], 'uncited source values cannot become authorized engineering facts' );
 		$this->assertSame( 'unknown', $item['pv_input_kw'] );
 		$this->assertSame( 'unknown', $item['usable_kwh'] );
 		$this->assertSame( 'unknown', $item['nominal_kwh'] );
@@ -151,7 +178,7 @@ final class EngineeringFeedTest extends TestCase {
 				'type'  => 'datasheet',
 				'lang'  => 'en',
 			),
-			$item['documents'][0]
+			array_intersect_key( $item['documents'][0], array_flip( array( 'url', 'title', 'type', 'lang' ) ) )
 		);
 		// The figures serialize as an object, also when the set is empty ({} never []).
 		$this->assertSame( '{"mppt_voltage_range_v":{"value":"180~900","unit":"V","citation":{"url":"https:\/\/de-linker.com\/wp-content\/uploads\/2026\/09\/H2-10-30K-T2T3-datasheet-EN-BEU.pdf","page":2}}}', (string) wp_json_encode( $item['figures'] ) );
@@ -499,6 +526,18 @@ final class EngineeringFeedTest extends TestCase {
 	 * @param string                              $document_url Document URL the migration wrote.
 	 */
 	private function mock_meta( int $id, array $figures, string $document_url = 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ): void {
+		$bindings = array();
+		foreach ( $figures as $key => $entry ) {
+			if ( is_string( $entry['citation']['url'] ?? null ) ) {
+				$bindings[ $key ] = array(
+					'figure_revision' => \Linker\Commerce\Products\Publication::revision( $entry ),
+					'document_id'     => \Linker\Commerce\Products\Publication\DocumentFiles::id( $document_url ),
+					'blob_sha256'     => hash_file( 'sha256', $this->publication_uploads . '/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ),
+				);
+			}
+		}
+		WP_Mock::userFunction( 'get_post_meta' )->with( $id, \Linker\Commerce\Products\Publication\FigureBindings::META_KEY, true )->andReturn( $bindings );
+
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(

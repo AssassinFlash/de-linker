@@ -40,10 +40,20 @@ final class DocumentLibrary {
 	/**
 	 * Sets up the library.
 	 *
-	 * @param ProductView|null $view Document/FAQ reading; the default one otherwise.
+	 * @param ProductView|null                    $view Document/FAQ reading; the default one otherwise.
+	 * @param callable():array<string,mixed>|null $publication Current authority fixture; production reads Woo.
 	 */
-	public function __construct( ?ProductView $view = null ) {
+	public function __construct( ?ProductView $view = null, private mixed $publication = null ) {
 		$this->view = $view ?? new ProductView( new CommerceState() );
+	}
+
+	/**
+	 * Current permission is shared with every customer tool.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function current(): array {
+		return is_callable( $this->publication ) ? ( $this->publication )() : Publication::manifest();
 	}
 
 	/**
@@ -78,22 +88,33 @@ final class DocumentLibrary {
 	 * Every published product ID of the page's language, by title (A–Z) —
 	 * the brands of the register read in that order.
 	 *
+	 * @param array<string,mixed> $manifest Current authority for this assembly.
 	 * @return list<int>
 	 */
-	private function products(): array {
+	private function products( array $manifest ): array {
+		$allowed = array();
+		foreach ( $manifest['products'] as $product ) {
+			foreach ( $product['published_locale_ids'] as $id ) {
+				$allowed[ $id ] = true;
+			}
+		}
 		return array_values(
-			array_map(
-				'intval',
-				get_posts(
-					array(
-						'post_type'      => 'product',
-						'post_status'    => 'publish',
-						'posts_per_page' => -1,
-						'fields'         => 'ids',
-						'orderby'        => 'title',
-						'order'          => 'ASC',
+			array_filter(
+				array_map(
+					'intval',
+					get_posts(
+						array(
+							'post_type'      => 'product',
+							'post_status'    => 'publish',
+							'posts_per_page' => -1,
+							'fields'         => 'ids',
+							'orderby'        => 'title',
+							'order'          => 'ASC',
+							'cache_results'  => false,
+						)
 					)
-				)
+				),
+				static fn ( int $id ): bool => isset( $allowed[ $id ] )
 			)
 		);
 	}
@@ -105,11 +126,12 @@ final class DocumentLibrary {
 	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>
 	 */
 	public function documents(): array {
-		$files = array();
-		foreach ( $this->products() as $id ) {
+		$files    = array();
+		$manifest = $this->current();
+		foreach ( $this->products( $manifest ) as $id ) {
 			$title = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
 			$brand = self::brand( self::source( $id ) );
-			foreach ( $this->view->downloads( self::source( $id ) ) as $document ) {
+			foreach ( $this->view->downloads( self::source( $id ), $manifest ) as $document ) {
 				if ( '' === $document['url'] ) {
 					continue;
 				}
@@ -165,13 +187,14 @@ final class DocumentLibrary {
 	 * @return list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>
 	 */
 	public function answers( string $lang = 'en' ): array {
-		$german  = 'de' === ProductText::lang( $lang );
-		$answers = array();
-		foreach ( $this->products() as $id ) {
+		$german   = 'de' === ProductText::lang( $lang );
+		$answers  = array();
+		$manifest = $this->current();
+		foreach ( $this->products( $manifest ) as $id ) {
 			$product = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
 			$url     = (string) get_permalink( $id );
 			$brand   = self::brand( self::source( $id ) );
-			foreach ( self::faq_items( self::source( $id ), $german ) as $item ) {
+			foreach ( $this->faq_items( self::source( $id ), $german, $manifest ) as $item ) {
 				$answers[] = array(
 					'question'   => $item['question'],
 					'answer'     => $item['answer'],
@@ -191,13 +214,24 @@ final class DocumentLibrary {
 	 * The FAQ items of a product in the page's language: `_linker_faqs` (#15),
 	 * the legacy product FAQ where that field is still empty.
 	 *
-	 * @param int  $id     Product ID.
-	 * @param bool $german German page.
+	 * @param int                 $id     Product ID.
+	 * @param bool                $german German page.
+	 * @param array<string,mixed> $manifest Current authority for this assembly.
 	 * @return list<array{question: string, answer: string, source: string, source_url: string}>
 	 */
-	private function faq_items( int $id, bool $german ): array {
-		$items = array();
-		foreach ( Faqs::of( $id ) as $faq ) {
+	private function faq_items( int $id, bool $german, array $manifest ): array {
+		$items        = array();
+		$faqs         = Faqs::of( $id );
+		$allowed_urls = array();
+		foreach ( $manifest['documents'] as $document ) {
+			if ( in_array( $id, $document['product_ids'], true ) ) {
+				$allowed_urls = array_merge( $allowed_urls, $document['aliases'] );
+			}
+		}
+		foreach ( $faqs as $faq ) {
+			if ( ! in_array( strtok( (string) $faq['citation']['url'], '#' ), $allowed_urls, true ) ) {
+				continue;
+			}
 			$question = $german && '' !== $faq['question_de'] ? $faq['question_de'] : $faq['question'];
 			$answer   = $german && '' !== $faq['answer_de'] ? $faq['answer_de'] : $faq['answer'];
 			if ( '' === trim( $question ) ) {
@@ -223,7 +257,7 @@ final class DocumentLibrary {
 				'source_url' => $faq['citation']['url'] . '#page=' . $page,
 			);
 		}
-		if ( array() !== $items ) {
+		if ( array() !== $faqs ) {
 			return $items;
 		}
 		foreach ( $this->view->faqs( $id ) as $faq ) {

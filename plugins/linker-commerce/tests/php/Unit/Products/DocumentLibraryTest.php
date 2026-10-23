@@ -20,6 +20,7 @@ use WP_Mock;
  * @covers \Linker\Commerce\Products\DocumentLibrary
  */
 final class DocumentLibraryTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\PublishedDocumentView;
 
 	/**
 	 * Two products of one brand: their download entries and their FAQ field.
@@ -195,7 +196,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * which products it covers.
 	 */
 	public function test_documents_are_deduplicated_by_file_and_count_their_products(): void {
-		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view() ) )->documents(), null, 'title' );
 
 		$this->assertCount( 7, $documents, 'eight entries, one file stated by both products' );
 		$this->assertSame(
@@ -212,7 +213,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * an absent one `EN`.
 	 */
 	public function test_type_and_language_are_normalised(): void {
-		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view() ) )->documents(), null, 'title' );
 
 		$this->assertSame( 'manual', $documents['ESA battery manual (DE)']['type'] );
 		$this->assertSame( 'DE', $documents['ESA battery manual (DE)']['language'] );
@@ -230,7 +231,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * the type chips had nothing to tell apart.
 	 */
 	public function test_german_rows_read_the_same_type_as_their_english_twin(): void {
-		$documents = array_column( ( new DocumentLibrary() )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view() ) )->documents(), null, 'title' );
 
 		$this->assertSame( 'datasheet', $documents['ESA-Batterie-Datenblatt (DE)']['type'] );
 		$this->assertSame( 'compatibility', $documents['ESA-Batterie-Kompatibilitätsliste (DE)']['type'] );
@@ -246,7 +247,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * live register used.
 	 */
 	public function test_the_register_is_ordered_by_type(): void {
-		$documents = ( new DocumentLibrary() )->documents();
+		$documents = ( new DocumentLibrary( $this->published_document_view() ) )->documents();
 
 		$this->assertSame(
 			array( 'datasheet', 'datasheet', 'manual', 'certificate', 'compatibility', 'brochure', 'document' ),
@@ -265,7 +266,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * until then; German reads the German words of the field.
 	 */
 	public function test_answers_prefer_the_faq_field_and_fall_back_to_the_legacy_list(): void {
-		$library = new DocumentLibrary();
+		$library = new DocumentLibrary( $this->published_document_view() );
 		$english = $library->answers( 'en' );
 		$german  = $library->answers( 'de' );
 

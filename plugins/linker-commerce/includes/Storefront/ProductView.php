@@ -16,6 +16,7 @@ use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Products\Publication;
 
 /**
  * What the product page shows, in the order the template prints it
@@ -32,11 +33,12 @@ final class ProductView {
 	/**
 	 * Sets up the view.
 	 *
-	 * @param CommerceState $state #11's price rule: whether this visitor sees
-	 *                             this product's price (the single authority;
-	 *                             this view never derives it).
+	 * @param CommerceState                                                                                   $state #11's price rule: whether this visitor sees
+	 *                                                                                                               this product's price (the single authority;
+	 *                                                                                                               this view never derives it).
+	 * @param \Closure(int):list<array{title:string,url:string,type:string,role:string,language:string}>|null $document_reader Current-document reader; presentation fixtures may supply an immutable source.
 	 */
-	public function __construct( private readonly CommerceState $state = new CommerceState() ) {}
+	public function __construct( private readonly CommerceState $state = new CommerceState(), private readonly ?\Closure $document_reader = null ) {}
 
 	/**
 	 * The fields of a product, keyed as the template prints them.
@@ -569,30 +571,32 @@ final class ProductView {
 	}
 
 	/**
-	 * The downloads list: the legacy download entries as our media library
-	 * links (every file is ours and under our URL, ADR-0023), the #8/#15
-	 * document fields take them over.
+	 * Current published Woo document relations for the product template.
 	 *
-	 * @param int $product_id The product.
-	 * @return list<array{title: string, url: string|null, type: string, role: string, language: string}> The documents.
+	 * @param int                      $product_id Product ID.
+	 * @param array<string,mixed>|null $manifest Optional current assembly snapshot.
+	 * @return list<array{title:string,url:string,type:string,role:string,language:string}>
 	 */
-	public function downloads( int $product_id ): array {
-		$documents = array();
-		foreach ( $this->legacy( $product_id, 'downloads' ) as $download ) {
-			if ( ! \is_array( $download ) ) {
-				continue;
-			}
-			$attachment = (int) ( $download['download_file'] ?? 0 );
-			$url        = $attachment ? wp_get_attachment_url( $attachment ) : null;
-			if ( ! \is_string( $url ) ) {
+	public function downloads( int $product_id, ?array $manifest = null ): array {
+		if ( null !== $this->document_reader ) {
+			return ( $this->document_reader )( $product_id );
+		}
+		if ( ! Publication::is_published( $product_id ) ) {
+			return array();
+		}
+		$id         = Publication::canonical_id( $product_id );
+		$documents  = array();
+		$manifest ??= Publication::manifest();
+		foreach ( $manifest['documents'] as $document ) {
+			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;
 			}
 			$documents[] = array(
-				'title'    => (string) ( $download['download_title'] ?? '' ),
-				'url'      => $url,
-				'type'     => (string) ( $download['download_type'] ?? '' ),
-				'role'     => (string) ( $download['download_role'] ?? '' ),
-				'language' => (string) ( $download['download_language'] ?? '' ),
+				'title'    => $document['title'],
+				'url'      => $document['url'],
+				'type'     => $document['type'],
+				'role'     => $document['role'] ?? '',
+				'language' => $document['lang'],
 			);
 		}
 		return $documents;

@@ -26,6 +26,26 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: hand-written, reviewed\n"
 
+#: src/configurator/publication.ts:6 build/configurator.js
+msgid "This solution needs a new calculation before the next step."
+msgstr "Für den nächsten Schritt muss diese Lösung neu berechnet werden."
+
+#: src/configurator/publication.ts:13 build/configurator.js
+msgid "The current product data could not be checked. Your entries are still here."
+msgstr "Die aktuellen Produktdaten konnten nicht geprüft werden. Ihre Angaben bleiben erhalten."
+
+#: src/configurator/publication.ts:20 build/configurator.js
+msgid "The addition could not be confirmed. The solution draft may already contain these products."
+msgstr "Das Hinzufügen konnte nicht bestätigt werden. Die Produkte können bereits im Lösungsentwurf stehen."
+
+#: src/configurator/publication.ts:26 build/configurator.js
+msgid "Addition not confirmed."
+msgstr "Hinzufügen nicht bestätigt."
+
+#: src/configurator/publication.ts:30 build/configurator.js
+msgid "New calculation required."
+msgstr "Neue Berechnung erforderlich."
+
 #: includes/Genie/Entries.php src/configurator/report/ReportView.tsx
 #: build/genie.js:19 build/hero.js build/configurator.js
 msgid "Ask Genie"

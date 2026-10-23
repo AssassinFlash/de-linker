@@ -4,12 +4,45 @@
  *
  * @package Linker\Commerce
  */
+
 declare( strict_types = 1 );
+
 namespace Linker\Commerce\Products\Publication;
 
 /** Resolve only real PDF files inside this site's uploads directory. */
 final class DocumentFiles {
-	/** @return array{path:string,url:string,relative:string,blob_sha256:string}|null */
+	/**
+	 * Byte hashes live only within one authority assembly, never across reads.
+	 *
+	 * @var array<string,string>
+	 */
+	private static array $hashes = array();
+
+	/**
+	 * Whether the current authority assembly owns the bounded hash cache.
+	 *
+	 * @var bool
+	 */
+	private static bool $reading = false;
+
+	/** Begin a fresh authority assembly. */
+	public static function begin_read(): void {
+		self::$hashes  = array();
+		self::$reading = true;
+	}
+
+	/** Release request assembly data immediately. */
+	public static function end_read(): void {
+		self::$hashes  = array();
+		self::$reading = false;
+	}
+
+	/**
+	 * Resolve a managed local PDF, never an arbitrary local file.
+	 *
+	 * @param string $url Hosted URL.
+	 * @return array{path:string,url:string,relative:string,blob_sha256:string}|null
+	 */
 	public static function resolve( string $url ): ?array {
 		$uploads = wp_upload_dir();
 		$parts   = wp_parse_url( $url );
@@ -30,7 +63,7 @@ final class DocumentFiles {
 			return null;
 		}
 		// Private inquiries, reports and uploads have their own owner gate.
-		if ( preg_match( '#(?:^|/)(?:linker-private|linker-proformas|linker-reports|linker-genie)(?:/|$)#i', $relative ) ) {
+		if ( preg_match( '#(?:^|/)(?:linker-private|linker-proformas|linker-reports|linker-genie|proforma|solution-reports|genie-uploads)(?:/|$)#i', $relative ) ) {
 			return null;
 		}
 		$root = realpath( $uploads['basedir'] );
@@ -38,11 +71,23 @@ final class DocumentFiles {
 		if ( false === $root || false === $file || ! str_starts_with( $file, $root . DIRECTORY_SEPARATOR ) || ! is_file( $file ) || ! is_readable( $file ) ) {
 			return null;
 		}
-		$sha = hash_file( 'sha256', $file );
-		return false === $sha ? null : array( 'path' => $file, 'relative' => $relative, 'url' => rtrim( $uploads['baseurl'], '/' ) . '/' . implode( '/', array_map( 'rawurlencode', explode( '/', $relative ) ) ), 'blob_sha256' => $sha );
+		$sha = self::$reading && isset( self::$hashes[ $file ] ) ? self::$hashes[ $file ] : hash_file( 'sha256', $file );
+		if ( self::$reading && false !== $sha ) {
+			self::$hashes[ $file ] = $sha;
+		}
+		return false === $sha ? null : array(
+			'path'        => $file,
+			'relative'    => $relative,
+			'url'         => rtrim( $uploads['baseurl'], '/' ) . '/' . implode( '/', array_map( 'rawurlencode', explode( '/', $relative ) ) ),
+			'blob_sha256' => $sha,
+		);
 	}
 
-	/** A URL's stable identity, independent of content bytes. */
+	/**
+	 * A URL's stable identity, independent of content bytes.
+	 *
+	 * @param string $url Hosted URL.
+	 */
 	public static function id( string $url ): string {
 		$path = wp_parse_url( $url, PHP_URL_PATH );
 		return 'doc-' . hash( 'sha256', rawurldecode( is_string( $path ) ? $path : '' ) );
