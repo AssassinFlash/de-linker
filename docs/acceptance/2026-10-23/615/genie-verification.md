@@ -83,3 +83,17 @@ After merging the root integration changes through `c32ce658` (including
 
 These aggregate failures are disclosed rather than excluded or presented as
 completed acceptance.
+
+After merging `6ed933d7`, the updated language-source assertion and the new
+independent Genie/hero JSON test both pass (9 tests). The retrieval review's
+duplicate direct/neighbour permission decoration now uses one helper; its
+current-association fixtures cover English and German with neighbour expansion
+both enabled and disabled. The complete publication/retrieval test files pass
+(59 tests), together with Ruff and mypy for that change. No additional full
+suite is claimed after this narrow refactor.
+
+No site instance, daemon, port, snapshot or backup was created by this Genie
+handoff. The existing assigned worktree and its lockfile-built dependencies
+remain active for the root owner's aggregate review and real-site fixture
+work. They can be reclaimed when that integration is accepted; no additional
+runtime copy is needed for this handoff.
