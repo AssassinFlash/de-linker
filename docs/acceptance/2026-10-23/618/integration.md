@@ -28,7 +28,7 @@ The first combined native run had 20 tests / 129 assertions with three failures 
 
 FAQ output now uses the single cited, byte-bound field in both the public product ability and the library. Singular and ACF editorial metadata remain stored; neither is an alternative permission source. Native fixtures cover EN/DE answers disappearing with replaced bytes while the records and files remain present.
 
-Engineering receipts require contract version 2 and explicit reference-input dependencies. Ordinary signed Genie product lists retain their separate contract. A native admission fixture exposed that replay initially applied the engineering marker to Genie too. The repair stores the consumer as trusted server metadata, separate from browser JSON, and retains fresh Woo checks for both. Its native replay/action rerun remains pending.
+Engineering receipts require contract version 2 and explicit reference-input dependencies. Ordinary signed Genie product lists retain their separate contract. A native admission fixture exposed that replay initially applied the engineering marker to Genie too. The repair stores the consumer as trusted server metadata, separate from browser JSON, and retains fresh Woo checks for both. The complete native resource-admission suite passed **28 tests / 535 assertions**, including genuine REST Genie add/save, completed retries, completion lifetime and refusal after a product becomes draft. Tools full unit **313 tests / 2,437 assertions**, full PHPStan and changed-file WPCS passed.
 
 Reference migration's real Woo fixture first failed because Woo 11.2 immediately restores its default category after `set_object_terms([], product_cat)`. The fix uses native relationship unlinking and reference-only hooks while retaining ordinary products' default-category behavior. The corrected native reference suite passed **2 tests / 63 assertions**, including all 30 figure fields, two documents, Store API/purchasing exclusions, idempotence, withdrawal and same-URL byte replacement. The actual local CLI preview and write then created reference record **8369**, preserving the existing 30 facts and two files. No production reference has been created yet. Runtime feed generation reads Woo, and the former engineering JSON is only a one-time migration input. Reference revisions are independent dependencies, so a changed reference does not invalidate a calculation that never used it.
 
@@ -36,12 +36,14 @@ The knowledge-scope repair's cached-corpus measurements are partial acceptance e
 
 ## Visual observations so far
 
-Computer Use inspected the actual snapshot-backed site at EN/DE and 1440/390. The library FAQ and document lists retain their layout and other brands. Typing EcoFlow produces zero FAQ and zero document results in each language and width. Screenshots are in `screenshots/`. These are library observations, not yet the configurator, Genie action-state or historical-account acceptance.
+Computer Use inspected the actual snapshot-backed site at EN/DE and 1440/390. The library FAQ and document lists retain their layout and other brands. Typing EcoFlow produces zero FAQ and zero document results in each language and width. Configurator input views and historical-account views were also captured in both languages and widths. Screenshots are in `screenshots/`.
+
+A local-only historical fixture (**8413**) belongs to the local administrator and references a preserved draft EcoFlow product. This is synthetic acceptance data, not a production customer's design. Actual LiveCanvas rendering initially read the current product name despite the native Woo fallback already using stored history. The account data adapter now uses `historical_items()` too. A real page reload showed `EcoFlow Recorded model at save`, with the original stored record unchanged. Computer Use downloaded its owner-gated report successfully and verified `%PDF-1.7`; `history-report-fixture.pdf` is that small synthetic downloaded artifact. These observations do not claim remaining configurator result/withdrawal or Genie frontend action-state acceptance.
 
 ## Remaining gates
 
 - Complete reference migration and knowledge-applicability fixes, then review their complete delta.
-- Corrected native Woo suites, two-process withdrawal/cache regression, loaded feed/index preparation and automatic queue acknowledgement.
+- Additional term/taxonomy-identity native fixture, two-process withdrawal/cache regression, loaded feed/index preparation and automatic queue acknowledgement. The actual engine preparation claim reached the loader and failed on retained document aliases, citation labels and legacy language tags; it did not replace the running generation. Producer/consumer format alignment is in progress.
 - Required configurator, Genie and historical action states, EN/DE at 1440/390.
 - Committed build verification, CI, full Spec/Standards closure and review-station acceptance.
 - Necessary production recovery point, atomic deployment, stable workers and actual runtime/loaded-source readback, followed by phase-one controls and bounded resource cleanup.

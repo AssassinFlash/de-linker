@@ -475,10 +475,17 @@ final class AccountTemplatesTest extends TestCase {
 		mkdir( $root . '/solution-reports/45', 0777, true );
 		file_put_contents( $root . '/solution-reports/45/design-report.pdf', '%PDF-1.4' );
 		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => $root ) ) );
+		WP_Mock::userFunction( 'wc_get_product', array( 'times' => 0 ) );
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
 				'return' => static function ( int $id, string $key ): string {
+					if ( 45 === $id && SavedSolutions::ITEMS_META === $key ) {
+						return '[{"product_id":9,"quantity":2}]';
+					}
+					if ( 45 === $id && SavedSolutions::DESIGN_META === $key ) {
+						return '{"snapshot":{"selected":{"lines":[{"product":{"id":9,"brand":"EcoFlow","model":"Recorded model at save"}}]}}}';
+					}
 					return SavedSolutions::REPORT_META === $key && 45 === $id ? '45/design-report.pdf' : '';
 				},
 			)
@@ -518,6 +525,7 @@ final class AccountTemplatesTest extends TestCase {
 
 		$this->assertStringContainsString( 'Munich home', $html );
 		$this->assertStringContainsString( 'No report yet', $html );
+		$this->assertStringContainsString( '2 × EcoFlow Recorded model at save', $html );
 		$this->assertStringNotContainsString( 'Someone else', $html );
 		$this->assertSame( 1, substr_count( $html, 'Design report (PDF)' ) );
 		$this->assertStringContainsString( 'linker-document=report&id=45', $html );
