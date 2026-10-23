@@ -138,7 +138,7 @@ final class EngineeringFeedController extends WP_REST_Controller {
 					),
 					'overlay'               => array(
 						'type'        => 'array',
-						'description' => __( 'Engineering components that are not products (data/engineering-overlay.json).', 'linker-commerce' ),
+						'description' => __( 'Current Woo engineering reference records with bound document evidence.', 'linker-commerce' ),
 						'items'       => array(
 							'type'       => 'object',
 							'properties' => array(

@@ -343,10 +343,7 @@ final class EngineeringFeedTest extends TestCase {
 		$this->assertSame( $feed['compatibility_version'], $contract['version'] ?? null, 'the contract the feed carries states the version it reports' );
 		$this->assertNotEmpty( $contract['pairs'] ?? array() );
 		$this->assertIsArray( $feed['overlay'] );
-		$this->assertSame( 'mat_trina_solar_tsm_460neg9r_28', $feed['overlay'][0]['id'] );
-		$this->assertSame( 'pv_module', $feed['overlay'][0]['kind'] );
-		$this->assertArrayNotHasKey( 'series', $feed['overlay'][0] );
-		$this->assertSame( 'en', $feed['overlay'][0]['documents'][0]['lang'] );
+		$this->assertSame( array(), $feed['overlay'], 'The migration input cannot supply a runtime reference without a Woo record.' );
 		$this->assertNotEmpty( $feed['generated_at'] );
 	}
 

@@ -112,6 +112,11 @@ final class PluginTest extends TestCase {
 		$preparation = \Linker\Commerce\Products\Publication\PreparationJobs::class;
 		$access      = \Linker\Commerce\Products\Publication\DocumentAccess::class;
 		$controller  = \Linker\Commerce\Products\Publication\Controller::class;
+		$reference   = \Linker\Commerce\Products\EngineeringReference::class;
+		WP_Mock::expectActionAdded( 'woocommerce_product_options_general_product_data', array( new AnyInstance( $reference ), 'fields' ) ); // @phpstan-ignore argument.type (WP_Mock callback matcher)
+		WP_Mock::expectActionAdded( 'woocommerce_admin_process_product_object', array( new AnyInstance( $reference ), 'save' ) ); // @phpstan-ignore argument.type (WP_Mock callback matcher)
+		WP_Mock::expectActionAdded( 'woocommerce_after_product_object_save', array( new AnyInstance( $reference ), 'remove_category' ) ); // @phpstan-ignore argument.type (WP_Mock callback matcher)
+		WP_Mock::expectFilterAdded( 'woocommerce_is_purchasable', array( new AnyInstance( $visibility ), 'purchasable' ), 20, 2 ); // @phpstan-ignore argument.type (WP_Mock callback matcher)
 		foreach ( array( array( 'rest_api_init', $controller, 'register_routes', 10, 1 ), array( 'linker_publication_reconcile', $preparation, 'reconcile', 10, 1 ), array( 'template_redirect', $access, 'serve', 0, 1 ), array( 'pre_get_posts', $visibility, 'query', 100, 1 ), array( 'template_redirect', $visibility, 'single_product', 0, 1 ), array( 'woocommerce_cart_loaded_from_session', $visibility, 'prune', 1, 1 ), array( 'woocommerce_before_calculate_totals', $visibility, 'prune', 1, 1 ) ) as [ $hook, $class, $method, $priority, $args ] ) {
 			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $class ), $method ), $priority, $args ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}

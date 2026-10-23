@@ -163,6 +163,6 @@ final class Controller {
 	 * @param int $id Product ID.
 	 */
 	private static function published( int $id ): bool {
-		return Publication::is_published( $id );
+		return Publication::is_published( $id ) && ! \Linker\Commerce\Products\EngineeringReference::is_reference( $id );
 	}
 }
