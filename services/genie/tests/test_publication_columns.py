@@ -30,7 +30,9 @@ LABELS = ["GW7K-HCA-20", "GW11K-HCA-20", "GW22K-HCA-20"]
 
 
 def manifest() -> dict[str, Any]:
-    return json.loads(gzip.decompress((FIXTURES / "manifest.json.gz").read_bytes()))
+    raw = json.loads(gzip.decompress((FIXTURES / "manifest.json.gz").read_bytes()))
+    assert isinstance(raw, dict)
+    return raw
 
 
 def pages(sha: str) -> list[Page]:
