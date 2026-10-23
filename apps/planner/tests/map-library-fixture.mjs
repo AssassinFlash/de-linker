@@ -2,6 +2,18 @@
 // never used as evidence of WebGL, map tiles, network privacy or survey accuracy.
 export const maps = [];
 export const behavior = { autoLoad: true };
+const toggle = (enabled) => ({
+	enabled,
+	isEnabled() {
+		return this.enabled;
+	},
+	enable() {
+		this.enabled = true;
+	},
+	disable() {
+		this.enabled = false;
+	},
+});
 export class Map {
 	constructor(options) {
 		this.options = options;
@@ -17,6 +29,10 @@ export class Map {
 		this.bearing = options.bearing;
 		this.pitch = options.pitch;
 		this.hits = [];
+		this.version = "5.24.0";
+		this.dragPan = toggle(true);
+		this.dragRotate = toggle(false);
+		this.doubleClickZoom = toggle(true);
 		maps.push(this);
 		queueMicrotask(() => {
 			if (!this.removed && behavior.autoLoad) this.emit("load");
@@ -36,6 +52,21 @@ export class Map {
 	addControl() {}
 	getCanvas() {
 		return this.canvas;
+	}
+	getContainer() {
+		return this.options.container;
+	}
+	project({ lng, lat }) {
+		return { x: lng * 1e5, y: -lat * 1e5 };
+	}
+	unproject({ x, y }) {
+		return { lng: x / 1e5, lat: -y / 1e5 };
+	}
+	removeSource(id) {
+		this.sources.delete(id);
+	}
+	removeLayer(id) {
+		this.layers.delete(id);
 	}
 	getSource(id) {
 		return this.sources.get(id);
@@ -100,3 +131,19 @@ export class Map {
 	}
 }
 export class AttributionControl {}
+export class Marker {
+	constructor({ element }) {
+		this.element = element;
+	}
+	setLngLat(position) {
+		this.position = position;
+		return this;
+	}
+	addTo(map) {
+		map.getContainer().append(this.element);
+		return this;
+	}
+	remove() {
+		this.element.remove();
+	}
+}

@@ -51,11 +51,16 @@ export interface MapDrawingCallbacks {
 type Start =
 	| { readonly kind: "draw" }
 	| { readonly kind: "edit"; readonly ring: readonly Vec2[] };
+export interface MapDrawingColours {
+	readonly ink: `#${string}`;
+	readonly paper: `#${string}`;
+}
 
 export function createMapDrawingController(
 	map: MapLibreMap,
 	start: Start,
 	callbacks: MapDrawingCallbacks,
+	colours?: MapDrawingColours,
 ): MapDrawingController {
 	return new MapDrawingController(
 		map,
@@ -67,6 +72,7 @@ export function createMapDrawingController(
 		}),
 		start,
 		callbacks,
+		colours,
 	);
 }
 
@@ -95,6 +101,7 @@ export class MapDrawingController {
 		adapter: DrawAdapter,
 		start: Start,
 		callbacks: MapDrawingCallbacks,
+		colours?: MapDrawingColours,
 	) {
 		this.canvas = map.getCanvas();
 		this.adapter = adapter;
@@ -137,6 +144,24 @@ export class MapDrawingController {
 					keyEvents: { cancel: "Escape", finish: "Enter" },
 				}),
 				new TerraDrawSelectMode({
+					...(colours
+						? {
+								styles: {
+									selectedPolygonColor: colours.ink,
+									selectedPolygonOutlineColor: colours.ink,
+									selectedPolygonFillOpacity: 0.14,
+									selectedPolygonOutlineWidth: 2,
+									selectionPointColor: colours.paper,
+									selectionPointOutlineColor: colours.ink,
+									selectionPointWidth: 7,
+									selectionPointOutlineWidth: 2,
+									midPointColor: colours.ink,
+									midPointOutlineColor: colours.paper,
+									midPointWidth: 5,
+									midPointOutlineWidth: 2,
+								},
+							}
+						: {}),
 					// Pinned source accepts finite non-negative values. Zero
 					// disables its modulo skip (n % 0 is NaN); unlike 1, it does
 					// not discard every movement. Library fixture checks event 5.

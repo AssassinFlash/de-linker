@@ -661,6 +661,14 @@ export function ProjectEditor({
 						<div className="lp-design-panel" hidden={workspace !== "design"}>
 							<DesignEditor
 								geometry={geometry}
+								confirmedGeometry={
+									draft.baseline.inputs.geometry === undefined
+										? null
+										: readGeometry(
+												draft.baseline.inputs.geometry,
+												geometryPolicy,
+											)
+								}
 								geometryImports={geometryImports}
 								attachImport={importGeometry}
 								confirmedAssetIds={Object.values(

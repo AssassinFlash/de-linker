@@ -25,7 +25,7 @@ import { PlanViewport } from "./PlanViewport.tsx";
 import { GeometryIntake } from "./GeometryIntake.tsx";
 import { CoordinatesForm } from "./CoordinatesForm.tsx";
 import { LazySceneViewport } from "./LazySceneViewport.tsx";
-import { LazyMapViewport } from "./LazyMapViewport.tsx";
+import { MapRoofWorkspace } from "./MapRoofWorkspace.tsx";
 import type { MapCamera } from "./MapViewport.tsx";
 
 type FormKind =
@@ -47,6 +47,7 @@ interface FormState {
 
 export function DesignEditor({
 	geometry,
+	confirmedGeometry = null,
 	geometryImports = { schema_version: 1, selected: {} },
 	sceneModuleUrl = null,
 	mapModuleUrl = null,
@@ -63,6 +64,7 @@ export function DesignEditor({
 	recoveryChecking,
 }: {
 	geometry: GeometryDocument;
+	confirmedGeometry?: GeometryDocument | null;
 	geometryImports?: GeometryImportSelections;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
@@ -88,6 +90,7 @@ export function DesignEditor({
 		[view, setView] = useState<"plan" | "map" | "3d">("plan");
 	const mapCamera = useRef<MapCamera | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
+	const [drawingOpen, setDrawingOpen] = useState(false);
 	const [form, setForm] = useState<FormState | null>(null),
 		[error, setError] = useState(false),
 		[page, setPage] = useState(0);
@@ -114,9 +117,9 @@ export function DesignEditor({
 		setError(false);
 	}, []);
 	useEffect(() => {
-		onValidity(form === null && !importOpen);
+		onValidity(form === null && !importOpen && !drawingOpen);
 		return () => onValidity(true);
-	}, [form, importOpen, onValidity]);
+	}, [form, importOpen, drawingOpen, onValidity]);
 	const edit = useCallback(
 		(command: GeometryCommand) => {
 			const accepted = commit(command);
@@ -146,7 +149,7 @@ export function DesignEditor({
 		setPage(0);
 	}, [array?.id]);
 	function choose(id: string) {
-		if (form || importOpen) return;
+		if (form || importOpen || drawingOpen) return;
 		if (id === "coordinate_system") {
 			open("coordinates");
 			return;
@@ -160,7 +163,7 @@ export function DesignEditor({
 		id: string | null = null,
 		forRoof: string | null = roof?.id ?? null,
 	) {
-		if (form || importOpen) return;
+		if (form || importOpen || drawingOpen) return;
 		setError(false);
 		setForm({ kind, id, roofId: forRoof, snapshot: geometry });
 	}
@@ -206,7 +209,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						className="lp-button"
-						disabled={!!form || importOpen}
+						disabled={!!form || importOpen || drawingOpen}
 						onClick={() => open("roof")}
 					>
 						<Icon name="plus" />
@@ -215,7 +218,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						className="lp-button lp-button-secondary"
-						disabled={!!form || importOpen}
+						disabled={!!form || importOpen || drawingOpen}
 						onClick={() => open("module")}
 					>
 						{__("Add module specification", "linker-tools")}
@@ -229,6 +232,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						aria-pressed={view === "plan"}
+						disabled={drawingOpen}
 						onClick={() => setView("plan")}
 					>
 						{__("Plan", "linker-tools")}
@@ -236,6 +240,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						aria-pressed={view === "map"}
+						disabled={drawingOpen}
 						onClick={() => setView("map")}
 					>
 						{__("Map", "linker-tools")}
@@ -243,6 +248,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						aria-pressed={view === "3d"}
+						disabled={drawingOpen}
 						onClick={() => setView("3d")}
 					>
 						3D
@@ -264,7 +270,7 @@ export function DesignEditor({
 				client={client}
 				locale={locale}
 				recheck={recheck}
-				disabled={!!form}
+				disabled={!!form || drawingOpen}
 				onActivity={setImportOpen}
 				attach={(before, asset) => {
 					if (!attachImport(before, asset)) return false;
@@ -281,9 +287,19 @@ export function DesignEditor({
 			<div className="lp-design-workspace">
 				<div className="lp-design-canvas">
 					{view === "map" ? (
-						<LazyMapViewport
+						<MapRoofWorkspace
 							mapModuleUrl={mapModuleUrl}
-							document={geometry}
+							geometry={geometry}
+							confirmedGeometry={confirmedGeometry}
+							projectId={projectId}
+							locale={locale}
+							session={session}
+							client={client}
+							recheck={recheck}
+							recoveryScopes={recoveryScopes}
+							recoveryChecking={recoveryChecking}
+							commit={edit}
+							onActivity={setDrawingOpen}
 							poses={poses}
 							selected={selected}
 							select={choose}
@@ -298,7 +314,7 @@ export function DesignEditor({
 									{__("Active roof face", "linker-tools")}
 									<select
 										value={roof.id}
-										disabled={!!form || importOpen}
+										disabled={!!form || importOpen || drawingOpen}
 										onChange={(event) => {
 											setRoofId(event.currentTarget.value);
 											setSelected(event.currentTarget.value);
@@ -326,7 +342,7 @@ export function DesignEditor({
 									selected={selected}
 									select={choose}
 									commit={edit}
-									disabled={!!form || importOpen}
+									disabled={!!form || importOpen || drawingOpen}
 								/>
 							) : (
 								<LazySceneViewport
@@ -336,7 +352,7 @@ export function DesignEditor({
 									selected={selected}
 									select={choose}
 									commit={edit}
-									disabled={!!form || importOpen}
+									disabled={!!form || importOpen || drawingOpen}
 								/>
 							)}
 						</>
@@ -358,7 +374,7 @@ export function DesignEditor({
 							<button
 								type="button"
 								className="lp-text-button"
-								disabled={!!form || importOpen}
+								disabled={!!form || importOpen || drawingOpen}
 								onClick={() => open("roof")}
 							>
 								{__("Add the first roof face", "linker-tools")}
@@ -385,6 +401,7 @@ export function DesignEditor({
 				</div>
 				<aside
 					className="lp-design-properties"
+					inert={drawingOpen}
 					aria-label={__("Design objects and properties", "linker-tools")}
 				>
 					{form ? (
@@ -782,7 +799,7 @@ export function DesignEditor({
 				locale={locale}
 				recheck={recheck}
 				select={choose}
-				disabled={!!form || importOpen}
+				disabled={!!form || importOpen || drawingOpen}
 			/>
 		</section>
 	);

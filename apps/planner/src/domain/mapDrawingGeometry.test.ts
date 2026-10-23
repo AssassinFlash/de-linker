@@ -186,7 +186,8 @@ test("new shapes need explicit physical fields and use a real sloped plane witho
 			},
 			pitch_deg: (Math.atan2(3, 4) * 180) / Math.PI,
 			bearing_deg: 123,
-			first_vertex_height_m: 8.125,
+			height_reference_position: binding.ring.geographic[0]!,
+			reference_height_m: 8.125,
 		},
 		withRoof = applyGeometryCommand(
 			document,
@@ -220,7 +221,7 @@ test("new shapes need explicit physical fields and use a real sloped plane witho
 		() =>
 			newMapShapeCommand(
 				document,
-				{ ...newRoof, first_vertex_height_m: NaN },
+				{ ...newRoof, reference_height_m: NaN },
 				polygon,
 			),
 		/plane_invalid/,

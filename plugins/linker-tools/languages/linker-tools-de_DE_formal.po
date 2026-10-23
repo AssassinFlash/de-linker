@@ -4863,3 +4863,179 @@ msgstr "Oberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichte
 #: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
 msgid "Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors."
 msgstr "Straßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:116
+msgid "The point or edit could not be accepted. Your previous drawing is still available."
+msgstr "Dieser Eckpunkt oder diese Änderung konnte nicht übernommen werden. Ihre vorherige Zeichnung ist weiterhin verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:196
+msgid "Some roof or source details are missing or invalid. Review the roof properties and source permissions. Your entries have been kept."
+msgstr "Einige Angaben zur Dachfläche oder Quelle fehlen oder sind ungültig. Prüfen Sie die Dacheigenschaften und die Nutzungsberechtigungen der Quelle. Ihre Eingaben bleiben erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:240
+msgid "This roof boundary could not pass the geometry check. Its points remain available for correction."
+msgstr "Dieser Dachumriss hat die Geometrieprüfung nicht bestanden. Seine Eckpunkte bleiben zur Korrektur verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:259
+msgid "The project changed before this roof could be added. The drawing has been kept."
+msgstr "Das Projekt wurde geändert, bevor die Dachfläche hinzugefügt werden konnte. Die Zeichnung bleibt erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:271
+msgid "The roof check or local save could not be completed. The drawing and its entered values remain available."
+msgstr "Die Dachprüfung oder das Speichern in diesem Browser konnte nicht abgeschlossen werden. Die Zeichnung und Ihre Eingaben sind weiterhin verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:291
+msgid "Map roof drawing"
+msgstr "Dachfläche auf der Karte zeichnen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:294
+msgid "Draw a roof face"
+msgstr "Dachfläche zeichnen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:311
+msgid "Start roof drawing"
+msgstr "Zeichnung beginnen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:317
+msgid "The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views."
+msgstr "Aus Umriss und Dacheigenschaften entsteht eine bearbeitbare Dachfläche. Sie ist im Projekt in der Plan- und 3D-Ansicht verfügbar; ihre Quellenangaben und Nutzungsberechtigungen bleiben mit ihr verknüpft."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:322
+msgid "Checking saved drawings…"
+msgstr "Gespeicherte Zeichnungen werden geprüft…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:329
+msgid "The browser recovery copy could not be updated. The drawing remains open in this tab. Retrying keeps a different version saved by another tab."
+msgstr "Die Wiederherstellungskopie in diesem Browser konnte nicht aktualisiert werden. Die Zeichnung bleibt in diesem Tab geöffnet. Eine abweichende, in einem anderen Tab gespeicherte Fassung bleibt bei einem erneuten Speicherversuch erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:333
+msgid "Saved drawings could not be read from this browser. Retry to check for an unfinished drawing."
+msgstr "Gespeicherte Zeichnungen konnten in diesem Browser nicht gelesen werden. Versuchen Sie es erneut, um nach einer unvollständigen Zeichnung zu suchen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:345
+msgid "Retry local save"
+msgstr "Erneut im Browser speichern"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:353
+msgid "Save as separate drawing"
+msgstr "Als separate Zeichnung speichern"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:364
+msgid "Retry reading saved drawings"
+msgstr "Gespeicherte Zeichnungen erneut laden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:375
+msgid "Unfinished roof drawing"
+msgstr "Unvollständige Dachzeichnung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:378 ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:404
+msgid "Recorded corners: %d"
+msgstr "Erfasste Eckpunkte: %d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:389
+msgid "Open saved drawing"
+msgstr "Gespeicherte Zeichnung öffnen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:399
+msgid "Checking roof geometry…"
+msgstr "Dachgeometrie wird geprüft…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:401
+msgid "Saving drawing in this browser…"
+msgstr "Zeichnung wird in diesem Browser gespeichert…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:409
+msgid "Roof added to the project draft. Save project stores it with the project."
+msgstr "Die Dachfläche wurde dem Projektentwurf hinzugefügt. Mit „Projekt speichern“ wird sie im Projekt gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:413
+msgid "Drawing paused and retained in this browser."
+msgstr "Zeichnung pausiert und in diesem Browser gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:420
+msgid "The project geometry has changed since this drawing began. The original drawing is retained; it cannot be applied to this changed geometry."
+msgstr "Die Projektgeometrie wurde seit Beginn dieser Zeichnung geändert. Die ursprüngliche Zeichnung bleibt erhalten und kann nicht auf die geänderte Geometrie angewendet werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:429
+msgid "Each map click records one corner. Panning and zooming keep the recorded points. At least three corners are needed before closing the outline."
+msgstr "Ein Kartenklick erfasst einen Eckpunkt. Beim Verschieben und Zoomen bleiben die erfassten Punkte erhalten. Zum Schließen des Umrisses sind mindestens drei Eckpunkte erforderlich."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:447
+msgid "Close outline and review"
+msgstr "Umriss schließen und prüfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:460
+msgid "Remove last corner"
+msgstr "Letzten Eckpunkt entfernen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:482
+msgid "Pause drawing"
+msgstr "Zeichnung pausieren"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:492
+msgid "Resume drawing"
+msgstr "Zeichnung fortsetzen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:505
+msgid "Close drawing preview"
+msgstr "Zeichnungsvorschau schließen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:506
+msgid "Discard drawing"
+msgstr "Zeichnung verwerfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:80
+msgid "Drag a corner to move it, or use an edge midpoint to add a corner. The marked height reference stays fixed when the outline changes."
+msgstr "Verschieben Sie einen Eckpunkt durch Ziehen oder fügen Sie an einem Kantenmittelpunkt einen Eckpunkt hinzu. Der markierte Höhenbezugspunkt bleibt bei Änderungen am Umriss fest."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:89
+msgid "Roof pitch (°)"
+msgstr "Dachneigung (°)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:98
+msgid "Down-slope bearing (°)"
+msgstr "Richtung des Dachgefälles (°)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:100
+msgid "Clockwise from true north, 0 to less than 360. North is 0, east 90, south 180 and west 270."
+msgstr "Im Uhrzeigersinn ab geografisch Nord: 0 bis unter 360. Nord ist 0, Ost 90, Süd 180 und West 270."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:107
+msgid "Height at marked reference (m)"
+msgstr "Höhe am markierten Bezugspunkt (m)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:109
+msgid "Height relative to the project origin, not altitude above sea level. The reference is fixed at the first recorded map point."
+msgstr "Höhe relativ zum Projektursprung, keine Höhenlage über dem Meeresspiegel. Der Bezugspunkt bleibt am zuerst erfassten Kartenpunkt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:119
+msgid "Height reference: longitude %1$s; latitude %2$s."
+msgstr "Höhenbezugspunkt: Längengrad %1$s; Breitengrad %2$s."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:136
+msgid "The source reference identifies the measurements or drawing used for the outline, slope and height. The street map provides orientation."
+msgstr "Die Quellenreferenz bezeichnet das Aufmaß oder die Zeichnung, auf der Umriss, Neigung und Höhe beruhen. Die Straßenkarte dient der Orientierung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:146
+msgid "Declared spatial precision (m)"
+msgstr "Angegebene räumliche Genauigkeit (m)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:200
+msgid "Check and add roof face"
+msgstr "Dachfläche prüfen und hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:207
+msgid "Continue adding corners"
+msgstr "Weitere Eckpunkte hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofProperties.tsx:213
+msgid "This check tests roof boundary geometry. It does not verify measurement accuracy, structural safety or engineering approval."
+msgstr "Diese Prüfung untersucht die Geometrie des Dachumrisses. Messgenauigkeit, Standsicherheit und fachplanerische Freigabe werden damit nicht bestätigt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:465
+msgid "Height reference"
+msgstr "Höhenbezugspunkt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:622
+msgid "Add corner at map centre"
+msgstr "Eckpunkt in der Kartenmitte hinzufügen"

@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import type { RefObject } from "react";
-import { Map as MapLibreMap, AttributionControl } from "maplibre-gl";
+import { Map as MapLibreMap, AttributionControl, Marker } from "maplibre-gl";
 import type {
 	GeoJSONSource,
 	MapMouseEvent,
@@ -9,6 +9,10 @@ import type {
 import type { GeometryDocument, PanelPose } from "../../domain/geometry.ts";
 import { geographicMapGeometry } from "../../domain/mapGeometry.ts";
 import { MapRequestScope } from "../../data/mapRequests.ts";
+import { MapPickGate } from "../../data/MapPickGate.ts";
+import { MapPrefixController } from "../../data/MapPrefixController.ts";
+import { createMapDrawingController } from "../../data/MapDrawingController.ts";
+import type { MapInteraction } from "../../data/mapInteraction.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 
@@ -60,6 +64,7 @@ export default function MapViewport({
 	disabled,
 	openReferences,
 	camera,
+	interaction = null,
 }: {
 	document: GeometryDocument;
 	poses: readonly PanelPose[];
@@ -68,6 +73,7 @@ export default function MapViewport({
 	disabled: boolean;
 	openReferences: () => void;
 	camera: RefObject<MapCamera | null>;
+	interaction?: MapInteraction | null;
 }) {
 	const host = useRef<HTMLDivElement>(null),
 		mapRef = useRef<MapLibreMap | null>(null),
@@ -75,9 +81,14 @@ export default function MapViewport({
 		[external, setExternal] = useState(false),
 		[attempt, setAttempt] = useState(0),
 		[status, setStatus] = useState<"loading" | "ready" | "failed">("loading"),
+		[readyMap, setReadyMap] = useState<MapLibreMap | null>(null),
 		[resourceFailure, setResourceFailure] = useState(false),
 		[failure, setFailure] = useState<string | null>(null),
 		label = useId();
+	const releaseDrawing = useRef<(() => void) | null>(null),
+		prefix = useRef<MapPrefixController | null>(null),
+		pickGate = useRef(new MapPickGate());
+	const heightMarker = useRef<Marker | null>(null);
 	const projection = useMemo(() => {
 		try {
 			return { view: geographicMapGeometry(geometry, poses), error: null };
@@ -88,8 +99,14 @@ export default function MapViewport({
 			};
 		}
 	}, [geometry, poses]);
-	const latest = useRef({ projection, selected, select, disabled });
-	latest.current = { projection, selected, select, disabled };
+	const latest = useRef({
+		projection,
+		selected,
+		select,
+		disabled,
+		interaction,
+	});
+	latest.current = { projection, selected, select, disabled, interaction };
 
 	function fit(map: MapLibreMap) {
 		const view = latest.current.projection.view;
@@ -274,13 +291,20 @@ export default function MapViewport({
 					if (!saved) fit(current);
 					initialized = true;
 					setStatus("ready");
+					setReadyMap(current);
 				} catch (error) {
 					setFailure(failureDiagnostic("overlay", error));
 					setStatus("failed");
 				}
 			};
 			const pick = (event: MapMouseEvent) => {
-				if (disposed || latest.current.disabled || !current.getSource(SOURCE))
+				if (
+					disposed ||
+					latest.current.disabled ||
+					latest.current.interaction ||
+					pickGate.current.blocked ||
+					!current.getSource(SOURCE)
+				)
 					return;
 				const hit = current
 					.queryRenderedFeatures(event.point, { layers: LAYERS })
@@ -295,9 +319,17 @@ export default function MapViewport({
 				}
 			};
 			const contextLost = () => {
-				if (!disposed) setStatus("failed");
+				if (!disposed) {
+					setReadyMap(null);
+					setStatus("failed");
+				}
 			};
 			current.on("load", ready);
+			const beginPointer = (event: PointerEvent) => {
+				if (current.getCanvas().contains(event.target as Node))
+					pickGate.current.beginPointer();
+			};
+			window.addEventListener("pointerdown", beginPointer, true);
 			current.on("click", pick);
 			current.on("error", resourceError);
 			current.getCanvas().addEventListener("webglcontextlost", contextLost);
@@ -308,6 +340,11 @@ export default function MapViewport({
 			const release = () => {
 				if (disposed) return;
 				disposed = true;
+				// Drawing adapters need their map sources/layers to exist at stop.
+				// Their public disposal reports failures without preventing remove.
+				releaseDrawing.current?.();
+				heightMarker.current?.remove();
+				heightMarker.current = null;
 				requests.release();
 				resize?.disconnect();
 				if (initialized) {
@@ -322,6 +359,7 @@ export default function MapViewport({
 				current.off("load", ready);
 				current.off("click", pick);
 				current.off("error", resourceError);
+				window.removeEventListener("pointerdown", beginPointer, true);
 				current
 					.getCanvas()
 					.removeEventListener("webglcontextlost", contextLost);
@@ -345,6 +383,102 @@ export default function MapViewport({
 			setStatus("failed");
 		}
 	}, [available, external, attempt, camera]);
+	useEffect(() => {
+		const map = mapRef.current,
+			value = latest.current.interaction;
+		if (!map || map !== readyMap || status !== "ready" || !value || disabled)
+			return;
+		let stopped = false;
+		const blockMapPick = () => pickGate.current.block();
+		const failed = () => {
+			const current = latest.current.interaction;
+			if (current?.key === value.key) current.failed();
+			else value.failed();
+		};
+		let controller: { dispose: () => void };
+		try {
+			const style = getComputedStyle(host.current!);
+			function hex(name: string): `#${string}` {
+				const value = style.getPropertyValue(name).trim();
+				if (!/^#[a-f0-9]{6}$/i.test(value))
+					throw new Error("map_design_tokens_missing");
+				return value as `#${string}`;
+			}
+			const ink = hex("--proto-teal-700"),
+				paper = hex("--proto-neutral-100");
+			if (value.phase === "collecting") {
+				const collector = new MapPrefixController(map, value.vertices, ink, {
+					append: (point) => latest.current.interaction?.append(point),
+					blockMapPick,
+					failed,
+				});
+				prefix.current = collector;
+				controller = collector;
+			} else {
+				controller = createMapDrawingController(
+					map,
+					{ kind: "edit", ring: value.vertices },
+					{
+						raw: () => undefined,
+						transaction: (change) =>
+							latest.current.interaction?.transaction(change),
+						interrupted: () => latest.current.interaction?.interrupted(),
+						failed,
+						blockMapPick,
+					},
+					{ ink, paper },
+				);
+			}
+		} catch {
+			failed();
+			return;
+		}
+		const release = () => {
+			if (stopped) return;
+			stopped = true;
+			prefix.current = null;
+			controller.dispose();
+			if (releaseDrawing.current === release) releaseDrawing.current = null;
+		};
+		releaseDrawing.current = release;
+		return release;
+	}, [
+		interaction?.key,
+		interaction?.phase,
+		readyMap,
+		status,
+		disabled,
+		external,
+		attempt,
+		available,
+	]);
+	useEffect(() => {
+		if (interaction?.phase === "collecting")
+			prefix.current?.update(interaction.vertices);
+	}, [interaction?.vertices, interaction?.phase]);
+	useEffect(() => {
+		const map = mapRef.current,
+			point = interaction?.referencePosition;
+		if (!map || map !== readyMap || status !== "ready" || !point) return;
+		const element = globalThis.document.createElement("span");
+		element.className = "lp-map-height-reference";
+		element.textContent = __("Height reference", "linker-tools");
+		const marker = new Marker({ element, anchor: "bottom", offset: [0, -12] })
+			.setLngLat([...point])
+			.addTo(map);
+		heightMarker.current = marker;
+		return () => {
+			marker.remove();
+			if (heightMarker.current === marker) heightMarker.current = null;
+		};
+	}, [
+		interaction?.key,
+		interaction?.referencePosition,
+		readyMap,
+		status,
+		external,
+		attempt,
+	]);
 	useEffect(() => {
 		const map = mapRef.current;
 		if (!map || !map.getSource(SOURCE) || !projection.view) return;
@@ -466,7 +600,28 @@ export default function MapViewport({
 					</button>
 				</Notice>
 			)}
-			<div className="lp-map-host" ref={host} />
+			<div
+				className="lp-map-surface"
+				data-collecting={interaction?.phase === "collecting" || undefined}
+			>
+				<div className="lp-map-host" ref={host} />
+				{interaction?.phase === "collecting" && (
+					<span className="lp-map-reticle" aria-hidden="true" />
+				)}
+			</div>
+			{interaction?.phase === "collecting" && (
+				<button
+					type="button"
+					className="lp-button lp-button-secondary"
+					disabled={status !== "ready"}
+					onClick={() => {
+						const centre = mapRef.current?.getCenter();
+						if (centre) interaction.append([centre.lng, centre.lat]);
+					}}
+				>
+					{__("Add corner at map centre", "linker-tools")}
+				</button>
+			)}
 			<div className="lp-map-provider">
 				<p className="lp-profile-help">
 					{__(

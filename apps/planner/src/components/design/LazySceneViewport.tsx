@@ -11,7 +11,10 @@ export function LazySceneViewport({
 }: ComponentProps<typeof SceneViewport> & { sceneModuleUrl: string | null }) {
 	const [attempt, setAttempt] = useState(0);
 	const View = useMemo(
-		() => lazy(() => loadSceneModule(sceneModuleUrl)),
+		// A remounted lazy boundary needs a fresh thenable. React can mark a
+		// cached promise fulfilled before this new lazy payload initializes;
+		// replaying it synchronously would starve its .then callback.
+		() => lazy(async () => await loadSceneModule(sceneModuleUrl)),
 		[attempt, sceneModuleUrl],
 	);
 	return (

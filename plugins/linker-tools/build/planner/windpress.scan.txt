@@ -19,6 +19,9 @@ lp-design-section
 lp-design-toolbar
 lp-design-workspace
 lp-diagnostics
+lp-drawing-properties
+lp-drawing-recoveries
+lp-drawing-status
 lp-edit-actions
 lp-editor-main
 lp-editor-with-design
@@ -44,11 +47,15 @@ lp-index-heading
 lp-inline-actions
 lp-keepout-shape
 lp-layout-review
+lp-map-drawing
 lp-map-heading
 lp-map-host
 lp-map-provider
+lp-map-reticle
+lp-map-surface
 lp-map-toolbar
 lp-map-view
+lp-map-workspace
 lp-mobile-workspace
 lp-module-table
 lp-nav-mark

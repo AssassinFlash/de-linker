@@ -222,7 +222,10 @@ export type NewMapShape =
 			readonly identity: Pick<RoofFace, "id" | "name" | "source_id">;
 			readonly pitch_deg: number;
 			readonly bearing_deg: number;
-			readonly first_vertex_height_m: number;
+			/** Frozen geographic position at which relative height was supplied.
+			 * It remains fixed when the SDK reorders or deletes boundary vertices. */
+			readonly height_reference_position: Vec2;
+			readonly reference_height_m: number;
 	  }
 	| { readonly kind: "hole"; readonly roof_id: string }
 	| {
@@ -251,15 +254,15 @@ export function newMapShapeCommand(
 			!Number.isFinite(shape.bearing_deg) ||
 			shape.bearing_deg < 0 ||
 			shape.bearing_deg >= 360 ||
-			!Number.isFinite(shape.first_vertex_height_m)
+			!Number.isFinite(shape.reference_height_m)
 		)
 			throw new Error("map_drawing_plane_invalid");
 		const plane = roofPlaneAtVertex(
 			bridge.reference,
-			ring[0]!,
+			position(shape.height_reference_position),
 			shape.pitch_deg,
 			shape.bearing_deg,
-			shape.first_vertex_height_m,
+			shape.reference_height_m,
 		);
 		return checkedGroup(before, {
 			type: "put_roof",

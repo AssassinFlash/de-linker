@@ -1,0 +1,23 @@
+{
+  "test": "cached map lazy remount through actual React and actual LazyMapViewport",
+  "symptom": "worker busy at 96-99% CPU; no completion after pause and remount",
+  "diagnosis": {
+    "paused_exception": "already fulfilled Promise",
+    "frames": [
+      "lazyInitializer",
+      "resolveLazy",
+      "replaySuspendedUnitOfWork",
+      "renderRootConcurrent",
+      "flushActQueue"
+    ],
+    "installed_react": "19.3.1",
+    "source": "apps/planner/node_modules/react/cjs/react.development.js:470-533"
+  },
+  "repair": "fresh async thenable per lazy payload; shared module export cache and explicit retry URLs retained",
+  "affected_consumers": [
+    "LazyMapViewport",
+    "LazySceneViewport"
+  ],
+  "fixed_regression": "tests/map-roof-workspace.test.mjs: one-point recovery after component remount",
+  "scope": "library/DOM fixture, not native GPU acceptance"
+}

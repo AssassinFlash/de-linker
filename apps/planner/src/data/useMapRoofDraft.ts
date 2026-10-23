@@ -1,0 +1,335 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { GeometryDocument } from "../domain/geometry.ts";
+import type { MapRoofDraft } from "../domain/mapRoofDraft.ts";
+import { startMapRoofDraft } from "../domain/mapRoofDraft.ts";
+import { sameJson } from "../domain/draft.ts";
+import { mapRoofDraftStore } from "./MapRoofDraftStore.ts";
+import type {
+	MapRoofDraftStore,
+	StoredMapRoofDraft,
+} from "./MapRoofDraftStore.ts";
+import type { PlannerClient } from "./PlannerClient.ts";
+import type { Session } from "./protocol.ts";
+
+interface DrawingWriter {
+	readonly scope: string;
+	readonly key: string;
+	body: string | null;
+	chain: Promise<void>;
+}
+export type DrawingJournal = Pick<
+	MapRoofDraftStore,
+	"list" | "write" | "clear"
+>;
+
+/** Restoring bytes requires a verified native project and scope grant. Partial
+ * points stay outside project history, including across route/provider changes. */
+export function useMapRoofDraft({
+	projectId,
+	geometry,
+	confirmedGeometry,
+	locale,
+	session,
+	client,
+	recoveryScopes,
+	recoveryChecking = false,
+	store = mapRoofDraftStore,
+}: {
+	projectId: string;
+	geometry: GeometryDocument;
+	confirmedGeometry: GeometryDocument | null;
+	locale: string;
+	session: Session;
+	client: PlannerClient;
+	recoveryScopes?: readonly string[] | undefined;
+	recoveryChecking?: boolean | undefined;
+	store?: DrawingJournal;
+}) {
+	const [drawing, setDrawing] = useState<MapRoofDraft | null>(null),
+		[records, setRecords] = useState<readonly StoredMapRoofDraft[]>([]),
+		[active, setActive] = useState(false),
+		[checking, setChecking] = useState(true),
+		[storageFailed, setStorageFailed] = useState(false),
+		[writing, setWriting] = useState(false),
+		[refresh, setRefresh] = useState(0);
+	const latest = useRef<MapRoofDraft | null>(null),
+		writer = useRef<DrawingWriter | null>(null),
+		mounted = useRef(true);
+	const owner = useRef(projectId + ":" + session.query_scope);
+	const ownerKey = projectId + ":" + session.query_scope;
+	const sameOwner = owner.current === ownerKey;
+	const scopeKey = JSON.stringify([
+		...new Set([session.query_scope, ...(recoveryScopes ?? [])]),
+	]);
+	const context = useRef({ scopeKey, session, projectId });
+	context.current = { scopeKey, session, projectId };
+	const admitted = useCallback(
+		(scope: string) =>
+			client.isCurrentScope(session.query_scope) &&
+			(JSON.parse(context.current.scopeKey) as string[]).includes(scope),
+		[client, session.query_scope],
+	);
+	useEffect(() => {
+		mounted.current = true;
+		return () => {
+			mounted.current = false;
+		};
+	}, []);
+	useEffect(() => {
+		if (owner.current === ownerKey) return;
+		owner.current = ownerKey;
+		writer.current = null;
+		latest.current = null;
+		setDrawing(null);
+		setRecords([]);
+		setActive(false);
+		setChecking(true);
+		setWriting(false);
+		setStorageFailed(false);
+	}, [ownerKey]);
+	useEffect(() => {
+		if (recoveryChecking || !client.isCurrentScope(session.query_scope)) return;
+		let current = true;
+		setChecking(true);
+		void (async () => {
+			const found = await store.list(
+				JSON.parse(scopeKey) as string[],
+				projectId,
+			);
+			const retained: StoredMapRoofDraft[] = [];
+			for (const record of found) {
+				if (!current || !admitted(record.scope)) return;
+				if (
+					record.drawing.prepared_geometry &&
+					confirmedGeometry &&
+					sameJson(record.drawing.prepared_geometry, confirmedGeometry) &&
+					writer.current?.key !== record.drawing.key
+				) {
+					await store.clear(record.scope, record.body);
+				} else retained.push(record);
+			}
+			if (current && client.isCurrentScope(session.query_scope)) {
+				setRecords(retained);
+				if (!writer.current) setStorageFailed(false);
+			}
+		})()
+			.catch(() => {
+				if (current) setStorageFailed(true);
+			})
+			.finally(() => {
+				if (current) setChecking(false);
+			});
+		return () => {
+			current = false;
+		};
+	}, [
+		projectId,
+		scopeKey,
+		recoveryChecking,
+		client,
+		session.query_scope,
+		admitted,
+		store,
+		refresh,
+		confirmedGeometry,
+	]);
+
+	function persist(next: MapRoofDraft, target: DrawingWriter): Promise<void> {
+		const body = JSON.stringify(next);
+		setWriting(true);
+		const operation = target.chain
+			.catch(() => undefined)
+			.then(async () => {
+				if (!admitted(target.scope)) throw new Error("session_changed");
+				await store.write(target.scope, target.body, body);
+				target.body = body;
+			});
+		target.chain = operation;
+		void operation.then(
+			() => {
+				if (
+					mounted.current &&
+					writer.current === target &&
+					target.chain === operation
+				) {
+					setStorageFailed(false);
+					setWriting(false);
+				}
+			},
+			() => {
+				if (
+					mounted.current &&
+					writer.current === target &&
+					target.chain === operation
+				) {
+					setStorageFailed(true);
+					setWriting(false);
+				}
+			},
+		);
+		return operation;
+	}
+	function update(next: MapRoofDraft): Promise<void> {
+		const target = writer.current;
+		if (
+			!target ||
+			!admitted(target.scope) ||
+			next.key !== target.key ||
+			next.project_id !== projectId
+		)
+			return Promise.reject(new Error("session_changed"));
+		latest.current = next;
+		setDrawing(next);
+		return persist(next, target);
+	}
+	function begin(record: StoredMapRoofDraft | null) {
+		if (
+			active ||
+			checking ||
+			recoveryChecking ||
+			!client.isCurrentScope(session.query_scope)
+		)
+			return;
+		if (record && (!records.includes(record) || !admitted(record.scope)))
+			return;
+		const next =
+			record?.drawing ?? startMapRoofDraft(projectId, geometry, locale);
+		const target: DrawingWriter = {
+			scope: record?.scope ?? session.query_scope,
+			key: next.key,
+			body: record?.body ?? null,
+			chain: Promise.resolve(),
+		};
+		writer.current = target;
+		latest.current = next;
+		setDrawing(next);
+		setActive(true);
+		setStorageFailed(false);
+		if (!record) void persist(next, target).catch(() => undefined);
+	}
+	async function flush(): Promise<boolean> {
+		const target = writer.current;
+		if (!target || !latest.current || !admitted(target.scope)) return false;
+		try {
+			await persist(latest.current, target);
+			return writer.current === target && admitted(target.scope);
+		} catch {
+			return false;
+		}
+	}
+	async function pause(): Promise<boolean> {
+		if (!(await flush())) return false;
+		setActive(false);
+		return true;
+	}
+	async function discard() {
+		const target = writer.current;
+		if (!target || !admitted(target.scope)) return;
+		await target.chain.catch(() => undefined);
+		try {
+			if (target.body !== null) await store.clear(target.scope, target.body);
+			if (writer.current !== target || !admitted(target.scope)) return;
+			writer.current = null;
+			latest.current = null;
+			setDrawing(null);
+			setActive(false);
+			setStorageFailed(false);
+			setRefresh((value) => value + 1);
+		} catch {
+			if (mounted.current && writer.current === target) setStorageFailed(true);
+		}
+	}
+	function fork() {
+		if (!latest.current || !client.isCurrentScope(session.query_scope)) return;
+		const next = {
+			...latest.current,
+			key: crypto.randomUUID(),
+			prepared_geometry: null,
+		};
+		const target: DrawingWriter = {
+			scope: session.query_scope,
+			key: next.key,
+			body: null,
+			chain: Promise.resolve(),
+		};
+		writer.current = target;
+		latest.current = next;
+		setDrawing(next);
+		setActive(true);
+		void persist(next, target).catch(() => undefined);
+	}
+	function resume() {
+		const target = writer.current;
+		if (
+			target &&
+			latest.current &&
+			admitted(target.scope) &&
+			!checking &&
+			!recoveryChecking
+		)
+			setActive(true);
+	}
+	function hide() {
+		if (writing) return;
+		writer.current = null;
+		latest.current = null;
+		setDrawing(null);
+		setActive(false);
+		setRefresh((value) => value + 1);
+	}
+	// A protected result is retired only after native project read/save confirms
+	// those exact geometry bytes, never just because a React command returned true.
+	useEffect(() => {
+		const target = writer.current,
+			value = latest.current;
+		if (
+			active ||
+			!target ||
+			!value?.prepared_geometry ||
+			!confirmedGeometry ||
+			!sameJson(value.prepared_geometry, confirmedGeometry)
+		)
+			return;
+		let current = true;
+		void target.chain
+			.then(async () => {
+				if (!current || !admitted(target.scope) || target.body === null) return;
+				await store.clear(target.scope, target.body);
+				if (!current || writer.current !== target || !admitted(target.scope))
+					return;
+				writer.current = null;
+				latest.current = null;
+				setDrawing(null);
+				setStorageFailed(false);
+				setRefresh((n) => n + 1);
+			})
+			.catch(() => {
+				if (current) setStorageFailed(true);
+			});
+		return () => {
+			current = false;
+		};
+	}, [active, confirmedGeometry, admitted, store, drawing, refresh]);
+	return {
+		drawing: sameOwner ? drawing : null,
+		records: sameOwner ? records : [],
+		active: sameOwner && active,
+		checking: !sameOwner || checking || recoveryChecking,
+		storageFailed,
+		writing,
+		begin,
+		update,
+		flush,
+		retry: async () => {
+			if (await flush()) setRefresh((n) => n + 1);
+		},
+		reload: () => setRefresh((n) => n + 1),
+		pause,
+		resume,
+		hide,
+		discard,
+		fork,
+		deactivate: () => setActive(false),
+		latest,
+	};
+}
