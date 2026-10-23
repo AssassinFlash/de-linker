@@ -36,12 +36,17 @@ import {
 	vectorFromRoof,
 } from "../../domain/coordinates.ts";
 import {
-	panelCornersUVN,
-	panelPositionRelative,
-} from "../../domain/panelPoses.ts";
-import { requireUvResolution } from "../../domain/geometryNumerics.ts";
+	centredRings,
+	panelBatches,
+	renderBoundsPoints,
+	requireRenderCoordinates,
+} from "../../domain/renderGeometry.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import {
+	releaseBackend,
+	releaseUnownedRenderer,
+} from "../../domain/renderLifetime.ts";
 
 interface Palette {
 	roof: string;
@@ -96,20 +101,27 @@ function RoofMesh({
 	palette: Palette;
 	select: (id: string) => void;
 }) {
+	const rings = useMemo(
+		() => centredRings(roof.boundary_uv, roof.holes_uv),
+		[roof],
+	);
 	const geometry = useMemo(() => {
-		const shape = new Shape(
-			roof.boundary_uv.map(([u, v]) => new Vector2(u, v)),
-		);
-		shape.holes = roof.holes_uv.map(
+		const shape = new Shape(rings.boundary.map(([u, v]) => new Vector2(u, v)));
+		shape.holes = rings.holes.map(
 			(ring) => new Path(ring.map(([u, v]) => new Vector2(u, v))),
 		);
 		return new ShapeGeometry(shape);
-	}, [roof]);
+	}, [rings]);
 	useEffect(() => () => geometry.dispose(), [geometry]);
 	return (
 		<mesh
 			geometry={geometry}
-			position={toRender(add(roof.origin_enu, scale(reference, -1)))}
+			position={toRender(
+				add(
+					add(roof.origin_enu, scale(reference, -1)),
+					vectorFromRoof(roof, [...rings.pivot, 0]),
+				),
+			)}
 			quaternion={roofRotation(roof)}
 			onClick={(event) => {
 				event.stopPropagation();
@@ -122,6 +134,78 @@ function RoofMesh({
 				roughness={0.9}
 			/>
 		</mesh>
+	);
+}
+
+function PanelBatch({
+	batch,
+	array,
+	palette,
+	selected,
+	select,
+}: {
+	batch: ReturnType<typeof panelBatches>[number];
+	array: PanelArray;
+	palette: Palette;
+	selected: string | null;
+	select: (id: string) => void;
+}) {
+	const mesh = useRef<InstancedMesh>(null!);
+	const { invalidate } = useThree();
+	useEffect(() => {
+		const instance = mesh.current;
+		batch.poses.forEach((pose, index) => {
+			const matrix = new Matrix4().makeBasis(
+				vector(pose.u_axis_uvn),
+				vector(pose.v_axis_uvn),
+				vector(pose.normal_uvn),
+			);
+			matrix.scale(new Vector3(pose.width_m, pose.length_m, pose.thickness_m));
+			matrix.setPosition(
+				pose.centre_uvn[0] - batch.pivot[0],
+				pose.centre_uvn[1] - batch.pivot[1],
+				pose.centre_uvn[2] - batch.pivot[2],
+			);
+			requireRenderCoordinates(matrix.elements);
+			instance.setMatrixAt(index, matrix);
+			instance.setColorAt(
+				index,
+				new Color(
+					pose.id === selected || selected === array.id
+						? palette.selected
+						: pose.included
+							? palette.module
+							: palette.roof,
+				),
+			);
+		});
+		instance.instanceMatrix.needsUpdate = true;
+		if (instance.instanceColor) instance.instanceColor.needsUpdate = true;
+		instance.computeBoundingBox();
+		instance.computeBoundingSphere();
+		invalidate();
+	}, [batch, array.id, selected, palette, invalidate]);
+	return (
+		<group
+			position={[
+				batch.pivot[0] - array.origin_uv[0],
+				batch.pivot[1] - array.origin_uv[1],
+				batch.pivot[2],
+			]}
+		>
+			<instancedMesh
+				ref={mesh}
+				args={[undefined, undefined, batch.poses.length]}
+				onClick={(event) => {
+					event.stopPropagation();
+					const pose = batch.poses[event.instanceId ?? -1];
+					if (pose) select(pose.id);
+				}}
+			>
+				<boxGeometry args={[1, 1, 1]} />
+				<meshStandardMaterial metalness={0.2} roughness={0.34} />
+			</instancedMesh>
+		</group>
 	);
 }
 
@@ -146,10 +230,14 @@ function Panels({
 	commit: (command: GeometryCommand) => boolean;
 	disabled: boolean;
 }) {
-	const group = useRef<Group>(null!),
-		mesh = useRef<InstancedMesh>(null!);
-	const start = useRef<Vector3 | null>(null);
+	const group = useRef<Group>(null!);
+	const start = useRef<{
+		position: Vector3;
+		array: PanelArray;
+		roof: RoofFace;
+	} | null>(null);
 	const { invalidate } = useThree();
+	const batches = useMemo(() => panelBatches(poses), [poses]);
 	const origin = toRender(
 		add(
 			add(roof.origin_enu, scale(reference, -1)),
@@ -158,83 +246,61 @@ function Panels({
 	);
 	const active =
 		selected === array.id || poses.some((pose) => pose.id === selected);
-	useEffect(() => {
-		const instance = mesh.current;
-		poses.forEach((pose, index) => {
-			const matrix = new Matrix4().makeBasis(
-				vector(pose.u_axis_uvn),
-				vector(pose.v_axis_uvn),
-				vector(pose.normal_uvn),
-			);
-			matrix.scale(new Vector3(pose.width_m, pose.length_m, pose.thickness_m));
-			matrix.setPosition(
-				pose.centre_uvn[0] - array.origin_uv[0],
-				pose.centre_uvn[1] - array.origin_uv[1],
-				pose.centre_uvn[2],
-			);
-			instance.setMatrixAt(index, matrix);
-			instance.setColorAt(
-				index,
-				new Color(
-					pose.id === selected || selected === array.id
-						? palette.selected
-						: pose.included
-							? palette.module
-							: palette.roof,
-				),
-			);
-		});
-		instance.instanceMatrix.needsUpdate = true;
-		if (instance.instanceColor) instance.instanceColor.needsUpdate = true;
-		instance.computeBoundingBox();
-		instance.computeBoundingSphere();
-		invalidate();
-	}, [poses, array, selected, palette, invalidate]);
 	return (
 		<>
 			<group ref={group} position={origin} quaternion={roofRotation(roof)}>
-				<instancedMesh
-					ref={mesh}
-					args={[undefined, undefined, poses.length]}
-					onClick={(event) => {
-						event.stopPropagation();
-						const pose = poses[event.instanceId ?? -1];
-						if (pose) select(pose.id);
-					}}
-				>
-					<boxGeometry args={[1, 1, 1]} />
-					<meshStandardMaterial metalness={0.2} roughness={0.34} />
-				</instancedMesh>
+				{batches.map((batch) => (
+					<PanelBatch
+						key={batch.key}
+						batch={batch}
+						array={array}
+						palette={palette}
+						selected={selected}
+						select={select}
+					/>
+				))}
 			</group>
 			{active && !disabled && (
 				<ArrayTransform
 					object={group}
 					start={() => {
-						start.current = group.current.position.clone();
+						start.current = {
+							position: group.current.position.clone(),
+							array,
+							roof,
+						};
+					}}
+					cancel={() => {
+						start.current = null;
+						group.current.position.set(...origin);
+						invalidate();
 					}}
 					finish={() => {
 						const before = start.current;
 						start.current = null;
 						if (!before) return;
 						const delta = fromRender(
-							group.current.position.clone().sub(before).toArray() as [
+							group.current.position.clone().sub(before.position).toArray() as [
 								number,
 								number,
 								number,
 							],
 						);
-						const u = dot(delta, roof.u_axis_enu),
-							v = dot(delta, roof.v_axis_enu);
+						const u = dot(delta, before.roof.u_axis_enu),
+							v = dot(delta, before.roof.v_axis_enu);
 						if (u !== 0 || v !== 0) {
 							const accepted = commit({
 								type: "put_array",
-								before: array,
+								before: before.array,
 								value: {
-									...array,
-									origin_uv: [array.origin_uv[0] + u, array.origin_uv[1] + v],
+									...before.array,
+									origin_uv: [
+										before.array.origin_uv[0] + u,
+										before.array.origin_uv[1] + v,
+									],
 								},
 							});
-							if (!accepted) group.current.position.copy(before);
+							if (!accepted) group.current.position.set(...origin);
 						}
 						invalidate();
 					}}
@@ -259,13 +325,14 @@ function SiteObjects({
 		() =>
 			[...geometry.obstacles, ...geometry.keepouts].map((object) => {
 				const roof = geometry.roofs.find((roof) => roof.id === object.roof_id)!;
+				const rings = centredRings(object.footprint_uv);
 				const shape = new Shape(
-					object.footprint_uv.map(([u, v]) => new Vector2(u, v)),
+					rings.boundary.map(([u, v]) => new Vector2(u, v)),
 				);
 				const obstacle = "height_m" in object;
 				const geometryObject = obstacle
 					? new ExtrudeGeometry(shape, {
-							depth: object.height_m,
+							depth: 1,
 							bevelEnabled: false,
 							steps: 1,
 						})
@@ -276,15 +343,21 @@ function SiteObjects({
 				const matrix = new Matrix4().makeBasis(
 					vector(toRender(roof.u_axis_enu)),
 					vector(toRender(roof.v_axis_enu)),
-					vector(toRender(axis)),
+					vector(toRender(obstacle ? scale(axis, object.height_m) : axis)),
 				);
 				matrix.setPosition(
-					...toRender(add(roof.origin_enu, scale(reference, -1))),
+					...toRender(
+						add(
+							add(roof.origin_enu, scale(reference, -1)),
+							vectorFromRoof(roof, [...rings.pivot, 0]),
+						),
+					),
 				);
-				geometryObject.applyMatrix4(matrix);
+				if (obstacle) requireRenderCoordinates([object.height_m]);
 				return {
 					id: object.id,
 					geometry: geometryObject,
+					matrix,
 					color: obstacle ? palette.obstacle : palette.keepout,
 					obstacle,
 				};
@@ -301,6 +374,8 @@ function SiteObjects({
 				<mesh
 					key={object.id}
 					geometry={object.geometry}
+					matrix={object.matrix}
+					matrixAutoUpdate={false}
 					onClick={(event) => {
 						event.stopPropagation();
 						select(object.id);
@@ -348,6 +423,7 @@ export default function SceneViewport(props: SceneProps) {
 		alive.current = true;
 		return () => {
 			alive.current = false;
+			generation.current++;
 		};
 	}, []);
 	useEffect(() => {
@@ -367,38 +443,11 @@ export default function SceneViewport(props: SceneProps) {
 	const bounds = useMemo(() => {
 		if (!reference) return null;
 		try {
-			const points: Vector3[] = [];
-			for (const roof of props.document.roofs)
-				for (const uv of [...roof.boundary_uv, ...roof.holes_uv.flat()]) {
-					requireUvResolution(uv);
-					points.push(
-						vector(
-							toRender(
-								add(
-									add(roof.origin_enu, scale(reference, -1)),
-									vectorFromRoof(roof, [...uv, 0]),
-								),
-							),
-						),
-					);
-				}
-			for (const pose of props.poses) {
-				const roof = props.document.roofs.find(
-					(roof) => roof.id === pose.roof_id,
-				)!;
-				panelPositionRelative(pose, roof, reference);
-				for (const point of panelCornersUVN(pose))
-					points.push(
-						vector(
-							toRender(
-								add(
-									add(roof.origin_enu, scale(reference, -1)),
-									vectorFromRoof(roof, point),
-								),
-							),
-						),
-					);
-			}
+			const points = renderBoundsPoints(
+				props.document,
+				props.poses,
+				reference,
+			).map(vector);
 			const box = new Box3().setFromPoints(points),
 				centre = box.getCenter(new Vector3()),
 				size = box.getSize(new Vector3()).length();
@@ -441,6 +490,7 @@ export default function SceneViewport(props: SceneProps) {
 						type="button"
 						className="lp-button lp-button-secondary"
 						onClick={() => {
+							generation.current++;
 							setFraming(bounds);
 							setBackend("");
 							setFailed(false);
@@ -475,17 +525,24 @@ export default function SceneViewport(props: SceneProps) {
 									antialias: true,
 									forceWebGL,
 								});
+								let initialBackend: typeof renderer.backend | null =
+									renderer.backend;
 								renderer.onDeviceLost = () => {
 									if (alive.current && identity === generation.current)
 										setFailed(true);
 								};
 								try {
 									await renderer.init();
+									if (initialBackend !== renderer.backend) {
+										await releaseBackend(initialBackend);
+										initialBackend = null;
+									}
 									if (!alive.current || identity !== generation.current) {
-										await renderer.dispose();
 										throw new Error("scene_unmounted");
 									}
 								} catch (error) {
+									// A rejected init never hands this instance to R3F for disposal.
+									await releaseUnownedRenderer(renderer, initialBackend);
 									if (alive.current && identity === generation.current)
 										setFailed(true);
 									throw error;
@@ -559,6 +616,7 @@ export default function SceneViewport(props: SceneProps) {
 					type="button"
 					className="lp-tool-button"
 					onClick={() => {
+						generation.current++;
 						setFraming(bounds);
 						setAttempt((value) => value + 1);
 						setBackend("");
@@ -575,6 +633,7 @@ export default function SceneViewport(props: SceneProps) {
 						type="checkbox"
 						checked={forceWebGL}
 						onChange={(event) => {
+							generation.current++;
 							setFraming(bounds);
 							setBackend("");
 							setForceWebGL(event.currentTarget.checked);

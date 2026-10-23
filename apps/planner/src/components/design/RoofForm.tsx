@@ -70,7 +70,7 @@ export function RoofForm({
 					{
 						width: values.metric("width", { positive: true }),
 						slopeLength: values.metric("length", { positive: true }),
-						pitch: values.metric("pitch", { min: 0, max: 90 }),
+						pitch: values.metric("pitch", { min: 0, maxExclusive: 90 }),
 						bearing: values.metric("bearing"),
 						origin: [
 							values.metric("east"),
@@ -116,7 +116,10 @@ export function RoofForm({
 							name="pitch"
 							label={__("Roof pitch", "linker-tools")}
 							unit="°"
-							help={__("0 to 90. A flat roof is 0.", "linker-tools")}
+							help={__(
+								"0 or greater and less than 90. A flat roof is 0.",
+								"linker-tools",
+							)}
 						/>
 						<GeometryNumber
 							{...numberProps}
@@ -124,7 +127,7 @@ export function RoofForm({
 							label={__("Down-slope bearing", "linker-tools")}
 							unit="°"
 							help={__(
-								"Clockwise from project north: 0 north, 90 east, 180 south, 270 west. North remains unverified until a reference is recorded.",
+								"Clockwise from project north: 0 north, 90 east, 180 south, 270 west. Bearings use the project's stated north reference; recording a reference does not verify it.",
 								"linker-tools",
 							)}
 						/>
@@ -190,7 +193,7 @@ export function RoofForm({
 						label={__("Measurement or drawing reference", "linker-tools")}
 						multiline
 						help={__(
-							"The reference is saved with this roof face. Measurement precision starts as unknown and can be recorded in Source properties.",
+							"The reference stays with this roof face in the project draft and is stored with Save project. Measurement precision starts as unknown and can be recorded in Source properties.",
 							"linker-tools",
 						)}
 					/>

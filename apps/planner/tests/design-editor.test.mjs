@@ -215,3 +215,29 @@ test("a late layout check is retained as previous output and cannot select curre
 		true,
 	);
 });
+
+test("manual roof intake marks the unsupported vertical boundary at its field", async (t) => {
+	const app = await mount(t);
+	await click("Add roof face");
+	for (const [name, value] of Object.entries({
+		name: "Synthetic roof",
+		width: "10",
+		length: "8",
+		pitch: "90",
+		bearing: "180",
+		source: "Synthetic dimensions",
+		rights_note: "Synthetic test rights",
+	}))
+		await enter(document.querySelector(`[name="${name}"]`), value);
+	await act(async () => document.querySelector('[name="rights"]').click());
+	await click("Apply properties");
+	assert.equal(app.edits, 0);
+	assert.equal(
+		document.querySelector('[name="pitch"]').getAttribute("aria-invalid"),
+		"true",
+	);
+	assert.equal(document.querySelector('[name="pitch"]').value, "90");
+	await enter(document.querySelector('[name="pitch"]'), "89.9");
+	await click("Apply properties");
+	assert.equal(app.edits, 1);
+});

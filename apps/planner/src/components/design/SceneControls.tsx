@@ -42,14 +42,16 @@ export function ArrayTransform({
 	object,
 	start,
 	finish,
+	cancel,
 }: {
 	object: RefObject<Group>;
 	start: () => void;
 	finish: () => void;
+	cancel: () => void;
 }) {
 	const { camera, gl, scene, invalidate } = useThree();
-	const handlers = useRef({ start, finish });
-	handlers.current = { start, finish };
+	const handlers = useRef({ start, finish, cancel });
+	handlers.current = { start, finish, cancel };
 	useEffect(() => {
 		const controls = new TransformControls(camera, gl.domElement);
 		controls.setMode("translate");
@@ -62,26 +64,42 @@ export function ArrayTransform({
 			gl.domElement.dispatchEvent(new Event("planner-transform-start"));
 			handlers.current.start();
 		};
+		let cancelling = false;
 		const end = () => {
-			handlers.current.finish();
+			if (!cancelling) handlers.current.finish();
 			gl.domElement.dispatchEvent(new Event("planner-transform-end"));
 		};
-		const cancel = (event: KeyboardEvent) => {
-			if (event.key === "Escape") {
-				controls.reset();
-				invalidate();
-			}
+		const abort = () => {
+			if (!controls.dragging) return;
+			controls.reset();
+			cancelling = true;
+			controls.pointerUp(null);
+			cancelling = false;
+			handlers.current.cancel();
+			gl.domElement.dispatchEvent(new Event("planner-transform-end"));
+			controls.disconnect();
+			controls.connect(gl.domElement);
+			invalidate();
+		};
+		const escape = (event: KeyboardEvent) => {
+			if (event.key === "Escape") abort();
 		};
 		const changed = () => invalidate();
 		controls.addEventListener("change", changed);
 		controls.addEventListener("mouseDown", begin);
 		controls.addEventListener("mouseUp", end);
-		window.addEventListener("keydown", cancel);
+		window.addEventListener("keydown", escape);
+		window.addEventListener("blur", abort);
+		gl.domElement.addEventListener("pointercancel", abort);
+		gl.domElement.addEventListener("lostpointercapture", abort);
 		return () => {
 			controls.removeEventListener("change", changed);
 			controls.removeEventListener("mouseDown", begin);
 			controls.removeEventListener("mouseUp", end);
-			window.removeEventListener("keydown", cancel);
+			window.removeEventListener("keydown", escape);
+			window.removeEventListener("blur", abort);
+			gl.domElement.removeEventListener("pointercancel", abort);
+			gl.domElement.removeEventListener("lostpointercapture", abort);
 			controls.detach();
 			scene.remove(helper);
 			controls.dispose();

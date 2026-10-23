@@ -1,0 +1,3 @@
+import React,{useEffect}from"react";
+export function Canvas(props){globalThis.__sceneProps=props;useEffect(()=>{if(globalThis.__initProbe)props.gl({canvas:document.createElement("canvas")}).then(r=>{globalThis.__initResolved=r;},e=>{globalThis.__initRejected=e;});},[]);const keep=globalThis.__sceneMeshes??[];return React.createElement("div",{"data-canvas-fixture":true},React.Children.toArray(props.children).filter(c=>keep.includes(c?.type?.name)));}
+export function useThree(){if(globalThis.__threeContext)return globalThis.__threeContext;throw new Error("GPU context intentionally unavailable in this source fixture");}

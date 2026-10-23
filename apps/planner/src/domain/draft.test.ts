@@ -93,3 +93,21 @@ test("incorrect save acknowledgements cannot advance the confirmed baseline", ()
 	);
 	assert.equal(draft.baseline, project);
 });
+
+test("wire-equivalent signed zeroes acknowledge saved geometry without rewriting the local input", () => {
+	const draft = editDraft(beginDraft(project), { axis: [-1, -0, 0] });
+	const prepared = prepareSave(draft, key, policy),
+		intent = prepared.pending!;
+	const reply = {
+		...project,
+		revision: 2,
+		inputs: JSON.parse(intent.body).inputs,
+	};
+	const acknowledged = acknowledgeSave(prepared, intent, reply);
+	assert.equal(acknowledged.pending, null);
+	assert.equal(isDirty(acknowledged), false);
+	assert.ok(
+		Object.is((acknowledged.history.current.axis as readonly number[])[1], -0),
+	);
+	assert.ok(Object.is((reply.inputs.axis as readonly number[])[1], 0));
+});

@@ -107,7 +107,7 @@ export function PlanViewport({
 		return (
 			<Notice error>
 				{__(
-					"This coordinate range cannot be displayed at the supported numerical precision. The source geometry remains saved and its numeric properties remain editable.",
+					"This coordinate range cannot be displayed at the supported numerical precision. The source geometry remains in the open project draft and its numeric properties remain editable.",
 					"linker-tools",
 				)}
 			</Notice>

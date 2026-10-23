@@ -1,0 +1,49 @@
+{
+  "lazy_chunk": {
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/standards-lazy-loader.mjs",
+      "--test",
+      "tests/standards-lazy-probe.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-37f2-u83ycxvp/apps/planner",
+    "exit": 0,
+    "stdout": "{\"case\":\"rejected_lazy_3d_chunk\",\"rejection\":\"synthetic_3d_chunk_unavailable\",\"remainingText\":\"\",\"remainingInputs\":0}\n✔ independent rejected 3D chunk probe (205.534791ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 662.867625\n",
+    "stderr": ""
+  },
+  "lazy_chunk_staged": {
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/standards-lazy-loader.mjs",
+      "--test",
+      "tests/standards-lazy-staged-probe.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-37f2-u83ycxvp/apps/planner",
+    "exit": 0,
+    "stdout": "{\"case\":\"rejected_lazy_3d_chunk_with_staged_raw\",\"stagedBefore\":\"2.5\",\"rejection\":\"synthetic_3d_chunk_unavailable\",\"remainingText\":\"\",\"remainingInputs\":0}\n✔ independent rejected 3D chunk probe (219.344666ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 633.153666\n",
+    "stderr": ""
+  },
+  "renderer_factory_failure": {
+    "command": [
+      "node",
+      "probe-renderer-init.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-37f2-u83ycxvp",
+    "exit": 0,
+    "stdout": "{\"case\":\"extracted_original_renderer_factory_rejection\",\"created\":1,\"disposed\":0,\"failed\":1,\"error\":\"synthetic_gpu_init_failure\"}\n",
+    "stderr": ""
+  },
+  "official_tests": {
+    "command": "npm test (own probes named .mjs, outside official *.test.mjs glob)",
+    "observed_exit": 0,
+    "node": "39 passed;0 failed;254.232041ms",
+    "react_dom": "49 passed;0 failed;2596.961667ms",
+    "note": "Recorded from independent completed clean test run;not rerun for reporting"
+  },
+  "legacy_identifier_hits": [],
+  "fixed_commit": "37f2acd3962e8da3f885b1dd669e831b96b1de9c"
+}

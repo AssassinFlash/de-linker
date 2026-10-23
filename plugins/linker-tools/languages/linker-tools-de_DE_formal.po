@@ -3489,3 +3489,907 @@ msgstr "Unbestätigte Projekterstellungen und CSV-Importe aus früheren Sitzunge
 #: build/planner/assets/planner.js
 msgid "If the file contains energy per interval, average power is calculated using the interval duration. For this interpretation, average power is treated as constant within each original interval. No additional measurements are created."
 msgstr "Bei Energiemengen je Intervall wird die mittlere Leistung anhand der jeweiligen Intervalldauer berechnet. Für diese Interpretation wird sie innerhalb jedes ursprünglichen Intervalls als konstant angenommen. Es entstehen keine zusätzlichen Messwerte."
+
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectEditor.tsx:235
+msgid "Site data and roof layouts are saved in the same project."
+msgstr "Standortdaten und Dachbelegungen werden im selben Projekt gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectEditor.tsx:258 ../../apps/planner/src/components/design/DesignEditor.tsx:176
+msgid "Roof design"
+msgstr "Dachplanung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:20
+msgid "Array properties"
+msgstr "Eigenschaften des Modulfelds"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:21
+msgid "Add a module array"
+msgstr "Modulfeld hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:54
+msgid "Array name"
+msgstr "Name des Modulfelds"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:58 ../../apps/planner/src/components/design/ModuleForm.tsx:15
+msgid "Module specification"
+msgstr "Modulspezifikation"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:65
+msgid "Select a module specification"
+msgstr "Modulspezifikation auswählen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:75
+msgid "Layout source"
+msgstr "Quelle der Anordnung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:92
+msgid "Anchor U"
+msgstr "Bezugspunkt U"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:98
+msgid "Anchor V"
+msgstr "Bezugspunkt V"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:104
+msgid "Rows"
+msgstr "Reihen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:107 ../../apps/planner/src/components/design/ArrayForm.tsx:115
+msgid "Positive whole number."
+msgstr "Positive ganze Zahl."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:112
+msgid "Columns"
+msgstr "Spalten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:120
+msgid "Rotation within roof plane"
+msgstr "Drehung in der Dachfläche"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:124
+msgid "Counter-clockwise from the roof U axis toward V."
+msgstr "Gegen den Uhrzeigersinn von der U-Achse des Dachs in Richtung V."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:131
+msgid "Additional module tilt"
+msgstr "Zusätzliche Modulneigung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:135
+msgid "0 to 90, relative to this roof face. Each row starts at its own lower edge."
+msgstr "0 bis 90, bezogen auf diese Dachfläche. Jede Reihe beginnt an ihrer eigenen Unterkante."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:142
+msgid "Gap between columns"
+msgstr "Abstand zwischen den Spalten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:144
+msgid "0 or greater."
+msgstr "0 oder größer."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:149
+msgid "Projected gap between rows"
+msgstr "Projizierter Reihenabstand"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:152
+msgid "Gap on the roof plane, 0 or greater. Shading and maintenance requirements are assessed separately."
+msgstr "Abstand auf der Dachfläche, 0 oder größer. Anforderungen an Verschattung und Wartungszugang werden gesondert beurteilt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:159
+msgid "Lower-edge height above roof"
+msgstr "Höhe der Unterkante über dem Dach"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:162
+msgid "0 or greater, measured along the roof normal."
+msgstr "0 oder größer, senkrecht zur Dachfläche gemessen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:169
+msgid "Mounting assumptions and reference"
+msgstr "Montageannahmen und Referenz"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ArrayForm.tsx:175
+msgid "The anchor is the lower-left corner of the first row before tilt and thickness are projected. Resizing preserves excluded module slots; slots outside the new size must be restored first."
+msgstr "Der Bezugspunkt liegt an der unteren linken Ecke der ersten Reihe, bevor Neigung und Moduldicke projiziert werden. Beim Ändern der Größe bleiben ausgeschlossene Modulplätze erhalten. Plätze außerhalb der neuen Größe müssen vorher wieder aufgenommen werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:16
+msgid "Project coordinate references"
+msgstr "Koordinatenbezüge des Projekts"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:59
+msgid "The project uses metres in a local east/north/up frame. A north reference records the stated basis for that frame; it does not rotate existing objects or verify a survey."
+msgstr "Das Projekt verwendet ein lokales Ost-Nord-Hoch-System in Metern. Der Nordbezug hält die angegebene Grundlage dieses Systems fest. Er dreht keine vorhandenen Objekte und bestätigt kein Aufmaß."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:64
+msgid "North reference"
+msgstr "Nordbezug"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:67
+msgid "Unreferenced"
+msgstr "Ohne Nordbezug"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:70
+msgid "User-declared north"
+msgstr "Vom Nutzer angegebene Nordrichtung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:73
+msgid "True north with source reference"
+msgstr "Geografisch Nord mit Quellenangabe"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:78
+msgid "North reference source"
+msgstr "Quelle des Nordbezugs"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:83 ../../apps/planner/src/components/design/CoordinatesForm.tsx:120
+msgid "Select a source"
+msgstr "Quelle auswählen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:95
+msgid "Project origin latitude"
+msgstr "Breitengrad des Projektursprungs"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:100
+msgid "−90 to 90. Both coordinates are required for a geographic anchor; empty fields leave it unknown."
+msgstr "−90 bis 90. Für einen geografischen Bezugspunkt sind beide Koordinaten erforderlich. Leere Felder bedeuten, dass der Bezugspunkt unbekannt ist."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:107
+msgid "Project origin longitude"
+msgstr "Längengrad des Projektursprungs"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:111
+msgid "−180 to 180, WGS 84 (EPSG:4326)."
+msgstr "−180 bis 180, WGS 84 (EPSG:4326)."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/CoordinatesForm.tsx:115
+msgid "Geographic anchor source"
+msgstr "Quelle des geografischen Bezugspunkts"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:179
+msgid "Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type."
+msgstr "Dachgeometrie und Modulspezifikationen bilden die Grundlage für eine bearbeitbare Belegung und eine nachvollziehbare Prüfung in der Dachfläche. Die Dachplanung ist bei jedem Projekttyp optional."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:194
+msgid "Add roof face"
+msgstr "Dachfläche hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:202
+msgid "Add module specification"
+msgstr "Modulspezifikation hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:208
+msgid "Design view"
+msgstr "Planungsansicht"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:215
+msgid "Plan"
+msgstr "Draufsicht"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:229
+msgid "This edit could not be applied. Some values or references may be invalid or may have changed. The current design is unchanged."
+msgstr "Die Änderung konnte nicht angewendet werden. Einige Werte oder Verweise sind möglicherweise ungültig oder haben sich geändert. Die aktuelle Planung bleibt unverändert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:240
+msgid "Active roof face"
+msgstr "Aktive Dachfläche"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:258
+msgid "North unreferenced"
+msgstr "Nordbezug fehlt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:259
+msgid "North reference recorded"
+msgstr "Nordbezug erfasst"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:289
+msgid "The roof layout starts with roof geometry"
+msgstr "Die Dachbelegung beginnt mit der Dachgeometrie"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:295
+msgid "A roof face needs surface dimensions, pitch, orientation and a measurement reference. Module dimensions and mounting parameters then determine the layout. Missing dimensions are left empty."
+msgstr "Eine Dachfläche benötigt Oberflächenmaße, Neigung, Ausrichtung und einen Aufmaßbezug. Modulmaße und Montageparameter bestimmen anschließend die Belegung. Fehlende Maße bleiben leer."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:305
+msgid "Add the first roof face"
+msgstr "Erste Dachfläche hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:312
+msgid "Included modules"
+msgstr "Berücksichtigte Module"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:316
+msgid "Declared DC nameplate power"
+msgstr "Angegebene DC-Nennleistung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:322
+msgid "Roof faces"
+msgstr "Dachflächen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:329
+msgid "Design objects and properties"
+msgstr "Planungsobjekte und Eigenschaften"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:382
+msgid "Remove this roof face?"
+msgstr "Diese Dachfläche entfernen?"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:386
+#, javascript-format
+msgid "Removing %1$s also removes %2$d dependent arrays, obstacles and keep-out areas, together with this roof face's clearance settings. Undo restores this edit."
+msgstr "Mit %1$s werden auch %2$d zugehörige Modulfelder, Hindernisse und Sperrflächen sowie die Abstandsvorgaben dieser Dachfläche aus dem Entwurf entfernt. Rückgängig stellt diese Änderung wieder her."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:411
+msgid "Remove roof and dependent objects"
+msgstr "Dachfläche und zugehörige Objekte entfernen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:426
+msgid "Design objects"
+msgstr "Planungsobjekte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:430
+msgid "Select a design object"
+msgstr "Planungsobjekt auswählen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:483
+msgid "Add module array"
+msgstr "Modulfeld hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:491
+msgid "Add obstacle"
+msgstr "Hindernis hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:499
+msgid "Add keep-out area"
+msgstr "Sperrfläche hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:507
+msgid "Layout clearances"
+msgstr "Abstandsvorgaben der Belegung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:512
+msgid "A module specification is needed before an array can be placed."
+msgstr "Vor dem Platzieren eines Modulfelds ist eine Modulspezifikation erforderlich."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:530
+#, javascript-format
+msgid "Module row %1$d, column %2$d"
+msgstr "Modul in Reihe %1$d, Spalte %2$d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:536 ../../apps/planner/src/components/design/DesignEditor.tsx:654
+msgid "Included"
+msgstr "Berücksichtigt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:537 ../../apps/planner/src/components/design/DesignEditor.tsx:655
+msgid "Excluded"
+msgstr "Ausgeschlossen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:554 ../../apps/planner/src/components/design/DesignEditor.tsx:678
+msgid "Exclude module"
+msgstr "Modul ausschließen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:555 ../../apps/planner/src/components/design/DesignEditor.tsx:679
+msgid "Restore module"
+msgstr "Modul wieder aufnehmen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:578
+msgid "Edit numeric properties"
+msgstr "Numerische Eigenschaften bearbeiten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:590
+msgid "Remove object"
+msgstr "Objekt entfernen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:600 ../../apps/planner/src/components/design/SourceForm.tsx:15
+msgid "Source properties"
+msgstr "Quelleneigenschaften"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:611
+msgid "Coordinate references"
+msgstr "Koordinatenbezüge"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:614
+msgid "Sources"
+msgstr "Quellen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:633
+#, javascript-format
+msgid "Module slots in %s"
+msgstr "Modulplätze in %s"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:639
+msgid "Row / column"
+msgstr "Reihe / Spalte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:640
+msgid "Status"
+msgstr "Status"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:641
+msgid "Actions"
+msgstr "Aktionen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:663
+msgid "Select module"
+msgstr "Modul auswählen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:694
+msgid "Previous"
+msgstr "Zurück"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:698
+#, javascript-format
+msgid "Page %1$d of %2$d"
+msgstr "Seite %1$d von %2$d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:709
+msgid "Next"
+msgstr "Weiter"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryForm.tsx:46
+msgid "A valid number is required. Thousands separators are not accepted."
+msgstr "Eine gültige Zahl ist erforderlich. Tausendertrennzeichen sind nicht zulässig."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryForm.tsx:63
+msgid "The value is outside this field's permitted range. The unit and range are shown beside the field."
+msgstr "Der Wert liegt außerhalb des zulässigen Bereichs dieses Felds. Einheit und Wertebereich stehen am Feld."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryForm.tsx:126
+msgid "These properties could not be applied. The current design has been kept; the values remain available for correction."
+msgstr "Diese Eigenschaften konnten nicht angewendet werden. Die aktuelle Planung bleibt erhalten. Die Eingaben können weiterhin korrigiert werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryForm.tsx:155
+msgid "Lengths are in metres. Decimal comma; no thousands separators."
+msgstr "Längen werden in Metern angegeben. Dezimalkomma verwenden, keine Tausendertrennzeichen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryForm.tsx:159
+msgid "Lengths are in metres. Decimal point; no thousands separators."
+msgstr "Längen werden in Metern angegeben. Dezimalpunkt verwenden, keine Tausendertrennzeichen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryForm.tsx:167
+msgid "Apply properties"
+msgstr "Eigenschaften anwenden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryForm.tsx:177
+msgid "Cancel properties"
+msgstr "Bearbeitung abbrechen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:17
+msgid "North reference is missing."
+msgstr "Der Nordbezug fehlt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:21
+msgid "Source measurement precision is unknown."
+msgstr "Die Genauigkeit der Ausgangsmaße ist unbekannt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:25
+msgid "Roof-edge clearance has not been specified."
+msgstr "Der Abstand zum Dachrand wurde nicht angegeben."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:29
+msgid "Obstacle clearance has not been specified."
+msgstr "Der Abstand zu Hindernissen wurde nicht angegeben."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:33
+msgid "The roof boundary or openings do not form a valid polygon."
+msgstr "Dachrand oder Dachöffnungen bilden kein gültiges Polygon."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:37
+msgid "The obstacle footprint is invalid."
+msgstr "Der Grundriss des Hindernisses ist ungültig."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:41
+msgid "The obstacle does not extend above this roof face."
+msgstr "Das Hindernis ragt nicht über diese Dachfläche hinaus."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:45
+msgid "The obstacle footprint extends outside this roof face."
+msgstr "Der Grundriss des Hindernisses reicht über diese Dachfläche hinaus."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:49
+msgid "The keep-out footprint is invalid."
+msgstr "Der Grundriss der Sperrfläche ist ungültig."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:53
+msgid "A module projection cannot be resolved at the supported numerical precision."
+msgstr "Eine Modulprojektion lässt sich mit der unterstützten numerischen Genauigkeit nicht auflösen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:57
+msgid "Coordinate resolution exceeds this check's numerical support. The design remains available for correction."
+msgstr "Die Koordinatenauflösung liegt außerhalb des numerischen Unterstützungsbereichs dieser Prüfung. Die Planung kann weiterhin korrigiert werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:60
+msgid "A module overlaps a roof opening."
+msgstr "Ein Modul überlappt eine Dachöffnung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:62
+msgid "A module extends outside the roof boundary."
+msgstr "Ein Modul reicht über den Dachrand hinaus."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:66
+msgid "A module is closer to the roof boundary than the declared clearance."
+msgstr "Ein Modul unterschreitet den angegebenen Abstand zum Dachrand."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:70
+msgid "A module projection overlaps an obstacle projection."
+msgstr "Eine Modulprojektion überlappt die Projektion eines Hindernisses."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:73
+msgid "A module overlaps a keep-out area."
+msgstr "Ein Modul überlappt eine Sperrfläche."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:75
+msgid "A module is closer to an obstacle than the declared clearance."
+msgstr "Ein Modul unterschreitet den angegebenen Abstand zu einem Hindernis."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:79
+msgid "Two module projections overlap."
+msgstr "Zwei Modulprojektionen überlappen sich."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:83
+msgid "Additional layout diagnostic."
+msgstr "Weiterer Hinweis zur Belegung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:162
+msgid "Layout check"
+msgstr "Belegung prüfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:171
+msgid "Checking layout…"
+msgstr "Belegung wird geprüft …"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:172
+msgid "Check layout"
+msgstr "Belegung prüfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:177
+msgid "The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate."
+msgstr "Die Prüfung vergleicht vollständige Modulprojektionen, Dachränder und Öffnungen, Hindernisse, Sperrflächen und angegebene Abstände in der jeweiligen Dachfläche. Statik, Brandschutz, elektrische Auslegung und Verschattung werden gesondert beurteilt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:184
+msgid "The layout check could not be completed. The design and any previous check remain available."
+msgstr "Die Belegungsprüfung konnte nicht abgeschlossen werden. Die Planung und vorhandene Prüfergebnisse bleiben erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:198
+msgid "Previous check: the design has changed. A new check is required."
+msgstr "Vorherige Prüfung: Die Planung wurde geändert. Eine neue Prüfung ist erforderlich."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:203
+msgid "Check incomplete. Some checks could not be performed."
+msgstr "Prüfung unvollständig. Einige Prüfungen konnten nicht durchgeführt werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:207
+msgid "Layout conflicts detected."
+msgstr "Konflikte in der Belegung erkannt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:209
+msgid "No conflicts detected in the completed plan checks."
+msgstr "In den abgeschlossenen Prüfungen der Dachprojektion wurden keine Konflikte erkannt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:232
+#, javascript-format
+msgid "Actual: %1$s m; required: %2$s m."
+msgstr "Tatsächlich: %1$s m; erforderlich: %2$s m."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:245
+#, javascript-format
+msgid "%1$d of %2$d diagnostics are shown."
+msgstr "%1$d von %2$d Hinweisen werden angezeigt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:253
+msgid "Method, inputs and numerical limits"
+msgstr "Methode, Eingaben und numerische Grenzen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:257
+msgid "Missing source precision, north references and clearance values remain listed even when a plan check finds no geometric conflicts. Geometry checks do not provide engineering approval."
+msgstr "Fehlende Angaben zur Quellengenauigkeit, zum Nordbezug und zu Abständen bleiben aufgeführt, auch wenn die Prüfung keine geometrischen Konflikte findet. Geometrieprüfungen ersetzen keine fachtechnische Freigabe."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:262
+msgid "Checker and geometry library"
+msgstr "Prüfverfahren und Geometriebibliothek"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:268
+msgid "Geometry SHA-256"
+msgstr "SHA-256 der Geometrie"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:270
+msgid "Calculation runtime SHA-256"
+msgstr "SHA-256 der Berechnungsumgebung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:274
+msgid "Observed coordinate granularity / supported maximum"
+msgstr "Gleitkommaschrittweite der Koordinaten / unterstützter Höchstwert"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:282
+msgid "Candidate checks / limit"
+msgstr "Geprüfte Kandidatenpaare / Höchstzahl"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutReviewPanel.tsx:290
+msgid "The numerical limit describes internal arithmetic support. It is not a surveying tolerance or an installation requirement."
+msgstr "Die numerische Grenze beschreibt den internen Rechenbereich. Sie ist weder eine Aufmaßtoleranz noch eine Montagevorgabe."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:18
+msgid "Declared layout clearances"
+msgstr "Angegebene Abstände der Belegung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:41
+msgid "Clearances are project inputs with a stated basis. Empty fields remain unknown. A value of 0 explicitly allows contact in the plan check; it is not a country, fire-safety or mounting approval."
+msgstr "Abstände sind Projekteingaben mit einer angegebenen Grundlage. Leere Felder bleiben unbekannt. Der Wert 0 erlaubt in der Prüfung ausdrücklich eine Berührung. Er bestätigt keine landesspezifischen, brandschutztechnischen oder montagetechnischen Anforderungen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:48
+msgid "Minimum roof-edge clearance"
+msgstr "Mindestabstand zum Dachrand"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:52
+msgid "0 or greater; roof openings are included in the boundary distance."
+msgstr "0 oder größer. Dachöffnungen werden bei der Abstandsmessung als Begrenzung berücksichtigt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:59
+msgid "Minimum obstacle clearance"
+msgstr "Mindestabstand zu Hindernissen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:63
+msgid "0 or greater, measured between roof-plane projections."
+msgstr "0 oder größer, zwischen den Projektionen auf die Dachfläche gemessen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:68
+msgid "Clearance source"
+msgstr "Quelle der Abstandsvorgaben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LayoutRulesForm.tsx:79
+msgid "Requirement, applicability and reference"
+msgstr "Anforderung, Geltungsbereich und Referenz"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LazySceneViewport.tsx:20
+msgid "The 3D workspace could not be loaded. Plan view and numeric properties remain available."
+msgstr "Der 3D-Arbeitsbereich konnte nicht geladen werden. Draufsicht und numerische Eigenschaften bleiben verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LazySceneViewport.tsx:29
+msgid "Retry loading 3D"
+msgstr "3D erneut laden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LazySceneViewport.tsx:49
+msgid "Loading 3D workspace…"
+msgstr "3D-Arbeitsbereich wird geladen …"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:48
+msgid "Model or reference name"
+msgstr "Modell- oder Referenzbezeichnung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:55
+msgid "Module width"
+msgstr "Modulbreite"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:57 ../../apps/planner/src/components/design/ModuleForm.tsx:64 ../../apps/planner/src/components/design/ModuleForm.tsx:71 ../../apps/planner/src/components/design/RoofForm.tsx:103 ../../apps/planner/src/components/design/ShapeForm.tsx:124 ../../apps/planner/src/components/design/ShapeForm.tsx:130
+msgid "Greater than 0."
+msgstr "Größer als 0."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:62
+msgid "Module length"
+msgstr "Modullänge"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:69
+msgid "Module thickness"
+msgstr "Moduldicke"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:76
+msgid "Rated power at STC"
+msgstr "Nennleistung unter STC"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:80
+msgid "Declared nameplate power, greater than 0. This is not generated energy."
+msgstr "Angegebene Nennleistung, größer als 0. Dieser Wert ist keine erzeugte Energiemenge."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:86
+msgid "Specification evidence"
+msgstr "Beleg der Spezifikation"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:92
+msgid "User-declared values"
+msgstr "Vom Nutzer angegebene Werte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:95
+msgid "Referenced datasheet"
+msgstr "Referenziertes Datenblatt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:101
+msgid "Specification source and conditions"
+msgstr "Quelle und Bedingungen der Spezifikation"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:107
+msgid "Source document URL"
+msgstr "URL des Quelldokuments"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:113
+msgid "Source document SHA-256"
+msgstr "SHA-256 des Quelldokuments"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:120
+msgid "Source page"
+msgstr "Seite im Quelldokument"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ModuleForm.tsx:125
+msgid "A datasheet reference requires its URL, 64-character SHA-256 and a positive whole page number. The reference is recorded; this form does not fetch or verify the document."
+msgstr "Eine Datenblattreferenz benötigt eine URL, einen SHA-256 mit 64 Zeichen und eine positive ganze Seitenzahl. Die Referenz wird erfasst. Dieses Formular ruft das Dokument nicht ab und überprüft es nicht."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:110
+msgid "This coordinate range cannot be displayed at the supported numerical precision. The source geometry remains in the open project draft and its numeric properties remain editable."
+msgstr "Dieser Koordinatenbereich lässt sich mit der unterstützten numerischen Genauigkeit nicht darstellen. Die Quellgeometrie bleibt im offenen Projektentwurf erhalten; die numerischen Eigenschaften können weiter bearbeitet werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:212
+msgid "Plan view controls"
+msgstr "Bedienelemente der Draufsicht"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:220
+msgid "Select / move array"
+msgstr "Modulfeld auswählen / verschieben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:228
+msgid "Pan view"
+msgstr "Ansicht verschieben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:234
+msgid "Zoom in"
+msgstr "Vergrößern"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:242
+msgid "Zoom out"
+msgstr "Verkleinern"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:251
+msgid "Fit view"
+msgstr "Ansicht einpassen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:261
+#, javascript-format
+msgid "Roof plane: %s. U increases to the right; V increases upward."
+msgstr "Dachfläche: %s. U nimmt nach rechts zu, V nach oben."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:346
+msgid "Roof plane · metres"
+msgstr "Dachfläche · Meter"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/PlanViewport.tsx:351
+msgid "Dragging a module moves its array in this roof plane. Numeric properties provide the same operation. Pan and zoom change only the view."
+msgstr "Beim Ziehen eines Moduls wird sein gesamtes Modulfeld in dieser Dachfläche verschoben. Dieselbe Änderung ist über die numerischen Eigenschaften möglich. Verschieben und Zoomen der Ansicht ändern nur die Ansicht."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:34
+msgid "Roof properties"
+msgstr "Dacheigenschaften"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:35
+msgid "Add a measured roof face"
+msgstr "Dachfläche nach Aufmaß hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:66
+msgid "Not recorded."
+msgstr "Nicht erfasst."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:93
+msgid "Roof face name"
+msgstr "Name der Dachfläche"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:102 ../../apps/planner/src/components/design/ShapeForm.tsx:123
+msgid "Width along U"
+msgstr "Breite entlang U"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:108
+msgid "Length down the slope"
+msgstr "Länge in Gefällerichtung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:110
+msgid "Surface length, greater than 0; this is not its horizontal projection."
+msgstr "Oberflächenlänge, größer als 0. Dieser Wert ist keine horizontale Projektion."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:117
+msgid "Roof pitch"
+msgstr "Dachneigung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:120
+msgid "0 or greater and less than 90. A flat roof is 0."
+msgstr "0 oder größer und kleiner als 90. Ein Flachdach hat die Neigung 0."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:127
+msgid "Down-slope bearing"
+msgstr "Richtung des Dachgefälles"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:130
+msgid "Clockwise from project north: 0 north, 90 east, 180 south, 270 west. Bearings use the project's stated north reference; recording a reference does not verify it."
+msgstr "Im Uhrzeigersinn von Projektnord: 0 Nord, 90 Ost, 180 Süd, 270 West. Die Winkel verwenden den angegebenen Nordbezug des Projekts; das Erfassen einer Referenz bestätigt ihn nicht."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:139
+msgid "The origin is the high corner of the roof face. East, north and height are relative to the project origin; height is not altitude above sea level."
+msgstr "Der Ursprung liegt an der oberen Ecke der Dachfläche. Ost, Nord und Höhe beziehen sich auf den Projektursprung. Die Höhe ist keine Höhenlage über dem Meeresspiegel."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:147
+msgid "Origin east"
+msgstr "Ursprung Ost"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:153
+msgid "Origin north"
+msgstr "Ursprung Nord"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:159
+msgid "Origin height"
+msgstr "Ursprung Höhe"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:167
+msgid "Roof boundary in U/V metres"
+msgstr "Dachrand in U/V-Metern"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:171
+msgid "One U ; V pair per line, at least three vertices. The final vertex connects to the first. The existing roof plane is preserved."
+msgstr "Ein Wertepaar U ; V pro Zeile, mindestens drei Eckpunkte. Der letzte Punkt wird mit dem ersten verbunden. Die vorhandene Dachebene bleibt erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:177
+msgid "Roof openings in U/V metres"
+msgstr "Dachöffnungen in U/V-Metern"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:184
+msgid "One U ; V pair per line. A blank line separates openings; an empty field means no openings."
+msgstr "Ein Wertepaar U ; V pro Zeile. Eine Leerzeile trennt die Öffnungen. Ein leeres Feld bedeutet, dass keine Öffnungen vorhanden sind."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:193
+msgid "Measurement or drawing reference"
+msgstr "Aufmaß- oder Zeichnungsreferenz"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:196
+msgid "The reference stays with this roof face in the project draft and is stored with Save project. Measurement precision starts as unknown and can be recorded in Source properties."
+msgstr "Die Referenz bleibt mit dieser Dachfläche im Projektentwurf verknüpft. Mit „Projekt speichern“ wird sie im Projekt gespeichert. Die Genauigkeit ist zunächst unbekannt und kann unter „Quelleneigenschaften“ erfasst werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:202
+msgid "Basis for using these measurements"
+msgstr "Grundlage für die Verwendung dieser Maße"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/RoofForm.tsx:208
+msgid "I have permission to retain these measurements and derive an editable design from them."
+msgstr "Ich bin berechtigt, diese Maße zu speichern und daraus eine bearbeitbare Planung abzuleiten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:485
+msgid "3D rendering is unavailable. The design remains available in the plan view and numeric properties."
+msgstr "Die 3D-Darstellung ist nicht verfügbar. Die Planung bleibt in der Draufsicht und über die numerischen Eigenschaften zugänglich."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:500
+msgid "Retry 3D"
+msgstr "3D erneut versuchen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:506
+msgid "This geometry cannot be displayed in 3D at the supported numerical precision. Numeric properties remain available."
+msgstr "Diese Geometrie lässt sich mit der unterstützten numerischen Genauigkeit nicht in 3D darstellen. Die numerischen Eigenschaften bleiben zugänglich."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:566
+msgid "3D rendering is unavailable on this device."
+msgstr "Die 3D-Darstellung ist auf diesem Gerät nicht verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:626
+msgid "Fit 3D view"
+msgstr "3D-Ansicht einpassen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:629
+msgid "Preparing 3D…"
+msgstr "3D wird vorbereitet …"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:643
+msgid "Use WebGL 2 backend"
+msgstr "WebGL-2-Renderer verwenden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SceneViewport.tsx:648
+msgid "Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses."
+msgstr "Beim Ziehen an den Griffen des ausgewählten Modulfelds wird dessen Position in der Dachfläche geändert. Die Kamerasteuerung ändert nur die Ansicht. Die Beleuchtung dient der Darstellung und berechnet keine Verschattungsverluste."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:27
+msgid "Obstacle properties"
+msgstr "Hinderniseigenschaften"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:28
+msgid "Keep-out area properties"
+msgstr "Eigenschaften der Sperrfläche"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:81
+msgid "Object name"
+msgstr "Objektname"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:85 ../../apps/planner/src/components/design/SourceForm.tsx:51
+msgid "Source reference"
+msgstr "Quellenreferenz"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:100
+msgid "Footprint in U/V metres"
+msgstr "Grundriss in U/V-Metern"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:104
+msgid "One U ; V pair per line, at least three vertices. The final vertex connects to the first."
+msgstr "Ein Wertepaar U ; V pro Zeile, mindestens drei Eckpunkte. Der letzte Punkt wird mit dem ersten verbunden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:113
+msgid "Lower corner U"
+msgstr "Untere Ecke U"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:118
+msgid "Lower corner V"
+msgstr "Untere Ecke V"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:129
+msgid "Length along V"
+msgstr "Länge entlang V"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:139
+msgid "Obstacle height"
+msgstr "Hindernishöhe"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:142
+msgid "Greater than 0, measured along the selected extrusion direction."
+msgstr "Größer als 0, entlang der gewählten Extrusionsrichtung gemessen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:147
+msgid "Extrusion direction"
+msgstr "Extrusionsrichtung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:154
+msgid "Select a direction"
+msgstr "Richtung auswählen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:158
+msgid "Keep the recorded direction"
+msgstr "Erfasste Richtung beibehalten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:162
+msgid "Perpendicular to this roof face"
+msgstr "Senkrecht zu dieser Dachfläche"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:165
+msgid "Vertically upward"
+msgstr "Senkrecht nach oben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/ShapeForm.tsx:173
+msgid "Reason or requirement"
+msgstr "Grund oder Anforderung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:45
+msgid "Source statements are retained with the geometry. They describe the supplied evidence and permissions; they do not certify measurement accuracy or licence compliance."
+msgstr "Quellenangaben bleiben mit der Geometrie verknüpft. Sie beschreiben die bereitgestellten Belege und Berechtigungen; sie bestätigen weder die Genauigkeit des Aufmaßes noch die Einhaltung von Lizenzbedingungen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:58
+msgid "Declared spatial precision"
+msgstr "Angegebene räumliche Genauigkeit"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:62
+msgid "0 or greater. An empty field means unknown. This is a source claim, separate from numerical calculation precision."
+msgstr "0 oder größer. Ein leeres Feld bedeutet unbekannt. Dies ist eine Quellenangabe und unabhängig von der numerischen Rechengenauigkeit."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:68
+msgid "Calibration and measurement conditions"
+msgstr "Kalibrierung und Messbedingungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:74
+msgid "Acquired at UTC"
+msgstr "Erfasst am (UTC)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:78
+msgid "YYYY-MM-DDTHH:MM:SSZ; an empty field means not recorded."
+msgstr "YYYY-MM-DDTHH:MM:SSZ; ein leeres Feld bedeutet nicht erfasst."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:84
+msgid "Permission or licence basis"
+msgstr "Berechtigungs- oder Lizenzgrundlage"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:90
+msgid "Reference URL"
+msgstr "Referenz-URL"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:96
+msgid "Reference SHA-256"
+msgstr "Referenz-SHA-256"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:101
+msgid "Permission to export geometry"
+msgstr "Berechtigung zum Export der Geometrie"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:103
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:104
+msgid "Permitted"
+msgstr "Erlaubt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/SourceForm.tsx:105
+msgid "Prohibited"
+msgstr "Untersagt"

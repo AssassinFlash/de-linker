@@ -32,6 +32,7 @@ export class GeometryValues {
 			min?: number;
 			positive?: boolean;
 			max?: number;
+			maxExclusive?: number;
 			integer?: boolean;
 		} = {},
 	): number | null {
@@ -53,6 +54,7 @@ export class GeometryValues {
 			(options.positive && value <= 0) ||
 			(options.min !== undefined && value < options.min) ||
 			(options.max !== undefined && value > options.max) ||
+			(options.maxExclusive !== undefined && value >= options.maxExclusive) ||
 			(options.integer && !Number.isSafeInteger(value))
 		)
 			throw new InputError(

@@ -1,11 +1,4 @@
-import {
-	lazy,
-	Suspense,
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import { roofDependents } from "../../domain/geometryCommands.ts";
@@ -25,8 +18,8 @@ import { LayoutRulesForm } from "./LayoutRulesForm.tsx";
 import { LayoutReviewPanel } from "./LayoutReviewPanel.tsx";
 import { PlanViewport } from "./PlanViewport.tsx";
 import { CoordinatesForm } from "./CoordinatesForm.tsx";
+import { LazySceneViewport } from "./LazySceneViewport.tsx";
 
-const SceneViewport = lazy(() => import("./SceneViewport.tsx"));
 type FormKind =
 	| "roof"
 	| "array"
@@ -183,7 +176,7 @@ export function DesignEditor({
 					<h2 id="lp-design-heading">{__("Roof design", "linker-tools")}</h2>
 					<p>
 						{__(
-							"Measured roof faces and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.",
+							"Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.",
 							"linker-tools",
 						)}
 					</p>
@@ -233,7 +226,7 @@ export function DesignEditor({
 			{error && (
 				<Notice error>
 					{__(
-						"The edit could not be applied. An object may have changed, a reference may still be in use, or the values may exceed the design contract. The current design has been preserved.",
+						"This edit could not be applied. Some values or references may be invalid or may have changed. The current design is unchanged.",
 						"linker-tools",
 					)}
 				</Notice>
@@ -278,22 +271,14 @@ export function DesignEditor({
 									disabled={!!form}
 								/>
 							) : (
-								<Suspense
-									fallback={
-										<p role="status">
-											{__("Loading 3D workspace…", "linker-tools")}
-										</p>
-									}
-								>
-									<SceneViewport
-										document={geometry}
-										poses={poses}
-										selected={selected}
-										select={choose}
-										commit={edit}
-										disabled={!!form}
-									/>
-								</Suspense>
+								<LazySceneViewport
+									document={geometry}
+									poses={poses}
+									selected={selected}
+									select={choose}
+									commit={edit}
+									disabled={!!form}
+								/>
 							)}
 						</>
 					) : (
@@ -301,7 +286,7 @@ export function DesignEditor({
 							<Icon name="layers" width={42} height={42} />
 							<h3>
 								{__(
-									"The roof layout starts with measured geometry",
+									"The roof layout starts with roof geometry",
 									"linker-tools",
 								)}
 							</h3>
@@ -398,7 +383,7 @@ export function DesignEditor({
 									<p>
 										{sprintf(
 											__(
-												"Removing %1$s also removes %2$d dependent arrays, obstacles and keep-out areas from this draft. Undo restores this edit.",
+												"Removing %1$s also removes %2$d dependent arrays, obstacles and keep-out areas, together with this roof face's clearance settings. Undo restores this edit.",
 												"linker-tools",
 											),
 											formRoof.name,

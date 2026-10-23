@@ -113,7 +113,9 @@ export function useRemote(draft: Draft): Draft {
 
 /** Structural equality only; the server alone owns canonical command hashes. */
 export function sameJson(left: unknown, right: unknown): boolean {
-	if (Object.is(left, right)) return true;
+	// JSON serialises both signed zeroes as 0. Exact structural equality must
+	// agree with the wire, including trig-derived -0 geometry coordinates.
+	if (left === right) return true;
 	if (
 		left === null ||
 		right === null ||

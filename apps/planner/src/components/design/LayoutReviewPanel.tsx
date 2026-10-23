@@ -42,7 +42,7 @@ function issueLabel(kind: string): string {
 			"linker-tools",
 		),
 		obstacle_outside_roof: __(
-			"The obstacle projection extends outside this roof face.",
+			"The obstacle footprint extends outside this roof face.",
 			"linker-tools",
 		),
 		invalid_keepout_polygon: __(
@@ -143,7 +143,10 @@ export function LayoutReviewPanel({
 		} catch (error) {
 			if (!mounted.current || controller.signal.aborted) return;
 			setFailed(true);
-			if (error instanceof ApiError && [401, 403].includes(error.status))
+			if (
+				error instanceof ApiError &&
+				([401, 403].includes(error.status) || error.code === "session_changed")
+			)
 				recheck();
 		} finally {
 			if (mounted.current) setBusy(false);
@@ -239,10 +242,7 @@ export function LayoutReviewPanel({
 					{result.report.diagnostics_truncated && (
 						<Notice>
 							{sprintf(
-								__(
-									"%1$d diagnostics are shown out of %2$d. Further conflicts may remain.",
-									"linker-tools",
-								),
+								__("%1$d of %2$d diagnostics are shown.", "linker-tools"),
 								result.report.issues.length,
 								result.report.issue_count,
 							)}

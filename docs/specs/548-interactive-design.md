@@ -66,3 +66,18 @@ release. Known whole-goal work includes map/provider lifecycle, free drawing and
 advanced geometry editing, import/calibration, scenario/task/dependency integration,
 engineering calculation/equipment/country qualification, files/reports and all site
 consumers. These are obligations in the active goal, not post-delivery follow-ups.
+
+### Refinements from the first fixed review
+
+The editable roof basis requires0<=pitch<90degrees; the field and errors use
+that exact domain. A renderer-only module centres roof/obstacle rings before
+Float32 conversion and batches instances into128m local cells. Local-coordinate
+rounding may not exceed1e-5m; distinct vertices that collapse after conversion
+and dimensions that become0 are explicitly refused. These are internal display
+policies, separate from the1e-9m binary64 plan-check support budget and from
+source/measurement precision. Full obstacle tops and keep-outs enter framing.
+The outer lazy boundary preserves staged input if the module itself cannot load.
+Pointercancel, lost capture, Escape and blur abort a transform and restore orbit;
+no cancellation writes a command. The renderer factory owns both attempted
+backends until handoff and uses the locked runtime's public cleanup methods.
+JSON signed-zero equivalence is required when acknowledging a saved document.
