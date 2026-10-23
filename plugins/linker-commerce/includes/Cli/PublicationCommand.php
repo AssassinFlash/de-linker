@@ -28,7 +28,8 @@ final class PublicationCommand {
 	/** Bind the current existing published Woo facts once, preserving later stale bindings. */
 	public function bind_figures(): void {
 		foreach ( Publication::manifest()['products'] as $product ) {
-			\Linker\Commerce\Products\Publication\FigureBindings::capture( $product['product_id'], true );
+			\Linker\Commerce\Products\Publication\EvidenceBindings::capture( $product['product_id'], true );
+			\Linker\Commerce\Products\Publication\EvidenceBindings::capture_faqs( $product['product_id'], true );
 		}
 		( new PreparationJobs() )->changed();
 		\WP_CLI::success( 'Existing published Woo figure sources bound; existing bindings preserved.' );

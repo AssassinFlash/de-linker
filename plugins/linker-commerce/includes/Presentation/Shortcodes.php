@@ -389,7 +389,7 @@ final class Shortcodes {
 		if ( ! $product instanceof WC_Product ) {
 			return '';
 		}
-		$items = Faqs::of( $product->get_id() );
+		$items = \Linker\Commerce\Products\Publication::faqs_for( $product->get_id() );
 		if ( array() === $items ) {
 			return '';
 		}

@@ -278,8 +278,8 @@ update_option( 'linker_publication_fixture', $linker_commerce_publication_state,
 $linker_commerce_publication_check( 10.0 === ( EngineeringFeed::item( $linker_commerce_publication_c )['ac_power_kw'] ?? null ), 'current numeric fact uses its bound document bytes' );
 file_put_contents( $linker_commerce_publication_files[4], $linker_commerce_publication_bytes . 'updated figure PDF' );
 $linker_commerce_publication_check( 'unknown' === ( EngineeringFeed::item( $linker_commerce_publication_c )['ac_power_kw'] ?? null ), 'same URL replacement cannot reauthorize old scalar figure values' );
-\Linker\Commerce\Products\Publication\FigureBindings::capture( $linker_commerce_publication_c, true );
-\Linker\Commerce\Products\Publication\FigureBindings::capture( $linker_commerce_publication_c );
+\Linker\Commerce\Products\Publication\EvidenceBindings::capture( $linker_commerce_publication_c, true );
+\Linker\Commerce\Products\Publication\EvidenceBindings::capture( $linker_commerce_publication_c );
 $linker_commerce_publication_check( 'unknown' === ( EngineeringFeed::item( $linker_commerce_publication_c )['ac_power_kw'] ?? null ), 'migration rerun and unchanged fact save cannot rebind old numbers to replacement bytes' );
 ob_start();
 ( new \Linker\Commerce\Admin\DocumentsMetaBox() )->render( $linker_commerce_publication_c );
