@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Unit\Digest;
 use Linker\Commerce\Digest\Format;
 use Linker\Commerce\Digest\InquiriesAwaitingProforma;
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Protection\BusinessDisposition;
 use Linker\Commerce\Tests\TestCase;
 use Mockery;
 use WC_DateTime;
@@ -90,6 +91,14 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 		$this->assertSame( 'Received on October 10, 2026 at 07:12 (26 hours ago)', $entries[0]['detail'] );
 	}
 
+	/** Unreadable disposition evidence cannot remove an otherwise visible inquiry. */
+	public function test_unreadable_disposition_evidence_remains_visible(): void {
+		$order = $this->order( self::NOW - 26 * 3600, true );
+		WP_Mock::userFunction( 'wc_get_orders', array( 'return' => array( $order ) ) );
+
+		$this->assertCount( 1, ( new InquiriesAwaitingProforma( self::NOW ) )->entries() );
+	}
+
 	/**
 	 * The empty sentence mirrors the window.
 	 */
@@ -112,9 +121,10 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 	/**
 	 * A received inquiry.
 	 *
-	 * @param int $created Unix time of creation.
+	 * @param int  $created Unix time of creation.
+	 * @param bool $unreadable Native disposition read fails.
 	 */
-	private static function order( int $created ): WC_Order {
+	private static function order( int $created, bool $unreadable = false ): WC_Order {
 		$moment = Mockery::mock( WC_DateTime::class );
 		$moment->allows( 'getTimestamp' )->andReturn( $created );
 		$order = Mockery::mock( WC_Order::class );
@@ -122,6 +132,12 @@ final class InquiriesAwaitingProformaTest extends TestCase {
 		$order->allows( 'get_billing_company' )->andReturn( 'Solarbau GmbH' );
 		$order->allows( 'get_edit_order_url' )->andReturn( '/wp-admin/admin.php?page=wc-orders&id=20&action=edit' );
 		$order->allows( 'get_date_created' )->andReturn( $moment );
+		$meta = $order->allows( 'get_meta' )->with( BusinessDisposition::META );
+		if ( $unreadable ) {
+			$meta->andThrow( new \RuntimeException( 'synthetic_unreadable_disposition' ) );
+		} else {
+			$meta->andReturn( '' );
+		}
 		return $order;
 	}
 }

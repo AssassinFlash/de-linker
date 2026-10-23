@@ -51,7 +51,7 @@ foreach ( $open as $item ) {
 	$block   = $item['block'];
 	$entries = $item['entries'];
 	echo '<table class="linker-digest-card" role="presentation" width="100%" cellpadding="0" cellspacing="0">' . "\n";
-	echo '<tr><td class="linker-digest-num">' . esc_html( (string) count( $entries ) ) . '</td>';
+	echo '<tr><td class="linker-digest-num">' . esc_html( (string) ( $block instanceof Linker\Commerce\Registration\PendingApprovals ? $block->pending_count() : count( $entries ) ) ) . '</td>';
 	echo '<td class="linker-digest-title">' . esc_html( $block->title() ) . '</td></tr>' . "\n";
 	echo '<tr><td class="linker-digest-body" colspan="2">';
 	echo '<table class="linker-digest-rows" role="presentation" width="100%" cellpadding="0" cellspacing="0">' . "\n";

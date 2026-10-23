@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Digest;
 
 use Linker\Commerce\Inquiry\Statuses;
+use Linker\Commerce\Protection\BusinessDisposition;
 use WC_Order;
 
 /**
@@ -74,11 +75,26 @@ final class InquiriesAwaitingProforma implements Block {
 		$entries = array();
 		foreach ( is_array( $orders ) ? $orders : array() as $order ) {
 			$created = $order->get_date_created();
-			if ( null !== $created && $this->timestamp() - $created->getTimestamp() > self::WINDOW ) {
+			if ( null !== $created && $this->timestamp() - $created->getTimestamp() > self::WINDOW && ! $this->processed( $order ) ) {
 				$entries[] = $this->entry( $order, $created->getTimestamp() );
 			}
 		}
 		return $entries;
+	}
+
+	/**
+	 * Only the authenticated native employee audit proves work was disposed.
+	 * A marker is only a lookup hint; missing, corrupt or unreadable evidence
+	 * leaves the inquiry visible, independently of any model classification.
+	 *
+	 * @param WC_Order $order Native inquiry candidate.
+	 */
+	private function processed( WC_Order $order ): bool {
+		try {
+			return (bool) $order->get_meta( BusinessDisposition::META ) && BusinessDisposition::processed( $order );
+		} catch ( \Throwable $error ) {
+			return false;
+		}
 	}
 
 	/**

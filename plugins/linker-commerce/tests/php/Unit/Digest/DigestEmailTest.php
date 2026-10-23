@@ -10,9 +10,12 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Digest;
 
 use Linker\Commerce\Digest\DigestEmail;
+use Linker\Commerce\Registration\Approval;
+use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
+use WP_User;
 
 /**
  * Tests for DigestEmail: the subject and heading, the date placeholder, and
@@ -100,9 +103,14 @@ final class DigestEmailTest extends TestCase {
 	}
 
 	/**
-	 * Summary placeholder computes counts for the subject line.
+	 * Decorative rows do not count as pending applications in the subject.
+	 *
+	 * @dataProvider account_sets
+	 * @phpstan-param list<string> $states
+	 * @param array $states Native approval states.
+	 * @param int   $pending Number actually awaiting staff approval.
 	 */
-	public function test_summary_placeholder_builds_counts(): void {
+	public function test_summary_placeholder_builds_counts( array $states, int $pending ): void {
 		$this->plain_text();
 		$this->reload_plugin_textdomain();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
@@ -124,29 +132,45 @@ final class DigestEmailTest extends TestCase {
 		$this->allow_locale_switch( 'zh_CN' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_digest', 'sales@sunriverinverter.com' );
 
-		$accounts = $this->createMock( \Linker\Commerce\Digest\Block::class );
-		$accounts->method( 'id' )->willReturn( 'pending_accounts' );
-		$accounts->method( 'entries' )->willReturn(
-			array(
-				array(
-					'label'     => 'Acme',
-					'url'       => 'https://example.test',
-					'link_text' => 'Open',
-					'detail'    => '',
-				),
-				array(
-					'label'     => 'Restricted',
-					'url'       => '',
-					'link_text' => '',
-					'detail'    => '',
-				),
-			)
-		);
+		$users = array();
+		foreach ( $states as $index => $state ) {
+			$user                  = new WP_User();
+			$user->ID              = $index + 1;
+			$user->roles           = array( 'customer' );
+			$user->display_name    = 'Fixture customer';
+			$user->user_registered = '2026-10-23 08:00:00';
+			$users[ $user->ID ]    = $user;
+		}
+		WP_Mock::userFunction( 'get_users', array( 'return' => array_values( $users ) ) );
+		WP_Mock::userFunction( 'get_userdata', array( 'return' => static fn ( int $id ): ?WP_User => $users[ $id ] ?? null ) );
+		WP_Mock::userFunction( 'get_user_meta', array( 'return' => static fn ( int $id, string $key ): string => Approval::STATUS_META === $key ? ( $states[ $id - 1 ] ?? '' ) : '' ) );
+		WP_Mock::userFunction( 'get_current_blog_id', array( 'return' => 1 ) );
+		WP_Mock::userFunction( 'wp_cache_get_last_changed', array( 'return' => 'fixture' ) );
+		WP_Mock::userFunction( 'number_format_i18n', array( 'return' => static fn ( int $count ): string => (string) $count ) );
+		WP_Mock::userFunction( 'mysql2date', array( 'return' => static fn ( string $format, string $date ): string => $date ) );
+		WP_Mock::userFunction( 'admin_url', array( 'return' => 'https://example.test/wp-admin/' ) );
+		WP_Mock::userFunction( 'add_query_arg', array( 'return' => 'https://example.test/wp-admin/?fixture=1' ) );
+		$accounts = new PendingApprovals();
 
 		$email = new DigestEmail( '/plugin/linker-commerce.php', new Options() );
 		$email->send_report( array( $accounts ) );
 
-		$this->assertSame( '：1 个待审客户', $email->placeholders['{summary}'] );
+		$this->assertSame( 0 === $pending ? '' : '：' . $pending . ' 个待审客户', $email->placeholders['{summary}'] );
+		$this->assertSame( 'Accounts waiting for approval (' . $pending . ')', $accounts->title() );
 		$this->assertConditionsMet();
+	}
+
+	/**
+	 * Native pending applications and decorative restricted/empty rows.
+	 *
+	 * @return array<string, array{list<string>, int}>
+	 */
+	public static function account_sets(): array {
+		return array(
+			'empty'           => array( array(), 0 ),
+			'restricted only' => array( array( Approval::RESTRICTED ), 0 ),
+			'one pending'     => array( array( Approval::PENDING ), 1 ),
+			'multiple mixed'  => array( array( Approval::PENDING, Approval::PENDING, Approval::RESTRICTED ), 2 ),
+		);
 	}
 }
