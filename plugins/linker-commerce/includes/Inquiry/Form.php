@@ -91,7 +91,7 @@ final class Form {
 			// A customer who talked with Genie starts from the note of that
 			// conversation (#244): the team sees the whole summary with the
 			// inquiry, and nothing already said is typed again.
-			'message'            => $this->summary_note(),
+			'message'            => isset( $previous['message'] ) && is_string( $previous['message'] ) ? $previous['message'] : ( 'message' === $key ? $this->summary_note() : '' ),
 			'action'             => admin_url( 'admin-post.php' ),
 			'draft-url'          => wc_get_cart_url(),
 			'draft-action'       => wc_get_checkout_url(),
@@ -100,7 +100,7 @@ final class Form {
 			'open'               => is_user_logged_in() && '' !== $name && '' !== $email && array() === $previous ? '' : 'open',
 			'summary-hide'       => is_user_logged_in() ? '' : 'hidden',
 			'draft-empty'        => WC()->cart->is_empty() ? 'hidden' : '',
-			'consent-attributes' => is_user_logged_in() ? 'checked' : 'required',
+			'consent-attributes' => is_user_logged_in() ? 'checked' : ( '1' === ( $previous['consent'] ?? '' ) ? 'required checked' : 'required' ),
 			'guest-hide'         => is_user_logged_in() ? 'hidden' : '',
 			'error'              => $error,
 		);

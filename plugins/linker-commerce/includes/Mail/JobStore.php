@@ -17,7 +17,57 @@ namespace Linker\Commerce\Mail;
  * that failed every attempt stays, marked as failed.
  */
 final class JobStore {
+	/**
+	 * The default is always the shared production envelope, including cron calls.
+	 *
+	 * @param JobCapacity $capacity Native queue admission and transaction boundary.
+	 */
+	public function __construct( private readonly JobCapacity $capacity = new NativeJobCapacity() ) {}
 
+	/** An outer native writer has not committed its own job/source yet. */
+	public function transaction_active(): bool {
+		return $this->capacity->transaction_active();
+	}
+
+	/** The storage port guards its own authoritative native hold read.
+	 *
+	 * @param int $id Original job.
+	 */
+	public function held( int $id ): bool {
+		return $this->capacity->held( $id );
+	}
+
+	/**
+	 * Enter the original invocation before quota or IO.
+	 *
+	 * @param int     $id Original job.
+	 * @param Message $message Exact immutable message.
+	 * @return string Native invocation token or empty on an unresolved earlier one.
+	 */
+	public function begin_attempt( int $id, Message $message ): string {
+		return $this->capacity->begin_attempt( $id, $message );
+	}
+
+	/**
+	 * Resolve only a known outcome of the original invocation.
+	 *
+	 * @param int    $id Original job.
+	 * @param string $token Exact invocation token after a definite no-IO/false result.
+	 */
+	public function resolve_attempt( int $id, string $token ): void {
+		$this->capacity->resolve_attempt( $id, $token );
+	}
+
+
+	/**
+	 * Native retries retain the same durable job; the memory port only drives units.
+	 *
+	 * @param int $id Original job.
+	 * @param int $time Next attempt.
+	 */
+	public function reschedule( int $id, int $time ): void {
+		$this->capacity->reschedule( $id, $time );
+	}
 
 	/**
 	 * Post type of the queued messages.
@@ -32,6 +82,40 @@ final class JobStore {
 	private const MESSAGE_META  = '_linker_mail_message';
 	private const ATTEMPTS_META = '_linker_mail_attempts';
 	private const ERROR_META    = '_linker_mail_error';
+
+	/**
+	 * Erase the frozen personal message and subject while preserving the private job/audit identity.
+	 *
+	 * @param int $id A source-owned native job being erased.
+	 * @throws \RuntimeException Copy removal must be confirmed before privacy reports success.
+	 */
+	public function erase_message( int $id ): void {
+		delete_post_meta( $id, self::MESSAGE_META );
+		foreach ( array( NativeAttempt::META, PreTransportRecovery::META ) as $meta ) {
+			delete_post_meta( $id, $meta );
+			wp_cache_delete( $id, 'post_meta' );
+			if ( metadata_exists( 'post', $id, $meta ) ) {
+				throw new \RuntimeException( 'mail_operational_erasure_unconfirmed' );
+			}
+		}
+		clean_post_cache( $id );
+		if ( metadata_exists( 'post', $id, self::MESSAGE_META ) ) {
+			throw new \RuntimeException( 'mail_message_erasure_unconfirmed' );
+		}
+		if ( self::POST_TYPE === get_post_type( $id ) ) {
+			$written = wp_update_post(
+				array(
+					'ID'         => $id,
+					'post_title' => 'erased',
+				),
+				true
+			);
+			clean_post_cache( $id );
+			if ( is_wp_error( $written ) || 'erased' !== get_post_field( 'post_title', $id, 'raw' ) ) {
+				throw new \RuntimeException( 'mail_subject_erasure_unconfirmed' );
+			}
+		}
+	}
 
 	/**
 	 * Post status of a message that failed every attempt.
@@ -50,10 +134,15 @@ final class JobStore {
 	 * @throws \RuntimeException When the priority cannot be persisted.
 	 */
 	public function promote( int $id ): void {
-		update_post_meta( $id, self::PRIORITY_META, 'yes' );
-		if ( ! $this->critical( $id ) ) {
-			throw new \RuntimeException( esc_html( 'notification_priority_write_failed' ) );
-		}
+		$this->capacity->promote(
+			$id,
+			function () use ( $id ): void {
+				update_post_meta( $id, self::PRIORITY_META, 'yes' );
+				if ( ! $this->critical( $id ) ) {
+					throw new \RuntimeException( esc_html( 'notification_priority_write_failed' ) );
+				}
+			}
+		);
 	}
 
 	/**
@@ -87,11 +176,24 @@ final class JobStore {
 	/**
 	 * Stores a message.
 	 *
-	 * @param  Message $message Message.
-	 * @param  int     $inquiry Native inquiry owning this original notification.
+	 * @param  Message       $message Message.
+	 * @param  int           $inquiry Native inquiry owning this original notification.
+	 * @param callable|null $accepted Durable native-source acknowledgement in this transaction.
 	 * @return int Job id, 0 when the post could not be written.
 	 */
-	public function create( Message $message, int $inquiry = 0 ): int {
+	public function create( Message $message, int $inquiry = 0, ?callable $accepted = null ): int {
+		return $this->capacity->create( $message, fn (): int => $this->write( $message, $inquiry, $accepted ) );
+	}
+
+	/**
+	 * Write and read back the complete native job inside the capacity transaction.
+	 *
+	 * @param Message       $message Frozen native notification.
+	 * @param int           $inquiry Owning native inquiry.
+	 * @param callable|null $accepted Durable native-source acknowledgement.
+	 * @throws \RuntimeException The full job cannot be read back.
+	 */
+	private function write( Message $message, int $inquiry, ?callable $accepted ): int {
 		$id = wp_insert_post(
 			array(
 				'post_type'   => self::POST_TYPE,
@@ -108,6 +210,14 @@ final class JobStore {
 		update_post_meta( $id, self::ATTEMPTS_META, 0 );
 		if ( $inquiry > 0 ) {
 			update_post_meta( $id, self::INQUIRY_META, $inquiry );
+		}
+		clean_post_cache( $id );
+		$read = $this->load( $id );
+		if ( 'private' !== get_post_status( $id ) || null === $read || $message->to_array() !== $read['message']->to_array() || ( $inquiry > 0 && (int) get_post_meta( $id, self::INQUIRY_META, true ) !== $inquiry ) ) {
+			throw new \RuntimeException( 'notification_job_readback_failed' );
+		}
+		if ( null !== $accepted ) {
+			$accepted( $id );
 		}
 		return $id;
 	}
@@ -213,5 +323,6 @@ final class JobStore {
 	 */
 	public function delete( int $id ): void {
 		wp_delete_post( $id, true );
+		$this->capacity->deleted( $id );
 	}
 }

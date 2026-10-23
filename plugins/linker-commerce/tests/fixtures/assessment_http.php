@@ -10,7 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Fixtures;
 
 use Linker\Commerce\Inquiry\Assessment\Queue;
-use Linker\Commerce\Inquiry\Assessment\Result;
+use Linker\Commerce\Inquiry\Assessment\AsyncRunner;
 use Linker\Commerce\Mail\TestMode;
 use Linker\Commerce\Mail\Throttle;
 
@@ -26,6 +26,7 @@ final class AssessmentHttpFixture {
 			return;
 		}
 		require_once __DIR__ . '/AssessmentFixtureEnvironment.php';
+		require_once __DIR__ . '/NormalMailAuthorizationFixture.php';
 		AssessmentFixtureEnvironment::configure();
 		add_filter( 'action_scheduler_allow_async_request_runner', '__return_false' );
 		add_filter( 'pre_http_request', array( self::class, 'provider' ), 10, 3 );
@@ -58,6 +59,8 @@ final class AssessmentHttpFixture {
 		add_option( 'linker_assessment_fixture_order_' . $tag, $order->get_id(), '', false );
 		$defer_at = microtime( true );
 		Queue::defer( $order );
+		// Explicitly exercise the existing optional HTTP consumer, after durable Queue admission.
+		AsyncRunner::enqueue( $order->get_id() );
 		wp_send_json(
 			array(
 				'id'            => $order->get_id(),
@@ -95,24 +98,8 @@ final class AssessmentHttpFixture {
 		usleep( $delay * 1000000 );
 		$event['completed_at'] = microtime( true );
 		update_option( $key, $event, false );
-		$result = array(
-			'label'   => 'normal',
-			'basis'   => 'business_request',
-			'reason'  => 'classified',
-			'model'   => Result::MODEL,
-			'rubric'  => Result::RUBRIC,
-			'seconds' => (float) $delay,
-			'raw'     => array(
-				'classification' => array(
-					'type'   => 'choice',
-					'choice' => 'normal',
-				),
-				'basis'          => array(
-					'type'   => 'choice',
-					'choice' => 'business_request',
-				),
-			),
-		);
+		$result            = NormalMailAuthorizationFixture::verdict( $body['binding'] );
+		$result['seconds'] = (float) $delay;
 		return array(
 			'response' => array( 'code' => 200 ),
 			'body'     => wp_json_encode( $result ),

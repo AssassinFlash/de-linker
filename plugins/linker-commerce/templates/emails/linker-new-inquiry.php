@@ -44,7 +44,7 @@ if ( '' === trim( $order->get_formatted_billing_full_name() ) ) {
 </p>
 <?php
 $linker_assessment = \Linker\Commerce\Inquiry\Assessment\Queue::data( $order );
-if ( array() !== $linker_assessment ) {
+if ( array() !== $linker_assessment && empty( $linker_assessment['notification_only'] ) ) {
 	$linker_initial = (array) ( $linker_assessment['initial_result'] ?? $linker_assessment['result'] );
 	echo '<p><strong>' . esc_html__( 'Jev initial assessment', 'linker-commerce' ) . ': ' . esc_html( \Linker\Commerce\Inquiry\Assessment\Result::label( (string) $linker_initial['label'] ) ) . '</strong><br />' . esc_html( \Linker\Commerce\Inquiry\Assessment\Result::explanation( $linker_initial ) ) . '</p>';
 }

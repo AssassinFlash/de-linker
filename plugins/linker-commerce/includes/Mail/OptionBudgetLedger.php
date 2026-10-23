@@ -24,6 +24,21 @@ final class OptionBudgetLedger implements BudgetLedger {
 	 * @phpstan-param callable(array<string, mixed>): array{state: array<string, mixed>, slot: int} $work
 	 */
 	public function transact( callable $work, bool $write = true ): ?int {
+		try {
+			return ConnectionFence::run( fn (): ?int => $this->transact_native( $work, $write ) );
+		} catch ( \Throwable $error ) {
+			return null;
+		}
+	}
+
+	/**
+	 * The transport budget cannot reconnect and replay a lost reservation.
+	 *
+	 * @param callable $work Native bounded ledger mutation.
+	 * @param bool     $write Whether to reserve or inspect.
+	 * @phpstan-param callable(array<string,mixed>):array{state:array<string,mixed>,slot:int} $work
+	 */
+	private function transact_native( callable $work, bool $write ): ?int {
 		global $wpdb;
 		$database = isset( $wpdb->dbname ) && is_string( $wpdb->dbname ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
 		$name     = 'linker-mail-budget-' . md5( $database . '/' . $wpdb->prefix );

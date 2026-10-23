@@ -12,6 +12,8 @@ namespace Linker\Commerce\Tests\Integration;
 use Linker\Commerce\Genie\Module;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Mail\Throttle;
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
+use Linker\Tools\Genie\Thread;
 
 /**
  * The tools plugin asks on two filters; this plugin answers each with one
@@ -25,6 +27,12 @@ use Linker\Commerce\Mail\Throttle;
  */
 final class GenieConversationEmailTest extends IntegrationTestCase {
 
+	/** Typed local service with native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
+
 	/**
 	 * A published product of the live snapshot: SAJ H2-10K-T3.
 	 */
@@ -36,7 +44,13 @@ final class GenieConversationEmailTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
-		$saved = array();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
+		$saved               = array();
 		foreach ( array( 'woocommerce_email_from_name', 'woocommerce_email_from_address' ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
@@ -67,27 +81,60 @@ final class GenieConversationEmailTest extends IntegrationTestCase {
 		$marker = self::newest_mail_job();
 		$to     = 'visitor-' . self::tag() . '@example.test';
 
+		$conversation = wp_insert_post(
+			array(
+				'post_type'   => \Linker\Tools\Genie\Conversations::POST_TYPE,
+				'post_status' => 'private',
+				'post_title'  => 'Synthetic mail source',
+			)
+		);
+		$this->assertGreaterThan( 0, $conversation );
+		$this->later(
+			static function () use ( $conversation ): void {
+				wp_delete_post( $conversation, true );
+			}
+		);
+		$stream = 'event: block' . "\n" . 'data: ' . wp_json_encode(
+			array(
+				'type' => 'text',
+				'text' => 'Der SAJ H2-10K-T3 passt zu Ihrem Projekt.',
+			)
+		) . "\n\n" . 'event: block' . "\n" . 'data: ' . wp_json_encode(
+			array(
+				'type'        => 'cards',
+				'product_ids' => array( self::PRODUCT ),
+			)
+		) . "\n\nevent: done\ndata: {}\n\n";
+		$this->assertTrue(
+			( new Thread() )->record(
+				$conversation,
+				array(
+					array(
+						'role'    => 'user',
+						'content' => 'Welcher Wechselrichter passt?',
+					),
+				),
+				$stream
+			)
+		);
+		$messages = ( new Thread() )->transcript( $conversation );
+
 		$sent = ( new Module( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->send(
 			false,
 			array(
-				'to'       => $to,
-				'locale'   => 'de_DE_formal',
-				'messages' => array(
-					array(
-						'role'     => 'user',
-						'content'  => 'Welcher Wechselrichter passt?',
-						'products' => array(),
-					),
-					array(
-						'role'     => 'assistant',
-						'content'  => 'Der SAJ H2-10K-T3 passt zu Ihrem Projekt.',
-						'products' => array( self::PRODUCT ),
-					),
-				),
+				'to'              => $to,
+				'locale'          => 'de_DE_formal',
+				'conversation_id' => $conversation,
+				'messages'        => $messages,
 			)
 		);
 
-		$this->assertTrue( $sent );
+		$this->assertSame( array( 'status' => 'pending' ), $sent );
+		$jobs = self::mail_jobs_after( $marker );
+		$this->assertCount( 1, $jobs );
+		$permit = $this->authorization->conversation( $jobs[0] );
+		$this->assertSame( 'normal', $permit['verdict']['decision'] );
+		$this->assertSame( 'conversation_mail', $this->authorization->requests[0]['binding']['purpose'] );
 		$row = $this->only_row( $marker );
 		$this->assertSame( array( $to ), $row['to'] );
 		$this->assertSame( 'Ihr Gespräch mit Genie', $row['subject'] );

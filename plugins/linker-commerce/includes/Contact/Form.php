@@ -277,6 +277,7 @@ final class Form {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
 		return match ( $state ) {
+			'reception_full' => $this->notice( 'invalid', \Linker\Commerce\Protection\BusinessCapacity::message() ),
 			'saved_review' => $this->notice( 'sent', \Linker\Commerce\Protection\IntakeAdmin::saved_message() ),
 			'review_size' => $this->notice( 'invalid', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) ),
 			'review_full' => $this->notice( 'invalid', __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),

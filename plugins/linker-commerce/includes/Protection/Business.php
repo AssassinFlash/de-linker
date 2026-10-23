@@ -85,8 +85,12 @@ final class Business {
 				return new WP_Error( 'linker_admission_input', __( 'Your request could not be processed. Please try again.', 'linker-commerce' ), array( 'status' => 400 ) );
 			}
 			if ( ! $verified ) {
-				return Intake::run( 'verification', $action, $id, $fp, $identity, $payload, $limits, $carry, $owners, $work );
+				return Intake::run( 'verification', $action, $id, $fp, $identity, $payload, BusinessPolicy::review_limits( $limits ), $carry, $owners, $work );
 			}
+		}
+		$capacity = BusinessCapacity::preflight();
+		if ( $capacity instanceof WP_Error ) {
+			return $capacity;
 		}
 		$permit = $gate->reserve( $action, $proof, $id, $payload, $limits, 120, true, $carry, $owners );
 		if ( is_wp_error( $permit ) ) {

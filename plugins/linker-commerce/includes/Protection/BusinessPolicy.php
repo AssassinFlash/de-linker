@@ -44,7 +44,25 @@ final class BusinessPolicy {
 		$address    = isset( $_SERVER['REMOTE_ADDR'] ) && is_string( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$connection = hash_hmac( 'sha256', 'direct-connection|' . $address, wp_salt( 'auth' ) );
 		$limits[]   = new Allowance( 'business_connection_hour', $connection, 100, HOUR_IN_SECONDS );
+		// Adjustable operating allocations, approved for #568. The independent
+		// staff-approved reserve cannot be acquired by creating a pending account.
+		$trusted  = TrustedCustomer::current();
+		$pool     = $trusted ? 'approved' : 'ordinary';
+		$limits[] = new Allowance( 'business_site_' . $pool . '_hour', 'site', $trusted ? 8 : 16, HOUR_IN_SECONDS );
+		$limits[] = new Allowance( 'business_site_' . $pool . '_day', 'site', $trusted ? 32 : 64, DAY_IN_SECONDS );
 		return array_merge( $existing, $limits );
+	}
+
+	/**
+	 * Held review lanes have independent persistent capacity, without Jev or notifications.
+	 * Native optional conversation summaries remain available before their first save.
+	 * They retain existing subject limits without consuming ordinary verified use.
+	 *
+	 * @param Allowance[] $limits Trusted business policy.
+	 * @return Allowance[]
+	 */
+	public static function review_limits( array $limits ): array {
+		return array_values( array_filter( $limits, static fn ( Allowance $limit ): bool => ! str_starts_with( $limit->name, 'business_site_' ) ) );
 	}
 
 	/**

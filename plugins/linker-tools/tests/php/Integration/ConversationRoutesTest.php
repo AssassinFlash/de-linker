@@ -13,6 +13,7 @@ use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\ConversationMail;
 use Linker\Tools\Genie\FormGuard;
 use Linker\Tools\Genie\RateLimit;
+use Linker\Tools\Genie\Retention;
 use Linker\Tools\Genie\Thread;
 use PHPUnit\Framework\TestCase;
 use WP_REST_Request;
@@ -21,8 +22,8 @@ use WP_REST_Request;
  * The two routes a visitor uses on one conversation of the list (ticket
  * #235): DELETE clears it, POST …/email sends it to the visitor's own
  * address. The email goes through the site's real mail chain as far as
- * wp_mail(); the call is recorded there and stopped before the Outbox, so
- * a run writes no mail (AGENTS.md §5, test mail).
+ * native rendering and the actual pending job. Fixed confirmation calls
+ * stop before Outbox and content capture remains active, so a run writes no mail (AGENTS.md §5, test mail).
  *
  * @coversNothing
  */
@@ -88,11 +89,11 @@ final class ConversationRoutesTest extends TestCase {
 		);
 		global $wp_filter;
 		foreach ( array( 'linker_tools_set_conversation_cookie', 'linker_tools_set_genie_browser_cookie' ) as $hook ) {
-			$this->held[ $hook ] = $wp_filter[ $hook ] ?? null;
+			$this->held[ $hook ] = isset( $wp_filter[ $hook ] ) ? clone $wp_filter[ $hook ] : null;
 			remove_all_actions( $hook );
 		}
 		add_filter( 'wp_mail', array( $this, 'record' ), PHP_INT_MAX );
-		add_filter( 'pre_wp_mail', array( $this, 'stop' ), 1 );
+		add_filter( 'pre_wp_mail', array( $this, 'stop' ), 1, 2 );
 		$this->held['limit'] = $_SERVER['REMOTE_ADDR'] ?? null; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- held to be put back unchanged.
 		// A connection of its own, so a run starts with a full allowance
 		// and never spends another test's.
@@ -161,11 +162,44 @@ final class ConversationRoutesTest extends TestCase {
 	/**
 	 * Stops the call before the Outbox; the `pre_wp_mail` filter.
 	 *
-	 * @param null|bool $pre Earlier answer.
+	 * @param null|bool           $pre Earlier answer.
+	 * @param array<string,mixed> $atts Native email render arguments.
 	 */
-	public function stop( $pre ): bool {
-		unset( $pre );
-		return true;
+	public function stop( $pre, array $atts ): ?bool {
+		// Let the real native content capture build its pending job, without transport.
+		$origin = \Linker\Commerce\Mail\Producer::origin( $atts );
+		return 'unclassified' === ( $origin['kind'] ?? '' ) ? $pre : true;
+	}
+
+	/**
+	 * The actual content producer persists a separate pending job, without granting transport.
+	 *
+	 * @param int    $id Native conversation.
+	 * @param string $to Actual account/confirmed recipient.
+	 * @param string $body Full native rendered template.
+	 */
+	private function assert_pending_copy( int $id, string $to, string $body ): void {
+		$jobs = get_posts(
+			array(
+				'post_type'   => \Linker\Commerce\Mail\JobStore::POST_TYPE,
+				'post_status' => 'any',
+				'numberposts' => -1,
+				'fields'      => 'ids',
+				'meta_key'    => \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::SOURCE_ID, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key -- Native lookup by this fixture's private source identity.
+				'meta_value'  => (string) $id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value -- The one fixture conversation, never another record.
+			)
+		);
+		$this->assertCount( 1, $jobs );
+		$job    = (int) $jobs[0];
+		$stored = ( new \Linker\Commerce\Mail\JobStore() )->load( $job );
+		$this->assertNotNull( $stored );
+		$this->assertSame( array( $to ), $stored['message']->to );
+		$this->assertSame( $body, $stored['message']->body );
+		$this->assertSame( 'conversation_mail', $stored['message']->origin['purpose'] );
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( 'conversation-' . $job );
+		$this->assertIsArray( $state );
+		$this->assertSame( 'pending', $state['status'] );
+		$this->assertFalse( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $stored['message'], $job ), 'Saved content is not sending permission.' );
 	}
 
 	/**
@@ -193,7 +227,7 @@ final class ConversationRoutesTest extends TestCase {
 	/**
 	 * A guest's request sends only the confirmation: fixed words and a
 	 * link to the typed address, nothing of the conversation. Opening the
-	 * link sends the conversation there, with the product its answer
+	 * link saves the pending content copy there, with the product its answer
 	 * showed; the link works once.
 	 */
 	public function test_a_guest_confirms_the_address_before_the_conversation_goes(): void {
@@ -220,7 +254,7 @@ final class ConversationRoutesTest extends TestCase {
 		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', $confirmation, $token ), 'The link is in it.' );
 
 		$mail = new ConversationMail( new Conversations(), new Thread() );
-		$this->assertSame( 'sent', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
+		$this->assertSame( 'pending', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
 		$this->assertCount( 2, $this->mail );
 		$this->assertSame( array( 'tester@example.test' ), (array) $this->mail[1]['to'] );
 		$this->assertSame( 'Your conversation with Genie', $this->mail[1]['subject'] );
@@ -229,6 +263,7 @@ final class ConversationRoutesTest extends TestCase {
 		$this->assertStringContainsString( 'The SAJ H2-10K-T3 is a three-phase hybrid inverter.', $body, 'The last answer, from its stream.' );
 		$this->assertStringContainsString( esc_html( get_the_title( 4107 ) ), $body, 'The product the answer showed.' );
 		$this->assertStringNotContainsString( 'Bcc', implode( "\n", (array) $this->mail[1]['headers'] ), 'Nobody else is copied.' );
+		$this->assert_pending_copy( $id, 'tester@example.test', $body );
 
 		$this->assertSame( 'expired', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'], 'The link works once.' );
 		$this->assertCount( 2, $this->mail );
@@ -290,8 +325,8 @@ final class ConversationRoutesTest extends TestCase {
 	}
 
 	/**
-	 * A signed-in customer's conversation goes to the account's address at
-	 * once, whatever address the request names.
+	 * A signed-in customer's pending conversation is bound to the account's
+	 * address, whatever address the request names.
 	 */
 	public function test_a_customer_gets_it_at_the_account_address(): void {
 		$user = wp_insert_user(
@@ -317,11 +352,184 @@ final class ConversationRoutesTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status() );
+		$this->assertSame( 202, $response->get_status() );
+		$this->assertSame( 'pending', $response->get_data()['status'] );
 		$this->assertSame( 'linker-it-account@example.test', $response->get_data()['to'], 'The panel is told which address the account used.' );
 		$this->assertCount( 1, $this->mail );
 		$this->assertSame( array( 'linker-it-account@example.test' ), (array) $this->mail[0]['to'] );
 		$this->assertSame( 'Your conversation with Genie', $this->mail[0]['subject'] );
+		$this->assert_pending_copy( $id, 'linker-it-account@example.test', (string) $this->mail[0]['message'] );
+	}
+
+	/** A saved automatic check is acknowledged without claiming the email is on its way. */
+	public function test_a_pending_copy_uses_the_native_conversation_and_account_address(): void {
+		$user = wp_insert_user(
+			array(
+				'user_login' => 'linker-it-pending-' . wp_generate_password( 8, false ),
+				'user_email' => 'tester@example.test',
+				'user_pass'  => wp_generate_password( 24 ),
+				'role'       => 'customer',
+			)
+		);
+		$this->assertIsInt( $user );
+		$this->created['users'][] = $user;
+		wp_set_current_user( $user );
+		$id       = $this->answered( 'Please keep the complete answer for our engineer.' );
+		$other    = $this->answered( 'Another conversation must not replace the URL source.' );
+		$captured = array();
+		global $wp_filter;
+		$held               = self::producer_hook();
+		$expected_callbacks = $held->callbacks ?? array();
+		remove_all_filters( ConversationMail::SEND_FILTER );
+		add_filter(
+			ConversationMail::SEND_FILTER,
+			static function ( mixed $sent, array $email ) use ( &$captured ): array {
+				unset( $sent );
+				$captured = $email;
+				return array( 'status' => 'pending' );
+			},
+			10,
+			2
+		);
+		try {
+			foreach ( array( 'json', 'query' ) as $placement ) {
+				$request = new WP_REST_Request( 'POST', '/linker-ai/v1/genie/conversations/' . $id . '/email' );
+				$body    = array(
+					'email'           => 'someone-else@example.test',
+					'conversation_id' => $id + 1000,
+					'id'              => $other,
+				);
+				if ( 'json' === $placement ) {
+					$request->set_header( 'Content-Type', 'application/json' );
+					$request->set_body( (string) wp_json_encode( $body ) );
+				} else {
+					$request->set_query_params( $body );
+				}
+				$response = rest_ensure_response( rest_do_request( $request ) );
+				$this->assertSame( 202, $response->get_status() );
+				$this->assertSame( array( 'status' => 'pending', 'to' => 'tester@example.test' ), $response->get_data() ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete native response.
+				$this->assertSame( $id, $captured['conversation_id'] );
+				$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
+			}
+			$this->assertSame( array(), $this->mail, 'The provider saved the request; this route must not send an extra email.' );
+		} finally {
+			if ( null === $held ) {
+				unset( $wp_filter[ ConversationMail::SEND_FILTER ] );
+			} else {
+				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the isolated fixture.
+			}
+		}
+		$this->assertSame( $expected_callbacks, $wp_filter[ ConversationMail::SEND_FILTER ]->callbacks ?? array(), 'The native producer survives this pending fixture.' );
+	}
+
+	/** A confirmed guest link may save a pending copy from a different browser, once. */
+	public function test_a_guest_confirmation_preserves_pending_in_another_browser(): void {
+		$id = $this->answered( 'Please email this complete conversation.' );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+		$this->assertCount( 1, $this->mail, 'Only the fixed address confirmation may go first.' );
+		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
+		$_COOKIE  = array();
+		$captured = array();
+		global $wp_filter;
+		$held               = self::producer_hook();
+		$expected_callbacks = $held->callbacks ?? array();
+		remove_all_filters( ConversationMail::SEND_FILTER );
+		add_filter(
+			ConversationMail::SEND_FILTER,
+			static function ( mixed $sent, array $email ) use ( &$captured ): array {
+				unset( $sent );
+				$captured = $email;
+				return array( 'status' => 'pending' );
+			},
+			10,
+			2
+		);
+		try {
+			$mail = new ConversationMail( new Conversations(), new Thread() );
+			$this->assertSame( array( 'status' => 'pending', 'locale' => 'en' ), $mail->confirm( (string) ( $token[1] ?? '' ) ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- the complete confirmation result.
+			$this->assertSame( $id, $captured['conversation_id'] );
+			$this->assertSame( 'tester@example.test', $captured['to'] );
+			$this->assertSame( ( new Thread() )->transcript( $id ), $captured['messages'] );
+			$this->assertSame( '', get_post_meta( $id, ConversationMail::PENDING, true ) );
+			$this->assertSame( 'expired', $mail->confirm( (string) ( $token[1] ?? '' ) )['status'] );
+			$this->assertCount( 1, $this->mail );
+		} finally {
+			if ( null === $held ) {
+				unset( $wp_filter[ ConversationMail::SEND_FILTER ] );
+			} else {
+				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the isolated fixture.
+			}
+		}
+		$this->assertSame( $expected_callbacks, $wp_filter[ ConversationMail::SEND_FILTER ]->callbacks ?? array(), 'The native producer survives this confirmation fixture.' );
+	}
+
+	/** Two confirmations that read the same capability may produce only one saved copy. */
+	public function test_a_confirmation_capability_has_only_one_atomic_winner(): void {
+		$id = $this->answered( 'Please keep this conversation.' );
+		$this->assertSame( 202, $this->call( 'POST', $id, '/email', array( 'email' => 'tester@example.test' ) + self::guard() )->get_status() );
+		$this->assertSame( 1, preg_match( '/token=(\d+\.[0-9a-f]{64})/', (string) $this->mail[0]['message'], $token ) );
+		$secret  = (string) ( $token[1] ?? '' );
+		$mail    = new ConversationMail( new Conversations(), new Thread() );
+		$calls   = 0;
+		$entered = false;
+		$nested  = array();
+		global $wp_filter;
+		$held               = self::producer_hook();
+		$expected_callbacks = $held->callbacks ?? array();
+		remove_all_filters( ConversationMail::SEND_FILTER );
+		$producer   = static function () use ( &$calls ): array {
+			++$calls;
+			return array( 'status' => 'pending' );
+		};
+		$interleave = static function ( mixed $prior, int $object_id, string $key ) use ( $id, $mail, $secret, &$entered, &$nested ): mixed {
+			if ( $id === $object_id && ConversationMail::PENDING === $key && ! $entered ) {
+				$entered = true;
+				$nested  = $mail->confirm( $secret );
+			}
+			return $prior;
+		};
+		add_filter( ConversationMail::SEND_FILTER, $producer );
+		add_filter( 'delete_post_metadata', $interleave, 10, 3 );
+		try {
+			$outer = $mail->confirm( $secret );
+			$this->assertTrue( $entered, 'The second confirmation ran after the first read and before its delete.' );
+			$this->assertSame( 'pending', $nested['status'] ?? '' );
+			$this->assertSame( 'expired', $outer['status'] );
+			$this->assertSame( 1, $calls );
+			$this->assertSame( '', get_post_meta( $id, ConversationMail::PENDING, true ) );
+			$this->assertCount( 1, $this->mail, 'Only the earlier fixed address confirmation reached the local mail capture.' );
+		} finally {
+			remove_filter( 'delete_post_metadata', $interleave, 10 );
+			if ( null === $held ) {
+				unset( $wp_filter[ ConversationMail::SEND_FILTER ] );
+			} else {
+				$wp_filter[ ConversationMail::SEND_FILTER ] = $held; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- restore the exact native producer hook after the interleaved fixture.
+			}
+		}
+		$this->assertSame( $expected_callbacks, $wp_filter[ ConversationMail::SEND_FILTER ]->callbacks ?? array() );
+	}
+
+	/** Background sends can verify an unchanged source, but never a changed, expired or removed one. */
+	public function test_the_source_check_needs_the_complete_current_private_transcript(): void {
+		$id       = $this->answered( 'Can I keep this conversation?' );
+		$messages = ( new Thread() )->transcript( $id );
+		$_COOKIE  = array();
+		$mail     = new ConversationMail( new Conversations(), new Thread() );
+		/**
+		 * Native source-continuity hook owned by Commerce; this verifies Tools registered its answer.
+		 *
+		 * @since 0.2.0
+		 */
+		$this->assertTrue( apply_filters( 'linker_commerce_conversation_mail_source_current', false, $id, $messages ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Commerce owns the cross-plugin contract.
+		$changed               = $messages;
+		$changed[0]['content'] = 'A different message was not authorized.';
+		$this->assertFalse( $mail->source_current( true, $id, $changed ) );
+		$this->assertFalse( $mail->source_current( true, $id, array() ) );
+		$old = gmdate( 'Y-m-d H:i:s', time() - ( Retention::RETENTION_DAYS + 1 ) * DAY_IN_SECONDS );
+		wp_update_post( array( 'ID' => $id, 'post_date' => $old, 'post_date_gmt' => $old ) ); // phpcs:ignore WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound -- one native fixture update.
+		$this->assertFalse( $mail->source_current( true, $id, $messages ) );
+		wp_delete_post( $id, true );
+		$this->assertFalse( $mail->source_current( true, $id, $messages ) );
 	}
 
 	/**
@@ -452,6 +660,13 @@ ANSWER;
 			'started'       => $stamp['started'],
 			'started_nonce' => $stamp['nonce'],
 		);
+	}
+
+	/** Keep a distinct native hook object before a fixture removes its callbacks. */
+	private static function producer_hook(): ?\WP_Hook {
+		global $wp_filter;
+		$hook = $wp_filter[ ConversationMail::SEND_FILTER ] ?? null;
+		return $hook instanceof \WP_Hook ? clone $hook : null;
 	}
 
 	/**

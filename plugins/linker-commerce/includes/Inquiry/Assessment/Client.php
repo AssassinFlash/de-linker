@@ -18,29 +18,30 @@ final class Client {
 		return '' !== (string) get_option( 'linker_genie_url', '' ) && defined( 'LINKER_GENIE_SERVICE_TOKEN' ) && '' !== (string) constant( 'LINKER_GENIE_SERVICE_TOKEN' );
 	}
 
-	/**
-	 * One service request bounded by the original acceptance deadline.
+	/** One service request bounded by the current background model-attempt deadline.
 	 *
 	 * @param array<string, mixed> $state Frozen current submission.
-	 * @param float                $deadline Absolute acceptance deadline.
+	 * @param float                $deadline Absolute claimed model-attempt deadline.
+	 * @param array<string,mixed>  $binding Exact server source binding.
 	 * @return array<string, mixed>
 	 */
-	public function assess( array $state, float $deadline ): array {
+	public function assess( array $state, float $deadline, array $binding = array() ): array {
 		$remaining = $deadline - microtime( true );
 		if ( $remaining <= 0 ) {
-			return Result::unknown( 'deadline' );
+			return SendVerdict::unknown( 'deadline' );
 		}
 		if ( ! self::configured() ) {
-			return Result::unknown( 'service_unavailable' );
+			return SendVerdict::unknown( 'service_unavailable' );
 		}
 		$body = wp_json_encode(
 			array(
 				'state'             => $state,
+				'binding'           => $binding,
 				'remaining_seconds' => min( Queue::WAIT_SECONDS, $remaining ),
 			)
 		);
 		if ( false === $body ) {
-			return Result::unknown( 'input_encoding_error' );
+			return SendVerdict::unknown( 'input_encoding_error' );
 		}
 		$response = wp_remote_post(
 			rtrim( (string) get_option( 'linker_genie_url', '' ), '/' ) . '/inquiries/assess',
@@ -55,11 +56,13 @@ final class Client {
 			)
 		);
 		if ( is_wp_error( $response ) ) {
-			return Result::unknown( microtime( true ) >= $deadline ? 'deadline' : 'service_unavailable' );
+			return SendVerdict::unknown( microtime( true ) >= $deadline ? 'deadline' : 'service_unavailable' );
 		}
+		if ( microtime( true ) >= $deadline ) {
+			return SendVerdict::unknown( 'deadline' ); }
 		if ( 200 !== wp_remote_retrieve_response_code( $response ) ) {
-			return Result::unknown( 'service_unavailable' );
+			return SendVerdict::unknown( 'service_unavailable' );
 		}
-		return Result::validate( json_decode( wp_remote_retrieve_body( $response ), true ) );
+		return SendVerdict::validate( json_decode( wp_remote_retrieve_body( $response ), true ), $binding );
 	}
 }

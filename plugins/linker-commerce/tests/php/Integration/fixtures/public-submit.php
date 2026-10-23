@@ -7,6 +7,27 @@
 
 declare( strict_types = 1 );
 require dirname( __DIR__, 2 ) . '/integration-bootstrap.php';
+if ( 'local' !== wp_get_environment_type() ) {
+	throw new RuntimeException( 'The parallel admission fixture requires a local instance.' );
+}
+// This child tests admission and persistence; the parent owns typed provider and queue consumption.
+add_filter( 'action_scheduler_allow_async_request_runner', '__return_false' );
+add_filter(
+	'pre_http_request',
+	static function ( $pre, $args, $url ) {
+		if ( strtok( $url, '?' ) !== admin_url( 'admin-ajax.php' ) ) {
+			return $pre;
+		}
+		parse_str( (string) wp_parse_url( $url, PHP_URL_QUERY ), $query );
+		if ( in_array( $query['action'] ?? '', array( \Linker\Commerce\Inquiry\Assessment\AsyncRunner::ACTION, 'as_async_request_queue_runner' ), true ) ) {
+			return new WP_Error( 'fixture_parent_owns_native_consumer' );
+		}
+		return $pre;
+	},
+	999,
+	3
+);
+
 // $_SERVER['argv'] is the CLI list in every PHP version; $argv is a global
 // only after php.ini's register_argc_argv, so the script reads the former.
 $linker_commerce_args   = $_SERVER['argv'] ?? array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- arguments of the test's own CLI fixture, not a request.

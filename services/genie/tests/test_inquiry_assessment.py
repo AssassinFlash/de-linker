@@ -12,7 +12,18 @@ import httpx
 import pytest
 
 from linker_genie import inquiry_assessment as assessment
+from linker_genie.inquiry_rubric import QUESTIONS
 from linker_genie.jev import MODEL
+
+
+def binding() -> assessment.Binding:
+    return assessment.Binding(
+        protocol="inquiry-mail-v1",
+        policy="inquiry-mail-v1",
+        record_id=1,
+        snapshot_sha256="a" * 64,
+        purpose="inquiry_mail",
+    )
 
 
 @pytest.mark.parametrize("failure", ["quota", "unavailable"])
@@ -38,13 +49,15 @@ def test_actual_assessment_budget_refusal_is_unknown_without_dispatch(
 
     result = asyncio.run(
         assessment.assess(
-            assessment.AssessmentInput(state={}, remaining_seconds=0.1),
+            assessment.AssessmentInput(
+                binding=binding(), state={}, remaining_seconds=0.1
+            ),
             key="synthetic-key",
             transport=httpx.MockTransport(upstream),
         )
     )
-    assert (result["label"], result["reason"]) == (
-        "uncertain",
+    assert (result["decision"], result["reason"]) == (
+        "unknown",
         "provider_budget_" + failure,
     )
     assert sent == []
@@ -67,13 +80,15 @@ def test_actual_assessment_retries_each_debit_and_retains_absolute_deadline(
 
     result = asyncio.run(
         assessment.assess(
-            assessment.AssessmentInput(state={}, remaining_seconds=0.1),
+            assessment.AssessmentInput(
+                binding=binding(), state={}, remaining_seconds=0.1
+            ),
             key="synthetic-key",
             transport=httpx.MockTransport(upstream),
         )
     )
     assert result["reason"] == "provider_budget_quota"
-    assert result["label"] == "uncertain"
+    assert result["decision"] == "unknown"
     assert len(calls) == 1
     with sqlite3.connect(ledger) as db:
         assert db.execute("SELECT COUNT(*) FROM dispatch").fetchone()[0] == 1
@@ -84,7 +99,9 @@ def test_actual_assessment_retries_each_debit_and_retains_absolute_deadline(
             db.execute("BEGIN IMMEDIATE")
             began = time.monotonic()
             result = await assessment.assess(
-                assessment.AssessmentInput(state={}, remaining_seconds=0.02),
+                assessment.AssessmentInput(
+                    binding=binding(), state={}, remaining_seconds=0.02
+                ),
                 key="synthetic-key",
                 transport=httpx.MockTransport(upstream),
             )
@@ -93,7 +110,7 @@ def test_actual_assessment_retries_each_debit_and_retains_absolute_deadline(
         return result
 
     result = asyncio.run(locked())
-    assert (result["label"], result["reason"]) == ("uncertain", "deadline")
+    assert (result["decision"], result["reason"]) == ("unknown", "deadline")
     assert len(calls) == 1  # Cancelled lock waiting never dispatches later.
 
 
@@ -102,7 +119,7 @@ def answer(label: str = "normal", basis: str = "business_request") -> dict[str, 
         "model": "typesafe/jev-1.13-20260917",
         "answers": {
             "classification": {"type": "choice", "choice": label, "confidence": 1},
-            "basis": {"type": "choice", "choice": basis},
+            "basis": {"type": "choice", "choice": basis, "confidence": 1},
         },
     }
 
@@ -121,40 +138,42 @@ def test_full_business_snapshot_and_native_channel_are_preserved() -> None:
 
     result = asyncio.run(
         assessment.assess(
-            assessment.AssessmentInput(state=state, remaining_seconds=10),
+            assessment.AssessmentInput(
+                binding=binding(), state=state, remaining_seconds=10
+            ),
             key="synthetic-key",
             transport=httpx.MockTransport(handler),
         )
     )
-    assert result["label"] == "normal"
+    assert result["decision"] == "normal"
     assert len(requests) == 1
     request = requests[0]
     assert str(request.url) == assessment.ENDPOINT
     body = json.loads(request.content)
     assert body == {
         "model": MODEL,
-        "questions": assessment.QUESTIONS,
+        "questions": QUESTIONS,
         "state": state,
     }
-    assert result["raw"]["classification"]["choice"] == "normal"
+    assert result["raw"]["primary"]["answers"]["classification"]["choice"] == "normal"
 
 
 @pytest.mark.parametrize(
     ("label", "basis", "expected", "reason"),
     [
         ("normal", "reporting_abuse", "normal", "classified"),
-        ("normal", "unsolicited_bulk_promotion", "uncertain", "conflict"),
-        ("normal", "insufficient_context", "uncertain", "conflict"),
-        ("suspected_spam", "business_request", "uncertain", "conflict"),
-        ("suspected_spam", "fraud_or_phishing", "suspected_spam", "classified"),
-        ("uncertain", "insufficient_context", "uncertain", "insufficient_context"),
+        ("normal", "unsolicited_bulk_promotion", "unknown", "conflict"),
+        ("normal", "insufficient_context", "unknown", "conflict"),
+        ("malicious", "business_request", "unknown", "conflict"),
+        ("malicious", "fraud_or_phishing", "malicious", "classified"),
+        ("unknown", "insufficient_context", "unknown", "insufficient_context"),
     ],
 )
 def test_semantic_conflicts_are_undetermined(
     label: str, basis: str, expected: str, reason: str
 ) -> None:
     result = assessment.parse(answer(label, basis))
-    assert (result["label"], result["reason"]) == (expected, reason)
+    assert (result["decision"], result["reason"]) == (expected, reason)
     assert result["raw"]["classification"]["choice"] == label
 
 
@@ -170,7 +189,7 @@ def test_protocol_errors_do_not_become_normal(mutation: str) -> None:
     else:
         body["answers"]["classification"]["choice"] = "invented"
     result = assessment.parse(body)
-    assert result["label"] == "uncertain"
+    assert result["decision"] == "unknown"
     assert result["reason"] in {"invalid_model", "invalid_response"}
 
 
@@ -181,13 +200,15 @@ def test_actual_async_deadline_cancels_a_slow_provider() -> None:
 
     result = asyncio.run(
         assessment.assess(
-            assessment.AssessmentInput(state={}, remaining_seconds=0.02),
+            assessment.AssessmentInput(
+                binding=binding(), state={}, remaining_seconds=0.02
+            ),
             key="synthetic-key",
             transport=httpx.MockTransport(handler),
         )
     )
     assert result["reason"] == "deadline"
-    assert result["label"] == "uncertain"
+    assert result["decision"] == "unknown"
     assert result["seconds"] < 0.5
 
 
@@ -204,12 +225,14 @@ def test_transient_retry_uses_same_channel_and_budget() -> None:
 
     result = asyncio.run(
         assessment.assess(
-            assessment.AssessmentInput(state={}, remaining_seconds=10),
+            assessment.AssessmentInput(
+                binding=binding(), state={}, remaining_seconds=10
+            ),
             key="synthetic-key",
             transport=httpx.MockTransport(handler),
         )
     )
-    assert result["label"] == "normal"
+    assert result["decision"] == "normal"
     assert calls == [assessment.ENDPOINT, assessment.ENDPOINT]
 
 
@@ -218,15 +241,21 @@ def test_missing_credentials_never_calls_any_provider(
 ) -> None:
     monkeypatch.setattr(assessment, "credentials", lambda *args: None)
     result = asyncio.run(
-        assessment.assess(assessment.AssessmentInput(state={}, remaining_seconds=10))
+        assessment.assess(
+            assessment.AssessmentInput(
+                binding=binding(), state={}, remaining_seconds=10
+            )
+        )
     )
-    assert (result["label"], result["reason"]) == ("uncertain", "missing_credentials")
+    assert (result["decision"], result["reason"]) == ("unknown", "missing_credentials")
 
 
 def test_provider_failure_has_a_fixed_diagnostic_without_response_text() -> None:
     result = asyncio.run(
         assessment.assess(
-            assessment.AssessmentInput(state={}, remaining_seconds=10),
+            assessment.AssessmentInput(
+                binding=binding(), state={}, remaining_seconds=10
+            ),
             key="synthetic-key",
             transport=httpx.MockTransport(
                 lambda request: httpx.Response(401, text="private provider data")
@@ -240,7 +269,9 @@ def test_provider_failure_has_a_fixed_diagnostic_without_response_text() -> None
 def test_invalid_json_is_explicit() -> None:
     result = asyncio.run(
         assessment.assess(
-            assessment.AssessmentInput(state={}, remaining_seconds=10),
+            assessment.AssessmentInput(
+                binding=binding(), state={}, remaining_seconds=10
+            ),
             key="synthetic-key",
             transport=httpx.MockTransport(
                 lambda request: httpx.Response(200, text="not json")
@@ -266,7 +297,11 @@ def test_assessment_endpoint_requires_shell_identity_and_a_bounded_budget(
 
     monkeypatch.setattr(service, "assess", fake)
     client = TestClient(service.app)
-    body = {"state": {"submission": "synthetic"}, "remaining_seconds": 8}
+    body = {
+        "state": {"submission": "synthetic"},
+        "binding": binding().model_dump(),
+        "remaining_seconds": 8,
+    }
     assert client.post("/inquiries/assess", json=body).status_code == 401
     headers = {"X-Linker-Service-Token": "synthetic-shell-token"}
     assert (
