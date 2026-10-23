@@ -23,6 +23,15 @@ pre-update baseline observer still runs: capture translation metadata and
 queued actions before and after and investigate changes. Do not run a model,
 translation queue, registration, inquiry or mail test for this repair.
 
+The first source review found that the shared writer in the complete base
+could let wpdb reconnect during a disconnected transaction. Bring across only
+the previously developed connection guard and native fault fixture, and
+verify them again on this owned instance: no disconnected write may replay
+on a new handle without its row locks. Restore the caller's connection report
+mode, retry count and query filter afterwards. A failed COMMIT acknowledgment
+has an unknown outcome; independently read both pages before any retry or
+rollback. Never promise that a catch-block ROLLBACK undoes a committed write.
+
 The migration refuses a changed image set, an unknown photo, duplicate
 attributes or conflicting loading/decoding instructions. It ignores IMG-like
 strings inside scripts and comments and is idempotent. A production write
