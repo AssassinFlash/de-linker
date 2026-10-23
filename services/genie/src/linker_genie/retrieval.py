@@ -28,7 +28,7 @@ import sqlite3
 from collections.abc import Sequence
 from dataclasses import dataclass, replace
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import TYPE_CHECKING, Any, NotRequired, TypedDict
 
 if TYPE_CHECKING:
     from linker_genie.publication import Snapshot
@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 import sqlite_vec
 
 from linker_genie.embedding import Embedder, query_encoder
-from linker_genie.publication_scope import authorize_chunk
+from linker_genie.publication_scope import authorize_chunk, table_header
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
 # `current` link. GENIE_INDEX points elsewhere (a local build, a test fixture).
@@ -139,6 +139,7 @@ class Permit(TypedDict):
     document_revision: str
     url: str
     product_ids: list[int]
+    table_header: NotRequired[str]
 
 
 class _Auto:
@@ -477,6 +478,10 @@ class DocumentIndex:
             if row is None or row[0] not in permits:
                 continue
             permit = permits[row[0]]
+            header = permit.get("table_header", "")
+            text = hit.text
+            if header and not text.startswith(header + "\n"):
+                text = header + "\n" + text
             output.append(
                 replace(
                     hit,
@@ -484,6 +489,7 @@ class DocumentIndex:
                     document_id=permit["document_id"],
                     document_revision=permit["document_revision"],
                     product_ids=tuple(permit["product_ids"]),
+                    text=text,
                 )
             )
         return output
@@ -621,12 +627,16 @@ class DocumentIndex:
                 sha, sorted(ids), associations.get(sha, []), scopes.get(cid)
             )
             if authorized:
+                header = table_header(scopes.get(cid), sorted(ids), snapshot.products)
+                if header is None:
+                    continue
                 association = authorized[0]
                 output[row] = {
                     "document_id": str(association["document_id"]),
                     "document_revision": str(association["document_revision"]),
                     "url": str(association["url"]),
                     "product_ids": sorted(ids),
+                    "table_header": header,
                 }
         return output
 

@@ -21,6 +21,17 @@ cannot replace it. Store availability and runtime retrieval use the same
 `authorize_chunk` rule. The existing complete-source checks run again after
 retrieval and before the current answer is released.
 
+For split technical tables, the chunker records the native Docling TableItem,
+its physical page/origin and the preceding continuous text-chunk identities.
+Only an original Technical Data column declaration can supply the ordered
+model set to the immediately following TableItem. Every fragment must retain
+all original columns; the proof stores the original labels, column order and
+header source IDs. A new table or section ends propagation, and an unresolved
+model on the column axis or inside the table closes the group. Runtime returns
+the proven column heading with each fragment, so alphabetic document metadata
+cannot reorder its values. Missing or inconsistent column proof is refused by
+both availability calculation and retrieval. Generic headings grant nothing.
+
 The build records the scope proof for each passage. A model is identified by Woo and authored model context; an ingress rating, frequency, standard or report number is not a product simply because it contains letters and digits. A single current model in an unambiguous authored section or document can supply its scope. Truly model-free warranty/certificate terms require the explicit Woo document purpose. Mixed files need a manufacturer-authored public-terms declaration and positive current-model evidence before model-free non-parameter prose can inherit a common scope. Mixed withdrawn/unknown-model tables and unnamed technical values remain denied. The generated context header grants no permission. `chunk_scopes` records the basis, source chunk IDs and authorizing document IDs; `manifest.json.permission_coverage` reports proven versus total chunks.
 
 Manifest inventory normalizes only derived metadata. The known Woo language
