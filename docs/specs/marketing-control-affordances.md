@@ -29,7 +29,12 @@ mail, inquiry, registration, production writes or broad presentation deployment.
 In WindPress, contain the Services rail's existing ring with the shared8px
 spacing token at its native820px breakpoint; use the white surface token for
 contrast on that dark section, retaining the native ring width/offset. Keep
-the cards' dimensions and their native scrolling/focus behavior. Give Utility's
+the cards' dimensions and their native scrolling/focus behavior.
+The rail's width and negative inline margins put that inset outside its former
+card area, so the fluid601–820px columns retain their original width as well as
+the fixed phone columns. Verify exact geometry against the single-CSS native
+control; its current content and Services introduction stay fixed throughout.
+Give Utility's
 four native summaries a consistent visual plus/minus from the existing12px
 disclosure bars, without adding generated spoken text or replacing native
 details. Use a44px minimum summary hit area, matching the existing Utility
