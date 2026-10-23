@@ -32,7 +32,10 @@ metadata; its ordinary fields do not carry these Contact query values. The
 existing `SelectionContext`, `SelectionView`, submission and native team consumer
 are the current mechanism. Extend their allowlist and semantic data labels.
 Reuse the same selection JSON and metadata key. No second handler, store, form
-protection, JavaScript, layout, stylesheet or stored-page rewrite is needed.
+protection, JavaScript, layout or stored-page rewrite is needed. In the existing
+WindPress contact stylesheet, selection values disable dictionary hyphenation:
+the first German phone render split the selected product name `Liquid` into
+`Li-quid`. Existing wrapping, columns, font sizes and spacing remain in use.
 
 `platform` is displayed using the existing Product / Produkt label; Documents /
 Dokumente is also an existing native term. This follows the customer vocabulary
