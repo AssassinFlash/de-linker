@@ -119,7 +119,7 @@ const json = (value, status = 200) =>
 	});
 const button = (text) =>
 	[...document.querySelectorAll("button")].find(
-		(node) => node.textContent === text,
+		(node) => (node.getAttribute("aria-label") ?? node.textContent) === text,
 	);
 const field = (text) =>
 	[...document.querySelectorAll("label")]
@@ -164,6 +164,7 @@ async function rig(
 		writeStarted = false,
 		attachConfirmed = false,
 		cleanupStarted = false,
+		durableDraft = null,
 		closes = 0,
 		guard = () => true;
 	let project = {
@@ -186,8 +187,10 @@ async function rig(
 		async candidates() {
 			return [];
 		},
-		async write() {
+		async write(verified, draft) {
+			assert.equal(verified, scope);
 			if (storageDown) throw new Error("synthetic storage outage");
+			durableDraft = draft;
 		},
 		async readProfileImports(verified, id) {
 			if (hydrationGate) await hydrationGate.promise;
@@ -216,7 +219,11 @@ async function rig(
 			if (storageDown) throw new Error("synthetic storage outage");
 			assert.equal(verified, scope);
 			assert.ok(
-				attachConfirmed || auth || refusedBodies.has(body),
+				attachConfirmed ||
+					durableDraft?.history.current.profile_selections?.selected
+						.net_import === assetId ||
+					auth ||
+					refusedBodies.has(body),
 				"selection recovery must be durable before cleanup",
 			);
 			if (pending.get(JSON.parse(body).key) === body)
@@ -567,6 +574,39 @@ test("confirmed server selection releases the source workflow despite unavailabl
 	assert.equal(button("Check or retry this import"), undefined);
 	await act(async () => button("Projects").click());
 	assert.equal(fixture.closes, 1);
+});
+
+test("selection notices follow current draft undo and redo independently of the saved baseline", async (t) => {
+	await prepareFile(t, { editor: true });
+	await act(async () => button("Import and review data").click());
+	await until(() => button("Use this profile in the open draft"));
+	await act(async () => button("Use this profile in the open draft").click());
+	const draftNotice = () =>
+		document.body.textContent.includes(
+			"The profile is selected in the open draft.",
+		);
+	const savedNotice = () =>
+		document.body.textContent.includes(
+			"This profile selection is saved with the project.",
+		);
+	await until(draftNotice);
+	assert.ok(button("Remove draft selection"));
+	await act(async () => button("Undo").click());
+	assert.equal(button("Remove draft selection"), undefined);
+	assert.equal(draftNotice(), false);
+	assert.equal(savedNotice(), false);
+	await act(async () => button("Redo").click());
+	assert.ok(button("Remove draft selection"));
+	assert.equal(draftNotice(), true);
+	await act(async () => button("Save project").click());
+	await until(savedNotice);
+	await act(async () => button("Undo").click());
+	assert.equal(button("Remove draft selection"), undefined);
+	assert.equal(draftNotice(), false);
+	assert.equal(savedNotice(), false);
+	await act(async () => button("Redo").click());
+	assert.ok(button("Remove draft selection"));
+	assert.equal(savedNotice(), true);
 });
 
 test("a different native scope confirmed during the recovery write prevents an old upload dispatch", async (t) => {

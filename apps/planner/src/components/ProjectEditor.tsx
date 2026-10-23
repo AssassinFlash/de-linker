@@ -405,6 +405,7 @@ export function ProjectEditor({
 								timezone={brief.site.timezone}
 								recheck={recheck}
 								registerGuard={registerProfileGuard}
+								currentAssetIds={Object.values(selections.selected)}
 								confirmedAssetIds={Object.values(
 									readSelections(draft.baseline.inputs.profile_selections)
 										.selected,

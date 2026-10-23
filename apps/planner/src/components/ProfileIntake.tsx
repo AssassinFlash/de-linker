@@ -37,6 +37,7 @@ export function ProfileIntake({
 	attach,
 	registerGuard,
 	confirmedAssetIds = [],
+	currentAssetIds = [],
 }: {
 	projectId: string;
 	session: Session;
@@ -48,6 +49,7 @@ export function ProfileIntake({
 	attach: (assetId: string, role: Measurement) => Promise<boolean>;
 	registerGuard: (guard: () => boolean) => void;
 	confirmedAssetIds?: readonly string[];
+	currentAssetIds: readonly string[];
 }) {
 	const id = useId();
 	const fileInput = useRef<HTMLInputElement>(null);
@@ -387,7 +389,7 @@ export function ProfileIntake({
 	if (!open)
 		return (
 			<>
-				{selected && (
+				{selected && currentAssetIds.includes(selected) && (
 					<Notice>
 						{confirmedAssetIds.includes(selected)
 							? __(

@@ -10,11 +10,11 @@
     "src/components/NumberField.tsx": "ac4c7b88bd98a6c353a0b32c5982fe227a1d61224ce0f8066f4d807192b95e4b",
     "src/components/OwnedProfile.tsx": "27ac35004d4c5049c28819a7cad6da4f7816574feb52e9c30ae75ab5bffd72bc",
     "src/components/ProfileError.tsx": "12893eee9d9b00cb976a63dab9bd3118210dab2a833c7f039be8abded6b3e910",
-    "src/components/ProfileIntake.tsx": "1a12f994eb18a5fab1eea7371a3b9e3f2a62080ea62e033cd2aa6e3189bfa098",
+    "src/components/ProfileIntake.tsx": "415f42df6d23c72bb011d83b06a85950a474bdaab9282dcecc4db6f4b86e97cd",
     "src/components/ProfileLabels.ts": "d6cf646c7ba6f54bd71b17498bd0eb69d899232ec6cdb3d01f9f8c5b0be60368",
     "src/components/ProfileMapping.tsx": "afc3566bf546e75a8318d29e14d137cabe89d70834545aaa507a9120dab216f9",
     "src/components/ProfileReview.tsx": "808472c57ade8a8f7c0ddddd6fe7a6ba4a73198a5f0af143d78121aeee5a7172",
-    "src/components/ProjectEditor.tsx": "cf6907f48698c7f51abcb311e0bddf3d23ee53311300dec4b7f2ae3bb6849814",
+    "src/components/ProjectEditor.tsx": "16bdf0167c61b8b3d61601e91990ce575e26d08d1d64acd01910e69010630a42",
     "src/components/RevisionComparison.tsx": "0a5de456a0e2e46e68099f96a05f4ce1398e3c069765411b3390bf15074f5b44",
     "src/components/SessionBoundary.tsx": "f76d1019895130fd24bb87848968074379e4f46f7c5f575caceb66f3b79aed11",
     "src/components/Workspace.tsx": "456ed1ac0ce23cf627271a08c9e803c3e7a843c7625225b585c6b3f16199407b",
@@ -49,7 +49,7 @@
     "vite.config.ts": "a9c99cf04c71606380d2f00f9dcd1c4b9245193a5652429d99ee37b6c72d9099"
   },
   "build": {
-    "assets/planner.js": "20450639e577a54d4a87ca9f7ccdbcce601f33b8208232407e07606e94138f8e",
+    "assets/planner.js": "2303a40e8c95b13807913aac86cf21582cca6b496a49f36d8b068862fd31c989",
     "vite-manifest.json": "cccc8dc021bafcf5f4c568db7ac0921dd3e9fd0eeac4347fe8b21d8e7babcee1",
     "windpress.scan.txt": "6fec1d88a1ec367a57cffeaf4ec2de95debba2448cc988d6397bc8a014b96fb7"
   }
