@@ -77,8 +77,9 @@ final class DesignProof {
 		if ( array() === self::items( $result ) ) {
 			return self::unavailable();
 		}
-		if ( ! $this->is_current( $result ) ) {
-			return self::unavailable();
+		$error = $this->current_error( $result );
+		if ( $error instanceof WP_Error ) {
+			return $error;
 		}
 		return $result;
 	}
@@ -90,12 +91,26 @@ final class DesignProof {
 	 * @phpstan-impure Reads current Woo state on every check, including after writes.
 	 */
 	public function is_current( array $result ): bool {
+		return null === $this->current_error( $result );
+	}
+
+	/**
+	 * Preserve the distinction between revoked dependencies and unavailable authority.
+	 *
+	 * @param array<string,mixed> $result Trusted result or historical snapshot.
+	 * @phpstan-impure Reads the current authority on each invocation.
+	 */
+	public function current_error( array $result ): ?WP_Error {
 		$dependencies = $result['publication'] ?? null;
 		if ( ! is_array( $dependencies ) || ! is_array( $dependencies['products'] ?? null ) || array() === $dependencies['products'] || ! is_string( $dependencies['compatibility_revision'] ?? null ) || '' === $dependencies['compatibility_revision'] ) {
-			return false;
+			return self::unavailable();
 		}
-		$checked = is_callable( $this->validate ) ? ( $this->validate )( $dependencies ) : Publication::validate( $dependencies );
-		return true === ( $checked['valid'] ?? false );
+		try {
+			$checked = is_callable( $this->validate ) ? ( $this->validate )( $dependencies ) : Publication::validate( $dependencies );
+		} catch ( \RuntimeException $error ) {
+			return self::verification_failed();
+		}
+		return true === ( $checked['valid'] ?? false ) ? null : self::unavailable();
 	}
 
 	/**
@@ -147,7 +162,7 @@ final class DesignProof {
 	}
 
 	/** A verification outage is separate from a changed product or design. */
-	private static function verification_failed(): WP_Error {
+	public static function verification_failed(): WP_Error {
 		return new WP_Error( 'linker_solution_verification', __( 'The solution could not be checked. Please try again.', 'linker-commerce' ), array( 'status' => 503 ) );
 	}
 }

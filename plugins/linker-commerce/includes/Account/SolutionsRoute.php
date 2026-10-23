@@ -131,23 +131,25 @@ final class SolutionsRoute {
 		if ( $report instanceof WP_Error ) {
 			return $report;
 		}
-		$title  = sanitize_text_field( (string) $request->get_param( 'title' ) );
-		$design = array(
+		$title         = sanitize_text_field( (string) $request->get_param( 'title' ) );
+		$design        = array(
 			'kind'                  => $kind,
 			'input'                 => $input,
 			'selection_fingerprint' => (string) $result['selection_fingerprint'],
 			'snapshot'              => $result,
 		);
-		if ( ! $this->proof->is_current( $result ) ) {
-			return DesignProof::unavailable();
+		$current_error = $this->proof->current_error( $result );
+		if ( $current_error instanceof WP_Error ) {
+			return $current_error;
 		}
 
 		$customer_id = get_current_user_id();
 		if ( 0 === $customer_id ) {
-			$slot = $this->solutions->keep_for_guest( $title, $items, $design );
-			if ( ! $this->proof->is_current( $result ) ) {
+			$slot          = $this->solutions->keep_for_guest( $title, $items, $design );
+			$current_error = $this->proof->current_error( $result );
+			if ( $current_error instanceof WP_Error ) {
 				$this->solutions->discard_guest( $slot, (string) $result['selection_fingerprint'] );
-				return DesignProof::unavailable();
+				return $current_error;
 			}
 			return new WP_REST_Response(
 				array(
@@ -162,9 +164,10 @@ final class SolutionsRoute {
 		if ( 0 === $id ) {
 			return new WP_Error( 'linker_solution_not_saved', __( 'The solution could not be saved.', 'linker-commerce' ), array( 'status' => 500 ) );
 		}
-		if ( ! $this->proof->is_current( $result ) ) {
+		$current_error = $this->proof->current_error( $result );
+		if ( $current_error instanceof WP_Error ) {
 			$this->solutions->discard( $id );
-			return DesignProof::unavailable();
+			return $current_error;
 		}
 		return new WP_REST_Response(
 			array(
