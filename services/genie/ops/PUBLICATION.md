@@ -10,6 +10,17 @@ The model channels, customer ownership rules and private historical PDF download
 
 Knowledge search intersects current Woo product/document revisions with the actual loaded SQLite proof tables. Empty filters authorize no passages. Fallback and same-page/short-datasheet expansion use the same permitted rows. Content SHA reuses parsing, not authorization; document IDs, content revisions and per-product associations remain separate.
 
+A passage explicitly covering current models A and B can be authorized by two
+separate current document identities, one actually associated with A and one
+with B. Its scope binds each `document_id`, `document_revision`, `blob_sha256`,
+`product_id` and `product_revision` as one required group. Every recorded link
+must still match the loaded and current source, and the group must cover every
+model in the whole passage. Asking about A does not skip B's dependency. Losing
+either link rejects the whole passage; another public URL with identical bytes
+cannot replace it. Store availability and runtime retrieval use the same
+`authorize_chunk` rule. The existing complete-source checks run again after
+retrieval and before the current answer is released.
+
 The build records the scope proof for each passage. A model is identified by Woo and authored model context; an ingress rating, frequency, standard or report number is not a product simply because it contains letters and digits. A single current model in an unambiguous authored section or document can supply its scope. Truly model-free warranty/certificate terms require the explicit Woo document purpose. Mixed files need a manufacturer-authored public-terms declaration and positive current-model evidence before model-free non-parameter prose can inherit a common scope. Mixed withdrawn/unknown-model tables and unnamed technical values remain denied. The generated context header grants no permission. `chunk_scopes` records the basis, source chunk IDs and authorizing document IDs; `manifest.json.permission_coverage` reports proven versus total chunks.
 
 Knowledge availability and complete preparation are separate. A current product is available when it has at least one proven passage that the current retrieval guard can actually release. A missing or ambiguous supplementary document does not suppress an already verified manual. The process reports `preparation_complete=false` and `unprepared_documents` entries `{document_id, product_id, reason}` until each current association is parsed and proven. Reasons are `document_unparsed` or `no_proven_passage`; no original text enters the diagnostic. Worker acknowledgement sends both fields and preserves the available product subset while Woo keeps incomplete work pending. Having all products available does not imply all documents are complete. Engineering reference products are excluded from Genie products, documents and actions.

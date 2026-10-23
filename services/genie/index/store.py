@@ -21,6 +21,7 @@ import sqlite_vec
 
 from index import corpus
 from linker_genie.publication import Snapshot
+from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import SCHEMA_VERSION, is_passage
 
 SCHEMA = """
@@ -140,25 +141,30 @@ def export(directory: Path, path: Path) -> None:
         chunks_by_id = {chunk.id: chunk for chunk, _ in corpus.read_chunks(directory)}
         covered: dict[int, set[str]] = {}
         by_id = {d["document_id"]: d for d in manifest.get("documents", [])}
+        revisions = {
+            p["product_id"]: p["product_revision"] for p in manifest.get("products", [])
+        }
+        links = [
+            {
+                "document_id": d["document_id"],
+                "document_revision": d["document_revision"],
+                "blob_sha256": d["blob_sha256"],
+                "product_id": pid,
+                "product_revision": revisions[pid],
+            }
+            for d in by_id.values()
+            for pid in d["product_ids"]
+            if pid in revisions
+        ]
         for cid, ids in proof.get("chunk_products", {}).items():
             chunk = chunks_by_id.get(cid)
-            permitted_documents = (
-                proof.get("chunk_scopes", {}).get(cid, {}).get("document_ids")
-            )
             if chunk is not None and ids and is_passage(chunk.text):
-                supported = [
-                    d
-                    for d in by_id.values()
-                    if d["blob_sha256"] == chunk.doc_sha256
-                    and set(ids).issubset(d["product_ids"])
-                    and (
-                        permitted_documents is None
-                        or d["document_id"] in permitted_documents
-                    )
-                ]
-                for pid in ids:
-                    covered.setdefault(pid, set()).update(
-                        d["document_id"] for d in supported
+                supported = authorize_chunk(
+                    chunk.doc_sha256, ids, links, proof.get("chunk_scopes", {}).get(cid)
+                )
+                for item in supported:
+                    covered.setdefault(item["product_id"], set()).add(
+                        item["document_id"]
                     )
         ready = []
         unprepared = []

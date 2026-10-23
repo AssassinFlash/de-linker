@@ -56,6 +56,7 @@ class ScopeProof(TypedDict):
     basis: str
     source_chunk_ids: list[str]
     document_ids: list[str]
+    associations: list[dict[str, Any]]
 
 
 def codes(text: str) -> list[str]:
@@ -405,5 +406,17 @@ def scope_proofs(
                 "basis": basis,
                 "source_chunk_ids": origin,
                 "document_ids": sorted(doc["document_id"] for doc in relations),
+                "associations": [
+                    {
+                        "document_id": doc["document_id"],
+                        "document_revision": doc["document_revision"],
+                        "blob_sha256": doc["blob_sha256"],
+                        "product_id": pid,
+                        "product_revision": source.products[pid]["product_revision"],
+                    }
+                    for doc in relations
+                    for pid in sorted(matched)
+                    if pid in doc["product_ids"]
+                ],
             }
     return result

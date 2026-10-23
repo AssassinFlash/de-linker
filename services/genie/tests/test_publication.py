@@ -59,7 +59,12 @@ def manifest() -> dict[str, Any]:
     }
 
 
-def authority(raw: dict[str, Any], *, valid: bool = True) -> PublicationClient:
+def authority(
+    raw: dict[str, Any],
+    *,
+    valid: bool = True,
+    extra_models: dict[str, str] | None = None,
+) -> PublicationClient:
     def handle(request: httpx.Request) -> httpx.Response:
         if request.url.path.endswith("/manifest"):
             return httpx.Response(200, json=raw)
@@ -75,6 +80,7 @@ def authority(raw: dict[str, Any], *, valid: bool = True) -> PublicationClient:
                     for p in raw["products"]
                 },
                 "MODEL-3": "unavailable",
+                **(extra_models or {}),
             }
             models = supplied.get("models", [])
             if "text" in supplied:
@@ -84,8 +90,8 @@ def authority(raw: dict[str, Any], *, valid: bool = True) -> PublicationClient:
                     m
                     for m in known
                     if re.search(
-                        r"(?<![\w./-])" + re.escape(m) + r"(?![\w./-])",
-                        supplied["text"],
+                        r"(?<![^\W_])" + re.escape(m) + r"(?![^\W_])",
+                        re.sub(r"\s+", " ", supplied["text"]),
                         re.IGNORECASE,
                     )
                 ]
@@ -298,7 +304,7 @@ def test_single_authored_current_scope_propagates_without_using_generated_header
         ),
     ]
     proof = scope_proofs(chunks, raw, authority(raw))
-    assert proof["rating"] == {
+    assert {k: v for k, v in proof["rating"].items() if k != "associations"} == {
         "product_ids": [1],
         "basis": "document_model",
         "source_chunk_ids": ["scope"],
@@ -463,7 +469,7 @@ def test_genuinely_model_free_general_document_uses_explicit_woo_purpose(
         )
     ]
     proof = scope_proofs(chunks, raw, authority(raw))
-    assert proof["terms"] == {
+    assert {k: v for k, v in proof["terms"].items() if k != "associations"} == {
         "product_ids": [1, 2],
         "basis": "woo_document",
         "source_chunk_ids": [],
@@ -488,6 +494,24 @@ def test_suffix_variant_cannot_borrow_shorter_published_model_scope() -> None:
     raw = manifest()
     chunk = Chunk("suffix", SHA, 1, "", "text", "", "MODEL-10 nominal power", "en", 10)
     assert applicability([chunk], raw, authority(raw)) == {}
+
+
+def test_multiword_unavailable_model_is_detected_from_original_text_not_code_shape() -> (
+    None
+):
+    raw = manifest()
+    chunks = [
+        Chunk(
+            "A", SHA, 1, "", "text", "", "These instructions concern MODEL-1.", "en", 10
+        ),
+        Chunk("retired", SHA, 2, "", "text", "", "Retired system.", "en", 10),
+        Chunk("unnamed", SHA, 3, "", "table", "", "| Nominal power | 8kW |", "en", 10),
+    ]
+    assert set(
+        applicability(
+            chunks, raw, authority(raw, extra_models={"Retired system": "unavailable"})
+        )
+    ) == {"A"}
 
 
 def test_reference_module_never_enters_genie_snapshot_index_or_product_scope(
@@ -640,6 +664,140 @@ def test_partial_safe_document_coverage_is_available_but_preparation_stays_incom
         h.chunk_id
         for h in index.search("energy", "en", [1], publication=Snapshot.read(raw))
     ] == ["safe"]
+    index.close()
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        "none",
+        "withdraw_product",
+        "reference_role",
+        "product_revision",
+        "remove_document",
+        "document_revision",
+        "remove_relation",
+        "same_sha_replacement",
+    ],
+)
+def test_joint_model_passage_requires_each_exact_current_document_relation(
+    tmp_path: Path, change: str
+) -> None:
+    import copy
+
+    raw = manifest()
+    original = raw["documents"][0]
+    raw["documents"] = [
+        {
+            **original,
+            "document_id": "doc-A",
+            "document_revision": "dA",
+            "url": "https://site.test/A.pdf",
+            "product_ids": [1],
+        },
+        {
+            **original,
+            "document_id": "doc-B",
+            "document_revision": "dB",
+            "url": "https://site.test/B.pdf",
+            "product_ids": [2],
+        },
+    ]
+    raw["products"][0]["documents"] = ["doc-A"]
+    raw["products"][1]["documents"] = ["doc-B"]
+    chunk = Chunk(
+        "AB",
+        SHA,
+        1,
+        "",
+        "table",
+        "",
+        "| Model | MODEL-1 | MODEL-2 |\n| Nominal power | 10kW | 8kW |",
+        "en",
+        20,
+    )
+    proof = scope_proofs([chunk], raw, authority(raw))
+    assert proof["AB"]["product_ids"] == [1, 2]
+    assert proof["AB"]["associations"] == [
+        {
+            "document_id": "doc-A",
+            "document_revision": "dA",
+            "blob_sha256": SHA,
+            "product_id": 1,
+            "product_revision": "p1",
+        },
+        {
+            "document_id": "doc-B",
+            "document_revision": "dB",
+            "blob_sha256": SHA,
+            "product_id": 2,
+            "product_revision": "p2",
+        },
+    ]
+    directory = tmp_path / "corpus"
+    corpus.write(
+        directory,
+        corpus.Meta(
+            "joint",
+            None,
+            None,
+            "fixture",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {"AB": [1, 2]},
+                "chunk_scopes": proof,
+            },
+        ),
+        [
+            DocumentRow(
+                SHA,
+                ("https://site.test/A.pdf", "https://site.test/B.pdf"),
+                "Manual",
+                "Anleitung",
+                (),
+                ("MODEL-1", "MODEL-2"),
+                "manual",
+                "en",
+                1,
+                "indexed",
+            )
+        ],
+        [(1, "MODEL-1"), (2, "MODEL-2")],
+        [chunk],
+    )
+    target = tmp_path / "joint.sqlite"
+    store.export(directory, target)
+    index = DocumentIndex(target)
+    assert index.loaded()["products"] == [
+        {"product_id": 1, "product_revision": "p1"},
+        {"product_id": 2, "product_revision": "p2"},
+    ]
+    assert index.loaded()["preparation_complete"] is True
+    current = copy.deepcopy(raw)
+    if change == "withdraw_product":
+        current["products"].pop()
+    elif change == "reference_role":
+        current["products"][1]["engineering_role"] = "reference_pv_module"
+    elif change == "product_revision":
+        current["products"][1]["product_revision"] = "p2-new"
+    elif change == "remove_document":
+        current["documents"].pop()
+    elif change == "document_revision":
+        current["documents"][1]["document_revision"] = "dB-new"
+    elif change == "remove_relation":
+        current["documents"][1]["product_ids"] = []
+    elif change == "same_sha_replacement":
+        current["documents"][1]["document_id"] = "another-public-identity"
+        current["documents"][1]["url"] = "https://site.test/another.pdf"
+    hits = index.search("power", "en", [1], publication=Snapshot.read(current))
+    assert [h.chunk_id for h in hits] == (["AB"] if change == "none" else [])
+    if hits:
+        assert hits[0].product_ids == (1, 2)
+        assert {
+            item["product_id"]
+            for item in Snapshot.read(raw).dependencies()["documents"]
+        } == {1, 2}
     index.close()
 
 

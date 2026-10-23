@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 import sqlite_vec
 
 from linker_genie.embedding import Embedder, query_encoder
+from linker_genie.publication_scope import authorize_chunk
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
 # `current` link. GENIE_INDEX points elsewhere (a local build, a test fixture).
@@ -582,7 +583,7 @@ class DocumentIndex:
         ):
             current = snapshot.documents.get(did)
             if (
-                pid not in wanted
+                pid not in allowed
                 or current is None
                 or current["document_revision"] != revision
                 or current["blob_sha256"] != sha
@@ -593,15 +594,16 @@ class DocumentIndex:
                 {
                     "document_id": did,
                     "document_revision": revision,
+                    "blob_sha256": sha,
                     "url": current["url"],
                     "product_id": pid,
-                    "allowed_product_ids": current["product_ids"],
+                    "product_revision": loaded_products[pid],
                 }
             )
         output: dict[int, Permit] = {}
-        scoped_documents = (
+        scopes = (
             {
-                cid: set(json.loads(proof)["document_ids"])
+                cid: json.loads(proof)
                 for cid, proof in self._db.execute(
                     "SELECT chunk_id,proof FROM chunk_scopes"
                 )
@@ -613,24 +615,19 @@ class DocumentIndex:
             "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
         ):
             ids = set(json.loads(raw_ids))
-            if not ids or not ids.issubset(allowed):
+            if not ids or not ids.issubset(allowed) or not ids.intersection(wanted):
                 continue
-            for association in associations.get(sha, []):
-                if (
-                    association["product_id"] in ids
-                    and ids.issubset(set(association["allowed_product_ids"]))
-                    and (
-                        cid not in scoped_documents
-                        or association["document_id"] in scoped_documents[cid]
-                    )
-                ):
-                    output[row] = {
-                        "document_id": str(association["document_id"]),
-                        "document_revision": str(association["document_revision"]),
-                        "url": str(association["url"]),
-                        "product_ids": sorted(ids),
-                    }
-                    break
+            authorized = authorize_chunk(
+                sha, sorted(ids), associations.get(sha, []), scopes.get(cid)
+            )
+            if authorized:
+                association = authorized[0]
+                output[row] = {
+                    "document_id": str(association["document_id"]),
+                    "document_revision": str(association["document_revision"]),
+                    "url": str(association["url"]),
+                    "product_ids": sorted(ids),
+                }
         return output
 
     def chunks(self, chunk_ids: Sequence[str], lang: str) -> list[DocumentHit]:
