@@ -39,6 +39,7 @@ interface FormState {
 
 export function DesignEditor({
 	geometry,
+	sceneModuleUrl = null,
 	commit,
 	locale,
 	projectId,
@@ -48,6 +49,7 @@ export function DesignEditor({
 	onValidity,
 }: {
 	geometry: GeometryDocument;
+	sceneModuleUrl?: string | null;
 	commit: (command: GeometryCommand) => boolean;
 	locale: string;
 	projectId: string;
@@ -272,6 +274,7 @@ export function DesignEditor({
 								/>
 							) : (
 								<LazySceneViewport
+									sceneModuleUrl={sceneModuleUrl}
 									document={geometry}
 									poses={poses}
 									selected={selected}

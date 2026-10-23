@@ -1,0 +1,38 @@
+[
+  {
+    "case": "array_changed_mid_drag",
+    "attempts": 0,
+    "commits": 0,
+    "array_name": "Newer array edit",
+    "origin": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "roof_changed_mid_drag",
+    "attempts": 0,
+    "commits": 0,
+    "original": [
+      1,
+      2
+    ],
+    "actual": [
+      1,
+      2
+    ]
+  },
+  {
+    "case": "reference_changed_mid_drag",
+    "attempts": 0,
+    "commits": 0,
+    "original": [
+      1,
+      2
+    ],
+    "actual": [
+      1,
+      2
+    ]
+  }
+]

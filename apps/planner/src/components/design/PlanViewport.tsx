@@ -318,6 +318,34 @@ export function PlanViewport({
 					data-object={roof.id}
 					data-selected={selected === roof.id || undefined}
 				/>
+				{arrays.map((array) => (
+					<g
+						key={array.id}
+						transform={
+							preview?.array === array.id
+								? `translate(${preview.delta[0]} ${-preview.delta[1]})`
+								: undefined
+						}
+						data-array={array.id}
+					>
+						{roofPoses
+							.filter((pose) => pose.array_id === array.id)
+							.map((pose) => (
+								<polygon
+									key={pose.id}
+									points={points(pose.footprint_uv)}
+									className="lp-panel-shape"
+									data-object={pose.id}
+									data-array={array.id}
+									data-excluded={!pose.included || undefined}
+									data-selected={
+										selected === pose.id || selected === array.id || undefined
+									}
+								/>
+							))}
+					</g>
+				))}
+				{/* Keep constraint objects visible/selectable when module projections overlap them. */}
 				{keepouts.map((object) => (
 					<polygon
 						key={object.id}
@@ -349,33 +377,6 @@ export function PlanViewport({
 								])}
 							/>
 						))}
-					</g>
-				))}
-				{arrays.map((array) => (
-					<g
-						key={array.id}
-						transform={
-							preview?.array === array.id
-								? `translate(${preview.delta[0]} ${-preview.delta[1]})`
-								: undefined
-						}
-						data-array={array.id}
-					>
-						{roofPoses
-							.filter((pose) => pose.array_id === array.id)
-							.map((pose) => (
-								<polygon
-									key={pose.id}
-									points={points(pose.footprint_uv)}
-									className="lp-panel-shape"
-									data-object={pose.id}
-									data-array={array.id}
-									data-excluded={!pose.included || undefined}
-									data-selected={
-										selected === pose.id || selected === array.id || undefined
-									}
-								/>
-							))}
 					</g>
 				))}
 			</svg>

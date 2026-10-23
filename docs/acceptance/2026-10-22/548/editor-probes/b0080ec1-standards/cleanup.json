@@ -1,0 +1,11 @@
+{
+  "commit": "b0080ec15eb2dcab6b2c22b7b029180a2c1f73c2",
+  "sha_verified_files_reclaimed": 118,
+  "logical_bytes_reclaimed": 2753496,
+  "mismatch_retained": [],
+  "dependency_symlink_unlinked": true,
+  "free_before_bytes": 877639036928,
+  "free_after_bytes": 877642121216,
+  "observed_free_delta_bytes": 3084288,
+  "note": "Disk delta includes concurrent work by other agents; logical bytes are this archive only. Unique probes/logs/review/results retained. No shared directory removed."
+}

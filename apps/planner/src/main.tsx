@@ -63,7 +63,7 @@ for (const element of document.querySelectorAll<HTMLElement>(
 	"[data-linker-planner]",
 )) {
 	try {
-		const config = readConfiguration(element);
+		const config = readConfiguration(element, import.meta.url);
 		createRoot(element).render(
 			<StrictMode>
 				<ApplicationBoundary>

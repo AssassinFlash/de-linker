@@ -101,3 +101,93 @@ Strict TS, production bundle/source manifest and full i18n coverage pass; existi
 is absent until opened. The core is555KB, with a1.2KB mount and0.9KB bundler
 runtime; the compiler reports the lazy scene's1.55MB uncompressed/416KB gzip
 size; this is measured bundle size, not startup/frame-time acceptance.
+
+## Independent source b0080ec1: both axes PASS
+
+Fixed source b0080ec15eb2dcab6b2c22b7b029180a2c1f73c2 was independently
+reviewed against the full baseline8a4a80b1 and correction6c6680ad. Spec PASS
+and Standards PASS are preserved in editor-probes/b0080ec1-{spec,standards}.
+The original failure probes remain unchanged alongside adapted/new challenges:
+actual R3F/Three frame tests, actual Three controls/StrictMode teardown, whole
+document guards before a child re-render, and real PlanViewport event handlers.
+Neither review represented its controlled GPU-free host as native rendering.
+Both independently passed46 domain/data,51 DOM and the actual built ESM graph;
+the Spec rebuild matched all7 emitted artifacts byte-for-byte. Copy consistency
+retained the previously reviewed259 active messages with no new public promise.
+
+## Subsequent native finding: failed ESM URL retry
+
+Native Network.setBlockedURLs blocked the emitted SceneViewport file while an
+array form retained raw rows2.5. The error boundary preserved that form, but
+unblocking and pressing Retry still left no canvas: a new React.lazy wrapper
+retried the same failed URL cached by the browser. This was found after b008's
+independent source review; those reports remain valid records of their own
+probes, rather than being retroactively rewritten.
+
+The correction uses reviewed native build metadata for a fresh explicit retry
+URL, retains a successful/in-flight import, and evicts only a rejected request.
+The native manifest supplies a strictly validated sibling scene filename; the
+client independently binds it to the origin/directory of import.meta.url. Tests
+reject foreign origins, executable schemes, query/fragment additions, different
+folders, lookalike uploads folders and non-string values. No project data can
+set this executable path. Missing metadata leaves the editor intact.
+
+The real retry result is in design-native/native-lazy-retry-result.json: blocked
+SceneViewport-eud94aNY.js transferred0bytes; explicit retry with planner_retry=1
+downloaded1,547,124 decoded bytes, produced one actual WebGPU canvas and kept
+raw rows2.5. Plan→3D then reused that module. Cancel properties explicitly
+abandoned this synthetic invalid input; no revision was created. This is a
+transient-request recovery result, not an all-failure/all-release guarantee.
+
+Constraint objects were also moved above module projections in SVG draw order.
+Native clicking the overlapping keep-out polygon selected Synthetic access zone
+and exposed its numeric properties. The later strict module-URL guard and draw
+order build booted the same saved revision6, loaded SceneViewport-BQc4p_xn.js,
+and rendered actual WebGPU. Current screenshots are explicitly distinguished
+from earlier captures in the evidence manifest.
+
+Implementer checks for this correction:46 domain/data +52 DOM +1 emitted-graph
+test pass, strict TypeScript and production source/build check pass. Native
+Application build metadata has1 PHP test/7 assertions, WPCS and PHPStan level8
+pass. No public message or PO entry changed. The fixed correction still requires
+its own independent two-axis review before this increment is accepted.
+
+## Native interaction and persistence evidence
+
+The synthetic project8c71ef3068ee465d86f093cece8406fa was saved and read back
+through the actual owned WordPress gateway, at revision6. Its explicit fixtures
+are a20×12m flat face; an8×6m30degree annex; twelve1.134×2.278×.03m500W
+declared modules; a2m obstacle; a keep-out; and one opening. The final array
+origin is[0.2368786363600952,2.0243478132330885], tilt15degrees, gaps.02/.8m,
+and lower edge.16m. These are synthetic inputs, not site/manufacturer evidence.
+The Paris-area location description explicitly says it is not surveyed and does
+not contain invented latitude/longitude.
+
+- Native plane drag changed the array once; Undo restored the previous exact
+  origin and Redo restored the move. The actual 3D red-axis handle then changed
+  U while preserving V; numeric properties and the persisted document agree.
+- Camera orbit did not enable Save. Escape and removing active handles by opening
+  numeric properties restored previews without writing a command. The first
+  uncertain revision2 intent was acknowledged after reopen without revision3.
+- Native pitch90 was rejected in the field while retaining text; pitch30 then
+  created the annex. DE raw rows2,5 was rejected without coercion; corrected3
+  and lower edge0,16 persisted as.16, and EN reopening displayed revision6.
+- Actual WebGPU and explicit WebGL2 rendered; EN/DE desktop1440 and phone390
+  plan/3D/error/property states were captured. At390 the page scrollWidth was390.
+  The renderer label was read only after actual backend initialization.
+- The native revision6 geometry hash is
+  76371d28c6e6e72e7a34d470bcfe38ab8bd64071e8f14d7423a6d8a44cb7b100;
+  the live checker4 returned4 synthetic layout conflicts,12 modules,6kWp and
+  engineering_status=not_evaluated. Missing north/source precision/clearances
+  remain explicit. Its complete response and runtime hash are retained.
+
+Original captures/readbacks and SHA-256 manifest are in design-native/. The
+record separates early native progression, b008 gesture proof, retry correction
+and the later current build; it does not assign one fixed SHA to all screenshots.
+No production or external customer project was changed by these tests.
+
+Native touch dispatch was unavailable in this browser tool; a mouse-to-touch
+emulation attempt did not complete and was restored. Touch is not accepted.
+Actual device loss and maximum5000-module phone performance are unproven.
+These remain full-workbench acceptance obligations in this same active goal.
+This record accepts neither completeB nor the remaining A–D/site/deployment work.

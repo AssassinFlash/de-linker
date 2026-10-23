@@ -1,0 +1,42 @@
+[
+  {
+    "name": "name",
+    "value": "Synthetic tilted commercial array"
+  },
+  {
+    "name": "u",
+    "value": "3.0156521486199424"
+  },
+  {
+    "name": "v",
+    "value": "2.0243478132330885"
+  },
+  {
+    "name": "rows",
+    "value": "3"
+  },
+  {
+    "name": "columns",
+    "value": "4"
+  },
+  {
+    "name": "rotation",
+    "value": "0"
+  },
+  {
+    "name": "tilt",
+    "value": "15"
+  },
+  {
+    "name": "column_gap",
+    "value": "0.02"
+  },
+  {
+    "name": "row_gap",
+    "value": "0.8"
+  },
+  {
+    "name": "height",
+    "value": "0.15"
+  }
+]

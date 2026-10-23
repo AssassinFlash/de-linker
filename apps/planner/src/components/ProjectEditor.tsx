@@ -503,6 +503,7 @@ export function ProjectEditor({
 						</section>
 						<DesignEditor
 							geometry={geometry}
+							sceneModuleUrl={config.sceneModuleUrl ?? null}
 							commit={editGeometry}
 							locale={config.locale}
 							projectId={project.id}

@@ -95,3 +95,34 @@ The current pinned Rolldown initial-module tag emits all static dependencies in
 a hashed core; the versioned WP entry owns the mount only. Generated chunks may
 never import the entry. Build checking executes that actual versioned ESM graph
 once before accepting assets. This does not upgrade or expose site-global React.
+
+### Native module recovery and current boundary
+
+An explicit 3D retry must make a new request after a failed module URL; replacing
+React.lazy alone does not invalidate the browser's failed ESM module cache. The
+native mount therefore publishes the scene file from its reviewed Vite manifest.
+The client accepts only a query-free, credential-free SceneViewport-hash.js in
+the actual entry module's own origin and directory. This configuration never
+comes from a project, uploaded file, map source or user-entered URL.
+
+The first request remains a literal lazy import so the production bundler owns
+its graph. A failed request is evicted from the loader, and a subsequent explicit
+retry adds a monotonic request query to that exact native scene URL. In-flight
+and successful modules are reused across view changes. Missing metadata keeps
+the plan and property editor available but cannot invent an executable URL.
+This recovers a transient failed scene request; it is not a claim that missing
+old-release assets, arbitrary dependency errors or device loss are all repaired.
+
+Constraint footprints draw after module projections in the plan, so overlapping
+modules cannot hide obstacle/keep-out selection. This changes view ordering,
+not coordinates, quantities or the geometry check.
+
+Independent b0080ec1 Spec and Standards reviews both passed the fixed manual
+increment. Subsequent native fault injection exposed the failed-URL retry defect
+above, separately from those source-review results. Native evidence now includes
+real WebGPU and WebGL2, plane and 3D mouse moves, undo/redo, save/reopen through
+the owned gateway, cancellation and EN/DE at both required viewport widths.
+The browser tool cannot dispatch native touch events, so touch acceptance is
+still open. Actual device loss and maximum-capacity mobile performance are also
+unproven. See the acceptance record and design-native evidence; the entire
+map/drawing/import/task/engineering/report/site goal remains active.

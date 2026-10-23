@@ -26,6 +26,10 @@ test("3D chunk failure and retry preserve unapplied raw properties and the plan 
 				React.StrictMode,
 				null,
 				React.createElement(DesignEditor, {
+					sceneModuleUrl: new URL(
+						"../src/components/design/SceneViewport.tsx",
+						import.meta.url,
+					).href,
 					geometry: flat,
 					commit() {
 						throw new Error("No edit expected");
@@ -55,5 +59,10 @@ test("3D chunk failure and retry preserve unapplied raw properties and the plan 
 	assert.equal(document.querySelector('[name="rows"]').value, "2.5");
 	assert.ok(
 		caught.every((error) => error.message === "synthetic_3d_chunk_unavailable"),
+	);
+	assert.equal(new URL(caught[0].moduleUrl).search, "");
+	assert.equal(
+		new URL(caught[1].moduleUrl).searchParams.get("planner_retry"),
+		"1",
 	);
 });

@@ -21,6 +21,13 @@ final class Application {
 	private bool $mounted = false;
 
 	/**
+	 * Public, reviewed build metadata; never a project-supplied executable URL.
+	 *
+	 * @var string|null
+	 */
+	private ?string $scene_module_url = null;
+
+	/**
 	 * Locate the plugin's reviewed build.
 	 *
 	 * @param string $plugin_file Main plugin file.
@@ -50,6 +57,10 @@ final class Application {
 			return;
 		}
 		$version = hash_file( 'sha256', $asset_path );
+		$scene   = $manifest['src/components/design/SceneViewport.tsx']['file'] ?? null;
+		if ( is_string( $scene ) && 1 === preg_match( '~\Aassets/SceneViewport-[a-zA-Z0-9_-]+\.js\z~', $scene ) ) {
+			$this->scene_module_url = plugin_dir_url( $this->plugin_file ) . 'build/planner/' . $scene;
+		}
 		wp_register_script_module( self::HANDLE, plugin_dir_url( $this->plugin_file ) . 'build/planner/' . $file, array(), is_string( $version ) ? $version : null );
 		wp_set_script_module_translations( self::HANDLE, 'linker-tools', plugin_dir_path( $this->plugin_file ) . 'languages' );
 	}
@@ -65,10 +76,11 @@ final class Application {
 		$countries = function_exists( 'WC' ) ? WC()->countries->get_countries() : array();
 		$config    = wp_json_encode(
 			array(
-				'base_url'  => rest_url( Gateway::NAMESPACE . Gateway::ROUTE ),
-				'nonce_url' => add_query_arg( 'action', 'rest-nonce', admin_url( 'admin-ajax.php' ) ),
-				'locale'    => determine_locale(),
-				'countries' => (object) $countries,
+				'base_url'         => rest_url( Gateway::NAMESPACE . Gateway::ROUTE ),
+				'nonce_url'        => add_query_arg( 'action', 'rest-nonce', admin_url( 'admin-ajax.php' ) ),
+				'locale'           => determine_locale(),
+				'countries'        => (object) $countries,
+				'scene_module_url' => $this->scene_module_url,
 			)
 		);
 		return sprintf(

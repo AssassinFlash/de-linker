@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "geometry_sha256": "76371d28c6e6e72e7a34d470bcfe38ab8bd64071e8f14d7423a6d8a44cb7b100",
+  "uv_resolution_m": 3.552713678800501e-15,
+  "checker": "roof_plane_layout_v4",
+  "libraries": {
+    "shapely": "2.2.0",
+    "geos": "3.14.1"
+  },
+  "geometry_status": "conflicts_detected",
+  "engineering_status": "not_evaluated",
+  "review_complete": true,
+  "diagnostics_truncated": false,
+  "issue_count": 11,
+  "conflict_count": 4,
+  "candidate_checks": 4,
+  "limits": {
+    "max_diagnostics": 200,
+    "max_candidate_checks": 200000,
+    "max_uv_resolution_m": 1e-09
+  },
+  "module_count": 12,
+  "declared_stc_kwp": 6,
+  "issues": [
+    {
+      "kind": "north_reference_unspecified",
+      "object_id": "coordinate_system",
+      "roof_id": null,
+      "related_id": null,
+      "category": "missing_input",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "source_precision_unspecified",
+      "object_id": "source_121ef0395f7f4ab186605346735b65fd",
+      "roof_id": null,
+      "related_id": null,
+      "category": "missing_input",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "source_precision_unspecified",
+      "object_id": "source_1f08d2d2924f44d2b63ebc3aaca7e9cb",
+      "roof_id": null,
+      "related_id": null,
+      "category": "missing_input",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "edge_clearance_unspecified",
+      "object_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "related_id": null,
+      "category": "missing_input",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "obstacle_clearance_unspecified",
+      "object_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "related_id": null,
+      "category": "missing_input",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "panel_projected_obstacle_overlap",
+      "object_id": "array_2bf8f4207b644dab8b9f589a640c8a9c:0:1",
+      "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "related_id": "obstacle_7b3c206db44345f9a5d4aa2e06f748ae",
+      "category": "layout_conflict",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "panel_projected_obstacle_overlap",
+      "object_id": "array_2bf8f4207b644dab8b9f589a640c8a9c:0:2",
+      "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "related_id": "obstacle_7b3c206db44345f9a5d4aa2e06f748ae",
+      "category": "layout_conflict",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "panel_in_keepout",
+      "object_id": "array_2bf8f4207b644dab8b9f589a640c8a9c:2:0",
+      "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "related_id": "keepout_d28e7bc42d5f4015a3669980a8035f48",
+      "category": "layout_conflict",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "panel_in_keepout",
+      "object_id": "array_2bf8f4207b644dab8b9f589a640c8a9c:2:1",
+      "roof_id": "roof_1498d7784ec644d1a5b0cbc7c2238576",
+      "related_id": "keepout_d28e7bc42d5f4015a3669980a8035f48",
+      "category": "layout_conflict",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "edge_clearance_unspecified",
+      "object_id": "roof_a9e16be4611840028f3a79e035da6bbb",
+      "roof_id": "roof_a9e16be4611840028f3a79e035da6bbb",
+      "related_id": null,
+      "category": "missing_input",
+      "required_m": null,
+      "actual_m": null
+    },
+    {
+      "kind": "obstacle_clearance_unspecified",
+      "object_id": "roof_a9e16be4611840028f3a79e035da6bbb",
+      "roof_id": "roof_a9e16be4611840028f3a79e035da6bbb",
+      "related_id": null,
+      "category": "missing_input",
+      "required_m": null,
+      "actual_m": null
+    }
+  ],
+  "runtime_sha256": "108f1109a8477e51b27b4803346ed666732bc4a45f6321116e60fe29aa196557"
+}
