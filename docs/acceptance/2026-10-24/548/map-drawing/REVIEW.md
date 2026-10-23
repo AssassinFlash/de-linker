@@ -18,7 +18,6 @@ No replacement checkout, dependency copy or local instance was created.
 
 Canonical report: [review-standards-71cd719a/REVIEW.md](review-standards-71cd719a/REVIEW.md).
 
-# Standards: PASS — no open findings
 
 Reviewed the full eleven-file `git diff 66324a39fb449425dd1144b46b4d3abc21dc52d0...71cd719aa67021aee6398ae58f359738005d1f57`, covering `c562676a`, `2464009a` and `71cd719a`. This reuses the exhaustive prior nine-file review and independently verifies every corrective hunk. Current root AGENTS, CONTEXT, the isolated-runtime ADR and existing domain/data conventions apply; no CONTRIBUTING/CODING_STANDARDS file exists.
 
@@ -36,7 +35,6 @@ No source copy, install, worktree, stack, network or application change was made
 
 Canonical report: [review-spec-71cd719a/REVIEW.md](review-spec-71cd719a/REVIEW.md).
 
-# Final Spec review — 71cd719a
 
 **PASS for this internal source increment; zero actionable findings.** Reviewed the complete `git diff 66324a39fb449425dd1144b46b4d3abc21dc52d0...71cd719aa67021aee6398ae58f359738005d1f57`: three commits, eleven files, against the source SPEC and the implementation/controller dossiers. All 107 source hashes match current pinned Git bytes; seven emitted artifacts remain byte-identical to the base. The controller remains unmounted.
 

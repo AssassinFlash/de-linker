@@ -1,0 +1,42 @@
+✔ a geographic vertex edit keeps every untouched source value and rejects a changed whole frame (3.073417ms)
+✔ one grouped edit joins existing project undo/redo without replacing unrelated inputs (1.115ms)
+✔ hole/obstacle/keep-out handles touch only their explicitly bound footprint (1.667458ms)
+✔ new shapes need explicit physical fields and use a real sloped plane without deleting original holes (0.883833ms)
+✔ malformed rings, unknown references, collapsed display handles and unsupported precision remain explicit refusals (0.327083ms)
+✔ new obstacle and keep-out commands retain their explicit source, height, axis and requirement (0.753791ms)
+✔ every winding/start-index arrangement changes only the one moved metric vertex (5.795042ms)
+✔ insertions at every edge and reversed winding preserve the canonical first vertex and exact old points (2.018459ms)
+✔ deletions and no-op winding changes perform no inverse projection (1.148333ms)
+✔ a midpoint insertion followed by a drag still preserves every original UV point (0.557625ms)
+✔ ambiguous display identity, unrelated mutations, crossings and too-small deletion are refused (1.00175ms)
+✔ the resource-bound ring remains linear in projection work (40.638916ms)
+✔ raw polygon previews never become completed transactions and the toolbar uses only committed points (36.678834ms)
+✔ click closure uses the library's actual winding; completion click stays blocked after disposal (5.19775ms)
+✔ midpoint insertion and its drag produce one transaction with two immutable snapshots (4.799625ms)
+✔ all drag movements including the fifth update the candidate; native Delete cannot erase the feature (4.00125ms)
+✔ interrupted gesture (cancel) retains raw input, cancels pending work and restores exact map handler states (3.794542ms)
+✔ interrupted gesture (lostcapture) retains raw input, cancels pending work and restores exact map handler states (3.212875ms)
+✔ interrupted gesture (outsideup) retains raw input, cancels pending work and restores exact map handler states (3.125583ms)
+✔ interrupted gesture (blur) retains raw input, cancels pending work and restores exact map handler states (3.59425ms)
+✔ interrupted gesture (hidden) retains raw input, cancels pending work and restores exact map handler states (5.055291ms)
+✔ interrupted gesture (secondary) retains raw input, cancels pending work and restores exact map handler states (6.624625ms)
+✔ interrupted gesture (dispose) retains raw input, cancels pending work and restores exact map handler states (3.905292ms)
+✔ disposing after a queued finish invalidates its late transaction callback (2.423083ms)
+✔ the release endpoint, even without a final move event, replaces only the actually dragged vertex (2.453875ms)
+✔ an unresolved release vertex is refused instead of assigning the cursor to an arbitrary point (2.760125ms)
+✔ a midpoint release corrects the inserted point and keeps all original display coordinates (2.57375ms)
+✔ a release onto another vertex is refused before API backfill or project submission (2.148375ms)
+✔ a midpoint transaction cannot silently drag an unrelated original vertex (2.986459ms)
+✔ real library midpoint callbacks enter one metric project history step and undo/redo retains every source input (5.990791ms)
+✔ adapter cleanup refusal still reports one terminal failure and lets the owner finish disposal (interrupt) (2.8515ms)
+✔ adapter cleanup refusal still reports one terminal failure and lets the owner finish disposal (failure) (2.712083ms)
+✔ adapter cleanup refusal still reports one terminal failure and lets the owner finish disposal (dispose) (2.011833ms)
+✔ one refused handler restore does not skip other handlers or the cursor and is reported (2.060666ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 467.623958
