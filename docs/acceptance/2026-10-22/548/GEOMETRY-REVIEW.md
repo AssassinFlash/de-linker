@@ -37,3 +37,34 @@ not an exception to immutable request semantics. No customer account, production
 write, real mail, formal route cutover or browser visual claim was made here.
 
 Fixed-source Standards and Spec review follow before this increment is accepted.
+
+## Rejected fixed source bc528c67
+
+Both axes FAIL. Standards independently showed that converting local corners
+to absolute ENU and back erased1cm overlap at a legal1e15 origin, and that an
+accepted large rotation differed between Python/JS by17.5mm. Spec reproduced
+the overlap, ordinary30-degree roof-basis zero-edge false refusal, missing
+periodicity (MAX_SAFE_INTEGER degrees vs31 degrees), and browser-only acceptance
+of invalid acquisition dates and duplicate excluded slots. Existing30 Python,
+2 ASGI and8 Node all passed despite these counterexamples. Spec's five extra
+ASGI, full5000-slot budget, concave/thickness/obstacle probes otherwise passed.
+Original independent probes/results are retained in `geometry-probes/`.
+
+The correction retains a roof-local UVN pose, directly projects its full cuboid
+for layout, and projects obstacle extrusion deltas without adding/subtracting
+large origins. Analysis also translates large UV charts near zero, preserving
+the original input/source/hash. Renderer placement now has an explicit helper
+that rebases before adding local offsets; the absolute display point is not
+an engineering roundtrip. Rotation uses signed remainder before the same pi
+operations in both languages, with exact quadrant values. No acceptance epsilon
+or arbitrary physical-angle restriction was added. Browser UTC calendar checks
+and duplicate-slot refusal now match the strict server contract.
+
+All16 rotated-roof/origin zero-edge cases and both original1cm-overlap cases
+pass. The unchanged Standards angle probes now return the same Python/JS pose.
+The original ordinary-scale pose reference was kept, with a numerical comparison
+for its original vector fields rather than regenerating expected values to hide
+the change. New local-frame/rebased tests and large-angle periodic cases are
+separate. Current geometry+private HTTP140 pass2.44s;10 Node geometry cases,
+strict TS, build and planning mypy70 modules pass. Final fixed-source axes and
+native current-checker readback still follow; this remains a service increment.

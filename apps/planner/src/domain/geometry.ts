@@ -127,9 +127,15 @@ export interface GeometryDocument {
 export interface PanelPose {
 	id: string;
 	array_id: string;
+	roof_id: string;
 	row: number;
 	column: number;
 	included: boolean;
+	centre_uvn: Vec3;
+	u_axis_uvn: Vec3;
+	v_axis_uvn: Vec3;
+	normal_uvn: Vec3;
+	/** Derived absolute display point; use local frame for fit/rebased rendering. */
 	centre_enu: Vec3;
 	u_axis_enu: Vec3;
 	v_axis_enu: Vec3;

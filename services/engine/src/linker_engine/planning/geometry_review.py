@@ -20,13 +20,10 @@ from shapely.ops import unary_union
 from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput
 from .geometry import (
-    add,
     cross,
     dot,
-    on_roof,
     panel_poses,
     read_geometry,
-    roof_coordinates,
     scale,
 )
 from .geometry_documents import GeometryDocument
@@ -89,7 +86,7 @@ def review_geometry(value: Json) -> Object:
     return {
         "schema_version": 1,
         "geometry_sha256": digest(encode(value)),
-        "checker": "roof_plane_layout_v1",
+        "checker": "roof_plane_layout_v2",
         "libraries": {
             "shapely": shapely.__version__,
             "geos": shapely.geos_version_string,
@@ -131,6 +128,7 @@ def _polygon(
 
 
 def _review(document: GeometryDocument, result: Diagnostics) -> None:
+    document = _local_review_frame(document)
     poses = panel_poses(document)
     rules = {r.roof_id: r for r in document.layout_rules}
     coordinate = document.coordinate_system
@@ -174,13 +172,8 @@ def _review(document: GeometryDocument, result: Diagnostics) -> None:
                 result.add("obstacle_not_above_roof", obstacle.id, roof.id)
             # Exact sweep of a potentially concave footprint, rather than
             # its convex hull (which would invent a blocker inside recesses).
-            du, dv = roof_coordinates(
-                roof,
-                add(
-                    on_roof(roof, 0, 0),
-                    scale(obstacle.extrusion_axis_enu, obstacle.height_m),
-                ),
-            )
+            extrusion = scale(obstacle.extrusion_axis_enu, obstacle.height_m)
+            du, dv = dot(extrusion, roof.u_axis_enu), dot(extrusion, roof.v_axis_enu)
             swept: list[BaseGeometry] = [base, translate(base, xoff=du, yoff=dv)]
             ring = obstacle.footprint_uv
             for first, second in zip(ring, [*ring[1:], ring[0]], strict=True):
@@ -217,7 +210,7 @@ def _review(document: GeometryDocument, result: Diagnostics) -> None:
             if pose.roof_id != roof.id or not pose.included:
                 continue
             footprint = MultiPoint(
-                [roof_coordinates(roof, point) for point in pose.corners()]
+                [(point[0], point[1]) for point in pose.corners_uvn()]
             ).convex_hull
             if (
                 not isinstance(footprint, Polygon)
@@ -298,3 +291,53 @@ def _review(document: GeometryDocument, result: Diagnostics) -> None:
                         roof.id,
                         related_id=panel_ids[other],
                     )
+
+
+def _local_review_frame(document: GeometryDocument) -> GeometryDocument:
+    """Translate each UV chart near zero; never roundtrip through global ENU.
+
+    This temporary analysis frame changes no input, source or command hash.
+    It also preserves small modules when an imported UV chart has a huge offset.
+    """
+    offsets = {roof.id: roof.boundary_uv[0] for roof in document.roofs}
+
+    def ring(points: list[list[float]], offset: list[float]) -> list[list[float]]:
+        return [[p[0] - offset[0], p[1] - offset[1]] for p in points]
+
+    roofs = [
+        roof.model_copy(
+            update={
+                "boundary_uv": ring(roof.boundary_uv, offsets[roof.id]),
+                "holes_uv": [ring(hole, offsets[roof.id]) for hole in roof.holes_uv],
+            }
+        )
+        for roof in document.roofs
+    ]
+    arrays = [
+        array.model_copy(
+            update={"origin_uv": ring([array.origin_uv], offsets[array.roof_id])[0]}
+        )
+        for array in document.arrays
+    ]
+    obstacles = [
+        obstacle.model_copy(
+            update={
+                "footprint_uv": ring(obstacle.footprint_uv, offsets[obstacle.roof_id])
+            }
+        )
+        for obstacle in document.obstacles
+    ]
+    keepouts = [
+        area.model_copy(
+            update={"footprint_uv": ring(area.footprint_uv, offsets[area.roof_id])}
+        )
+        for area in document.keepouts
+    ]
+    return document.model_copy(
+        update={
+            "roofs": roofs,
+            "arrays": arrays,
+            "obstacles": obstacles,
+            "keepouts": keepouts,
+        }
+    )

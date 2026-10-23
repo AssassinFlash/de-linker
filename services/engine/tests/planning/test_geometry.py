@@ -93,7 +93,15 @@ def test_frozen_browser_server_pose_reference_still_matches() -> None:
                 [dataclasses.asdict(p) for p in panel_poses(read_geometry(value))]
             )
         )
-        assert actual == case["poses"]
+        assert len(actual) == len(case["poses"])
+        # Keep the original reference unchanged. New local-frame fields are
+        # tested separately; display vectors retain ordinary-scale behaviour.
+        for result, expected in zip(actual, case["poses"], strict=True):
+            for key, value in expected.items():
+                if isinstance(value, list):
+                    assert result[key] == pytest.approx(value, abs=1e-12)
+                else:
+                    assert result[key] == value
 
 
 def test_slope_length_and_tilted_rows_use_their_own_lower_edges() -> None:
@@ -332,3 +340,59 @@ def test_saved_geometries_replay_reopen_and_refuse_foreign_writers(
     assert workspace.get(user, project.id, revision=1).inputs == inputs
     with pytest.raises(InvalidInput):
         workspace.create(user, "New over policy", inputs, key="new")
+
+
+@pytest.mark.parametrize("rotation", [0, 30, 45, 60])
+@pytest.mark.parametrize("origin", [0, 10, 1e6, 1e15])
+def test_roof_rotation_and_translation_do_not_break_zero_contact(
+    rotation: float, origin: float
+) -> None:
+    value = one_panel()
+    value["arrays"][0]["origin_uv"] = [0, 0]
+    angle = math.radians(rotation)
+    value["roofs"][0].update(
+        origin_enu=[origin, origin, 4],
+        u_axis_enu=[math.cos(angle), math.sin(angle), 0],
+        v_axis_enu=[-math.sin(angle), math.cos(angle), 0],
+        boundary_uv=[[0, 0], [1, 0], [1, 2], [0, 2]],
+    )
+    assert review_geometry(value)["conflict_count"] == 0
+
+
+def test_one_centimetre_overlap_survives_large_enu_translation() -> None:
+    value = one_panel()
+    value["arrays"].append(
+        {**value["arrays"][0], "id": "second", "origin_uv": [1.99, 2]}
+    )
+    for origin in (0, 1e15):
+        value["roofs"][0]["origin_enu"] = [origin, 0, 4]
+        report = review_geometry(value)
+        assert report["conflict_count"] == 1
+        assert "panel_projected_overlap" in kinds(report)
+
+
+def test_review_rebases_large_uv_chart_before_constructing_small_panels() -> None:
+    value = one_panel()
+    value["arrays"][0]["origin_uv"] = [1e15 + 1, 1e15 + 2]
+    value["module_specs"][0].update(width_m=0.01, length_m=0.02)
+    value["roofs"][0]["boundary_uv"] = [
+        [1e15, 1e15],
+        [1e15 + 10, 1e15],
+        [1e15 + 10, 1e15 + 10],
+        [1e15, 1e15 + 10],
+    ]
+    assert review_geometry(value)["conflict_count"] == 0
+
+
+@pytest.mark.parametrize(
+    "degrees", [360, -360, 6898968225049280, 9007199254740991, -9007199254740991]
+)
+def test_rotation_reduces_before_trig_and_keeps_periodic_semantics(
+    degrees: float,
+) -> None:
+    value = one_panel()
+    value["arrays"][0]["rotation_deg"] = degrees
+    actual = panel_poses(read_geometry(value))[0]
+    value["arrays"][0]["rotation_deg"] = math.fmod(degrees, 360)
+    expected = panel_poses(read_geometry(value))[0]
+    assert actual == expected

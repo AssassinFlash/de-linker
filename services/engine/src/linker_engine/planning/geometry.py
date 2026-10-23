@@ -71,6 +71,12 @@ class PanelPose:
     row: int
     column: int
     included: bool
+    centre_uvn: Vector
+    u_axis_uvn: Vector
+    v_axis_uvn: Vector
+    normal_uvn: Vector
+    # Absolute display coordinates can lose local detail at huge origins.
+    # Fit/rays/rebased rendering must use the retained local frame instead.
     centre_enu: Vector
     u_axis_enu: Vector
     v_axis_enu: Vector
@@ -80,20 +86,80 @@ class PanelPose:
     thickness_m: float
     stc_power_w: float
 
+    def corners_uvn(self) -> list[Vector]:
+        return cuboid_corners(
+            self.centre_uvn,
+            self.u_axis_uvn,
+            self.v_axis_uvn,
+            self.normal_uvn,
+            self.width_m,
+            self.length_m,
+            self.thickness_m,
+        )
+
     def corners(self) -> list[Vector]:
-        return [
+        return cuboid_corners(
+            self.centre_enu,
+            self.u_axis_enu,
+            self.v_axis_enu,
+            self.normal_enu,
+            self.width_m,
+            self.length_m,
+            self.thickness_m,
+        )
+
+
+def cuboid_corners(
+    centre: Vector,
+    u_axis: Vector,
+    v_axis: Vector,
+    normal: Vector,
+    width: float,
+    length: float,
+    thickness: float,
+) -> list[Vector]:
+    return [
+        add(
+            centre,
             add(
-                self.centre_enu,
+                scale(u_axis, u * width / 2),
                 add(
-                    scale(self.u_axis_enu, u * self.width_m / 2),
-                    add(
-                        scale(self.v_axis_enu, v * self.length_m / 2),
-                        scale(self.normal_enu, n * self.thickness_m / 2),
-                    ),
+                    scale(v_axis, v * length / 2),
+                    scale(normal, n * thickness / 2),
                 ),
-            )
-            for u, v, n in product((-1, 1), repeat=3)
-        ]
+            ),
+        )
+        for u, v, n in product((-1, 1), repeat=3)
+    ]
+
+
+def sin_cos_degrees(degrees: float) -> tuple[float, float]:
+    # Signed binary64 remainder matches JS %, before multiplication by pi.
+    # Exact quadrant values prevent a nominal 90deg edge from drifting.
+    reduced = math.fmod(degrees, 360)
+    quadrants: dict[float, tuple[float, float]] = {
+        0: (0.0, 1.0),
+        90: (1.0, 0.0),
+        -90: (-1.0, 0.0),
+        180: (0.0, -1.0),
+        -180: (0.0, -1.0),
+        270: (-1.0, 0.0),
+        -270: (1.0, 0.0),
+    }
+    if reduced in quadrants:
+        return quadrants[reduced]
+    radians = (reduced * math.pi) / 180
+    return math.sin(radians), math.cos(radians)
+
+
+def vector_from_roof(roof: RoofFace, uvn: Vector) -> Vector:
+    return add(
+        scale(roof.u_axis_enu, uvn[0]),
+        add(
+            scale(roof.v_axis_enu, uvn[1]),
+            scale(cross(roof.u_axis_enu, roof.v_axis_enu), uvn[2]),
+        ),
+    )
 
 
 def panel_poses(document: GeometryDocument) -> list[PanelPose]:
@@ -103,33 +169,31 @@ def panel_poses(document: GeometryDocument) -> list[PanelPose]:
     poses = []
     for array in document.arrays:
         roof, spec = roofs[array.roof_id], specs[array.module_spec_id]
-        angle, tilt = (
-            math.radians(array.rotation_deg),
-            math.radians(array.mount_tilt_deg),
+        sin_angle, cos_angle = sin_cos_degrees(array.rotation_deg)
+        sin_tilt, cos_tilt = sin_cos_degrees(array.mount_tilt_deg)
+        local_u = (cos_angle, sin_angle, 0.0)
+        local_v = (-sin_angle * cos_tilt, cos_angle * cos_tilt, sin_tilt)
+        local_normal = cross(local_u, local_v)
+        u, v, panel_normal = (
+            vector_from_roof(roof, axis) for axis in (local_u, local_v, local_normal)
         )
-        normal = cross(roof.u_axis_enu, roof.v_axis_enu)
-        u = add(
-            scale(roof.u_axis_enu, math.cos(angle)),
-            scale(roof.v_axis_enu, math.sin(angle)),
-        )
-        row_axis = add(
-            scale(roof.u_axis_enu, -math.sin(angle)),
-            scale(roof.v_axis_enu, math.cos(angle)),
-        )
-        v = add(scale(row_axis, math.cos(tilt)), scale(normal, math.sin(tilt)))
-        panel_normal = cross(u, v)
-        origin = on_roof(roof, *array.origin_uv)
         excluded = set(array.excluded_slots)
         for row, column in product(range(array.rows), range(array.columns)):
             x = column * (spec.width_m + array.column_gap_m) + spec.width_m / 2
             y = (
-                row * (spec.length_m * math.cos(tilt) + array.row_gap_m)
-                + spec.length_m * math.cos(tilt) / 2
+                row * (spec.length_m * cos_tilt + array.row_gap_m)
+                + spec.length_m * cos_tilt / 2
             )
-            z = array.lower_edge_clearance_m + spec.length_m * math.sin(tilt) / 2
-            centre = add(
-                origin, add(scale(u, x), add(scale(row_axis, y), scale(normal, z)))
+            z = array.lower_edge_clearance_m + spec.length_m * sin_tilt / 2
+            centre_uvn = add(
+                (
+                    array.origin_uv[0] + x * cos_angle - y * sin_angle,
+                    array.origin_uv[1] + x * sin_angle + y * cos_angle,
+                    z,
+                ),
+                scale(local_normal, spec.thickness_m / 2),
             )
+            centre = add(roof.origin_enu, vector_from_roof(roof, centre_uvn))
             poses.append(
                 PanelPose(
                     f"{array.id}:{row}:{column}",
@@ -138,7 +202,11 @@ def panel_poses(document: GeometryDocument) -> list[PanelPose]:
                     row,
                     column,
                     f"{row}:{column}" not in excluded,
-                    add(centre, scale(panel_normal, spec.thickness_m / 2)),
+                    centre_uvn,
+                    local_u,
+                    local_v,
+                    local_normal,
+                    centre,
                     u,
                     v,
                     panel_normal,

@@ -12,7 +12,11 @@ import type { GeometryDocument, Vec3 } from "./geometry.ts";
 import flatFixture from "../../../../fixtures/planning/geometry-flat.json" with { type: "json" };
 import poseReference from "../../../../fixtures/planning/geometry-pose-reference.json" with { type: "json" };
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
-import { moduleSummary, panelPoses } from "./panelPoses.ts";
+import {
+	moduleSummary,
+	panelPoses,
+	panelPositionRelative,
+} from "./panelPoses.ts";
 import { readGeometry } from "./validateGeometry.ts";
 
 // Analytic geometry fixtures, with deliberately synthetic module dimensions.
@@ -183,4 +187,64 @@ test("browser poses match frozen server poses across slope, rotation and tilted 
 			}
 		}
 	}
+});
+
+test("periodic angles normalise before trig and large origins retain a rebased local pose", () => {
+	for (const angle of [
+		360, -360, 6898968225049280, 9007199254740991, -9007199254740991,
+	]) {
+		const document = fixture();
+		const run = (rotation_deg: number) =>
+			panelPoses({
+				...document,
+				arrays: [{ ...document.arrays[0]!, rotation_deg }],
+			});
+		assert.deepEqual(run(angle), run(angle % 360));
+	}
+	const document = fixture();
+	const roof = { ...document.roofs[0]!, origin_enu: [1e15, 0, 4] as Vec3 };
+	const pose = panelPoses({ ...document, roofs: [roof] })[0]!;
+	assert.deepEqual(
+		panelPositionRelative(pose, roof, roof.origin_enu),
+		[1.5, 3, 0.12000000000000001],
+	);
+});
+
+test("source UTC semantics and duplicate excluded slots agree with the server", () => {
+	const document = fixture();
+	for (const acquired_at_utc of [
+		"yesterday",
+		"2024-02-30T00:00:00Z",
+		"2024-01-01T00:00:00+01:00",
+		"0000-01-01T00:00:00Z",
+	]) {
+		assert.throws(() =>
+			readGeometry(
+				{
+					...document,
+					sources: [{ ...document.sources[0]!, acquired_at_utc }],
+				},
+				geometryPolicy,
+			),
+		);
+	}
+	const accepted = {
+		...document,
+		sources: [
+			{
+				...document.sources[0]!,
+				acquired_at_utc: "2024-02-29T23:30:00.123456+00:00",
+			},
+		],
+	};
+	assert.equal(readGeometry(accepted, geometryPolicy), accepted);
+	assert.throws(() =>
+		readGeometry(
+			{
+				...document,
+				arrays: [{ ...document.arrays[0]!, excluded_slots: ["0:0", "0:0"] }],
+			},
+			geometryPolicy,
+		),
+	);
 });

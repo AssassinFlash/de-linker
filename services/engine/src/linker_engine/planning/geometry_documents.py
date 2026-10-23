@@ -60,7 +60,15 @@ class GeometrySource(Document):
     rights_note: Text
     reference_url: Text | None
     reference_sha256: Hash | None
-    acquired_at_utc: Text | None
+    acquired_at_utc: (
+        Annotated[
+            Text,
+            Field(
+                pattern=r"^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]{1,6})?(Z|\+00:00)$"
+            ),
+        ]
+        | None
+    )
     spatial_precision_m: Nonnegative | None
     calibration_note: Text
     rights_basis: Literal["user_attestation", "referenced_licence", "synthetic"]

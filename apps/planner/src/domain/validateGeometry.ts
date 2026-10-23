@@ -88,6 +88,16 @@ export function readGeometry(
 		throw new GeometryInputError("duplicate_layout_rules");
 	for (const source of value.sources) {
 		checkUrl(source.reference_url, source.id);
+		if (source.acquired_at_utc !== null) {
+			const stamp = source.acquired_at_utc;
+			const date = new Date(stamp);
+			if (
+				Number(stamp.slice(0, 4)) < 1 ||
+				!Number.isFinite(date.getTime()) ||
+				date.toISOString().slice(0, 19) !== stamp.slice(0, 19)
+			)
+				throw new GeometryInputError("invalid_acquisition_time", source.id);
+		}
 		if (
 			source.permissions.retain !== "permitted" ||
 			source.permissions.derive !== "permitted"
@@ -157,6 +167,8 @@ export function readGeometry(
 		total += count;
 		if (!Number.isSafeInteger(total) || total > limits.max_panels)
 			throw new GeometryInputError("geometry_panel_limit");
+		if (new Set(array.excluded_slots).size !== array.excluded_slots.length)
+			throw new GeometryInputError("duplicate_excluded_slot", array.id);
 		for (const slot of array.excluded_slots) {
 			const [row, column] = slot.split(":").map(Number);
 			if (

@@ -33,3 +33,24 @@ export function roofCoordinates(roof: RoofFace, enu: Vec3): Vec2 {
 /** Right-handed ENU → right-handed Three Y-up. No global DEFAULT_UP mutation. */
 export const toRender = ([east, north, up]: Vec3): Vec3 => [east, up, -north];
 export const fromRender = ([x, y, z]: Vec3): Vec3 => [x, -z, y];
+
+/** Signed binary64 remainder and exact quadrant values, shared with Python. */
+export function sinCosDegrees(degrees: number): readonly [number, number] {
+	const reduced = degrees % 360;
+	if (reduced === 0) return [0, 1];
+	if (reduced === 90 || reduced === -270) return [1, 0];
+	if (reduced === -90 || reduced === 270) return [-1, 0];
+	if (reduced === 180 || reduced === -180) return [0, -1];
+	const radians = (reduced * Math.PI) / 180;
+	return [Math.sin(radians), Math.cos(radians)];
+}
+
+export function vectorFromRoof(roof: RoofFace, [u, v, n]: Vec3): Vec3 {
+	return add(
+		scale(roof.u_axis_enu, u),
+		add(
+			scale(roof.v_axis_enu, v),
+			scale(cross(roof.u_axis_enu, roof.v_axis_enu), n),
+		),
+	);
+}
