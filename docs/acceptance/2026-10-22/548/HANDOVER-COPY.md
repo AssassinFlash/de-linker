@@ -72,3 +72,12 @@ zusätzlichen Messwerte.”
 
 The parent applied this final pair. Fixed-source and native rendered readback
 remain distinct acceptance gates below; the initial draft is kept as history.
+
+## Applied copy acceptance
+
+ef30778d passed both fixed-source review axes. Native discovery503 showed the
+selected recovery message in EN/DE at1440/390; existing save remained usable.
+The original frozen settings and exact interpretation pair were opened and
+read in both languages at those viewports. The native module/gettext hash and
+phase-specific PNGs are pinned in [the manifest](handover-native/acceptance.json).
+No additional customer message was added during this acceptance.

@@ -189,8 +189,8 @@ axes retain the earlier330 planning/31 Node/42 DOM and no-old-symbol evidence.
 Native CUA has now completed unknown creation→actual Woo login→explicit retry:
 the already-created71325bf40adb441ca7696896828857e3 remained revision1 and was
 not duplicated. Unknown CSV import has survived EN/DE×1440/390 and actual login,
-preserving its original file, mapping and request; its final explicit retry,
-selection and saved readback are still being completed.
+preserving its original file, mapping and request. Its final retry, selection
+and saved readback are recorded in the native acceptance below.
 
 Expanding its original settings exposed an interface defect: only program JSON
 was offered for review. The new read-only ProfileImportSettings consumes the
@@ -202,5 +202,43 @@ to an incorrect kWh/end label. The fixed interpretation sentence passed the
 independent opposition/parent selection recorded in HANDOVER-COPY.md.
 31 Node/45 DOM, strict TS, build/manifest and targeted three settings cases pass;
 the188-module build is486.80kB/gzip143.13kB. Existing WindPress classes are reused.
-This rendered-settings correction still needs its own fixed-source axes and
-native readback; neither accepted recovery core nor this status closes path A.
+The fixed-source axes and native readback of this correction are recorded
+below; neither accepted recovery core nor this status closes path A.
+
+## Accepted settings ef30778d and native handover
+
+Standards PASS and Spec PASS independently cover 01ac29ea→ef30778d while
+retaining the accepted complete recovery core. Standards reran21 relevant DOM
+cases, native module/gettext copy identity and manifest checks. Spec reran31
+Node/45 DOM cases, plus independent fractional duration and unknown external
+unit/timestamp challenges. The final explanatory pair matches both native
+languages. Source/rights remain escaped and the immutable command unchanged.
+
+The [native acceptance manifest](handover-native/acceptance.json) pins source,
+frontend hash, viewport method, phase distinctions and each evidence hash.
+The actual site login was verified through the account Overview and independent
+engine ownership before retrying. A previous incomplete login interaction was
+not accepted as proof. Explicit German mobile retry returned the one original
+asset1ffa8ae534e045329aedae25c8bf9118. Selection and Save project persisted it
+in project5c9fca3466324c308895cc8b386dc6db revision2; reload and EN/DE switching
+retained the same original bytes and metadata. The quality view reports1kWh,
+0.5h covered and0.75h missing; these are synthetic interval data, not annual
+or instantaneous estimates. Readable settings and their interpretation were
+inspected in EN/DE at1440/390 before that confirmed account handover.
+
+A second narrowly scoped local fixture made only native recovery discovery
+return503. EN/DE×1440/390 show the reviewed message and disabled new creation.
+The existing project remained accessible and saved its synthetic note as
+revision3. After removing the fixture, explicit Check session restored discovery
+and new creation. Fresh EN/DE readback retained revision3, the note and source,
+without a pending import selector or discovery warning. The final read-only
+database record verifies one source asset, one original creation, exact selected
+asset and all referenced CAS hashes. This final revision3 evidence is separate
+from the earlier revision2 save record.
+
+Both local fault fixtures and their state files/options were removed and read
+back absent. No production write, real email or formal tool route cutover was
+performed. The current-viewport PNG captures use no coordinate clip; earlier
+diagnostic captures with incorrect scroll framing are excluded. This accepts
+the recovery/settings increment only. Project files/account entry, unified
+design editing and all remaining workbench/engineering/site paths remain active.

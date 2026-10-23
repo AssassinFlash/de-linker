@@ -1,0 +1,189 @@
+{
+  "source_commit": "ef30778d579e5055a8ee94e6cd48ebef7e0dbb2c",
+  "frontend_sha256": "f9e71051f4be59e3686869e9ac17bde121322e0b0faee397efd825142351b396",
+  "runtime": "isolated p548 WordPress/WooCommerce; native browser; engine database and CAS read-only verification",
+  "viewports": {
+    "desktop": [
+      1440,
+      1000
+    ],
+    "mobile": [
+      390,
+      844
+    ]
+  },
+  "screenshot_method": "CUA-controlled browser CDP Page.captureScreenshot current viewport, no clip; PNG. No separate browser automation.",
+  "phase_notes": {
+    "settings-readable": "guest pending exact original import; final frontend, before second verified login",
+    "upload-unknown-guest": "guest before verified native account handover",
+    "upload-unknown-account": "verified native login and engine claim, original intent still awaits explicit retry",
+    "saved-source": "revision 2 after retry, selection, save and reload",
+    "discovery-unavailable": "temporary scoped native discovery503, new creation disabled and existing project available",
+    "save-during-discovery-failure": "revision 3 with synthetic note while discovery unavailable",
+    "discovery-restored": "fixture removed; explicit native session check; new creation enabled",
+    "final-restored": "revision 3, original source unchanged and pending selector absent"
+  },
+  "coverage": "Recovery/CSV settings increment only. No engineering calculation, renderer, whole path A, formal route cutover or production claim.",
+  "files": [
+    {
+      "path": "handover-upload-unknown-guest-en-1440.png",
+      "bytes": 196108,
+      "sha256": "2c046191d29668780e4ae2eb5ec2f31910b6d354f66be88099ec171209971828"
+    },
+    {
+      "path": "handover-upload-unknown-guest-en-390.png",
+      "bytes": 63825,
+      "sha256": "e06812d4f8cb58911b7ca9308b5a2c74a68b26b74f72ef110bad3427fa84da2a"
+    },
+    {
+      "path": "handover-upload-unknown-guest-de-1440.png",
+      "bytes": 206391,
+      "sha256": "c100862014c1a84ef211ffa3cf78bf01809305311c7c09c3cc067a342ca9e1fe"
+    },
+    {
+      "path": "handover-upload-unknown-guest-de-390.png",
+      "bytes": 68623,
+      "sha256": "364db2e7d9f35d27cfe917a197a47b77f46518163072156b2873a55665849f22"
+    },
+    {
+      "path": "handover-settings-readable-en-1440.png",
+      "bytes": 146447,
+      "sha256": "882013a8e2aff020d3b442d9c6af61a0761db76d234a1c928c6629e82f724b28"
+    },
+    {
+      "path": "handover-settings-readable-en-390.png",
+      "bytes": 48005,
+      "sha256": "ce5c01eff3e08744962e52d3034af3ab2cae3a9ab2a0488f644d133a843804c2"
+    },
+    {
+      "path": "handover-settings-readable-de-1440.png",
+      "bytes": 165764,
+      "sha256": "5206d9338b64412ed19d74f59c232ba702aa7f82f84090f662339134a3adc906"
+    },
+    {
+      "path": "handover-settings-readable-de-390.png",
+      "bytes": 61517,
+      "sha256": "35738a3145c9092c937cd5016ca92ae24f76486033a281c861f6c0ff374e17cc"
+    },
+    {
+      "path": "handover-saved-source-en-1440.png",
+      "bytes": 138098,
+      "sha256": "d8b0fe248d3d20d268e7004c45fed5eb90223eace003d616c9cf0f962a0ce50c"
+    },
+    {
+      "path": "handover-saved-source-en-390.png",
+      "bytes": 45678,
+      "sha256": "f408ae5feb3e5e207b3ecf185e75aa91decb809378abdb1192523d2d8fa11057"
+    },
+    {
+      "path": "handover-saved-source-de-1440.png",
+      "bytes": 158442,
+      "sha256": "97696101d4147702720ff8322e0f4c172d9166c3fd679bc56aa73a27366b37dc"
+    },
+    {
+      "path": "handover-saved-source-de-390.png",
+      "bytes": 66328,
+      "sha256": "07444632de5b9ffbf9d03afaf0b287886050e5a1cb6b04787919467b777f133d"
+    },
+    {
+      "path": "handover-discovery-unavailable-en-1440.png",
+      "bytes": 136487,
+      "sha256": "64b67d08a97b98489cad723e1904c94dd1932ce395e2b093476e5826a0b6302e"
+    },
+    {
+      "path": "handover-discovery-unavailable-en-390.png",
+      "bytes": 53760,
+      "sha256": "01577877eeb5468b9f2d7ed4ec6c0bac057d017e499a1b9538acffe42add7569"
+    },
+    {
+      "path": "handover-discovery-unavailable-de-1440.png",
+      "bytes": 101468,
+      "sha256": "6809f345e23c90754cb1a78a69b248f7a326f77a184a0ddff4c7e4e07334eecd"
+    },
+    {
+      "path": "handover-discovery-unavailable-de-390.png",
+      "bytes": 49639,
+      "sha256": "ad97a5cead29f11b845b4a3408b2683676754f5e30f4754cb8f0bfc79766d24d"
+    },
+    {
+      "path": "handover-upload-unknown-account-de-390.png",
+      "bytes": 50554,
+      "sha256": "e45e08ffe7d4a46e554fdd932664c4f3f752a77394f61500d87a4ecbc7661b04"
+    },
+    {
+      "path": "handover-upload-recovered-quality-de-390.png",
+      "bytes": 58975,
+      "sha256": "10cfb62f12a88f7b3791f93c571665e0bc685f4c7570cb2d282ef3994f1e684d"
+    },
+    {
+      "path": "handover-settings-assumption-en-390.png",
+      "bytes": 80408,
+      "sha256": "4430c2da4121e97d56c4925771a40a419c32ca60a90f81669e3f039de8f192f7"
+    },
+    {
+      "path": "handover-settings-assumption-de-390.png",
+      "bytes": 83474,
+      "sha256": "ab4430d2338ead4ebeb8f6bc5d91de1c4e2b91a98ebdf77146c5d57403e7e708"
+    },
+    {
+      "path": "handover-save-during-discovery-failure-de-1440.png",
+      "bytes": 134888,
+      "sha256": "8f73216d4331d756f13cf8f584ed11ebf602e22ec31da6dd1c1e8ddb837360fd"
+    },
+    {
+      "path": "handover-discovery-restored-de-1440.png",
+      "bytes": 97937,
+      "sha256": "6c6f3e42db906063d4e9861793993863cb9aa0b0d87bee71f217ef3676bf8feb"
+    },
+    {
+      "path": "handover-final-restored-en-1440.png",
+      "bytes": 142750,
+      "sha256": "8d80fa60790734983444c843d05e019486fa315b6fae0b29a7c3947f0cf2bae3"
+    },
+    {
+      "path": "native-handover-before-upload-retry.json",
+      "bytes": 783,
+      "sha256": "a795e2941c8e1bd32e13c717f3ef08d875a8b8b10295598fc4dbf329c764f4b6"
+    },
+    {
+      "path": "native-handover-saved-backend.json",
+      "bytes": 1562,
+      "sha256": "487376f1196665b2f4dcb4d83f777d77e541b011abc6419f1c6a7a580f293a1f"
+    },
+    {
+      "path": "native-handover-final-backend.json",
+      "bytes": 1761,
+      "sha256": "b29107303759cdb38762f5537e6d64c9003876f66cd269bbf04c614026cd7488"
+    },
+    {
+      "path": "handover-visible-readback-en.json",
+      "bytes": 5317,
+      "sha256": "9e1dc43b439b2fb3208271b889910dd041e7068d2bfe3b31379508c8d30bb3a5"
+    },
+    {
+      "path": "handover-restored-readback-en.json",
+      "bytes": 2457,
+      "sha256": "619d6c6622c0dbaac9b1dd5138ca19e8fb33f390230ad794218956e54febfa86"
+    },
+    {
+      "path": "handover-restored-readback-de.json",
+      "bytes": 5456,
+      "sha256": "55cd7ebd3aa21614b5841bc1abd58ebc555b60014698ce3d9e0663ebaf7ddd82"
+    },
+    {
+      "path": "native-ack-fixture-cleanup.json",
+      "bytes": 506,
+      "sha256": "c31452716a615e25a81e0223b0a5cbd60a2b791f84db48c488e7871efd44358b"
+    },
+    {
+      "path": "native-recovery-fixture-cleanup.json",
+      "bytes": 603,
+      "sha256": "c769d93a30f0b40c73fa858a10446f95b826cb0bb71297be3a1c1e4ae9f63555"
+    },
+    {
+      "path": "synthetic-net-import-dst-548.csv",
+      "bytes": 140,
+      "sha256": "c3786829889364e06731c2caa91019214bb3e20fff241ed6ba4e89423f9fd6c0"
+    }
+  ]
+}
