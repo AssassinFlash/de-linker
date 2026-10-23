@@ -1,0 +1,35 @@
+# Woo publication preparation and runtime checks
+
+Implementation responsibility: [Genie and knowledge publication](https://github.com/AssassinFlash/de-linker/issues/615). Business rules: `docs/specs/609-product-publication.md`.
+
+The model channels, customer ownership rules and private historical PDF downloads do not change. The existing EcoFlow draft states and emergency file rules stay in place. This code must be rehearsed with the Woo foundation and engine/receipt work before deployment.
+
+## Runtime
+
+`GENIE_WP_URL` supplies the sole publication authority. Every turn reads the no-store Woo manifest and validates the complete input dependency set again before release. Product tools validate all returned candidates, not only displayed cards. A missing authority closes the affected turn. Product vocabulary and page/draft caches are also invalidated by the current source revision; hooks are an optimization rather than permission.
+
+Knowledge search intersects current Woo product/document revisions with the actual loaded SQLite proof tables. Empty filters authorize no passages. Fallback and same-page/short-datasheet expansion use the same permitted rows. Content SHA reuses parsing, not authorization; document IDs, content revisions and per-product associations remain separate.
+
+The build records only explicit, proven model passages. The chunker's generic context header cannot prove a passage's applicability because it lists every model in a shared manual. Unknown code-bearing passages, generic passages without explicit applicability and mixed withdrawn-model tables remain unready. `manifest.json.permission_coverage` reports proven versus total chunks. This is deliberately conservative and is **not a claim that the former whole-library retrieval recall baseline has been retained**. Publication readiness is per product: each associated document must have a proven passage, and parse failures do not mark a product ready.
+
+Old indexes without proof tables cannot authorize knowledge hits. Every search resolves the current symlink, opens the immutable new release and retires the old connection under the shared search lock. Authenticated `POST /knowledge/loaded` returns the process's actual `index_version`, `source_revision` and prepared product revisions. Reading a disk manifest alone is insufficient.
+
+New turns omit historical assistant messages from model input. Customer messages remain project inputs; old uploaded-file readings are re-identified against Woo before reuse. A supplied withdrawn model, including in a photo, permits identification and the owned bilingual team handoff sentence only. Personal saved solutions are explicitly historical snapshots and grant no current product-card IDs. The PHP proxy revalidates before committing; stored current-turn receipts carry server-only dependencies, and receipts without those proofs cannot bypass the service on replay. Historical transcript text remains available.
+
+Historical active document links require a stored `document_id` and the same current `document_revision`; old links without identity or links to a replaced same-URL file are disabled. The current original-file gate independently enforces download permission. These technical document rules do not touch the account's owner-gated historical report files.
+
+## Mac worker installation
+
+Use a stable checked-out source path with the locked Genie index dependencies installed. Do not install a launchd job pointing at a temporary review worktree. Keep one configured worker for this site. Heavy Docling/OCR/embedding preparation stays on the Mac; the worker refuses to run elsewhere.
+
+1. Provision a mode-0600 environment file outside the repository with `LINKER_PUBLICATION_JOBS_URL` (ending `/wp-json/linker/v1/publication/jobs`), `LINKER_PUBLICATION_USER`, `LINKER_PUBLICATION_PASSWORD` (existing WP Application Password user with `manage_woocommerce`), and `GENIE_SERVICE_TOKEN`. Keep existing embedding credentials and model routing. `--rest-config` uses the existing private REST JSON; its site origin must equal the queue origin. No credential goes in a plist or issue.
+2. Choose the polling interval for the build machine's availability and a lease longer than its measured complete-build budget. Render the plist first with `python ops/install_publication_worker.py --env-file <private-path> --interval-seconds <interval> --lease-seconds <measured-budget> --worker-id <stable-id> --loaded-url <loopback-or-forward>/knowledge/loaded --host <configured-ssh-alias>`. Add `--install` only in the deployment session, then read back `launchctl print` and the actual process/path. Replacing an existing worker requires reading its active definition first; this implementation session does not install it.
+3. Keep a controlled loopback/SSH forward to the service's `/knowledge/loaded`. The request uses the existing service token. Do not expose or disable the service gate. The existing publish CLI uploads and atomically switches the index; the worker then reads the **serving process** and acknowledges only matching loaded source/index versions and prepared product revisions.
+4. Rehearse offline, build failure, expired leases, edit-during-build, partial readiness, old loaded process and restart. Woo retains pending work; `claim` automatically reconciles current source. Old jobs cannot authorize later states. Partial preparation persists its loaded subset and remains pending automatically; the polling interval bounds retry frequency. Runtime withdrawal does not wait for this schedule.
+5. On successful publication, the worker prunes only its ledger-owned local successful build directories to current and previous; existing evaluation/bake-off evidence is preserved, while the established host release tool retains its bounded current/rollback set. It reuses content-addressed PDF, parse and embedding caches. Do not make a fresh full site copy for each job. At acceptance/merge remove this task's rebuildable dependencies and retire its managed worktree following `docs/agents/local-storage.md`.
+
+## Acceptance boundaries
+
+The implementation tests use actual FTS5/sqlite-vec SQLite files and HTTP transports without paid model or email calls. Source-layer tests establish fail-closed permissions and loading behavior; they do not establish production deployment, a completed full knowledge rebuild, live model-answer quality, or launchd installation. Review-station acceptance must include one Woo edit flowing through claim/build/publish/loaded/ack, fresh EN/DE customer turns, 390/1440 artifact states, and stage-one production controls before promotion.
+
+Keep the 49 emergency EcoFlow paths until the replacement file gate proves anonymous original URLs, aliases, HEAD/GET/Range and caches are equally protected. Preserve the reversible current code/index generation; rolling back an index never rolls back current Woo permission.

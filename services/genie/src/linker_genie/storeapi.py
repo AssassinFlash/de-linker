@@ -21,6 +21,7 @@ from typing import Any
 import httpx
 
 from linker_genie.lexicon import Category, Product, Vocabulary, build
+from linker_genie.publication import PublicationClient, PublicationUnavailable
 
 # Store API's own page size ceiling (WooCommerce Store API, `per_page` maximum 100).
 PAGE_SIZE = 100
@@ -46,6 +47,7 @@ class StoreVocabulary:
         transport: httpx.BaseTransport | None = None,
         clock: Callable[[], float] = time.monotonic,
         ttl: float = TTL_SECONDS,
+        publication: PublicationClient | None = None,
     ) -> None:
         self._client = httpx.Client(
             base_url=base_url.rstrip("/"),
@@ -59,6 +61,8 @@ class StoreVocabulary:
         self._lock = threading.Lock()
         self._cached: Vocabulary | None = None
         self._loaded_at = 0.0
+        self._publication = publication
+        self._source_revision = ""
 
     def close(self) -> None:
         self._client.close()
@@ -66,17 +70,39 @@ class StoreVocabulary:
     def get(self) -> Vocabulary:
         with self._lock:
             now = self._clock()
-            if self._cached is None or now - self._loaded_at >= self._ttl:
+            try:
+                source = (
+                    self._publication.snapshot()
+                    if self._publication is not None
+                    else None
+                )
+            except PublicationUnavailable as error:
+                raise VocabularyError(str(error)) from error
+            changed = (
+                source is not None and self._source_revision != source.source_revision
+            )
+            if self._cached is None or changed or now - self._loaded_at >= self._ttl:
                 self._cached = self._load()
                 self._loaded_at = now
+                if source is not None:
+                    self._source_revision = source.source_revision
             return self._cached
 
     def _load(self) -> Vocabulary:
-        english = [_product(item) for item in self._pages("/products", {})]
+        permit = self._publication.snapshot() if self._publication is not None else None
+        english = [
+            _product(item)
+            for item in self._pages("/products", {})
+            if permit is None or permit.canonical(int(item.get("id", 0))) is not None
+        ]
         categories = [
             _category(item) for item in self._pages("/products/categories", {})
         ]
-        german = [_product(item) for item in self._pages("/products", {"lang": "de"})]
+        german = [
+            _product(item)
+            for item in self._pages("/products", {"lang": "de"})
+            if permit is None or permit.canonical(int(item.get("id", 0))) is not None
+        ]
         german_categories = [
             _category(item)
             for item in self._pages("/products/categories", {"lang": "de"})

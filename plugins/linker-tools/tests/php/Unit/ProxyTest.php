@@ -14,6 +14,7 @@ use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\PublicationGuard;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 use WP_REST_Request;
@@ -546,12 +547,13 @@ final class ProxyTest extends TestCase {
 	/**
 	 * A proxy whose conversations always answer 51.
 	 *
-	 * @param callable|null        $fetch  HTTP client.
-	 * @param RecordingThread|null $thread Conversation store; a recording one by default.
-	 * @param bool                 $uploads Whether the turn may carry files.
-	 * @param string               $token   The shared service token; '' for a site without one.
+	 * @param callable|null         $fetch  HTTP client.
+	 * @param RecordingThread|null  $thread Conversation store; a recording one by default.
+	 * @param bool                  $uploads Whether the turn may carry files.
+	 * @param string                $token   The shared service token; '' for a site without one.
+	 * @param PublicationGuard|null $publication Source permission fixture.
 	 */
-	private function proxy( ?callable $fetch = null, ?RecordingThread $thread = null, bool $uploads = false, string $token = 'token' ): Proxy {
+	private function proxy( ?callable $fetch = null, ?RecordingThread $thread = null, bool $uploads = false, string $token = 'token', ?PublicationGuard $publication = null ): Proxy {
 		$conversations = new class() extends Conversations {
 			/**
 			 * Always the same conversation.
@@ -617,7 +619,8 @@ final class ProxyTest extends TestCase {
 			null,
 			// An allowance that never runs out: the limit has its own tests.
 			$uploads ? new Attachments( static fn(): bool => true ) : null,
-			$token
+			$token,
+			$publication ?? new FixturePublication()
 		);
 	}
 
@@ -717,7 +720,8 @@ final class ProxyTest extends TestCase {
 			null,
 			null,
 			null,
-			'token'
+			'token',
+			new FixturePublication()
 		);
 
 		$thread = $proxy->conversation();
@@ -1028,5 +1032,54 @@ final class ProxyTest extends TestCase {
 			WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
 			$this->assertSame( 52, $proxy->conversation()->get_data()['conversation_id'] );
 			$this->assertConditionsMet();
+	}
+	/** A current read which loses permission cannot commit its generated text. */
+	public function test_publication_change_before_commit_preserves_prior_thread(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$thread = new RecordingThread();
+		$guard  = new class() extends PublicationGuard {
+			/**
+			 * Read the original current scope.
+			 *
+			 * @return array<string,mixed>
+			 */
+			public function dependencies(): array|WP_Error {
+				return array(
+					'products'  => array(),
+					'documents' => array(),
+				);
+			}
+			/**
+			 * The source withdrew during the HTTP call.
+			 *
+			 * @param array<string,mixed> $dependencies Initial proof.
+			 */
+			public function validate( array $dependencies ): true|WP_Error {
+				unset( $dependencies );
+				return new WP_Error( 'publication_changed', 'Changed', array( 'status' => 409 ) );
+			}
+		};
+		$proxy  = $this->proxy( static fn(): string => "event: done\ndata: {}\n\n", $thread, false, 'token', $guard );
+		$result = $proxy->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertNull( $thread->recorded );
+	}
+
+	/** Legacy and malformed receipts cannot restore a current answer without proof. */
+	public function test_old_genie_receipt_requires_publication_dependencies(): void {
+		$reply = new WP_REST_Response( array( 'stream' => 'old' ) );
+		$this->assertInstanceOf( WP_Error::class, PublicationGuard::restored( $reply, array( 'data' => array( 'stream' => 'old' ) ) ) );
+		$this->assertInstanceOf(
+			WP_Error::class,
+			PublicationGuard::restored(
+				$reply,
+				array(
+					'data'        => array( 'stream' => 'old' ),
+					'publication' => array(),
+				)
+			)
+		);
+		$this->assertSame( $reply, PublicationGuard::restored( $reply, array( 'data' => array( 'inquiry_id' => 7 ) ) ) );
 	}
 }

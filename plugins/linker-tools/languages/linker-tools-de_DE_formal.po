@@ -2171,7 +2171,7 @@ msgstr "Genie ist vorübergehend nicht verfügbar. Ihre Nachricht ist erhalten. 
 msgid "Your request could not be completed. Your input is still here. Please try again."
 msgstr "Ihre Anfrage konnte nicht verarbeitet werden. Ihre Eingaben sind erhalten. Bitte versuchen Sie es erneut."
 
-#: includes/Protection/Replies.php
+#: includes/Protection/Replies.php build/configurator.js
 msgid "The request status could not be confirmed. Please check before sending it again."
 msgstr "Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand."
 

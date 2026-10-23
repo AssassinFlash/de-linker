@@ -34,14 +34,21 @@ final class CompareProducts {
 	 * @var Comparison
 	 */
 	private readonly Comparison $comparison;
+	/**
+	 * Current operation snapshot.
+	 *
+	 * @var array<string,mixed>
+	 */
+	private array $publication_snapshot = array();
 
 	/**
 	 * Sets up the ability.
 	 *
 	 * @param Comparison|null $comparison Assembly override (tests).
+	 * @param PublicationData $publication Current authority reader.
 	 */
-	public function __construct( ?Comparison $comparison = null ) {
-		$this->comparison = $comparison ?? new Comparison();
+	public function __construct( ?Comparison $comparison = null, private readonly PublicationData $publication = new PublicationData() ) {
+		$this->comparison = $comparison ?? new Comparison( facts_reader: fn( int $id ) => $this->publication->facts( $id, $this->publication_snapshot ) );
 	}
 
 	/**
@@ -130,11 +137,19 @@ final class CompareProducts {
 	 * @return array{products: list<array<string, mixed>>, rows: list<array<string, mixed>>}
 	 */
 	public function execute( $input = array() ): array {
-		$input      = (array) $input;
-		$lang       = ProductText::lang( $input['lang'] ?? null );
-		$ids        = array_values( array_unique( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) );
-		$comparison = $this->comparison->of( $ids, $lang );
-		$products   = array();
+		$input                      = (array) $input;
+		$lang                       = ProductText::lang( $input['lang'] ?? null );
+		$ids                        = array_values( array_unique( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) );
+		$this->publication_snapshot = $this->publication->manifest();
+		if ( $this->publication->published( $ids, $this->publication_snapshot ) !== $ids ) {
+			return array(
+				'products' => array(),
+				'rows'     => array(),
+			);
+		}
+		$dependencies = $this->publication->dependencies( $ids, $this->publication_snapshot );
+		$comparison   = $this->comparison->of( $ids, $lang );
+		$products     = array();
 		foreach ( $comparison['products'] as $column ) {
 			$products[] = array(
 				'product_id' => $column['product_id'],
@@ -144,6 +159,12 @@ final class CompareProducts {
 			);
 		}
 
+		if ( ! $this->publication->unchanged( $dependencies ) ) {
+			return array(
+				'products' => array(),
+				'rows'     => array(),
+			);
+		}
 		return array(
 			'products' => $products,
 			'rows'     => array_map(

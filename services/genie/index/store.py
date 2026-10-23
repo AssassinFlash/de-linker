@@ -47,6 +47,10 @@ CREATE TABLE products (
     model TEXT NOT NULL,
     PRIMARY KEY (product_id, model)
 );
+CREATE TABLE publication_ready_products (product_id INTEGER PRIMARY KEY, product_revision TEXT NOT NULL);
+CREATE TABLE publication_products (product_id INTEGER PRIMARY KEY, product_revision TEXT NOT NULL);
+CREATE TABLE publication_documents (document_id TEXT NOT NULL, document_revision TEXT NOT NULL, blob_sha256 TEXT NOT NULL, product_id INTEGER NOT NULL, PRIMARY KEY(document_id,product_id));
+CREATE TABLE chunk_products (chunk_id TEXT PRIMARY KEY, product_ids TEXT NOT NULL);
 CREATE TABLE chunks (
     rowid INTEGER PRIMARY KEY,
     id TEXT NOT NULL UNIQUE,
@@ -90,6 +94,52 @@ def export(directory: Path, path: Path) -> None:
         db.executemany(
             "INSERT INTO meta (key, value) VALUES (?, ?)", sorted(values.items())
         )
+        proof = meta.publication
+        manifest = proof.get("manifest", {})
+        db.executemany(
+            "INSERT INTO publication_products VALUES (?, ?)",
+            [
+                (p["product_id"], p["product_revision"])
+                for p in manifest.get("products", [])
+            ],
+        )
+        db.executemany(
+            "INSERT INTO publication_documents VALUES (?, ?, ?, ?)",
+            [
+                (d["document_id"], d["document_revision"], d["blob_sha256"], pid)
+                for d in manifest.get("documents", [])
+                for pid in d["product_ids"]
+            ],
+        )
+        db.executemany(
+            "INSERT INTO chunk_products VALUES (?, ?)",
+            [
+                (cid, json.dumps(ids))
+                for cid, ids in proof.get("chunk_products", {}).items()
+            ],
+        )
+        # A product becomes prepared only after each associated document has
+        # at least one proven passage for it. Failures and ambiguous text stay pending.
+        chunks_by_id = {chunk.id: chunk for chunk, _ in corpus.read_chunks(directory)}
+        covered: dict[int, set[str]] = {}
+        for cid, ids in proof.get("chunk_products", {}).items():
+            chunk = chunks_by_id.get(cid)
+            if chunk is not None:
+                for pid in ids:
+                    covered.setdefault(pid, set()).add(chunk.doc_sha256)
+        by_id = {d["document_id"]: d for d in manifest.get("documents", [])}
+        ready = []
+        for product in manifest.get("products", []):
+            required = {
+                by_id[did]["blob_sha256"]
+                for did in product["documents"]
+                if did in by_id
+            }
+            if required and required.issubset(
+                covered.get(product["product_id"], set())
+            ):
+                ready.append((product["product_id"], product["product_revision"]))
+        db.executemany("INSERT INTO publication_ready_products VALUES (?, ?)", ready)
         if meta.dimensions:
             db.execute(VECTORS.format(dimensions=int(meta.dimensions)))
         for document in corpus.read_documents(directory):

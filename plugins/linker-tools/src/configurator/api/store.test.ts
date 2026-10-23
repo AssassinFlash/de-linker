@@ -189,3 +189,26 @@ test( 'a short or unreadable response never reports partial success', async () =
 		'unverified',
 	] );
 } );
+
+test( 'Genie cards use their signed complete list without an engineering fallback', async () => {
+	const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
+		if ( String( input ).endsWith( '/cart' ) ) {
+			return json( { items: [] }, { Nonce: 'abc' } );
+		}
+		expect( String( input ) ).toBe( '/wp-json/linker-ai/v1/genie/draft' );
+		expect( JSON.parse( String( init?.body ) ) ).toEqual( {
+			proof: 'signed-complete-list',
+		} );
+		return json( { items: [ { id: 7, quantity: 2 } ] } );
+	} );
+	const statuses = new Map< number, AddStatus >();
+	expect(
+		await storeClient( '/wp-json/', fetcher ).addAll(
+			[ { productId: 7, quantity: 2 } ],
+			( id, status ) => statuses.set( id, status ),
+			{ kind: 'genie', token: 'signed-complete-list' }
+		)
+	).toBe( true );
+	expect( statuses.get( 7 ) ).toBe( 'added' );
+	expect( fetcher ).toHaveBeenCalledTimes( 2 );
+} );

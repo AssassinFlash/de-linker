@@ -420,6 +420,8 @@ test( 'a complete answer near its connection deadline survives a slow auxiliary 
 			{
 				type: 'document',
 				ref: 'p3573.document.0',
+				document_id: 'doc',
+				document_revision: 'revision-1',
 				label: 'Old label · p. 1',
 				url: 'https://de-linker.test/file.pdf#page=1',
 			},
@@ -440,6 +442,24 @@ test( 'a complete answer near its connection deadline survives a slow auxiliary 
 					new Promise( ( resolve ) => {
 						release = () => resolve( { stream } );
 					} ),
+			} as unknown as Response;
+		}
+		if ( String( url ).endsWith( '/publication/manifest' ) ) {
+			return {
+				ok: true,
+				json: async () => ( {
+					schema_version: 1,
+					products: [
+						{ product_id: 3573, published_locale_ids: [ 3573 ] },
+					],
+					documents: [
+						{
+							document_id: 'doc',
+							document_revision: 'revision-1',
+							url: 'https://de-linker.test/file.pdf',
+						},
+					],
+				} ),
 			} as unknown as Response;
 		}
 		return {

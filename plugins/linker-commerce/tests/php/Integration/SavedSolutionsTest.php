@@ -11,6 +11,7 @@ namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Commerce\Products\Publication;
 use WP_REST_Request;
 
 /**
@@ -66,7 +67,7 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 		$this->assertSame( array( 'Guest house', 'House Barleben' ), $titles );
 		$this->assertNull( WC()->session->get( SavedSolutions::SESSION_KEY ) );
 
-		$this->assertSame( 400, $this->save( 'Unknown product', PHP_INT_MAX )->get_status() );
+		$this->assertSame( 409, $this->save( 'Unknown product', PHP_INT_MAX )->get_status() );
 	}
 
 	/**
@@ -125,15 +126,17 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 	 * @param string|null $language   The request's `lang` (linker-i18n RestLang), absent for English.
 	 */
 	private function save( string $title, int $product_id, ?string $language = null ): \WP_REST_Response {
-		$request = new WP_REST_Request( 'POST', '/linker/v1/solutions' );
+		$fingerprint = str_repeat( 'a', 64 );
+		$request     = new WP_REST_Request( 'POST', '/linker/v1/solutions' );
 		$request->set_header( 'Content-Type', 'application/json' );
 		$request->set_body(
 			(string) wp_json_encode(
 				array(
-					'kind'  => 'residential',
-					'title' => $title,
-					'input' => array( 'plz' => '39179' ),
-					'lines' => array(
+					'kind'                  => 'residential',
+					'selection_fingerprint' => $fingerprint,
+					'title'                 => $title,
+					'input'                 => array( 'plz' => '39179' ),
+					'lines'                 => array(
 						array(
 							'product_id' => $product_id,
 							'quantity'   => 2,
@@ -148,7 +151,58 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 		if ( null !== $language ) {
 			$request->set_query_params( array( 'lang' => $language ) );
 		}
-		return rest_do_request( $request );
+		// Only the private engine transport is a fixture. REST, Woo publication,
+		// account persistence and guest claiming use the running native instance.
+		$manifest  = Publication::manifest();
+		$products  = array_column( $manifest['products'], null, 'product_id' );
+		$version   = hash( 'sha256', 'saved-solution-fixture-engine' );
+		$result    = array(
+			'selection_fingerprint' => $fingerprint,
+			'publication'           => array(
+				'products'               => isset( $products[ $product_id ] ) ? array(
+					array(
+						'product_id'       => $product_id,
+						'product_revision' => $products[ $product_id ]['product_revision'],
+					),
+				) : array(),
+				'documents'              => array(),
+				'compatibility_revision' => $manifest['compatibility_revision'],
+			),
+			'selected'              => array(
+				'lines' => array(
+					array(
+						'product'  => array(
+							'id'    => $product_id,
+							'brand' => 'Fixture',
+							'model' => 'Recorded model',
+						),
+						'quantity' => 2,
+					),
+				),
+			),
+		);
+		$transport = static function ( mixed $pre, array $args, string $url ) use ( $result, $version ): mixed {
+			unset( $args );
+			if ( ! str_ends_with( $url, '/resource/version' ) && ! str_ends_with( $url, '/selection/validate' ) ) {
+				return $pre;
+			}
+			return array(
+				'headers'  => array( 'x-linker-engine-version' => $version ),
+				'body'     => wp_json_encode( str_ends_with( $url, '/resource/version' ) ? array( 'version' => $version ) : $result ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+				'cookies'  => array(),
+				'filename' => null,
+			);
+		};
+		add_filter( 'pre_http_request', $transport, -10, 3 );
+		try {
+			return rest_do_request( $request );
+		} finally {
+			remove_filter( 'pre_http_request', $transport, -10 );
+		}
 	}
 
 	/**

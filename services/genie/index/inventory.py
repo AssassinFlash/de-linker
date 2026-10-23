@@ -1,15 +1,8 @@
-"""Inventory: every hosted PDF, deduplicated by sha256, with what the products say it is.
+"""Inventory from Woo's publication manifest; no media enumeration or draft reads.
 
-Sources, read with GET only (`python -m index.inventory`):
-- the media library: every attachment with mime type application/pdf
-  (`/wp/v2/media?mime_type=application/pdf`), the bytes downloaded from our own URL;
-- the products' documents field: the ACF `downloads` rows in `_tv_legacy_acf_json`
-  (EN title, type, language, attachment ID) and `_linker_de_acf_json` (DE title), read
-  from `/wc/v3/products`. Brand and model come from the products that link a document;
-  a document no product links keeps empty brands and models and the type `other`.
-
-Credentials: a JSON file `{site_url, username, application_password}`
-(`--rest-config`, default ~/.config/terravolt-builder/rest-de.json); never printed.
+SHA caches are processing caches only. `index.publication` keeps the document and
+product permissions separate while reusing the content-addressed bytes and parses.
+Credentials: --rest-config points at the existing local WP Application Password JSON.
 """
 
 from __future__ import annotations
@@ -25,7 +18,7 @@ import urllib.request
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -353,30 +346,9 @@ def _iter_args(argv: Sequence[str] | None) -> argparse.Namespace:
 
 def run(rest_config: Path, out: Path, pdf_dir: Path) -> list[Document]:
     """Read the live lists, download the bytes and write the inventory JSON."""
-    client = RestClient(rest_config)
-    media = client.get_all(
-        "/wp/v2/media",
-        {
-            "mime_type": "application/pdf",
-            "_fields": "id,source_url,title,modified_gmt,media_details",
-        },
-    )
-    products = client.get_all("/wc/v3/products", {"status": "any"})
-    print(f"{len(media)} PDF attachments, {len(products)} products", flush=True)
-    documents = build_documents(
-        media, download_all(media, pdf_dir), product_links(products)
-    )
-    out.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "source": client.base,
-        "read_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "attachments": len(media),
-        "products": [asdict(product_of(product)) for product in products],
-        "documents": [asdict(document) for document in documents],
-    }
-    out.write_text(json.dumps(payload, indent=1, ensure_ascii=False), encoding="utf-8")
-    print(f"{len(documents)} unique documents -> {out}", flush=True)
-    return documents
+    from index.publication import inventory
+
+    return inventory(RestClient(rest_config), out, pdf_dir)
 
 
 def load(path: Path = INVENTORY_PATH) -> list[Document]:

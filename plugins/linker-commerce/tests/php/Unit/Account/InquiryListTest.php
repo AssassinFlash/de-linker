@@ -125,6 +125,9 @@ final class InquiryListTest extends TestCase {
 
 	/** A withdrawn product never supplies a new download link to historical inquiries. */
 	public function test_withdrawn_product_has_no_current_datasheet_link(): void {
+		WP_Mock::userFunction( 'has_filter', array( 'return' => false ) );
+		WP_Mock::userFunction( 'wp_cache_supports', array( 'return' => true ) );
+		WP_Mock::userFunction( 'wp_cache_flush_runtime', array( 'return' => true ) );
 		WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( 4107 )->reply( 4107 );
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
 		WP_Mock::userFunction( 'get_post_type', array( 'return' => 'product' ) );

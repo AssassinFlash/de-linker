@@ -46,9 +46,17 @@ from linker_genie.facts import TurnFacts
 from linker_genie.failure import from_log, is_row
 from linker_genie.gate import Gate
 from linker_genie.inquiry_assessment import AssessmentInput, assess
+from linker_genie.knowledge import SEARCH
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
+from linker_genie.publication import (
+    PublicationUnavailable,
+    Snapshot,
+    current,
+    document_urls,
+    product_ids,
+)
 from linker_genie.route import simple_stock
 from linker_genie.schema import (
     MAX_REQUEST_BYTES,
@@ -109,7 +117,7 @@ def ability_client() -> AbilityClient:
     if _client is None:
         # No service token, ever: the only identity is the customer's own
         # short-lived token, passed per call (linker_genie.abilities).
-        _client = AbilityClient(_wp_url())
+        _client = AbilityClient(_wp_url(), publication=current())
     return _client
 
 
@@ -121,7 +129,7 @@ def page_reader() -> page.PageReader:
     """The pages of the site this service serves (page.py, #234)."""
     global _pages
     if _pages is None:
-        _pages = page.PageReader(_wp_url())
+        _pages = page.PageReader(_wp_url(), publication=current())
     return _pages
 
 
@@ -142,10 +150,11 @@ def understander() -> Understander:
     global _understander
     if _understander is None:
         _understander = Understander(
-            StoreVocabulary(_wp_url()).get,
+            StoreVocabulary(_wp_url(), publication=current()).get,
             jev.from_env(),
             pages=page_reader().read,
             see=vision(),
+            publication=current(),
         )
     return _understander
 
@@ -197,6 +206,38 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
 
 
 def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
+    """Establish and recheck current authority around the complete computation.
+
+    A historical assistant message is a snapshot, never a fresh source. User
+    messages still carry project inputs; attached readings are re-identified in
+    Understander before any of their technical content enters the model.
+    """
+    authority = getattr(request.app.state, "publication", None) or current()
+    try:
+        snapshot = authority.snapshot()
+        snapshot.require_products(list(product_ids(body.page_context.model_dump())))
+        clean = body.model_copy(
+            update={"messages": [m for m in body.messages if m.role == "user"]}
+        )
+        response = _compute_turn(clean, request, snapshot)
+        authority.validate(snapshot)
+        return response
+    except PublicationUnavailable as error:
+        logger.warning("publication refused turn: %s", error)
+        raise HTTPException(
+            status_code=503, detail="publication_unavailable"
+        ) from error
+
+
+@app.post("/knowledge/loaded")
+def knowledge_loaded() -> dict[str, object]:
+    """Actually open the current release; workers acknowledge this process's version."""
+    return SEARCH.loaded()
+
+
+def _compute_turn(
+    body: TurnRequest, request: Request, original_permission: Snapshot
+) -> StreamingResponse:
     """One conversation turn, grounded and hydrated, as SSE."""
     started = time.monotonic()
     # The turn's passive phase timings (#336, timing.py): measurement only, no
@@ -290,6 +331,29 @@ def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     # answered by the service alone: no model ran (model-routing audits read
     # provider/model). The four model channels are unchanged; these routes are
     # sentences, not channels.
+    authority = getattr(request.app.state, "publication", None) or current()
+    authority.validate(original_permission)
+    permission = authority.snapshot()
+    permission.require_products(list(product_ids(shipped)))
+    permission.require_urls(list(document_urls(shipped)))
+    # Stored citations carry content identity. A historical same-URL link cannot
+    # silently point its old page references at newly replaced bytes.
+    for block in shipped["blocks"]:
+        if block.get("type") != "document" or not block.get("url"):
+            continue
+        url = block["url"].split("#")[0]
+        document = next(
+            (
+                d
+                for d in permission.documents.values()
+                if url in [d["url"], *d.get("aliases", [])]
+            ),
+            None,
+        )
+        if document is not None:
+            block["document_id"] = document["document_id"]
+            block["document_revision"] = document["document_revision"]
+    authority.validate(permission)
     code_made = prepared.route.name in (
         "person",
         "parts",

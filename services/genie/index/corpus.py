@@ -16,7 +16,7 @@ from __future__ import annotations
 import base64
 import json
 from collections.abc import Iterator, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +51,7 @@ class Meta:
     max_tokens: int
     # The encoder's fingerprint (linker_genie.embedding.Embedder.fingerprint).
     embedding: dict[str, str] | None = None
+    publication: dict[str, Any] = field(default_factory=dict)
 
 
 def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
@@ -62,6 +63,9 @@ def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
         "dimensions": str(meta.dimensions or 0),
         "embedding_fingerprint": json.dumps(meta.embedding or {}, sort_keys=True),
         "parser": meta.parser,
+        "source_revision": str(
+            meta.publication.get("manifest", {}).get("source_revision", "")
+        ),
     }
 
 

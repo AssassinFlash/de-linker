@@ -30,6 +30,13 @@ use WC_Product;
  * does not establish is `unknown`, which the page prints as an em dash.
  */
 final class Comparison {
+	/**
+	 * Reads only currently authorized selection facts.
+	 *
+	 * @var callable(int):SelectionFactSet
+	 */
+	private $facts_reader;
+
 
 	/**
 	 * Most products one comparison holds; the address, the storage and the
@@ -95,11 +102,13 @@ final class Comparison {
 	/**
 	 * Sets up the assembly.
 	 *
-	 * @param ProductView|null $view  Technical-table reading; the default one otherwise.
-	 * @param CommerceState    $state #11's price rule, shared with the view.
+	 * @param ProductView|null                    $view  Technical-table reading; the default one otherwise.
+	 * @param CommerceState                       $state #11's price rule, shared with the view.
+	 * @param callable(int):SelectionFactSet|null $facts_reader Current authorized facts.
 	 */
-	public function __construct( ?ProductView $view = null, private readonly CommerceState $state = new CommerceState() ) {
-		$this->view = $view ?? new ProductView( $state );
+	public function __construct( ?ProductView $view = null, private readonly CommerceState $state = new CommerceState(), ?callable $facts_reader = null ) {
+		$this->facts_reader = $facts_reader ?? static fn( int $id ): SelectionFactSet => SelectionFacts::from_figures( Publication::canonical_id( $id ), Publication::figures_for( $id ) );
+		$this->view         = $view ?? new ProductView( $state );
 	}
 
 	/**
@@ -120,7 +129,7 @@ final class Comparison {
 		$products = array();
 		$classes  = array();
 		foreach ( self::published( $ids ) as $id ) {
-			$facts      = SelectionFacts::for_product( $id );
+			$facts      = ( $this->facts_reader )( $id );
 			$classes[]  = $facts->device_class;
 			$products[] = $this->column( $id, $lang, $facts );
 		}
@@ -178,7 +187,7 @@ final class Comparison {
 		$out = array();
 		foreach ( $ids as $id ) {
 			$id = (int) $id;
-			if ( $id > 0 && ! in_array( $id, $out, true ) && 'product' === get_post_type( $id ) && 'publish' === get_post_status( $id ) ) {
+			if ( $id > 0 && ! in_array( $id, $out, true ) && Publication::is_published( $id ) ) {
 				$out[] = $id;
 			}
 		}
