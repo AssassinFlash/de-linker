@@ -1,0 +1,8 @@
+First probe attempt stopped before producing a verdict:
+AssertionError at `assert len(runtime_paths) == 97`.
+
+Cause: the reviewer counted every tracked apps/planner/src file, including 19
+*.test.ts files excluded by the build manifest. The actual totals are 116
+tracked src files and 97 runtime-manifest src entries. The corrected probe checks
+both groups against the previous pin. This is a review-probe counting error,
+not an application finding. No source, dependencies or runtime changed.

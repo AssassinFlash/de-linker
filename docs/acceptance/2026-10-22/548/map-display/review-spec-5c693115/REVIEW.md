@@ -1,0 +1,13 @@
+# Final Spec review — 5c693115
+
+**PASS for the scoped map-display and system-identity implementation; zero actionable findings.** Full comparison: `git diff be5711bf...5c693115d345a676d7a737bdfb886597b74fbe80` (four commits, 156 changed files). This carries forward the complete independent `81cd1c5b` review; the remaining delta was reviewed in full. No Standards verdict supplied this Spec conclusion.
+
+Independent Git/hash probes confirm all 97 runtime source files, 116 tracked `src` files including tests, seven runtime artifacts and the four governing specifications are unchanged. All 103 final source hashes and seven build hashes match current pinned bytes. The only lock differences are 189 canonical registry-host changes; versions, integrity and every other field remain intact. Package-local registry replacement and its manifest binding add no feature, provider or input side effect.
+
+The previous P2 stays closed. Re-running its exact retained safe-wire counterexample now yields `geometry_numeric_resolution_unsupported` with unchanged inputs, satisfying “the render-position helper refuses instead of returning an inaccurate position” (`548-design-geometry.md:38–43`). The prior eight-case and fallback/action probes remain applicable by byte identity; unchanged suites were not repeated.
+
+Inspected five retained identity PNG/JSON pairs: EN/DE desktop/phone and English project list. PNG dimensions, complete framing, ten credit links, loaded fonts, unchanged fields/scroll and entry SHA `590f6e…` agree with the final artifact. Workspace, keyboard and reopen records consistently retain one identity and revision 3. These records support the shared disclosure required by `548-product-identity.md:7–18,31–34`; this was stored-evidence inspection, not fresh browser execution. Linker's contribution still leads subordinate credits without announcing unaccepted capabilities.
+
+German desktop map/roof-hole/point-pick/3D records support their named path only. Worker packet tracing is unavailable; optional sprite warnings remain recorded. Complete EN/phone map, withdrawal/failure/gesture coverage and the remaining full-goal/release work stay open under `548-map-display.md:59–64`. No provider/legal, engineering/country or production acceptance is inferred.
+
+Stored npm acquisition has terminal `SUCCEEDED` and three HTTP200 downloaded JSON records matching the lock. Its terminal counter reports zero succeeded/three failed crawl requests; it is not an error-free crawl claim. Reproduce bounded checks with adjacent `probe.mjs`; `probe.json` retains exact hashes, equivalence and evidence bindings. No source copy, stack, network or production action was performed.

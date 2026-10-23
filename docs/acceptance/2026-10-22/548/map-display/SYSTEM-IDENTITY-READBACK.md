@@ -85,7 +85,7 @@ concurrent request. Run `gk9VPwmJz2GGcWzct` succeeded: all three new packages'
 official npm version records returned HTTP200, with matching version, integrity
 and canonical tarball URL. Input, raw metadata, run and readback are under
 `docs/research/2026-10-23-map-workbench-integration/registry-canonicalization/`.
-No ordinary-search fallback was used.
+The terminal page counter reports zero successful pages and three failed crawl requests; the separately retained file-download records and parsed bytes establish the HTTP200 acquisitions. This is not an error-free page-crawl claim. No ordinary-search fallback was used.
 
 ## Verification boundary
 
