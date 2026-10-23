@@ -44,3 +44,9 @@ The correction uses WordPress `wp_delete_object_term_relationships` to unlink ca
 A temporary memory-only PHP process executed the **actual installed** `WC_Post_Data::force_default_term` callback without loading WordPress or connecting to its database. Before correction it printed `remaining_category_ids=[28]` and exited 1; after correction it printed `remaining_category_ids=[]` and exited 0. The committed unit regression showed the same red-to-green result. The temporary harness was removed. The real WordPress test now also checks a later native product save, direct category assignment, and preservation of the default category on an ordinary fixture product; the root integration owner reruns it in the shared instance.
 
 After this correction, Commerce full unit passed **1,274 tests / 6,500 assertions**; full PHPStan and the five changed PHP files' WPCS passed. No shared instance or production write was performed by this worker.
+
+## Native attribute identity correction
+
+Standards review identified another native API distinction: `wp_set_object_terms` returns term taxonomy IDs, while `WC_Product_Attribute::get_terms` resolves integer options by term ID. Migration now reads the assigned relationship through `wp_get_object_terms(..., fields=ids)`, checks for `WP_Error` and an empty result, and stores those actual term IDs as attribute options. Existing source identity and product data are preserved.
+
+The real WordPress regression creates only fixture-owned terms through native APIs and a narrowly scoped `wp_insert_term_data` filter, explicitly making both brand/model term IDs differ from their taxonomy IDs. It then checks native Woo attribute options, `get_terms()` names and actual feed identity. The fixture unregisters its temporary taxonomy and deletes only its own terms/product/files. The shared runtime remains with the root integration owner; this worker did not execute its writes.

@@ -101,10 +101,16 @@ final class ReferenceMigration {
 				if ( is_wp_error( $terms ) ) {
 					throw new \RuntimeException( 'Cannot assign the native reference attributes.' );
 				}
+				// The assignment returns term_taxonomy_ids; Woo attribute options
+				// resolve integer values as term_ids. Read the actual assigned terms.
+				$term_ids = wp_get_object_terms( $id, $taxonomy, array( 'fields' => 'ids' ) );
+				if ( is_wp_error( $term_ids ) || array() === $term_ids ) {
+					throw new \RuntimeException( 'Cannot read the assigned native reference attribute terms.' );
+				}
 				$attribute = new WC_Product_Attribute();
 				$attribute->set_id( wc_attribute_taxonomy_id_by_name( $taxonomy ) );
 				$attribute->set_name( $taxonomy );
-				$attribute->set_options( array_map( 'intval', $terms ) );
+				$attribute->set_options( array_map( 'intval', $term_ids ) );
 				$attribute->set_visible( true );
 				$attributes[] = $attribute;
 			}
