@@ -164,7 +164,7 @@ def publication_feed(raw: dict[str, Any], contract: dict[str, Any]) -> dict[str,
 
     raw = json.loads(json.dumps(raw))
     raw["compatibility"] = contract
-    raw["compatibility_revision"] = digest([contract, raw["overlay"]])
+    raw["compatibility_revision"] = digest(contract)
     for product in raw["products"]:
         urls = {document["url"] for document in product["documents"]}
         refs = [figure["citation"]["url"] for figure in product["figures"].values()]
@@ -195,6 +195,19 @@ def publication_feed(raw: dict[str, Any], contract: dict[str, Any]) -> dict[str,
             )
         product["canonical_product_id"] = product["id"]
         product["product_revision"] = digest(product)
+    # A synthetic Woo reference identity wraps the unchanged real Trina facts.
+    # It is deliberately absent from saleable feed.products and categories.
+    for index, reference in enumerate(raw["overlay"]):
+        reference["canonical_product_id"] = 90000001 + index
+        for document in reference["documents"]:
+            document.update(
+                document_id=digest(document["url"]),
+                document_revision=digest(document["url"]),
+                blob_sha256=digest(document["url"]),
+                product_ids=[reference["canonical_product_id"]],
+            )
+        reference["product_revision"] = digest(reference)
+        reference["reference_revision"] = reference["product_revision"]
     raw["source_revision"] = digest(raw)
     return raw
 
@@ -202,15 +215,21 @@ def publication_feed(raw: dict[str, Any], contract: dict[str, Any]) -> dict[str,
 def publication_manifest(feed: dict[str, Any]) -> dict[str, Any]:
     docs: dict[str, Any] = {}
     products = []
-    for product in feed["products"]:
-        products.append(
-            {
-                "product_id": product["canonical_product_id"],
-                "product_revision": product["product_revision"],
-                "documents": [d["document_id"] for d in product["documents"]],
-                "ready": {"engineering": False},
-            }
-        )
+    for product in [*feed["products"], *feed["overlay"]]:
+        # Historical pure algorithm fixtures may have no publication metadata.
+        if "canonical_product_id" not in product:
+            continue
+        source = {
+            "product_id": product["canonical_product_id"],
+            "product_revision": product["product_revision"],
+            "documents": [d["document_id"] for d in product["documents"]],
+            "ready": {"engineering": False},
+        }
+        if product.get("kind") == "pv_module":
+            source.update(
+                engineering_role="reference_pv_module", engineering_id=product["id"]
+            )
+        products.append(source)
         for doc in product["documents"]:
             current = docs.setdefault(doc["document_id"], {**doc, "product_ids": []})
             current["product_ids"].append(product["canonical_product_id"])

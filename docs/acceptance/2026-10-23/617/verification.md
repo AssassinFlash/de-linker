@@ -45,3 +45,26 @@
 共享 Woo 合同的可复用范围是 `Products\Publication::manifest()`、`validate()`、生成工程 feed 与准备 jobs：canonical 产品身份、产品修订、资料身份/内容修订及产品关联、兼容修订、实际准备读回。当前许可每次新动作前后新读；完整候选及其证据都列入依赖，未准备新品不阻断其他已准备产品。过期产品/资料返回 409，当前权威不可核验返回 503；准备完成、历史 frozen hash 或客户端字段均不自行授予发布许可。
 
 接入新工作台时，应在其产品资格/排名及新商务交接前后验证上述完整范围，并将验证过的 Woo 依赖与它自己的 project/revision/run/candidate/result hash 绑定。客户读取已拥有的历史修订/结果不触发重算，也不补读草稿产品；新计算、新报告或加入 Solution draft 则遵守当前许可。此段是对两个已核实合同的接口衔接结论，尚未声明新工作台已实现该消费者。
+
+## 参考组件与技术资料的同轮修复
+
+独立 Spec 复核发现：原 `Publication.view()` 仅验证 `feed.products`，原 Trina module 原样留在 engine；两条 roof 路径还主动将 `products/documents` 清空。这使组件 PDF 撤回、关联移除或同 URL 替换内容无法撤销依赖其电压、功率、尺寸的结果。原工程 JSON 的存在并非 Woo 许可，也不能把旧图值在请求时绑定为新读到的 PDF SHA。
+
+按本轮确认合同，基础模块将既有 Trina 事实与 EN/DE 两份资料迁入一个 Woo 原生参考记录，后台仍使用现有图值和 Documents 维护；隐藏销售展示、virtual、无价格和产品分类，role 为 `reference_pv_module`。原 JSON 仅作一次迁移输入。feed.overlay 必须由当前 Woo 记录及有效 EvidenceBindings 生成，保留旧工程 ID，携带 canonical source、product/reference 同一修订以及文档 identity/revision/SHA/product association。此 PHP producer 与迁移由基础模块执行者拥有，本增量没有复制其 PHP 实现或写生产。
+
+Python 消费者已落实：参考角色/工程 ID 与源修订一致，所有资料身份/内容 SHA/修订/源关联和图值引用集合均通过后，实际使用组件的住宅与两条 roof 才能计算。输出前再核完整依赖；roof 不再清空证明。`engineering_contract=2` 与显式 `reference_inputs` 参与结果指纹，source 产品和所有资料也列入普通依赖。旧 receipt 缺少标记、参考身份或完整资料证明，即使旧产品仍在上架，也不能保存/确认/生成新 PDF；不重算、不静默替换。新动作前未准备返回既有产品数据 503，明确内部 reason；在途撤证/变更与旧证明返回 409。客户历史原件保持不动。
+
+全局 `compatibility_revision` 仅包含兼容合同。参考证据变化单独受其产品/文档依赖约束。overlay 为空可以正常加载；不读取 module 的 commercial、既有逆变器 retrofit 和无逆变器可评估的正常空候选不被封住。准备读回仅在参考实际可用时返回其 Woo 修订，缺证只遗漏该参考。当前 manifest 的明确参考角色或 overlay source 身份也不能混入销售候选。
+
+真实本地快照的 producer 已有 URL 归一约定：feed 为 canonical de-linker URL，manifest 保留当前本地 uploads origin。消费者仅按 `LINKER_PUBLICATION_URL` 的精确 origin 归一映射并保留 path/query/fragment，仍须身份/版本/SHA/关联全通过；其他 host 同路径或同内容不能授权。此处与基础模块 owning source 已核一致。
+
+本增量基于已合并的 `049a0beb` 聚合代码（本树 merge `ce53d946`），完成以下验证：
+
+- `PYTHONPATH=src .../.venv/bin/python -m pytest -q`：**238 passed in 40.04s**。其中新 `test_reference_publication.py` **54** 个用例，覆盖真实 106 商品、Trina、慕尼黑 PVGIS/LoD2 输入下的三入口完整证明、七种事前失效、在途撤证、旧 SQLite receipt、已确认动作及渲染后换 bytes、空 overlay、未版本化旧输入、无关路径可用与准备确认、错误销售源及显式 origin 映射。其他 184 个已有工程/同步/GC/HTTP/报告/展示夹具测试同轮通过。
+- Ruff 全目录 lint 与 format 通过（58 文件），mypy 全目录 **57 source files** 通过，`git diff --check` 通过。
+- 配置器 App、engine/store/solutions API 四个前端文件 **66 tests / 4 files** 通过；整个 linker-tools `tsc --noEmit` 通过。八份 EN/DE 展示夹具只有 `selection_fingerprint` 各一行改变，真实选型、数字、报告、文案完全相同；指纹保持参与端到端夹具比较，没有从断言中剔除。
+- 新 `reason` 不直接呈给客户，继续使用已审定 EN/DE 503/409 状态；文案准确性补记在同目录 copy-review。此次没有新增工具界面、长期保存机制、模型或商业按钮。
+
+本地未启动新实例、复制依赖或全站备份；继续复用现有 venv 和两条共享依赖软链，未把软链加进 Git。工作树仍服务当前集成/复核，唯一代码和证据保留，依赖原件由原任务拥有；新增测试仅使用自动保留边界内的 pytest 临时目录。按已读本地存储规则，没有可独立认定过时的本任务运行副本可删除。
+
+**集成仍需证明**：组合基础 producer、Python consumer 和 PHP 新 proof marker 检查；先备份并预览/执行一次 Woo 参考迁移，核真实记录、当前 30 项图值及两 PDF，而非采用测试用 synthetic ID；核其不进入商店/Genie/整套加入销售候选；在组合真实 WP 验证事前/在途/旧成功回执及 origin 对应；读回实际 engine 加载 source/compatibility/prepared reference，复核 EcoFlow 原有保护；完成全量双评审、EN/DE 390/1440 状态验收与此前记录的真实 systemd/定时清理证明。详见 ops/PUBLICATION.md。以上待办属于本地图同轮集成门，本增量不将其宣称完成，也没有部署、生产数据写入或改动另一工作台的 source/运行实例。

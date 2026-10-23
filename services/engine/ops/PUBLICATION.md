@@ -6,6 +6,53 @@ Woo permission even while this worker is stopped or failing. Product drafts,
 original documents and customer-owned historical reports are not deleted by
 this worker.
 
+## Current reference evidence before enabling calculations
+
+The Trina PV module is an approved engineering reference, not a saleable Woo
+candidate. Its existing facts and EN/DE PDFs must first be migrated into the
+one current Woo reference record using the foundation migration's preview,
+backup and verified write procedure. Do not hand-copy a second product source
+or run the old overlay JSON as authority. Use the existing Woo figures and
+Documents editor for subsequent changes. The record stays hidden from sales,
+virtual, without a price or product category; its current manifest role is
+`reference_pv_module` and engineering ID remains
+`mat_trina_solar_tsm_460neg9r_28`.
+
+Before accepting a release, read back the actual Woo manifest and generated
+feed together. Require matching reference `canonical_product_id`,
+`product_revision` and `reference_revision` (the two revisions are identical),
+matching manifest engineering role/ID, and both current PDF identities,
+revisions, byte SHA values and source associations. Figures must have current
+content bindings. The old source JSON is only a migration input. Global
+`compatibility_revision` hashes the compatibility contract alone; changing a
+reference must not disable unrelated commercial or retrofit calculations.
+For a pulled local snapshot, configure its exact manifest URL: the consumer
+maps only that configured origin to the producer's canonical feed origin,
+preserving path/query/fragment. A matching path on another host grants no
+permission. Identity, revision, SHA and association checks still apply.
+
+After the process loads that generation, authenticated
+`/resource/version?ready=1` must include the reference's current Woo product
+revision in `prepared_products`. A feed file on disk is insufficient. Run the
+actual residential, roof-outline and hand-drawn roof paths: each successful
+response must carry `engineering_contract: 2`, the reference input, its source
+product and all current PDF dependencies including SHA. The reference must not
+appear as a saleable candidate. An empty/unprepared reference overlay can load
+normally; affected paths return 503 with
+`reason=reference_evidence_unavailable`, while unused commercial/retrofit and
+normal empty-product results remain available. Only that reference is omitted
+from preparation readback when its evidence is incomplete.
+
+Exercise reversible reference-product draft, document-withdrawal/association
+removal and same-URL content replacement in the integration fixture. Before
+calculation these must close affected work; during calculation, after PDF
+rendering, or when confirming a saved receipt they must refuse the old result
+with 409. Old receipts without contract 2 or complete reference proof also
+refuse new actions. Do not mutate customer history or original PDFs to run
+these checks. Local fixture tests cover the contract; production acceptance
+still requires the deployed Woo producer, runtime generation and actual
+consumer/readback paths.
+
 ## One writable cache for both units
 
 The engine and `linker-engine-feed-sync.service` must both use

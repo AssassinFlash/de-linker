@@ -27,6 +27,8 @@
 
 补充复核：保存的 POST 可能已在服务端成功，但响应丢失、5xx 或成功回执无法解析时，原先“无法保存，请重试”超出了已知事实。Save 与 Ask Genie 的保存步骤改用上表既有“请求状态未确认”说明，不自动重发、不宣称没有保存，也不打开未经确认的账户记录。该句已在正式德语 PO 的 `includes/Protection/Replies.php` 来源上存在；配置器增加原生 bundle reference。服务端明确拒绝保留原失败说明；保存 POST 之前的 PDF 生成失败仍明确没有发出保存动作，继续走既有失败状态。本增量仅纠正旧入口的既有状态提示，不建立新的保存/恢复架构。
 
+参考组件证据的补充复核：参考资料未准备或无法取得当前许可属于既有产品数据 503；旧回执未包含参考证明、在途证据撤回或版本变动属于需重算 409。继续使用上表已审定的 EN/DE 提示，保留输入和结果，不把参考资料问题说成辐照故障或直接断言产品已下架。新增 `reason=reference_evidence_unavailable` 仅供机器诊断；`api/engine.ts` 只按 code/field 选择现有状态，不将服务端英文 message 直接呈给客户。此次不新增客户文案、品牌提示或自动重试。
+
 ## Pre-delivery
 
 - [x] Encyclopedia loaded (non-PDP): one new dimension; category words attested.

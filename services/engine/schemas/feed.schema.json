@@ -22,7 +22,7 @@
 		},
 		"products": { "type": "array", "items": { "$ref": "#/$defs/product" } },
 		"overlay": {
-			"description": "data/engineering-overlay.json: engineering items that are not products (the reference PV module).",
+			"description": "Reference engineering inputs generated from current Woo engineering-reference records and bound evidence. The migration JSON is not a runtime authority. Empty while no reference is published and prepared.",
 			"type": "array",
 			"items": { "$ref": "#/$defs/overlayItem" }
 		}
@@ -99,6 +99,9 @@
 			"properties": {
 				"id": { "type": "string", "minLength": 1 },
 				"kind": { "enum": ["pv_module"] },
+				"canonical_product_id": { "type": "integer", "minimum": 1 },
+				"product_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+				"reference_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 				"brand": { "type": "string" },
 				"model": { "type": "string" },
 				"figures": { "$ref": "#/$defs/figures" },
