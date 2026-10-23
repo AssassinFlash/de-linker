@@ -17,8 +17,8 @@ use WP_REST_Request;
  * 8-engineering-data.md: every published product's engineering data, the
  * overlay, the compatibility contract and its version. With ?since= only the
  * products modified after that moment. It is public and the same for every
- * visitor: no login, nonce or cookie, so a page cache may keep it. An OPTIONS
- * request shows the schema.
+ * visitor: no login, nonce or cookie. Responses disable caching; consumers
+ * must also validate current dependencies. An OPTIONS request shows the schema.
  */
 final class EngineeringFeedController extends WP_REST_Controller {
 
@@ -100,7 +100,11 @@ final class EngineeringFeedController extends WP_REST_Controller {
 		$since = $request->get_param( 'since' );
 
 		nocache_headers();
-		return (object) EngineeringFeed::feed( is_string( $since ) && '' !== $since ? $since : null );
+		try {
+			return (object) EngineeringFeed::feed( is_string( $since ) && '' !== $since ? $since : null );
+		} catch ( \RuntimeException $error ) {
+			return new \WP_Error( 'publication_unavailable', 'Current product permission could not be checked.', array( 'status' => 503 ) );
+		}
 	}
 
 	/**
