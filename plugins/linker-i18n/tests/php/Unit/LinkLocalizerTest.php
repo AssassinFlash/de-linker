@@ -220,4 +220,51 @@ final class LinkLocalizerTest extends TestCase {
 			$this->localizer()->localize( '<p>Write to <a class="btn" href="/contact/">us</a> or <a href="https://www.goodwe.com/">GoodWe</a>; <img src="/contact/x.png" alt="contact"></p>' )
 		);
 	}
+
+	/** Marked handoffs localize their source even when the destination is already German. */
+	public function test_contact_source_follows_the_rendered_language_without_changing_other_bytes(): void {
+		$home   = PolylangDouble::HOME;
+		$source = $home . 'products/?q=SAJ+5&brand=saj#model';
+		$target = $home . 'de/produkte/?q=SAJ+5&brand=saj#model';
+		$prefix = '<script>const icon="\\u003csvg"; const path=/\\s+/g;</script><a data-linker-contact=\'{"url":"' . $home . 'products/"}\' href="/de/kontakt/?intent=offer&amp;source=';
+		$suffix = '&amp;source_id=15&amp;search=PV%20%2B+storage&amp;filters%5Bbrand%5D=saj#form">Contact</a><img src="/products/x.png">';
+		$this->assertSame(
+			$prefix . rawurlencode( $target ) . $suffix,
+			$this->localizer()->localize( $prefix . rawurlencode( $source ) . $suffix, 'de' )
+		);
+	}
+
+	/** Home paths follow native Polylang roots in both directions. */
+	public function test_contact_home_sources_work_in_both_directions(): void {
+		$home  = PolylangDouble::HOME;
+		$cases = array(
+			'de' => array( '/contact/', $home, '/de/kontakt/', $home . 'de/' ),
+			'en' => array( '/de/kontakt/', $home . 'de/', '/contact/', $home ),
+		);
+		foreach ( $cases as $language => $values ) {
+			$this->assertSame(
+				'<a data-linker-contact="" href="' . $values[2] . '?source=' . rawurlencode( $values[3] ) . '">Contact</a>',
+				$this->localizer()->localize( '<a data-linker-contact="" href="' . $values[0] . '?source=' . rawurlencode( $values[1] ) . '">Contact</a>', $language )
+			);
+		}
+	}
+
+	/** The public URL API and unmarked links retain their established query contract. */
+	public function test_unmarked_contact_query_is_unchanged(): void {
+		$query = '?source=' . rawurlencode( PolylangDouble::HOME );
+		$this->assertSame( '/de/kontakt/' . $query, $this->localizer()->url( '/contact/' . $query ) );
+		$this->assertSame( '<a href="/de/kontakt/' . $query . '">Contact</a>', $this->localizer()->localize( '<a href="/contact/' . $query . '">Contact</a>' ) );
+	}
+
+	/** A source that the Contact boundary rejects must not become a valid same-origin URL. */
+	public function test_contact_does_not_repair_foreign_credentialed_or_unknown_sources(): void {
+		foreach ( array( 'https://elsewhere.test/products/', 'http://example.test:8080/products/', 'https://example.test/products/', 'http://user@example.test/products/', '//example.test/products/', '/products/', 'javascript:alert(1)', PolylangDouble::HOME . 'unknown/' ) as $source ) {
+			$html = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
+			$this->assertSame( $html, $this->localizer()->localize( $html ) );
+		}
+		foreach ( array( 'http://example.test:8080/contact/', 'http://user@example.test/contact/', 'https://elsewhere.test/contact/', '//example.test/contact/' ) as $destination ) {
+			$html = '<a data-linker-contact="" href="' . $destination . '?source=' . rawurlencode( PolylangDouble::HOME ) . '">Contact</a>';
+			$this->assertSame( $html, $this->localizer()->localize( $html ) );
+		}
+	}
 }

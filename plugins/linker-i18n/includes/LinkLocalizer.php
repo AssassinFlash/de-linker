@@ -22,8 +22,9 @@ use WP_Term;
  *
  * The resolver reads the object behind the address — a page, post, product,
  * product category or blog category — through Polylang's translation pair,
- * and keeps the query and fragment untouched. External addresses, other URL
- * schemes and addresses with no translation stay as they are.
+ * and keeps the query and fragment untouched. Marked contact links also carry
+ * their same-origin source page into the target language. External addresses,
+ * other URL schemes and addresses with no translation stay as they are.
  */
 final class LinkLocalizer {
 
@@ -59,7 +60,7 @@ final class LinkLocalizer {
 		foreach ( $this->tokenizer->tokens( $html ) as $token ) {
 			$href = HtmlToken::TAG === $token->type && 'a' === $token->name ? $token->attribute( 'href' ) : null;
 			if ( null !== $href ) {
-				$localized = $this->url( $href, $language );
+				$localized = null === $token->attribute( 'data-linker-contact' ) ? $this->url( $href, $language ) : $this->contact_url( $href, $language );
 				if ( $localized !== $href ) {
 					$out .= $token->with_attribute( 'href', $localized );
 					continue;
@@ -84,6 +85,63 @@ final class LinkLocalizer {
 			$this->resolved[ $key ] = $this->resolve( $url, $language );
 		}
 		return $this->resolved[ $key ];
+	}
+
+	/**
+	 * Localize an explicitly marked contact handoff, including its source URL.
+	 * Other query fields keep their original bytes; source metadata is not trusted.
+	 *
+	 * @param string $url      Contact URL.
+	 * @param string $language Target language slug.
+	 */
+	private function contact_url( string $url, string $language ): string {
+		if ( ! $this->same_origin( $url, true ) ) {
+			return $url;
+		}
+		$localized = $this->url( $url, $language );
+		$parts     = wp_parse_url( $localized );
+		if ( ! is_array( $parts ) || ! isset( $parts['query'] ) ) {
+			return $localized;
+		}
+		$fields = explode( '&', $parts['query'] );
+		foreach ( $fields as &$field ) {
+			$pair = explode( '=', $field, 2 );
+			if ( 'source' !== urldecode( $pair[0] ) || ! isset( $pair[1] ) ) {
+				continue;
+			}
+			$source = urldecode( $pair[1] );
+			if ( $this->same_origin( $source ) ) {
+				$target = $this->url( $source, $language );
+				if ( $target !== $source ) {
+					$field = $pair[0] . '=' . rawurlencode( $target );
+				}
+			}
+		}
+		unset( $field );
+		$offset = strpos( $localized, '?' );
+		return false === $offset ? $localized : substr_replace( $localized, implode( '&', $fields ), $offset + 1, strlen( $parts['query'] ) );
+	}
+
+	/**
+	 * Contact sources use the same scheme, host and port, with no userinfo.
+	 * A contact destination may also be root-relative, never protocol-relative.
+	 *
+	 * @param string $url           Proposed URL.
+	 * @param bool   $root_relative Whether a root-relative destination is allowed.
+	 */
+	private function same_origin( string $url, bool $root_relative = false ): bool {
+		$parts = wp_parse_url( $url );
+		$home  = wp_parse_url( $this->languages->home_url( Languages::SOURCE ) );
+		if ( ! is_array( $parts ) || ! is_array( $home ) || isset( $parts['user'] ) || isset( $parts['pass'] ) ) {
+			return false;
+		}
+		if ( $root_relative && ! isset( $parts['scheme'] ) && ! isset( $parts['host'] ) ) {
+			return str_starts_with( $url, '/' ) && ! str_starts_with( $url, '//' );
+		}
+		return in_array( $parts['scheme'] ?? '', array( 'http', 'https' ), true )
+			&& ( $home['scheme'] ?? '' ) === $parts['scheme']
+			&& strtolower( (string) ( $parts['host'] ?? '' ) ) === strtolower( (string) ( $home['host'] ?? '' ) )
+			&& ( $parts['port'] ?? null ) === ( $home['port'] ?? null );
 	}
 
 	/**
