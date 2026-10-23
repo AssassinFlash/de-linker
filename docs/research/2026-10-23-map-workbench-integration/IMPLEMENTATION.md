@@ -2,6 +2,8 @@
 
 2026-10-23，后台研究。范围只补当前地图接入；不重做几何内核、系统计算或整体架构审计。只读基线为 `b0080ec15eb2dcab6b2c22b7b029180a2c1f73c2` 加本会话正在协作的工作目录；未改业务、依赖、实例、设置或生产，未取得或使用 Google key。以下 **V** 表示本轮实际读取/运行，**R** 表示继承的官方原件，**D** 表示本站待实现设计，**A** 表示须由真实账号/资料持有者提供的事实。研究不构成地图 UI、工程精度或全欧洲放行。
 
+**实施状态读法，2026-10-24 更新：**下文保留研究时 `b0080ec1` 的事实快照，其中“尚未进入 `apps/planner`”“没有地理投影”“尚无几何 intake”等措辞不代表当前工作树。隔离应用现已锁定 MapLibre **5.24.0** / Terra Draw **1.35.0** / adapter **1.4.1**；有来源的地理几何导入和只读地图已进入同一项目链，边界见 [MAP-DISPLAY](MAP-DISPLAY.md)。完成后的坐标边界使用已接受的 `geographicOnRoof` 大地垂线与屋面求交，不能按本文早期水平求交草案替换它。绘制控制器与米制命令增量及其验收界限见 [DRAW-CONTROLLER](DRAW-CONTROLLER.md) 和 [source contract](../../acceptance/2026-10-24/548/map-drawing/SPEC.md)；该控制器尚未挂入客户界面，完整绘制、草稿恢复、原生触控与全站交付仍在原地图内继续执行。实现进展不会把原研究中的设计项整体改成已验收能力。
+
 ## 1. 可以马上实施的接缝
 
 **把地图作为现有 `DesignEditor` 的第三个视图，保留 `GeometryDocument → GeometryCommand → ProjectEditor.editGeometry → editDraft` 这条写入链。** `MapViewport` 只管投影、交互和来源展示；Terra Draw 的快照是编辑草稿。新屋面、孔洞、障碍、禁布区经校准与来源检查后，提交一次 `group { before, edits }`。2D、3D、对象树、保存、重开继续消费同一米制文档和对象 ID。[现有合同](../../specs/548-workbench-application.md)、[几何合同](../../specs/548-design-geometry.md)、[commands](../../../apps/planner/src/domain/geometryCommands.ts)、[调用方](../../../apps/planner/src/components/ProjectEditor.tsx)

@@ -1,10 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { JSDOM } from "jsdom";
-import {
-	MapDrawingController,
-	MapPickGate,
-} from "../src/data/MapDrawingController.ts";
+import { MapDrawingController } from "../src/data/MapDrawingController.ts";
+import { MapPickGate } from "../src/data/MapPickGate.ts";
 import imported from "../../../fixtures/planning/geometry-import-asset.json" with { type: "json" };
 import {
 	bindMapRing,
