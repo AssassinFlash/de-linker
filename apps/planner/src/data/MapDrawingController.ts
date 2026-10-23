@@ -119,10 +119,22 @@ export class MapDrawingController {
 		);
 		const cursor = this.canvas.style.cursor;
 		this.restore = () => {
-			for (const { handler, enabled } of toggles)
-				if (enabled) handler.enable();
-				else handler.disable();
-			this.canvas.style.cursor = cursor;
+			const failures: unknown[] = [];
+			for (const { handler, enabled } of toggles) {
+				try {
+					if (enabled) handler.enable();
+					else handler.disable();
+				} catch (error) {
+					failures.push(error);
+				}
+			}
+			try {
+				this.canvas.style.cursor = cursor;
+			} catch (error) {
+				failures.push(error);
+			}
+			if (failures.length)
+				throw new AggregateError(failures, "map_drawing_restore_failed");
 		};
 		this.draw = new TerraDraw({
 			adapter,
@@ -187,7 +199,12 @@ export class MapDrawingController {
 				this.addAndSelect(geometry);
 			} else this.draw.setMode("polygon");
 		} catch (error) {
-			this.dispose();
+			const cleanup = this.release();
+			if (cleanup)
+				throw new AggregateError(
+					[error, cleanup],
+					"map_drawing_initialization_failed",
+				);
 			throw error;
 		} finally {
 			this.applying = false;
@@ -211,8 +228,12 @@ export class MapDrawingController {
 
 	private fail(cause: unknown) {
 		if (this.disposed) return;
-		this.dispose();
-		this.callbacks.failed(cause);
+		const cleanup = this.release();
+		this.callbacks.failed(
+			cleanup
+				? new AggregateError([cause, cleanup], "map_drawing_failed")
+				: cause,
+		);
 	}
 	private changed: TerraDrawEventListeners["change"] = (ids, _, context) => {
 		if (
@@ -340,8 +361,9 @@ export class MapDrawingController {
 	};
 	private interrupt = () => {
 		if (this.disposed) return;
-		this.dispose();
-		this.callbacks.interrupted();
+		const cleanup = this.release();
+		if (cleanup) this.callbacks.failed(cleanup);
+		else this.callbacks.interrupted();
 	};
 	private enqueue() {
 		if (this.queued) return;
@@ -471,9 +493,14 @@ export class MapDrawingController {
 	}
 
 	/** Call while the old map/style/layers still exist, before MapLibre.remove or
-	 * provider replacement. Late microtasks cannot call the project writer. */
+	 * provider replacement. A library cleanup refusal is reported, without
+	 * aborting the owner's subsequent map cleanup. Late work cannot commit. */
 	dispose(): void {
-		if (this.disposed) return;
+		const cleanup = this.release();
+		if (cleanup) this.callbacks.failed(cleanup);
+	}
+	private release(): Error | null {
+		if (this.disposed) return null;
 		this.disposed = true;
 		this.steps = [];
 		this.canvas.removeEventListener("pointerdown", this.pointerDown, true);
@@ -485,10 +512,19 @@ export class MapDrawingController {
 		this.owner.removeEventListener("visibilitychange", this.visibility);
 		this.draw.off("change", this.changed);
 		this.draw.off("finish", this.finished);
+		const failures: unknown[] = [];
 		try {
 			this.draw.stop();
-		} finally {
-			this.restore();
+		} catch (error) {
+			failures.push(error);
 		}
+		try {
+			this.restore();
+		} catch (error) {
+			failures.push(error);
+		}
+		return failures.length
+			? new AggregateError(failures, "map_drawing_cleanup_failed")
+			: null;
 	}
 }

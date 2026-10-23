@@ -55,8 +55,11 @@ customer drawing flow and native acceptance still belong to the active map.
     pointer and disposal invalidate pending transactions. Raw input previously
     handed to the caller remains available. Restore the exact original map
     pan/rotate/double-click and cursor state, including originally disabled
-    handlers. Stop and detach the controller while its old map/style still
-    exists; late microtasks cannot call the project writer.
+    handlers. Attempt every handler restoration even when one refuses; report
+    cleanup/restoration failures through one terminal failure notification.
+    Stop and detach the controller while its old map/style still exists, and
+    allow the owner to finish removing that map after an adapter cleanup
+    refusal. Late microtasks cannot call the project writer.
 11. The viewport owns a completion-click pick gate that outlives the controller.
     A completion click cannot become a fresh object selection; reset the gate
     only at a later physical pointerdown.

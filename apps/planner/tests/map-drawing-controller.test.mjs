@@ -82,6 +82,8 @@ function fixture(t, start = { kind: "draw" }, options = {}) {
 			unregister() {
 				unregisters++;
 				this.clear();
+				if (options.stopFailure)
+					throw new Error("synthetic_adapter_cleanup_refusal");
 			},
 		};
 	canvas.style.cursor = "crosshair";
@@ -562,4 +564,81 @@ test("real library midpoint callbacks enter one metric project history step and 
 		draft.history.current,
 	);
 	assert.equal(draft.history.current.extra_project_fact, "keep exactly");
+});
+
+for (const terminal of ["interrupt", "failure", "dispose"])
+	test(`adapter cleanup refusal still reports one terminal failure and lets the owner finish disposal (${terminal})`, async (t) => {
+		const f = fixture(
+			t,
+			{
+				kind: "edit",
+				ring: [
+					[0, 0],
+					[0.002, 0],
+					[0.002, -0.002],
+				],
+			},
+			{ stopFailure: true, endpoint: true },
+		);
+		f.pointer("pointerdown");
+		f.callbacks.onMouseMove(f.event(0, 0));
+		f.callbacks.onDragStart(f.event(0, 0), () => {});
+		f.callbacks.onDrag(f.event(-50, 0), () => {});
+		const raw = JSON.stringify(f.raw.at(-1));
+		let ownerCleanup = false;
+		if (terminal === "interrupt")
+			f.dom.window.dispatchEvent(new f.dom.window.Event("blur"));
+		if (terminal === "failure")
+			f.pointer("pointerup", f.canvas, { clientX: Infinity, clientY: 0 });
+		if (terminal === "dispose")
+			assert.doesNotThrow(() => f.controller.dispose());
+		ownerCleanup = true;
+		await Promise.resolve();
+		assert.equal(ownerCleanup, true);
+		assert.equal(f.transactions.length, 0);
+		assert.equal(f.interrupted, 0);
+		assert.equal(f.failures.length, 1);
+		assert.ok(f.failures[0] instanceof AggregateError);
+		assert.match(
+			f.failures[0].message,
+			terminal === "failure"
+				? /map_drawing_failed/
+				: /map_drawing_cleanup_failed/,
+		);
+		assert.ok(JSON.stringify(f.raw.at(-1)) === raw);
+		assert.equal(f.map.dragPan.isEnabled(), true);
+		assert.equal(f.map.dragRotate.isEnabled(), false);
+		assert.equal(f.map.doubleClickZoom.isEnabled(), true);
+		assert.equal(f.unregisters, 1);
+		assert.doesNotThrow(() => f.controller.dispose());
+		assert.equal(f.failures.length, 1, "late cleanup cannot notify twice");
+	});
+
+test("one refused handler restore does not skip other handlers or the cursor and is reported", (t) => {
+	const f = fixture(t, {
+		kind: "edit",
+		ring: [
+			[0, 0],
+			[0.002, 0],
+			[0.002, -0.002],
+		],
+	});
+	f.map.dragPan.disable();
+	f.map.dragPan.enable = () => {
+		throw new Error("synthetic_pan_restore_refusal");
+	};
+	f.map.dragRotate.enable();
+	f.map.doubleClickZoom.disable();
+	f.canvas.style.cursor = "move";
+	assert.doesNotThrow(() => f.controller.dispose());
+	assert.equal(f.map.dragRotate.isEnabled(), false);
+	assert.equal(f.map.doubleClickZoom.isEnabled(), true);
+	assert.equal(f.canvas.style.cursor, "crosshair");
+	assert.equal(f.failures.length, 1);
+	assert.match(f.failures[0].message, /cleanup_failed/);
+	assert.ok(
+		f.failures[0].errors.some(
+			(cause) => cause.message === "map_drawing_restore_failed",
+		),
+	);
 });

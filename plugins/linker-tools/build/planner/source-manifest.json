@@ -58,7 +58,7 @@
     "src/contracts/wgs84-ellipsoid.json": "6eb345c4434248190de923c9f280463a202c86fd1facbba428df80fd2069952e",
     "src/data/DraftStore.ts": "194c95d7bab8ea862a283c1e8cd841f3e474c770183f39a90a4ab5233b77717f",
     "src/data/GeometryImportStore.ts": "5d26925d79049deb934b94a4771f24152e551c74a9a3614dd3212c0751f7de6d",
-    "src/data/MapDrawingController.ts": "c93bc5568adef4f674f4fbf40f65003cf1827422c1b0f7e13604e5437ee9cb2d",
+    "src/data/MapDrawingController.ts": "0814361870fcecef28f0bf88defa8cfe54a07d51982eb5d89b332cae62716d9c",
     "src/data/PlannerClient.ts": "2b11a1f9613f2820d4dfe034c78c1ba880ba1f0d8c25d0608b7de799c83a3eff",
     "src/data/boundedBody.ts": "566f0c44420b605bf5bf043aa79d278494211e88b19745a458b576edd0bcc076",
     "src/data/config.ts": "056d43e91e0df78759239b11fd87f6987363e5a7595ed1c9e983fdfe4133536c",
