@@ -31,16 +31,17 @@ const session = {
 async function workspaceFixture(t, mode, configureDom = () => {}) {
 	const fixture = setupDom();
 	const browserGlobals = new Map();
-	for (const name of [
-		"MutationObserver",
-		"getComputedStyle",
-		"requestAnimationFrame",
-		"cancelAnimationFrame",
-	]) {
+	const browserValues = {
+		MutationObserver: window.MutationObserver,
+		getComputedStyle: window.getComputedStyle.bind(window),
+		requestAnimationFrame: (callback) =>
+			setTimeout(() => callback(Date.now()), 0),
+		cancelAnimationFrame: clearTimeout,
+	};
+	for (const [name, value] of Object.entries(browserValues)) {
 		browserGlobals.set(name, Object.getOwnPropertyDescriptor(globalThis, name));
-		const value = window[name];
 		Object.defineProperty(globalThis, name, {
-			value: name === "MutationObserver" ? value : value.bind(window),
+			value,
 			configurable: true,
 			writable: true,
 		});
