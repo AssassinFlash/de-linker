@@ -9,7 +9,11 @@ from __future__ import annotations
 
 import argparse
 import fcntl
+import json
 import os
+import shlex
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -22,6 +26,90 @@ from index.paths import INDEX_DIR, INVENTORY_PATH, PARSED_DIR, PDF_DIR
 from index.publication import inventory as fetch_inventory
 from linker_genie.publication import Snapshot
 from publish_index import publish
+
+_LOADED_PROGRAM = """import json, sys, urllib.request
+try:
+    data = json.load(sys.stdin)
+    request = urllib.request.Request(data['url'], data=b'{}', method='POST', headers={
+        'Content-Type': 'application/json', 'X-Linker-Service-Token': data['token']})
+    with urllib.request.urlopen(request, timeout=20) as response:
+        loaded = json.load(response)
+    print(json.dumps({key: loaded[key] for key in ('index_version', 'source_revision', 'products')}))
+except Exception:
+    sys.exit(1)
+"""
+
+
+def read_loaded(url: str, token: str, host: str | None = None) -> dict[str, Any]:
+    """Ask the serving process on its loopback, using one managed SSH call.
+
+    The token travels in stdin, never SSH arguments, a temporary script or logs.
+    No persistent forwarding process is needed for the automatic Mac worker.
+    """
+    parsed = urlsplit(url)
+    if (
+        parsed.scheme != "http"
+        or parsed.hostname not in {"127.0.0.1", "localhost", "::1"}
+        or parsed.path != "/knowledge/loaded"
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError("loaded verification requires the private service loopback")
+    if host is None:
+        response = httpx.post(
+            url, json={}, timeout=20, headers={"X-Linker-Service-Token": token}
+        )
+        response.raise_for_status()
+        result: dict[str, Any] = response.json()
+        return result
+    completed = subprocess.run(
+        [
+            "ssh",
+            "-o",
+            "BatchMode=yes",
+            "--",
+            host,
+            "python3 -c " + shlex.quote(_LOADED_PROGRAM),
+        ],
+        input=json.dumps({"url": url, "token": token}),
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    if completed.returncode != 0:
+        raise RuntimeError("running Genie loaded verification failed")
+    result = json.loads(completed.stdout)
+    if not isinstance(result, dict):
+        raise RuntimeError("running Genie returned invalid loaded verification")
+    return result
+
+
+def retain_builds(index_dir: Path, current: Path) -> None:
+    """Keep current and one prior worker-owned build; unrelated evidence stays.
+
+    This is the bounded runtime retention from docs/agents/local-storage.md.
+    A ledger entry alone can never delete outside this worker's builds root.
+    """
+    root = (index_dir / "builds").resolve()
+    current = current.resolve()
+    if current.parent != root or not current.is_dir():
+        raise ValueError("prepared build is outside the worker builds directory")
+    ledger = index_dir / "publication-worker-releases.json"
+    raw = json.loads(ledger.read_text()) if ledger.is_file() else []
+    owned: list[str] = []
+    for item in raw if isinstance(raw, list) else []:
+        if not isinstance(item, str):
+            continue
+        path = Path(item).resolve()
+        if path.parent == root and path.is_dir() and str(path) not in owned:
+            owned.append(str(path))
+    owned = [item for item in owned if item != str(current)] + [str(current)]
+    for old in owned[:-2]:
+        shutil.rmtree(Path(old))
+    ledger.write_text(json.dumps(owned[-2:], indent=1))
 
 
 class Worker:
@@ -136,7 +224,7 @@ def main() -> int:
     parser.add_argument(
         "--loaded-url",
         required=True,
-        help="Local service POST /knowledge/loaded; SSH forwards may be used",
+        help="Private service loopback /knowledge/loaded; --host checks it over the same SSH alias",
     )
     args = parser.parse_args()
     if args.lease_seconds <= 0:
@@ -181,32 +269,13 @@ def main() -> int:
                 lambda text: str(py3langid.classify(text)[0]),
             )
             report = publish(directory, args.root, args.host)
-            # Prune only builds this worker owns. Existing bake-off/golden
-            # evidence in the shared build root is not ours to delete.
-            ledger = INDEX_DIR / "publication-worker-releases.json"
-            owned = json.loads(ledger.read_text()) if ledger.is_file() else []
-            owned = [str(path) for path in owned if Path(path).is_dir()]
-            owned.append(str(directory.resolve()))
-            import shutil
-            for old in owned[:-2]:
-                candidate = Path(old)
-                if candidate.parent == (INDEX_DIR / "builds").resolve() and candidate != directory.resolve():
-                    shutil.rmtree(candidate)
-            ledger.write_text(json.dumps(owned[-2:], indent=1))
+            retain_builds(INDEX_DIR, directory)
             return str(report["index_version"])
 
         def loaded() -> dict[str, Any]:
             # The serving process reopens the resolved current file under the same
             # search lock, so a changed symlink alone never satisfies this check.
-            response = httpx.post(
-                args.loaded_url,
-                json={},
-                timeout=20,
-                headers={"X-Linker-Service-Token": token},
-            )
-            response.raise_for_status()
-            result: dict[str, Any] = response.json()
-            return result
+            return read_loaded(args.loaded_url, token, args.host)
 
         try:
             worker.one(prepare, loaded)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -451,3 +452,76 @@ def test_historical_solution_names_do_not_authorize_current_product_cards() -> N
     assert "MODEL-" in payload["text"]
     assert payload["products"] == []
     assert not solution.collect(payload).product_ids
+
+
+def test_worker_retention_removes_only_owned_obsolete_builds(tmp_path: Path) -> None:
+    from publication_worker import retain_builds
+
+    index = tmp_path / "index"
+    root = index / "builds"
+    root.mkdir(parents=True)
+    first, second, current, reference = [
+        root / name for name in ("a", "b", "c", "golden")
+    ]
+    external = tmp_path / "unique-evidence"
+    for directory in (first, second, current, reference, external):
+        directory.mkdir()
+        (directory / "proof.txt").write_text("preserve")
+    ledger = index / "publication-worker-releases.json"
+    ledger.write_text(json.dumps([str(first), str(second), str(external)]))
+    retain_builds(index, current)
+    assert not first.exists()
+    assert second.is_dir() and current.is_dir()
+    assert reference.is_dir() and external.is_dir()
+    assert json.loads(ledger.read_text()) == [str(second), str(current)]
+    retain_builds(index, current)
+    assert second.is_dir() and current.is_dir()
+
+
+def test_loaded_process_readback_uses_same_ssh_alias_and_secret_only_on_stdin(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import subprocess
+
+    from publication_worker import read_loaded
+
+    calls: list[tuple[list[str], dict[str, Any]]] = []
+
+    def run(command: list[str], **options: Any) -> subprocess.CompletedProcess[str]:
+        calls.append((command, options))
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            json.dumps(
+                {
+                    "source_revision": "source-1",
+                    "index_version": "build1",
+                    "products": [],
+                }
+            ),
+            "",
+        )
+
+    monkeypatch.setattr(subprocess, "run", run)
+    result = read_loaded(
+        "http://127.0.0.1:8902/knowledge/loaded",
+        "fixture-private-service-token",
+        "fixture-host",
+    )
+    assert result["index_version"] == "build1"
+    command, options = calls[0]
+    assert command[:6] == [
+        "ssh",
+        "-o",
+        "BatchMode=yes",
+        "--",
+        "fixture-host",
+        command[5],
+    ]
+    assert all("fixture-private-service-token" not in argument for argument in command)
+    assert json.loads(options["input"])["token"] == "fixture-private-service-token"
+    assert options["capture_output"] is True and options["timeout"] == 30
+    with pytest.raises(ValueError, match="loopback"):
+        read_loaded(
+            "https://public.example/knowledge/loaded", "fixture", "fixture-host"
+        )
