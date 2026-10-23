@@ -56,7 +56,9 @@ final class PublicationData {
 			}
 			foreach ( $manifest['products'] as $product ) {
 				if ( $id === $product['product_id'] || in_array( $id, $product['published_locale_ids'], true ) ) {
-					$out[] = $id;
+					if ( '' === ( $product['engineering_role'] ?? '' ) ) {
+						$out[] = $id;
+					}
 					break;
 				}
 			}

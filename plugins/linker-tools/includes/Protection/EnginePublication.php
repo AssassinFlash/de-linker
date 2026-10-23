@@ -7,6 +7,7 @@
 declare( strict_types = 1 );
 namespace Linker\Tools\Protection;
 
+use Linker\Commerce\Account\DesignProof;
 use Linker\Commerce\Products\Publication;
 use WP_Error;
 use WP_REST_Response;
@@ -29,8 +30,11 @@ final class EnginePublication {
 		if ( ! isset( $dependencies['products'], $dependencies['documents'] ) ) {
 			return self::failure();
 		}
-		if ( ! class_exists( Publication::class ) ) {
+		if ( ! class_exists( Publication::class ) || ! class_exists( DesignProof::class ) ) {
 			return self::failure( 503 );
+		}
+		if ( ! DesignProof::has_engineering_proof( $dependencies ) ) {
+			return self::failure();
 		}
 		try {
 			$result = Publication::validate( $dependencies );

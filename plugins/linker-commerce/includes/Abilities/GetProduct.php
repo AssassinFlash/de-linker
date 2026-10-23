@@ -9,12 +9,13 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
+use Linker\Commerce\Products\Publication;
 use WC_Product;
 
 /**
  * One published product: selection facts, cited figures, attributes, documents
- * and commerce state. FAQ answers are generated in #15 and live on product meta
- * `_linker_faq` when present.
+ * and commerce state. Cited FAQ answers use the same current source gate as
+ * the product page and document library.
  */
 final class GetProduct {
 	/**
@@ -29,11 +30,6 @@ final class GetProduct {
 	 * Ability name.
 	 */
 	public const NAME = 'linker/get-product';
-
-	/**
-	 * Product meta of the FAQ list written by #15.
-	 */
-	public const FAQ_META = '_linker_faq';
 
 	/**
 	 * Arguments for wp_register_ability(), apart from the category.
@@ -149,7 +145,7 @@ final class GetProduct {
 			'figures'    => (object) $this->publication->figures( $id, $manifest ),
 			'attributes' => (object) $this->attributes( $id ),
 			'documents'  => $this->publication->documents( $id, $manifest ),
-			'faq'        => $this->faq( $id, $lang ),
+			'faq'        => $this->faq( $id, $lang, $manifest ),
 			'commerce'   => ProductCommerce::of( $id, $product instanceof WC_Product ? $product : null, $lang ),
 		);
 		return $this->publication->unchanged( $dependencies ) ? $result : $this->empty( $id, $lang );
@@ -176,26 +172,17 @@ final class GetProduct {
 	/**
 	 * FAQ entries in the requested language.
 	 *
-	 * @param int       $product_id Product ID.
-	 * @param 'en'|'de' $lang    Language.
+	 * @param int                 $product_id Product ID.
+	 * @param 'en'|'de'           $lang    Language.
+	 * @param array<string,mixed> $manifest Current source snapshot.
 	 * @return list<array{question: string, answer: string}>
 	 */
-	private function faq( int $product_id, string $lang ): array {
-		$stored = get_post_meta( $product_id, self::FAQ_META, true );
-		if ( is_string( $stored ) ) {
-			$stored = json_decode( $stored, true );
-		}
-		if ( ! is_array( $stored ) ) {
-			return array();
-		}
+	private function faq( int $product_id, string $lang, array $manifest ): array {
 		$out = array();
-		foreach ( $stored as $entry ) {
-			if ( ! is_array( $entry ) ) {
-				continue;
-			}
-			$question = $entry[ 'question_' . $lang ] ?? $entry['question'] ?? $entry['question_en'] ?? null;
-			$answer   = $entry[ 'answer_' . $lang ] ?? $entry['answer'] ?? $entry['answer_en'] ?? null;
-			if ( is_string( $question ) && is_string( $answer ) && '' !== $question && '' !== $answer ) {
+		foreach ( Publication::faqs_for( $product_id, $manifest ) as $entry ) {
+			$question = $entry[ 'de' === $lang ? 'question_de' : 'question' ];
+			$answer   = $entry[ 'de' === $lang ? 'answer_de' : 'answer' ];
+			if ( '' !== $question && '' !== $answer ) {
 				$out[] = array(
 					'question' => $question,
 					'answer'   => $answer,

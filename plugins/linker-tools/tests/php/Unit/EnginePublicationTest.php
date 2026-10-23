@@ -54,6 +54,7 @@ final class EnginePublicationTest extends TestCase {
 	 */
 	public function test_unreadable_current_authority_is_a_service_failure(): void {
 		require_once dirname( __DIR__, 4 ) . '/linker-commerce/includes/Products/Publication.php';
+		require_once dirname( __DIR__, 4 ) . '/linker-commerce/includes/Account/DesignProof.php';
 		WP_Mock::userFunction(
 			'wp_cache_supports',
 			array(
@@ -65,8 +66,10 @@ final class EnginePublicationTest extends TestCase {
 		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		$result = EnginePublication::validate(
 			array(
-				'products'  => array(),
-				'documents' => array(),
+				'engineering_contract' => 2,
+				'reference_inputs'     => array(),
+				'products'             => array(),
+				'documents'            => array(),
 			)
 		);
 		$this->assertInstanceOf( WP_Error::class, $result );

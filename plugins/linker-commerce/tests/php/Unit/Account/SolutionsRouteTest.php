@@ -43,6 +43,8 @@ final class SolutionsRouteTest extends TestCase {
 		return array(
 			'selection_fingerprint' => str_repeat( 'a', 64 ),
 			'publication'           => array(
+				'engineering_contract'   => 2,
+				'reference_inputs'       => array(),
 				'products'               => array(
 					array(
 						'product_id'       => 4107,

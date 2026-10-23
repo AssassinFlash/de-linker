@@ -20,7 +20,7 @@ final class FixturePublication extends PublicationGuard {
 	 *
 	 * @return array<string,mixed>
 	 */
-	public function dependencies(): array|WP_Error {
+	public function dependencies(): array {
 		return array(
 			'products'  => array(),
 			'documents' => array(),

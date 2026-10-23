@@ -9,6 +9,7 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Tests\Integration;
 
+use Linker\Commerce\Abilities\GetProduct;
 use Linker\Commerce\Presentation\Shortcodes;
 use Linker\Commerce\Products\DocumentLibrary;
 use Linker\Commerce\Products\EngineeringData;
@@ -145,8 +146,22 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 		);
 		$faqs = $this->answers( $file['url'] );
 		update_post_meta( $id, Faqs::META_KEY, Faqs::encode( $faqs ) );
+		update_post_meta(
+			$id,
+			'_linker_faq',
+			array(
+				array(
+					'question'    => 'Old unbound question?',
+					'answer'      => 'Unbound old answer',
+					'question_de' => 'Alte Frage ohne Beleg?',
+					'answer_de'   => 'Alte Antwort ohne Beleg',
+				),
+			)
+		);
 		$this->assertSame( '1', get_post_meta( $id, '_linker_faqs_managed', true ) );
 		$this->assertCount( 2, Publication::faqs_for( $id ) );
+		$this->assertSame( 'Old alpha answer', $this->ability_answers( $id, 'en' )[0]['answer'] );
+		$this->assertSame( 'Alte Alpha-Antwort', $this->ability_answers( $id, 'de' )[0]['answer'] );
 		$this->assertCount( 2, $this->library_answers( $product, 'en' ) );
 		$this->assertStringContainsString( '#page=7', $this->library_answers( $product, 'en' )[0]['source_url'] );
 		$this->product_context( $product );
@@ -156,6 +171,8 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 		file_put_contents( $file['path'], "%PDF-1.4\nReplacement evidence fixture\n%%EOF\n" );
 		$this->assertCount( 2, Faqs::of( $id ), 'Stored source answers remain available to their editor.' );
 		$this->assertSame( array(), Publication::faqs_for( $id ) );
+		$this->assertSame( array(), $this->ability_answers( $id, 'en' ) );
+		$this->assertSame( array(), $this->ability_answers( $id, 'de' ) );
 		$this->assertSame( array(), $this->library_answers( $product, 'en' ) );
 		$this->assertSame( array(), $this->library_answers( $product, 'de' ) );
 		$this->assertSame( '', ( new Shortcodes() )->faqs() );
@@ -194,6 +211,8 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 		delete_post_meta( $id, Faqs::META_KEY );
 		$this->assertSame( '1', get_post_meta( $id, '_linker_faqs_managed', true ) );
 		$this->assertSame( array(), $this->library_answers( $product, 'en' ), 'Deleting the final maintained FAQ cannot restore an old ACF answer.' );
+		$this->assertSame( array(), $this->ability_answers( $id, 'en' ), 'The singular old field cannot restore a withdrawn answer.' );
+		$this->assertNotEmpty( get_post_meta( $id, '_linker_faq', true ), 'The old editorial record was preserved.' );
 	}
 
 	/** Equal document bytes do not grant a FAQ another URL's association. */
@@ -202,6 +221,17 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 		$id      = $product->get_id();
 		$files   = $this->files( array( 'allowed', 'unassociated' ) );
 		update_post_meta( $id, EngineeringData::DOCUMENTS_META_KEY, array( array( 'url' => $files['allowed']['url'] ) ) );
+		$legacy = array(
+			'faqs' => array(
+				array(
+					'faq_question' => 'Unbound old question?',
+					'faq_answer'   => 'Unbound old answer',
+				),
+			),
+		);
+		update_post_meta( $id, '_tv_legacy_acf_json', $legacy );
+		$this->assertSame( array(), $this->library_answers( $product, 'en' ), 'Even a never-maintained FAQ list cannot authorize an uncited old answer.' );
+		$this->assertSame( $legacy, get_post_meta( $id, '_tv_legacy_acf_json', true ) );
 		update_post_meta( $id, Faqs::META_KEY, $this->answers( $files['unassociated']['url'] ) );
 		$this->assertSame( array(), Publication::faqs_for( $id ) );
 		$this->assertSame( 410, $this->download_status( $files['unassociated']['url'] ) );
@@ -297,6 +327,23 @@ final class PublicationEvidenceTest extends IntegrationTestCase {
 	 */
 	private function library_answers( WC_Product_Simple $product, string $lang ): array {
 		return array_values( array_filter( ( new DocumentLibrary() )->answers( $lang ), static fn ( array $answer ): bool => $product->get_name() === $answer['product'] ) );
+	}
+
+	/**
+	 * The same native metadata through Genie's current product ability.
+	 *
+	 * @param int       $id Fixture product.
+	 * @param 'en'|'de' $lang Requested language.
+	 * @return list<array{question:string,answer:string}>
+	 */
+	private function ability_answers( int $id, string $lang ): array {
+		$result = ( new GetProduct() )->execute(
+			array(
+				'product_id' => $id,
+				'lang'       => $lang,
+			)
+		);
+		return $result['faq'];
 	}
 
 	/**

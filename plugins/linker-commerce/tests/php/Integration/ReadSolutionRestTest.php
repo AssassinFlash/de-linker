@@ -137,9 +137,7 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 				}
 			}
 		);
-		add_filter(
-			'pre_http_request',
-			function ( $pre, $args, $url ) {
+		$transport = function ( $pre, $args, $url ) {
 				unset( $pre );
 				$this->engine[] = array(
 					'url'  => (string) $url,
@@ -155,10 +153,9 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 					'cookies'  => array(),
 					'filename' => null,
 				);
-			},
-			10,
-			3
-		);
+		};
+		add_filter( 'pre_http_request', $transport, 10, 3 );
+		$this->later( static fn() => remove_filter( 'pre_http_request', $transport, 10 ) );
 	}
 
 	/**

@@ -18,8 +18,8 @@ use Linker\Commerce\Storefront\ProductView;
  * published products state, once per file, and their product answers. Both
  * come from the readings the product page already uses — the product's
  * document list (ProductView::downloads(), the `_linker_documents` field of
- * #8 once the migration writes it, the legacy entry until then) and the FAQ
- * field of #15 (Products\Faqs, the legacy FAQ until the field is filled) — so
+ * #8 once the migration writes it, the legacy entry until then) and the cited
+ * FAQ field through Publication::faqs_for() — so
  * the library cannot disagree with the product pages it indexes.
  */
 final class DocumentLibrary {
@@ -211,8 +211,8 @@ final class DocumentLibrary {
 	}
 
 	/**
-	 * The FAQ items of a product in the page's language: `_linker_faqs` (#15),
-	 * the legacy product FAQ where that field is still empty.
+	 * Current cited FAQ items in the page's language. Unbound editorial records
+	 * remain stored but cannot supply a current technical answer.
 	 *
 	 * @param int                 $id     Product ID.
 	 * @param bool                $german German page.
@@ -221,7 +221,6 @@ final class DocumentLibrary {
 	 */
 	private function faq_items( int $id, bool $german, array $manifest ): array {
 		$items = array();
-		$faqs  = Faqs::of( $id );
 		foreach ( Publication::faqs_for( $id, $manifest ) as $faq ) {
 			$question = $german && '' !== $faq['question_de'] ? $faq['question_de'] : $faq['question'];
 			$answer   = $german && '' !== $faq['answer_de'] ? $faq['answer_de'] : $faq['answer'];
@@ -248,21 +247,6 @@ final class DocumentLibrary {
 				'source_url' => $faq['citation']['url'] . '#page=' . $page,
 			);
 		}
-		if ( array() !== $faqs || '1' === get_post_meta( $id, '_linker_faqs_managed', true ) ) {
-			return $items;
-		}
-		foreach ( $this->view->faqs( $id ) as $faq ) {
-			if ( '' === trim( $faq['question'] ) ) {
-				continue;
-			}
-			$items[] = array(
-				'question'   => $faq['question'],
-				'answer'     => $faq['answer'],
-				'source'     => '',
-				'source_url' => '',
-			);
-		}
-
 		return $items;
 	}
 

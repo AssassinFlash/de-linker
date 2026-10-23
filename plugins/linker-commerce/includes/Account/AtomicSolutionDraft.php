@@ -65,8 +65,14 @@ final class AtomicSolutionDraft {
 					}
 				}
 				$needed = max( 0, $item['quantity'] - $held );
-				if ( $needed > 0 && false === $cart->add_to_cart( $item['product_id'], $needed ) ) {
-					return $this->rollback( $cart, $before, $notices );
+				if ( $needed > 0 ) {
+					// WC_Form_Handler validates this hook before WC_Cart::add_to_cart;
+					// the cart method does not run it for trusted server-side callers.
+					/** This filter is documented in woocommerce/includes/class-wc-form-handler.php. */
+					$valid = apply_filters( 'woocommerce_add_to_cart_validation', true, $item['product_id'], $needed ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WooCommerce's native validation hook.
+					if ( ! $valid || false === $cart->add_to_cart( $item['product_id'], $needed ) ) {
+						return $this->rollback( $cart, $before, $notices );
+					}
 				}
 			}
 			$current_error = $this->proof->current_error( $result );

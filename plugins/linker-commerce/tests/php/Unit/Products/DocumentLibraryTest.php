@@ -244,7 +244,7 @@ final class DocumentLibraryTest extends TestCase {
 		$manifest             = $this->manifest();
 		$manifest['products'] = array( $manifest['products'][1] );
 		$library              = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
-		$this->assertSame( array( 'GoodWe GW8.3-BAT-D-G21' ), array_unique( array_column( $library->answers(), 'product' ) ) );
+		$this->assertSame( array(), $library->answers() );
 		foreach ( $library->documents() as $document ) {
 			$this->assertNotContains( 'GoodWe GW5.1-BAT-D-G21', $document['covers'] );
 		}
@@ -255,14 +255,14 @@ final class DocumentLibraryTest extends TestCase {
 		$manifest              = $this->manifest();
 		$manifest['documents'] = array();
 		$library               = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
-		$this->assertSame( array( 'Legacy question?' ), array_column( $library->answers(), 'question' ) );
+		$this->assertSame( array(), $library->answers() );
 	}
 
 	/** A current URL alone does not grant an unprepared answer its current evidence. */
 	public function test_cited_answer_requires_an_explicit_current_binding(): void {
 		$this->current_faq_bindings = array();
 		$library                    = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
-		$this->assertSame( array( 'Legacy question?' ), array_column( $library->answers(), 'question' ) );
+		$this->assertSame( array(), $library->answers() );
 	}
 
 	/** Replacement bytes invalidate old answer text and the page URL together. */
@@ -270,8 +270,7 @@ final class DocumentLibraryTest extends TestCase {
 		$manifest                                = $this->manifest();
 		$manifest['documents'][0]['blob_sha256'] = hash( 'sha256', 'replacement manual bytes' );
 		$library                                 = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
-		$this->assertSame( array( 'Legacy question?' ), array_column( $library->answers(), 'question' ) );
-		$this->assertSame( array( '' ), array_column( $library->answers(), 'source_url' ) );
+		$this->assertSame( array(), $library->answers() );
 	}
 
 	/** An intentionally emptied FAQ field cannot restore an older ACF answer. */
@@ -352,10 +351,10 @@ final class DocumentLibraryTest extends TestCase {
 	}
 
 	/**
-	 * The #15 FAQ field answers where it is filled, the legacy product FAQ
-	 * until then; German reads the German words of the field.
+	 * Cited current answers use their requested language. Unbound old metadata
+	 * never provides a fallback when a maintained answer is absent.
 	 */
-	public function test_answers_prefer_the_faq_field_and_fall_back_to_the_legacy_list(): void {
+	public function test_answers_require_current_citations_without_unbound_fallbacks(): void {
 		$library = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
 		$english = $library->answers( 'en' );
 		$german  = $library->answers( 'de' );
@@ -365,7 +364,7 @@ final class DocumentLibraryTest extends TestCase {
 		$this->assertSame( 'GoodWe', $english[0]['brand'], 'the row names its product brand, so the register files it' );
 		$this->assertSame( 'Ist das Modul stapelbar?', $german[0]['question'] );
 		$this->assertSame( 'ESA battery manual, p. 12', $english[0]['source'], 'the answer cites the document it came from' );
-		$this->assertSame( 'Legacy question?', $english[1]['question'], 'the field is empty, so the product FAQ answers' );
-		$this->assertSame( '', $english[1]['source'], 'a legacy answer cites no page' );
+		$this->assertCount( 1, $english );
+		$this->assertCount( 1, $german );
 	}
 }

@@ -153,6 +153,8 @@ final class PublicationSolutionActionsTest extends IntegrationTestCase {
 		return array(
 			'selection_fingerprint' => str_repeat( 'a', 64 ),
 			'publication'           => array(
+				'engineering_contract'   => 2,
+				'reference_inputs'       => array(),
 				'products'               => array_map(
 					static fn ( int $id ): array => array(
 						'product_id'       => $id,

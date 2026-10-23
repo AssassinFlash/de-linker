@@ -12,6 +12,7 @@ namespace Linker\Commerce\Tests\Integration;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Protection\Identity;
 use WP_REST_Request;
 
 /**
@@ -22,6 +23,17 @@ use WP_REST_Request;
  * @coversNothing
  */
 final class SavedSolutionsTest extends IntegrationTestCase {
+	/** Native guest admission sees a browser cookie, as a real REST request does. */
+	protected function setUp(): void {
+		parent::setUp();
+		$cookies                     = $_COOKIE;
+		$_COOKIE[ Identity::COOKIE ] = bin2hex( random_bytes( 16 ) );
+		$this->later(
+			static function () use ( $cookies ): void {
+				$_COOKIE = $cookies;
+			}
+		);
+	}
 
 	/**
 	 * A customer's save and a guest's save that is claimed at login.
@@ -33,7 +45,7 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 
 		$this->as_user( $customer->get_id() );
 		$response = $this->save( 'House Barleben', $product->get_id() );
-		$this->assertSame( 201, $response->get_status() );
+		$this->assertSame( 201, $response->get_status(), (string) wp_json_encode( $response->get_data() ) );
 		$data = $response->get_data();
 		$this->assertIsArray( $data );
 		$saved = (int) $data['id'];
@@ -51,7 +63,7 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 
 		$this->as_user( 0 );
 		$response = $this->save( 'Guest house', $product->get_id() );
-		$this->assertSame( 202, $response->get_status() );
+		$this->assertSame( 202, $response->get_status(), (string) wp_json_encode( $response->get_data() ) );
 		$this->assertSame( array(), $store->for_customer( 0 ) );
 
 		$this->as_user( $customer->get_id() );
@@ -159,6 +171,8 @@ final class SavedSolutionsTest extends IntegrationTestCase {
 		$result    = array(
 			'selection_fingerprint' => $fingerprint,
 			'publication'           => array(
+				'engineering_contract'   => 2,
+				'reference_inputs'       => array(),
 				'products'               => isset( $products[ $product_id ] ) ? array(
 					array(
 						'product_id'       => $product_id,

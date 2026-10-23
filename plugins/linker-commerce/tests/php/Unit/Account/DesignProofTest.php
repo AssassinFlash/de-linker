@@ -119,6 +119,41 @@ final class DesignProofTest extends TestCase {
 		);
 	}
 
+	/** Old snapshots cannot omit the current reference-input contract. */
+	public function test_engineering_receipt_requires_complete_reference_links(): void {
+		$result = self::result();
+		$proof  = new DesignProof( static fn (): array => array( 'valid' => true ) );
+		$this->assertTrue( $proof->is_current( $result ) );
+		unset( $result['publication']['engineering_contract'] );
+		$this->assertFalse( $proof->is_current( $result ) );
+		$result                                    = self::result();
+		$result['publication']['reference_inputs'] = array(
+			array(
+				'reference_input_id' => 'reference-module',
+				'product_id'         => 20,
+				'product_revision'   => str_repeat( 'c', 64 ),
+				'reference_revision' => str_repeat( 'c', 64 ),
+			),
+		);
+		$this->assertFalse( $proof->is_current( $result ), 'The reference needs its current document.' );
+		$result['publication']['documents'][] = array(
+			'document_id'       => 'doc-reference',
+			'document_revision' => str_repeat( 'e', 64 ),
+			'product_id'        => 20,
+		);
+		$this->assertTrue( $proof->is_current( $result ) );
+		$result['publication']['reference_inputs'][0]['reference_revision'] = str_repeat( 'f', 64 );
+		$this->assertFalse( $proof->is_current( $result ) );
+	}
+
+	/** An ordinary signed Genie list has its independent non-engineering contract. */
+	public function test_genie_list_keeps_its_independent_contract(): void {
+		$result = self::result();
+		unset( $result['publication']['engineering_contract'], $result['publication']['reference_inputs'] );
+		$result['kind'] = 'genie';
+		$this->assertTrue( ( new DesignProof( static fn (): array => array( 'valid' => true ) ) )->is_current( $result ) );
+	}
+
 	/**
 	 * A selected product and a second candidate are separate dependencies.
 	 *
@@ -128,6 +163,8 @@ final class DesignProofTest extends TestCase {
 		return array(
 			'selection_fingerprint' => str_repeat( 'a', 64 ),
 			'publication'           => array(
+				'engineering_contract'   => 2,
+				'reference_inputs'       => array(),
 				'products'               => array(
 					array(
 						'product_id'       => 10,

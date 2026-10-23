@@ -35,8 +35,10 @@ use WP_REST_Response;
 final class ResourceAdmissionTest extends TestCase {
 	/** Synthetic transport fixtures contain no product-derived facts. */
 	private const PUBLICATION = array(
-		'products'  => array(),
-		'documents' => array(),
+		'engineering_contract' => 2,
+		'reference_inputs'     => array(),
+		'products'             => array(),
+		'documents'            => array(),
 	);
 	/**
 	 * Saved local journal.
@@ -1206,13 +1208,15 @@ final class ResourceAdmissionTest extends TestCase {
 				$current = \Linker\Commerce\Products\Publication::product( $id );
 				$this->assertIsArray( $current );
 				$dependencies = array(
-					'products'  => array(
+					'engineering_contract' => 2,
+					'reference_inputs'     => array(),
+					'products'             => array(
 						array(
 							'product_id'       => $current['product_id'],
 							'product_revision' => $current['product_revision'],
 						),
 					),
-					'documents' => array(),
+					'documents'            => array(),
 				);
 				$calls        = 0;
 				$handler      = array(
@@ -1252,10 +1256,7 @@ final class ResourceAdmissionTest extends TestCase {
 			'/linker/v1/solutions'       => 'solution_save',
 			'/linker/v1/solutions/draft' => 'draft_write',
 		) as $route => $action ) {
-			$dependencies = array(
-				'products'  => array(),
-				'documents' => array(),
-			);
+			$dependencies = self::PUBLICATION;
 			$handler      = array(
 				'callback' => static fn(): WP_REST_Response => new WP_REST_Response(
 					array(

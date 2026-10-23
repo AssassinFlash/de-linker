@@ -105,12 +105,53 @@ final class DesignProof {
 		if ( ! is_array( $dependencies ) || ! is_array( $dependencies['products'] ?? null ) || array() === $dependencies['products'] || ! is_string( $dependencies['compatibility_revision'] ?? null ) || '' === $dependencies['compatibility_revision'] ) {
 			return self::unavailable();
 		}
+		if ( 'genie' !== ( $result['kind'] ?? '' ) && ! self::has_engineering_proof( $dependencies ) ) {
+			return self::unavailable();
+		}
 		try {
 			$checked = is_callable( $this->validate ) ? ( $this->validate )( $dependencies ) : Publication::validate( $dependencies );
 		} catch ( \RuntimeException $error ) {
 			return self::verification_failed();
 		}
 		return true === ( $checked['valid'] ?? false ) ? null : self::unavailable();
+	}
+
+	/**
+	 * Reject old engineering receipts that omitted non-sale reference evidence.
+	 * Genie product lists have their own signed contract and do not call this gate.
+	 *
+	 * @param array<string,mixed> $dependencies Trusted engineering dependency scope.
+	 */
+	public static function has_engineering_proof( array $dependencies ): bool {
+		$references = $dependencies['reference_inputs'] ?? null;
+		if ( 2 !== ( $dependencies['engineering_contract'] ?? null ) || ! is_array( $references ) || ! array_is_list( $references ) || ! is_array( $dependencies['products'] ?? null ) || ! is_array( $dependencies['documents'] ?? null ) ) {
+			return false;
+		}
+		$versions = array();
+		foreach ( $dependencies['products'] as $product ) {
+			if ( is_array( $product ) && is_int( $product['product_id'] ?? null ) && is_string( $product['product_revision'] ?? null ) ) {
+				$versions[ $product['product_id'] ] = $product['product_revision'];
+			}
+		}
+		foreach ( $references as $reference ) {
+			if ( ! is_array( $reference ) || ! is_string( $reference['reference_input_id'] ?? null ) || '' === $reference['reference_input_id'] || ! is_int( $reference['product_id'] ?? null ) || $reference['product_id'] < 1 || ! is_string( $reference['product_revision'] ?? null ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $reference['product_revision'] ) || ( $reference['reference_revision'] ?? null ) !== $reference['product_revision'] ) {
+				return false;
+			}
+			if ( ( $versions[ $reference['product_id'] ] ?? null ) !== $reference['product_revision'] ) {
+				return false;
+			}
+			$has_document = false;
+			foreach ( $dependencies['documents'] as $document ) {
+				if ( is_array( $document ) && ( $document['product_id'] ?? null ) === $reference['product_id'] && is_string( $document['document_id'] ?? null ) && '' !== $document['document_id'] && is_string( $document['document_revision'] ?? null ) && '' !== $document['document_revision'] ) {
+					$has_document = true;
+					break;
+				}
+			}
+			if ( ! $has_document ) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
