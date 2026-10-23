@@ -32,7 +32,8 @@ contrast on that dark section, retaining the native ring width/offset. Keep
 the cards' dimensions and their native scrolling/focus behavior. Give Utility's
 four native summaries a consistent visual plus/minus from the existing12px
 disclosure bars, without adding generated spoken text or replacing native
-details. Keep a44px minimum summary hit area and allow long headings to wrap.
+details. Use a44px minimum summary hit area, matching the existing Utility
+phone hero action, and allow long headings to wrap.
 
 Restore the Services mobile introduction's24px shared gutter and48px section
 spacing at its existing800px breakpoint. Remove the legacy ledger/invitation

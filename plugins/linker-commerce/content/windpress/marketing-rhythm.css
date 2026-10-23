@@ -199,6 +199,7 @@ html[lang^="de"] #installer-journal .lk-hero-title {
    uses the existing disclosure's12px bars, without adding spoken label text.
    Include the fourth summary so the same state cue and alignment serve all. */
 #tv-utility-page-v1 #engineering .us-engineering-feature > summary {
+	/* Reuse the existing Utility phone hero action's44px minimum hit area. */
 	min-height: 44px;
 }
 
