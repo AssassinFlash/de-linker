@@ -33,7 +33,12 @@ import type { GeometryCommand } from "../domain/geometryCommands.ts";
 import { readGeometry } from "../domain/validateGeometry.ts";
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
 import { readObject } from "../data/readProtocol.ts";
-import { readGeometryImports } from "../domain/geometryImports.ts";
+import {
+	attachGeometryImport,
+	readGeometryImports,
+} from "../domain/geometryImports.ts";
+import type { PreparedGeometryImport } from "../domain/geometryImports.ts";
+import type { GeometryDocument } from "../domain/geometry.ts";
 import { ProjectOverview } from "./ProjectOverview.tsx";
 import { revealActionResult } from "./revealActionResult.ts";
 
@@ -140,6 +145,23 @@ export function ProjectEditor({
 						geometry: readObject(applyGeometryCommand(geometry, command)),
 					});
 				});
+				return true;
+			} catch {
+				return false;
+			}
+		},
+		[client, session.query_scope, update],
+	);
+	const importGeometry = useCallback(
+		(before: GeometryDocument, asset: PreparedGeometryImport): boolean => {
+			if (!client.isCurrentScope(session.query_scope)) return false;
+			try {
+				update((previous) =>
+					editDraft(
+						previous,
+						attachGeometryImport(previous.history.current, before, asset),
+					),
+				);
 				return true;
 			} catch {
 				return false;
@@ -640,6 +662,13 @@ export function ProjectEditor({
 							<DesignEditor
 								geometry={geometry}
 								geometryImports={geometryImports}
+								attachImport={importGeometry}
+								confirmedAssetIds={Object.values(
+									readGeometryImports(draft.baseline.inputs.geometry_imports)
+										.selected,
+								)}
+								recoveryScopes={recoveryScopes}
+								recoveryChecking={recoveryChecking}
 								sceneModuleUrl={config.sceneModuleUrl ?? null}
 								commit={editGeometry}
 								locale={config.locale}

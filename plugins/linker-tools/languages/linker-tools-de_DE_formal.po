@@ -102,6 +102,7 @@ msgstr "Hilfe bei Ihrem Solarprojekt"
 msgid "Products, documents and your next step."
 msgstr "Produkte, Unterlagen und Ihr nächster Schritt."
 
+#: build/planner/assets/planner.js
 #: build/genie.js:16 build/hero.js
 msgid "Back"
 msgstr "Zurück"
@@ -4477,3 +4478,247 @@ msgstr "Dachbearbeitung läuft"
 #: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectEditor.tsx
 msgid "Finish or cancel roof editing before leaving this workspace."
 msgstr "Schließen Sie die Dachbearbeitung ab oder brechen Sie sie ab, bevor Sie den Arbeitsbereich verlassen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "This file could not be used. Choose a UTF-8 GeoJSON file up to 4 MiB with closed roof polygons containing only WGS 84 longitude/latitude pairs."
+msgstr "Diese Datei kann nicht verwendet werden. Unterstützt wird GeoJSON in UTF-8 bis 4 MiB mit geschlossenen Dachumrissen und WGS-84-Koordinaten aus Längen- und Breitengrad."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Complete this field to continue."
+msgstr "Bitte füllen Sie dieses Feld aus."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "The roof preview could not be prepared. Your file and entries remain available for correction."
+msgstr "Die Dachvorschau konnte nicht vorbereitet werden. Ihre Datei und Eingaben bleiben für die Korrektur erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "File and roof"
+msgstr "Datei und Dachfläche"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Roof plane"
+msgstr "Dachebene"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Source"
+msgstr "Quelle"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Import roof geometry"
+msgstr "Dachgeometrie importieren"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "The roof import is included in the saved project."
+msgstr "Der Dachimport ist im gespeicherten Projekt enthalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Imported roof is in the current design. Save the project to record it."
+msgstr "Die importierte Dachfläche ist im aktuellen Projektentwurf enthalten. Speichern Sie das Projekt, um diesen Stand zu sichern."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Browser recovery could not be read or updated. An upload starts only after a recovery copy of its original file and settings is saved. Project versions already saved on the server are unchanged."
+msgstr "Die Wiederherstellung im Browser konnte nicht gelesen oder aktualisiert werden. Ein Upload startet erst, wenn die Originaldatei und ihre Einstellungen hier für die Wiederherstellung gesichert sind. Bereits auf dem Server gespeicherte Projektstände bleiben unverändert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Review an earlier upload before retrying it or adding its roof to this project."
+msgstr "Prüfen Sie einen früheren Upload, bevor Sie ihn erneut versuchen oder die Dachfläche in dieses Projekt übernehmen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Review imported roof"
+msgstr "Importierte Dachfläche prüfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Review an earlier upload"
+msgstr "Früheren Upload prüfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Preview the roof outline and its openings, then add it to your design. Importing a drawing does not verify site dimensions or engineering compliance."
+msgstr "Die Vorschau zeigt den Dachumriss mit seinen Aussparungen. Anschließend können Sie die Fläche in den Entwurf übernehmen. Der Import ersetzt weder ein Aufmaß vor Ort noch eine technische Prüfung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "The file or roof settings could not be accepted. Your file and entries are still available. Check the file format and roof settings, then try again."
+msgstr "Die Datei oder die Dachangaben konnten nicht übernommen werden. Ihre Datei und Eingaben bleiben erhalten. Bitte prüfen Sie das Dateiformat und die Dachangaben und versuchen Sie es erneut."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "The upload has not been confirmed. Retry uses the same original file and settings; your current design is kept."
+msgstr "Der Upload wurde nicht bestätigt. Ein erneuter Versuch verwendet dieselbe Originaldatei und dieselben Angaben. Ihr aktueller Entwurf bleibt erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Preparing preview…"
+msgstr "Vorschau wird vorbereitet …"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Check or retry this upload"
+msgstr "Upload prüfen oder erneut versuchen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Retained original file"
+msgstr "Gesicherte Originaldatei"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Correct this import"
+msgstr "Importangaben korrigieren"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Import progress"
+msgstr "Importschritte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "The existing design needs a geographic origin and a source reference for true north before another roof can be imported. Close this import and open Project coordinate references. These settings do not rotate or move existing objects; the design must already match the references."
+msgstr "Für eine weitere Dachfläche benötigt der bestehende Entwurf einen geografischen Ursprung und einen Bezug auf geografisch Nord mit Quellenangabe. Schließen Sie den Import und öffnen Sie Koordinatenbezüge des Projekts. Diese Angaben drehen oder verschieben vorhandene Objekte nicht; der Entwurf muss bereits mit diesen Bezügen übereinstimmen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Roof file"
+msgstr "Dachdatei"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "WGS 84 GeoJSON · up to 4 MiB"
+msgstr "GeoJSON in WGS 84 · höchstens 4 MiB"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Continue"
+msgstr "Weiter"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Prepare roof preview"
+msgstr "Dachvorschau vorbereiten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Roof-plane area"
+msgstr "Fläche in der Dachebene"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Openings retained"
+msgstr "Übernommene Aussparungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "The design or coordinate reference has changed. Your imported source is retained; review it against the current project before adding it."
+msgstr "Der Entwurf oder sein Koordinatenbezug hat sich geändert. Die importierte Quelle bleibt erhalten. Bitte gleichen Sie die Angaben vor dem Übernehmen mit dem aktuellen Projekt ab."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Add roof to current design"
+msgstr "Dachfläche in den Entwurf übernehmen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "One editable roof face is added as a single step in project history. Save the project to record the addition. You can undo this addition in the open design."
+msgstr "Die bearbeitbare Dachfläche wird in einem Schritt in den Projektverlauf übernommen. Speichern Sie das Projekt, um sie darin zu sichern. Diese Übernahme lässt sich im offenen Projektentwurf rückgängig machen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Close import"
+msgstr "Import schließen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "%1$s · face %2$d"
+msgstr "%1$s · Fläche %2$d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Feature %d"
+msgstr "Objekt %d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Roof in this file"
+msgstr "Dachfläche in dieser Datei"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Select a roof face"
+msgstr "Dachfläche auswählen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Openings in source: %d"
+msgstr "Aussparungen in der Quelle: %d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "The file provides the horizontal outline. Add the roof pitch, downslope direction and relative height from a survey or drawing to reconstruct the roof surface."
+msgstr "Die Datei liefert den horizontalen Dachumriss. Für die räumliche Dachfläche werden zusätzlich Neigung, Gefällerichtung und relative Höhe aus Ihrem Aufmaß oder Plan benötigt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Enter 0° for a flat roof, or a value greater than 0° and below 90°."
+msgstr "Für ein flaches Dach gilt 0°. Bei geneigten Dächern muss der Wert größer als 0° und kleiner als 90° sein."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Downslope direction from true north"
+msgstr "Gefällerichtung ab geografisch Nord"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Measured clockwise from true north: 0° north, 90° east, 180° south, 270° west. For a flat roof this sets its local drawing axes."
+msgstr "Der Winkel läuft im Uhrzeigersinn ab geografisch Nord: 0° Nord, 90° Ost, 180° Süd, 270° West. Bei einem flachen Dach bestimmt er die lokalen Zeichenachsen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Set the first outline point's relative height to 0 m"
+msgstr "Relative Höhe am ersten Umrisspunkt auf 0 m setzen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "0 m uses the project's height reference. It does not establish ground level or height above sea level. Other roofs and obstacles must use the same height reference."
+msgstr "0 m bezieht sich auf den Höhenbezug des Projekts. Daraus ergeben sich weder die Geländehöhe noch eine Höhe über dem Meer. Weitere Dachflächen und Hindernisse müssen denselben Höhenbezug verwenden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Relative height at the first outline point"
+msgstr "Relative Höhe am ersten Umrisspunkt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Metres relative to the project's height reference. Negative values are allowed."
+msgstr "Meter relativ zum Höhenbezug des Projekts. Negative Werte sind zulässig."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Identify the drawing or survey used for pitch, downslope direction and relative height. Include its date or identifier."
+msgstr "Geben Sie an, aus welchem Plan oder Aufmaß Neigung, Gefällerichtung und relative Höhe stammen. Nennen Sie dazu das Datum oder die Referenzkennung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Position and coordinate reference"
+msgstr "Position und Koordinatenbezug"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "An existing geographic project origin is kept. For an empty, unreferenced project, the first point of the selected outer outline becomes the geographic origin, with WGS 84 true north. This sets the coordinate reference; it does not verify the survey."
+msgstr "Ein vorhandener geografischer Projektursprung bleibt erhalten. Bei einem leeren Projekt ohne geografischen Bezug wird der erste Punkt des gewählten äußeren Dachumrisses zum geografischen Ursprung; der Nordbezug ist geografisch Nord nach WGS 84. Die Genauigkeit des Aufmaßes wird damit nicht geprüft."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Name the drawing, survey or data export used for this roof."
+msgstr "Bezeichnung des Plans, Aufmaßes oder Datenexports für diese Dachfläche."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Source-stated precision, in metres. Leave blank if unknown."
+msgstr "Genauigkeitsangabe der Quelle in Metern. Ohne Angabe bleibt das Feld leer."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Explain your permission to use and privately retain this original file and its derived geometry."
+msgstr "Grundlage Ihrer Berechtigung zur Nutzung und privaten Speicherung der Originaldatei und der daraus erzeugten Geometrie."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "I have permission to upload this original file, derive roof geometry from it and retain both privately with this project."
+msgstr "Ich bin berechtigt, die Originaldatei für dieses Projekt hochzuladen, daraus Dachgeometrie zu erzeugen und beides privat mit dem Projekt zu speichern."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "A retry uses this original file and these unchanged settings for the same import."
+msgstr "Ein erneuter Versuch verwendet für denselben Import diese Originaldatei und die unveränderten Einstellungen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Feature in original file"
+msgstr "Objekt in der Originaldatei"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Roof face in feature"
+msgstr "Dachfläche im Objekt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Plane origin: east, north and relative height (m)"
+msgstr "Ebenenursprung: Ost, Nord und relative Höhe (m)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Plane U unit vector (east, north, up)"
+msgstr "U-Einheitsvektor der Dachebene (Ost, Nord, Hoch)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Plane V unit vector (east, north, up)"
+msgstr "V-Einheitsvektor der Dachebene (Ost, Nord, Hoch)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Roof-plane reference"
+msgstr "Referenz der Dachebene"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Conversion method"
+msgstr "Umrechnungsmethode"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
+msgid "Unsupported earlier conversion method"
+msgstr "Frühere Umrechnungsmethode nicht unterstützt"

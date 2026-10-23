@@ -147,6 +147,7 @@ async function rig(
 		hydrationGate = null,
 		auth = false,
 		refuse = false,
+		refuseCode = "invalid_input",
 		storageDown = false,
 		cleanupGate = null,
 		editor = false,
@@ -279,7 +280,7 @@ async function rig(
 					return json(
 						{
 							error: {
-								code: "invalid_input",
+								code: refuseCode,
 								profile_issue: { issue: "value_sign", line: 2, field: "value" },
 							},
 						},
@@ -525,6 +526,28 @@ test("close and reload are guarded while selected file bytes are still being rea
 		),
 		true,
 	);
+});
+
+test("an unidentified 422 preserves the exact import until its explicit retry is confirmed", async (t) => {
+	const original = command();
+	const fixture = await rig(t, {
+		bodies: [original],
+		refuse: true,
+		refuseCode: "request_failed",
+	});
+	await until(() => button("Check or retry this import"));
+	await act(async () => button("Check or retry this import").click());
+	await until(
+		() =>
+			fixture.uploads.length === 1 &&
+			!button("Check or retry this import").disabled,
+	);
+	assert.equal(fixture.uploads[0], original);
+	assert.equal(field("Source file"), undefined);
+	fixture.setRefuse(false);
+	await act(async () => button("Check or retry this import").click());
+	await until(() => button("Use this profile in the open draft"));
+	assert.deepEqual(fixture.uploads, [original, original]);
 });
 
 test("typed input refusal permits correction despite failed local writes and cleanup", async (t) => {

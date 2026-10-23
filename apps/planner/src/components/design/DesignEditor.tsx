@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
-import type { GeometryImportSelections } from "../../domain/geometryImports.ts";
+import type {
+	PreparedGeometryImport,
+	GeometryImportSelections,
+} from "../../domain/geometryImports.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import { roofDependents } from "../../domain/geometryCommands.ts";
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
@@ -18,6 +21,7 @@ import { SourceForm } from "./SourceForm.tsx";
 import { LayoutRulesForm } from "./LayoutRulesForm.tsx";
 import { LayoutReviewPanel } from "./LayoutReviewPanel.tsx";
 import { PlanViewport } from "./PlanViewport.tsx";
+import { GeometryIntake } from "./GeometryIntake.tsx";
 import { CoordinatesForm } from "./CoordinatesForm.tsx";
 import { LazySceneViewport } from "./LazySceneViewport.tsx";
 
@@ -49,6 +53,10 @@ export function DesignEditor({
 	client,
 	recheck,
 	onValidity,
+	attachImport,
+	confirmedAssetIds = [],
+	recoveryScopes,
+	recoveryChecking,
 }: {
 	geometry: GeometryDocument;
 	geometryImports?: GeometryImportSelections;
@@ -60,12 +68,20 @@ export function DesignEditor({
 	client: PlannerClient;
 	recheck: () => void;
 	onValidity: (valid: boolean) => void;
+	attachImport: (
+		before: GeometryDocument,
+		asset: PreparedGeometryImport,
+	) => boolean;
+	confirmedAssetIds?: readonly string[];
+	recoveryScopes?: readonly string[] | undefined;
+	recoveryChecking?: boolean | undefined;
 }) {
 	const [selected, setSelected] = useState<string | null>(null),
 		[roofId, setRoofId] = useState<string | null>(
 			geometry.roofs[0]?.id ?? null,
 		),
 		[view, setView] = useState<"plan" | "3d">("plan");
+	const [importOpen, setImportOpen] = useState(false);
 	const [form, setForm] = useState<FormState | null>(null),
 		[error, setError] = useState(false),
 		[page, setPage] = useState(0);
@@ -92,9 +108,9 @@ export function DesignEditor({
 		setError(false);
 	}, []);
 	useEffect(() => {
-		onValidity(form === null);
+		onValidity(form === null && !importOpen);
 		return () => onValidity(true);
-	}, [form, onValidity]);
+	}, [form, importOpen, onValidity]);
 	const edit = useCallback(
 		(command: GeometryCommand) => {
 			const accepted = commit(command);
@@ -124,7 +140,7 @@ export function DesignEditor({
 		setPage(0);
 	}, [array?.id]);
 	function choose(id: string) {
-		if (form) return;
+		if (form || importOpen) return;
 		if (id === "coordinate_system") {
 			open("coordinates");
 			return;
@@ -146,7 +162,7 @@ export function DesignEditor({
 		id: string | null = null,
 		forRoof: string | null = roof?.id ?? null,
 	) {
-		if (form) return;
+		if (form || importOpen) return;
 		setError(false);
 		setForm({ kind, id, roofId: forRoof, snapshot: geometry });
 	}
@@ -192,7 +208,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						className="lp-button"
-						disabled={!!form}
+						disabled={!!form || importOpen}
 						onClick={() => open("roof")}
 					>
 						<Icon name="plus" />
@@ -201,7 +217,7 @@ export function DesignEditor({
 					<button
 						type="button"
 						className="lp-button lp-button-secondary"
-						disabled={!!form}
+						disabled={!!form || importOpen}
 						onClick={() => open("module")}
 					>
 						{__("Add module specification", "linker-tools")}
@@ -236,6 +252,27 @@ export function DesignEditor({
 					)}
 				</Notice>
 			)}
+			<GeometryIntake
+				geometry={geometry}
+				projectId={projectId}
+				session={session}
+				client={client}
+				locale={locale}
+				recheck={recheck}
+				disabled={!!form}
+				onActivity={setImportOpen}
+				attach={(before, asset) => {
+					if (!attachImport(before, asset)) return false;
+					const added = asset.geometry.roofs[0]!;
+					setRoofId(added.id);
+					setSelected(added.id);
+					return true;
+				}}
+				currentAssetIds={Object.values(geometryImports.selected)}
+				confirmedAssetIds={confirmedAssetIds}
+				recoveryScopes={recoveryScopes}
+				recoveryChecking={recoveryChecking}
+			/>
 			<div className="lp-design-workspace">
 				<div className="lp-design-canvas">
 					{roof ? (
@@ -245,7 +282,7 @@ export function DesignEditor({
 									{__("Active roof face", "linker-tools")}
 									<select
 										value={roof.id}
-										disabled={!!form}
+										disabled={!!form || importOpen}
 										onChange={(event) => {
 											setRoofId(event.currentTarget.value);
 											setSelected(event.currentTarget.value);
@@ -273,7 +310,7 @@ export function DesignEditor({
 									selected={selected}
 									select={choose}
 									commit={edit}
-									disabled={!!form}
+									disabled={!!form || importOpen}
 								/>
 							) : (
 								<LazySceneViewport
@@ -283,7 +320,7 @@ export function DesignEditor({
 									selected={selected}
 									select={choose}
 									commit={edit}
-									disabled={!!form}
+									disabled={!!form || importOpen}
 								/>
 							)}
 						</>
@@ -305,7 +342,7 @@ export function DesignEditor({
 							<button
 								type="button"
 								className="lp-text-button"
-								disabled={!!form}
+								disabled={!!form || importOpen}
 								onClick={() => open("roof")}
 							>
 								{__("Add the first roof face", "linker-tools")}
@@ -729,7 +766,7 @@ export function DesignEditor({
 				locale={locale}
 				recheck={recheck}
 				select={choose}
-				disabled={!!form}
+				disabled={!!form || importOpen}
 			/>
 		</section>
 	);

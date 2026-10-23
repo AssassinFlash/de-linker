@@ -1,0 +1,382 @@
+[
+  {
+    "en": "Choose a UTF-8 GeoJSON file up to 4 MiB with closed, two-dimensional WGS 84 roof polygons. Check the file's coordinates and format, then try again.",
+    "de": "Die Datei benötigt geschlossene Dachumrisse mit zweidimensionalen WGS-84-Koordinaten im GeoJSON-Format (UTF-8, höchstens 4 MiB). Bitte prüfen Sie Format und Koordinaten der Datei.",
+    "existing": false
+  },
+  {
+    "en": "Complete this field to continue.",
+    "de": "Bitte füllen Sie dieses Feld aus.",
+    "existing": false
+  },
+  {
+    "en": "The file and roof settings could not be prepared. Your values remain available for correction.",
+    "de": "Die Dachvorschau konnte nicht vorbereitet werden. Ihre Datei und Eingaben bleiben für die Korrektur erhalten.",
+    "existing": false
+  },
+  {
+    "en": "File and roof",
+    "de": "Datei und Dachfläche",
+    "existing": false
+  },
+  {
+    "en": "Roof plane",
+    "de": "Dachebene",
+    "existing": false
+  },
+  {
+    "en": "Source",
+    "de": "Quelle",
+    "existing": false
+  },
+  {
+    "en": "Import roof geometry",
+    "de": "Dachgeometrie importieren",
+    "existing": false
+  },
+  {
+    "en": "Imported roof saved with the project.",
+    "de": "Die importierte Dachfläche ist im Projekt gespeichert.",
+    "existing": false
+  },
+  {
+    "en": "Imported roof is in the current design. Save the project to record it.",
+    "de": "Die importierte Dachfläche ist im aktuellen Entwurf enthalten. Mit dem Speichern des Projekts wird sie dauerhaft übernommen.",
+    "existing": false
+  },
+  {
+    "en": "Browser recovery is unavailable or full. The upload needs a retained copy of its original request. Any confirmed project save remains on the server.",
+    "de": "Die Wiederherstellung im Browser ist nicht verfügbar oder ihr Speicher ist voll. Vor dem Hochladen muss die ursprüngliche Anfrage dort gesichert werden. Bestätigte Projektstände bleiben auf dem Server erhalten.",
+    "existing": false
+  },
+  {
+    "en": "Imports to review",
+    "de": "Importe zur Prüfung",
+    "existing": true
+  },
+  {
+    "en": "Review an earlier upload before deciding whether to retry it or add it to this project.",
+    "de": "Hier können Sie einen früheren Upload prüfen und anschließend erneut versuchen oder in das Projekt übernehmen.",
+    "existing": false
+  },
+  {
+    "en": "Review imported roof",
+    "de": "Importierte Dachfläche prüfen",
+    "existing": false
+  },
+  {
+    "en": "Review an earlier upload",
+    "de": "Früheren Upload prüfen",
+    "existing": false
+  },
+  {
+    "en": "Preview the roof outline and its openings, then add it to your design. Importing a drawing does not verify site dimensions or engineering compliance.",
+    "de": "Die Vorschau zeigt den Dachumriss mit seinen Aussparungen. Anschließend können Sie die Fläche in den Entwurf übernehmen. Der Import ersetzt weder ein Aufmaß vor Ort noch eine technische Prüfung.",
+    "existing": false
+  },
+  {
+    "en": "The file or roof settings were refused before storage. Check the format and calibration before trying again.",
+    "de": "Die Datei oder die Dachangaben wurden vor dem Speichern abgewiesen. Bitte prüfen Sie Dateiformat und Angaben zur Dachebene.",
+    "existing": false
+  },
+  {
+    "en": "The upload has not been confirmed. Retry uses the same original file and settings; your current design is kept.",
+    "de": "Der Upload wurde nicht bestätigt. Ein erneuter Versuch verwendet dieselbe Originaldatei und dieselben Angaben. Ihr aktueller Entwurf bleibt erhalten.",
+    "existing": false
+  },
+  {
+    "en": "Preparing preview…",
+    "de": "Vorschau wird vorbereitet …",
+    "existing": false
+  },
+  {
+    "en": "Check or retry this upload",
+    "de": "Upload prüfen oder erneut versuchen",
+    "existing": false
+  },
+  {
+    "en": "Retained original file",
+    "de": "Gesicherte Originaldatei",
+    "existing": false
+  },
+  {
+    "en": "Correct this import",
+    "de": "Importangaben korrigieren",
+    "existing": false
+  },
+  {
+    "en": "Import progress",
+    "de": "Importschritte",
+    "existing": false
+  },
+  {
+    "en": "Align the existing design to true north and a geographic origin before importing another roof. Close this import and open Project coordinate references; existing objects are kept in place.",
+    "de": "Für eine weitere Dachfläche benötigt der bestehende Entwurf einen geografischen Ursprung und eine belegte Ausrichtung nach geografisch Nord. Diese Angaben finden Sie nach dem Schließen unter Projektkoordinaten. Vorhandene Objekte werden dabei nicht verschoben.",
+    "existing": false
+  },
+  {
+    "en": "Roof file",
+    "de": "Dachdatei",
+    "existing": false
+  },
+  {
+    "en": "WGS 84 GeoJSON · up to 4 MiB",
+    "de": "GeoJSON in WGS 84 · höchstens 4 MiB",
+    "existing": false
+  },
+  {
+    "en": "Back",
+    "de": "Zurück",
+    "existing": true
+  },
+  {
+    "en": "Continue",
+    "de": "Weiter",
+    "existing": false
+  },
+  {
+    "en": "Prepare roof preview",
+    "de": "Dachvorschau vorbereiten",
+    "existing": false
+  },
+  {
+    "en": "Roof-plane area",
+    "de": "Fläche in der Dachebene",
+    "existing": false
+  },
+  {
+    "en": "Openings retained",
+    "de": "Übernommene Aussparungen",
+    "existing": false
+  },
+  {
+    "en": "The design or coordinate reference has changed. Your imported source is retained; review it against the current project before adding it.",
+    "de": "Der Entwurf oder sein Koordinatenbezug hat sich geändert. Die importierte Quelle bleibt erhalten. Bitte gleichen Sie die Angaben vor dem Übernehmen mit dem aktuellen Projekt ab.",
+    "existing": false
+  },
+  {
+    "en": "Add roof to current design",
+    "de": "Dachfläche in den Entwurf übernehmen",
+    "existing": false
+  },
+  {
+    "en": "This adds one editable roof to project history. Save the project to keep the selection; Undo removes it from the open design.",
+    "de": "Die Dachfläche wird als ein bearbeitbarer Schritt in den Entwurf übernommen. Durch Speichern bleibt die Auswahl im Projekt erhalten. Rückgängig entfernt sie aus dem offenen Entwurf.",
+    "existing": false
+  },
+  {
+    "en": "Close import",
+    "de": "Import schließen",
+    "existing": false
+  },
+  {
+    "en": "%1$s · face %2$d",
+    "de": "%1$s · Fläche %2$d",
+    "existing": false
+  },
+  {
+    "en": "Feature %d",
+    "de": "Objekt %d",
+    "existing": false
+  },
+  {
+    "en": "Roof in this file",
+    "de": "Dachfläche in dieser Datei",
+    "existing": false
+  },
+  {
+    "en": "Select a roof face",
+    "de": "Dachfläche auswählen",
+    "existing": false
+  },
+  {
+    "en": "Openings in source: %d",
+    "de": "Aussparungen in der Quelle: %d",
+    "existing": false
+  },
+  {
+    "en": "Roof face name",
+    "de": "Name der Dachfläche",
+    "existing": true
+  },
+  {
+    "en": "The file supplies the outline. Enter the roof plane from a survey or drawing so its surface can be reconstructed.",
+    "de": "Der Umriss stammt aus der Datei. Für die räumliche Dachfläche werden zusätzlich Neigung, Ausrichtung und relative Höhe aus Ihrem Aufmaß oder Plan benötigt.",
+    "existing": false
+  },
+  {
+    "en": "Roof pitch",
+    "de": "Dachneigung",
+    "existing": true
+  },
+  {
+    "en": "0° is flat; enter a value below 90°.",
+    "de": "0° steht für ein flaches Dach. Zulässig sind Werte unter 90°.",
+    "existing": false
+  },
+  {
+    "en": "Downslope direction from true north",
+    "de": "Gefällerichtung ab geografisch Nord",
+    "existing": false
+  },
+  {
+    "en": "0° north · 90° east · 180° south · 270° west. For a flat roof this sets its local drawing axes.",
+    "de": "0° Nord · 90° Ost · 180° Süd · 270° West. Bei einem flachen Dach bestimmt dieser Winkel die lokalen Zeichenachsen.",
+    "existing": false
+  },
+  {
+    "en": "Use this roof vertex as relative height 0 m",
+    "de": "Diesen Dachpunkt als relative Höhe 0 m festlegen",
+    "existing": false
+  },
+  {
+    "en": "Relative zero is a drawing reference, not ground level or a measured elevation. Other roofs and obstacles must use the same height reference.",
+    "de": "Der relative Nullpunkt ist ein Bezug für die Zeichnung. Er entspricht weder automatisch dem Gelände noch einer gemessenen Höhe. Weitere Dachflächen und Hindernisse benötigen denselben Höhenbezug.",
+    "existing": false
+  },
+  {
+    "en": "Roof height at the selected vertex",
+    "de": "Dachhöhe am gewählten Umrisspunkt",
+    "existing": false
+  },
+  {
+    "en": "Metres relative to the project origin. Negative values are allowed.",
+    "de": "Meter relativ zum Projektursprung. Negative Werte sind zulässig.",
+    "existing": false
+  },
+  {
+    "en": "Measurement or drawing reference",
+    "de": "Aufmaß- oder Zeichnungsreferenz",
+    "existing": true
+  },
+  {
+    "en": "Identify the source of the pitch, direction and relative height, including the drawing date or survey reference.",
+    "de": "Als Grundlage benötigen wir die Plan- oder Aufmaßreferenz für Neigung, Ausrichtung und relative Höhe, möglichst mit Datum.",
+    "existing": false
+  },
+  {
+    "en": "Position and coordinate reference",
+    "de": "Position und Koordinatenbezug",
+    "existing": false
+  },
+  {
+    "en": "The project keeps its existing geographic origin. A new unreferenced project uses the selected outline's first vertex as its origin, with true north from WGS 84. These choices set coordinates; they do not verify the survey.",
+    "de": "Ein vorhandener geografischer Projektursprung bleibt erhalten. Bei einem neuen Projekt ohne Bezug wird der erste Punkt des gewählten Umrisses zum Ursprung; die Nordrichtung folgt WGS 84. Damit wird das Koordinatensystem festgelegt, das Aufmaß jedoch nicht geprüft.",
+    "existing": false
+  },
+  {
+    "en": "Source reference",
+    "de": "Quellenreferenz",
+    "existing": true
+  },
+  {
+    "en": "Name the drawing, survey or data export used for this roof.",
+    "de": "Bezeichnung des Plans, Aufmaßes oder Datenexports für diese Dachfläche.",
+    "existing": false
+  },
+  {
+    "en": "Declared spatial precision",
+    "de": "Angegebene räumliche Genauigkeit",
+    "existing": true
+  },
+  {
+    "en": "Use the precision stated by the source. Leave empty if unknown.",
+    "de": "Die Genauigkeitsangabe der Quelle kann hier übernommen werden. Ohne belegte Angabe bleibt das Feld leer.",
+    "existing": false
+  },
+  {
+    "en": "Permission or licence basis",
+    "de": "Berechtigungs- oder Lizenzgrundlage",
+    "existing": true
+  },
+  {
+    "en": "Explain your permission to use and privately retain this original file and its derived geometry.",
+    "de": "Grundlage Ihrer Berechtigung zur Nutzung und privaten Speicherung der Originaldatei und der daraus erzeugten Geometrie.",
+    "existing": false
+  },
+  {
+    "en": "Permission to export geometry",
+    "de": "Berechtigung zum Export der Geometrie",
+    "existing": true
+  },
+  {
+    "en": "Unknown",
+    "de": "Unbekannt",
+    "existing": true
+  },
+  {
+    "en": "Permitted",
+    "de": "Erlaubt",
+    "existing": true
+  },
+  {
+    "en": "Prohibited",
+    "de": "Untersagt",
+    "existing": true
+  },
+  {
+    "en": "I have permission to upload this original and retain it privately with this project.",
+    "de": "Ich bin berechtigt, diese Originaldatei hochzuladen und privat mit diesem Projekt zu speichern.",
+    "existing": false
+  },
+  {
+    "en": "Original import settings",
+    "de": "Ursprüngliche Importeinstellungen",
+    "existing": true
+  },
+  {
+    "en": "A retry uses this original file and these frozen settings. It does not create a different request.",
+    "de": "Ein erneuter Versuch verwendet genau diese Originaldatei und diese unveränderten Angaben. Es wird keine neue Anfrage erzeugt.",
+    "existing": false
+  },
+  {
+    "en": "Feature in original file",
+    "de": "Objekt in der Originaldatei",
+    "existing": false
+  },
+  {
+    "en": "Roof face in feature",
+    "de": "Dachfläche im Objekt",
+    "existing": false
+  },
+  {
+    "en": "Project origin longitude",
+    "de": "Längengrad des Projektursprungs",
+    "existing": true
+  },
+  {
+    "en": "Project origin latitude",
+    "de": "Breitengrad des Projektursprungs",
+    "existing": true
+  },
+  {
+    "en": "Plane origin east, north and relative height",
+    "de": "Ebenenursprung: Ost, Nord und relative Höhe",
+    "existing": false
+  },
+  {
+    "en": "Plane U direction in east, north and up",
+    "de": "U-Richtung der Ebene: Ost, Nord und Oben",
+    "existing": false
+  },
+  {
+    "en": "Plane V direction in east, north and up",
+    "de": "V-Richtung der Ebene: Ost, Nord und Oben",
+    "existing": false
+  },
+  {
+    "en": "Plane calibration basis",
+    "de": "Grundlage der Dachebene",
+    "existing": false
+  },
+  {
+    "en": "Conversion method",
+    "de": "Umrechnungsmethode",
+    "existing": false
+  },
+  {
+    "en": "Unsupported legacy method",
+    "de": "Nicht unterstützte frühere Methode",
+    "existing": false
+  }
+]

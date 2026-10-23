@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { isPreMutationInputRefusal } from "../data/inputRefusal.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import { profileIntents, intentId } from "../data/recoveryIntents.ts";
@@ -393,12 +394,7 @@ export function ProfileIntake({
 			failure(cause, instance);
 			// A typed input refusal guarantees no asset publication. An unknown
 			// acknowledgement or transient failure retains the exact wire/key.
-			if (
-				body &&
-				current(instance) &&
-				cause instanceof ApiError &&
-				[400, 413, 415, 422].includes(cause.status)
-			) {
+			if (body && current(instance) && isPreMutationInputRefusal(cause)) {
 				// A definitive pre-publication refusal makes this editable input,
 				// even if the browser cannot clean up its older recovery record.
 				// Revoke the durable admission before awaiting that cleanup.

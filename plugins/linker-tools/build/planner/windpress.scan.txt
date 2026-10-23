@@ -26,6 +26,7 @@ lp-empty
 lp-eyebrow
 lp-field
 lp-field-error
+lp-field-summary
 lp-file-button
 lp-file-name
 lp-file-picker
@@ -33,7 +34,11 @@ lp-focus-target
 lp-geometry-check
 lp-geometry-fields
 lp-geometry-form
+lp-geometry-intake
 lp-icon-button
+lp-import-panel
+lp-import-review
+lp-import-steps
 lp-index
 lp-index-heading
 lp-inline-actions

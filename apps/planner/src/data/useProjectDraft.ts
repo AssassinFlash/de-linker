@@ -12,6 +12,7 @@ import {
 import type { Project, Session } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
 import { readProject } from "./readProtocol.ts";
+import { isPreMutationInputRefusal } from "./inputRefusal.ts";
 import type { PlannerClient } from "./PlannerClient.ts";
 import type { DraftStore, RecoveryCandidate } from "./DraftStore.ts";
 
@@ -202,10 +203,7 @@ export function useProjectDraft(
 					/* Local input and exact uncertain intent remain available. */
 				}
 			}
-			if (
-				error instanceof ApiError &&
-				[400, 413, 415, 422].includes(error.status)
-			) {
+			if (isPreMutationInputRefusal(error)) {
 				// These are explicit pre-mutation input refusals, not lost replies.
 				update((previous) => ({ ...previous, pending: null }));
 			}
