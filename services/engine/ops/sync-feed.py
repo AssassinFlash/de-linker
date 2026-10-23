@@ -8,6 +8,7 @@ Two immutable generations are retained for rollback; no independent swaps.
 
 from __future__ import annotations
 
+import argparse
 import base64
 import contextlib
 import datetime as dt
@@ -23,7 +24,7 @@ import sys
 import tempfile
 import time
 import urllib.request
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -32,13 +33,14 @@ TARGET = Path("/opt/linker-engine/state/feed.json")
 COMPATIBILITY_TARGET = Path("/opt/linker-engine/state/compatibility.json")
 STATE = Path("/var/log/linker-engine-feed-sync.log")
 PROBE_PYTHON = "/opt/linker-engine/current/.venv/bin/python"
+MANAGED_STATE = Path("/opt/linker-engine/state")
 PROBE = "import pathlib,sys; from linker_engine.products import Products; Products.load(pathlib.Path(sys.argv[1])); print('validated')"
 COMPATIBILITY_PROBE = "import pathlib,sys; from linker_engine.compatibility import Compatibility; Compatibility.load(pathlib.Path(sys.argv[1])); print('validated')"
 
 
 def log(message: str) -> None:
     line = f"{dt.datetime.now(dt.UTC).isoformat(timespec='seconds')} {message}"
-    print(line)
+    print(line, flush=True)
     try:
         with STATE.open("a", encoding="utf-8") as handle:
             handle.write(line + "\n")
@@ -322,23 +324,93 @@ def sync(
             return 1
 
 
-def cleanup_receipts() -> None:
-    directory = Path(
-        os.environ.get(
-            "LINKER_ENGINE_CACHE", str(Path.home() / ".cache" / "linker-engine")
-        )
-    )
+def receipt_path(*, state_root: Path = MANAGED_STATE) -> Path:
+    """Both units must use the same explicit cache under their writable state."""
+    configured = os.environ.get("LINKER_ENGINE_CACHE", "")
+    if not configured:
+        raise ValueError("LINKER_ENGINE_CACHE must explicitly name the shared cache")
+    directory = Path(configured)
+    if (
+        not directory.is_absolute()
+        or directory.resolve() == state_root.resolve()
+        or not directory.resolve().is_relative_to(state_root.resolve())
+    ):
+        raise ValueError("LINKER_ENGINE_CACHE must remain inside managed engine state")
     path = directory / "private" / "selections.sqlite"
-    if path.is_file():
-        with sqlite3.connect(f"file:{path}?mode=rw", uri=True) as database:
-            database.execute(
+    if not path.resolve().is_relative_to(directory.resolve()):
+        raise ValueError("private receipt data must remain inside the shared cache")
+    return path
+
+
+def cache_preflight(*, state_root: Path = MANAGED_STATE) -> bool:
+    """Exercise SQLite writes in the real unit namespace without keeping a probe."""
+    try:
+        path = receipt_path(state_root=state_root)
+        path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        with tempfile.TemporaryDirectory(
+            dir=path.parent, prefix=".receipt-preflight-"
+        ) as temporary:
+            # Match Selections' SQLite journal writes, not merely os.access().
+            # One second yields to the minute retry instead of holding up work.
+            with sqlite3.connect(
+                Path(temporary) / "probe.sqlite", timeout=1
+            ) as database:
+                database.execute("CREATE TABLE probe (value INTEGER NOT NULL)")
+                database.execute("INSERT INTO probe VALUES (1)")
+                database.execute("DELETE FROM probe")
+        if path.is_file():
+            with sqlite3.connect(
+                f"{path.as_uri()}?mode=rw", uri=True, timeout=1
+            ) as database:
+                database.execute("BEGIN IMMEDIATE")
+                database.execute("DELETE FROM selections WHERE 0")
+                database.rollback()
+        log(f"receipt retention preflight passed: {path}")
+        return True
+    except (OSError, ValueError, RuntimeError, sqlite3.Error) as error:
+        log(f"receipt retention preflight failed: {type(error).__name__}: {error}")
+        return False
+
+
+def cleanup_receipts(*, state_root: Path = MANAGED_STATE) -> bool:
+    """Expiry is independent of source work; an invisible cache is never success."""
+    try:
+        path = receipt_path(state_root=state_root)
+        if not path.is_file():
+            if not cache_preflight(state_root=state_root):
+                return False
+            log("receipt retention: database not yet created; shared cache is writable")
+            return True
+        with sqlite3.connect(
+            f"{path.as_uri()}?mode=rw", uri=True, timeout=1
+        ) as database:
+            deleted = database.execute(
                 "DELETE FROM selections WHERE expires < ?", (int(time.time()),)
-            )
+            ).rowcount
+        log(
+            f"receipt retention: deleted {deleted} expired confirmed-result receipts at {path}"
+        )
+        return True
+    except (OSError, ValueError, RuntimeError, sqlite3.Error) as error:
+        log(
+            f"receipt retention failed; publication preparation still runs: {type(error).__name__}: {error}"
+        )
+        return False
 
 
-def main() -> int:
-    cleanup_receipts()
-    return sync(jobs=job_request)
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--cache-preflight", action="store_true")
+    modes.add_argument("--cleanup-receipts", action="store_true")
+    options = parser.parse_args(argv)
+    if options.cache_preflight:
+        return 0 if cache_preflight() else 1
+    retained = cleanup_receipts()
+    if options.cleanup_receipts:
+        return 0 if retained else 1
+    prepared = sync(jobs=job_request)
+    return prepared if prepared else (0 if retained else 1)
 
 
 if __name__ == "__main__":
