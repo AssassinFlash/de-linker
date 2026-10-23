@@ -32,6 +32,8 @@ def test_preserves_copy_scripts_styles_escapes_and_sources() -> None:
     assert after.endswith(surrounding)
     # Drop only the added tokens: every other byte and slash must survive.
     restored = after.replace(' decoding="async"', "")
+    for width, height in repair.PHOTO_SIZES:
+        restored = restored.replace(f' width="{width}" height="{height}"', "")
     for src in SOURCES[:-1]:
         restored = restored.replace(f'src="{src}" loading="lazy"', f'src="{src}"')
     assert restored == before
@@ -52,6 +54,10 @@ def test_preserves_copy_scripts_styles_escapes_and_sources() -> None:
         homepage().replace(
             '<img alt="EN &amp; Grüße > photo"', '<img src="/ambiguous"', 1
         ),
+        homepage().replace('<img ', '<img width="1599" ', 1),
+        homepage().replace('<img ', '<img height="0" ', 1),
+        homepage().replace('<img ', '<img width="100%" ', 1),
+        homepage().replace('<img ', '<img height ', 1),
         homepage().replace("</main>", '<img src="/extra.webp"></main>'),
         homepage().replace("</main>", f'<img src="{SOURCES[0]}"></main>'),
     ],
@@ -68,3 +74,19 @@ def test_preserves_quote_case_and_self_closing_spelling() -> None:
     after = repair.defer_images(before)
     assert after.count("<IMG alt='Grüße > photo'") == 16
     assert repair.defer_images(after) == after
+
+
+def test_intrinsic_sizes_match_each_source_and_preserve_existing_attributes() -> None:
+    before = homepage().replace('<img ', "<img WIDTH='1600' ", 1)
+    after = repair.defer_images(before)
+    assert after.startswith('<main id="home-a">\n<img WIDTH=\'1600\' ')
+    parser = repair.HomeImages(after)
+    parser.feed(after)
+    parser.close()
+    assert parser.edits == []
+    assert parser.sources == repair.PHOTO_SOURCES
+    for source, (width, height) in repair.PHOTO_DIMENSIONS.items():
+        assert width > 0 and height > 0
+        assert source in after
+    assert after.count(' height="') == 16
+    assert after.count(' width="') == 15

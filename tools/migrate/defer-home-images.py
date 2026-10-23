@@ -47,6 +47,31 @@ PHOTO_PATHS = (
     "2026/09/linker-when-demand-gets-bigger.webp",
 )
 PHOTO_SOURCES = Counter("/wp-content/uploads/" + name for name in PHOTO_PATHS)
+# Native getimagesize() of the complete snapshot and the browser's decoded
+# naturalWidth/naturalHeight agree for all sixteen photos (2026-10-23).
+# Width/height supply the intrinsic ratio before download. In particular, the
+# two first solution rows otherwise shrink until their lazy images load.
+PHOTO_SIZES = (
+    (1600, 1600),
+    (1600, 1600),
+    (1600, 1600),
+    (2336, 1744),
+    (1600, 1600),
+    (1568, 672),
+    (2304, 1440),
+    (2304, 1440),
+    (2304, 1440),
+    (2304, 1440),
+    (2304, 1440),
+    (2048, 1360),
+    (2400, 1600),
+    (2048, 1360),
+    (1568, 672),
+    (1774, 887),
+)
+PHOTO_DIMENSIONS = dict(
+    zip(("/wp-content/uploads/" + name for name in PHOTO_PATHS), PHOTO_SIZES, strict=True)
+)
 
 
 class HomeImages(HTMLParser):
@@ -74,7 +99,13 @@ class HomeImages(HTMLParser):
         assert source is not None
         self.sources[source] += 1
         added = ""
-        for name, value in (("loading", "lazy"), ("decoding", "async")):
+        width, height = PHOTO_DIMENSIONS[source]
+        for name, value in (
+            ("loading", "lazy"),
+            ("decoding", "async"),
+            ("width", str(width)),
+            ("height", str(height)),
+        ):
             if name not in attributes:
                 added += f' {name}="{value}"'
             elif attributes[name] != value:

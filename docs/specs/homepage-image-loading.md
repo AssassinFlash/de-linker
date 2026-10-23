@@ -8,12 +8,20 @@ four hidden process steps. These are local transport measurements, not an
 online performance claim. Verify the first-photo position at EN/DE1440/390/320
 before applying the candidate to the owned current-source instance.
 
-Add native `loading="lazy"` and `decoding="async"` to the sixteen audited
-photos. Keep every original src, alt, dimension, class, paragraph, style,
+Add native `loading="lazy"`, `decoding="async"`, and intrinsic `width`/`height`
+to the sixteen audited photos. Their sizes must match the decoded browser
+images and native file metadata from the complete snapshot. Keep every
+original src, alt, existing matching dimension, class, paragraph, style,
 script and language. Keep the header logo and CSS hero background unchanged.
 No data-src hydration, observer, loading overlay, new CSS or image rewrite is
-needed. Existing CSS reserves the photo containers; verify actual geometry
-and shifts with the browser rather than assuming attributes cannot affect it.
+needed. The first lazy/async-only candidate failed initial layout: in DE1440,
+the residential image height fell from 406.672 to 350px and the commercial
+image from 693.273 to 408.094px before loading, moving later sections up by
+341.852px. Loaded screenshots missed this issue. The existing CSS relies on
+intrinsic ratios in those rows. Reserve them through native dimensions, then
+verify initial and loaded geometry at all six EN/DE1440/390/320 layouts.
+Retain the earlier candidate's measurements as rejected layout evidence; do
+not reuse them as acceptance of the revised candidate.
 
 Use the existing transactional content writer, which checks original bytes,
 locks both rows, supplies wp_slash, uses native wp_update_post and reads the
@@ -33,7 +41,7 @@ has an unknown outcome; independently read both pages before any retry or
 rollback. Never promise that a catch-block ROLLBACK undoes a committed write.
 
 The migration refuses a changed image set, an unknown photo, duplicate
-attributes or conflicting loading/decoding instructions. It ignores IMG-like
+attributes or conflicting loading/decoding/dimension instructions. It ignores IMG-like
 strings inside scripts and comments and is idempotent. A production write
 requires a verified complete local backup; retain a separate native database
 backup and exact content backup before the local write too. Rollback supplies
