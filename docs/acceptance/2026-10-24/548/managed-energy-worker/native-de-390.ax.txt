@@ -1,0 +1,3 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1#lp-design".
+There has been no change in the accessibility tree.
+The focused UI element is 153 button (expanded) Über dieses Werkzeug, Secondary Actions: Collapse
