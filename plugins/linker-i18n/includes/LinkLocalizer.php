@@ -11,6 +11,7 @@ namespace Linker\I18n;
 
 use Linker\I18n\Translation\HtmlToken;
 use Linker\I18n\Translation\HtmlTokenizer;
+use WP_Post;
 use WP_Term;
 
 /**
@@ -193,6 +194,17 @@ final class LinkLocalizer {
 			// A German descriptive slug has no English rewrite; the English
 			// path is the same path without /de/, and resolves the source.
 			$post_id = url_to_postid( home_url( $unprefixed ) );
+		}
+		if ( $post_id <= 0 ) {
+			// Polylang's frontend home_url filter can make url_to_postid miss
+			// an English page while a German theme is rendering its content.
+			$page = get_page_by_path( trim( $unprefixed, '/' ) );
+			if ( $page instanceof WP_Post && 'page' === $page->post_type && 'publish' === $page->post_status && '' === $page->post_password ) {
+				$canonical = get_permalink( $page->ID );
+				if ( is_string( $canonical ) && untrailingslashit( $path ) === untrailingslashit( (string) wp_parse_url( $canonical, PHP_URL_PATH ) ) ) {
+					$post_id = $page->ID;
+				}
+			}
 		}
 		if ( $post_id > 0 ) {
 			if ( $this->languages->of_post( $post_id ) === $language ) {

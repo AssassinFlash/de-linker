@@ -23,6 +23,27 @@ use WP_Mock\Tools\TestCase;
 final class LinkLocalizerTest extends TestCase {
 
 	/**
+	 * Native URL lookup can return zero under the frontend's filtered home URL.
+	 *
+	 * @var bool
+	 */
+	private bool $unresolved_posts = false;
+
+	/**
+	 * A direct native page lookup must still respect publication and password state.
+	 *
+	 * @var string
+	 */
+	private string $page_status = 'publish';
+
+	/**
+	 * Password-protected pages are not public contact sources.
+	 *
+	 * @var string
+	 */
+	private string $page_password = '';
+
+	/**
 	 * The localizer on a site where /contact/ (33) has the German page
 	 * /de/kontakt/ (58), the category accessories (46) Zubehör (150), the
 	 * shop page products (15) produkte (42).
@@ -56,12 +77,33 @@ final class LinkLocalizerTest extends TestCase {
 		WP_Mock::userFunction(
 			'url_to_postid',
 			array(
-				'return' => static fn( string $url ) => array(
+				'return' => fn( string $url ) => $this->unresolved_posts ? 0 : ( array(
 					PolylangDouble::HOME . 'contact/'     => 33,
 					PolylangDouble::HOME . 'de/kontakt/'  => 58,
 					PolylangDouble::HOME . 'products/'    => 15,
 					PolylangDouble::HOME . 'de/produkte/' => 42,
-				)[ $url ] ?? 0,
+				)[ $url ] ?? 0 ),
+			)
+		);
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'return' => function ( string $path ) {
+					$id = array(
+						'contact'  => 33,
+						'kontakt'  => 58,
+						'products' => 15,
+						'produkte' => 42,
+					)[ $path ] ?? 0;
+					return $id > 0 ? PolylangDouble::post(
+						$id,
+						array(
+							'post_type'     => 'page',
+							'post_status'   => $this->page_status,
+							'post_password' => $this->page_password,
+						)
+					) : null;
+				},
 			)
 		);
 		WP_Mock::userFunction(
@@ -266,5 +308,23 @@ final class LinkLocalizerTest extends TestCase {
 			$html = '<a data-linker-contact="" href="' . $destination . '?source=' . rawurlencode( PolylangDouble::HOME ) . '">Contact</a>';
 			$this->assertSame( $html, $this->localizer()->localize( $html ) );
 		}
+	}
+
+	/** The frontend's filtered home URL must not prevent resolving a native page pair. */
+	public function test_native_page_lookup_recovers_a_page_when_url_lookup_returns_zero(): void {
+		$this->unresolved_posts = true;
+		$this->assertSame( PolylangDouble::HOME . 'de/kontakt/', $this->localizer()->url( PolylangDouble::HOME . 'contact/', 'de' ) );
+		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'de/kontakt/', 'en' ) );
+	}
+
+	/** A fallback must not accept an alias, private page or protected page. */
+	public function test_native_page_fallback_requires_a_public_canonical_page(): void {
+		$this->unresolved_posts = true;
+		$this->assertSame( PolylangDouble::HOME . 'fake/contact/', $this->localizer()->url( PolylangDouble::HOME . 'fake/contact/' ) );
+		$this->page_status = 'private';
+		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'contact/' ) );
+		$this->page_status   = 'publish';
+		$this->page_password = 'restricted';
+		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'contact/' ) );
 	}
 }

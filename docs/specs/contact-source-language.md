@@ -10,6 +10,14 @@ The current snapshot contains 78 marked anchors across 18 published pages. The
 39 German anchors span nine pages. This is a saved-content inventory, not proof
 that every dynamic entry or consumer has been exercised.
 
+Actual browser acceptance exposed a second native context: Polylang filters
+`home_url` while the theme renders a German page. WordPress `url_to_postid` then
+misses English source pages such as Services & Support. A direct CLI localizer
+with `PLL_Admin` does not reproduce that frontend behavior. The existing
+resolver therefore needs a canonical, public native page lookup when URL lookup
+returns zero. The live FAQ template also replaces its saved page content: its
+two stored marked anchors are inventory records, not currently rendered entries.
+
 ## Required behavior
 
 - An anchor explicitly carrying `data-linker-contact` localizes both its main
@@ -34,6 +42,10 @@ that every dynamic entry or consumer has been exercised.
 - Contact language switching carries a verified homepage using the native
   language root, rather than the front page slug returned outside the frontend.
   Existing intent and selected search/filter semantics continue to apply.
+- When the frontend home filter causes URL lookup to return zero, resolve a
+  page through native `get_page_by_path` only if its current canonical path,
+  published page type and empty password match. Do not change locale, suppress
+  global filters or accept a private page or a noncanonical alias.
 
 ## Implementation boundary
 
@@ -54,6 +66,8 @@ Unit regressions cover marked and unmarked transport, both languages, preserved
 query/script bytes, rejected origins, homepage pair identity, unavailable homes
 and language switching. Read-only native snapshot fixtures must verify the
 marked-page inventory against actual Polylang pairs and public source results.
+Include the native frontend home filter in a separate control: CLI language
+switching alone does not prove the request-time lookup.
 Real browser consumers must verify EN/DE at 1440 and 390, including navigation,
 source summary, inclusion choice and contact language switching without submit.
 Relevant checks and both independent review axes precede integration. Production
