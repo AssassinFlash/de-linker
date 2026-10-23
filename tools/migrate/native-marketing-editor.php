@@ -18,7 +18,15 @@
 		throw new RuntimeException( 'Run through WP-CLI.' );
 	}
 
-	$snapshot    = static function (): array {
+	$encode = static function ( mixed $value, int $flags = 0 ): string {
+		$json = wp_json_encode( $value, $flags );
+		if ( false === $json ) {
+			throw new RuntimeException( 'Cannot encode the complete state; nothing may be planned from an incomplete digest.' );
+		}
+		return $json;
+	};
+	/** Read every eligible post and its complete metadata. */
+	$snapshot    = static function () use ( $encode ): array {
 		if ( ! function_exists( 'pll_get_post' ) || ! function_exists( 'lc_post_is_using_livecanvas' ) ) {
 			throw new RuntimeException( 'Polylang and LiveCanvas must be active.' );
 		}
@@ -70,8 +78,8 @@
 					'id'               => $id,
 					'language'         => $language,
 					'translations'     => $pairs,
-					'post_sha256'      => hash( 'sha256', wp_json_encode( $post ) ),
-					'meta_sha256'      => hash( 'sha256', wp_json_encode( $meta ) ),
+					'post_sha256'      => hash( 'sha256', $encode( $post ) ),
+					'meta_sha256'      => hash( 'sha256', $encode( $meta ) ),
 					'values'           => $values,
 					'using_livecanvas' => lc_post_is_using_livecanvas( $id ),
 				);
@@ -85,14 +93,21 @@
 	};
 	$fingerprint = static fn ( array $rows ): string => hash(
 		'sha256',
-		wp_json_encode(
+		$encode(
 			array(
 				'site' => home_url(),
 				'rows' => $rows,
 			)
 		)
 	);
-	$predict     = static function ( array $state, array $ids, bool $enabled ): array {
+	/**
+	 * Predict the exact single-key state without writing it.
+	 *
+	 * @param array{rows: array<int, array<string, mixed>>, metas: array<int, array<string, mixed>>} $state Complete scoped state.
+	 * @param list<int> $ids Exact intended rows.
+	 * @return array{rows: array<int, array<string, mixed>>, metas: array<int, array<string, mixed>>}
+	 */
+	$predict = static function ( array $state, array $ids, bool $enabled ) use ( $encode ): array {
 		foreach ( $ids as $id ) {
 			if ( $enabled ) {
 				$state['metas'][ $id ]['_lc_livecanvas_enabled'] = array( '1' );
@@ -102,12 +117,12 @@
 			ksort( $state['metas'][ $id ] );
 			$state['rows'][ $id ]['values']           = $enabled ? array( '1' ) : array();
 			$state['rows'][ $id ]['using_livecanvas'] = $enabled;
-			$state['rows'][ $id ]['meta_sha256']      = hash( 'sha256', wp_json_encode( $state['metas'][ $id ] ) );
+			$state['rows'][ $id ]['meta_sha256']      = hash( 'sha256', $encode( $state['metas'][ $id ] ) );
 		}
 		return $state;
 	};
 
-	$execute = static function () use ( $snapshot, $fingerprint, $predict, $args ): void {
+	$execute = static function () use ( $snapshot, $fingerprint, $predict, $encode, $args ): void {
 		$operation = $args[0] ?? 'plan';
 		if ( ! in_array( $operation, array( 'plan', 'apply', 'rollback' ), true ) ) {
 			throw new RuntimeException( 'Expected plan, apply or rollback.' );
@@ -156,17 +171,19 @@
 		} else {
 			$after = $before;
 		}
-		echo wp_json_encode(
-			array(
-				'site'          => home_url(),
-				'operation'     => $operation,
-				'before_sha256' => $before_sha,
-				'after_sha256'  => $fingerprint( $after['rows'] ),
-				'changed_ids'   => $changed,
-				'rows'          => array_values( $after['rows'] ),
-			),
-			JSON_UNESCAPED_SLASHES
-		), PHP_EOL;
+		WP_CLI::log(
+			$encode(
+				array(
+					'site'          => home_url(),
+					'operation'     => $operation,
+					'before_sha256' => $before_sha,
+					'after_sha256'  => $fingerprint( $after['rows'] ),
+					'changed_ids'   => $changed,
+					'rows'          => array_values( $after['rows'] ),
+				),
+				JSON_UNESCAPED_SLASHES
+			)
+		);
 	};
 
 	try {

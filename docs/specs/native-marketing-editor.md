@@ -32,6 +32,10 @@ plans fail. Read back the exact single-key change. Rollback requires the
 current digest, original digest and exact `changed_ids`; its predicted state
 must match the original digest before deleting any newly added flag.
 
+Reject native JSON encoding failures before hashing any state; do not coerce
+a failed encoding into an empty digest. Static analysis reads a signature-only
+stub for LiveCanvas's installed boolean predicate, never a runtime replacement.
+
 Verify real local EN/DE1440/390 plus320 stress: native grids and labels,
 image loading, hero/chapter links, tabs and arrows, summaries, contact context,
 header/footer and keyboard focus. Normal and no-script states stay distinct.
