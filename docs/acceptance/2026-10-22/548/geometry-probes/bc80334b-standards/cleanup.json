@@ -1,0 +1,17 @@
+{
+  "removed_files": 191,
+  "removed_logical_bytes": 1412677,
+  "free_before": 875530215424,
+  "free_after": 875532161024,
+  "retained": [
+    "probe_checker4_reference.py",
+    "probe_geometry_translation.py",
+    "results.json",
+    "probe-angle.py",
+    "probe_derived_resolution.py",
+    "probe_uv_extent.py",
+    "archive-manifest.json",
+    "probe-angle.mjs",
+    "REVIEW.md"
+  ]
+}

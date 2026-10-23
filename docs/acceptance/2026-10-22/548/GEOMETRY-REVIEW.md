@@ -112,3 +112,25 @@ counterexamples and nine ordinary rotations with real thick-row overlap.
 Native MySQL acceptance is temporarily paused for the separately coordinated
 compatible-database maintenance; no replacement instance is created. Parent
 continues editor implementation and SQLite/DOM checks while it is restored.
+
+## Accepted fixed service source bc80334b
+
+Standards PASS and Spec PASS against full baseline8791c933. Both axes reran
+the unchanged original probes and found no remaining service-increment blocker.
+Standards independently ran151 Python/11 Node plus64 rational interval/rotated
+cases. Spec ran158 Python (151 existing,7 independent ASGI),11 Node,27 independent
+high-precision rectangle-intersection cases and16 footprint parity cases with
+768 coordinates exactly matching. The real5000-slot/200000-candidate limit probe
+still returns explicit incomplete;5001 is rejected. Reports/probes/results and
+SHA-checked temporary-source reclamation records live under
+`geometry-probes/bc80334b-standards` and `geometry-probes/bc80334b-spec`.
+
+The separate machine maintenance owner restored official MySQL9.6.0 without
+data/cache deletion and verified p548 HTTP200. The first resumed native fixture
+correctly exposed that the owned engine process still served checker3. Restarting
+only this task's services through `just serve p548` installed the current code;
+no MySQL service/config was changed by this task. The native fixture was then
+rerun against checker4:1 passed,23 deselected,2.28s. It again verified ownership,
+read-only checking, save/replay and reopening with an unchanged geometry hash.
+Editor/renderer and full path B remain separate required
+work; this record is not whole-tool acceptance.
