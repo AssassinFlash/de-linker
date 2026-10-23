@@ -85,6 +85,12 @@
  * one is (1,1,1) and one is (0,1,0), both below the rules in this file.
  */
 
+/* Keep the shared German invitation heading readable across its page widths.
+ * Body prose retains the site's automatic hyphenation. */
+html[lang^="de"] #theme-main .linker-contact-invitation h2 {
+	hyphens: manual;
+}
+
 /* The band's box: the article column, a rule above it, nothing else. */
 #tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article {
 	display: flex;

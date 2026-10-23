@@ -36,6 +36,12 @@
  * and the side cards stack.
  */
 
+/* German headings use word boundaries, without dictionary-inserted hyphens.
+ * Keep their existing widths, authored breaks and typography. */
+html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
+	hyphens: manual;
+}
+
 #contact-form .linker-contact-card {
 	display: grid;
 	/* 20px: the live rail's own margin-top under the card. */
