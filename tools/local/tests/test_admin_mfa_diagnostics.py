@@ -2,11 +2,14 @@
 
 import importlib.util
 import json
+import os
 import sys
+from collections.abc import Iterator
+from contextlib import contextmanager
 from http.client import HTTPException, InvalidURL
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
-from typing import Any
+from typing import Any, BinaryIO
 
 import pytest
 
@@ -14,7 +17,7 @@ REPO = Path(__file__).resolve().parents[3]
 
 
 @pytest.fixture
-def runner() -> ModuleType:
+def runner(monkeypatch: pytest.MonkeyPatch) -> Iterator[ModuleType]:
     spec = importlib.util.spec_from_file_location(
         "admin_mfa_diagnostics", REPO / "tools/checks/admin-mfa.py"
     )
@@ -22,7 +25,22 @@ def runner() -> ModuleType:
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
-    return module
+    opened: list[BinaryIO] = []
+    original = module._open_log
+
+    @contextmanager
+    def tracked(path: Path) -> Iterator[BinaryIO]:
+        with original(path) as source:
+            opened.append(source)
+            yield source
+
+    monkeypatch.setattr(module, "_open_log", tracked)
+    monkeypatch.setattr(module, "opened_log_files", opened, raising=False)
+    try:
+        yield module
+    finally:
+        for source in opened:
+            source.close()
 
 
 @pytest.fixture
@@ -93,6 +111,73 @@ def test_rotation_uses_inode_offsets_for_both_files(
     log(wp).rename(log(wp, "php.1.log"))
     log(wp).write_text(fatal(source, 4))
     assert sorted(row["line"] for row in window.collect()) == [3, 4]
+
+
+def test_snapshot_pins_deleted_inode_until_explicit_close(
+    runner: ModuleType, wp: Any
+) -> None:
+    source = wp.instance.docroot / "wp-includes/failure.php"
+    log(wp).write_text(fatal(source, 1))
+    log(wp, "php.1.log").write_text(fatal(source, 2))
+    previous = log(wp, "php.1.log").stat()
+    window = runner.FatalLogWindow.capture(wp)
+    assert window is not None
+    pinned = list(runner.opened_log_files)
+    assert len(pinned) == 2
+    assert all(not stream.closed for stream in pinned)
+    log(wp, "php.1.log").unlink()
+    held = os.fstat(pinned[1].fileno())
+    assert (held.st_dev, held.st_ino) == (previous.st_dev, previous.st_ino)
+    assert held.st_nlink == 0
+    replacement = log(wp, "php.1.log")
+    replacement.write_text(fatal(source, 3))
+    allocated = replacement.stat()
+    assert (allocated.st_dev, allocated.st_ino) != (held.st_dev, held.st_ino)
+    assert [row["line"] for row in window.collect()] == [3]
+    window.close()
+    assert all(stream.closed for stream in pinned)
+    window.close()  # Closing again is harmless, including from main's finally.
+
+
+def test_partial_snapshot_failure_closes_every_open_log(
+    runner: ModuleType, wp: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = wp.instance.docroot / "wp-includes/failure.php"
+    for name in ("php.log", "php.1.log"):
+        log(wp, name).write_text(fatal(source))
+    original = runner._read_log_bytes
+    reads = 0
+
+    def fail_second(stream: BinaryIO, count: int) -> bytes:
+        nonlocal reads
+        reads += 1
+        if reads == 2:
+            raise PermissionError("secret-token person@example.test")
+        result: bytes = original(stream, count)
+        return result
+
+    monkeypatch.setattr(runner, "_read_log_bytes", fail_second)
+    assert runner.FatalLogWindow.capture(wp) is None
+    assert len(runner.opened_log_files) == 2
+    assert all(stream.closed for stream in runner.opened_log_files)
+
+
+def test_disposal_error_still_closes_all_pins_without_output(
+    runner: ModuleType, wp: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    for name in ("php.log", "php.1.log"):
+        log(wp, name).write_text(fatal(wp.instance.docroot / "wp-includes/failure.php"))
+    window = runner.FatalLogWindow.capture(wp)
+    assert window is not None
+
+    def failed_close() -> None:
+        raise OSError("secret-token person@example.test https://private.test")
+
+    window._pins.callback(failed_close)
+    window.close()
+    assert len(runner.opened_log_files) == 2
+    assert all(stream.closed for stream in runner.opened_log_files)
+    assert capsys.readouterr() == ("", "")
 
 
 def test_initially_missing_logs_and_deleted_logs_are_safe(
@@ -292,3 +377,62 @@ def test_failure_report_keeps_checks_exit_and_cleanup_without_http_secrets(
             str(wp.instance.docroot),
         ):
             assert private not in output
+
+
+@pytest.mark.parametrize(
+    "outcome",
+    ["success", "failure", "diagnostic-error", "uncaught", "cleanup-error", "keep"],
+)
+def test_main_releases_pins_on_every_exit_including_cleanup_failure(
+    runner: ModuleType,
+    wp: Any,
+    monkeypatch: pytest.MonkeyPatch,
+    outcome: str,
+) -> None:
+    for name in ("php.log", "php.1.log"):
+        log(wp, name).write_text(fatal(wp.instance.docroot / "wp-includes/failure.php"))
+    wp.run = lambda *_: "true"
+    monkeypatch.setattr(runner, "WpCli", lambda *_: wp)
+    monkeypatch.setattr(
+        runner, "Registry", lambda *_: SimpleNamespace(get=lambda _: object())
+    )
+    monkeypatch.setattr(runner, "require_php", lambda: Path("unused"))
+    monkeypatch.setattr(runner, "verify_dependency", lambda _: {})
+    cleaned: list[str] = []
+
+    def run(test: Any) -> None:
+        test.owns_fixture = True
+        assert len(runner.opened_log_files) == 2
+        assert all(not stream.closed for stream in runner.opened_log_files)
+        if outcome in {"failure", "diagnostic-error"}:
+            raise RuntimeError("Original acceptance failure")
+        if outcome == "uncaught":
+            raise TypeError("Original uncaught failure")
+
+    def collect(_: Any) -> Any:
+        raise ValueError("secret-token person@example.test")
+
+    def cleanup(_: Any, action: str) -> str:
+        cleaned.append(action)
+        if outcome == "cleanup-error":
+            raise OSError("Original cleanup failure")
+        return ""
+
+    monkeypatch.setattr(runner.Acceptance, "run", run)
+    monkeypatch.setattr(runner.Acceptance, "fixture", cleanup)
+    if outcome == "diagnostic-error":
+        monkeypatch.setattr(runner.FatalLogWindow, "collect", collect)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["admin-mfa", "offline"] + (["--keep-fixture"] if outcome == "keep" else []),
+    )
+    if outcome in {"uncaught", "cleanup-error"}:
+        with pytest.raises(
+            TypeError if outcome == "uncaught" else OSError, match="Original"
+        ):
+            runner.main()
+    else:
+        assert runner.main() == (1 if outcome in {"failure", "diagnostic-error"} else 0)
+    assert cleaned == ([] if outcome == "keep" else ["cleanup"])
+    assert all(stream.closed for stream in runner.opened_log_files)

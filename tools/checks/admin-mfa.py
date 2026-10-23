@@ -25,7 +25,7 @@ import urllib.request
 import uuid
 import zipfile
 from collections.abc import Iterator
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from html.parser import HTMLParser
@@ -86,22 +86,26 @@ class FatalLogWindow:
     roots: tuple[tuple[str, Path], ...]
     positions: dict[tuple[int, int], tuple[int, bool]]
     snapshot_bytes: int = 0
+    _pins: ExitStack = field(default_factory=ExitStack, repr=False)
 
     @classmethod
     def capture(cls, wp: WpCli) -> FatalLogWindow | None:
         try:
-            directory = wp.instance.wp_content / "linker-errors"
-            window = cls(
-                (directory / "php.log", directory / "php.1.log"),
-                (
-                    ("repo", REPO.resolve(strict=True)),
-                    ("wordpress", wp.instance.docroot.resolve(strict=True)),
-                ),
-                {},
-            )
-            for path in window.paths:
-                try:
-                    with _open_log(path) as source:
+            with ExitStack() as pins:
+                directory = wp.instance.wp_content / "linker-errors"
+                window = cls(
+                    (directory / "php.log", directory / "php.1.log"),
+                    (
+                        ("repo", REPO.resolve(strict=True)),
+                        ("wordpress", wp.instance.docroot.resolve(strict=True)),
+                    ),
+                    {},
+                )
+                for path in window.paths:
+                    try:
+                        # Hold each original inode across unlink/rotation. Once
+                        # closed, ext4 can reuse it for a new, unrelated log.
+                        source = pins.enter_context(_open_log(path))
                         info = os.fstat(source.fileno())
                         at_boundary = True
                         if info.st_size:
@@ -113,13 +117,22 @@ class FatalLogWindow:
                             info.st_size,
                             at_boundary,
                         )
-                except FileNotFoundError:
-                    continue
-            return window
+                    except FileNotFoundError:
+                        continue
+                window._pins = pins.pop_all()
+                return window
         except Exception:
             # If the baseline is unreadable, no historical byte is provably new.
             # Diagnostics are best effort and must never replace the test result.
             return None
+
+    def close(self) -> None:
+        try:
+            self._pins.close()
+        except Exception:  # noqa: BLE001 -- Disposal must not replace the test/cleanup failure.
+            # ExitStack still attempts every close. Do not print a close error:
+            # it can contain a private path, just like a diagnostic read error.
+            return
 
     def location(self, value: str) -> str | None:
         if EVAL_FILE.fullmatch(value):
@@ -737,9 +750,13 @@ def main() -> int:
             report["failure"] = str(error)
         attach_fatal_diagnostics(report, diagnostic)
     finally:
-        report["checks"] = test.results
-        if test.owns_fixture and not args.keep_fixture:
-            test.fixture("cleanup")
+        try:
+            report["checks"] = test.results
+            if test.owns_fixture and not args.keep_fixture:
+                test.fixture("cleanup")
+        finally:
+            if diagnostic is not None:
+                diagnostic.close()
     if args.evidence:
         args.evidence.parent.mkdir(parents=True, exist_ok=True)
         args.evidence.write_text(json.dumps(report, indent=2) + "\n")
