@@ -613,6 +613,78 @@ test("unchanged source-reviewed boundary adds no project command or calculation 
 	assert.equal(document.querySelector(".lp-drawing-status"), null);
 });
 
+for (const target of ringCases.slice(2))
+	test(`${target.kind} cannot infer validation from a missing diagnostic when its invalid parent roof prevented the check`, async (t) => {
+		const r = await rig(t, {
+			geometry: ringGeometry,
+			selected: target.id,
+			pixelScale: 1e7,
+		});
+		await openRing(r, target);
+		const before = (await r.records())[0].drawing;
+		await r.drag(before.vertices[1], [
+			before.vertices[1][0] + 0.000001,
+			before.vertices[1][1],
+		]);
+		const edited = (await r.records())[0].drawing;
+		await confirmSource();
+		// This is the service's diagnostic shape when its invalid-roof branch skips
+		// dependent obstacles and keep-outs. The independent real-engine probe in
+		// review-spec-a1281d9d establishes that branch; this is the UI regression.
+		r.invalidReview = {
+			kind: "invalid_roof_polygon",
+			category: "layout_conflict",
+			object_id: geometry.roofs[0].id,
+			roof_id: geometry.roofs[0].id,
+			related_id: null,
+			required_m: null,
+			actual_m: null,
+		};
+		await submitRing();
+		await until(() =>
+			document.body.textContent.includes("could not validate this boundary"),
+		);
+		assert.equal(r.commits.length, 0);
+		assert.equal(r.active, true);
+		assert.deepEqual((await r.records())[0].drawing.vertices, edited.vertices);
+		assert.deepEqual(
+			(await r.records())[0].drawing.metric_vertices,
+			edited.metric_vertices,
+		);
+		assert.equal((await r.records())[0].drawing.prepared_geometry, null);
+	});
+
+test("an unrelated invalid roof remains a layout conflict without blocking a checked edit on this roof", async (t) => {
+	const target = ringCases[2],
+		r = await rig(t, {
+			geometry: ringGeometry,
+			selected: target.id,
+			pixelScale: 1e7,
+		});
+	await openRing(r, target);
+	const before = (await r.records())[0].drawing;
+	await r.drag(before.vertices[1], [
+		before.vertices[1][0] + 0.000001,
+		before.vertices[1][1],
+	]);
+	await confirmSource();
+	r.invalidReview = {
+		kind: "invalid_roof_polygon",
+		category: "layout_conflict",
+		object_id: "unrelated_roof",
+		roof_id: "unrelated_roof",
+		related_id: null,
+		required_m: null,
+		actual_m: null,
+	};
+	await submitRing();
+	await until(() => !r.active && r.commits.length === 1);
+	assert.deepEqual(
+		r.geometry.obstacles[0].footprint_uv,
+		(await r.records())[0].drawing.metric_vertices,
+	);
+});
+
 for (const invalidation of ["geometry", "identity"])
 	test(`a ${invalidation} change while boundary review is pending cannot commit the obsolete result`, async (t) => {
 		const gate = deferred(),

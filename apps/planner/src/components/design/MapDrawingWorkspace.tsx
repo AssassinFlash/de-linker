@@ -285,6 +285,10 @@ export function MapDrawingWorkspace({
 						(issue) =>
 							(issue.object_id === target.id &&
 								issue.kind === target.invalid) ||
+							// An invalid parent roof makes the service skip its shapes.
+							// Absence of a target diagnostic cannot validate that shape.
+							(issue.object_id === target.roof &&
+								issue.kind === "invalid_roof_polygon") ||
 							((issue.object_id === target.id ||
 								issue.roof_id === target.roof) &&
 								issue.category === "numerical_limit"),
@@ -393,7 +397,9 @@ export function MapDrawingWorkspace({
 					<h3>
 						{drawing?.schema_version === 2
 							? __("Edit an existing boundary", "linker-tools")
-							: __("Draw a roof face", "linker-tools")}
+							: drawing
+								? __("Draw a roof face", "linker-tools")
+								: __("Map drawing", "linker-tools")}
 					</h3>
 					{!active && !drawing && (
 						<button

@@ -34,7 +34,7 @@
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazyMapViewport.tsx": "2d4d7999253517cd9479573000377b8317c78e8dc680fce68fe10aa7eb67e042",
     "src/components/design/LazySceneViewport.tsx": "1f19dab63d5068c7c8f9e9d8da406dc9fffe7a356cd66c4ea8897dc301088998",
-    "src/components/design/MapDrawingWorkspace.tsx": "df2af8a528207c62f96c36925f1490b03abae2ee40bb368dcc0be8755cc81367",
+    "src/components/design/MapDrawingWorkspace.tsx": "b77ed25776a85a44879bf095fe3cea8de5517c62eca16784ef408b7abdd93f91",
     "src/components/design/MapRingProperties.tsx": "cdf853e5897790eb1bdb091d7187b4d7ad11bf493b1354d7271331e7b607a9b0",
     "src/components/design/MapRingSelector.tsx": "f120456c54afeacad2fc20fed8d21f3c08fd4168129285767f677d971a61e448",
     "src/components/design/MapRoofProperties.tsx": "bc02bda8115ca49a7977f54decd22e3e78c0a2b51e7376ae85db94299226c5f9",
@@ -123,12 +123,12 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-vp_6q1r8.js": "31e8db7653cb693784d580c028894cdc72222fae94e9ea24362057beb5573f0b",
-    "assets/SceneViewport-fCPgTwg6.js": "8479770fd03542a6005601afb62d2df97bed9c99540ae083c7e9e5e21b18a322",
-    "assets/planner-core-CNtQBvDU.js": "b1be25f4550bdfe7da1408bb65052c562104861d08dc09a25d5e4f2ef2d2cc94",
-    "assets/planner.js": "1343c1b83390c07900eb2027818bda0109475717c6f6078a8b4a722d87079605",
+    "assets/MapViewport-UQ-6e4HB.js": "a7197a2e277f720e729e55eed524c58eb5d17b707d0193798444ef60f64550af",
+    "assets/SceneViewport-Dq4MY0tH.js": "c1c888509604708a9e5194859416d5f7ddf256fd64cf1eb63c1b47edc990c041",
+    "assets/planner-core-DFB-X0pb.js": "0a882d4b7b4411e8fc3c3ec063d2efc65e77e06ce096b8f58e8d5a0b44785366",
+    "assets/planner.js": "acc14b46a9035814b39524b61e625c7d41e98f3c21448c0afa9330d5038cb7a3",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "ec0c49ff5177feb9827d4bd22627dd62ba774426b0ff58487302569a472f7bfd",
+    "vite-manifest.json": "5b5d8fd3f21303b9823f9d0cbedff9369ddaa949513f3eff24ecd24757254590",
     "windpress.scan.txt": "bb5ce14116e7df9a7272603cd170b0bfd39e09517dc31825b09b52bb9dada6b1"
   }
 }
