@@ -23,6 +23,18 @@ retrieval and before the current answer is released.
 
 The build records the scope proof for each passage. A model is identified by Woo and authored model context; an ingress rating, frequency, standard or report number is not a product simply because it contains letters and digits. A single current model in an unambiguous authored section or document can supply its scope. Truly model-free warranty/certificate terms require the explicit Woo document purpose. Mixed files need a manufacturer-authored public-terms declaration and positive current-model evidence before model-free non-parameter prose can inherit a common scope. Mixed withdrawn/unknown-model tables and unnamed technical values remain denied. The generated context header grants no permission. `chunk_scopes` records the basis, source chunk IDs and authorizing document IDs; `manifest.json.permission_coverage` reports proven versus total chunks.
 
+Manifest inventory normalizes only derived metadata. The known Woo language
+labels EN/DE/MUL/MULTI/EN/DE/DE/EN/empty become `en`, `de`, `mul` or `und`;
+the existing ES label remains `es`. Multilingual or unstated documents use the
+existing per-passage language detector. Document role takes precedence over
+type, using the same explicit EN/DE vocabulary as `Materials::document_kind`:
+for example Handbuch/user_manual becomes manual, Datenblatt becomes datasheet,
+and Kompatibilität/compatibility_list becomes compatibility. Warranty purpose
+remains available to the scope proof even though the index's five-type metadata
+stores it as other. `publication_manifest` retains the original tags, roles and
+types byte for byte. Unknown metadata fails preparation visibly; it is never
+guessed to be a language or a particular document purpose.
+
 Knowledge availability and complete preparation are separate. A current product is available when it has at least one proven passage that the current retrieval guard can actually release. A missing or ambiguous supplementary document does not suppress an already verified manual. The process reports `preparation_complete=false` and `unprepared_documents` entries `{document_id, product_id, reason}` until each current association is parsed and proven. Reasons are `document_unparsed` or `no_proven_passage`; no original text enters the diagnostic. Worker acknowledgement sends both fields and preserves the available product subset while Woo keeps incomplete work pending. Having all products available does not imply all documents are complete. Engineering reference products are excluded from Genie products, documents and actions.
 
 Old indexes without proof tables cannot authorize knowledge hits. Every search resolves the current symlink, opens the immutable new release and retires the old connection under the shared search lock. Authenticated `POST /knowledge/loaded` returns the process's actual `index_version`, `source_revision`, available product revisions, `preparation_complete` and `unprepared_documents`. Reading a disk manifest alone is insufficient.
