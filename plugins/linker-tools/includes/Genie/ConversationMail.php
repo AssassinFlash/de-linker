@@ -297,19 +297,31 @@ class ConversationMail {
 	 * @param callable $work Source validation and original-job handoff only.
 	 */
 	private function confirmation_lock( int $id, callable $work ): void {
-		global $wpdb;
-		$database = is_string( $wpdb->dbname ?? null ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
-		$name     = 'linker-conversation-mail-' . md5( $database . '/' . $wpdb->prefix . '/' . $id );
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Connection-owned bounded mutex, following Thread's native DB namespace.
-		if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 1)', $name ) ) ) {
-			return;
+		if ( ! class_exists( \Linker\Commerce\Mail\ConnectionFence::class ) ) {
+			return; // The native mail consumer is unavailable too; never consume the token.
 		}
 		try {
-			$work();
-		} finally {
-			$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
+			\Linker\Commerce\Mail\ConnectionFence::run(
+				function () use ( $id, $work ): void {
+					global $wpdb;
+					$database = is_string( $wpdb->dbname ?? null ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
+					$name     = 'linker-conversation-mail-' . md5( $database . '/' . $wpdb->prefix . '/' . $id );
+			   // phpcs:disable WordPress.DB.DirectDatabaseQuery -- Connection-owned bounded mutex, following Thread's native DB namespace.
+					if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 1)', $name ) ) ) {
+							return;
+					}
+					try {
+						$work();
+					} finally {
+						$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
+					}
+			// phpcs:enable
+				}
+			);
+		} catch ( \Throwable $error ) {
+			// Keep the initialized unavailable result and its original token after unknown storage.
+			return;
 		}
-		// phpcs:enable
 	}
 
 	/**

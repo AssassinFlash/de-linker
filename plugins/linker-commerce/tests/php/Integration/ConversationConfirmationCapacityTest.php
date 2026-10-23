@@ -102,6 +102,72 @@ final class ConversationConfirmationCapacityTest extends IntegrationTestCase {
 		self::assertSame( 'pending', $this->mailer()->confirm( $token )['status'] );
 	}
 
+	/** The Tools confirmation's own first mutex cannot replay after losing its caller. */
+	public function test_confirmation_first_mutex_failure_keeps_token_and_original_transaction_unpublished(): void {
+		list( $id, $token ) = $this->source();
+		$this->seed( 0 );
+		$pending = get_post_meta( $id, ConversationMail::PENDING, true );
+		$budget  = get_option( OptionBudgetLedger::OPTION );
+		$before  = self::newest_mail_job();
+		global $wpdb;
+		$peer   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$lock   = 'linker-conversation-mail-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $id );
+		$marker = 'synthetic-confirmation-caller-' . self::tag();
+		$hits   = 0;
+		$kill   = static function ( string $sql ) use ( $lock, $peer, &$hits ): string {
+			if ( 0 === $hits && str_contains( $sql, 'GET_LOCK(' ) && str_contains( $sql, $lock ) ) {
+				++$hits;
+				global $wpdb;
+				$peer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+			}
+			return $sql;
+		};
+		$wpdb->query( 'START TRANSACTION' );
+		$wpdb->insert(
+			$wpdb->options,
+			array(
+				'option_name'  => $marker,
+				'option_value' => 'caller-owned',
+				'autoload'     => 'off',
+			)
+		);
+		add_filter( 'query', $kill, 999 );
+		try {
+			try {
+				$result = $this->mailer()->confirm( $token );
+			} catch ( \Throwable $error ) {
+				$result = array( 'status' => 'unavailable' );
+			}
+			$caller_rows = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE option_name=%s', $wpdb->options, $marker ) );
+			$new_jobs    = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE post_type=%s AND ID>%d', $wpdb->posts, JobStore::POST_TYPE, $before ) );
+			$ack_rows    = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE post_id=%d AND meta_key=%s', $wpdb->postmeta, $id, ConversationMail::ACCEPTED ) );
+		} finally {
+			remove_filter( 'query', $kill, 999 );
+			self::assertTrue( $wpdb->db_connect( false ) );
+			delete_option( $marker );
+			$peer->close();
+			clean_post_cache( $id );
+		}
+		self::assertSame( 1, $hits );
+		self::assertSame(
+			'unavailable',
+			$result['status'],
+			(string) wp_json_encode(
+				array(
+					'status'      => $result['status'],
+					'caller_rows' => $caller_rows,
+					'new_jobs'    => $new_jobs,
+					'ack_rows'    => $ack_rows,
+				)
+			)
+		);
+		self::assertSame( 0, $caller_rows );
+		self::assertSame( 0, $new_jobs );
+		self::assertSame( 0, $ack_rows );
+		self::assertSame( $pending, get_post_meta( $id, ConversationMail::PENDING, true ) );
+		self::assertSame( $budget, get_option( OptionBudgetLedger::OPTION ) );
+	}
+
 	/** Expiry, wrong token and erased native sources never create a notification. */
 	public function test_expired_replaced_or_deleted_source_cannot_be_reused(): void {
 		list( $id, $token ) = $this->source();
