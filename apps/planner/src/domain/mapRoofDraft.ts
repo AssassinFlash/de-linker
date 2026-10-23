@@ -14,7 +14,11 @@ import { readGeometry } from "./validateGeometry.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { parseDecimal } from "./decimal.ts";
 import { sameJson } from "./draft.ts";
-import { appendMapPrefix, readMapDrawingBase } from "./mapDrawingBase.ts";
+import {
+	appendMapPrefix,
+	mapDrawingTextLimit,
+	readMapDrawingBase,
+} from "./mapDrawingBase.ts";
 import type { MapDrawingBase } from "./mapDrawingBase.ts";
 import policy from "../contracts/geometry-policy.json" with { type: "json" };
 
@@ -118,7 +122,7 @@ export function readMapRoofDraft(value: unknown): MapRoofDraft {
 		names.some(
 			(name) =>
 				typeof fields[name] !== "string" ||
-				(fields[name] as string).length > 4096,
+				(fields[name] as string).length > mapDrawingTextLimit,
 		) ||
 		typeof fields.permission !== "boolean" ||
 		!["unknown", "permitted", "prohibited"].includes(fields.export as string)

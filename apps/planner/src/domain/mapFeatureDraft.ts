@@ -2,7 +2,7 @@
  * second roof, infer a height or replace a source declaration. */
 import type { GeometryDocument } from "./geometry.ts";
 import type { MapDrawingBase } from "./mapDrawingBase.ts";
-import { readMapDrawingBase } from "./mapDrawingBase.ts";
+import { mapDrawingTextLimit, readMapDrawingBase } from "./mapDrawingBase.ts";
 import { mapPolygon, newMapShapeCommand } from "./mapDrawingGeometry.ts";
 import { applyGeometryCommand } from "./geometryCommands.ts";
 import { cross } from "./coordinates.ts";
@@ -110,7 +110,7 @@ export function readMapFeatureDraft(value: unknown): MapFeatureDraft {
 		["name", "height", "reason", "source_id"].some(
 			(name) =>
 				typeof fields[name] !== "string" ||
-				(fields[name] as string).length > 4096,
+				(fields[name] as string).length > mapDrawingTextLimit,
 		) ||
 		!["", "normal", "vertical"].includes(fields.axis as string) ||
 		typeof fields.source_confirmed !== "boolean"

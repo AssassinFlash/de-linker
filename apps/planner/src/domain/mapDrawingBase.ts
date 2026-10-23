@@ -8,6 +8,11 @@ import {
 } from "./mapDrawingGeometry.ts";
 import policy from "../contracts/geometry-policy.json" with { type: "json" };
 
+/** Application input bound, matching planning/geometry_documents.py's Text
+ * transport limit. Shared raw fields (including unparsed numbers) use this
+ * existing cap; it is not a physical limit or measurement precision. */
+export const mapDrawingTextLimit = 4096;
+
 /** Shared local working data, admitted only by the native project/scope grant. */
 export interface MapDrawingBase {
 	readonly key: string;

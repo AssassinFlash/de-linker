@@ -5,6 +5,7 @@ import type {
 } from "../../domain/mapFeatureDraft.ts";
 import { mapFeatureSource } from "../../domain/mapFeatureDraft.ts";
 import { decimalSeparator } from "../../domain/decimal.ts";
+import { mapDrawingTextLimit } from "../../domain/mapDrawingBase.ts";
 import { useMapPropertyFeedback } from "./useMapPropertyFeedback.ts";
 import { MapSourceDetails } from "./MapSourceDetails.tsx";
 import { mapFeatureContext } from "./mapDrawingLabels.ts";
@@ -67,7 +68,7 @@ export function MapFeatureProperties({
 								value={drawing.fields.name}
 								onChange={(event) => field("name", event.currentTarget.value)}
 								required
-								maxLength={4096}
+								maxLength={mapDrawingTextLimit}
 								{...invalid("name")}
 							/>
 						</label>
@@ -101,7 +102,7 @@ export function MapFeatureProperties({
 								value={drawing.fields.height}
 								onChange={(event) => field("height", event.currentTarget.value)}
 								required
-								maxLength={4096}
+								maxLength={mapDrawingTextLimit}
 								{...invalid("height")}
 							/>
 							<small>
@@ -152,7 +153,7 @@ export function MapFeatureProperties({
 							onChange={(event) => field("reason", event.currentTarget.value)}
 							rows={3}
 							required
-							maxLength={4096}
+							maxLength={mapDrawingTextLimit}
 							{...invalid("reason")}
 						/>
 					</label>

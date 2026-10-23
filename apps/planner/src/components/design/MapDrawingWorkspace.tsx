@@ -93,6 +93,11 @@ export function MapDrawingWorkspace({
 	} catch {
 		geographicReady = false;
 	}
+	const canStartDrawing =
+		!mapProps.disabled &&
+		!journal.checking &&
+		!journal.storageFailed &&
+		geographicReady;
 	useEffect(() => {
 		onActivity(active || busy || (journal.writing && drawing !== null));
 		return () => onActivity(false);
@@ -416,12 +421,7 @@ export function MapDrawingWorkspace({
 						<button
 							className="lp-button"
 							type="button"
-							disabled={
-								mapProps.disabled ||
-								journal.checking ||
-								journal.storageFailed ||
-								!geographicReady
-							}
+							disabled={!canStartDrawing}
 							onClick={() => begin({ kind: "new_roof" })}
 						>
 							{__("Start roof drawing", "linker-tools")}
@@ -452,23 +452,13 @@ export function MapDrawingWorkspace({
 						<MapRingSelector
 							geometry={geometry}
 							selected={mapProps.selected}
-							disabled={
-								mapProps.disabled ||
-								journal.checking ||
-								journal.storageFailed ||
-								!geographicReady
-							}
+							disabled={!canStartDrawing}
 							begin={(target) => begin({ kind: "edit_ring", target })}
 						/>
 						<MapFeatureSelector
 							geometry={geometry}
 							selected={mapProps.selected}
-							disabled={
-								mapProps.disabled ||
-								journal.checking ||
-								journal.storageFailed ||
-								!geographicReady
-							}
+							disabled={!canStartDrawing}
 							begin={(target) => begin({ kind: "new_feature", target })}
 						/>
 					</>

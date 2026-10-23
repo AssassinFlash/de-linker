@@ -3,6 +3,7 @@ import { useId } from "react";
 import { useMapPropertyFeedback } from "./useMapPropertyFeedback.ts";
 import { Notice } from "../Notice.tsx";
 import { decimalSeparator, formatDecimal } from "../../domain/decimal.ts";
+import { mapDrawingTextLimit } from "../../domain/mapDrawingBase.ts";
 import { __, sprintf } from "../../i18n.ts";
 
 export function MapRoofProperties({
@@ -44,7 +45,7 @@ export function MapRoofProperties({
 					name={name}
 					value={drawing!.fields[name]}
 					onChange={(e) => field(name, e.target.value)}
-					maxLength={4096}
+					maxLength={mapDrawingTextLimit}
 					required={!optional}
 					rows={3}
 					aria-invalid={invalidField === name || undefined}
@@ -55,7 +56,7 @@ export function MapRoofProperties({
 					name={name}
 					value={drawing!.fields[name]}
 					onChange={(e) => field(name, e.target.value)}
-					maxLength={4096}
+					maxLength={mapDrawingTextLimit}
 					required={!optional}
 					inputMode={numeric ? "decimal" : "text"}
 					aria-invalid={invalidField === name || undefined}
