@@ -71,10 +71,10 @@ def main():
     check(out[0] == 401, "Anonymous build-worker claim is denied", status=out[0])
     signal = Path(request(RACE, {"mode": "describe"})[2]["signal"])
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as pool:
-        for kind in ["document", "product"]:
+        for kind, read_mode in [("document", "hold"), ("product", "hold"), ("product", "identify-hold")]:
             restore()
             signal.unlink(missing_ok=True)
-            held = pool.submit(request, RACE, {"mode": "hold"})
+            held = pool.submit(request, RACE, {"mode": read_mode})
             deadline = time.time() + 10
             while time.time() < deadline:
                 if signal.is_file() and signal.read_text() == "waiting":
@@ -88,9 +88,20 @@ def main():
             first = next(concurrent.futures.as_completed(changes)).result()
             check(first[0] == 200, "Separate HTTP worker withdraws " + kind)
             out = held.result()
-            check(out[0] == 200 and out[2]["valid_after_external_change"] is False
-                  and first[2]["worker"] != out[2]["worker"],
-                  "Primed Redis/request cache sees external " + kind + " withdrawal", status=out[0])
+            if read_mode == "identify-hold":
+                before = out[2]["before"]["models"]
+                after = out[2]["after"]["models"]
+                check(out[0] == 200 and before[0]["status"] == "published"
+                      and after[0]["status"] == "unavailable"
+                      and "product_id" not in after[0]
+                      and first[2]["worker"] != out[2]["worker"],
+                      "Primed identity request sees external draft without product facts", status=out[0])
+                check(out[2]["document_resolutions"] == 0,
+                      "Identity request never resolves or hashes hosted PDFs", resolutions=out[2]["document_resolutions"])
+            else:
+                check(out[0] == 200 and out[2]["valid_after_external_change"] is False
+                      and first[2]["worker"] != out[2]["worker"],
+                      "Primed Redis/request cache sees external " + kind + " withdrawal", status=out[0])
             for changed in changes:
                 changed.result()
     restore()

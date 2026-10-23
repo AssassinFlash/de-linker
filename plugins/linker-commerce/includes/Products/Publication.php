@@ -95,6 +95,60 @@ final class Publication {
 	}
 
 	/**
+	 * Current model-label statuses, without document bytes or technical facts.
+	 *
+	 * This is an internal projection of the same native Woo source. Callers must
+	 * return only labels already supplied by their client, never this whole map.
+	 *
+	 * @return array<string,array{status:'published',product_id:int}|array{status:'unavailable'}>
+	 * @throws \RuntimeException When fresh native permissions cannot be read.
+	 * @phpstan-impure
+	 */
+	public static function model_statuses(): array {
+		self::refresh_runtime();
+		$ids   = get_posts(
+			array(
+				'post_type'                   => 'product',
+				'post_status'                 => array( 'publish', 'draft', 'pending', 'private', 'future', 'trash' ),
+				'fields'                      => 'ids',
+				'posts_per_page'              => -1,
+				'suppress_filters'            => true,
+				'lang'                        => '',
+				'linker_publication_internal' => true,
+				'cache_results'               => false,
+			)
+		);
+		$known = array();
+		foreach ( $ids as $id ) {
+			$id    = (int) $id;
+			$terms = wp_get_object_terms(
+				$id,
+				'pa_model',
+				array(
+					'fields' => 'names',
+					'lang'   => '',
+				)
+			);
+			if ( is_wp_error( $terms ) ) {
+				throw new \RuntimeException( 'Current model identity terms could not be read.' );
+			}
+			$published = self::published_in_current_read( $id ) && ! EngineeringReference::is_reference( $id );
+			foreach ( $terms as $model ) {
+				$key = strtolower( trim( $model ) );
+				if ( ! isset( $known[ $key ] ) || $published ) {
+					$known[ $key ] = $published
+						? array(
+							'status'     => 'published',
+							'product_id' => self::canonical_id( $id ),
+						)
+						: array( 'status' => 'unavailable' );
+				}
+			}
+		}
+		return $known;
+	}
+
+	/**
 	 * Current public manifest, including an empty set.
 	 *
 	 * @return array<string,mixed>

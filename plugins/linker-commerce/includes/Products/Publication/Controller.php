@@ -71,7 +71,6 @@ final class Controller {
 			} elseif ( 'validate' === $path ) {
 				$data = Publication::validate( $body );
 			} elseif ( 'identify' === $path ) {
-				Publication::manifest();
 				$data = $this->identify( $body );
 			} elseif ( 'jobs/claim' === $path ) {
 				$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ) );
@@ -106,30 +105,7 @@ final class Controller {
 		if ( ! is_array( $labels ) || ! array_is_list( $labels ) || count( $labels ) > 20 ) {
 			return new WP_Error( 'invalid_models', 'Supply at most 20 model labels.', array( 'status' => 400 ) );
 		}
-		$known = array();
-		$ids   = get_posts(
-			array(
-				'post_type'                   => 'product',
-				'post_status'                 => array( 'publish', 'draft', 'pending', 'private', 'future', 'trash' ),
-				'fields'                      => 'ids',
-				'posts_per_page'              => -1,
-				'suppress_filters'            => true,
-				'lang'                        => '',
-				'linker_publication_internal' => true,
-			)
-		);
-		foreach ( $ids as $id ) {
-			$terms = wp_get_object_terms( (int) $id, 'pa_model', array( 'fields' => 'names' ) );
-			if ( is_wp_error( $terms ) ) {
-				continue;
-			}
-			foreach ( $terms as $model ) {
-				$key = strtolower( trim( $model ) );
-				if ( ! isset( $known[ $key ] ) || self::published( (int) $id ) ) {
-					$known[ $key ] = (int) $id;
-				}
-			}
-		}
+		$known = Publication::model_statuses();
 		if ( is_string( $text ) ) {
 			$normalized = preg_replace( '/\s+/u', ' ', $text );
 			foreach ( array_keys( $known ) as $label ) {
@@ -144,25 +120,16 @@ final class Controller {
 			if ( ! is_string( $label ) || strlen( $label ) > 200 || '' === trim( $label ) ) {
 				return new WP_Error( 'invalid_models', 'Invalid model label.', array( 'status' => 400 ) );
 			}
-			$id   = $known[ strtolower( trim( $label ) ) ] ?? 0;
-			$item = array(
+			$permission = $known[ strtolower( trim( $label ) ) ] ?? array();
+			$item       = array(
 				'model'  => $label,
-				'status' => 0 === $id ? 'unknown' : ( self::published( $id ) ? 'published' : 'unavailable' ),
+				'status' => $permission['status'] ?? 'unknown',
 			);
-			if ( 'published' === $item['status'] ) {
-				$item['product_id'] = Publication::canonical_id( $id );
+			if ( 'published' === ( $permission['status'] ?? '' ) ) {
+				$item['product_id'] = $permission['product_id'];
 			}
 			$result[] = $item;
 		}
 		return array( 'models' => $result );
-	}
-
-	/**
-	 * Current source and locale permission.
-	 *
-	 * @param int $id Product ID.
-	 */
-	private static function published( int $id ): bool {
-		return Publication::is_published( $id ) && ! \Linker\Commerce\Products\EngineeringReference::is_reference( $id );
 	}
 }
