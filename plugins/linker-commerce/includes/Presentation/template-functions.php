@@ -10,7 +10,6 @@
 
 declare( strict_types = 1 );
 
-use Linker\Commerce\Products\Faqs;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Storefront\ProductView;
 

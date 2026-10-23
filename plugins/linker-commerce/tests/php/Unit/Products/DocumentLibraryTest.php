@@ -21,6 +21,21 @@ use WP_Mock;
  */
 final class DocumentLibraryTest extends TestCase {
 	use \Linker\Commerce\Tests\Support\PublishedDocumentView;
+	use \Linker\Commerce\Tests\Support\BoundFaqFixture;
+
+	/**
+	 * Only the declared prepared answers receive fixture evidence bindings.
+	 *
+	 * @var array<int,array<string,array{document_id:string,blob_sha256:string,figure_revision:string}>>
+	 */
+	private array $current_faq_bindings = array();
+
+	/**
+	 * Explicitly maintained FAQ source records of this fixture.
+	 *
+	 * @var array<int,string>
+	 */
+	private array $managed_faqs = array();
 
 	/**
 	 * Two products of one brand: their download entries and their FAQ field.
@@ -123,6 +138,12 @@ final class DocumentLibraryTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' )->byDefault();
+		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' )->byDefault();
+		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( mixed $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) )->byDefault();
+		$this->current_faq_bindings = array( 6521 => self::bound_faqs( self::PRODUCTS[6521]['faqs'], 'fixture-manual', hash( 'sha256', 'fixture manual bytes' ) ) );
 		WP_Mock::userFunction( 'wp_specialchars_decode', array( 'return' => static fn ( string $value ): string => $value ) );
 		WP_Mock::userFunction(
 			'has_filter',
@@ -174,7 +195,7 @@ final class DocumentLibraryTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ) {
+				'return' => function ( int $id, string $key ) {
 					$product = self::PRODUCTS[ $id ];
 					return match ( $key ) {
 						'_tv_legacy_acf_json' => (string) json_encode(
@@ -184,6 +205,8 @@ final class DocumentLibraryTest extends TestCase {
 							)
 						),
 						'_linker_faqs'        => (string) json_encode( $product['faqs'] ),
+						'_linker_faqs_managed' => $this->managed_faqs[ $id ] ?? '',
+						\Linker\Commerce\Products\Publication\EvidenceBindings::FAQ_META_KEY => $this->current_faq_bindings[ $id ] ?? array(),
 						default               => '',
 					};
 				},
@@ -208,6 +231,8 @@ final class DocumentLibraryTest extends TestCase {
 			'documents' => array(
 				array(
 					'product_ids' => array( 6521 ),
+					'document_id' => 'fixture-manual',
+					'blob_sha256' => hash( 'sha256', 'fixture manual bytes' ),
 					'aliases'     => array( 'https://de-linker.test/media/901.pdf' ),
 				),
 			),
@@ -231,6 +256,29 @@ final class DocumentLibraryTest extends TestCase {
 		$manifest['documents'] = array();
 		$library               = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
 		$this->assertSame( array( 'Legacy question?' ), array_column( $library->answers(), 'question' ) );
+	}
+
+	/** A current URL alone does not grant an unprepared answer its current evidence. */
+	public function test_cited_answer_requires_an_explicit_current_binding(): void {
+		$this->current_faq_bindings = array();
+		$library                    = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
+		$this->assertSame( array( 'Legacy question?' ), array_column( $library->answers(), 'question' ) );
+	}
+
+	/** Replacement bytes invalidate old answer text and the page URL together. */
+	public function test_same_url_replacement_omits_old_answer_and_source_page(): void {
+		$manifest                                = $this->manifest();
+		$manifest['documents'][0]['blob_sha256'] = hash( 'sha256', 'replacement manual bytes' );
+		$library                                 = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
+		$this->assertSame( array( 'Legacy question?' ), array_column( $library->answers(), 'question' ) );
+		$this->assertSame( array( '' ), array_column( $library->answers(), 'source_url' ) );
+	}
+
+	/** An intentionally emptied FAQ field cannot restore an older ACF answer. */
+	public function test_maintained_empty_faq_list_cannot_fall_back_to_old_answers(): void {
+		$this->managed_faqs[6522] = '1';
+		$library                  = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
+		$this->assertSame( array( 'Is the module stackable?' ), array_column( $library->answers(), 'question' ) );
 	}
 
 	/**

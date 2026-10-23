@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Presentation;
 
-use Linker\Commerce\Products\Faqs;
 use Linker\Commerce\Settings\Options;
 use WC_Product;
 

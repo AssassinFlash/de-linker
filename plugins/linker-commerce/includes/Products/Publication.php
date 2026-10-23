@@ -67,6 +67,18 @@ final class Publication {
 	 */
 	public static function is_published( int $id ): bool {
 		self::refresh_runtime();
+		return self::published_in_current_read( $id );
+	}
+
+	/**
+	 * Read within one explicit freshly opened authority assembly.
+	 *
+	 * The outer manifest already refreshed runtime copies; repeating that flush
+	 * per locale would discard every post/term read made by this same assembly.
+	 *
+	 * @param int $id Locale product ID.
+	 */
+	private static function published_in_current_read( int $id ): bool {
 		$canonical = self::canonical_id( $id );
 		return $id > 0 && 'product' === get_post_type( $id ) && 'publish' === get_post_status( $id ) && 'product' === get_post_type( $canonical ) && 'publish' === get_post_status( $canonical );
 	}
@@ -121,7 +133,7 @@ final class Publication {
 		$documents = array();
 		foreach ( $ids as $locale_id ) {
 			$locale_id = (int) $locale_id;
-			if ( ! self::is_published( $locale_id ) ) {
+			if ( ! self::published_in_current_read( $locale_id ) ) {
 				continue;
 			}
 			$id = self::canonical_id( $locale_id );
@@ -259,7 +271,7 @@ final class Publication {
 			$rows = json_decode( $rows, true );
 		}
 		$rows = is_array( $rows ) ? array_values( array_filter( $rows, 'is_array' ) ) : array();
-		if ( '1' === (string) get_post_meta( self::canonical_id( $id ), '_linker_documents_managed', true ) ) {
+		if ( '1' === get_post_meta( self::canonical_id( $id ), '_linker_documents_managed', true ) ) {
 			return $rows;
 		}
 		$urls      = array_column( $rows, 'url' );
@@ -325,9 +337,13 @@ final class Publication {
 	 *
 	 * @param int                      $id Product ID.
 	 * @param array<string,mixed>|null $manifest Current assembly, otherwise a fresh read.
-	 * @return list<array<string,mixed>>
+	 * @return list<array{question:string,answer:string,question_de:string,answer_de:string,citation:array{url:string,page:int,title?:string}}>
+	 * @phpstan-impure
 	 */
 	public static function faqs_for( int $id, ?array $manifest = null ): array {
+		if ( ! self::is_published( $id ) ) {
+			return array();
+		}
 		$manifest ??= self::manifest();
 		$id         = self::canonical_id( $id );
 		if ( ! in_array( $id, array_column( $manifest['products'], 'product_id' ), true ) ) {
