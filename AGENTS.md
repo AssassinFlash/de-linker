@@ -53,6 +53,8 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 
 ## 3. 用词
 
+产品与资料的发布、撤下、共享资料、派生数据和工具消费变更，先读 [统一产品与资料发布规则](docs/specs/609-product-publication.md)。业主 2026-10-23 已确认：唯一维护入口是 WooCommerce；上下架后各工具自动跟随，下架即时撤权；新产品自动准备；历史按快照保留；已下架型号的上传资料只识别后转团队。索引、feed 和缓存不能另作发布权威，第一阶段 EcoFlow 下架措施保持到新机制对等验收。
+
 产品、产品分类；不说目录（catalogue）、文章（article）、篮子（basket/cart）。
 客户的工作清单：Solution draft / Lösungsentwurf。方案内的清单：Bill of materials / Stückliste。
 询盘四状态：Inquiry received / Anfrage eingegangen · Proforma invoice issued / Proformarechnung ausgestellt · Completed / Abgeschlossen · Cancelled / Storniert。
