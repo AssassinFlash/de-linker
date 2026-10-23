@@ -271,6 +271,13 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 	assert.equal(r.queries.length, 0);
 	assert.equal(r.commits.length, 0);
 	assert.equal(document.activeElement.name, "pitch");
+	const invalidPitch = document.activeElement;
+	assert.match(
+		document.getElementById(invalidPitch.getAttribute("aria-describedby"))
+			.textContent,
+		/Some roof or source details are missing or invalid/,
+	);
+	assert.ok(invalidPitch.closest("label").querySelector('[role="alert"]'));
 	await enter(document.querySelector('[name="pitch"]'), "30");
 	r.invalidReview = true;
 	await submit();
@@ -279,6 +286,8 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 	);
 	assert.equal(r.commits.length, 0);
 	assert.equal((await r.records())[0].drawing.phase, "staged");
+	assert.match(document.activeElement.textContent, /geometry check/);
+	assert.ok(document.activeElement.closest(".lp-drawing-properties"));
 	r.invalidReview = false;
 	await submit();
 	await until(() => !r.active && r.commits.length === 1);

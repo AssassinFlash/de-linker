@@ -1,6 +1,7 @@
 import type { MapRoofDraft, MapRoofFields } from "../../domain/mapRoofDraft.ts";
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { revealActionResult } from "../revealActionResult.ts";
+import { Notice } from "../Notice.tsx";
 import { decimalSeparator, formatDecimal } from "../../domain/decimal.ts";
 import { __, sprintf } from "../../i18n.ts";
 
@@ -12,6 +13,7 @@ export function MapRoofProperties({
 	submit,
 	continueDrawing,
 	invalidField,
+	error,
 }: {
 	drawing: MapRoofDraft;
 	locale: string;
@@ -23,13 +25,17 @@ export function MapRoofProperties({
 	submit: () => void;
 	continueDrawing: () => void;
 	invalidField: string | null;
+	error: string | null;
 }) {
-	const form = useRef<HTMLFormElement>(null);
+	const form = useRef<HTMLFormElement>(null),
+		result = useRef<HTMLDivElement>(null),
+		errorId = useId();
 	useEffect(() => {
-		if (!invalidField) return;
-		const input = form.current?.elements.namedItem(invalidField);
-		if (input instanceof window.HTMLElement) revealActionResult(input);
-	}, [invalidField]);
+		if (invalidField) {
+			const input = form.current?.elements.namedItem(invalidField);
+			if (input instanceof window.HTMLElement) revealActionResult(input);
+		} else if (error) revealActionResult(result.current);
+	}, [invalidField, error]);
 	const fieldInput = (
 		name: keyof Omit<MapRoofFields, "permission" | "export">,
 		label: string,
@@ -49,6 +55,7 @@ export function MapRoofProperties({
 					required={!optional}
 					rows={3}
 					aria-invalid={invalidField === name || undefined}
+					aria-describedby={invalidField === name ? errorId : undefined}
 				/>
 			) : (
 				<input
@@ -59,9 +66,15 @@ export function MapRoofProperties({
 					required={!optional}
 					inputMode={numeric ? "decimal" : "text"}
 					aria-invalid={invalidField === name || undefined}
+					aria-describedby={invalidField === name ? errorId : undefined}
 				/>
 			)}
 			{help && <small>{help}</small>}
+			{invalidField === name && error && (
+				<small id={errorId} className="lp-field-error" role="alert">
+					{error}
+				</small>
+			)}
 		</label>
 	);
 	return (
@@ -195,6 +208,11 @@ export function MapRoofProperties({
 						"linker-tools",
 					)}
 				</label>
+				{error && !invalidField && (
+					<div ref={result} tabIndex={-1}>
+						<Notice error>{error}</Notice>
+					</div>
+				)}
 				<div className="lp-inline-actions">
 					<button type="submit" className="lp-button">
 						{__("Check and add roof face", "linker-tools")}

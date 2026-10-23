@@ -508,7 +508,10 @@ export function MapRoofWorkspace({
 						</div>
 					</>
 				)}
-				{error && <Notice error>{error}</Notice>}
+				{error &&
+					!(active && drawing && drawing.phase === "staged" && !stale) && (
+						<Notice error>{error}</Notice>
+					)}
 			</section>
 			<LazyMapViewport
 				{...mapProps}
@@ -521,6 +524,7 @@ export function MapRoofWorkspace({
 					locale={locale}
 					busy={busy}
 					invalidField={invalidField}
+					error={error}
 					field={field}
 					submit={() => void apply()}
 					continueDrawing={() =>
