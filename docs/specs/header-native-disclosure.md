@@ -29,7 +29,11 @@ footprint also overlaps the Services row before the panel reaches its end,
 so bottom padding alone cannot protect the menu's full hit areas. While the
 native panel is open, hide only the collapsed launcher through its existing
 aria-expanded=false state. Restore it when the panel closes; retain an
-already open conversation and the menu's Genie link. Keep the existing12px
+already open conversation and the menu's Genie link. The independent fixed
+preview card is temporarily hidden by that same native open state; its timer,
+visit memory and hidden flag are unchanged. Verify both an already visible
+card and one whose timer becomes due while navigation is open.
+Keep the existing12px
 panel bottom gap. Check the whole Services and Contact actions, launcher
 restoration and keyboard visibility, not just their centre points or bounds.
 The actual expanded state remains native; the summary has an explicit button

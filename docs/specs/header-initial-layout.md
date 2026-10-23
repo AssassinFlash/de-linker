@@ -95,7 +95,12 @@ Services row's right end by50px by44.7109375px. Testing only the row's centre
 misses that blocked area. Temporarily hide the resting launcher while native
 navigation is open, using its existing aria-expanded=false state. The same
 menu still offers its Genie link; closing navigation restores the launcher,
-and an already open conversation is unchanged. Remove the special82px panel
+and an already open conversation is unchanged. The separately fixed preview
+card follows the same temporary visibility rule, including when its existing
+timer fires while the menu is open. Preserve its hidden flag, visit memory
+and timer; do not dismiss the card or reset the visitor's data. Check a real
+visible preview through menu opening/closing as well as a pending preview.
+Remove the special82px panel
 bottom padding that only protected Contact and keep the existing12px bottom
 breathing room. Verify the whole affected row's hit area, all group states,
 Contact at scroll end, and launcher restoration in both languages; do not

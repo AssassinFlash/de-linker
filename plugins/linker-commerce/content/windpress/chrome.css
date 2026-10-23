@@ -205,9 +205,11 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 .tv-mobile-navigation>.tv-mobile-panel{position:absolute;top:100%;left:0;right:0;box-sizing:border-box;max-height:calc(100dvh - var(--lk-header-h) - var(--lk-toolbar-offset,0px));padding-left:1rem;padding-right:1rem;background:#fff;border-bottom:1px solid var(--proto-neutral-200)}
 #tv-header-v2 .tv-mobile-navigation[open]>.tv-mobile-panel{display:flex;flex-direction:column}
 /* The resting Genie bubble covers Services' right end in the open panel.
-   Temporarily hide only that collapsed launcher while native navigation is
-   open. Its existing menu link and an already open conversation stay usable. */
-body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie>.linker-genie-open[aria-expanded="false"]{visibility:hidden}
+   Temporarily hide that collapsed launcher and its separately fixed preview
+   while native navigation is open, including a preview whose timer fires
+   later. Its menu link and an already open conversation stay usable. */
+body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie>.linker-genie-open[aria-expanded="false"],
+body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie-peek{visibility:hidden}
 @media (min-width:1280px){#tv-header-v2 .tv-mobile-navigation{display:none}}
 #tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation{display:block}
 @media (min-width:1280px){#tv-header-v2 #tv-mobile-toggle{display:none!important}}
