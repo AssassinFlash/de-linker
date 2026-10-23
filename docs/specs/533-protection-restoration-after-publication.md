@@ -24,6 +24,12 @@ This restoration does not redesign their mechanisms. Preserve the current
 publication, owner, historical snapshot and atomic draft security boundaries
 at the shared seams. Do not bundle held marketing/visual changes into this fix.
 
+During validation, main advanced to
+`d2fd257302576f943840be55b36c491707b22ae6`. Merge those current changes as well:
+native supply-brand navigation and first-publication evidence initialization
+must survive unchanged. The final review/CI source is the combined head, and
+the restoration PR's effective baseline is this newer main.
+
 ## Composition constraints
 
 - Preserve current Product Publication, DocumentAccess, DraftProof,

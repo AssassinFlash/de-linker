@@ -75,6 +75,7 @@ trait CurrentFaqProduct {
 				return '' === $key ? $this->current_faq_meta : ( $this->current_faq_meta[ $key ] ?? '' );
 			}
 		)->byDefault();
+		WP_Mock::userFunction( 'metadata_exists' )->andReturnUsing( fn ( string $type, int $product_id, string $key ): bool => 'post' === $type && $id === $product_id && array_key_exists( $key, $this->current_faq_meta ) )->byDefault();
 		WP_Mock::userFunction( 'update_post_meta' )->andReturnUsing(
 			function ( int $product_id, string $key, mixed $value ) use ( $id ): bool {
 				if ( $id !== $product_id ) {

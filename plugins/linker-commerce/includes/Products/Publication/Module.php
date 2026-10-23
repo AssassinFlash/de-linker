@@ -22,6 +22,7 @@ final class Module {
 		foreach ( array( 'save_post_product', 'set_object_terms', 'deleted_term_relationships', 'add_attachment', 'edit_attachment', 'delete_attachment', 'pll_save_post', 'woocommerce_update_product' ) as $hook ) {
 			add_action( $hook, array( $this, 'source_changed' ) );
 		}
+		add_action( 'woocommerce_after_product_object_save', array( $this, 'product_saved' ) );
 		add_action( 'transition_post_status', array( $this, 'status_changed' ), 10, 3 );
 		add_action( 'deleted_post', array( $this, 'source_deleted' ), 10, 2 );
 		foreach ( array( 'edited_term', 'created_term', 'delete_term' ) as $hook ) {
@@ -47,6 +48,17 @@ final class Module {
 		if ( $post instanceof \WP_Post && self::is_source( $post ) ) {
 			( new PreparationJobs() )->changed();
 		}
+	}
+
+	/**
+	 * The editor, Woo REST and CRUD reach this after object metadata is persisted.
+	 * Earlier WordPress status/save events only queue; they may still see old fields.
+	 *
+	 * @param \WC_Product $product Fully saved Woo object.
+	 */
+	public function product_saved( \WC_Product $product ): void {
+		EvidenceBindings::capture_missing( $product->get_id() );
+		$this->source_changed( $product->get_id() );
 	}
 
 	/**
