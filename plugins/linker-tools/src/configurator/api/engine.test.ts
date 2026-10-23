@@ -24,12 +24,21 @@ const input = {
 };
 
 test.each( [
+	[ 409, { code: 'linker_admission_conflict' }, 'network', undefined ],
+	[ 409, { detail: { error: 'selection_changed' } }, 'stale', undefined ],
 	[
-		409,
-		{ detail: { error: 'publication_changed' } },
-		'unavailable',
+		503,
+		{ detail: { error: 'publication_unavailable' } },
+		'publication',
 		undefined,
 	],
+	[
+		422,
+		{ detail: { error: 'invalid_input', field: 'battery_id' } },
+		'stale',
+		'battery_id',
+	],
+	[ 409, { detail: { error: 'publication_changed' } }, 'stale', undefined ],
 	[
 		422,
 		{ detail: { error: 'invalid_input', field: 'plz' } },

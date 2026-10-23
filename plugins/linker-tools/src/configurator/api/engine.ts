@@ -17,6 +17,8 @@ import type {
 
 /** Why a call failed, in the terms the screens explain. */
 export type EngineErrorKind =
+	| 'stale' // confirmed selection or a used dependency is no longer valid
+	| 'publication' // current Woo authority could not be checked
 	| 'invalid' // 422: the engine refused an input (`field` names it)
 	| 'unavailable' // 503: PVGIS or the LoD2 source did not answer
 	| 'not_found' // 404: unknown postcode
@@ -47,11 +49,34 @@ async function call( response: Promise< Response > ): Promise< Response > {
 		return answer;
 	}
 	let field: string | undefined;
+	let code: string | undefined;
 	try {
 		const body = await answer.json();
 		field = body?.detail?.field;
+		code = body?.detail?.error ?? body?.code;
 	} catch {
 		field = undefined;
+	}
+	if (
+		( answer.status === 409 &&
+			[
+				'publication_changed',
+				'selection_changed',
+				'linker_publication_changed',
+			].includes( code ?? '' ) ) ||
+		( answer.status === 422 &&
+			[ 'inverter_id', 'battery_id' ].includes( field ?? '' ) )
+	) {
+		throw new EngineError( 'stale', field );
+	}
+	if (
+		answer.status === 503 &&
+		[
+			'publication_unavailable',
+			'linker_publication_unavailable',
+		].includes( code ?? '' )
+	) {
+		throw new EngineError( 'publication' );
 	}
 	if ( answer.status === 429 ) {
 		throw new EngineError( 'limited' );
@@ -62,7 +87,7 @@ async function call( response: Promise< Response > ): Promise< Response > {
 	if ( answer.status === 404 ) {
 		throw new EngineError( 'not_found', field );
 	}
-	if ( answer.status === 503 || answer.status === 409 ) {
+	if ( answer.status === 503 ) {
 		throw new EngineError( 'unavailable' );
 	}
 	throw new EngineError( 'network' );
@@ -129,13 +154,17 @@ export function engineClient(
 					azimuth_deg: azimuth,
 				} )
 			).json(),
-		reportPdf: async ( input, logo, selectionFingerprint ) =>
-			(
+		reportPdf: async ( input, logo, selectionFingerprint ) => {
+			if ( ! selectionFingerprint ) {
+				throw new EngineError( 'stale' );
+			}
+			return (
 				await post( '/report/pdf', {
 					input,
 					logo,
 					selection_fingerprint: selectionFingerprint,
 				} )
-			).blob(),
+			).blob();
+		},
 	};
 }

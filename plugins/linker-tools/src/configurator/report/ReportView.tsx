@@ -13,21 +13,25 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import type { EngineClient } from '../api/engine';
+import { EngineError, type EngineClient } from '../api/engine';
+import {
+	selectionChangedText,
+	publicationUnavailableText,
+} from '../publication';
 import { FilePicker } from '../FilePicker';
 import { Table } from '../Table';
 import type { Report, ResidentialInput } from '../types';
 
 const LOGO_BYTES = 500 * 1024; // the engine accepts data URLs up to about 700 kB of text
 
-type PdfState = 'idle' | 'working' | 'failed';
+type PdfState = 'idle' | 'working' | 'failed' | 'changed' | 'publication';
 
 /**
  * What the "Ask Genie" click did: the save it needs is running, its save
  * failed (the configurator's own failure copy), or the solution stays in the
  * guest's session and has no account post to read yet.
  */
-export type AskState = 'idle' | 'saving' | 'failed' | 'signin';
+export type AskState = 'idle' | 'saving' | 'failed' | 'changed' | 'signin';
 
 export interface ReportViewProps {
 	report: Report;
@@ -99,8 +103,15 @@ export function ReportView( {
 			link.click();
 			URL.revokeObjectURL( url );
 			setPdf( 'idle' );
-		} catch {
-			setPdf( 'failed' );
+		} catch ( error ) {
+			setPdf(
+				error instanceof EngineError && error.kind === 'stale'
+					? 'changed'
+					: error instanceof EngineError &&
+						  error.kind === 'publication'
+						? 'publication'
+						: 'failed'
+			);
 		}
 	}
 
@@ -145,12 +156,16 @@ export function ReportView( {
 							: __( 'Download PDF', 'linker-tools' ) }
 					</button>
 					<p className="linker-report__status" role="status">
-						{ pdf === 'failed'
-							? __(
-									'The PDF could not be created. Try again.',
-									'linker-tools'
-								)
-							: '' }
+						{ pdf === 'changed'
+							? selectionChangedText()
+							: pdf === 'publication'
+								? publicationUnavailableText()
+								: pdf === 'failed'
+									? __(
+											'The PDF could not be created. Try again.',
+											'linker-tools'
+										)
+									: '' }
 					</p>
 				</div>
 				<div className="linker-report__ask">
@@ -166,12 +181,14 @@ export function ReportView( {
 							: __( 'Ask Genie', 'linker-tools' ) }
 					</button>
 					<p className="linker-report__status" role="status">
-						{ askState === 'failed'
-							? __(
-									'The solution could not be saved. Try again.',
-									'linker-tools'
-								)
-							: '' }
+						{ askState === 'changed'
+							? selectionChangedText()
+							: askState === 'failed'
+								? __(
+										'The solution could not be saved. Try again.',
+										'linker-tools'
+									)
+								: '' }
 					</p>
 					{ askState === 'signin' ? (
 						<p className="linker-report__ask-note" role="status">

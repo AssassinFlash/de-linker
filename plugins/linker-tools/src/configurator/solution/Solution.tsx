@@ -24,9 +24,10 @@ import type {
 	StoreProduct,
 	Verdict,
 } from '../types';
+import { selectionChangedText, additionUnconfirmedText } from '../publication';
 import { Documents } from './Documents';
 
-export type SaveState = 'idle' | 'saving' | 'saved' | 'failed';
+export type SaveState = 'idle' | 'saving' | 'saved' | 'failed' | 'changed';
 
 export interface SolutionProps {
 	result: ResidentialResult;
@@ -34,7 +35,7 @@ export interface SolutionProps {
 	products: Map< number, StoreProduct >;
 	statuses: Map< number, AddStatus >;
 	adding: boolean;
-	addOutcome: 'none' | 'complete' | 'partial';
+	addOutcome: 'none' | 'complete' | 'unverified' | 'changed';
 	saveState: SaveState;
 	savedUrl: string | null;
 	onSwapInverter: ( id: number ) => void;
@@ -94,14 +95,12 @@ function cardStatus( status: AddStatus | undefined ): {
 				state: 'added',
 				text: __( 'In your solution draft', 'linker-tools' ),
 			};
+		case 'stale':
+			return { state: 'retry', text: newCalculationStatusText() };
 		case 'unverified':
 			return {
 				state: 'unverified',
-				text: _x(
-					'Sent, but the draft does not show it yet. Please check.',
-					'configurator',
-					'linker-tools'
-				),
+				text: additionStatusText(),
 			};
 		case 'retry':
 			return {
@@ -346,14 +345,12 @@ export function Solution( props: SolutionProps ) {
 							) }{ ' ' }
 						</>
 					) : null }
-					{ props.addOutcome === 'partial' ? (
-						<>
-							{ __(
-								'Some products are not confirmed in your solution draft. See the cards above.',
-								'linker-tools'
-							) }{ ' ' }
-						</>
-					) : null }
+					{ props.addOutcome === 'unverified'
+						? additionUnconfirmedText()
+						: null }
+					{ props.addOutcome === 'changed'
+						? selectionChangedText()
+						: null }
 					{ props.saveState === 'saved' ? (
 						<>
 							{ _x(
@@ -371,12 +368,14 @@ export function Solution( props: SolutionProps ) {
 							) : null }
 						</>
 					) : null }
-					{ props.saveState === 'failed'
-						? __(
-								'The solution could not be saved. Try again.',
-								'linker-tools'
-							)
-						: null }
+					{ props.saveState === 'changed'
+						? selectionChangedText()
+						: props.saveState === 'failed'
+							? __(
+									'The solution could not be saved. Try again.',
+									'linker-tools'
+								)
+							: null }
 				</p>
 			</div>
 			<h3 className="linker-section__subtitle">

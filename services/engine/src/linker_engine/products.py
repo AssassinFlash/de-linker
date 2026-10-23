@@ -65,6 +65,8 @@ class Document:
     document_revision: str | None = None
     blob_sha256: str | None = None
     product_ids: list[int] | None = None
+    role: str | None = None
+    citation_aliases: list[str] | None = None
 
 
 def _known(value: Any) -> Any:

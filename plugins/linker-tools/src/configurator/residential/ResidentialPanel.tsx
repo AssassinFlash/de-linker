@@ -22,8 +22,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { EngineError, type EngineClient } from '../api/engine';
-import { saveSolution, type SavedSolution } from '../api/solutions';
+import {
+	SolutionWriteError,
+	saveSolution,
+	type SavedSolution,
+} from '../api/solutions';
 import type { AddStatus, StoreClient } from '../api/store';
+import {
+	selectionChangedText,
+	publicationUnavailableText,
+} from '../publication';
 import type { Config } from '../config';
 import { MobileNavigation } from '../MobileNavigation';
 import { ReportView, type AskState } from '../report/ReportView';
@@ -82,6 +90,12 @@ function designKey(
 
 function errorText( error: unknown ): string {
 	if ( error instanceof EngineError ) {
+		if ( error.kind === 'stale' ) {
+			return selectionChangedText();
+		}
+		if ( error.kind === 'publication' ) {
+			return publicationUnavailableText();
+		}
 		if ( error.kind === 'limited' ) {
 			return __(
 				'The calculation is temporarily unavailable. Your entries are still here. Please try again later.',
@@ -126,7 +140,7 @@ export function ResidentialPanel( {
 	);
 	const [ adding, setAdding ] = useState( false );
 	const [ addOutcome, setAddOutcome ] = useState<
-		'none' | 'complete' | 'partial'
+		'none' | 'complete' | 'unverified' | 'changed'
 	>( 'none' );
 	const [ saveState, setSaveState ] = useState< SaveState >( 'idle' );
 	const [ savedUrl, setSavedUrl ] = useState< string | null >( null );
@@ -142,6 +156,7 @@ export function ResidentialPanel( {
 	// promise both the Save button and Ask Genie await, and only for the design
 	// it was started for.
 	const askingKey = useRef< string | null >( null );
+	const askFailure = useRef< 'failed' | 'changed' >( 'failed' );
 	const saveInFlight = useRef< {
 		key: string;
 		promise: Promise< SavedSolution | null >;
@@ -237,24 +252,29 @@ export function ResidentialPanel( {
 
 	async function addAll() {
 		if ( ! input || ! result?.selection_fingerprint ) {
-			setAddOutcome( 'partial' );
+			setAddOutcome( 'changed' );
 			return;
 		}
 		setAdding( true );
 		setAddOutcome( 'none' );
+		let stale = false;
 		const complete = await store.addAll(
 			draftLines(),
-			( id, state ) =>
+			( id, state ) => {
+				stale ||= state === 'stale';
 				setStatuses( ( current ) =>
 					new Map( current ).set( id, state )
-				),
+				);
+			},
 			{
 				kind: 'residential',
 				input,
 				selection_fingerprint: result?.selection_fingerprint,
 			}
 		);
-		setAddOutcome( complete ? 'complete' : 'partial' );
+		setAddOutcome(
+			complete ? 'complete' : stale ? 'changed' : 'unverified'
+		);
 		setAdding( false );
 	}
 
@@ -310,11 +330,18 @@ export function ResidentialPanel( {
 					setSaveState( 'saved' );
 				}
 				return record;
-			} catch {
+			} catch ( error ) {
+				const changed =
+					( error instanceof EngineError &&
+						error.kind === 'stale' ) ||
+					( error instanceof SolutionWriteError && error.changed );
+				askFailure.current = changed ? 'changed' : 'failed';
 				// One failure sentence: the Save button's own status for its
 				// click, the report's Ask status when Ask started the save.
 				if ( designEpoch.current === epoch ) {
-					setSaveState( fromAsk ? 'idle' : 'failed' );
+					setSaveState(
+						fromAsk ? 'idle' : changed ? 'changed' : 'failed'
+					);
 				}
 				return null;
 			}
@@ -345,6 +372,7 @@ export function ResidentialPanel( {
 		}
 		const epoch = designEpoch.current;
 		askingKey.current = key;
+		askFailure.current = 'failed';
 		setAskState( 'saving' );
 		let target: SavedSolution | null = null;
 		try {
@@ -367,7 +395,7 @@ export function ResidentialPanel( {
 			// The report carries the failure sentence; the Save status would
 			// repeat it (or still show a save the customer did not click).
 			setSaveState( 'idle' );
-			setAskState( 'failed' );
+			setAskState( askFailure.current );
 			return;
 		}
 		if ( target.id < 1 ) {
