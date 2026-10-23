@@ -240,7 +240,9 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 /* The existing 2px outline plus 2px offset needs 4px inside the scrollport.
    Keep card alignment, the 140px cap and 10px gap; let two cards fit narrow rails. */
 #tv-header-v2 .tv-mobile-rail{display:flex;gap:10px;overflow-x:auto;margin-inline:-4px;padding:4px 4px 6px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-inline:4px}
-#tv-header-v2 .tv-mobile-rail-card{flex:0 0 min(140px,calc((100% - 10px)/2));min-width:0;scroll-snap-align:start;text-decoration:none;color:inherit}
+#tv-header-v2 .tv-mobile-rail-card{flex:0 0 min(140px,calc((100% - 10px)/2));min-width:0;scroll-snap-align:start;scroll-margin-inline:4px;text-decoration:none;color:inherit}
+/* Native snapping must reveal the keyboard target, rather than retain another card. */
+#tv-header-v2 .tv-mobile-rail:focus-within .tv-mobile-rail-card:not(:focus){scroll-snap-align:none}
 #tv-header-v2 .tv-mobile-rail-card img{width:100%;height:80px;object-fit:cover;border-radius:12px;display:block;background:var(--proto-neutral-50)}
 #tv-header-v2 .tv-mobile-rail-card:focus-visible{border-radius:12px}
 #tv-header-v2 .tv-mobile-rail-card:hover .tv-mobile-rail-title,#tv-header-v2 .tv-mobile-rail-card:focus-visible .tv-mobile-rail-title{color:var(--proto-teal-600)}
