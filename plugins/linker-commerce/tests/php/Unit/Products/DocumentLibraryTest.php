@@ -192,11 +192,53 @@ final class DocumentLibraryTest extends TestCase {
 	}
 
 	/**
+	 * Current authoritative products and document relations of the fixture.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function manifest(): array {
+		return array(
+			'products'  => array_map(
+				static fn ( int $id ): array => array(
+					'product_id'           => $id,
+					'published_locale_ids' => array( $id ),
+				),
+				array_keys( self::PRODUCTS )
+			),
+			'documents' => array(
+				array(
+					'product_ids' => array( 6521 ),
+					'aliases'     => array( 'https://de-linker.test/media/901.pdf' ),
+				),
+			),
+		);
+	}
+
+	/** Native published translations do not override canonical withdrawal. */
+	public function test_library_omits_a_product_without_current_publication_permission(): void {
+		$manifest             = $this->manifest();
+		$manifest['products'] = array( $manifest['products'][1] );
+		$library              = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
+		$this->assertSame( array( 'GoodWe GW8.3-BAT-D-G21' ), array_unique( array_column( $library->answers(), 'product' ) ) );
+		foreach ( $library->documents() as $document ) {
+			$this->assertNotContains( 'GoodWe GW5.1-BAT-D-G21', $document['covers'] );
+		}
+	}
+
+	/** Withdrawing cited evidence suppresses its answer without a legacy fallback. */
+	public function test_library_omits_answers_whose_cited_document_is_withdrawn(): void {
+		$manifest              = $this->manifest();
+		$manifest['documents'] = array();
+		$library               = new DocumentLibrary( $this->published_document_view(), static fn (): array => $manifest );
+		$this->assertSame( array( 'Legacy question?' ), array_column( $library->answers(), 'question' ) );
+	}
+
+	/**
 	 * One row per file even when several products state it, and the row says
 	 * which products it covers.
 	 */
 	public function test_documents_are_deduplicated_by_file_and_count_their_products(): void {
-		$documents = array_column( ( new DocumentLibrary( $this->published_document_view() ) )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents(), null, 'title' );
 
 		$this->assertCount( 7, $documents, 'eight entries, one file stated by both products' );
 		$this->assertSame(
@@ -213,7 +255,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * an absent one `EN`.
 	 */
 	public function test_type_and_language_are_normalised(): void {
-		$documents = array_column( ( new DocumentLibrary( $this->published_document_view() ) )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents(), null, 'title' );
 
 		$this->assertSame( 'manual', $documents['ESA battery manual (DE)']['type'] );
 		$this->assertSame( 'DE', $documents['ESA battery manual (DE)']['language'] );
@@ -231,7 +273,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * the type chips had nothing to tell apart.
 	 */
 	public function test_german_rows_read_the_same_type_as_their_english_twin(): void {
-		$documents = array_column( ( new DocumentLibrary( $this->published_document_view() ) )->documents(), null, 'title' );
+		$documents = array_column( ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents(), null, 'title' );
 
 		$this->assertSame( 'datasheet', $documents['ESA-Batterie-Datenblatt (DE)']['type'] );
 		$this->assertSame( 'compatibility', $documents['ESA-Batterie-Kompatibilitätsliste (DE)']['type'] );
@@ -247,7 +289,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * live register used.
 	 */
 	public function test_the_register_is_ordered_by_type(): void {
-		$documents = ( new DocumentLibrary( $this->published_document_view() ) )->documents();
+		$documents = ( new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() ) )->documents();
 
 		$this->assertSame(
 			array( 'datasheet', 'datasheet', 'manual', 'certificate', 'compatibility', 'brochure', 'document' ),
@@ -266,7 +308,7 @@ final class DocumentLibraryTest extends TestCase {
 	 * until then; German reads the German words of the field.
 	 */
 	public function test_answers_prefer_the_faq_field_and_fall_back_to_the_legacy_list(): void {
-		$library = new DocumentLibrary( $this->published_document_view() );
+		$library = new DocumentLibrary( $this->published_document_view(), fn (): array => $this->manifest() );
 		$english = $library->answers( 'en' );
 		$german  = $library->answers( 'de' );
 
