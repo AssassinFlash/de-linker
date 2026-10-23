@@ -77,6 +77,52 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
 	display: none;
 }
 
+/* WordPress formatting adds breaks around the utility hero's SVG and label.
+   These become anonymous flex gaps and push the label toward the capsule's
+   bottom. The same row also has breaks between its three native anchors. */
+#tv-utility-page-v1 .lk-hero-cta-row > br,
+#tv-utility-page-v1 .lk-hero-cta-row > a > br {
+	display: none;
+}
+
+/* The saved hero surfaces override its earlier generic hover rules. Keep the
+   foreground/background pair instantaneous, using the existing brand palette. */
+#tv-utility-page-v1 .lk-hero-cta-row > a {
+	transition-property: box-shadow;
+	/* The 2px ring plus 5px offset needs one more pixel for native scroll
+	   rounding: EN320 no-script focus left the element bottom at899.898px. */
+	scroll-margin-block: 8px;
+}
+
+#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-teal:is(:hover, :focus-visible) {
+	color: #fff;
+	background: var(--proto-teal-700);
+	border-color: var(--proto-teal-700);
+}
+
+#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-hero-ghost:is(:hover, :focus-visible) {
+	color: var(--us-ink);
+	background: #fff;
+	border-color: #fff;
+}
+
+/* Preserve the native hero's 2px ring and 5px offset; a dark underlay keeps
+   that white ring visible against both light and dark areas of the photo. */
+#tv-utility-page-v1 .lk-hero-cta-row > a:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 5px;
+	box-shadow: 0 0 0 5px var(--us-ink);
+}
+
+/* Match the saved utility page's existing 600px hero-icon breakpoint. */
+@media (max-width: 600px) {
+	#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-hero-ghost {
+		/* Retain the existing desktop label size on phones instead of 10px. */
+		/* The native anchor type outranks the page's later inline class rule. */
+		font-size: var(--proto-size-xs);
+	}
+}
+
 :is(#service-redesign #start, #tv-solution-v1 #contact) .lk-cta-actions > a {
 	display: inline-flex;
 	align-items: center;
