@@ -139,11 +139,18 @@ export function useCardActions( {
 		async ( productId: number, _title: string, token = '' ) => {
 			status( productId, 'pending', __( 'Saving…', 'linker-tools' ) );
 			try {
-				await saveGenieSolution( restUrl, restNonce, token, locale );
+				const saved = await saveGenieSolution(
+					restUrl,
+					restNonce,
+					token,
+					locale
+				);
 				status(
 					productId,
 					'added',
-					__( 'Saved to your account.', 'linker-tools' )
+					saved.id > 0
+						? __( 'Saved to your account.', 'linker-tools' )
+						: __( 'Saved in this browser for now.', 'linker-tools' )
 				);
 			} catch ( error ) {
 				if ( error instanceof GenieSaveUnconfirmedError ) {

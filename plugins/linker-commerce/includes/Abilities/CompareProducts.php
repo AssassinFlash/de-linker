@@ -48,7 +48,7 @@ final class CompareProducts {
 	 * @param PublicationData $publication Current authority reader.
 	 */
 	public function __construct( ?Comparison $comparison = null, private readonly PublicationData $publication = new PublicationData() ) {
-		$this->comparison = $comparison ?? new Comparison( facts_reader: fn( int $id ) => $this->publication->facts( $id, $this->publication_snapshot ) );
+		$this->comparison = $comparison ?? new Comparison( facts_reader: fn( int $id ) => $this->publication->facts( $id, $this->publication_snapshot ), publication: $this->publication );
 	}
 
 	/**
@@ -141,7 +141,7 @@ final class CompareProducts {
 		$lang                       = ProductText::lang( $input['lang'] ?? null );
 		$ids                        = array_values( array_unique( array_map( 'intval', (array) ( $input['product_ids'] ?? array() ) ) ) );
 		$this->publication_snapshot = $this->publication->manifest();
-		if ( $this->publication->published( $ids, $this->publication_snapshot ) !== $ids ) {
+		if ( $this->publication->published( $ids, $this->publication_snapshot, $lang ) !== $ids ) {
 			return array(
 				'products' => array(),
 				'rows'     => array(),

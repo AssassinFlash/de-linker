@@ -38,7 +38,10 @@ export function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {
 	return [];
 }
 
-/** Exact live product-card actions; history never creates replacement proofs. */
+/**
+ * Exact live product-card actions; history never creates replacement proofs.
+ * @param blocks Current normalized turn blocks.
+ */
 export function proofsOf( blocks: Block[] ): Record< string, string > {
 	return Object.assign(
 		{},

@@ -87,6 +87,8 @@ class DraftProof {
 	/**
 	 * Verify HMAC, browser/account binding, lifetime and all current dependencies.
 	 *
+	 * @phpstan-impure Every call observes current identity and source, even within one request.
+	 *
 	 * @param string $token Signed artifact proof, never editable lines.
 	 * @return array<string,mixed>|WP_Error Exact trusted list snapshot.
 	 */

@@ -310,7 +310,7 @@ final class SearchProducts {
 	 */
 	public function select( array $ids, array $input, string $lang, int $limit ): array {
 		$this->publication_snapshot = $this->publication->manifest();
-		$ids                        = $this->publication->published( $ids, $this->publication_snapshot );
+		$ids                        = $this->publication->published( $ids, $this->publication_snapshot, $lang );
 		$dependencies               = $this->publication->dependencies( $ids, $this->publication_snapshot );
 		$excluded                   = array();
 		$qualified                  = array();

@@ -568,7 +568,7 @@ class Proxy {
 		if ( $action_stream instanceof WP_Error ) {
 			return $action_stream;
 		}
-		$permitted     = $this->publication->validate( $publication );
+		$permitted = $this->publication->validate( $publication );
 		if ( is_wp_error( $permitted ) ) {
 			return $permitted;
 		}
@@ -700,6 +700,13 @@ class Proxy {
 			return $response;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( in_array( $code, array( 409, 503 ), true ) ) {
+			$failure  = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+			$expected = 409 === $code ? 'publication_changed' : 'publication_unavailable';
+			if ( is_array( $failure ) && isset( $failure['detail'] ) && $failure['detail'] === $expected ) {
+				return PublicationGuard::refused( $code );
+			}
+		}
 		if ( in_array( $code, array( 429, 503 ), true ) ) {
 			$failure = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 			if ( is_array( $failure ) && ( str_starts_with( (string) ( $failure['code'] ?? '' ), 'provider_budget_' ) || str_starts_with( (string) ( $failure['code'] ?? '' ), 'genie_resource_' ) ) ) {

@@ -499,6 +499,44 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * Native service transport preserves current-source status instead of a 502.
+	 *
+	 * @dataProvider publication_statuses
+	 * @param int    $status Service status.
+	 * @param string $detail Safe service reason.
+	 * @param string $code Native shell reason.
+	 */
+	public function test_publication_status_survives_the_actual_http_transport( int $status, string $detail, string $code ): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Wire fixture.
+		WP_Mock::userFunction( 'sanitize_text_field', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'fixture-native-source-status' ) );
+		WP_Mock::userFunction( 'wp_remote_post', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => $status ) );
+		WP_Mock::userFunction( 'wp_remote_retrieve_body', array( 'return' => (string) wp_json_encode( array( 'detail' => $detail ) ) ) );
+		$previous                         = $_COOKIE;
+		$_COOKIE['linker_public_browser'] = str_repeat( 'a', 32 );
+		try {
+			$answer = $this->proxy()->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+		} finally {
+			$_COOKIE = $previous;
+		}
+		$this->assertInstanceOf( WP_Error::class, $answer );
+		$this->assertSame( $status, $answer->get_error_data()['status'] );
+		$this->assertSame( $code, $answer->get_error_code() );
+	}
+
+	/**
+	 * Safe service reason/status pairs.
+	 *
+	 * @return list<array{int,string,string}>
+	 */
+	public static function publication_statuses(): array {
+		return array( array( 409, 'publication_changed', 'linker_genie_publication_changed' ), array( 503, 'publication_unavailable', 'linker_genie_publication_unavailable' ) );
+	}
+
+	/**
 	 * What linker-commerce's price rule answers the shell
 	 * (`linker_commerce_visitor_sees_prices`, applied with false).
 	 *
@@ -519,6 +557,7 @@ final class ProxyTest extends TestCase {
 	 * @param bool $logged_in Whether a visitor is signed in.
 	 */
 	private function wp_functions( bool $logged_in = false ): void {
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		// No plugin answers the price rule: the filter's own default comes back.
@@ -1044,7 +1083,7 @@ final class ProxyTest extends TestCase {
 			 *
 			 * @return array<string,mixed>
 			 */
-			public function dependencies(): array|WP_Error {
+			public function dependencies(): array {
 				return array(
 					'products'  => array(),
 					'documents' => array(),
@@ -1055,7 +1094,7 @@ final class ProxyTest extends TestCase {
 			 *
 			 * @param array<string,mixed> $dependencies Initial proof.
 			 */
-			public function validate( array $dependencies ): true|WP_Error {
+			public function validate( array $dependencies ): WP_Error {
 				unset( $dependencies );
 				return new WP_Error( 'publication_changed', 'Changed', array( 'status' => 409 ) );
 			}
@@ -1068,6 +1107,7 @@ final class ProxyTest extends TestCase {
 
 	/** Legacy and malformed receipts cannot restore a current answer without proof. */
 	public function test_old_genie_receipt_requires_publication_dependencies(): void {
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		$reply = new WP_REST_Response( array( 'stream' => 'old' ) );
 		$this->assertInstanceOf( WP_Error::class, PublicationGuard::restored( $reply, array( 'data' => array( 'stream' => 'old' ) ) ) );
 		$this->assertInstanceOf(

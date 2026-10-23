@@ -123,6 +123,7 @@ final class GeniePublicationActionsTest extends IntegrationTestCase {
 		);
 		$store    = new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '' );
 		$snapshot = $store->snapshot( $id );
+		$this->assertIsArray( $snapshot );
 		$this->assertSame( 'genie', $snapshot['kind'] );
 		$this->assertArrayNotHasKey( 'yield', $snapshot );
 		$before = $store->historical_items( $id );
@@ -220,7 +221,9 @@ final class GeniePublicationActionsTest extends IntegrationTestCase {
 		);
 		$stream = ( new DraftProof() )->stream( "event: block\ndata: " . wp_json_encode( $block ) . "\n\nevent: done\ndata: {}\n\n", $dependencies );
 		$this->assertIsString( $stream );
-		preg_match( '/^data: (.+)$/m', $stream, $data );
+		if ( 1 !== preg_match( '/^data: (.+)$/m', $stream, $data ) ) {
+			$this->fail( 'The live fixture did not produce its artifact.' );
+		}
 		return json_decode( $data[1], true )['add']['proof'];
 	}
 }

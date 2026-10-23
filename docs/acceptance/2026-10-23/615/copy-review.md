@@ -55,3 +55,38 @@ Pre-delivery:
 - [x] No slogan formulas.
 - [x] No banned brand in new customer copy.
 - [x] No invented quotes.
+
+
+A further state review found the former product-card success text “Saved to
+your account.” was also shown to guests whose record only lives in their Woo
+session. The new API's `id=0` outcome now uses EN “Saved in this browser for
+now.” DE is independently “Vorerst in diesem Browser gespeichert.” This names
+the actual temporary storage without promising it lasts indefinitely or
+claiming the visitor already owns an account record. The same pre-delivery
+checks above hold. Account success keeps its existing sentence.
+
+## Permission changes while an answer is being prepared
+
+The earlier shared failure path treated a confirmed withdrawal and an
+unreadable authority alike. The revised status contract distinguishes a
+confirmed source change (HTTP 409) from a failed authority read (HTTP 503).
+The visitor's message remains available in either case; no unverified reply
+is released or saved as the new conversation answer.
+
+The initial wording was the existing temporary-unavailability sentence for
+both states. Adversarial reading found that this hid an actual withdrawal
+and could imply that simply retrying would restore the same product facts.
+The final source-change candidate names the observed event and retained
+message only:
+
+- EN: “The product information changed while Genie was answering. Your message is still here.”
+- DE, independently written: “Während der Antwort haben sich die Produktinformationen geändert. Ihre Nachricht bleibt erhalten.”
+
+The authority-outage state retains the existing “Genie is temporarily
+unavailable. Your message is still here. You can send an inquiry to our team.”
+The new source-change sentence makes no availability, compatibility,
+inventory or completion promise. The same Hard Stops and pre-delivery checks
+listed above apply. The root integration owner accepted the EN/DE candidates
+and owns extraction into the actual Genie and hero language bundles. This
+record is the writer's adversarial pass; the final independent full-diff
+review remains a separate acceptance gate.

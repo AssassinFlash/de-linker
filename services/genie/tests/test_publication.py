@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -12,8 +13,13 @@ from index import corpus, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
 from index.publication import applicability
-from linker_genie.knowledge import KnowledgeSearch, KnowledgeUnavailable
-from linker_genie.publication import PublicationClient, PublicationUnavailable, Snapshot
+from linker_genie.knowledge import KnowledgeSearch
+from linker_genie.publication import (
+    PublicationChanged,
+    PublicationClient,
+    PublicationUnavailable,
+    Snapshot,
+)
 from linker_genie.retrieval import DocumentIndex
 from publication_worker import Worker
 
@@ -200,7 +206,7 @@ def test_inflight_revocation_discards_search_result(path: Path) -> None:
     search = KnowledgeSearch(
         lambda: DocumentIndex(path), authority(manifest(), valid=False)
     )
-    with pytest.raises(KnowledgeUnavailable, match="changed"):
+    with pytest.raises(PublicationChanged, match="changed"):
         search({"query": "energy", "lang": "en"})
 
 
@@ -451,3 +457,259 @@ def test_historical_solution_names_do_not_authorize_current_product_cards() -> N
     assert "MODEL-" in payload["text"]
     assert payload["products"] == []
     assert not solution.collect(payload).product_ids
+
+
+def test_worker_retention_removes_only_owned_obsolete_builds(tmp_path: Path) -> None:
+    from publication_worker import retain_builds
+
+    index = tmp_path / "index"
+    root = index / "builds"
+    root.mkdir(parents=True)
+    first, second, current, reference = [
+        root / name for name in ("a", "b", "c", "golden")
+    ]
+    external = tmp_path / "unique-evidence"
+    for directory in (first, second, current, reference, external):
+        directory.mkdir()
+        (directory / "proof.txt").write_text("preserve")
+    ledger = index / "publication-worker-releases.json"
+    ledger.write_text(json.dumps([str(first), str(second), str(external)]))
+    retain_builds(index, current)
+    assert not first.exists()
+    assert second.is_dir() and current.is_dir()
+    assert reference.is_dir() and external.is_dir()
+    assert json.loads(ledger.read_text()) == [str(second), str(current)]
+    retain_builds(index, current)
+    assert second.is_dir() and current.is_dir()
+
+
+def test_loaded_process_readback_uses_same_ssh_alias_and_secret_only_on_stdin(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import subprocess
+
+    from publication_worker import read_loaded
+
+    calls: list[tuple[list[str], dict[str, Any]]] = []
+
+    def run(command: list[str], **options: Any) -> subprocess.CompletedProcess[str]:
+        calls.append((command, options))
+        return subprocess.CompletedProcess(
+            command,
+            0,
+            json.dumps(
+                {
+                    "source_revision": "source-1",
+                    "index_version": "build1",
+                    "products": [],
+                }
+            ),
+            "",
+        )
+
+    monkeypatch.setattr(subprocess, "run", run)
+    result = read_loaded(
+        "http://127.0.0.1:8902/knowledge/loaded",
+        "fixture-private-service-token",
+        "fixture-host",
+    )
+    assert result["index_version"] == "build1"
+    command, options = calls[0]
+    assert command[:5] == ["ssh", "-o", "BatchMode=yes", "--", "fixture-host"]
+    assert command[5].startswith("python3 -c ")
+    assert all("fixture-private-service-token" not in argument for argument in command)
+    assert json.loads(options["input"])["token"] == "fixture-private-service-token"
+    assert options["capture_output"] is True and options["timeout"] == 30
+    with pytest.raises(ValueError, match="loopback"):
+        read_loaded(
+            "https://public.example/knowledge/loaded", "fixture", "fixture-host"
+        )
+
+
+@pytest.mark.parametrize("after", ["revoked", "outage", "malformed"])
+def test_http_turn_distinguishes_authoritative_revocation_from_authority_failure(
+    monkeypatch: pytest.MonkeyPatch, after: str
+) -> None:
+    from conftest import SHELL
+    from fastapi.responses import StreamingResponse
+    from fastapi.testclient import TestClient
+
+    import linker_genie.app as service
+
+    reads: list[str] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        reads.append(request.url.path)
+        if request.url.path.endswith("manifest"):
+            return httpx.Response(200, json=manifest())
+        if after == "outage":
+            return httpx.Response(503)
+        return httpx.Response(200, json={"valid": False} if after == "revoked" else {})
+
+    client = PublicationClient("https://site.test", httpx.MockTransport(handle))
+    monkeypatch.setattr(service.app.state, "publication", client, raising=False)
+    monkeypatch.setattr(
+        service,
+        "_compute_turn",
+        lambda *args: StreamingResponse(iter(["never released"])),
+    )
+    response = TestClient(service.app, headers=SHELL).post(
+        "/turn",
+        json={
+            "conversation_id": "fixture",
+            "messages": [{"role": "user", "content": "Current product question"}],
+        },
+    )
+    assert response.status_code == (409 if after == "revoked" else 503)
+    assert response.json()["detail"] == (
+        "publication_changed" if after == "revoked" else "publication_unavailable"
+    )
+    assert "never released" not in response.text
+    assert reads == [
+        "/wp-json/linker/v1/publication/manifest",
+        "/wp-json/linker/v1/publication/validate",
+    ]
+    client.close()
+
+
+@pytest.mark.parametrize("failure", ["build", "publish"])
+def test_failed_worker_generation_is_removed_without_deleting_shared_builds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    from types import SimpleNamespace
+
+    from index import build
+    from publication_worker import record_build, run_job
+
+    index_dir = tmp_path / "index"
+    shared = index_dir / "builds" / "unique-shared-evidence"
+    shared.mkdir(parents=True)
+    (shared / "proof.txt").write_text("keep")
+    replies: list[dict[str, Any]] = []
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        if request.url.path.endswith("claim"):
+            return httpx.Response(
+                200,
+                json={
+                    "job": {
+                        "job_id": "j",
+                        "lease_token": "l",
+                        "source_revision": "source-1",
+                        "manifest": manifest(),
+                    }
+                },
+            )
+        replies.append(json.loads(request.content))
+        return httpx.Response(200, json={"accepted": True})
+
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        transport=httpx.MockTransport(handle),
+    )
+    monkeypatch.setattr(
+        build, "chunk_all", lambda *args: SimpleNamespace(chunks=[], documents=[])
+    )
+
+    def prepare(raw: dict[str, Any]) -> str:
+        del raw
+        if failure == "build":
+            # Native builder creates a generation and calls its ownership hook
+            # before this missing inventory source makes the build fail.
+            build.build(
+                tmp_path / "missing.json",
+                tmp_path,
+                tmp_path,
+                index_dir,
+                None,
+                None,
+                lambda text: "en",
+                on_created=lambda path: record_build(index_dir, path),
+            )
+        else:
+            directory = index_dir / "builds" / "new-worker-generation"
+            directory.mkdir()
+            record_build(index_dir, directory)
+            raise RuntimeError("fixture publish failed")
+        return "never"
+
+    with pytest.raises((OSError, RuntimeError)):
+        run_job(worker, prepare, lambda: {}, index_dir)
+    worker.close()
+    assert replies[-1]["status"] == "failed"
+    assert list((index_dir / "builds").iterdir()) == [shared]
+    assert not (index_dir / "publication-worker-pending.json").exists()
+
+
+def test_worker_absolute_script_entry_starts_without_pythonpath(tmp_path: Path) -> None:
+    import os
+    import subprocess
+    import sys
+
+    script = Path(__file__).resolve().parents[1] / "ops" / "publication_worker.py"
+    environment = os.environ.copy()
+    environment.pop("PYTHONPATH", None)
+    process = subprocess.run(
+        [sys.executable, str(script), "--help"],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert process.returncode == 0, process.stderr
+    assert "--loaded-url" in process.stdout
+
+
+def test_installer_actual_program_arguments_start_child_without_pythonpath(
+    tmp_path: Path,
+) -> None:
+    import os
+    import plistlib
+    import subprocess
+    import sys
+
+    installer = (
+        Path(__file__).resolve().parents[1] / "ops" / "install_publication_worker.py"
+    )
+    private = tmp_path / "worker.env"
+    private.write_text("# synthetic environment, --help performs no network work\n")
+    private.chmod(0o600)
+    environment = os.environ.copy()
+    environment.pop("PYTHONPATH", None)
+    rendered = subprocess.run(
+        [
+            sys.executable,
+            str(installer),
+            "--env-file",
+            str(private),
+            "--interval-seconds",
+            "60",
+            "--lease-seconds",
+            "600",
+            "--worker-id",
+            "fixture",
+            "--loaded-url",
+            "http://127.0.0.1:8902/knowledge/loaded",
+        ],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        timeout=30,
+    )
+    assert rendered.returncode == 0, rendered.stderr
+    definition = plistlib.loads(rendered.stdout)
+    child = subprocess.run(
+        [*definition["ProgramArguments"], "--help"],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert child.returncode == 0, child.stderr
+    assert "--loaded-url" in child.stdout

@@ -30,6 +30,7 @@ from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, collect
 from linker_genie.figures import tag
 from linker_genie.publication import (
+    PublicationChanged,
     PublicationClient,
     PublicationUnavailable,
     current,
@@ -90,9 +91,7 @@ class KnowledgeSearch:
                 authority = self._publication or current()
                 snapshot = authority.snapshot()
                 if "unavailable" in authority.identify_text(query).values():
-                    raise PublicationUnavailable(
-                        "supplied model is no longer published"
-                    )
+                    raise PublicationChanged("supplied model is no longer published")
                 if product_ids:
                     snapshot.require_products(product_ids)
                 hits = index.search(
@@ -102,6 +101,8 @@ class KnowledgeSearch:
                     publication=snapshot,
                 )
                 authority.validate(snapshot)
+            except PublicationChanged:
+                raise
             except PublicationUnavailable as error:
                 raise KnowledgeUnavailable(str(error)) from error
             except EmbeddingError as error:
