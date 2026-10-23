@@ -1,0 +1,166 @@
+/* Phone defects observed in the EN/DE homepage at 390px and 320px.
+   Reuse the existing controls, accordion and reading surfaces. The unmodified
+   desktop design and all page content remain owned by LiveCanvas. */
+@media (max-width: 560px) {
+	#home-a .hero-ops-mobile .hero-ops-info {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	#home-a .hero-ops-mobile summary {
+		white-space: normal;
+	}
+
+	#home-a .hero-ops-mobile summary > span:not([aria-hidden]) {
+		min-width: 0;
+	}
+
+	#home-a .hero-ops-mobile .hero-ops-chevron {
+		flex: 0 0 12px;
+		width: 12px;
+		height: 12px;
+	}
+
+	#home-a .hero-ops-mobile .hero-ops-actions {
+		flex: 0 0 auto;
+	}
+
+	#home-a .hero-ops-mobile .hero-ops-email {
+		box-sizing: border-box;
+		width: var(--proto-control-height, 44px);
+		min-width: var(--proto-control-height, 44px);
+		padding: 0;
+	}
+
+	#home-a .hero-dialog .hero-nameplate-btn {
+		box-sizing: border-box;
+		min-width: 0;
+		max-width: 100%;
+		height: auto;
+		min-height: var(--proto-control-height, 44px);
+		padding: 10px 12px;
+		font-size: 14px;
+		line-height: 1.45;
+		white-space: normal;
+		text-align: center;
+	}
+
+	#home-a .hero-dialog .hero-nameplate-btn > span {
+		min-width: 0;
+	}
+
+	#home-a .hero-dialog .hero-nameplate-btn > svg {
+		flex: 0 0 16px;
+	}
+
+	#home-a .hero-cinematic .hero-title {
+		-webkit-hyphens: manual;
+		hyphens: manual;
+		text-wrap: balance;
+	}
+
+	/* Three narrow columns reduced the German choices to 8px labels and
+	   fragmented 12px titles. Use the existing vertical accordion layout. */
+	#home-a .home-adv-horizontal .home-adv-copy {
+		display: flex;
+		flex-direction: column;
+		border-top: 1px solid var(--home-line, #a5b9a9);
+	}
+
+	#home-a .home-adv-horizontal .home-adv-choice {
+		display: block;
+	}
+
+	#home-a .home-adv-horizontal .home-adv-trigger {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 24px;
+		gap: var(--proto-space-2, 8px);
+		min-height: 90px;
+		padding: var(--proto-space-4, 16px) 0;
+		border-top: 0;
+		border-bottom: 0;
+	}
+
+	#home-a .home-adv-horizontal .home-adv-trigger .home-idx {
+		display: block;
+		font-size: 10px;
+		line-height: 1.4;
+	}
+
+	#home-a .home-adv-horizontal .home-adv-choice .home-adv-title,
+	#home-a .home-adv-horizontal .home-adv-choice.is-active .home-adv-title {
+		margin-top: 0;
+		font-size: 18px;
+		line-height: 1.35;
+	}
+
+	#home-a .home-adv-horizontal .home-adv-arrow {
+		display: block;
+	}
+
+	#home-a .home-adv-horizontal .home-adv-detail {
+		padding: 0 0 calc(var(--proto-space-4, 16px) + var(--proto-space-1, 4px));
+	}
+
+	#home-a .home-adv-horizontal .home-adv-detail p:last-child {
+		font-size: 14px;
+		line-height: 1.7;
+	}
+
+	/* Preserve the authorized quotes and attribution; size the reading text
+	   for a phone instead of retaining the desktop display scale. */
+	#home-a #testimonials .home-story .home-story-copy {
+		padding: calc(var(--proto-space-4, 16px) + var(--proto-space-1, 4px));
+	}
+
+	#home-a #testimonials .home-story .home-story-copy blockquote {
+		font-size: clamp(22px, 6vw, 24px);
+		line-height: 1.45;
+	}
+
+	/* The existing photo and copy need a full-width column on a phone;
+	   splitting 284px into two columns left the action at 11px. */
+	#home-a .home-reference-scene .home-scene-card {
+		display: block;
+	}
+
+	#home-a .home-reference-scene .scene-card-body {
+		padding: calc(var(--proto-space-4, 16px) + var(--proto-space-1, 4px));
+	}
+
+	#home-a .home-reference-scene .scene-card-body h4 {
+		font-size: 20px;
+		line-height: 1.4;
+	}
+
+	#home-a .home-reference-scene .scene-card-body > p {
+		font-size: 14px;
+		line-height: 1.7;
+	}
+
+	#home-a .home-reference-scene .scene-card-action {
+		gap: var(--proto-space-3, 12px);
+		font-size: 14px;
+		line-height: 1.5;
+	}
+
+	#home-a .home-reference-scene .scene-card-action .scene-arrow {
+		flex: 0 0 30px;
+		width: 30px;
+		height: 30px;
+		font-size: 18px;
+	}
+
+	#home-a .home-reference-scene .home-scene-card .scene-card-photo {
+		height: auto;
+		min-height: 0;
+		aspect-ratio: 2;
+	}
+}
+
+@media (max-width: 359px) {
+	#home-a .hero-cinematic .hero-title {
+		font-size: 40px;
+		line-height: 1.12;
+	}
+}
