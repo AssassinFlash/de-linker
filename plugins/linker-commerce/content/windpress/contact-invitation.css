@@ -91,6 +91,14 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
 	hyphens: manual;
 }
 
+/* At 320px the utility card has 236px for text; its 27px compound heading
+ * needs 256.875px. Scale that heading below 360px to keep the card's inset. */
+@media (max-width: 359px) {
+	html[lang^="de"] #tv-utility-page-v1 .linker-contact-invitation h2 {
+		font-size: clamp(24px, 7.5vw, 27px);
+	}
+}
+
 /* The band's box: the article column, a rule above it, nothing else. */
 #tv-blog-single-v1 .tv-blog-single-content > .linker-contact-invitation.linker-contact-article {
 	display: flex;

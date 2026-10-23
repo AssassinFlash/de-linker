@@ -9,10 +9,18 @@ hyphenation to keep words readable.
 
 In the existing WindPress Contact styles, apply manual hyphenation only to
 German Contact h1/h2/h3 and shared Contact invitation h2. Preserve the words,
-authored breaks, fonts, widths, columns, spacing, body text and all interactions.
+authored breaks, font family, widths, columns, spacing, body text and all interactions.
 English selectors must not match. Long words may still use existing wrapping;
 do not add nowrap or hide overflow. This is a rendering correction with no
 customer copy, markup, PHP, JavaScript or page-content change.
+
+The first candidate passes viewport containment but fails the utility card's
+inner padding at 320px: its 27px compound heading requires 256.875px in a 236px
+text column. Below 360px only that German utility invitation heading scales
+from 24px at 320px to its existing 27px at 360px. Keep the card padding and
+normal line-height ratio. Other headings and wider layouts retain their size.
+Check direct component children against the padded content bounds as well as
+the viewport; viewport containment alone misses this defect.
 
 LiveCanvas already supplies the heading markup. No composition or Woo behavior
 needs to change. Two inherited typography overrides belong in the existing
