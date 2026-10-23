@@ -157,6 +157,9 @@ export function ProjectEditor({
 		"invalid" | "recovery" | null
 	>(null);
 	useEffect(() => {
+		if (valid) setCloseBlocked(null);
+	}, [valid]);
+	useEffect(() => {
 		if (valid) return;
 		const preventLoss = (event: BeforeUnloadEvent) => {
 			event.preventDefault();
@@ -256,14 +259,16 @@ export function ProjectEditor({
 							? __("Saving…", "linker-tools")
 							: draft.pending
 								? __("Save not confirmed", "linker-tools")
-								: !valid
+								: !briefValid
 									? __("Input needs attention", "linker-tools")
-									: dirty
-										? __("Unsaved changes", "linker-tools")
-										: sprintf(
-												__("Saved · revision %d", "linker-tools"),
-												draft.baseline.revision,
-											)}
+									: !designValid
+										? __("Roof editing in progress", "linker-tools")
+										: dirty
+											? __("Unsaved changes", "linker-tools")
+											: sprintf(
+													__("Saved · revision %d", "linker-tools"),
+													draft.baseline.revision,
+												)}
 					</span>
 					<button
 						className="lp-icon-button"
@@ -426,15 +431,20 @@ export function ProjectEditor({
 							recoveryFailed &&
 							(dirty || draft.pending))) && (
 						<Notice error>
-							{!valid
+							{!briefValid
 								? __(
 										"Correct the highlighted input before leaving this project.",
 										"linker-tools",
 									)
-								: __(
-										"Save the project before leaving. Browser recovery could not be stored.",
-										"linker-tools",
-									)}
+								: !designValid
+									? __(
+											"Finish or cancel roof editing before leaving this workspace.",
+											"linker-tools",
+										)
+									: __(
+											"Save the project before leaving. Browser recovery could not be stored.",
+											"linker-tools",
+										)}
 						</Notice>
 					)}
 					{recovered && (

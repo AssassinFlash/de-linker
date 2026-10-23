@@ -4469,3 +4469,11 @@ msgstr "Die Übersicht zeigt Ihre aktuellen Eingaben. Für Ertrag, Geräteeignun
 #: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:39
 msgid "Your project at a glance"
 msgstr "Ihr Projekt im Überblick"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectEditor.tsx
+msgid "Roof editing in progress"
+msgstr "Dachbearbeitung läuft"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectEditor.tsx
+msgid "Finish or cancel roof editing before leaving this workspace."
+msgstr "Schließen Sie die Dachbearbeitung ab oder brechen Sie sie ab, bevor Sie den Arbeitsbereich verlassen."

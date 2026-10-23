@@ -251,6 +251,42 @@ test("Journal workspaces show one task while retaining real input nodes, values 
 	assert.ok(
 		document.body.textContent.includes("Correct the highlighted input"),
 	);
+	await act(async () =>
+		app
+			.annual()
+			.dispatchEvent(
+				new window.KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+			),
+	);
+	await act(async () => nav("Roof design").click());
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent.trim() === "Add roof face")
+			.click(),
+	);
+	assert.equal(
+		document.querySelector(".lp-save-state").textContent,
+		"Roof editing in progress",
+	);
+	assert.ok(
+		!document.body.textContent.includes("Correct the highlighted input"),
+	);
+	await act(async () => {
+		mobileSelect.value = "overview";
+		mobileSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(mobileSelect.value, "design");
+	assert.ok(
+		document.body.textContent.includes("Finish or cancel roof editing"),
+	);
+	await act(async () =>
+		[...document.querySelectorAll("button")]
+			.find((button) => button.textContent.trim() === "Cancel properties")
+			.click(),
+	);
+	assert.ok(
+		!document.body.textContent.includes("Finish or cancel roof editing"),
+	);
 });
 
 test("failed storage and failed identity refresh preserve hidden edits until same owner returns", async (t) => {

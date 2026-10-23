@@ -274,6 +274,7 @@
   [data-linker-planner] .lp-overview-metrics dt { color: var(--proto-neutral-600); font-size: 11px; }
   [data-linker-planner] .lp-overview-metrics dd { margin: 8px 0 5px; font-size: clamp(21px, 2.2vw, 32px); font-weight: 500; letter-spacing: -.04em; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-overview-metrics small { font-size: 10px; color: var(--proto-neutral-500); letter-spacing: 0; }
+  [data-linker-planner] .lp-overview-metrics dd small { margin-inline-start: 4px; }
   [data-linker-planner] .lp-overview-work { display: grid; grid-template-columns: minmax(0, 1fr) 245px; gap: 28px; }
   [data-linker-planner] .lp-overview-preview { min-width: 0; background: rgb(255 255 255 / .64); border: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-overview-preview-title { display: flex; gap: 10px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--lp-line); font-size: 12px; }
@@ -317,10 +318,13 @@
     [data-linker-planner] .lp-overview-empty { min-height: 290px; padding: 28px 22px; }
     [data-linker-planner] .lp-overview-next { display: block; }
     [data-linker-planner] .lp-overview-preview-title { flex-wrap: wrap; }
+    [data-linker-planner] .lp-overview-preview .lp-plan-svg { height: 220px; }
     [data-linker-planner] .lp-overview-preview-title > span:last-child { margin-left: 0; width: 100%; }
   }
 }
 [data-linker-planner] [hidden] { display: none; }
+[data-linker-planner] .lp-section[tabindex="-1"]:focus-visible,
+[data-linker-planner] .lp-overview[tabindex="-1"]:focus-visible { outline: none; }
 /* chrome.css gives every [id] an unlayered site-header offset. Actual anchor
    targets and action results account for both measured application bars. */
 [data-linker-planner] .lp-section[id],

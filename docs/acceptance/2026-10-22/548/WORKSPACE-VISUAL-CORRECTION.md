@@ -106,3 +106,33 @@ names wrap without truncation or an unbounded flex minimum. These two cases came
 from the independent Standards review; physical-touch behavior is not established
 by a DOM test. Final EN/DE native screenshots and corrected-source independent
 reviews remain pending at this checkpoint.
+
+## Resolved validation versus staged roof editing
+
+The next fixed-source Spec review at eefe7c0b found a second native-reproduced
+semantic defect. After an invalid annual entry blocked navigation, correcting
+the entry and undoing to the saved input did not clear the earlier refusal.
+Opening an ordinary roof property form later made the old highlighted-input
+warning reappear, although no field was invalid. The fixed eefe failing probe
+and original report remain retained.
+
+Resolved validation now clears the stale refusal. An invalid brief input keeps
+its existing correction message; a staged roof form reports its actual state
+and, only after a refused departure, explains finishing or cancelling that edit.
+The two new messages are `Roof editing in progress` / `Dachbearbeitung läuft`
+and `Finish or cancel roof editing before leaving this workspace.` /
+`Schließen Sie die Dachbearbeitung ab oder brechen Sie sie ab, bevor Sie den
+Arbeitsbereich verlassen.` The first wording considered, "roof properties
+open", was rejected because this guard also covers modules, sources and other
+roof-editor forms. No invalid-input, automatic-save or completed-engineering
+claim is made by the final wording. Independent adversarial review of these two
+messages remains required.
+
+The native small-screen review also showed a large focus outline surrounding
+the entire programmatically focused section. Only these non-interactive section
+containers lose that outline; keyboard focus on links, buttons, inputs and other
+controls remains visible. The readonly mobile preview is220px high rather than
+360px, so its actual roof occupies the available narrow viewport without the
+previous excess vertical letterboxing. Units have explicit inline separation
+from overview quantities. These are customer-presentation corrections only;
+they do not change a roof vertex, module pose or numerical result.
