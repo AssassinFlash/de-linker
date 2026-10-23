@@ -338,9 +338,9 @@ def _compute_turn(
     # answered by the service alone: no model ran (model-routing audits read
     # provider/model). The four model channels are unchanged; these routes are
     # sentences, not channels.
-    authority = getattr(request.app.state, "publication", None) or current()
-    authority.validate(original_permission)
-    permission = authority.snapshot()
+    # Keep the computed facts/citations bound to their original input set. The
+    # outer handler freshly validates this same S0 immediately before SSE release.
+    permission = original_permission
     permission.require_products(list(product_ids(shipped)))
     permission.require_urls(list(document_urls(shipped)))
     # Stored citations carry content identity. A historical same-URL link cannot
@@ -360,7 +360,6 @@ def _compute_turn(
         if document is not None:
             block["document_id"] = document["document_id"]
             block["document_revision"] = document["document_revision"]
-    authority.validate(permission)
     code_made = prepared.route.name in (
         "person",
         "parts",
