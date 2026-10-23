@@ -87,8 +87,9 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
 
 /* Match the saved utility page's existing 600px hero-icon breakpoint. */
 @media (max-width: 600px) {
-	#tv-utility-page-v1 .lk-hero-cta-row .lk-btn-hero-ghost {
+	#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-hero-ghost {
 		/* Retain the existing desktop label size on phones instead of 10px. */
+		/* The native anchor type outranks the page's later inline class rule. */
 		font-size: var(--proto-size-xs);
 	}
 }

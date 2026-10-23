@@ -37,6 +37,8 @@ those row and direct-anchor breaks, leaving every native anchor, SVG and text
 node intact. On phones retain the existing desktop12px label size through the
 existing `--proto-size-xs` token instead of reducing it to10px. Keep the existing
 44px minimum target, borders, padding, gap and native responsive wrapping.
+The native anchor type supplies the additional selector weight needed to
+outrank the saved page's later inline class rule; no important override is used.
 This button geometry/readability change and the script-disabled presentation
 correction are declared visual bug fixes. Normal enhanced pages outside the
 utility row keep their visual parity gate.
