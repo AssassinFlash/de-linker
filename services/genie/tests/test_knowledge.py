@@ -6,7 +6,9 @@ from dataclasses import dataclass, field
 from typing import Any
 
 import pytest
+from test_publication import authority, manifest
 
+import linker_genie.knowledge as knowledge
 from linker_genie.embedding import EmbeddingError
 from linker_genie.knowledge import (
     KnowledgeSearch,
@@ -15,6 +17,13 @@ from linker_genie.knowledge import (
     validate,
 )
 from linker_genie.retrieval import DocumentHit
+
+
+@pytest.fixture(autouse=True)
+def permission(monkeypatch: pytest.MonkeyPatch) -> None:
+    raw = manifest()
+    raw["products"][0]["product_id"] = 3556
+    monkeypatch.setattr(knowledge, "current", lambda: authority(raw))
 
 
 @dataclass
@@ -29,6 +38,7 @@ class FakeIndex:
     error: Exception | None = None
     encoder: Encoder | None = field(default_factory=Encoder)
     version: str = "20261016T072222Z"
+    source_revision: str = "source-1"
     calls: list[tuple[str, str, Any]] = field(default_factory=list)
 
     @property
@@ -36,7 +46,7 @@ class FakeIndex:
         return "vector" if self.encoder else "keywords"
 
     def search(
-        self, query: str, lang: str, product_ids: Any = None
+        self, query: str, lang: str, product_ids: Any = None, publication: Any = None
     ) -> list[DocumentHit]:
         self.calls.append((query, lang, product_ids))
         if self.error:

@@ -101,3 +101,57 @@ def pytest_collection_modifyitems(
     if dropped:
         config.hook.pytest_deselected(items=dropped)
         items[:] = kept
+
+
+@pytest.fixture(autouse=True)
+def _published_turn_fixture(
+    request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The existing injected-generator HTTP tests also supply their Woo permission.
+
+    These modules already replace understanding, abilities and the model. Their
+    fixed Store API fixture is the publication set; dedicated publication tests use
+    real HTTP transports/SQLite and mutate permission during the actual request.
+    """
+    if request.module.__name__ not in {
+        "test_turn",
+        "test_inquiry",
+        "test_nameplate",
+        "test_quality",
+    }:
+        return
+    import linker_genie.app as service
+    from linker_genie.app import app
+    from linker_genie.publication import PublicationClient
+
+    ids = {
+        int(p["id"])
+        for locale in ("en", "de")
+        for p in STORE_FIXTURE[locale]["products"]
+    }
+    raw = {
+        "schema_version": 1,
+        "source_revision": "fixture",
+        "compatibility_revision": "fixture",
+        "products": [
+            {
+                "product_id": pid,
+                "product_revision": str(pid),
+                "published_locale_ids": [pid],
+            }
+            for pid in ids
+        ],
+        "documents": [],
+    }
+
+    def handle(call: httpx.Request) -> httpx.Response:
+        if call.url.path.endswith("/manifest"):
+            return httpx.Response(200, json=raw)
+        if call.url.path.endswith("/identify"):
+            return httpx.Response(200, json={"models": []})
+        return httpx.Response(200, json={"valid": True})
+
+    client = PublicationClient("https://site.test", httpx.MockTransport(handle))
+    monkeypatch.setattr(app.state, "publication", client, raising=False)
+    monkeypatch.setattr(service, "current", lambda: client)
+    monkeypatch.setattr(service, "_client", None)

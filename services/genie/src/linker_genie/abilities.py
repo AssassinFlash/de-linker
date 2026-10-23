@@ -39,6 +39,12 @@ from urllib.parse import quote
 import httpx
 
 from linker_genie.facts import TurnFacts, collect, merge
+from linker_genie.publication import (
+    PublicationClient,
+    PublicationUnavailable,
+    document_urls,
+    product_ids,
+)
 
 # The header the shell's token travels in; WordPress' UserContext accepts it.
 USER_CONTEXT_HEADER = "X-Linker-User-Context"
@@ -107,6 +113,7 @@ class AbilityClient:
         timeout: float = 20.0,
         # The clock of the retry backoff; injected so tests need no waiting.
         sleep: Callable[[float], None] = time.sleep,
+        publication: PublicationClient | None = None,
     ) -> None:
         self._client = httpx.Client(
             base_url=base_url.rstrip("/"),
@@ -115,6 +122,7 @@ class AbilityClient:
             transport=transport,
         )
         self._sleep = sleep
+        self._publication = publication
 
     def close(self) -> None:
         self._client.close()
@@ -147,6 +155,26 @@ class AbilityClient:
             if user_context and name in USER_CONTEXT_ABILITIES
             else None
         )
+        # Product tools validate both their complete inputs and all returned candidates.
+        authority = self._publication
+        snapshot = (
+            authority.snapshot()
+            if authority is not None
+            and name
+            in {
+                "linker/search-products",
+                "linker/get-product",
+                "linker/compare-products",
+                "linker/check-compatibility",
+                "linker/size-hint",
+            }
+            else None
+        )
+        try:
+            if snapshot is not None:
+                snapshot.require_products(list(product_ids(arguments)))
+        except PublicationUnavailable as error:
+            raise AbilityError(str(error), fatal=True) from error
         response = self._get(name, path, params, headers)
         if response.status_code == 401:
             # A login-gated ability asked without a user: the caller must ask
@@ -161,9 +189,17 @@ class AbilityClient:
                 fatal=response.status_code >= 500,
             )
         body = response.json()
-        if isinstance(body, dict) and "result" in body:
-            return body["result"]
-        return body
+        payload = (
+            body["result"] if isinstance(body, dict) and "result" in body else body
+        )
+        if snapshot is not None and authority is not None:
+            try:
+                snapshot.require_products(list(product_ids(payload)))
+                snapshot.require_urls(list(document_urls(payload)))
+                authority.validate(snapshot)
+            except PublicationUnavailable as error:
+                raise AbilityError(str(error), fatal=True) from error
+        return payload
 
     def _get(
         self,

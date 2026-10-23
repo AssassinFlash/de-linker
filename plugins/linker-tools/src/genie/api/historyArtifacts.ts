@@ -1,7 +1,11 @@
 /** Current artifact presentation for live and restored turns; transcript stays intact. */
 import { __ } from '@wordpress/i18n';
 import type { Locale } from '../../configurator/types';
-import { productPresentation, type ProductPresentation } from './product';
+import {
+	ARTIFACT_TIMEOUT_MS,
+	productPresentation,
+	type ProductPresentation,
+} from './product';
 import type { CardPrice, DocumentBlock, Turn } from './turn';
 
 export interface ArtifactContext {
@@ -113,6 +117,59 @@ function documentLabel(
 	};
 }
 
+/** Current permission and content identity; settles even if a transport ignores abort. */
+async function publicationManifest(
+	context: ArtifactContext,
+	nonce: string,
+	fetcher: typeof fetch
+): Promise< {
+	schema_version: number;
+	products: Array< { product_id: number; published_locale_ids: number[] } >;
+	documents: Array< {
+		document_id: string;
+		document_revision: string;
+		url: string;
+		aliases?: string[];
+	} >;
+} | null > {
+	const controller = new AbortController();
+	let timer: ReturnType< typeof setTimeout > | undefined;
+	const timeout = new Promise< null >( ( resolve ) => {
+		timer = setTimeout( () => {
+			controller.abort();
+			resolve( null );
+		}, ARTIFACT_TIMEOUT_MS );
+	} );
+	const attempt = async () => {
+		try {
+			const response = await fetcher(
+				`${ context.restUrl.replace( /\/?$/, '/' ) }linker/v1/publication/manifest`,
+				{
+					credentials: 'same-origin',
+					cache: 'no-store',
+					headers: { 'X-WP-Nonce': nonce },
+					signal: controller.signal,
+				}
+			);
+			const manifest = response.ok ? await response.json() : null;
+			return manifest?.schema_version === 1 &&
+				Array.isArray( manifest.products ) &&
+				Array.isArray( manifest.documents )
+				? manifest
+				: null;
+		} catch {
+			return null;
+		}
+	};
+	try {
+		return await Promise.race( [ attempt(), timeout ] );
+	} finally {
+		if ( timer !== undefined ) {
+			clearTimeout( timer );
+		}
+	}
+}
+
 /**
  * Reuse current get-product authority, never translating or trusting a saved
  * price sentence. Failed/missing authority removes that snapshot's price.
@@ -142,6 +199,7 @@ export async function restoreArtifacts(
 			}
 		}
 	}
+	const permission = publicationManifest( context, nonce, fetcher );
 	const products = (
 		await Promise.all(
 			[ ...ids ].map( ( id ) =>
@@ -155,6 +213,15 @@ export async function restoreArtifacts(
 			)
 		)
 	).filter( ( product ): product is ProductPresentation => product !== null );
+	// Historical text remains a snapshot; active links require matching content identity.
+	const manifest = await permission;
+	const documents = manifest?.documents ?? [];
+	const allowed = new Set< number >(
+		manifest?.products.flatMap( ( product ) => [
+			product.product_id,
+			...product.published_locale_ids,
+		] ) ?? []
+	);
 	const prices = new Map< number, CardPrice >();
 	for ( const product of products ) {
 		const commerce = product.commerce;
@@ -185,17 +252,45 @@ export async function restoreArtifacts(
 	return {
 		...turn,
 		blocks: turn.blocks.map( ( block ) => {
-			if ( block.type === 'cards' && options.refreshPrices ) {
+			if ( block.type === 'cards' ) {
 				return {
 					...block,
-					prices: block.product_ids.flatMap( ( id ) =>
-						prices.has( id ) ? [ prices.get( id )! ] : []
+					product_ids: block.product_ids.filter( ( id ) =>
+						allowed.has( id )
+					),
+					prices: options.refreshPrices
+						? block.product_ids.flatMap( ( id ) =>
+								allowed.has( id ) && prices.has( id )
+									? [ prices.get( id )! ]
+									: []
+							)
+						: block.prices?.filter( ( price ) =>
+								allowed.has( price.product_id )
+							),
+				};
+			}
+			if ( block.type === 'compare' ) {
+				return {
+					...block,
+					product_ids: block.product_ids.filter( ( id ) =>
+						allowed.has( id )
 					),
 				};
 			}
-			return block.type === 'document'
-				? documentLabel( block, products, context.locale )
-				: block;
+			if ( block.type === 'document' ) {
+				const current = documents.find(
+					( item ) =>
+						item.document_id === block.document_id &&
+						item.document_revision === block.document_revision &&
+						[ item.url, ...( item.aliases ?? [] ) ].includes(
+							block.url?.split( '#' )[ 0 ] ?? ''
+						)
+				);
+				return current
+					? documentLabel( block, products, context.locale )
+					: { ...block, url: null };
+			}
+			return block;
 		} ),
 	};
 }

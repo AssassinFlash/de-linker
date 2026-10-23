@@ -97,6 +97,8 @@ export interface HandoffBlock {
 export interface DocumentBlock {
 	type: 'document';
 	ref: string;
+	document_id?: string;
+	document_revision?: string;
 	label: string | null;
 	url: string | null;
 	/** Original document title, preserved when history UI is localized. */

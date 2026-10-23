@@ -35,13 +35,13 @@ final class CheckCompatibilityTest extends TestCase {
 	 * OPTIONS can show the four-value verdict, including unknown.
 	 */
 	public function test_output_schema_has_the_four_verdicts(): void {
-		$schema = ( new CheckCompatibility() )->args()['output_schema'];
+		$schema = ( new CheckCompatibility( $this->publication_data() ) )->args()['output_schema'];
 
 		$this->assertSame(
 			array( 'released', 'released_with_accessory', 'not_released', 'unknown' ),
 			$schema['properties']['verdict']['enum']
 		);
-		$this->assertTrue( ( new CheckCompatibility() )->can_execute() );
+		$this->assertTrue( ( new CheckCompatibility( $this->publication_data() ) )->can_execute() );
 	}
 
 	/**
@@ -55,7 +55,7 @@ final class CheckCompatibilityTest extends TestCase {
 	 */
 	public function test_documented_pairs( int $inverter, int $battery, string $verdict ): void {
 		$this->mock_live_products( array( $inverter, $battery ) );
-		$ability = new CheckCompatibility();
+		$ability = new CheckCompatibility( $this->publication_data() );
 
 		$named   = $ability->execute(
 			array(
@@ -91,9 +91,9 @@ final class CheckCompatibilityTest extends TestCase {
 	 * Missing IDs, or two inverters, are unknown: the contract does not infer.
 	 */
 	public function test_unknown_when_the_contract_has_no_pair(): void {
-		$this->assertSame( 'unknown', ( new CheckCompatibility() )->execute( array() )['verdict'] );
+		$this->assertSame( 'unknown', ( new CheckCompatibility( $this->publication_data() ) )->execute( array() )['verdict'] );
 		$this->mock_live_products( array( 4107, 3556 ) );
-		$two_inverters = ( new CheckCompatibility() )->execute( array( 'product_ids' => array( 4107, 3556 ) ) );
+		$two_inverters = ( new CheckCompatibility( $this->publication_data() ) )->execute( array( 'product_ids' => array( 4107, 3556 ) ) );
 		$this->assertSame( 'unknown', $two_inverters['verdict'] );
 		$this->assertSame( array(), $two_inverters['documents'] );
 	}
