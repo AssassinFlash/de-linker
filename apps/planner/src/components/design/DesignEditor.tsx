@@ -51,6 +51,7 @@ export function DesignEditor({
 	geometryImports = { schema_version: 1, selected: {} },
 	sceneModuleUrl = null,
 	mapModuleUrl = null,
+	initialMapView = false,
 	commit,
 	locale,
 	projectId,
@@ -68,6 +69,7 @@ export function DesignEditor({
 	geometryImports?: GeometryImportSelections;
 	sceneModuleUrl?: string | null;
 	mapModuleUrl?: string | null;
+	initialMapView?: boolean;
 	commit: (command: GeometryCommand) => boolean;
 	locale: string;
 	projectId: string;
@@ -87,7 +89,9 @@ export function DesignEditor({
 		[roofId, setRoofId] = useState<string | null>(
 			geometry.roofs[0]?.id ?? null,
 		),
-		[view, setView] = useState<"plan" | "map" | "3d">("plan");
+		[view, setView] = useState<"plan" | "map" | "3d">(
+			initialMapView ? "map" : "plan",
+		);
 	const mapCamera = useRef<MapCamera | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
 	const [drawingOpen, setDrawingOpen] = useState(false);

@@ -50,12 +50,19 @@ const workspaceHash = {
 	design: "lp-design",
 } as const;
 const workspaceTarget = { ...workspaceHash, site: "lp-brief-use" } as const;
+const mapPropertyHashes: readonly string[] = [
+	"#lp-map-roof-properties",
+	"#lp-map-ring-properties",
+];
 function workspaceFromHash(): ProjectWorkspace {
 	if (["#lp-site", "#lp-brief-use", "#lp-notes"].includes(window.location.hash))
 		return "site";
 	if (["#lp-load", "#lp-profiles"].includes(window.location.hash))
 		return "energy";
-	return window.location.hash === "#lp-design" ? "design" : "overview";
+	return window.location.hash === "#lp-design" ||
+		mapPropertyHashes.includes(window.location.hash)
+		? "design"
+		: "overview";
 }
 
 export function ProjectEditor({
@@ -660,6 +667,9 @@ export function ProjectEditor({
 						</section>
 						<div className="lp-design-panel" hidden={workspace !== "design"}>
 							<DesignEditor
+								initialMapView={mapPropertyHashes.includes(
+									window.location.hash,
+								)}
 								geometry={geometry}
 								confirmedGeometry={
 									draft.baseline.inputs.geometry === undefined

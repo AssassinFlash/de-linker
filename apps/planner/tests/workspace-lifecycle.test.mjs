@@ -1,8 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { register } from "node:module";
 import React, { act } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { setupDom, until, enter, deferred } from "./dom-fixture.mjs";
+// The renderer port is a fixture; this test proves route/consumer selection.
+register("./map-library-loader.mjs", import.meta.url);
 
 const session = {
 	schema_version: 1,
@@ -27,6 +30,21 @@ const session = {
 
 async function workspaceFixture(t, mode, configureDom = () => {}) {
 	const fixture = setupDom();
+	const browserGlobals = new Map();
+	for (const name of [
+		"MutationObserver",
+		"getComputedStyle",
+		"requestAnimationFrame",
+		"cancelAnimationFrame",
+	]) {
+		browserGlobals.set(name, Object.getOwnPropertyDescriptor(globalThis, name));
+		const value = window[name];
+		Object.defineProperty(globalThis, name, {
+			value: name === "MutationObserver" ? value : value.bind(window),
+			configurable: true,
+			writable: true,
+		});
+	}
 	configureDom(fixture);
 	const { createRoot } = await import("react-dom/client");
 	const { SessionBoundary } =
@@ -101,7 +119,13 @@ async function workspaceFixture(t, mode, configureDom = () => {}) {
 		countries: { NO: "Norway" },
 	};
 	const root = createRoot(fixture.element);
-	t.after(() => fixture.dispose(root));
+	t.after(async () => {
+		await fixture.dispose(root);
+		for (const [name, descriptor] of browserGlobals) {
+			if (descriptor) Object.defineProperty(globalThis, name, descriptor);
+			else delete globalThis[name];
+		}
+	});
 	await act(async () =>
 		root.render(
 			React.createElement(
@@ -199,6 +223,32 @@ test("same identity rechecks retain delayed edits and invalid raw numeric text",
 		!document.body.textContent.includes("Browser recovery could not be stored"),
 	);
 });
+
+for (const hash of ["#lp-map-roof-properties", "#lp-map-ring-properties"])
+	test(`reopening the ${hash} property link preserves the roof workspace and map recovery entry`, async (t) => {
+		await workspaceFixture(t, "available", () => {
+			window.history.replaceState(
+				null,
+				"",
+				location.pathname + location.search + hash,
+			);
+		});
+		assert.equal(
+			document.querySelector(".lp-project").dataset.workspace,
+			"design",
+		);
+		assert.equal(document.querySelector(".lp-design-panel").hidden, false);
+		assert.ok(document.querySelector("#lp-overview").closest("[hidden]"));
+		const map = [...document.querySelectorAll("button")].find(
+			(node) => node.textContent === "Map",
+		);
+		assert.equal(map.getAttribute("aria-pressed"), "true");
+		await until(() => document.querySelector(".lp-map-workspace"));
+		assert.match(
+			document.querySelector(".lp-map-workspace").textContent,
+			/Map drawing/,
+		);
+	});
 
 test("Journal workspaces show one task while retaining real input nodes, values and undo history", async (t) => {
 	const app = await workspaceFixture(t, "available");
