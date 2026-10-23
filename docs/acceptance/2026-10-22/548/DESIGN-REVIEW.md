@@ -191,3 +191,16 @@ emulation attempt did not complete and was restored. Touch is not accepted.
 Actual device loss and maximum5000-module phone performance are unproven.
 These remain full-workbench acceptance obligations in this same active goal.
 This record accepts neither completeB nor the remaining A–D/site/deployment work.
+
+### Review correction after8e11c7c3
+
+The Spec reviewer independently found a P3 mismatch with the declared query-free
+and fragment-free asset contract: WHATWG URL.search/hash are empty even when
+the URL ends with a bare `?`, `#` or `?#`. Native PHP never emits these values,
+and this finding did not demonstrate arbitrary-path execution, but the client
+boundary still did not meet its stated contract. It now requires the resolved
+href to equal origin+pathname, covering empty as well as nonempty delimiters.
+All three cases are added to the negative matrix. Strict build/source and real
+emitted graph checks plus the configuration/raw-input retry regressions pass.
+The independent fixed-source result and corrective recheck are recorded
+separately; no native screenshot is retroactively assigned to this correction.

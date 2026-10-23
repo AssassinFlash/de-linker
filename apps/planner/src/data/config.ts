@@ -36,8 +36,8 @@ export function readConfiguration(
 			new URL(".", asset).href !== entryDirectory.href ||
 			asset.username ||
 			asset.password ||
-			asset.search ||
-			asset.hash ||
+			// WHATWG search/hash are also empty for a bare trailing ? or #.
+			asset.href !== asset.origin + asset.pathname ||
 			!/^SceneViewport-[a-zA-Z0-9_-]+\.js$/.test(
 				asset.pathname.slice(entryDirectory.pathname.length),
 			)
