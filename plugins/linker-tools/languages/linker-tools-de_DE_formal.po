@@ -4724,3 +4724,18 @@ msgstr "Umrechnungsmethode"
 #: build/planner/assets/planner.js ../../apps/planner/src/components/design/GeometryIntake.tsx
 msgid "Unsupported earlier conversion method"
 msgstr "Frühere Umrechnungsmethode nicht unterstützt"
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "View options"
+msgstr "Ansichtsoptionen"
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Compatibility mode"
+msgstr "Kompatibilitätsmodus"
+
+#: ../../apps/planner/src/components/design/SceneViewport.tsx
+#: build/planner/assets/planner.js
+msgid "Use this if the 3D view does not display correctly."
+msgstr "Nutzen Sie diesen Modus, wenn die 3D-Ansicht nicht korrekt dargestellt wird."

@@ -1,7 +1,13 @@
-import { Component, useEffect, useMemo, useRef, useState } from "react";
+import { Component, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitController, ArrayTransform } from "./SceneControls.tsx";
+import { SceneCamera } from "./SceneCamera.tsx";
+import {
+	SCENE_FOV_DEG,
+	sceneFitDistance,
+	sceneViewDirection,
+} from "../../domain/sceneCamera.ts";
 import {
 	Box3,
 	Color,
@@ -431,12 +437,14 @@ function RendererLifecycle({ fail }: { fail: () => void }) {
 
 /** Loaded only when 3D is opened. Geometry persists independently of this GPU tree. */
 export default function SceneViewport(props: SceneProps) {
+	const compatibilityHelp = useId();
 	const frame = useMemo(() => JSON.stringify(props.document), [props.document]);
 	const host = useRef<HTMLDivElement>(null);
 	const [palette, setPalette] = useState<Palette | null>(null),
 		[failed, setFailed] = useState(false),
 		[attempt, setAttempt] = useState(0);
 	const [backend, setBackend] = useState("");
+	const [fitRequest, setFitRequest] = useState(0);
 	const [forceWebGL, setForceWebGL] = useState(false);
 	const alive = useRef(true);
 	const generation = useRef(0);
@@ -473,30 +481,30 @@ export default function SceneViewport(props: SceneProps) {
 				centre = box.getCenter(new Vector3()),
 				size = box.getSize(new Vector3()).length();
 			if (!Number.isFinite(size) || size <= 0) return null;
-			return { centre, size };
+			return {
+				centre,
+				size,
+				direction: sceneViewDirection(props.document, props.selected),
+			};
 		} catch {
 			return null;
 		}
-	}, [props.document, props.poses, reference]);
+	}, [props.document, props.poses, props.selected, reference]);
 	const [framing, setFraming] = useState(bounds);
 	useEffect(() => {
 		if (!framing && bounds) setFraming(bounds);
 	}, [framing, bounds]);
-	const camera = useMemo(
-		() =>
-			framing
-				? {
-						position: [
-							framing.centre.x + framing.size * 0.6,
-							framing.centre.y + framing.size * 0.65,
-							framing.centre.z + framing.size * 0.7,
-						] as [number, number, number],
-						near: Math.max(framing.size / 10000, 0.001),
-						far: framing.size * 100,
-					}
-				: undefined,
-		[framing],
-	);
+	const camera = useMemo(() => {
+		if (!framing) return undefined;
+		const distance = sceneFitDistance(framing.size / 2, 1);
+		return {
+			position: framing.centre
+				.clone()
+				.addScaledVector(new Vector3(...framing.direction), distance)
+				.toArray() as [number, number, number],
+			fov: SCENE_FOV_DEG,
+		};
+	}, [framing]);
 	return (
 		<div className="lp-scene-view" ref={host}>
 			{failed ? (
@@ -623,6 +631,7 @@ export default function SceneViewport(props: SceneProps) {
 								palette={palette}
 								select={props.select}
 							/>
+							<SceneCamera framing={framing ?? bounds} request={fitRequest} />
 							<OrbitController target={(framing ?? bounds).centre} />
 							<RendererLifecycle fail={() => setFailed(true)} />
 						</Canvas>
@@ -633,22 +642,24 @@ export default function SceneViewport(props: SceneProps) {
 				<button
 					type="button"
 					className="lp-tool-button"
+					disabled={failed || !bounds}
 					onClick={() => {
-						generation.current++;
 						setFraming(bounds);
-						setAttempt((value) => value + 1);
-						setBackend("");
-						setFailed(false);
+						setFitRequest((value) => value + 1);
 					}}
 				>
 					{__("Fit 3D view", "linker-tools")}
 				</button>
-				<span>
-					{backend ? `3D · ${backend}` : __("Preparing 3D…", "linker-tools")}
+				<span data-renderer={backend || undefined}>
+					{backend ? "3D" : __("Preparing 3D…", "linker-tools")}
 				</span>
-				<label>
+			</div>
+			<details className="lp-comparison">
+				<summary>{__("View options", "linker-tools")}</summary>
+				<label className="lp-geometry-check">
 					<input
 						type="checkbox"
+						aria-describedby={compatibilityHelp}
 						checked={forceWebGL}
 						onChange={(event) => {
 							generation.current++;
@@ -658,9 +669,15 @@ export default function SceneViewport(props: SceneProps) {
 							setFailed(false);
 						}}
 					/>
-					{__("Use WebGL 2 backend", "linker-tools")}
+					<span>{__("Compatibility mode", "linker-tools")}</span>
 				</label>
-			</div>
+				<p id={compatibilityHelp} className="lp-profile-help">
+					{__(
+						"Use this if the 3D view does not display correctly.",
+						"linker-tools",
+					)}
+				</p>
+			</details>
 			<p className="lp-profile-help">
 				{__(
 					"Dragging the selected array's handles changes its position in the roof plane. Camera controls change only the view. Lighting is for display; it does not calculate shading losses.",

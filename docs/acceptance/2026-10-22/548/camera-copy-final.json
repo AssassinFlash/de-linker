@@ -1,0 +1,26 @@
+[
+  {
+    "id": "CAM-001",
+    "en": "View options",
+    "de": "Ansichtsoptionen",
+    "context": "Collapsed disclosure below the 3D view, containing an optional renderer compatibility choice.",
+    "review_decision": "keep",
+    "resolution": "Accepted unchanged after independent linker-copywriting and EN/DE opposition; see camera-copy-feedback.json."
+  },
+  {
+    "id": "CAM-002",
+    "en": "Compatibility mode",
+    "de": "Kompatibilitätsmodus",
+    "context": "Explicit checkbox selects the already-implemented WebGL 2 renderer; it changes display only, not engineering or project data.",
+    "review_decision": "keep",
+    "resolution": "Accepted unchanged after independent linker-copywriting and EN/DE opposition; see camera-copy-feedback.json."
+  },
+  {
+    "id": "CAM-003",
+    "en": "Use this if the 3D view does not display correctly.",
+    "de": "Nutzen Sie diesen Modus, wenn die 3D-Ansicht nicht korrekt dargestellt wird.",
+    "context": "Help for that optional compatibility checkbox. It does not promise recovery on unsupported devices.",
+    "review_decision": "keep",
+    "resolution": "Accepted unchanged after independent linker-copywriting and EN/DE opposition; see camera-copy-feedback.json."
+  }
+]

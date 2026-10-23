@@ -84,3 +84,17 @@ None of these becomes accepted merely because this import workflow passes.
 Primary dependency sources:
 [README](https://github.com/dumbmatter/fakeIndexedDB),
 [package](https://github.com/dumbmatter/fakeIndexedDB/blob/master/package.json).
+
+## Same-geometry 3D presentation
+
+Native import exposed a fixed-camera composition defect: a north-facing
+3–4–5 roof appears almost edge-on. Initial framing and explicit Fit must face
+the selected object's roof (the first roof when nothing is selected), retain
+all actual scene extents, and fit both horizontal and vertical perspective
+limits at the current viewport aspect ratio. Camera composition, lens, padding
+and clipping are display policies only; they never edit metric geometry,
+calculate shading, create history or claim measurement accuracy. Selecting an
+object does not automatically reset an orbit. An explicit Fit moves the current
+camera without recreating the renderer. Resizing reframes the current extent
+while keeping the viewing direction. Retry/backend changes retain their
+existing renderer lifecycle and source/geometry ownership safeguards.
