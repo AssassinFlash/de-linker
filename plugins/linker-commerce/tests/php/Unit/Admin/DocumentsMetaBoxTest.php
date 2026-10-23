@@ -26,6 +26,7 @@ final class DocumentsMetaBoxTest extends TestCase {
 	/** Provide the real managed PDFs the editor may associate. */
 	public function setUp(): void {
 		parent::setUp();
+		WP_Mock::userFunction( 'has_filter' )->andReturn( false )->byDefault();
 		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
 		WP_Mock::userFunction( 'get_post_meta' )->andReturn( array() )->byDefault();
 		$this->managed_documents( array( '2026/10/manual.pdf', '2026/10/kept.pdf', '2026/10/gone.pdf', '2026/10/appended.pdf' ) );

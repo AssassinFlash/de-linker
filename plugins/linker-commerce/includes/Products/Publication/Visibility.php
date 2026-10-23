@@ -17,14 +17,19 @@ use WC_Cart;
 
 /** Scope native reads without changing privileged product administration. */
 final class Visibility {
-	/** Whether the currently running REST callback is a public product read. */
+	/**
+	 * Whether the currently running REST callback is a public product read.
+	 *
+	 * @var bool
+	 */
 	private bool $store_products = false;
 
 	/** Register the narrow native extension points. */
 	public function register(): void {
 		add_filter( 'rest_request_before_callbacks', array( $this, 'enter' ), 1, 3 );
 		add_filter( 'rest_request_after_callbacks', array( $this, 'leave' ), 1, 3 );
-		add_action( 'pre_get_posts', array( $this, 'query' ) );
+		add_action( 'pre_get_posts', array( $this, 'query' ), 100 );
+		add_action( 'template_redirect', array( $this, 'single_product' ), 0 );
 		add_action( 'woocommerce_cart_loaded_from_session', array( $this, 'prune' ), 1 );
 		add_action( 'woocommerce_before_calculate_totals', array( $this, 'prune' ), 1 );
 		add_filter( 'woocommerce_product_is_visible', array( $this, 'visible' ), 10, 2 );
@@ -57,6 +62,7 @@ final class Visibility {
 	 * @return mixed
 	 */
 	public function leave( mixed $response, array $handler, WP_REST_Request $request ): mixed {
+		unset( $handler, $request );
 		if ( $this->store_products && $response instanceof \WP_REST_Response ) {
 			$data = $response->get_data();
 			if ( is_array( $data ) && isset( $data['id'] ) && ! Publication::is_published( (int) $data['id'] ) ) {
@@ -73,7 +79,8 @@ final class Visibility {
 	 * @param WP_Query $query Native query.
 	 */
 	public function query( WP_Query $query ): void {
-		if ( ! $this->store_products || $query->get( 'linker_publication_internal' ) || 'product' !== $query->get( 'post_type' ) ) {
+		$front = ! is_admin() && ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) && ( ! defined( 'WP_CLI' ) || ! WP_CLI );
+		if ( ( ! $this->store_products && ! $front ) || $query->get( 'linker_publication_internal' ) || ! in_array( 'product', (array) $query->get( 'post_type' ), true ) || ( $query->is_preview() && current_user_can( 'manage_woocommerce' ) ) ) {
 			return;
 		}
 		$ids     = get_posts(
@@ -83,15 +90,27 @@ final class Visibility {
 				'fields'                      => 'ids',
 				'posts_per_page'              => -1,
 				'suppress_filters'            => true,
+				'lang'                        => 'all',
 				'linker_publication_internal' => true,
 			)
 		);
 		$allowed = array_values( array_filter( array_map( 'intval', $ids ), array( Publication::class, 'is_published' ) ) );
 		$include = $query->get( 'post__in' );
 		if ( is_array( $include ) && array() !== $include ) {
-			$allowed = array_values( array_intersect( $allowed, $include ) );
+			$allowed = array_values( array_intersect( $include, $allowed ) );
 		}
 		$query->set( 'post__in', array() === $allowed ? array( 0 ) : $allowed );
+	}
+
+	/** A locale mirror cannot expose a withdrawn canonical product page. */
+	public function single_product(): void {
+		if ( ! is_singular( 'product' ) || ( is_preview() && current_user_can( 'edit_post', get_queried_object_id() ) ) || Publication::is_published( get_queried_object_id() ) ) {
+			return;
+		}
+		global $wp_query;
+		$wp_query->set_404();
+		status_header( 404 );
+		nocache_headers();
 	}
 
 	/**

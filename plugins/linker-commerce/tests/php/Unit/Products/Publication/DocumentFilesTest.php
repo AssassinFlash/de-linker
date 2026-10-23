@@ -14,7 +14,11 @@ use Linker\Commerce\Products\Publication\DocumentFiles;
 use Linker\Commerce\Tests\Support\ManagedDocumentFixture;
 use Linker\Commerce\Tests\TestCase;
 
-/** @covers \Linker\Commerce\Products\Publication\DocumentFiles */
+/**
+ * File and rewrite permissions operate on actual bytes and paths.
+ *
+ * @covers \Linker\Commerce\Products\Publication\DocumentFiles
+ */
 final class DocumentFilesTest extends TestCase {
 	use ManagedDocumentFixture;
 

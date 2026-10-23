@@ -33,11 +33,12 @@ final class ProductView {
 	/**
 	 * Sets up the view.
 	 *
-	 * @param CommerceState $state #11's price rule: whether this visitor sees
-	 *                             this product's price (the single authority;
-	 *                             this view never derives it).
+	 * @param CommerceState                                                                                   $state #11's price rule: whether this visitor sees
+	 *                                                                                                               this product's price (the single authority;
+	 *                                                                                                               this view never derives it).
+	 * @param \Closure(int):list<array{title:string,url:string,type:string,role:string,language:string}>|null $document_reader Current-document reader; presentation fixtures may supply an immutable source.
 	 */
-	public function __construct( private readonly CommerceState $state = new CommerceState() ) {}
+	public function __construct( private readonly CommerceState $state = new CommerceState(), private readonly ?\Closure $document_reader = null ) {}
 
 	/**
 	 * The fields of a product, keyed as the template prints them.
@@ -572,16 +573,21 @@ final class ProductView {
 	/**
 	 * Current published Woo document relations for the product template.
 	 *
-	 * @param int $product_id Product ID.
+	 * @param int                      $product_id Product ID.
+	 * @param array<string,mixed>|null $manifest Optional current assembly snapshot.
 	 * @return list<array{title:string,url:string,type:string,role:string,language:string}>
 	 */
-	public function downloads( int $product_id ): array {
+	public function downloads( int $product_id, ?array $manifest = null ): array {
+		if ( null !== $this->document_reader ) {
+			return ( $this->document_reader )( $product_id );
+		}
 		if ( ! Publication::is_published( $product_id ) ) {
 			return array();
 		}
-		$id        = Publication::canonical_id( $product_id );
-		$documents = array();
-		foreach ( Publication::manifest()['documents'] as $document ) {
+		$id         = Publication::canonical_id( $product_id );
+		$documents  = array();
+		$manifest ??= Publication::manifest();
+		foreach ( $manifest['documents'] as $document ) {
 			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;
 			}
@@ -589,7 +595,7 @@ final class ProductView {
 				'title'    => $document['title'],
 				'url'      => $document['url'],
 				'type'     => $document['type'],
-				'role'     => '',
+				'role'     => $document['role'] ?? '',
 				'language' => $document['lang'],
 			);
 		}

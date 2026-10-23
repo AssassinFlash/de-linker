@@ -156,36 +156,6 @@ final class EngineeringFeed {
 	}
 
 	/**
-	 * Whether a citation names a document we host.
-	 *
-	 * On production that is a URL on de-linker.com or www.de-linker.com.
-	 * Pull load rewrites every live address to the instance
-	 * (tools/pull/src/linker_pull/load.py replacements()) and then requires
-	 * none of those addresses left, so a local citation cannot keep the
-	 * production host. The same path on this site is the same document.
-	 *
-	 * @param mixed $citation The citation of a figure entry.
-	 */
-	private static function is_hosted_citation( mixed $citation ): bool {
-		$url = self::citation_url( $citation );
-
-		return null !== $url && ( self::is_production_url( $url ) || self::is_this_site( $url ) );
-	}
-
-	/**
-	 * The citation URL, or null when the entry does not name one.
-	 *
-	 * @param mixed $citation The citation of a figure entry.
-	 */
-	private static function citation_url( mixed $citation ): ?string {
-		if ( ! is_array( $citation ) || ! is_string( $citation['url'] ?? null ) || '' === $citation['url'] ) {
-			return null;
-		}
-
-		return $citation['url'];
-	}
-
-	/**
 	 * The citation as the feed names it. An instance address is the same path
 	 * on the canonical origin: the engine schema refuses any other host, and
 	 * the stored value is not changed.

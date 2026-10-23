@@ -108,6 +108,7 @@ final class Controller {
 				'fields'                      => 'ids',
 				'posts_per_page'              => -1,
 				'suppress_filters'            => true,
+				'lang'                        => 'all',
 				'linker_publication_internal' => true,
 			)
 		);

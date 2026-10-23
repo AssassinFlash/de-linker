@@ -25,6 +25,15 @@ final class PublicationCommand {
 		\WP_CLI::success( 'Current preparation jobs reconciled.' );
 	}
 
+	/** Bind the current existing published Woo facts once, preserving later stale bindings. */
+	public function bind_figures(): void {
+		foreach ( Publication::manifest()['products'] as $product ) {
+			\Linker\Commerce\Products\Publication\FigureBindings::capture( $product['product_id'], true );
+		}
+		( new PreparationJobs() )->changed();
+		\WP_CLI::success( 'Existing published Woo figure sources bound; existing bindings preserved.' );
+	}
+
 	/** Install and read back the native PDF gate. */
 	public function install_gate(): void {
 		require_once ABSPATH . 'wp-admin/includes/misc.php';

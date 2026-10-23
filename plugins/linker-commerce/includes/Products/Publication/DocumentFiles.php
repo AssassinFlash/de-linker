@@ -11,10 +11,18 @@ namespace Linker\Commerce\Products\Publication;
 
 /** Resolve only real PDF files inside this site's uploads directory. */
 final class DocumentFiles {
-	/** Byte hashes live only within one authority assembly, never across reads. @var array<string,string> */
+	/**
+	 * Byte hashes live only within one authority assembly, never across reads.
+	 *
+	 * @var array<string,string>
+	 */
 	private static array $hashes = array();
 
-	/** Whether the current authority assembly owns the bounded hash cache. */
+	/**
+	 * Whether the current authority assembly owns the bounded hash cache.
+	 *
+	 * @var bool
+	 */
 	private static bool $reading = false;
 
 	/** Begin a fresh authority assembly. */

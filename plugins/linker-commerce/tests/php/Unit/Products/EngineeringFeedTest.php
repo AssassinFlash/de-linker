@@ -36,8 +36,7 @@ final class EngineeringFeedTest extends TestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( 4107 )->reply( 4107 );
-		WP_Mock::onFilter( 'linker_commerce_facts_product_id' )->with( 99 )->reply( 99 );
+		WP_Mock::userFunction( 'pll_get_post_language' )->andReturn( 'en' )->byDefault();
 		$this->managed_documents( array( '2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ) );
 		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
@@ -53,7 +52,7 @@ final class EngineeringFeedTest extends TestCase {
 				)
 			)
 		)->byDefault();
-		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( static fn ( int $id, string $key = '', bool $single = false ) => '' === $key ? array() : '' )->byDefault();
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( static fn ( int $id, string $key = '' ) => '' === $key ? array() : '' )->byDefault();
 		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturn( 0 )->byDefault();
 		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
 		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) )->byDefault();
@@ -527,6 +526,18 @@ final class EngineeringFeedTest extends TestCase {
 	 * @param string                              $document_url Document URL the migration wrote.
 	 */
 	private function mock_meta( int $id, array $figures, string $document_url = 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ): void {
+		$bindings = array();
+		foreach ( $figures as $key => $entry ) {
+			if ( is_string( $entry['citation']['url'] ?? null ) ) {
+				$bindings[ $key ] = array(
+					'figure_revision' => \Linker\Commerce\Products\Publication::revision( $entry ),
+					'document_id'     => \Linker\Commerce\Products\Publication\DocumentFiles::id( $document_url ),
+					'blob_sha256'     => hash_file( 'sha256', $this->publication_uploads . '/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf' ),
+				);
+			}
+		}
+		WP_Mock::userFunction( 'get_post_meta' )->with( $id, \Linker\Commerce\Products\Publication\FigureBindings::META_KEY, true )->andReturn( $bindings );
+
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(

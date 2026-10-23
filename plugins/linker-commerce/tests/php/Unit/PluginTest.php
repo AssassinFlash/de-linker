@@ -112,17 +112,17 @@ final class PluginTest extends TestCase {
 		$preparation = \Linker\Commerce\Products\Publication\PreparationJobs::class;
 		$access      = \Linker\Commerce\Products\Publication\DocumentAccess::class;
 		$controller  = \Linker\Commerce\Products\Publication\Controller::class;
-		foreach ( array( array( 'rest_api_init', $controller, 'register_routes', 10, 1 ), array( 'linker_publication_reconcile', $preparation, 'reconcile', 10, 1 ), array( 'template_redirect', $access, 'serve', 0, 1 ), array( 'pre_get_posts', $visibility, 'query', 10, 1 ), array( 'woocommerce_cart_loaded_from_session', $visibility, 'prune', 1, 1 ), array( 'woocommerce_before_calculate_totals', $visibility, 'prune', 1, 1 ) ) as [ $hook, $class, $method, $priority, $args ] ) {
-			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $class ), $method ), $priority, $args ); // @phpstan-ignore argument.type (WP_Mock matcher).
+		foreach ( array( array( 'rest_api_init', $controller, 'register_routes', 10, 1 ), array( 'linker_publication_reconcile', $preparation, 'reconcile', 10, 1 ), array( 'template_redirect', $access, 'serve', 0, 1 ), array( 'pre_get_posts', $visibility, 'query', 100, 1 ), array( 'template_redirect', $visibility, 'single_product', 0, 1 ), array( 'woocommerce_cart_loaded_from_session', $visibility, 'prune', 1, 1 ), array( 'woocommerce_before_calculate_totals', $visibility, 'prune', 1, 1 ) ) as [ $hook, $class, $method, $priority, $args ] ) {
+			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $class ), $method ), $priority, $args ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}
 		foreach ( array( 'added_post_meta', 'updated_post_meta', 'deleted_post_meta' ) as $hook ) {
-			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $publication ), 'managed_documents' ), 10, 3 ); // @phpstan-ignore argument.type (WP_Mock matcher).
+			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $publication ), 'managed_documents' ), 10, 3 ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}
 		foreach ( array( 'save_post_product', 'transition_post_status', 'deleted_post', 'set_object_terms', 'added_post_meta', 'updated_post_meta', 'deleted_post_meta', 'add_attachment', 'edit_attachment', 'delete_attachment', 'pll_save_post', 'edited_term', 'created_term', 'delete_term', 'woocommerce_update_product', 'wp_update_attachment_metadata' ) as $hook ) {
-			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $preparation ), 'changed' ) ); // @phpstan-ignore argument.type (WP_Mock matcher).
+			WP_Mock::expectActionAdded( $hook, array( new AnyInstance( $preparation ), 'changed' ) ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}
 		foreach ( array( array( 'rest_request_before_callbacks', $visibility, 'enter', 1, 3 ), array( 'rest_request_after_callbacks', $visibility, 'leave', 1, 3 ), array( 'woocommerce_product_is_visible', $visibility, 'visible', 10, 2 ), array( 'mod_rewrite_rules', $access, 'rewrite_rules', 10, 1 ), array( 'attachment_fields_to_edit', $publication, 'attachment_fields', 10, 2 ), array( 'attachment_fields_to_save', $publication, 'save_attachment', 10, 2 ) ) as [ $hook, $class, $method, $priority, $args ] ) {
-			WP_Mock::expectFilterAdded( $hook, array( new AnyInstance( $class ), $method ), $priority, $args ); // @phpstan-ignore argument.type (WP_Mock matcher).
+			WP_Mock::expectFilterAdded( $hook, array( new AnyInstance( $class ), $method ), $priority, $args ); // @phpstan-ignore argument.type (WP_Mock matcher)
 		}
 
 		$plugin->register();
