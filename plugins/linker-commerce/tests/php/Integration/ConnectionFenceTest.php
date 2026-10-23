@@ -135,6 +135,158 @@ final class ConnectionFenceTest extends IntegrationTestCase {
 		self::assertSame( 0, $authorization_rows );
 	}
 
+	/**
+	 * Native source writers must fence their first mutex before inspecting a caller's transaction.
+	 *
+	 * @testWith ["vat_persist"]
+	 *           ["vat_erase"]
+	 *           ["vat_deliver"]
+	 *           ["proforma"]
+	 * @param string $writer Actual native source writer.
+	 */
+	public function test_native_source_first_lock_cannot_reconnect_over_an_uncommitted_caller( string $writer ): void {
+		global $wpdb;
+		$intake = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		$this->later(
+			static function () use ( $intake ): void {
+				delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+				if ( false !== $intake ) {
+					update_option( \Linker\Commerce\Protection\IntakeStore::OPTION, $intake, false );
+				} }
+		);
+		WC()->mailer();
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
+		$customer = $this->customer();
+		$id       = $customer->get_id();
+		$notices  = new \Linker\Commerce\Registration\VatNotice();
+		$source   = $notices->persist(
+			$id,
+			'DE123456789',
+			array(
+				'status' => \Linker\Commerce\Registration\VatProfile::INVALID,
+				'detail' => '',
+			),
+			false,
+			''
+		);
+		self::assertIsArray( $source );
+		if ( 'vat_deliver' === $writer ) {
+			$source = $notices->persist(
+				$id,
+				'DE123456789',
+				array(
+					'status' => \Linker\Commerce\Registration\VatProfile::VALID,
+					'detail' => '',
+				),
+				true,
+				$source['version']
+			);
+			self::assertIsArray( $source );
+			self::assertSame( 0, $source['job'] );
+			self::assertSame( 'yes', get_user_meta( $id, $notices::PENDING, true ) );
+		}
+		$order = new \WC_Order();
+		$order->set_billing_email( self::TESTER );
+		$order->set_status( \Linker\Commerce\Inquiry\Statuses::PROFORMA );
+		$order->update_meta_data( \Linker\Commerce\Proforma\Issuer::NUMBER_META, 'SYNTHETIC-FIRST-LOCK-' . self::tag() );
+		$order->update_meta_data( \Linker\Commerce\Proforma\Issuer::ISSUED_META, (string) time() );
+		$order->update_meta_data( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::PENDING, 'yes' );
+		$order->save();
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$email = WC()->mailer()->get_emails()[ \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class ];
+		self::assertInstanceOf( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::class, $email );
+		$key           = 'proforma' === $writer ? 'release-' . $order->get_id() : 'vat-source-' . $id;
+		$lock          = 'linker-assessment-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $key );
+		$peer          = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$marker        = 'synthetic-first-lock-caller-' . self::tag();
+		$before_jobs   = self::newest_mail_job();
+		$before_source = $peer->get_var( $peer->prepare( 'SELECT meta_value FROM %i WHERE user_id=%d AND meta_key=%s', $wpdb->usermeta, $id, $notices::SOURCE ) );
+		$before_budget = $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		$hits          = 0;
+		$failed        = false;
+		$kill          = static function ( string $sql ) use ( $lock, $peer, &$hits ): string {
+			if ( 0 === $hits && str_contains( $sql, 'GET_LOCK(' ) && str_contains( $sql, $lock ) ) {
+				++$hits;
+				global $wpdb;
+				$peer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+			}
+			return $sql;
+		};
+		$wpdb->query( 'START TRANSACTION' );
+		$wpdb->insert(
+			$wpdb->options,
+			array(
+				'option_name'  => $marker,
+				'option_value' => 'caller-owned',
+				'autoload'     => 'off',
+			)
+		);
+		add_filter( 'query', $kill, 999 );
+		try {
+			try {
+				if ( 'vat_persist' === $writer ) {
+					$failed = is_wp_error(
+						$notices->persist(
+							$id,
+							'DE987654321',
+							array(
+								'status' => \Linker\Commerce\Registration\VatProfile::VALID,
+								'detail' => '',
+							),
+							true,
+							$source['version']
+						)
+					);
+				} elseif ( 'vat_erase' === $writer ) {
+					$notices->erase( array(), $customer );
+				} elseif ( 'vat_deliver' === $writer ) {
+					$vat_email = WC()->mailer()->get_emails()[ \Linker\Commerce\Registration\Emails\VatReviewEmail::class ];
+					self::assertInstanceOf( \Linker\Commerce\Registration\Emails\VatReviewEmail::class, $vat_email );
+					( new \Linker\Commerce\Mail\Producer() )->woocommerce( array( $vat_email, 'trigger' ), $vat_email )( $id );
+				} else {
+					$email->trigger( $order->get_id(), $order );
+				}
+			} catch ( \Throwable $error ) {
+				$failed = true;
+			}
+			$caller_rows  = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE option_name=%s', $wpdb->options, $marker ) );
+			$after_source = $peer->get_var( $peer->prepare( 'SELECT meta_value FROM %i WHERE user_id=%d AND meta_key=%s', $wpdb->usermeta, $id, $notices::SOURCE ) );
+			$jobs         = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE post_type=%s AND ID>%d', $wpdb->posts, \Linker\Commerce\Mail\JobStore::POST_TYPE, $before_jobs ) );
+			$after_budget = $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		} finally {
+			remove_filter( 'query', $kill, 999 );
+			self::assertTrue( $wpdb->db_connect( false ) );
+			delete_option( $marker );
+			$peer->close();
+			clean_user_cache( $id );
+			wp_cache_delete( $id, 'user_meta' );
+		}
+		self::assertSame( 1, $hits );
+		$fresh = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() );
+		self::assertInstanceOf( \WC_Order::class, $fresh );
+		self::assertTrue(
+			$failed,
+			'Losing the original connection before the native source mutex must fail closed: ' . wp_json_encode(
+				array(
+					'caller_rows'           => $caller_rows,
+					'source_changed'        => $before_source !== $after_source,
+					'new_jobs'              => $jobs,
+					'proforma_acknowledged' => '' !== $fresh->get_meta( $email::ACCEPTED ),
+				)
+			)
+		);
+		self::assertSame( 0, $caller_rows );
+		self::assertSame( $before_source, $after_source );
+		self::assertSame( 0, $jobs );
+		self::assertSame( $before_budget, $after_budget );
+		self::assertSame( '', $fresh->get_meta( $email::ACCEPTED ) );
+	}
+
 	/** Scoped nested policy is exactly restored; it neither starts nor commits a transaction. */
 	public function test_nested_scopes_restore_native_policy_and_leave_outer_transaction_owned(): void {
 		global $wpdb;

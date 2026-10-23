@@ -70,7 +70,7 @@ account deletion and conversation ACK boundaries. The final immutable source run
 - Both plugin PHPStan runs, scoped WPCS, gettext validation and diff checks passed.
   Added code lines contain zero matches for the retired implementation identifiers.
 
-The final evidence-only record changes no runtime after that tested source. Initial red logs remain intact: native historical read
+The original `0a1f05bc` evidence-only record changed no runtime after that tested source. Initial red logs remain intact: native historical read
 failure and peer body/audit/capability changes, classic recovery starvation, stale
 team-mail defaults, first authorization-lock reconnect, and late VAT response after
 peer deletion. None was resolved by relaxing its substantive assertion.
@@ -106,3 +106,28 @@ The coordinator's fresh read-only snapshot reports 102 ordinary unhandled inquir
 and a separate 90 review-lane inquiries. These pools are not combined. The proposed
 87-entry disposition and its 102-to-15 result still require the coordinator's fresh
 clone rehearsal and controlled production operation; this worktree performs neither.
+
+## Independent review: first native source mutex
+
+The independent Standards review identified the same first-lock ordering in VAT
+persist/erase/deliver and Proforma trigger. Four bounded actual native KILL controls
+include an unrelated caller-owned uncommitted marker. Before repair, persist and
+erase reconnected and changed VAT source after losing the caller; deliver reconnected
+and committed a new original job plus source ACK; the Proforma policy-skip path
+reconnected and persisted its ACCEPTED ACK. The Proforma red had zero new jobs and
+is not described as a delivered or newly queued email. The preceding red files and
+the later one-case deliver red are retained separately, without overwriting them.
+
+Only these native producers now hold their existing ConnectionFence from before
+GET_LOCK through source work/unlock. Transport remains outside that scope. The
+explicit Proforma unit-memory writer still uses its existing unit port, while the
+production native writer always fences the first lock. No general Lock or database
+framework was changed. All four controls prove unchanged source/ACK, zero new jobs,
+unchanged transport budget and no replay after the original connection dies.
+
+Classic ConnectionFence/VAT/critical/atomic-mail native batch: 29 tests / 260
+assertions PASS. The original healthy source, outer transaction and process-death
+controls remain in that batch. Complete Commerce PHPStan and scoped WPCS pass;
+Commerce unit suite: 1748 tests / 6368 assertions, 404 native-only skips, no failures.
+The corresponding strong-cache snapshot run is recorded in the fixed-head handoff;
+the earlier 418-test result remains explicitly tied to the preceding tested source.

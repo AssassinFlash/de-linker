@@ -40,6 +40,11 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 	 * @var \Closure(int):?WC_Order
 	 */
 	private readonly \Closure $read;
+	/** Explicit unit memory writers do not own a native mysqli connection.
+	 *
+	 * @var bool
+	 */
+	private readonly bool $native;
 
 	/**
 	 * Email id.
@@ -57,6 +62,7 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 	 * @param \Closure|null $read Authoritative native reader, or an explicit unit memory reader.
 	 */
 	public function __construct( string $plugin_file, ?\Closure $write = null, ?\Closure $read = null ) {
+		$this->native        = null === $write;
 		$this->read          = $read ?? static fn ( int $id ): ?WC_Order => CurrentSource::order( $id );
 		$this->write         = $write ?? static fn ( callable $work ): mixed => \Linker\Commerce\Mail\NativeTransaction::run( $work );
 		$this->id            = self::ID;
@@ -87,67 +93,72 @@ final class ProformaIssuedEmail extends CustomerOrderEmail {
 	 */
 	public function trigger( $order_id, $order = false ): void {
 		unset( $order ); // A callback's object may predate another accepted handoff.
-		$job = 0;
-		Lock::run(
-			'release-' . (int) $order_id,
-			function () use ( $order_id, &$job ): void {
-				( $this->write )(
-					function () use ( $order_id, &$job ): void {
-						$order = ( $this->read )( (int) $order_id );
-						if ( ! $order instanceof WC_Order ) {
-							return;
-						}
-						$order->read_meta_data( true );
-						$number = (string) $order->get_meta( Issuer::NUMBER_META );
-						if ( ! $order->has_status( Statuses::PROFORMA ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number === $order->get_meta( self::ACCEPTED ) ) {
-							// Retire only a definite terminal/erased/already-ACKed index row.
-							// This does not mark a new message sent or free its original job.
-							if ( 'yes' === $order->get_meta( self::PENDING ) ) {
-								$order->update_meta_data( self::PENDING, 'no' );
-								$order->save_meta_data();
+		$job   = 0;
+		$fence = $this->native ? \Linker\Commerce\Mail\ConnectionFence::enter() : null;
+		try {
+			Lock::run(
+				'release-' . (int) $order_id,
+				function () use ( $order_id, &$job ): void {
+					( $this->write )(
+						function () use ( $order_id, &$job ): void {
+							$order = ( $this->read )( (int) $order_id );
+							if ( ! $order instanceof WC_Order ) {
+								return;
 							}
-							return;
-						}
-						if ( '' === $number ) {
-							return;
-						}
-						$this->placeholders['{proforma_number}'] = $number;
-						$order->update_meta_data( self::PENDING, 'yes' );
-						$order->save_meta_data();
-						$message = Prepared::capture( fn () => parent::trigger( $order_id, $order ) );
-						if ( null === $message ) {
-							// Native disabled/no-recipient policy explicitly skipped this notice.
-							$order->update_meta_data( self::PENDING, 'no' );
-							$order->update_meta_data( self::ACCEPTED, $number );
+							$order->read_meta_data( true );
+							$number = (string) $order->get_meta( Issuer::NUMBER_META );
+							if ( ! $order->has_status( Statuses::PROFORMA ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number === $order->get_meta( self::ACCEPTED ) ) {
+								// Retire only a definite terminal/erased/already-ACKed index row.
+								// This does not mark a new message sent or free its original job.
+								if ( 'yes' === $order->get_meta( self::PENDING ) ) {
+									$order->update_meta_data( self::PENDING, 'no' );
+									$order->save_meta_data();
+								}
+								return;
+							}
+							if ( '' === $number ) {
+								return;
+							}
+							$this->placeholders['{proforma_number}'] = $number;
+							$order->update_meta_data( self::PENDING, 'yes' );
 							$order->save_meta_data();
-							return;
-						}
-						$job = ( new JobStore() )->create(
-							$message,
-							0,
-							function ( int $id ) use ( $order, $number ): void {
-								$fresh = ( $this->read )( $order->get_id() );
-								if ( ! $fresh instanceof WC_Order ) {
-									throw new \RuntimeException( 'proforma_notice_source_missing' );
-								}
-								$fresh->read_meta_data( true );
-								if ( ! $fresh->has_status( Statuses::PROFORMA ) || $fresh->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number !== $fresh->get_meta( Issuer::NUMBER_META ) || $number === $fresh->get_meta( self::ACCEPTED ) ) {
-									throw new \RuntimeException( 'proforma_notice_source_changed' );
-								}
-								$fresh->update_meta_data( self::PENDING, 'no' );
-								$fresh->update_meta_data( self::ACCEPTED, $number );
-								$fresh->update_meta_data( self::JOB, (string) $id );
-								$fresh->save_meta_data();
-								$fresh->read_meta_data( true );
-								if ( $number !== $fresh->get_meta( self::ACCEPTED ) || $id !== (int) $fresh->get_meta( self::JOB ) || 'no' !== $fresh->get_meta( self::PENDING ) ) {
-									throw new \RuntimeException( 'proforma_notice_readback_failed' );
-								}
+							$message = Prepared::capture( fn () => parent::trigger( $order_id, $order ) );
+							if ( null === $message ) {
+								// Native disabled/no-recipient policy explicitly skipped this notice.
+								$order->update_meta_data( self::PENDING, 'no' );
+								$order->update_meta_data( self::ACCEPTED, $number );
+								$order->save_meta_data();
+								return;
 							}
-						);
-					}
-				);
-			}
-		);
+							$job = ( new JobStore() )->create(
+								$message,
+								0,
+								function ( int $id ) use ( $order, $number ): void {
+									$fresh = ( $this->read )( $order->get_id() );
+									if ( ! $fresh instanceof WC_Order ) {
+										throw new \RuntimeException( 'proforma_notice_source_missing' );
+									}
+									$fresh->read_meta_data( true );
+									if ( ! $fresh->has_status( Statuses::PROFORMA ) || $fresh->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $number !== $fresh->get_meta( Issuer::NUMBER_META ) || $number === $fresh->get_meta( self::ACCEPTED ) ) {
+										throw new \RuntimeException( 'proforma_notice_source_changed' );
+									}
+									$fresh->update_meta_data( self::PENDING, 'no' );
+									$fresh->update_meta_data( self::ACCEPTED, $number );
+									$fresh->update_meta_data( self::JOB, (string) $id );
+									$fresh->save_meta_data();
+									$fresh->read_meta_data( true );
+									if ( $number !== $fresh->get_meta( self::ACCEPTED ) || $id !== (int) $fresh->get_meta( self::JOB ) || 'no' !== $fresh->get_meta( self::PENDING ) ) {
+										throw new \RuntimeException( 'proforma_notice_readback_failed' );
+									}
+								}
+							);
+						}
+					);
+				}
+			);
+		} finally {
+			$fence?->close();
+		}
 		if ( $job > 0 ) {
 			$deliver = static function () use ( $job ): void {
 				/** This action is documented in Mail\Module::register(). */

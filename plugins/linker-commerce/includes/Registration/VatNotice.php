@@ -11,6 +11,7 @@ namespace Linker\Commerce\Registration;
 
 use Linker\Commerce\Inquiry\Assessment\Lock;
 use Linker\Commerce\Mail\NativeTransaction;
+use Linker\Commerce\Mail\ConnectionFence;
 use Linker\Commerce\Mail\Capacity;
 use Linker\Commerce\Mail\CapacityHealth;
 use Linker\Commerce\Mail\JobStore;
@@ -53,53 +54,60 @@ class VatNotice {
 	 */
 	public function persist( int $id, string $number, array $result, bool $notify, string $witness ): array|WP_Error {
 		$saved = new WP_Error( 'vat_notice_unavailable' );
-		Lock::run(
-			'vat-source-' . $id,
-			function () use ( $id, $number, $result, $notify, $witness, &$saved ): void {
-				// The provider can outlive a peer's native account deletion.
-				clean_user_cache( $id );
-				wp_cache_delete( $id, 'user_meta' );
-				$user = get_userdata( $id );
-				if ( ! $user instanceof \WP_User || $this->version( $id ) !== $witness || Capacity::transaction_active() ) {
-					return;
-				}
-				$transaction = new NativeTransaction();
-				try {
-					$previous = (string) self::meta( $id, VatProfile::STATUS_META, true );
-					$old      = self::meta( $id, self::SOURCE, true );
-					$pending  = $notify && ( ( '' !== $previous && $previous !== $result['status'] ) || ( is_array( $old ) && 'yes' === self::meta( $id, self::PENDING, true ) && empty( $old['erased'] ) ) );
-					$checked  = time();
-					update_user_meta( $id, VatProfile::STATUS_META, $result['status'] );
-					update_user_meta( $id, VatProfile::DETAIL_META, $result['detail'] );
-					update_user_meta( $id, VatProfile::NUMBER_META, $number );
-					update_user_meta( $id, VatProfile::CHECKED_META, $checked );
+		$fence = ConnectionFence::enter();
+		try {
+			Lock::run(
+				'vat-source-' . $id,
+				function () use ( $id, $number, $result, $notify, $witness, &$saved ): void {
+					// The provider can outlive a peer's native account deletion.
+					clean_user_cache( $id );
 					wp_cache_delete( $id, 'user_meta' );
-					if ( self::meta( $id, VatProfile::STATUS_META, true ) !== $result['status'] || self::meta( $id, VatProfile::DETAIL_META, true ) !== $result['detail'] || self::meta( $id, VatProfile::NUMBER_META, true ) !== $number || (int) self::meta( $id, VatProfile::CHECKED_META, true ) !== $checked ) {
-						throw new \RuntimeException( 'vat_verdict_readback_failed' );
+					$user = get_userdata( $id );
+					if ( ! $user instanceof \WP_User || $this->version( $id ) !== $witness || Capacity::transaction_active() ) {
+						return;
 					}
-					$record = array(
-						'version'  => wp_generate_uuid4(),
-						'source'   => self::fingerprint( $id ),
-						'verdict'  => self::fingerprint( $id, false ),
-						'previous' => self::status( $previous ),
-						'current'  => self::status( $result['status'] ),
-						'job'      => $pending ? 0 : -1,
-					);
-					update_user_meta( $id, self::SOURCE, $record );
-					update_user_meta( $id, self::PENDING, $pending ? 'yes' : 'no' );
-					wp_cache_delete( $id, 'user_meta' );
-					if ( self::meta( $id, self::SOURCE, true ) !== $record || ( $pending ? 'yes' : 'no' ) !== self::meta( $id, self::PENDING, true ) ) {
-						throw new \RuntimeException( 'vat_notice_source_readback_failed' );
+					$transaction = new NativeTransaction();
+					try {
+						$previous = (string) self::meta( $id, VatProfile::STATUS_META, true );
+						$old      = self::meta( $id, self::SOURCE, true );
+						$pending  = $notify && ( ( '' !== $previous && $previous !== $result['status'] ) || ( is_array( $old ) && 'yes' === self::meta( $id, self::PENDING, true ) && empty( $old['erased'] ) ) );
+						$checked  = time();
+						update_user_meta( $id, VatProfile::STATUS_META, $result['status'] );
+						update_user_meta( $id, VatProfile::DETAIL_META, $result['detail'] );
+						update_user_meta( $id, VatProfile::NUMBER_META, $number );
+						update_user_meta( $id, VatProfile::CHECKED_META, $checked );
+						wp_cache_delete( $id, 'user_meta' );
+						if ( self::meta( $id, VatProfile::STATUS_META, true ) !== $result['status'] || self::meta( $id, VatProfile::DETAIL_META, true ) !== $result['detail'] || self::meta( $id, VatProfile::NUMBER_META, true ) !== $number || (int) self::meta( $id, VatProfile::CHECKED_META, true ) !== $checked ) {
+							throw new \RuntimeException( 'vat_verdict_readback_failed' );
+						}
+						$record = array(
+							'version'  => wp_generate_uuid4(),
+							'source'   => self::fingerprint( $id ),
+							'verdict'  => self::fingerprint( $id, false ),
+							'previous' => self::status( $previous ),
+							'current'  => self::status( $result['status'] ),
+							'job'      => $pending ? 0 : -1,
+						);
+						update_user_meta( $id, self::SOURCE, $record );
+						update_user_meta( $id, self::PENDING, $pending ? 'yes' : 'no' );
+						wp_cache_delete( $id, 'user_meta' );
+						if ( self::meta( $id, self::SOURCE, true ) !== $record || ( $pending ? 'yes' : 'no' ) !== self::meta( $id, self::PENDING, true ) ) {
+							throw new \RuntimeException( 'vat_notice_source_readback_failed' );
+						}
+						$transaction->commit();
+						$saved = $record;
+					} catch ( \Throwable $error ) {
+						self::rollback( $transaction );
+						wp_cache_delete( $id, 'user_meta' );
 					}
-					$transaction->commit();
-					$saved = $record;
-				} catch ( \Throwable $error ) {
-					self::rollback( $transaction );
-					wp_cache_delete( $id, 'user_meta' );
-				}
-			},
-			1
-		);
+				},
+				1
+			);
+		} catch ( \Throwable $error ) {
+			return $saved; // A lost caller connection cannot publish or log on a new one.
+		} finally {
+			$fence->close();
+		}
 		if ( $saved instanceof WP_Error ) {
 			CapacityHealth::failed();
 		}
@@ -114,76 +122,81 @@ class VatNotice {
 	 * @phpstan-param callable(array<string,mixed>):?Message $capture
 	 */
 	public function deliver( int $id, callable $capture ): void {
-		$job = 0;
-		Lock::run(
-			'vat-source-' . $id,
-			static function () use ( $id, $capture, &$job ): void {
-				clean_user_cache( $id );
-				wp_cache_delete( $id, 'user_meta' );
-				$record = self::meta( $id, self::SOURCE, true );
-				if ( ! get_userdata( $id ) || ! is_array( $record ) || ! empty( $record['erased'] ) || 0 !== ( $record['job'] ?? -1 ) || 'yes' !== self::meta( $id, self::PENDING, true ) || ! is_string( $record['source'] ?? null ) ) {
-					return;
-				}
-				if ( ! hash_equals( $record['source'], self::fingerprint( $id ) ) ) {
-					// Only unchanged native VAT facts permit rebinding a current email.
-					// Erasure/new verdict generations remain authoritative and cannot revive.
-					if ( ! is_string( $record['verdict'] ?? null ) || ! hash_equals( $record['verdict'], self::fingerprint( $id, false ) ) ) {
+		$job   = 0;
+		$fence = ConnectionFence::enter();
+		try {
+			Lock::run(
+				'vat-source-' . $id,
+				static function () use ( $id, $capture, &$job ): void {
+					clean_user_cache( $id );
+					wp_cache_delete( $id, 'user_meta' );
+					$record = self::meta( $id, self::SOURCE, true );
+					if ( ! get_userdata( $id ) || ! is_array( $record ) || ! empty( $record['erased'] ) || 0 !== ( $record['job'] ?? -1 ) || 'yes' !== self::meta( $id, self::PENDING, true ) || ! is_string( $record['source'] ?? null ) ) {
 						return;
 					}
-					try {
-						$record = NativeTransaction::run(
-							static function () use ( $id, $record ): array {
-								wp_cache_delete( $id, 'user_meta' );
-								if ( self::meta( $id, self::SOURCE, true ) !== $record || ! hash_equals( $record['verdict'], self::fingerprint( $id, false ) ) ) {
-									throw new \RuntimeException( 'vat_notice_rebind_source_changed' );
+					if ( ! hash_equals( $record['source'], self::fingerprint( $id ) ) ) {
+						// Only unchanged native VAT facts permit rebinding a current email.
+						// Erasure/new verdict generations remain authoritative and cannot revive.
+						if ( ! is_string( $record['verdict'] ?? null ) || ! hash_equals( $record['verdict'], self::fingerprint( $id, false ) ) ) {
+							return;
+						}
+						try {
+							$record = NativeTransaction::run(
+								static function () use ( $id, $record ): array {
+									wp_cache_delete( $id, 'user_meta' );
+									if ( self::meta( $id, self::SOURCE, true ) !== $record || ! hash_equals( $record['verdict'], self::fingerprint( $id, false ) ) ) {
+										throw new \RuntimeException( 'vat_notice_rebind_source_changed' );
+									}
+									$latest = array_merge(
+										$record,
+										array(
+											'version' => wp_generate_uuid4(),
+											'source'  => self::fingerprint( $id ),
+										)
+									);
+									update_user_meta( $id, self::SOURCE, $latest );
+									wp_cache_delete( $id, 'user_meta' );
+									if ( self::meta( $id, self::SOURCE, true ) !== $latest ) {
+										throw new \RuntimeException( 'vat_notice_rebind_readback_failed' );
+									}
+									return $latest;
 								}
-								$latest = array_merge(
-									$record,
-									array(
-										'version' => wp_generate_uuid4(),
-										'source'  => self::fingerprint( $id ),
-									)
-								);
-								update_user_meta( $id, self::SOURCE, $latest );
-								wp_cache_delete( $id, 'user_meta' );
-								if ( self::meta( $id, self::SOURCE, true ) !== $latest ) {
-									throw new \RuntimeException( 'vat_notice_rebind_readback_failed' );
-								}
-								return $latest;
+							);
+						} catch ( \Throwable $error ) {
+							CapacityHealth::failed();
+							return;
+						}
+					}
+					$message = $capture( $record );
+					if ( ! $message instanceof Message ) {
+						// Explicit native disabled/no-recipient policy, not accepted mail.
+						return;
+					}
+					$job = ( new JobStore() )->create(
+						$message,
+						0,
+						static function ( int $job ) use ( $id, $record ): void {
+							wp_cache_delete( $id, 'user_meta' );
+							if ( self::meta( $id, self::SOURCE, true ) !== $record || ! hash_equals( $record['source'], self::fingerprint( $id ) ) ) {
+								throw new \RuntimeException( 'vat_notice_generation_changed' );
 							}
-						);
-					} catch ( \Throwable $error ) {
+							$accepted = array_merge( $record, array( 'job' => $job ) );
+							update_user_meta( $id, self::SOURCE, $accepted );
+							update_user_meta( $id, self::PENDING, 'no' );
+							wp_cache_delete( $id, 'user_meta' );
+							if ( self::meta( $id, self::SOURCE, true ) !== $accepted || 'no' !== self::meta( $id, self::PENDING, true ) ) {
+								throw new \RuntimeException( 'vat_notice_ack_readback_failed' );
+							}
+						}
+					);
+					if ( $job < 1 ) {
 						CapacityHealth::failed();
-						return;
 					}
 				}
-				$message = $capture( $record );
-				if ( ! $message instanceof Message ) {
-					// Explicit native disabled/no-recipient policy, not accepted mail.
-					return;
-				}
-				$job = ( new JobStore() )->create(
-					$message,
-					0,
-					static function ( int $job ) use ( $id, $record ): void {
-						wp_cache_delete( $id, 'user_meta' );
-						if ( self::meta( $id, self::SOURCE, true ) !== $record || ! hash_equals( $record['source'], self::fingerprint( $id ) ) ) {
-							throw new \RuntimeException( 'vat_notice_generation_changed' );
-						}
-						$accepted = array_merge( $record, array( 'job' => $job ) );
-						update_user_meta( $id, self::SOURCE, $accepted );
-						update_user_meta( $id, self::PENDING, 'no' );
-						wp_cache_delete( $id, 'user_meta' );
-						if ( self::meta( $id, self::SOURCE, true ) !== $accepted || 'no' !== self::meta( $id, self::PENDING, true ) ) {
-							throw new \RuntimeException( 'vat_notice_ack_readback_failed' );
-						}
-					}
-				);
-				if ( $job < 1 ) {
-					CapacityHealth::failed();
-				}
-			}
-		);
+			);
+		} finally {
+			$fence->close();
+		}
 		if ( $job > 0 ) {
 			/** This action is documented in Mail\Module::register(). */
 			do_action( Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Existing original-job consumer, outside user/site locks.
@@ -223,49 +236,54 @@ class VatNotice {
 	 * @throws \RuntimeException Busy erasure cannot claim completion.
 	 */
 	public function erase( array $response, \WC_Customer $customer ): array {
-		$id   = $customer->get_id();
-		$done = false;
-		Lock::run(
-			'vat-source-' . $id,
-			static function () use ( $id, &$done ): void {
-				if ( Capacity::transaction_active() ) {
-					return;
-				}
-				$transaction = new NativeTransaction();
-				try {
-					wp_cache_delete( $id, 'user_meta' );
-					$old = self::meta( $id, self::SOURCE, true );
-					$job = is_array( $old ) ? (int) ( $old['job'] ?? 0 ) : 0;
-					if ( $job > 0 && ( new JobStore() )->load( $job ) ) {
-						$hold = array( 'reason' => 'erased_vat_source' );
-						update_post_meta( $job, NotificationHold::META, $hold );
-						wp_cache_delete( $job, 'post_meta' );
-						if ( get_post_meta( $job, NotificationHold::META, true ) !== $hold ) {
-							throw new \RuntimeException( 'vat_notice_erasure_hold_failed' );
+		$id    = $customer->get_id();
+		$done  = false;
+		$fence = ConnectionFence::enter();
+		try {
+			Lock::run(
+				'vat-source-' . $id,
+				static function () use ( $id, &$done ): void {
+					if ( Capacity::transaction_active() ) {
+						return;
+					}
+					$transaction = new NativeTransaction();
+					try {
+						wp_cache_delete( $id, 'user_meta' );
+						$old = self::meta( $id, self::SOURCE, true );
+						$job = is_array( $old ) ? (int) ( $old['job'] ?? 0 ) : 0;
+						if ( $job > 0 && ( new JobStore() )->load( $job ) ) {
+							$hold = array( 'reason' => 'erased_vat_source' );
+							update_post_meta( $job, NotificationHold::META, $hold );
+							wp_cache_delete( $job, 'post_meta' );
+							if ( get_post_meta( $job, NotificationHold::META, true ) !== $hold ) {
+								throw new \RuntimeException( 'vat_notice_erasure_hold_failed' );
+							}
 						}
+						// Even an account with no previous source needs a witness tombstone:
+						// an in-flight first VIES response must not revive erased metadata.
+						$tombstone = array(
+							'version' => wp_generate_uuid4(),
+							'erased'  => true,
+							'job'     => $job,
+						);
+						update_user_meta( $id, self::SOURCE, $tombstone );
+						update_user_meta( $id, self::PENDING, 'no' );
+						wp_cache_delete( $id, 'user_meta' );
+						if ( self::meta( $id, self::SOURCE, true ) !== $tombstone || 'no' !== self::meta( $id, self::PENDING, true ) ) {
+							throw new \RuntimeException( 'vat_notice_erasure_readback_failed' );
+						}
+						$transaction->commit();
+						$done = true;
+					} catch ( \Throwable $error ) {
+						self::rollback( $transaction );
+						wp_cache_delete( $id, 'user_meta' );
 					}
-					// Even an account with no previous source needs a witness tombstone:
-					// an in-flight first VIES response must not revive erased metadata.
-					$tombstone = array(
-						'version' => wp_generate_uuid4(),
-						'erased'  => true,
-						'job'     => $job,
-					);
-					update_user_meta( $id, self::SOURCE, $tombstone );
-					update_user_meta( $id, self::PENDING, 'no' );
-					wp_cache_delete( $id, 'user_meta' );
-					if ( self::meta( $id, self::SOURCE, true ) !== $tombstone || 'no' !== self::meta( $id, self::PENDING, true ) ) {
-						throw new \RuntimeException( 'vat_notice_erasure_readback_failed' );
-					}
-					$transaction->commit();
-					$done = true;
-				} catch ( \Throwable $error ) {
-					self::rollback( $transaction );
-					wp_cache_delete( $id, 'user_meta' );
-				}
-			},
-			1
-		);
+				},
+				1
+			);
+		} finally {
+			$fence->close();
+		}
 		if ( ! $done ) {
 			throw new \RuntimeException( 'vat_notice_erasure_unconfirmed' );
 		}
