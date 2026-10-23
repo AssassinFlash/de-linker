@@ -17,11 +17,17 @@ from conftest import SHELL
 from fastapi.testclient import TestClient
 
 from linker_genie.abilities import Abilities, AbilityClient, AbilityError, gather
-from linker_genie.facts import TurnFacts
+from linker_genie.facts import Document, TurnFacts
 from linker_genie.log import TurnLog
 from linker_genie.prices import Lookup, commerce_lookup
 from linker_genie.publication import PublicationClient, Snapshot
-from linker_genie.schema import CardsBlock, TextBlock, TurnOutput, TurnRequest
+from linker_genie.schema import (
+    CardsBlock,
+    DocumentBlock,
+    TextBlock,
+    TurnOutput,
+    TurnRequest,
+)
 from linker_genie.understand import Prepared, nothing
 
 MANIFEST = "/wp-json/linker/v1/publication/manifest"
@@ -283,7 +289,9 @@ def test_native_integer_ids_and_published_locale_ids_allow_verdict_only_response
     assert "102" in sent.values() and "1" in sent.values()
 
 
-@pytest.mark.parametrize("failure", [None, "draft", "bytes", "outage"])
+@pytest.mark.parametrize(
+    "failure", [None, "draft", "bytes", "outage", "new_member", "new_url"]
+)
 def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_changes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str | None
 ) -> None:
@@ -299,9 +307,19 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
     def validate(request: httpx.Request) -> httpx.Response:
         validated.append(json.loads(request.content))
         assert model_finished
+        # The only final Woo read occurs after the computed answer is logged,
+        # before any SSE bytes are released. It must retain the old citation.
+        (stored,) = log._db.execute("SELECT output FROM turns").fetchone()
+        document = next(
+            block
+            for block in json.loads(stored)["blocks"]
+            if block["type"] == "document"
+        )
+        assert document["document_id"] == "doc-1"
+        assert document["document_revision"] == "revision-1"
         if failure == "outage":
             return httpx.Response(503)
-        return httpx.Response(200, json={"valid": failure is None})
+        return httpx.Response(200, json={"valid": failure not in {"draft", "bytes"}})
 
     def payload(request: httpx.Request) -> dict[str, Any]:
         if request.url.path.endswith("get-product/run"):
@@ -341,17 +359,36 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
                 for text in ("one", "two", "three")
             ]
             model_finished = True
+            facts = gather(parts)
+            product_id = 1
+            document_url = "https://wp.test/1.pdf"
             if failure == "draft":
                 raw["products"] = []
             elif failure == "bytes":
                 raw["documents"][0]["document_revision"] = "replacement-bytes"
+                raw["documents"][0]["blob_sha256"] = "b" * 64
+            elif failure == "new_member":
+                raw["products"].extend(manifest(2)["products"])
+                # A derived result may be newer than the turn's original source.
+                # Even otherwise grounded output must remain inside original S0.
+                product_id = 2
+                facts.product_ids.add(2)
+                facts.qualified_ids.add(2)
+                facts.commerce[2] = {"price_line": "Sign in", "price_reason": "login"}
+            elif failure == "new_url":
+                document_url = "https://wp.test/new.pdf"
+                raw["documents"].append(
+                    {**raw["documents"][0], "document_id": "new", "url": document_url}
+                )
+            facts.documents["fixture-document"] = Document(document_url, "Manual", 1)
             return TurnOutput(
                 language="en",
                 blocks=[
-                    TextBlock(text="Current results.", refs=["1"]),
-                    CardsBlock(product_ids=[1]),
+                    TextBlock(text="Current results.", refs=[str(product_id)]),
+                    CardsBlock(product_ids=[product_id]),
+                    DocumentBlock(ref="fixture-document"),
                 ],
-            ), gather(parts)
+            ), facts
 
         return generate
 
@@ -379,6 +416,12 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
     log.close()
 
     assert len(seen) == 3 and all(tools is seen[0] for tools in seen)
+    if failure in {"new_member", "new_url"}:
+        assert response.status_code == 409, response.text
+        assert "event: block" not in response.text
+        assert validated == []
+        assert Counter(request.url.path for request in requests)[MANIFEST] == 1
+        return
     assert validated[0]["products"] == [
         {"product_id": 1, "product_revision": "product-1"}
     ]
@@ -392,8 +435,17 @@ def test_complete_turn_shares_its_tools_and_still_refuses_final_authority_change
     if failure is None:
         assert response.status_code == 200, response.text
         assert "Current results." in response.text
-        assert Counter(request.url.path for request in requests)[MANIFEST] == 2
-        assert Counter(request.url.path for request in requests)[VALIDATE] == 3
+        assert Counter(request.url.path for request in requests)[MANIFEST] == 1
+        assert Counter(request.url.path for request in requests)[VALIDATE] == 1
+        assert requests[-1].url.path == VALIDATE
+        blocks = [
+            json.loads(event.split("data: ", 1)[1])
+            for event in response.text.split("\n\n")
+            if event.startswith("event: block\n")
+        ]
+        document = next(block for block in blocks if block["type"] == "document")
+        assert document["document_id"] == "doc-1"
+        assert document["document_revision"] == "revision-1"
     else:
         assert response.status_code == (503 if failure == "outage" else 409), (
             response.text

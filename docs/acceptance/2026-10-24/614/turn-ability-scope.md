@@ -110,3 +110,35 @@ Full strict mypy passed all 195 source files, and Ruff lint/format passed all
 200 Python files. This follow-on changes only the ability input boundary, its
 regression tests and this evidence; it does not change model, timeout, budget,
 PHP, publication clients or the final permission gates.
+
+## One final release validation
+
+Root's subsequent native run computed a service turn in 49.008 seconds while the
+WordPress/browser request still failed after approximately 65 seconds. The
+initial snapshot was outside the service's clock, and the compute tail made
+three additional complete Woo reads before returning to the outer release gate.
+This was not accepted as a completed browser turn.
+
+The compute tail now checks all shipped IDs and URLs against original S0 and
+annotates documents with S0's original document identity/revision. It performs
+no authority RPC. The existing outer handler remains the only final release
+authorization: it freshly validates original S0 after the computed answer is
+logged and before returning any SSE. PHP tool before/after checks and the
+WordPress proxy/receipt checks remain unchanged. No fresh manifest can replace
+the evidence behind an already computed answer.
+
+The normal complete-turn HTTP regression first failed on the previous two
+manifest reads. It now proves exactly one initial manifest and one final
+validation, with final validation as the last Woo request. It also checks the
+logged and delivered citation identities remain S0's. Same-URL byte replacement
+and product withdrawal refuse release with 409; authority outage returns 503.
+Additional derived new-member/new-URL cases are refused against S0 even though
+the fake current source contains them. No partial answer blocks are released.
+The combined scope/publication suite passed 104 cases. The normal worker and
+actual browser timing readback remain root's integration acceptance, not a
+latency claim derived from these local HTTP-contract tests.
+
+Final validation on this branch: 2,206 passed, one skipped, six expected failures
+and 195 existing duplicate cases deselected; full strict mypy passed 195 source
+files, and full Ruff lint/format passed 200 files. The final-read delta changes
+only app composition, these regressions and this evidence.
