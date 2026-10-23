@@ -163,6 +163,7 @@ class Proxy {
 	 * Registers the routes; runs on rest_api_init.
 	 */
 	public function register(): void {
+		( new DraftActions() )->register();
 		add_filter( 'linker_tools_restored_reply', array( PublicationGuard::class, 'restored' ), 10, 2 );
 		register_rest_route(
 			self::NAMESPACE,
@@ -562,10 +563,19 @@ class Proxy {
 				array( 'status' => 409 )
 			);
 		}
+		// Action tokens are issued only for this live checked answer; history stays unsigned.
+		$action_stream = ( new DraftProof() )->stream( $split['stream'], $publication );
+		if ( $action_stream instanceof WP_Error ) {
+			return $action_stream;
+		}
+		$permitted     = $this->publication->validate( $publication );
+		if ( is_wp_error( $permitted ) ) {
+			return $permitted;
+		}
 		$reply = new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,
-				'stream'          => $split['stream'],
+				'stream'          => $action_stream,
 			)
 		);
 		$this->publication->remember( $reply, $publication );

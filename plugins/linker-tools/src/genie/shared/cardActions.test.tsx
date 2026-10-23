@@ -14,13 +14,14 @@ import { beforeEach, expect, test, vi } from 'vitest';
 /**
  * Internal dependencies
  */
-import { saveSolution } from '../../configurator/api/solutions';
+import { saveGenieSolution } from '../api/solution';
 import type { storeClient } from '../../configurator/api/store';
 import type { Locale } from '../../configurator/types';
 import { useCardActions } from './cardActions';
 
-vi.mock( '../../configurator/api/solutions', () => ( {
-	saveSolution: vi.fn(),
+vi.mock( '../api/solution', async ( importOriginal ) => ( {
+	...( await importOriginal< typeof import( '../api/solution' ) >() ),
+	saveGenieSolution: vi.fn(),
 } ) );
 
 function store() {
@@ -41,7 +42,7 @@ function hook( client = store(), locale: Locale = 'en' ) {
 }
 
 beforeEach( () => {
-	vi.mocked( saveSolution ).mockReset();
+	vi.mocked( saveGenieSolution ).mockReset();
 } );
 
 test( 'a card starts idle', () => {
@@ -57,12 +58,13 @@ test( 'adding to the draft shows the settled status in the card', async () => {
 	const { result } = hook( client );
 
 	await act( async () => {
-		await result.current.addToDraft( 5 );
+		await result.current.addToDraft( 5, 'signed-a' );
 	} );
 
 	expect( client.addAll ).toHaveBeenCalledWith(
 		[ { productId: 5, quantity: 1 } ],
-		expect.any( Function )
+		expect.any( Function ),
+		{ kind: 'genie', token: 'signed-a' }
 	);
 	expect( result.current.statusFor( 5 ) ).toEqual( {
 		state: 'added',
@@ -71,24 +73,20 @@ test( 'adding to the draft shows the settled status in the card', async () => {
 } );
 
 test( 'saving a solution reports the saved card', async () => {
-	vi.mocked( saveSolution ).mockResolvedValue( {
+	vi.mocked( saveGenieSolution ).mockResolvedValue( {
 		id: 9,
 		url: '/solution/9/',
 	} );
 	const { result } = hook();
 
 	await act( async () => {
-		await result.current.saveCardSolution( 5, 'SAJ H2-10K-T3' );
+		await result.current.saveCardSolution( 5, 'SAJ H2-10K-T3', 'signed-a' );
 	} );
 
-	expect( saveSolution ).toHaveBeenCalledWith(
+	expect( saveGenieSolution ).toHaveBeenCalledWith(
 		'/wp-json/',
 		'n',
-		expect.objectContaining( {
-			kind: 'residential',
-			title: 'SAJ H2-10K-T3',
-			lines: [ { productId: 5, quantity: 1 } ],
-		} ),
+		'signed-a',
 		'en'
 	);
 	expect( result.current.statusFor( 5 ) ).toEqual( {
@@ -98,20 +96,20 @@ test( 'saving a solution reports the saved card', async () => {
 } );
 
 test( 'a German card asks for the save in German', async () => {
-	vi.mocked( saveSolution ).mockResolvedValue( {
+	vi.mocked( saveGenieSolution ).mockResolvedValue( {
 		id: 9,
 		url: '/de/mein-konto/gespeicherte-loesungen/#linker-solution-9',
 	} );
 	const { result } = hook( store(), 'de' );
 
 	await act( async () => {
-		await result.current.saveCardSolution( 5, 'SAJ H2-10K-T3' );
+		await result.current.saveCardSolution( 5, 'SAJ H2-10K-T3', 'signed-a' );
 	} );
 
-	expect( saveSolution ).toHaveBeenCalledWith(
+	expect( saveGenieSolution ).toHaveBeenCalledWith(
 		'/wp-json/',
 		'n',
-		expect.objectContaining( { kind: 'residential' } ),
+		'signed-a',
 		'de'
 	);
 	expect( result.current.statusFor( 5 ) ).toEqual( {
@@ -121,11 +119,11 @@ test( 'a German card asks for the save in German', async () => {
 } );
 
 test( 'a failed save asks for a retry', async () => {
-	vi.mocked( saveSolution ).mockRejectedValue( new Error( 'save 500' ) );
+	vi.mocked( saveGenieSolution ).mockRejectedValue( new Error( 'save 500' ) );
 	const { result } = hook();
 
 	await act( async () => {
-		await result.current.saveCardSolution( 5, 'SAJ H2-10K-T3' );
+		await result.current.saveCardSolution( 5, 'SAJ H2-10K-T3', 'signed-a' );
 	} );
 
 	expect( result.current.statusFor( 5 ) ).toEqual( {
@@ -153,7 +151,8 @@ test( 'a parts list writes every row in one call and reports added', async () =>
 			{ productId: 5, quantity: 2 },
 			{ productId: 6, quantity: 1 },
 		],
-		expect.any( Function )
+		expect.any( Function ),
+		{ kind: 'genie', token: '' }
 	);
 	expect( outcome ).toBe( 'added' );
 } );

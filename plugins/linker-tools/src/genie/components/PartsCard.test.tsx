@@ -146,10 +146,13 @@ test( 'one click writes every confirmed row once', async () => {
 		} )
 	);
 	expect( onAdd ).toHaveBeenCalledTimes( 1 );
-	expect( onAdd ).toHaveBeenCalledWith( [
-		{ product_id: 4107, quantity: 2 },
-		{ product_id: 2063, quantity: 4 },
-	] );
+	expect( onAdd ).toHaveBeenCalledWith(
+		[
+			{ product_id: 4107, quantity: 2 },
+			{ product_id: 2063, quantity: 4 },
+		],
+		undefined
+	);
 	expect(
 		await screen.findByText( 'In your solution draft.' )
 	).toBeInTheDocument();
@@ -170,7 +173,7 @@ test( 'a failed write says so inside the card', async () => {
 		} )
 	);
 	expect(
-		await screen.findByText( 'Not everything was added. Try again.' )
+		await screen.findByText( 'Not added. Try again.' )
 	).toBeInTheDocument();
 } );
 

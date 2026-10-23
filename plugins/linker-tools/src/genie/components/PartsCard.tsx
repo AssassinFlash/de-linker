@@ -20,16 +20,18 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useState } from '@wordpress/element';
 import type { PartsBlock, PartsRow } from '../api/turn';
+import { additionUnconfirmedText } from '../../configurator/publication';
 
 /** How the one draft write ended, for the card's own line. */
-export type PartsAddResult = 'added' | 'unverified' | 'retry';
+export type PartsAddResult = 'added' | 'unverified' | 'retry' | 'stale';
 
 export interface PartsActions {
 	/** Sends a message as the customer (a candidate, skip). */
 	onAsk: ( message: string ) => void;
 	/** The one Store API write for every confirmed row. */
 	onAdd: (
-		items: { product_id: number; quantity: number }[]
+		items: { product_id: number; quantity: number }[],
+		proof?: string
 	) => Promise< PartsAddResult >;
 	/** Puts the cursor in the composer, for the model typed by hand. */
 	onTypeModel: () => void;
@@ -77,7 +79,7 @@ export function PartsCard( {
 		}
 		setPhase( 'sending' );
 		try {
-			setPhase( await onAdd( block.add.items ) );
+			setPhase( await onAdd( block.add.items, block.add.proof ) );
 		} catch {
 			setPhase( 'retry' );
 		}
@@ -90,15 +92,14 @@ export function PartsCard( {
 			case 'added':
 				return __( 'In your solution draft.', 'linker-tools' );
 			case 'unverified':
+				return additionUnconfirmedText();
+			case 'stale':
 				return __(
-					'Sent, but the solution draft does not show the change yet.',
+					'Genie needs to check this product list again before it can be saved or added.',
 					'linker-tools'
 				);
 			case 'retry':
-				return __(
-					'Not everything was added. Try again.',
-					'linker-tools'
-				);
+				return __( 'Not added. Try again.', 'linker-tools' );
 			default:
 				return block.add && block.add.products === 1
 					? __(

@@ -17,3 +17,41 @@ Final candidates for the independent review:
 - Unverified file DE: “Ich konnte dieser Datei kein aktuell angebotenes Produkt zuordnen. Bitte wenden Sie sich an das Linker-Team: sales@de-linker.com.”
 
 The unavailable-model sentence distinguishes product-range permission from stock. The unverified-file branch makes no identification claim. The code removes technical ratings and text before recording a fresh identification-only reading, and supplies no technical facts/actions to the model for that turn.
+
+## Signed product-list actions
+
+Dimension: the next current product-list action after a previously displayed
+Genie list has lost its current permission. This is a tool outcome, with no
+claim about inventory quantity, compatibility, warranty or delivery.
+
+Initial draft: “Ask Genie again before saving or adding these products.”
+Adversarial reading found the imperative assigned work to the visitor and the
+engineering alternative “new calculation” incorrectly described ordinary
+product cards. The final candidate instead names Genie's required check:
+
+- EN: “Genie needs to check this product list again before it can be saved or added.”
+- DE, independently written: “Diese Produktliste muss Genie vor dem Speichern oder Hinzufügen erneut prüfen.”
+
+The root integration owner accepted this candidate on 2026-10-23 and owns its
+PO/MO/JSON extraction. It must still appear in the complete Spec/Standards review.
+No statement implies that withdrawal is merely out of stock.
+
+The definite retry state now uses the existing “Not added. Try again.” only
+when the action is known not to have committed. Unknown POST/network outcomes
+retain the common reviewed “Addition not confirmed.” or the full common
+sentence acknowledging the draft may already contain these products. Saving
+with an unknown acknowledgement uses the existing translated resource outcome
+“The request status could not be confirmed. Please check before sending it
+again.” The historical account record is preserved in all those cases.
+
+Pre-delivery:
+
+- [x] Encyclopedia loaded (non-PDP): one tool-action dimension; existing product/list vocabulary.
+- [x] Hard Stops 1–9 hold on the new visible sentence.
+- [x] Actor: Genie performs the necessary check; no new visitor homework.
+- [x] Future: no invented customer trajectory.
+- [x] Weight: an action refusal is not promoted to a service claim.
+- [x] Duration: no continuing-service language.
+- [x] No slogan formulas.
+- [x] No banned brand in new customer copy.
+- [x] No invented quotes.
