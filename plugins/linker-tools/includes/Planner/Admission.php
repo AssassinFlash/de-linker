@@ -134,6 +134,11 @@ final class Admission {
 		$fingerprint = $this->fingerprint( $principal, $path, $command_scope, $command_hash );
 		$id          = $this->operation_id( $principal, $id, $quota->binding(), $fingerprint, true );
 		if ( is_wp_error( $id ) ) {
+			// Exhausting unused local attempts is not a persistence failure and
+			// cannot hide an already-confirmed permanent engine result.
+			if ( 'linker_admission_capacity' === $id->get_error_code() ) {
+				return true;
+			}
 			return Failure::make( 'receipt_persistence', 503 );
 		}
 		$receipt = $ledger->lookup( $id, $fingerprint );

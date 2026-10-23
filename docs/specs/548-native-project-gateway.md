@@ -112,7 +112,10 @@ engineering reports, and does not replace any model channel.
    erasure tombstones cannot reopen admission. Resolving at most32 successor
    entries per request is an initial operational bound, not an engineering or
    business limit; exhaustion returns a temporary refusal with the original
-   frozen intent retained. Permanent engine replay always precedes this work.
+   frozen intent retained when the engine has no receipt. An already-confirmed
+   permanent result is returned despite traversal exhaustion, without new
+   admission or pretending an unlocated journal entry was settled. Journal
+   persistence failures remain explicit. Permanent engine replay precedes this work.
 
 Acceptance requires real HTTP cookies/nonces and a running local site, not
 only mocks: two isolated guests, reload, native login/registration and logout,

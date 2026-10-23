@@ -154,3 +154,23 @@ replay, and does not create a second project. The shared native database suite
 passes13 tests112 assertions1.989s, including erasure refusal. WPCS, PHPStan in
 both plugins and ruff pass. Unchanged browser/engine source retains previous
 evidence. Final independent review and remaining native CUA paths are pending.
+
+## Rejected fixed source c484d444
+
+Both independent axes reproduced one remaining P2:32 unused terminal attempts
+could exhaust local traversal and incorrectly turn an already-confirmed engine
+result into receipt_persistence503. Spec also proved five-layer expiry/cancel
+continuation, erasure refusal/confirmed precedence, and actual two-process
+successor convergence under a barrier between lookup and atomic reservation:
+one new admission, browser/site each used1, old records unchanged. Two transport
+calls can still occur with the same business intent; engine idempotency, not
+network-call counting, guarantees one resource.
+
+The correction distinguishes the local traversal bound from a journal storage
+failure in confirmed acknowledgement. Only capacity exhaustion returns the
+already-confirmed result without inventing a settlement; actual persistence
+failures remain explicit. The [unchanged chain probe](handover-probes/probe-attempt-chain.original.php)
+now proves32-layer confirmed200/no mutation/no charge/unchanged records, while
+absent still503. Five-layer expired/cancelled create one new attempt; erased
+absent refuses and confirmed succeeds without changing the tombstone. All six
+outcomes were asserted. WPCS and PHPStan pass. Final fixed-source axes follow.
