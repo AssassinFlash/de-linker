@@ -102,8 +102,8 @@ final class PublicationInitialBindingsTest extends IntegrationTestCase {
 		$this->assertSame( array(), Publication::faqs_for( $id, $manifest ) );
 	}
 
-	/** Final relation removal, withdrawal and an existing empty binding all remain authoritative. */
-	public function test_normal_republish_cannot_restore_removed_relations_or_empty_bindings(): void {
+	/** Final relation removal and withdrawal remain authoritative after normal republishing. */
+	public function test_normal_republish_cannot_restore_removed_relations(): void {
 		[ $product, $file ] = $this->unbound_draft();
 		$product->set_status( 'publish' );
 		$product->save();
@@ -127,22 +127,113 @@ final class PublicationInitialBindingsTest extends IntegrationTestCase {
 		$this->assertSame( $before['figure_revision'], $after['figure_revision'] );
 		$this->assertSame( $before['metadata'][ Faqs::META_KEY ], $after['metadata'][ Faqs::META_KEY ] );
 		$this->assertFileExists( $file['path'] );
-		update_post_meta( $id, EvidenceBindings::META_KEY, array() );
-		update_post_meta( $id, EvidenceBindings::FAQ_META_KEY, array() );
-		update_post_meta( $id, EngineeringData::DOCUMENTS_META_KEY, $before['metadata'][ EngineeringData::DOCUMENTS_META_KEY ] );
+	}
+
+	/** Normal Woo maintenance may save cited values before staff add their explicit document relation. */
+	public function test_natural_empty_bindings_initialize_when_only_documents_are_added_later(): void {
+		[ $product, $file ] = $this->unbound_draft( false );
+		$id                 = $product->get_id();
+		$this->assertSame( array( array(), array() ), $this->bindings( $id ), 'Normal source writes created empty generated maps without deleting any binding metadata.' );
+		$before = $this->source_snapshot( $id, $file );
+		$product->set_status( 'publish' );
 		$product->save();
-		$this->assertSame( array( array(), array() ), $this->bindings( $id ), 'Restoring a document relation does not reset initialized empty evidence.' );
+		$this->assertSame( array( array(), array() ), $this->bindings( $id ) );
+		$this->assertSame( 410, $this->download_status( $file['url'] ) );
+		$product->update_meta_data(
+			EngineeringData::DOCUMENTS_META_KEY,
+			array(
+				array(
+					'url'  => $file['url'],
+					'type' => 'manual',
+				),
+			)
+		);
+		$product->save();
+		$this->assert_initial_bindings_and_queue( $id );
+		$after = $this->source_snapshot( $id, $file );
+		foreach ( array( SelectionFacts::FIGURES_META_KEY, Faqs::META_KEY ) as $key ) {
+			$this->assertSame( $before['metadata'][ $key ], $after['metadata'][ $key ], 'Only the maintained document relation changed.' );
+		}
+		$this->assertSame( $before['figure_revision'], $after['figure_revision'] );
+		$this->assertSame( $before['document_id'], $after['document_id'] );
+		$this->assertSame( $before['blob_sha256'], $after['blob_sha256'] );
 		$manifest = Publication::manifest();
-		$this->assertSame( array(), Publication::figures_for( $id, $manifest ) );
-		$this->assertSame( array(), Publication::faqs_for( $id, $manifest ) );
+		$this->assertCount( 1, Publication::figures_for( $id, $manifest ) );
+		$this->assertCount( 1, Publication::faqs_for( $id, $manifest ) );
+	}
+
+	/** A later relation initializes missing entries in the same maps as old stale evidence. */
+	public function test_partial_first_bindings_preserve_every_existing_stale_entry(): void {
+		[ $product, $file ] = $this->unbound_draft( false );
+		$product->update_meta_data(
+			EngineeringData::DOCUMENTS_META_KEY,
+			array(
+				array(
+					'url'  => $file['url'],
+					'type' => 'manual',
+				),
+			)
+		);
+		$product->set_status( 'publish' );
+		$product->save();
+		$id  = $product->get_id();
+		$old = $this->bindings( $id );
+		$this->assertNotEmpty( $old[0] );
+		$this->assertNotEmpty( $old[1] );
+		$product->update_meta_data( EngineeringData::DOCUMENTS_META_KEY, array() );
+		$product->save();
+		file_put_contents( $file['path'], "%PDF-1.4\nPartial first-binding replacement\n%%EOF\n" );
+		$figures                        = get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true );
+		$figures['usable_capacity_kwh'] = array(
+			'value'    => 20,
+			'unit'     => 'kWh',
+			'citation' => array(
+				'url'  => $file['url'],
+				'page' => 2,
+			),
+		);
+		$faqs                           = Faqs::of( $id );
+		$faqs[]                         = array(
+			'question'    => 'Second fixture question?',
+			'answer'      => 'Second fixture answer.',
+			'question_de' => 'Zweite Fixture-Frage?',
+			'answer_de'   => 'Zweite Fixture-Antwort.',
+			'citation'    => array(
+				'url'  => $file['url'],
+				'page' => 2,
+			),
+		);
+		$product->update_meta_data( SelectionFacts::FIGURES_META_KEY, $figures );
+		$product->update_meta_data( Faqs::META_KEY, Faqs::encode( $faqs ) );
+		$product->save();
+		$this->assertSame( $old, $this->bindings( $id ), 'New entries have no binding while the relation is absent; old entries retain their old bytes.' );
+		$product->update_meta_data(
+			EngineeringData::DOCUMENTS_META_KEY,
+			array(
+				array(
+					'url'  => $file['url'],
+					'type' => 'manual',
+				),
+			)
+		);
+		$product->save();
+		$after = $this->bindings( $id );
+		$this->assertSame( $old[0], array_intersect_key( $after[0], $old[0] ) );
+		$this->assertSame( $old[1], array_intersect_key( $after[1], $old[1] ) );
+		$this->assertCount( 2, $after[0] );
+		$this->assertCount( 2, $after[1] );
+		$manifest = Publication::manifest();
+		$this->assertSame( array( 'usable_capacity_kwh' ), array_keys( Publication::figures_for( $id, $manifest ) ) );
+		$this->assertSame( array( 'Second fixture answer.' ), array_column( Publication::faqs_for( $id, $manifest ), 'answer' ) );
 	}
 
 	/**
-	 * A pre-adoption draft with owned explicit sources, as skipped by published-only adoption.
+	 * A pre-adoption draft or natural Woo maintenance with documents still missing.
 	 *
+	 * @param bool $pre_adoption Model an existing unbound draft; false uses only normal Woo maintenance.
 	 * @return array{WC_Product_Simple,array{path:string,url:string}}
 	 */
-	private function unbound_draft(): array {
+	private function unbound_draft( bool $pre_adoption = true ): array {
 		$product = new WC_Product_Simple();
 		$product->set_name( 'Initial binding fixture ' . self::tag() );
 		$product->set_status( 'draft' );
@@ -169,51 +260,50 @@ final class PublicationInitialBindingsTest extends IntegrationTestCase {
 			}
 		);
 		file_put_contents( $file['path'], "%PDF-1.4\nOriginal initial-binding fixture\n%%EOF\n" );
-		update_post_meta(
-			$id,
-			EngineeringData::DOCUMENTS_META_KEY,
+		$documents = array(
+			array(
+				'url'  => $file['url'],
+				'type' => 'manual',
+			),
+		);
+		$figures   = array(
+			'rated_ac_power_kw' => array(
+				'value'    => 10,
+				'unit'     => 'kW',
+				'citation' => array(
+					'url'  => $file['url'],
+					'page' => 1,
+				),
+			),
+		);
+		$faqs      = Faqs::encode(
 			array(
 				array(
-					'url'  => $file['url'],
-					'type' => 'manual',
-				),
-			)
-		);
-		update_post_meta(
-			$id,
-			SelectionFacts::FIGURES_META_KEY,
-			array(
-				'rated_ac_power_kw' => array(
-					'value'    => 10,
-					'unit'     => 'kW',
-					'citation' => array(
+					'question'    => 'Fixture question?',
+					'answer'      => 'Fixture answer.',
+					'question_de' => 'Fixture-Frage?',
+					'answer_de'   => 'Fixture-Antwort.',
+					'citation'    => array(
 						'url'  => $file['url'],
 						'page' => 1,
 					),
 				),
 			)
 		);
-		update_post_meta(
-			$id,
-			Faqs::META_KEY,
-			Faqs::encode(
-				array(
-					array(
-						'question'    => 'Fixture question?',
-						'answer'      => 'Fixture answer.',
-						'question_de' => 'Fixture-Frage?',
-						'answer_de'   => 'Fixture-Antwort.',
-						'citation'    => array(
-							'url'  => $file['url'],
-							'page' => 1,
-						),
-					),
-				)
-			)
-		);
-		// Only these owned keys emulate an existing draft skipped by first adoption.
-		delete_post_meta( $id, EvidenceBindings::META_KEY );
-		delete_post_meta( $id, EvidenceBindings::FAQ_META_KEY );
+		if ( $pre_adoption ) {
+			update_post_meta( $id, EngineeringData::DOCUMENTS_META_KEY, $documents );
+			update_post_meta( $id, SelectionFacts::FIGURES_META_KEY, $figures );
+			update_post_meta( $id, Faqs::META_KEY, $faqs );
+			// Only these owned keys emulate an existing draft skipped by first adoption.
+			delete_post_meta( $id, EvidenceBindings::META_KEY );
+			delete_post_meta( $id, EvidenceBindings::FAQ_META_KEY );
+		} else {
+			$product->update_meta_data( EngineeringData::DOCUMENTS_META_KEY, array() );
+			$product->save();
+			$product->update_meta_data( SelectionFacts::FIGURES_META_KEY, $figures );
+			$product->update_meta_data( Faqs::META_KEY, $faqs );
+			$product->save();
+		}
 		return array( $product, $file );
 	}
 
@@ -255,7 +345,7 @@ final class PublicationInitialBindingsTest extends IntegrationTestCase {
 	private function assert_initial_bindings_and_queue( int $id ): void {
 		$this->assertTrue( metadata_exists( 'post', $id, EvidenceBindings::META_KEY ), 'Final Woo save initialized the missing figure bindings.' );
 		$this->assertTrue( metadata_exists( 'post', $id, EvidenceBindings::FAQ_META_KEY ), 'Final Woo save initialized the missing FAQ bindings.' );
-		$this->assertTrue( get_option( 'linker_publication_pending' ), 'Final Woo save leaves preparation pending.' );
+		$this->assertSame( '1', (string) get_option( 'linker_publication_pending' ), 'Final Woo save leaves preparation pending.' );
 		$this->assertNotFalse( as_has_scheduled_action( 'linker_publication_reconcile', array(), 'linker-publication' ), 'Preparation has durable native Action Scheduler work.' );
 	}
 

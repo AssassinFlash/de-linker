@@ -68,10 +68,10 @@ final class PublicationHooksTest extends IntegrationTestCase {
 		delete_option( 'linker_publication_pending' );
 		$this->assertNotFalse( wp_update_attachment_metadata( $id, $metadata ) );
 		$this->assertSame( $metadata, get_post_meta( $id, '_wp_attachment_metadata', true ) );
-		$this->assertTrue( get_option( 'linker_publication_pending' ) );
+		$this->assert_pending();
 		delete_option( 'linker_publication_pending' );
 		update_post_meta( $id, '_linker_document_public', '0' );
-		$this->assertTrue( get_option( 'linker_publication_pending' ) );
+		$this->assert_pending();
 	}
 
 	/** All native product metadata operations continue to notify the queue. */
@@ -80,17 +80,22 @@ final class PublicationHooksTest extends IntegrationTestCase {
 		$id      = $product->get_id();
 		delete_option( 'linker_publication_pending' );
 		add_post_meta( $id, '_linker_hook_fixture', 'first', true );
-		$this->assertTrue( get_option( 'linker_publication_pending' ) );
+		$this->assert_pending();
 		delete_option( 'linker_publication_pending' );
 		update_post_meta( $id, '_linker_hook_fixture', 'second' );
-		$this->assertTrue( get_option( 'linker_publication_pending' ) );
+		$this->assert_pending();
 		delete_option( 'linker_publication_pending' );
 		delete_post_meta( $id, '_linker_hook_fixture' );
-		$this->assertTrue( get_option( 'linker_publication_pending' ) );
+		$this->assert_pending();
 		delete_option( 'linker_publication_pending' );
 		$product->set_status( 'draft' );
 		$product->save();
-		$this->assertTrue( get_option( 'linker_publication_pending' ) );
+		$this->assert_pending();
+	}
+
+	/** Native options may return cached true or the persisted string representation. */
+	private function assert_pending(): void {
+		$this->assertSame( '1', (string) get_option( 'linker_publication_pending' ) );
 	}
 
 	/**

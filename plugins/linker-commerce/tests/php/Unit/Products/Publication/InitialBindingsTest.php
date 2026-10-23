@@ -93,20 +93,17 @@ final class InitialBindingsTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
-		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing( fn ( int $id ): string => $this->runtime_statuses[ $id ] );
+		WP_Mock::userFunction( 'get_post_status' )->andReturnUsing(
+			function ( int $id ): string {
+				$this->assertGreaterThan( 0, $this->fresh_reads, 'Publication must refresh before reading native source and locale status.' );
+				return $this->runtime_statuses[ $id ];
+			}
+		);
 		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturnUsing(
 			function (): bool {
 				++$this->fresh_reads;
 				$this->runtime_statuses = $this->source_statuses;
 				return true;
-			}
-		);
-		WP_Mock::userFunction( 'metadata_exists' )->andReturnUsing(
-			function ( string $type, int $id, string $key ): bool {
-				$this->assertSame( 'post', $type );
-				$this->assertSame( 12, $id, 'Bindings belong to the canonical source, not its locale mirror.' );
-				$this->assertGreaterThan( 0, $this->fresh_reads, 'Publication must refresh before inspecting binding metadata.' );
-				return array_key_exists( $key, $this->current_faq_meta );
 			}
 		);
 	}
@@ -151,20 +148,56 @@ final class InitialBindingsTest extends TestCase {
 		$this->assertCount( 1, Publication::faqs_for( 13 ) );
 	}
 
-	/** Existing empty or malformed metadata is initialized history, never permission to re-adopt. */
-	public function test_existing_empty_binding_keys_are_never_auto_initialized(): void {
+	/** An empty generated map has no historical entries and may receive first bindings. */
+	public function test_empty_generated_containers_initialize_their_missing_entries(): void {
+		$this->current_faq_meta[ EvidenceBindings::META_KEY ]     = array();
+		$this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] = array();
+		EvidenceBindings::capture_missing( 12 );
+		$this->assertNotEmpty( get_post_meta( 12, EvidenceBindings::META_KEY, true ) );
+		$this->assertNotEmpty( get_post_meta( 12, EvidenceBindings::FAQ_META_KEY, true ) );
+	}
+
+	/** Existing corrupt containers are not a missing map and cannot acquire replacement evidence. */
+	public function test_malformed_existing_containers_are_preserved_without_pdf_reads(): void {
 		WP_Mock::userFunction( 'wp_upload_dir' )->never();
-		foreach ( array( array(), '', null ) as $empty ) {
-			$this->current_faq_meta[ EvidenceBindings::META_KEY ]     = $empty;
-			$this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] = $empty;
+		foreach ( array( '', null, 'damaged', 42 ) as $malformed ) {
+			$this->current_faq_meta[ EvidenceBindings::META_KEY ]     = $malformed;
+			$this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] = $malformed;
 			EvidenceBindings::capture_missing( 12 );
-			$this->assertSame( $empty, $this->current_faq_meta[ EvidenceBindings::META_KEY ] );
-			$this->assertSame( $empty, $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
+			$this->assertSame( $malformed, $this->current_faq_meta[ EvidenceBindings::META_KEY ] );
+			$this->assertSame( $malformed, $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
 		}
 	}
 
-	/** A missing FAQ key cannot cause the existing figure binding to be rewritten. */
-	public function test_each_key_initializes_independently_and_preserves_stale_bindings(): void {
+	/** An existing entry key, even null or an invalid array, is historical and stays fail closed. */
+	public function test_malformed_existing_entries_are_preserved_without_pdf_reads(): void {
+		WP_Mock::userFunction( 'wp_upload_dir' )->never();
+		$faq_key = Publication::revision( Faqs::of( 12 )[0] );
+		foreach ( array( null, 'damaged', array() ) as $malformed ) {
+			$figures = array( 'rated_ac_power_kw' => $malformed );
+			$faqs    = array( $faq_key => $malformed );
+			$this->current_faq_meta[ EvidenceBindings::META_KEY ]     = $figures;
+			$this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] = $faqs;
+			EvidenceBindings::capture_missing( 12 );
+			$this->assertSame( $figures, $this->current_faq_meta[ EvidenceBindings::META_KEY ] );
+			$this->assertSame( $faqs, $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
+		}
+	}
+
+	/** Fully initialized evidence and deleted/invalid raw rows require no PDF read on adoption. */
+	public function test_complete_entries_and_removed_raw_rows_do_not_read_pdf_bytes(): void {
+		EvidenceBindings::capture_missing( 12 );
+		WP_Mock::userFunction( 'wp_upload_dir' )->never();
+		EvidenceBindings::capture_missing( 12 );
+		$this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ] = array( 'invalid' => array( 'value' => 20 ) );
+		$this->current_faq_meta[ Faqs::META_KEY ]                   = array();
+		EvidenceBindings::capture_missing( 12 );
+		$this->assertSame( array(), $this->current_faq_meta[ EvidenceBindings::META_KEY ] );
+		$this->assertSame( array(), $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
+	}
+
+	/** Missing entries may acquire first bindings while every recorded stale entry keeps its old SHA. */
+	public function test_partial_missing_entries_initialize_without_renewing_stale_entries(): void {
 		EvidenceBindings::capture_missing( 12 );
 		$figures = $this->current_faq_meta[ EvidenceBindings::META_KEY ];
 		$faqs    = $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ];
@@ -176,10 +209,29 @@ final class InitialBindingsTest extends TestCase {
 		$this->assertSame( $faqs, $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
 		$this->assertSame( array(), Publication::figures_for( 12 ) );
 		$this->assertSame( array(), Publication::faqs_for( 12 ) );
-		unset( $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
+		$this->current_faq_meta[ SelectionFacts::FIGURES_META_KEY ]['usable_capacity_kwh'] = array(
+			'value'    => 20,
+			'unit'     => 'kWh',
+			'citation' => array(
+				'url'  => $file['url'],
+				'page' => 2,
+			),
+		);
+		$this->current_faq_meta[ Faqs::META_KEY ][]                                        = array(
+			'question' => 'Second fixture?',
+			'answer'   => 'Second answer.',
+			'citation' => array(
+				'url'  => $file['url'],
+				'page' => 2,
+			),
+		);
 		EvidenceBindings::capture_missing( 13 );
-		$this->assertSame( $figures, $this->current_faq_meta[ EvidenceBindings::META_KEY ] );
-		$this->assertNotSame( $faqs, $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
+		$this->assertSame( $figures['rated_ac_power_kw'], $this->current_faq_meta[ EvidenceBindings::META_KEY ]['rated_ac_power_kw'] );
+		$this->assertSame( $faqs, array_intersect_key( $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ], $faqs ) );
+		$this->assertCount( 2, $this->current_faq_meta[ EvidenceBindings::META_KEY ] );
+		$this->assertCount( 2, $this->current_faq_meta[ EvidenceBindings::FAQ_META_KEY ] );
+		$this->assertSame( array( 'usable_capacity_kwh' ), array_keys( Publication::figures_for( 12 ) ) );
+		$this->assertSame( 'Second answer.', Publication::faqs_for( 13 )[0]['answer'] );
 	}
 
 	/** Fresh source and locale permission both precede initialization, even with warm published copies. */

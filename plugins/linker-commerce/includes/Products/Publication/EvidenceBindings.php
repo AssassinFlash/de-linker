@@ -19,8 +19,8 @@ final class EvidenceBindings {
 	public const FAQ_META_KEY = '_linker_publication_faqs';
 
 	/**
-	 * First publication adopts previously unbound drafts after Woo persists all fields.
-	 * Existing empty or stale metadata is history, never a request to renew evidence.
+	 * Initialize never-bound entries after Woo persists current explicit source relations.
+	 * Previously recorded entries, including stale evidence, are never renewed here.
 	 *
 	 * @param int $id Saved locale product ID.
 	 */
@@ -29,19 +29,15 @@ final class EvidenceBindings {
 			return;
 		}
 		$id = Publication::canonical_id( $id );
-		if ( ! metadata_exists( 'post', $id, self::META_KEY ) ) {
-			self::capture( $id, true );
-		}
-		if ( ! metadata_exists( 'post', $id, self::FAQ_META_KEY ) ) {
-			self::capture_faqs( $id, true );
-		}
+		self::capture( $id, true );
+		self::capture_faqs( $id, true );
 	}
 
 	/**
 	 * Bind new/edited figure facts; unchanged fields never adopt replaced bytes.
 	 *
 	 * @param int  $id Canonical Woo product.
-	 * @param bool $adopt_existing One-time existing-source migration; never overwrite an existing binding.
+	 * @param bool $adopt_existing Initial explicit-source adoption; never overwrite an existing entry.
 	 */
 	public static function capture( int $id, bool $adopt_existing = false ): void {
 		$id  = Publication::canonical_id( $id );
@@ -55,7 +51,7 @@ final class EvidenceBindings {
 	 * Bind cited answers by content identity, so reordering never adopts new PDF bytes.
 	 *
 	 * @param int  $id Canonical Woo product.
-	 * @param bool $adopt_existing Initial explicit-source adoption only.
+	 * @param bool $adopt_existing Preserve existing entries while adopting missing explicit sources.
 	 */
 	public static function capture_faqs( int $id, bool $adopt_existing = false ): void {
 		$id      = Publication::canonical_id( $id );
@@ -76,37 +72,53 @@ final class EvidenceBindings {
 	 */
 	private static function capture_entries( int $id, array $raw, string $meta_key, bool $adopt_existing ): void {
 		$previous = get_post_meta( $id, $meta_key, true );
+		if ( $adopt_existing && ! is_array( $previous ) && metadata_exists( 'post', $id, $meta_key ) ) {
+			return;
+		}
 		$previous = is_array( $previous ) ? $previous : array();
 		$paths    = array();
 		$names    = array();
-		DocumentFiles::begin_read();
-		try {
-			foreach ( Publication::document_rows( $id ) as $row ) {
-				$file = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
-				if ( null === $file ) {
-					continue;
-				}
-				$identity = DocumentFiles::id( $file['url'] );
-				$binding  = array(
-					'document_id' => $identity,
-					'blob_sha256' => $file['blob_sha256'],
-				);
-				foreach ( array_merge( array( $file['url'] ), (array) ( $row['aliases'] ?? array() ) ) as $url ) {
-					$alias = is_string( $url ) ? DocumentFiles::resolve( $url ) : null;
-					if ( null !== $alias && $alias['blob_sha256'] === $file['blob_sha256'] ) {
-						$path           = rawurldecode( (string) wp_parse_url( $alias['url'], PHP_URL_PATH ) );
-						$paths[ $path ] = $binding;
-						$names[ strtolower( basename( $path ) ) ][ $identity ] = $binding;
-					}
-				}
-				foreach ( (array) ( $row['citation_aliases'] ?? array() ) as $name ) {
-					if ( is_string( $name ) ) {
-						$names[ strtolower( $name ) ][ $identity ] = $binding;
-					}
-				}
+		$needed   = false;
+		foreach ( $raw as $key => $entry ) {
+			if ( ! is_array( $entry ) || ! is_array( $entry['citation'] ?? null ) ) {
+				continue;
 			}
-		} finally {
-			DocumentFiles::end_read();
+			$old = $previous[ $key ] ?? null;
+			if ( $adopt_existing ? ! array_key_exists( $key, $previous ) : ! is_array( $old ) || ( $old['figure_revision'] ?? '' ) !== Publication::revision( $entry ) ) {
+				$needed = true;
+				break;
+			}
+		}
+		if ( $needed ) {
+			DocumentFiles::begin_read();
+			try {
+				foreach ( Publication::document_rows( $id ) as $row ) {
+					$file = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
+					if ( null === $file ) {
+						continue;
+					}
+					$identity = DocumentFiles::id( $file['url'] );
+					$binding  = array(
+						'document_id' => $identity,
+						'blob_sha256' => $file['blob_sha256'],
+					);
+					foreach ( array_merge( array( $file['url'] ), (array) ( $row['aliases'] ?? array() ) ) as $url ) {
+						$alias = is_string( $url ) ? DocumentFiles::resolve( $url ) : null;
+						if ( null !== $alias && $alias['blob_sha256'] === $file['blob_sha256'] ) {
+							$path           = rawurldecode( (string) wp_parse_url( $alias['url'], PHP_URL_PATH ) );
+							$paths[ $path ] = $binding;
+							$names[ strtolower( basename( $path ) ) ][ $identity ] = $binding;
+						}
+					}
+					foreach ( (array) ( $row['citation_aliases'] ?? array() ) as $name ) {
+						if ( is_string( $name ) ) {
+							$names[ strtolower( $name ) ][ $identity ] = $binding;
+						}
+					}
+				}
+			} finally {
+				DocumentFiles::end_read();
+			}
 		}
 		$next = array();
 		foreach ( $raw as $key => $entry ) {
@@ -115,8 +127,8 @@ final class EvidenceBindings {
 			}
 			$fingerprint = Publication::revision( $entry );
 			$old         = $previous[ $key ] ?? null;
-			if ( is_array( $old ) && ( $adopt_existing || ( $old['figure_revision'] ?? '' ) === $fingerprint ) ) {
-				$next[ $key ] = $old;
+			if ( ( $adopt_existing && array_key_exists( $key, $previous ) ) || ( is_array( $old ) && ( $old['figure_revision'] ?? '' ) === $fingerprint ) ) {
+				$next[ $key ] = $previous[ $key ];
 				continue;
 			}
 			$binding = null;
