@@ -25,13 +25,14 @@ final class PlannerApplicationTest extends TestCase {
 	 *
 	 * @throws \RuntimeException If the native configuration is absent.
 	 */
-	public function test_native_mount_exposes_the_current_reviewed_scene_module(): void {
+	public function test_native_mount_exposes_the_current_reviewed_view_modules(): void {
 		$root     = dirname( __DIR__, 3 ) . '/';
 		$base     = 'https://fixture.invalid/wp-content/plugins/linker-tools/';
 		$manifest = json_decode( (string) file_get_contents( $root . 'build/planner/vite-manifest.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- actual read-only build fixture.
 		$this->assertIsArray( $manifest );
 		$entry = $manifest['src/main.tsx']['file'];
 		$scene = $manifest['src/components/design/SceneViewport.tsx']['file'];
+		$map   = $manifest['src/components/design/MapViewport.tsx']['file'];
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => $root ) );
 		WP_Mock::userFunction( 'plugin_dir_url', array( 'return' => $base ) );
 		WP_Mock::userFunction(
@@ -87,6 +88,7 @@ final class PlannerApplicationTest extends TestCase {
 		$this->assertSame( 1, preg_match( '/data-planner-config="([^"]+)"/', $html, $matches ) );
 		$config = json_decode( html_entity_decode( $matches[1] ?? throw new \RuntimeException( 'Native planner configuration was not rendered.' ), ENT_QUOTES ), true );
 		$this->assertSame( $base . 'build/planner/' . $scene, $config['scene_module_url'] );
+		$this->assertSame( $base . 'build/planner/' . $map, $config['map_module_url'] );
 		$this->assertSame( array( 'FR' => 'France' ), $config['countries'] );
 		$this->assertStringNotContainsString( '<script', $html );
 		$this->assertSame( '', $app->mount() );

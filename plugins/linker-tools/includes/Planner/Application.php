@@ -28,6 +28,13 @@ final class Application {
 	private ?string $scene_module_url = null;
 
 	/**
+	 * Reviewed lazy map module, never a provider or user-selected script.
+	 *
+	 * @var string|null
+	 */
+	private ?string $map_module_url = null;
+
+	/**
 	 * Locate the plugin's reviewed build.
 	 *
 	 * @param string $plugin_file Main plugin file.
@@ -61,6 +68,10 @@ final class Application {
 		if ( is_string( $scene ) && 1 === preg_match( '~\Aassets/SceneViewport-[a-zA-Z0-9_-]+\.js\z~', $scene ) ) {
 			$this->scene_module_url = plugin_dir_url( $this->plugin_file ) . 'build/planner/' . $scene;
 		}
+		$map = $manifest['src/components/design/MapViewport.tsx']['file'] ?? null;
+		if ( is_string( $map ) && 1 === preg_match( '~\Aassets/MapViewport-[a-zA-Z0-9_-]+\.js\z~', $map ) ) {
+			$this->map_module_url = plugin_dir_url( $this->plugin_file ) . 'build/planner/' . $map;
+		}
 		wp_register_script_module( self::HANDLE, plugin_dir_url( $this->plugin_file ) . 'build/planner/' . $file, array(), is_string( $version ) ? $version : null );
 		wp_set_script_module_translations( self::HANDLE, 'linker-tools', plugin_dir_path( $this->plugin_file ) . 'languages' );
 	}
@@ -81,6 +92,7 @@ final class Application {
 				'locale'           => determine_locale(),
 				'countries'        => (object) $countries,
 				'scene_module_url' => $this->scene_module_url,
+				'map_module_url'   => $this->map_module_url,
 			)
 		);
 		return sprintf(

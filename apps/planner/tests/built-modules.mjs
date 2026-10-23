@@ -10,6 +10,19 @@ test("a lazy built chunk never executes the versioned WordPress entry again", as
 		url: "https://fixture.invalid/workspace/",
 	});
 	const previous = new Map();
+	// JSDOM omits Blob URLs. MapLibre creates its local worker URL at module
+	// import, before a map exists. Use Node's real Blob registry for this import
+	// identity test; no Worker, WebGL or browser/provider result is simulated.
+	const blobUrls = new Set();
+	dom.window.URL.createObjectURL = (blob) => {
+		const url = URL.createObjectURL(blob);
+		blobUrls.add(url);
+		return url;
+	};
+	dom.window.URL.revokeObjectURL = (url) => {
+		URL.revokeObjectURL(url);
+		blobUrls.delete(url);
+	};
 	for (const name of [
 		"window",
 		"document",
@@ -24,6 +37,7 @@ test("a lazy built chunk never executes the versioned WordPress entry again", as
 		});
 	}
 	t.after(() => {
+		for (const url of blobUrls) URL.revokeObjectURL(url);
 		dom.window.close();
 		for (const [name, descriptor] of previous) {
 			if (descriptor) Object.defineProperty(globalThis, name, descriptor);
@@ -43,7 +57,10 @@ test("a lazy built chunk never executes the versioned WordPress entry again", as
 	const manifest = JSON.parse(
 		await readFile(new URL("vite-manifest.json", directory), "utf8"),
 	);
-	assert.ok(manifest["src/components/design/SceneViewport.tsx"]?.isDynamicEntry);
+	assert.ok(
+		manifest["src/components/design/SceneViewport.tsx"]?.isDynamicEntry,
+	);
+	assert.ok(manifest["src/components/design/MapViewport.tsx"]?.isDynamicEntry);
 	await import(
 		new URL(manifest["src/main.tsx"].file + "?ver=wordpress-version", directory)
 	);

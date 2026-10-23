@@ -356,3 +356,25 @@
 [data-linker-planner] .lp-project :is(label, input, textarea, select) {
   scroll-margin-top: calc(var(--lp-site-header-height, 0px) + var(--lp-project-bar-height, 0px) + 16px);
 }
+
+/* Map rendering stays inside the tool surface and the site token system. */
+@layer components {
+  [data-linker-planner] .lp-map-view { min-width: 0; border-block: 1px solid var(--lp-line); background: rgb(255 255 255 / .62); }
+  [data-linker-planner] .lp-map-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 20px 20px 0; }
+  [data-linker-planner] .lp-map-heading h3 { font-size: 17px; margin: 0; }
+  [data-linker-planner] .lp-map-view > .lp-profile-help { margin: 12px 20px 16px; }
+  [data-linker-planner] .lp-map-toolbar { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 0 20px 16px; }
+  [data-linker-planner] .lp-map-host.maplibregl-map { font-family: var(--proto-font-sans); line-height: 1.6; }
+  [data-linker-planner] .lp-map-host { width: 100%; height: 560px; min-width: 0; position: relative; background: var(--proto-neutral-100); }
+  [data-linker-planner] .lp-map-provider { padding: 18px 20px 22px; }
+  [data-linker-planner] .lp-map-provider a { font-size: 12px; color: var(--proto-teal-800); text-underline-offset: 3px; }
+  [data-linker-planner] .lp-map-view > [role="status"], [data-linker-planner] .lp-map-view > .lp-notice { margin: 0 20px 16px; }
+  [data-linker-planner] .lp-map-host .maplibregl-ctrl-attrib { max-width: calc(100% - 16px); font-family: var(--proto-font-sans); font-size: 10px; line-height: 1.6; color: var(--proto-neutral-800); background: rgb(255 255 255 / .9); }
+  [data-linker-planner] .lp-map-host .maplibregl-ctrl-attrib a { color: var(--proto-neutral-800); text-decoration: underline; }
+  [data-linker-planner] .lp-map-host .maplibregl-ctrl-bottom-right { max-width: 100%; }
+  [data-linker-planner] .lp-map-host .maplibregl-ctrl-attrib-inner { white-space: normal; overflow-wrap: anywhere; }
+  @media (max-width: 640px) {
+    [data-linker-planner] .lp-map-host { height: 420px; }
+    [data-linker-planner] .lp-map-heading { align-items: flex-start; }
+  }
+}

@@ -6,6 +6,7 @@ export interface Configuration {
 	readonly locale: string;
 	readonly countries: Readonly<Record<string, string>>;
 	readonly sceneModuleUrl?: string | null;
+	readonly mapModuleUrl?: string | null;
 }
 export function readConfiguration(
 	element: HTMLElement,
@@ -25,31 +26,34 @@ export function readConfiguration(
 		)
 	)
 		throw new Error("invalid_planner_countries");
-	let sceneModuleUrl: string | null = null;
-	if (data.scene_module_url !== undefined && data.scene_module_url !== null) {
-		if (typeof data.scene_module_url !== "string")
-			throw new Error("invalid_planner_scene_module");
-		const asset = new URL(data.scene_module_url, element.baseURI);
+	function reviewedModule(field: string, prefix: string): string | null {
+		const value = data[field + "_module_url"];
+		if (value === undefined || value === null) return null;
+		const error = "invalid_planner_" + field + "_module";
+		if (typeof value !== "string") throw new Error(error);
+		const asset = new URL(value, element.baseURI);
 		const entryDirectory = new URL(".", entryModuleUrl);
 		if (
 			asset.origin !== entryDirectory.origin ||
 			new URL(".", asset).href !== entryDirectory.href ||
 			asset.username ||
 			asset.password ||
-			// WHATWG search/hash are also empty for a bare trailing ? or #.
+			// Empty ?/# delimiters are also forbidden by complete URL equality.
 			asset.href !== asset.origin + asset.pathname ||
-			!/^SceneViewport-[a-zA-Z0-9_-]+\.js$/.test(
+			!new RegExp("^" + prefix + "-[a-zA-Z0-9_-]+\\.js$").test(
 				asset.pathname.slice(entryDirectory.pathname.length),
 			)
 		)
-			throw new Error("invalid_planner_scene_module");
-		sceneModuleUrl = asset.href;
+			throw new Error(error);
+		return asset.href;
 	}
+
 	return {
 		baseUrl: data.base_url,
 		nonceUrl: data.nonce_url,
 		locale: data.locale.replaceAll("_", "-").replace("-formal", ""),
 		countries: countries as Record<string, string>,
-		sceneModuleUrl,
+		sceneModuleUrl: reviewedModule("scene", "SceneViewport"),
+		mapModuleUrl: reviewedModule("map", "MapViewport"),
 	};
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import type {
 	PreparedGeometryImport,
@@ -25,6 +25,8 @@ import { PlanViewport } from "./PlanViewport.tsx";
 import { GeometryIntake } from "./GeometryIntake.tsx";
 import { CoordinatesForm } from "./CoordinatesForm.tsx";
 import { LazySceneViewport } from "./LazySceneViewport.tsx";
+import { LazyMapViewport } from "./LazyMapViewport.tsx";
+import type { MapCamera } from "./MapViewport.tsx";
 
 type FormKind =
 	| "roof"
@@ -47,6 +49,7 @@ export function DesignEditor({
 	geometry,
 	geometryImports = { schema_version: 1, selected: {} },
 	sceneModuleUrl = null,
+	mapModuleUrl = null,
 	commit,
 	locale,
 	projectId,
@@ -62,6 +65,7 @@ export function DesignEditor({
 	geometry: GeometryDocument;
 	geometryImports?: GeometryImportSelections;
 	sceneModuleUrl?: string | null;
+	mapModuleUrl?: string | null;
 	commit: (command: GeometryCommand) => boolean;
 	locale: string;
 	projectId: string;
@@ -81,7 +85,8 @@ export function DesignEditor({
 		[roofId, setRoofId] = useState<string | null>(
 			geometry.roofs[0]?.id ?? null,
 		),
-		[view, setView] = useState<"plan" | "3d">("plan");
+		[view, setView] = useState<"plan" | "map" | "3d">("plan");
+	const mapCamera = useRef<MapCamera | null>(null);
 	const [importOpen, setImportOpen] = useState(false);
 	const [form, setForm] = useState<FormState | null>(null),
 		[error, setError] = useState(false),
@@ -230,6 +235,13 @@ export function DesignEditor({
 					</button>
 					<button
 						type="button"
+						aria-pressed={view === "map"}
+						onClick={() => setView("map")}
+					>
+						{__("Map", "linker-tools")}
+					</button>
+					<button
+						type="button"
 						aria-pressed={view === "3d"}
 						onClick={() => setView("3d")}
 					>
@@ -268,7 +280,18 @@ export function DesignEditor({
 			/>
 			<div className="lp-design-workspace">
 				<div className="lp-design-canvas">
-					{roof ? (
+					{view === "map" ? (
+						<LazyMapViewport
+							mapModuleUrl={mapModuleUrl}
+							document={geometry}
+							poses={poses}
+							selected={selected}
+							select={choose}
+							disabled={!!form || importOpen}
+							openReferences={() => open("coordinates")}
+							camera={mapCamera}
+						/>
+					) : roof ? (
 						<>
 							<div className="lp-roof-picker">
 								<label>

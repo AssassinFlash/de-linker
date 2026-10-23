@@ -1,0 +1,22 @@
+{
+  "map-display-primary/apify-results.json": {
+    "bytes": 458797,
+    "sha256": "02adb38c8622f394e38975c52ba0a5ff0af447d78a445afc11011e0d68c48714"
+  },
+  "map-display-primary/input.json": {
+    "bytes": 862,
+    "sha256": "39ba0cfed6ed6f73b026dcddd802a94055d558ba6800e08522b16fa7575c972b"
+  },
+  "map-display-primary/run.json": {
+    "bytes": 268,
+    "sha256": "fbc0cc97e24cf4e436fe9dd4155155339b48b2513769914e8db3abad13e44901"
+  },
+  "provider-openfreemap/apify-results.json": {
+    "bytes": 46489,
+    "sha256": "bb8e9dc4fd64c270b846c350536880f5412776f20327fc58a1fb2ff7cc698da0"
+  },
+  "provider-openfreemap/run.json": {
+    "bytes": 218,
+    "sha256": "9e3960609ecf5f97acdea9ea12b1632874b565730042e61e36b5ce5f55d918e5"
+  }
+}

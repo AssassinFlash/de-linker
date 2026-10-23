@@ -44,6 +44,11 @@ lp-index-heading
 lp-inline-actions
 lp-keepout-shape
 lp-layout-review
+lp-map-heading
+lp-map-host
+lp-map-provider
+lp-map-toolbar
+lp-map-view
 lp-mobile-workspace
 lp-module-table
 lp-nav-mark

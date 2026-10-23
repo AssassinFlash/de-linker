@@ -670,6 +670,7 @@ export function ProjectEditor({
 								recoveryScopes={recoveryScopes}
 								recoveryChecking={recoveryChecking}
 								sceneModuleUrl={config.sceneModuleUrl ?? null}
+								mapModuleUrl={config.mapModuleUrl ?? null}
 								commit={editGeometry}
 								locale={config.locale}
 								projectId={project.id}

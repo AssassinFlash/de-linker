@@ -1,0 +1,14 @@
+{
+  "source": "tools/local/mu/000-linker-local-isolation.php",
+  "instance": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/mu-plugins/000-linker-local-isolation.php",
+  "before_sha256": "f75a50aa7613cd049f8891d253dd0538c603529f2f8cb4cfb6d85edfcdb573f3",
+  "recovery_git": "be5711bf:tools/local/mu/000-linker-local-isolation.php",
+  "original_instance_matched_git": true,
+  "after_sha256": "9a230984633ed6383b4e880abe4dcb72baa4f80e69eb65848812380b85585256",
+  "only_new_origin": "https://tiles.openfreemap.org",
+  "directives": [
+    "img-src",
+    "connect-src"
+  ],
+  "other_instances_modified": false
+}

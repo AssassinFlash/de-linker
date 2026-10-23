@@ -4739,3 +4739,95 @@ msgstr "Kompatibilitätsmodus"
 #: build/planner/assets/planner.js
 msgid "Use this if the 3D view does not display correctly."
 msgstr "Nutzen Sie diesen Modus, wenn die 3D-Ansicht nicht korrekt dargestellt wird."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:381
+msgid "Show full design"
+msgstr "Gesamte Planung anzeigen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:445
+msgid "Hide street map"
+msgstr "Straßenkarte ausblenden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:446
+msgid "Load street map"
+msgstr "Straßenkarte laden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:411 ../../apps/planner/src/components/design/LazyMapViewport.tsx:29
+msgid "Loading map…"
+msgstr "Karte wird geladen…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:434
+msgid "Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation."
+msgstr "Wenn Sie die Straßenkarte laden, erhalten OpenFreeMap und die beteiligten Dienste Ihre IP-Adresse und Angaben zum angezeigten Kartenausschnitt. Die Straßenkarte dient der Orientierung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/DesignEditor.tsx:241
+msgid "Map"
+msgstr "Karte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:177
+msgid "Map attribution"
+msgstr "Quellenangaben zur Karte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:371
+msgid "Map controls"
+msgstr "Bedienelemente der Karte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:180
+msgid "Map feedback"
+msgstr "Rückmeldung zur Karte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:453
+msgid "OpenFreeMap privacy policy"
+msgstr "Datenschutzhinweise von OpenFreeMap"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:407
+msgid "North up"
+msgstr "Norden oben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:359
+msgid "Project geometry"
+msgstr "Projektgeometrie"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:175 ../../apps/planner/src/components/design/MapViewport.tsx:205 ../../apps/planner/src/components/design/MapViewport.tsx:355
+msgid "Project map"
+msgstr "Projektkarte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:426 ../../apps/planner/src/components/design/LazyMapViewport.tsx:25
+msgid "Retry loading map"
+msgstr "Karte erneut laden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:417
+msgid "The map could not be fully displayed. Your project geometry is unchanged."
+msgstr "Die Karte konnte nicht vollständig angezeigt werden. Die Geometrie Ihres Projekts ist unverändert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:358
+msgid "Street map"
+msgstr "Straßenkarte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:330
+msgid "The map needs a geographic origin and a recorded true-north reference for this design."
+msgstr "Die Kartenansicht benötigt einen geografischen Ursprung und einen im Projekt hinterlegten Bezug auf geografisch Nord."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:364
+msgid "The map displays your recorded geometry using the project's geographic reference. Roof dimensions and declared source accuracy remain unchanged."
+msgstr "Die Karte zeigt die erfasste Geometrie anhand des geografischen Projektbezugs. Dachmaße und die im Projekt angegebene Quellengenauigkeit bleiben unverändert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/LazyMapViewport.tsx:22
+msgid "The map could not be loaded. You can still switch views or edit numeric properties."
+msgstr "Die Karte konnte nicht geladen werden. Sie können weiterhin die Ansicht wechseln oder numerische Eigenschaften bearbeiten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:334
+msgid "This geometry cannot be shown on the map. You can still switch views or edit numeric properties."
+msgstr "Diese Geometrie lässt sich auf der Karte nicht darstellen. Sie können weiterhin die Ansicht wechseln oder numerische Eigenschaften bearbeiten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:182
+msgid "Use Ctrl + scroll to zoom the map"
+msgstr "Zum Zoomen der Karte Strg gedrückt halten und scrollen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:190
+msgid "Use two fingers to move the map"
+msgstr "Die Karte mit zwei Fingern verschieben."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:186
+msgid "Use ⌘ + scroll to zoom the map"
+msgstr "Zum Zoomen der Karte ⌘ gedrückt halten und scrollen."

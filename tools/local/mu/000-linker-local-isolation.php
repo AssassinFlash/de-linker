@@ -25,7 +25,7 @@ add_action( 'requests-requests.before_redirect', 'linker_local_filter_redirect' 
 
 if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// The browser may fetch from this machine only (any port: the instance, its engine and Genie).
-	// Three kinds of outside material reach a page, both by the site's own design:
+	// Four kinds of outside material reach a page, both by the site's own design:
 	// - the live theme's template scripts (the snapshot's pages enqueue Alpine,
 	// Preline, lottie-player and taos from these CDNs; without them the local
 	// instance would not look like the live one, AGENTS.md §2);
@@ -33,6 +33,9 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// each federal state (services/engine/data/imagery.json, open-licence WMS,
 	// credited on the map), which MapLibre loads by fetch (connect-src) and
 	// paints as images (img-src), not through WordPress's HTTP API.
+	// - the unified planner's explicitly requested OpenFreeMap street reference.
+	// Its retained style manifest identifies this single origin for style, tile,
+	// glyph and sprite requests; it does not grant engineering source accuracy.
 	// - the public-entry Managed verification widget, loaded only on customer
 	// interaction from Cloudflare's single official challenge origin.
 	// Sorted, unique, the same order the stack test derives from imagery.json.
@@ -60,12 +63,13 @@ if ( 'cli' !== PHP_SAPI && ! headers_sent() ) {
 	// the same faces, so pixel comparisons do not drift on empty heads
 	// (a3-final package §5-2, 2026-10-16).
 	$linker_local_avatars = 'https://secure.gravatar.com';
+	$linker_local_map     = 'https://tiles.openfreemap.org';
 	$linker_local_sources = "'self' http://127.0.0.1:* data: blob: 'unsafe-inline' 'unsafe-eval'";
 	header(
 		"Content-Security-Policy: default-src {$linker_local_sources}; " .
 		"script-src {$linker_local_sources} https://cdn.jsdelivr.net https://esm.sh https://unpkg.com https://challenges.cloudflare.com; " .
-		"img-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_avatars}; " .
-		"connect-src {$linker_local_sources} {$linker_local_imagery} https://challenges.cloudflare.com; " .
+		"img-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_map} {$linker_local_avatars}; " .
+		"connect-src {$linker_local_sources} {$linker_local_imagery} {$linker_local_map} https://challenges.cloudflare.com; " .
 		"frame-src 'self' http://127.0.0.1:* https://challenges.cloudflare.com; " .
 		"form-action 'self'"
 	);

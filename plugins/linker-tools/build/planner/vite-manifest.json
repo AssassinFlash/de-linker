@@ -1,26 +1,37 @@
 {
-  "_planner-core-CDGLxH3H.js": {
-    "file": "assets/planner-core-CDGLxH3H.js",
+  "_planner-core-sJPTB_v8.js": {
+    "file": "assets/planner-core-sJPTB_v8.js",
     "name": "planner-core",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js"
     ],
     "dynamicImports": [
-      "src/components/design/SceneViewport.tsx"
+      "src/components/design/SceneViewport.tsx",
+      "src/components/design/MapViewport.tsx"
     ]
   },
   "_rolldown-runtime-BWaJ3C7D.js": {
     "file": "assets/rolldown-runtime-BWaJ3C7D.js",
     "name": "rolldown-runtime"
   },
+  "src/components/design/MapViewport.tsx": {
+    "file": "assets/MapViewport-CNw4GCpL.js",
+    "name": "MapViewport",
+    "src": "src/components/design/MapViewport.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-sJPTB_v8.js"
+    ]
+  },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-744Cecd-.js",
+    "file": "assets/SceneViewport-Bi_Y4N87.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-CDGLxH3H.js"
+      "_planner-core-sJPTB_v8.js"
     ]
   },
   "src/main.tsx": {
@@ -30,7 +41,7 @@
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-CDGLxH3H.js"
+      "_planner-core-sJPTB_v8.js"
     ]
   }
 }

@@ -6,7 +6,7 @@ import flat from "../../../fixtures/planning/geometry-flat.json" with { type: "j
 import { setupDom, enter, until } from "./dom-fixture.mjs";
 register("./scene-failure-loader.mjs", import.meta.url);
 
-test("3D chunk failure and retry preserve unapplied raw properties and the plan path", async (t) => {
+test("3D and map chunk failures and retries preserve unapplied raw properties and the plan path", async (t) => {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { DesignEditor } =
@@ -28,6 +28,10 @@ test("3D chunk failure and retry preserve unapplied raw properties and the plan 
 				React.createElement(DesignEditor, {
 					sceneModuleUrl: new URL(
 						"../src/components/design/SceneViewport.tsx",
+						import.meta.url,
+					).href,
+					mapModuleUrl: new URL(
+						"../src/components/design/MapViewport.tsx",
 						import.meta.url,
 					).href,
 					geometry: flat,
@@ -65,4 +69,21 @@ test("3D chunk failure and retry preserve unapplied raw properties and the plan 
 		new URL(caught[1].moduleUrl).searchParams.get("planner_retry"),
 		"1",
 	);
+	await act(async () => button("Map").click());
+	await until(() => button("Retry loading map"));
+	assert.equal(document.querySelector('[name="rows"]').value, "2.5");
+	await act(async () => button("Retry loading map").click());
+	await until(() => caught.length >= 4);
+	assert.ok(
+		caught
+			.slice(2)
+			.every((error) => error.message === "synthetic_map_chunk_unavailable"),
+	);
+	assert.equal(
+		new URL(caught[3].moduleUrl).searchParams.get("planner_retry"),
+		"1",
+	);
+	await act(async () => button("Plan").click());
+	assert.ok(document.querySelector(".lp-plan-svg"));
+	assert.equal(document.querySelector('[name="rows"]').value, "2.5");
 });
