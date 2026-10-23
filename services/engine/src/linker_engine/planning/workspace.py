@@ -19,6 +19,7 @@ from .access import active_actor, positive_integer, project_row
 from .brief import validate_new_brief
 from .canonical import Object, digest, encode
 from .errors import Conflict, InvalidInput, NotFound, VersionUnavailable
+from .geometry import validate_project_geometry
 from .records import Actor, Context, JobState, Project, Run
 from .storage import Blobs, Database
 
@@ -73,6 +74,7 @@ class Workspace:
                     connection, actor, commands.receipt_string(receipt, "project_id"), 1
                 )
             validate_new_brief(inputs)
+            validate_project_geometry(inputs)
             content = self.blobs.put_object(inputs)
             project_id = uuid4().hex
             now = self.clock()
@@ -145,6 +147,7 @@ class Workspace:
             if project["revision"] != expected_revision:
                 raise Conflict("project inputs have changed")
             validate_new_brief(inputs)
+            validate_project_geometry(inputs)
             content = self.blobs.put_object(inputs)
             number = expected_revision + 1
             now = self.clock()

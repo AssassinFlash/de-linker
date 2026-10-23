@@ -7,6 +7,7 @@ import base64
 import json
 from collections.abc import Iterator
 from dataclasses import dataclass
+from pathlib import Path
 from typing import cast
 
 import pytest
@@ -90,6 +91,73 @@ class Rig:
 
     def replay(self, path: str, body: Object, actor: Actor = USER) -> Object:
         return self.post("/operations/replay" + path, body, actor)
+
+
+def test_geometry_review_uses_owned_draft_without_publishing_or_saving(
+    rig: Rig,
+) -> None:
+    path = Path(__file__).resolve().parents[4] / "fixtures/planning/geometry-flat.json"
+    geometry = json.loads(path.read_text())
+    project_id = rig.create("geometry")
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    body: Object = {"project_id": project_id, "geometry": geometry}
+    report = rig.post("/geometry/review", body)
+    assert (
+        report["module_count"] == 5 and report["engineering_status"] == "not_evaluated"
+    )
+    assert report["geometry_sha256"] == digest(encode(geometry))
+    assert rig.workspace.get(USER, project_id).revision == 1
+    assert rig.workspace.get(USER, project_id).inputs == {}
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+    # Foreign access is refused before the intentionally unusable geometry is read.
+    response = rig.client.post(
+        "/geometry/review",
+        json={"schema_version": 1, "project_id": project_id, "geometry": {}},
+        headers=headers(FOREIGN),
+    )
+    assert response.status_code == 404
+    response = rig.client.post(
+        "/geometry/review",
+        json={"schema_version": 1, "project_id": project_id, "geometry": {}},
+        headers=headers(),
+    )
+    assert response.status_code == 422
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+
+
+def test_geometry_save_refuses_bad_references_and_keeps_unfinished_polygon(
+    rig: Rig,
+) -> None:
+    path = Path(__file__).resolve().parents[4] / "fixtures/planning/geometry-flat.json"
+    geometry = json.loads(path.read_text())
+    project_id = rig.create("geometry-write")
+    geometry["arrays"][0]["roof_id"] = "foreign"
+    before = set(rig.workspace.blobs.directory.rglob("*"))
+    command = {
+        "schema_version": 1,
+        "project_id": project_id,
+        "expected_revision": 1,
+        "inputs": {"geometry": geometry},
+        "key": "geometry-save",
+    }
+    response = rig.client.post("/projects/revise", json=command, headers=headers())
+    assert response.status_code == 422
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before
+    geometry["arrays"][0]["roof_id"] = "roof"
+    geometry["roofs"][0]["boundary_uv"] = [[0, 0], [10, 10], [0, 10], [10, 0]]
+    saved = rig.post(
+        "/projects/revise",
+        cast(
+            Object,
+            {key: value for key, value in command.items() if key != "schema_version"},
+        ),
+    )
+    assert saved["revision"] == 2
+    assert rig.workspace.get(USER, project_id).inputs == {"geometry": geometry}
+    report = rig.post(
+        "/geometry/review", {"project_id": project_id, "geometry": geometry}
+    )
+    assert report["geometry_status"] == "conflicts_detected"
 
 
 @pytest.fixture

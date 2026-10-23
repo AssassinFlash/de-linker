@@ -50,6 +50,7 @@ export const RPC_PATHS = [
 	"profiles/csv",
 	"profiles/inspect",
 	"profiles/preview",
+	"geometry/review",
 	"battery/scenario",
 	"recovery/scopes",
 ] as const;

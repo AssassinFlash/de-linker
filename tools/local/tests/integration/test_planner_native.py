@@ -228,6 +228,38 @@ def test_native_guest_save_replay_conflict_and_private_ownership(local: tuple[In
     assert first.read(project).object()["inputs"] == {"site": {"country": "FR"}}
 
 
+def test_geometry_review_and_saved_source_use_the_actual_native_gateway(local: tuple[Instance, WpCli]) -> None:
+    instance, _ = local
+    owner, foreign = Browser(instance.url), Browser(instance.url)
+    owner.bootstrap()
+    foreign.bootstrap()
+    project = owner.create("Synthetic native geometry review")
+    path = Path(__file__).resolve().parents[4] / "fixtures/planning/geometry-flat.json"
+    geometry = json.loads(path.read_text())
+    review_body = {"schema_version": 1, "project_id": project["id"], "geometry": geometry}
+    report = owner.rpc("rpc/geometry/review", review_body)
+    assert report.status == 200, report.body
+    assert report.object()["module_count"] == 5
+    assert report.object()["declared_stc_kwp"] == 2.5
+    assert report.object()["engineering_status"] == "not_evaluated"
+    assert owner.read(project).object()["inputs"] == {}
+    assert foreign.rpc("rpc/geometry/review", {**review_body, "geometry": {}}).status == 404
+    geometry["arrays"][0]["source_id"] = "missing"
+    command = {"schema_version": 1, "project_id": project["id"], "expected_revision": 1, "inputs": {"geometry": geometry}, "key": str(uuid.uuid4())}
+    assert owner.rpc("rpc/projects/revise", command).status == 422
+    assert owner.read(project).object()["revision"] == 1
+    geometry["arrays"][0]["source_id"] = "survey"
+    # Correcting a refused input is a new intent, not a changed-key replay.
+    command["key"] = str(uuid.uuid4())
+    saved = owner.rpc("rpc/projects/revise", command)
+    assert saved.status == 200, saved.body
+    assert saved.object()["revision"] == 2
+    assert owner.rpc("rpc/projects/revise", command).object() == saved.object()
+    reopened = owner.read(project).object()
+    assert reopened["inputs"] == {"geometry": geometry}
+    assert owner.rpc("rpc/geometry/review", review_body).object()["geometry_sha256"] == report.object()["geometry_sha256"]
+
+
 def test_nonce_origin_body_and_unknown_route_are_private(local: tuple[Instance, WpCli]) -> None:
     instance, _ = local
     browser = Browser(instance.url)

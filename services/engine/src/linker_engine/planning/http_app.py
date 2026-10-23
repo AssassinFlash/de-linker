@@ -35,6 +35,7 @@ from .errors import (
     PlanningError,
     VersionUnavailable,
 )
+from .geometry_review import review_geometry
 from .guest_claims import GuestClaims
 from .http_asset_intake import HttpAssetIntake
 from .http_documents import (
@@ -44,6 +45,7 @@ from .http_documents import (
     CsvImport,
     CsvInspect,
     EnergyEvaluate,
+    GeometryReview,
     ProfilePreviewRead,
     ProjectCreate,
     ProjectList,
@@ -246,6 +248,13 @@ def create_private_app(
             body.before_created_at,
             body.before_id,
         )
+
+    @app.post("/geometry/review")
+    def geometry_review(body: GeometryReview, request: Request) -> Object:
+        # Ownership is checked before geometry work; this read-only review
+        # never publishes a source blob or mutates the saved revision.
+        workspace.get(verified_actor(request.scope), body.project_id)
+        return review_geometry(body.geometry)
 
     @app.post("/runs/read")
     def run_read(body: RunRead, request: Request) -> Object:

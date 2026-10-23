@@ -3,14 +3,31 @@ export type Vec2 = readonly [number, number];
 export type Vec3 = readonly [number, number, number];
 
 export interface Source {
-	kind: "user_measurement" | "licensed_dataset" | "synthetic_fixture";
+	id: string;
+	kind:
+		| "user_measurement"
+		| "user_drawing"
+		| "licensed_dataset"
+		| "synthetic_fixture";
 	note: string;
 	rights_note: string;
+	reference_url: string | null;
+	reference_sha256: string | null;
+	acquired_at_utc: string | null;
+	spatial_precision_m: number | null;
+	calibration_note: string;
+	rights_basis: "user_attestation" | "referenced_licence" | "synthetic";
+	permissions: {
+		derive: "permitted" | "unknown" | "prohibited";
+		retain: "permitted" | "unknown" | "prohibited";
+		export: "permitted" | "unknown" | "prohibited";
+	};
 }
 
 export interface RoofFace {
 	id: string;
 	name: string;
+	source_id: string;
 	origin_enu: Vec3;
 	u_axis_enu: Vec3;
 	v_axis_enu: Vec3;
@@ -38,6 +55,7 @@ export interface ModuleSpec {
 export interface PanelArray {
 	id: string;
 	name: string;
+	source_id: string;
 	roof_id: string;
 	module_spec_id: string;
 	/** Lower-left row anchor on the roof face, not a panel centre. */
@@ -58,10 +76,28 @@ export interface PanelArray {
 export interface Obstacle {
 	id: string;
 	name: string;
+	source_id: string;
 	roof_id: string;
 	footprint_uv: readonly Vec2[];
 	extrusion_axis_enu: Vec3;
 	height_m: number;
+}
+
+export interface Keepout {
+	id: string;
+	name: string;
+	source_id: string;
+	roof_id: string;
+	footprint_uv: readonly Vec2[];
+	reason: string;
+}
+
+export interface RoofLayoutRules {
+	roof_id: string;
+	source_id: string;
+	edge_clearance_m: number | null;
+	obstacle_clearance_m: number | null;
+	source_note: string;
 }
 
 export interface GeometryDocument {
@@ -71,13 +107,21 @@ export interface GeometryDocument {
 		unit: "m";
 		height_reference: "relative_to_project_origin";
 		north_reference: "true_north" | "user_declared" | "unreferenced";
-		anchor: { latitude_deg: number; longitude_deg: number } | null;
+		north_source_id: string | null;
+		anchor: {
+			latitude_deg: number;
+			longitude_deg: number;
+			source_id: string;
+			datum: "EPSG:4326";
+		} | null;
 	};
-	source: Source;
+	sources: readonly Source[];
 	roofs: readonly RoofFace[];
 	module_specs: readonly ModuleSpec[];
 	arrays: readonly PanelArray[];
 	obstacles: readonly Obstacle[];
+	keepouts: readonly Keepout[];
+	layout_rules: readonly RoofLayoutRules[];
 }
 
 export interface PanelPose {

@@ -1,0 +1,1025 @@
+{
+  "purpose": "Frozen Python/browser placement parity, not independent engineering release; analytic expectations are separately tested",
+  "cases": [
+    {
+      "name": "flat",
+      "roof_v_axis_enu": [
+        0,
+        1,
+        0
+      ],
+      "rotation_deg": 0,
+      "mount_tilt_deg": 0,
+      "poses": [
+        {
+          "id": "array:0:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -17.0,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -17.0,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 2,
+          "included": true,
+          "centre_enu": [
+            13.9,
+            -17.0,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -14.6,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -14.6,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 2,
+          "included": false,
+          "centre_enu": [
+            13.9,
+            -14.6,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        }
+      ]
+    },
+    {
+      "name": "slope30",
+      "roof_v_axis_enu": [
+        0,
+        0.8660254037844386,
+        0.5
+      ],
+      "rotation_deg": 0,
+      "mount_tilt_deg": 0,
+      "poses": [
+        {
+          "id": "array:0:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -17.461923788646683,
+            5.603923048454132
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844386,
+            0.5
+          ],
+          "normal_enu": [
+            0.0,
+            -0.5,
+            0.8660254037844386
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -17.461923788646683,
+            5.603923048454132
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844386,
+            0.5
+          ],
+          "normal_enu": [
+            0.0,
+            -0.5,
+            0.8660254037844386
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 2,
+          "included": true,
+          "centre_enu": [
+            13.9,
+            -17.461923788646683,
+            5.603923048454132
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844386,
+            0.5
+          ],
+          "normal_enu": [
+            0.0,
+            -0.5,
+            0.8660254037844386
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -15.383462819564029,
+            6.803923048454132
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844386,
+            0.5
+          ],
+          "normal_enu": [
+            0.0,
+            -0.5,
+            0.8660254037844386
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -15.383462819564029,
+            6.803923048454132
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844386,
+            0.5
+          ],
+          "normal_enu": [
+            0.0,
+            -0.5,
+            0.8660254037844386
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 2,
+          "included": false,
+          "centre_enu": [
+            13.9,
+            -15.383462819564029,
+            6.803923048454132
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844386,
+            0.5
+          ],
+          "normal_enu": [
+            0.0,
+            -0.5,
+            0.8660254037844386
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        }
+      ]
+    },
+    {
+      "name": "mount30",
+      "roof_v_axis_enu": [
+        0,
+        1,
+        0
+      ],
+      "rotation_deg": 0,
+      "mount_tilt_deg": 30,
+      "poses": [
+        {
+          "id": "array:0:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -17.143974596215564,
+            4.6173205080756885
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844387,
+            0.49999999999999994
+          ],
+          "normal_enu": [
+            0.0,
+            -0.49999999999999994,
+            0.8660254037844387
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -17.143974596215564,
+            4.6173205080756885
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844387,
+            0.49999999999999994
+          ],
+          "normal_enu": [
+            0.0,
+            -0.49999999999999994,
+            0.8660254037844387
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 2,
+          "included": true,
+          "centre_enu": [
+            13.9,
+            -17.143974596215564,
+            4.6173205080756885
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844387,
+            0.49999999999999994
+          ],
+          "normal_enu": [
+            0.0,
+            -0.49999999999999994,
+            0.8660254037844387
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -15.011923788646683,
+            4.6173205080756885
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844387,
+            0.49999999999999994
+          ],
+          "normal_enu": [
+            0.0,
+            -0.49999999999999994,
+            0.8660254037844387
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -15.011923788646683,
+            4.6173205080756885
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844387,
+            0.49999999999999994
+          ],
+          "normal_enu": [
+            0.0,
+            -0.49999999999999994,
+            0.8660254037844387
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 2,
+          "included": false,
+          "centre_enu": [
+            13.9,
+            -15.011923788646683,
+            4.6173205080756885
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            0.8660254037844387,
+            0.49999999999999994
+          ],
+          "normal_enu": [
+            0.0,
+            -0.49999999999999994,
+            0.8660254037844387
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        }
+      ]
+    },
+    {
+      "name": "rotation90",
+      "roof_v_axis_enu": [
+        0,
+        1,
+        0
+      ],
+      "rotation_deg": 90,
+      "mount_tilt_deg": 0,
+      "poses": [
+        {
+          "id": "array:0:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            10.0,
+            -17.5,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            6.123233995736766e-17,
+            1.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            -1.0,
+            6.123233995736766e-17,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            10.0,
+            -16.3,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            6.123233995736766e-17,
+            1.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            -1.0,
+            6.123233995736766e-17,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 2,
+          "included": true,
+          "centre_enu": [
+            10.0,
+            -15.1,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            6.123233995736766e-17,
+            1.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            -1.0,
+            6.123233995736766e-17,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            7.6,
+            -17.5,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            6.123233995736766e-17,
+            1.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            -1.0,
+            6.123233995736766e-17,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            7.6,
+            -16.3,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            6.123233995736766e-17,
+            1.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            -1.0,
+            6.123233995736766e-17,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 2,
+          "included": false,
+          "centre_enu": [
+            7.6,
+            -15.1,
+            4.119999999999999
+          ],
+          "u_axis_enu": [
+            6.123233995736766e-17,
+            1.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            -1.0,
+            6.123233995736766e-17,
+            0.0
+          ],
+          "normal_enu": [
+            0.0,
+            -0.0,
+            1.0
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        }
+      ]
+    },
+    {
+      "name": "vertical_mount",
+      "roof_v_axis_enu": [
+        0,
+        1,
+        0
+      ],
+      "rotation_deg": 0,
+      "mount_tilt_deg": 90,
+      "poses": [
+        {
+          "id": "array:0:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -18.02,
+            5.1
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            6.123233995736766e-17,
+            1.0
+          ],
+          "normal_enu": [
+            0.0,
+            -1.0,
+            6.123233995736766e-17
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -18.02,
+            5.1
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            6.123233995736766e-17,
+            1.0
+          ],
+          "normal_enu": [
+            0.0,
+            -1.0,
+            6.123233995736766e-17
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:0:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 0,
+          "column": 2,
+          "included": true,
+          "centre_enu": [
+            13.9,
+            -18.02,
+            5.1
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            6.123233995736766e-17,
+            1.0
+          ],
+          "normal_enu": [
+            0.0,
+            -1.0,
+            6.123233995736766e-17
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:0",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 0,
+          "included": true,
+          "centre_enu": [
+            11.5,
+            -17.62,
+            5.1
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            6.123233995736766e-17,
+            1.0
+          ],
+          "normal_enu": [
+            0.0,
+            -1.0,
+            6.123233995736766e-17
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:1",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 1,
+          "included": true,
+          "centre_enu": [
+            12.7,
+            -17.62,
+            5.1
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            6.123233995736766e-17,
+            1.0
+          ],
+          "normal_enu": [
+            0.0,
+            -1.0,
+            6.123233995736766e-17
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        },
+        {
+          "id": "array:1:2",
+          "array_id": "array",
+          "roof_id": "roof",
+          "row": 1,
+          "column": 2,
+          "included": false,
+          "centre_enu": [
+            13.9,
+            -17.62,
+            5.1
+          ],
+          "u_axis_enu": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "v_axis_enu": [
+            0.0,
+            6.123233995736766e-17,
+            1.0
+          ],
+          "normal_enu": [
+            0.0,
+            -1.0,
+            6.123233995736766e-17
+          ],
+          "width_m": 1.0,
+          "length_m": 2.0,
+          "thickness_m": 0.04,
+          "stc_power_w": 500.0
+        }
+      ]
+    }
+  ]
+}

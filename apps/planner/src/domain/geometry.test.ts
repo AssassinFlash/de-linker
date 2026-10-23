@@ -9,77 +9,15 @@ import {
 	toRender,
 } from "./coordinates.ts";
 import type { GeometryDocument, Vec3 } from "./geometry.ts";
+import flatFixture from "../../../../fixtures/planning/geometry-flat.json" with { type: "json" };
+import poseReference from "../../../../fixtures/planning/geometry-pose-reference.json" with { type: "json" };
+import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
 import { moduleSummary, panelPoses } from "./panelPoses.ts";
 import { readGeometry } from "./validateGeometry.ts";
 
 // Analytic geometry fixtures, with deliberately synthetic module dimensions.
-const fixture = (): GeometryDocument => ({
-	schema_version: 1,
-	coordinate_system: {
-		kind: "local_enu",
-		unit: "m",
-		height_reference: "relative_to_project_origin",
-		north_reference: "unreferenced",
-		anchor: null,
-	},
-	source: {
-		kind: "synthetic_fixture",
-		note: "Analytic test only",
-		rights_note: "Owned fixture",
-	},
-	roofs: [
-		{
-			id: "roof",
-			name: "Fixture roof",
-			origin_enu: [10, -20, 4],
-			u_axis_enu: [1, 0, 0],
-			v_axis_enu: [0, 1, 0],
-			boundary_uv: [
-				[0, 0],
-				[20, 0],
-				[20, 20],
-				[0, 20],
-			],
-			holes_uv: [],
-		},
-	],
-	module_specs: [
-		{
-			id: "module",
-			model: "Synthetic 1 × 2 m",
-			width_m: 1,
-			length_m: 2,
-			thickness_m: 0.04,
-			stc_power_w: 500,
-			source: {
-				kind: "user_declared",
-				note: "Synthetic fixture",
-				document_sha256: null,
-				url: null,
-				page: null,
-			},
-		},
-	],
-	arrays: [
-		{
-			id: "array",
-			name: "Fixture array",
-			roof_id: "roof",
-			module_spec_id: "module",
-			origin_uv: [1, 2],
-			rotation_deg: 0,
-			mount_tilt_deg: 0,
-			lower_edge_clearance_m: 0.1,
-			rows: 2,
-			columns: 3,
-			column_gap_m: 0.2,
-			row_gap_m: 0.4,
-			excluded_slots: ["1:2"],
-			mounting_note: "Synthetic dimensions, not a mounting-system release",
-		},
-	],
-	obstacles: [],
-});
+const fixture = (): GeometryDocument =>
+	readGeometry(structuredClone(flatFixture), geometryPolicy);
 
 function close(actual: number, expected: number): void {
 	// Floating point comparison policy for these metre-scale analytic fixtures.
@@ -204,5 +142,45 @@ test("module-source claims need complete references and safe URL schemes", () =>
 				limits,
 			),
 		);
+	}
+});
+
+test("browser poses match frozen server poses across slope, rotation and tilted mounts", () => {
+	for (const reference of poseReference.cases) {
+		const document = fixture();
+		const value = {
+			...document,
+			roofs: [
+				{
+					...document.roofs[0]!,
+					v_axis_enu: reference.roof_v_axis_enu as unknown as Vec3,
+				},
+			],
+			arrays: [
+				{
+					...document.arrays[0]!,
+					rotation_deg: reference.rotation_deg,
+					mount_tilt_deg: reference.mount_tilt_deg,
+				},
+			],
+		};
+		const poses = panelPoses(readGeometry(value, geometryPolicy));
+		assert.equal(poses.length, reference.poses.length, reference.name);
+		for (const [index, pose] of poses.entries()) {
+			const expected = reference.poses[index]!;
+			assert.equal(pose.id, expected.id);
+			assert.equal(pose.array_id, expected.array_id);
+			assert.equal(pose.included, expected.included);
+			for (const property of [
+				"centre_enu",
+				"u_axis_enu",
+				"v_axis_enu",
+				"normal_enu",
+			] as const) {
+				pose[property].forEach((value, axis) =>
+					close(value, expected[property][axis]!),
+				);
+			}
+		}
 	}
 });

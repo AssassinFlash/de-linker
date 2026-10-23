@@ -9,6 +9,7 @@ from pydantic import Field, field_validator, model_validator
 from .brief import PlanningBrief
 from .canonical import Object
 from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaVersion
+from .geometry_documents import GeometryDocument
 from .wire_numbers import check_wire_numbers
 
 # Protocol string limits, not engineering quantities; see 548-private-gateway.md.
@@ -54,6 +55,8 @@ class ProjectInputs(Command):
             from .profile_selections import ProfileSelections
 
             ProfileSelections.model_validate(value["profile_selections"])
+        if "geometry" in value:
+            GeometryDocument.model_validate(value["geometry"])
         return value
 
 
@@ -65,6 +68,11 @@ class ProjectCreate(ProjectInputs):
 class ProjectRead(Command):
     project_id: Id
     revision: Revision | None
+
+
+class GeometryReview(Command):
+    project_id: Id
+    geometry: Object
 
 
 class ProjectRevise(ProjectInputs):

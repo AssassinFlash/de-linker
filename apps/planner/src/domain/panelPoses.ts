@@ -1,11 +1,31 @@
 import { add, cross, pointOnRoof, scale } from "./coordinates.ts";
-import type { GeometryDocument, PanelPose } from "./geometry.ts";
+import type { GeometryDocument, PanelPose, Vec3 } from "./geometry.ts";
 
 /** Stable array/row/column identities; excluded slots remain editable objects. */
 export const slotKey = (row: number, column: number): string =>
 	`${row}:${column}`;
 export const panelId = (arrayId: string, row: number, column: number): string =>
 	`${arrayId}:${slotKey(row, column)}`;
+
+/** The same full cuboid used by server plan-fit review, including thickness. */
+export function panelCorners(pose: PanelPose): readonly Vec3[] {
+	return [-1, 1].flatMap((u) =>
+		[-1, 1].flatMap((v) =>
+			[-1, 1].map((n) =>
+				add(
+					pose.centre_enu,
+					add(
+						scale(pose.u_axis_enu, (u * pose.width_m) / 2),
+						add(
+							scale(pose.v_axis_enu, (v * pose.length_m) / 2),
+							scale(pose.normal_enu, (n * pose.thickness_m) / 2),
+						),
+					),
+				),
+			),
+		),
+	);
+}
 
 /** Euclidean placement only. Fit, structural and electrical release are separate. */
 export function panelPoses(document: GeometryDocument): readonly PanelPose[] {
