@@ -24,9 +24,10 @@ html[lang^="de"]
 	hyphenate-limit-chars: 12 6 6;
 }
 
-/* The saved EPC page assigns 12 5 5 directly to its headings. Inheritance
-   cannot replace it; native heading types outrank that later :where rule. */
-#tv-solutions-developers-v1:lang(de) :is(h1, h2, h3, h4, h5, h6) {
+/* The saved EPC page directly assigns 12 5 5 to headings and 8 4 3 to prose.
+   Native element types outrank those later :where rules; inheritance cannot. */
+#tv-solutions-developers-v1:lang(de)
+	:is(h1, h2, h3, h4, h5, h6, p, li, dd, td, figcaption, span) {
 	hyphenate-limit-chars: 12 6 6;
 }
 

@@ -27,6 +27,12 @@ the native heading types. Keep the original failed0a1b evidence; recheck all
 six EPC viewport/script combinations and its two full-page views. Other roots
 cannot match this corrective selector, so their existing0a1b evidence retains
 its original source binding rather than being relabelled as the new source.
+The bb1 native preview then showed `Kapa-/zitätsanforderungen` and
+`zuge-/schnitten`: these are paragraphs, including the heading-like hero
+description, whose separate saved rule is8 4 3. A native audit of all ten
+German roots confirmed this additional direct assignment only in EPC.
+Override the exact existing prose types(p,li,dd,td,figcaption,span) alongside
+the heading types. Recheck visible text, not only heading computed values.
 
 The Installer mobile prompt is a native two-row textarea. At390 the actual
 German placeholder has scrollHeight68px inside clientHeight60px, cutting off
