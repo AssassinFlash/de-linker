@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Account;
 
+use Linker\Commerce\Products\Publication;
+
 use Linker\Commerce\Proforma\Issuer;
 use WC_Order;
 use WC_Order_Item;
@@ -116,7 +118,18 @@ final class InquiryList {
 		if ( $plain_text || ! $item instanceof WC_Order_Item_Product || ! is_wc_endpoint_url( 'view-order' ) ) {
 			return;
 		}
-		$url = (string) get_post_meta( $item->get_product_id(), self::DATASHEET_META, true );
+		$product = Publication::product( $item->get_product_id() );
+		if ( null === $product ) {
+			return;
+		}
+		$url    = '';
+		$legacy = (string) get_post_meta( $product['product_id'], self::DATASHEET_META, true );
+		foreach ( Publication::manifest()['documents'] as $document ) {
+			if ( in_array( $document['document_id'], $product['documents'], true ) && in_array( $product['product_id'], $document['product_ids'], true ) && ( 'datasheet' === $document['type'] || in_array( $legacy, $document['aliases'], true ) ) ) {
+				$url = (string) $document['url'];
+				break;
+			}
+		}
 		if ( '' === $url ) {
 			return;
 		}

@@ -40,6 +40,7 @@ test( 'posts the design and its lines with the nonce', async () => {
 		{
 			kind: 'residential',
 			title: 'Munich home',
+			selectionFingerprint: 'a'.repeat( 64 ),
 			input,
 			lines: [
 				{ productId: 3556, quantity: 1 },
@@ -65,6 +66,7 @@ test( 'posts the design and its lines with the nonce', async () => {
 	expect( JSON.parse( String( init?.body ) ) ).toEqual( {
 		kind: 'residential',
 		title: 'Munich home',
+		selection_fingerprint: 'a'.repeat( 64 ),
 		input,
 		lines: [
 			{ product_id: 3556, quantity: 1 },
