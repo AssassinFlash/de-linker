@@ -354,7 +354,8 @@ export function Solution( props: SolutionProps ) {
 					{ props.addOutcome === 'unverified'
 						? additionUnconfirmedText()
 						: null }
-					{ props.addOutcome === 'changed'
+					{ props.addOutcome === 'changed' ||
+					props.saveState === 'changed'
 						? selectionChangedText()
 						: null }
 					{ props.saveState === 'saved' ? (
@@ -374,9 +375,6 @@ export function Solution( props: SolutionProps ) {
 							) : null }
 						</>
 					) : null }
-					{ props.saveState === 'changed'
-						? selectionChangedText()
-						: null }
 					{ props.saveState === 'unconfirmed'
 						? __(
 								'The request status could not be confirmed. Please check before sending it again.',

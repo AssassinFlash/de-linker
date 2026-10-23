@@ -1213,13 +1213,19 @@ test( 'a save refused for publication displays re-selection without replacing th
 		<App
 			config={ config( 'en' ) }
 			engine={ engine }
-			store={ fakeStore().store }
+			store={ fakeStore( 'stale' ).store }
 		/>
 	);
 	await calculate();
 	const save = await screen.findByRole( 'button', { name: 'Save solution' } );
 	await act( async () => fireEvent.click( save ) );
 	expect( await screen.findByText( CHANGED ) ).toBeInTheDocument();
+	await act( async () =>
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Add all to solution draft' } )
+		)
+	);
+	expect( screen.getAllByText( CHANGED ) ).toHaveLength( 1 );
 	expect(
 		calls.filter( ( call ) => call.name === 'residential' )
 	).toHaveLength( 1 );
