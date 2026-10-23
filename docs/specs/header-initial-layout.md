@@ -34,6 +34,16 @@ its top, clearing the 2px outline and 2px offset. Keep the summary's target,
 closed row geometry, content, and desktop menus unchanged. Recheck focused
 groups and the final contact action after all five groups are expanded.
 
+At 320px the two 140px product cards and their existing 10px gap exceed the
+288px content width by 2px. Cap each card at the smaller of its existing width
+and half the available rail width after the gap; let its image follow that
+width. Keep the three-card solutions rail horizontally browsable. Reserve the
+existing outline's 4px footprint inside the scrollport, offsetting that reserve
+at its sides so card alignment stays unchanged. The card outline must be fully
+visible, including its top and left edges; use the existing 12px card corner
+radius and teal title on hover or keyboard focus. Verify both rails, first/last
+card focus, true third-card scrolling and category consumers in EN/DE.
+
 If someone has already opened the native panel at a desktop width while the
 enhancement is pending, keep it available until they close it. A fit that has
 room for the ordinary row must not dismiss that active menu. After it closes,

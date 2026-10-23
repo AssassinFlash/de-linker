@@ -237,9 +237,13 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 .tv-mobile-link-text{display:flex;flex-direction:column;justify-content:center;gap:2px;min-height:44px;padding:10px 12px}
 #tv-header-v2 .tv-mobile-link-title{font-weight:700;color:var(--proto-ink);font-size:16px;line-height:1.3}
 #tv-header-v2 .tv-mobile-link-desc{font-size:13.5px;font-weight:400;color:var(--proto-neutral-500);line-height:1.45}
-#tv-header-v2 .tv-mobile-rail{display:flex;gap:10px;overflow-x:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
-#tv-header-v2 .tv-mobile-rail-card{flex:0 0 140px;scroll-snap-align:start;text-decoration:none;color:inherit}
-#tv-header-v2 .tv-mobile-rail-card img{width:140px;height:80px;object-fit:cover;border-radius:12px;display:block;background:var(--proto-neutral-50)}
+/* The existing 2px outline plus 2px offset needs 4px inside the scrollport.
+   Keep card alignment, the 140px cap and 10px gap; let two cards fit narrow rails. */
+#tv-header-v2 .tv-mobile-rail{display:flex;gap:10px;overflow-x:auto;margin-inline:-4px;padding:4px 4px 6px;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory}
+#tv-header-v2 .tv-mobile-rail-card{flex:0 0 min(140px,calc((100% - 10px)/2));min-width:0;scroll-snap-align:start;text-decoration:none;color:inherit}
+#tv-header-v2 .tv-mobile-rail-card img{width:100%;height:80px;object-fit:cover;border-radius:12px;display:block;background:var(--proto-neutral-50)}
+#tv-header-v2 .tv-mobile-rail-card:focus-visible{border-radius:12px}
+#tv-header-v2 .tv-mobile-rail-card:hover .tv-mobile-rail-title,#tv-header-v2 .tv-mobile-rail-card:focus-visible .tv-mobile-rail-title{color:var(--proto-teal-600)}
 #tv-header-v2 .tv-mobile-rail-title{display:block;margin-top:4px;font-size:13px;font-weight:750;line-height:1.3;color:var(--proto-ink)}
 #tv-header-v2 .tv-mobile-rail-desc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px;font-size:12px;font-weight:400;line-height:1.35;color:var(--proto-neutral-500)}
 #tv-header-v2 .tv-mobile-sub--break{margin-top:10px}
