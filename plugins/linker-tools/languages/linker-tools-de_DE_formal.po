@@ -1651,6 +1651,8 @@ msgstr[0] "%s Stk."
 msgstr[1] "%s Stk."
 
 #: src/configurator/commercial/CommercialPanel.tsx:405 build/configurator.js
+#: ../../apps/planner/src/components/design/GeometryIntake.tsx
+#: build/planner/assets/planner.js
 msgid "Choose file"
 msgstr "Datei auswählen"
 

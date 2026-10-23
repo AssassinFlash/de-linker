@@ -26,7 +26,7 @@
     "src/components/design/GeometryForm.tsx": "bd431507dcef8136edbef5435d908a0d589c4a613048705996ed3246489198b6",
     "src/components/design/GeometryImportFields.tsx": "1915b44a1b1d1f35a9212287d09dce3b3e48e64c54c00386b81b171da65c664c",
     "src/components/design/GeometryImportSettings.tsx": "46be6f7d30710d3caa8e91c02c1127f675bcf32ecc63e03d4e29471aa01c3fab",
-    "src/components/design/GeometryIntake.tsx": "a46045ec322cd59b04807764f3f726c0ab67c379ba0bcb9bc2d459c2a5067e0b",
+    "src/components/design/GeometryIntake.tsx": "80a4eeee8e825153cef27407d61b2970da25b01a98edd214e364f601f7f99ddc",
     "src/components/design/LayoutReviewPanel.tsx": "8b9649009e93c7c113024ce98e6a3483c7e151b746d8cd067e8bdb1b05963b6e",
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazySceneViewport.tsx": "32da11a88a9458b0c4738b41ab5537becad71f783e4b79cefe4eba80118fd6ee",
@@ -55,7 +55,7 @@
     "src/data/boundedBody.ts": "566f0c44420b605bf5bf043aa79d278494211e88b19745a458b576edd0bcc076",
     "src/data/config.ts": "6609402c3ad00c931360822341a3216020bbba02c52a05d540520326b2e3b21d",
     "src/data/geometryReview.ts": "fdcf15f0e8ca5b560a7a643cddcc2ee4bb115df658857037594bf23f7f83b6a7",
-    "src/data/inputRefusal.ts": "0faeaf5348bec11e3bd3541790d05c4171a5e95cb8dcb22f9cca2a178508c63a",
+    "src/data/inputRefusal.ts": "33f1ba5e786281cc7ef8173bd42472f2b6aa88d89775328cf2e2b47f6a17bc0d",
     "src/data/inspectJson.ts": "4a7de8ac282ff71aea99785e717a225b8b6a1869a7abdbe2a2d260e6f1b3b46b",
     "src/data/profileIssue.ts": "d7fc789099b4d3f8dab079f0fca7665f9d3da5672cd2b205817414947cf8b01d",
     "src/data/projectIndex.ts": "ee7fe2d8ae915643987003f403b149ef6d958ccebefaf3109caaf6b0c0f623c5",
@@ -72,7 +72,7 @@
     "src/domain/coordinates.ts": "063d78214006fc8c8ffe4bdcbbc34cf55ff41569388c49c76cefde7a7b8d83f0",
     "src/domain/decimal.ts": "c111c90e416eec2d07cb39310e0d341e3c5524242df6eabaa977c7d5a6fbe18a",
     "src/domain/draft.ts": "b8630d317ecd746c4afe7783654601c646ccac6caff728f6af4f036464255d3a",
-    "src/domain/geoJsonChoices.ts": "a601bf6103ab5d0e52261ee18730b68859b8e925d6787638638faac4448223c2",
+    "src/domain/geoJsonChoices.ts": "b89839a3fe4e62a6be7451afee4bd6313bc3bf1677a7363b7452b287de158f21",
     "src/domain/geographic.ts": "d1277cb6ac4e87d39f00a69b9c6a239bed07e7229035b53620993a719b788c19",
     "src/domain/geometry.ts": "0a9f126d9a800c3e759c3dc8e6fb0769272b3eeb243244368fdc32176dc67f88",
     "src/domain/geometryCommands.ts": "865f9c036f860ae884e8e9c802e45776aa373a0306d3d794dc500f662cf8dfee",
@@ -92,11 +92,11 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/SceneViewport-CR4un0iD.js": "253fb9cfd4c74ab781a781ea0f03ab14c54518902d69c61a5b9b3e0c397e87fc",
-    "assets/planner-core-DPxbxJR-.js": "4580e3535a3bae5547da33b8a6618cb5cd2a002a09c36d74033b184f42760acd",
-    "assets/planner.js": "ff007af993a734b7dd7949d6205019c0ff17df439a71c8447e1a9e776281651a",
+    "assets/SceneViewport-C1XxKAho.js": "73c2cc31b336a3434f9fbc8f1352b5d21920d75bb9b33126b31d3a40f20601e3",
+    "assets/planner-core-BMs4pm-l.js": "76cf0cb4693097ad8c07141034727d6a7b2f098d5930c4219c498d68742bc95d",
+    "assets/planner.js": "92151adc218d44399026bb01a4bb51dd3c737f8fe4925a23af18c35ef2a93a98",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "85d20610b10031f155128c6a4ec5b77514b9060c3393d2fe795bd4255f4b7485",
+    "vite-manifest.json": "77fc80470b7e769ba4bdb9d7b39d7440da8c86f416f4fef8c8965cd4b7d659a1",
     "windpress.scan.txt": "43c26f0811338efee2417a1cffbbc11045e2b7334884f804c5f9da085d66d8ca"
   }
 }

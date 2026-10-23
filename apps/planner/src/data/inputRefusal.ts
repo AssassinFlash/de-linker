@@ -8,7 +8,6 @@ export function isPreMutationInputRefusal(error: unknown): boolean {
 	if (!(error instanceof ApiError)) return false;
 	const statuses: Readonly<Record<string, readonly number[]>> = {
 		invalid_input: [400, 422],
-		invalid_json_object: [422],
 		body_too_large: [413],
 		request_too_large: [413],
 		linker_planner_body: [413],
@@ -16,6 +15,8 @@ export function isPreMutationInputRefusal(error: unknown): boolean {
 		linker_planner_input: [400],
 		linker_planner_input_depth: [400],
 	};
+	// Shared JSON/shape validators also run after dispatch on response bytes.
+	// Their codes (including invalid_json_object) cannot prove a refused write.
 	return Object.hasOwn(statuses, error.code)
 		? statuses[error.code]!.includes(error.status)
 		: false;

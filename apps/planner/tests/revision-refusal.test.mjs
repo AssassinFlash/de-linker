@@ -7,7 +7,7 @@ import { useProjectDraft } from "../src/data/useProjectDraft.ts";
 import { ApiError } from "../src/data/protocol.ts";
 import { editDraft } from "../src/domain/draft.ts";
 
-for (const code of ["request_failed", "invalid_input"])
+for (const code of ["request_failed", "invalid_json_object", "invalid_input"])
 	test(`${code}: revision retry keeps or releases the original key according to the identified refusal`, async (t) => {
 		const fixture = setupDom(),
 			{ createRoot } = await import("react-dom/client");
@@ -72,10 +72,10 @@ for (const code of ["request_failed", "invalid_input"])
 		);
 		await act(async () => hook.save());
 		const first = JSON.parse(sent[0]);
-		assert.equal(hook.draft.pending !== null, code === "request_failed");
+		assert.equal(hook.draft.pending !== null, code !== "invalid_input");
 		await act(async () => hook.save());
 		const second = JSON.parse(sent[1]);
-		assert.equal(first.key === second.key, code === "request_failed");
-		if (code === "request_failed") assert.equal(sent[0], sent[1]);
+		assert.equal(first.key === second.key, code !== "invalid_input");
+		if (code !== "invalid_input") assert.equal(sent[0], sent[1]);
 		assert.equal(hook.draft.history.current.note, "Uncertain original");
 	});

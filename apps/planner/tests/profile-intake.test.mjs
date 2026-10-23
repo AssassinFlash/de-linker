@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import React, { act } from "react";
+import { IDBFactory } from "fake-indexeddb";
+import { DraftStore } from "../src/data/DraftStore.ts";
 import { setupDom, until, deferred, enter } from "./dom-fixture.mjs";
 
 const projectId = "1".repeat(32),
@@ -148,6 +150,9 @@ async function rig(
 		auth = false,
 		refuse = false,
 		refuseCode = "invalid_input",
+		reply = undefined,
+		replyStatus = 200,
+		realRecovery = false,
 		storageDown = false,
 		cleanupGate = null,
 		editor = false,
@@ -156,6 +161,21 @@ async function rig(
 	} = {},
 ) {
 	const dom = setupDom();
+	let durableStore;
+	if (realRecovery) {
+		const previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+		Object.defineProperty(globalThis, "indexedDB", {
+			value: new IDBFactory(),
+			configurable: true,
+		});
+		t.after(() => {
+			if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
+			else delete globalThis.indexedDB;
+		});
+		durableStore = new DraftStore();
+		for (const body of bodies)
+			await durableStore.writeProfileImport(recoveryOrigin, body);
+	}
 	const { createRoot } = await import("react-dom/client");
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
@@ -275,6 +295,14 @@ async function rig(
 				});
 			if (path.endsWith("/profiles/csv")) {
 				uploads.push(init.body);
+				if (durableStore)
+					assert.equal(
+						(
+							await durableStore.readProfileImports(recoveryOrigin, projectId)
+						)[0].body,
+						init.body,
+					);
+				if (reply !== undefined) return json(reply, replyStatus);
 				if (refuse) {
 					refusedBodies.add(init.body);
 					return json(
@@ -325,7 +353,7 @@ async function rig(
 									project: opening,
 									session: confirmed,
 									client,
-									store,
+									store: durableStore ?? store,
 									config: { locale: "en-GB", countries: { NO: "Norway" } },
 									recheck,
 									close() {
@@ -339,7 +367,7 @@ async function rig(
 									recoveryScopes,
 									session: confirmed,
 									client,
-									store,
+									store: durableStore ?? store,
 									locale: "en-GB",
 									timezone: "Europe/Oslo",
 									recheck,
@@ -360,6 +388,8 @@ async function rig(
 		client,
 		uploads,
 		pending,
+		readImports: () =>
+			durableStore?.readProfileImports(recoveryOrigin, projectId),
 		calls,
 		attachments,
 		get writeStarted() {
@@ -385,6 +415,42 @@ async function rig(
 		dom,
 	};
 }
+
+for (const status of [200, 422, 500])
+	for (const response of [[], null, {}])
+		test(`HTTP ${status} ${JSON.stringify(response)} keeps CSV original and retry key`, async (t) => {
+			const body = command(),
+				fixture = await rig(t, {
+					bodies: [body],
+					reply: response,
+					replyStatus: status,
+					realRecovery: true,
+				});
+			await until(() => button("Check or retry this import"));
+			await act(async () => button("Check or retry this import").click());
+			await until(() =>
+				document.body.textContent.includes("could not be confirmed"),
+			);
+			assert.deepEqual([...fixture.pending.values()], [body]);
+			assert.deepEqual(
+				(await fixture.readImports()).map((record) => record.body),
+				[body],
+			);
+			await act(async () => button("Check or retry this import").click());
+			await until(() => fixture.uploads.length === 2);
+			await until(
+				() =>
+					!button("Check or retry this import").disabled &&
+					document.body.textContent.includes("could not be confirmed"),
+			);
+			assert.deepEqual(fixture.uploads, [body, body]);
+			assert.deepEqual(
+				(await fixture.readImports()).map((record) => record.body),
+				[body],
+			);
+			assert.deepEqual([...fixture.pending.values()], [body]);
+			assert.equal(fixture.attachments.length, 0);
+		});
 
 test("unknown imports are explicitly selected and retried with frozen bytes before durable selection clears recovery", async (t) => {
 	const a = command("Synthetic A"),

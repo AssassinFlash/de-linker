@@ -65,6 +65,8 @@ async function rig(
 		replyGate = null,
 		lost = false,
 		refusal = null,
+		reply = undefined,
+		replyStatus = 200,
 		previousScope = null,
 		intake = false,
 		locale = "en-GB",
@@ -99,6 +101,7 @@ async function rig(
 					"dispatch requires a committed exact intent",
 				);
 				if (replyGate) await replyGate.promise;
+				if (reply !== undefined) return json(reply, replyStatus);
 				if (refusal) return json({ error: { code: refusal } }, 422);
 				if (lost) {
 					lost = false;
@@ -192,6 +195,9 @@ async function rig(
 		setRefusal(code) {
 			refusal = code;
 		},
+		setReply(value) {
+			reply = value;
+		},
 		setOwner(value) {
 			owner = value;
 		},
@@ -238,6 +244,35 @@ test("unknown 422 keeps the frozen intent while a typed input refusal releases i
 	assert.deepEqual(await fixture.journal.list([scope], projectId), []);
 	assert.deepEqual(fixture.uploads, [pending.body, pending.body]);
 });
+
+for (const status of [200, 422, 500])
+	for (const response of [[], null, {}])
+		test(`HTTP ${status} ${JSON.stringify(response)} cannot erase a dispatched roof original`, async (t) => {
+			const fixture = await rig(t, { reply: response, replyStatus: status }),
+				request = command();
+			await act(async () => fixture.flow.prepare(request));
+			await until(() => !fixture.flow.checking);
+			assert.equal(fixture.flow.asset, null);
+			assert.ok(fixture.flow.error);
+			const [record] = await fixture.journal.list([scope], projectId);
+			assert.equal(record.body, fixture.flow.intent.body);
+			assert.equal(record.key, request.key);
+			await act(async () => fixture.flow.dismiss());
+			await until(() => fixture.flow.records.length === 1);
+			fixture.setReply(undefined);
+			await act(async () => fixture.flow.retry(record));
+			await until(
+				() =>
+					!fixture.flow.checking &&
+					fixture.flow.records[0]?.assetId === asset.id,
+			);
+			assert.equal(fixture.flow.asset.id, asset.id);
+			assert.deepEqual(fixture.uploads, [record.body, record.body]);
+			assert.equal(
+				(await fixture.journal.list([scope], projectId))[0].assetId,
+				asset.id,
+			);
+		});
 
 test("withdrawn native admission during the recovery write prevents dispatch", async (t) => {
 	const gate = deferred(),
@@ -320,19 +355,7 @@ const button = (label) =>
 		(element) => element.textContent.trim() === label,
 	);
 const field = (name) => document.querySelector(`[name="${name}"]`);
-async function click(label) {
-	assert.ok(button(label), label);
-	await act(async () => button(label).click());
-}
-
-test("guided import retains raw locale input and source holes across Back and a typed refusal", async (t) => {
-	const fixture = await rig(t, {
-		intake: true,
-		locale: "de-DE",
-		refusal: "invalid_input",
-	});
-	await click("Import roof geometry");
-	assert.equal(fixture.activity, true);
+async function chooseFixtureFile() {
 	await act(async () => {
 		const input = document.querySelector('input[type="file"]');
 		Object.defineProperty(input, "files", {
@@ -347,6 +370,21 @@ test("guided import retains raw locale input and source holes across Back and a 
 		input.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	await until(() => !button("Continue").disabled);
+}
+async function click(label) {
+	assert.ok(button(label), label);
+	await act(async () => button(label).click());
+}
+
+test("guided import retains raw locale input and source holes across Back and a typed refusal", async (t) => {
+	const fixture = await rig(t, {
+		intake: true,
+		locale: "de-DE",
+		refusal: "invalid_input",
+	});
+	await click("Import roof geometry");
+	assert.equal(fixture.activity, true);
+	await chooseFixtureFile();
 	assert.equal(field("selection").value, "0:0");
 	assert.ok(document.body.textContent.includes("Openings in source: 1"));
 	await click("Continue");
@@ -368,6 +406,12 @@ test("guided import retains raw locale input and source holes across Back and a 
 		field("rights"),
 		"Test original; permission to derive and retain",
 	);
+	await click("Prepare roof preview");
+	assert.equal(
+		field("retention").validationMessage,
+		"Complete this field to continue.",
+	);
+	assert.deepEqual(fixture.uploads, []);
 	await act(async () => field("retention").click());
 	await click("Prepare roof preview");
 	await until(
@@ -390,6 +434,43 @@ test("guided import retains raw locale input and source holes across Back and a 
 	assert.equal(fixture.activity, false);
 	await until(() => document.activeElement === button("Import roof geometry"));
 });
+
+for (const rawHeight of ["", "1,"])
+	test(`explicit zero-height datum bypasses ${JSON.stringify(rawHeight)} while keeping its correction available`, async (t) => {
+		const fixture = await rig(t, { intake: true });
+		await click("Import roof geometry");
+		await chooseFixtureFile();
+		await click("Continue");
+		await enter(field("pitch"), "30");
+		await enter(field("bearing"), "180");
+		await enter(field("basis"), "Synthetic height-reference fixture");
+		if (rawHeight) await enter(field("height"), rawHeight);
+		await click("Continue");
+		assert.equal(
+			document.querySelector('[data-import-step="1"]').hidden,
+			false,
+		);
+		assert.ok(field("height").validationMessage);
+		const zero = [...document.querySelectorAll('input[type="checkbox"]')].find(
+			(input) => !input.name,
+		);
+		await act(async () => zero.click());
+		await click("Continue");
+		assert.equal(
+			document.querySelector('[data-import-step="2"]').hidden,
+			false,
+		);
+		assert.equal(field("height").value, rawHeight);
+		await click("Back");
+		await act(async () => zero.click());
+		await click("Continue");
+		assert.equal(
+			document.querySelector('[data-import-step="1"]').hidden,
+			false,
+		);
+		assert.equal(field("height").value, rawHeight);
+		assert.deepEqual(fixture.uploads, []);
+	});
 
 test("an earlier upload is explicitly reviewed before its actual fixture roof can join history", async (t) => {
 	const fixture = await rig(t, { intake: true }),

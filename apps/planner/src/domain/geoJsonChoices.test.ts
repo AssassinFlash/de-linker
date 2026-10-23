@@ -12,7 +12,35 @@ const raw = readFileSync(
 		import.meta.url,
 	),
 );
-const encoded = (value: unknown) => btoa(JSON.stringify(value));
+const encoded = (value: unknown) =>
+	Buffer.from(JSON.stringify(value)).toString("base64");
+
+test("long display names preserve complete Unicode and source identity", () => {
+	for (const property of ["name", "id"]) {
+		for (const suffix of ["🙂", "🙂Z"]) {
+			const source = JSON.parse(raw.toString()),
+				name = "a".repeat(255) + suffix;
+			if (property === "name") source.properties = { name };
+			else {
+				source.properties = {};
+				source.id = name;
+			}
+			const content = encoded(source),
+				[choice] = geoJsonChoices(content);
+			assert.equal(
+				choice!.name,
+				"a".repeat(255) + (suffix === "🙂" ? "🙂" : "…"),
+			);
+			assert.equal(Array.from(choice!.name!).length, 256);
+			assert.equal(choice!.featureIndex, 0);
+			assert.equal(choice!.polygonIndex, 0);
+			assert.equal(
+				Buffer.from(content, "base64").toString(),
+				JSON.stringify(source),
+			);
+		}
+	}
+});
 
 test("selection exposes actual features and polygon parts while retaining holes", () => {
 	const source = JSON.parse(raw.toString()),

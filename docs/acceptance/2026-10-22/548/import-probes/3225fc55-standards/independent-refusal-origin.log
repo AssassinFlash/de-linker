@@ -1,0 +1,68 @@
+{"probe":"response-origin","response_status":200,"upload_count":1,"error_code":"invalid_json_object","error_status":422,"intent_retained":false,"journal_count":0,"original_key":"33ab52bc-bb62-4d33-a136-73fc0c34532e"}
+✖ independent malformed 200 response retains the committed original as an unknown result (190.518292ms)
+{"probe":"response-origin","response_status":422,"upload_count":1,"error_code":"invalid_json_object","error_status":422,"intent_retained":false,"journal_count":0,"original_key":"3b26b309-269b-414d-81c5-c5820dcb4a5a"}
+✖ independent malformed 422 response retains the committed original as an unknown result (10.726042ms)
+{"probe":"response-origin","response_status":500,"upload_count":1,"error_code":"invalid_json_object","error_status":422,"intent_retained":false,"journal_count":0,"original_key":"f127b3c5-02cc-4535-b660-1bda497ab018"}
+✖ independent malformed 500 response retains the committed original as an unknown result (9.217ms)
+✔ independent identified input refusal still releases the committed original (10.697209ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 1
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 888.140833
+
+✖ failing tests:
+
+test at tests/standards-refusal-origin.test.mjs:204:2
+✖ independent malformed 200 response retains the committed original as an unknown result (190.518292ms)
+  AssertionError [ERR_ASSERTION]: an unusable response is not evidence of a pre-mutation input refusal
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-3225-pinw2cau/apps/planner/tests/standards-refusal-origin.test.mjs:211:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/standards-refusal-origin.test.mjs:204:2
+✖ independent malformed 422 response retains the committed original as an unknown result (10.726042ms)
+  AssertionError [ERR_ASSERTION]: an unusable response is not evidence of a pre-mutation input refusal
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-3225-pinw2cau/apps/planner/tests/standards-refusal-origin.test.mjs:211:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/standards-refusal-origin.test.mjs:204:2
+✖ independent malformed 500 response retains the committed original as an unknown result (9.217ms)
+  AssertionError [ERR_ASSERTION]: an unusable response is not evidence of a pre-mutation input refusal
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-standards-3225-pinw2cau/apps/planner/tests/standards-refusal-origin.test.mjs:211:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

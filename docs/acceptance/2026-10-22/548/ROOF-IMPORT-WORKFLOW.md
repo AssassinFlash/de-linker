@@ -71,3 +71,40 @@ search fallback. The Actor's first refusal was traced to the required proxy
 configuration and repaired by using its valid existing Apify Proxy setting.
 [Primary source capture](../../../research/2026-10-23-map-workbench-integration/dependency-fake-indexeddb/run.json).
 No token, account configuration or new full-permission Actor approval was stored.
+
+## Fixed-source opposition and correction
+
+`3225fc55` is **FAIL**, preserved in [Spec](import-probes/3225fc55-spec/REVIEW.md)
+and [Standards](import-probes/3225fc55-standards/REVIEW.md). The baseline's passing
+tests did not cover these independent counterexamples:
+
+- A generic `invalid_json_object/422` comes from response readers as well as
+  request validation. Malformed HTTP 200/422/500/502 replies could therefore
+  erase an already-dispatched original. The classifier no longer accepts that
+  ambiguous code. Real PlannerClient/hook/IndexedDB tests retain and retry exact
+  roof originals after array/null/object responses; the CSV path now uses the
+  real DraftStore as well. Revision saves retain the same pending key for the
+  shared parser error. Identified `invalid_input` still permits correction.
+- An explicitly selected relative-zero datum was blocked by an earlier hidden
+  height error. This datum now bypasses that field without changing its raw
+  text or erasing its error; switching back requires correction again. Empty
+  and invalid locale-string branches are exercised.
+- Cutting a display/default name at 256 UTF-16 units could split a valid emoji.
+  A documented display policy now bounds 256 Unicode code points with a visible
+  ellipsis; original file bytes and feature/part identity are unchanged.
+
+Native use also exposed the operating-system language in the plain file input.
+The roof workflow now uses the existing accessible CSV picker pattern and the
+already-approved Choose file / Datei auswählen message. Required checkbox
+feedback uses the same approved required-field message. Preview area is rounded
+only for display (maximum two decimal places); the accepted raw area and unknown
+source precision remain unchanged. No new customer message was invented for
+these corrections. The catalog reference for the reused picker label is present
+in the generated WordPress module JSON.
+
+The earlier 3225 native run used a synthetic Köln original, one opening and an
+explicit 3–4–5 plane. The server returned 187.66430950859078 m². Explicit Add,
+Undo, Redo, save as version 2 and reload all preserved one roof with the opening.
+This is a synthetic geometry-path observation, not a surveyed building or an
+engineering release. The fixed-source native matrix and new independent review
+must still be recorded; the old failing verdict is not overwritten.

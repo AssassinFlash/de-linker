@@ -16,6 +16,8 @@ test("only a known input-refusal code and status release an import", () => {
 		for (const code of [
 			"request_failed",
 			"upstream",
+			"invalid_json_object",
+			"invalid_reply",
 			"toString",
 			"constructor",
 		])

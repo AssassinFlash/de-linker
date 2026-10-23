@@ -1,0 +1,87 @@
+{
+  "fixed_sha": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "base_sha": "367e454c23f542632258e1440387c4c9e7825e17",
+  "observed_utc": "2026-10-23T11:19:08.303870+00:00",
+  "standards_inventory": [
+    "AGENTS.md"
+  ],
+  "other_contributing_or_coding_standard_files_found": [],
+  "standards_also_applied": [
+    "CONTEXT.md",
+    "docs/adr/0002-isolated-planner-runtime.md",
+    "docs/specs/548-roof-import-workflow.md",
+    "docs/specs/548-geographic-intake.md",
+    "current user local-storage discipline and /Users/chesterjohn/Documents/de-linker/docs/agents/local-storage.md"
+  ],
+  "reviewed_changed_files": [
+    "apps/planner/package-lock.json",
+    "apps/planner/package.json",
+    "apps/planner/src/components/ProfileIntake.tsx",
+    "apps/planner/src/components/ProjectEditor.tsx",
+    "apps/planner/src/components/design/DesignEditor.tsx",
+    "apps/planner/src/components/design/GeometryImportFields.tsx",
+    "apps/planner/src/components/design/GeometryImportSettings.tsx",
+    "apps/planner/src/components/design/GeometryIntake.tsx",
+    "apps/planner/src/data/GeometryImportStore.test.ts",
+    "apps/planner/src/data/GeometryImportStore.ts",
+    "apps/planner/src/data/inputRefusal.test.ts",
+    "apps/planner/src/data/inputRefusal.ts",
+    "apps/planner/src/data/useGeometryImport.ts",
+    "apps/planner/src/data/useProjectDraft.ts",
+    "apps/planner/src/domain/geoJsonChoices.test.ts",
+    "apps/planner/src/domain/geoJsonChoices.ts",
+    "apps/planner/src/domain/geometryEditing.ts",
+    "apps/planner/tests/geometry-import.test.mjs",
+    "apps/planner/tests/geometry-project.test.mjs",
+    "apps/planner/tests/profile-intake.test.mjs",
+    "apps/planner/tests/revision-refusal.test.mjs",
+    "docs/acceptance/2026-10-22/548/ROOF-IMPORT-WORKFLOW.md",
+    "docs/acceptance/2026-10-22/548/import-copy-draft.json",
+    "docs/acceptance/2026-10-22/548/import-copy-feedback.json",
+    "docs/acceptance/2026-10-22/548/import-copy-final.json",
+    "docs/acceptance/2026-10-22/548/import-owner-tests.log",
+    "docs/research/2026-10-23-map-workbench-integration/dependency-fake-indexeddb/apify-results.json",
+    "docs/research/2026-10-23-map-workbench-integration/dependency-fake-indexeddb/run.json",
+    "docs/specs/548-roof-import-workflow.md",
+    "plugins/linker-commerce/content/windpress/planner.css",
+    "plugins/linker-tools/build/planner/assets/SceneViewport-CR4un0iD.js",
+    "plugins/linker-tools/build/planner/assets/planner-core-BkIGcxZy.js",
+    "plugins/linker-tools/build/planner/assets/planner-core-DPxbxJR-.js",
+    "plugins/linker-tools/build/planner/assets/planner.js",
+    "plugins/linker-tools/build/planner/source-manifest.json",
+    "plugins/linker-tools/build/planner/vite-manifest.json",
+    "plugins/linker-tools/build/planner/windpress.scan.txt",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po"
+  ],
+  "added_legacy_identifier_matches": [],
+  "runtime_dependencies_unchanged": true,
+  "only_new_dependency": {
+    "package": "fake-indexeddb",
+    "version": "6.2.6",
+    "dev_only": true,
+    "installed_version": "6.2.6",
+    "actual_usage": "IDBFactory creates isolated stores in unit/component tests; standard transaction, cursor, scope index, commit and abort behavior execute through GeometryImportStore, not a hand-written map."
+  },
+  "new_styles_only_native_windpress": true,
+  "new_scoped_css_rules": 18,
+  "source_capture": {
+    "run": {
+      "id": "MfjksZG4mjsSSLurD",
+      "actId": "aYG0l9s7dbB7j3gbS",
+      "status": "SUCCEEDED",
+      "startedAt": "2026-10-23T10:38:14.544Z",
+      "finishedAt": "2026-10-23T10:38:19.408Z",
+      "defaultDatasetId": "kY2LwwlOovnHuwER6"
+    },
+    "path": "docs/research/2026-10-23-map-workbench-integration/dependency-fake-indexeddb/apify-results.json",
+    "sha256": "f073b31acb3c78e2f871ab99d09ce31164d7b366163ef7219fcc97cbb562ed00",
+    "primary_source_urls": [
+      "https://github.com/dumbmatter/fakeIndexedDB",
+      "https://github.com/dumbmatter/fakeIndexedDB/blob/master/package.json"
+    ],
+    "primary_sources_support_selected_version_licence_and_constructor": true
+  },
+  "limit": "Source/compiled-catalog and emitted graph evidence only. No p548 browser, native runtime mutation or production operation."
+}

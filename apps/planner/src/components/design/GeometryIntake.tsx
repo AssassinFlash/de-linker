@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
 import type {
@@ -10,7 +10,6 @@ import { geoJsonChoices } from "../../domain/geoJsonChoices.ts";
 import type { GeoJsonChoice } from "../../domain/geoJsonChoices.ts";
 import { roofPlaneAtVertex } from "../../domain/geometryEditing.ts";
 import { fileBase64 } from "../../domain/profiles.ts";
-import { formatDecimal } from "../../domain/decimal.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { Session } from "../../data/protocol.ts";
 import type { GeometryImportIntent } from "../../data/GeometryImportStore.ts";
@@ -73,7 +72,8 @@ export function GeometryIntake({
 		[reading, setReading] = useState(false),
 		[error, setError] = useState<string | null>(null),
 		[applied, setApplied] = useState<string | null>(null);
-	const form = useRef<HTMLFormElement>(null),
+	const id = useId(),
+		form = useRef<HTMLFormElement>(null),
 		heading = useRef<HTMLHeadingElement>(null),
 		trigger = useRef<HTMLButtonElement>(null),
 		readSequence = useRef(0),
@@ -226,7 +226,15 @@ export function GeometryIntake({
 		for (const input of section?.querySelectorAll<
 			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
 		>("input,textarea,select") ?? []) {
-			if (input.required && input.type !== "checkbox" && !input.value.trim())
+			// An explicit drawing datum replaces this height only for this run.
+			// Keep its raw value and error intact if the user switches back.
+			if (input.name === "height" && zeroHeight) continue;
+			if (
+				input.required &&
+				(input instanceof window.HTMLInputElement && input.type === "checkbox"
+					? !input.checked
+					: !input.value.trim())
+			)
 				input.setCustomValidity(
 					__("Complete this field to continue.", "linker-tools"),
 				);
@@ -543,17 +551,34 @@ export function GeometryIntake({
 							<fieldset disabled={reading || flow.busy || !!frozen || !aligned}>
 								<div hidden={step !== 0}>
 									<label className="lp-field">
-										<span>{__("Roof file", "linker-tools")}</span>
-										<input
-											type="file"
-											accept=".geojson,.json,application/geo+json,application/json"
-											onChange={(event) => {
-												void choose(event.currentTarget.files?.[0]);
-											}}
-										/>
-										<small>
-											{filename ||
-												__("WGS 84 GeoJSON · up to 4 MiB", "linker-tools")}
+										<span id={id + "-file"}>
+											{__("Roof file", "linker-tools")}
+										</span>
+										<div className="lp-file-picker">
+											<span className="lp-file-button" aria-hidden="true">
+												{__("Choose file", "linker-tools")}
+											</span>
+											<span
+												className="lp-file-name"
+												id={id + "-file-name"}
+												aria-live="polite"
+											>
+												{filename || __("No file selected", "linker-tools")}
+											</span>
+											<input
+												type="file"
+												aria-labelledby={id + "-file"}
+												aria-describedby={
+													id + "-file-name " + id + "-file-hint"
+												}
+												accept=".geojson,.json,application/geo+json,application/json"
+												onChange={(event) => {
+													void choose(event.currentTarget.files?.[0]);
+												}}
+											/>
+										</div>
+										<small id={id + "-file-hint"}>
+											{__("WGS 84 GeoJSON · up to 4 MiB", "linker-tools")}
 										</small>
 									</label>
 								</div>
@@ -617,7 +642,14 @@ export function GeometryIntake({
 							<dl className="lp-field-summary">
 								<div>
 									<dt>{__("Roof-plane area", "linker-tools")}</dt>
-									<dd>{formatDecimal(asset.areaM2, locale)} m²</dd>
+									<dd>
+										{/* Display policy only: two fractional digits do not
+										    establish the source's survey precision. */}
+										{new Intl.NumberFormat(locale, {
+											maximumFractionDigits: 2,
+										}).format(asset.areaM2)}{" "}
+										m²
+									</dd>
 								</div>
 								<div>
 									<dt>{__("Openings retained", "linker-tools")}</dt>

@@ -22,6 +22,8 @@ None of these becomes accepted merely because this import workflow passes.
    pitch, direction, height or source precision is supplied as a default.
    A separate explicit relative-zero checkbox sets a drawing datum; it does
    not claim ground/ellipsoid height. Existing geographic origins stay fixed.
+   Selecting this datum bypasses a previously rejected height without erasing
+   its raw string; switching back requires correcting that height again.
    A new empty unreferenced project adopts the selected vertex as origin.
    A nonempty unaligned project must align its existing frame first; import
    cannot silently rotate or reposition it. The accepted geographic conversion
@@ -50,6 +52,8 @@ None of these becomes accepted merely because this import workflow passes.
   unidentified 4xx responses, retain the exact original request for an explicit
   retry. Only identified pre-mutation refusal code/status pairs release it.
   Apply this correction consistently to CSV import and project revision save.
+   Shared JSON/shape parser errors never identify a pre-mutation refusal: they
+   also arise from unusable response bytes after a server write.
 - Native-granted former namespaces may be reviewed without automatically
   uploading, changing project history or granting ownership. A retry uses that
   original namespace/body/key. Disappearance of native admission fences delayed
@@ -69,6 +73,13 @@ None of these becomes accepted merely because this import workflow passes.
   raw command JSON, fabricated result or unearned engineering release enters
   the customer surface. Copy follows the site EN/DE terminology and independent
   draft/review/final record. All styling belongs to the same WindPress volume.
+   The existing accessible file picker supplies the site language independently
+   of the operating-system language. Required-field feedback also uses the site
+   language, including the source-retention declaration. Source names use a
+   documented 256-code-point display/default-name policy, with complete Unicode
+   characters and a visible ellipsis when shortened; original identity stays
+   unchanged. Preview area uses at most two fractional digits as display policy;
+   the calculation original and declared source precision are kept separately.
 
 Primary dependency sources:
 [README](https://github.com/dumbmatter/fakeIndexedDB),

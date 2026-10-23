@@ -15,6 +15,16 @@ const object = (value: unknown): Record<string, unknown> | null =>
 		? (value as Record<string, unknown>)
 		: null;
 
+// UI display/default-name resource policy, in Unicode code points. This does
+// not alter source bytes, feature identity or any engineering precision.
+const maxLabelCodePoints = 256;
+function displayName(value: string): string {
+	const points = Array.from(value.trim());
+	return points.length <= maxLabelCodePoints
+		? points.join("")
+		: points.slice(0, maxLabelCodePoints - 1).join("") + "…";
+}
+
 /** File inspection offers choices, never repairs or rewrites original bytes.
  * The authoritative intake still validates the complete selected shape,
  * duplicate JSON members, projection, topology and numerical support. */
@@ -44,9 +54,9 @@ export function geoJsonChoices(content: string): readonly GeoJsonChoice[] {
 		const properties = object(feature.properties),
 			name =
 				typeof properties?.name === "string" && properties.name.trim()
-					? properties.name.trim().slice(0, 256)
+					? displayName(properties.name)
 					: typeof feature.id === "string"
-						? feature.id.slice(0, 256)
+						? displayName(feature.id)
 						: null;
 		polygons.forEach((rings, polygonIndex) => {
 			if (!Array.isArray(rings) || !rings.length) return;
