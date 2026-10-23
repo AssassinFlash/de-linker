@@ -13,6 +13,7 @@ from typing import Any, cast
 import pytest
 from fastapi import Request
 
+from linker_genie.abilities import Abilities
 from linker_genie.app import _answer
 from linker_genie.facts import Fact, TurnFacts, collect, merge, stock_rows
 from linker_genie.ground import check
@@ -527,6 +528,7 @@ def test_a_stock_question_with_no_product_asks_which_one(
         Prepared(route=route),
         _http(),
         cast(Lookup, None),
+        abilities=cast(Abilities, None),
     )
     assert block is None
     assert result.attempts == 0
@@ -635,6 +637,7 @@ def test_stock_and_delivery_answers_stock_and_hands_delivery_to_the_team(
         Prepared(route=route, facts=facts),
         _http(),
         cast(Lookup, None),
+        abilities=cast(Abilities, None),
     )
     assert block is None
     assert result.attempts == 0
@@ -772,6 +775,7 @@ def test_a_compound_question_keeps_its_other_half(
         Prepared(route=route, facts=facts),
         _request_with(model),
         cast(Lookup, None),
+        abilities=cast(Abilities, None),
     )
     assert block is None
     assert model.calls == 1, result.retried
@@ -819,6 +823,7 @@ def test_an_empty_stock_search_is_degraded_not_no_match(
         Prepared(route=route, facts=facts),
         _http(),
         cast(Lookup, None),
+        abilities=cast(Abilities, None),
     )
     assert block is None
     assert result.attempts == 0
@@ -845,6 +850,7 @@ def test_a_missing_delivery_sentence_is_a_recorded_failure() -> None:
         Prepared(route=route, facts=facts),
         _http(),
         cast(Lookup, None),
+        abilities=cast(Abilities, None),
     )
     assert result.attempts == 0
     assert result.grounded is False
