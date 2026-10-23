@@ -35,10 +35,12 @@ msgid "The current product data could not be checked. Your entries are still her
 msgstr "Die aktuellen Produktdaten konnten nicht geprüft werden. Ihre Angaben bleiben erhalten."
 
 #: src/configurator/publication.ts:20 build/configurator.js
+#: build/genie.js build/hero.js
 msgid "The addition could not be confirmed. The solution draft may already contain these products."
 msgstr "Das Hinzufügen konnte nicht bestätigt werden. Die Produkte können bereits im Lösungsentwurf stehen."
 
 #: src/configurator/publication.ts:26 build/configurator.js
+#: build/genie.js build/hero.js
 msgid "Addition not confirmed."
 msgstr "Hinzufügen nicht bestätigt."
 
@@ -2171,7 +2173,8 @@ msgstr "Genie ist vorübergehend nicht verfügbar. Ihre Nachricht ist erhalten. 
 msgid "Your request could not be completed. Your input is still here. Please try again."
 msgstr "Ihre Anfrage konnte nicht verarbeitet werden. Ihre Eingaben sind erhalten. Bitte versuchen Sie es erneut."
 
-#: includes/Protection/Replies.php
+#: includes/Protection/Replies.php build/configurator.js
+#: build/genie.js build/hero.js
 msgid "The request status could not be confirmed. Please check before sending it again."
 msgstr "Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand."
 
@@ -2186,3 +2189,15 @@ msgstr "Anfrage senden"
 #: includes/Protection/ReplyPrivacy.php
 msgid "Response"
 msgstr "Antwort"
+
+#: includes/Genie/DraftProof.php:204 src/genie/shared/cardActions.ts:93 src/genie/components/PartsCard.tsx:98 build/genie.js build/hero.js
+msgid "Genie needs to check this product list again before it can be saved or added."
+msgstr "Diese Produktliste muss Genie vor dem Speichern oder Hinzufügen erneut prüfen."
+
+#: src/genie/App.tsx src/genie/shared/cardActions.ts build/genie.js build/hero.js
+msgid "The product information changed while Genie was answering. Your message is still here."
+msgstr "Während der Antwort haben sich die Produktinformationen geändert. Ihre Nachricht bleibt erhalten."
+
+#: src/genie/App.tsx src/genie/shared/cardActions.ts build/genie.js build/hero.js
+msgid "Saved in this browser for now."
+msgstr "Vorerst in diesem Browser gespeichert."

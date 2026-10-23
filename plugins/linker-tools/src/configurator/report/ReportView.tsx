@@ -31,7 +31,8 @@ type PdfState = 'idle' | 'working' | 'failed' | 'changed' | 'publication';
  * failed (the configurator's own failure copy), or the solution stays in the
  * guest's session and has no account post to read yet.
  */
-export type AskState = 'idle' | 'saving' | 'failed' | 'changed' | 'signin';
+export type AskState =
+	'idle' | 'saving' | 'failed' | 'changed' | 'unconfirmed' | 'signin';
 
 export interface ReportViewProps {
 	report: Report;
@@ -104,14 +105,16 @@ export function ReportView( {
 			URL.revokeObjectURL( url );
 			setPdf( 'idle' );
 		} catch ( error ) {
-			setPdf(
-				error instanceof EngineError && error.kind === 'stale'
-					? 'changed'
-					: error instanceof EngineError &&
-						  error.kind === 'publication'
-						? 'publication'
-						: 'failed'
-			);
+			let next: PdfState = 'failed';
+			if ( error instanceof EngineError && error.kind === 'stale' ) {
+				next = 'changed';
+			} else if (
+				error instanceof EngineError &&
+				error.kind === 'publication'
+			) {
+				next = 'publication';
+			}
+			setPdf( next );
 		}
 	}
 
@@ -156,16 +159,16 @@ export function ReportView( {
 							: __( 'Download PDF', 'linker-tools' ) }
 					</button>
 					<p className="linker-report__status" role="status">
-						{ pdf === 'changed'
-							? selectionChangedText()
-							: pdf === 'publication'
-								? publicationUnavailableText()
-								: pdf === 'failed'
-									? __(
-											'The PDF could not be created. Try again.',
-											'linker-tools'
-										)
-									: '' }
+						{ pdf === 'changed' ? selectionChangedText() : '' }
+						{ pdf === 'publication'
+							? publicationUnavailableText()
+							: '' }
+						{ pdf === 'failed'
+							? __(
+									'The PDF could not be created. Try again.',
+									'linker-tools'
+								)
+							: '' }
 					</p>
 				</div>
 				<div className="linker-report__ask">
@@ -181,14 +184,19 @@ export function ReportView( {
 							: __( 'Ask Genie', 'linker-tools' ) }
 					</button>
 					<p className="linker-report__status" role="status">
-						{ askState === 'changed'
-							? selectionChangedText()
-							: askState === 'failed'
-								? __(
-										'The solution could not be saved. Try again.',
-										'linker-tools'
-									)
-								: '' }
+						{ askState === 'changed' ? selectionChangedText() : '' }
+						{ askState === 'unconfirmed'
+							? __(
+									'The request status could not be confirmed. Please check before sending it again.',
+									'linker-tools'
+								)
+							: '' }
+						{ askState === 'failed'
+							? __(
+									'The solution could not be saved. Try again.',
+									'linker-tools'
+								)
+							: '' }
 					</p>
 					{ askState === 'signin' ? (
 						<p className="linker-report__ask-note" role="status">

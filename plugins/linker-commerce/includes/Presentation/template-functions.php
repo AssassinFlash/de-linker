@@ -138,6 +138,6 @@ if ( ! function_exists( 'linker_commerce_pdp_has_faqs' ) ) {
 	 */
 	function linker_commerce_pdp_has_faqs(): bool {
 		$id = linker_commerce_pdp_product_id();
-		return $id > 0 && array() !== Faqs::of( $id );
+		return $id > 0 && array() !== \Linker\Commerce\Products\Publication::faqs_for( $id );
 	}
 }

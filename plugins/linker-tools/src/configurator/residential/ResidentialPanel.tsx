@@ -156,7 +156,9 @@ export function ResidentialPanel( {
 	// promise both the Save button and Ask Genie await, and only for the design
 	// it was started for.
 	const askingKey = useRef< string | null >( null );
-	const askFailure = useRef< 'failed' | 'changed' >( 'failed' );
+	const askFailure = useRef< 'failed' | 'changed' | 'unconfirmed' >(
+		'failed'
+	);
 	const saveInFlight = useRef< {
 		key: string;
 		promise: Promise< SavedSolution | null >;
@@ -272,9 +274,11 @@ export function ResidentialPanel( {
 				selection_fingerprint: result?.selection_fingerprint,
 			}
 		);
-		setAddOutcome(
-			complete ? 'complete' : stale ? 'changed' : 'unverified'
-		);
+		if ( complete ) {
+			setAddOutcome( 'complete' );
+		} else {
+			setAddOutcome( stale ? 'changed' : 'unverified' );
+		}
 		setAdding( false );
 	}
 
@@ -330,18 +334,30 @@ export function ResidentialPanel( {
 					setSaveState( 'saved' );
 				}
 				return record;
-			} catch ( error ) {
+			} catch ( failure ) {
 				const changed =
-					( error instanceof EngineError &&
-						error.kind === 'stale' ) ||
-					( error instanceof SolutionWriteError && error.changed );
-				askFailure.current = changed ? 'changed' : 'failed';
+					( failure instanceof EngineError &&
+						failure.kind === 'stale' ) ||
+					( failure instanceof SolutionWriteError &&
+						failure.changed );
+				let outcome: 'failed' | 'changed' | 'unconfirmed' = 'failed';
+				if ( changed ) {
+					outcome = 'changed';
+				} else if (
+					failure instanceof SolutionWriteError &&
+					failure.unconfirmed
+				) {
+					outcome = 'unconfirmed';
+				}
+				askFailure.current = outcome;
 				// One failure sentence: the Save button's own status for its
 				// click, the report's Ask status when Ask started the save.
 				if ( designEpoch.current === epoch ) {
-					setSaveState(
-						fromAsk ? 'idle' : changed ? 'changed' : 'failed'
-					);
+					if ( fromAsk ) {
+						setSaveState( 'idle' );
+					} else {
+						setSaveState( outcome );
+					}
 				}
 				return null;
 			}

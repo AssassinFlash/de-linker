@@ -133,7 +133,7 @@ trait MocksLiveProducts {
 					if ( SelectionFacts::FIGURES_META_KEY === $key ) {
 						return $product['figures'];
 					}
-					if ( \Linker\Commerce\Products\Publication\FigureBindings::META_KEY === $key ) {
+					if ( \Linker\Commerce\Products\Publication\EvidenceBindings::META_KEY === $key ) {
 						return $bindings[ $id ] ?? array();
 					}
 					if ( CommerceState::MODE_META === $key ) {

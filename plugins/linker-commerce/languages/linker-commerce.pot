@@ -5396,3 +5396,12 @@ msgstr ""
 #: includes/Products/Publication/Module.php:62
 msgid "Requires an associated published product. Clear to withdraw this document from every product."
 msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:124
+#, php-format
+msgid "The current document does not yet verify these technical values: %s. The tools cannot use them."
+msgstr ""
+
+#: includes/Admin/DocumentsMetaBox.php:115
+msgid "Current product permissions could not be checked. Automatic preparation status is unavailable."
+msgstr ""

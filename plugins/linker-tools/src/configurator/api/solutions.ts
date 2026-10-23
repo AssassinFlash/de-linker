@@ -32,8 +32,14 @@ export interface SavedSolution {
 }
 
 export class SolutionWriteError extends Error {
-	constructor( public readonly changed: boolean ) {
-		super( changed ? 'solution_changed' : 'solution_write_failed' );
+	constructor(
+		public readonly changed: boolean,
+		public readonly unconfirmed = false
+	) {
+		const message = unconfirmed
+			? 'solution_write_unconfirmed'
+			: 'solution_write_failed';
+		super( changed ? 'solution_changed' : message );
 		this.name = 'SolutionWriteError';
 	}
 }
@@ -88,27 +94,47 @@ export async function saveSolution(
 ): Promise< SavedSolution > {
 	const reportPdf = body.reportPdf ? await pdfBase64( body.reportPdf ) : '';
 	const endpoint = `${ restUrl }linker/v1/solutions?lang=${ locale }`;
-	const response = await resourceFetch( fetcher, endpoint, {
-		method: 'POST',
-		credentials: 'same-origin',
-		headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
-		body: JSON.stringify( {
-			kind: body.kind,
-			title: body.title,
-			input: body.input,
-			selection_fingerprint: body.selectionFingerprint ?? '',
-			lines: body.lines.map( ( line ) => ( {
-				product_id: line.productId,
-				quantity: line.quantity,
-			} ) ),
-			...( reportPdf ? { report_pdf: reportPdf } : {} ),
-		} ),
-	} );
+	let response: Response;
+	try {
+		response = await resourceFetch( fetcher, endpoint, {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-WP-Nonce': nonce,
+			},
+			body: JSON.stringify( {
+				kind: body.kind,
+				title: body.title,
+				input: body.input,
+				selection_fingerprint: body.selectionFingerprint ?? '',
+				lines: body.lines.map( ( line ) => ( {
+					product_id: line.productId,
+					quantity: line.quantity,
+				} ) ),
+				...( reportPdf ? { report_pdf: reportPdf } : {} ),
+			} ),
+		} );
+	} catch {
+		throw new SolutionWriteError( false, true );
+	}
 	if ( ! response.ok ) {
 		const error = await response.json().catch( () => null );
 		throw new SolutionWriteError(
-			response.status === 409 && error?.code === 'linker_solution_changed'
+			response.status === 409 &&
+				error?.code === 'linker_solution_changed',
+			response.status >= 500
 		);
 	}
-	return response.json();
+	const saved = await response.json().catch( () => null );
+	if (
+		! saved ||
+		! Number.isInteger( saved.id ) ||
+		saved.id < 0 ||
+		typeof saved.url !== 'string' ||
+		! saved.url
+	) {
+		throw new SolutionWriteError( false, true );
+	}
+	return saved;
 }

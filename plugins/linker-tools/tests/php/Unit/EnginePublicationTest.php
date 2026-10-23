@@ -45,4 +45,32 @@ final class EnginePublicationTest extends TestCase {
 		$this->assertSame( array(), $reply->get_headers() );
 		$this->assertSame( array(), EnginePublication::dependencies( new WP_REST_Response( '%PDF-other', 200 ) ) );
 	}
+
+	/**
+	 * A cache provider that cannot refresh current Woo data is unavailable.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_unreadable_current_authority_is_a_service_failure(): void {
+		require_once dirname( __DIR__, 4 ) . '/linker-commerce/includes/Products/Publication.php';
+		WP_Mock::userFunction(
+			'wp_cache_supports',
+			array(
+				'args'   => array( 'flush_runtime' ),
+				'times'  => 1,
+				'return' => false,
+			)
+		);
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
+		$result = EnginePublication::validate(
+			array(
+				'products'  => array(),
+				'documents' => array(),
+			)
+		);
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'linker_publication_unavailable', $result->get_error_code() );
+		$this->assertSame( 503, $result->get_error_data()['status'] );
+	}
 }

@@ -129,8 +129,8 @@ final class NativeEngine {
 			$decoded = json_decode( $payload, true );
 			$valid   = EnginePublication::validate( is_array( $decoded ) && is_array( $decoded['publication'] ?? null ) ? $decoded['publication'] : array() );
 			if ( is_wp_error( $valid ) ) {
-				$status  = 409;
-				$payload = '{"error":"publication_changed"}';
+				$status  = (int) ( $valid->get_error_data()['status'] ?? 503 );
+				$payload = (string) wp_json_encode( array( 'detail' => array( 'error' => 409 === $status ? 'publication_changed' : 'publication_unavailable' ) ) );
 			}
 		}
 		if ( $enforce ) {

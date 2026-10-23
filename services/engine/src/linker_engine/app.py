@@ -325,10 +325,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(status_code=409, detail={"error": "selection_changed"})
         try:
             loaded.publication.confirm(View(loaded.engine, result.publication))
-        except PublicationUnavailable as error:
+        except PublicationChanged as error:
             raise HTTPException(
                 status_code=409, detail={"error": "publication_changed"}
             ) from error
+        except PublicationUnavailable as error:
+            raise unavailable(error, "publication_unavailable") from error
         return result
 
     @app.post("/roof/outline")
@@ -343,6 +345,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             loaded.publication.confirm(view)
             result.publication = view.dependencies
             return result
+        except PublicationChanged as error:
+            raise HTTPException(
+                status_code=409, detail={"error": "publication_changed"}
+            ) from error
         except PublicationUnavailable as error:
             raise unavailable(error, "publication_unavailable") from error
         except Lod2Unavailable as error:
@@ -361,6 +367,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             loaded.publication.confirm(view)
             result.publication = view.dependencies
             return result
+        except PublicationChanged as error:
+            raise HTTPException(
+                status_code=409, detail={"error": "publication_changed"}
+            ) from error
         except PublicationUnavailable as error:
             raise unavailable(error, "publication_unavailable") from error
 
@@ -374,10 +384,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             # Rendering can take time: validate again immediately before bytes.
             loaded = services()
             loaded.publication.confirm(View(loaded.engine, result.publication or {}))
-        except PublicationUnavailable as error:
+        except PublicationChanged as error:
             raise HTTPException(
                 status_code=409, detail={"error": "publication_changed"}
             ) from error
+        except PublicationUnavailable as error:
+            raise unavailable(error, "publication_unavailable") from error
         except pdf.LogoError as error:
             raise HTTPException(
                 status_code=422, detail={"error": "invalid_input", "field": "logo"}

@@ -32,7 +32,8 @@ import {
 } from '../publication';
 import { Documents } from './Documents';
 
-export type SaveState = 'idle' | 'saving' | 'saved' | 'failed' | 'changed';
+export type SaveState =
+	'idle' | 'saving' | 'saved' | 'failed' | 'changed' | 'unconfirmed';
 
 export interface SolutionProps {
 	result: ResidentialResult;
@@ -375,12 +376,19 @@ export function Solution( props: SolutionProps ) {
 					) : null }
 					{ props.saveState === 'changed'
 						? selectionChangedText()
-						: props.saveState === 'failed'
-							? __(
-									'The solution could not be saved. Try again.',
-									'linker-tools'
-								)
-							: null }
+						: null }
+					{ props.saveState === 'unconfirmed'
+						? __(
+								'The request status could not be confirmed. Please check before sending it again.',
+								'linker-tools'
+							)
+						: null }
+					{ props.saveState === 'failed'
+						? __(
+								'The solution could not be saved. Try again.',
+								'linker-tools'
+							)
+						: null }
 				</p>
 			</div>
 			<h3 className="linker-section__subtitle">

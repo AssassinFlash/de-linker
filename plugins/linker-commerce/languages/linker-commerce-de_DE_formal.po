@@ -5884,3 +5884,12 @@ msgstr "Öffentliche technische Unterlage"
 #: includes/Products/Publication/Module.php:62
 msgid "Requires an associated published product. Clear to withdraw this document from every product."
 msgstr "Erfordert ein zugeordnetes, veröffentlichtes Produkt. Entfernen Sie das Häkchen, um diese Unterlage für alle Produkte zurückzuziehen."
+
+#: includes/Admin/DocumentsMetaBox.php:124
+#, php-format
+msgid "The current document does not yet verify these technical values: %s. The tools cannot use them."
+msgstr "Die aktuelle Unterlage belegt diese technischen Werte noch nicht: %s. Die Werkzeuge können diese Werte nicht verwenden."
+
+#: includes/Admin/DocumentsMetaBox.php:115
+msgid "Current product permissions could not be checked. Automatic preparation status is unavailable."
+msgstr "Die aktuellen Produktfreigaben konnten nicht geprüft werden. Der Status der automatischen Aufbereitung ist nicht verfügbar."

@@ -21,8 +21,11 @@
 | 整套加入未确认 | The addition could not be confirmed. The solution draft may already contain these products. | Das Hinzufügen konnte nicht bestätigt werden. Die Produkte können bereits im Lösungsentwurf stehen. |
 | 卡片未确认 | Addition not confirmed. | Hinzufügen nicht bestätigt. |
 | 卡片需重算 | New calculation required. | Neue Berechnung erforderlich. |
+| 保存请求结果未确认（复用既有文案） | The request status could not be confirmed. Please check before sending it again. | Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand. |
 
 仅明确的发布/选型失效码进入重算状态；显式旧逆变器或电池的失效 422 也适用，其他 409 不冒充产品变化。发布权威无法核验时显示产品数据提示，真实辐照/LoD2 故障保留原提示。保存、Ask Genie、新 PDF 与整套加入失败均保留当前屏幕，不自动换产品或重算，不编造清单写入结果。
+
+补充复核：保存的 POST 可能已在服务端成功，但响应丢失、5xx 或成功回执无法解析时，原先“无法保存，请重试”超出了已知事实。Save 与 Ask Genie 的保存步骤改用上表既有“请求状态未确认”说明，不自动重发、不宣称没有保存，也不打开未经确认的账户记录。该句已在正式德语 PO 的 `includes/Protection/Replies.php` 来源上存在；配置器增加原生 bundle reference。服务端明确拒绝保留原失败说明；保存 POST 之前的 PDF 生成失败仍明确没有发出保存动作，继续走既有失败状态。本增量仅纠正旧入口的既有状态提示，不建立新的保存/恢复架构。
 
 ## Pre-delivery
 

@@ -228,7 +228,7 @@ final class DocumentLibrary {
 				$allowed_urls = array_merge( $allowed_urls, $document['aliases'] );
 			}
 		}
-		foreach ( $faqs as $faq ) {
+		foreach ( Publication::faqs_for( $id, $manifest ) as $faq ) {
 			if ( ! in_array( strtok( (string) $faq['citation']['url'], '#' ), $allowed_urls, true ) ) {
 				continue;
 			}
