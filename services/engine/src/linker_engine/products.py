@@ -254,19 +254,28 @@ class Products:
     generated_at: str
     compatibility_version: str
     products: tuple[Product, ...]
-    module: PvModule
+    reference_module: PvModule | None
+
+    @property
+    def module(self) -> PvModule:
+        """Only paths that actually need a prepared reference may read it.
+
+        A withdrawn reference does not prevent loading unrelated saleable
+        products. HTTP consumers establish its current Woo evidence first.
+        """
+        if self.reference_module is None:
+            raise FeedError("feed has no prepared reference PV module")
+        return self.reference_module
 
     @classmethod
     def from_feed(cls, feed: dict[str, Any]) -> Products:
         validate(feed, "feed.schema.json")
         modules = [item for item in feed["overlay"] if item["kind"] == "pv_module"]
-        if not modules:
-            raise FeedError("feed overlay has no reference PV module")
         return cls(
             generated_at=feed["generated_at"],
             compatibility_version=feed["compatibility_version"],
             products=tuple(Product.from_feed(raw) for raw in feed["products"]),
-            module=PvModule.from_overlay(modules[0]),
+            reference_module=PvModule.from_overlay(modules[0]) if modules else None,
         )
 
     @classmethod

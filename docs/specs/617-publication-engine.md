@@ -4,9 +4,25 @@
 
 ## 当前对象与已加载代
 
-`services/engine` 每个计算读取 Woo `/linker/v1/publication/manifest`。只保留当前 canonical 产品版本、资料身份/内容版本和产品关联均与已加载 feed 一致的交集。候选、被排除项、配件和备选都从该视图计算。未准备的新产品不进入交集；空集正常返回 `no_candidate`。兼容合同与工程 overlay 采用 Woo 同一 `compatibility_revision`。没有有效 Woo 文档关联的兼容依据不使用，也不以 JSON 中存在 URL 代替发布许可。
+`services/engine` 每个计算读取 Woo `/linker/v1/publication/manifest`。只保留当前 canonical 产品版本、资料身份/内容版本和产品关联均与已加载 feed 一致的交集。候选、被排除项、配件和备选都从该视图计算。未准备的新产品不进入交集；空集正常返回 `no_candidate`。`compatibility_revision` 只标识兼容合同，不混入单一参考组件的修订。没有有效 Woo 文档关联的兼容依据不使用，也不以 JSON 中存在 URL 代替发布许可。
 
 结果返回前再次检查全部使用的候选与资料依赖。下架/内容更新发生在途中则返回 409；Woo 当前权威不可读时返回 503。Python 的发布判断和 PHP 的最后验证均独立于 `off` / `observe` / `enforce` 的反滥用模式。显式给出的旧逆变器或电池 ID 返回 422，保持原输入，不替换为首候选。
+
+## 参考组件仍由 Woo 维护
+
+光伏组件不进入销售产品分类，保留业主批准的参考组件设计输入。既有 Trina 的事实及两份托管 PDF 一次迁入 Woo 原生参考记录：已发布、隐藏销售展示、virtual、无价格、无产品分类；`engineering_role=reference_pv_module` 与 `engineering_id=mat_trina_solar_tsm_460neg9r_28` 标识用途。后台仍用现有产品图值与 Documents 入口维护。它不能作为商品候选、推荐或加入 Solution draft 的产品；非销售角色不免除资料公开许可校验。
+
+`feed.overlay` 从这一 Woo 记录及当前 EvidenceBindings 生成，不再运行时读取 `data/engineering-overlay.json`。文件仅作一次迁移输入。每项保留 `{id,kind,brand,model,figures,documents}`，增加 `canonical_product_id`、`product_revision`、`reference_revision`；后两者是同一 Woo 产品修订，不再构造另一份手工版本。文档携带当前 `document_id`、`document_revision`、`blob_sha256` 与 `product_ids`。manifest 中同一 source 还须具有匹配的参考角色与工程 ID。
+
+使用参考组件的住宅完整候选评估与两条屋顶入口，计算前验证源记录仍发布、角色与 ID 一致、源修订一致、每份已加载资料的身份/修订/内容 SHA 及关联仍有效，全部图值引用属于这份获准资料集合。结果放行前再核相同范围。不能将旧图值临时绑定为刚读到的新 PDF hash，也不能以文件仍可访问、共享 SHA 或其他产品的关联授予参考组件许可。
+
+线上 feed URL 与 manifest URL 一致。本地快照保留本地 uploads origin，而现有 feed producer 将当前站点 URL 归一为 `https://de-linker.com`；Python 只按 `LINKER_PUBLICATION_URL` 所指定的同一精确 origin 做对应归一，保持路径、query、fragment 不变，且身份/修订/SHA/关联仍须全通过。任意其他主机即使路径或内容相同也不能通过。
+
+新结果 `publication.engineering_contract=2`，且显式携带 `reference_inputs`。每个参考项为 `{reference_input_id,reference_revision,product_id,product_revision}`；其 source 产品依赖与全部文档依赖同时列入普通 `products` / `documents`，文档额外携带 `blob_sha256`。参考信息因此参与选择指纹及 Woo 最后校验。屋顶结果只列实际使用的参考及资料，不再清空依赖，也不附带无关销售候选。
+
+旧 receipt 没有这一版本标记、遗漏参考身份或不含其完整产品/文档证明时，后续保存、确认与新 PDF 拒绝为 409。资料或源在途撤回/更新同样拒绝 409；计算开始前参考未准备/不可用，返回 503 `publication_unavailable`，明确 `reason=reference_evidence_unavailable`。客户拥有的历史快照和已生成 PDF 原件仍保留。
+
+不实际读取参考组件的工商业计算、既有逆变器 retrofit，以及没有任何逆变器可评估的正常空候选，不携带参考依赖。`reference_inputs=[]` 在这些路径合法。overlay 可为空并正常加载普通产品；参考未准备不会封住这些计算。`/resource/version?ready=1` 仅确认已验证参考源的当前产品修订，缺证时只遗漏该参考；普通已准备产品仍可确认。参考资料变化不改变全局兼容修订。
 
 ## 已确认结果与下一步
 
