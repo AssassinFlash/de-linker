@@ -24,16 +24,34 @@ def replay(
     key: str,
     command_sha256: str,
 ) -> Object | None:
-    row = connection.execute(
+    rows = connection.execute(
         "SELECT command_sha256, receipt_sha256 FROM idempotency "
         "WHERE actor=? AND scope=? AND key=?",
         (actor.key, scope, key),
-    ).fetchone()
-    if row is None:
+    ).fetchall()
+    # Native claim retires the guest, but its immutable command receipts remain
+    # the proof of an uncertain request. This is not an ownership grant: every
+    # caller still admits the actor and reads the current owned project/resource.
+    # Claim-event receipts themselves never inherit another actor's authority.
+    if actor.kind == "user" and (
+        scope == "create" or scope.startswith(("revise:", "asset:", "evaluate:"))
+    ):
+        rows.extend(
+            connection.execute(
+                "SELECT i.command_sha256, i.receipt_sha256 FROM idempotency AS i "
+                "JOIN principal_closures AS c ON c.guest=i.actor "
+                "WHERE c.new_owner=? AND i.scope=? AND i.key=?",
+                (actor.key, scope, key),
+            ).fetchall()
+        )
+    if not rows:
         return None
-    if row["command_sha256"] != command_sha256:
+    if any(row["command_sha256"] != command_sha256 for row in rows):
         raise Conflict("idempotency key already used for a different command")
-    return blobs.object(row["receipt_sha256"])
+    receipts = {row["receipt_sha256"] for row in rows}
+    if len(receipts) != 1:
+        raise Conflict("idempotency key has multiple original receipts")
+    return blobs.object(rows[0]["receipt_sha256"])
 
 
 def remember(

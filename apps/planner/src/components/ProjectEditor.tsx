@@ -33,6 +33,9 @@ export function ProjectEditor({
 	config,
 	recheck,
 	close,
+	recoveryScopes,
+	recoveryChecking = false,
+	recoveryFailed: discoveryFailed = false,
 }: {
 	project: Project;
 	session: Session;
@@ -41,6 +44,9 @@ export function ProjectEditor({
 	config: Configuration;
 	recheck: () => void;
 	close: () => boolean;
+	recoveryScopes?: readonly string[] | undefined;
+	recoveryChecking?: boolean;
+	recoveryFailed?: boolean;
 }) {
 	const {
 		draft,
@@ -221,6 +227,19 @@ export function ProjectEditor({
 					</div>
 				</aside>
 				<div className="lp-editor-main">
+					{discoveryFailed && (
+						<Notice error>
+							<p>
+								{__(
+									"Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged.",
+									"linker-tools",
+								)}
+							</p>
+							<button className="lp-text-button" onClick={recheck}>
+								{__("Check session", "linker-tools")}
+							</button>
+						</Notice>
+					)}
 					{recoveries.length > 0 && (
 						<Notice>
 							<p>
@@ -404,6 +423,8 @@ export function ProjectEditor({
 								locale={config.locale}
 								timezone={brief.site.timezone}
 								recheck={recheck}
+								recoveryScopes={recoveryScopes}
+								recoveryChecking={recoveryChecking}
 								registerGuard={registerProfileGuard}
 								currentAssetIds={Object.values(selections.selected)}
 								confirmedAssetIds={Object.values(

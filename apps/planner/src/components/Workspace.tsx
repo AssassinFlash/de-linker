@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
 	useInfiniteQuery,
 	useQuery,
@@ -11,6 +11,7 @@ import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { readProject } from "../data/readProtocol.ts";
 import { readProjectPage } from "../data/projectIndex.ts";
 import { useSiteIntegration } from "../data/useSiteIntegration.ts";
+import { recoveryScopes } from "../data/recoveryScopes.ts";
 import { __, sprintf } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { NewProject } from "./NewProject.tsx";
@@ -36,6 +37,22 @@ export function Workspace({
 }) {
 	const [selected, setSelected] = useState<string | null>(currentProject);
 	const cache = useQueryClient();
+	const recovery = useQuery({
+		queryKey: [session.query_scope, "recovery-scopes", session.claim_pending],
+		queryFn: ({ signal }) =>
+			session.kind === "guest"
+				? Promise.resolve([session.query_scope])
+				: recoveryScopes(client, session.query_scope, signal),
+	});
+	const previousSession = useRef(session);
+	useEffect(() => {
+		if (previousSession.current !== session) {
+			previousSession.current = session;
+			void cache.invalidateQueries({
+				queryKey: [session.query_scope, "recovery-scopes"],
+			});
+		}
+	}, [cache, session]);
 	const select = useCallback(
 		(id: string | null) => {
 			if (!client.isCurrentScope(session.query_scope)) return;
@@ -109,6 +126,9 @@ export function Workspace({
 				config={config}
 				session={session}
 				recheck={recheck}
+				recoveryScopes={recovery.data}
+				recoveryChecking={recovery.isFetching}
+				recoveryFailed={recovery.isError}
 				close={() => {
 					if (!client.isCurrentScope(session.query_scope)) return false;
 					void cache.invalidateQueries({
@@ -183,14 +203,36 @@ export function Workspace({
 						store={store}
 						created={created}
 						recheck={recheck}
+						recoveryScopes={recovery.data}
+						recoveryChecking={recovery.isFetching}
+						recoveryDiscoveryFailed={recovery.isError}
 					/>
 				</header>
+				{recovery.isError && (
+					<Notice error>
+						<p>
+							{__(
+								"Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged.",
+								"linker-tools",
+							)}
+						</p>
+						<button
+							className="lp-text-button"
+							onClick={() => void recovery.refetch()}
+						>
+							{__("Try again", "linker-tools")}
+						</button>
+					</Notice>
+				)}
 				{session.claim_pending && (
 					<Notice>
 						{__(
 							"Projects from the guest session are still being linked to your account.",
 							"linker-tools",
 						)}
+						<button className="lp-text-button" onClick={recheck}>
+							{__("Check session", "linker-tools")}
+						</button>
 					</Notice>
 				)}
 				<section

@@ -3476,3 +3476,10 @@ msgstr "Wiederhergestellte Quelldatei"
 #: build/planner/assets/planner.js
 msgid "This profile selection is saved with the project."
 msgstr "Diese Profilauswahl ist im Projekt gespeichert."
+
+
+#: ../../apps/planner/src/components/Workspace.tsx
+#: ../../apps/planner/src/components/ProjectEditor.tsx
+#: build/planner/assets/planner.js
+msgid "Unconfirmed project creations and CSV imports from earlier sessions could not be checked. Any recovery data already stored in this browser remains unchanged."
+msgstr "Unbestätigte Projekterstellungen und CSV-Importe aus früheren Sitzungen konnten nicht geprüft werden. Bereits in diesem Browser gespeicherte Wiederherstellungsdaten bleiben unverändert."

@@ -333,6 +333,67 @@ def test_native_login_claim_survives_upstream_outage_and_logout(
     assert owner.read(project).status == 404
 
 
+def test_native_recovery_grants_and_original_create_receipt_cross_login(
+    local: tuple[Instance, WpCli], account: Account, second_account: Account
+) -> None:
+    instance, _ = local
+    owner = Browser(instance.url)
+    guest = owner.bootstrap()
+    assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"] == []
+    command = {"schema_version": 1, "title": "Synthetic lost acknowledgement", "inputs": {}, "key": str(uuid.uuid4())}
+    original = owner.rpc("rpc/projects/create", command).object()
+    owner.login(account.login, account.password)
+    signed_in = owner.bootstrap()
+    page = owner.rpc("rpc/recovery/scopes", {"after": None, "schema_version": 1})
+    assert page.status == 200
+    assert set(page.object()["scopes"]) == {guest["query_scope"], signed_in["query_scope"]}
+    assert owner.rpc("rpc/projects/create", command).object() == original
+    assert owner.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 20, "after": None}).object()["items"][0]["id"] == original["id"]
+    assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": "invalid"}).status == 422
+    assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None, "user": account.user}).status == 422
+    owner.logout()
+    owner.bootstrap()
+    assert owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"] == []
+    assert owner.read(original).status == 404
+    owner.login(second_account.login, second_account.password)
+    second = owner.bootstrap()
+    scopes = owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"]
+    assert signed_in["query_scope"] not in scopes and guest["query_scope"] not in scopes
+    assert second["query_scope"] in scopes and owner.read(original).status == 404
+    owner.logout()
+    owner.login(account.login, account.password)
+    renewed = owner.bootstrap()
+    scopes = owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": None}).object()["scopes"]
+    assert {guest["query_scope"], signed_in["query_scope"], renewed["query_scope"]} <= set(scopes)
+    assert second["query_scope"] not in scopes
+    assert owner.rpc("rpc/projects/create", command).object() == original
+
+
+def test_native_recovery_grants_paginate_without_omission_or_other_account_data(
+    local: tuple[Instance, WpCli], account: Account
+) -> None:
+    instance, wp = local
+    synthetic = sorted(uuid.uuid4().hex + uuid.uuid4().hex for _ in range(67))
+    result = wp.run("eval", '$registry = new \\Linker\\Tools\\Planner\\RecoveryScopes(); foreach (json_decode(getenv("LINKER_PLANNER_FIXTURE_SCOPES"), true) as $scope) { if (!$registry->remember((int) getenv("LINKER_PLANNER_FIXTURE_USER"), $scope)) { throw new Exception("scope fixture failed"); } } echo "ok";', env={"LINKER_PLANNER_FIXTURE_USER": str(account.user), "LINKER_PLANNER_FIXTURE_SCOPES": json.dumps(synthetic)})
+    assert result == "ok"
+    owner = Browser(instance.url)
+    owner.login(account.login, account.password)
+    owner.bootstrap()
+    scopes: list[str] = []
+    after = None
+    while True:
+        page = owner.rpc("rpc/recovery/scopes", {"schema_version": 1, "after": after}).object()
+        assert 0 < len(page["scopes"]) <= 32
+        assert page["scopes"] == sorted(set(page["scopes"]))
+        assert after is None or page["scopes"][0] > after
+        scopes.extend(page["scopes"])
+        after = page["next"]
+        if after is None:
+            break
+    assert len(scopes) == len(set(scopes))
+    assert set(synthetic) <= set(scopes)
+
+
 @contextmanager
 def failed_native_insert(instance: Instance) -> Iterator[str]:
     """Inject a native insert refusal in only this owned local HTTP instance.

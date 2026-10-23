@@ -151,6 +151,7 @@ async function rig(
 		cleanupGate = null,
 		editor = false,
 		focusGate = null,
+		recoveryOrigin = scope,
 	} = {},
 ) {
 	const dom = setupDom();
@@ -177,6 +178,7 @@ async function rig(
 		inputs: { brief: emptyBrief() },
 	};
 	const opening = project;
+	const recoveryScopes = [...new Set([scope, recoveryOrigin])];
 	const refusedBodies = new Set();
 	const pending = new Map(bodies.map((body) => [JSON.parse(body).key, body])),
 		uploads = [],
@@ -198,7 +200,8 @@ async function rig(
 			if (hydrationGate) await hydrationGate.promise;
 			const records = [...pending.values()]
 				.filter(
-					(body) => verified === scope && JSON.parse(body).project_id === id,
+					(body) =>
+						verified === recoveryOrigin && JSON.parse(body).project_id === id,
 				)
 				.map((body) => ({
 					body,
@@ -223,7 +226,7 @@ async function rig(
 			return records;
 		},
 		async writeProfileImport(verified, body) {
-			assert.equal(verified, scope);
+			assert.equal(verified, recoveryOrigin);
 			writeStarted = true;
 			if (writeGate) await writeGate.promise;
 			if (storageDown) throw new Error("synthetic storage outage");
@@ -233,7 +236,7 @@ async function rig(
 			cleanupStarted = true;
 			if (cleanupGate) await cleanupGate.promise;
 			if (storageDown) throw new Error("synthetic storage outage");
-			assert.equal(verified, scope);
+			assert.equal(verified, recoveryOrigin);
 			assert.ok(
 				attachConfirmed ||
 					durableDraft?.history.current.profile_selections?.selected
@@ -332,6 +335,7 @@ async function rig(
 							: React.createElement(ProfileIntake, {
 									key: confirmed.query_scope,
 									projectId,
+									recoveryScopes,
 									session: confirmed,
 									client,
 									store,
@@ -387,7 +391,7 @@ test("unknown imports are explicitly selected and retried with frozen bytes befo
 	const fixture = await rig(t, { bodies: [a, b], lost: true });
 	await until(() => button("Check or retry this import"));
 	assert.deepEqual(fixture.uploads, []);
-	await choose("Imports to review", JSON.parse(b).key);
+	await choose("Imports to review", scope + ":" + JSON.parse(b).key);
 	await act(async () => button("Check or retry this import").click());
 	await until(() =>
 		document.body.textContent.includes("could not be confirmed"),
@@ -414,7 +418,7 @@ test("unknown imports are explicitly selected and retried with frozen bytes befo
 	assert.deepEqual([...fixture.pending.values()], [a]);
 	assert.equal(button("Check or retry this import"), undefined);
 	await act(async () => button("Import interval data").click());
-	await choose("Imports to review", JSON.parse(a).key);
+	await choose("Imports to review", scope + ":" + JSON.parse(a).key);
 	assert.ok(button("Check or retry this import"));
 	assert.deepEqual(
 		fixture.uploads,
@@ -560,14 +564,14 @@ test("a refused recovery is removed before slow cleanup and cannot regain false 
 		cleanupGate: gate,
 	});
 	await until(() => button("Check or retry this import"));
-	await choose("Imports to review", JSON.parse(b).key);
+	await choose("Imports to review", scope + ":" + JSON.parse(b).key);
 	await act(async () => button("Check or retry this import").click());
 	await until(() => fixture.cleanupStarted);
 	await act(async () => assert.equal(fixture.guard(), false));
 	assert.equal(field("Imports to review").disabled, true);
 	assert.equal(
 		[...field("Imports to review").options].some(
-			(option) => option.value === JSON.parse(b).key,
+			(option) => option.value === scope + ":" + JSON.parse(b).key,
 		),
 		false,
 	);
@@ -575,7 +579,7 @@ test("a refused recovery is removed before slow cleanup and cannot regain false 
 	await until(() => !button("Cancel").disabled);
 	await act(async () => button("Cancel").click());
 	await act(async () => button("Import interval data").click());
-	await choose("Imports to review", JSON.parse(a).key);
+	await choose("Imports to review", scope + ":" + JSON.parse(a).key);
 	assert.equal(fixture.guard(), true);
 	fixture.setRefuse(false);
 	await act(async () => button("Check or retry this import").click());
@@ -967,4 +971,20 @@ test("persistent profile authentication failure rechecks once and waits for an e
 	await act(async () => button("Check session").click());
 	await until(() => reads === 4 && button("Check session"));
 	assert.equal(bootstraps, 4);
+});
+
+test("a native-granted previous import namespace is retained through explicit retry and exact cleanup", async (t) => {
+	const original = command("Prior guest synthetic source");
+	const fixture = await rig(t, {
+		bodies: [original],
+		recoveryOrigin: "a".repeat(64),
+	});
+	await until(() => button("Check or retry this import"));
+	assert.deepEqual(fixture.uploads, []);
+	await act(async () => button("Check or retry this import").click());
+	await until(() => button("Use this profile in the open draft"));
+	assert.deepEqual(fixture.uploads, [original]);
+	await act(async () => button("Use this profile in the open draft").click());
+	await until(() => fixture.pending.size === 0);
+	assert.deepEqual(fixture.attachments, [[assetId, "net_import"]]);
 });

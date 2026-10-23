@@ -71,10 +71,11 @@ final class ClaimOutbox {
 			return;
 		}
 		$subject = NativeIdentity::guest_subject( $guest );
+		$scope   = NativeIdentity::query_scope( new Principal( 'guest', $subject ), $guest );
 		// Bind to the native event's user before any persistence attempt. A
 		// subsequent shared-browser login cannot retarget a failed insert.
-		$this->ticket->issue( $subject, $proof['expires'], $current );
-		$stored = $this->enqueue( $subject, $current );
+		$this->ticket->issue( $subject, $proof['expires'], $current, $scope );
+		$stored = $this->enqueue( $subject, $current, $scope );
 		if ( ! is_wp_error( $stored ) ) {
 			$this->ticket->clear( $subject, $current );
 		}
@@ -88,7 +89,7 @@ final class ClaimOutbox {
 	public function recover(): bool {
 		$recovered = true;
 		foreach ( $this->ticket->read_all() as $ticket ) {
-			$result = $this->enqueue( $ticket['guest'], $ticket['user'] );
+			$result = $this->enqueue( $ticket['guest'], $ticket['user'], $ticket['recovery_scope'] ?? null );
 			if ( is_wp_error( $result ) || ! $this->ticket->clear( $ticket['guest'], $ticket['user'] ) ) {
 				$recovered = false;
 			}
@@ -99,12 +100,13 @@ final class ClaimOutbox {
 	/**
 	 * Persist and read back the complete immutable native event.
 	 *
-	 * @param string $guest Verified guest subject.
-	 * @param int    $user Native verified target.
+	 * @param string      $guest Verified guest subject.
+	 * @param int         $user Native verified target.
+	 * @param string|null $scope Captured native guest namespace, absent in older events.
 	 * @return int|WP_Error Durable native record ID.
 	 */
-	public function enqueue( string $guest, int $user ): int|WP_Error {
-		if ( ! TransitionTicket::subject( $guest ) || $user < 1 || false === get_userdata( $user ) ) {
+	public function enqueue( string $guest, int $user, ?string $scope = null ): int|WP_Error {
+		if ( ! TransitionTicket::subject( $guest ) || $user < 1 || false === get_userdata( $user ) || ( null !== $scope && ! RecoveryScopes::valid( $scope ) ) ) {
 			return Failure::make( 'claim_event', 400 );
 		}
 		$key     = wp_hash( 'linker-planner-claim:v1|' . $guest . '|' . $user, 'auth', 'sha256' );
@@ -116,6 +118,17 @@ final class ClaimOutbox {
 				'key'            => $key,
 			)
 		);
+		if ( null !== $scope ) {
+			$payload = wp_json_encode(
+				array(
+					'schema_version' => 2,
+					'guest'          => $guest,
+					'user'           => $user,
+					'key'            => $key,
+					'recovery_scope' => $scope,
+				)
+			);
+		}
 		if ( ! is_string( $payload ) ) {
 			return Failure::make( 'claim_event', 500 );
 		}
@@ -242,7 +255,7 @@ final class ClaimOutbox {
 			return true;
 		}
 		$event = json_decode( $post->post_content, true, 8 );
-		if ( ! is_array( $event ) || array_keys( $event ) !== array( 'schema_version', 'guest', 'user', 'key' ) || 1 !== $event['schema_version'] || ! is_string( $event['guest'] ) || ! TransitionTicket::subject( $event['guest'] ) || ! is_int( $event['user'] ) || $event['user'] < 1 || (int) $post->post_author !== $event['user'] || ! is_string( $event['key'] ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $event['key'] ) || false === get_userdata( $event['user'] ) ) {
+		if ( ! is_array( $event ) || ! in_array( $event['schema_version'] ?? null, array( 1, 2 ), true ) || array_keys( $event ) !== ( 2 === $event['schema_version'] ? array( 'schema_version', 'guest', 'user', 'key', 'recovery_scope' ) : array( 'schema_version', 'guest', 'user', 'key' ) ) || ! is_string( $event['guest'] ) || ! TransitionTicket::subject( $event['guest'] ) || ! is_int( $event['user'] ) || $event['user'] < 1 || (int) $post->post_author !== $event['user'] || ! is_string( $event['key'] ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $event['key'] ) || false === get_userdata( $event['user'] ) || ( 2 === $event['schema_version'] && ( ! is_string( $event['recovery_scope'] ) || ! RecoveryScopes::valid( $event['recovery_scope'] ) ) ) ) {
 			return false;
 		}
 		$reply = $this->transport->object(
@@ -255,6 +268,9 @@ final class ClaimOutbox {
 			$event['guest']
 		);
 		if ( is_wp_error( $reply ) || 1 !== ( $reply['schema_version'] ?? null ) || 'claimed' !== ( $reply['status'] ?? null ) || true !== ( $reply['guest_retired'] ?? null ) || ! is_int( $reply['transferred_count'] ?? null ) || $reply['transferred_count'] < 0 ) {
+			return false;
+		}
+		if ( isset( $event['recovery_scope'] ) && ! ( new RecoveryScopes() )->remember( $event['user'], $event['recovery_scope'] ) ) {
 			return false;
 		}
 		// A failed delete retains the event. Replaying the same key is safe.

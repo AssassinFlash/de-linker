@@ -3,7 +3,7 @@ import test from "node:test";
 import React, { act } from "react";
 import { setupDom, until } from "./dom-fixture.mjs";
 
-test("several pending creations require selection and an explicit retry of the exact bytes", async (t) => {
+async function exercise(t, historical) {
 	const fixture = setupDom();
 	const { createRoot } = await import("react-dom/client");
 	const { NewProject } = await import("../src/components/NewProject.tsx");
@@ -29,6 +29,7 @@ test("several pending creations require selection and an explicit retry of the e
 			},
 		},
 	};
+	const originScope = historical ? "a".repeat(64) : session.query_scope;
 	const pending = ["Synthetic tab A", "Synthetic tab B"].map((title, index) => {
 		const key = crypto.randomUUID();
 		return {
@@ -71,11 +72,11 @@ test("several pending creations require selection and an explicit retry of the e
 	});
 	await client.bootstrap();
 	const store = {
-		async readCreations() {
-			return pending;
+		async readCreations(scope) {
+			return scope === originScope ? pending : [];
 		},
 		async writeCreation(scope, body) {
-			assert.equal(scope, session.query_scope);
+			assert.equal(scope, originScope);
 			assert.equal(body, pending[1].body);
 		},
 		async clearCreation(scope, body) {
@@ -93,6 +94,7 @@ test("several pending creations require selection and an explicit retry of the e
 					session,
 					client,
 					store,
+					recoveryScopes: [session.query_scope, originScope],
 					recheck: () => assert.fail("unexpected identity failure"),
 					created: (project) => {
 						created = project;
@@ -108,7 +110,7 @@ test("several pending creations require selection and an explicit retry of the e
 	assert.equal(document.querySelector("input").readOnly, true);
 	await act(async () => {
 		const select = document.querySelector("select");
-		select.value = pending[1].key;
+		select.value = originScope + ":" + pending[1].key;
 		select.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	assert.equal(document.querySelector("input").value, pending[1].title);
@@ -122,6 +124,11 @@ test("several pending creations require selection and an explicit retry of the e
 	);
 	await until(() => created !== null);
 	assert.deepEqual(sent, [pending[1].body]);
-	assert.deepEqual(cleared, [[session.query_scope, pending[1].body]]);
+	assert.deepEqual(cleared, [[originScope, pending[1].body]]);
 	assert.equal(created.title, pending[1].title);
-});
+}
+
+test("several pending creations require selection and an explicit retry of the exact bytes", (t) =>
+	exercise(t, false));
+test("a native-granted prior scope restores exact creations without automatically sending or clearing another scope", (t) =>
+	exercise(t, true));

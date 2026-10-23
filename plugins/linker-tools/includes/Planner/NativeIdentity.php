@@ -164,6 +164,16 @@ final class NativeIdentity {
 	}
 
 	/**
+	 * Reproduce only a native verified principal/session's browser namespace.
+	 *
+	 * @param Principal $principal Native owner.
+	 * @param string    $session Native guest ID or account session token.
+	 */
+	public static function query_scope( Principal $principal, string $session ): string {
+		return wp_hash( 'linker-planner-query:v1|' . $principal->kind . '|' . $principal->subject . '|' . $session, 'nonce', 'sha256' );
+	}
+
+	/**
 	 * Fresh row check, independent of Woo's session-data cache.
 	 *
 	 * @param string $id Native session key.
@@ -189,7 +199,7 @@ final class NativeIdentity {
 			'principal'   => $principal,
 			'confirmed'   => $confirmed,
 			'expires'     => $expires,
-			'query_scope' => wp_hash( 'linker-planner-query:v1|' . $principal->kind . '|' . $principal->subject . '|' . $session, 'nonce', 'sha256' ),
+			'query_scope' => self::query_scope( $principal, $session ),
 			'nonce'       => $nonce,
 		);
 	}

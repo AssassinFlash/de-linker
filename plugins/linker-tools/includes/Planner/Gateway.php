@@ -22,7 +22,7 @@ final class Gateway {
 	public const MAX_BODY_BYTES = 16 * 1024 * 1024;
 	public const MAX_JSON_DEPTH = 32;
 	/** The account-claim and identity-status commands are deliberately private. */
-	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|cancel|energy|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|battery/scenario';
+	private const PATHS = 'projects/(?:create|list|read|revise|runs)|runs/(?:read|cancel|energy|trace)|assets/(?:read|content)|profiles/(?:csv|inspect|preview)|battery/scenario|recovery/scopes';
 	/**
 	 * A rejected request stays rejected if an installed integration returns null.
 	 *
@@ -225,6 +225,24 @@ final class Gateway {
 			return $principal;
 		}
 		$path = strtolower( (string) ( $request->get_url_params()['path'] ?? '' ) );
+		if ( 'recovery/scopes' === $path ) {
+			$command = $this->command( $request );
+			if ( is_wp_error( $command ) ) {
+				return $command;
+			}
+			$keys = array_keys( $command );
+			sort( $keys );
+			if ( array( 'after', 'schema_version' ) !== $keys || 1 !== $command['schema_version'] || ( null !== $command['after'] && ! is_string( $command['after'] ) ) ) {
+				return Failure::make( 'recovery_input', 422 );
+			}
+			$registry = new RecoveryScopes();
+			$user     = get_current_user_id();
+			if ( $user > 0 && ! $registry->remember( $user, NativeIdentity::query_scope( $principal, wp_get_session_token() ) ) ) {
+				return Failure::make( 'recovery_unavailable', 503 );
+			}
+			$page = $registry->page( $user, $command['after'] );
+			return is_wp_error( $page ) ? $page : new WP_REST_Response( $page );
+		}
 		if ( 1 !== preg_match( '~\A(?:' . self::PATHS . ')\z~', $path ) ) {
 			return Failure::make( 'path', 404 );
 		}

@@ -460,7 +460,9 @@ test("a former identity's delayed creation cannot dispatch or restore cache and 
 				isCurrentScope(scope) {
 					return scope === admittedScope;
 				},
-				async query() {
+				async query(path) {
+					if (path === "recovery/scopes")
+						return { schema_version: 1, scopes: [], next: null };
 					return { items: [], next: null };
 				},
 				async send() {
@@ -584,6 +586,8 @@ test("native confirmation fences pending creation, revision and navigation befor
 				fetch: async (url) => {
 					if (String(url).endsWith("/nonce")) return new Response("abcdefghij");
 					if (String(url).endsWith("/bootstrap")) return response(nextSession);
+					if (String(url).endsWith("/recovery/scopes"))
+						return response({ schema_version: 1, scopes: [], next: null });
 					if (String(url).endsWith("/projects/list"))
 						return response({ items: [], next: null });
 					if (String(url).endsWith("/projects/read"))

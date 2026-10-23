@@ -103,6 +103,7 @@ CREATE TABLE IF NOT EXISTS principal_closures (
     receipt_sha256 TEXT NOT NULL,
     created_at REAL NOT NULL
 );
+CREATE INDEX IF NOT EXISTS closures_owner ON principal_closures(new_owner, guest);
 CREATE TRIGGER IF NOT EXISTS retired_guest_insert
 BEFORE INSERT ON projects
 WHEN EXISTS (SELECT 1 FROM principal_closures WHERE guest=NEW.owner)

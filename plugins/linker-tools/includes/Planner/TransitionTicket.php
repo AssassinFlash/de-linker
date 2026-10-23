@@ -13,7 +13,7 @@ namespace Linker\Tools\Planner;
 final class TransitionTicket {
 
 	public const COOKIE_PREFIX = 'linker_planner_transition_';
-	/** Transport bound for a fixed four-field record, not a retention policy. */
+	/** Transport bound for a fixed signed record, not a retention policy. */
 	private const MAX_BYTES = 1024;
 	/** Bounded recovery work; further native tickets remain for the next request. */
 	private const BATCH = 8;
@@ -21,12 +21,13 @@ final class TransitionTicket {
 	/**
 	 * Issue recovery proof already bound by the native login event.
 	 *
-	 * @param string $guest Verified native guest subject.
-	 * @param int    $expires Native guest expiry, never extended here.
-	 * @param int    $user Verified target account from the native login event.
+	 * @param string      $guest Verified native guest subject.
+	 * @param int         $expires Native guest expiry, never extended here.
+	 * @param int         $user Verified target account from the native login event.
+	 * @param string|null $scope Native guest query scope, if captured by this version.
 	 */
-	public function issue( string $guest, int $expires, int $user ): bool {
-		if ( ! self::subject( $guest ) || $expires <= time() || $user < 1 || headers_sent() ) {
+	public function issue( string $guest, int $expires, int $user, ?string $scope = null ): bool {
+		if ( ! self::subject( $guest ) || $expires <= time() || $user < 1 || ( null !== $scope && ! RecoveryScopes::valid( $scope ) ) || headers_sent() ) {
 			return false;
 		}
 		$json = wp_json_encode(
@@ -37,6 +38,17 @@ final class TransitionTicket {
 				'user'           => $user,
 			)
 		);
+		if ( null !== $scope ) {
+			$json = wp_json_encode(
+				array(
+					'schema_version' => 2,
+					'guest'          => $guest,
+					'expires'        => $expires,
+					'user'           => $user,
+					'recovery_scope' => $scope,
+				)
+			);
+		}
 		if ( ! is_string( $json ) ) {
 			return false;
 		}
@@ -53,7 +65,7 @@ final class TransitionTicket {
 	 * insert when the same browser later logs into account B. No unbound
 	 * guest-to-whichever-user token is issued.
 	 *
-	 * @return list<array{schema_version:int,guest:string,expires:int,user:int}> Verified transitions, no owner-read authority.
+	 * @return list<array{schema_version:int,guest:string,expires:int,user:int,recovery_scope?:string}> Verified transitions, no owner-read authority.
 	 */
 	public function read_all(): array {
 		$tickets = array();
@@ -87,7 +99,7 @@ final class TransitionTicket {
 	 * Decode one complete purpose-bound record.
 	 *
 	 * @param string $raw Exact cookie bytes.
-	 * @return array{schema_version:int,guest:string,expires:int,user:int}|null Verified transition.
+	 * @return array{schema_version:int,guest:string,expires:int,user:int,recovery_scope?:string}|null Verified transition.
 	 */
 	private function decode( string $raw ): ?array {
 		if ( strlen( $raw ) > self::MAX_BYTES || 1 !== preg_match( '/\A([a-zA-Z0-9_-]+)\.([a-f0-9]{64})\z/', $raw, $match ) || ! hash_equals( wp_hash( 'linker-planner-transition:v1|' . $match[1], 'auth', 'sha256' ), $match[2] ) ) {
@@ -96,7 +108,7 @@ final class TransitionTicket {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- signature verified first; fixed JSON payload only, never evaluated.
 		$json = base64_decode( strtr( $match[1], '-_', '+/' ), true );
 		$data = is_string( $json ) ? json_decode( $json, true, 8 ) : null;
-		if ( ! is_array( $data ) || array_keys( $data ) !== array( 'schema_version', 'guest', 'expires', 'user' ) || 1 !== $data['schema_version'] || ! is_string( $data['guest'] ) || ! self::subject( $data['guest'] ) || ! is_int( $data['expires'] ) || $data['expires'] <= time() || ! is_int( $data['user'] ) || $data['user'] < 1 ) {
+		if ( ! is_array( $data ) || ! in_array( $data['schema_version'] ?? null, array( 1, 2 ), true ) || array_keys( $data ) !== ( 2 === $data['schema_version'] ? array( 'schema_version', 'guest', 'expires', 'user', 'recovery_scope' ) : array( 'schema_version', 'guest', 'expires', 'user' ) ) || ! is_string( $data['guest'] ) || ! self::subject( $data['guest'] ) || ! is_int( $data['expires'] ) || $data['expires'] <= time() || ! is_int( $data['user'] ) || $data['user'] < 1 || ( 2 === $data['schema_version'] && ( ! is_string( $data['recovery_scope'] ) || ! RecoveryScopes::valid( $data['recovery_scope'] ) ) ) ) {
 			return null;
 		}
 		return $data;

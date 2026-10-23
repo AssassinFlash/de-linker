@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { Project, Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
-import type { CreationIntent, DraftStore } from "../data/DraftStore.ts";
+import type { DraftStore } from "../data/DraftStore.ts";
+import { creationIntents, intentId } from "../data/recoveryIntents.ts";
+import type { ScopedCreation } from "../data/recoveryIntents.ts";
 import { readProject, wire } from "../data/readProtocol.ts";
 import { emptyBrief } from "../domain/brief.ts";
 import { __ } from "../i18n.ts";
@@ -15,12 +17,18 @@ export function NewProject({
 	store,
 	created,
 	recheck,
+	recoveryScopes,
+	recoveryChecking = false,
+	recoveryDiscoveryFailed = false,
 }: {
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
 	created: (project: Project) => boolean;
 	recheck: () => void;
+	recoveryScopes?: readonly string[] | undefined;
+	recoveryChecking?: boolean;
+	recoveryDiscoveryFailed?: boolean;
 }) {
 	const [open, setOpen] = useState(false);
 	const [title, setTitle] = useState("");
@@ -28,18 +36,35 @@ export function NewProject({
 	const [failed, setFailed] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [checking, setChecking] = useState(true);
-	const [requests, setRequests] = useState<readonly CreationIntent[]>([]);
+	const [requests, setRequests] = useState<readonly ScopedCreation[]>([]);
 	const intent = useRef<string | null>(null);
+	const intentScope = useRef(session.query_scope);
 	const lifetime = useRef(0);
+	const openWork = useRef(false);
+	openWork.current = Boolean(intent.current || title);
+	const admitted = client.isCurrentScope(session.query_scope);
 	useEffect(() => {
 		lifetime.current++;
+		return () => {
+			lifetime.current++;
+		};
+	}, [session.query_scope]);
+	useEffect(() => {
+		if (recoveryChecking || !admitted) return;
 		let active = true;
-		void store
-			.readCreations(session.query_scope)
+		setChecking(true);
+		void creationIntents(store, recoveryScopes ?? [session.query_scope])
 			.then((records) => {
-				if (!active || !records.length) return;
+				if (
+					!active ||
+					!client.isCurrentScope(session.query_scope) ||
+					!records.length
+				)
+					return;
 				setRequests(records);
+				if (openWork.current) return;
 				intent.current = records[0]!.body;
+				intentScope.current = records[0]!.scope;
 				setTitle(records[0]!.title);
 				setOpen(true);
 				setFailed(true);
@@ -52,12 +77,27 @@ export function NewProject({
 			});
 		return () => {
 			active = false;
-			lifetime.current++;
 		};
-	}, [session.query_scope, store]);
+	}, [
+		admitted,
+		client,
+		session.query_scope,
+		store,
+		recoveryScopes,
+		recoveryChecking,
+	]);
 	async function submit() {
-		if (busy || !title.trim()) return;
+		if (
+			busy ||
+			checking ||
+			recoveryChecking ||
+			recoveryDiscoveryFailed ||
+			!title.trim()
+		)
+			return;
 		const instance = lifetime.current;
+		if (!intent.current) intentScope.current = session.query_scope;
+		const originScope = intentScope.current;
 		intent.current ??= wire(
 			{
 				schema_version: 1,
@@ -71,11 +111,9 @@ export function NewProject({
 		setBusy(true);
 		setFailed(false);
 		try {
-			await store
-				.writeCreation(session.query_scope, intent.current)
-				.catch(() => {
-					if (lifetime.current === instance) setRecoveryFailed(true);
-				});
+			await store.writeCreation(originScope, intent.current).catch(() => {
+				if (lifetime.current === instance) setRecoveryFailed(true);
+			});
 			if (lifetime.current !== instance) return;
 			if (!client.isCurrentScope(session.query_scope)) {
 				setFailed(true);
@@ -88,11 +126,9 @@ export function NewProject({
 					session.query_scope,
 				),
 			);
-			await store
-				.clearCreation(session.query_scope, intent.current)
-				.catch(() => {
-					if (lifetime.current === instance) setRecoveryFailed(true);
-				});
+			await store.clearCreation(originScope, intent.current).catch(() => {
+				if (lifetime.current === instance) setRecoveryFailed(true);
+			});
 			if (lifetime.current !== instance) return;
 			if (!created(project)) {
 				setFailed(true);
@@ -115,11 +151,15 @@ export function NewProject({
 			if (lifetime.current === instance) setBusy(false);
 		}
 	}
+	const selectedRequest = requests.find(
+		(request) =>
+			request.body === intent.current && request.scope === intentScope.current,
+	);
 	if (!open)
 		return (
 			<button
 				className="lp-button"
-				disabled={checking}
+				disabled={checking || recoveryChecking || recoveryDiscoveryFailed}
 				onClick={() => setOpen(true)}
 			>
 				<Icon name="plus" />
@@ -139,22 +179,21 @@ export function NewProject({
 					<span>{__("Unconfirmed project creations", "linker-tools")}</span>
 					<select
 						disabled={busy}
-						value={
-							requests.find((request) => request.body === intent.current)
-								?.key ?? ""
-						}
+						value={selectedRequest ? intentId(selectedRequest) : ""}
 						onChange={(event) => {
 							const request = requests.find(
-								(candidate) => candidate.key === event.currentTarget.value,
+								(candidate) =>
+									intentId(candidate) === event.currentTarget.value,
 							);
 							if (!request) return;
 							intent.current = request.body;
+							intentScope.current = request.scope;
 							setTitle(request.title);
 							setFailed(true);
 						}}
 					>
 						{requests.map((request, index) => (
-							<option key={request.key} value={request.key}>
+							<option key={intentId(request)} value={intentId(request)}>
 								{index + 1}. {request.title}
 							</option>
 						))}
@@ -173,7 +212,16 @@ export function NewProject({
 				/>
 			</label>
 			<div className="lp-inline-actions">
-				<button className="lp-button" disabled={busy || !title.trim()}>
+				<button
+					className="lp-button"
+					disabled={
+						busy ||
+						checking ||
+						recoveryChecking ||
+						recoveryDiscoveryFailed ||
+						!title.trim()
+					}
+				>
 					{busy
 						? __("Creating…", "linker-tools")
 						: failed

@@ -51,6 +51,7 @@ export const RPC_PATHS = [
 	"profiles/inspect",
 	"profiles/preview",
 	"battery/scenario",
+	"recovery/scopes",
 ] as const;
 export type RpcPath = (typeof RPC_PATHS)[number];
 export type JsonRpcPath = Exclude<RpcPath, "assets/content">;

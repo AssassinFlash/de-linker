@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { PlannerClient } from "../data/PlannerClient.ts";
-import type { DraftStore, ProfileImportIntent } from "../data/DraftStore.ts";
+import type { DraftStore } from "../data/DraftStore.ts";
+import { profileIntents, intentId } from "../data/recoveryIntents.ts";
+import type { ScopedProfileImport } from "../data/recoveryIntents.ts";
 import type { Session } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { wire } from "../data/readProtocol.ts";
@@ -39,6 +41,8 @@ export function ProfileIntake({
 	registerGuard,
 	confirmedAssetIds = [],
 	currentAssetIds = [],
+	recoveryScopes,
+	recoveryChecking = false,
 }: {
 	projectId: string;
 	session: Session;
@@ -51,6 +55,8 @@ export function ProfileIntake({
 	registerGuard: (guard: () => boolean) => void;
 	confirmedAssetIds?: readonly string[];
 	currentAssetIds: readonly string[];
+	recoveryScopes?: readonly string[] | undefined;
+	recoveryChecking?: boolean;
 }) {
 	const id = useId();
 	const fileInput = useRef<HTMLInputElement>(null);
@@ -69,10 +75,11 @@ export function ProfileIntake({
 	const [error, setError] = useState<unknown>(null),
 		[recoveryFailed, setRecoveryFailed] = useState(false),
 		[closeBlocked, setCloseBlocked] = useState(false);
-	const [requests, setRequests] = useState<readonly ProfileImportIntent[]>([]),
+	const [requests, setRequests] = useState<readonly ScopedProfileImport[]>([]),
 		[pending, setPending] = useState<string | null>(null);
 	const [asset, setAsset] = useState<ProfileAsset | null>(null),
 		[durable, setDurable] = useState(false);
+	const pendingScope = useRef(session.query_scope);
 	const [selected, setSelected] = useState<string | null>(null);
 	const importTrigger = useRef<HTMLButtonElement>(null);
 	const selectionNotice = useRef<HTMLDivElement>(null);
@@ -84,6 +91,10 @@ export function ProfileIntake({
 		[client, session.query_scope],
 	);
 	const admitted = canReveal();
+	const openWork = useRef(false);
+	openWork.current = Boolean(
+		pending || content || readingFile || label || rights,
+	);
 	const lifetime = useRef(0),
 		flight = useRef(false),
 		form = useRef<HTMLDivElement>(null);
@@ -114,7 +125,8 @@ export function ProfileIntake({
 		canReveal,
 		admitted,
 	]);
-	function restore(body: string) {
+	function restore(body: string, scope: string) {
+		pendingScope.current = scope;
 		const command = readImport(JSON.parse(body));
 		if (command.project_id !== projectId)
 			throw new Error("wrong_profile_project");
@@ -146,24 +158,50 @@ export function ProfileIntake({
 		});
 	}
 	useEffect(() => {
-		const instance = ++lifetime.current;
-		void store
-			.readProfileImports(session.query_scope, projectId)
-			.then((records) => {
-				if (instance !== lifetime.current) return;
-				setRequests(records);
-				if (records[0]) restore(records[0].body);
-			})
-			.catch(() => {
-				if (instance === lifetime.current) setRecoveryFailed(true);
-			})
-			.finally(() => {
-				if (instance === lifetime.current) setChecking(false);
-			});
+		lifetime.current++;
 		return () => {
 			lifetime.current++;
 		};
-	}, [projectId, session.query_scope, store]);
+	}, [projectId, session.query_scope]);
+	useEffect(() => {
+		if (recoveryChecking || !admitted) return;
+		const instance = lifetime.current;
+		let active = true;
+		setChecking(true);
+		void profileIntents(
+			store,
+			recoveryScopes ?? [session.query_scope],
+			projectId,
+		)
+			.then((records) => {
+				if (
+					!active ||
+					instance !== lifetime.current ||
+					!client.isCurrentScope(session.query_scope)
+				)
+					return;
+				setRequests(records);
+				if (!openWork.current && records[0])
+					restore(records[0].body, records[0].scope);
+			})
+			.catch(() => {
+				if (active && instance === lifetime.current) setRecoveryFailed(true);
+			})
+			.finally(() => {
+				if (active && instance === lifetime.current) setChecking(false);
+			});
+		return () => {
+			active = false;
+		};
+	}, [
+		admitted,
+		client,
+		projectId,
+		session.query_scope,
+		store,
+		recoveryScopes,
+		recoveryChecking,
+	]);
 	const serverRecorded = asset !== null && confirmedAssetIds.includes(asset.id);
 	const unprotected =
 		(Boolean(content) || readingFile) && !durable && !serverRecorded;
@@ -178,10 +216,13 @@ export function ProfileIntake({
 		// The owned import receipt and the server-confirmed project baseline
 		// now protect this selection independently of browser recovery storage.
 		const body = pending,
+			originScope = pendingScope.current,
 			instance = lifetime.current;
 		setSelected(asset.id);
 		setRequests((previous) =>
-			previous.filter((request) => request.body !== body),
+			previous.filter(
+				(request) => request.body !== body || request.scope !== originScope,
+			),
 		);
 		setPending(null);
 		setContent("");
@@ -191,7 +232,7 @@ export function ProfileIntake({
 		setDurable(false);
 		feedback.current = "selection";
 		setOpen(false);
-		void store.clearProfileImport(session.query_scope, body).catch(() => {
+		void store.clearProfileImport(originScope, body).catch(() => {
 			if (
 				instance === lifetime.current &&
 				client.isCurrentScope(session.query_scope)
@@ -318,6 +359,8 @@ export function ProfileIntake({
 		setBusy(true);
 		setError(null);
 		let body = pending;
+		if (!body) pendingScope.current = session.query_scope;
+		const originScope = pendingScope.current;
 		try {
 			body ??= wire(
 				readImport({
@@ -334,7 +377,7 @@ export function ProfileIntake({
 			);
 			setPending(body);
 			try {
-				await store.writeProfileImport(session.query_scope, body);
+				await store.writeProfileImport(originScope, body);
 				if (instance === lifetime.current) setDurable(true);
 			} catch {
 				if (instance === lifetime.current) setRecoveryFailed(true);
@@ -362,10 +405,13 @@ export function ProfileIntake({
 				setDurable(false);
 				const refusedBody = body;
 				setRequests((previous) =>
-					previous.filter((request) => request.body !== refusedBody),
+					previous.filter(
+						(request) =>
+							request.body !== refusedBody || request.scope !== originScope,
+					),
 				);
 				try {
-					await store.clearProfileImport(session.query_scope, body);
+					await store.clearProfileImport(originScope, body);
 				} catch {
 					if (current(instance)) setRecoveryFailed(true);
 				}
@@ -390,13 +436,20 @@ export function ProfileIntake({
 			)
 				return;
 			setSelected(confirmed.id);
-			await store.clearProfileImport(session.query_scope, pending);
+			await store.clearProfileImport(pendingScope.current, pending);
 			if (!current(instance)) return;
-			const remaining = await store.readProfileImports(
-				session.query_scope,
+			const remaining = await profileIntents(
+				store,
+				recoveryScopes ?? [session.query_scope],
 				projectId,
 			);
-			if (!current(instance)) return;
+			// Only finish this component's already-persisted local operation.
+			// Native verification may hide it between the final read and this
+			// continuation. No server mutation/navigation/cache write occurs here;
+			// feedback still waits for live admission, and another scope unmounts
+			// this editor. Refusing local completion would strand the user until
+			// another click after a same-scope verification.
+			if (instance !== lifetime.current) return;
 			setRequests(remaining);
 			setPending(null);
 			setContent("");
@@ -419,6 +472,10 @@ export function ProfileIntake({
 			}
 		}
 	}
+	const selectedRequest = requests.find(
+		(request) =>
+			request.body === pending && request.scope === pendingScope.current,
+	);
 	if (!open)
 		return (
 			<>
@@ -441,7 +498,7 @@ export function ProfileIntake({
 					ref={importTrigger}
 					className="lp-button lp-button-secondary lp-focus-target"
 					type="button"
-					disabled={checking}
+					disabled={checking || recoveryChecking}
 					onClick={() => setOpen(true)}
 				>
 					{__("Import interval data", "linker-tools")}
@@ -458,21 +515,19 @@ export function ProfileIntake({
 					<select
 						aria-labelledby={id + "-requests"}
 						disabled={busy || unprotected}
-						value={
-							requests.find((request) => request.body === pending)?.key ?? ""
-						}
+						value={selectedRequest ? intentId(selectedRequest) : ""}
 						onChange={(event) => {
 							const request = requests.find(
-								(item) => item.key === event.currentTarget.value,
+								(item) => intentId(item) === event.currentTarget.value,
 							);
-							if (request) restore(request.body);
+							if (request) restore(request.body, request.scope);
 						}}
 					>
 						<option value="" disabled>
 							{__("Select…", "linker-tools")}
 						</option>
 						{requests.map((request) => (
-							<option key={request.key} value={request.key}>
+							<option key={intentId(request)} value={intentId(request)}>
 								{request.label}
 							</option>
 						))}

@@ -7,6 +7,7 @@ import {
 	isDirty,
 	markConflict,
 	prepareSave,
+	sameJson,
 } from "../domain/draft.ts";
 import type { Project, Session } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
@@ -81,7 +82,9 @@ export function useProjectDraft(
 					const candidates = (
 						await store.candidates(session.query_scope, project)
 					).filter(
-						(candidate) => isDirty(candidate.draft) || candidate.draft.pending,
+						(candidate) =>
+							candidate.draft.pending ||
+							!sameJson(candidate.draft.history.current, project.inputs),
 					);
 					if (!mounted) return;
 					if (candidates.length === 1) {

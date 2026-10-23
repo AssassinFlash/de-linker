@@ -59,6 +59,8 @@ test("a deferred close refused during same-scope verification remains retryable"
 				if (verifying) await bootstrapGate.promise;
 				return response(session);
 			}
+			if (String(url).endsWith("/recovery/scopes"))
+				return response({ schema_version: 1, scopes: [], next: null });
 			if (String(url).endsWith("/projects/read")) return response(project);
 			assert.ok(String(url).endsWith("/projects/list"));
 			return response({ items: [], next: null });

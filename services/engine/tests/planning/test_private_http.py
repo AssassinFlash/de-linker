@@ -1016,6 +1016,54 @@ def csv_preview_command(project_id: str, content: bytes, key: str) -> Object:
     }
 
 
+def test_http_unknown_creation_and_csv_import_recover_original_after_native_claim(
+    rig: Rig,
+) -> None:
+    from linker_engine.planning.guest_claims import GuestClaims
+
+    guest = Actor("guest", "synthetic-native-handover")
+    create: Object = {"title": "Synthetic handover", "inputs": {}, "key": "lost-create"}
+    original = rig.post("/projects/create", create, guest)
+    project_id = cast(str, original["id"])
+    command = csv_preview_command(
+        project_id,
+        b"time;power\n2024-10-27T02:00:00+02:00;-4\n2024-10-27T02:00:00+01:00;8\n",
+        "lost-upload",
+    )
+    cast(Object, command["mapping"])["measurement"] = "net_import"
+    asset = rig.post("/profiles/csv", command, guest)
+    GuestClaims(rig.workspace).claim(guest, USER, key="native-login")
+    with rig.workspace.database.read() as connection:
+        before = connection.execute("SELECT count(*) FROM idempotency").fetchone()[0]
+    assert rig.replay("/projects/create", create)["result"] == original
+    assert rig.replay("/profiles/csv", command)["result"] == asset
+    assert rig.post("/projects/create", create) == original
+    assert rig.post("/profiles/csv", command) == asset
+    with rig.workspace.database.read() as connection:
+        assert (
+            connection.execute("SELECT count(*) FROM idempotency").fetchone()[0]
+            == before
+        )
+        assert (
+            connection.execute("SELECT count(*) FROM project_assets").fetchone()[0] == 1
+        )
+    assert rig.replay("/projects/create", create, FOREIGN)["status"] == "absent"
+    assert (
+        rig.client.post(
+            "/profiles/csv", json=command, headers=headers(FOREIGN)
+        ).status_code
+        == 404
+    )
+    assert (
+        rig.client.post(
+            "/projects/create",
+            json={"schema_version": 1, **create},
+            headers=headers(guest),
+        ).status_code
+        == 404
+    )
+
+
 def test_csv_column_inspection_is_owned_read_only_and_not_a_quality_release(
     rig: Rig,
 ) -> None:

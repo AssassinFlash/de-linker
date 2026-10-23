@@ -125,6 +125,9 @@ final class Admission {
 		$fingerprint = $this->fingerprint( $principal, $path, $command_scope, $command_hash );
 		$receipt     = $ledger->lookup( $id, $fingerprint );
 		if ( is_wp_error( $receipt ) ) {
+			// A permanent owned receipt can predate login or native salt rotation.
+			// Its old, independently scoped quota fingerprint is not this actor's
+			// entry to complete. No new reservation/charge or mutation is made.
 			return 'linker_admission_unknown_receipt' === $receipt->get_error_code() ? true : Failure::make( 'receipt_persistence', 503 );
 		}
 		if ( in_array( $receipt['status'] ?? '', array( 'dispatched', 'unresolved' ), true ) && is_wp_error( $ledger->complete( $id, $fingerprint ) ) ) {
