@@ -8,12 +8,15 @@ Actual browser inspection of all twenty articles at 1440px identifies this
 article; English remains within its rail. The German defect also reproduces at
 1120px. Phone contents disclosure already opens and fits at 390px and 320px.
 
-Reuse the existing WindPress rule for contents anchors. Use native `hyphens:
-auto` with `overflow-wrap: anywhere` so labels can follow their document
-language's hyphenation and contribute a small enough native CSS grid minimum
-size. Emergency wrapping alone left a final German letter on its own line in
-the actual 1440px candidate; it is retained as rejected visual evidence.
-Article prose already uses emergency wrapping. Keep
+Reuse the existing WindPress contents grid with `minmax(0,1fr)` so its track
+can shrink within the rail. Use native `hyphens: auto` with `overflow-wrap:
+break-word` for labels, allowing language-based hyphenation before emergency
+wrapping. The two `anywhere` candidates fit the rail but stranded one or two
+German letters on a separate line in the actual 1440px render; those candidates
+remain rejected visual evidence. Native word breaking then produced a real
+hyphen but still left two letters on the final line. Use the native minimum
+fragment length of three on both sides of a hyphen, the smallest limit that
+excludes that observed two-letter orphan. Keep
 all labels, native heading IDs, links, disclosure behavior, reading dimensions,
 typography, spacing, scroll offset and active-location behavior. Do not clip or
 hide overflow, abbreviate labels, or introduce PHP/JavaScript or another layout.
