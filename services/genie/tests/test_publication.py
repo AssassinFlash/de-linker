@@ -154,15 +154,20 @@ def test_empty_product_scope_is_empty_not_whole_library(path: Path) -> None:
 
 
 @pytest.mark.parametrize("lang", ["en", "de"])
+@pytest.mark.parametrize("neighbours", [False, True])
 def test_shared_manual_revocation_filters_fallback_and_same_page_neighbours(
-    path: Path, lang: str
+    path: Path, lang: str, neighbours: bool
 ) -> None:
     raw = manifest()
     raw["products"] = raw["products"][:1]
     raw["documents"][0]["product_ids"] = [1]
-    hits = DocumentIndex(path).search("energy", lang, publication=Snapshot.read(raw))
+    hits = DocumentIndex(path).search(
+        "energy", lang, neighbours=neighbours, publication=Snapshot.read(raw)
+    )
     assert [h.chunk_id for h in hits] == ["A"]
     assert hits[0].document_id == "doc"
+    assert hits[0].document_revision == "doc-1"
+    assert hits[0].product_ids == (1,)
     assert hits[0].doc_url == "https://site.test/shared.pdf"
     assert not any("MODEL-2" in h.text for h in hits)
 
