@@ -23,6 +23,14 @@ from linker_genie.retrieval import DocumentIndex
 
 BAT = "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38"
 CHS = "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262"
+COMBINED_FAILURES = [
+    "reverse_unknown_later",
+    "normal_missing_rows",
+    "normal_missing_column_later",
+    "normal_unknown_declaration",
+    "normal_missing_preceding",
+    "normal_invalid_rows",
+]
 
 
 def source_chunks(sha: str, source: list[Page] | None = None) -> list[Chunk]:
@@ -177,6 +185,74 @@ def test_component_property_never_excuses_an_unproven_system_axis(change: str) -
         selected = source_chunks(BAT, source)
     scopes = scope_proofs(selected, manifest(), authority(manifest()))
     assert all(c.id not in scopes for c in selected if c.kind == "table")
+
+
+def combined_table_failure(mode: str) -> list[Chunk]:
+    """The late conflict must not be packed together with the explicit first axis."""
+    source = deepcopy(pages(BAT))
+    page = next(p for p in source if p.number == 2)
+    position = next(i for i, block in enumerate(page.blocks) if block.kind == "table")
+    original = page.blocks[position]
+    labels = ["GW208.9-BAT-LC-G10", "GW261.2-BAT-LCD-G10"]
+    if mode == "reverse_unknown_later":
+        labels.reverse()
+    rows = (
+        ("Model", *labels),
+        *original.rows,
+        *((("Model", "Z999", ""),) if mode == "reverse_unknown_later" else ()),
+        *((("Parameter", "10"),) if mode == "normal_missing_column_later" else ()),
+    )
+    page.blocks[position] = replace(
+        original,
+        rows=rows,
+        header_rows=0,
+        row_indices=tuple(range(len(rows))),
+    )
+    if mode == "normal_unknown_declaration":
+        page.blocks.insert(position, Block("text", "Z999"))
+    selected = source_chunks(BAT, source)
+    if mode == "normal_missing_rows":
+        selected = [replace(c, source_rows=()) for c in selected]
+    if mode == "normal_missing_preceding":
+        last = next(c for c in reversed(selected) if c.kind == "table")
+        selected = [
+            replace(c, preceding_text=()) if c.id == last.id else c for c in selected
+        ]
+    if mode == "normal_invalid_rows":
+        first = next(c for c in selected if c.kind == "table")
+        selected = [
+            replace(c, source_rows=(0,) * len(c.source_rows)) if c.id == first.id else c
+            for c in selected
+        ]
+    return selected
+
+
+@pytest.mark.parametrize("mode", COMBINED_FAILURES)
+def test_combined_table_failure_refuses_even_the_explicit_current_model_first_chunk(
+    mode: str,
+) -> None:
+    selected = combined_table_failure(mode)
+    tables = [c for c in selected if c.source_table == "docling:p2:#/tables/0"]
+    assert len(tables) >= 3
+    assert tables[0].text.startswith("| Model |")
+    scopes = scope_proofs(selected, manifest(), authority(manifest()))
+    assert not [c.id for c in tables if c.id in scopes]
+
+
+@pytest.mark.parametrize("mode", COMBINED_FAILURES)
+def test_combined_table_failure_cannot_release_the_first_chunk_through_sqlite(
+    tmp_path: Path, mode: str
+) -> None:
+    selected = combined_table_failure(mode)
+    table_ids = {c.id for c in selected if c.source_table == "docling:p2:#/tables/0"}
+    loaded = loaded_index(tmp_path, BAT, selected)
+    try:
+        hits = loaded.search(
+            "Model Battery Type", "en", [1958], publication=Snapshot.read(manifest())
+        )
+        assert not [h.chunk_id for h in hits if h.chunk_id in table_ids]
+    finally:
+        loaded.close()
 
 
 @pytest.mark.parametrize("change", ["withdrawn", "revision", "host_relation"])
