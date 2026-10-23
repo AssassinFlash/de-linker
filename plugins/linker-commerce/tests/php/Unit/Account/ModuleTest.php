@@ -21,6 +21,7 @@ use Linker\Commerce\Account\AccountStatusNotice;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Account\SolutionsRoute;
+use Linker\Commerce\Account\SolutionDraftRoute;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;

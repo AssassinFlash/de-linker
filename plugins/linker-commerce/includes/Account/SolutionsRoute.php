@@ -40,8 +40,9 @@ final class SolutionsRoute {
 	 * Sets up the route.
 	 *
 	 * @param SavedSolutions $solutions The store of saved solutions.
+	 * @param DesignProof    $proof     Current complete design verification.
 	 */
-	public function __construct( private readonly SavedSolutions $solutions ) {}
+	public function __construct( private readonly SavedSolutions $solutions, private readonly DesignProof $proof = new DesignProof() ) {}
 
 	/**
 	 * Registers the route; runs on rest_api_init.
@@ -56,21 +57,21 @@ final class SolutionsRoute {
 				// Guests may save too: their solution waits in their session until they log in.
 				'permission_callback' => '__return_true',
 				'args'                => array(
-					'kind'       => array(
+					'kind'                  => array(
 						'type'     => 'string',
 						'enum'     => self::KINDS,
 						'required' => true,
 					),
-					'title'      => array(
+					'title'                 => array(
 						'type'      => 'string',
 						'minLength' => 1,
 						'required'  => true,
 					),
-					'input'      => array(
+					'input'                 => array(
 						'type'     => 'object',
 						'required' => true,
 					),
-					'lines'      => array(
+					'lines'                 => array(
 						'type'     => 'array',
 						'minItems' => 1,
 						'required' => true,
@@ -90,7 +91,12 @@ final class SolutionsRoute {
 							'additionalProperties' => false,
 						),
 					),
-					'report_pdf' => array(
+					'selection_fingerprint' => array(
+						'type'     => 'string',
+						'required' => true,
+						'pattern'  => '^[a-f0-9]{64}$',
+					),
+					'report_pdf'            => array(
 						'type' => 'string',
 					),
 				),
@@ -105,23 +111,17 @@ final class SolutionsRoute {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function create( WP_REST_Request $request ): WP_REST_Response|WP_Error {
-		$items = array();
-		foreach ( (array) $request->get_param( 'lines' ) as $line ) {
-			$line       = (array) $line;
-			$product_id = (int) ( $line['product_id'] ?? 0 );
-			$product    = wc_get_product( $product_id );
-			if ( ! $product instanceof \WC_Product || 'publish' !== $product->get_status() ) {
-				return new WP_Error(
-					'linker_solution_product',
-					/* translators: %d: product ID. */
-					sprintf( __( 'Product %d is not available.', 'linker-commerce' ), $product_id ),
-					array( 'status' => 400 )
-				);
-			}
-			$items[] = array(
-				'product_id' => $product_id,
-				'quantity'   => (int) ( $line['quantity'] ?? 0 ),
-			);
+		$kind   = (string) $request->get_param( 'kind' );
+		$input  = (array) $request->get_param( 'input' );
+		$result = $this->proof->verify( $kind, $input, (string) $request->get_param( 'selection_fingerprint' ) );
+		if ( $result instanceof WP_Error ) {
+			return $result;
+		}
+		$items = DesignProof::items( $result );
+		$sent  = (array) $request->get_param( 'lines' );
+		usort( $sent, static fn ( array $a, array $b ): int => (int) ( $a['product_id'] ?? 0 ) <=> (int) ( $b['product_id'] ?? 0 ) );
+		if ( $sent !== $items ) {
+			return DesignProof::unavailable();
 		}
 		$report = self::report( (string) $request->get_param( 'report_pdf' ) );
 		if ( $report instanceof WP_Error ) {
@@ -129,9 +129,14 @@ final class SolutionsRoute {
 		}
 		$title  = sanitize_text_field( (string) $request->get_param( 'title' ) );
 		$design = array(
-			'kind'  => (string) $request->get_param( 'kind' ),
-			'input' => (array) $request->get_param( 'input' ),
+			'kind'                  => $kind,
+			'input'                 => $input,
+			'selection_fingerprint' => (string) $result['selection_fingerprint'],
+			'snapshot'              => $result,
 		);
+		if ( ! $this->proof->is_current( $result ) ) {
+			return DesignProof::unavailable();
+		}
 
 		$customer_id = get_current_user_id();
 		if ( 0 === $customer_id ) {
@@ -147,6 +152,10 @@ final class SolutionsRoute {
 		$id = $this->solutions->save( $customer_id, $title, $items, $design, $report );
 		if ( 0 === $id ) {
 			return new WP_Error( 'linker_solution_not_saved', __( 'The solution could not be saved.', 'linker-commerce' ), array( 'status' => 500 ) );
+		}
+		if ( ! $this->proof->is_current( $result ) ) {
+			$this->solutions->discard( $id );
+			return DesignProof::unavailable();
 		}
 		return new WP_REST_Response(
 			array(

@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Account;
 
 use Linker\Commerce\Account\PrivateFiles;
+use Linker\Commerce\Account\DesignProof;
 use Linker\Commerce\Account\SavedSolutions;
 use Linker\Commerce\Account\SolutionsRoute;
 use Linker\Commerce\Tests\TestCase;
@@ -25,6 +26,48 @@ use WP_REST_Response;
  * @covers \Linker\Commerce\Account\SolutionsRoute
  */
 final class SolutionsRouteTest extends TestCase {
+
+	/** Current Woo authority, independent of the browser body. */
+	private bool $current = true;
+
+	/** @return array<string,mixed> A complete verified engine fixture. */
+	private static function result(): array {
+		return array(
+			'selection_fingerprint' => str_repeat( 'a', 64 ),
+			'publication'           => array(
+				'products'               => array(
+					array(
+						'product_id'       => 4107,
+						'product_revision' => str_repeat( 'b', 64 ),
+					),
+				),
+				'documents'              => array(),
+				'compatibility_revision' => str_repeat( 'c', 64 ),
+			),
+			'selected'              => array(
+				'lines' => array(
+					array(
+						'product'  => array(
+							'id'    => 4107,
+							'brand' => 'Test',
+							'model' => 'Recorded',
+						),
+						'quantity' => 2,
+					),
+				),
+			),
+		);
+	}
+
+	/** @return array<string,mixed> The immutable saved design. */
+	private static function design(): array {
+		return array(
+			'kind'                  => 'residential',
+			'input'                 => array( 'plz' => '39179' ),
+			'selection_fingerprint' => str_repeat( 'a', 64 ),
+			'snapshot'              => self::result(),
+		);
+	}
 
 	/**
 	 * Uploads directory of the test.
@@ -46,6 +89,7 @@ final class SolutionsRouteTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://engine.test' ) );
 		$this->uploads = sys_get_temp_dir() . '/linker-route-' . bin2hex( random_bytes( 4 ) );
 		mkdir( $this->uploads );
 		WP_Mock::userFunction( 'wp_upload_dir', array( 'return' => array( 'basedir' => $this->uploads ) ) );
@@ -94,7 +138,7 @@ final class SolutionsRouteTest extends TestCase {
 	 * The route of the test.
 	 */
 	private function route(): SolutionsRoute {
-		return new SolutionsRoute( new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' ) );
+		return new SolutionsRoute( new SavedSolutions( new PrivateFiles( SavedSolutions::REPORTS_DIRECTORY ), '/plugin/templates/' ), new DesignProof( fn (): array => array( 'valid' => $this->current ), static fn (): array => array( 200, (string) json_encode( self::result() ) ) ) );
 	}
 
 	/**
@@ -106,10 +150,11 @@ final class SolutionsRouteTest extends TestCase {
 		$request = new WP_REST_Request( 'POST', '/linker/v1/solutions' );
 		$params  = array_merge(
 			array(
-				'kind'  => 'residential',
-				'title' => 'House <b>Barleben</b>',
-				'input' => array( 'plz' => '39179' ),
-				'lines' => array(
+				'kind'                  => 'residential',
+				'title'                 => 'House <b>Barleben</b>',
+				'selection_fingerprint' => str_repeat( 'a', 64 ),
+				'input'                 => array( 'plz' => '39179' ),
+				'lines'                 => array(
 					array(
 						'product_id' => 4107,
 						'quantity'   => 2,
@@ -139,7 +184,7 @@ final class SolutionsRouteTest extends TestCase {
 					$this->assertSame( 'POST', $options['methods'] );
 					$this->assertSame( array( $route, 'create' ), $options['callback'] );
 					$this->assertSame( '__return_true', $options['permission_callback'] );
-					$this->assertSame( array( 'kind', 'title', 'input', 'lines', 'report_pdf' ), array_keys( $options['args'] ) );
+					$this->assertSame( array( 'kind', 'title', 'input', 'lines', 'selection_fingerprint', 'report_pdf' ), array_keys( $options['args'] ) );
 					$this->assertSame( SolutionsRoute::KINDS, $options['args']['kind']['enum'] );
 					$this->assertSame( array( 'product_id', 'quantity' ), $options['args']['lines']['items']['required'] );
 					$this->assertFalse( $options['args']['lines']['items']['additionalProperties'] );
@@ -187,7 +232,7 @@ final class SolutionsRouteTest extends TestCase {
 			$response->get_data()
 		);
 		$this->assertSame( '[{"product_id":4107,"quantity":2}]', $this->meta[ SavedSolutions::ITEMS_META ] );
-		$this->assertSame( '{"kind":"residential","input":{"plz":"39179"}}', $this->meta[ SavedSolutions::DESIGN_META ] );
+		$this->assertSame( self::design(), json_decode( $this->meta[ SavedSolutions::DESIGN_META ], true ) );
 		$this->assertSame( '%PDF-1.7 report', file_get_contents( $this->uploads . '/solution-reports/' . $this->meta[ SavedSolutions::REPORT_META ] ) );
 	}
 
@@ -211,10 +256,7 @@ final class SolutionsRouteTest extends TestCase {
 							'quantity'   => 2,
 						),
 					),
-					'design' => array(
-						'kind'  => 'residential',
-						'input' => array( 'plz' => '39179' ),
-					),
+					'design' => self::design(),
 				),
 			)
 		);
@@ -252,7 +294,7 @@ final class SolutionsRouteTest extends TestCase {
 
 		$this->assertInstanceOf( WP_Error::class, $response );
 		$this->assertSame( $code, $response->get_error_code() );
-		$this->assertSame( array( 'status' => 400 ), $response->get_error_data() );
+		$this->assertSame( array( 'status' => 'linker_solution_changed' === $code ? 409 : 400 ), $response->get_error_data() );
 	}
 
 	/**
@@ -270,8 +312,8 @@ final class SolutionsRouteTest extends TestCase {
 			),
 		);
 		return array(
-			'unknown product'   => array( $line( 9999 ), 'linker_solution_product' ),
-			'draft product'     => array( $line( 4108 ), 'linker_solution_product' ),
+			'unknown product'   => array( $line( 9999 ), 'linker_solution_changed' ),
+			'draft product'     => array( $line( 4108 ), 'linker_solution_changed' ),
 			'report not base64' => array( array( 'report_pdf' => '%%%' ), 'linker_solution_report' ),
 			'report not a PDF'  => array( array( 'report_pdf' => self::base64( '<html>' ) ), 'linker_solution_report' ),
 			'report too large'  => array( array( 'report_pdf' => self::base64( '%PDF-' . str_repeat( 'x', 1024 ) ) ), 'linker_solution_report' ),
@@ -290,6 +332,23 @@ final class SolutionsRouteTest extends TestCase {
 		$this->assertInstanceOf( WP_Error::class, $response );
 		$this->assertSame( 'linker_solution_not_saved', $response->get_error_code() );
 		$this->assertSame( array( 'status' => 500 ), $response->get_error_data() );
+	}
+
+	/** A stale full candidate set cannot be saved using a still-published subset. */
+	public function test_current_authority_refuses_the_whole_design(): void {
+		$this->current = false;
+		WP_Mock::userFunction( 'wp_insert_post', array( 'times' => 0 ) );
+		$error = $this->route()->create( self::request() );
+		$this->assertInstanceOf( WP_Error::class, $error );
+		$this->assertSame( 409, $error->get_error_data()['status'] );
+	}
+
+	/** A pre-contract or tampered request cannot fall back to product IDs alone. */
+	public function test_missing_fingerprint_is_refused_before_writing(): void {
+		WP_Mock::userFunction( 'wp_insert_post', array( 'times' => 0 ) );
+		$error = $this->route()->create( self::request( array( 'selection_fingerprint' => '' ) ) );
+		$this->assertInstanceOf( WP_Error::class, $error );
+		$this->assertSame( 'linker_solution_changed', $error->get_error_code() );
 	}
 
 	/**

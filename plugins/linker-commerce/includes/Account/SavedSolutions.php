@@ -223,6 +223,53 @@ final class SavedSolutions {
 	}
 
 	/**
+	 * Immutable engine result stored when the customer saved this design.
+	 * A legacy record without a snapshot does not re-run today's engine.
+	 *
+	 * @param int $solution_id Solution.
+	 * @return array<string, mixed>|null
+	 */
+	public function snapshot( int $solution_id ): ?array {
+		$design = json_decode( (string) get_post_meta( $solution_id, self::DESIGN_META, true ), true );
+		return is_array( $design ) && is_array( $design['snapshot'] ?? null ) ? $design['snapshot'] : null;
+	}
+
+	/**
+	 * Recorded item labels only, never current facts from a withdrawn product.
+	 *
+	 * @param int $solution_id Solution.
+	 * @return list<array{product_id:int,quantity:int,label:string}>
+	 */
+	public function historical_items( int $solution_id ): array {
+		$snapshot = $this->snapshot( $solution_id );
+		$labels   = array();
+		$selected = is_array( $snapshot['selected'] ?? null ) ? $snapshot['selected'] : array();
+		foreach ( is_array( $selected['lines'] ?? null ) ? $selected['lines'] : array() as $line ) {
+			if ( is_array( $line ) && is_array( $line['product'] ?? null ) ) {
+				$product                                 = $line['product'];
+				$labels[ (int) ( $product['id'] ?? 0 ) ] = trim( (string) ( $product['brand'] ?? '' ) . ' ' . (string) ( $product['model'] ?? '' ) );
+			}
+		}
+		$items = array();
+		foreach ( $this->items( $solution_id ) as $item ) {
+			/* translators: %d: product ID recorded in a historical solution. */
+			$item['label'] = $labels[ $item['product_id'] ] ?? sprintf( __( 'Product %d', 'linker-commerce' ), $item['product_id'] );
+			$items[]       = $item;
+		}
+		return $items;
+	}
+
+	/**
+	 * Removes only a new write rejected by its final publication check.
+	 *
+	 * @param int $solution_id Newly inserted solution.
+	 */
+	public function discard( int $solution_id ): void {
+		$this->reports->delete( (string) get_post_meta( $solution_id, self::REPORT_META, true ) );
+		wp_delete_post( $solution_id, true );
+	}
+
+	/**
 	 * Prints the "Saved solutions" page of the account; runs on its endpoint.
 	 */
 	public function render(): void {
@@ -251,13 +298,11 @@ final class SavedSolutions {
 		if ( ! wp_verify_nonce( $nonce, self::ADD_ACTION . '_' . $solution_id ) || get_current_user_id() !== $this->owner( $solution_id ) ) {
 			return;
 		}
-		$added = 0;
-		foreach ( $this->items( $solution_id ) as $item ) {
-			if ( false !== WC()->cart->add_to_cart( $item['product_id'], $item['quantity'] ) ) {
-				++$added;
-			}
-		}
-		if ( $added > 0 ) {
+		$snapshot = $this->snapshot( $solution_id );
+		$added    = null !== $snapshot ? ( new AtomicSolutionDraft() )->add( $snapshot ) : DesignProof::unavailable();
+		if ( $added instanceof \WP_Error ) {
+			wc_add_notice( $added->get_error_message(), 'error' );
+		} else {
 			wc_add_notice( __( 'The products of the saved solution are in your solution draft.', 'linker-commerce' ) );
 		}
 		wp_safe_redirect( wc_get_cart_url() );

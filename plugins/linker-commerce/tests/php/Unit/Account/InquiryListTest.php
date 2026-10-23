@@ -123,26 +123,19 @@ final class InquiryListTest extends TestCase {
 		}
 	}
 
-	/**
-	 * Each line of the inquiry page links the product's own datasheet, not in emails.
-	 */
-	public function test_datasheet_link(): void {
+	/** A withdrawn product never supplies a new download link to historical inquiries. */
+	public function test_withdrawn_product_has_no_current_datasheet_link(): void {
 		WP_Mock::userFunction( 'is_wc_endpoint_url', array( 'return' => true ) );
-		WP_Mock::userFunction(
-			'get_post_meta',
-			array(
-				'args'   => array( 4107, InquiryList::DATASHEET_META, true ),
-				'return' => 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf',
-			)
-		);
+		WP_Mock::userFunction( 'get_post_type', array( 'return' => 'product' ) );
+		WP_Mock::userFunction( 'get_post_status', array( 'return' => 'draft' ) );
+		WP_Mock::userFunction( 'get_post_meta', array( 'times' => 0 ) );
 		$item = Mockery::mock( WC_Order_Item_Product::class );
 		$item->allows( 'get_product_id' )->andReturn( 4107 );
 		$order = Mockery::mock( WC_Order::class );
 		$list  = new InquiryList();
-
 		ob_start();
 		$list->datasheet_link( 1, $item, $order, true );
 		$list->datasheet_link( 1, $item, $order );
-		$this->assertSame( '<br><a class="linker-datasheet" href="https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf" target="_blank" rel="noopener">Datasheet (PDF)</a>', ob_get_clean() );
+		$this->assertSame( '', ob_get_clean() );
 	}
 }

@@ -33,7 +33,7 @@ endif;
 	<tbody>
 		<?php
 		foreach ( $solutions as $linker_solution ) :
-			$linker_items = $saved->items( $linker_solution->ID );
+			$linker_items = $saved->historical_items( $linker_solution->ID );
 			?>
 			<tr id="<?php echo esc_attr( 'linker-solution-' . $linker_solution->ID ); ?>">
 				<th scope="row" data-title="<?php esc_attr_e( 'Solution', 'linker-commerce' ); ?>"><?php echo esc_html( $linker_solution->post_title ); ?></th>
@@ -41,10 +41,7 @@ endif;
 				<td data-title="<?php esc_attr_e( 'Products', 'linker-commerce' ); ?>">
 					<?php
 					foreach ( $linker_items as $linker_item ) {
-						$linker_product = wc_get_product( $linker_item['product_id'] );
-						if ( $linker_product ) {
-							printf( '%1$d × %2$s<br>', (int) $linker_item['quantity'], esc_html( $linker_product->get_name() ) );
-						}
+						printf( '%1$d × %2$s<br>', (int) $linker_item['quantity'], esc_html( $linker_item['label'] ) );
 					}
 					?>
 				</td>

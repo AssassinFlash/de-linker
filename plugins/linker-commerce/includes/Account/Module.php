@@ -66,6 +66,7 @@ final class Module {
 		add_action( 'wp_loaded', array( $this->solutions, 'add_to_draft' ), 30 );
 		add_action( 'woocommerce_load_cart_from_session', array( $this->solutions, 'claim' ) );
 		add_action( 'rest_api_init', array( $this->route, 'register' ) );
+		add_action( 'rest_api_init', array( new SolutionDraftRoute(), 'register' ) );
 		add_action( 'woocommerce_account_documents_endpoint', array( $this->documents, 'render' ) );
 		add_action( 'template_redirect', array( $this->download, 'serve' ), 1 );
 	}

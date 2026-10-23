@@ -34,6 +34,7 @@ export interface SavedSolution {
 export interface SolutionBody {
 	kind: 'residential';
 	title: string;
+	selectionFingerprint?: string;
 	input: ResidentialInput;
 	lines: DraftLine[];
 	/**
@@ -88,6 +89,7 @@ export async function saveSolution(
 			kind: body.kind,
 			title: body.title,
 			input: body.input,
+			selection_fingerprint: body.selectionFingerprint ?? '',
 			lines: body.lines.map( ( line ) => ( {
 				product_id: line.productId,
 				quantity: line.quantity,
