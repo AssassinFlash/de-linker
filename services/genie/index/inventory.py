@@ -131,9 +131,15 @@ class RestClient:
     def get(self, path: str, params: Mapping[str, str | int]) -> tuple[Any, int, int]:
         """One page: the decoded body, X-WP-Total and X-WP-TotalPages."""
         url = f"{self.base}/wp-json{path}?{urllib.parse.urlencode(params)}"
+        headers = {"User-Agent": "linker-genie-index"}
+        # Woo's publication manifest is public permission data. The existing
+        # inventory credential is scoped to the two native collections and must
+        # not turn this public read into a forbidden privileged request.
+        if path != "/linker/v1/publication/manifest":
+            headers["Authorization"] = self._auth
         request = urllib.request.Request(
             url,
-            headers={"Authorization": self._auth, "User-Agent": "linker-genie-index"},
+            headers=headers,
         )
         with self._opener.open(request, timeout=120) as response:
             body = json.load(response)

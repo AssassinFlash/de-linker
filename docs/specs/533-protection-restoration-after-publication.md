@@ -39,6 +39,9 @@ the restoration PR's effective baseline is this newer main.
   card projection, without repeatedly hashing full technical documents.
 - Restore the separate native inventory GET credential scope without granting
   it publication permissions or broadening another account's capabilities.
+  The standalone index reader fetches Woo's public publication manifest without
+  that collection credential. Its same-origin redirect guard remains enforced;
+  native media/product collection reads still carry the original credential.
 - Keep complete-message authorization before each transport attempt and again
   before PHP fallback. A fresh NORMAL grant is bound to the current native
   source, privacy revision and full recipients/body/attachments/origin.
@@ -98,3 +101,15 @@ does not authorize a whole-plugin replacement that omits current protection.
 Private evidence: `/Users/chesterjohn/de-linker-data/incident-20261022/security-restore-after-publication-20261024`.
 Acceptance and deployment readback are separate gates; this specification does
 not declare them complete.
+
+## Review repair
+
+The combined source review found that the current standalone index reader
+attached its scoped collection credential to the public manifest GET, which
+the restored narrow MU guard correctly refuses. Two real local HTTP controls
+failed before the repair: the standalone inventory build received 403, and
+the public-manifest request wrongly carried Basic authorization. The reader
+now omits that credential only for the exact public manifest route. The same
+controls pass, media/product reads retain authentication, and foreign-origin
+redirects remain refused. The existing publication inventory controls also
+pass. No credential's server-side scope was widened.
