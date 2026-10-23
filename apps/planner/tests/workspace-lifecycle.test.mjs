@@ -227,13 +227,27 @@ test("Journal workspaces show one task while retaining real input nodes, values 
 		document.querySelector('button[aria-label="Undo"]').click(),
 	);
 	assert.equal(app.annual().value, "10");
+	const mobileSelect = document.querySelector(
+		'select[aria-label="Project sections"]',
+	);
+	await act(async () => {
+		mobileSelect.value = "site";
+		mobileSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(document.querySelector(".lp-project").dataset.workspace, "site");
+	assert.equal(document.activeElement.id, "lp-brief-use");
+	await act(async () => nav("Energy inputs").click());
 	await enter(app.annual(), "1,");
-	await act(async () => nav("Site and project").click());
+	await act(async () => {
+		mobileSelect.value = "site";
+		mobileSelect.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
 	assert.equal(
 		document.querySelector(".lp-project").dataset.workspace,
 		"energy",
 	);
 	assert.equal(app.annual().value, "1,");
+	assert.equal(mobileSelect.value, "energy");
 	assert.ok(
 		document.body.textContent.includes("Correct the highlighted input"),
 	);

@@ -69,7 +69,8 @@
   [data-linker-planner] .lp-new-project > .lp-field + .lp-field { margin-top: 16px; }
   [data-linker-planner] .lp-project-bar { position: sticky; top: var(--lp-site-header-height, 0px); z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 28px; background: rgb(255 255 255 / .83); backdrop-filter: blur(18px); border-bottom: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-breadcrumb { display: flex; align-items: center; gap: 12px; font-size: 12px; min-width: 0; }
-  [data-linker-planner] .lp-breadcrumb > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 22vw; }
+  [data-linker-planner] .lp-breadcrumb > span:last-of-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 22vw; }
+  [data-linker-planner] .lp-mobile-workspace { display: none; }
   [data-linker-planner] .lp-edit-actions { display: flex; align-items: center; gap: 6px; }
   [data-linker-planner] .lp-save-state { color: var(--proto-neutral-500); font-size: 12px; margin-right: 14px; }
   [data-linker-planner] .lp-project-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); }
@@ -223,7 +224,7 @@
     [data-linker-planner] .lp-project-aside .lp-source-note { display: none; }
     [data-linker-planner] .lp-project-bar { padding: 10px 16px; flex-wrap: wrap; gap: 4px; }
     [data-linker-planner] .lp-breadcrumb { width: 100%; }
-    [data-linker-planner] .lp-breadcrumb > span:last-child { max-width: 70vw; }
+    [data-linker-planner] .lp-breadcrumb > span:last-of-type { max-width: 70vw; }
     [data-linker-planner] .lp-edit-actions { width: 100%; justify-content: flex-end; }
     [data-linker-planner] .lp-save-state { margin-right: auto; font-size: 10px; }
     [data-linker-planner] .lp-edit-actions .lp-button { padding-inline: 12px; font-size: 12px; }
@@ -277,9 +278,11 @@
   [data-linker-planner] .lp-overview-preview { min-width: 0; background: rgb(255 255 255 / .64); border: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-overview-preview-title { display: flex; gap: 10px; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--lp-line); font-size: 12px; }
   [data-linker-planner] .lp-overview-preview-title > span:last-child { margin-left: auto; color: var(--proto-neutral-500); font-size: 10px; }
+  [data-linker-planner] .lp-overview-preview-title > span { min-width: 0; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-overview-preview > .lp-text-button { display: flex; justify-content: space-between; width: calc(100% - 36px); margin: 6px 18px; }
   [data-linker-planner] .lp-overview-preview .lp-plan-view { padding: 0; }
-  [data-linker-planner] .lp-overview-preview .lp-plan-svg { height: 360px; cursor: default; }
+  [data-linker-planner] .lp-overview-preview .lp-plan-svg { height: 360px; cursor: default; touch-action: auto; }
+  [data-linker-planner] .lp-overview-preview .lp-plan-svg * { cursor: default; }
   [data-linker-planner] .lp-overview-empty { display: flex; min-height: 360px; padding: 40px; flex-direction: column; justify-content: center; align-items: flex-start; background: linear-gradient(135deg, rgb(235 244 242 / .8), rgb(243 246 249 / .5)); }
   [data-linker-planner] .lp-overview-empty > svg { width: 36px; height: 36px; margin-bottom: 24px; color: var(--proto-teal-700); }
   [data-linker-planner] .lp-overview-empty h3 { font-size: 22px; }
@@ -300,7 +303,9 @@
   }
   @media (max-width: 640px) {
     [data-linker-planner] .lp-project-layout { grid-template-columns: minmax(0, 1fr); }
-    [data-linker-planner] .lp-project-aside { position: static; max-height: none; overflow: visible; padding: 16px 16px 0; }
+    [data-linker-planner] .lp-project-aside { display: none; }
+    [data-linker-planner] .lp-breadcrumb > span:last-of-type { display: none; }
+    [data-linker-planner] .lp-mobile-workspace { display: block; flex: 1; min-width: 0; min-height: 44px; padding: 8px 10px; font-size: 16px; font-weight: 500; color: var(--proto-teal-900); background-color: rgb(255 255 255 / .6); border: 1px solid var(--lp-line); border-radius: var(--proto-radius-sm); }
     [data-linker-planner] .lp-project-nav-title, [data-linker-planner] .lp-project-aside > .lp-eyebrow { display: none; }
     [data-linker-planner] .lp-project-aside nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; margin: 0; padding-bottom: 12px; overflow: visible; }
     [data-linker-planner] .lp-project-aside nav a { min-width: 0; padding: 10px 8px; gap: 8px; font-size: 11px; }

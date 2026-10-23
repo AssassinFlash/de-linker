@@ -82,3 +82,27 @@ proves one visible workspace with the same input nodes, values and undo history,
 plus refusal to hide an invalid raw value. Catalogs compile with native gettext.
 The application still uses the owned p548 WordPress/native identity and the site
 WindPress volume, not a substitute HTML response.
+
+## Native correction after the first layout checkpoint
+
+The fixed563e0387 independent Spec review reproduced a navigation defect:
+explicit Site and project navigation focused `lp-site`, the second visible
+section, leaving the preceding Project brief/system scope above the viewport.
+The same behavior was observed in the actual390px local WordPress page. Explicit
+navigation now reveals `lp-brief-use`; existing `lp-site` and related URL aliases
+still select the Site workspace. The retained fixed-source failing probe is not
+rewritten as a pass.
+
+The390px page also showed that the sidebar navigation scrolled out of view after
+revealing the workspace. A compact native workspace selector now occupies the
+mobile breadcrumb row in the sticky project bar, using the same four existing
+labels, validation guard, current state and reveal action. The desktop sidebar
+remains the navigation at larger widths. The lifecycle probe now exercises the
+selector, shared undo and invalid raw-input refusal as well as desktop links.
+
+The readonly overview preview now allows the browser's normal touch action,
+while the actual editing viewport retains its own pointer controls. Long roof
+names wrap without truncation or an unbounded flex minimum. These two cases came
+from the independent Standards review; physical-touch behavior is not established
+by a DOM test. Final EN/DE native screenshots and corrected-source independent
+reviews remain pending at this checkpoint.

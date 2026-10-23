@@ -39,6 +39,7 @@ lp-index-heading
 lp-inline-actions
 lp-keepout-shape
 lp-layout-review
+lp-mobile-workspace
 lp-module-table
 lp-nav-mark
 lp-new-project

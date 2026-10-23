@@ -44,6 +44,7 @@ const workspaceHash = {
 	energy: "lp-load",
 	design: "lp-design",
 } as const;
+const workspaceTarget = { ...workspaceHash, site: "lp-brief-use" } as const;
 function workspaceFromHash(): ProjectWorkspace {
 	if (["#lp-site", "#lp-brief-use", "#lp-notes"].includes(window.location.hash))
 		return "site";
@@ -98,7 +99,7 @@ export function ProjectEditor({
 		if (
 			revealActionResult(
 				document.querySelector<HTMLElement>(
-					"[data-linker-planner] #" + workspaceHash[workspace],
+					"[data-linker-planner] #" + workspaceTarget[workspace],
 				),
 				() => client.isCurrentScope(session.query_scope),
 			)
@@ -114,7 +115,7 @@ export function ProjectEditor({
 		if (next === workspace) {
 			revealActionResult(
 				document.querySelector<HTMLElement>(
-					"[data-linker-planner] #" + workspaceHash[next],
+					"[data-linker-planner] #" + workspaceTarget[next],
 				),
 				() => client.isCurrentScope(session.query_scope),
 			);
@@ -229,6 +230,25 @@ export function ProjectEditor({
 					</button>
 					<span aria-hidden="true">/</span>
 					<span>{project.title}</span>
+					<select
+						className="lp-mobile-workspace"
+						aria-label={__("Project sections", "linker-tools")}
+						value={workspace}
+						onChange={(event) =>
+							chooseWorkspace(event.currentTarget.value as ProjectWorkspace)
+						}
+					>
+						<option value="overview">
+							{__("Project overview", "linker-tools")}
+						</option>
+						<option value="site">
+							{__("Site and project", "linker-tools")}
+						</option>
+						<option value="design">{__("Roof design", "linker-tools")}</option>
+						<option value="energy">
+							{__("Energy inputs", "linker-tools")}
+						</option>
+					</select>
 				</div>
 				<div className="lp-edit-actions">
 					<span className="lp-save-state" role="status">
