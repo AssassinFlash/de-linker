@@ -207,6 +207,12 @@ test("unknown local write outcomes remain retryable; a stale tab can explicitly 
 			.catch(() => undefined),
 	);
 	assert.equal(r.flow.storageFailed, true);
+	await act(async () => r.flow.discard());
+	assert.equal(r.flow.storageFailed, true);
+	assert.equal(
+		(await r.store.list([scope], projectId))[0].drawing.fields.name,
+		"newer tab",
+	);
 	await act(async () => r.flow.fork());
 	await until(() => !r.flow.writing);
 	assert.deepEqual(
@@ -215,6 +221,102 @@ test("unknown local write outcomes remain retryable; a stale tab can explicitly 
 			.sort(),
 		["newer tab", "this tab"],
 	);
+});
+test("a newer buffer settles exact uncertain bytes before advancing, including repeated lost acknowledgements", async (t) => {
+	let lose = 2;
+	const writes = [];
+	const r = await rig(t, (store) => ({
+		list: (...args) => store.list(...args),
+		clear: (...args) => store.clear(...args),
+		write: async (...args) => {
+			writes.push({ previous: args[1], next: args[2] });
+			await store.write(...args);
+			if (JSON.parse(args[2]).vertices.length === 1 && lose-- > 0)
+				throw new Error("unknown local acknowledgement");
+		},
+	}));
+	await act(async () => r.flow.begin(null));
+	await until(() => !r.flow.writing);
+	const zero = body(r.flow.drawing),
+		one = appendMapRoofVertex(r.flow.drawing, [6.96, 50.94]),
+		two = appendMapRoofVertex(one, [6.9601, 50.94]),
+		newer = { ...two, fields: { ...two.fields, pitch: "12,,invalid" } };
+	await act(async () => r.flow.update(one).catch(() => undefined));
+	await act(async () => r.flow.update(newer).catch(() => undefined));
+	assert.equal(r.flow.storageFailed, true);
+	assert.equal(r.flow.drawing.vertices.length, 2);
+	assert.equal(r.flow.drawing.fields.pitch, "12,,invalid");
+	assert.equal((await r.store.list([scope], projectId))[0].body, body(one));
+	await act(async () => r.flow.retry());
+	await until(() => !r.flow.checking);
+	assert.equal(r.flow.storageFailed, false);
+	assert.equal((await r.store.list([scope], projectId))[0].body, body(newer));
+	assert.deepEqual(writes, [
+		{ previous: null, next: zero },
+		{ previous: zero, next: body(one) },
+		{ previous: zero, next: body(one) },
+		{ previous: zero, next: body(one) },
+		{ previous: body(one), next: body(newer) },
+	]);
+});
+test("a pre-mutation refusal permits correction without retrying the refused bytes", async (t) => {
+	const r = await rig(t);
+	await act(async () => r.flow.begin(null));
+	await until(() => !r.flow.writing);
+	const initial = (await r.store.list([scope], projectId))[0].body;
+	await act(async () =>
+		r.flow
+			.update({
+				...r.flow.drawing,
+				fields: { ...r.flow.drawing.fields, source: "x".repeat(4097) },
+			})
+			.catch(() => undefined),
+	);
+	assert.equal(r.flow.storageFailed, true);
+	assert.equal((await r.store.list([scope], projectId))[0].body, initial);
+	await act(async () =>
+		r.flow.update({
+			...r.flow.drawing,
+			fields: { ...r.flow.drawing.fields, source: "corrected source" },
+		}),
+	);
+	assert.equal(r.flow.storageFailed, false);
+	assert.equal(
+		(await r.store.list([scope], projectId))[0].drawing.fields.source,
+		"corrected source",
+	);
+});
+test("explicit discard confirms an uncertain write before deleting its exact owned copy", async (t) => {
+	let lose = true;
+	const r = await rig(t, (store) => ({
+		list: (...args) => store.list(...args),
+		clear: (...args) => store.clear(...args),
+		write: async (...args) => {
+			await store.write(...args);
+			if (JSON.parse(args[2]).vertices.length === 1 && lose) {
+				lose = false;
+				throw new Error("unknown local acknowledgement");
+			}
+		},
+	}));
+	await act(async () => r.flow.begin(null));
+	await until(() => !r.flow.writing);
+	await act(async () =>
+		r.flow
+			.update(appendMapRoofVertex(r.flow.drawing, [6.96, 50.94]))
+			.catch(() => undefined),
+	);
+	assert.equal(r.flow.storageFailed, true);
+	assert.equal(
+		(await r.store.list([scope], projectId))[0].drawing.vertices.length,
+		1,
+	);
+	await act(async () => r.flow.discard());
+	await until(() => !r.flow.checking);
+	assert.equal(r.flow.drawing, null);
+	assert.equal(r.flow.storageFailed, false);
+	assert.equal(r.flow.writing, false);
+	assert.equal((await r.store.list([scope], projectId)).length, 0);
 });
 test("prepared geometry survives local application and clears only after an exact confirmed server geometry", async (t) => {
 	const r = await rig(t);

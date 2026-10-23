@@ -82,7 +82,7 @@
     "src/data/retryableModule.ts": "e8de42cf86d8cc30313c5e5450982eb2566257ea1f49d9a8a82b0b654e6be025",
     "src/data/sceneModule.ts": "3d238e55d9db3418ade21214ef6ce6a051ea81d4d1308527f34625cdd0a26927",
     "src/data/useGeometryImport.ts": "d554162c6fa3255cfd1c489aeb41c6377e85b81beddeae3cf2ba85edbae4ceb0",
-    "src/data/useMapRoofDraft.ts": "e1b55869c2762830797650f4df0d93cff3608cb67a58e124a40bdee71918fd31",
+    "src/data/useMapRoofDraft.ts": "afbaa13ebf22d6fb140ad02abced1802ffebc3d3e4950bfc17f0c01e7da7b19c",
     "src/data/useProjectBar.ts": "3228f0688127fbbc07df48b9d546c9eb77a68c0cbf2c59a08180d6b38af49295",
     "src/data/useProjectDraft.ts": "acacde557542c8617cadaa5813059f0c0a93178b900c948faff0a2db448a45e1",
     "src/data/useSiteIntegration.ts": "dc96cfc404a2de8aa954769487061be4f51b50045db3aad0b34967cd7666ad59",
@@ -116,12 +116,12 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-CSepjNvH.js": "1d1342bb79cb18f2183259b0087f8af6c7206ef036d5c9e933ef40f242bf3c0c",
-    "assets/SceneViewport-hDHV1DB6.js": "b83cdeabd773f264ae8589ada34a4e79b211510bc84a0548494bd8cf9b0081cc",
-    "assets/planner-core-1GG4Wgwm.js": "67d178fdf6c7b19ed8e6b4d697d90197753009a4eb315842c97a3528585558bb",
-    "assets/planner.js": "c7d35d8c8083403f211bb410d167f4f2fe07b7b43ad3f4148f904c1cc2ab18e5",
+    "assets/MapViewport-S4hw7bq0.js": "a4e7f81b40c6102287e1fe766f1bb81f609cfec813c1ddca64c4e9e86a5d2b1b",
+    "assets/SceneViewport-C3IJsG4W.js": "47f622ebc9320d74476b295f4eb6a9926028f7966fab2106b21b849de9b9611b",
+    "assets/planner-core-Di3EJ9p-.js": "ae6aadc4b59f26f67ce0d2bc85db02343477fedf46f64e6df743af10a4e347a0",
+    "assets/planner.js": "214dcc305ba903e849d381966b18738272db4d5210cc054f421a274eeccade95",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "26913e28a60cf832d8ee96931ee4e87c5bb3099dddf0a28a1a16faaef2ac6b9b",
+    "vite-manifest.json": "05308f974ecca7e5ee7f9faafca2bf90a7c0ca4d92dcc78ce77c933c7131ef04",
     "windpress.scan.txt": "d33dd03364b62e8b88d31b820605062f2d188cafbe9c616a61b0177a72fd7ad7"
   }
 }

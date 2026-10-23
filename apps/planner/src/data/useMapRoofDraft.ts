@@ -15,6 +15,7 @@ interface DrawingWriter {
 	readonly scope: string;
 	readonly key: string;
 	body: string | null;
+	pending: { previous: string | null; next: string } | null;
 	chain: Promise<void>;
 }
 export type DrawingJournal = Pick<
@@ -134,15 +135,42 @@ export function useMapRoofDraft({
 		confirmedGeometry,
 	]);
 
+	async function acknowledge(
+		target: DrawingWriter,
+		intent: NonNullable<DrawingWriter["pending"]>,
+	) {
+		if (!admitted(target.scope) || writer.current !== target)
+			throw new Error("session_changed");
+		target.pending = intent;
+		try {
+			await store.write(target.scope, intent.previous, intent.next);
+		} catch (error) {
+			// These journal refusals occur before mutation (or abort its transaction).
+			// Unknown acknowledgements retain their exact bytes until confirmed.
+			if (
+				error instanceof Error &&
+				[
+					"map_drawing_recovery_invalid",
+					"map_drawing_recovery_limit",
+					"map_drawing_recovery_conflict",
+				].includes(error.message)
+			)
+				target.pending = null;
+			throw error;
+		}
+		target.body = intent.next;
+		target.pending = null;
+	}
 	function persist(next: MapRoofDraft, target: DrawingWriter): Promise<void> {
 		const body = JSON.stringify(next);
 		setWriting(true);
 		const operation = target.chain
 			.catch(() => undefined)
 			.then(async () => {
-				if (!admitted(target.scope)) throw new Error("session_changed");
-				await store.write(target.scope, target.body, body);
-				target.body = body;
+				const pending = target.pending;
+				if (pending) await acknowledge(target, pending);
+				if (pending?.next !== body)
+					await acknowledge(target, { previous: target.body, next: body });
 			});
 		target.chain = operation;
 		void operation.then(
@@ -198,6 +226,7 @@ export function useMapRoofDraft({
 			scope: record?.scope ?? session.query_scope,
 			key: next.key,
 			body: record?.body ?? null,
+			pending: null,
 			chain: Promise.resolve(),
 		};
 		writer.current = target;
@@ -225,18 +254,31 @@ export function useMapRoofDraft({
 	async function discard() {
 		const target = writer.current;
 		if (!target || !admitted(target.scope)) return;
-		await target.chain.catch(() => undefined);
+		setWriting(true);
+		const operation = target.chain
+			.catch(() => undefined)
+			.then(async () => {
+				if (!admitted(target.scope) || writer.current !== target)
+					throw new Error("session_changed");
+				if (target.pending) await acknowledge(target, target.pending);
+				if (target.body !== null) await store.clear(target.scope, target.body);
+				if (writer.current !== target || !admitted(target.scope)) return;
+				writer.current = null;
+				latest.current = null;
+				setDrawing(null);
+				setActive(false);
+				setStorageFailed(false);
+				setWriting(false);
+				setRefresh((value) => value + 1);
+			});
+		target.chain = operation;
 		try {
-			if (target.body !== null) await store.clear(target.scope, target.body);
-			if (writer.current !== target || !admitted(target.scope)) return;
-			writer.current = null;
-			latest.current = null;
-			setDrawing(null);
-			setActive(false);
-			setStorageFailed(false);
-			setRefresh((value) => value + 1);
+			await operation;
 		} catch {
-			if (mounted.current && writer.current === target) setStorageFailed(true);
+			if (mounted.current && writer.current === target) {
+				setStorageFailed(true);
+				setWriting(false);
+			}
 		}
 	}
 	function fork() {
@@ -250,6 +292,7 @@ export function useMapRoofDraft({
 			scope: session.query_scope,
 			key: next.key,
 			body: null,
+			pending: null,
 			chain: Promise.resolve(),
 		};
 		writer.current = target;
