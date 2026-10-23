@@ -31,7 +31,8 @@ type PdfState = 'idle' | 'working' | 'failed' | 'changed' | 'publication';
  * failed (the configurator's own failure copy), or the solution stays in the
  * guest's session and has no account post to read yet.
  */
-export type AskState = 'idle' | 'saving' | 'failed' | 'changed' | 'signin';
+export type AskState =
+	'idle' | 'saving' | 'failed' | 'changed' | 'unconfirmed' | 'signin';
 
 export interface ReportViewProps {
 	report: Report;
@@ -184,6 +185,12 @@ export function ReportView( {
 					</button>
 					<p className="linker-report__status" role="status">
 						{ askState === 'changed' ? selectionChangedText() : '' }
+						{ askState === 'unconfirmed'
+							? __(
+									'The request status could not be confirmed. Please check before sending it again.',
+									'linker-tools'
+								)
+							: '' }
 						{ askState === 'failed'
 							? __(
 									'The solution could not be saved. Try again.',

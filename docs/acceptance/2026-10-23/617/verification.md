@@ -20,3 +20,18 @@
 部署须带上 engine 的新原子 sync 与 timer/service 定义，既有 `/etc/linker-engine.env` 增加专用 Woo Application Password 环境变量（只保存在服务器秘密配置），配置站点相应 manifest/jobs URL，读回实际 loaded source/compatibility/prepared_products 并确认 ack。首次替换 regular feed/contract 时脚本保留旧数据对，恢复旧代码时配合旧数据；不得只切新软链后给旧进程贴新版本。
 
 第一阶段 EcoFlow 的草稿与资料 410 保护未改动；这份执行记录没有声称已重建知识库或通过实际公开 HTTP 撤权验收。
+
+## 与统一工作台的边界对齐
+
+本轮后续裁定要求长期产品方向以统一工作台为准。只读核对 `/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548` 的固定提交 `bc714bc628f1555d2ddcbface216dabc7b9371d5`，依据该树的 `docs/specs/548-workbench-application.md`、`548-design-geometry.md`、`548-geographic-intake.md` 与 `548-roof-import-workflow.md`；没有修改、重置或重启该工作树或运行实例。
+
+| 边界 | 已查明的 source 合同 | 本票处置 |
+| --- | --- | --- |
+| 项目修订与未知确认 | `planning/workspace.py` 的 revise 以 expected_revision + intent key 在同一事务保存修订和回执；`planning/commands.py` 校验同 key 的完整命令 hash。工作台合同要求未知响应复用原 key/字节，保护更新的本地编辑。 | 新工作台继续由既有项目/命令机制维护。617 只修旧 Save/Ask 的未知结果提示；不扩展旧保存机制，不将旧 24 小时 selection receipt 当成永久项目。 |
+| 冻结计算 | `planning/workspace.py` evaluate 固定 project/revision/input hash/context；`planning/frozen_run.py` 验证 run 与已存来源资产；`runtime_snapshot.py` 固定实际代码/依赖。`Run.is_current` 当前只表达项目修订相同。 | 本票旧 `/selection/validate` 和 `/report/pdf` 的 receipt 封住既有入口的重算与草稿读取。新工作台复用自己的 run 身份及冻结结果，不建立第二份 selection-receipt 历史；不能把 is_current 当成当前 Woo 发布许可。 |
+| 来源与资产 | `planning/assets.py` 在所有读写前核 owner，以内容 hash 与独立 metadata hash 保留不可变私有来源；导入、项目修订和计算是不同命令。几何/CSV/用户场景具有独立来源、许可及质量。 | 产品事实与公开厂商资料仍只在 Woo 维护；客户项目输入继续由工作台的 Assets/修订维护。公开托管资料的 DocumentAccess 不接管私有用户上传、私有报告或数据源。 |
+| SKU 资格与交接 | `planning/energy_kernel.py` 的实际输出明确 equipment_release / country_assessment 为 not_assessed。`records.py` 与 `schema.py` 存在 Handoff 值记录/表结构，工作台合同 §13 要求同一 project/revision/run/candidate/evidence 交接；本次未查到已生效的交接命令/HTTP 路径。 | 不能把物理场景重放、表结构或旧配置器 receipt 称为已完成产品资格/交接。新消费者应在其既有 run / candidate / handoff 边界接共享 Woo 权威；本票不在旧 UI 增造长期交接架构。 |
+
+共享 Woo 合同的可复用范围是 `Products\\Publication::manifest()`、`validate()`、生成工程 feed 与准备 jobs：canonical 产品身份、产品修订、资料身份/内容修订及产品关联、兼容修订、实际准备读回。当前许可每次新动作前后新读；完整候选及其证据都列入依赖，未准备新品不阻断其他已准备产品。过期产品/资料返回 409，当前权威不可核验返回 503；准备完成、历史 frozen hash 或客户端字段均不自行授予发布许可。
+
+接入新工作台时，应在其产品资格/排名及新商务交接前后验证上述完整范围，并将验证过的 Woo 依赖与它自己的 project/revision/run/candidate/result hash 绑定。客户读取已拥有的历史修订/结果不触发重算，也不补读草稿产品；新计算、新报告或加入 Solution draft 则遵守当前许可。此段是对两个已核实合同的接口衔接结论，尚未声明新工作台已实现该消费者。
