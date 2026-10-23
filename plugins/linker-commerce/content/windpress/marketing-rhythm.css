@@ -5,6 +5,58 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
 	hyphens: manual;
 }
 
+/* Keep short German marketing words whole, including the six-letter Linker
+   brand. Two six-letter fragments give a 12-letter minimum for auto breaks;
+   the existing automatic/manual modes and font sizes stay intact. */
+html[lang^="de"]
+	:is(
+		#home-a,
+		#tv-contact-v1,
+		#tv-solution-v1,
+		#tv-rs-page-v1,
+		#tv-cs-page-v1,
+		#installer-journal,
+		#tv-solutions-developers-v1,
+		#about-journal,
+		#tv-utility-page-v1,
+		#service-redesign
+	) {
+	hyphenate-limit-chars: 12 6 6;
+}
+
+/* The saved EPC page directly assigns 12 5 5 to headings and 8 4 3 to prose.
+   Native element types outrank those later :where rules; inheritance cannot. */
+#tv-solutions-developers-v1:lang(de)
+	:is(h1, h2, h3, h4, h5, h6, p, li, dd, td, figcaption, span) {
+	hyphenate-limit-chars: 12 6 6;
+}
+
+/* The existing 22-letter compound is Speicher (8) + lösungspartner (14).
+   Prefer that real compound boundary over the observed Speicherlö-/sungs… . */
+html[lang^="de"] #installer-journal .lk-hero-title {
+	hyphenate-limit-chars: 22 8 14;
+}
+
+/* Native content sizing includes the existing placeholder and entered text.
+   The old two-row control was 60px while its German prompt needed68px. */
+#installer-journal .installer-mobile-assistant > textarea {
+	field-sizing: content;
+	height: auto;
+}
+
+#installer-journal .installer-mobile-assistant > textarea:focus-visible {
+	outline: var(--proto-focus-ring);
+	outline-offset: var(--proto-focus-offset);
+}
+
+@supports not (field-sizing: content) {
+	#installer-journal .installer-mobile-assistant > textarea[rows] {
+		/* Reuse the account/inquiry textarea minimum (auth.css):6.5rem. */
+		/* The native rows attribute outranks the saved page's later60px rule. */
+		min-height: 6.5rem;
+	}
+}
+
 /* At 320px the utility card has 236px for text; its 27px compound heading
  * needs 256.875px. Scale that heading below 360px to keep the card's inset. */
 @media (max-width: 359px) {
