@@ -143,17 +143,26 @@ class EpcMedia(HTMLParser):
             if attributes.get("poster") != prefix + f"-{expected_language}-poster.webp":
                 raise ValueError("Video poster drifted from the reviewed state")
             if self.state == "old":
-                if attributes.get("preload") != "auto" or "autoplay" not in attributes:
+                if (
+                    attributes.get("preload") != "auto"
+                    or "autoplay" not in attributes
+                    or "controls" in attributes
+                ):
                     raise ValueError("Partially changed native video policy")
                 raw = _replace(raw, ' autoplay=""', "")
                 raw = _replace(raw, 'preload="auto"', 'preload="none"')
+                raw = _attribute(raw, attributes, "controls", "")
                 if self.language == "de":
                     raw = _replace(
                         raw,
                         f'poster="{prefix}-en-poster.webp"',
                         f'poster="{prefix}-de-poster.webp"',
                     )
-            elif attributes.get("preload") != "none" or "autoplay" in attributes:
+            elif (
+                attributes.get("preload") != "none"
+                or "autoplay" in attributes
+                or attributes.get("controls") != ""
+            ):
                 raise ValueError("Final native video policy changed")
         else:
             if self.video is None:

@@ -25,7 +25,11 @@ only the current slide's video may play when the actual gallery intersects the
 viewport, the document is visible, motion is permitted and the user has not
 paused. Other videos pause. If autoplay is declined or IntersectionObserver is
 unavailable, native video controls retain an on-demand path. No eager-play
-fallback. The retained German localization path cannot independently play video.
+fallback. Saved HTML retains native video controls for no-script playback.
+Only after enhancement is ready does the observable-gallery lifecycle take over
+those controls; native controls remain available without observation or after
+autoplay is declined. The retained German localization path cannot independently
+play video.
 
 Replicate the existing Solution page's visible/document/reduced-motion scheduling
 pattern. Distinguish persistent user pause from pointer/focus suspension. Derive

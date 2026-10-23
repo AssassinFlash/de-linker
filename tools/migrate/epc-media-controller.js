@@ -168,6 +168,10 @@
         explicitPlay = false;
         synchronize();
       });
+      // Saved HTML keeps native playback available until enhancement is ready.
+      workbench.querySelectorAll('video').forEach(function(video) {
+        video.controls = !canObserveMedia;
+      });
       workbench.classList.add('epc-media-ready');
       mediaTabs.hidden = spCounter.hidden = false;
       motionButton.hidden = !canObserveMedia;
@@ -182,7 +186,4 @@
           });
         });
         mediaObserver.observe(mediaGallery);
-      } else {
-        // No offscreen eager-play fallback: retain native on-demand playback.
-        workbench.querySelectorAll('video').forEach(function(video) { video.controls = true; });
       }

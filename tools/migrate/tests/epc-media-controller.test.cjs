@@ -34,7 +34,7 @@ function element() {
 
 function fixture({ reduced = false, observer = true, declinesAutoplay = false } = {}) {
   const video = () => ({
-    paused: true, controls: false, plays: 0, decline: declinesAutoplay,
+    paused: true, controls: true, plays: 0, decline: declinesAutoplay,
     play() {
       this.plays++;
       if (this.decline) return Promise.reject({ name: 'NotAllowedError' });
@@ -100,6 +100,15 @@ test('offscreen media is not played; the observer targets the gallery', () => {
   f.show(false);
   assert.equal(f.timers.size, 0);
   assert(f.videos.every(v => v.paused));
+});
+
+test('enhancement takes over saved native controls only with gallery observation', () => {
+  const observed = fixture();
+  assert(observed.videos.every(v => !v.controls));
+  assert.deepEqual(observed.videos.map(v => v.plays), [0, 0]);
+  const manual = fixture({ observer: false });
+  assert(manual.videos.every(v => v.controls));
+  assert.equal(manual.toggle.hidden, true);
 });
 
 test('one scheduled dwell advances one choice and stops when the gallery leaves', () => {
