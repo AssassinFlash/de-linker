@@ -166,6 +166,18 @@ html[lang^="de"] #installer-journal .lk-hero-title {
 	box-shadow: 0 0 0 5px var(--us-ink);
 }
 
+/* The saved workflow becomes a horizontal rail at1000px. Its native 2px
+   outline plus5px offset was clipped by overflow at the top and inline start.
+   An existing8px spacing token contains that7px ring; scroll padding keeps
+   native snap alignment inside the same inset. Retain the15px scrollbar gap. */
+@media (max-width: 1000px) {
+	#tv-utility-page-v1 #exec-deck-nav {
+		padding-block-start: var(--proto-space-2);
+		padding-inline: var(--proto-space-2);
+		scroll-padding-inline: var(--proto-space-2);
+	}
+}
+
 /* Match the saved utility page's existing 600px hero-icon breakpoint. */
 @media (max-width: 600px) {
 	#tv-utility-page-v1 .lk-hero-cta-row > a.lk-btn-hero-ghost {
