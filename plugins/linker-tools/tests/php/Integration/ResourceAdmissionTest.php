@@ -400,6 +400,8 @@ final class ResourceAdmissionTest extends TestCase {
 
 	/** Reads and conversation writes never consume Genie/model-turn dimensions. */
 	public function test_policy_reads_writes_and_native_budget_exhaustion(): void {
+		$this->assertSame( 'draft_write', ResourcePolicy::action( '/linker-ai/v1/genie/draft', 'POST' ) );
+		$this->assertSame( 'solution_save', ResourcePolicy::action( '/linker-ai/v1/genie/solution', 'POST' ) );
 		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversation', 'GET' ) );
 		$this->assertSame( '', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'GET' ) );
 		$this->assertSame( 'conversation_write', ResourcePolicy::action( '/linker-ai/v1/genie/conversations', 'POST', true ) );

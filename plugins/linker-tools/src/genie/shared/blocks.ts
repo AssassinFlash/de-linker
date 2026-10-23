@@ -37,3 +37,13 @@ export function idsOf( blocks: Block[], kind: 'cards' | 'compare' ): number[] {
 	}
 	return [];
 }
+
+/** Exact live product-card actions; history never creates replacement proofs. */
+export function proofsOf( blocks: Block[] ): Record< string, string > {
+	return Object.assign(
+		{},
+		...blocks
+			.filter( ( block ): block is CardsBlock => block.type === 'cards' )
+			.map( ( block ) => block.draft_proofs ?? {} )
+	);
+}
