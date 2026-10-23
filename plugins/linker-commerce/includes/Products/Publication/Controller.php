@@ -4,7 +4,9 @@
  *
  * @package Linker\Commerce
  */
+
 declare( strict_types = 1 );
+
 namespace Linker\Commerce\Products\Publication;
 
 use Linker\Commerce\Products\Publication;
@@ -14,20 +16,54 @@ use WP_Error;
 
 /** REST authentication uses native WordPress Application Passwords/capabilities. */
 final class Controller {
+	/** Register public permission reads and authenticated preparation writes. */
 	public function register_routes(): void {
-		foreach ( array( 'manifest' => 'GET', 'validate' => 'POST', 'identify' => 'POST', 'jobs/claim' => 'POST', 'jobs/ack' => 'POST' ) as $path => $method ) {
-			register_rest_route( 'linker/v1', '/publication/' . $path, array( 'methods' => $method, 'permission_callback' => str_starts_with( $path, 'jobs/' ) ? array( $this, 'worker_permission' ) : '__return_true', 'callback' => function ( WP_REST_Request $request ) use ( $path ): WP_REST_Response|WP_Error { return $this->dispatch( $path, $request ); } ) );
+		foreach ( array(
+			'manifest'   => 'GET',
+			'validate'   => 'POST',
+			'identify'   => 'POST',
+			'jobs/claim' => 'POST',
+			'jobs/ack'   => 'POST',
+		) as $path => $method ) {
+			register_rest_route(
+				'linker/v1',
+				'/publication/' . $path,
+				array(
+					'methods'             => $method,
+					'permission_callback' => str_starts_with( $path, 'jobs/' ) ? array( $this, 'worker_permission' ) : '__return_true',
+					'callback'            => function ( WP_REST_Request $request ) use ( $path ): WP_REST_Response|WP_Error {
+						return $this->dispatch( $path, $request );
+					},
+				)
+			);
 		}
 	}
 
+	/**
+	 * Reject scalar JSON as an empty request object without trusting stub narrowing.
+	 *
+	 * @param mixed $value Decoded JSON.
+	 * @return array<string,mixed>
+	 */
+	private static function json_object( mixed $value ): array {
+		return is_array( $value ) ? $value : array();
+	}
+
+	/** Use native WordPress capability authentication for build workers. */
 	public function worker_permission(): bool {
 		return current_user_can( 'manage_woocommerce' );
 	}
 
-	/** @return WP_REST_Response|WP_Error */
+	/**
+	 * Dispatch the minimal shared contract.
+	 *
+	 * @param string          $path Registered action.
+	 * @param WP_REST_Request $request Request.
+	 * @phpstan-param WP_REST_Request<array<string,mixed>> $request
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function dispatch( string $path, WP_REST_Request $request ): WP_REST_Response|WP_Error {
-		$body = $request->get_json_params();
-		$body = is_array( $body ) ? $body : array();
+		$body = self::json_object( $request->get_json_params() );
 		if ( 'manifest' === $path ) {
 			$data = Publication::manifest();
 		} elseif ( 'validate' === $path ) {
@@ -48,15 +84,33 @@ final class Controller {
 		return $response;
 	}
 
-	/** Exact caller-supplied labels only; no draft facts or complete model list. @param array<string,mixed> $body @return array<string,mixed>|WP_Error */
+	/**
+	 * Exact caller-supplied labels only; no draft facts or complete model list.
+	 *
+	 * @param array<string,mixed> $body Caller supplied labels.
+	 * @return array<string,mixed>|WP_Error
+	 */
 	private function identify( array $body ): array|WP_Error {
-		$labels = $body['models'] ?? null;
+		$labels = $body['models'] ?? array();
+		$text   = $body['text'] ?? null;
+		if ( null !== $text && ( ! is_string( $text ) || strlen( $text ) > 16000 || isset( $body['models'] ) ) ) {
+			return new WP_Error( 'invalid_models', 'Supply either model labels or bounded input text.', array( 'status' => 400 ) );
+		}
 		// Request-size bounds protect the public exact-match oracle, not product facts.
 		if ( ! is_array( $labels ) || ! array_is_list( $labels ) || count( $labels ) > 20 ) {
 			return new WP_Error( 'invalid_models', 'Supply at most 20 model labels.', array( 'status' => 400 ) );
 		}
 		$known = array();
-		$ids = get_posts( array( 'post_type' => 'product', 'post_status' => array( 'publish', 'draft', 'pending', 'private', 'future', 'trash' ), 'fields' => 'ids', 'posts_per_page' => -1, 'suppress_filters' => true ) );
+		$ids   = get_posts(
+			array(
+				'post_type'                   => 'product',
+				'post_status'                 => array( 'publish', 'draft', 'pending', 'private', 'future', 'trash' ),
+				'fields'                      => 'ids',
+				'posts_per_page'              => -1,
+				'suppress_filters'            => true,
+				'linker_publication_internal' => true,
+			)
+		);
 		foreach ( $ids as $id ) {
 			$terms = wp_get_object_terms( (int) $id, 'pa_model', array( 'fields' => 'names' ) );
 			if ( is_wp_error( $terms ) ) {
@@ -69,13 +123,25 @@ final class Controller {
 				}
 			}
 		}
+		if ( is_string( $text ) ) {
+			$normalized = preg_replace( '/\s+/u', ' ', $text );
+			foreach ( array_keys( $known ) as $label ) {
+				$pattern = '/(?<![\pL\pN])' . preg_quote( $label, '/' ) . '(?![\pL\pN])/iu';
+				if ( is_string( $normalized ) && 1 === preg_match( $pattern, $normalized ) ) {
+					$labels[] = $label;
+				}
+			}
+		}
 		$result = array();
 		foreach ( $labels as $label ) {
 			if ( ! is_string( $label ) || strlen( $label ) > 200 || '' === trim( $label ) ) {
 				return new WP_Error( 'invalid_models', 'Invalid model label.', array( 'status' => 400 ) );
 			}
-			$id = $known[ strtolower( trim( $label ) ) ] ?? 0;
-			$item = array( 'model' => $label, 'status' => 0 === $id ? 'unknown' : ( self::published( $id ) ? 'published' : 'unavailable' ) );
+			$id   = $known[ strtolower( trim( $label ) ) ] ?? 0;
+			$item = array(
+				'model'  => $label,
+				'status' => 0 === $id ? 'unknown' : ( self::published( $id ) ? 'published' : 'unavailable' ),
+			);
 			if ( 'published' === $item['status'] ) {
 				$item['product_id'] = Publication::canonical_id( $id );
 			}
@@ -84,6 +150,11 @@ final class Controller {
 		return array( 'models' => $result );
 	}
 
+	/**
+	 * Current source and locale permission.
+	 *
+	 * @param int $id Product ID.
+	 */
 	private static function published( int $id ): bool {
 		return Publication::is_published( $id );
 	}
