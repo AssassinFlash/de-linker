@@ -70,8 +70,11 @@ checks above hold. Account success keeps its existing sentence.
 The earlier shared failure path treated a confirmed withdrawal and an
 unreadable authority alike. The revised status contract distinguishes a
 confirmed source change (HTTP 409) from a failed authority read (HTTP 503).
-The visitor's message remains available in either case; no unverified reply
-is released or saved as the new conversation answer.
+The visitor's message remains available in either case; the current response
+is not released after its permission check fails. A reply that passed the
+pre-record check remains an unsigned historical snapshot if permission
+changes during the subsequent record operation; it receives no live action
+token, and assistant history is excluded from the next turn's fact sources.
 
 The initial wording was the existing temporary-unavailability sentence for
 both states. Adversarial reading found that this hid an actual withdrawal
