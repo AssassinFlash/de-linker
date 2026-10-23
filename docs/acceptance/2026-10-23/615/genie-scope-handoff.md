@@ -6,6 +6,14 @@ was performed in this worktree. The captured source snapshot has 85 ordinary
 published products and 142 documents. These are captured local Woo facts, not a
 claim about the current live site.
 
+**The corpus measurements below are a replay of the older immutable cached
+index. They are not coverage/readiness results for the new normal-worker build.**
+The root integration session reports that its new build has 10,894 chunks from
+142 cached documents, while this replay uses 11,413 associated older chunks.
+New Woo-derived metadata and chunk boundaries can differ. Recheck coverage,
+scope proofs, loaded versions and acknowledgement from that actual build when
+it finishes; these replay counts cannot replace that acceptance.
+
 The final runtime scope source is `e08a60c9`, including the two original-table
 axis review fixes after `2c309da6`. Local verification:
 
