@@ -1,0 +1,32 @@
+{"mode":"normal_finish","calls":1,"accepted":1,"releases":1,"remainingCaptures":0}
+✔ plan preview normal_finish (121.195875ms)
+{"mode":"escape","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview escape (12.157667ms)
+{"mode":"blur","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview blur (9.79825ms)
+{"mode":"pointercancel","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview pointercancel (9.305958ms)
+{"mode":"lostpointercapture","calls":0,"accepted":0,"releases":0,"remainingCaptures":0}
+✔ plan preview lostpointercapture (8.415708ms)
+{"mode":"disabled","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview disabled (9.923ms)
+{"mode":"geometry_render","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview geometry_render (9.32425ms)
+{"mode":"geometry_before_render","calls":1,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview geometry_before_render (8.216792ms)
+{"mode":"pan_tool","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview pan_tool (10.398167ms)
+{"mode":"zoom","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview zoom (8.777542ms)
+{"mode":"fit","calls":0,"accepted":0,"releases":1,"remainingCaptures":0}
+✔ plan preview fit (11.277959ms)
+{"mode":"unmount","calls":0,"accepted":0,"releases":0,"remainingCaptures":1}
+✔ plan preview unmount (6.867375ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 783.317375

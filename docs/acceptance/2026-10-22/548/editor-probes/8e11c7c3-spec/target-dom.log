@@ -1,0 +1,63 @@
+✔ only a same-site reviewed scene asset can become an executable retry URL (71.579ms)
+✔ several pending creations require selection and an explicit retry of the exact bytes (825.65425ms)
+✔ a native-granted prior scope restores exact creations without automatically sending or clearing another scope (23.645292ms)
+✔ measured roof intake preserves decimal locale, explicit source and one command (845.931792ms)
+✔ invalid staged properties stay visible until corrected or cancelled (249.220417ms)
+✔ module exclusion updates the same plan, object selection and derived quantity (85.757959ms)
+✔ a late layout check is retained as previous output and cannot select current objects (126.712ms)
+✔ manual roof intake marks the unsupported vertical boundary at its field (87.445958ms)
+✔ 3D chunk failure and retry preserve unapplied raw properties and the plan path (1350.60725ms)
+✔ unknown imports are explicitly selected and retried with frozen bytes before durable selection clears recovery (1496.707542ms)
+✔ a new file needs explicit mapping and provenance, and closing is guarded until recovery is durable (384.732042ms)
+✔ close and reload are guarded while selected file bytes are still being read (21.674667ms)
+✔ typed input refusal permits correction despite failed local writes and cleanup (160.675917ms)
+✔ a refused recovery is removed before slow cleanup and cannot regain false durable admission (37.47675ms)
+✔ confirmed server selection releases the source workflow despite unavailable browser recovery (376.051917ms)
+✔ selection notices follow current draft undo and redo independently of the saved baseline (196.91875ms)
+✔ a different native scope confirmed during the recovery write prevents an old upload dispatch (19.504083ms)
+✔ authentication refusal rechecks native identity even after the client invalidates its scope (19.102167ms)
+✔ same-scope verification does not strand delayed recovery hydration (12.674583ms)
+✔ a rejected replacement file cannot leave an older file available for import (36.288584ms)
+✔ an interactive result is revealed once; background reads and interval paging keep user focus (34.785ms)
+✔ same-identity verification consumes deferred completion before history can replay it (74.352334ms)
+▶ native withdrawal between render and effects prevents cached-result and error focus
+  ✔ preview (7.81375ms)
+  ✔ error (12.987541ms)
+✔ native withdrawal between render and effects prevents cached-result and error focus (21.233208ms)
+✔ persistent profile authentication failure rechecks once and waits for an explicit session retry (15.86175ms)
+✔ a native-granted previous import namespace is retained through explicit retry and exact cleanup (27.562417ms)
+✔ frozen source settings explain fixed start intervals without changing the command (790.2305ms)
+✔ frozen source settings explain fractional end intervals and energy values without changing the command (75.841667ms)
+✔ frozen source settings explain separate boundaries with repeated-time columns without changing the command (8.578917ms)
+✔ a transient authentication refusal recovers native reads without replaying a mutation (1564.878708ms)
+✔ recovery 401 has bounded verification and a working explicit retry (153.696625ms)
+✔ recovery 503 has bounded verification and a working explicit retry (37.304541ms)
+✔ prior scope: now-saved edits do not reappear as unsaved (1470.589ms)
+✔ prior scope: uncertain intent remains reviewable (82.119542ms)
+✔ current scope: now-saved edits do not reappear as unsaved (90.746709ms)
+✔ current scope: uncertain intent remains reviewable (61.061959ms)
+✔ clean-prior scope: now-saved edits do not reappear as unsaved (68.408959ms)
+✔ a deferred close refused during same-scope verification remains retryable (1779.8865ms)
+✔ same identity rechecks retain delayed edits and invalid raw numeric text (1904.2505ms)
+✔ failed storage and failed identity refresh preserve hidden edits until same owner returns (107.643542ms)
+✔ a confirmed different identity removes the former editor and does not grant its project (55.702709ms)
+✔ the actual project bar is observed after asynchronous draft opening and on resize (40.372541ms)
+✔ creation authentication failure rechecks once and explicitly retries the exact intent (40.856667ms)
+▶ a former identity's delayed creation cannot dispatch or restore cache and navigation
+  ✔ write (27.293167ms)
+  ✔ clear (21.765917ms)
+✔ a former identity's delayed creation cannot dispatch or restore cache and navigation (49.710791ms)
+▶ native confirmation fences pending creation, revision and navigation before React commits
+  ✔ write (24.956625ms)
+  ✔ clear (41.536333ms)
+  ✔ revise (70.484666ms)
+  ✔ close (67.739125ms)
+✔ native confirmation fences pending creation, revision and navigation before React commits (205.678416ms)
+ℹ tests 52
+ℹ suites 0
+ℹ pass 52
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4095.322166

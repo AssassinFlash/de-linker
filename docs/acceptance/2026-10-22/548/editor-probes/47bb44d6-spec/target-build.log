@@ -1,0 +1,31 @@
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 233 modules transformed.
+rendering chunks...
+computing gzip size...
+../../plugins/linker-tools/build/planner/vite-manifest.json                       0.90 kB │ gzip:   0.27 kB
+../../plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js      0.91 kB │ gzip:   0.51 kB
+../../plugins/linker-tools/build/planner/assets/planner.js                        1.25 kB │ gzip:   0.67 kB
+../../plugins/linker-tools/build/planner/assets/planner-core-DWaGfCpX.js        555.59 kB │ gzip: 160.88 kB
+../../plugins/linker-tools/build/planner/assets/SceneViewport-uF-OdQNM.js     1,547.12 kB │ gzip: 416.56 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 247ms
+
+> @linker/planner@0.1.0 build:check
+> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs
+
+Planner build matches its sources.
+✔ a lazy built chunk never executes the versioned WordPress entry again (140.545041ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 312.583292

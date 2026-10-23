@@ -1,0 +1,13 @@
+(node:20163) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./tests/standards-scene-cache-loader.mjs", pathToFileURL("./")); register("./tests/standards-scene-cache-loader.mjs", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"evaluated":["file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-8e11-0p8lmmlo/apps/planner/src/components/design/SceneViewport.tsx","file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-8e11-0p8lmmlo/plugins/linker-tools/build/planner/assets/SceneViewport-BQc4p_xn.js?planner_retry=1"],"pendingIdentityReused":true,"successfulPromiseReused":true,"missingMetadataInventedNoURL":true}
+✔ rejected module evicts pending, explicit retry changes identity, inflight and success are reused (3.514167ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 89.23725

@@ -1,0 +1,13 @@
+✔ only a same-site reviewed scene asset can become an executable retry URL (70.957042ms)
+✔ independent URL boundary: canonical sibling/native-missing accepted and20 foreign variants refused (6.665459ms)
+✔ contract: empty delimiter ? must not survive as executable metadata (1.099958ms)
+✔ contract: empty delimiter # must not survive as executable metadata (0.843542ms)
+✔ contract: empty delimiter ?# must not survive as executable metadata (0.463083ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 808.968584

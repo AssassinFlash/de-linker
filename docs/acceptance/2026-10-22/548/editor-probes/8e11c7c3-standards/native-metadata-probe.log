@@ -1,0 +1,10 @@
+{"input":"assets\/SceneViewport-ab_CD-12.js","scene":"https:\/\/fixture.invalid\/wp-content\/plugins\/linker-tools\/build\/planner\/assets\/SceneViewport-ab_CD-12.js","accepted":true}
+{"input":null,"scene":null,"accepted":false}
+{"input":17,"scene":null,"accepted":false}
+{"input":"assets\/SceneViewport-hash.js?x=1","scene":null,"accepted":false}
+{"input":"assets\/SceneViewport-hash.js#fragment","scene":null,"accepted":false}
+{"input":"assets\/..\/SceneViewport-hash.js","scene":null,"accepted":false}
+{"input":"assets\/SceneViewport-%2f.js","scene":null,"accepted":false}
+{"input":"https:\/\/foreign.invalid\/SceneViewport-hash.js","scene":null,"accepted":false}
+{"input":"assets\/SceneViewport-hash.mjs","scene":null,"accepted":false}
+{"input":"assets\/SceneViewport-.js","scene":null,"accepted":false}
