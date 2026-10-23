@@ -104,7 +104,7 @@ def _table_columns(
     positions = {chunk.id: i for i, chunk in enumerate(chunks)}
     groups: dict[tuple[str, str], list[Chunk]] = {}
     for chunk in chunks:
-        if chunk.kind == "table" and chunk.source_table and chunk.preceding_text:
+        if chunk.kind == "table" and chunk.source_table:
             groups.setdefault((chunk.doc_sha256, chunk.source_table), []).append(chunk)
     labels_to_ids = {model.casefold(): pid for pid, model in models.items() if model}
     output: dict[str, TableColumns] = {}
@@ -127,6 +127,7 @@ def _table_columns(
                 for chunk in preceding
             )
         ):
+            conflicts.update(part.id for part in parts)
             continue
         excluded = [part for part in parts if observed[part.id][1]]
         # An explicit component property is not a replacement model-column
@@ -134,8 +135,18 @@ def _table_columns(
         # indices can use the already-proven, complete current system columns.
         if excluded and (
             any(not pack_model_row(part.text) for part in excluded)
-            or any(not part.source_rows for part in parts)
+            or any(
+                not part.source_rows
+                or len(part.source_rows) != len(part.text.splitlines())
+                or part.source_rows != tuple(sorted(set(part.source_rows)))
+                or any(row < 0 for row in part.source_rows)
+                for part in parts
+            )
         ):
+            # This is a rejected TableItem, not merely absent column inheritance.
+            # Explicit current models in its first fragment must not bypass the
+            # group's failure through scope_proofs' direct passage branch.
+            conflicts.update(part.id for part in parts)
             continue
         text = "\n".join(chunk.text for chunk in preceding)
         headings = list(TECHNICAL_DATA.finditer(text))
@@ -150,13 +161,15 @@ def _table_columns(
         )
         labels = {label for _, label, _ in written}
         if (
-            len(labels) < 2
-            or any(statuses.get(label) != "published" for label in labels)
+            any(statuses.get(label) != "published" for label in labels)
             or not labels.issubset(labels_to_ids)
             # This is an explicit model-column axis; unresolved codes here are
             # model candidates even when their family is absent from Woo.
             or _unknown_models(tail, labels, shapes, section=True)
         ):
+            conflicts.update(part.id for part in parts)
+            continue
+        if len(labels) < 2:
             continue
         ordered = list(dict.fromkeys(label for _, label, _ in written))
         ids = [labels_to_ids[label] for label in ordered]
@@ -174,6 +187,7 @@ def _table_columns(
             or len(line.split("|")) - 2 != len(ids) + 1
             for line in rows
         ):
+            conflicts.update(part.id for part in parts)
             continue
         # A native table's own model axis cannot be overwritten by the preceding
         # text. Equal sets do not prove equal column order. Refuse the complete
