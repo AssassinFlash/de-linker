@@ -371,3 +371,119 @@ body[data-page]:is(
 	#tv-header-v2 {
 	background: rgba(21, 53, 47, 0.8);
 }
+
+/* EPC media: keep all native descriptions readable without enhancement.
+ * In the enhanced grid, the longest real pane reserves the height, including
+ * long German copy. Inactive panes stay in layout and leave focus/reading.
+ */
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-content {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: center;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-slide {
+	visibility: hidden;
+	pointer-events: none;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-slide.active {
+	visibility: visible;
+	pointer-events: auto;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-pane {
+	display: flex;
+	grid-column: 1;
+	visibility: visible;
+	gap: var(--proto-space-4);
+}
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-content {
+	gap: var(--proto-space-7);
+}
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-media-wrap {
+	align-self: start;
+}
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-pagination {
+	display: none;
+}
+#tv-solutions-developers-v1 #sp-workbench.epc-media-ready .lk-sp-pane {
+	grid-row: 1;
+	visibility: hidden;
+	pointer-events: none;
+}
+#tv-solutions-developers-v1 #sp-workbench.epc-media-ready .lk-sp-pane.active {
+	visibility: visible;
+	pointer-events: auto;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-pagination {
+	flex-wrap: wrap;
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-media-tabs {
+	display: flex;
+	flex: 1;
+	gap: var(--proto-space-2);
+}
+/* The existing progress line is 3px; the independent native hit area follows
+ * the site's existing44px Utility hero control instead of a 3px click target.
+ */
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar {
+	position: relative;
+	display: block;
+	min-width: 44px;
+	min-height: 44px;
+	height: 44px;
+	padding: 0;
+	border: 0;
+	border-radius: var(--proto-radius-sm);
+	background: transparent;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar::before,
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar-fill {
+	position: absolute;
+	top: calc(50% - 1.5px);
+	right: 0;
+	bottom: auto;
+	left: 0;
+	height: 3px;
+	border-radius: var(--proto-radius-sm);
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar::before {
+	content: "";
+	background: var(--proto-line-journal);
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar.active::before,
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar:hover::before {
+	background: var(--proto-teal-700);
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle {
+	display: inline-flex;
+	flex: 0 0 44px;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	min-height: 44px;
+	padding: 0;
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-pill);
+	background: var(--proto-neutral-0);
+	color: var(--proto-teal-700);
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle:hover {
+	background: var(--proto-teal-50);
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle svg {
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-play,
+#tv-solutions-developers-v1 #sp-workbench .is-paused .epc-motion-pause {
+	display: none;
+}
+#tv-solutions-developers-v1 #sp-workbench .is-paused .epc-motion-play {
+	display: block;
+}
+#tv-solutions-developers-v1 #sp-workbench :is(.lk-sp-bar, .epc-motion-toggle):focus-visible {
+	outline: 2px solid var(--proto-teal-700);
+	outline-offset: 4px;
+}
