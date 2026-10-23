@@ -9,12 +9,13 @@ import {
 	mapPolygon,
 	newMapShapeCommand,
 	quantizeMapPosition,
-	readMapPolygon,
 } from "./mapDrawingGeometry.ts";
 import { readGeometry } from "./validateGeometry.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { parseDecimal } from "./decimal.ts";
 import { sameJson } from "./draft.ts";
+import { readMapDrawingBase } from "./mapDrawingBase.ts";
+import type { MapDrawingBase } from "./mapDrawingBase.ts";
 import policy from "../contracts/geometry-policy.json" with { type: "json" };
 
 export interface MapRoofFields {
@@ -29,19 +30,10 @@ export interface MapRoofFields {
 	readonly export: "unknown" | "permitted" | "prohibited";
 	readonly permission: boolean;
 }
-export interface MapRoofDraft {
+export interface MapRoofDraft extends MapDrawingBase {
 	readonly schema_version: 1;
-	readonly key: string;
-	readonly project_id: string;
-	readonly locale: string;
-	readonly before: GeometryDocument;
-	readonly phase: "collecting" | "staged";
-	readonly vertices: readonly Vec2[];
 	readonly height_reference_position: Vec2 | null;
 	readonly fields: MapRoofFields;
-	/** A prepared result protects the raw data across a crash between local
-	 * application and persistence. It is not proof the project was saved. */
-	readonly prepared_geometry: GeometryDocument | null;
 }
 
 export function startMapRoofDraft(
@@ -75,9 +67,6 @@ export function startMapRoofDraft(
 	});
 }
 
-const uuid =
-	/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
-
 /** Browser storage is untrusted. No coercion, SDK snapshots or unknown fields. */
 export function readMapRoofDraft(value: unknown): MapRoofDraft {
 	const row = readObject(value, 24);
@@ -97,38 +86,16 @@ export function readMapRoofDraft(value: unknown): MapRoofDraft {
 			]
 				.sort()
 				.join() ||
-		row.schema_version !== 1 ||
-		typeof row.key !== "string" ||
-		!uuid.test(row.key) ||
-		typeof row.project_id !== "string" ||
-		!/^[a-f0-9]{32}$/.test(row.project_id) ||
-		typeof row.locale !== "string" ||
-		row.locale.length > 64 ||
-		(row.phase !== "collecting" && row.phase !== "staged") ||
-		!Array.isArray(row.vertices) ||
-		row.vertices.length > policy.max_vertices
+		row.schema_version !== 1
 	)
 		throw new Error("map_drawing_recovery_invalid");
-	// Parsing retains the drawing's number convention across language changes.
-	new Intl.NumberFormat(row.locale);
-	const vertices = row.vertices.map((point) => {
-		const rounded = quantizeMapPosition(point);
-		if (JSON.stringify(rounded) !== JSON.stringify(point))
-			throw new Error("map_drawing_recovery_invalid");
-		return rounded;
-	});
-	if (
-		new Set(vertices.map((point) => JSON.stringify(point))).size !==
-		vertices.length
-	)
-		throw new Error("map_drawing_recovery_invalid");
-	if (row.phase === "staged") readMapPolygon(mapPolygon(vertices));
+	const base = readMapDrawingBase(row);
 	const reference =
 		row.height_reference_position === null
 			? null
 			: quantizeMapPosition(row.height_reference_position);
 	if (
-		(vertices.length > 0 && reference === null) ||
+		(base.vertices.length > 0 && reference === null) ||
 		(reference !== null &&
 			JSON.stringify(reference) !==
 				JSON.stringify(row.height_reference_position))
@@ -157,22 +124,11 @@ export function readMapRoofDraft(value: unknown): MapRoofDraft {
 		!["unknown", "permitted", "prohibited"].includes(fields.export as string)
 	)
 		throw new Error("map_drawing_recovery_invalid");
-	const before = readGeometry(row.before, policy);
-	drawingBridge(before);
 	const draft: MapRoofDraft = {
+		...base,
 		schema_version: 1,
-		key: row.key,
-		project_id: row.project_id,
-		locale: row.locale,
-		before,
-		phase: row.phase,
-		vertices,
 		height_reference_position: reference,
 		fields: fields as unknown as MapRoofFields,
-		prepared_geometry:
-			row.prepared_geometry === null
-				? null
-				: readGeometry(row.prepared_geometry, policy),
 	};
 	if (
 		draft.prepared_geometry &&

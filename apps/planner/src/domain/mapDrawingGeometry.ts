@@ -135,6 +135,18 @@ function targetObject(document: GeometryDocument, target: MapRingTarget) {
 	return { object: roof, roof, ring };
 }
 
+export function mapRingMetadata(
+	document: GeometryDocument,
+	target: MapRingTarget,
+) {
+	const { object, roof } = targetObject(document, target);
+	return {
+		name: object.name,
+		roof_id: roof.id,
+		source: document.sources.find((source) => source.id === object.source_id)!,
+	};
+}
+
 /** Freeze the whole frame: a hole's array index is not a permanent object ID. */
 export function bindMapRing(
 	document: GeometryDocument,

@@ -25,7 +25,7 @@ import { PlanViewport } from "./PlanViewport.tsx";
 import { GeometryIntake } from "./GeometryIntake.tsx";
 import { CoordinatesForm } from "./CoordinatesForm.tsx";
 import { LazySceneViewport } from "./LazySceneViewport.tsx";
-import { MapRoofWorkspace } from "./MapRoofWorkspace.tsx";
+import { MapDrawingWorkspace } from "./MapDrawingWorkspace.tsx";
 import type { MapCamera } from "./MapViewport.tsx";
 
 type FormKind =
@@ -287,7 +287,7 @@ export function DesignEditor({
 			<div className="lp-design-workspace">
 				<div className="lp-design-canvas">
 					{view === "map" ? (
-						<MapRoofWorkspace
+						<MapDrawingWorkspace
 							mapModuleUrl={mapModuleUrl}
 							geometry={geometry}
 							confirmedGeometry={confirmedGeometry}

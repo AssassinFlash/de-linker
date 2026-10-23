@@ -1,6 +1,6 @@
 import type { MapRoofDraft, MapRoofFields } from "../../domain/mapRoofDraft.ts";
-import { useEffect, useId, useRef } from "react";
-import { revealActionResult } from "../revealActionResult.ts";
+import { useId } from "react";
+import { useMapPropertyFeedback } from "./useMapPropertyFeedback.ts";
 import { Notice } from "../Notice.tsx";
 import { decimalSeparator, formatDecimal } from "../../domain/decimal.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -27,15 +27,8 @@ export function MapRoofProperties({
 	invalidField: string | null;
 	error: string | null;
 }) {
-	const form = useRef<HTMLFormElement>(null),
-		result = useRef<HTMLDivElement>(null),
-		errorId = useId();
-	useEffect(() => {
-		if (invalidField) {
-			const input = form.current?.elements.namedItem(invalidField);
-			if (input instanceof window.HTMLElement) revealActionResult(input);
-		} else if (error) revealActionResult(result.current);
-	}, [invalidField, error]);
+	const { form, result } = useMapPropertyFeedback(error, invalidField);
+	const errorId = useId();
 	const fieldInput = (
 		name: keyof Omit<MapRoofFields, "permission" | "export">,
 		label: string,
@@ -80,7 +73,7 @@ export function MapRoofProperties({
 	return (
 		<form
 			ref={form}
-			className="lp-drawing-properties"
+			className="lp-drawing-properties lp-focus-target"
 			id="lp-map-roof-properties"
 			onSubmit={(event) => {
 				event.preventDefault();

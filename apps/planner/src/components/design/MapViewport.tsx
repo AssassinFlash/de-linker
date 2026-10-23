@@ -534,7 +534,7 @@ export default function MapViewport({
 			</div>
 			<p className="lp-profile-help">
 				{__(
-					"The map displays your recorded geometry using the project's geographic reference. Roof dimensions and declared source accuracy remain unchanged.",
+					"The map, plan and 3D views use the same project geometry. Panning and zooming change the view. Boundary edits update the project when you apply them.",
 					"linker-tools",
 				)}
 			</p>

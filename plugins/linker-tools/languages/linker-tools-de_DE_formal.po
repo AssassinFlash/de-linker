@@ -4864,123 +4864,123 @@ msgstr "Oberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichte
 msgid "Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors."
 msgstr "Straßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:116
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:116
 msgid "The point or edit could not be accepted. Your previous drawing is still available."
 msgstr "Dieser Eckpunkt oder diese Änderung konnte nicht übernommen werden. Ihre vorherige Zeichnung ist weiterhin verfügbar."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:196
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:196
 msgid "Some roof or source details are missing or invalid. Review the roof properties and source permissions. Your entries have been kept."
 msgstr "Einige Angaben zur Dachfläche oder Quelle fehlen oder sind ungültig. Prüfen Sie die Dacheigenschaften und die Nutzungsberechtigungen der Quelle. Ihre Eingaben bleiben erhalten."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:240
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:240
 msgid "This roof boundary could not pass the geometry check. Its points remain available for correction."
 msgstr "Dieser Dachumriss hat die Geometrieprüfung nicht bestanden. Seine Eckpunkte bleiben zur Korrektur verfügbar."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:259
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:259
 msgid "The project changed before this roof could be added. The drawing has been kept."
 msgstr "Das Projekt wurde geändert, bevor die Dachfläche hinzugefügt werden konnte. Die Zeichnung bleibt erhalten."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:271
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:271
 msgid "The roof check or local save could not be completed. The drawing and its entered values remain available."
 msgstr "Die Dachprüfung oder das Speichern in diesem Browser konnte nicht abgeschlossen werden. Die Zeichnung und Ihre Eingaben sind weiterhin verfügbar."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:291
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:291
 msgid "Map roof drawing"
 msgstr "Dachfläche auf der Karte zeichnen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:294
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:294
 msgid "Draw a roof face"
 msgstr "Dachfläche zeichnen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:311
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:311
 msgid "Start roof drawing"
 msgstr "Zeichnung beginnen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:317
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:317
 msgid "The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views."
 msgstr "Aus Umriss und Dacheigenschaften entsteht eine bearbeitbare Dachfläche. Sie ist im Projekt in der Plan- und 3D-Ansicht verfügbar; ihre Quellenangaben und Nutzungsberechtigungen bleiben mit ihr verknüpft."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:322
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:322
 msgid "Checking saved drawings…"
 msgstr "Gespeicherte Zeichnungen werden geprüft…"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:329
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:329
 msgid "The browser recovery copy could not be updated. The drawing remains open in this tab. Retrying keeps a different version saved by another tab."
 msgstr "Die Wiederherstellungskopie in diesem Browser konnte nicht aktualisiert werden. Die Zeichnung bleibt in diesem Tab geöffnet. Eine abweichende, in einem anderen Tab gespeicherte Fassung bleibt bei einem erneuten Speicherversuch erhalten."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:333
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:333
 msgid "Saved drawings could not be read from this browser. Retry to check for an unfinished drawing."
 msgstr "Gespeicherte Zeichnungen konnten in diesem Browser nicht gelesen werden. Versuchen Sie es erneut, um nach einer unvollständigen Zeichnung zu suchen."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:345
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:345
 msgid "Retry local save"
 msgstr "Erneut im Browser speichern"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:353
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:353
 msgid "Save as separate drawing"
 msgstr "Als separate Zeichnung speichern"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:364
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:364
 msgid "Retry reading saved drawings"
 msgstr "Gespeicherte Zeichnungen erneut laden"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:375
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:375
 msgid "Unfinished roof drawing"
 msgstr "Unvollständige Dachzeichnung"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:378 ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:404
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:378 ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:404
 msgid "Recorded corners: %d"
 msgstr "Erfasste Eckpunkte: %d"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:389
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:389
 msgid "Open saved drawing"
 msgstr "Gespeicherte Zeichnung öffnen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:399
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:399
 msgid "Checking roof geometry…"
 msgstr "Dachgeometrie wird geprüft…"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:401
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:401
 msgid "Saving drawing in this browser…"
 msgstr "Zeichnung wird in diesem Browser gespeichert…"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:409
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:409
 msgid "Roof added to the project draft. Save project stores it with the project."
 msgstr "Die Dachfläche wurde dem Projektentwurf hinzugefügt. Mit „Projekt speichern“ wird sie im Projekt gespeichert."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:413
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:413
 msgid "Drawing paused and retained in this browser."
 msgstr "Zeichnung pausiert und in diesem Browser gespeichert."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:420
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:420
 msgid "The project geometry has changed since this drawing began. The original drawing is retained; it cannot be applied to this changed geometry."
 msgstr "Die Projektgeometrie wurde seit Beginn dieser Zeichnung geändert. Die ursprüngliche Zeichnung bleibt erhalten und kann nicht auf die geänderte Geometrie angewendet werden."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:429
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:429
 msgid "Each map click records one corner. Panning and zooming keep the recorded points. At least three corners are needed before closing the outline."
 msgstr "Ein Kartenklick erfasst einen Eckpunkt. Beim Verschieben und Zoomen bleiben die erfassten Punkte erhalten. Zum Schließen des Umrisses sind mindestens drei Eckpunkte erforderlich."
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:447
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:447
 msgid "Close outline and review"
 msgstr "Umriss schließen und prüfen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:460
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:460
 msgid "Remove last corner"
 msgstr "Letzten Eckpunkt entfernen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:482
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:482
 msgid "Pause drawing"
 msgstr "Zeichnung pausieren"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:492
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:492
 msgid "Resume drawing"
 msgstr "Zeichnung fortsetzen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:505
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:505
 msgid "Close drawing preview"
 msgstr "Zeichnungsvorschau schließen"
 
-#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRoofWorkspace.tsx:506
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:506
 msgid "Discard drawing"
 msgstr "Zeichnung verwerfen"
 
@@ -5039,3 +5039,123 @@ msgstr "Höhenbezugspunkt"
 #: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:622
 msgid "Add corner at map centre"
 msgstr "Eckpunkt in der Kartenmitte hinzufügen"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRingSelector.tsx:28
+msgid "Select a roof face, obstacle or keep-out area on the map or in the object list. For a roof face, choose its outer boundary or an existing opening."
+msgstr "Wählen Sie auf der Karte oder in der Objektliste eine Dachfläche, ein Hindernis oder eine Sperrfläche aus. Bei einer Dachfläche können Sie den äußeren Umriss oder eine vorhandene Dachöffnung wählen."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRingSelector.tsx:38
+msgid "Boundary to edit"
+msgstr "Zu bearbeitender Umriss"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRingSelector.tsx:62
+msgid "Edit boundary on map"
+msgstr "Umriss auf der Karte bearbeiten"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:582 ../../apps/planner/src/components/design/MapRingProperties.tsx:40
+msgid "Boundary properties"
+msgstr "Eigenschaften des Umrisses"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRingProperties.tsx:46
+msgid "Drag a corner to move it, or use an edge midpoint to add a corner. The roof plane, other boundaries and recorded source details stay unchanged."
+msgstr "Verschieben Sie einen Eckpunkt durch Ziehen oder fügen Sie an einem Kantenmittelpunkt einen Eckpunkt hinzu. Dachebene, andere Umrisse und erfasste Quellenangaben bleiben unverändert."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRingProperties.tsx:86
+msgid "I have checked that the recorded source and permissions cover these boundary edits."
+msgstr "Ich habe geprüft, dass die erfasste Quelle und die Nutzungsberechtigungen diese Änderungen am Umriss abdecken."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRingProperties.tsx:102
+msgid "Check and apply changes"
+msgstr "Änderungen prüfen und übernehmen"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapRingProperties.tsx:108
+msgid "The geometry check does not verify measurements or source permissions. Your confirmation does not change the recorded export permission. If the source or permissions do not cover your changes, pause the drawing and review the project's source details."
+msgstr "Die Geometrieprüfung bestätigt weder Messdaten noch Nutzungsberechtigungen. Ihre Bestätigung ändert die erfasste Berechtigung zum Export der Geometrie nicht. Wenn die Quelle oder die Berechtigungen Ihre Änderungen nicht abdecken, pausieren Sie die Zeichnung und prüfen Sie die Quellenangaben im Projekt."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:119
+msgid "This boundary cannot be edited on the map. Numeric properties remain available."
+msgstr "Dieser Umriss kann auf der Karte nicht bearbeitet werden. Die numerischen Eigenschaften bleiben verfügbar."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:223
+msgid "Review the boundary and its recorded source details. Your edits have been kept."
+msgstr "Prüfen Sie den Umriss und die dazu erfassten Quellenangaben. Ihre Änderungen bleiben erhalten."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:296
+msgid "The geometry check could not validate this boundary. Your edits remain available for correction."
+msgstr "Die Geometrieprüfung für diesen Umriss war nicht erfolgreich. Ihre Änderungen bleiben zur Korrektur verfügbar."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:316
+msgid "The project changed before this boundary edit could be applied. Your edit has been kept."
+msgstr "Das Projekt wurde geändert, bevor die Änderung am Umriss übernommen werden konnte. Ihre Änderungen bleiben erhalten."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:334
+msgid "The boundary check or browser save could not be completed. Your edits remain available."
+msgstr "Die Prüfung des Umrisses oder das Speichern in diesem Browser konnte nicht abgeschlossen werden. Ihre Änderungen sind weiterhin verfügbar."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:359
+msgid "Checking boundary geometry…"
+msgstr "Geometrie des Umrisses wird geprüft…"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:375 ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:438
+msgid "The boundary is unchanged. No project change was made."
+msgstr "Der Umriss ist unverändert. Im Projekt wurde nichts geändert."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:377
+msgid "Boundary changes applied to the project draft. Choose Save project to save them."
+msgstr "Die Änderungen am Umriss wurden in den Projektentwurf übernommen. Mit „Projekt speichern“ werden sie im Projekt gespeichert."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:387
+msgid "Map drawing"
+msgstr "Zeichnen auf der Karte"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:392
+msgid "Edit an existing boundary"
+msgstr "Vorhandenen Umriss bearbeiten"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapDrawingWorkspace.tsx:414
+msgid "The roof plane stays fixed while you edit this boundary. Applied changes appear in this project's map, plan and 3D views."
+msgstr "Die Dachebene bleibt beim Bearbeiten dieses Umrisses unverändert. Übernommene Änderungen erscheinen in der Karten-, Plan- und 3D-Ansicht dieses Projekts."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:537
+msgid "The map, plan and 3D views use the same project geometry. Panning and zooming change the view. Boundary edits update the project when you apply them."
+msgstr "Karten-, Plan- und 3D-Ansicht verwenden dieselbe Projektgeometrie. Verschieben und Zoomen ändern nur die Ansicht. Änderungen am Umriss wirken sich erst nach dem Übernehmen auf das Projekt aus."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/mapDrawingLabels.ts:9
+msgid "Roof boundary"
+msgstr "Dachrand"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/mapDrawingLabels.ts:11
+msgid "Opening %d"
+msgstr "Dachöffnung %d"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/mapDrawingLabels.ts:13
+msgid "Obstacle footprint"
+msgstr "Grundriss des Hindernisses"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-ring-ui/COPY-REVIEW.md
+#: build/planner/assets/planner.js ../../apps/planner/src/components/design/mapDrawingLabels.ts:15
+msgid "Keep-out boundary"
+msgstr "Umriss der Sperrfläche"

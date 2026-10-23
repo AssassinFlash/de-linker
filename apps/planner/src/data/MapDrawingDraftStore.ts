@@ -1,13 +1,13 @@
 /** Mutable local drawing journal. Exact compare-and-swap prevents a stale tab
  * from overwriting or deleting a newer buffer. It never grants project access. */
-import { readMapRoofDraft } from "../domain/mapRoofDraft.ts";
-import type { MapRoofDraft } from "../domain/mapRoofDraft.ts";
+import { readMapDrawingDraft } from "../domain/mapDrawingDraft.ts";
+import type { MapDrawingDraft } from "../domain/mapDrawingDraft.ts";
 import { readObject } from "./readProtocol.ts";
 
-export interface StoredMapRoofDraft {
+export interface StoredMapDrawingDraft {
 	readonly scope: string;
 	readonly body: string;
-	readonly drawing: MapRoofDraft;
+	readonly drawing: MapDrawingDraft;
 }
 // Local resource policy, separate from survey precision and server capacity.
 const DATABASE = "linker-planner-map-drawings-v1",
@@ -20,12 +20,12 @@ function scopeKey(scope: string) {
 	if (!/^[a-f0-9]{64}$/.test(scope))
 		throw new Error("map_drawing_recovery_invalid");
 }
-function decode(body: string): MapRoofDraft {
+function decode(body: string): MapDrawingDraft {
 	if (size(body) > MAX_RECORD_BYTES)
 		throw new Error("map_drawing_recovery_limit");
-	return readMapRoofDraft(JSON.parse(body));
+	return readMapDrawingDraft(JSON.parse(body));
 }
-function row(value: unknown, scope: string): StoredMapRoofDraft {
+function row(value: unknown, scope: string): StoredMapDrawingDraft {
 	const record = readObject(value, 4);
 	if (
 		record.schema_version !== 1 ||
@@ -41,10 +41,10 @@ function row(value: unknown, scope: string): StoredMapRoofDraft {
 function scan(
 	store: IDBObjectStore,
 	scope: string,
-	done: (rows: StoredMapRoofDraft[]) => void,
+	done: (rows: StoredMapDrawingDraft[]) => void,
 	fail: (error: unknown) => void,
 ) {
-	const rows: StoredMapRoofDraft[] = [];
+	const rows: StoredMapDrawingDraft[] = [];
 	let bytes = 0;
 	const request = store.index("scope").openCursor(scope);
 	request.onerror = () => fail(new Error("map_drawing_recovery_unavailable"));
@@ -67,7 +67,7 @@ function scan(
 	};
 }
 
-export class MapRoofDraftStore {
+export class MapDrawingDraftStore {
 	private connection: Promise<IDBDatabase> | null = null;
 	private open(): Promise<IDBDatabase> {
 		if (this.connection) return this.connection;
@@ -110,18 +110,18 @@ export class MapRoofDraftStore {
 	async list(
 		scopes: readonly string[],
 		projectId: string,
-	): Promise<readonly StoredMapRoofDraft[]> {
+	): Promise<readonly StoredMapDrawingDraft[]> {
 		if (!/^[a-f0-9]{32}$/.test(projectId))
 			throw new Error("map_drawing_recovery_invalid");
 		scopes.forEach(scopeKey);
 		const db = await this.open(),
-			results: StoredMapRoofDraft[] = [];
+			results: StoredMapDrawingDraft[] = [];
 		let total = 0;
 		for (const scope of new Set(scopes)) {
-			const rows = await new Promise<StoredMapRoofDraft[]>(
+			const rows = await new Promise<StoredMapDrawingDraft[]>(
 				(resolve, reject) => {
 					const transaction = db.transaction(STORE, "readonly");
-					let rows: StoredMapRoofDraft[] | null = null;
+					let rows: StoredMapDrawingDraft[] | null = null;
 					transaction.oncomplete = () =>
 						rows === null
 							? reject(new Error("map_drawing_recovery_unavailable"))
@@ -199,7 +199,7 @@ export class MapRoofDraftStore {
 	}
 	private async mutate(
 		scope: string,
-		apply: (rows: StoredMapRoofDraft[], store: IDBObjectStore) => void,
+		apply: (rows: StoredMapDrawingDraft[], store: IDBObjectStore) => void,
 	): Promise<void> {
 		const db = await this.open();
 		await new Promise<void>((resolve, reject) => {
@@ -229,4 +229,4 @@ export class MapRoofDraftStore {
 	}
 }
 
-export const mapRoofDraftStore = new MapRoofDraftStore();
+export const mapDrawingDraftStore = new MapDrawingDraftStore();

@@ -1,21 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import type { ComponentProps } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
+import { appendMapRoofVertex } from "../../domain/mapRoofDraft.ts";
+import type { MapRoofFields } from "../../domain/mapRoofDraft.ts";
+import type { MapDrawingDraft } from "../../domain/mapDrawingDraft.ts";
 import {
-	appendMapRoofVertex,
-	mapRoofDraftCommand,
-} from "../../domain/mapRoofDraft.ts";
-import type { MapRoofDraft, MapRoofFields } from "../../domain/mapRoofDraft.ts";
+	editMapDrawingVertex,
+	mapDrawingDraftCommand,
+} from "../../domain/mapDrawingDraft.ts";
 import {
 	drawingBridge,
 	mapPolygon,
 	readMapPolygon,
+	mapRingMetadata,
 } from "../../domain/mapDrawingGeometry.ts";
-import { reconcileMapVertex } from "../../domain/mapRingEdit.ts";
 import { applyGeometryCommand } from "../../domain/geometryCommands.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import { sameJson } from "../../domain/draft.ts";
-import { useMapRoofDraft } from "../../data/useMapRoofDraft.ts";
+import { useMapDrawingDraft } from "../../data/useMapDrawingDraft.ts";
 import type { MapInteraction } from "../../data/mapInteraction.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { ApiError } from "../../data/protocol.ts";
@@ -27,8 +29,11 @@ import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { LazyMapViewport } from "./LazyMapViewport.tsx";
 import { MapRoofProperties } from "./MapRoofProperties.tsx";
+import { MapRingProperties } from "./MapRingProperties.tsx";
+import { MapRingSelector } from "./MapRingSelector.tsx";
+import { mapDrawingName } from "./mapDrawingLabels.ts";
 
-export function MapRoofWorkspace({
+export function MapDrawingWorkspace({
 	geometry,
 	confirmedGeometry,
 	projectId,
@@ -54,7 +59,7 @@ export function MapRoofWorkspace({
 	commit: (command: GeometryCommand) => boolean;
 	onActivity: (active: boolean) => void;
 }) {
-	const journal = useMapRoofDraft({
+	const journal = useMapDrawingDraft({
 		projectId,
 		geometry,
 		confirmedGeometry,
@@ -68,6 +73,7 @@ export function MapRoofWorkspace({
 	const [error, setError] = useState<string | null>(null),
 		[invalidField, setInvalidField] = useState<string | null>(null),
 		[busy, setBusy] = useState(false),
+		[unchanged, setUnchanged] = useState(false),
 		[completedApplications, setCompletedApplications] = useState(0);
 	const flight = useRef<AbortController | null>(null),
 		mounted = useRef(true),
@@ -97,17 +103,37 @@ export function MapRoofWorkspace({
 	useEffect(() => {
 		if (completedApplications > 0) revealActionResult(result.current);
 	}, [completedApplications]);
-	function change(next: MapRoofDraft) {
+	useEffect(
+		() => setUnchanged(false),
+		[geometry, projectId, session.query_scope, mapProps.selected],
+	);
+	function begin(input: Parameters<typeof journal.begin>[0]) {
+		setError(null);
+		setInvalidField(null);
+		setUnchanged(false);
+		try {
+			journal.begin(input);
+		} catch {
+			setError(
+				__(
+					"This boundary cannot be edited on the map. Numeric properties remain available.",
+					"linker-tools",
+				),
+			);
+		}
+	}
+	function change(next: MapDrawingDraft) {
 		if (busy || !client.isCurrentScope(session.query_scope)) return;
 		setError(null);
 		setInvalidField(null);
+		setUnchanged(false);
 		void journal.update(next).catch(() => undefined);
 	}
 	function field<K extends keyof MapRoofFields>(
 		name: K,
 		value: MapRoofFields[K],
 	) {
-		if (drawing)
+		if (drawing?.schema_version === 1)
 			change({
 				...drawing,
 				prepared_geometry: null,
@@ -128,33 +154,29 @@ export function MapRoofWorkspace({
 					key: drawing.key,
 					phase: drawing.phase,
 					vertices: drawing.vertices,
-					referencePosition: drawing.height_reference_position,
+					referencePosition:
+						drawing.schema_version === 1
+							? drawing.height_reference_position
+							: null,
 					append(point) {
 						try {
-							change(appendMapRoofVertex(journal.latest.current!, point));
+							const value = journal.latest.current;
+							if (value?.schema_version !== 1)
+								throw new Error("unexpected_append");
+							change(appendMapRoofVertex(value, point));
 						} catch {
 							inputFailure();
 						}
 					},
 					transaction(transaction) {
 						try {
-							const value = journal.latest.current!;
-							let ring = { geographic: value.vertices, metric: value.vertices };
+							let value = journal.latest.current!;
 							for (const step of transaction.steps) {
 								if (step.action === "draw")
 									throw new Error("unexpected_draw_transaction");
-								ring = reconcileMapVertex(
-									ring,
-									readMapPolygon(step.geometry),
-									step.action,
-									(point) => point,
-								);
+								value = editMapDrawingVertex(value, step.geometry, step.action);
 							}
-							change({
-								...value,
-								vertices: ring.geographic,
-								prepared_geometry: null,
-							});
+							change(value);
 						} catch {
 							inputFailure();
 							void journal.pause();
@@ -190,22 +212,27 @@ export function MapRoofWorkspace({
 		}
 		let command: GeometryCommand, result: GeometryDocument;
 		try {
-			command = mapRoofDraftCommand(value);
+			command = mapDrawingDraftCommand(value);
 			result = applyGeometryCommand(value.before, command);
 		} catch (cause) {
 			const field = (cause as { field?: unknown } | null)?.field;
 			setInvalidField(typeof field === "string" ? field : null);
 			setError(
-				__(
-					"Some roof or source details are missing or invalid. Review the roof properties and source permissions. Your entries have been kept.",
-					"linker-tools",
-				),
+				value.schema_version === 2
+					? __(
+							"Review the boundary and its recorded source details. Your edits have been kept.",
+							"linker-tools",
+						)
+					: __(
+							"Some roof or source details are missing or invalid. Review the roof properties and source permissions. Your entries have been kept.",
+							"linker-tools",
+						),
 			);
 			flight.current = null;
 			setBusy(false);
 			return;
 		}
-		const admitted = () =>
+		const admitted = (expected: MapDrawingDraft = value) =>
 			mounted.current &&
 			flight.current === controller &&
 			!controller.signal.aborted &&
@@ -213,68 +240,104 @@ export function MapRoofWorkspace({
 			current.current.active &&
 			current.current.drawing?.key === value.key &&
 			sameJson(current.current.geometry, value.before) &&
-			sameJson(journal.latest.current, value);
+			sameJson(journal.latest.current, expected);
 		try {
-			const report = readLayoutReview(
-				await client.query(
-					"geometry/review",
-					{
-						schema_version: 1,
-						project_id: projectId,
-						geometry: readObject(result),
-					},
-					session.query_scope,
-					controller.signal,
-				),
-			);
 			if (!admitted()) return;
-			const roofId = "roof_" + value.key.replaceAll("-", "");
-			if (
-				!report.review_complete ||
-				report.diagnostics_truncated ||
-				report.issues.some(
-					(issue) =>
-						(issue.object_id === roofId || issue.roof_id === roofId) &&
-						(issue.category === "numerical_limit" ||
-							issue.kind === "invalid_roof_polygon"),
-				)
-			) {
-				setError(
-					__(
-						"This roof boundary could not pass the geometry check. Its points remain available for correction.",
-						"linker-tools",
+			const changed = !sameJson(result, value.before);
+			if (changed) {
+				const report = readLayoutReview(
+					await client.query(
+						"geometry/review",
+						{
+							schema_version: 1,
+							project_id: projectId,
+							geometry: readObject(result),
+						},
+						session.query_scope,
+						controller.signal,
 					),
 				);
-				return;
+				if (!admitted()) return;
+				const target =
+					value.schema_version === 1
+						? {
+								id: "roof_" + value.key.replaceAll("-", ""),
+								roof: "roof_" + value.key.replaceAll("-", ""),
+								invalid: "invalid_roof_polygon",
+							}
+						: {
+								id:
+									"roof_id" in value.target
+										? value.target.roof_id
+										: value.target.id,
+								roof: mapRingMetadata(value.before, value.target).roof_id,
+								invalid:
+									value.target.kind === "obstacle"
+										? "invalid_obstacle_polygon"
+										: value.target.kind === "keepout"
+											? "invalid_keepout_polygon"
+											: "invalid_roof_polygon",
+							};
+				if (
+					!report.review_complete ||
+					report.diagnostics_truncated ||
+					report.issues.some(
+						(issue) =>
+							(issue.object_id === target.id &&
+								issue.kind === target.invalid) ||
+							((issue.object_id === target.id ||
+								issue.roof_id === target.roof) &&
+								issue.category === "numerical_limit"),
+					)
+				) {
+					setError(
+						value.schema_version === 2
+							? __(
+									"The geometry check could not validate this boundary. Your edits remain available for correction.",
+									"linker-tools",
+								)
+							: __(
+									"This roof boundary could not pass the geometry check. Its points remain available for correction.",
+									"linker-tools",
+								),
+					);
+					return;
+				}
 			}
 			// Protect both sides of the commit/persist boundary before exposing a
 			// project change. Unknown storage outcomes never discard raw vertices.
-			await journal.update({ ...value, prepared_geometry: result });
-			if (
-				!mounted.current ||
-				flight.current !== controller ||
-				!client.isCurrentScope(session.query_scope) ||
-				!sameJson(current.current.geometry, value.before)
-			)
-				return;
-			if (!commit(command)) {
+			const prepared = { ...value, prepared_geometry: result };
+			await journal.update(prepared);
+			if (!admitted(prepared)) return;
+			if (changed && !commit(command)) {
 				setError(
-					__(
-						"The project changed before this roof could be added. The drawing has been kept.",
-						"linker-tools",
-					),
+					value.schema_version === 2
+						? __(
+								"The project changed before this boundary edit could be applied. Your edit has been kept.",
+								"linker-tools",
+							)
+						: __(
+								"The project changed before this roof could be added. The drawing has been kept.",
+								"linker-tools",
+							),
 				);
 				return;
 			}
+			setUnchanged(!changed);
 			journal.deactivate();
 			setCompletedApplications((count) => count + 1);
 		} catch (cause) {
 			if (!mounted.current || controller.signal.aborted) return;
 			setError(
-				__(
-					"The roof check or local save could not be completed. The drawing and its entered values remain available.",
-					"linker-tools",
-				),
+				value.schema_version === 2
+					? __(
+							"The boundary check or browser save could not be completed. Your edits remain available.",
+							"linker-tools",
+						)
+					: __(
+							"The roof check or local save could not be completed. The drawing and its entered values remain available.",
+							"linker-tools",
+						),
 			);
 			if (
 				cause instanceof ApiError &&
@@ -288,16 +351,50 @@ export function MapRoofWorkspace({
 			}
 		}
 	}
+	function drawingStatus(): string {
+		if (!drawing) return "";
+		if (busy)
+			return drawing.schema_version === 1
+				? __("Checking roof geometry…", "linker-tools")
+				: __("Checking boundary geometry…", "linker-tools");
+		if (journal.writing)
+			return __("Saving drawing in this browser…", "linker-tools");
+		if (active)
+			return sprintf(
+				__("Recorded corners: %d", "linker-tools"),
+				drawing.vertices.length,
+			);
+		if (!protectedResult)
+			return __("Drawing paused and retained in this browser.", "linker-tools");
+		if (drawing.schema_version === 1)
+			return __(
+				"Roof added to the project draft. Save project stores it with the project.",
+				"linker-tools",
+			);
+		return sameJson(drawing.prepared_geometry, drawing.before)
+			? __(
+					"The boundary is unchanged. No project change was made.",
+					"linker-tools",
+				)
+			: __(
+					"Boundary changes applied to the project draft. Choose Save project to save them.",
+					"linker-tools",
+				);
+	}
 	return (
 		<div className="lp-map-workspace">
 			<section
 				ref={result}
 				tabIndex={-1}
 				className="lp-map-drawing lp-focus-target"
-				aria-label={__("Map roof drawing", "linker-tools")}
+				aria-label={__("Map drawing", "linker-tools")}
 			>
 				<div className="lp-inline-actions">
-					<h3>{__("Draw a roof face", "linker-tools")}</h3>
+					<h3>
+						{drawing?.schema_version === 2
+							? __("Edit an existing boundary", "linker-tools")
+							: __("Draw a roof face", "linker-tools")}
+					</h3>
 					{!active && !drawing && (
 						<button
 							className="lp-button"
@@ -308,21 +405,44 @@ export function MapRoofWorkspace({
 								journal.storageFailed ||
 								!geographicReady
 							}
-							onClick={() => {
-								setError(null);
-								journal.begin(null);
-							}}
+							onClick={() => begin({ kind: "new_roof" })}
 						>
 							{__("Start roof drawing", "linker-tools")}
 						</button>
 					)}
 				</div>
 				<p className="lp-profile-help">
-					{__(
-						"The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views.",
-						"linker-tools",
-					)}
+					{drawing?.schema_version === 2
+						? __(
+								"The roof plane stays fixed while you edit this boundary. Applied changes appear in this project's map, plan and 3D views.",
+								"linker-tools",
+							)
+						: __(
+								"The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views.",
+								"linker-tools",
+							)}
 				</p>
+				{!drawing && (
+					<MapRingSelector
+						geometry={geometry}
+						selected={mapProps.selected}
+						disabled={
+							mapProps.disabled ||
+							journal.checking ||
+							journal.storageFailed ||
+							!geographicReady
+						}
+						begin={(target) => begin({ kind: "edit_ring", target })}
+					/>
+				)}
+				{!drawing && unchanged && (
+					<p className="lp-drawing-status" role="status">
+						{__(
+							"The boundary is unchanged. No project change was made.",
+							"linker-tools",
+						)}
+					</p>
+				)}
 				{journal.checking && (
 					<p role="status">{__("Checking saved drawings…", "linker-tools")}</p>
 				)}
@@ -376,8 +496,7 @@ export function MapRoofWorkspace({
 						{journal.records.map((record) => (
 							<li key={record.scope + record.drawing.key}>
 								<span>
-									{record.drawing.fields.name ||
-										__("Unfinished roof drawing", "linker-tools")}
+									{mapDrawingName(record.drawing)}
 									<small>
 										{sprintf(
 											__("Recorded corners: %d", "linker-tools"),
@@ -389,7 +508,7 @@ export function MapRoofWorkspace({
 									type="button"
 									className="lp-button lp-button-secondary"
 									disabled={mapProps.disabled || journal.checking}
-									onClick={() => journal.begin(record)}
+									onClick={() => begin({ kind: "restore", record })}
 								>
 									{__("Open saved drawing", "linker-tools")}
 								</button>
@@ -400,24 +519,7 @@ export function MapRoofWorkspace({
 				{drawing && (
 					<>
 						<p className="lp-drawing-status" role="status">
-							{busy
-								? __("Checking roof geometry…", "linker-tools")
-								: journal.writing
-									? __("Saving drawing in this browser…", "linker-tools")
-									: active
-										? sprintf(
-												__("Recorded corners: %d", "linker-tools"),
-												drawing.vertices.length,
-											)
-										: protectedResult
-											? __(
-													"Roof added to the project draft. Save project stores it with the project.",
-													"linker-tools",
-												)
-											: __(
-													"Drawing paused and retained in this browser.",
-													"linker-tools",
-												)}
+							{drawingStatus()}
 						</p>
 						{stale && !protectedResult && (
 							<Notice error>
@@ -472,9 +574,15 @@ export function MapRoofWorkspace({
 							{active && drawing.phase === "staged" && !stale && (
 								<a
 									className="lp-button lp-button-secondary"
-									href="#lp-map-roof-properties"
+									href={
+										drawing.schema_version === 1
+											? "#lp-map-roof-properties"
+											: "#lp-map-ring-properties"
+									}
 								>
-									{__("Roof properties", "linker-tools")}
+									{drawing.schema_version === 1
+										? __("Roof properties", "linker-tools")
+										: __("Boundary properties", "linker-tools")}
 								</a>
 							)}
 							{active ? (
@@ -523,20 +631,44 @@ export function MapRoofWorkspace({
 				document={geometry}
 				interaction={interaction}
 			/>
-			{active && drawing && drawing.phase === "staged" && !stale && (
-				<MapRoofProperties
-					drawing={drawing}
-					locale={locale}
-					busy={busy}
-					invalidField={invalidField}
-					error={error}
-					field={field}
-					submit={() => void apply()}
-					continueDrawing={() =>
-						change({ ...drawing, phase: "collecting", prepared_geometry: null })
-					}
-				/>
-			)}
+			{active &&
+				drawing &&
+				drawing.phase === "staged" &&
+				!stale &&
+				(drawing.schema_version === 1 ? (
+					<MapRoofProperties
+						drawing={drawing}
+						locale={locale}
+						busy={busy}
+						invalidField={invalidField}
+						error={error}
+						field={field}
+						submit={() => void apply()}
+						continueDrawing={() =>
+							change({
+								...drawing,
+								phase: "collecting",
+								prepared_geometry: null,
+							})
+						}
+					/>
+				) : (
+					<MapRingProperties
+						drawing={drawing}
+						locale={locale}
+						busy={busy}
+						invalidField={invalidField}
+						error={error}
+						confirm={(confirmed) =>
+							change({
+								...drawing,
+								source_confirmed: confirmed,
+								prepared_geometry: null,
+							})
+						}
+						submit={() => void apply()}
+					/>
+				))}
 		</div>
 	);
 }

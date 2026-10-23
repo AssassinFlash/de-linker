@@ -1,0 +1,183 @@
+{
+  "status": "EN initial draft, independent adversarial review and formal DE composition required",
+  "dimension": "Existing project boundary editing and preservation of source statements",
+  "scope": "Current whole-system identity is unchanged; this increment adds target selection, original-source review and checked boundary application. Native geometry checks do not validate source claims.",
+  "entries": [
+    {
+      "en": "Select a roof face, obstacle or keep-out area to edit its boundary on the map.",
+      "locations": [
+        "apps/planner/src/components/design/MapRingSelector.tsx:27"
+      ]
+    },
+    {
+      "en": "Boundary to edit",
+      "locations": [
+        "apps/planner/src/components/design/MapRingSelector.tsx:38"
+      ]
+    },
+    {
+      "en": "Edit boundary on map",
+      "locations": [
+        "apps/planner/src/components/design/MapRingSelector.tsx:62"
+      ]
+    },
+    {
+      "en": "Boundary properties",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:40",
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:582"
+      ]
+    },
+    {
+      "en": "Drag a corner or an edge midpoint to edit this boundary. The existing roof plane, other boundaries and source statements are retained.",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:45"
+      ]
+    },
+    {
+      "en": "Measurement or drawing reference",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:51"
+      ]
+    },
+    {
+      "en": "Declared spatial precision (m)",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:53"
+      ]
+    },
+    {
+      "en": "Unknown",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:56"
+      ]
+    },
+    {
+      "en": "Calibration and measurement conditions",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:59"
+      ]
+    },
+    {
+      "en": "Basis for using these measurements",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:61"
+      ]
+    },
+    {
+      "en": "I have checked that the recorded source and permissions cover these boundary edits.",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:77"
+      ]
+    },
+    {
+      "en": "Check and apply boundary",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:94"
+      ]
+    },
+    {
+      "en": "The geometry check does not verify measurements or source permissions. If the recorded source does not cover these edits, pause the drawing and review the project inputs.",
+      "locations": [
+        "apps/planner/src/components/design/MapRingProperties.tsx:99"
+      ]
+    },
+    {
+      "en": "This boundary cannot be edited on the map. Numeric properties remain available.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:118"
+      ]
+    },
+    {
+      "en": "Review the boundary and its source declaration. Your edits have been kept.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:222"
+      ]
+    },
+    {
+      "en": "This boundary did not pass the geometry check. Its points are kept for correction.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:295"
+      ]
+    },
+    {
+      "en": "The project changed before this boundary edit could be applied. Your edit has been kept.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:315"
+      ]
+    },
+    {
+      "en": "The boundary check or local save could not be completed. Your edits remain available.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:333"
+      ]
+    },
+    {
+      "en": "Checking boundary geometry…",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:359"
+      ]
+    },
+    {
+      "en": "Boundary unchanged. No project edit was added.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:375",
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:437"
+      ]
+    },
+    {
+      "en": "Boundary edit added to the project draft. Save project stores it with the project.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:376"
+      ]
+    },
+    {
+      "en": "Map drawing",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:387"
+      ]
+    },
+    {
+      "en": "Edit existing boundary",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:392"
+      ]
+    },
+    {
+      "en": "The selected boundary is edited in the existing roof plane. Confirmed changes use the same project, plan and 3D views.",
+      "locations": [
+        "apps/planner/src/components/design/MapDrawingWorkspace.tsx:413"
+      ]
+    },
+    {
+      "en": "The map, plan and 3D views use the same project geometry. Map controls change the view; confirmed boundary edits change the project.",
+      "locations": [
+        "apps/planner/src/components/design/MapViewport.tsx:536"
+      ]
+    },
+    {
+      "en": "Roof boundary",
+      "locations": [
+        "apps/planner/src/components/design/mapDrawingLabels.ts:9"
+      ]
+    },
+    {
+      "en": "Opening %d",
+      "locations": [
+        "apps/planner/src/components/design/mapDrawingLabels.ts:11"
+      ]
+    },
+    {
+      "en": "Obstacle footprint",
+      "locations": [
+        "apps/planner/src/components/design/mapDrawingLabels.ts:13"
+      ]
+    },
+    {
+      "en": "Keep-out boundary",
+      "locations": [
+        "apps/planner/src/components/design/mapDrawingLabels.ts:15"
+      ]
+    }
+  ]
+}

@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { GeometryDocument } from "../domain/geometry.ts";
-import type { MapRoofDraft } from "../domain/mapRoofDraft.ts";
-import { startMapRoofDraft } from "../domain/mapRoofDraft.ts";
-import { sameJson } from "../domain/draft.ts";
-import { mapRoofDraftStore } from "./MapRoofDraftStore.ts";
 import type {
-	MapRoofDraftStore,
-	StoredMapRoofDraft,
-} from "./MapRoofDraftStore.ts";
+	MapDrawingDraft,
+	MapDrawingIntent,
+} from "../domain/mapDrawingDraft.ts";
+import { startMapDrawingDraft } from "../domain/mapDrawingDraft.ts";
+import { sameJson } from "../domain/draft.ts";
+import { mapDrawingDraftStore } from "./MapDrawingDraftStore.ts";
+import type {
+	MapDrawingDraftStore,
+	StoredMapDrawingDraft,
+} from "./MapDrawingDraftStore.ts";
 import type { PlannerClient } from "./PlannerClient.ts";
 import type { Session } from "./protocol.ts";
 
@@ -19,13 +22,13 @@ interface DrawingWriter {
 	chain: Promise<void>;
 }
 export type DrawingJournal = Pick<
-	MapRoofDraftStore,
+	MapDrawingDraftStore,
 	"list" | "write" | "clear"
 >;
 
 /** Restoring bytes requires a verified native project and scope grant. Partial
  * points stay outside project history, including across route/provider changes. */
-export function useMapRoofDraft({
+export function useMapDrawingDraft({
 	projectId,
 	geometry,
 	confirmedGeometry,
@@ -34,7 +37,7 @@ export function useMapRoofDraft({
 	client,
 	recoveryScopes,
 	recoveryChecking = false,
-	store = mapRoofDraftStore,
+	store = mapDrawingDraftStore,
 }: {
 	projectId: string;
 	geometry: GeometryDocument;
@@ -46,14 +49,14 @@ export function useMapRoofDraft({
 	recoveryChecking?: boolean | undefined;
 	store?: DrawingJournal;
 }) {
-	const [drawing, setDrawing] = useState<MapRoofDraft | null>(null),
-		[records, setRecords] = useState<readonly StoredMapRoofDraft[]>([]),
+	const [drawing, setDrawing] = useState<MapDrawingDraft | null>(null),
+		[records, setRecords] = useState<readonly StoredMapDrawingDraft[]>([]),
 		[active, setActive] = useState(false),
 		[checking, setChecking] = useState(true),
 		[storageFailed, setStorageFailed] = useState(false),
 		[writing, setWriting] = useState(false),
 		[refresh, setRefresh] = useState(0);
-	const latest = useRef<MapRoofDraft | null>(null),
+	const latest = useRef<MapDrawingDraft | null>(null),
 		writer = useRef<DrawingWriter | null>(null),
 		mounted = useRef(true);
 	const owner = useRef(projectId + ":" + session.query_scope);
@@ -97,7 +100,7 @@ export function useMapRoofDraft({
 				JSON.parse(scopeKey) as string[],
 				projectId,
 			);
-			const retained: StoredMapRoofDraft[] = [];
+			const retained: StoredMapDrawingDraft[] = [];
 			for (const record of found) {
 				if (!current || !admitted(record.scope)) return;
 				if (
@@ -161,7 +164,10 @@ export function useMapRoofDraft({
 		target.body = intent.next;
 		target.pending = null;
 	}
-	function persist(next: MapRoofDraft, target: DrawingWriter): Promise<void> {
+	function persist(
+		next: MapDrawingDraft,
+		target: DrawingWriter,
+	): Promise<void> {
 		const body = JSON.stringify(next);
 		setWriting(true);
 		const operation = target.chain
@@ -197,7 +203,7 @@ export function useMapRoofDraft({
 		);
 		return operation;
 	}
-	function update(next: MapRoofDraft): Promise<void> {
+	function update(next: MapDrawingDraft): Promise<void> {
 		const target = writer.current;
 		if (
 			!target ||
@@ -210,18 +216,25 @@ export function useMapRoofDraft({
 		setDrawing(next);
 		return persist(next, target);
 	}
-	function begin(record: StoredMapRoofDraft | null) {
+	function begin(
+		input:
+			MapDrawingIntent | { kind: "restore"; record: StoredMapDrawingDraft },
+	) {
 		if (
+			writer.current ||
 			active ||
 			checking ||
 			recoveryChecking ||
 			!client.isCurrentScope(session.query_scope)
 		)
-			return;
+			return false;
+		const record = input.kind === "restore" ? input.record : null;
 		if (record && (!records.includes(record) || !admitted(record.scope)))
-			return;
+			return false;
 		const next =
-			record?.drawing ?? startMapRoofDraft(projectId, geometry, locale);
+			input.kind === "restore"
+				? input.record.drawing
+				: startMapDrawingDraft(projectId, geometry, locale, input);
 		const target: DrawingWriter = {
 			scope: record?.scope ?? session.query_scope,
 			key: next.key,
@@ -235,6 +248,7 @@ export function useMapRoofDraft({
 		setActive(true);
 		setStorageFailed(false);
 		if (!record) void persist(next, target).catch(() => undefined);
+		return true;
 	}
 	async function flush(): Promise<boolean> {
 		const target = writer.current;

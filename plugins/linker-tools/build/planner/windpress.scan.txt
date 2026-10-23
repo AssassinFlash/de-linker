@@ -21,6 +21,7 @@ lp-design-workspace
 lp-diagnostics
 lp-drawing-properties
 lp-drawing-recoveries
+lp-drawing-source
 lp-drawing-status
 lp-edit-actions
 lp-editor-main
@@ -52,6 +53,7 @@ lp-map-heading
 lp-map-host
 lp-map-provider
 lp-map-reticle
+lp-map-ring-selector
 lp-map-surface
 lp-map-toolbar
 lp-map-view
