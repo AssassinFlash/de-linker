@@ -12,7 +12,7 @@ import pytest
 from index import corpus, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
-from index.publication import applicability
+from index.publication import applicability, scope_proofs
 from linker_genie.knowledge import KnowledgeSearch
 from linker_genie.publication import (
     PublicationChanged,
@@ -66,18 +66,36 @@ def authority(raw: dict[str, Any], *, valid: bool = True) -> PublicationClient:
         if request.url.path.endswith("/identify"):
             import json
 
-            models = json.loads(request.content).get("models", [])
+            supplied = json.loads(request.content)
+            known = {
+                **{
+                    p["model"]: "unavailable"
+                    if p.get("engineering_role") == "reference_pv_module"
+                    else "published"
+                    for p in raw["products"]
+                },
+                "MODEL-3": "unavailable",
+            }
+            models = supplied.get("models", [])
+            if "text" in supplied:
+                import re
+
+                models = [
+                    m
+                    for m in known
+                    if re.search(
+                        r"(?<![\w./-])" + re.escape(m) + r"(?![\w./-])",
+                        supplied["text"],
+                        re.IGNORECASE,
+                    )
+                ]
             return httpx.Response(
                 200,
                 json={
                     "models": [
                         {
                             "model": m,
-                            "status": "unavailable"
-                            if m == "MODEL-3"
-                            else "published"
-                            if m in {"MODEL-1", "MODEL-2"}
-                            else "unknown",
+                            "status": known.get(m, "unknown"),
                         }
                         for m in models
                     ]
@@ -252,6 +270,379 @@ def test_chunk_scope_requires_explicit_model_and_rejects_mixed_withdrawn_or_unkn
     assert applicability(chunks, raw, authority(raw)) == {"A": [1]}
 
 
+def test_engineering_tokens_do_not_become_unknown_models() -> None:
+    raw = manifest()
+    text = "| Model | MODEL-1 |\n| Protection | IP65 |\n| Frequency | 50Hz |\n| Power | 10kW |\n| Standard | IEC62109-1 |"
+    chunk = Chunk("ratings", SHA, 1, "", "table", "", text, "en", 30)
+    assert applicability([chunk], raw, authority(raw)) == {"ratings": [1]}
+
+
+def test_single_authored_current_scope_propagates_without_using_generated_header() -> (
+    None
+):
+    raw = manifest()
+    chunks = [
+        Chunk(
+            "scope", SHA, 1, "", "text", "MODEL-2", "Instructions for MODEL-1", "en", 10
+        ),
+        Chunk(
+            "rating",
+            SHA,
+            2,
+            "",
+            "table",
+            "MODEL-2",
+            "| Nominal power | 10kW |",
+            "en",
+            10,
+        ),
+    ]
+    proof = scope_proofs(chunks, raw, authority(raw))
+    assert proof["rating"] == {
+        "product_ids": [1],
+        "basis": "document_model",
+        "source_chunk_ids": ["scope"],
+        "document_ids": ["doc"],
+    }
+    assert proof["scope"]["basis"] == "passage"
+
+
+@pytest.mark.parametrize("foreign", ["MODEL-3", "Z999"])
+def test_mixed_file_cannot_assign_unnamed_parameter_table_to_remaining_product(
+    foreign: str,
+) -> None:
+    raw = manifest()
+    chunks = [
+        Chunk("scope", SHA, 1, "", "text", "", "Instructions for MODEL-1", "en", 10),
+        Chunk(
+            "foreign",
+            SHA,
+            2,
+            "",
+            "table",
+            "",
+            f"| Model | {foreign} |\n| Power | 8kW |",
+            "en",
+            10,
+        ),
+        Chunk(
+            "unnamed",
+            SHA,
+            3,
+            "",
+            "table",
+            "MODEL-1",
+            "| Nominal power | 8kW |",
+            "en",
+            10,
+        ),
+        Chunk(
+            "scoped",
+            SHA,
+            4,
+            "MODEL-1",
+            "text",
+            "",
+            "Use the isolator before maintenance.",
+            "en",
+            10,
+        ),
+    ]
+    proof = scope_proofs(chunks, raw, authority(raw))
+    assert set(proof) == {"scope", "scoped"}
+    assert proof["scoped"]["basis"] == "section"
+
+
+def test_an_unambiguous_authored_section_can_supply_scope_in_a_mixed_file() -> None:
+    raw = manifest()
+    chunks = [
+        Chunk(
+            "A",
+            SHA,
+            1,
+            "Installation",
+            "text",
+            "",
+            "These instructions concern MODEL-1.",
+            "en",
+            10,
+        ),
+        Chunk(
+            "method",
+            SHA,
+            1,
+            "Installation",
+            "text",
+            "",
+            "Open the isolator before connecting the cables.",
+            "en",
+            10,
+        ),
+        Chunk(
+            "B",
+            SHA,
+            2,
+            "Other equipment",
+            "text",
+            "",
+            "MODEL-3 nominal power",
+            "en",
+            10,
+        ),
+        Chunk(
+            "ambiguous",
+            SHA,
+            2,
+            "Other equipment",
+            "table",
+            "",
+            "| Nominal power | 8kW |",
+            "en",
+            10,
+        ),
+    ]
+    proof = scope_proofs(chunks, raw, authority(raw))
+    assert set(proof) == {"A", "method"}
+    assert proof["method"]["basis"] == "section_model"
+    assert proof["method"]["source_chunk_ids"] == ["A"]
+
+
+@pytest.mark.parametrize("purpose", ["warranty", "certificate"])
+def test_authored_common_terms_do_not_authorize_unnamed_technical_parameters(
+    purpose: str,
+) -> None:
+    raw = manifest()
+    raw["documents"][0]["type"] = purpose
+    text = (
+        "MODEL-1 and MODEL-3 are covered by these Warranty Terms and Conditions."
+        if purpose == "warranty"
+        else "This certificate refers to the above mentioned products MODEL-1 and MODEL-3."
+    )
+    chunks = [
+        Chunk("declaration", SHA, 1, "", "text", "", text, "en", 20),
+        Chunk(
+            "terms",
+            SHA,
+            2,
+            "Claims",
+            "text",
+            "",
+            "Keep your proof of purchase when submitting a claim.",
+            "en",
+            10,
+        ),
+        Chunk("table", SHA, 2, "", "table", "", "| Nominal power | 8kW |", "en", 10),
+        Chunk(
+            "technical", SHA, 2, "", "text", "", "The nominal power is 8kW.", "en", 10
+        ),
+    ]
+    proof = scope_proofs(chunks, raw, authority(raw))
+    assert set(proof) == {"terms"}
+    assert proof["terms"]["product_ids"] == [1]
+    assert proof["terms"]["basis"] == "common_terms"
+    assert proof["terms"]["source_chunk_ids"] == ["declaration"]
+
+
+@pytest.mark.parametrize("purpose", ["warranty", "certificate"])
+def test_genuinely_model_free_general_document_uses_explicit_woo_purpose(
+    purpose: str,
+) -> None:
+    raw = manifest()
+    raw["documents"][0]["type"] = purpose
+    chunks = [
+        Chunk(
+            "terms",
+            SHA,
+            1,
+            "",
+            "text",
+            "MODEL-3",
+            "The warranty requires proof of purchase.",
+            "en",
+            10,
+        )
+    ]
+    proof = scope_proofs(chunks, raw, authority(raw))
+    assert proof["terms"] == {
+        "product_ids": [1, 2],
+        "basis": "woo_document",
+        "source_chunk_ids": [],
+        "document_ids": ["doc"],
+    }
+    raw["documents"][0]["type"] = "datasheet"
+    assert applicability(chunks, raw, authority(raw)) == {}
+
+
+def test_certificate_report_and_standard_numbers_are_not_product_models() -> None:
+    raw = manifest()
+    raw["documents"][0]["type"] = "certificate"
+    text = "Registration No.: A3 50696265 0001\nReport No.:\nCN2534ZQ 001\nEN 50549-2:2019+A1\nIEC62109-1\nThis certificate refers to the supplied equipment."
+    chunk = Chunk("certificate", SHA, 1, "", "text", "", text, "en", 30)
+    assert (
+        scope_proofs([chunk], raw, authority(raw))["certificate"]["basis"]
+        == "woo_document"
+    )
+
+
+def test_suffix_variant_cannot_borrow_shorter_published_model_scope() -> None:
+    raw = manifest()
+    chunk = Chunk("suffix", SHA, 1, "", "text", "", "MODEL-10 nominal power", "en", 10)
+    assert applicability([chunk], raw, authority(raw)) == {}
+
+
+def test_reference_module_never_enters_genie_snapshot_index_or_product_scope(
+    tmp_path: Path,
+) -> None:
+    raw = manifest()
+    raw["products"][1]["engineering_role"] = "reference_pv_module"
+    raw["documents"][0]["type"] = "warranty"
+    raw["documents"].append(
+        {**raw["documents"][0], "document_id": "reference-only", "product_ids": [2]}
+    )
+    source = Snapshot.read(raw)
+    assert set(source.products) == {1}
+    assert set(source.documents) == {"doc"}
+    assert source.documents["doc"]["product_ids"] == [1]
+    with pytest.raises(PublicationChanged):
+        source.require_products([2])
+    chunk = Chunk(
+        "terms",
+        SHA,
+        1,
+        "",
+        "text",
+        "",
+        "Warranty requires proof of purchase.",
+        "en",
+        10,
+    )
+    scopes = scope_proofs([chunk], raw, authority(raw))
+    directory = tmp_path / "corpus"
+    corpus.write(
+        directory,
+        corpus.Meta(
+            "scope-fixture",
+            None,
+            None,
+            "fixture",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {cid: p["product_ids"] for cid, p in scopes.items()},
+                "chunk_scopes": scopes,
+            },
+        ),
+        [
+            DocumentRow(
+                SHA,
+                ("https://site.test/shared.pdf",),
+                "Warranty",
+                "Garantie",
+                (),
+                (),
+                "warranty",
+                "en",
+                1,
+                "indexed",
+            )
+        ],
+        [(1, "MODEL-1")],
+        [chunk],
+    )
+    target = tmp_path / "scoped.sqlite"
+    store.export(directory, target)
+    index = DocumentIndex(target)
+    assert index.loaded()["products"] == [{"product_id": 1, "product_revision": "p1"}]
+    assert index.search("warranty", "en", [2], publication=source) == []
+    assert [
+        h.chunk_id for h in index.search("warranty", "en", [1], publication=source)
+    ] == ["terms"]
+    assert (
+        json.loads(
+            index._db.execute(
+                "SELECT proof FROM chunk_scopes WHERE chunk_id='terms'"
+            ).fetchone()[0]
+        )
+        == scopes["terms"]
+    )
+    index.close()
+
+
+def test_partial_safe_document_coverage_is_available_but_preparation_stays_incomplete(
+    tmp_path: Path,
+) -> None:
+    raw = manifest()
+    raw["products"] = raw["products"][:1]
+    raw["documents"][0]["product_ids"] = [1]
+    raw["products"][0]["documents"].append("unparsed")
+    raw["documents"].append(
+        {**raw["documents"][0], "document_id": "unparsed", "blob_sha256": "b" * 64}
+    )
+    chunk = Chunk(
+        "safe", SHA, 1, "", "text", "", "MODEL-1 stores nominal energy.", "en", 10
+    )
+    scopes = scope_proofs([chunk], raw, authority(raw))
+    directory = tmp_path / "corpus"
+    corpus.write(
+        directory,
+        corpus.Meta(
+            "partial",
+            None,
+            None,
+            "fixture",
+            512,
+            publication={
+                "manifest": raw,
+                "chunk_products": {cid: s["product_ids"] for cid, s in scopes.items()},
+                "chunk_scopes": scopes,
+            },
+        ),
+        [
+            DocumentRow(
+                SHA,
+                ("https://site.test/shared.pdf",),
+                "Manual",
+                "Anleitung",
+                (),
+                (),
+                "manual",
+                "en",
+                1,
+                "indexed",
+            ),
+            DocumentRow(
+                "b" * 64,
+                ("https://site.test/new.pdf",),
+                "New manual",
+                "Neue Anleitung",
+                (),
+                (),
+                "manual",
+                "en",
+                1,
+                "failed",
+                "fixture parse failure",
+            ),
+        ],
+        [(1, "MODEL-1")],
+        [chunk],
+    )
+    target = tmp_path / "partial.sqlite"
+    store.export(directory, target)
+    index = DocumentIndex(target)
+    loaded = index.loaded()
+    assert loaded["products"] == [{"product_id": 1, "product_revision": "p1"}]
+    assert loaded["preparation_complete"] is False
+    assert loaded["unprepared_documents"] == [
+        {"document_id": "unparsed", "product_id": 1, "reason": "document_unparsed"}
+    ]
+    assert [
+        h.chunk_id
+        for h in index.search("energy", "en", [1], publication=Snapshot.read(raw))
+    ] == ["safe"]
+    index.close()
+
+
 def test_actual_resolved_current_is_reopened_after_switch(
     tmp_path: Path, path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -277,6 +668,8 @@ def test_actual_resolved_current_is_reopened_after_switch(
             {"product_id": 1, "product_revision": "p1"},
             {"product_id": 2, "product_revision": "p2"},
         ],
+        "preparation_complete": True,
+        "unprepared_documents": [],
     }
     link.unlink()
     link.symlink_to(two)
@@ -321,6 +714,70 @@ def test_worker_publishes_then_acknowledges_only_actual_loaded_generation() -> N
     assert requests[-1]["status"] == "ready"
     assert requests[-1]["loaded_revision"] == "source-1"
     assert "password" not in requests[-1]
+
+
+@pytest.mark.parametrize(
+    "complete,issues,expected",
+    [
+        (True, [], True),
+        (False, [], False),
+        (None, [], False),
+        (
+            True,
+            [{"document_id": "doc", "product_id": 1, "reason": "no_proven_passage"}],
+            False,
+        ),
+    ],
+)
+def test_all_products_available_cannot_hide_unprepared_document_associations(
+    complete: Any, issues: list[dict[str, Any]], expected: bool
+) -> None:
+    recorded = []
+    raw = manifest()
+
+    def handle(request: httpx.Request) -> httpx.Response:
+        recorded.append(json.loads(request.content))
+        return httpx.Response(
+            200,
+            json={
+                "job": {
+                    "job_id": "j",
+                    "lease_token": "l",
+                    "source_revision": "source-1",
+                    "manifest": raw,
+                }
+            }
+            if request.url.path.endswith("claim")
+            else {"accepted": True},
+        )
+
+    worker = Worker(
+        "https://site.test/jobs",
+        "fixture",
+        "fixture",
+        "mac",
+        600,
+        transport=httpx.MockTransport(handle),
+    )
+    products = [
+        {"product_id": p["product_id"], "product_revision": p["product_revision"]}
+        for p in raw["products"]
+    ]
+    assert worker.one(
+        lambda _: "build1",
+        lambda: {
+            "source_revision": "source-1",
+            "index_version": "build1",
+            "products": products,
+            "preparation_complete": complete,
+            "unprepared_documents": issues,
+        },
+    )
+    assert recorded[-1]["prepared_products"] == products
+    assert recorded[-1]["preparation_complete"] is expected
+    assert recorded[-1]["unprepared_documents"] == issues
+    assert bool(recorded[-1]["error"]) is not expected
+    worker.close()
 
 
 def test_worker_does_not_ack_ready_when_disk_changed_but_running_process_is_old() -> (

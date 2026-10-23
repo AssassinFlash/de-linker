@@ -133,6 +133,20 @@ final class DraftProofTest extends TestCase {
 		$this->assertArrayNotHasKey( '999', $block['draft_proofs'] );
 	}
 
+	/** Engineering reference records cannot become sale-oriented Genie actions. */
+	public function test_reference_module_cannot_mint_a_card_or_partial_parts_list(): void {
+		$this->manifest['products'][1]['engineering_role'] = 'reference_pv_module';
+		$proof = $this->proof();
+		$this->assertSame( '', $this->token( $proof ) );
+		$stream = $proof->stream( "event: block\ndata: {\"type\":\"cards\",\"product_ids\":[5,6]}\n\n", $this->dependencies() );
+		if ( ! is_string( $stream ) || 1 !== preg_match( '/^data: (.+)$/m', $stream, $data ) ) {
+			$this->fail( 'The live fixture did not produce its artifact.' );
+		}
+		$block = json_decode( $data[1], true );
+		$this->assertArrayHasKey( '5', $block['draft_proofs'] );
+		$this->assertArrayNotHasKey( '6', $block['draft_proofs'] );
+	}
+
 	/** Complete current candidate and evidence set.
 	 *
 	 * @return array<string,mixed>

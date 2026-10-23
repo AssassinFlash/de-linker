@@ -134,7 +134,7 @@ class DraftProof {
 			$id      = $item['product_id'];
 			$product = null;
 			foreach ( $manifest['products'] as $candidate ) {
-				if ( $id === $candidate['product_id'] || in_array( $id, $candidate['published_locale_ids'], true ) ) {
+				if ( 'reference_pv_module' !== ( $candidate['engineering_role'] ?? '' ) && ( $id === $candidate['product_id'] || in_array( $id, $candidate['published_locale_ids'], true ) ) ) {
 					$product = $candidate;
 					break;
 				}

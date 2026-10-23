@@ -208,6 +208,18 @@ class DocumentIndex:
             "index_version": self.version,
             "source_revision": self.source_revision,
             "products": ready,
+            "preparation_complete": self._db.execute(
+                "SELECT value FROM meta WHERE key='preparation_complete'"
+            ).fetchone()
+            == ("true",),
+            "unprepared_documents": json.loads(
+                (
+                    self._db.execute(
+                        "SELECT value FROM meta WHERE key='unprepared_documents'"
+                    ).fetchone()
+                    or ("[]",)
+                )[0]
+            ),
         }
 
     def close(self) -> None:
@@ -587,15 +599,30 @@ class DocumentIndex:
                 }
             )
         output: dict[int, Permit] = {}
-        for row, sha, raw_ids in self._db.execute(
-            "SELECT c.rowid, c.doc_sha256, cp.product_ids FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
+        scoped_documents = (
+            {
+                cid: set(json.loads(proof)["document_ids"])
+                for cid, proof in self._db.execute(
+                    "SELECT chunk_id,proof FROM chunk_scopes"
+                )
+            }
+            if "chunk_scopes" in tables
+            else {}
+        )
+        for row, sha, raw_ids, cid in self._db.execute(
+            "SELECT c.rowid, c.doc_sha256, cp.product_ids, c.id FROM chunks c JOIN chunk_products cp ON cp.chunk_id=c.id"
         ):
             ids = set(json.loads(raw_ids))
             if not ids or not ids.issubset(allowed):
                 continue
             for association in associations.get(sha, []):
-                if association["product_id"] in ids and ids.issubset(
-                    set(association["allowed_product_ids"])
+                if (
+                    association["product_id"] in ids
+                    and ids.issubset(set(association["allowed_product_ids"]))
+                    and (
+                        cid not in scoped_documents
+                        or association["document_id"] in scoped_documents[cid]
+                    )
                 ):
                     output[row] = {
                         "document_id": str(association["document_id"]),

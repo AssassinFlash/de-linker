@@ -20,7 +20,8 @@ from pathlib import Path
 import sqlite_vec
 
 from index import corpus
-from linker_genie.retrieval import SCHEMA_VERSION
+from linker_genie.publication import Snapshot
+from linker_genie.retrieval import SCHEMA_VERSION, is_passage
 
 SCHEMA = """
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
@@ -51,6 +52,7 @@ CREATE TABLE publication_ready_products (product_id INTEGER PRIMARY KEY, product
 CREATE TABLE publication_products (product_id INTEGER PRIMARY KEY, product_revision TEXT NOT NULL);
 CREATE TABLE publication_documents (document_id TEXT NOT NULL, document_revision TEXT NOT NULL, blob_sha256 TEXT NOT NULL, product_id INTEGER NOT NULL, PRIMARY KEY(document_id,product_id));
 CREATE TABLE chunk_products (chunk_id TEXT PRIMARY KEY, product_ids TEXT NOT NULL);
+CREATE TABLE chunk_scopes (chunk_id TEXT PRIMARY KEY, proof TEXT NOT NULL);
 CREATE TABLE chunks (
     rowid INTEGER PRIMARY KEY,
     id TEXT NOT NULL UNIQUE,
@@ -96,6 +98,13 @@ def export(directory: Path, path: Path) -> None:
         )
         proof = meta.publication
         manifest = proof.get("manifest", {})
+        if manifest:
+            ordinary = Snapshot.read(manifest)
+            manifest = {
+                **manifest,
+                "products": list(ordinary.products.values()),
+                "documents": list(ordinary.documents.values()),
+            }
         db.executemany(
             "INSERT INTO publication_products VALUES (?, ?)",
             [
@@ -118,28 +127,69 @@ def export(directory: Path, path: Path) -> None:
                 for cid, ids in proof.get("chunk_products", {}).items()
             ],
         )
-        # A product becomes prepared only after each associated document has
-        # at least one proven passage for it. Failures and ambiguous text stay pending.
+        db.executemany(
+            "INSERT INTO chunk_scopes VALUES (?, ?)",
+            [
+                (cid, json.dumps(scope, sort_keys=True))
+                for cid, scope in proof.get("chunk_scopes", {}).items()
+            ],
+        )
+        # Availability means at least one passage the current retrieval guard can
+        # actually release. Whole-job completion still requires every associated
+        # document to be parsed/proven and is reported separately below.
         chunks_by_id = {chunk.id: chunk for chunk, _ in corpus.read_chunks(directory)}
         covered: dict[int, set[str]] = {}
+        by_id = {d["document_id"]: d for d in manifest.get("documents", [])}
         for cid, ids in proof.get("chunk_products", {}).items():
             chunk = chunks_by_id.get(cid)
-            if chunk is not None:
+            permitted_documents = (
+                proof.get("chunk_scopes", {}).get(cid, {}).get("document_ids")
+            )
+            if chunk is not None and ids and is_passage(chunk.text):
+                supported = [
+                    d
+                    for d in by_id.values()
+                    if d["blob_sha256"] == chunk.doc_sha256
+                    and set(ids).issubset(d["product_ids"])
+                    and (
+                        permitted_documents is None
+                        or d["document_id"] in permitted_documents
+                    )
+                ]
                 for pid in ids:
-                    covered.setdefault(pid, set()).add(chunk.doc_sha256)
-        by_id = {d["document_id"]: d for d in manifest.get("documents", [])}
+                    covered.setdefault(pid, set()).update(
+                        d["document_id"] for d in supported
+                    )
         ready = []
+        unprepared = []
+        document_status = {d.sha256: d.status for d in corpus.read_documents(directory)}
         for product in manifest.get("products", []):
-            required = {
-                by_id[did]["blob_sha256"]
-                for did in product["documents"]
-                if did in by_id
-            }
-            if required and required.issubset(
-                covered.get(product["product_id"], set())
-            ):
+            pid = product["product_id"]
+            if covered.get(pid):
                 ready.append((product["product_id"], product["product_revision"]))
+            for did in product["documents"]:
+                document = by_id.get(did)
+                if (
+                    document is None
+                    or document_status.get(document["blob_sha256"]) != "indexed"
+                ):
+                    reason = "document_unparsed"
+                elif did not in covered.get(pid, set()):
+                    reason = "no_proven_passage"
+                else:
+                    continue
+                unprepared.append(
+                    {"document_id": did, "product_id": pid, "reason": reason}
+                )
         db.executemany("INSERT INTO publication_ready_products VALUES (?, ?)", ready)
+        complete = not unprepared and len(ready) == len(manifest.get("products", []))
+        db.executemany(
+            "INSERT INTO meta VALUES (?, ?)",
+            [
+                ("preparation_complete", json.dumps(complete)),
+                ("unprepared_documents", json.dumps(unprepared, sort_keys=True)),
+            ],
+        )
         if meta.dimensions:
             db.execute(VECTORS.format(dimensions=int(meta.dimensions)))
         for document in corpus.read_documents(directory):

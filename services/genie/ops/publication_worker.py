@@ -41,7 +41,9 @@ try:
         'Content-Type': 'application/json', 'X-Linker-Service-Token': data['token']})
     with urllib.request.urlopen(request, timeout=20) as response:
         loaded = json.load(response)
-    print(json.dumps({key: loaded[key] for key in ('index_version', 'source_revision', 'products')}))
+    loaded['preparation_complete'] = loaded.get('preparation_complete') is True
+    loaded['unprepared_documents'] = loaded.get('unprepared_documents', [])
+    print(json.dumps({key: loaded[key] for key in ('index_version', 'source_revision', 'products', 'preparation_complete', 'unprepared_documents')}))
 except Exception:
     sys.exit(1)
 """
@@ -201,6 +203,8 @@ class Worker:
         loaded: str,
         error: str = "",
         products: list[dict[str, Any]] | None = None,
+        preparation_complete: bool = False,
+        unprepared_documents: list[dict[str, Any]] | None = None,
     ) -> None:
         response = self.client.post(
             self.jobs + "/ack",
@@ -212,6 +216,8 @@ class Worker:
                 "status": "ready" if loaded else "failed",
                 "error": error,
                 "prepared_products": products or [],
+                "preparation_complete": preparation_complete,
+                "unprepared_documents": unprepared_documents or [],
             },
         )
         response.raise_for_status()
@@ -222,7 +228,8 @@ class Worker:
         job = self.claim()
         if job is None:
             return False
-        revision = Snapshot.read(job["manifest"]).source_revision
+        snapshot = Snapshot.read(job["manifest"])
+        revision = snapshot.source_revision
         if revision != job["source_revision"]:
             raise RuntimeError("job manifest revision differs from its claimed source")
         try:
@@ -236,14 +243,21 @@ class Worker:
                     "running Genie has not loaded the prepared generation"
                 )
             products = actual.get("products", [])
-            partial = len(products) < len(job["manifest"]["products"])
+            partial = len(products) < len(snapshot.products)
+            complete = (
+                actual.get("preparation_complete") is True
+                and not partial
+                and not actual.get("unprepared_documents")
+            )
             self.ack(
                 job,
                 str(actual["source_revision"]),
-                "Some published products still lack proven document passages."
-                if partial
+                "Some current document associations still lack proven passages."
+                if not complete
                 else "",
                 products=products,
+                preparation_complete=complete,
+                unprepared_documents=actual.get("unprepared_documents", []),
             )
         except (
             Exception,

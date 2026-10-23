@@ -389,16 +389,20 @@ def build(
     source = json.loads(inventory_path.read_text(encoding="utf-8"))
     proof: dict[str, Any] = {}
     if "publication_manifest" in source:
-        from index.publication import applicability
+        from index.publication import scope_proofs
         from linker_genie.publication import PublicationClient
 
         authority = PublicationClient(str(source["source"]))
         try:
+            scopes = scope_proofs(
+                chunked.chunks, source["publication_manifest"], authority
+            )
             proof = {
                 "manifest": source["publication_manifest"],
-                "chunk_products": applicability(
-                    chunked.chunks, source["publication_manifest"], authority
-                ),
+                "chunk_products": {
+                    cid: scope["product_ids"] for cid, scope in scopes.items()
+                },
+                "chunk_scopes": scopes,
             }
         finally:
             authority.close()
