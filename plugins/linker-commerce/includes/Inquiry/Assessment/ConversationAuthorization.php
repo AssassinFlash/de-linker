@@ -19,21 +19,22 @@ final class ConversationAuthorization {
 	public const SOURCE_ID = '_linker_conversation_mail_source_id';
 	/** Trusted conversation.
 	 *
-	 * @param int          $id Trusted conversation.
-	 * @param array<mixed> $messages Native full messages.
-	 * @param Conversation $conversation Validated rendered source.
-	 * @param Message      $captured Actual native email.
+	 * @param int           $id Trusted conversation.
+	 * @param array<mixed>  $messages Native full messages.
+	 * @param Conversation  $conversation Validated rendered source.
+	 * @param Message       $captured Actual native email.
+	 * @param callable|null $accepted Trusted native source ACK committed with this pending job.
 	 * @return bool|array{status:string}
 	 */
-	public static function enqueue( int $id, array $messages, Conversation $conversation, Message $captured ): bool|array {
+	public static function enqueue( int $id, array $messages, Conversation $conversation, Message $captured, ?callable $accepted = null ): bool|array {
 		$answer = false;
 		Lock::run(
 			'conversation-source-' . $id,
-			static function () use ( $id, $messages, $conversation, $captured, &$answer ): void {
+			static function () use ( $id, $messages, $conversation, $captured, $accepted, &$answer ): void {
 				$erased = AuthorizationStore::read( 'conversation-erased-' . $id );
 				if ( ! is_array( $erased ) || array() !== $erased ) {
 					return; }
-				$answer = self::enqueue_current( $id, $messages, $conversation, $captured );
+				$answer = self::enqueue_current( $id, $messages, $conversation, $captured, $accepted );
 			}
 		);
 		return $answer;
@@ -41,14 +42,15 @@ final class ConversationAuthorization {
 
 	/** Freeze only while owning the source-level deletion lock.
 	 *
-	 * @param int          $id Native source.
-	 * @param array<mixed> $messages Full native messages.
-	 * @param Conversation $conversation Native rendered conversation.
-	 * @param Message      $captured Actual native mail.
+	 * @param int           $id Native source.
+	 * @param array<mixed>  $messages Full native messages.
+	 * @param Conversation  $conversation Native rendered conversation.
+	 * @param Message       $captured Actual native mail.
+	 * @param callable|null $accepted Trusted native source ACK committed with this pending job.
 	 * @return bool|array{status:string} Durable result.
 	 * @throws \RuntimeException A transaction cannot publish an unconfirmed source/job.
 	 */
-	private static function enqueue_current( int $id, array $messages, Conversation $conversation, Message $captured ): bool|array {
+	private static function enqueue_current( int $id, array $messages, Conversation $conversation, Message $captured, ?callable $accepted = null ): bool|array {
 		$source = array(
 			'conversation_id'   => $id,
 			'messages'          => $messages,
@@ -77,13 +79,15 @@ final class ConversationAuthorization {
 		$answer  = false;
 		$saved   = AuthorizationStore::edit(
 			$key,
-			static function ( array &$state ) use ( $source, $message, &$answer ): void {
+			static function ( array &$state ) use ( $source, $message, $accepted, &$answer ): void {
 				$job = (int) ( $state['job'] ?? 0 );
 				if ( $job > 0 ) {
 					$old      = ( new JobStore() )->load( $job );
 					$decision = AuthorizationStore::read( 'conversation-' . $job );
 					$status   = is_array( $decision ) ? ( $decision['status'] ?? '' ) : '';
 					$answer   = 'delivered' === $status ? true : ( null !== $old && in_array( $status, array( '', 'pending', 'processing', 'normal' ), true ) ? array( 'status' => 'pending' ) : false );
+					if ( false !== $answer && null !== $accepted ) {
+						$accepted( $job ); }
 					return;
 				}
 				$job      = ( new JobStore() )->create( $message );
@@ -102,6 +106,8 @@ final class ConversationAuthorization {
 				if ( get_post_meta( $job, self::SOURCE, true ) !== $encoded || (int) get_post_meta( $job, self::SOURCE_ID, true ) !== $source['conversation_id'] || 'yes' !== get_post_meta( $job, self::PENDING, true ) ) {
 					throw new \RuntimeException( 'conversation_mail_source_unconfirmed' );
 				}
+				if ( null !== $accepted ) {
+					$accepted( $job ); }
 				$state  = array( 'job' => $job );
 				$answer = array( 'status' => 'pending' );
 			},

@@ -166,6 +166,25 @@ jobs:
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter 'ReviewReminderTest|MailBudgetRollbackTest|MailBudgetTest|InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest'
 
+      # Current #568 composition keeps the mandatory pre-send gate while adding
+      # persistent reception/job occupancy. Both native stores run the same real
+      # connection, source ACK, critical/reset/VAT, held-job and classifier fixtures.
+      - name: business and native notification capacity in both stores
+        run: |
+          cd plugins/linker-commerce
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
+          cd ../..
+          just wp smoke wc hpos sync --user=1
+          just wp smoke option update woocommerce_custom_orders_table_enabled yes
+          just wp smoke option update woocommerce_hpos_datastore_caching_enabled yes
+          just wp smoke option update woocommerce_feature_product_instance_caching_enabled yes
+          cd plugins/linker-commerce
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
+
       # #414: the abilities route, including the customer token. The test
 
       # #519: real REST proof consumption, multi-dimensional admission,
@@ -253,7 +272,7 @@ jobs:
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter GenieInquiryTest
 
-      # The observation-only classifier uses fake service answers and local
+      # The mandatory pre-send classifier uses fake service answers and local
       # Outbox data. Includes private review history, native privacy, two real
       # PHP connections, and rollback after a failed metadata write.
       - name: inquiry assessment, customer evidence and staff review

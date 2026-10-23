@@ -95,7 +95,8 @@ final class Handler {
 			foreach ( array( 'name', 'email', 'company', 'message', 'linker_request_id', 'linker_individual_review' ) as $key ) {
 				$fields[ $key ] = isset( $post[ $key ] ) && is_string( $post[ $key ] ) ? sanitize_textarea_field( $post[ $key ] ) : '';
 			}
-			$blocked = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
+			$fields['consent'] = '1' === ( $post['consent'] ?? '' ) ? '1' : '';
+			$blocked           = 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode() && \Linker\Commerce\Protection\Campaign::recovery_matches( $post, false );
 			WC()->session->set( 'linker_inquiry_fields', $blocked ? null : $fields );
 			$language = isset( $post['lang'] ) && is_string( $post['lang'] ) ? sanitize_key( $post['lang'] ) : null;
 			WC()->session->set( 'linker_inquiry_error', $result->get_error_message() );

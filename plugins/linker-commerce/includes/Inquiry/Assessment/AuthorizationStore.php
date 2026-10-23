@@ -42,17 +42,21 @@ final class AuthorizationStore {
 		global $wpdb;
 		$name = 'linker-send-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $id );
 	 // phpcs:disable WordPress.DB.DirectDatabaseQuery -- Follows the existing Admission ledger's connection-owned lock + exact CAS contract.
-		if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s,0)', $name ) ) ) {
-			return false;
-		}
 		$owned      = false;
+		$native     = null;
 		$committed  = false;
 		$connection = null;
 		$fence      = null;
+		$taken      = false;
 		try {
 			if ( $transaction ) {
 				$fence = \Linker\Commerce\Mail\ConnectionFence::enter();
 			}
+			// Fence the first lock too: reconnecting here would lose a caller's
+			// outer transaction before NativeTransaction could discover it.
+			$taken = '1' === (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s,0)', $name ) );
+			if ( ! $taken ) {
+				return false; }
 			$option = self::PREFIX . $id;
 			$wpdb->query( $wpdb->prepare( "INSERT IGNORE INTO {$wpdb->options} (option_name,option_value,autoload) VALUES (%s,'{}','off')", $option ) );
 			$raw   = $wpdb->get_var( $wpdb->prepare( "SELECT option_value FROM {$wpdb->options} WHERE option_name=%s AND IS_USED_LOCK(%s)=CONNECTION_ID()", $option, $name ) );
@@ -62,10 +66,8 @@ final class AuthorizationStore {
 			}
 			if ( $transaction ) {
 				$connection = $wpdb->get_var( 'SELECT CONNECTION_ID()' );
-				$owned      = \Linker\Commerce\Mail\BudgetTransaction::begin();
-				if ( ! $owned ) {
-					return false;
-				}
+				$native     = new \Linker\Commerce\Mail\NativeTransaction();
+				$owned      = true;
 			}
 			$work( $state );
 			$encoded = wp_json_encode( $state );
@@ -81,9 +83,10 @@ final class AuthorizationStore {
 			}
 			if ( $owned ) {
 				$fence->assert_current();
-				if ( $connection !== $wpdb->get_var( 'SELECT CONNECTION_ID()' ) || false === $wpdb->query( 'COMMIT' ) ) {
+				if ( $connection !== $wpdb->get_var( 'SELECT CONNECTION_ID()' ) ) {
 					return false;
 				}
+				$native->commit();
 				$fence->assert_current();
 				$committed = true;
 			}
@@ -93,10 +96,11 @@ final class AuthorizationStore {
 		} finally {
 			try {
 				$fence?->assert_current();
-				if ( $owned && ! $committed && $connection === $wpdb->get_var( 'SELECT CONNECTION_ID()' ) ) {
-					$wpdb->query( 'ROLLBACK' );
+				if ( null !== $native && $owned && ! $committed && $connection === $wpdb->get_var( 'SELECT CONNECTION_ID()' ) ) {
+					$native->rollback();
 				}
-				$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
+				if ( $taken ) {
+					$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) ); }
 			} catch ( \Throwable $cleanup_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Connection loss releases the native lock; cleanup must never reconnect or mask the fail-closed result.
 				// A lost connection releases its native lock; never replay cleanup SQL on another one.
 			} finally {

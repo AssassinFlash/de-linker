@@ -73,6 +73,18 @@ abstract class TeamEmail extends WC_Email {
 	 */
 	public function restore_locale(): void {}
 
+	/** Unsaved native defaults must follow each render in the shared background mailer. */
+	public function get_subject() {
+		$this->init_settings();
+		return parent::get_subject();
+	}
+
+	/** The heading follows the same native per-render locale as the subject. */
+	public function get_heading() {
+		$this->init_settings();
+		return parent::get_heading();
+	}
+
 	/**
 	 * Internal mail uses its own sender; WC_Email installs these getters as
 	 * wp_mail filters while sending, and Outbox persists their values (#286).

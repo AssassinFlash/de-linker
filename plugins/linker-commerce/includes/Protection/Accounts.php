@@ -158,6 +158,7 @@ final class Accounts {
 			return;
 		}
 		$post = self::post();
+		\Linker\Commerce\Mail\ResetNotice::remember( isset( $post['user_login'] ) && is_string( $post['user_login'] ) ? $post['user_login'] : '' );
 		if ( 'enforce' === Configuration::current()->mode && ! wp_verify_nonce( self::text( $post, 'linker_password_reset_nonce' ), 'linker_password_reset' ) ) {
 			$errors->add( 'linker_reset_verification', __( 'Please verify your request and try again.', 'linker-commerce' ) );
 			return;
@@ -166,6 +167,11 @@ final class Accounts {
 		if ( is_wp_error( $result ) ) {
 			$errors->add( $result->get_error_code(), $result->get_error_message() );
 		} else {
+			$reserved = \Linker\Commerce\Mail\ResetNotice::reserve( $user, (string) ( $result['id'] ?? wp_generate_uuid4() ) );
+			if ( is_wp_error( $reserved ) ) {
+				$errors->add( 'linker_reset_capacity', __( 'Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) );
+				return;
+			}
 			$this->reset      = $result;
 			$this->reset_user = $user->ID;
 		}

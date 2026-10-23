@@ -316,6 +316,13 @@ final class InternalSmtpTest extends IntegrationTestCase {
 	 * Only authorized staff can read configuration status, never config values.
 	 */
 	public function test_staff_rest_readback_has_no_credentials(): void {
+		$before = get_option( \Linker\Commerce\Mail\CapacityHealth::OPTION );
+		$this->later(
+			static function () use ( $before ): void {
+				false === $before ? delete_option( \Linker\Commerce\Mail\CapacityHealth::OPTION ) : update_option( \Linker\Commerce\Mail\CapacityHealth::OPTION, $before, false );
+			}
+		);
+		\Linker\Commerce\Mail\CapacityHealth::failed();
 		$directory = $this->fixture();
 		$server    = rest_get_server();
 		$health    = new \Linker\Commerce\Mail\SmtpHealth( new InternalSmtp( $directory . '/smtp.env' ) );
@@ -333,7 +340,10 @@ final class InternalSmtpTest extends IntegrationTestCase {
 		$data = $response->get_data();
 		$this->assertTrue( $data['smtp_configured'] );
 		$this->assertSame( 'SMTP configured', $data['label'] );
-		$this->assertSame( array( 'smtp_configured', 'label', 'last_outcome' ), array_keys( $data ) );
+		$this->assertSame( array( 'smtp_configured', 'label', 'last_outcome', 'capacity_failure' ), array_keys( $data ) );
+		$this->assertSame( array( 'at', 'reason' ), array_keys( $data['capacity_failure'] ) );
+		$this->assertIsInt( $data['capacity_failure']['at'] );
+		$this->assertSame( 'notification_not_accepted', $data['capacity_failure']['reason'] );
 		$this->assertStringNotContainsString( 'fake-password', (string) wp_json_encode( $data ) );
 	}
 

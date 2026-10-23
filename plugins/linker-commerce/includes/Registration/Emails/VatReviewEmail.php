@@ -38,10 +38,11 @@ final class VatReviewEmail extends TeamEmail {
 	/**
 	 * Sets up the email.
 	 *
-	 * @param string  $plugin_file Absolute path of the main plugin file.
-	 * @param Options $options     The plugin settings.
+	 * @param string                                  $plugin_file Absolute path of the main plugin file.
+	 * @param Options                                 $options     The plugin settings.
+	 * @param \Linker\Commerce\Registration\VatNotice $notices Native current-source handoff.
 	 */
-	public function __construct( string $plugin_file, Options $options ) {
+	public function __construct( string $plugin_file, Options $options, private readonly \Linker\Commerce\Registration\VatNotice $notices = new \Linker\Commerce\Registration\VatNotice() ) {
 		$this->id            = self::ID;
 		$this->title         = __( 'VAT check changed', 'linker-commerce' );
 		$this->description   = __( 'Sent to the internal notification address, with blind copies, when the VIES verdict of a customer changes.', 'linker-commerce' );
@@ -63,12 +64,21 @@ final class VatReviewEmail extends TeamEmail {
 		if ( ! $user instanceof WP_User ) {
 			return;
 		}
-		$this->change                    = array(
-			'previous' => (string) $previous,
-			'current'  => (string) $current,
+		$this->notices->deliver(
+			$user->ID,
+			function ( array $record ) use ( $user ): ?\Linker\Commerce\Mail\Message {
+				$user = get_userdata( $user->ID );
+				if ( ! $user instanceof WP_User ) {
+					return null;
+				}
+				$this->change                    = array(
+					'previous' => $record['previous'],
+					'current'  => $record['current'],
+				);
+				$this->placeholders['{company}'] = (string) get_user_meta( $user->ID, 'billing_company', true );
+				return \Linker\Commerce\Mail\Prepared::capture( fn () => $this->notify( $user ) );
+			}
 		);
-		$this->placeholders['{company}'] = (string) get_user_meta( $user->ID, 'billing_company', true );
-		$this->notify( $user );
 	}
 
 	/**

@@ -5359,3 +5359,11 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr ""
+
+#: includes/Protection/BusinessCapacity.php
+msgid "Your request has not been saved. We cannot accept new requests on this website right now. Your entries and solution draft are still here. Please try again later or email sales@de-linker.com."
+msgstr ""
+
+#: includes/Protection/Accounts.php
+msgid "Password reset is temporarily unavailable. Please try again later or email sales@de-linker.com."
+msgstr ""
