@@ -156,7 +156,9 @@ export function ResidentialPanel( {
 	// promise both the Save button and Ask Genie await, and only for the design
 	// it was started for.
 	const askingKey = useRef< string | null >( null );
-	const askFailure = useRef< 'failed' | 'changed' >( 'failed' );
+	const askFailure = useRef< 'failed' | 'changed' | 'unconfirmed' >(
+		'failed'
+	);
 	const saveInFlight = useRef< {
 		key: string;
 		promise: Promise< SavedSolution | null >;
@@ -338,14 +340,23 @@ export function ResidentialPanel( {
 						failure.kind === 'stale' ) ||
 					( failure instanceof SolutionWriteError &&
 						failure.changed );
-				askFailure.current = changed ? 'changed' : 'failed';
+				let outcome: 'failed' | 'changed' | 'unconfirmed' = 'failed';
+				if ( changed ) {
+					outcome = 'changed';
+				} else if (
+					failure instanceof SolutionWriteError &&
+					failure.unconfirmed
+				) {
+					outcome = 'unconfirmed';
+				}
+				askFailure.current = outcome;
 				// One failure sentence: the Save button's own status for its
 				// click, the report's Ask status when Ask started the save.
 				if ( designEpoch.current === epoch ) {
 					if ( fromAsk ) {
 						setSaveState( 'idle' );
 					} else {
-						setSaveState( changed ? 'changed' : 'failed' );
+						setSaveState( outcome );
 					}
 				}
 				return null;

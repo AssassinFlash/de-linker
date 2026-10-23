@@ -32,7 +32,8 @@ import {
 } from '../publication';
 import { Documents } from './Documents';
 
-export type SaveState = 'idle' | 'saving' | 'saved' | 'failed' | 'changed';
+export type SaveState =
+	'idle' | 'saving' | 'saved' | 'failed' | 'changed' | 'unconfirmed';
 
 export interface SolutionProps {
 	result: ResidentialResult;
@@ -375,6 +376,12 @@ export function Solution( props: SolutionProps ) {
 					) : null }
 					{ props.saveState === 'changed'
 						? selectionChangedText()
+						: null }
+					{ props.saveState === 'unconfirmed'
+						? __(
+								'The request status could not be confirmed. Please check before sending it again.',
+								'linker-tools'
+							)
 						: null }
 					{ props.saveState === 'failed'
 						? __(

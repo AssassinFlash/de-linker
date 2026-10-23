@@ -735,7 +735,7 @@ test( 'Ask Genie reuses the solution this session already saved', async () => {
 
 test( 'Ask Genie does not open Genie when the solution could not be saved', async () => {
 	const save = vi.mocked( saveSolution );
-	save.mockRejectedValue( new Error( 'save 500' ) );
+	save.mockRejectedValue( new SolutionWriteError( false ) );
 	const asks = genieAsks();
 	const { engine } = fakeEngine( { locale: 'en' } );
 	render(
@@ -759,6 +759,87 @@ test( 'Ask Genie does not open Genie when the solution could not be saved', asyn
 	expect( asks.asks ).toEqual( [] );
 	asks.stop();
 } );
+
+test.each( [
+	[ 'en', 'Save solution' ],
+	[ 'en', 'Ask Genie' ],
+	[ 'de', 'Lösung speichern' ],
+	[ 'de', 'Genie fragen' ],
+] as const )(
+	'%s %s keeps an unconfirmed save visible without claiming failure or resending',
+	async ( locale, action ) => {
+		if ( locale === 'de' ) {
+			setLocaleData( german.locale_data.messages, 'linker-tools' );
+		}
+		const save = vi.mocked( saveSolution );
+		save.mockRejectedValue( new SolutionWriteError( false, true ) );
+		const asks = genieAsks();
+		const { engine, calls } = fakeEngine( { locale } );
+		render(
+			<App
+				config={ config( locale ) }
+				engine={ engine }
+				store={ fakeStore().store }
+			/>
+		);
+		const germanPage = locale === 'de';
+		fill(
+			germanPage ? /Postleitzahl des Standorts/ : /Postcode of the site/,
+			'80538'
+		);
+		fill(
+			germanPage
+				? /Jahresverbrauch des Haushalts/
+				: /Annual household consumption/,
+			'5000'
+		);
+		fill( germanPage ? /PV-Leistung/ : /PV array/, '10' );
+		await act( async () =>
+			fireEvent.click(
+				screen.getByRole( 'button', {
+					name: germanPage ? 'System berechnen' : 'Calculate system',
+				} )
+			)
+		);
+		const button = await screen.findByRole( 'button', { name: action } );
+		await act( async () => fireEvent.click( button ) );
+		expect(
+			await screen.findByText(
+				germanPage
+					? 'Der Status Ihrer Anfrage konnte nicht bestätigt werden. Bitte prüfen Sie ihn vor einem erneuten Versand.'
+					: 'The request status could not be confirmed. Please check before sending it again.'
+			)
+		).toBeInTheDocument();
+		expect( save ).toHaveBeenCalledTimes( 1 );
+		expect( asks.asks ).toEqual( [] );
+		expect(
+			calls.filter( ( call ) => call.name === 'residential' )
+		).toHaveLength( 1 );
+		expect(
+			screen.queryByText(
+				germanPage
+					? 'Die Lösung konnte nicht gespeichert werden. Versuchen Sie es erneut.'
+					: 'The solution could not be saved. Try again.'
+			)
+		).toBeNull();
+		expect(
+			screen.queryByRole( 'link', {
+				name: germanPage
+					? 'Gespeicherte Lösung öffnen'
+					: 'Open saved solution',
+			} )
+		).toBeNull();
+		expect(
+			screen.getByLabelText(
+				germanPage
+					? 'Postleitzahl des Standorts'
+					: 'Postcode of the site'
+			)
+		).toHaveValue( '80538' );
+		expect( screen.getAllByRole( 'article' ) ).toHaveLength( 2 );
+		asks.stop();
+	}
+);
 
 test( 'a guest save has no account solution, and the report asks for a sign-in', async () => {
 	const save = vi.mocked( saveSolution );
