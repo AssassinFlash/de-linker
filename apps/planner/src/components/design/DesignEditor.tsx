@@ -7,6 +7,7 @@ import type {
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import { roofDependents } from "../../domain/geometryCommands.ts";
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
+import { selectedRoofId } from "../../domain/geometrySelection.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { Session } from "../../data/protocol.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -146,16 +147,8 @@ export function DesignEditor({
 			return;
 		}
 		setSelected(id);
-		const pose = poses.find((pose) => pose.id === id),
-			object = [
-				...geometry.roofs,
-				...geometry.arrays,
-				...geometry.obstacles,
-				...geometry.keepouts,
-			].find((object) => object.id === id);
-		if (pose) setRoofId(pose.roof_id);
-		else if (object)
-			setRoofId("roof_id" in object ? object.roof_id : object.id);
+		const selectedRoof = selectedRoofId(geometry, id, poses);
+		if (selectedRoof !== null) setRoofId(selectedRoof);
 	}
 	function open(
 		kind: FormKind,

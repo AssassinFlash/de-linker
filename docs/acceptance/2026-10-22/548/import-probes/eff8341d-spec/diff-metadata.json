@@ -1,0 +1,10 @@
+{
+  "command": [
+    "git",
+    "diff",
+    "367e454c23f542632258e1440387c4c9e7825e17...eff8341d5a0eaf24999f42854da6339032c65c9c"
+  ],
+  "sha256": "2b663e1f512c1a6461b5f3c673802b026c5864e1c8a83f3d972b19c78015a053",
+  "bytes": 2519637,
+  "retention": "Full reconstructible patch reviewed through fixed Git objects; retained command/hash only"
+}

@@ -1,0 +1,15 @@
+✔ Float32 roof buffers retain centimetre openings inside large supported UV charts (0.770042ms)
+✔ scene framing includes all actual obstacle top vertices (7.185583ms)
+✔ large arrays batch relative to local pivots without dropping stable IDs (21.800417ms)
+✔ unowned failed renderer releases both partial backends and preserves cleanup isolation (1.2925ms)
+✔ initialised renderer owns current backend disposal and previous fallback remains separate (0.329416ms)
+✔ initial roof view remains above and faces flat/steep roofs in every bearing without editing geometry (4.330083ms)
+✔ explicit framing follows the selected child's roof while retaining every scene extent (3.846709ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 335.195209

@@ -82,6 +82,7 @@ async function rig(
 	const journal = new GeometryImportStore(),
 		uploads = [];
 	let owner = session,
+		recoveryReadGate = null,
 		rechecks = 0,
 		flow,
 		writeStarted = false;
@@ -114,7 +115,10 @@ async function rig(
 	});
 	await client.bootstrap();
 	const store = {
-		list: journal.list.bind(journal),
+		async list(...args) {
+			if (recoveryReadGate) await recoveryReadGate.promise;
+			return journal.list(...args);
+		},
 		clear: journal.clear.bind(journal),
 		acknowledge: journal.acknowledge.bind(journal),
 		async write(origin, body) {
@@ -197,6 +201,9 @@ async function rig(
 		},
 		setReply(value) {
 			reply = value;
+		},
+		holdRecoveryReads(gate) {
+			recoveryReadGate = gate;
 		},
 		setOwner(value) {
 			owner = value;
@@ -496,7 +503,18 @@ test("an earlier upload is explicitly reviewed before its actual fixture roof ca
 			.includes(asset.metadata.geometry_import_options.roof_name),
 		true,
 	);
+	const recoveryGate = deferred();
+	fixture.holdRecoveryReads(recoveryGate);
 	await click("Add roof to current design");
+	await until(() => button("Import roof geometry").disabled);
+	assert.notEqual(
+		document.activeElement,
+		button("Import roof geometry"),
+		"focus must not be restored before a pending recovery scan disables the entry",
+	);
+	await act(async () => recoveryGate.resolve());
+	await until(() => !button("Import roof geometry").disabled);
+	assert.equal(document.activeElement, button("Import roof geometry"));
 	assert.equal(fixture.attachments.length, 1);
 	assert.equal(
 		fixture.attachments[0].prepared.geometry.roofs[0].holes_uv.length,

@@ -4,39 +4,8 @@
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 import { useThree } from "@react-three/fiber";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { TransformControls } from "three/addons/controls/TransformControls.js";
-import type { Group, Vector3 } from "three";
-
-export function OrbitController({ target }: { target: Vector3 }) {
-	const { camera, gl, invalidate } = useThree();
-	const orbit = useRef<OrbitControls | null>(null);
-	// Construct on effect, so StrictMode's mount/dispose cycle never reuses disposed resources.
-	useEffect(() => {
-		const controls = new OrbitControls(camera, gl.domElement);
-		orbit.current = controls;
-		controls.target.copy(target);
-		controls.update();
-		const changed = () => invalidate();
-		controls.addEventListener("change", changed);
-		const pause = () => {
-				controls.enabled = false;
-			},
-			resume = () => {
-				controls.enabled = true;
-			};
-		gl.domElement.addEventListener("planner-transform-start", pause);
-		gl.domElement.addEventListener("planner-transform-end", resume);
-		return () => {
-			controls.removeEventListener("change", changed);
-			gl.domElement.removeEventListener("planner-transform-start", pause);
-			gl.domElement.removeEventListener("planner-transform-end", resume);
-			controls.dispose();
-			orbit.current = null;
-		};
-	}, [camera, gl, invalidate, target]);
-	return null;
-}
+import type { Group } from "three";
 
 export function ArrayTransform({
 	object,

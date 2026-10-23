@@ -66,6 +66,17 @@ test("explicit framing follows the selected child's roof while retaining every s
 		sceneViewDirection(document, array.id),
 		sceneViewDirection(document, second.id),
 	);
+	const poses = panelPoses(document);
+	for (const pose of poses) {
+		assert.deepEqual(
+			sceneViewDirection(document, pose.id),
+			sceneViewDirection(document, second.id),
+		);
+		assert.deepEqual(
+			sceneViewDirection(document, pose.id, poses),
+			sceneViewDirection(document, second.id),
+		);
+	}
 	const points = renderBoundsPoints(
 			document,
 			panelPoses(document),

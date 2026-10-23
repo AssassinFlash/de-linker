@@ -128,6 +128,9 @@ export function useGeometryImport({
 		setIntent(null);
 		setAsset(null);
 		setError(null);
+		// Close may restore focus only after this recovery scan has completed;
+		// a later checking=true must not disable an already-refocused trigger.
+		setChecking(true);
 		setRefresh((value) => value + 1);
 	}, []);
 

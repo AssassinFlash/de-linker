@@ -1,0 +1,64 @@
+{
+  "owner": "/root/geographic_spec_e138",
+  "target": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "base": "367e454c23f542632258e1440387c4c9e7825e17",
+  "completed_utc": "2026-10-23T11:38:31.348766+00:00",
+  "temporary_root": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/roof-import-spec-eff8341d-0sxnek86",
+  "temporary_root_absent": true,
+  "source_files_sha_checked_removed": 145,
+  "source_bytes_removed": 3044055,
+  "generated_probe_copies_removed": [
+    {
+      "path": "apps/planner/tests/composed-eff-probe.mjs",
+      "sha256": "cfe3af2b805d6669ba9cfa803cce7e398da897fa9a5a0ce3231f547dc1c838b3",
+      "bytes": 39704
+    },
+    {
+      "path": "apps/planner/tests/independent-roof-import.mjs",
+      "sha256": "0eb6a82132b93609646ce5c1180ea7b1fe2127e3bfa19a920df3127040c45430",
+      "bytes": 29239
+    },
+    {
+      "path": "apps/planner/tests/revision-parser-probe.mjs",
+      "sha256": "6ef58d3b331e45aa268adb718b6d658fc4b3b90f9faef34cb9c5a6d014254071",
+      "bytes": 4048
+    },
+    {
+      "path": "apps/planner/tests/independent-revision-refusal.mjs",
+      "sha256": "f4d95de00ab4581a9846f5569ee3b30fe04752487eca9ae46dfbfb0a0129e540",
+      "bytes": 4003
+    }
+  ],
+  "duplicate_archived_probe_copies_removed": [
+    {
+      "path": "independent-roof-import.mjs",
+      "sha256": "0eb6a82132b93609646ce5c1180ea7b1fe2127e3bfa19a920df3127040c45430",
+      "bytes": 29239,
+      "authoritative_retained_original": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/import-probes/3225fc55-spec/independent-roof-import.mjs"
+    },
+    {
+      "path": "independent-revision-refusal.mjs",
+      "sha256": "f4d95de00ab4581a9846f5569ee3b30fe04752487eca9ae46dfbfb0a0129e540",
+      "bytes": 4003,
+      "authoritative_retained_original": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/import-probes/3225fc55-spec/independent-revision-refusal.mjs"
+    }
+  ],
+  "dependency_symlinks_removed": [
+    {
+      "path": "apps/planner/node_modules",
+      "target": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules"
+    }
+  ],
+  "dependency_targets_untouched": true,
+  "prior_3225_FAIL_files_hash_checked_unchanged": 37,
+  "unique_evidence_retained": true,
+  "full_diff_copy_retained": false,
+  "active_snapshot_processes": [],
+  "all_test_runs_completed": true,
+  "source_mismatches": [],
+  "new_sites_worktrees_external_databases": 0,
+  "disk_free_before_bytes": 885325426688,
+  "disk_free_after_bytes": 885328986112,
+  "observed_free_space_delta_bytes": 3559424,
+  "disk_delta_caveat": "Global APFS free space is affected by concurrent writers; listed logical deletion sizes are exact"
+}

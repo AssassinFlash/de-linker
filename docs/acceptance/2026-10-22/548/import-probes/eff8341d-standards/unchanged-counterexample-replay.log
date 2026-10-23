@@ -1,0 +1,24 @@
+{"probe":"choice-unicode","input_name_well_formed":true,"input_utf16_units":257,"output_utf16_units":257,"output_name_well_formed":true,"last_code_unit":56898}
+✔ independent valid source name does not become an unpaired surrogate at a display cap (2.759208ms)
+{"probe":"project-save-with-local-recovery-failure","server_revision":2,"original_retained":true,"all_inputs_saved":true}
+✔ independent acknowledged source with failed browser updates can still be adopted and saved on the server (303.991042ms)
+{"probe":"response-origin","response_status":200,"upload_count":1,"error_code":"invalid_json_object","error_status":422,"intent_retained":true,"journal_count":1,"original_key":"0ecfd674-85ae-463e-9195-6277e60daca6"}
+✔ independent malformed 200 response retains the committed original as an unknown result (252.816375ms)
+{"probe":"response-origin","response_status":422,"upload_count":1,"error_code":"invalid_json_object","error_status":422,"intent_retained":true,"journal_count":1,"original_key":"3c4a5c68-d3a9-466c-ac93-febfb71ce191"}
+✔ independent malformed 422 response retains the committed original as an unknown result (13.169291ms)
+{"probe":"response-origin","response_status":500,"upload_count":1,"error_code":"invalid_json_object","error_status":422,"intent_retained":true,"journal_count":1,"original_key":"3d662972-5f0e-47a9-a64b-5c4892f76c2c"}
+✔ independent malformed 500 response retains the committed original as an unknown result (10.097584ms)
+✔ independent identified input refusal still releases the committed original (9.991291ms)
+{"probe":"recovery-copy","locale":"en-GB","confirmed_preview":true,"explicit_adoption":true,"original_retained":true,"warning":"Browser recovery could not be read or updated. An upload starts only after a recovery copy of its original file and settings is saved. Project versions already saved on the server are unchanged."}
+✔ independent recovery-update failure still allows confirmed preview and explicit adoption en-GB (327.222709ms)
+{"probe":"recovery-copy","locale":"de-DE","confirmed_preview":true,"explicit_adoption":true,"original_retained":true,"warning":"Die Wiederherstellung im Browser konnte nicht gelesen oder aktualisiert werden. Ein Upload startet erst, wenn die Originaldatei und ihre Einstellungen hier für die Wiederherstellung gesichert sind. Bereits auf dem Server gespeicherte Projektstände bleiben unverändert."}
+✔ independent recovery-update failure still allows confirmed preview and explicit adoption de-DE (46.643083ms)
+✔ independent concurrent quota decisions preserve the first committed originals without eviction (50.745042ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1424.871125

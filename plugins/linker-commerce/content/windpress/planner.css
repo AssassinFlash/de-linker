@@ -119,7 +119,6 @@
   [data-linker-planner] .lp-field-summary dt { font-size: 11px; color: var(--proto-neutral-500); }
   [data-linker-planner] .lp-field-summary dd { margin: 6px 0 0; font-size: 13px; }
   [data-linker-planner] .lp-geometry-intake > details > .lp-text-button { display: block; width: 100%; text-align: left; overflow-wrap: anywhere; }
-  [data-linker-planner] .lp-import-panel h3 { scroll-margin-top: calc(var(--lp-site-header-height, 0px) + var(--lp-project-bar-height, 0px) + 16px); }
   [data-linker-planner] .lp-import-panel h3:focus-visible { outline: none; }
   [data-linker-planner] .lp-import-panel .lp-inline-actions { margin-top: 20px; }
   [data-linker-planner] .lp-import-panel .lp-comparison { margin-block: 20px; }
@@ -349,6 +348,8 @@
 /* chrome.css gives every [id] an unlayered site-header offset. Actual anchor
    targets and action results account for both measured application bars. */
 [data-linker-planner] .lp-section[id],
-[data-linker-planner] .lp-focus-target {
+[data-linker-planner] .lp-focus-target,
+[data-linker-planner] .lp-import-panel h3,
+[data-linker-planner] .lp-project :is(label, input, textarea, select) {
   scroll-margin-top: calc(var(--lp-site-header-height, 0px) + var(--lp-project-bar-height, 0px) + 16px);
 }

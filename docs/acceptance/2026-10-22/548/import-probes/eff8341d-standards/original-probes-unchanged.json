@@ -1,0 +1,13 @@
+{
+  "target_sha": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "prior_failing_sha": "3225fc552a89c406f685bfc5643d50745e58baa9",
+  "four_generated_test_files_byte_identical": true,
+  "all_retained_probe_deltas_byte_identical": true,
+  "files": {
+    "standards-choice-unicode.test.mjs": "b7d0909e955fb81b7c2b902b931d9dac4a502bbdbe4efcf90d58740a76163331",
+    "standards-refusal-origin.test.mjs": "deec204e7a031ed6da022a951755c508af9fd83ddf8e0db24a1872be7c54dc1f",
+    "standards-project-storage-failure.test.mjs": "5453f29c821eb4e79631ad80b6d742bb89c7ce7defef08dde95305bd21914cab",
+    "standards-storage-warning.test.mjs": "6bf162f9ebd544d9044711c4154f36e6f449ab21168a8b909530a5142f441b26"
+  },
+  "source_boundary": "Original fixed fixture helpers are reconstructed from the prior Git commit; relative application imports execute the target SHA snapshot."
+}

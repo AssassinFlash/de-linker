@@ -81,6 +81,11 @@ None of these becomes accepted merely because this import workflow passes.
    unchanged. Preview area uses at most two fractional digits as display policy;
    the calculation original and declared source precision are kept separately.
 
+  Error-field scrolling must clear both measured sticky bars, including after
+  the project bar grows with translated feedback or a narrow viewport. The
+  field, its unit and correction context must remain visible below those bars;
+  a focused field hidden underneath them fails native acceptance.
+
 Primary dependency sources:
 [README](https://github.com/dumbmatter/fakeIndexedDB),
 [package](https://github.com/dumbmatter/fakeIndexedDB/blob/master/package.json).

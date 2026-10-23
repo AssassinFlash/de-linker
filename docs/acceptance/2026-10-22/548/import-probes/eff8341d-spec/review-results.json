@@ -1,0 +1,41 @@
+{
+  "axis": "Spec",
+  "verdict": "PASS",
+  "scope": "Guided owned roof import fixed source/DOM increment only",
+  "target": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "base": "367e454c23f542632258e1440387c4c9e7825e17",
+  "findings": [],
+  "closed_prior_findings": [
+    {
+      "priority": 1,
+      "source_target": "3225fc55",
+      "name": "Response parser errors delete uncertain original",
+      "unchanged_leaf_variants_pass": 2
+    },
+    {
+      "priority": 2,
+      "source_target": "3225fc55",
+      "name": "Explicit zero blocked by hidden rejected height",
+      "unchanged_leaf_variants_pass": 2
+    }
+  ],
+  "checks": {
+    "locked_domain_data": 62,
+    "locked_DOM": 87,
+    "types": "PASS",
+    "emitted_graph": 1,
+    "source_manifest": "PASS",
+    "unchanged_main": 20,
+    "unchanged_revision": 1,
+    "new_followup": 20,
+    "new_revision_parser": 1,
+    "failures": 0
+  },
+  "not_accepted": [
+    "native camera/framing correction",
+    "native language/viewport matrix",
+    "physical touch",
+    "production",
+    "full A-D goal"
+  ]
+}

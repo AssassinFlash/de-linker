@@ -6,6 +6,11 @@ export function revealActionResult(
 	if (!element?.isConnected || !canReveal()) return false;
 	element.focus({ preventScroll: true });
 	if (!canReveal()) return false;
-	element.scrollIntoView({ block: "start", behavior: "instant" });
+	// A field's visible label carries its name/unit. Reveal that context while
+	// keeping keyboard focus on the editable control itself.
+	(element.closest("label") ?? element).scrollIntoView({
+		block: "start",
+		behavior: "instant",
+	});
 	return true;
 }

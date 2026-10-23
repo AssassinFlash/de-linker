@@ -1,0 +1,2 @@
+eff8341d fix(planner): retain uncertain imports and unblock explicit roof datums
+3225fc55 feat(planner): guide owned roof import into project history

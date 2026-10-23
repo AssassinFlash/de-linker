@@ -1,13 +1,9 @@
 import { Component, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitController, ArrayTransform } from "./SceneControls.tsx";
+import { ArrayTransform } from "./SceneControls.tsx";
 import { SceneCamera } from "./SceneCamera.tsx";
-import {
-	SCENE_FOV_DEG,
-	sceneFitDistance,
-	sceneViewDirection,
-} from "../../domain/sceneCamera.ts";
+import { SCENE_FOV_DEG, sceneViewDirection } from "../../domain/sceneCamera.ts";
 import {
 	Box3,
 	Color,
@@ -71,6 +67,7 @@ interface SceneProps {
 	disabled: boolean;
 }
 const vector = (point: Vec3) => new Vector3(...point);
+const sceneLens = { fov: SCENE_FOV_DEG };
 const roofRotation = (roof: RoofFace) =>
 	new Quaternion().setFromRotationMatrix(
 		new Matrix4().makeBasis(
@@ -484,27 +481,16 @@ export default function SceneViewport(props: SceneProps) {
 			return {
 				centre,
 				size,
-				direction: sceneViewDirection(props.document, props.selected),
+				direction: sceneViewDirection(
+					props.document,
+					props.selected,
+					props.poses,
+				),
 			};
 		} catch {
 			return null;
 		}
 	}, [props.document, props.poses, props.selected, reference]);
-	const [framing, setFraming] = useState(bounds);
-	useEffect(() => {
-		if (!framing && bounds) setFraming(bounds);
-	}, [framing, bounds]);
-	const camera = useMemo(() => {
-		if (!framing) return undefined;
-		const distance = sceneFitDistance(framing.size / 2, 1);
-		return {
-			position: framing.centre
-				.clone()
-				.addScaledVector(new Vector3(...framing.direction), distance)
-				.toArray() as [number, number, number],
-			fov: SCENE_FOV_DEG,
-		};
-	}, [framing]);
 	return (
 		<div className="lp-scene-view" ref={host}>
 			{failed ? (
@@ -520,7 +506,6 @@ export default function SceneViewport(props: SceneProps) {
 						className="lp-button lp-button-secondary"
 						onClick={() => {
 							generation.current++;
-							setFraming(bounds);
 							setBackend("");
 							setFailed(false);
 							setAttempt((value) => value + 1);
@@ -537,8 +522,7 @@ export default function SceneViewport(props: SceneProps) {
 					)}
 				</Notice>
 			) : (
-				palette &&
-				camera && (
+				palette && (
 					<SceneBoundary
 						key={attempt + String(forceWebGL)}
 						failed={() => setFailed(true)}
@@ -548,7 +532,7 @@ export default function SceneViewport(props: SceneProps) {
 							aria-label={__("Roof design", "linker-tools")}
 							frameloop="demand"
 							dpr={[1, 2]}
-							camera={camera}
+							camera={sceneLens}
 							gl={async (defaults) => {
 								const identity = ++generation.current;
 								const renderer = new WebGPURenderer({
@@ -631,8 +615,7 @@ export default function SceneViewport(props: SceneProps) {
 								palette={palette}
 								select={props.select}
 							/>
-							<SceneCamera framing={framing ?? bounds} request={fitRequest} />
-							<OrbitController target={(framing ?? bounds).centre} />
+							<SceneCamera extent={bounds} request={fitRequest} />
 							<RendererLifecycle fail={() => setFailed(true)} />
 						</Canvas>
 					</SceneBoundary>
@@ -644,7 +627,6 @@ export default function SceneViewport(props: SceneProps) {
 					className="lp-tool-button"
 					disabled={failed || !bounds}
 					onClick={() => {
-						setFraming(bounds);
 						setFitRequest((value) => value + 1);
 					}}
 				>
@@ -663,7 +645,6 @@ export default function SceneViewport(props: SceneProps) {
 						checked={forceWebGL}
 						onChange={(event) => {
 							generation.current++;
-							setFraming(bounds);
 							setBackend("");
 							setForceWebGL(event.currentTarget.checked);
 							setFailed(false);

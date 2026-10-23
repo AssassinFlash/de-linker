@@ -1,0 +1,73 @@
+[
+  {
+    "name": "targeted-domain",
+    "command": [
+      "node",
+      "--test",
+      "src/domain/sceneCamera.test.ts",
+      "src/domain/renderGeometry.test.ts",
+      "src/domain/renderLifetime.test.ts"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-f482-bjlqozr5/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 0.4083362500241492,
+    "log": "targeted-domain.log",
+    "log_sha256": "ae712ede7de5110049a0815270df8d65e70a96f659e30b23618a76ad65453552"
+  },
+  {
+    "name": "emitted-graph",
+    "command": [
+      "npm",
+      "run",
+      "build:check"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-f482-bjlqozr5/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 1.149129958008416,
+    "log": "emitted-graph.log",
+    "log_sha256": "d0996fe046f1277de4da40ac17528b2c96701b82856ff10e523b3a75cb3e1306"
+  },
+  {
+    "name": "controlled-lifecycle",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--loader",
+      "./tests/controlled-fiber-loader.mjs",
+      "--test",
+      "tests/camera-lifecycle.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-f482-bjlqozr5/apps/planner",
+    "exit_code": 1,
+    "elapsed_s": 1.151425082993228,
+    "log": "controlled-lifecycle.log",
+    "log_sha256": "96c4e6720bdfb681526a72c34c88fab4b1e30b06b610a3875d711bbf3ecf207f"
+  },
+  {
+    "name": "catalogs",
+    "command": [
+      "/opt/homebrew/opt/python@3.15/bin/python3.15",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/camera-probes/f48228a8-standards/catalogs.py",
+      "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-f482-bjlqozr5"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-f482-bjlqozr5/apps/planner",
+    "exit_code": 1,
+    "elapsed_s": 0.12299283398897387,
+    "log": "catalogs.log",
+    "log_sha256": "ef3f6f8535ff698629223a3a44f96b776f45e49c91407467c541450a167b2a39"
+  },
+  {
+    "name": "selected-panel",
+    "command": [
+      "node",
+      "--test",
+      "tests/selected-panel.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-f482-bjlqozr5/apps/planner",
+    "exit_code": 1,
+    "log": "selected-panel.log",
+    "log_sha256": "3a875f56e7ac4910888bda0f87f2b1a40361dc952ff903f1aa04ad23b402a892"
+  }
+]

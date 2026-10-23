@@ -1,6 +1,8 @@
 /** Camera presentation only; these choices never alter saved geometry or fit. */
-import type { GeometryDocument, Vec3 } from "./geometry.ts";
+import type { GeometryDocument, PanelPose, Vec3 } from "./geometry.ts";
 import { add, cross, scale, toRender } from "./coordinates.ts";
+import { panelPoses } from "./panelPoses.ts";
+import { selectedRoofId } from "./geometrySelection.ts";
 
 // Internal display policy: retain the existing 75-degree perspective lens and
 // leave 10% distance margin around the scene's enclosing sphere.
@@ -13,15 +15,11 @@ const FIT_MARGIN = 1.1;
 export function sceneViewDirection(
 	document: GeometryDocument,
 	selected: string | null,
+	poses: readonly PanelPose[] = panelPoses(document),
 ): Vec3 {
-	const child = [
-		...document.arrays,
-		...document.obstacles,
-		...document.keepouts,
-	].find((item) => item.id === selected);
+	const roofId = selectedRoofId(document, selected, poses);
 	const roof =
-		document.roofs.find((item) => item.id === (child?.roof_id ?? selected)) ??
-		document.roofs[0];
+		document.roofs.find((item) => item.id === roofId) ?? document.roofs[0];
 	if (!roof) throw new Error("scene_has_no_roof");
 	const normal = cross(roof.u_axis_enu, roof.v_axis_enu),
 		direction = toRender(

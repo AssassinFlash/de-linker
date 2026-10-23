@@ -1,0 +1,10 @@
+{
+  "command": [
+    "npm",
+    "test"
+  ],
+  "cwd": "apps/planner",
+  "target": "f48228a87894c23f68d180675d05b902139d531e",
+  "exit_code": 0,
+  "completed_utc": "2026-10-23T11:43:46.755477+00:00"
+}

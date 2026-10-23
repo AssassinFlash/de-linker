@@ -1,0 +1,51 @@
+{
+  "target": "f48228a87894c23f68d180675d05b902139d531e",
+  "base": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "diff": "git diff eff8341d5a0eaf24999f42854da6339032c65c9c...f48228a87894c23f68d180675d05b902139d531e",
+  "commits": [
+    "f48228a8 fix(planner): frame roof surfaces for desktop and narrow 3D views"
+  ],
+  "rule_inventory": [
+    "AGENTS.md"
+  ],
+  "copy": {
+    "draft_sha256": "d44b0cb0f5a415f12996ae429365d53a8343566bd50e0857265ec28966f9a008",
+    "approved_three_pairs_unchanged": true,
+    "final_matches_independent_feedback": true
+  },
+  "fixed_file_hashes": {
+    "apps/planner/src/components/design/SceneCamera.tsx": "f4257ce5a8696941e295a1eef5a5c555898b68acbd24e6592aef488bed63fb3e",
+    "apps/planner/src/components/design/SceneViewport.tsx": "99b1b229a719b48cba48deac37fc728d814730f05235677e53ab52e2ee5db914",
+    "apps/planner/src/domain/sceneCamera.ts": "3eb524af6edcf17a7e030be32225d65c5fa56302bf08548d29de931e03a8404a",
+    "AGENTS.md": "afb605acea0a03d946ff0622db70e9893283ac81dc579d9e06db0605da15de26",
+    "CONTEXT.md": "dc8e88975e90091b3d77ddf189f3492bf3ae6fd1f55e80bea3b0ea574a39fe05",
+    "docs/adr/0002-isolated-planner-runtime.md": "d1dfe4eaef64fd3e03bd08a34aef82954dc5422ee4ee5d5cb8ea37e18db2855f",
+    "docs/specs/548-roof-import-workflow.md": "3b2b494776ad4800717ea929b46272e93794d4c21026c698bebde4a91c1ca440"
+  },
+  "legacy_new_source_matches": [],
+  "changed_production_source_files": [
+    "apps/planner/src/components/design/SceneCamera.tsx",
+    "apps/planner/src/components/design/SceneViewport.tsx",
+    "apps/planner/src/domain/sceneCamera.test.ts",
+    "apps/planner/src/domain/sceneCamera.ts"
+  ],
+  "worktree_status_readback": [
+    " M apps/planner/src/components/revealActionResult.ts",
+    " M docs/specs/548-roof-import-workflow.md",
+    " M plugins/linker-commerce/content/windpress/planner.css",
+    " D plugins/linker-tools/build/planner/assets/SceneViewport-V6NpERFd.js",
+    " D plugins/linker-tools/build/planner/assets/planner-core-BOaHUlv1.js",
+    " M plugins/linker-tools/build/planner/assets/planner.js",
+    " M plugins/linker-tools/build/planner/source-manifest.json",
+    " M plugins/linker-tools/build/planner/vite-manifest.json",
+    " M plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+    "?? docs/acceptance/2026-10-22/548/camera-probes/",
+    "?? docs/acceptance/2026-10-22/548/import-native/camera-working/",
+    "?? docs/acceptance/2026-10-22/548/import-native/eff8341d/",
+    "?? docs/acceptance/2026-10-22/548/import-native/f48228a8/",
+    "?? docs/acceptance/2026-10-22/548/import-probes/eff8341d-spec/",
+    "?? docs/acceptance/2026-10-22/548/import-probes/eff8341d-standards/",
+    "?? plugins/linker-tools/build/planner/assets/SceneViewport-DsAlr1rA.js",
+    "?? plugins/linker-tools/build/planner/assets/planner-core-BzeUzLOh.js"
+  ]
+}
