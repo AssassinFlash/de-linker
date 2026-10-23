@@ -52,7 +52,11 @@ final class EngineeringFeedTest extends TestCase {
 				)
 			)
 		)->byDefault();
-		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing( static fn ( int $id, string $key = '' ) => '' === $key ? array() : '' )->byDefault();
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+			static function ( int $id, string $key = '' ) {
+				return '' === $key ? array() : '';
+			}
+		)->byDefault();
 		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturn( 0 )->byDefault();
 		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
 		WP_Mock::userFunction( 'wp_json_encode' )->andReturnUsing( static fn ( $value, int $flags = 0 ): string => (string) json_encode( $value, $flags ) )->byDefault();

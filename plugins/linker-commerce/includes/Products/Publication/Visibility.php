@@ -90,7 +90,7 @@ final class Visibility {
 				'fields'                      => 'ids',
 				'posts_per_page'              => -1,
 				'suppress_filters'            => true,
-				'lang'                        => 'all',
+				'lang'                        => '',
 				'linker_publication_internal' => true,
 			)
 		);

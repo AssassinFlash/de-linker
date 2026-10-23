@@ -63,17 +63,23 @@ final class Controller {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function dispatch( string $path, WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		nocache_headers();
 		$body = self::json_object( $request->get_json_params() );
-		if ( 'manifest' === $path ) {
-			$data = Publication::manifest();
-		} elseif ( 'validate' === $path ) {
-			$data = Publication::validate( $body );
-		} elseif ( 'identify' === $path ) {
-			$data = $this->identify( $body );
-		} elseif ( 'jobs/claim' === $path ) {
-			$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ) );
-		} else {
-			$data = ( new PreparationJobs() )->acknowledge( $body );
+		try {
+			if ( 'manifest' === $path ) {
+				$data = Publication::manifest();
+			} elseif ( 'validate' === $path ) {
+				$data = Publication::validate( $body );
+			} elseif ( 'identify' === $path ) {
+				Publication::manifest();
+				$data = $this->identify( $body );
+			} elseif ( 'jobs/claim' === $path ) {
+				$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ) );
+			} else {
+				$data = ( new PreparationJobs() )->acknowledge( $body );
+			}
+		} catch ( \RuntimeException $error ) {
+			return new WP_Error( 'publication_unavailable', 'Current product permission could not be checked.', array( 'status' => 503 ) );
 		}
 		if ( is_wp_error( $data ) ) {
 			return $data;
@@ -108,7 +114,7 @@ final class Controller {
 				'fields'                      => 'ids',
 				'posts_per_page'              => -1,
 				'suppress_filters'            => true,
-				'lang'                        => 'all',
+				'lang'                        => '',
 				'linker_publication_internal' => true,
 			)
 		);

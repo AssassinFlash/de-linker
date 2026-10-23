@@ -112,7 +112,7 @@ final class Publication {
 				'orderby'                     => 'ID',
 				'order'                       => 'ASC',
 				'suppress_filters'            => true,
-				'lang'                        => 'all',
+				'lang'                        => '',
 				'linker_publication_internal' => true,
 				'cache_results'               => false,
 			)
