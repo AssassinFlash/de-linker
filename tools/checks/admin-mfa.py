@@ -12,8 +12,10 @@ import base64
 import hashlib
 import http.cookiejar
 import json
+import os
 import re
 import secrets
+import stat
 import subprocess
 import tempfile
 import time
@@ -22,11 +24,14 @@ import urllib.parse
 import urllib.request
 import uuid
 import zipfile
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from html.parser import HTMLParser
+from http.client import HTTPException, InvalidURL
 from pathlib import Path
-from typing import Any
+from typing import Any, BinaryIO
 
 from linker_local.cli import require_php
 from linker_local.downloads import fetch
@@ -41,6 +46,189 @@ FIXTURE = REPO / "tests/e2e/fixtures/admin-mfa.php"
 VERSION = "0.17.0"
 ARCHIVE_SHA256 = "4d1b0f8e5d82e24876c2b4e86f119122e28a8dbaf76dfde495173226c3356f37"
 LANGUAGE_SHA256 = "8d5e133f7ef0697f6f8c48a240ff8a078702bda97bc39eac5fc98fe6da9c318c"
+
+
+# The diagnostic's explicit per-run privacy/resource bounds: no messages or
+# stacks, at most 128 KiB read across both logs and at most five fatal rows.
+FATAL_READ_LIMIT = 128 * 1024
+FATAL_ROW_LIMIT = 5
+FATAL_HEADER = re.compile(
+    r"\[[0-9]{2}-[A-Z][a-z]{2}-[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} "
+    r"[A-Za-z0-9_+/-]+\] PHP Fatal error: +Uncaught "
+    r"(?P<exception>[A-Za-z_][A-Za-z0-9_]*(?:\\[A-Za-z_][A-Za-z0-9_]*)*): "
+)
+EVAL_FILE = re.compile(
+    r"(?:phar://)?/[^\r\n\x00]+/vendor/wp-cli/eval-command/src/"
+    r"EvalFile_Command\.php\([1-9][0-9]*\) : eval\(\)'d code"
+)
+
+
+@contextmanager
+def _open_log(path: Path) -> Iterator[BinaryIO]:
+    # A missing/rotating log is normal. Never follow a replacement symlink or
+    # block on a non-file planted at either of these two fixed log paths.
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    with os.fdopen(descriptor, "rb") as source:
+        if not stat.S_ISREG(os.fstat(source.fileno()).st_mode):
+            raise OSError("The diagnostic log is not a regular file.")
+        yield source
+
+
+def _read_log_bytes(source: BinaryIO, count: int) -> bytes:
+    return source.read(count)
+
+
+@dataclass
+class FatalLogWindow:
+    """Only bytes appended after this run's snapshot can become diagnostics."""
+
+    paths: tuple[Path, Path]
+    roots: tuple[tuple[str, Path], ...]
+    positions: dict[tuple[int, int], tuple[int, bool]]
+    snapshot_bytes: int = 0
+
+    @classmethod
+    def capture(cls, wp: WpCli) -> FatalLogWindow | None:
+        try:
+            directory = wp.instance.wp_content / "linker-errors"
+            window = cls(
+                (directory / "php.log", directory / "php.1.log"),
+                (
+                    ("repo", REPO.resolve(strict=True)),
+                    ("wordpress", wp.instance.docroot.resolve(strict=True)),
+                ),
+                {},
+            )
+            for path in window.paths:
+                try:
+                    with _open_log(path) as source:
+                        info = os.fstat(source.fileno())
+                        at_boundary = True
+                        if info.st_size:
+                            source.seek(info.st_size - 1)
+                            final_byte = _read_log_bytes(source, 1)
+                            window.snapshot_bytes += len(final_byte)
+                            at_boundary = final_byte == b"\n"
+                        window.positions[(info.st_dev, info.st_ino)] = (
+                            info.st_size,
+                            at_boundary,
+                        )
+                except FileNotFoundError:
+                    continue
+            return window
+        except Exception:
+            # If the baseline is unreadable, no historical byte is provably new.
+            # Diagnostics are best effort and must never replace the test result.
+            return None
+
+    def location(self, value: str) -> str | None:
+        if EVAL_FILE.fullmatch(value):
+            # WP-CLI's native eval wrapper is outside the checkout/docroot. Its
+            # installation prefix is private and never becomes a report field.
+            return "wp-cli/eval-file"
+        if not Path(value).is_absolute():
+            return None
+        try:
+            path = Path(value).resolve(strict=True)
+            if not path.is_file():
+                return None
+            for label, root in self.roots:
+                if not path.is_relative_to(root):
+                    continue
+                relative = path.relative_to(root).as_posix()
+                if not re.fullmatch(
+                    r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*\.php", relative
+                ):
+                    return None
+                # Code locations only: uploads, caches and user-named data are
+                # not trustworthy source filenames even inside the WP docroot.
+                first = relative.split("/")[0]
+                if label == "repo" and first not in {
+                    "plugins",
+                    "mu-plugins",
+                    "tests",
+                    "tools",
+                }:
+                    return None
+                if (
+                    label == "wordpress"
+                    and "/" in relative
+                    and not relative.startswith(
+                        (
+                            "wp-admin/",
+                            "wp-includes/",
+                            "wp-content/plugins/",
+                            "wp-content/mu-plugins/",
+                        )
+                    )
+                ):
+                    return None
+                return f"{label}/{relative}"
+        except (OSError, ValueError):
+            return None
+        return None
+
+    def collect(self) -> list[dict[str, str | int]]:
+        remaining = FATAL_READ_LIMIT - self.snapshot_bytes
+        rows: list[dict[str, str | int]] = []
+        seen: set[tuple[int, int]] = set()
+        for path in self.paths:
+            if remaining <= 0 or len(rows) >= FATAL_ROW_LIMIT:
+                break
+            try:
+                with _open_log(path) as source:
+                    info = os.fstat(source.fileno())
+                    identity = (info.st_dev, info.st_ino)
+                    if identity in seen:
+                        continue
+                    seen.add(identity)
+                    offset, at_boundary = self.positions.get(identity, (0, True))
+                    if info.st_size < offset:
+                        # Copy/truncate cannot prove a current-run boundary.
+                        continue
+                    start = max(offset, info.st_size - remaining)
+                    source.seek(start)
+                    data = _read_log_bytes(source, info.st_size - start)
+                    remaining -= len(data)
+                    if start > offset or not at_boundary:
+                        data = data.partition(b"\n")[2]
+                    found: list[dict[str, str | int]] = []
+                    # Ignore incomplete final lines and all stack/message text.
+                    for raw in data.split(b"\n")[:-1]:
+                        text = raw.decode("utf-8", errors="replace")
+                        match = FATAL_HEADER.match(text)
+                        if match is None:
+                            continue
+                        # PHP appends the origin after the message. Splitting
+                        # from the right also avoids backtracking over its text.
+                        _, separator, origin = text.rpartition(" in ")
+                        filename, _, line = origin.rpartition(":")
+                        if not separator or not re.fullmatch(r"[1-9][0-9]*", line):
+                            continue
+                        location = self.location(filename)
+                        if location is not None:
+                            found.append(
+                                {
+                                    "exception": match["exception"],
+                                    "file": location,
+                                    "line": int(line),
+                                }
+                            )
+                    rows.extend(found[-(FATAL_ROW_LIMIT - len(rows)) :])
+            except OSError:
+                continue
+        return rows
+
+
+def attach_fatal_diagnostics(
+    report: dict[str, Any], window: FatalLogWindow | None
+) -> None:
+    try:
+        if window is not None and (rows := window.collect()):
+            report["php_fatals"] = rows
+    except Exception:
+        # Never emit the diagnostic error: it can itself contain private paths.
+        pass
 
 
 @dataclass
@@ -531,14 +719,23 @@ def main() -> int:
         "captured_utc": datetime.now(UTC).isoformat(),
     }
     test = Acceptance(wp)
+    diagnostic: FatalLogWindow | None = None
     try:
         prepared = prepare(wp) if args.prepare else {}
         report["dependency"] = {**prepared, **verify_dependency(wp)}
+        diagnostic = FatalLogWindow.capture(wp)
         test.run()
         report["passed"] = True
-    except (RuntimeError, OSError, ValueError) as error:
+    except (HTTPException, RuntimeError, OSError, ValueError) as error:
         report["passed"] = False
-        report["failure"] = str(error)
+        if isinstance(error, HTTPException):
+            # InvalidURL/BadStatusLine messages can contain reset keys, cookies
+            # or response bytes. Only these fixed classifications are public.
+            kind = "InvalidURL" if isinstance(error, InvalidURL) else "HTTPException"
+            report["failure"] = f"Native MFA HTTP transport failed: {kind}."
+        else:
+            report["failure"] = str(error)
+        attach_fatal_diagnostics(report, diagnostic)
     finally:
         report["checks"] = test.results
         if test.owns_fixture and not args.keep_fixture:
