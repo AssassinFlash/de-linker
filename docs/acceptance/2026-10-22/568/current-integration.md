@@ -192,3 +192,21 @@ both native mutex phases and preserve German on the late failure. No real email,
 provider request, new message, new authorization or budget reset was used. Final
 fixed-head counts/static checks are recorded in the private coordinator handoff;
 this note does not assert a later complete suite, independent review, CI or release.
+
+
+Fixed `86faf475` then completed its exact strong-cache suite: **436 tests / 5658
+assertions, 0 skipped**. Independent review withheld final approval after a separate
+native one-case red (27 assertions): a retained unscheduled preparation phase could
+arm a new action after a direct consumer reached synthetic IO and threw an unknown
+outcome. That red remains separate; the 436-pass result does not close that window.
+
+The next repair makes the real original-job attempt durable before quota/IO and
+retains unknown outcomes across immediate, native-AS and heartbeat consumers.
+Native controls include a witness-write KILL with zero quota/transport, the original
+phase-before-immediate red, and the reverse direction: an independent PHP/DB worker
+consumes the original AS action while the immediate worker is already in synthetic
+IO holding its mail-job mutex. The peer's initial-read KILL must not arm a successor.
+Existing definite-false SMTP/fallback and native three-failure retry contracts stay
+positive controls. The operator helper's documented invocation now includes native
+WP-CLI `--use-include`, required for its existing strict_types declaration; its
+historical disposition implementation is unchanged.

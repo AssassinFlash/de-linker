@@ -10,8 +10,8 @@ namespace Linker\Commerce\Mail;
 use Linker\Commerce\Inquiry\Assessment\Lock;
 
 /** No transport, message creation, authorization or quota reservation occurs here. */
-final class InitialReadRecovery {
-	public const META = '_linker_mail_initial_read_recovery';
+final class PreTransportRecovery {
+	public const META = '_linker_mail_pre_transport_recovery';
 
 	/**
 	 * Use the same native queue as the original Outbox.
@@ -28,10 +28,10 @@ final class InitialReadRecovery {
 	 */
 	public function failed( int $action_id, \Exception $error ): void {
 		$cause = $error;
-		while ( ! $cause instanceof InitialReadFailure && null !== $cause->getPrevious() ) {
+		while ( ! $cause instanceof PreTransportFailure && null !== $cause->getPrevious() ) {
 			$cause = $cause->getPrevious();
 		}
-		if ( ! $cause instanceof InitialReadFailure ) {
+		if ( ! $cause instanceof PreTransportFailure ) {
 			return;
 		}
 		try {
@@ -39,7 +39,7 @@ final class InitialReadRecovery {
 				function () use ( $action_id ): void {
 					$action = \ActionScheduler::store()->fetch_action( $action_id );
 					if ( $action instanceof \ActionScheduler_NullAction ) {
-						throw new \RuntimeException( 'mail_initial_read_action_unavailable' );
+						throw new \RuntimeException( 'mail_pre_transport_action_unavailable' );
 					}
 					$args = $action->get_args();
 					if ( Outbox::HOOK !== $action->get_hook() || Outbox::GROUP !== $action->get_group() || array_keys( $args ) !== array( 0 ) || ! is_int( $args[0] ) || $args[0] < 1 || 'failed' !== \ActionScheduler::store()->get_status( $action_id ) ) {
@@ -88,7 +88,7 @@ final class InitialReadRecovery {
 	 *
 	 * @param int      $job Original job.
 	 * @param callable $work Read-back and scheduling only.
-	 * @param int      $failed_action Optional newly failed initial-read source.
+	 * @param int      $failed_action Optional newly failed pre-transport source.
 	 * @throws \RuntimeException Unconfirmed native phase or scheduler write.
 	 */
 	private function edit( int $job, callable $work, int $failed_action = 0 ): void {
@@ -101,18 +101,18 @@ final class InitialReadRecovery {
 						// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Exact original committed job, same native NOWAIT boundary as its scheduler.
 						$row = $wpdb->get_var( $wpdb->prepare( 'SELECT ID FROM %i WHERE ID=%d FOR UPDATE NOWAIT', $wpdb->posts, $job ) );
 						clean_post_cache( $job );
-						if ( (int) $row !== $job || 'private' !== get_post_status( $job ) || $this->jobs->held( $job ) || null === $this->jobs->load( $job ) ) {
+						if ( (int) $row !== $job || 'private' !== get_post_status( $job ) || $this->jobs->held( $job ) || null === $this->jobs->load( $job ) || NativeAttempt::unresolved( $job ) ) {
 							return;
 						}
 						if ( $failed_action > 0 ) {
 							$previous = get_post_meta( $job, self::META, true );
 							if ( '' !== $previous ) {
 								if ( ! is_array( $previous ) || ! is_int( $previous['action'] ?? null ) || ! is_int( $previous['count'] ?? null ) || $previous['count'] < 1 || $previous['count'] > count( Outbox::RETRY_DELAYS ) + 1 || ! is_int( $previous['scheduled'] ?? null ) ) {
-									throw new \RuntimeException( 'mail_initial_read_phase_invalid' );
+									throw new \RuntimeException( 'mail_pre_transport_phase_invalid' );
 								}
-								// Only this phase's exact successor can advance it. Duplicate
-								// or late callbacks cannot resurrect an older failed action.
-								if ( $previous['action'] === $failed_action || $previous['scheduled'] !== $failed_action ) {
+								// Native AS IDs increase. Duplicate/older callbacks cannot
+								// resurrect a phase; a later known-safe consumer may advance it.
+								if ( $previous['action'] >= $failed_action ) {
 									return;
 								}
 							}
@@ -136,7 +136,7 @@ final class InitialReadRecovery {
 			true
 		);
 		if ( ! $taken ) {
-			throw new \RuntimeException( 'mail_initial_read_recovery_busy' );
+			throw new \RuntimeException( 'mail_pre_transport_recovery_busy' );
 		}
 	}
 
@@ -162,7 +162,7 @@ final class InitialReadRecovery {
 						$pending = self::actions( $id, 'pending' );
 					}
 					if ( 1 !== count( $pending ) ) {
-						throw new \RuntimeException( 'mail_initial_read_successor_unconfirmed' );
+						throw new \RuntimeException( 'mail_pre_transport_successor_unconfirmed' );
 					}
 					$state['scheduled'] = (int) $pending[0];
 					self::save( $id, $state );
@@ -204,13 +204,13 @@ final class InitialReadRecovery {
 		update_post_meta( $job, self::META, $state );
 		wp_cache_delete( $job, 'post_meta' );
 		if ( get_post_meta( $job, self::META, true ) !== $state ) {
-			throw new \RuntimeException( 'mail_initial_read_phase_unconfirmed' );
+			throw new \RuntimeException( 'mail_pre_transport_phase_unconfirmed' );
 		}
 	}
 
 	/** Fixed diagnostic, never raw native errors or the frozen message. */
 	private static function diagnostic(): void {
 		CapacityHealth::failed();
-		wc_get_logger()->warning( 'Original notification retained; initial-read recovery could not be confirmed.', array( 'source' => Outbox::LOG_SOURCE ) );
+		wc_get_logger()->warning( 'Original notification retained; pre-transport recovery could not be confirmed.', array( 'source' => Outbox::LOG_SOURCE ) );
 	}
 }

@@ -2,7 +2,8 @@
 /**
  * Guarded historical staff disposition; run only through native wp eval-file --user=STAFF.
  *
- * Usage: wp --user=STAFF eval-file tools/security/568-disposition.php MODE MANIFEST UUID SHA256
+ * Usage: wp --user=STAFF eval-file tools/security/568-disposition.php MODE MANIFEST UUID SHA256 --use-include
+ * Native include is required because this file declares strict_types (WP-CLI eval mode cannot).
  * MODE is preflight (default), apply, or rollback. Manifest and output stay private.
  * Each entry commits independently. An unconfirmed entry stops the batch; never report all done.
  *

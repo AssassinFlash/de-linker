@@ -51,4 +51,21 @@ interface JobCapacity {
 	 * @param int $id Original native job.
 	 */
 	public function held( int $id ): bool;
+
+	/**
+	 * Persist an invocation's native witness before quota or transport.
+	 *
+	 * @param int     $id Original job.
+	 * @param Message $message Exact authorized message.
+	 * @return string Owner token, empty for an unresolved earlier invocation.
+	 */
+	public function begin_attempt( int $id, Message $message ): string;
+
+	/**
+	 * Resolve only this invocation's definite no-IO/false outcome.
+	 *
+	 * @param int    $id Original job.
+	 * @param string $token Exact owner token.
+	 */
+	public function resolve_attempt( int $id, string $token ): void;
 }

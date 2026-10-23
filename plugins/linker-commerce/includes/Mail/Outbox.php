@@ -156,7 +156,7 @@ final class Outbox {
 	 * Attempts a queued message again; runs on the Action Scheduler hook.
 	 *
 	 * @param int $job_id Job id.
-	 * @throws InitialReadFailure Native initial reads failed before any attempt.
+	 * @throws PreTransportFailure Native preparation failed before any quota reservation or transport.
 	 */
 	public function retry( int $job_id ): void {
 		// An outer transaction cannot arm an already held original notification.
@@ -168,7 +168,7 @@ final class Outbox {
 		} catch ( \Throwable $error ) {
 			// This witness ends before any attempt. It must never cover SMTP,
 			// a delivered ACK, or deletion whose external outcome is unknown.
-			throw new InitialReadFailure( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Typed cause only; the public diagnostic is fixed and never outputs native errors.
+			throw new PreTransportFailure( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Typed cause only; the public diagnostic is fixed and never outputs native errors.
 		}
 		if ( $joined ) {
 			NativeTransaction::after_commit(
@@ -242,6 +242,7 @@ final class Outbox {
 	 * @param  int     $attempts Failed attempts so far.
 	 * @param  int     $job_id   Job id, 0 while the message is not queued.
 	 * @return bool Whether the message was sent in this attempt.
+	 * @throws PreTransportFailure The native witness failed before any quota or IO.
 	 */
 	private function attempt( Message $message, int $attempts, int $job_id ): bool {
 		// Owner stop policy applies before any transport selection or quota reservation.
@@ -254,11 +255,23 @@ final class Outbox {
 				$this->jobs->create( $message ); }
 			return false;
 		}
+		try {
+			$attempt_token = $job_id > 0 ? $this->jobs->begin_attempt( $job_id, $message ) : '';
+		} catch ( \Throwable $error ) {
+			throw new PreTransportFailure( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Fixed phase diagnostic; the native cause is never output.
+		}
+		if ( $job_id > 0 && '' === $attempt_token ) {
+			CapacityHealth::failed();
+			return false;
+		}
 		$now       = time();
 		$critical  = $message->critical || ( $job_id > 0 && $this->jobs->critical( $job_id ) );
 		$transport = $message->is_internal() && $this->smtp->available() ? Throttle::SMTP : Throttle::PHP;
 		$slot      = $this->throttle->reserve( $now, $transport, $critical, $message->category );
 		if ( $slot > $now ) {
+			if ( $job_id > 0 ) {
+				$this->jobs->resolve_attempt( $job_id, $attempt_token );
+			}
 			$this->schedule( $job_id > 0 ? $job_id : $this->jobs->create( $message ), $slot );
 			return false;
 		}
@@ -315,6 +328,9 @@ final class Outbox {
 		}
 
 		++$attempts;
+		if ( $job_id > 0 ) {
+			$this->jobs->resolve_attempt( $job_id, $attempt_token );
+		}
 		$job_id = $job_id > 0 ? $job_id : $this->jobs->create( $message );
 		if ( $attempts > count( self::RETRY_DELAYS ) ) {
 			$this->jobs->fail( $job_id, $attempts, $this->error );

@@ -54,8 +54,8 @@ final class ModuleTest extends TestCase {
 		WP_Mock::expectActionAdded( 'wp_mail_failed', array( $outbox, 'remember_error' ) );
 		WP_Mock::expectActionAdded( 'phpmailer_init', array( $outbox, 'configure_mailer' ) );
 		WP_Mock::expectActionAdded( Outbox::HOOK, array( $outbox, 'retry' ) );
-		$this->expect_action_on_any( 'action_scheduler_failed_execution', \Linker\Commerce\Mail\InitialReadRecovery::class, 'failed', 10, 2 );
-		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, \Linker\Commerce\Mail\InitialReadRecovery::class, 'recover' );
+		$this->expect_action_on_any( 'action_scheduler_failed_execution', \Linker\Commerce\Mail\PreTransportRecovery::class, 'failed', 10, 2 );
+		$this->expect_action_on_any( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, \Linker\Commerce\Mail\PreTransportRecovery::class, 'recover' );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_switching_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_allow_restoring_email_locale', array( $locale, 'allow' ), 10, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_email_recipient_customer_reset_password', array( $locale, 'password_recipient' ), 10, 3 );

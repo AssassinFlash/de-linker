@@ -384,7 +384,7 @@ local mechanism test or by these historical aggregates.
 
 A native Action Scheduler single action becomes failed when its callback throws;
 keeping a durable job alone does not keep a pending consumer. Only failure in the
-Outbox retry's initial hold/transaction reads has a dedicated server-side typed
+Outbox retry's initial hold/transaction reads or native pre-quota witness has a dedicated server-side typed
 witness. It proves that no quota reservation or transport was reached. Ordinary
 exceptions, later delivery/ACK uncertainty and browser data cannot produce this
 recovery authority.
@@ -409,3 +409,21 @@ mandatory send authorization and unchanged host quota.
 A confirmation callback's tentative pending result is not final until its own
 mutex release and ConnectionFence checks succeed. Failure returns unavailable,
 retains the known native locale and never claims an uncommitted job/ACK was saved.
+
+
+The pre-transport recovery phase is not proof that a different consumer has never
+attempted this job. Every real Outbox invocation, including immediate/after-commit
+consumers without an Action Scheduler in-progress row, first commits and reads back
+an original-job attempt witness under its native row lock. The witness contains
+only a native UUID, the complete Message digest and the fixed open/ready state;
+its size is constant and bounded per existing queue slot. Logical capacity still
+counts the complete encoded Message, including NativeOrigin, without a second
+content copy in operational metadata.
+
+An unresolved open witness blocks every later invocation and recovery heartbeat.
+Only a quota wait with no IO or the existing definite false result resolves that
+exact owner's witness to ready. A confirmed success deletes the original job and
+its metadata; privacy erasure clears the Message and operational witnesses.
+Unhandled/unknown outcomes retain open, the original job and its charged capacity
+and budget. Lock release alone cannot turn them ready. The existing false/retry
+contract is retained; this is not a claim of SMTP protocol exactly-once delivery.

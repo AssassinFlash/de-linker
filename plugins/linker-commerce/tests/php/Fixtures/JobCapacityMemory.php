@@ -15,6 +15,24 @@ use Linker\Commerce\Mail\Message;
 /** Native count/byte/CAS/transaction evidence lives in MailCapacityTest. */
 final class JobCapacityMemory implements JobCapacity {
 	/**
+	 * Native witness durability is covered by real database fixtures.
+	 *
+	 * @param int     $id In-memory job.
+	 * @param Message $message In-memory message.
+	 */
+	public function begin_attempt( int $id, Message $message ): string {
+		return 'memory-' . $id . '-' . hash( 'sha256', $message->body );
+	}
+
+	/**
+	 * Complete the explicit memory-only invocation port.
+	 *
+	 * @param int    $id In-memory job.
+	 * @param string $token In-memory invocation.
+	 */
+	public function resolve_attempt( int $id, string $token ): void {}
+
+	/**
 	 * Execute the unit's native post fixture, without pretending to prove DB safety.
 	 *
 	 * @param Message  $message Native fixture message.

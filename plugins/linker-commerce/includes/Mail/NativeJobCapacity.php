@@ -12,6 +12,27 @@ namespace Linker\Commerce\Mail;
 /** Server pre-reservations and all actual jobs share the same Capacity store. */
 final class NativeJobCapacity implements JobCapacity {
 	/**
+	 * Enter the original invocation before quota or IO.
+	 *
+	 * @param int     $id Original job.
+	 * @param Message $message Exact authorized message.
+	 * @return string Owner token, empty when a previous attempt is unresolved.
+	 */
+	public function begin_attempt( int $id, Message $message ): string {
+		return NativeAttempt::begin( $id, $message );
+	}
+
+	/**
+	 * Resolve only a known outcome of the original invocation.
+	 *
+	 * @param int    $id Original job.
+	 * @param string $token Exact native invocation.
+	 */
+	public function resolve_attempt( int $id, string $token ): void {
+		NativeAttempt::resolved( $id, $token );
+	}
+
+	/**
 	 * Admit one complete native write.
 	 *
 	 * @param Message  $message Frozen notification.

@@ -59,7 +59,7 @@ final class Module {
 		add_action( 'wp_mail_failed', array( $this->outbox, 'remember_error' ) );
 		add_action( 'phpmailer_init', array( $this->outbox, 'configure_mailer' ) );
 		add_action( Outbox::HOOK, array( $this->outbox, 'retry' ) );
-		$read_recovery = new InitialReadRecovery( $this->jobs );
+		$read_recovery = new PreTransportRecovery( $this->jobs );
 		add_action( 'action_scheduler_failed_execution', array( $read_recovery, 'failed' ), 10, 2 );
 		add_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK, array( $read_recovery, 'recover' ) );
 		add_filter( 'woocommerce_allow_switching_email_locale', array( $this->locale, 'allow' ), 10, 2 );

@@ -37,6 +37,27 @@ final class JobStore {
 		return $this->capacity->held( $id );
 	}
 
+	/**
+	 * Enter the original invocation before quota or IO.
+	 *
+	 * @param int     $id Original job.
+	 * @param Message $message Exact immutable message.
+	 * @return string Native invocation token or empty on an unresolved earlier one.
+	 */
+	public function begin_attempt( int $id, Message $message ): string {
+		return $this->capacity->begin_attempt( $id, $message );
+	}
+
+	/**
+	 * Resolve only a known outcome of the original invocation.
+	 *
+	 * @param int    $id Original job.
+	 * @param string $token Exact invocation token after a definite no-IO/false result.
+	 */
+	public function resolve_attempt( int $id, string $token ): void {
+		$this->capacity->resolve_attempt( $id, $token );
+	}
+
 
 	/**
 	 * Native retries retain the same durable job; the memory port only drives units.
@@ -70,6 +91,13 @@ final class JobStore {
 	 */
 	public function erase_message( int $id ): void {
 		delete_post_meta( $id, self::MESSAGE_META );
+		foreach ( array( NativeAttempt::META, PreTransportRecovery::META ) as $meta ) {
+			delete_post_meta( $id, $meta );
+			wp_cache_delete( $id, 'post_meta' );
+			if ( metadata_exists( 'post', $id, $meta ) ) {
+				throw new \RuntimeException( 'mail_operational_erasure_unconfirmed' );
+			}
+		}
 		clean_post_cache( $id );
 		if ( metadata_exists( 'post', $id, self::MESSAGE_META ) ) {
 			throw new \RuntimeException( 'mail_message_erasure_unconfirmed' );
