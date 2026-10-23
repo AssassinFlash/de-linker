@@ -11,7 +11,9 @@ contract supersedes the historical advisory delivery paragraphs.
 The integration reads all 17 candidate commits through `3926de72`, then resolves their
 changes against the current protected implementation. Current required proof/Campaign
 v3 refusal, NativeOrigin/exact-message/source authorization, source erasure/freshness,
-product-instance cache handling and TLS mechanisms remain. Queue always defers through
+product-instance cache handling and TLS mechanisms remain. The latest reviewed
+production-tracking `e442a423` is merged without discarding its inventory credential
+scope, same-origin index transport or native CI runner. Queue always defers through
 mandatory classification; no notification-only send path is copied. Unknown/malicious
 inquiries retain complete native content and business occupancy without spending
 receipt or transport allowances. Normal full-template notices acquire the actual
@@ -58,8 +60,17 @@ folder, directory 0700/files 0600. No real provider or email delivery was used.
 The broad runs above preceded the last first-lock/VAT-delete boundary repairs. Their
 focused native regressions passed 30 tests / 243 assertions, including the first-lock
 connection loss, peer-revoked current disposition operator, late VAT result after
-account deletion and conversation ACK boundaries. The final immutable source run must be read
-with the fixed-head handoff. Initial red logs remain intact: native historical read
+account deletion and conversation ACK boundaries. The final immutable source run on
+`b8ff74462ce11dedf80b7f86e7eb332383ef30a2` then passed:
+
+- Classic storage: 186 tests / 2129 assertions.
+- Snapshot-loaded HPOS, order datastore cache, product instance cache and Redis:
+  413 tests / 5167 assertions, plus the five native budget-rollback and Proforma
+  price-gate cases / 233 assertions. Combined: 418 tests / 5400 assertions, no skips.
+- Both plugin PHPStan runs, scoped WPCS, gettext validation and diff checks passed.
+  Added code lines contain zero matches for the retired implementation identifiers.
+
+The final evidence-only record changes no runtime after that tested source. Initial red logs remain intact: native historical read
 failure and peer body/audit/capability changes, classic recovery starvation, stale
 team-mail defaults, first authorization-lock reconnect, and late VAT response after
 peer deletion. None was resolved by relaxing its substantive assertion.
