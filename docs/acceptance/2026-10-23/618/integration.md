@@ -6,7 +6,7 @@ This is the integration record for [migration, full-chain acceptance and deploym
 
 The phase-one protection remains in production. A fresh SSH readback confirmed **68 product records present, all draft; 49 protected original paths present, none missing; 48 distinct content hashes**. The private evidence is `~/de-linker-data/ecoflow-withdrawal-20261023/phase2-preservation-readback.json`. Products, media records, original PDFs and customer-owned history are preserved. The separate security task's Genie entry block and the existing emergency PDF rules are retained.
 
-The current production LiteSpeed Cache plugin is inactive, confirmed through native WP-CLI. This is an observed current state, not a guarantee about a cache enabled later.
+Fresh read-only preflight found no production LiteSpeed plugin directory or `advanced-cache.php`, while legacy `.htaccess` still has `CacheLookup on` and `no-autoflush`. Anonymous page/feed reads showed no hit headers; none of that proves server cache lookup is disabled. The existing PDF rewrite sets the URL-specific `Cache-Control:no-cache` environment before the gate. The common PDF response now additionally sends LiteSpeed’s own `no-cache,no-store` control header, consistent with its official precedence rules. Six actual local GET/HEAD/Range response checks passed (`document-cache-control-http.json`); a genuine old LiteSpeed hit followed by same-URL withdrawal remains a separate production verification gate. Other-page caching is not changed.
 
 ## Integration environment
 
@@ -53,6 +53,8 @@ A local-only historical fixture (**8413**) belongs to the local administrator an
 Actual snapshot-backed Configurator acceptance then exposed a transport mismatch that the integer-only fixtures missed: native engine BOM quantities serialize whole pieces as JSON `1.0`, while `DesignProof::items()` required PHP integers. The new regression reproduced refusal before the fix. The adapter now accepts only finite, exactly integral numeric piece counts within the native integer range; fractional/coerced/non-finite/overflowed quantities still reject the entire BOM. With unchanged current publication checks, Computer Use saved solution **8443**, downloaded its real three-page PDF (`current-residential-report.pdf`) and added the complete selected pair to the existing local draft. EN result/save/add screenshots are recorded. This is local synthetic acceptance data; existing draft lines are retained and their original quantities must be restored at fixture retirement. PHP 8.3 full analysis passed; its default all-suite run reported 1,699 tests / 6,635 assertions with 330 native tests skipped (the separately executed native suites remain the actual WP evidence). A prior accidental system PHP 8.5 analysis is not counted; no global PHP setting changed.
 
 The existing review-station contract defines it as a local, non-public instance (`docs/specs/16-review-acceptance.md`). The snapshot-backed `publication614` instance is reused for that gate; it is not necessary to create another site. Final source/build/index versions and remaining observations are still required.
+
+The matching German calculation also succeeded with no EcoFlow candidates, and Computer Use saved solution **8444** with the native German success notice. DE result and success states were captured at 1440/390. Both local saved IDs are recorded in the private fixture-retirement ledger.
 
 ## Remaining gates
 
