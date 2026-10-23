@@ -65,6 +65,7 @@ trait MocksLiveProducts {
 		WP_Mock::userFunction( 'wp_cache_flush_runtime', array( 'return' => true ) );
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $part = -1 ) => parse_url( $url, $part ) ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://de-linker.com' ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => 0 ) )->byDefault();
 		$this->publication_migrated = $migrated;
 		$products                   = LiveProducts::products( $migrated );
 		$bindings                   = array();
@@ -132,7 +133,7 @@ trait MocksLiveProducts {
 					if ( SelectionFacts::FIGURES_META_KEY === $key ) {
 						return $product['figures'];
 					}
-					if ( \Linker\Commerce\Products\Publication\FigureBindings::META_KEY === $key ) {
+					if ( \Linker\Commerce\Products\Publication\EvidenceBindings::META_KEY === $key ) {
 						return $bindings[ $id ] ?? array();
 					}
 					if ( CommerceState::MODE_META === $key ) {
@@ -150,7 +151,7 @@ trait MocksLiveProducts {
 					return $products[ $id ]['name'] ?? '';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction(
 			'get_permalink',
 			array(
@@ -158,7 +159,7 @@ trait MocksLiveProducts {
 					return 'https://de-linker.com/product/' . $id . '/';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction(
 			'get_post_type',
 			array(
@@ -166,7 +167,7 @@ trait MocksLiveProducts {
 					return isset( $products[ $id ] ) ? 'product' : '';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction(
 			'get_post_status',
 			array(
@@ -174,7 +175,7 @@ trait MocksLiveProducts {
 					return $products[ $id ]['status'] ?? '';
 				},
 			)
-		);
+		)->byDefault();
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $sees_prices ) );
 		if ( $sees_prices ) {
 			// Customer 7 is an approved account, so CommerceState shows prices.

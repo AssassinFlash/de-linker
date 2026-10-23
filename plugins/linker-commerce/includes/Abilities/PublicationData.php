@@ -45,12 +45,13 @@ final class PublicationData {
 	 *
 	 * @param int[]               $ids Requested candidates.
 	 * @param array<string,mixed> $manifest Current snapshot.
+	 * @param 'en'|'de'|null      $lang Requested product locale, when present.
 	 * @return list<int>
 	 */
-	public function published( array $ids, array $manifest ): array {
+	public function published( array $ids, array $manifest, ?string $lang = null ): array {
 		$out = array();
 		foreach ( $ids as $id ) {
-			if ( ! Publication::is_published( $id ) ) {
+			if ( ! Publication::is_published( $id ) || ( null !== $lang && 0 === ProductText::translated_id( $id, $lang ) ) ) {
 				continue;
 			}
 			foreach ( $manifest['products'] as $product ) {

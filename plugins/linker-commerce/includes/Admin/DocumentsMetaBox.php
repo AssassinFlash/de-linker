@@ -75,6 +75,7 @@ final class DocumentsMetaBox {
 				echo '<p>' . esc_html( (string) $job['error'] ) . '</p>';
 			}
 		}
+		$this->figure_warning( $post_id );
 
 		echo '<p>' . esc_html__( 'The documents shown on the product page and used as citations: datasheets, manuals and warranty terms of our own media library.', 'linker-commerce' ) . '</p>';
 		echo '<p>' . esc_html__( 'The file itself is uploaded to the media library; the address here is the media file\'s URL. What a document may state is decided item by item — do not change a value or a claim without that confirmation.', 'linker-commerce' ) . '</p>';
@@ -94,6 +95,38 @@ final class DocumentsMetaBox {
 			$this->row( $index + $spare, array(), true );
 		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * Replaced or withdrawn evidence cannot leave apparently ready old numbers.
+	 *
+	 * @param int $post_id Product being edited.
+	 */
+	private function figure_warning( int $post_id ): void {
+		$id  = Publication::canonical_id( $post_id );
+		$raw = get_post_meta( $id, \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, true );
+		$raw = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+		if ( ! is_array( $raw ) || array() === $raw || 'publish' !== get_post_status( $id ) ) {
+			return;
+		}
+		try {
+			$missing = array_diff_key( $raw, Publication::figures_for( $id ) );
+		} catch ( \RuntimeException $error ) {
+			echo '<p>' . esc_html__( 'Current product permissions could not be checked. Automatic preparation status is unavailable.', 'linker-commerce' ) . '</p>';
+			return;
+		}
+		if ( array() !== $missing ) {
+			printf(
+				'<p>%s</p>',
+				esc_html(
+					sprintf(
+						/* translators: %s: technical field names shown only to the product editor. */
+						__( 'The current document does not yet verify these technical values: %s. The tools cannot use them.', 'linker-commerce' ),
+						implode( ', ', array_keys( $missing ) )
+					)
+				)
+			);
+		}
 	}
 
 	/**

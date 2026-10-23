@@ -111,6 +111,11 @@ final class RestLang {
 	 * @param \WP_Query $query The query.
 	 */
 	public function posts( \WP_Query $query ): void {
+		// Only server-built authority queries carry this marker. REST query
+		// parameters are never copied here; customer lists keep their language.
+		if ( true === $query->get( 'linker_publication_internal' ) ) {
+			return;
+		}
 		$language = $this->language();
 		if ( null === $language || '' !== (string) $query->get( self::PARAM ) ) {
 			return;

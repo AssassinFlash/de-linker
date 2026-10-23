@@ -16,7 +16,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { storeClient } from '../configurator/api/store';
 import { rememberInquiry } from '../protection/inquiryHandoff';
 import type { GenieConfig } from './config';
-import { idsOf, pricesOf } from './shared/blocks';
+import { idsOf, pricesOf, proofsOf } from './shared/blocks';
 import { useCardActions } from './shared/cardActions';
 import { buildQuestion, typeModelPrompt } from './shared/conversation';
 import {
@@ -292,7 +292,7 @@ export function App( { config }: { config: GenieConfig } ) {
 		setCurrentId( id );
 	}, [] );
 
-	const store = storeClient( config.restUrl );
+	const store = storeClient( config.restUrl, undefined, config.restNonce );
 	const {
 		statusFor: cardStatusFor,
 		addToDraft: addCardToDraft,
@@ -1005,6 +1005,7 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
+	const cardProofs = proofsOf( turn?.blocks ?? [] );
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
 	const entryInbox = useEntryInbox( {
@@ -1671,8 +1672,19 @@ export function App( { config }: { config: GenieConfig } ) {
 														line.product_id ===
 														productId
 												) }
-												onAdd={ addCardToDraft }
-												onSave={ saveCardSolution }
+												onAdd={ ( id ) =>
+													addCardToDraft(
+														id,
+														cardProofs[ id ]
+													)
+												}
+												onSave={ ( id, title ) =>
+													saveCardSolution(
+														id,
+														title,
+														cardProofs[ id ]
+													)
+												}
 											/>
 										) ) }
 									</div>

@@ -438,23 +438,7 @@ class DocumentIndex:
                 )
                 if is_passage(hit.text)
             ]
-            if permits is not None:
-                hits = [
-                    replace(
-                        hit,
-                        doc_url=permits[row]["url"],
-                        document_id=permits[row]["document_id"],
-                        document_revision=permits[row]["document_revision"],
-                        product_ids=tuple(permits[row]["product_ids"]),
-                    )
-                    for hit in hits
-                    for row in [
-                        self._db.execute(
-                            "SELECT rowid FROM chunks WHERE id=?", (hit.chunk_id,)
-                        ).fetchone()[0]
-                    ]
-                    if row in permits
-                ]
+            hits = self._permitted_hits(hits, permits)
             if hits:
                 if not neighbours:
                     return hits[:k]
@@ -463,25 +447,33 @@ class DocumentIndex:
                     lang,
                     allowed_rows=set(permits) if permits is not None else None,
                 )
-                if permits is not None:
-                    expanded = [
-                        replace(
-                            hit,
-                            doc_url=permits[row]["url"],
-                            document_id=permits[row]["document_id"],
-                            document_revision=permits[row]["document_revision"],
-                            product_ids=tuple(permits[row]["product_ids"]),
-                        )
-                        for hit in expanded
-                        for row in [
-                            self._db.execute(
-                                "SELECT rowid FROM chunks WHERE id=?", (hit.chunk_id,)
-                            ).fetchone()[0]
-                        ]
-                        if row in permits
-                    ]
-                return expanded
+                return self._permitted_hits(expanded, permits)
         return []
+
+    def _permitted_hits(
+        self, hits: Sequence[DocumentHit], permits: dict[int, Permit] | None
+    ) -> list[DocumentHit]:
+        """Apply the same current association to ranked hits and neighbours."""
+        if permits is None:
+            return list(hits)
+        output = []
+        for hit in hits:
+            row = self._db.execute(
+                "SELECT rowid FROM chunks WHERE id=?", (hit.chunk_id,)
+            ).fetchone()
+            if row is None or row[0] not in permits:
+                continue
+            permit = permits[row[0]]
+            output.append(
+                replace(
+                    hit,
+                    doc_url=permit["url"],
+                    document_id=permit["document_id"],
+                    document_revision=permit["document_revision"],
+                    product_ids=tuple(permit["product_ids"]),
+                )
+            )
+        return output
 
     def with_page_neighbours(
         self,

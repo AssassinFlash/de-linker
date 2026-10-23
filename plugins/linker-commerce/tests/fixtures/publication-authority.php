@@ -15,145 +15,316 @@ use Linker\Commerce\Products\Publication\PreparationJobs;
 if ( 'local' !== wp_get_environment_type() ) {
 	throw new RuntimeException( 'Publication fixture requires a local environment.' );
 }
-$linker_publication_mode = $args[0] ?? 'verify';
-$linker_publication_state = get_option( 'linker_publication_fixture', array() );
-if ( 'withdraw' === $linker_publication_mode ) {
-	foreach ( $linker_publication_state['ids'] as $linker_publication_id ) {
-		wp_update_post( array( 'ID' => $linker_publication_id, 'post_status' => 'draft' ) );
+$linker_commerce_publication_mode  = $args[0] ?? 'verify';
+$linker_commerce_publication_state = get_option( 'linker_publication_fixture', array() );
+if ( 'withdraw' === $linker_commerce_publication_mode ) {
+	foreach ( $linker_commerce_publication_state['ids'] as $linker_commerce_publication_id ) {
+		wp_update_post(
+			array(
+				'ID'          => $linker_commerce_publication_id,
+				'post_status' => 'draft',
+			)
+		);
 	}
-	echo wp_json_encode( array( 'withdrawn' => true, 'state' => $linker_publication_state ) );
+	echo wp_json_encode(
+		array(
+			'withdrawn' => true,
+			'state'     => $linker_commerce_publication_state,
+		)
+	);
 	return;
 }
-if ( 'cleanup' === $linker_publication_mode ) {
-	foreach ( $linker_publication_state['ids'] ?? array() as $linker_publication_id ) {
-		wp_delete_post( $linker_publication_id, true );
+if ( 'cleanup' === $linker_commerce_publication_mode ) {
+	foreach ( $linker_commerce_publication_state['ids'] ?? array() as $linker_commerce_publication_id ) {
+		wp_delete_post( $linker_commerce_publication_id, true );
 	}
-	foreach ( $linker_publication_state['files'] ?? array() as $linker_publication_file ) {
-		wp_delete_file( $linker_publication_file );
+	foreach ( $linker_commerce_publication_state['files'] ?? array() as $linker_commerce_publication_file ) {
+		wp_delete_file( $linker_commerce_publication_file );
 	}
 	delete_option( 'linker_publication_fixture' );
 	delete_option( PreparationJobs::OPTION );
 	echo wp_json_encode( array( 'cleaned' => true ) );
 	return;
 }
-if ( array() !== $linker_publication_state ) {
+if ( array() !== $linker_commerce_publication_state ) {
 	throw new RuntimeException( 'Clean the previous publication fixture first.' );
 }
-$linker_publication_checks = array();
-$linker_publication_check = static function ( bool $condition, string $name ) use ( &$linker_publication_checks ): void {
+$linker_commerce_publication_checks = array();
+$linker_commerce_publication_check  = static function ( bool $condition, string $name ) use ( &$linker_commerce_publication_checks ): void {
 	if ( ! $condition ) {
 		throw new RuntimeException( 'FAIL: ' . $name );
 	}
-	$linker_publication_checks[] = $name;
+	$linker_commerce_publication_checks[] = $name;
 };
-$linker_publication_create = static function ( string $model, string $status, string $lang = 'en' ): int {
+$linker_commerce_publication_create = static function ( string $model, string $status, string $lang = 'en' ): int {
 	$product = new WC_Product_Simple();
 	$product->set_name( 'Publication fixture ' . $model );
 	$product->set_status( $status );
+	$product->set_regular_price( '100' );
 	$id = $product->save();
 	pll_set_post_language( $id, $lang );
 	wp_set_object_terms( $id, $model, 'pa_model' );
 	return $id;
 };
 if ( ! taxonomy_exists( 'pa_model' ) ) {
-	wc_create_attribute( array( 'name' => 'Model', 'slug' => 'model' ) );
+	wc_create_attribute(
+		array(
+			'name' => 'Model',
+			'slug' => 'model',
+		)
+	);
 	register_taxonomy( 'pa_model', 'product', array( 'public' => true ) );
 }
-$linker_publication_a = $linker_publication_create( 'Fixture-A', 'publish' );
-$linker_publication_de = $linker_publication_create( 'Fixture-A', 'publish', 'de' );
-pll_save_post_translations( array( 'en' => $linker_publication_a, 'de' => $linker_publication_de ) );
-$linker_publication_b = $linker_publication_create( 'Fixture-B', 'draft' );
-$linker_publication_c = $linker_publication_create( 'Fixture-C', 'publish' );
-$linker_publication_uploads = wp_upload_dir();
-$linker_publication_directory = $linker_publication_uploads['basedir'] . '/publication-614';
-wp_mkdir_p( $linker_publication_directory );
-$linker_publication_bytes = "%PDF-1.4\nPublication fixture\n%%EOF\n";
-$linker_publication_files = array();
-$linker_publication_urls = array();
-foreach ( array( 'shared', 'alias', 'unassociated', 'legacy', 'figure' ) as $linker_publication_name ) {
-	$linker_publication_path = $linker_publication_directory . '/' . $linker_publication_name . '.pdf';
-	file_put_contents( $linker_publication_path, $linker_publication_bytes );
-	$linker_publication_files[] = $linker_publication_path;
-	$linker_publication_urls[ $linker_publication_name ] = $linker_publication_uploads['baseurl'] . '/publication-614/' . $linker_publication_name . '.pdf';
+$linker_commerce_publication_a  = $linker_commerce_publication_create( 'Fixture-A', 'publish' );
+$linker_commerce_publication_de = $linker_commerce_publication_create( 'Fixture-A', 'publish', 'de' );
+pll_save_post_translations(
+	array(
+		'en' => $linker_commerce_publication_a,
+		'de' => $linker_commerce_publication_de,
+	)
+);
+$linker_commerce_publication_b         = $linker_commerce_publication_create( 'Fixture-B', 'draft' );
+$linker_commerce_publication_c         = $linker_commerce_publication_create( 'Fixture-C', 'publish' );
+$linker_commerce_publication_uploads   = wp_upload_dir();
+$linker_commerce_publication_directory = $linker_commerce_publication_uploads['basedir'] . '/publication-614';
+wp_mkdir_p( $linker_commerce_publication_directory );
+$linker_commerce_publication_bytes = "%PDF-1.4\nPublication fixture\n%%EOF\n";
+$linker_commerce_publication_files = array();
+$linker_commerce_publication_urls  = array();
+foreach ( array( 'shared', 'alias', 'unassociated', 'legacy', 'figure' ) as $linker_commerce_publication_name ) {
+	$linker_commerce_publication_path = $linker_commerce_publication_directory . '/' . $linker_commerce_publication_name . '.pdf';
+	file_put_contents( $linker_commerce_publication_path, $linker_commerce_publication_bytes );
+	$linker_commerce_publication_files[]                                   = $linker_commerce_publication_path;
+	$linker_commerce_publication_urls[ $linker_commerce_publication_name ] = $linker_commerce_publication_uploads['baseurl'] . '/publication-614/' . $linker_commerce_publication_name . '.pdf';
 }
-$linker_publication_state = array( 'ids' => array( $linker_publication_a, $linker_publication_de, $linker_publication_b, $linker_publication_c ), 'files' => $linker_publication_files, 'urls' => $linker_publication_urls );
-update_option( 'linker_publication_fixture', $linker_publication_state, false );
-$linker_publication_row = array( 'url' => $linker_publication_urls['shared'], 'title' => 'Fixture manual', 'type' => 'manual', 'lang' => 'en', 'aliases' => array( $linker_publication_urls['alias'] ) );
-update_post_meta( $linker_publication_a, EngineeringData::DOCUMENTS_META_KEY, array( $linker_publication_row ) );
-update_post_meta( $linker_publication_b, EngineeringData::DOCUMENTS_META_KEY, array( $linker_publication_row ) );
-update_post_meta( $linker_publication_c, '_delinker_datasheet_url', $linker_publication_urls['legacy'] );
-update_post_meta( $linker_publication_c, \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, array( 'rated_ac_power_kw' => array( 'value' => 10, 'unit' => 'kW', 'citation' => array( 'url' => $linker_publication_urls['figure'], 'page' => 1 ) ) ) );
-$linker_publication_manifest = Publication::manifest();
-$linker_publication_products = array_column( $linker_publication_manifest['products'], null, 'product_id' );
-$linker_publication_documents = array_column( $linker_publication_manifest['documents'], null, 'document_id' );
-$linker_publication_doc_id = DocumentFiles::id( $linker_publication_urls['shared'] );
-$linker_publication_doc = $linker_publication_documents[ $linker_publication_doc_id ];
-$linker_publication_a_revision = $linker_publication_products[ $linker_publication_a ]['product_revision'];
-$linker_publication_dependencies = array( 'products' => array( array( 'product_id' => $linker_publication_a, 'product_revision' => $linker_publication_a_revision ) ), 'documents' => array( array( 'document_id' => $linker_publication_doc_id, 'document_revision' => $linker_publication_doc['document_revision'], 'product_id' => $linker_publication_a ) ), 'compatibility_revision' => $linker_publication_manifest['compatibility_revision'] );
-$linker_publication_check( Publication::validate( $linker_publication_dependencies )['valid'], 'current dependency set validates' );
-$linker_publication_check( ! isset( $linker_publication_products[ $linker_publication_b ] ), 'draft model absent from public manifest' );
-$linker_publication_check( $linker_publication_doc['product_ids'] === array( $linker_publication_a ), 'shared manual grants only published A' );
-$linker_publication_check( Publication::canonical_id( $linker_publication_de ) === $linker_publication_a, 'German mirror resolves canonical source' );
-$linker_publication_check( 2 === count( $linker_publication_products[ $linker_publication_c ]['documents'] ), 'legacy datasheet and figure citations remain explicit Woo associations' );
-$linker_publication_check( Publication::manifest()['source_revision'] === $linker_publication_manifest['source_revision'], 'source revision excludes generated time and readiness' );
-$linker_publication_check( ! Publication::validate( array() )['valid'] && Publication::validate( array( 'products' => array(), 'documents' => array() ) )['valid'], 'missing scope rejects; explicit empty scope represents zero objects' );
-$linker_publication_check( ! Publication::validate( array( 'products' => array( array( 'product_id' => array(), 'product_revision' => '' ) ), 'documents' => array() ) )['valid'], 'malformed public dependency fails closed' );
-$linker_publication_access = new DocumentAccess();
-$linker_publication_file = DocumentFiles::resolve( $linker_publication_urls['shared'] );
-if ( null === $linker_publication_file ) {
+$linker_commerce_publication_state = array(
+	'ids'   => array( $linker_commerce_publication_a, $linker_commerce_publication_de, $linker_commerce_publication_b, $linker_commerce_publication_c ),
+	'files' => $linker_commerce_publication_files,
+	'urls'  => $linker_commerce_publication_urls,
+);
+update_option( 'linker_publication_fixture', $linker_commerce_publication_state, false );
+$linker_commerce_publication_row = array(
+	'url'     => $linker_commerce_publication_urls['shared'],
+	'title'   => 'Fixture manual',
+	'type'    => 'manual',
+	'lang'    => 'en',
+	'aliases' => array( $linker_commerce_publication_urls['alias'] ),
+);
+update_post_meta( $linker_commerce_publication_a, EngineeringData::DOCUMENTS_META_KEY, array( $linker_commerce_publication_row ) );
+update_post_meta( $linker_commerce_publication_b, EngineeringData::DOCUMENTS_META_KEY, array( $linker_commerce_publication_row ) );
+update_post_meta( $linker_commerce_publication_c, '_delinker_datasheet_url', $linker_commerce_publication_urls['legacy'] );
+update_post_meta(
+	$linker_commerce_publication_c,
+	\Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY,
+	array(
+		'rated_ac_power_kw' => array(
+			'value'    => 10,
+			'unit'     => 'kW',
+			'citation' => array(
+				'url'  => $linker_commerce_publication_urls['figure'],
+				'page' => 1,
+			),
+		),
+	)
+);
+$linker_commerce_publication_manifest     = Publication::manifest();
+$linker_commerce_publication_products     = array_column( $linker_commerce_publication_manifest['products'], null, 'product_id' );
+$linker_commerce_publication_documents    = array_column( $linker_commerce_publication_manifest['documents'], null, 'document_id' );
+$linker_commerce_publication_doc_id       = DocumentFiles::id( $linker_commerce_publication_urls['shared'] );
+$linker_commerce_publication_doc          = $linker_commerce_publication_documents[ $linker_commerce_publication_doc_id ];
+$linker_commerce_publication_a_revision   = $linker_commerce_publication_products[ $linker_commerce_publication_a ]['product_revision'];
+$linker_commerce_publication_dependencies = array(
+	'products'               => array(
+		array(
+			'product_id'       => $linker_commerce_publication_a,
+			'product_revision' => $linker_commerce_publication_a_revision,
+		),
+	),
+	'documents'              => array(
+		array(
+			'document_id'       => $linker_commerce_publication_doc_id,
+			'document_revision' => $linker_commerce_publication_doc['document_revision'],
+			'product_id'        => $linker_commerce_publication_a,
+		),
+	),
+	'compatibility_revision' => $linker_commerce_publication_manifest['compatibility_revision'],
+);
+$linker_commerce_publication_check( Publication::validate( $linker_commerce_publication_dependencies )['valid'], 'current dependency set validates' );
+$linker_commerce_publication_check( ! isset( $linker_commerce_publication_products[ $linker_commerce_publication_b ] ), 'draft model absent from public manifest' );
+$linker_commerce_publication_check( array( $linker_commerce_publication_a ) === $linker_commerce_publication_doc['product_ids'], 'shared manual grants only published A' );
+$linker_commerce_publication_check( Publication::canonical_id( $linker_commerce_publication_de ) === $linker_commerce_publication_a, 'German mirror resolves canonical source' );
+$linker_commerce_publication_check( 2 === count( $linker_commerce_publication_products[ $linker_commerce_publication_c ]['documents'] ), 'legacy datasheet and figure citations remain explicit Woo associations' );
+$linker_commerce_publication_check( Publication::manifest()['source_revision'] === $linker_commerce_publication_manifest['source_revision'], 'source revision excludes generated time and readiness' );
+$linker_commerce_publication_check(
+	! Publication::validate( array() )['valid'] && Publication::validate(
+		array(
+			'products'  => array(),
+			'documents' => array(),
+		)
+	)['valid'],
+	'missing scope rejects; explicit empty scope represents zero objects'
+);
+$linker_commerce_publication_check(
+	! Publication::validate(
+		array(
+			'products'  => array(
+				array(
+					'product_id'       => array(),
+					'product_revision' => '',
+				),
+			),
+			'documents' => array(),
+		)
+	)['valid'],
+	'malformed public dependency fails closed'
+);
+$linker_commerce_publication_access = new DocumentAccess();
+$linker_commerce_publication_file   = DocumentFiles::resolve( $linker_commerce_publication_urls['shared'] );
+if ( null === $linker_commerce_publication_file ) {
 	throw new RuntimeException( 'Fixture PDF cannot be resolved.' );
 }
-$linker_publication_check( 200 === $linker_publication_access->response( $linker_publication_file, 'GET' )['status'] && 200 === $linker_publication_access->response( $linker_publication_file, 'HEAD' )['status'], 'GET and HEAD authorize current document' );
-$linker_publication_check( 206 === $linker_publication_access->response( $linker_publication_file, 'GET', 'bytes=0-4' )['status'] && 416 === $linker_publication_access->response( $linker_publication_file, 'GET', 'bytes=999999-' )['status'], 'single byte range supported and invalid range rejected' );
-$linker_publication_check( 200 === $linker_publication_access->response( DocumentFiles::resolve( $linker_publication_urls['alias'] ), 'GET' )['status'], 'explicit same-content alias is authorized' );
-$linker_publication_check( 410 === $linker_publication_access->response( DocumentFiles::resolve( $linker_publication_urls['unassociated'] ), 'GET' )['status'], 'same SHA unassociated alias receives no permission' );
-$linker_publication_check( null === DocumentFiles::resolve( $linker_publication_uploads['baseurl'] . '/publication-614/../publication-614/shared.pdf' ) && null === DocumentFiles::resolve( 'https://example.com/shared.pdf' ), 'traversal and foreign hosts cannot resolve local files' );
-wp_update_post( array( 'ID' => $linker_publication_b, 'post_status' => 'publish' ) );
-$linker_publication_after = Publication::manifest();
-$linker_publication_check( Publication::validate( $linker_publication_dependencies )['valid'], 'another product sharing unchanged PDF does not invalidate A' );
-wp_update_post( array( 'ID' => $linker_publication_b, 'post_status' => 'draft' ) );
-$linker_publication_check( Publication::validate( $linker_publication_dependencies )['valid'], 'withdrawing shared B preserves valid A dependencies' );
-$linker_publication_jobs = new PreparationJobs();
-$linker_publication_claim = $linker_publication_jobs->claim( 'knowledge', 'fixture-worker', 300 );
-$linker_publication_check( ! is_wp_error( $linker_publication_claim ) && is_array( $linker_publication_claim['job'] ), 'current source automatically produces a persistent preparation lease' );
-if ( is_wp_error( $linker_publication_claim ) ) {
-	throw new RuntimeException( $linker_publication_claim->get_error_message() );
+$linker_commerce_publication_check( 200 === $linker_commerce_publication_access->response( $linker_commerce_publication_file, 'GET' )['status'] && 200 === $linker_commerce_publication_access->response( $linker_commerce_publication_file, 'HEAD' )['status'], 'GET and HEAD authorize current document' );
+$linker_commerce_publication_check( 206 === $linker_commerce_publication_access->response( $linker_commerce_publication_file, 'GET', 'bytes=0-4' )['status'] && 416 === $linker_commerce_publication_access->response( $linker_commerce_publication_file, 'GET', 'bytes=999999-' )['status'], 'single byte range supported and invalid range rejected' );
+$linker_commerce_publication_check( 200 === $linker_commerce_publication_access->response( DocumentFiles::resolve( $linker_commerce_publication_urls['alias'] ), 'GET' )['status'], 'explicit same-content alias is authorized' );
+$linker_commerce_publication_check( 410 === $linker_commerce_publication_access->response( DocumentFiles::resolve( $linker_commerce_publication_urls['unassociated'] ), 'GET' )['status'], 'same SHA unassociated alias receives no permission' );
+$linker_commerce_publication_check( null === DocumentFiles::resolve( $linker_commerce_publication_uploads['baseurl'] . '/publication-614/../publication-614/shared.pdf' ) && null === DocumentFiles::resolve( 'https://example.com/shared.pdf' ), 'traversal and foreign hosts cannot resolve local files' );
+require_once ABSPATH . 'wp-admin/includes/misc.php';
+require_once ABSPATH . 'wp-admin/includes/file.php';
+$linker_commerce_publication_rewrite_file = get_home_path() . '.htaccess';
+$linker_commerce_publication_old_rules    = is_file( $linker_commerce_publication_rewrite_file ) ? file_get_contents( $linker_commerce_publication_rewrite_file ) : false;
+$linker_commerce_publication_control      = "# BEGIN Linker fixture emergency\nRewriteRule ^fixture-withdrawn\\.pdf$ - [G,L]\n# END Linker fixture emergency\n";
+file_put_contents( $linker_commerce_publication_rewrite_file, $linker_commerce_publication_control . (string) $linker_commerce_publication_old_rules );
+add_filter( 'got_rewrite', '__return_true' );
+try {
+	$linker_commerce_publication_installed = save_mod_rewrite_rules();
+	$linker_commerce_publication_rules     = (string) file_get_contents( $linker_commerce_publication_rewrite_file );
+	$linker_commerce_publication_gate      = strpos( $linker_commerce_publication_rules, 'linker_public_document=' );
+	$linker_commerce_publication_shortcut  = strpos( $linker_commerce_publication_rules, 'REQUEST_FILENAME' );
+	$linker_commerce_publication_check( true === $linker_commerce_publication_installed && false !== $linker_commerce_publication_gate && false !== $linker_commerce_publication_shortcut && $linker_commerce_publication_gate < $linker_commerce_publication_shortcut && str_contains( $linker_commerce_publication_rules, $linker_commerce_publication_control ), 'native rewrite installation precedes static files and preserves outside emergency rules' );
+} finally {
+	remove_filter( 'got_rewrite', '__return_true' );
+	if ( false === $linker_commerce_publication_old_rules ) {
+		wp_delete_file( $linker_commerce_publication_rewrite_file );
+	} else {
+		file_put_contents( $linker_commerce_publication_rewrite_file, $linker_commerce_publication_old_rules );
+	}
 }
-$linker_publication_job = $linker_publication_claim['job'];
-$linker_publication_ack = array( 'job_id' => $linker_publication_job['job_id'], 'lease_token' => $linker_publication_job['lease_token'], 'source_revision' => $linker_publication_job['source_revision'], 'loaded_revision' => 'fixture-actually-loaded', 'status' => 'ready' );
-$linker_publication_second_claim = $linker_publication_jobs->claim( 'knowledge', 'another-worker', 300 );
-$linker_publication_check( ! is_wp_error( $linker_publication_second_claim ) && null === $linker_publication_second_claim['job'], 'live preparation lease prevents double claim' );
-wp_update_post( array( 'ID' => $linker_publication_a, 'post_status' => 'draft' ) );
-$linker_publication_check( ! Publication::is_published( $linker_publication_de ) && ! Publication::validate( $linker_publication_dependencies )['valid'], 'canonical withdrawal immediately blocks German mirror and old dependencies without a job' );
-$linker_publication_check( 410 === $linker_publication_access->response( $linker_publication_file, 'GET' )['status'], 'last live relation withdrawal denies original bytes immediately' );
-$linker_publication_check( is_wp_error( $linker_publication_jobs->acknowledge( $linker_publication_ack ) ), 'late preparation acknowledgement cannot restore withdrawn source' );
-wp_update_post( array( 'ID' => $linker_publication_a, 'post_status' => 'publish' ) );
-$linker_publication_current = Publication::manifest();
-$linker_publication_before_bytes = array_column( $linker_publication_current['documents'], null, 'document_id' )[ $linker_publication_doc_id ]['document_revision'];
-file_put_contents( $linker_publication_file['path'], $linker_publication_bytes . 'replacement' );
-$linker_publication_changed = array_column( Publication::manifest()['documents'], null, 'document_id' )[ $linker_publication_doc_id ];
-$linker_publication_check( $linker_publication_changed['document_revision'] !== $linker_publication_before_bytes && $linker_publication_changed['blob_sha256'] !== $linker_publication_doc['blob_sha256'], 'same URL changed bytes produces a new content revision' );
-file_put_contents( $linker_publication_file['path'], $linker_publication_bytes );
-$linker_publication_attachment = wp_insert_attachment( array( 'post_title' => 'Fixture manual', 'post_mime_type' => 'application/pdf', 'post_status' => 'inherit' ), $linker_publication_file['path'] );
-update_attached_file( $linker_publication_attachment, $linker_publication_file['path'] );
-update_post_meta( $linker_publication_attachment, '_linker_document_public', '0' );
-$linker_publication_check( 410 === $linker_publication_access->response( $linker_publication_file, 'GET' )['status'], 'media withdrawal blocks every active relation' );
-update_post_meta( $linker_publication_attachment, '_linker_document_public', '1' );
-$linker_publication_state['ids'][] = $linker_publication_attachment;
-update_option( 'linker_publication_fixture', $linker_publication_state, false );
-$linker_publication_check( 10.0 === EngineeringFeed::item( $linker_publication_c )['ac_power_kw'], 'current numeric fact uses its bound document bytes' );
-file_put_contents( $linker_publication_files[4], $linker_publication_bytes . 'updated figure PDF' );
-$linker_publication_check( 'unknown' === EngineeringFeed::item( $linker_publication_c )['ac_power_kw'], 'same URL replacement cannot reauthorize old scalar figure values' );
-update_post_meta( $linker_publication_c, \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, array( 'rated_ac_power_kw' => array( 'value' => 11, 'unit' => 'kW', 'citation' => array( 'url' => $linker_publication_urls['figure'], 'page' => 1 ) ) ) );
-$linker_publication_check( 11.0 === EngineeringFeed::item( $linker_publication_c )['ac_power_kw'], 'normal Woo fact correction binds the newly edited fact to current bytes' );
-$linker_publication_feed = EngineeringFeed::feed();
-$linker_publication_feed_ids = array_column( $linker_publication_feed['products'], 'id' );
-$linker_publication_check( in_array( $linker_publication_a, $linker_publication_feed_ids, true ) && ! in_array( $linker_publication_b, $linker_publication_feed_ids, true ) && ! in_array( $linker_publication_de, $linker_publication_feed_ids, true ), 'engineering feed emits one canonical published product and current document versions' );
-$linker_publication_current_claim = $linker_publication_jobs->claim( 'knowledge', 'fixture-worker', 300 );
-if ( is_wp_error( $linker_publication_current_claim ) ) {
-	throw new RuntimeException( $linker_publication_current_claim->get_error_message() );
+wp_update_post(
+	array(
+		'ID'          => $linker_commerce_publication_b,
+		'post_status' => 'publish',
+	)
+);
+$linker_commerce_publication_after = Publication::manifest();
+$linker_commerce_publication_check( Publication::validate( $linker_commerce_publication_dependencies )['valid'], 'another product sharing unchanged PDF does not invalidate A' );
+wp_update_post(
+	array(
+		'ID'          => $linker_commerce_publication_b,
+		'post_status' => 'draft',
+	)
+);
+$linker_commerce_publication_check( Publication::validate( $linker_commerce_publication_dependencies )['valid'], 'withdrawing shared B preserves valid A dependencies' );
+$linker_commerce_publication_jobs  = new PreparationJobs();
+$linker_commerce_publication_claim = $linker_commerce_publication_jobs->claim( 'knowledge', 'fixture-worker', 300 );
+$linker_commerce_publication_check( ! is_wp_error( $linker_commerce_publication_claim ) && is_array( $linker_commerce_publication_claim['job'] ), 'current source automatically produces a persistent preparation lease' );
+if ( is_wp_error( $linker_commerce_publication_claim ) ) {
+	throw new RuntimeException( $linker_commerce_publication_claim->get_error_message() );
 }
-$linker_publication_current_job = $linker_publication_current_claim['job'];
-$linker_publication_ready = $linker_publication_jobs->acknowledge( array( 'job_id' => $linker_publication_current_job['job_id'], 'lease_token' => $linker_publication_current_job['lease_token'], 'source_revision' => $linker_publication_current_job['source_revision'], 'loaded_revision' => 'fixture-current-loaded', 'status' => 'ready', 'prepared_products' => $linker_publication_current_job['manifest']['products'] ) );
-$linker_publication_check( ! is_wp_error( $linker_publication_ready ) && ( Publication::product( $linker_publication_a )['ready']['knowledge'] ?? false ), 'current loaded receipt enables matching preparation state without changing permission' );
-echo wp_json_encode( array( 'checks' => $linker_publication_checks, 'count' => count( $linker_publication_checks ), 'state' => $linker_publication_state, 'manifest' => Publication::manifest() ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+$linker_commerce_publication_job          = $linker_commerce_publication_claim['job'];
+$linker_commerce_publication_ack          = array(
+	'job_id'          => $linker_commerce_publication_job['job_id'],
+	'lease_token'     => $linker_commerce_publication_job['lease_token'],
+	'source_revision' => $linker_commerce_publication_job['source_revision'],
+	'loaded_revision' => 'fixture-actually-loaded',
+	'status'          => 'ready',
+);
+$linker_commerce_publication_second_claim = $linker_commerce_publication_jobs->claim( 'knowledge', 'another-worker', 300 );
+$linker_commerce_publication_check( ! is_wp_error( $linker_commerce_publication_second_claim ) && null === $linker_commerce_publication_second_claim['job'], 'live preparation lease prevents double claim' );
+wp_update_post(
+	array(
+		'ID'          => $linker_commerce_publication_a,
+		'post_status' => 'draft',
+	)
+);
+$linker_commerce_publication_check( ! Publication::is_published( $linker_commerce_publication_de ) && ! Publication::validate( $linker_commerce_publication_dependencies )['valid'], 'canonical withdrawal immediately blocks German mirror and old dependencies without a job' );
+$linker_commerce_publication_check( 410 === $linker_commerce_publication_access->response( $linker_commerce_publication_file, 'GET' )['status'], 'last live relation withdrawal denies original bytes immediately' );
+$linker_commerce_publication_check( is_wp_error( $linker_commerce_publication_jobs->acknowledge( $linker_commerce_publication_ack ) ), 'late preparation acknowledgement cannot restore withdrawn source' );
+wp_update_post(
+	array(
+		'ID'          => $linker_commerce_publication_a,
+		'post_status' => 'publish',
+	)
+);
+$linker_commerce_publication_current      = Publication::manifest();
+$linker_commerce_publication_before_bytes = array_column( $linker_commerce_publication_current['documents'], null, 'document_id' )[ $linker_commerce_publication_doc_id ]['document_revision'];
+file_put_contents( $linker_commerce_publication_file['path'], $linker_commerce_publication_bytes . 'replacement' );
+$linker_commerce_publication_changed = array_column( Publication::manifest()['documents'], null, 'document_id' )[ $linker_commerce_publication_doc_id ];
+$linker_commerce_publication_check( $linker_commerce_publication_changed['document_revision'] !== $linker_commerce_publication_before_bytes && $linker_commerce_publication_changed['blob_sha256'] !== $linker_commerce_publication_doc['blob_sha256'], 'same URL changed bytes produces a new content revision' );
+file_put_contents( $linker_commerce_publication_file['path'], $linker_commerce_publication_bytes );
+$linker_commerce_publication_attachment = wp_insert_attachment(
+	array(
+		'post_title'     => 'Fixture manual',
+		'post_mime_type' => 'application/pdf',
+		'post_status'    => 'inherit',
+	),
+	$linker_commerce_publication_file['path']
+);
+update_attached_file( $linker_commerce_publication_attachment, $linker_commerce_publication_file['path'] );
+update_post_meta( $linker_commerce_publication_attachment, '_linker_document_public', '0' );
+$linker_commerce_publication_check( 410 === $linker_commerce_publication_access->response( $linker_commerce_publication_file, 'GET' )['status'], 'media withdrawal blocks every active relation' );
+update_post_meta( $linker_commerce_publication_attachment, '_linker_document_public', '1' );
+$linker_commerce_publication_state['ids'][] = $linker_commerce_publication_attachment;
+update_option( 'linker_publication_fixture', $linker_commerce_publication_state, false );
+$linker_commerce_publication_check( 10.0 === ( EngineeringFeed::item( $linker_commerce_publication_c )['ac_power_kw'] ?? null ), 'current numeric fact uses its bound document bytes' );
+file_put_contents( $linker_commerce_publication_files[4], $linker_commerce_publication_bytes . 'updated figure PDF' );
+$linker_commerce_publication_check( 'unknown' === ( EngineeringFeed::item( $linker_commerce_publication_c )['ac_power_kw'] ?? null ), 'same URL replacement cannot reauthorize old scalar figure values' );
+\Linker\Commerce\Products\Publication\EvidenceBindings::capture( $linker_commerce_publication_c, true );
+\Linker\Commerce\Products\Publication\EvidenceBindings::capture( $linker_commerce_publication_c );
+$linker_commerce_publication_check( 'unknown' === ( EngineeringFeed::item( $linker_commerce_publication_c )['ac_power_kw'] ?? null ), 'migration rerun and unchanged fact save cannot rebind old numbers to replacement bytes' );
+ob_start();
+( new \Linker\Commerce\Admin\DocumentsMetaBox() )->render( $linker_commerce_publication_c );
+$linker_commerce_publication_admin = (string) ob_get_clean();
+$linker_commerce_publication_check( str_contains( $linker_commerce_publication_admin, 'The current document does not yet verify these technical values:' ) && str_contains( $linker_commerce_publication_admin, 'rated_ac_power_kw' ), 'product editor visibly identifies stale engineering facts without rebinding them' );
+update_post_meta(
+	$linker_commerce_publication_c,
+	\Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY,
+	array(
+		'rated_ac_power_kw' => array(
+			'value'    => 11,
+			'unit'     => 'kW',
+			'citation' => array(
+				'url'  => $linker_commerce_publication_urls['figure'],
+				'page' => 1,
+			),
+		),
+	)
+);
+$linker_commerce_publication_check( 11.0 === ( EngineeringFeed::item( $linker_commerce_publication_c )['ac_power_kw'] ?? null ), 'normal Woo fact correction binds the newly edited fact to current bytes' );
+$linker_commerce_publication_feed     = EngineeringFeed::feed();
+$linker_commerce_publication_feed_ids = array_column( $linker_commerce_publication_feed['products'], 'id' );
+$linker_commerce_publication_check( in_array( $linker_commerce_publication_a, $linker_commerce_publication_feed_ids, true ) && ! in_array( $linker_commerce_publication_b, $linker_commerce_publication_feed_ids, true ) && ! in_array( $linker_commerce_publication_de, $linker_commerce_publication_feed_ids, true ), 'engineering feed emits one canonical published product and current document versions' );
+$linker_commerce_publication_current_claim = $linker_commerce_publication_jobs->claim( 'knowledge', 'fixture-worker', 300 );
+if ( is_wp_error( $linker_commerce_publication_current_claim ) ) {
+	throw new RuntimeException( $linker_commerce_publication_current_claim->get_error_message() );
+}
+$linker_commerce_publication_current_job = $linker_commerce_publication_current_claim['job'];
+$linker_commerce_publication_ready       = $linker_commerce_publication_jobs->acknowledge(
+	array(
+		'job_id'            => $linker_commerce_publication_current_job['job_id'],
+		'lease_token'       => $linker_commerce_publication_current_job['lease_token'],
+		'source_revision'   => $linker_commerce_publication_current_job['source_revision'],
+		'loaded_revision'   => 'fixture-current-loaded',
+		'status'            => 'ready',
+		'prepared_products' => $linker_commerce_publication_current_job['manifest']['products'],
+	)
+);
+$linker_commerce_publication_check( ! is_wp_error( $linker_commerce_publication_ready ) && ( Publication::product( $linker_commerce_publication_a )['ready']['knowledge'] ?? false ), 'current loaded receipt enables matching preparation state without changing permission' );
+echo wp_json_encode(
+	array(
+		'checks'   => $linker_commerce_publication_checks,
+		'count'    => count( $linker_commerce_publication_checks ),
+		'state'    => $linker_commerce_publication_state,
+		'manifest' => Publication::manifest(),
+	),
+	JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+);

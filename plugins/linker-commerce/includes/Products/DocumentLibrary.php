@@ -220,18 +220,9 @@ final class DocumentLibrary {
 	 * @return list<array{question: string, answer: string, source: string, source_url: string}>
 	 */
 	private function faq_items( int $id, bool $german, array $manifest ): array {
-		$items        = array();
-		$faqs         = Faqs::of( $id );
-		$allowed_urls = array();
-		foreach ( $manifest['documents'] as $document ) {
-			if ( in_array( $id, $document['product_ids'], true ) ) {
-				$allowed_urls = array_merge( $allowed_urls, $document['aliases'] );
-			}
-		}
-		foreach ( $faqs as $faq ) {
-			if ( ! in_array( strtok( (string) $faq['citation']['url'], '#' ), $allowed_urls, true ) ) {
-				continue;
-			}
+		$items = array();
+		$faqs  = Faqs::of( $id );
+		foreach ( Publication::faqs_for( $id, $manifest ) as $faq ) {
 			$question = $german && '' !== $faq['question_de'] ? $faq['question_de'] : $faq['question'];
 			$answer   = $german && '' !== $faq['answer_de'] ? $faq['answer_de'] : $faq['answer'];
 			if ( '' === trim( $question ) ) {
@@ -257,7 +248,7 @@ final class DocumentLibrary {
 				'source_url' => $faq['citation']['url'] . '#page=' . $page,
 			);
 		}
-		if ( array() !== $faqs ) {
+		if ( array() !== $faqs || '1' === get_post_meta( $id, '_linker_faqs_managed', true ) ) {
 			return $items;
 		}
 		foreach ( $this->view->faqs( $id ) as $faq ) {

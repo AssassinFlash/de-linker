@@ -51,6 +51,7 @@ from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
 from linker_genie.publication import (
+    PublicationChanged,
     PublicationUnavailable,
     Snapshot,
     current,
@@ -222,8 +223,11 @@ def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
         response = _compute_turn(clean, request, snapshot)
         authority.validate(snapshot)
         return response
+    except PublicationChanged as error:
+        logger.warning("publication changed during turn")
+        raise HTTPException(status_code=409, detail="publication_changed") from error
     except PublicationUnavailable as error:
-        logger.warning("publication refused turn: %s", error)
+        logger.warning("publication authority unavailable")
         raise HTTPException(
             status_code=503, detail="publication_unavailable"
         ) from error

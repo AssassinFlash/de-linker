@@ -39,7 +39,11 @@ final class Module {
 	 */
 	public function managed_documents( int|array $meta_id, int $id, string $key ): void {
 		if ( \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY === $key && 'product' === get_post_type( $id ) ) {
-			FigureBindings::capture( $id );
+			EvidenceBindings::capture( $id );
+		}
+		if ( \Linker\Commerce\Products\Faqs::META_KEY === $key && 'product' === get_post_type( $id ) ) {
+			EvidenceBindings::capture_faqs( $id );
+			update_post_meta( \Linker\Commerce\Products\Publication::canonical_id( $id ), '_linker_faqs_managed', '1' );
 		}
 		if ( \Linker\Commerce\Products\EngineeringData::DOCUMENTS_META_KEY === $key && 'product' === get_post_type( $id ) ) {
 			update_post_meta( $id, '_linker_documents_managed', '1' );

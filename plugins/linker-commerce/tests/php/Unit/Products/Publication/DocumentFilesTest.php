@@ -72,4 +72,13 @@ final class DocumentFilesTest extends TestCase {
 		self::assertStringContainsString( 'linker_public_document=$1 [END,NC]', $after );
 		self::assertLessThan( strpos( $after, 'REQUEST_FILENAME' ), strpos( $after, 'linker_public_document=' ) );
 	}
+
+	/** Unreadable current authority cannot stream an allowed stale document. */
+	public function test_authority_failure_is_unavailable_without_pdf_bytes(): void {
+		\WP_Mock::userFunction( 'wp_cache_supports' )->with( 'flush_runtime' )->andReturn( false );
+		$file     = DocumentFiles::resolve( rtrim( home_url(), '/' ) . '/wp-content/uploads/2026/manual.pdf' );
+		$response = ( new DocumentAccess() )->response( $file, 'GET' );
+		self::assertSame( 503, $response['status'] );
+		self::assertSame( 0, $response['length'] );
+	}
 }

@@ -163,6 +163,7 @@ class Proxy {
 	 * Registers the routes; runs on rest_api_init.
 	 */
 	public function register(): void {
+		( new DraftActions() )->register();
 		add_filter( 'linker_tools_restored_reply', array( PublicationGuard::class, 'restored' ), 10, 2 );
 		register_rest_route(
 			self::NAMESPACE,
@@ -562,10 +563,19 @@ class Proxy {
 				array( 'status' => 409 )
 			);
 		}
+		// Action tokens are issued only for this live checked answer; history stays unsigned.
+		$action_stream = ( new DraftProof() )->stream( $split['stream'], $publication );
+		if ( $action_stream instanceof WP_Error ) {
+			return $action_stream;
+		}
+		$permitted = $this->publication->validate( $publication );
+		if ( is_wp_error( $permitted ) ) {
+			return $permitted;
+		}
 		$reply = new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,
-				'stream'          => $split['stream'],
+				'stream'          => $action_stream,
 			)
 		);
 		$this->publication->remember( $reply, $publication );
@@ -690,6 +700,13 @@ class Proxy {
 			return $response;
 		}
 		$code = (int) wp_remote_retrieve_response_code( $response );
+		if ( in_array( $code, array( 409, 503 ), true ) ) {
+			$failure  = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+			$expected = 409 === $code ? 'publication_changed' : 'publication_unavailable';
+			if ( is_array( $failure ) && isset( $failure['detail'] ) && $failure['detail'] === $expected ) {
+				return PublicationGuard::refused( $code );
+			}
+		}
 		if ( in_array( $code, array( 429, 503 ), true ) ) {
 			$failure = json_decode( (string) wp_remote_retrieve_body( $response ), true );
 			if ( is_array( $failure ) && ( str_starts_with( (string) ( $failure['code'] ?? '' ), 'provider_budget_' ) || str_starts_with( (string) ( $failure['code'] ?? '' ), 'genie_resource_' ) ) ) {

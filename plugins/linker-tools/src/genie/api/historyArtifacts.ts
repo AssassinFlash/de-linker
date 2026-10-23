@@ -117,7 +117,12 @@ function documentLabel(
 	};
 }
 
-/** Current permission and content identity; settles even if a transport ignores abort. */
+/**
+ * Current permission and content identity; settles even if a transport ignores abort.
+ * @param context Current REST root and language.
+ * @param nonce   Native REST identity nonce.
+ * @param fetcher Authority transport.
+ */
 async function publicationManifest(
 	context: ArtifactContext,
 	nonce: string,
@@ -255,6 +260,7 @@ export async function restoreArtifacts(
 			if ( block.type === 'cards' ) {
 				return {
 					...block,
+					...( options.refreshPrices ? { draft_proofs: {} } : {} ),
 					product_ids: block.product_ids.filter( ( id ) =>
 						allowed.has( id )
 					),
@@ -276,6 +282,13 @@ export async function restoreArtifacts(
 						allowed.has( id )
 					),
 				};
+			}
+			if (
+				block.type === 'parts' &&
+				options.refreshPrices &&
+				block.add
+			) {
+				return { ...block, add: { ...block.add, proof: undefined } };
 			}
 			if ( block.type === 'document' ) {
 				const current = documents.find(

@@ -130,7 +130,7 @@ final class GetProduct {
 		$id       = (int) ( $input['product_id'] ?? 0 );
 		$lang     = ProductText::lang( $input['lang'] ?? null );
 		$manifest = $this->publication->manifest();
-		if ( array() === $this->publication->published( array( $id ), $manifest ) ) {
+		if ( array() === $this->publication->published( array( $id ), $manifest, $lang ) ) {
 			return $this->empty( $id, $lang );
 		}
 		$product      = wc_get_product( $id );
@@ -140,7 +140,7 @@ final class GetProduct {
 		$result = array(
 			'product_id' => $id,
 			'title'      => ProductText::title( $id, $lang ),
-			'url'        => ProductText::url( $id ),
+			'url'        => ProductText::url( $id, $lang ),
 			'sku'        => $product instanceof WC_Product ? (string) $product->get_sku() : '',
 			'model'      => ProductText::term_name( $id, 'pa_model' ),
 			'brand'      => ProductText::term_name( $id, 'pa_brand' ),

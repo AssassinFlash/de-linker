@@ -113,4 +113,33 @@ final class ProductPublicationTest extends TestCase {
 			$result
 		);
 	}
+	/** An English published source cannot expose an unpublished German twin. */
+	public function test_published_source_with_draft_locale_releases_no_locale_facts(): void {
+		WP_Mock::userFunction( 'get_post_type', array( 'return' => static fn( int $id ): string => in_array( $id, array( 4107, 1832, 3556, 6519, 99991 ), true ) ? 'product' : '' ) );
+		WP_Mock::userFunction( 'get_post_status', array( 'return' => static fn( int $id ): string => 99991 === $id ? 'draft' : 'publish' ) );
+		WP_Mock::userFunction( 'get_the_title', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'get_permalink', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'pll_get_post', array( 'return' => static fn( int $id, string $lang ): int => 'de' === $lang && 4107 === $id ? 99991 : 0 ) );
+		$data    = $this->publication_data();
+		$product = ( new GetProduct( $data ) )->execute(
+			array(
+				'product_id' => 4107,
+				'lang'       => 'de',
+			)
+		);
+		$this->assertSame( '', $product['title'] );
+		$this->assertSame( '', $product['url'] );
+		$this->assertSame( array(), (array) $product['facts'] );
+		$search = ( new SearchProducts( $data ) )->select( array( 4107 ), array(), 'de', 12 );
+		$this->assertSame( array(), $search['qualified'] );
+		$comparison = ( new CompareProducts( null, $data ) )->execute(
+			array(
+				'product_ids' => array( 4107, 1832 ),
+				'lang'        => 'de',
+			)
+		);
+		$this->assertSame( array(), $comparison['products'] );
+		$this->assertSame( '', \Linker\Commerce\Abilities\ProductText::title( 4107, 'de' ) );
+		$this->assertSame( '', \Linker\Commerce\Abilities\ProductText::url( 4107, 'de' ) );
+	}
 }

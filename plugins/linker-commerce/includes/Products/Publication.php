@@ -11,7 +11,7 @@ namespace Linker\Commerce\Products;
 
 use Linker\Commerce\Products\Publication\DocumentFiles;
 use Linker\Commerce\Products\Publication\PreparationJobs;
-use Linker\Commerce\Products\Publication\FigureBindings;
+use Linker\Commerce\Products\Publication\EvidenceBindings;
 
 /** A current read; no TTL, index or preparation acknowledgement grants access. */
 final class Publication {
@@ -67,6 +67,18 @@ final class Publication {
 	 */
 	public static function is_published( int $id ): bool {
 		self::refresh_runtime();
+		return self::published_in_current_read( $id );
+	}
+
+	/**
+	 * Read within one explicit freshly opened authority assembly.
+	 *
+	 * The outer manifest already refreshed runtime copies; repeating that flush
+	 * per locale would discard every post/term read made by this same assembly.
+	 *
+	 * @param int $id Locale product ID.
+	 */
+	private static function published_in_current_read( int $id ): bool {
 		$canonical = self::canonical_id( $id );
 		return $id > 0 && 'product' === get_post_type( $id ) && 'publish' === get_post_status( $id ) && 'product' === get_post_type( $canonical ) && 'publish' === get_post_status( $canonical );
 	}
@@ -112,7 +124,7 @@ final class Publication {
 				'orderby'                     => 'ID',
 				'order'                       => 'ASC',
 				'suppress_filters'            => true,
-				'lang'                        => 'all',
+				'lang'                        => '',
 				'linker_publication_internal' => true,
 				'cache_results'               => false,
 			)
@@ -121,7 +133,7 @@ final class Publication {
 		$documents = array();
 		foreach ( $ids as $locale_id ) {
 			$locale_id = (int) $locale_id;
-			if ( ! self::is_published( $locale_id ) ) {
+			if ( ! self::published_in_current_read( $locale_id ) ) {
 				continue;
 			}
 			$id = self::canonical_id( $locale_id );
@@ -219,7 +231,7 @@ final class Publication {
 		}
 		$meta = get_post_meta( $id );
 		foreach ( array_keys( $meta ) as $key ) {
-			if ( ( str_starts_with( (string) $key, '_linker_publication_' ) && FigureBindings::META_KEY !== $key ) || in_array( $key, array( '_edit_lock', '_edit_last' ), true ) ) {
+			if ( ( str_starts_with( (string) $key, '_linker_publication_' ) && ! in_array( $key, array( EvidenceBindings::META_KEY, EvidenceBindings::FAQ_META_KEY ), true ) ) || in_array( $key, array( '_edit_lock', '_edit_last' ), true ) ) {
 				unset( $meta[ $key ] );
 			}
 		}
@@ -258,7 +270,10 @@ final class Publication {
 		if ( is_string( $rows ) ) {
 			$rows = json_decode( $rows, true );
 		}
-		$rows      = is_array( $rows ) ? array_values( array_filter( $rows, 'is_array' ) ) : array();
+		$rows = is_array( $rows ) ? array_values( array_filter( $rows, 'is_array' ) ) : array();
+		if ( '1' === get_post_meta( self::canonical_id( $id ), '_linker_documents_managed', true ) ) {
+			return $rows;
+		}
 		$urls      = array_column( $rows, 'url' );
 		$figures   = get_post_meta( self::canonical_id( $id ), SelectionFacts::FIGURES_META_KEY, true );
 		$figures   = is_string( $figures ) ? json_decode( $figures, true ) : $figures;
@@ -315,6 +330,35 @@ final class Publication {
 	private static function attachment_allows( string $url ): bool {
 		$id = attachment_url_to_postid( $url );
 		return 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+	}
+
+	/**
+	 * Current cited FAQ answers; raw editorial metadata remains available to its editor.
+	 *
+	 * @param int                      $id Product ID.
+	 * @param array<string,mixed>|null $manifest Current assembly, otherwise a fresh read.
+	 * @return list<array{question:string,answer:string,question_de:string,answer_de:string,citation:array{url:string,page:int,title?:string}}>
+	 * @phpstan-impure
+	 */
+	public static function faqs_for( int $id, ?array $manifest = null ): array {
+		if ( ! self::is_published( $id ) ) {
+			return array();
+		}
+		$manifest ??= self::manifest();
+		$id         = self::canonical_id( $id );
+		if ( ! in_array( $id, array_column( $manifest['products'], 'product_id' ), true ) ) {
+			return array();
+		}
+		$answers = array();
+		foreach ( Faqs::of( $id ) as $entry ) {
+			foreach ( $manifest['documents'] as $document ) {
+				if ( in_array( $id, $document['product_ids'], true ) && in_array( strtok( $entry['citation']['url'], '#' ), $document['aliases'], true ) && EvidenceBindings::matches_faq( $id, $entry, $document ) ) {
+					$answers[] = $entry;
+					break;
+				}
+			}
+		}
+		return $answers;
 	}
 
 	/**
@@ -385,7 +429,7 @@ final class Publication {
 					$document = reset( $matches );
 				}
 			}
-			if ( is_array( $document ) && FigureBindings::matches( $id, (string) $key, $entry, $document ) ) {
+			if ( is_array( $document ) && EvidenceBindings::matches( $id, (string) $key, $entry, $document ) ) {
 				$entry['citation']['url'] = $document['url'];
 				$result[ (string) $key ]  = $entry;
 			}
