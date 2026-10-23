@@ -621,6 +621,57 @@ def native_operation_ids(wp: WpCli) -> set[str]:
     return set(json.loads(wp.run("eval", 'echo wp_json_encode(array_keys(json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true)["receipts"] ?? array()));')))
 
 
+@pytest.mark.parametrize("committed", [False, True])
+def test_legacy_native_receipt_retries_and_settles_without_new_quota(
+    local: tuple[Instance, WpCli], committed: bool,
+) -> None:
+    instance, wp = local
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    command = {"schema_version": 1, "title": "Synthetic legacy receipt", "inputs": {}, "key": str(uuid.uuid4())}
+    preceding = native_operation_ids(wp)
+    if committed:
+        original = browser.rpc("rpc/projects/create", command)
+        assert original.status == 200, original.body
+    else:
+        with failed_native_dispatch(instance) as token:
+            assert browser.rpc("rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token}).status == 503
+    inserted = native_operation_ids(wp) - preceding
+    assert len(inserted) == 1
+    native_id = inserted.pop()
+    # Reproduce the previous raw-UUID journal representation for this one
+    # synthetic operation. Its native fingerprint, binding and debits survive.
+    before = json.loads(wp.run("eval", '''
+$name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
+$state = json_decode(get_option($name), true);
+$id = getenv('LINKER_PLANNER_FIXTURE_OPERATION');
+$key = getenv('LINKER_PLANNER_FIXTURE_KEY');
+if (!isset($state['receipts'][$id]) || isset($state['receipts'][$key])) { throw new Exception('legacy fixture collision'); }
+$state['receipts'][$key] = $state['receipts'][$id];
+unset($state['receipts'][$id]);
+$state['receipts'][$key]['status'] = 'unresolved';
+update_option($name, wp_json_encode($state), false);
+echo wp_json_encode(array('receipt' => $state['receipts'][$key], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id, "LINKER_PLANNER_FIXTURE_KEY": command["key"]}))
+    if not committed:
+        assert browser.rpc("rpc/projects/create", {**command, "title": "Changed legacy intent"}).status == 409
+    reply = browser.rpc("rpc/projects/create", command)
+    assert reply.status == 200, reply.body
+    if committed:
+        assert reply.object() == original.object()
+    after = json.loads(wp.run("eval", '''
+$state = json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true);
+$id = getenv('LINKER_PLANNER_FIXTURE_KEY');
+echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
+''', env={"LINKER_PLANNER_FIXTURE_KEY": command["key"]}))
+    assert before["count"] == after["count"]
+    assert before["buckets"] == after["buckets"]
+    assert after["receipt"]["status"] == "completed"
+    assert before["receipt"]["fingerprint"] == after["receipt"]["fingerprint"]
+    assert before["receipt"]["debits"] == after["receipt"]["debits"]
+    assert native_id not in native_operation_ids(wp)
+
+
 def test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting(local: tuple[Instance, WpCli]) -> None:
     instance, wp = local
     browser = Browser(instance.url)

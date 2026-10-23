@@ -92,3 +92,36 @@ The case passes in isolation and the other16 are unchanged. Current31 Node and
 Native refresh now shows the original Oslo project Saved·revision8, no stale
 conflict, with its source data retained. Final fixed-source reviews and remaining
 native unknown-ack paths are still required before this increment is accepted.
+
+## Rejected fixed source 7d9af42c
+
+Spec passed the complete dee1aaac→7d9af42c increment; Standards found one P2
+legacy-journal compatibility defect. Its unchanged independent real-class PHP
+probe showed a matching raw-UUID dispatched receipt was ignored: absent engine
+receipt caused used1→2/receipts1→2, and confirmed engine replay left the old
+receipt dispatched. Both axes independently passed330 planning,31 Node and42
+React cases; this did not cover the missing legacy representation.
+
+The correction adds an atomic context lookup to the native Ledger without
+changing its existing lookup/reserve/transition contracts. Send and confirmed
+acknowledgement share legacy-ID resolution. Matching purpose/binding/intent
+reuses the original journal entry, including a full bucket; different binding
+or purpose is unknown. Changed input in the same legacy context conflicts.
+Old records cannot independently identify a different guest principal with
+that same binding, so mismatched fingerprints conservatively conflict before
+admission. An engine-confirmed permanent result retains precedence and never
+completes an unrelated legacy entry. No receipt migration/refund/key rewrite
+is performed.
+
+The unchanged independent probe now shows used1→1/receipts1→1 and completed old
+status in both absent and confirmed branches; mutation calls are respectively
+one and zero. Actual native HTTP now passes19 cases82.64s, including both legacy
+representations, unchanged buckets/debits/count, exact successful replay and a
+changed-body409 before the absent receipt commits. The native shared-Ledger
+database fixture additionally covers a full bucket, purpose/binding isolation
+and conflict:13 tests109 assertions2.888s. Both plugins' WPCS and PHPStan pass.
+The unchanged [independent probe](handover-probes/review-legacy-journal.original.php)
+can be copied into a temporary directory with `plugins` symlinked to the fixed
+checkout, then run with PHP assertions enabled, with/without `replayed` argument.
+Final independent fixed-source review and remaining native CUA
+unknown-ack paths are still pending.

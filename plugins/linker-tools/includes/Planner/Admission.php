@@ -76,9 +76,12 @@ final class Admission {
 				'target' => $target,
 			);
 		}
-		$id          = $this->operation_id( $principal, $command['key'], $quota->binding() );
 		$fingerprint = $this->fingerprint( $principal, $path, $known->command_scope, $known->command_sha256 );
-		$ledger      = new Ledger();
+		$id          = $this->operation_id( $principal, $command['key'], $quota->binding(), $fingerprint );
+		if ( is_wp_error( $id ) ) {
+			return $this->refusal( $id );
+		}
+		$ledger = new Ledger();
 		// This lease covers only bounded RPC dispatch, not queued numerical work.
 		$receipt = $ledger->reserve( $id, $fingerprint, $limits, 30, $carry, 'planner_write', $quota->binding(), $quota->owners() );
 		if ( is_wp_error( $receipt ) ) {
@@ -125,10 +128,13 @@ final class Admission {
 		if ( is_wp_error( $quota ) ) {
 			return true; // The permanent owned engine receipt is already confirmed.
 		}
-		$id          = $this->operation_id( $principal, $id, $quota->binding() );
 		$ledger      = new Ledger();
 		$fingerprint = $this->fingerprint( $principal, $path, $command_scope, $command_hash );
-		$receipt     = $ledger->lookup( $id, $fingerprint );
+		$id          = $this->operation_id( $principal, $id, $quota->binding(), $fingerprint, true );
+		if ( is_wp_error( $id ) ) {
+			return Failure::make( 'receipt_persistence', 503 );
+		}
+		$receipt = $ledger->lookup( $id, $fingerprint );
 		if ( is_wp_error( $receipt ) ) {
 			// A permanent owned receipt can predate login or native salt rotation.
 			// Its old, independently scoped quota fingerprint is not this actor's
@@ -147,12 +153,25 @@ final class Admission {
 	 * An earlier dispatched attempt under a different native context retains
 	 * its charge; an absent engine receipt needs a new admitted attempt there.
 	 * Reusing a raw UUID globally otherwise rejects legitimate login recovery.
+	 * A still-present legacy receipt is retained only for this exact context.
 	 *
 	 * @param Principal $principal Verified native principal.
 	 * @param string    $key Original client intent UUID.
 	 * @param string    $binding Existing native quota context.
+	 * @param string    $fingerprint This principal's canonical intent.
+	 * @param bool      $confirmed The engine has already proved this exact result.
+	 * @return string|WP_Error Existing or namespaced journal ID, or refusal.
 	 */
-	private function operation_id( Principal $principal, string $key, string $binding ): string {
+	private function operation_id( Principal $principal, string $key, string $binding, string $fingerprint, bool $confirmed = false ): string|WP_Error {
+		$legacy = ( new Ledger() )->lookup_context( $key, $fingerprint, 'planner_write', $binding );
+		if ( ! is_wp_error( $legacy ) ) {
+			return $key;
+		}
+		// A confirmed permanent receipt remains recoverable even if an unrelated
+		// old entry shares its key. It cannot settle that mismatched entry.
+		if ( 'linker_admission_unknown_receipt' !== $legacy->get_error_code() && ! ( $confirmed && 'linker_admission_payload_changed' === $legacy->get_error_code() ) ) {
+			return $legacy;
+		}
 		// Preserve exact key bytes, matching the engine's opaque Key contract.
 		$hash = wp_hash( 'linker-planner-quota:v2|' . $principal->kind . '|' . $principal->subject . '|' . $binding . '|' . $key, 'auth', 'sha256' );
 		// Ledger::reserve/transition accept a UUID4-shaped local identifier.

@@ -177,6 +177,30 @@ final class Ledger {
 	}
 
 	/**
+	 * Resolve a legacy operation only inside its server-owned quota context.
+	 * A foreign context is unknown; changed input in this context conflicts.
+	 *
+	 * @phpstan-impure
+	 * @param string $id Original operation UUID.
+	 * @param string $fingerprint Bound subject/action/input fingerprint.
+	 * @param string $purpose Server-owned operation kind.
+	 * @param string $binding Private current quota context.
+	 * @return array<string,mixed>|WP_Error Matching receipt or explicit refusal.
+	 */
+	public function lookup_context( string $id, string $fingerprint, string $purpose, string $binding ): array|WP_Error {
+		$id = strtolower( $id );
+		return $this->edit(
+			static function ( array &$state ) use ( $id, $fingerprint, $purpose, $binding ): array|WP_Error {
+				$receipt = $state['receipts'][ $id ] ?? null;
+				if ( ! is_array( $receipt ) || $receipt['purpose'] !== $purpose || $receipt['binding'] !== $binding ) {
+					return self::error( 'unknown_receipt' );
+				}
+				return hash_equals( (string) $receipt['fingerprint'], $fingerprint ) ? $receipt : self::error( 'payload_changed' );
+			}
+		);
+	}
+
+	/**
 	 * Read-only proof decision for the bounded business intake adapter.
 	 *
 	 * @param array{id:string,binding:string,action:string,single:bool} $proof Checked signed scope.

@@ -94,6 +94,15 @@ engineering reports, and does not replace any model channel.
    quota context admits the explicitly retried attempt. Existing receipts are
    not rewritten or refunded by inference. Evidence: the real native dispatched
    timeout→login fixture previously returned409 despite zero engine projects.
+   A still-present legacy raw-UUID receipt is reused and settled only when its
+   purpose, quota binding and principal-derived intent fingerprint all match.
+   Context lookup uses the same atomic journal lock/recovery as admission. A
+   different purpose/binding is unknown; changed input in the same legacy
+   context conflicts before new admission. Legacy records cannot distinguish a
+   changed intent from another guest principal sharing that quota binding, so
+   a mismatched fingerprint is conservatively refused rather than reused.
+   Already-confirmed permanent engine results remain recoverable; a mismatched
+   legacy entry is never settled as that result's receipt.
 
 Acceptance requires real HTTP cookies/nonces and a running local site, not
 only mocks: two isolated guests, reload, native login/registration and logout,
