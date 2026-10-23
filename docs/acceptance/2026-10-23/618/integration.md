@@ -84,6 +84,24 @@ An actual new English generic-family browser turn after the final vocabulary cor
 
 ## Remaining gates
 
+The repeated final-source CI failure in the unchanged native MFA fixture was
+reproduced locally. Its mail reader unconditionally decoded original 7bit/8bit
+messages as quoted-printable, corrupting `id=127` and hexadecimal-prefixed reset
+keys. The actual captured messages declare 7bit/8bit. The fixture now respects
+each MIME part's transfer encoding, preserving current-key/origin/user checks;
+real EN/DE login, MFA and both password-reset flows passed all **36 checks**.
+The 24 related offline regressions also passed. See `admin-mfa-native.json`.
+These observations establish the mail-reading defect and the local correction;
+the complete CI run is still required for the promoted source. No production
+account, mail setting or reset policy was changed.
+
+The newer verified pre-cutover recovery points are
+`~/de-linker-data/cutover-20261023-1904` (39,970 files, 60 InnoDB tables)
+and `~/de-linker-data/vps-recovery-20261023T191902Z` (all three actual code trees,
+five consistent SQLite databases, private configuration, engine cache and the
+current knowledge index). They supersede the older points for this cutover;
+retention verification preserved the bounded previous/baseline versions.
+
 - Finish committed evidence/build verification on the pinned source; final-source EN/DE generic-family observations are complete.
 - Final-source CI and explicit review-station acceptance; earlier green runs are retained as earlier-source evidence.
 - Necessary fresh production recovery point, atomic deployment, native migration and narrow key provisioning, stable workers and actual runtime/loaded-source readback.

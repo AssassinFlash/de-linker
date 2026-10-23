@@ -239,9 +239,36 @@ use Linker\Commerce\Mail\TestMode;
 				$bodies[] = $job['message']->body;
 			}
 		}
+		$decode_message = static function ( string $message ) use ( &$decode_message ): array {
+			$parts = preg_split( '/\r?\n\r?\n/', $message, 2 );
+			if ( 2 !== count( $parts ) ) {
+				return array();
+			}
+			$headers = preg_replace( '/\r?\n[ \t]+/', ' ', $parts[0] );
+			if ( preg_match( '~^Content-Type:\s*multipart/[^\r\n]*\bboundary=(?:"([^"]+)"|([^\s;]+))~mi', $headers, $boundary ) ) {
+				$decoded = array();
+				foreach ( preg_split( '~(?:^|\r?\n)--' . preg_quote( $boundary[1] ?: $boundary[2], '~' ) . '(?:--)?[ \t]*(?:\r?\n|$)~', $parts[1] ) as $part ) {
+					array_push( $decoded, ...$decode_message( $part ) );
+				}
+				return $decoded;
+			}
+			preg_match( '/^Content-Transfer-Encoding:\s*([^\s;]+)/mi', $headers, $transfer );
+			switch ( strtolower( $transfer[1] ?? '7bit' ) ) {
+				case 'quoted-printable':
+					return array( quoted_printable_decode( $parts[1] ) );
+				case 'base64':
+					$decoded = base64_decode( $parts[1], true );
+					return false === $decoded ? array() : array( $decoded );
+				default:
+					// Native 7bit/8bit messages already contain the original URL.
+					// Decoding them as quoted-printable corrupts =12 in id=127
+					// and reset keys whose first bytes happen to be hexadecimal.
+					return array( $parts[1] );
+			}
+		};
 		foreach ( glob( LINKER_LOCAL_MAIL_DIR . '/*.eml' ) as $file ) {
 			if ( filemtime( $file ) >= $state['started'] ) {
-				$bodies[] = quoted_printable_decode( file_get_contents( $file ) );
+				array_push( $bodies, ...$decode_message( file_get_contents( $file ) ) );
 			}
 		}
 		foreach ( $bodies as $body ) {
@@ -250,7 +277,7 @@ use Linker\Commerce\Mail\TestMode;
 				$query = array();
 				parse_str( (string) wp_parse_url( $url, PHP_URL_QUERY ), $query );
 				$valid = isset( $query['key'] ) ? check_password_reset_key( $query['key'], $user['login'] ) : new WP_Error( 'missing_key' );
-				if ( str_starts_with( $url, home_url() . '/' ) && ! is_wp_error( $valid ) && $valid->ID === $user['id'] ) {
+				if ( ! preg_match( '/[\x00-\x20\x7f]/', $url ) && str_starts_with( $url, home_url() . '/' ) && ! is_wp_error( $valid ) && $valid->ID === $user['id'] && ( ! isset( $query['id'] ) || (string) $user['id'] === $query['id'] ) ) {
 					echo $url; // Synthetic reset token: capture privately, never report.
 					return;
 				}
