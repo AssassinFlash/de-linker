@@ -144,4 +144,5 @@ def read_chunks(directory: Path) -> Iterator[tuple[Chunk, bytes | None]]:
     for row in _read_lines(directory / "chunks.jsonl"):
         encoded = row.pop("vector", None)
         row["preceding_text"] = tuple(row.get("preceding_text", ()))
+        row["source_rows"] = tuple(row.get("source_rows", ()))
         yield Chunk(**row), base64.b64decode(encoded) if encoded is not None else None

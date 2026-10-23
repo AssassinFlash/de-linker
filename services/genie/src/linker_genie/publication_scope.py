@@ -6,8 +6,15 @@ document identity, relation, content revision or product revision for a grant.
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Mapping, Sequence
 from typing import Any
+
+from linker_genie.source_roles import (
+    manual_scope_models,
+    meter_references,
+    pack_model_row,
+)
 
 
 def binding(association: Mapping[str, Any]) -> tuple[str, str, str, int, str]:
@@ -26,6 +33,10 @@ def authorize_chunk(
     product_ids: Sequence[int],
     associations: Sequence[dict[str, Any]],
     scope: Mapping[str, Any] | None = None,
+    *,
+    products: Mapping[int, Mapping[str, Any]] | None = None,
+    chunk_id: str = "",
+    text: str = "",
 ) -> list[dict[str, Any]]:
     """Authorize the complete model set with its explicit association group.
 
@@ -38,6 +49,50 @@ def authorize_chunk(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and (
+        scope.get("basis") == "manual_peripheral" or "referenced_products" in scope
+    ):
+        references = scope.get("referenced_products")
+        declaration = scope.get("manual_scope")
+        if (
+            products is None
+            or not isinstance(references, list)
+            or not references
+            or not isinstance(declaration, dict)
+            or set(declaration.get("product_ids", [])) != wanted
+            or not all(
+                pid in products
+                and str(products[pid].get("model", "")).casefold()
+                in manual_scope_models(str(declaration.get("quote", "")))
+                for pid in wanted
+            )
+            or not declaration.get("source_chunk_ids")
+            or not set(declaration["source_chunk_ids"]).issubset(
+                scope["source_chunk_ids"]
+            )
+        ):
+            return []
+        authored = {
+            (model.casefold(), quote) for model, quote in meter_references(text)
+        }
+        for ref in references:
+            if not isinstance(ref, dict):
+                return []
+            pid = ref.get("product_id")
+            current = products.get(pid) if type(pid) is int else None
+            if (
+                current is None
+                or pid in wanted
+                or ref.get("product_revision") != current.get("product_revision")
+                or ref.get("model") != current.get("model")
+                or ref.get("role") != "meter"
+                or not isinstance(ref.get("quote"), str)
+                or ref.get("source_chunk_id") != chunk_id
+                or chunk_id not in scope["source_chunk_ids"]
+                or (str(ref.get("model", "")).casefold(), ref.get("quote"))
+                not in authored
+            ):
+                return []
     document_ids = set(scope["document_ids"]) if scope is not None else None
     available = [
         item
@@ -60,6 +115,9 @@ def table_header(
     scope: Mapping[str, Any] | None,
     product_ids: Sequence[int],
     products: Mapping[int, Mapping[str, Any]],
+    *,
+    chunk_id: str = "",
+    text: str = "",
 ) -> str | None:
     """Restore the proven original table columns in order, or refuse invalid proof."""
     if scope is None:
@@ -97,4 +155,32 @@ def table_header(
             != " ".join(str(products[pid].get("model", "")).split()).casefold()
         ):
             return None
+    if "excluded_role_rows" in columns:
+        rows, excluded = columns.get("source_rows"), columns["excluded_role_rows"]
+        if (
+            columns.get("source_chunk_id") != chunk_id
+            or columns.get("text_sha256") != hashlib.sha256(text.encode()).hexdigest()
+            or not isinstance(rows, list)
+            or not rows
+            or any(type(row) is not int or row < 0 for row in rows)
+            or rows != sorted(set(rows))
+            or len(rows) != len(text.splitlines())
+            or not isinstance(excluded, list)
+            or not excluded
+        ):
+            return None
+        for anchor in excluded:
+            if (
+                not isinstance(anchor, dict)
+                or anchor.get("role") != "pack_model"
+                or not anchor.get("source_chunk_id")
+                or not pack_model_row(str(anchor.get("quote", "")))
+                or not isinstance(anchor.get("source_rows"), list)
+                or len(anchor["source_rows"]) != 1
+                or type(anchor["source_rows"][0]) is not int
+                or anchor["source_rows"][0] < 0
+                or anchor["source_chunk_id"] == chunk_id
+                or anchor["source_rows"][0] in rows
+            ):
+                return None
     return "| " + " | ".join([heading, *labels]) + " |"

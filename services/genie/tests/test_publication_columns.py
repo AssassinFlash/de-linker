@@ -197,14 +197,21 @@ def test_table_column_scope_stops_at_actual_structure_or_unproven_model(
         source[1].blocks.insert(target, Block("text", text="Z999"))
     elif boundary == "table_unknown_model":
         source[1].blocks[target] = replace(
-            original, rows=original.rows + (("Model", "GW125/261-ESA-LCN-G11", "", ""),)
+            original,
+            rows=original.rows + (("Model", "GW125/261-ESA-LCN-G11", "", ""),),
+            row_indices=tuple(range(len(original.rows) + 1)),
         )
     elif boundary == "new_section":
         source[1].blocks.insert(target, Block("heading", text="GOODWE"))
     elif boundary == "new_table":
         source[1].blocks.insert(
             target,
-            replace(original, rows=(("Input", "", "", ""),), source_id="#/tables/new"),
+            replace(
+                original,
+                rows=(("Input", "", "", ""),),
+                source_id="#/tables/new",
+                row_indices=(0,),
+            ),
         )
     else:
         source[1].blocks[target] = replace(
@@ -239,7 +246,10 @@ def test_original_table_model_axis_must_match_preceding_column_order(
     original = source[1].blocks[position]
     local_labels = list(reversed(LABELS)) if reverse else LABELS
     source[1].blocks[position] = replace(
-        original, rows=(("Model", *local_labels), *original.rows), header_rows=0
+        original,
+        rows=(("Model", *local_labels), *original.rows),
+        header_rows=0,
+        row_indices=tuple(range(len(original.rows) + 1)),
     )
     selected = chunks(source=source)
     proof = scope_proofs(selected, manifest(), authority(manifest()))
@@ -271,6 +281,7 @@ def test_different_current_associated_local_axis_refuses_whole_original_table() 
         original,
         rows=(("Model", LABELS[0], LABELS[1], other["model"]), *original.rows),
         header_rows=0,
+        row_indices=tuple(range(len(original.rows) + 1)),
     )
     selected = chunks(source=source)
     proof = scope_proofs(selected, raw, authority(raw))
