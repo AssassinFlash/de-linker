@@ -47,6 +47,14 @@ PHOTO_PATHS = (
     "2026/09/linker-when-demand-gets-bigger.webp",
 )
 PHOTO_SOURCES = Counter("/wp-content/uploads/" + name for name in PHOTO_PATHS)
+# Moving the carousel exposes the next photo as well as the selected card.
+# Native lazy loading left that visible preview blank until its request ended
+# in the 2026-10-23 desktop walkthrough. Retain eager loading for all three,
+# with low fetch priority; the other below-fold photos can remain lazy.
+CAROUSEL_SOURCES = frozenset(
+    "/wp-content/uploads/2026/09/linker-" + name + "-buy-through-linker.webp"
+    for name in ("installers", "contractors", "grid-projects")
+)
 # Native getimagesize() of the complete snapshot and the browser's decoded
 # naturalWidth/naturalHeight agree for all sixteen photos (2026-10-23).
 # Width/height supply the intrinsic ratio before download. In particular, the
@@ -104,12 +112,15 @@ class HomeImages(HTMLParser):
         self.sources[source] += 1
         added = ""
         width, height = PHOTO_DIMENSIONS[source]
-        for name, value in (
-            ("loading", "lazy"),
+        instructions = [
+            ("loading", "eager" if source in CAROUSEL_SOURCES else "lazy"),
             ("decoding", "async"),
             ("width", str(width)),
             ("height", str(height)),
-        ):
+        ]
+        if source in CAROUSEL_SOURCES:
+            instructions.append(("fetchpriority", "low"))
+        for name, value in instructions:
             if name not in attributes:
                 added += f' {name}="{value}"'
             elif attributes[name] != value:

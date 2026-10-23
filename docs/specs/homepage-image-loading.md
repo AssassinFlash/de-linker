@@ -8,8 +8,18 @@ four hidden process steps. These are local transport measurements, not an
 online performance claim. Verify the first-photo position at EN/DE1440/390/320
 before applying the candidate to the owned current-source instance.
 
-Add native `loading="lazy"`, `decoding="async"`, and intrinsic `width`/`height`
-to the sixteen audited photos. Their sizes must match the decoded browser
+Add native `loading="lazy"` to thirteen audited photos. Retain eager loading
+for the three customer-story photos and give them `fetchpriority="low"`.
+The desktop carousel exposes a neighboring preview: lazily loading that
+image left a visible blank after switching to story 1 in both languages.
+A dedicated EN1440 limited-network trace still found it incomplete 276ms
+after the click and complete at 639ms. Original EN/DE same-path controls
+already had all three images loaded. Avoid that introduced gap through
+native eager loading for this group; measure the revised transfer/timings
+again rather than reusing the sixteen-lazy candidate's savings.
+
+Add `decoding="async"` and intrinsic `width`/`height` to all sixteen photos.
+Their sizes must match the decoded browser
 images and native file metadata from the complete snapshot. Keep every
 original src, alt, existing matching dimension, class, paragraph, style,
 script and language. Keep the header logo and CSS hero background unchanged.

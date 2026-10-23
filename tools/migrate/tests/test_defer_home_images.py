@@ -27,15 +27,20 @@ def test_preserves_copy_scripts_styles_escapes_and_sources() -> None:
 <p>Grüße, installation &amp; compatibility. `literal` $(literal)</p>"""
     before = homepage() + surrounding
     after = repair.defer_images(before)
-    assert after.count('loading="lazy"') == 16
+    assert after.count('loading="lazy"') == 13
+    assert after.count('loading="eager"') == 3
+    assert after.count('fetchpriority="low"') == 3
     assert after.count('decoding="async"') == 16
     assert after.endswith(surrounding)
     # Drop only the added tokens: every other byte and slash must survive.
-    restored = after.replace(' decoding="async"', "")
+    restored = after.replace(' decoding="async"', "").replace(
+        ' fetchpriority="low"', ""
+    )
     for width, height in repair.PHOTO_SIZES:
         restored = restored.replace(f' width="{width}" height="{height}"', "")
     for src in SOURCES[:-1]:
-        restored = restored.replace(f'src="{src}" loading="lazy"', f'src="{src}"')
+        loading = "eager" if src in repair.CAROUSEL_SOURCES else "lazy"
+        restored = restored.replace(f'src="{src}" loading="{loading}"', f'src="{src}"')
     assert restored == before
     assert repair.defer_images(after) == after
 
@@ -58,6 +63,12 @@ def test_preserves_copy_scripts_styles_escapes_and_sources() -> None:
         homepage().replace("<img ", '<img height="0" ', 1),
         homepage().replace("<img ", '<img width="100%" ', 1),
         homepage().replace("<img ", "<img height ", 1),
+        homepage().replace(
+            f'src="{SOURCES[11]}"', f'src="{SOURCES[11]}" loading="lazy"'
+        ),
+        homepage().replace(
+            f'src="{SOURCES[11]}"', f'src="{SOURCES[11]}" fetchpriority="high"'
+        ),
         homepage().replace("</main>", '<img src="/extra.webp"></main>'),
         homepage().replace("</main>", f'<img src="{SOURCES[0]}"></main>'),
     ],
@@ -90,3 +101,15 @@ def test_intrinsic_sizes_match_each_source_and_preserve_existing_attributes() ->
         assert source in after
     assert after.count(' height="') == 16
     assert after.count(' width="') == 15
+
+
+def test_preserves_matching_carousel_loading_and_priority() -> None:
+    before = homepage().replace(
+        f'src="{SOURCES[11]}"',
+        f"src=\"{SOURCES[11]}\" loading='eager' fetchpriority='low'",
+    )
+    after = repair.defer_images(before)
+    assert "loading='eager' fetchpriority='low'" in after
+    assert after.count('loading="eager"') == 2
+    assert after.count('fetchpriority="low"') == 2
+    assert repair.defer_images(after) == after
