@@ -1,6 +1,6 @@
 # CSV 导入客户文案：初稿与独立对抗审阅
 
-2026-10-23。状态：**review complete / final pending**。评审者只写本记录和 [PROFILE-COPY-DRAFT.json](PROFILE-COPY-DRAFT.json)，未修改 UI、PO、构建物或实例。
+2026-10-23。最终状态：**独立文案审阅完成、父线选择应用、原生英德视觉核验通过**。以下初稿和取舍历史保留；评审者只写本记录和 [PROFILE-COPY-DRAFT.json](PROFILE-COPY-DRAFT.json)，未修改 UI、PO、构建物或实例，应用与原生验收由父线完成。
 
 本轮新增的用户价值维度是**将一份时间序列资料解释为可检查、可追溯的项目输入**。审查对象是操作说明、字段、质量事实、错误和恢复状态。营销页面的销售话术不适合这层界面；必要的操作指引保留，避免给客户编造采购任务。
 
@@ -97,3 +97,17 @@ Pre-delivery：
 ## Server-confirmed selection notice
 
 The independent Spec reviewer approved the exact pair “This profile selection is saved with the project.” / “Diese Profilauswahl ist im Projekt gespeichert.” The parent selected and applied it. This notice requires an owned import receipt whose asset ID is present in the server-confirmed project baseline. An open draft selection keeps the earlier save reminder. Native gettext was regenerated for the actual `build/planner/assets/planner.js` entry; visual verification remains a separate gate.
+
+## 父线最终选择与本地原生核验
+
+固定 `432d86294da8200bea20cc35c0f7b550cbf9bec5` 已通过两条独立代码评审轴。
+全部父线选择已应用到 UI 与 EN/DE gettext；当前236条源码消息，137条新增目录项，
+138条纳入本轮取舍的消息。原始提取、reviewer 决策与建议保留为历史快照，
+JSON 的 `initial_reviewer_decisions` 不再冒充最终状态。最终源文件哈希另外绑定，
+不覆盖初始快照或把漂移行号当固定代码证据。
+
+实际原生英德1440/390解释视图、显式列映射、净网输入负值纠错、合成来源、缺口、
+单位、草稿选择与服务器保存提示均已核验。当前修订7刷新、英德切换后保留同一原件、
+metadata/TZif 和解释；逐脚本 JSON 覆盖无缺项，JSON问题0。原生证据及各截图实际
+代码版本见 [profile-native/acceptance.json](profile-native/acceptance.json)。
+这一记录允许称本增量文案已定稿、已在本地实际采用并核验；不允许称整工具完成或已部署。

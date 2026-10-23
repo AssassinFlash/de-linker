@@ -2,7 +2,8 @@
 
 2026-10-23. Implemented against
 [`548-profile-intake-workflow.md`](../../../specs/548-profile-intake-workflow.md).
-Fixed-source Spec/Standards review and the final browser matrix are pending.
+Final fixed-source Spec/Standards review and the native browser matrix pass for
+this increment; the rejection/fix history below is preserved.
 This record does not close path A or the whole unified-workbench goal.
 
 Mature intake research used Apify for all search/retrieval: eight official
@@ -96,3 +97,45 @@ Native success testing exposed the same structural scroll-loss after long-form c
 Standards found an executable render/layout/passive-effect interleaving: native admission could be withdrawn after render-time admitted=true, yet an old cached owned preview still received focus/scroll and was marked revealed. No RPC/ACL disclosure was established. Spec independently found completion feedback stranded across same-scope verification; it then replayed on Undo and moved focus to the import trigger. Both are P2 and that fixed snapshot remains rejected.
 
 The correction supplies stable live admission callbacks to the shared reveal operation, rechecks at the actual focus/scroll boundary, and records an asset revealed only after success. Intake also tracks render-time admission as a dependency so same-scope verification resumes and consumes its pending feedback. Interactive errors use the same live guard. Real React regressions cover native withdrawal between render and effects for both cached result and error, plus delayed same-identity verification consuming completion before Undo. Native full fresh-file mapping→source interpretation→Use→Save already reached server revision7; final corrected runtime readback and new fixed-source reviews remain separate gates.
+
+## Final scoped acceptance at 432d8629
+
+Both independent axes pass fixed `432d86294da8200bea20cc35c0f7b550cbf9bec5`.
+Standards replayed the original layout-withdrawal probe unchanged: current
+admission false, no focus events. It also challenged disconnected targets and
+synchronous withdrawal during focus. Its isolated archive passed 25 Node,
+32 existing React cases plus the original probe, an additional reveal-boundary
+probe and the build manifest check. Spec replayed its original outside-act
+React 19/StrictMode/SessionBoundary/ProjectEditor/PlannerClient interleaving:
+completion waits during verification, resumes once the same scope is verified,
+and Undo preserves user focus. Its independent 25 Node/32 React suite and live
+guard/disconnected/retry probes passed. Neither axis treats DOM tests as layout
+evidence or repeats unchanged backend tests.
+
+The native WP runtime was refreshed at this fixed source. All four EN/DE ×
+1440×1000/390×844 interpretation views show saved project revision 7; the
+original source hash, mapping, captured TZif and quality facts survive refresh
+and language switching. A full fresh DE390 file chooser→column preview→explicit
+mapping→interpretation→Use→Save path produced that revision. The successful
+interpretation heading began at y209.99 below bar194; the selected-draft notice
+at y219.89 below the wrapped unsaved bar204.39. Final-code cancellation returns
+focus to Import at y209.82 below bar194. The prior 36bea12c EN/DE error matrix
+proves unchanged visual error margins; it is identified separately from the
+final-code lifecycle checks rather than relabelled as a fresh final-code run.
+
+The synthetic two-row Oslo fall-back fixture interprets explicit offsets as two
+different UTC intervals: signed net energy1kWh, covered0.5h, gap0.75h, one gap,
+interval means−4/8kW, native15min. It is never labelled actual meter data, gross
+load, a peak guarantee, annual consumption or engineering suitability. No gap
+was filled. The transient local filename is absent from saved metadata.
+
+Curated native screenshots, visible readback, fixture and source/build hashes
+are preserved in [profile-native/acceptance.json](profile-native/acceptance.json).
+The runtime script SHA-256 was compared with the built file, not inferred from
+an app version. Strict TS/Vite, all three source manifests and gettext coverage
+pass (236 source messages, zero catalog gaps/JSON problems). The backend remains
+the independently accepted 323 planning tests and real ASGI/concurrent CSV
+probes at 0446; PHP gateway evidence remains289/2357, unchanged thereafter.
+No production write, live tool cutover or real mail occurred. This closes the
+intake increment only. Native login/cross-identity unknown intents and the
+remaining A–D work remain inside the active whole-delivery goal.

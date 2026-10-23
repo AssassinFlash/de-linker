@@ -1,0 +1,10 @@
+{
+  "documentWidth": 390,
+  "focusBottom": 461.7265625,
+  "focusTop": 210.1640625,
+  "focusedText": "Values must be finite and match the selected measurement point. Negative values are accepted only for net grid import.The CSV record starts on file line 2.File lines include blank lines and line breaks inside quoted cells. They are not spreadsheet row numbers.Check the value column.",
+  "height": 844,
+  "projectBarBottom": 194,
+  "script": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=4151592f271720fc704371b391c67a68bb397624144e3797fa1c31526f8d1349",
+  "width": 390
+}
