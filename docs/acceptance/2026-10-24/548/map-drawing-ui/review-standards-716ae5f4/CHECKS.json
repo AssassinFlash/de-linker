@@ -1,0 +1,23 @@
+{
+  "pin": "716ae5f456377339f5b41b85430fbb3e92e0ea67",
+  "incremental_base": "726e326b5c3ce322a2e1471008483a10e9e3c3b1",
+  "full_review_base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "diff_command": "git diff --no-ext-diff --unified=0 726e326b5c3ce322a2e1471008483a10e9e3c3b1...716ae5f456377339f5b41b85430fbb3e92e0ea67",
+  "diff_sha256": "8a7214c25a5cc707ebc5f46067f4ebd9a6fe0fcbcc2b42d3bbc895ff0be6a4a1",
+  "changed_files": 2,
+  "insertions": 2,
+  "source_css_sha256": "6dadc4a210a067a8a831ef3834f3c28912f6d096ac1cb188145df99b998e2bb2",
+  "volume_css_sha256": "6dadc4a210a067a8a831ef3834f3c28912f6d096ac1cb188145df99b998e2bb2",
+  "volume_path": "/Users/chesterjohn/de-linker-local/p548/wordpress/wp-content/uploads/windpress/data/planner.css",
+  "incremental_whitespace_check_exit": 0,
+  "full_base_whitespace_check_exit": 2,
+  "retained_tooling_diagnostic": {
+    "file": "plugins/linker-tools/build/planner/assets/MapViewport-DEU-DlpF.js",
+    "line": 62,
+    "reason": "Trailing whitespace in bundled MapLibre shader text."
+  },
+  "verification_boundary": "Read-only scoped CSS/cascade review and source-volume hashes; no claim of WindPress compilation or native layout acceptance.",
+  "unchanged_layers": ["JavaScript", "generated app manifests", "locale", "copy", "dependencies", "server code"],
+  "tests": "No new mirror test or unchanged large-suite rerun for this scoped CSS-only delta.",
+  "reviewer_mutations": "Only this review directory; no source/build/locale/runtime/production changes."
+}

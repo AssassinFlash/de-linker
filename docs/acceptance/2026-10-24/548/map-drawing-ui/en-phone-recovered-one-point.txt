@@ -1,0 +1,160 @@
+- banner:
+  - navigation "Primary navigation":
+    - link "Linker home":
+      - /url: /
+    - link "Search products":
+      - /url: http://127.0.0.1:9347/products/#search-box
+      - generic: Search
+    - group "Language":
+      - link "EN":
+        - /url: http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+      - link "DE":
+        - /url: http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+    - button "Open menu":
+- main:
+  - button "Projects"
+  - generic: /
+  - combobox "Project sections":
+    - option "Project overview"
+    - option "Site and project"
+    - option "Roof design" [selected]
+    - option "Energy inputs"
+  - status: Saved · revision 4
+  - button "Undo" [disabled]:
+  - button "Redo" [disabled]:
+  - button "Save project" [disabled]
+  - text: Current project
+  - heading "Köln · owned synthetic roof · acceptance" [level=1]
+  - paragraph: Site data and roof layouts are saved in the same project.
+  - region "Roof design":
+    - generic: "06"
+    - heading "Roof design" [level=2]
+    - paragraph: Roof geometry and module specifications produce an editable layout and a traceable plan check. The roof step is optional for every project type.
+    - button "Add roof face":
+      - text: Add roof face
+    - button "Add module specification"
+    - group "Design view":
+      - button "Plan"
+      - button "Map" [active] [pressed]
+      - button "3D"
+    - button "Import roof geometry"
+    - generic "Imports to review"
+    - region "Map roof drawing":
+      - heading "Draw a roof face" [level=3]
+      - button "Start roof drawing"
+      - paragraph: The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views.
+      - list:
+        - text: Unfinished roof drawing
+        - generic: "Recorded corners: 1"
+        - button "Open saved drawing"
+    - region "Project map":
+      - heading "Project map" [level=3]
+      - generic: Project geometry
+      - paragraph: The map displays your recorded geometry using the project's geographic reference. Roof dimensions and declared source accuracy remain unchanged.
+      - group "Map controls":
+        - button "Show full design"
+        - button "Zoom in": +
+        - button "Zoom out": −
+        - button "North up"
+      - region "Project map"
+      - generic: Use ⌘ + scroll to zoom the map
+      - paragraph: Loading the street map sends your IP address and the area shown to OpenFreeMap and its delivery network. The street map is for orientation.
+      - button "Load street map"
+      - link "OpenFreeMap privacy policy":
+        - /url: https://openfreemap.org/privacy/
+    - term: Included modules
+    - definition: "0"
+    - term: Declared DC nameplate power
+    - definition: 0 kWp
+    - term: Roof faces
+    - definition: "2"
+    - complementary "Design objects and properties":
+      - heading "Design objects" [level=3]
+      - group "Select a design object":
+        - button "Synthetic 3–4–5 roof · Köln":
+          - text: Synthetic 3–4–5 roof · Köln
+        - button "Synthetic drawing acceptance · 548 · 24 Oct":
+          - text: Synthetic drawing acceptance · 548 · 24 Oct
+      - button "Add module array" [disabled]:
+        - text: Add module array
+      - button "Add obstacle":
+        - text: Add obstacle
+      - button "Add keep-out area":
+        - text: Add keep-out area
+      - button "Layout clearances"
+      - paragraph: A module specification is needed before an array can be placed.
+      - button "Coordinate references"
+      - generic "Sources"
+    - region "Layout check":
+      - heading "Layout check" [level=3]
+      - button "Check layout"
+      - paragraph: The check compares full module projections, roof boundaries and openings, obstacles, keep-out areas and declared clearances in each roof plane. Structural, fire-safety, electrical and shading assessments are separate.
+  - strong: Solution Configurator
+  - generic: by Linker
+  - paragraph: Linker brings your inputs into an editable project for solar and storage planning.
+  - generic "About this tool"
+- contentinfo:
+  - img "Linker"
+  - text: Language
+  - navigation "Language":
+    - link "English":
+      - /url: http://127.0.0.1:9347/planning-workspace-review/?project=82a84c56e50c4efb8497d1bfbe106bd1
+    - link "Deutsch":
+      - /url: http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=82a84c56e50c4efb8497d1bfbe106bd1
+  - paragraph:
+    - generic: Linking
+    - link "products":
+      - /url: /products/
+      - generic: products
+    - generic: ","
+    - link "technology":
+      - /url: /about/capability/
+      - generic: technology
+    - generic: and
+    - link "service":
+      - /url: /services-support/
+      - generic: service
+    - text: to create
+    - strong: lasting value
+    - text: for energy partners in Europe.
+  - tablist "Footer navigation":
+    - tab "Solutions" [selected]:
+      - generic: Solutions
+    - tab "Services":
+      - generic: Services
+    - tab "Plan with Linker":
+      - generic: Plan with Linker
+    - tab "Account":
+      - generic: Account
+    - tab "Contact Linker":
+      - generic: Contact Linker
+  - tabpanel "Solutions":
+    - heading "Solutions" [level=2]
+    - generic: "03"
+    - list:
+      - link "Residential Storage":
+        - /url: /solution/residential-storage/
+        - generic: Residential Storage
+      - link "Commercial Storage":
+        - /url: /solution/commercial-storage/
+        - generic: Commercial Storage
+      - link "Utility-Scale Storage":
+        - /url: /solution/utility-storage/
+        - generic: Utility-Scale Storage
+  - generic: © 2026 Linker. All rights reserved.
+  - navigation "Legal":
+    - link "Imprint":
+      - /url: /imprint/
+    - link "Privacy Policy":
+      - /url: /privacy-policy/
+    - button "Cookie settings"
+    - link "Terms of Sale":
+      - /url: /terms-of-sale/
+    - link "Refund & Returns":
+      - /url: /refund-returns/
+  - text: Product fit
+  - emphasis: ·
+  - text: Inverter compatibility
+  - emphasis: ·
+  - text: Project support
+- status

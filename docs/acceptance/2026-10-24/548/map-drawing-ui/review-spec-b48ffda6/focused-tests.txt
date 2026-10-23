@@ -1,0 +1,18 @@
+✔ drawing journal uses exact CAS, refuses a stale tab, and never deletes its newer copy (97.218125ms)
+✔ serialized writes preserve real new points and invalid fields through pause, hide and recovery (22.786ms)
+✔ only native-granted prior scopes are exposed; identity changes fence late reads and callbacks (11.357459ms)
+✔ unknown local write outcomes remain retryable; a stale tab can explicitly fork without overwriting (16.710292ms)
+✔ a newer buffer settles exact uncertain bytes before advancing, including repeated lost acknowledgements (15.050959ms)
+✔ a pre-mutation refusal permits correction without retrying the refused bytes (14.419667ms)
+✔ explicit discard confirms an uncertain write before deleting its exact owned copy (12.369125ms)
+✔ prepared geometry survives local application and clears only after an exact confirmed server geometry (27.701875ms)
+✔ real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command (303.049334ms)
+✔ provider replacement restores an open prefix only after the new map loads and keeps its points (40.545875ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1043.809208

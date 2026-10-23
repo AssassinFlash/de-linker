@@ -1,0 +1,37 @@
+{
+  "pin": "02c8704970294ff17de3f0aaa00f420e5f1e0405",
+  "base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "full_diff_command": "git diff --no-ext-diff --unified=0 43297ecf5673fa5f29c82f90fbe583666a5e3e15...02c8704970294ff17de3f0aaa00f420e5f1e0405",
+  "full_diff_sha256": "dfde4e4dc2ab6d05eb281c650c6573ee0e2d8ddcf7d26ff53e32d4d615972973",
+  "changed_files": 41,
+  "added_lines_scanned": 4865,
+  "added_legacy_patterns": ["tv_b2b_", "Linker_AI_", "dlk-"],
+  "added_legacy_hits": 0,
+  "credential_pattern_hits": 0,
+  "dependency_php_service_or_local_instance_changes": [],
+  "build_check": {
+    "command": "npm run build:check",
+    "cwd": "apps/planner",
+    "exit_code": 0,
+    "source_and_build_hashes": "matched",
+    "built_module_identity_tests_passed": 1,
+    "warning": "Existing Node MODULE_TYPELESS_PACKAGE_JSON warning when importing generated planner.js under Node; not a native browser result."
+  },
+  "focused_tests": {
+    "command": "node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/map-prefix-controller.test.mjs tests/map-roof-recovery.test.mjs tests/map-roof-workspace.test.mjs",
+    "cwd": "apps/planner",
+    "exit_code": 0,
+    "passed": 14,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "fixture_boundary": "Real React, domain, journal, Terra and adapter; fake-indexeddb and a narrow fake MapLibre port. No native GPU/provider/touch inference."
+  },
+  "tooling_only_diagnostic": {
+    "command": "git diff --check 43297ecf5673fa5f29c82f90fbe583666a5e3e15...02c87049",
+    "result": "Generated MapViewport-S4hw7bq0.js:62 contains trailing whitespace in bundled MapLibre shader source. Reported to owner; excluded from this Standards axis under the skill rule to skip tooling-enforced issues.",
+    "file": "plugins/linker-tools/build/planner/assets/MapViewport-S4hw7bq0.js",
+    "line": 62
+  },
+  "reviewer_mutations": "Only this review directory; no application/source/test/build/locale, dependency, worktree, instance, browser, mail or production changes."
+}

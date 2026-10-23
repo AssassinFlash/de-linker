@@ -1,0 +1,20 @@
+{
+  "pin": "9efd14fcb79687344d676a8fdb5fbd24c2e9aad8",
+  "base": "43297ecf5673fa5f29c82f90fbe583666a5e3e15",
+  "diff_files": 41,
+  "snapshot_manifest_hash_checks": {
+    "sources": 114,
+    "build": 7
+  },
+  "compiled_formal_german_copy_final_entries_checked": 44,
+  "installed_versions": {
+    "react": "19.3.1",
+    "maplibre-gl": "5.24.0",
+    "terra-draw": "1.35.0",
+    "terra-draw-maplibre-gl-adapter": "1.4.1"
+  },
+  "independent_probe": "unknown-ack.json",
+  "new_scope": "new roof faces only",
+  "native_acceptance": "not performed by reviewer; owner running native CUA separately",
+  "root_reported_checks": "211 tests, TSC, Vite build, build check, format, i18n coverage; not rerun as a whole suite"
+}
