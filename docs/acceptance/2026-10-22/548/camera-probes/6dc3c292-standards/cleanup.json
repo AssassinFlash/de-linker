@@ -1,0 +1,16 @@
+{
+  "at_utc": "2026-10-23T12:03:32.672020+00:00",
+  "removed_snapshot": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88",
+  "sha_clean_original_files": 153,
+  "original_bytes": 3409432,
+  "generated_unique_probe_files": 6,
+  "generated_probe_bytes": 21075,
+  "dependency_symlink_removed": true,
+  "existing_dependency_directory_retained": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules",
+  "snapshot_absent": true,
+  "free_bytes_before": 883590369280,
+  "free_bytes_after": 883594215424,
+  "observed_free_delta_bytes": 3846144,
+  "space_note": "Observed filesystem delta includes concurrent activity and APFS effects; not an attribution of deleted logical bytes.",
+  "retained": "Only unique executable probes, complete original logs, fixed-SHA manifests and reports in this evidence directory."
+}

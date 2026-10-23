@@ -1,0 +1,52 @@
+{
+  "base": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "target": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "rows": [
+    {
+      "old": "SceneViewport-C2H7tgEJ.js",
+      "new": "SceneViewport-744Cecd-.js",
+      "complete_byte_equivalence_after_declared_changes": true,
+      "changes": [
+        {
+          "before": "planner-core-DcYMVvKs.js",
+          "after": "planner-core-CDGLxH3H.js",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "old": "planner.js",
+      "new": "planner.js",
+      "complete_byte_equivalence_after_declared_changes": true,
+      "changes": [
+        {
+          "before": "planner-core-DcYMVvKs.js",
+          "after": "planner-core-CDGLxH3H.js",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "old": "planner-core-DcYMVvKs.js",
+      "new": "planner-core-CDGLxH3H.js",
+      "complete_byte_equivalence_after_declared_changes": true,
+      "changes": [
+        {
+          "before": "SceneViewport-C2H7tgEJ.js",
+          "after": "SceneViewport-744Cecd-.js",
+          "count": 2
+        },
+        {
+          "before": "c.current?.querySelector(`input`)?.focus()",
+          "after": "Co(c.current?.querySelector(`input`)??null)",
+          "count": 1
+        },
+        {
+          "before": "t.reportValidity(),t.focus()),s(e.message)",
+          "after": "t.reportValidity(),Co(t)),s(e.message)",
+          "count": 1
+        }
+      ]
+    }
+  ]
+}

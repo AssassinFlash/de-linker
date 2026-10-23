@@ -1,0 +1,19 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/camera-loader.mjs",
+    "--test",
+    "tests/camera-probe.mjs"
+  ],
+  "cwd": "apps/planner",
+  "target": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "exit_code": 0,
+  "probes": {
+    "camera-loader.mjs": "4ce78b24b54740ad8f874524a256de1012fe7091c7f506bc683a042fa6cb88fc",
+    "camera-host.mjs": "55ea30b5ae35611c0c2ce7e66bcb65fa1e45868a3ff3bab4f0c6c9e40a3abfe3",
+    "camera-probe.mjs": "16dd892636c680c288d50dd69400b0e9fc236066fa893bf71fa137818304fd33"
+  },
+  "completed_utc": "2026-10-23T11:57:38.205875+00:00"
+}

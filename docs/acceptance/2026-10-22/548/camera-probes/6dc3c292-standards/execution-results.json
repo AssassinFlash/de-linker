@@ -1,0 +1,136 @@
+[
+  {
+    "name": "targeted-domain",
+    "command": [
+      "node",
+      "--test",
+      "src/domain/sceneCamera.test.ts",
+      "src/domain/renderGeometry.test.ts",
+      "src/domain/renderLifetime.test.ts"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 0.4433254999748897,
+    "log": "targeted-domain.log",
+    "log_sha256": "f6e6522633067edf8ed29d9ae6da1e78e8975d2b177a1c09c8333dbd085ac9ce"
+  },
+  {
+    "name": "emitted-graph",
+    "command": [
+      "npm",
+      "run",
+      "build:check"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 1.598764750000555,
+    "log": "emitted-graph.log",
+    "log_sha256": "bc0834148679ada08924f12e55a95f0ecd1c69fa752a4b7d20cba314520b202b"
+  },
+  {
+    "name": "original-lifecycle-replay",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--loader",
+      "./tests/controlled-fiber-loader.mjs",
+      "--test",
+      "tests/camera-lifecycle.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 1.5609860000258777,
+    "log": "original-lifecycle-replay.log",
+    "log_sha256": "37e4ce3ddde75bd86ecd195c2f3701d18c2e89cdadbc87fcad22a652aeec6e11"
+  },
+  {
+    "name": "real-controls-lifetime",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--loader",
+      "./tests/controlled-fiber-loader.mjs",
+      "--test",
+      "tests/camera-lifetime.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 1.581468333984958,
+    "log": "real-controls-lifetime.log",
+    "log_sha256": "cfd4ac897f34b9aaa5ed9c2ac857825c3d1ab0ab6e1216fb8924a537f02efdd5"
+  },
+  {
+    "name": "original-panel-replay",
+    "command": [
+      "node",
+      "--test",
+      "tests/selected-panel.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 0.35738874998060055,
+    "log": "original-panel-replay.log",
+    "log_sha256": "21fac52dac8222c6a75c25d8fc57a4fedea4cd22116616ab5784e52247c845b0"
+  },
+  {
+    "name": "reveal-focus",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--test",
+      "tests/reveal-focus.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 1.0791212499898393,
+    "log": "reveal-focus.log",
+    "log_sha256": "d7a3babcc11b29ee41d5ccc3e5d8bc7407e21b6d9afe311a90a6ea00df0fe627"
+  },
+  {
+    "name": "fixed-dom-suite",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--test",
+      "tests/config.test.mjs",
+      "tests/creation-recovery.test.mjs",
+      "tests/design-editor.test.mjs",
+      "tests/design-lazy-failure.test.mjs",
+      "tests/geometry-import.test.mjs",
+      "tests/geometry-project.test.mjs",
+      "tests/profile-intake.test.mjs",
+      "tests/profile-settings.test.mjs",
+      "tests/recovery-auth.test.mjs",
+      "tests/revision-refusal.test.mjs",
+      "tests/saved-recovery.test.mjs",
+      "tests/workspace-close.test.mjs",
+      "tests/workspace-lifecycle.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 6.368335417006165,
+    "log": "fixed-dom-suite.log",
+    "log_sha256": "cfa9ce09b3edbdc90b31b4bed77b41fcb7b02aa1cf6c0e7208ccd98c728541b6"
+  },
+  {
+    "name": "catalogs",
+    "command": [
+      "/opt/homebrew/opt/python@3.15/bin/python3.15",
+      "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/camera-probes/6dc3c292-standards/catalogs.py",
+      "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/camera-standards-6dc3-m3b10i88/apps/planner",
+    "exit_code": 0,
+    "elapsed_s": 0.08051016600802541,
+    "log": "catalogs.log",
+    "log_sha256": "edadba8a4cbab46f6c296fc31e1f647b33e85a543eb95fe465ab537e83555f82"
+  }
+]

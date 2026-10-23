@@ -1,0 +1,518 @@
+{
+  "captured_at": "2026-10-23T12:42:02.482454+00:00",
+  "javascript_source_commit": "1652209cb0deef904adc70baba9770c8f8ed61b7",
+  "preview_css_commit": "bc714bc628f1555d2ddcbface216dabc7b9371d5",
+  "entry_sha256": "f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2",
+  "field_assertions": [
+    {
+      "state": "de-1440-pitch-final",
+      "active_name": "pitch",
+      "raw_value": "1.",
+      "invalid": "true",
+      "label_top": 177.7578125,
+      "sticky_bottom": 162,
+      "clearance_px": 15.7578125,
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "state": "de-390-pitch-final",
+      "active_name": "pitch",
+      "raw_value": "1.",
+      "invalid": "true",
+      "label_top": 210.15625,
+      "sticky_bottom": 194,
+      "clearance_px": 16.15625,
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "state": "en-1440-pitch-refusal",
+      "active_name": "pitch",
+      "raw_value": "1..",
+      "invalid": "true",
+      "label_top": 177.8671875,
+      "sticky_bottom": 162,
+      "clearance_px": 15.8671875,
+      "viewport": [
+        1440,
+        1000
+      ]
+    },
+    {
+      "state": "en-390-pitch-refusal",
+      "active_name": "pitch",
+      "raw_value": "1..",
+      "invalid": "true",
+      "label_top": 209.828125,
+      "sticky_bottom": 194,
+      "clearance_px": 15.828125,
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "state": "de-390-ordinary-form-initial-focus",
+      "active_name": "name",
+      "raw_value": "",
+      "invalid": null,
+      "label_top": 210.0390625,
+      "sticky_bottom": 194,
+      "clearance_px": 16.0390625,
+      "viewport": [
+        390,
+        844
+      ]
+    },
+    {
+      "state": "de-390-ordinary-form-error",
+      "active_name": "width",
+      "raw_value": "1.",
+      "invalid": "true",
+      "label_top": 210.125,
+      "sticky_bottom": 194,
+      "clearance_px": 16.125,
+      "viewport": [
+        390,
+        844
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "de-1440-amsterdam-reopened-3d.png",
+      "sha256": "474e6963c0d83956e0548fedc0cc7e926ae4839f17f3b16c1181343834f19fdb",
+      "bytes": 130469,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "de-1440-amsterdam-reopened-3d.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-1440-pitch-clip.png",
+      "sha256": "cd102b6c16285c6588e63b3e58790432ea60cd8bc6985bec10bfe74038da6dcd",
+      "bytes": 130670,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": null,
+      "viewport": null,
+      "scrollStable": null,
+      "entry": null
+    },
+    {
+      "path": "de-1440-pitch-final.png",
+      "sha256": "bf89e932cecff6240ce8e8064454714a35c43550e484470e0d26a86f64a0624e",
+      "bytes": 130679,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "de-1440-pitch-final.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-1440-pitch-refusal.png",
+      "sha256": "9e81fe4fc6ff46b9d8c5cb20f6c1a88a6c2c04b69357db245b2f496edabc962f",
+      "bytes": 95729,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "de-1440-pitch-refusal.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-1440-recovered-preview-framed.png",
+      "sha256": "ca7e78ed762521bee47aeb19b73b134df9e60b03e654bb2edf8dbfb2a371ba39",
+      "bytes": 114549,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "de-1440-recovered-preview-framed.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-1440-recovered-preview.png",
+      "sha256": "1d2f53e7d24397a8b240ce1f38fda8f35d767561b5474e62018da03a7ac8bf21",
+      "bytes": 107885,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "de-1440-recovered-preview.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-added-focus.png",
+      "sha256": "261894b413def2b0f62099334947fabcdf1ae232cd713c9a8e999554f431f6be",
+      "bytes": 52830,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-added-focus.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-amsterdam-reopened-3d.png",
+      "sha256": "767491fa43209ee27d432f2bb0051616f06868d095367720667ae95e0e18af03",
+      "bytes": 41283,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-amsterdam-reopened-3d.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-import-preview.png",
+      "sha256": "c8bda4e2d85671e7029f55a8d4243c4fa78ad005ea049defd78c42cd82d62ce2",
+      "bytes": 39751,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-import-preview.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-ordinary-form-error.png",
+      "sha256": "6c7f560dff3f8f184651d026891728f14d8900cb0c1ea0da27ad878da809f385",
+      "bytes": 48664,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-ordinary-form-error.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-ordinary-form-initial-focus.png",
+      "sha256": "2e873d69862ccb59dc11e74a3d544c25abf9b2bac0aeb57abf0d2e7c94d596aa",
+      "bytes": 43192,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-ordinary-form-initial-focus.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-pitch-final.png",
+      "sha256": "b3045ad450449e270ad360ee81f681dedaa92740f0a4f17c2b07c99c4d2067cd",
+      "bytes": 70506,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-pitch-final.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-preview-details.png",
+      "sha256": "58d41b2d7ca9ce267c857e32366479002c7e7fb35e076f6fd6444ee0cf1fb23f",
+      "bytes": 39445,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-preview-details.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "de-390-recovered-preview.png",
+      "sha256": "e65045b60fa5f0ad6ff99479f3539157a490deeeb5f960367e2ddccf26898f67",
+      "bytes": 44470,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "de-390-recovered-preview.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-1440-amsterdam-file.png",
+      "sha256": "4360a755c29e2a14f9cbcf8b8bba54a5db4a470679297dedde5efb316d33352c",
+      "bytes": 112036,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "en-1440-amsterdam-file.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-1440-amsterdam-preview.png",
+      "sha256": "5bd5d0401601cca59ba2255d83c516eed5319e31c06c66a074134499e715945c",
+      "bytes": 99188,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "en-1440-amsterdam-preview.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-1440-pitch-refusal.png",
+      "sha256": "b1885bd088df1d1c36cea596a16424dd236a9658f7cf368528defcbdae491ff1",
+      "bytes": 124289,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "en-1440-pitch-refusal.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-1440-roof-3d-framed.png",
+      "sha256": "9cdc91fe36902a6a5d0473f2811726fd3abe42ae68ee453d5b4e1956c9eab1b9",
+      "bytes": 115557,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "en-1440-roof-3d-framed.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-1440-roof-3d.png",
+      "sha256": "21efed54334535aa6f5ede0e4440644a14a8b748777c1e6ef0c0c0e0a8a0b599",
+      "bytes": 113403,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "en-1440-roof-3d.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-1440-valid-trailing-point-attempt.png",
+      "sha256": "1c081e087ea2b85dd6ff7d0907d5ded2484b1c78d70fd5fa24d73ca78167df44",
+      "bytes": 107450,
+      "pixels": [
+        1440,
+        1000
+      ],
+      "metadata": "en-1440-valid-trailing-point-attempt.json",
+      "viewport": [
+        1440,
+        1000
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-390-amsterdam-added-focus.png",
+      "sha256": "967c5ec63cf3a1fb73dde99929eca3bea8503e3997384623c2385f4aac292e84",
+      "bytes": 33799,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "en-390-amsterdam-added-focus.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": false,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-390-amsterdam-compatibility.png",
+      "sha256": "2df9eb75f915d96819fb837339a8942fada36cdfe4da5b762f526832441d03f0",
+      "bytes": 48172,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "en-390-amsterdam-compatibility.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-390-amsterdam-preview.png",
+      "sha256": "17fe2c1603cac2abd8f65dd2d1644c3ea1d72787a518e7a81ff388ff310bdd02",
+      "bytes": 41878,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "en-390-amsterdam-preview.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-390-amsterdam-reopened-3d.png",
+      "sha256": "2df9a04249b7af03f2f29a269ddd2cd20ac49031c018a9fc5d292483e255c05a",
+      "bytes": 39273,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "en-390-amsterdam-reopened-3d.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-390-pitch-refusal.png",
+      "sha256": "dda56b50cfd7191f8bc63ee63b8338ffeb505ef113e42a3e024a04635d9c4189",
+      "bytes": 67772,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "en-390-pitch-refusal.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    },
+    {
+      "path": "en-390-roof-3d.png",
+      "sha256": "d5e5e02779b89d9c71a94a1024e358b914f05dde608e398f24451df067c4c390",
+      "bytes": 37846,
+      "pixels": [
+        390,
+        844
+      ],
+      "metadata": "en-390-roof-3d.json",
+      "viewport": [
+        390,
+        844
+      ],
+      "scrollStable": true,
+      "entry": "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f538a04367fb7c1743d5f2ee6ada279064d70b5236152d5ac12a75c54c3959a2"
+    }
+  ],
+  "excluded_from_visual_acceptance": {
+    "de-1440-pitch-refusal.png": "CDP captureBeyondViewport=false tiled the real foreground surface; valid explicit CSS-clip recapture retained",
+    "de-1440-pitch-clip.png": "Exploratory explicit-clip capture has no matching measurement sidecar; final capture includes it",
+    "en-1440-valid-trailing-point-attempt.png": "Wrong test assumption: 1. is valid in English and advances. Real illegal1.. was tested separately; no product defect inferred",
+    "en-390-amsterdam-added-focus.png": "Immediate capture has scrollStable=false; AX focus evidence retained, not a stable layout verdict",
+    "en-1440-roof-3d.png": "Page-scroll position cuts the top of canvas; framed recapture retained",
+    "de-1440-recovered-preview.png": "After resizing, page scroll cuts the preview heading. The complete de-1440-recovered-preview-framed capture supersedes this composition."
+  },
+  "not_accepted": [
+    "physical touch",
+    "max-capacity mobile rendering",
+    "device-loss",
+    "map drawing and providers",
+    "engineering release",
+    "full A-D and production"
+  ],
+  "indexed_at": "2026-10-23T13:08:39.727434+00:00"
+}

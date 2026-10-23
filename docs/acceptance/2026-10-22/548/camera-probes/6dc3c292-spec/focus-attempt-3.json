@@ -1,0 +1,14 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/focus-followup.mjs"
+  ],
+  "target": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "exit_code": 0,
+  "probe_sha256": "e8282d649cbb59313af7af5d946df71907ec86fad569d88793ba17474ffd54b4",
+  "completed_utc": "2026-10-23T12:01:42.631416+00:00"
+}

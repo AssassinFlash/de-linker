@@ -1,0 +1,37 @@
+{
+  "activeName": "pitch",
+  "bar": {
+    "bottom": 194,
+    "height": 113,
+    "left": 0,
+    "right": 375,
+    "top": 81,
+    "width": 375,
+    "x": 0,
+    "y": 81
+  },
+  "field": {
+    "bottom": 284.9453125,
+    "height": 46.3984375,
+    "left": 34,
+    "right": 181.5,
+    "top": 238.546875,
+    "width": 147.5,
+    "x": 34,
+    "y": 238.546875
+  },
+  "invalid": "true",
+  "label": {
+    "bottom": 433.0703125,
+    "height": 223.3203125,
+    "left": 34,
+    "right": 181.5,
+    "top": 209.75,
+    "width": 147.5,
+    "x": 34,
+    "y": 209.75
+  },
+  "scrollMargin": "210px",
+  "scrollY": 1172.5,
+  "value": "1."
+}

@@ -1,0 +1,14 @@
+{
+  "command": [
+    "node",
+    "--no-warnings=ExperimentalWarning",
+    "--loader",
+    "./tests/tsx-loader.mjs",
+    "--test",
+    "tests/orbit-followup.mjs"
+  ],
+  "target": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "exit_code": 0,
+  "probe_sha256": "543893212b22978c530e91540d840a57769d9ef677af8e03adaf1ec366fd78a7",
+  "completed_utc": "2026-10-23T12:01:08.762344+00:00"
+}

@@ -1,0 +1,53 @@
+{
+  "axis": "Spec",
+  "verdict": "PASS",
+  "verdict_scope": "implementation camera correction and focus contracts; native acceptance remains open",
+  "target": "6dc3c292079ec4f654113ecd3e11b631906e6c04",
+  "base": "eff8341d5a0eaf24999f42854da6339032c65c9c",
+  "findings": [],
+  "retained_counterexamples": {
+    "probe_sha256": "16dd892636c680c288d50dd69400b0e9fc236066fa893bf71fa137818304fd33",
+    "byte_identical_to_previous": true,
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "selected_roof_normal_dot": 0.7432170894353325,
+    "current_extent_clipped_points": 0,
+    "log": "independent-attempt-1.log"
+  },
+  "additional_actual_controls": {
+    "tests": 2,
+    "pass": 2,
+    "fail": 0,
+    "log": "orbit-attempt-3.log",
+    "strict_constructions": 2,
+    "strict_disposals": 2
+  },
+  "additional_actual_idb_focus": {
+    "tests": 5,
+    "pass": 5,
+    "fail": 0,
+    "log": "focus-attempt-3.log"
+  },
+  "locked_checks": {
+    "domain_data_pass": 64,
+    "dom_pass": 87,
+    "types": "PASS",
+    "source_build_manifest": "PASS",
+    "emitted_graph_pass": 1
+  },
+  "excluded_harness_attempts": [
+    "orbit-attempt-1.log",
+    "focus-attempt-1.log",
+    "focus-attempt-2.log"
+  ],
+  "harness_notes": "harness-adaptation.md",
+  "not_claimed": [
+    "GPU drawing",
+    "native rendered sticky clearance",
+    "physical touch",
+    "production deployment",
+    "full A-D acceptance"
+  ],
+  "implementation_edits": false
+}

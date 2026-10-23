@@ -1,0 +1,16 @@
+{
+  "at_utc": "2026-10-23T12:51:55.421105+00:00",
+  "removed_snapshot": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/intake-layout-standards-1652-ykycc9ta",
+  "sha_clean_original_files": 153,
+  "original_bytes": 3409999,
+  "generated_unique_probe_files": 0,
+  "generated_probe_bytes": 0,
+  "dependency_symlink_removed": true,
+  "existing_dependency_directory_retained": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules",
+  "snapshot_absent": true,
+  "free_bytes_before": 882808508416,
+  "free_bytes_after": 882812338176,
+  "observed_free_delta_bytes": 3829760,
+  "space_note": "Observed filesystem delta includes concurrent activity and APFS effects; not an attribution of deleted logical bytes.",
+  "retained": "Only unique executable probes, complete original logs, fixed-SHA manifests and reports in this evidence directory."
+}
