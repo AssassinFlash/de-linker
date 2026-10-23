@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "format": "geojson_wgs84_horizontal_v1",
+  "feature_index": 0,
+  "polygon_index": 0,
+  "roof_name": "Synthetic 3-4-5 roof with opening",
+  "reference": {
+    "schema_version": 1,
+    "method": "wgs84_cart_topocentric_v1",
+    "longitude_deg": 6.96,
+    "latitude_deg": 50.94,
+    "ellipsoid_height_m": 0,
+    "height_basis": "zero_height_horizontal_convention"
+  },
+  "plane": {
+    "origin_enu": [0,0,5],
+    "u_axis_enu": [1,0,0],
+    "v_axis_enu": [0,0.8,-0.6],
+    "basis_note": "Synthetic 3-4-5 plane, origin Up5m relative to the project; not a surveyed roof or known ellipsoid elevation."
+  },
+  "source": {
+    "label": "Generated WGS84 source; not surveyed",
+    "rights_note": "Generated synthetic test coordinates. This is our own original file, and we permit retaining and deriving this test geometry.",
+    "spatial_precision_m": null,
+    "export_permission": "permitted"
+  }
+}

@@ -17,6 +17,7 @@ from .geometry_documents import (
     ModuleSpec,
     Obstacle,
     PanelArray,
+    PlaneFrame,
     RoofFace,
     RoofLayoutRules,
 )
@@ -58,7 +59,7 @@ def on_roof(roof: RoofFace, u: float, v: float) -> Vector:
     )
 
 
-def roof_coordinates(roof: RoofFace, point: Vector) -> tuple[float, float]:
+def roof_coordinates(roof: PlaneFrame, point: Vector) -> tuple[float, float]:
     delta = add(point, scale(roof.origin_enu, -1))
     return (dot(delta, roof.u_axis_enu), dot(delta, roof.v_axis_enu))
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Annotated, Literal, Self
+from typing import Annotated, Literal, Protocol, Self
 from urllib.parse import urlsplit
 
 from pydantic import Field, field_validator, model_validator
@@ -136,6 +136,19 @@ class RoofFace(Document):
     v_axis_enu: Vec3
     boundary_uv: Ring
     holes_uv: list[Ring]
+
+
+class PlaneFrame(Protocol):
+    """Read-only coordinate seam; an unbuilt import plane is not yet a roof."""
+
+    @property
+    def origin_enu(self) -> list[float]: ...
+
+    @property
+    def u_axis_enu(self) -> list[float]: ...
+
+    @property
+    def v_axis_enu(self) -> list[float]: ...
 
 
 class ModuleSource(Document):

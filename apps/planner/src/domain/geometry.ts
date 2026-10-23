@@ -36,6 +36,11 @@ export interface RoofFace {
 	holes_uv: readonly (readonly Vec2[])[];
 }
 
+export type PlaneFrame = Pick<
+	RoofFace,
+	"origin_enu" | "u_axis_enu" | "v_axis_enu"
+>;
+
 export interface ModuleSpec {
 	id: string;
 	model: string;

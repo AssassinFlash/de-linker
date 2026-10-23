@@ -12,11 +12,13 @@ from .access import active_actor, project_row
 from .canonical import Object
 from .energy_service import EnergyService
 from .errors import NotFound
+from .geometry_import import GeometryImport
 from .http_asset_intake import HttpAssetIntake
 from .http_documents import (
     BatteryScenario,
     CsvImport,
     EnergyEvaluate,
+    GeometryImportCommand,
     ProjectCreate,
     ProjectRevise,
 )
@@ -27,11 +29,16 @@ from .workspace import Workspace
 
 class HttpReplay:
     def __init__(
-        self, workspace: Workspace, energy: EnergyService, intake: HttpAssetIntake
+        self,
+        workspace: Workspace,
+        energy: EnergyService,
+        intake: HttpAssetIntake,
+        geometry_intake: GeometryImport,
     ) -> None:
         self.workspace = workspace
         self.energy = energy
         self.intake = intake
+        self.geometry_intake = geometry_intake
 
     def read(self, actor: Actor, path: str, value: Object) -> Object:
         if actor.kind == "team":
@@ -109,6 +116,17 @@ class HttpReplay:
             command = self.intake.csv_command(actor, csv)
             command_sha256 = commands.command_hash(command, csv.key)
             asset = self.intake.assets.receipt(actor, csv.project_id, csv.key, command)
+            result = None if asset is None else asset_view(asset)
+        elif path == "geometry/import":
+            geometry = GeometryImportCommand.model_validate(value)
+            self.intake.assets.check_write(actor, geometry.project_id)
+            content = self.geometry_intake.decode(geometry.content_base64)
+            command_scope = f"asset:{geometry.project_id}"
+            command = self.geometry_intake.command(content, geometry.options)
+            command_sha256 = commands.command_hash(command, geometry.key)
+            asset = self.geometry_intake.previous(
+                actor, geometry.project_id, content, geometry.options, key=geometry.key
+            )
             result = None if asset is None else asset_view(asset)
         elif path == "battery/scenario":
             battery = BatteryScenario.model_validate(value)

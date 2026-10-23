@@ -228,6 +228,46 @@ def test_native_guest_save_replay_conflict_and_private_ownership(local: tuple[In
     assert first.read(project).object()["inputs"] == {"site": {"country": "FR"}}
 
 
+def test_geometry_import_source_manifest_and_save_use_the_actual_native_gateway(local: tuple[Instance, WpCli]) -> None:
+    instance, _ = local
+    owner, foreign = Browser(instance.url), Browser(instance.url)
+    owner.bootstrap()
+    foreign.bootstrap()
+    project = owner.create("Synthetic native geographic import; not surveyed")
+    root = Path(__file__).resolve().parents[4]
+    source = (root / "fixtures/planning/source-roof-wgs84.geojson").read_bytes()
+    options = json.loads((root / "fixtures/planning/geometry-import-options.json").read_text())
+    command = {"schema_version": 1, "project_id": project["id"], "content_base64": base64.b64encode(source).decode(), "options": options, "key": str(uuid.uuid4())}
+    imported = owner.rpc("rpc/geometry/import", command)
+    assert imported.status == 200, imported.body
+    asset = imported.object()
+    assert owner.rpc("rpc/geometry/import", command).object() == asset
+    assert asset["purpose"] == "geometry_import_v1"
+    prepared = asset["metadata"]["geometry_import"]
+    geometry = prepared["geometry"]
+    assert geometry["roofs"][0]["holes_uv"] and geometry["roofs"][0]["origin_enu"][2] == 5
+    assert owner.read(project).object()["revision"] == 1
+    assert owner.read(project).object()["inputs"] == {}
+    assert foreign.rpc("rpc/geometry/import", {**command, "content_base64": "!"}).status == 404
+    invalid_id = json.loads(source)
+    invalid_id["id"] = 2**54
+    refused = owner.rpc("rpc/geometry/import", {**command, "key": str(uuid.uuid4()), "content_base64": base64.b64encode(json.dumps(invalid_id).encode()).decode()})
+    assert refused.status == 422
+    assert owner.read(project).object()["revision"] == 1
+    assert owner.rpc("rpc/assets/content", {"schema_version": 1, "project_id": project["id"], "asset_id": asset["id"]}).body == source
+    source_id = geometry["sources"][0]["id"]
+    inputs = {"geometry": geometry, "geometry_imports": {"schema_version": 1, "selected": {source_id: asset["id"]}}}
+    change = {"schema_version": 1, "project_id": project["id"], "expected_revision": 1, "inputs": inputs, "key": str(uuid.uuid4())}
+    saved = owner.rpc("rpc/projects/revise", change)
+    assert saved.status == 200, saved.body
+    assert saved.object()["revision"] == 2
+    assert owner.rpc("rpc/projects/revise", change).object() == saved.object()
+    assert owner.read(project).object()["inputs"] == inputs
+    report = owner.rpc("rpc/geometry/review", {"schema_version": 1, "project_id": project["id"], "geometry": geometry})
+    assert report.status == 200 and report.object()["module_count"] == 0
+    assert report.object()["engineering_status"] == "not_evaluated"
+
+
 def test_geometry_review_and_saved_source_use_the_actual_native_gateway(local: tuple[Instance, WpCli]) -> None:
     instance, _ = local
     owner, foreign = Browser(instance.url), Browser(instance.url)

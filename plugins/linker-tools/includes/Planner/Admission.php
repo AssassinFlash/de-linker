@@ -250,7 +250,7 @@ final class Admission {
 		return match ( $path ) {
 			'projects/create' => array( 'planner_projects', 10, 100, DAY_IN_SECONDS, 500 ),
 			'projects/revise', 'battery/scenario' => array( 'planner_edits', 240, 1200, HOUR_IN_SECONDS, 5000 ),
-			'profiles/csv' => array( 'planner_uploads', 20, 100, DAY_IN_SECONDS, 500 ),
+			'profiles/csv', 'geometry/import' => array( 'planner_uploads', 20, 100, DAY_IN_SECONDS, 500 ),
 			'runs/energy' => array( 'planner_calculations', 30, 120, HOUR_IN_SECONDS, 500 ),
 			default => null,
 		};

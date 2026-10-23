@@ -93,6 +93,87 @@ class Rig:
         return self.post("/operations/replay" + path, body, actor)
 
 
+def test_geometry_import_has_owned_original_receipt_and_separate_project_save(
+    rig: Rig,
+) -> None:
+    root = Path(__file__).resolve().parents[4]
+    source = (root / "fixtures/planning/source-roof-wgs84.geojson").read_bytes()
+    options = json.loads(
+        (root / "fixtures/planning/geometry-import-options.json").read_text()
+    )
+    project_id = rig.create("geometry-import")
+    command: Object = {
+        "project_id": project_id,
+        "content_base64": base64.b64encode(source).decode(),
+        "options": options,
+        "key": "owned-source",
+    }
+    asset = rig.post("/geometry/import", command)
+    assert asset["purpose"] == "geometry_import_v1"
+    assert asset["content_sha256"] == digest(source)
+    assert rig.post("/geometry/import", command) == asset
+    replay = rig.replay("/geometry/import", command)
+    assert replay["status"] == "replayed" and replay["result"] == asset
+    before = rig.post("/projects/read", {"project_id": project_id, "revision": None})
+    assert before["revision"] == 1 and before["inputs"] == {}
+    metadata = cast(Object, asset["metadata"])
+    prepared = cast(Object, metadata["geometry_import"])
+    geometry = cast(Object, prepared["geometry"])
+    source_id = str(cast(list[Object], geometry["sources"])[0]["id"])
+    inputs: Object = {
+        "geometry": geometry,
+        "geometry_imports": {"schema_version": 1, "selected": {source_id: asset["id"]}},
+    }
+    saved = rig.post(
+        "/projects/revise",
+        {
+            "project_id": project_id,
+            "expected_revision": 1,
+            "inputs": inputs,
+            "key": "attach-source",
+        },
+    )
+    assert saved["revision"] == 2 and saved["inputs"] == inputs
+    original = rig.client.post(
+        "/assets/content",
+        json={"schema_version": 1, "project_id": project_id, "asset_id": asset["id"]},
+        headers=headers(),
+    )
+    assert original.content == source
+    before_blobs = set(rig.workspace.blobs.directory.rglob("*"))
+    refused = rig.client.post(
+        "/geometry/import",
+        json={"schema_version": 1, **command, "content_base64": "!"},
+        headers=headers(FOREIGN),
+    )
+    assert refused.status_code == 404
+    assert set(rig.workspace.blobs.directory.rglob("*")) == before_blobs
+    other_project = rig.create("different-geometry-project")
+    foreign_asset = rig.client.post(
+        "/projects/revise",
+        json={
+            "schema_version": 1,
+            "project_id": other_project,
+            "expected_revision": 1,
+            "inputs": inputs,
+            "key": "foreign-source",
+        },
+        headers=headers(),
+    )
+    assert foreign_asset.status_code == 404
+    invalid_new = rig.client.post(
+        "/projects/create",
+        json={
+            "schema_version": 1,
+            "title": "Cannot borrow files",
+            "inputs": inputs,
+            "key": "borrowed-source",
+        },
+        headers=headers(),
+    )
+    assert invalid_new.status_code == 422
+
+
 def test_geometry_review_uses_owned_draft_without_publishing_or_saving(
     rig: Rig,
 ) -> None:

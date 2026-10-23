@@ -35,6 +35,8 @@ from .errors import (
     PlanningError,
     VersionUnavailable,
 )
+from .geometry_import import GeometryImport
+from .geometry_import_selections import check_geometry_imports
 from .geometry_review import review_geometry
 from .guest_claims import GuestClaims
 from .http_asset_intake import HttpAssetIntake
@@ -45,6 +47,7 @@ from .http_documents import (
     CsvImport,
     CsvInspect,
     EnergyEvaluate,
+    GeometryImportCommand,
     GeometryReview,
     ProfilePreviewRead,
     ProjectCreate,
@@ -96,8 +99,9 @@ def create_private_app(
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
     intake = HttpAssetIntake(assets, max_csv_bytes=limits.max_csv_bytes)
+    geometry_intake = GeometryImport(assets)
     previews = ProfilePreview(assets)
-    replays = HttpReplay(workspace, energy, intake)
+    replays = HttpReplay(workspace, energy, intake, geometry_intake)
 
     @app.exception_handler(PlanningError)
     async def domain_error(_request: Request, error: PlanningError) -> JSONResponse:
@@ -200,6 +204,7 @@ def create_private_app(
     def create(body: ProjectCreate, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
         check_profile_selections(assets, actor, None, body.inputs)
+        check_geometry_imports(assets, actor, None, body.inputs)
         return project_view(
             workspace.create(actor, body.title, body.inputs, key=body.key)
         )
@@ -226,6 +231,7 @@ def create_private_app(
         # Reject a foreign writer before publishing even an orphan input blob.
         workspace.get(actor, body.project_id)
         check_profile_selections(assets, actor, body.project_id, body.inputs)
+        check_geometry_imports(assets, actor, body.project_id, body.inputs)
         return project_view(
             workspace.revise(
                 actor,
@@ -257,6 +263,20 @@ def create_private_app(
         reply = review_geometry(body.geometry)
         reply["runtime_sha256"] = energy.kernel.runtime.sha256
         return reply
+
+    @app.post("/geometry/import")
+    def geometry_import(body: GeometryImportCommand, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        assets.check_write(actor, body.project_id)
+        return asset_view(
+            geometry_intake.prepare(
+                actor,
+                body.project_id,
+                geometry_intake.decode(body.content_base64),
+                body.options,
+                key=body.key,
+            )
+        )
 
     @app.post("/runs/read")
     def run_read(body: RunRead, request: Request) -> Object:

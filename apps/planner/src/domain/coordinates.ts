@@ -1,4 +1,4 @@
-import type { RoofFace, Vec2, Vec3 } from "./geometry.ts";
+import type { PlaneFrame, RoofFace, Vec2, Vec3 } from "./geometry.ts";
 
 export const add = (a: Vec3, b: Vec3): Vec3 => [
 	a[0] + b[0],
@@ -25,7 +25,7 @@ export function pointOnRoof(roof: RoofFace, uv: Vec2): Vec3 {
 	);
 }
 
-export function roofCoordinates(roof: RoofFace, enu: Vec3): Vec2 {
+export function roofCoordinates(roof: PlaneFrame, enu: Vec3): Vec2 {
 	const delta = add(enu, scale(roof.origin_enu, -1));
 	return [dot(delta, roof.u_axis_enu), dot(delta, roof.v_axis_enu)];
 }

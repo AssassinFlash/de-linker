@@ -10,6 +10,7 @@ from .brief import PlanningBrief
 from .canonical import Object
 from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaVersion
 from .geometry_documents import GeometryDocument
+from .geometry_import_documents import GeometryImportOptions
 from .wire_numbers import check_wire_numbers
 
 # Protocol string limits, not engineering quantities; see 548-private-gateway.md.
@@ -57,6 +58,10 @@ class ProjectInputs(Command):
             ProfileSelections.model_validate(value["profile_selections"])
         if "geometry" in value:
             GeometryDocument.model_validate(value["geometry"])
+        if "geometry_imports" in value:
+            from .geometry_import_selections import GeometryImports
+
+            GeometryImports.model_validate(value["geometry_imports"])
         return value
 
 
@@ -73,6 +78,13 @@ class ProjectRead(Command):
 class GeometryReview(Command):
     project_id: Id
     geometry: Object
+
+
+class GeometryImportCommand(Command):
+    project_id: Id
+    content_base64: str
+    options: GeometryImportOptions
+    key: Key
 
 
 class ProjectRevise(ProjectInputs):
