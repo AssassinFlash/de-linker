@@ -79,6 +79,7 @@
 		padding: var(--proto-space-4, 16px) 0;
 		border-top: 0;
 		border-bottom: 0;
+		color: var(--home-muted, #5c7068);
 	}
 
 	#home-a .home-adv-horizontal .home-adv-trigger .home-idx {

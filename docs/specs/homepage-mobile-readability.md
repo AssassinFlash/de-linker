@@ -15,7 +15,8 @@ At the existing 560px control breakpoint, allow the nameplate control to wrap
 and grow, retain its camera icon and a minimum 44px target, keep the operations
 summary within its available space and give email a 44px target. Retain the
 existing vertical accordion pattern at this width instead of three narrow
-columns. Set its labels to 10px and titles to 18px; keep the original panel,
+columns. Set its labels to 10px and titles to 18px; use the existing muted body
+color for unselected controls instead of the washed-out decorative gray. Keep the original panel,
 photo, keyboard and selection consumers. Use 22–24px quote text with a 1.45
 line height and the current phone scene’s 20px spacing (16px + 4px tokens). Give the scene card's copy
 and photograph the full phone width, with 14px body/action text. Avoid a
