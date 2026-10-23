@@ -1,0 +1,45 @@
+{
+  "stage": "Initial English draft, superseded by the recorded opposition pass",
+  "messages": [
+    {
+      "id": "product_name",
+      "en": "Solution Configurator"
+    },
+    {
+      "id": "ownership",
+      "en": "by Linker"
+    },
+    {
+      "id": "system_role",
+      "en": "Linker combines site, roof and energy data in one project."
+    },
+    {
+      "id": "about_label",
+      "en": "About this tool"
+    },
+    {
+      "id": "linker_contribution",
+      "en": "Linker provides the project workflow and editing tools. Your inputs and design are saved and recovered in the same project."
+    },
+    {
+      "id": "geometry_source_boundary",
+      "en": "Map and 3D views use the project geometry. Source accuracy and permissions stay as recorded. The tool does not approve installations."
+    },
+    {
+      "id": "credits_label",
+      "en": "Software and data credits"
+    },
+    {
+      "id": "software_credits",
+      "en": "Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js, React Three Fiber and Drei. Map display: MapLibre GL JS."
+    },
+    {
+      "id": "street_map_credits",
+      "en": "Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors."
+    },
+    {
+      "id": "provider_privacy",
+      "en": "OpenFreeMap privacy policy"
+    }
+  ]
+}

@@ -7,6 +7,7 @@ import { PlannerClient } from "./data/PlannerClient.ts";
 import { DraftStore } from "./data/DraftStore.ts";
 import { SessionBoundary } from "./components/SessionBoundary.tsx";
 import { Workspace } from "./components/Workspace.tsx";
+import { ToolIdentity } from "./components/ToolIdentity.tsx";
 import { __ } from "./i18n.ts";
 
 class ApplicationBoundary extends Component<
@@ -47,14 +48,17 @@ function Application({ config }: { config: Configuration }) {
 	return (
 		<SessionBoundary client={client}>
 			{(session, recheck) => (
-				<Workspace
-					key={session.query_scope}
-					client={client}
-					store={store}
-					config={config}
-					session={session}
-					recheck={recheck}
-				/>
+				<>
+					<Workspace
+						key={session.query_scope}
+						client={client}
+						store={store}
+						config={config}
+						session={session}
+						recheck={recheck}
+					/>
+					<ToolIdentity />
+				</>
 			)}
 		</SessionBoundary>
 	);

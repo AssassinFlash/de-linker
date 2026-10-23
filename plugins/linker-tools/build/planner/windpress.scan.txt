@@ -106,7 +106,11 @@ lp-source-hashes
 lp-source-note
 lp-table-scroll
 lp-text-button
+lp-tool-about
+lp-tool-boundary
 lp-tool-button
+lp-tool-identity
+lp-tool-product
 lp-view-switch
 lp-workspace
 lp-workspace-footnote

@@ -4831,3 +4831,35 @@ msgstr "Die Karte mit zwei Fingern verschieben."
 #: build/planner/assets/planner.js ../../apps/planner/src/components/design/MapViewport.tsx:186
 msgid "Use ⌘ + scroll to zoom the map"
 msgstr "Zum Zoomen der Karte ⌘ gedrückt halten und scrollen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "by Linker"
+msgstr "von Linker"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "Linker brings your inputs into an editable project for solar and storage planning."
+msgstr "Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "About this tool"
+msgstr "Über dieses Werkzeug"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "Linker provides the project workflow and editing tools. Your inputs and design stay together in the same project, with controls for saving changes and restoring available drafts."
+msgstr "Linker verbindet die Projektverwaltung mit den Bearbeitungsfunktionen. Ihre Angaben und der Entwurf bleiben im selben Projekt; dort können Sie Änderungen speichern und verfügbare Arbeitsstände wiederherstellen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "All design views use the same project geometry. Source records retain the declared accuracy and permissions; a displayed model provides no engineering approval."
+msgstr "Alle Entwurfsansichten verwenden dieselbe Projektgeometrie. Die erfassten Angaben zur Quellengenauigkeit und zu Nutzungsrechten bleiben unverändert. Die Darstellung ersetzt keine fachtechnische Freigabe."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "Software and data credits"
+msgstr "Software und Datenquellen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "Interface and project data: React, TanStack Query and Ajv. 3D views: Three.js and React Three Fiber. Map display: MapLibre GL JS."
+msgstr "Oberfläche und Projektdaten: React, TanStack Query und Ajv. 3D-Ansichten: Three.js und React Three Fiber. Kartendarstellung: MapLibre GL JS."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ToolIdentity.tsx
+msgid "Street map: OpenFreeMap. © OpenMapTiles; © OpenStreetMap contributors."
+msgstr "Straßenkarte: OpenFreeMap. © OpenMapTiles; © OpenStreetMap-Mitwirkende."

@@ -1,0 +1,6 @@
+{
+  "messages": 10,
+  "issues": [],
+  "method": "Compiled GNU gettext MO readback plus native WordPress JSON compared with reviewed final EN/DE",
+  "earlier_probe_correction": "catalog_entries extracts only IDs, not msgstr; its initial translation mismatch report was an invalid probe, not a product failure"
+}

@@ -13,8 +13,9 @@ import type {
 	Vec3,
 } from "./geometry.ts";
 import { GeographicBridge } from "./geographic.ts";
-import { add, pointOnRoof, scale, vectorFromRoof } from "./coordinates.ts";
+import { add, scale, vectorFromRoof } from "./coordinates.ts";
 import { panelCornersUVN, panelPoses } from "./panelPoses.ts";
+import { requireUvResolution } from "./geometryNumerics.ts";
 
 // Pinned MapLibre GL 5.24.0 src/util/util.ts MAX_VALID_LATITUDE. Refuse rather
 // than let its Mercator renderer clamp a real position to another latitude.
@@ -57,6 +58,9 @@ export function geographicMapGeometry(
 		south = Infinity,
 		north = -Infinity;
 	function position(enu: Vec3): [number, number] {
+		// The geodetic boundary uses the same binary64 support policy as import
+		// and layout rendering. This budget does not assert source accuracy.
+		requireUvResolution(enu);
 		const [longitude, latitude] = bridge.inverse(enu);
 		if (Math.abs(latitude) > MERCATOR_LATITUDE_LIMIT)
 			throw new Error("map_projection_latitude_unsupported");
@@ -84,6 +88,12 @@ export function geographicMapGeometry(
 		if (!roof) throw new Error("map_geometry_reference_missing");
 		return roof;
 	}
+	function onRoof(roof: RoofFace, uvn: Vec3): Vec3 {
+		// Check before adding the origin: cancellation could otherwise hide an
+		// unsupported local chart behind a small but already inaccurate ENU sum.
+		requireUvResolution(uvn);
+		return add(roof.origin_enu, vectorFromRoof(roof, uvn));
+	}
 	function put(properties: MapObject, surfaces: number[][][][]) {
 		features.push({
 			type: "Feature",
@@ -107,13 +117,13 @@ export function geographicMapGeometry(
 			},
 			[
 				[roof.boundary_uv, ...roof.holes_uv].map((uvs) =>
-					ring(uvs.map((uv) => pointOnRoof(roof, uv))),
+					ring(uvs.map((uv) => onRoof(roof, [...uv, 0]))),
 				),
 			],
 		);
 	for (const object of [...document.obstacles, ...document.keepouts]) {
 		const roof = roofFor(object.roof_id),
-			base = object.footprint_uv.map((uv) => pointOnRoof(roof, uv)),
+			base = object.footprint_uv.map((uv) => onRoof(roof, [...uv, 0])),
 			surfaces = [[ring(base)]];
 		if ("height_m" in object) {
 			const rise = scale(object.extrusion_axis_enu, object.height_m),
@@ -142,9 +152,7 @@ export function geographicMapGeometry(
 			array = arrays.get(pose.array_id);
 		if (!array || array.roof_id !== roof.id)
 			throw new Error("map_geometry_reference_missing");
-		const corners = panelCornersUVN(pose).map((point) =>
-			add(roof.origin_enu, vectorFromRoof(roof, point)),
-		);
+		const corners = panelCornersUVN(pose).map((point) => onRoof(roof, point));
 		// Six faces of the same eight-corner cuboid used in 3D and fit review.
 		// A vertical side can project to a zero-area face; no metric face is
 		// deleted or used to infer engineering fit from this display geometry.

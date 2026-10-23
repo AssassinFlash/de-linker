@@ -8,6 +8,7 @@ import { readGeometry } from "./validateGeometry.ts";
 import { emptyGeometry } from "./geometryCommands.ts";
 import { panelPoses } from "./panelPoses.ts";
 import { geographicMapGeometry } from "./mapGeometry.ts";
+import type { GeometryDocument, Vec2 } from "./geometry.ts";
 
 const original = JSON.parse(
 	readFileSync(
@@ -196,4 +197,89 @@ test("a dateline crossing keeps a short display extent without changing original
 	assert.ok(view.bounds![1][0] > 180);
 	assert.ok(view.bounds![1][0] - view.bounds![0][0] < 0.001);
 	assert.equal(JSON.stringify(document), before);
+});
+
+test("map refuses unsupported roof, obstacle, keepout, module and ENU coordinates without changing accepted inputs", () => {
+	const base = readGeometry(structuredClone(flat), policy),
+		referenced: GeometryDocument = {
+			...base,
+			coordinate_system: {
+				...base.coordinate_system,
+				north_reference: "true_north",
+				north_source_id: "survey",
+				anchor: {
+					latitude_deg: 50.94,
+					longitude_deg: 6.96,
+					source_id: "survey",
+					datum: "EPSG:4326",
+				},
+			},
+			arrays: [],
+		},
+		farRing: readonly Vec2[] = [
+			[1e14, 1e14],
+			[1e14 + 20, 1e14],
+			[1e14 + 20, 1e14 + 20],
+			[1e14, 1e14 + 20],
+		],
+		footprint = {
+			id: "far-footprint",
+			name: "Synthetic unsupported chart",
+			roof_id: "roof",
+			source_id: "survey",
+			footprint_uv: farRing,
+		};
+	const cases: Record<string, GeometryDocument> = {
+		// The 45-degree chart cancels the huge origin. Checking only the final
+		// ENU positions would accept edges already distorted by about 20 mm.
+		"cancelling roof chart": {
+			...referenced,
+			roofs: [
+				{
+					...base.roofs[0]!,
+					origin_enu: [0, -Math.SQRT2 * 1e14, 4],
+					u_axis_enu: [Math.SQRT1_2, Math.SQRT1_2, 0],
+					v_axis_enu: [-Math.SQRT1_2, Math.SQRT1_2, 0],
+					boundary_uv: farRing,
+				},
+			],
+		},
+		"obstacle chart": {
+			...referenced,
+			obstacles: [{ ...footprint, extrusion_axis_enu: [0, 0, 1], height_m: 1 }],
+		},
+		"keepout chart": {
+			...referenced,
+			keepouts: [{ ...footprint, reason: "Synthetic numerical limit" }],
+		},
+		"module chart": {
+			...referenced,
+			arrays: [{ ...base.arrays[0]!, origin_uv: [1e14, 1e14] }],
+		},
+		"ENU origin": {
+			...referenced,
+			roofs: [{ ...base.roofs[0]!, origin_enu: [1e14, 0, 4] }],
+		},
+		"obstacle top": {
+			...referenced,
+			obstacles: [
+				{
+					...footprint,
+					footprint_uv: base.roofs[0]!.boundary_uv,
+					extrusion_axis_enu: [0, 0, 1],
+					height_m: 1e14,
+				},
+			],
+		},
+	};
+	for (const [name, input] of Object.entries(cases)) {
+		const document = readGeometry(input, policy),
+			before = JSON.stringify(document);
+		assert.throws(
+			() => geographicMapGeometry(document),
+			/geometry_numeric_resolution_unsupported/,
+			name,
+		);
+		assert.equal(JSON.stringify(document), before, name);
+	}
 });

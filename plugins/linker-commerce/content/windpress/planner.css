@@ -64,6 +64,16 @@
   [data-linker-planner] .lp-project-row small { display: block; margin-top: 5px; color: var(--proto-neutral-500); font-size: 12px; }
   [data-linker-planner] .lp-workspace-footnote { border-top: 1px solid var(--lp-line); padding-top: 24px; margin-top: 40px; display: flex; align-items: flex-start; gap: 12px; color: var(--proto-neutral-500); font-size: 12px; }
   [data-linker-planner] .lp-workspace-footnote svg { flex-shrink: 0; }
+  [data-linker-planner] .lp-tool-identity { padding: 24px clamp(20px, 3vw, 40px); border-top: 1px solid var(--lp-line); background: rgb(255 255 255 / .6); color: var(--proto-neutral-600); font-size: 12px; }
+  [data-linker-planner] .lp-tool-product { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+  [data-linker-planner] .lp-tool-product strong { color: var(--proto-neutral-800); font-size: 14px; font-weight: 600; }
+  [data-linker-planner] .lp-tool-product p { flex-basis: 100%; margin: 0; max-width: 820px; font-size: 13px; }
+  [data-linker-planner] .lp-tool-about summary { width: fit-content; min-height: 44px; align-content: center; color: var(--proto-teal-800); cursor: pointer; }
+  [data-linker-planner] .lp-tool-about > div { max-width: 820px; padding-top: 12px; overflow-wrap: anywhere; }
+  [data-linker-planner] .lp-tool-about p { margin-bottom: 14px; }
+  [data-linker-planner] .lp-tool-about .lp-tool-boundary { color: var(--proto-neutral-500); }
+  [data-linker-planner] .lp-tool-about h2 { margin-block: 24px 12px; font-size: 14px; }
+  [data-linker-planner] .lp-tool-about a { color: var(--proto-teal-800); text-underline-offset: 3px; }
   [data-linker-planner] .lp-new-project { width: min(100%, 340px); flex-shrink: 0; padding: 20px; background: rgb(255 255 255 / .8); border: 1px solid var(--lp-line); box-shadow: 0 10px 35px rgb(12 40 35 / .05); }
   [data-linker-planner] .lp-new-project .lp-inline-actions { margin-top: 16px; }
   [data-linker-planner] .lp-new-project > .lp-field + .lp-field { margin-top: 16px; }
