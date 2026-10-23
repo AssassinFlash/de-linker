@@ -375,6 +375,22 @@ final class LibraryPageTest extends TestCase {
 	 * The register the fragments describe: one product of one brand.
 	 */
 	private function library(): DocumentLibrary {
-		return new DocumentLibrary( $this->published_document_view() );
+		return new DocumentLibrary(
+			$this->published_document_view(),
+			static fn (): array => array(
+				'products'  => array(
+					array(
+						'product_id'           => 6521,
+						'published_locale_ids' => array( 6521 ),
+					),
+				),
+				'documents' => array(
+					array(
+						'product_ids' => array( 6521 ),
+						'aliases'     => array( 'https://de-linker.test/media/901.pdf' ),
+					),
+				),
+			)
+		);
 	}
 }

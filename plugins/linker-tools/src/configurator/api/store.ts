@@ -20,6 +20,10 @@ export type AddStatus = 'pending' | 'added' | 'unverified' | 'retry' | 'stale';
 
 export type SelectionProof =
 	| {
+			kind: 'genie';
+			token: string;
+	  }
+	| {
 			kind: 'residential';
 			input: ResidentialInput;
 			selection_fingerprint: string;
@@ -104,10 +108,15 @@ export function storeClient(
 					return false;
 				}
 				const before = await cart();
+				const genie = proof.kind === 'genie';
 				submitted = true;
 				const response = await resourceFetch(
 					fetcher,
-					`${ restUrl }linker/v1/solutions/draft`,
+					`${ restUrl }${
+						genie
+							? 'linker-ai/v1/genie/draft'
+							: 'linker/v1/solutions/draft'
+					}`,
 					{
 						method: 'POST',
 						credentials: 'same-origin',
@@ -116,7 +125,9 @@ export function storeClient(
 							Nonce: before.nonce,
 							...( restNonce ? { 'X-WP-Nonce': restNonce } : {} ),
 						},
-						body: JSON.stringify( proof ),
+						body: JSON.stringify(
+							genie ? { proof: proof.token } : proof
+						),
 					}
 				);
 				if ( ! response.ok ) {
