@@ -29,6 +29,14 @@ final class JobStore {
 		return $this->capacity->transaction_active();
 	}
 
+	/** The storage port guards its own authoritative native hold read.
+	 *
+	 * @param int $id Original job.
+	 */
+	public function held( int $id ): bool {
+		return $this->capacity->held( $id );
+	}
+
 
 	/**
 	 * Native retries retain the same durable job; the memory port only drives units.

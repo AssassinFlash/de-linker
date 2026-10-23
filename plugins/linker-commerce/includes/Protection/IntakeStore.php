@@ -210,7 +210,9 @@ final class IntakeStore {
 				if ( is_wp_error( $result ) ) {
 					throw new \RuntimeException( 'intake_erasure_busy' );
 				}
-			}
+			},
+			0,
+			true
 		);
 		if ( ! $done ) {
 			throw new \RuntimeException( 'intake_erasure_busy' );

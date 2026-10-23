@@ -45,4 +45,10 @@ interface JobCapacity {
 
 	/** An outer native transaction must defer all external transport. */
 	public function transaction_active(): bool;
+
+	/** Authoritative hold reads precede any transaction probe or transport.
+	 *
+	 * @param int $id Original native job.
+	 */
+	public function held( int $id ): bool;
 }

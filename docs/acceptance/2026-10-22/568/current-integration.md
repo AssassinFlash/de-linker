@@ -131,3 +131,38 @@ controls remain in that batch. Complete Commerce PHPStan and scoped WPCS pass;
 Commerce unit suite: 1748 tests / 6368 assertions, 404 native-only skips, no failures.
 The corresponding strong-cache snapshot run is recorded in the fixed-head handoff;
 the earlier 418-test result remains explicitly tied to the preceding tested source.
+
+## First-SQL coverage completed after independent review
+
+The next independent boundary review also reproduced the Tools confirmation's
+actual first mutex: a lost caller was followed by a committed job, consumed token
+and accepted ACK. Its pure-DB confirmation scope now starts before that mutex.
+The original cross-browser token, healthy caller rollback and full-queue retry
+remain covered (5 native tests / 53 assertions). No mail or model runs in that scope.
+
+A complete new/rewritten callsite scan then proved four more original-entry KILL
+controls: native reschedule, staff disposition, review erasure and review intake.
+All could previously persist state after losing their caller. They now use an
+explicit guard on only the existing mutex acquisition/release SQL. The native
+callback's policy is restored before its model/native work. The guard keeps the
+original wpdb/handle/thread, rejects another connection at cleanup, requires a
+confirmed RELEASE_LOCK=1 and preserves an existing callback error.
+
+The Outbox controls use genuine native account-security Message witnesses. Killing
+the initial intercept SAVEPOINT or retry's first held-metadata SELECT previously
+produced one **synthetic** transport and changed the real local budget; retry also
+deleted the original native job. These are retained red results, not real email
+deliveries. The complete native transaction probe now runs in a short existing
+ConnectionFence. Its live no-transaction 1305 result is retained; connection failure
+cannot become false. Initial held reads use the existing JobCapacity native/memory
+port, with the native read fenced before any probe or transport.
+
+The green native fixtures compare independent committed job rows, full original
+Message/attempt/error metadata, pending actions, capacity and transport budget.
+The four additional owner entries are also formal native CI data cases, not only
+source assertions. Related native batch: 147 tests / 2047 assertions PASS; final
+first-SQL class: 17 tests / 141 assertions PASS. Commerce unit suite: 1757 tests /
+6368 assertions, 408 native-only skips; full Commerce PHPStan and scoped WPCS PASS.
+The final strong-cache snapshot result and exact source head are attached to the
+coordinator's immutable handoff. Earlier broad runs stay tied to their original
+source; no later CI, CUA or production completion is inferred from these checks.

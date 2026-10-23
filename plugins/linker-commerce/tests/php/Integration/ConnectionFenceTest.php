@@ -287,6 +287,309 @@ final class ConnectionFenceTest extends IntegrationTestCase {
 		self::assertSame( '', $fresh->get_meta( $email::ACCEPTED ) );
 	}
 
+	/**
+	 * Outbox's initial transaction probe and held-meta read precede its final native writer.
+	 *
+	 * @testWith ["intercept"]
+	 *           ["retry"]
+	 * @param string $entry Actual native mail entry.
+	 */
+	public function test_first_outbox_read_cannot_turn_a_lost_caller_into_transport( string $entry ): void {
+		global $wpdb;
+		$intake = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		$this->later(
+			static function () use ( $intake ): void {
+				delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+				if ( false !== $intake ) {
+					update_option( \Linker\Commerce\Protection\IntakeStore::OPTION, $intake, false );
+				} }
+		);
+		$customer = $this->customer();
+		$user     = get_userdata( $customer->get_id() );
+		self::assertInstanceOf( \WP_User::class, $user );
+		$message = \Linker\Commerce\Mail\Prepared::capture(
+			static function () use ( $user ): void {
+				wp_password_change_notification( $user );
+			}
+		);
+		self::assertInstanceOf( \Linker\Commerce\Mail\Message::class, $message );
+		self::assertTrue( \Linker\Commerce\Mail\NativeOrigin::valid( $message ) );
+		$store       = new \Linker\Commerce\Mail\JobStore();
+		$before_jobs = self::newest_mail_job();
+		$job         = 'retry' === $entry ? $store->create( $message ) : 0;
+		if ( 'retry' === $entry ) {
+			self::assertGreaterThan( 0, $job );
+			wp_cache_delete( $job, 'post_meta' ); }
+		$peer            = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$before_budget   = $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		$before_capacity = $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Protection\IntakeStore::OPTION ) );
+		$before_actions  = $peer->get_results( $peer->prepare( 'SELECT action_id,args,status FROM %i WHERE hook=%s ORDER BY action_id', $wpdb->prefix . 'actionscheduler_actions', \Linker\Commerce\Mail\Outbox::HOOK ), ARRAY_A );
+		$before_meta     = $peer->get_results( $peer->prepare( 'SELECT meta_key,meta_value FROM %i WHERE post_id=%d ORDER BY meta_id', $wpdb->postmeta, $job ), ARRAY_A );
+		$marker          = 'synthetic-outbox-first-read-' . self::tag();
+		$hits            = 0;
+		$transports      = 0;
+		$kill            = static function ( string $sql ) use ( $entry, $job, $peer, &$hits ): string {
+			global $wpdb;
+			$target = 'intercept' === $entry ? str_starts_with( $sql, 'SAVEPOINT linker_mail_' ) : str_starts_with( $sql, 'SELECT' ) && str_contains( $sql, $wpdb->postmeta ) && preg_match( '/\b' . $job . '\b/', $sql );
+			if ( 0 === $hits && $target ) {
+				++$hits;
+				$peer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id ); }
+			return $sql;
+		};
+		$transport       = static function ( $pre, array $atts ) use ( &$hits, &$transports, $message ) {
+			if ( $hits > 0 && $message->subject === $atts['subject'] ) {
+				++$transports;
+				return true; }
+			return $pre;
+		};
+		$wpdb->query( 'START TRANSACTION' );
+		$wpdb->insert(
+			$wpdb->options,
+			array(
+				'option_name'  => $marker,
+				'option_value' => 'caller-owned',
+				'autoload'     => 'off',
+			)
+		);
+		add_filter( 'query', $kill, 999 );
+		add_filter( 'pre_wp_mail', $transport, -1000, 2 );
+		try {
+			try {
+				if ( 'intercept' === $entry ) {
+					wp_password_change_notification( $user );
+				} else {
+					/** This action is documented in Mail\Module::register(). */
+					do_action( \Linker\Commerce\Mail\Outbox::HOOK, $job ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Actual original-job consumer under test.
+				}
+			} catch ( \Throwable $error ) {
+				self::assertInstanceOf( \RuntimeException::class, $error );
+			}
+			$caller_rows    = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE option_name=%s', $wpdb->options, $marker ) );
+			$after_budget   = $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+			$job_rows       = 'retry' === $entry ? (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE ID=%d', $wpdb->posts, $job ) ) : (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE post_type=%s AND ID>%d', $wpdb->posts, \Linker\Commerce\Mail\JobStore::POST_TYPE, $before_jobs ) );
+			$after_capacity = $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Protection\IntakeStore::OPTION ) );
+			$after_actions  = $peer->get_results( $peer->prepare( 'SELECT action_id,args,status FROM %i WHERE hook=%s ORDER BY action_id', $wpdb->prefix . 'actionscheduler_actions', \Linker\Commerce\Mail\Outbox::HOOK ), ARRAY_A );
+			$after_meta     = $peer->get_results( $peer->prepare( 'SELECT meta_key,meta_value FROM %i WHERE post_id=%d ORDER BY meta_id', $wpdb->postmeta, $job ), ARRAY_A );
+		} finally {
+			remove_filter( 'query', $kill, 999 );
+			remove_filter( 'pre_wp_mail', $transport, -1000 );
+			self::assertTrue( $wpdb->db_connect( false ) );
+			delete_option( $marker );
+			$peer->close();
+		}
+		self::assertSame( 1, $hits );
+		self::assertSame(
+			0,
+			$transports,
+			(string) wp_json_encode(
+				array(
+					'entry'             => $entry,
+					'caller_rows'       => $caller_rows,
+					'transports'        => $transports,
+					'budget_changed'    => $before_budget !== $after_budget,
+					'original_job_rows' => $job_rows,
+				)
+			)
+		);
+		self::assertSame( 0, $caller_rows );
+		self::assertSame( $before_budget, $after_budget );
+		self::assertSame( $before_capacity, $after_capacity );
+		self::assertSame( $before_actions, $after_actions );
+		if ( 'retry' === $entry ) {
+			self::assertSame( 1, $job_rows );
+			self::assertSame( $before_meta, $after_meta );
+			self::assertNotNull( $store->load( $job ) );
+		} else {
+			self::assertSame( 0, $job_rows );
+		}
+	}
+
+	/**
+	 * Each new outer mutex is exercised through its native owner, not a replacement lock.
+	 *
+	 * @testWith ["reschedule"]
+	 *           ["disposition"]
+	 *           ["forget"]
+	 *           ["intake"]
+	 * @param string $entry Native capacity entry.
+	 */
+	public function test_new_native_entry_first_mutex_cannot_publish_after_caller_loss( string $entry ): void {
+		global $wpdb;
+		$restore = array();
+		foreach ( array( \Linker\Commerce\Protection\IntakeStore::OPTION, \Linker\Commerce\Protection\Ledger::OPTION ) as $option ) {
+			$restore[ $option ] = get_option( $option );
+			delete_option( $option );
+		}
+		$cookie = $_COOKIE;
+		$this->later(
+			static function () use ( $restore, $cookie ): void {
+				foreach ( $restore as $option => $value ) {
+					delete_option( $option );
+					if ( false !== $value ) {
+								update_option( $option, $value, false ); }
+				}
+				$_COOKIE = $cookie;
+			}
+		);
+		if ( 'reschedule' === $entry ) {
+			$store = new \Linker\Commerce\Mail\JobStore();
+			$id    = $store->create( new \Linker\Commerce\Mail\Message( array( self::TESTER ), 'Synthetic source schedule', 'Original complete job.', array(), array() ) );
+			self::assertGreaterThan( 0, $id );
+			$key  = 'mail-schedule-' . $id;
+			$work = static fn () => $store->reschedule( $id, time() + HOUR_IN_SECONDS );
+			$args = wp_json_encode( array( $id ) );
+			$read = static fn ( \wpdb $peer ) => $peer->get_results( $peer->prepare( 'SELECT action_id,scheduled_date_gmt FROM %i WHERE hook=%s AND args=%s AND status=%s ORDER BY action_id', $wpdb->prefix . 'actionscheduler_actions', \Linker\Commerce\Mail\Outbox::HOOK, $args, 'pending' ), ARRAY_A );
+		} elseif ( 'intake' === $entry ) {
+			$_COOKIE[ \Linker\Commerce\Protection\Identity::COOKIE ] = md5( 'synthetic-native-first-lock' );
+			$identity = \Linker\Commerce\Protection\Identity::current();
+			self::assertInstanceOf( \Linker\Commerce\Protection\Identity::class, $identity );
+			$id   = wp_generate_uuid4();
+			$key  = 'intake-write-' . $id;
+			$work = static fn () => \Linker\Commerce\Protection\Intake::run( 'verification', 'contact', $id, hash( 'sha256', $id ), $identity, array( 'message' => 'Synthetic original caller' ), array( new \Linker\Commerce\Protection\Allowance( 'synthetic_first_lock_site', 'site', 10, HOUR_IN_SECONDS ) ), array(), array(), static fn () => new \WP_Error( 'synthetic_no_business_write' ) );
+			$read = static fn ( \wpdb $peer ) => $peer->get_var( $peer->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, \Linker\Commerce\Protection\IntakeStore::OPTION ) );
+		} else {
+			$order = new \WC_Order();
+			$order->set_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED );
+			if ( 'disposition' === $entry ) {
+				$this->as_user( 1 );
+				$order->set_customer_note( 'Вам перевод 123 руб. забрать тут https://fredmer.buzz/synthetic-first-lock' );
+				$order->update_meta_data( '_linker_inquiry_source', 'contact' );
+				\Linker\Commerce\Inquiry\Assessment\StructuredMeta::update( $order, \Linker\Commerce\Inquiry\Assessment\Queue::META, array( 'snapshot' => array( 'submission' => array( 'message' => $order->get_customer_note() ) ) ) );
+			} else {
+				$order->update_meta_data( \Linker\Commerce\Protection\Intake::META, 'synthetic-existing-review' );
+			}
+			$order->save();
+			$id = $order->get_id();
+			$this->later(
+				static function () use ( $order ): void {
+					$order->delete( true );
+				}
+			);
+			if ( 'disposition' === $entry ) {
+				$key       = 'historical-disposition-' . $id;
+				$operation = wp_generate_uuid4();
+				$hash      = hash( 'sha256', \Linker\Commerce\Protection\BusinessDisposition::body( $order ) );
+				$work      = static fn () => \Linker\Commerce\Protection\BusinessDisposition::run( $id, $hash, $operation );
+				$read      = static fn ( \wpdb $peer ) => $peer->get_results( $peer->prepare( 'SELECT comment_ID,comment_content FROM %i WHERE comment_post_ID=%d ORDER BY comment_ID', $wpdb->comments, $id ), ARRAY_A );
+			} else {
+				$key    = 'release-' . $id;
+				$work   = static fn () => \Linker\Commerce\Protection\IntakeStore::forget( $order );
+				$meta   = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ? $wpdb->prefix . 'wc_orders_meta' : $wpdb->postmeta;
+				$column = \Automattic\WooCommerce\Utilities\OrderUtil::custom_orders_table_usage_is_enabled() ? 'order_id' : 'post_id';
+				$read   = static fn ( \wpdb $peer ) => $peer->get_results( $peer->prepare( 'SELECT meta_key,meta_value FROM %i WHERE %i=%d AND meta_key=%s', $meta, $column, $id, \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ), ARRAY_A );
+			}
+		}
+		$result = $this->first_mutex_probe( $key, $work, $read );
+		self::assertSame( 1, $result['hits'] );
+		self::assertTrue( $result['failed'] );
+		self::assertSame( 0, $result['caller_rows'] );
+		self::assertTrue( $result['state_unchanged'], (string) wp_json_encode( $result ) );
+	}
+
+	/**
+	 * Independent readback keeps the caller's lost write separate from new committed state.
+	 *
+	 * @param string                $key Exact original source mutex.
+	 * @param callable():mixed      $work Native entry, never transport/provider.
+	 * @param callable(\wpdb):mixed $read Exact native state on the independent observer.
+	 * @return array{hits:int,failed:bool,caller_rows:int,state_unchanged:bool}
+	 */
+	private function first_mutex_probe( string $key, callable $work, callable $read ): array {
+		global $wpdb;
+		$peer   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$lock   = 'linker-assessment-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $key );
+		$marker = 'synthetic-first-mutex-' . self::tag();
+		$hits   = 0;
+		$failed = false;
+		$before = $read( $peer );
+		$kill   = static function ( string $sql ) use ( $lock, $peer, &$hits ): string {
+			if ( 0 === $hits && str_contains( $sql, 'GET_LOCK(' ) && str_contains( $sql, $lock ) ) {
+				++$hits;
+				global $wpdb;
+				$peer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+			} return $sql;
+		};
+		$wpdb->query( 'START TRANSACTION' );
+		$wpdb->insert(
+			$wpdb->options,
+			array(
+				'option_name'  => $marker,
+				'option_value' => 'caller-owned',
+				'autoload'     => 'off',
+			)
+		);
+		add_filter( 'query', $kill, 999 );
+		try {
+			try {
+				$failed = is_wp_error( $work() );
+			} catch ( \Throwable $error ) {
+				$failed = true; }
+			$after = $read( $peer );
+			$rows  = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE option_name=%s', $wpdb->options, $marker ) );
+		} finally {
+			remove_filter( 'query', $kill, 999 );
+			self::assertTrue( $wpdb->db_connect( false ) );
+			delete_option( $marker );
+			$peer->close();
+		}
+		return array(
+			'hits'            => $hits,
+			'failed'          => $failed,
+			'caller_rows'     => $rows,
+			'state_unchanged' => $before === $after,
+		);
+	}
+
+	/**
+	 * Only mutex SQL changes policy; an unconfirmed release cannot conceal the work's error.
+	 *
+	 * @testWith [false]
+	 *           [true]
+	 * @param bool $primary Whether the work already failed.
+	 */
+	public function test_guarded_mutex_release_is_confirmed_without_masking_the_original_error( bool $primary ): void {
+		global $wpdb;
+		$key      = 'synthetic-guarded-release-' . self::tag();
+		$name     = 'linker-assessment-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $key );
+		$before   = self::retries();
+		$hits     = 0;
+		$caught   = null;
+		$original = new \RuntimeException( 'synthetic-original-work-failure' );
+		$reject   = static function ( string $sql ) use ( $name, &$hits ): string {
+			if ( str_contains( $sql, 'RELEASE_LOCK(' ) && str_contains( $sql, $name ) ) {
+				++$hits;
+				return 'SELECT 0';
+			} return $sql;
+		};
+		add_filter( 'query', $reject, 999 );
+		try {
+			try {
+				\Linker\Commerce\Inquiry\Assessment\Lock::run(
+					$key,
+					static function () use ( $before, $primary, $original ): void {
+						self::assertSame( $before, self::retries(), 'The callback can perform its model/SMTP work without a persistent SQL policy scope.' );
+						if ( $primary ) {
+							throw $original;
+						} },
+					0,
+					true
+				);
+			} catch ( \Throwable $error ) {
+				$caught = $error; }
+		} finally {
+			remove_filter( 'query', $reject, 999 );
+			self::assertSame( '1', (string) $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) ) );
+		}
+		self::assertSame( 1, $hits );
+		self::assertSame( $before, self::retries() );
+		self::assertInstanceOf( \RuntimeException::class, $caught );
+		if ( $primary ) {
+			self::assertSame( $original, $caught );
+		} else {
+			self::assertSame( 'native_mutex_release_unconfirmed', $caught->getMessage() ); }
+	}
+
 	/** Scoped nested policy is exactly restored; it neither starts nor commits a transaction. */
 	public function test_nested_scopes_restore_native_policy_and_leave_outer_transaction_owned(): void {
 		global $wpdb;

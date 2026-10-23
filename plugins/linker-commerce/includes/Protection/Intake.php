@@ -75,94 +75,100 @@ final class Intake {
 		$result = self::problem( new WP_Error( 'linker_intake_busy' ) );
 		// Only this logical request stays locked across its native/model work.
 		// The site-wide capacity mutex covers reservation and binding separately.
-		Lock::run(
-			'intake-write-' . $id,
-			static function () use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners, $work, &$result ): void {
-				$result = IntakeStore::edit(
-					static function ( array &$state ) use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners ): WC_Order|WP_Error|array {
-						$ledger = new Ledger();
-						$entry  = $state['entries'][ $id ] ?? null;
-						if ( is_array( $entry ) ) {
-							if ( $entry['fingerprint'] !== $fingerprint || $entry['binding'] !== $identity->binding() || $entry['action'] !== $action ) {
-								return new WP_Error( 'linker_admission_payload_changed', __( 'Your entries changed. Please reload the form before sending a new request.', 'linker-commerce' ) );
-							}
-							$recovered = BusinessRecord::recover( $id, $fingerprint, $identity->binding(), array( 'outcome' => (int) $entry['order'] ) );
-							if ( $recovered instanceof WC_Order ) {
-								$state['entries'][ $id ]['order'] = $recovered->get_id();
-								IntakeStore::save( $state );
-								$ledger->complete( $id, $fingerprint, $recovered->get_id() );
-								return $recovered;
-							}
-							// A started writer may have dispatched the optional paid summary.
-							// Without an associated native record its outcome is unknown: do
-							// not automatically retry work or refund its persistent slot.
-							if ( ! empty( $entry['creating'] ) ) {
-								return self::problem( new WP_Error( 'linker_intake_pending' ) );
-							}
-							$receipt = $ledger->lookup( $id, $fingerprint );
-							if ( is_wp_error( $receipt ) || ! in_array( $receipt['status'], array( 'reserved', 'dispatched', 'unresolved' ), true ) || (int) $entry['order'] > 0 ) {
-								return self::problem( new WP_Error( 'linker_intake_pending' ) );
-							}
-							if ( 'reserved' === $receipt['status'] ) {
-								$dispatch = $ledger->dispatch( $id, $fingerprint );
-								if ( is_wp_error( $dispatch ) ) {
-									return self::problem( $dispatch );
+		try {
+			Lock::run(
+				'intake-write-' . $id,
+				static function () use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners, $work, &$result ): void {
+					$result = IntakeStore::edit(
+						static function ( array &$state ) use ( $lane, $action, $id, $fingerprint, $identity, $limits, $carry, $owners ): WC_Order|WP_Error|array {
+							$ledger = new Ledger();
+							$entry  = $state['entries'][ $id ] ?? null;
+							if ( is_array( $entry ) ) {
+								if ( $entry['fingerprint'] !== $fingerprint || $entry['binding'] !== $identity->binding() || $entry['action'] !== $action ) {
+									return new WP_Error( 'linker_admission_payload_changed', __( 'Your entries changed. Please reload the form before sending a new request.', 'linker-commerce' ) );
 								}
-							}
-							return self::begin( $state, $id, $entry['lane'] );
-						}
-						$old = $ledger->lookup( $id, $fingerprint );
-						if ( ! is_wp_error( $old ) && 'completed' === $old['status'] && 0 === (int) $old['outcome'] ) {
-							return self::grouped( $id );
-						}
-						if ( is_array( $old ) ) {
-							$recovered = BusinessRecord::recover( $id, $fingerprint, $identity->binding(), $old );
-							if ( $recovered instanceof WC_Order ) {
-								return $recovered;
-							}
-						}
-						$used = count( array_filter( $state['entries'], static fn ( array $record ): bool => $record['lane'] === $lane ) );
-						if ( $used >= IntakeStore::CAPACITY[ $lane ] && 'campaign' !== $lane ) {
-							return self::full();
-						}
-						$permit = $ledger->reserve( $id, $fingerprint, $limits, 120, $carry, $action, $identity->binding(), array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ) );
-						if ( is_wp_error( $permit ) ) {
-							return self::problem( $permit );
-						}
-						if ( 'campaign' === $lane ) {
-							$state['campaign_count'] = min( PHP_INT_MAX - 1, (int) $state['campaign_count'] ) + 1;
-							if ( $used >= IntakeStore::CAPACITY[ $lane ] ) {
-								$sent = $ledger->dispatch( $id, $fingerprint );
-								if ( is_wp_error( $sent ) ) {
-									return self::problem( $sent );
+								$recovered = BusinessRecord::recover( $id, $fingerprint, $identity->binding(), array( 'outcome' => (int) $entry['order'] ) );
+								if ( $recovered instanceof WC_Order ) {
+									$state['entries'][ $id ]['order'] = $recovered->get_id();
+									IntakeStore::save( $state );
+									$ledger->complete( $id, $fingerprint, $recovered->get_id() );
+									return $recovered;
 								}
-								IntakeStore::save( $state );
-								$ledger->complete( $id, $fingerprint, 0 );
+								// A started writer may have dispatched the optional paid summary.
+								// Without an associated native record its outcome is unknown: do
+								// not automatically retry work or refund its persistent slot.
+								if ( ! empty( $entry['creating'] ) ) {
+									return self::problem( new WP_Error( 'linker_intake_pending' ) );
+								}
+								$receipt = $ledger->lookup( $id, $fingerprint );
+								if ( is_wp_error( $receipt ) || ! in_array( $receipt['status'], array( 'reserved', 'dispatched', 'unresolved' ), true ) || (int) $entry['order'] > 0 ) {
+									return self::problem( new WP_Error( 'linker_intake_pending' ) );
+								}
+								if ( 'reserved' === $receipt['status'] ) {
+									$dispatch = $ledger->dispatch( $id, $fingerprint );
+									if ( is_wp_error( $dispatch ) ) {
+										return self::problem( $dispatch );
+									}
+								}
+								return self::begin( $state, $id, $entry['lane'] );
+							}
+							$old = $ledger->lookup( $id, $fingerprint );
+							if ( ! is_wp_error( $old ) && 'completed' === $old['status'] && 0 === (int) $old['outcome'] ) {
 								return self::grouped( $id );
 							}
+							if ( is_array( $old ) ) {
+								$recovered = BusinessRecord::recover( $id, $fingerprint, $identity->binding(), $old );
+								if ( $recovered instanceof WC_Order ) {
+									return $recovered;
+								}
+							}
+							$used = count( array_filter( $state['entries'], static fn ( array $record ): bool => $record['lane'] === $lane ) );
+							if ( $used >= IntakeStore::CAPACITY[ $lane ] && 'campaign' !== $lane ) {
+								return self::full();
+							}
+							$permit = $ledger->reserve( $id, $fingerprint, $limits, 120, $carry, $action, $identity->binding(), array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ) );
+							if ( is_wp_error( $permit ) ) {
+								return self::problem( $permit );
+							}
+							if ( 'campaign' === $lane ) {
+								$state['campaign_count'] = min( PHP_INT_MAX - 1, (int) $state['campaign_count'] ) + 1;
+								if ( $used >= IntakeStore::CAPACITY[ $lane ] ) {
+									$sent = $ledger->dispatch( $id, $fingerprint );
+									if ( is_wp_error( $sent ) ) {
+										return self::problem( $sent );
+									}
+									IntakeStore::save( $state );
+									$ledger->complete( $id, $fingerprint, 0 );
+									return self::grouped( $id );
+								}
+							}
+							$state['entries'][ $id ] = array(
+								'lane'        => $lane,
+								'action'      => $action,
+								'order'       => 0,
+								'fingerprint' => $fingerprint,
+								'binding'     => $identity->binding(),
+								'at'          => time(),
+								'owners'      => array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ),
+							);
+							IntakeStore::save( $state );
+							$sent = $ledger->dispatch( $id, $fingerprint );
+							if ( is_wp_error( $sent ) ) {
+								return self::problem( $sent );
+							}
+							return self::begin( $state, $id, $lane );
 						}
-						$state['entries'][ $id ] = array(
-							'lane'        => $lane,
-							'action'      => $action,
-							'order'       => 0,
-							'fingerprint' => $fingerprint,
-							'binding'     => $identity->binding(),
-							'at'          => time(),
-							'owners'      => array_values( array_unique( array_merge( $identity->owners(), $owners ) ) ),
-						);
-						IntakeStore::save( $state );
-						$sent = $ledger->dispatch( $id, $fingerprint );
-						if ( is_wp_error( $sent ) ) {
-							return self::problem( $sent );
-						}
-						return self::begin( $state, $id, $lane );
+					);
+					if ( is_array( $result ) && isset( $result['write_lane'] ) ) {
+						$result = self::write( (string) $result['write_lane'], $id, $fingerprint, $identity, $work );
 					}
-				);
-				if ( is_array( $result ) && isset( $result['write_lane'] ) ) {
-					$result = self::write( (string) $result['write_lane'], $id, $fingerprint, $identity, $work );
-				}
-			}
-		);
+				},
+				0,
+				true
+			);
+		} catch ( \Throwable $error ) {
+			return self::problem( new WP_Error( 'linker_intake_pending' ) );
+		}
 		return $result instanceof WC_Order || $result instanceof WP_Error ? $result : self::full();
 	}
 

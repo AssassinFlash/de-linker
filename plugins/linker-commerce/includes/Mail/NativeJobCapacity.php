@@ -101,7 +101,9 @@ final class NativeJobCapacity implements JobCapacity {
 						}
 					}
 				);
-			}
+			},
+			0,
+			true
 		);
 		if ( ! $taken ) {
 			throw new \RuntimeException( 'notification_retry_busy' );
@@ -111,5 +113,13 @@ final class NativeJobCapacity implements JobCapacity {
 	/** Read actual native transaction state without committing the caller. */
 	public function transaction_active(): bool {
 		return Capacity::transaction_active();
+	}
+
+	/** Keep the first native metadata read on its original caller connection.
+	 *
+	 * @param int $id Original native job.
+	 */
+	public function held( int $id ): bool {
+		return ConnectionFence::run( static fn (): bool => NotificationHold::job_held( $id ) );
 	}
 }

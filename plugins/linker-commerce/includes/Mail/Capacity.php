@@ -394,6 +394,16 @@ final class Capacity {
 	 * @throws \mysqli_sql_exception Unexpected native errors propagate without replay.
 	 */
 	public static function transaction_active(): bool {
+		return ConnectionFence::run( self::transaction_active_native( ... ) );
+	}
+
+	/** Inspect only the original connection; 1305 on a live handle means no transaction.
+	 *
+	 * @phpstan-impure
+	 * @throws \RuntimeException The original transaction state cannot be read.
+	 * @throws \mysqli_sql_exception Unexpected native errors must not become a false no-transaction result.
+	 */
+	private static function transaction_active_native(): bool {
 		global $wpdb;
 		// MySQL 8 has no @@in_transaction (the local native DB proves this).
 		// SAVEPOINT is ignored outside a transaction; RELEASE then detects that

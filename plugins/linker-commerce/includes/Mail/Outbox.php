@@ -159,7 +159,7 @@ final class Outbox {
 	 */
 	public function retry( int $job_id ): void {
 		// An outer transaction cannot arm an already held original notification.
-		if ( NotificationHold::job_held( $job_id ) ) {
+		if ( $this->jobs->held( $job_id ) ) {
 			return; }
 		if ( $this->jobs->transaction_active() ) {
 			NativeTransaction::after_commit(
@@ -172,7 +172,7 @@ final class Outbox {
 		}
 		$inquiry = NotificationHold::inquiry( $job_id );
 		$work    = function () use ( $job_id ): void {
-			if ( NotificationHold::job_held( $job_id ) ) {
+			if ( $this->jobs->held( $job_id ) ) {
 				return;
 			}
 			$locked = Lock::run(

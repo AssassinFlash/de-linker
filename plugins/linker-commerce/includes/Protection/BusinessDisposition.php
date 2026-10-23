@@ -161,115 +161,120 @@ final class BusinessDisposition {
 			return new WP_Error( 'disposition_forbidden' );
 		}
 		$result = new WP_Error( 'disposition_busy' );
-		Lock::run(
-			'historical-disposition-' . $id,
-			static function () use ( $id, $body_hash, $operation, $rollback, &$result ): void {
-				$result = IntakeStore::edit(
-					static function ( array &$state ) use ( $id, $body_hash, $operation, $rollback ): array|WP_Error {
-						if ( Capacity::transaction_active() ) {
-							return new WP_Error( 'disposition_outer_transaction' );
-						}
-						$transaction = new NativeTransaction();
-						try {
-							$actor = get_current_user_id();
-							clean_user_cache( $actor );
-							wp_cache_delete( $actor, 'user_meta' );
-							if ( ! user_can( $actor, 'manage_woocommerce' ) ) {
-								throw new \RuntimeException( 'disposition_actor_changed' ); }
-							$order = CurrentSource::order( $id );
-							if ( ! $order instanceof WC_Order ) {
-								throw new \RuntimeException( 'disposition_missing_source' );
+		try {
+			Lock::run(
+				'historical-disposition-' . $id,
+				static function () use ( $id, $body_hash, $operation, $rollback, &$result ): void {
+					$result = IntakeStore::edit(
+						static function ( array &$state ) use ( $id, $body_hash, $operation, $rollback ): array|WP_Error {
+							if ( Capacity::transaction_active() ) {
+								return new WP_Error( 'disposition_outer_transaction' );
 							}
-							$order->read_meta_data( true );
-							$body = self::body( $order );
-							if ( ! hash_equals( $body_hash, hash( 'sha256', $body ) ) || ! Campaign::matches( $body ) || $order->get_meta( Intake::META ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || ! $order->has_status( Statuses::RECEIVED ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'proforma' ), true ) ) {
-								throw new \RuntimeException( 'disposition_source_changed' );
-							}
-							BusinessCapacity::synchronize( $state );
-							$old = $order->get_meta( self::META );
-							if ( ! $rollback && is_array( $old ) && ( $old['operation'] ?? '' ) === $operation && self::processed( $order ) ) {
-								$transaction->rollback();
+							$transaction = new NativeTransaction();
+							try {
+								$actor = get_current_user_id();
+								clean_user_cache( $actor );
+								wp_cache_delete( $actor, 'user_meta' );
+								if ( ! user_can( $actor, 'manage_woocommerce' ) ) {
+									throw new \RuntimeException( 'disposition_actor_changed' ); }
+								$order = CurrentSource::order( $id );
+								if ( ! $order instanceof WC_Order ) {
+									throw new \RuntimeException( 'disposition_missing_source' );
+								}
+								$order->read_meta_data( true );
+								$body = self::body( $order );
+								if ( ! hash_equals( $body_hash, hash( 'sha256', $body ) ) || ! Campaign::matches( $body ) || $order->get_meta( Intake::META ) || $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || ! $order->has_status( Statuses::RECEIVED ) || ! in_array( $order->get_meta( '_linker_inquiry_source' ), array( 'contact', 'proforma' ), true ) ) {
+									throw new \RuntimeException( 'disposition_source_changed' );
+								}
+								BusinessCapacity::synchronize( $state );
+								$old = $order->get_meta( self::META );
+								if ( ! $rollback && is_array( $old ) && ( $old['operation'] ?? '' ) === $operation && self::processed( $order ) ) {
+									$transaction->rollback();
+									return array(
+										'order'     => $id,
+										'status'    => 'already_applied',
+										'operation' => $operation,
+										'note'      => $old['note'],
+									);
+								}
+								if ( $rollback ) {
+									if ( ! is_array( $old ) || ( $old['operation'] ?? '' ) !== $operation || ! self::processed( $order ) ) {
+										throw new \RuntimeException( 'disposition_rollback_changed' );
+									}
+									$order->delete_meta_data( self::META );
+									$order->save_meta_data();
+									if ( ! wp_delete_comment( $old['note'], true ) ) {
+										throw new \RuntimeException( 'disposition_rollback_note_failed' );
+									}
+									unset( $state['business_dispositions'][ $id ] );
+									$state['business'][ 'legacy-' . $id ] = array(
+										'pool'  => 'ordinary',
+										'order' => $id,
+										'bytes' => BusinessCapacity::bytes( $order ),
+									);
+								} else {
+									if ( $old || ( ! isset( $state['business_dispositions'][ $id ] ) && count( $state['business_dispositions'] ) >= self::MAXIMUM ) ) {
+										throw new \RuntimeException( 'disposition_existing_or_full' );
+									}
+									$record = array(
+										'v'         => 1,
+										'reason'    => self::REASON,
+										'by'        => get_current_user_id(),
+										'at'        => time(),
+										'operation' => $operation,
+										'body'      => $body_hash,
+									);
+									$note   = $order->add_order_note( (string) wp_json_encode( $record ), 0, true );
+									if ( $note < 1 || ! wp_update_comment(
+										array(
+											'comment_ID' => $note,
+											'user_id'    => get_current_user_id(),
+										)
+									) ) {
+										throw new \RuntimeException( 'disposition_note_failed' );
+									}
+									$record['note'] = $note;
+									if ( ! add_comment_meta( $note, self::META, $record, true ) ) {
+										throw new \RuntimeException( 'disposition_audit_failed' );
+									}
+									$record['mac'] = self::signature( $id, $record );
+									StructuredMeta::update( $order, self::META, $record );
+									$order->save_meta_data();
+									if ( ! self::processed( $order ) ) {
+										throw new \RuntimeException( 'disposition_readback_failed' );
+									}
+									$state['business_dispositions'][ $id ] = true;
+									self::reconcile( $state );
+								}
+								IntakeStore::save( $state );
+								$order->read_meta_data( true );
+								if ( $rollback && ( $order->get_meta( self::META ) || get_comment( $old['note'] ) ) ) {
+									throw new \RuntimeException( 'disposition_rollback_readback_failed' );
+								}
+								$transaction->commit();
 								return array(
 									'order'     => $id,
-									'status'    => 'already_applied',
+									'status'    => $rollback ? 'rolled_back' : 'applied',
 									'operation' => $operation,
-									'note'      => $old['note'],
+									'note'      => $rollback ? $old['note'] : $note,
 								);
+							} catch ( \Throwable $error ) {
+								try {
+									$transaction->rollback();
+								} catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Unknown original commit is not compensated on a new connection.
+								}
+								return new WP_Error( 'disposition_unconfirmed' );
 							}
-							if ( $rollback ) {
-								if ( ! is_array( $old ) || ( $old['operation'] ?? '' ) !== $operation || ! self::processed( $order ) ) {
-									throw new \RuntimeException( 'disposition_rollback_changed' );
-								}
-								$order->delete_meta_data( self::META );
-								$order->save_meta_data();
-								if ( ! wp_delete_comment( $old['note'], true ) ) {
-									throw new \RuntimeException( 'disposition_rollback_note_failed' );
-								}
-								unset( $state['business_dispositions'][ $id ] );
-								$state['business'][ 'legacy-' . $id ] = array(
-									'pool'  => 'ordinary',
-									'order' => $id,
-									'bytes' => BusinessCapacity::bytes( $order ),
-								);
-							} else {
-								if ( $old || ( ! isset( $state['business_dispositions'][ $id ] ) && count( $state['business_dispositions'] ) >= self::MAXIMUM ) ) {
-									throw new \RuntimeException( 'disposition_existing_or_full' );
-								}
-								$record = array(
-									'v'         => 1,
-									'reason'    => self::REASON,
-									'by'        => get_current_user_id(),
-									'at'        => time(),
-									'operation' => $operation,
-									'body'      => $body_hash,
-								);
-								$note   = $order->add_order_note( (string) wp_json_encode( $record ), 0, true );
-								if ( $note < 1 || ! wp_update_comment(
-									array(
-										'comment_ID' => $note,
-										'user_id'    => get_current_user_id(),
-									)
-								) ) {
-									throw new \RuntimeException( 'disposition_note_failed' );
-								}
-								$record['note'] = $note;
-								if ( ! add_comment_meta( $note, self::META, $record, true ) ) {
-									throw new \RuntimeException( 'disposition_audit_failed' );
-								}
-								$record['mac'] = self::signature( $id, $record );
-								StructuredMeta::update( $order, self::META, $record );
-								$order->save_meta_data();
-								if ( ! self::processed( $order ) ) {
-									throw new \RuntimeException( 'disposition_readback_failed' );
-								}
-								$state['business_dispositions'][ $id ] = true;
-								self::reconcile( $state );
-							}
-							IntakeStore::save( $state );
-							$order->read_meta_data( true );
-							if ( $rollback && ( $order->get_meta( self::META ) || get_comment( $old['note'] ) ) ) {
-								throw new \RuntimeException( 'disposition_rollback_readback_failed' );
-							}
-							$transaction->commit();
-							return array(
-								'order'     => $id,
-								'status'    => $rollback ? 'rolled_back' : 'applied',
-								'operation' => $operation,
-								'note'      => $rollback ? $old['note'] : $note,
-							);
-						} catch ( \Throwable $error ) {
-							try {
-								$transaction->rollback();
-							} catch ( \Throwable $rollback_error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- Unknown original commit is not compensated on a new connection.
-							}
-							return new WP_Error( 'disposition_unconfirmed' );
-						}
-					},
-					1
-				);
-			},
-			1
-		);
+						},
+						1
+					);
+				},
+				1,
+				true
+			);
+		} catch ( \Throwable $error ) {
+			return new WP_Error( 'disposition_unconfirmed' );
+		}
 		return is_array( $result ) || $result instanceof WP_Error ? $result : new WP_Error( 'disposition_unconfirmed' );
 	}
 

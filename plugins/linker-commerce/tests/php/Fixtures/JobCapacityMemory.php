@@ -56,4 +56,12 @@ final class JobCapacityMemory implements JobCapacity {
 	public function transaction_active(): bool {
 		return false;
 	}
+
+	/** Unit post metadata retains its existing in-memory hold behavior.
+	 *
+	 * @param int $id In-memory job.
+	 */
+	public function held( int $id ): bool {
+		return \Linker\Commerce\Mail\NotificationHold::job_held( $id );
+	}
 }
