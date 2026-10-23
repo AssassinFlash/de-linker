@@ -46,6 +46,17 @@ final class EngineeringReferenceTest extends IntegrationTestCase {
 		$this->assertSame( '', $product->get_price( 'edit' ) );
 		$this->assertSame( '', $product->get_sku() );
 		$this->assertSame( array(), wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'ids' ) ) );
+		$default_category = (int) get_option( 'default_product_cat' );
+		$product->set_category_ids( array( $default_category ) );
+		$product->save();
+		$this->assertSame( array(), wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'ids' ) ), 'A subsequent native Woo save cannot restore a reference category.' );
+		wp_set_object_terms( $id, array( $default_category ), 'product_cat' );
+		$this->assertSame( array(), wp_get_object_terms( $id, 'product_cat', array( 'fields' => 'ids' ) ), 'Direct native term assignment also excludes engineering references.' );
+		$ordinary = $this->product( '1' );
+		wp_set_object_terms( $ordinary->get_id(), array(), 'product_cat' );
+		$ordinary_categories = wp_get_object_terms( $ordinary->get_id(), 'product_cat', array( 'fields' => 'ids' ) );
+		$this->assertIsArray( $ordinary_categories );
+		$this->assertContains( $default_category, $ordinary_categories, 'Woo still restores the default category for an ordinary product.' );
 		$this->assertFalse( $product->is_purchasable(), 'The real priority chain must refuse even unpriced-inquiry permission.' );
 		$this->assertFalse( $product->is_visible() );
 		$this->assertCount( 30, get_post_meta( $id, SelectionFacts::FIGURES_META_KEY, true ) );

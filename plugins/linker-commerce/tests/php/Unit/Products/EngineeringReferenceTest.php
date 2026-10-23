@@ -183,6 +183,57 @@ final class EngineeringReferenceTest extends TestCase {
 		$this->assertSame( array(), EngineeringFeed::feed()['overlay'] );
 	}
 
+	/** Empty assignments trigger Woo's default callback; native unlink does not. */
+	public function test_category_unlink_does_not_trigger_woo_force_default_term(): void {
+		$assigned = array( 28 );
+		// WC_Post_Data::force_default_term immediately re-adds the default after
+		// wp_set_object_terms([], product_cat); a native unlink emits no set event.
+		WP_Mock::userFunction( 'wp_set_object_terms' )->andReturnUsing(
+			static function () use ( &$assigned ): array {
+				$assigned = array( 28 );
+				return $assigned;
+			}
+		);
+		WP_Mock::userFunction( 'wp_delete_object_term_relationships' )->andReturnUsing(
+			static function () use ( &$assigned ): void {
+				$assigned = array();
+			}
+		);
+		$product = Mockery::mock( \WC_Product::class );
+		$product->shouldReceive( 'get_id' )->andReturn( self::ID );
+		( new EngineeringReference() )->remove_category( $product );
+		$this->assertSame( array(), $assigned );
+		$assigned = array( 28 );
+		$this->current_faq_meta[ EngineeringReference::ROLE_META_KEY ] = '';
+		( new EngineeringReference() )->remove_category( $product );
+		$this->assertSame( array( 28 ), $assigned, 'Ordinary product category relationships are untouched.' );
+	}
+
+	/** Native taxonomy writes and scheduled defaults preserve ordinary categories. */
+	public function test_native_category_events_unlink_only_engineering_references(): void {
+		$removed = array();
+		WP_Mock::userFunction( 'wp_delete_object_term_relationships' )->andReturnUsing(
+			static function ( int $id, string $taxonomy ) use ( &$removed ): void {
+				$removed[] = array( $id, $taxonomy );
+			}
+		);
+		$reference = new EngineeringReference();
+		$reference->assigned_categories( self::ID, array( 28 ), array( 28 ), 'product_cat' );
+		$reference->assigned_categories( self::ID, array( 28 ), array( 28 ), 'product_tag' );
+		$reference->assigned_categories( 9999, array( 28 ), array( 28 ), 'product_cat' );
+		$this->assertSame( array( array( self::ID, 'product_cat' ) ), $removed );
+		WP_Mock::userFunction( 'get_posts' )->andReturnUsing(
+			function ( array $query ): array {
+				$this->assertSame( EngineeringReference::ROLE_META_KEY, $query['meta_key'] );
+				$this->assertSame( EngineeringReference::PV_MODULE, $query['meta_value'] );
+				$this->assertTrue( $query['linker_publication_internal'] );
+				return array( self::ID, 9999 );
+			}
+		);
+		$reference->remove_default_categories();
+		$this->assertSame( array( array( self::ID, 'product_cat' ), array( self::ID, 'product_cat' ) ), $removed );
+	}
+
 	/** Native price/visibility cannot turn an engineering input into an order line. */
 	public function test_native_purchase_and_visibility_refuse_reference_role(): void {
 		$product = Mockery::mock( \WC_Product::class );
