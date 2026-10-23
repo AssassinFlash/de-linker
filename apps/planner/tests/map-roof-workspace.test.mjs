@@ -159,12 +159,14 @@ async function rig(t, options = {}) {
 			document.querySelector('[data-map-status="ready"]') &&
 			!document.body.textContent.includes("Checking saved drawings"),
 	);
-	if (options.pixelScale) {
-		const map = maps.findLast((value) => !value.removed),
+	function configureProjection() {
+		if (!options.pixelScale) return;
+		const value = map(),
 			scale = options.pixelScale;
-		map.project = ({ lng, lat }) => ({ x: lng * scale, y: -lat * scale });
-		map.unproject = ({ x, y }) => ({ lng: x / scale, lat: -y / scale });
+		value.project = ({ lng, lat }) => ({ x: lng * scale, y: -lat * scale });
+		value.unproject = ({ x, y }) => ({ lng: x / scale, lat: -y / scale });
 	}
+	configureProjection();
 	t.after(async () => {
 		await dom.dispose(root);
 		for (const [name, descriptor] of previous) {
@@ -213,6 +215,7 @@ async function rig(t, options = {}) {
 		return records;
 	}
 	async function drag(from, to) {
+		configureProjection();
 		// The real pinned adapter consumes these DOM pointer events. The map's
 		// linear projection remains a fixture, not native/GPU or touch evidence.
 		const canvas = map().getCanvas(),
@@ -275,6 +278,173 @@ async function rig(t, options = {}) {
 		},
 	};
 }
+
+async function selectNative(node, value) {
+	await act(async () => {
+		node.value = value;
+		node.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+}
+const submitFeature = async () =>
+	act(async () =>
+		document
+			.querySelector("#lp-map-feature-properties")
+			.dispatchEvent(
+				new window.Event("submit", { bubbles: true, cancelable: true }),
+			),
+	);
+for (const kind of ["hole", "obstacle", "keepout"])
+	test(`new ${kind} UI recovers an unfinished arbitrary outline, reviews its fields and source, edits through Terra and applies one grouped command`, async (t) => {
+		const r = await rig(t, {
+			geometry: ringGeometry,
+			selected: geometry.roofs[0].id,
+			pixelScale: 1e7,
+		});
+		// Each label contains one select; query all to select the feature control.
+		await selectNative(
+			document.querySelectorAll(
+				'section[aria-label="Add a roof feature"] select',
+			)[1],
+			kind,
+		);
+		await r.click("Draw a roof feature");
+		await until(() => r.active);
+		const corners = bindMapRing(ringGeometry, {
+			kind: "obstacle",
+			id: "synthetic_obstacle",
+		}).ring.geographic;
+		const points = [
+			corners[0],
+			corners[1],
+			corners[2],
+			[
+				(corners[0][0] + corners[2][0]) / 2,
+				(corners[0][1] + corners[2][1]) / 2,
+			],
+			corners[3],
+		];
+		await r.point(...points[0]);
+		const id = (await r.records())[0].drawing.object_id;
+		await r.click("Pause drawing");
+		await until(() => !r.active);
+		await act(async () => r.root.render(null));
+		await r.render();
+		await until(() => button("Open saved drawing"));
+		await r.click("Open saved drawing");
+		await until(
+			() => r.active && document.querySelector('[data-map-status="ready"]'),
+		);
+		for (const point of points.slice(1)) await r.point(...point);
+		assert.equal((await r.records())[0].drawing.vertices.length, 5);
+		assert.equal(r.commits.length, 0);
+		await r.click("Close outline and review");
+		await until(() => document.querySelector("#lp-map-feature-properties"));
+		await submitFeature();
+		await until(() =>
+			document.querySelector('[name="source_confirmed"][aria-invalid="true"]'),
+		);
+		assert.equal(r.queries.length, 0);
+		assert.equal(document.activeElement.name, "source_confirmed");
+		if (kind !== "hole")
+			await enter(
+				document.querySelector('[name="name"]'),
+				"Synthetic new " + kind,
+			);
+		if (kind === "keepout")
+			await enter(
+				document.querySelector('[name="reason"]'),
+				"Synthetic local check, not a regulatory exclusion",
+			);
+		if (kind === "obstacle") {
+			await enter(document.querySelector('[name="height"]'), "0");
+			await confirmSource();
+			await submitFeature();
+			await until(() => document.activeElement.name === "height");
+			assert.equal(r.queries.length, 0);
+			await enter(document.querySelector('[name="height"]'), "1.25");
+			await selectNative(document.querySelector('[name="axis"]'), "vertical");
+		}
+		if (!document.querySelector('[name="source_confirmed"]').checked)
+			await confirmSource();
+		const before = (await r.records())[0].drawing;
+		await r.drag(before.vertices[1], [
+			before.vertices[1][0] + 0.000001,
+			before.vertices[1][1],
+		]);
+		const edited = (await r.records())[0].drawing;
+		assert.notDeepEqual(edited.vertices, before.vertices);
+		assert.equal(edited.fields.source_confirmed, false);
+		assert.equal(edited.object_id, id);
+		await confirmSource();
+		r.invalidReview = {
+			kind: "invalid_roof_polygon",
+			category: "layout_conflict",
+			object_id: geometry.roofs[0].id,
+			roof_id: geometry.roofs[0].id,
+			related_id: null,
+			required_m: null,
+			actual_m: null,
+		};
+		await submitFeature();
+		await until(() =>
+			document.body.textContent.includes("could not validate this boundary"),
+		);
+		assert.equal(r.commits.length, 0);
+		assert.equal((await r.records())[0].drawing.prepared_geometry, null);
+		assert.match(document.activeElement.textContent, /geometry check/);
+		if (kind !== "hole") {
+			r.invalidReview = {
+				...r.invalidReview,
+				kind:
+					kind === "obstacle"
+						? "invalid_obstacle_polygon"
+						: "invalid_keepout_polygon",
+				object_id: id,
+			};
+			await submitFeature();
+			await until(
+				() =>
+					r.queries.length === 2 &&
+					!document.body.textContent.includes("Checking boundary geometry"),
+			);
+			assert.equal(r.commits.length, 0);
+		}
+		r.invalidReview = false;
+		await submitFeature();
+		await until(() => !r.active && r.commits.length === 1);
+		assert.deepEqual(r.commits[0].before, ringGeometry);
+		assert.deepEqual(r.geometry.sources, ringGeometry.sources);
+		assert.deepEqual(
+			r.geometry.roofs[0].boundary_uv,
+			ringGeometry.roofs[0].boundary_uv,
+		);
+		assert.deepEqual(
+			r.geometry.roofs[0].origin_enu,
+			ringGeometry.roofs[0].origin_enu,
+		);
+		assert.equal(r.geometry.sources[0].permissions.export, "prohibited");
+		if (kind === "hole")
+			assert.equal(r.geometry.roofs[0].holes_uv.at(-1).length, 5);
+		else {
+			const feature = (
+				kind === "obstacle" ? r.geometry.obstacles : r.geometry.keepouts
+			).at(-1);
+			assert.equal(feature.id, id);
+			assert.equal(feature.footprint_uv.length, 5);
+			if (kind === "obstacle") {
+				assert.equal(feature.height_m, 1.25);
+				assert.deepEqual(feature.extrusion_axis_enu, [0, 0, 1]);
+			} else assert.match(feature.reason, /Synthetic local check/);
+		}
+		assert.match(
+			document.querySelector(".lp-drawing-status").textContent,
+			/Feature added/,
+		);
+		assert.equal((await r.records()).length, 1);
+		await r.confirm(r.geometry);
+		await until(() => button("Draw a roof feature"));
+		assert.equal((await r.records()).length, 0);
+	});
 test("real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command", async (t) => {
 	const r = await rig(t);
 	await r.click("Start roof drawing");

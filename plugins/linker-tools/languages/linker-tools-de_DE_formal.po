@@ -5159,3 +5159,73 @@ msgstr "Grundriss des Hindernisses"
 #: build/planner/assets/planner.js ../../apps/planner/src/components/design/mapDrawingLabels.ts:15
 msgid "Keep-out boundary"
 msgstr "Umriss der Sperrfläche"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Add a roof feature"
+msgstr "Objekt auf der Dachfläche hinzufügen"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Check and add feature"
+msgstr "Prüfen und Objekt hinzufügen"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Draw a roof feature"
+msgstr "Objekt auf der Dachfläche zeichnen"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Feature added to the project draft. Choose Save project to save it."
+msgstr "Das Objekt wurde dem Projektentwurf hinzugefügt. Mit „Projekt speichern“ wird es im Projekt gespeichert."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Feature properties"
+msgstr "Objekteigenschaften"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Feature type"
+msgstr "Objekttyp"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "I have checked that the recorded source and permissions cover this new roof feature."
+msgstr "Ich habe geprüft, dass die erfasste Quelle und die Nutzungsberechtigungen dieses neue Objekt abdecken."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Keep-out area"
+msgstr "Sperrfläche"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Obstacle"
+msgstr "Hindernis"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Roof face"
+msgstr "Dachfläche"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Roof opening"
+msgstr "Dachöffnung"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Select a feature type"
+msgstr "Objekttyp auswählen"
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "Some feature or source details are missing or invalid. Your entries have been kept."
+msgstr "Einige Objekt- oder Quellenangaben fehlen oder sind ungültig. Ihre Eingaben bleiben erhalten."
+
+#. Reviewed: docs/acceptance/2026-10-24/548/map-feature-creation/COPY-REVIEW.md
+#: build/planner/assets/planner.js
+msgid "The outline lies in the selected roof plane. Check the source details and feature properties before adding it to the project draft."
+msgstr "Der Umriss liegt in der gewählten Dachebene. Prüfen Sie die Quellenangaben und Objekteigenschaften, bevor Sie das Objekt zum Projektentwurf hinzufügen."

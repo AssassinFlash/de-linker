@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState } from "react";
 import type { ComponentProps } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
-import { appendMapRoofVertex } from "../../domain/mapRoofDraft.ts";
 import type { MapRoofFields } from "../../domain/mapRoofDraft.ts";
+import type { MapFeatureFields } from "../../domain/mapFeatureDraft.ts";
 import type { MapDrawingDraft } from "../../domain/mapDrawingDraft.ts";
 import {
 	editMapDrawingVertex,
 	mapDrawingDraftCommand,
+	appendMapDrawingVertex,
+	mapDrawingVertices,
+	mapDrawingReviewTarget,
 } from "../../domain/mapDrawingDraft.ts";
 import {
 	drawingBridge,
 	mapPolygon,
 	readMapPolygon,
-	mapRingMetadata,
 } from "../../domain/mapDrawingGeometry.ts";
 import { applyGeometryCommand } from "../../domain/geometryCommands.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
@@ -31,6 +33,8 @@ import { LazyMapViewport } from "./LazyMapViewport.tsx";
 import { MapRoofProperties } from "./MapRoofProperties.tsx";
 import { MapRingProperties } from "./MapRingProperties.tsx";
 import { MapRingSelector } from "./MapRingSelector.tsx";
+import { MapFeatureSelector } from "./MapFeatureSelector.tsx";
+import { MapFeatureProperties } from "./MapFeatureProperties.tsx";
 import { mapDrawingName } from "./mapDrawingLabels.ts";
 
 export function MapDrawingWorkspace({
@@ -148,6 +152,21 @@ export function MapDrawingWorkspace({
 			),
 		);
 	}
+	function featureField<K extends keyof MapFeatureFields>(
+		name: K,
+		value: MapFeatureFields[K],
+	) {
+		if (drawing?.schema_version === 3)
+			change({
+				...drawing,
+				prepared_geometry: null,
+				fields: {
+					...drawing.fields,
+					[name]: value,
+					source_confirmed: name === "source_confirmed" && value === true,
+				},
+			});
+	}
 	const interaction: MapInteraction | null =
 		active && drawing && !stale && !busy
 			? {
@@ -161,9 +180,8 @@ export function MapDrawingWorkspace({
 					append(point) {
 						try {
 							const value = journal.latest.current;
-							if (value?.schema_version !== 1)
-								throw new Error("unexpected_append");
-							change(appendMapRoofVertex(value, point));
+							if (!value) throw new Error("unexpected_append");
+							change(appendMapDrawingVertex(value, point));
 						} catch {
 							inputFailure();
 						}
@@ -218,15 +236,20 @@ export function MapDrawingWorkspace({
 			const field = (cause as { field?: unknown } | null)?.field;
 			setInvalidField(typeof field === "string" ? field : null);
 			setError(
-				value.schema_version === 2
+				value.schema_version === 3
 					? __(
-							"Review the boundary and its recorded source details. Your edits have been kept.",
+							"Some feature or source details are missing or invalid. Your entries have been kept.",
 							"linker-tools",
 						)
-					: __(
-							"Some roof or source details are missing or invalid. Review the roof properties and source permissions. Your entries have been kept.",
-							"linker-tools",
-						),
+					: value.schema_version === 2
+						? __(
+								"Review the boundary and its recorded source details. Your edits have been kept.",
+								"linker-tools",
+							)
+						: __(
+								"Some roof or source details are missing or invalid. Review the roof properties and source permissions. Your entries have been kept.",
+								"linker-tools",
+							),
 			);
 			flight.current = null;
 			setBusy(false);
@@ -258,26 +281,7 @@ export function MapDrawingWorkspace({
 					),
 				);
 				if (!admitted()) return;
-				const target =
-					value.schema_version === 1
-						? {
-								id: "roof_" + value.key.replaceAll("-", ""),
-								roof: "roof_" + value.key.replaceAll("-", ""),
-								invalid: "invalid_roof_polygon",
-							}
-						: {
-								id:
-									"roof_id" in value.target
-										? value.target.roof_id
-										: value.target.id,
-								roof: mapRingMetadata(value.before, value.target).roof_id,
-								invalid:
-									value.target.kind === "obstacle"
-										? "invalid_obstacle_polygon"
-										: value.target.kind === "keepout"
-											? "invalid_keepout_polygon"
-											: "invalid_roof_polygon",
-							};
+				const target = mapDrawingReviewTarget(value);
 				if (
 					!report.review_complete ||
 					report.diagnostics_truncated ||
@@ -295,7 +299,7 @@ export function MapDrawingWorkspace({
 					)
 				) {
 					setError(
-						value.schema_version === 2
+						value.schema_version !== 1
 							? __(
 									"The geometry check could not validate this boundary. Your edits remain available for correction.",
 									"linker-tools",
@@ -315,7 +319,7 @@ export function MapDrawingWorkspace({
 			if (!admitted(prepared)) return;
 			if (changed && !commit(command)) {
 				setError(
-					value.schema_version === 2
+					value.schema_version !== 1
 						? __(
 								"The project changed before this boundary edit could be applied. Your edit has been kept.",
 								"linker-tools",
@@ -333,7 +337,7 @@ export function MapDrawingWorkspace({
 		} catch (cause) {
 			if (!mounted.current || controller.signal.aborted) return;
 			setError(
-				value.schema_version === 2
+				value.schema_version !== 1
 					? __(
 							"The boundary check or browser save could not be completed. Your edits remain available.",
 							"linker-tools",
@@ -375,6 +379,11 @@ export function MapDrawingWorkspace({
 				"Roof added to the project draft. Save project stores it with the project.",
 				"linker-tools",
 			);
+		if (drawing.schema_version === 3)
+			return __(
+				"Feature added to the project draft. Choose Save project to save it.",
+				"linker-tools",
+			);
 		return sameJson(drawing.prepared_geometry, drawing.before)
 			? __(
 					"The boundary is unchanged. No project change was made.",
@@ -397,9 +406,11 @@ export function MapDrawingWorkspace({
 					<h3>
 						{drawing?.schema_version === 2
 							? __("Edit an existing boundary", "linker-tools")
-							: drawing
-								? __("Draw a roof face", "linker-tools")
-								: __("Map drawing", "linker-tools")}
+							: drawing?.schema_version === 3
+								? __("Draw a roof feature", "linker-tools")
+								: drawing
+									? __("Draw a roof face", "linker-tools")
+									: __("Map drawing", "linker-tools")}
 					</h3>
 					{!active && !drawing && (
 						<button
@@ -418,28 +429,46 @@ export function MapDrawingWorkspace({
 					)}
 				</div>
 				<p className="lp-profile-help">
-					{drawing?.schema_version === 2
+					{drawing?.schema_version === 3
 						? __(
-								"The roof plane stays fixed while you edit this boundary. Applied changes appear in this project's map, plan and 3D views.",
+								"The outline lies in the selected roof plane. Check the source details and feature properties before adding it to the project draft.",
 								"linker-tools",
 							)
-						: __(
-								"The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views.",
-								"linker-tools",
-							)}
+						: drawing?.schema_version === 2
+							? __(
+									"The roof plane stays fixed while you edit this boundary. Applied changes appear in this project's map, plan and 3D views.",
+									"linker-tools",
+								)
+							: __(
+									"The outline and roof properties form an editable roof face. The source and permissions stay with it in the project, alongside the plan and 3D views.",
+									"linker-tools",
+								)}
 				</p>
 				{!drawing && (
-					<MapRingSelector
-						geometry={geometry}
-						selected={mapProps.selected}
-						disabled={
-							mapProps.disabled ||
-							journal.checking ||
-							journal.storageFailed ||
-							!geographicReady
-						}
-						begin={(target) => begin({ kind: "edit_ring", target })}
-					/>
+					<>
+						<MapRingSelector
+							geometry={geometry}
+							selected={mapProps.selected}
+							disabled={
+								mapProps.disabled ||
+								journal.checking ||
+								journal.storageFailed ||
+								!geographicReady
+							}
+							begin={(target) => begin({ kind: "edit_ring", target })}
+						/>
+						<MapFeatureSelector
+							geometry={geometry}
+							selected={mapProps.selected}
+							disabled={
+								mapProps.disabled ||
+								journal.checking ||
+								journal.storageFailed ||
+								!geographicReady
+							}
+							begin={(target) => begin({ kind: "new_feature", target })}
+						/>
+					</>
 				)}
 				{!drawing && unchanged && (
 					<p className="lp-drawing-status" role="status">
@@ -564,10 +593,12 @@ export function MapDrawingWorkspace({
 										className="lp-button lp-button-secondary"
 										disabled={!drawing.vertices.length || busy}
 										onClick={() =>
-											change({
-												...drawing,
-												vertices: drawing.vertices.slice(0, -1),
-											})
+											change(
+												mapDrawingVertices(
+													drawing,
+													drawing.vertices.slice(0, -1),
+												),
+											)
 										}
 									>
 										{__("Remove last corner", "linker-tools")}
@@ -583,12 +614,16 @@ export function MapDrawingWorkspace({
 									href={
 										drawing.schema_version === 1
 											? "#lp-map-roof-properties"
-											: "#lp-map-ring-properties"
+											: drawing.schema_version === 3
+												? "#lp-map-feature-properties"
+												: "#lp-map-ring-properties"
 									}
 								>
 									{drawing.schema_version === 1
 										? __("Roof properties", "linker-tools")
-										: __("Boundary properties", "linker-tools")}
+										: drawing.schema_version === 3
+											? __("Feature properties", "linker-tools")
+											: __("Boundary properties", "linker-tools")}
 								</a>
 							)}
 							{active ? (
@@ -654,6 +689,24 @@ export function MapDrawingWorkspace({
 							change({
 								...drawing,
 								phase: "collecting",
+								prepared_geometry: null,
+							})
+						}
+					/>
+				) : drawing.schema_version === 3 ? (
+					<MapFeatureProperties
+						drawing={drawing}
+						locale={locale}
+						busy={busy}
+						invalidField={invalidField}
+						error={error}
+						field={featureField}
+						submit={() => void apply()}
+						continueDrawing={() =>
+							change({
+								...drawing,
+								phase: "collecting",
+								fields: { ...drawing.fields, source_confirmed: false },
 								prepared_geometry: null,
 							})
 						}

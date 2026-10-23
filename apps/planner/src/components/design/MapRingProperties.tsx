@@ -1,7 +1,7 @@
 import { useId } from "react";
 import type { MapRingDraft } from "../../domain/mapRingDraft.ts";
 import { mapRingMetadata } from "../../domain/mapDrawingGeometry.ts";
-import { formatDecimal } from "../../domain/decimal.ts";
+import { MapSourceDetails } from "./MapSourceDetails.tsx";
 import { mapRingLabel } from "./mapDrawingLabels.ts";
 import { useMapPropertyFeedback } from "./useMapPropertyFeedback.ts";
 import { Notice } from "../Notice.tsx";
@@ -47,28 +47,7 @@ export function MapRingProperties({
 					"linker-tools",
 				)}
 			</p>
-			<dl className="lp-drawing-source">
-				<dt>{__("Measurement or drawing reference", "linker-tools")}</dt>
-				<dd>{source.note}</dd>
-				<dt>{__("Declared spatial precision (m)", "linker-tools")}</dt>
-				<dd>
-					{source.spatial_precision_m === null
-						? __("Unknown", "linker-tools")
-						: formatDecimal(source.spatial_precision_m, locale)}
-				</dd>
-				<dt>{__("Calibration and measurement conditions", "linker-tools")}</dt>
-				<dd>{source.calibration_note}</dd>
-				<dt>{__("Basis for using these measurements", "linker-tools")}</dt>
-				<dd>{source.rights_note}</dd>
-				<dt>{__("Permission to export geometry", "linker-tools")}</dt>
-				<dd>
-					{source.permissions.export === "permitted"
-						? __("Permitted", "linker-tools")
-						: source.permissions.export === "prohibited"
-							? __("Prohibited", "linker-tools")
-							: __("Unknown", "linker-tools")}
-				</dd>
-			</dl>
+			<MapSourceDetails source={source} locale={locale} />
 			<fieldset disabled={busy}>
 				<label className="lp-geometry-check">
 					<input

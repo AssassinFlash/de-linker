@@ -14,7 +14,7 @@ import { readGeometry } from "./validateGeometry.ts";
 import { readObject } from "../data/readProtocol.ts";
 import { parseDecimal } from "./decimal.ts";
 import { sameJson } from "./draft.ts";
-import { readMapDrawingBase } from "./mapDrawingBase.ts";
+import { appendMapPrefix, readMapDrawingBase } from "./mapDrawingBase.ts";
 import type { MapDrawingBase } from "./mapDrawingBase.ts";
 import policy from "../contracts/geometry-policy.json" with { type: "json" };
 
@@ -145,22 +145,12 @@ export function appendMapRoofVertex(
 	draft: MapRoofDraft,
 	value: unknown,
 ): MapRoofDraft {
-	if (
-		draft.phase !== "collecting" ||
-		draft.vertices.length >= policy.max_vertices
-	)
-		throw new Error("map_drawing_vertex_limit");
-	const point = quantizeMapPosition(value);
-	if (
-		draft.vertices.some(
-			(existing) => existing[0] === point[0] && existing[1] === point[1],
-		)
-	)
-		throw new Error("map_drawing_duplicate_vertex");
+	const vertices = appendMapPrefix(draft, value);
 	return {
 		...draft,
-		vertices: [...draft.vertices, point],
-		height_reference_position: draft.height_reference_position ?? point,
+		vertices,
+		height_reference_position:
+			draft.height_reference_position ?? vertices.at(-1)!,
 		prepared_geometry: null,
 	};
 }

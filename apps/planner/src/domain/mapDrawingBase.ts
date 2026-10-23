@@ -21,6 +21,22 @@ export interface MapDrawingBase {
 const uuid =
 	/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 
+/** Collection is application-owned; hover and library helpers are not vertices. */
+export function appendMapPrefix(
+	draft: MapDrawingBase,
+	value: unknown,
+): readonly Vec2[] {
+	if (
+		draft.phase !== "collecting" ||
+		draft.vertices.length >= policy.max_vertices
+	)
+		throw new Error("map_drawing_vertex_limit");
+	const point = quantizeMapPosition(value);
+	if (draft.vertices.some((old) => old[0] === point[0] && old[1] === point[1]))
+		throw new Error("map_drawing_duplicate_vertex");
+	return [...draft.vertices, point];
+}
+
 /** Each operation separately checks its exact keys and prepared-result proof. */
 export function readMapDrawingBase(
 	row: Record<string, unknown>,

@@ -53,6 +53,7 @@ const workspaceTarget = { ...workspaceHash, site: "lp-brief-use" } as const;
 const mapPropertyHashes: readonly string[] = [
 	"#lp-map-roof-properties",
 	"#lp-map-ring-properties",
+	"#lp-map-feature-properties",
 ];
 function workspaceFromHash(): ProjectWorkspace {
 	if (["#lp-site", "#lp-brief-use", "#lp-notes"].includes(window.location.hash))

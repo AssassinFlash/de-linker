@@ -225,7 +225,11 @@ test("same identity rechecks retain delayed edits and invalid raw numeric text",
 	);
 });
 
-for (const hash of ["#lp-map-roof-properties", "#lp-map-ring-properties"])
+for (const hash of [
+	"#lp-map-roof-properties",
+	"#lp-map-ring-properties",
+	"#lp-map-feature-properties",
+])
 	test(`reopening the ${hash} property link preserves the roof workspace and map recovery entry`, async (t) => {
 		await workspaceFixture(t, "available", () => {
 			window.history.replaceState(

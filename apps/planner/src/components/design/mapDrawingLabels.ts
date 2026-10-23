@@ -1,7 +1,17 @@
 import type { MapDrawingDraft } from "../../domain/mapDrawingDraft.ts";
 import type { MapRingTarget } from "../../domain/mapDrawingGeometry.ts";
+import type { MapFeatureTarget } from "../../domain/mapFeatureDraft.ts";
+import { mapFeatureRoof } from "../../domain/mapFeatureDraft.ts";
 import { mapRingMetadata } from "../../domain/mapDrawingGeometry.ts";
 import { __, sprintf } from "../../i18n.ts";
+
+export function mapFeatureLabel(kind: MapFeatureTarget["kind"]): string {
+	return kind === "hole"
+		? __("Roof opening", "linker-tools")
+		: kind === "obstacle"
+			? __("Obstacle", "linker-tools")
+			: __("Keep-out area", "linker-tools");
+}
 
 export function mapRingLabel(target: MapRingTarget): string {
 	switch (target.kind) {
@@ -18,6 +28,12 @@ export function mapRingLabel(target: MapRingTarget): string {
 export function mapDrawingName(drawing: MapDrawingDraft): string {
 	if (drawing.schema_version === 1)
 		return drawing.fields.name || __("Unfinished roof drawing", "linker-tools");
+	if (drawing.schema_version === 3)
+		return (
+			(drawing.fields.name || mapFeatureLabel(drawing.target.kind)) +
+			" · " +
+			mapFeatureRoof(drawing).name
+		);
 	return (
 		mapRingMetadata(drawing.before, drawing.target).name +
 		" · " +

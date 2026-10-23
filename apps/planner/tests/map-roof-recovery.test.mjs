@@ -16,6 +16,7 @@ import { startMapRingDraft } from "../src/domain/mapRingDraft.ts";
 import {
 	editMapDrawingVertex,
 	mapDrawingDraftCommand,
+	appendMapDrawingVertex,
 } from "../src/domain/mapDrawingDraft.ts";
 import {
 	mapPolygon,
@@ -43,6 +44,74 @@ const moveRing = (draft, delta = 0.000001) => {
 	vertices[1] = quantizeMapPosition([vertices[1][0] + delta, vertices[1][1]]);
 	return editMapDrawingVertex(draft, mapPolygon(vertices), "dragCoordinate");
 };
+
+for (const kind of ["hole", "obstacle", "keepout"])
+	test(`v3 ${kind} recovery separates journal and domain identity and retires only exact confirmed output`, async (t) => {
+		const r = await rig(t);
+		await act(async () =>
+			r.flow.begin({
+				kind: "new_feature",
+				target: { kind, roof_id: geometry.roofs[0].id },
+			}),
+		);
+		await until(() => !r.flow.writing);
+		await act(async () =>
+			r.flow.update(appendMapDrawingVertex(r.flow.drawing, [6.96, 50.94])),
+		);
+		const original = r.flow.drawing;
+		await act(async () => r.flow.fork());
+		await until(() => !r.flow.writing);
+		const fork = r.flow.drawing;
+		assert.notEqual(fork.key, original.key);
+		assert.equal(fork.object_id, original.object_id);
+		assert.deepEqual(fork.target, original.target);
+		assert.equal((await r.records()).length, 2);
+		await act(async () => r.flow.pause());
+		await act(async () => r.root.render(null));
+		await r.render({ locale: "en-GB" });
+		await until(() => !r.flow.checking);
+		const record = r.flow.records.find(
+			(value) => value.drawing.key === fork.key,
+		);
+		assert.ok(record);
+		await act(async () => r.flow.begin({ kind: "restore", record }));
+		assert.equal(r.flow.drawing.locale, "de-DE");
+		let draft = r.flow.drawing;
+		for (const point of [
+			[6.9601, 50.94],
+			[6.9601, 50.9401],
+		])
+			draft = appendMapDrawingVertex(draft, point);
+		draft = {
+			...draft,
+			phase: "staged",
+			fields: {
+				...draft.fields,
+				name: kind === "hole" ? "" : "Synthetic feature",
+				height: kind === "obstacle" ? "1,25" : "",
+				axis: kind === "obstacle" ? "normal" : "",
+				reason: kind === "keepout" ? "Synthetic zone" : "",
+				source_confirmed: true,
+			},
+		};
+		const result = applyGeometryCommand(
+			geometry,
+			mapDrawingDraftCommand(draft),
+		);
+		await act(async () =>
+			r.flow.update({ ...draft, prepared_geometry: result }),
+		);
+		await act(async () => r.flow.deactivate());
+		await r.render({ geometry: result, confirmedGeometry: geometry });
+		await until(() => !r.flow.checking);
+		assert.equal((await r.records()).length, 2);
+		await r.render({ confirmedGeometry: result });
+		await until(() => r.flow.drawing === null && !r.flow.checking);
+		const remaining = await r.records();
+		assert.equal(remaining.length, 1);
+		assert.equal(remaining[0].drawing.key, original.key);
+		assert.equal(remaining[0].drawing.vertices.length, 1);
+	});
 async function rig(t, custom = null) {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
