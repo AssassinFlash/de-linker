@@ -116,7 +116,39 @@ final class Outbox {
 		if ( null !== $pre || $this->delivering ) {
 			return $pre;
 		}
-		$this->attempt( Message::from_wp_mail( $atts ), 0, 0 );
+		try {
+			$joined = $this->jobs->transaction_active();
+		} catch ( \Throwable $error ) {
+			CapacityHealth::failed();
+			return false;
+		}
+		$message     = Prepared::current() ?? Message::from_wp_mail( $atts );
+		$reset       = ResetNotice::take( $atts );
+		$reset_scope = '' !== $reset ? $reset : Capacity::current();
+		$job         = '' !== $reset ? Capacity::within( $reset, fn (): int => $this->jobs->create( $message ) ) : $this->jobs->create( $message );
+		if ( $job < 1 ) {
+			ResetNotice::finish( $reset_scope, false );
+			CapacityHealth::failed();
+			return false;
+		}
+		if ( $joined ) {
+			NativeTransaction::after_commit(
+				function () use ( $job ): void {
+					$this->retry( $job );
+				}
+			);
+			// Job and action join the caller's transaction. No external mail can
+			// escape before commit; rollback removes both native pending rows.
+			$this->schedule( $job, time() + 1 );
+			return ResetNotice::finish( $reset_scope, true );
+		}
+		Lock::run(
+			'mail-job-' . $job,
+			function () use ( $message, $job ): void {
+				$this->attempt( $message, 0, $job );
+			}
+		);
+		// A durable job owns the notification even when transport is deferred.
 		return true;
 	}
 
@@ -126,6 +158,18 @@ final class Outbox {
 	 * @param int $job_id Job id.
 	 */
 	public function retry( int $job_id ): void {
+		// An outer transaction cannot arm an already held original notification.
+		if ( NotificationHold::job_held( $job_id ) ) {
+			return; }
+		if ( $this->jobs->transaction_active() ) {
+			NativeTransaction::after_commit(
+				function () use ( $job_id ): void {
+					$this->retry( $job_id );
+				}
+			);
+			$this->schedule( $job_id, time() + 1 );
+			return;
+		}
 		$inquiry = NotificationHold::inquiry( $job_id );
 		$work    = function () use ( $job_id ): void {
 			if ( NotificationHold::job_held( $job_id ) ) {
@@ -378,7 +422,7 @@ final class Outbox {
 	 */
 	private function schedule( int $job_id, int $time ): void {
 		if ( $job_id > 0 ) {
-			as_schedule_single_action( $time, self::HOOK, array( $job_id ), self::GROUP );
+			$this->jobs->reschedule( $job_id, $time );
 		}
 	}
 

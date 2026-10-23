@@ -29,6 +29,12 @@ final class IntakeStore {
 	 * @var bool
 	 */
 	private static bool $editing = false;
+	/**
+	 * A nested native consumer joins the same locked snapshot, never a stale copy.
+	 *
+	 * @var array<string,mixed>|null
+	 */
+	private static ?array $active = null;
 	// Initial operating allocation and separate lanes: docs/specs/542-safe-intake.md.
 	public const CAPACITY = array(
 		'verification' => 128,
@@ -40,9 +46,28 @@ final class IntakeStore {
 	 * Serialize capacity decisions and first native save across DB connections.
 	 *
 	 * @param callable(array<string,mixed>&):(WC_Order|WP_Error|array<string,mixed>) $work Native work.
+	 * @param int                                                                    $wait_seconds Optional bounded native business/mail wait; review stays zero.
 	 * @return WC_Order|WP_Error|array<string,mixed>
 	 */
-	public static function edit( callable $work ): WC_Order|WP_Error|array {
+	public static function edit( callable $work, int $wait_seconds = 0 ): WC_Order|WP_Error|array {
+		try {
+			return \Linker\Commerce\Mail\ConnectionFence::run( static fn (): WC_Order|WP_Error|array => self::edit_native( $work, $wait_seconds ) );
+		} catch ( \Throwable $error ) {
+			return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
+		}
+	}
+
+	/**
+	 * Hold the same connection policy through lock, native writes and unlock.
+	 *
+	 * @param callable(array<string,mixed>&):(WC_Order|WP_Error|array<string,mixed>) $work Native work.
+	 * @param int                                                                    $wait_seconds Bounded native mutex wait.
+	 * @return WC_Order|WP_Error|array<string,mixed>
+	 */
+	private static function edit_native( callable $work, int $wait_seconds ): WC_Order|WP_Error|array {
+		if ( self::$editing && null !== self::$active ) {
+			return $work( self::$active );
+		}
 		$result = new WP_Error( 'linker_intake_busy', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 		Lock::run(
 			self::MUTEX,
@@ -60,17 +85,20 @@ final class IntakeStore {
 					}
 					self::$snapshot = $raw;
 					self::$editing  = true;
+					self::$active   =& $state;
 					$result         = $work( $state );
 				} catch ( \Throwable $error ) {
-					// Native checkout may have started an unfinished transaction.
-					wc_transaction_query( 'rollback' );
+					// This mutex wrapper owns no transaction. Native consumers roll
+					// back only their own transaction/savepoint before propagating.
 					$result = new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 				} finally {
 					self::$snapshot = $previous;
 					self::$editing  = $editing;
+					self::$active   = null;
 					self::clear_cache();
 				}
-			}
+			},
+			$wait_seconds
 		);
 		return $result;
 	}
@@ -109,8 +137,11 @@ final class IntakeStore {
 	 */
 	private static function read(): ?string {
 		global $wpdb;
+		// NOWAIT also handles a prior owner whose outer transaction has not yet
+		// committed after its connection mutex was released. CAS alone is safe
+		// against excess, but would otherwise wait for the DB's long row timeout.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Native option snapshot and mutex ownership must come from the same DB connection, without an object cache.
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT (SELECT option_value FROM {$wpdb->options} WHERE option_name = %s) AS value, IS_USED_LOCK(%s) = CONNECTION_ID() AS owned", self::OPTION, self::lock_name() ), ARRAY_A );
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT (SELECT option_value FROM {$wpdb->options} WHERE option_name = %s FOR UPDATE NOWAIT) AS value, IS_USED_LOCK(%s) = CONNECTION_ID() AS owned", self::OPTION, self::lock_name() ), ARRAY_A );
 		if ( ! is_array( $row ) || '1' !== (string) ( $row['owned'] ?? '' ) || '' !== $wpdb->last_error || ( null !== $row['value'] && ! is_string( $row['value'] ) ) ) {
 			throw new \RuntimeException( 'intake_capacity_read_failed' );
 		}
@@ -147,25 +178,33 @@ final class IntakeStore {
 					static function ( array &$state ) use ( $order ): array {
 						$order->read_meta_data( true );
 						$request = $order->get_meta( BusinessRecord::REQUEST );
-						wc_transaction_query( 'start' );
-						$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' );
-						$order->delete_meta_data( Intake::META );
-						$order->delete_meta_data( Intake::LANE_META );
-						$order->save_meta_data();
-						$order->read_meta_data( true );
-						if ( 'yes' !== $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $order->get_meta( Intake::META ) || $order->get_meta( Intake::LANE_META ) ) {
-							throw new \RuntimeException( 'intake_erasure_readback_failed' );
+						if ( \Linker\Commerce\Mail\Capacity::transaction_active() ) {
+							throw new \RuntimeException( 'intake_erasure_transaction_unavailable' );
 						}
-						foreach ( $state['entries'] as $id => $entry ) {
-							if ( $order->get_id() === (int) ( $entry['order'] ?? 0 ) || $id === $request ) {
-								unset( $state['entries'][ $id ] );
+						$transaction = new \Linker\Commerce\Mail\NativeTransaction();
+						try {
+							$order->update_meta_data( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED, 'yes' );
+							$order->delete_meta_data( Intake::META );
+							$order->delete_meta_data( Intake::LANE_META );
+							$order->save_meta_data();
+							$order->read_meta_data( true );
+							if ( 'yes' !== $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) || $order->get_meta( Intake::META ) || $order->get_meta( Intake::LANE_META ) ) {
+								throw new \RuntimeException( 'intake_erasure_readback_failed' );
 							}
+							foreach ( $state['entries'] as $id => $entry ) {
+								if ( $order->get_id() === (int) ( $entry['order'] ?? 0 ) || $id === $request ) {
+									unset( $state['entries'][ $id ] );
+								}
+							}
+							self::save( $state );
+							// Native erasure continues outside these locks. Its durable
+							// tombstone already prevents any later notification capture.
+							$transaction->commit();
+							return array();
+						} catch ( \Throwable $error ) {
+							$transaction->rollback();
+							throw $error;
 						}
-						self::save( $state );
-						// Native erasure continues outside these locks. Its durable
-						// tombstone already prevents any later notification capture.
-						wc_transaction_query( 'commit' );
-						return array();
 					}
 				);
 				if ( is_wp_error( $result ) ) {

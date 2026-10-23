@@ -75,6 +75,43 @@ final class Queue {
 		$order->update_meta_data( self::PENDING, 'yes' );
 	}
 
+	/**
+	 * Before first save, replace only the generated summary in the frozen evidence.
+	 * Customer fields, history and account evidence never change during model work.
+	 *
+	 * @param WC_Order $order Unsaved prepared inquiry.
+	 * @param bool     $clock Whether to start the native assessment wait now.
+	 */
+	public static function refresh_summary( WC_Order $order, bool $clock = true ): void {
+		if ( $order->get_id() > 0 ) {
+			return;
+		}
+		$legacy  = $order->get_data_store() instanceof \WC_Data_Store && is_a( $order->get_data_store()->get_current_class_name(), \WC_Order_Data_Store_CPT::class, true );
+		$summary = $order->get_meta( \Linker\Commerce\Inquiry\Sender::SUMMARY_META );
+		$summary = $legacy && is_array( $summary ) ? wp_unslash( $summary ) : $summary;
+		$now     = microtime( true );
+		foreach ( array( self::META, CustomerEvidence::META ) as $key ) {
+			$data = $order->get_meta( $key );
+			if ( ! is_array( $data ) ) {
+				continue;
+			}
+			$data = $legacy ? wp_unslash( $data ) : $data;
+			if ( self::META === $key ) {
+				$data['snapshot']['submission']['summary'] = $summary;
+				if ( $clock ) {
+					$data['accepted_at'] = $now;
+					$data['deadline']    = $now + self::WAIT_SECONDS;
+				}
+			} else {
+				$data['request']['summary'] = $summary;
+				if ( $clock ) {
+					$data['captured_at'] = $now;
+				}
+			}
+			StructuredMeta::update( $order, $key, $data );
+		}
+	}
+
 	/** Persist deferred content mail without delaying the native submission.
 	 *
 	 * @param WC_Order $order Received inquiry.
@@ -119,6 +156,10 @@ final class Queue {
 
 	/** Native independent minute heartbeat; no visitor or synchronous provider is needed. */
 	public function recover(): int {
+		// Cron loads WC email base classes lazily, before invoking native rebuilders.
+		WC()->mailer();
+		\Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::recover();
+		\Linker\Commerce\Registration\VatNotice::recover();
 		update_option( self::HEARTBEAT, microtime( true ), false );
 		$orders = wc_get_orders(
 			array(

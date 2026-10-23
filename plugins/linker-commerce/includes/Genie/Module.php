@@ -110,7 +110,7 @@ final class Module {
 	 * @param mixed $handoff The hand-off (Linker\Tools\Genie\ContactRequest::handoff()).
 	 * @return array{order: int, receipt: bool}|null The record and whether the receipt went; null when the hand-off is not one.
 	 */
-	public function contact( mixed $sent, mixed $handoff ): ?array {
+	public function contact( mixed $sent, mixed $handoff ): array|WP_Error|null {
 		if ( is_array( $sent ) && isset( $sent['order'] ) ) {
 			return array(
 				'order'   => (int) $sent['order'],
@@ -134,6 +134,9 @@ final class Module {
 			return null;
 		}
 		$order = ( new Sender() )->message( $details, array( self::HANDOFF_META => $handoff ) );
+		if ( $order instanceof WP_Error ) {
+			return $order;
+		}
 		return array(
 			'order'           => $order->get_id(),
 			'receipt'         => '' === (string) $order->get_meta( ReceiptLimit::SKIPPED_META ),
@@ -258,7 +261,7 @@ final class Module {
 		if ( ! is_int( $id ) || $id < 1 ) {
 			return false; }
 		$message = ( new ConversationEmail( $this->plugin_file ) )->capture( $conversation );
-		return null === $message ? false : \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::enqueue( $id, $source['messages'], $conversation, $message );
+		return null === $message ? false : \Linker\Commerce\Inquiry\Assessment\ConversationAuthorization::enqueue( $id, $source['messages'], $conversation, $message, ( $source['accepted'] ?? null ) instanceof \Closure ? $source['accepted'] : null );
 	}
 
 	/**

@@ -22,7 +22,6 @@ use WC_Order;
  * @coversNothing
  */
 final class PublicSubmissionTest extends IntegrationTestCase {
-
 	/** Install only this test's bound local service seam. */
 	protected function setUp(): void {
 		parent::setUp();
@@ -185,6 +184,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$before = self::newest_mail_job();
 		for ( $i = 0; $i < 10; ++$i ) {
 			$order = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+			$this->assertInstanceOf( \WC_Order::class, $order );
 			$this->assertSame( '', $order->get_billing_first_name(), 'A hand-off name is optional.' );
 			$this->later(
 				static function () use ( $order ): void {
@@ -273,6 +273,7 @@ final class PublicSubmissionTest extends IntegrationTestCase {
 		$this->assertInstanceOf( \Linker\Commerce\Contact\Submission::class, $details );
 		$marker = self::newest_mail_job();
 		$order  = ( new \Linker\Commerce\Inquiry\Sender() )->message( $details );
+		$this->assertInstanceOf( \WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
 				$order->delete( true );

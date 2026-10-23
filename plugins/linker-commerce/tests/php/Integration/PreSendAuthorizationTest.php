@@ -50,6 +50,7 @@ final class PreSendAuthorizationTest extends IntegrationTestCase {
 		);
 		self::assertInstanceOf( Submission::class, $details );
 		$order = ( new Sender() )->message( $details );
+		self::assertInstanceOf( WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
 				foreach ( array( Queue::PROCESS, Queue::EXPIRE ) as $hook ) {

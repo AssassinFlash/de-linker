@@ -163,7 +163,20 @@ final class NotificationRoutingTest extends IntegrationTestCase {
 		$email    = WC()->mailer()->get_emails()[ VatReviewEmail::class ];
 		$this->assertInstanceOf( VatReviewEmail::class, $email );
 		$marker = self::newest_mail_job();
-		$email->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
+		update_user_meta( $customer->get_id(), VatProfile::STATUS_META, VatProfile::UNVERIFIED );
+			$notices = new \Linker\Commerce\Registration\VatNotice();
+			$source  = $notices->persist(
+				$customer->get_id(),
+				'DE123456789',
+				array(
+					'status' => VatProfile::INVALID,
+					'detail' => 'Synthetic native VIES verdict',
+				),
+				true,
+				$notices->version( $customer->get_id() )
+			);
+			$this->assertIsArray( $source );
+			$email->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
 		$row = $this->internal_message( $marker, 'VAT check changed: Linker Integration Test GmbH', $from );
 		$this->assertContains( 'Reply-to: Maria Beispiel <' . $customer->get_billing_email() . '>', $row['headers'], VatReviewEmail::ID );
 	}

@@ -49,6 +49,7 @@ final class MailRetryTest extends IntegrationTestCase {
 		$this->assertInstanceOf( Submission::class, $details );
 		$marker = self::newest_mail_job();
 		$order  = ( new Sender() )->message( $details );
+		$this->assertInstanceOf( \WC_Order::class, $order );
 		$this->later(
 			static function () use ( $order ): void {
 				$order->delete( true );

@@ -421,9 +421,11 @@ final class NotificationHoldTest extends IntegrationTestCase {
 			as_unschedule_all_actions( $hook, array( $order->get_id() ), Outbox::GROUP );
 		}
 		$this->assertFalse( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::managed( $order->get_id() ) );
+		$order->update_meta_data( NotificationHold::META, array( 'reason' => 'synthetic existing incident' ) );
+		$order->save_meta_data();
 		$message = new Message( array( self::TESTER ), 'Held synthetic inquiry', 'Original notification body.', array( Message::INTERNAL_HEADER ), array() );
 		$jobs    = new JobStore();
-		$id      = $jobs->create( $message );
+		$id      = $jobs->create( $message, $order->get_id() );
 		$hold    = array(
 			'incident'        => 'synthetic-incident',
 			'at'              => time(),
