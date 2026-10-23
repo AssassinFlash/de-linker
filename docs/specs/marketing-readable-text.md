@@ -30,6 +30,8 @@ site focus-ring and offset tokens, within the card's existing padding.
 Where native content sizing is unavailable, reuse the existing
 account/inquiry textarea minimum of6.5rem from `auth.css`. No script, input
 submission, assistant/model route, page content or translation data changes.
+The native `rows` attribute gives this fallback higher specificity than the
+saved page's later60px minimum; equal specificity would leave the crop intact.
 
 Reuse the snapshot-backed9410 instance and its verified recovery baseline.
 Keep48ea's frozen source/runtime/interaction evidence and its independent

@@ -43,8 +43,9 @@ html[lang^="de"] #installer-journal .lk-hero-title {
 }
 
 @supports not (field-sizing: content) {
-	#installer-journal .installer-mobile-assistant > textarea {
+	#installer-journal .installer-mobile-assistant > textarea[rows] {
 		/* Reuse the account/inquiry textarea minimum (auth.css):6.5rem. */
+		/* The native rows attribute outranks the saved page's later60px rule. */
 		min-height: 6.5rem;
 	}
 }
