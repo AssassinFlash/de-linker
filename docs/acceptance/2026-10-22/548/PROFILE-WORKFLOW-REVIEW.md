@@ -52,3 +52,23 @@ source/save semantics and EN/DE visual execution remain separate gates.
 
 Owned p548 was restarted and its WindPress volume recompiled through the native
 admin pipeline. No production write or real mail was performed in this increment.
+
+## Fixed-source rejection at a3602a4d
+
+Both independent axes rejected that snapshot. Standards reproduced the
+unprotected asynchronous file-read stage and a rejected request remaining in
+the selector after its recovery record was removed. Spec also reproduced typed
+input refusal being held hostage by unavailable browser cleanup, a completed
+server save still blocked by the import close guard, and Python csv's implicit
+131072-character cell ceiling rejecting a legal source below the declared limits.
+
+The correction adds byte-read protection, revokes rejected durable state before
+best-effort cleanup, removes stale selector entries, and passes only baseline
+server selections into intake. An owned receipt plus that confirmed baseline
+allows completion independently of IndexedDB. Merely editing the selection
+does not. A shared stdlib-reader factory monotonically raises csv's process-wide
+field ceiling under a lock to the bounded source length; smaller concurrent
+sources cannot lower an active reader's limit. These changes require a new
+fixed-source review; this history does not retroactively pass a3602a4d.
+
+Correction checks: 323 planning fixtures passed in 14.48s; strict mypy passed over 67 planning modules. The full app suite passed 25 domain/client and 26 React DOM cases. Four added rendered regressions exercise pending file bytes and reload, typed refusal with failed storage, stale selection during delayed cleanup, and a full ProjectEditor import→selection→server Save→close with every local write/cleanup unavailable. An actual private ASGI fixture previews an unchanged 140000-character cell, imports the same source hash and returns 1 kWh without a project revision; concurrent readers preserve their large/small cells. All three build-manifest checks, German-copy and eight gettext catalogs passed. New fixed-source reviews and the final native matrix are still pending.

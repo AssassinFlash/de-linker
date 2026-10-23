@@ -405,6 +405,10 @@ export function ProjectEditor({
 								timezone={brief.site.timezone}
 								recheck={recheck}
 								registerGuard={registerProfileGuard}
+								confirmedAssetIds={Object.values(
+									readSelections(draft.baseline.inputs.profile_selections)
+										.selected,
+								)}
 								attach={async (assetId, role) => {
 									if (
 										!client.isCurrentScope(session.query_scope) ||

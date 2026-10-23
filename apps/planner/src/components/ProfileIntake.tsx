@@ -36,6 +36,7 @@ export function ProfileIntake({
 	recheck,
 	attach,
 	registerGuard,
+	confirmedAssetIds = [],
 }: {
 	projectId: string;
 	session: Session;
@@ -46,10 +47,12 @@ export function ProfileIntake({
 	recheck: () => void;
 	attach: (assetId: string, role: Measurement) => Promise<boolean>;
 	registerGuard: (guard: () => boolean) => void;
+	confirmedAssetIds?: readonly string[];
 }) {
 	const id = useId();
 	const fileInput = useRef<HTMLInputElement>(null);
 	const [fileName, setFileName] = useState("");
+	const [readingFile, setReadingFile] = useState(false);
 	const [open, setOpen] = useState(false),
 		[busy, setBusy] = useState(false),
 		[checking, setChecking] = useState(true);
@@ -67,7 +70,7 @@ export function ProfileIntake({
 		[pending, setPending] = useState<string | null>(null);
 	const [asset, setAsset] = useState<ProfileAsset | null>(null),
 		[durable, setDurable] = useState(false);
-	const [selected, setSelected] = useState(false);
+	const [selected, setSelected] = useState<string | null>(null);
 	const lifetime = useRef(0),
 		flight = useRef(false),
 		form = useRef<HTMLDivElement>(null);
@@ -127,7 +130,40 @@ export function ProfileIntake({
 			lifetime.current++;
 		};
 	}, [projectId, session.query_scope, store]);
-	const unprotected = Boolean(content) && !durable;
+	const serverRecorded = asset !== null && confirmedAssetIds.includes(asset.id);
+	const unprotected =
+		(Boolean(content) || readingFile) && !durable && !serverRecorded;
+	useEffect(() => {
+		if (
+			!serverRecorded ||
+			!asset ||
+			!pending ||
+			!client.isCurrentScope(session.query_scope)
+		)
+			return;
+		// The owned import receipt and the server-confirmed project baseline
+		// now protect this selection independently of browser recovery storage.
+		const body = pending,
+			instance = lifetime.current;
+		setSelected(asset.id);
+		setRequests((previous) =>
+			previous.filter((request) => request.body !== body),
+		);
+		setPending(null);
+		setContent("");
+		setFileName("");
+		setInspection(null);
+		setAsset(null);
+		setDurable(false);
+		setOpen(false);
+		void store.clearProfileImport(session.query_scope, body).catch(() => {
+			if (
+				instance === lifetime.current &&
+				client.isCurrentScope(session.query_scope)
+			)
+				setRecoveryFailed(true);
+		});
+	}, [serverRecorded, asset, pending, client, session.query_scope, store]);
 	useEffect(() => {
 		registerGuard(() => {
 			if (!unprotected) return true;
@@ -166,6 +202,7 @@ export function ProfileIntake({
 		const instance = lifetime.current;
 		flight.current = true;
 		setBusy(true);
+		setReadingFile(true);
 		setError(null);
 		setContent("");
 		setFileName("");
@@ -193,6 +230,7 @@ export function ProfileIntake({
 		} finally {
 			if (instance === lifetime.current) {
 				flight.current = false;
+				setReadingFile(false);
 				setBusy(false);
 			}
 		}
@@ -282,12 +320,17 @@ export function ProfileIntake({
 				cause instanceof ApiError &&
 				[400, 413, 415, 422].includes(cause.status)
 			) {
+				// A definitive pre-publication refusal makes this editable input,
+				// even if the browser cannot clean up its older recovery record.
+				// Revoke the durable admission before awaiting that cleanup.
+				setPending(null);
+				setDurable(false);
+				const refusedBody = body;
+				setRequests((previous) =>
+					previous.filter((request) => request.body !== refusedBody),
+				);
 				try {
 					await store.clearProfileImport(session.query_scope, body);
-					if (current(instance)) {
-						setPending(null);
-						setDurable(false);
-					}
 				} catch {
 					if (current(instance)) setRecoveryFailed(true);
 				}
@@ -311,7 +354,7 @@ export function ProfileIntake({
 				!current(instance)
 			)
 				return;
-			setSelected(true);
+			setSelected(confirmed.id);
 			await store.clearProfileImport(session.query_scope, pending);
 			if (!current(instance)) return;
 			const remaining = await store.readProfileImports(
@@ -346,10 +389,15 @@ export function ProfileIntake({
 			<>
 				{selected && (
 					<Notice>
-						{__(
-							"The profile is selected in the open draft. Save the project to record this selection.",
-							"linker-tools",
-						)}
+						{confirmedAssetIds.includes(selected)
+							? __(
+									"This profile selection is saved with the project.",
+									"linker-tools",
+								)
+							: __(
+									"The profile is selected in the open draft. Save the project to record this selection.",
+									"linker-tools",
+								)}
 					</Notice>
 				)}
 				<button
@@ -364,14 +412,14 @@ export function ProfileIntake({
 		);
 	return (
 		<div className="lp-profile-intake" ref={form}>
-			{requests.length > 1 && (
+			{requests.length > 0 && (
 				<label className="lp-field">
 					<span id={id + "-requests"}>
 						{__("Imports to review", "linker-tools")}
 					</span>
 					<select
 						aria-labelledby={id + "-requests"}
-						disabled={busy}
+						disabled={busy || unprotected}
 						value={
 							requests.find((request) => request.body === pending)?.key ?? ""
 						}
@@ -382,6 +430,9 @@ export function ProfileIntake({
 							if (request) restore(request.body);
 						}}
 					>
+						<option value="" disabled>
+							{__("Select…", "linker-tools")}
+						</option>
 						{requests.map((request) => (
 							<option key={request.key} value={request.key}>
 								{request.label}

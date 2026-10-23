@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import csv
-import io
 
 from .canonical import Json, Object, digest, encode
 from .csv_issue import CsvIssue
+from .csv_reader import source_reader
 from .errors import InvalidInput
 
 
@@ -19,7 +19,7 @@ def inspect_csv(
         text = content.decode("utf-8-sig")
     except UnicodeError as error:
         raise CsvIssue("encoding") from error
-    reader = csv.reader(io.StringIO(text, newline=""), delimiter=delimiter, strict=True)
+    reader = source_reader(text, delimiter)
     completed_line = 0
     rows: list[Json] = []
     records = 0

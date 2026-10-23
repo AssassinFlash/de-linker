@@ -1084,6 +1084,55 @@ def test_csv_column_inspection_validates_rows_beyond_the_displayed_sample(
     assert "PRIVATE" not in response.text
 
 
+def test_legal_large_cells_follow_declared_source_limits_through_inspection_and_import(
+    workspace: Workspace,
+) -> None:
+    kernel = EnergyKernel(workspace, Tolerance(1e-7, 1e-7, 1e-9), max_intervals=100)
+    app = create_private_app(
+        workspace,
+        EnergyService(workspace, kernel, max_attempts=1),
+        credential=lambda: TOKEN,
+        limits=HttpLimits(1_000_000, 300_000, 2, 16),
+    )
+    # This legal comment exceeds Python csv's default 131072-character ceiling.
+    # Its size remains below the deployment's declared source/reply bounds.
+    comment = "x" * 140_000
+    raw = f"time;power;note\n2024-01-01T00:00Z;4;{comment}\n".encode()
+    with TestClient(app, raise_server_exceptions=False) as client:
+        local = Rig(workspace, kernel, client)
+        project_id = local.create("large-legal-csv-field")
+        before = set(workspace.blobs.directory.rglob("*"))
+        inspected = local.post(
+            "/profiles/inspect",
+            {
+                "project_id": project_id,
+                "content_base64": base64.b64encode(raw).decode(),
+                "delimiter": ";",
+                "page_size": 1,
+            },
+        )
+        assert inspected["rows"] == [
+            {"line": 2, "cells": ["2024-01-01T00:00Z", "4", comment]}
+        ]
+        assert inspected["content_sha256"] == digest(raw)
+        assert set(workspace.blobs.directory.rglob("*")) == before
+        asset = local.post(
+            "/profiles/csv", csv_preview_command(project_id, raw, "large-legal-cell")
+        )
+        assert asset["content_sha256"] == digest(raw)
+        preview = local.post(
+            "/profiles/preview",
+            {
+                "project_id": project_id,
+                "asset_id": asset["id"],
+                "offset": 0,
+                "page_size": 1,
+            },
+        )
+        assert cast(Object, preview["summary"])["energy_kwh"] == 1
+        assert workspace.get(USER, project_id).revision == 1
+
+
 @pytest.mark.parametrize(
     ("raw", "issue", "row", "field"),
     [

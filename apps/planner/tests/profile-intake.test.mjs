@@ -146,6 +146,10 @@ async function rig(
 		writeGate = null,
 		hydrationGate = null,
 		auth = false,
+		refuse = false,
+		storageDown = false,
+		cleanupGate = null,
+		editor = false,
 	} = {},
 ) {
 	const dom = setupDom();
@@ -153,16 +157,38 @@ async function rig(
 	const { SessionBoundary } =
 		await import("../src/components/SessionBoundary.tsx");
 	const { ProfileIntake } = await import("../src/components/ProfileIntake.tsx");
+	const { ProjectEditor } = await import("../src/components/ProjectEditor.tsx");
+	const { emptyBrief } = await import("../src/domain/brief.ts");
 	const { PlannerClient } = await import("../src/data/PlannerClient.ts");
 	let owner = session,
 		writeStarted = false,
 		attachConfirmed = false,
+		cleanupStarted = false,
+		closes = 0,
 		guard = () => true;
+	let project = {
+		id: projectId,
+		title: "Synthetic project",
+		revision: 1,
+		input_sha256: "9".repeat(64),
+		inputs: { brief: emptyBrief() },
+	};
+	const opening = project;
+	const refusedBodies = new Set();
 	const pending = new Map(bodies.map((body) => [JSON.parse(body).key, body])),
 		uploads = [],
 		calls = [],
 		attachments = [];
 	const store = {
+		async read() {
+			return null;
+		},
+		async candidates() {
+			return [];
+		},
+		async write() {
+			if (storageDown) throw new Error("synthetic storage outage");
+		},
 		async readProfileImports(verified, id) {
 			if (hydrationGate) await hydrationGate.promise;
 			return [...pending.values()]
@@ -181,12 +207,16 @@ async function rig(
 			assert.equal(verified, scope);
 			writeStarted = true;
 			if (writeGate) await writeGate.promise;
+			if (storageDown) throw new Error("synthetic storage outage");
 			pending.set(JSON.parse(body).key, body);
 		},
 		async clearProfileImport(verified, body) {
+			cleanupStarted = true;
+			if (cleanupGate) await cleanupGate.promise;
+			if (storageDown) throw new Error("synthetic storage outage");
 			assert.equal(verified, scope);
 			assert.ok(
-				attachConfirmed || auth,
+				attachConfirmed || auth || refusedBodies.has(body),
 				"selection recovery must be durable before cleanup",
 			);
 			if (pending.get(JSON.parse(body).key) === body)
@@ -215,6 +245,18 @@ async function rig(
 				});
 			if (path.endsWith("/profiles/csv")) {
 				uploads.push(init.body);
+				if (refuse) {
+					refusedBodies.add(init.body);
+					return json(
+						{
+							error: {
+								code: "invalid_input",
+								profile_issue: { issue: "value_sign", line: 2, field: "value" },
+							},
+						},
+						422,
+					);
+				}
 				if (auth) return json({ error: { code: "expired" } }, 401);
 				if (lost) {
 					lost = false;
@@ -224,6 +266,15 @@ async function rig(
 			}
 			if (path.endsWith("/assets/read")) return json(asset);
 			if (path.endsWith("/profiles/preview")) return json(preview);
+			if (path.endsWith("/projects/revise")) {
+				const command = JSON.parse(init.body);
+				project = {
+					...project,
+					revision: command.expected_revision + 1,
+					inputs: command.inputs,
+				};
+				return json(project);
+			}
 			assert.fail("unexpected path " + path);
 		},
 	});
@@ -234,25 +285,42 @@ async function rig(
 			React.createElement(
 				React.StrictMode,
 				null,
-				React.createElement(SessionBoundary, { client }, (confirmed, recheck) =>
-					React.createElement(ProfileIntake, {
-						key: confirmed.query_scope,
-						projectId,
-						session: confirmed,
-						client,
-						store,
-						locale: "en-GB",
-						timezone: "Europe/Oslo",
-						recheck,
-						registerGuard(value) {
-							guard = value;
-						},
-						async attach(id, role) {
-							attachments.push([id, role]);
-							attachConfirmed = true;
-							return true;
-						},
-					}),
+				React.createElement(
+					SessionBoundary,
+					{ client },
+					(confirmed, recheck) =>
+						editor
+							? React.createElement(ProjectEditor, {
+									key: confirmed.query_scope,
+									project: opening,
+									session: confirmed,
+									client,
+									store,
+									config: { locale: "en-GB", countries: { NO: "Norway" } },
+									recheck,
+									close() {
+										closes++;
+										return true;
+									},
+								})
+							: React.createElement(ProfileIntake, {
+									key: confirmed.query_scope,
+									projectId,
+									session: confirmed,
+									client,
+									store,
+									locale: "en-GB",
+									timezone: "Europe/Oslo",
+									recheck,
+									registerGuard(value) {
+										guard = value;
+									},
+									async attach(id, role) {
+										attachments.push([id, role]);
+										attachConfirmed = true;
+										return true;
+									},
+								}),
 				),
 			),
 		),
@@ -265,6 +333,18 @@ async function rig(
 		attachments,
 		get writeStarted() {
 			return writeStarted;
+		},
+		get cleanupStarted() {
+			return cleanupStarted;
+		},
+		get closes() {
+			return closes;
+		},
+		get project() {
+			return project;
+		},
+		setRefuse(value) {
+			refuse = value;
 		},
 		guard: () => guard(),
 		changeOwner(value) {
@@ -308,8 +388,8 @@ test("unknown imports are explicitly selected and retried with frozen bytes befo
 	assert.deepEqual([...fixture.pending.values()], [a]);
 });
 
-test("a new file needs explicit mapping and provenance, and closing is guarded until recovery is durable", async (t) => {
-	const fixture = await rig(t);
+async function prepareFile(t, options = {}) {
+	const fixture = await rig(t, options);
 	await until(
 		() =>
 			button("Import interval data") &&
@@ -326,7 +406,8 @@ test("a new file needs explicit mapping and provenance, and closing is guarded u
 		input.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 	await until(() => !field("Column delimiter").disabled);
-	await act(async () => assert.equal(fixture.guard(), false));
+	if (!options.editor)
+		await act(async () => assert.equal(fixture.guard(), false));
 	await choose("Column delimiter", ";");
 	await act(async () => button("Preview columns").click());
 	await until(() => field("Timestamp column"));
@@ -339,6 +420,7 @@ test("a new file needs explicit mapping and provenance, and closing is guarded u
 		["Value meaning and unit", "interval_average_kw"],
 		["Decimal separator in the file", "."],
 		["Source type", "synthetic"],
+		["Source time zone", "Europe/Oslo"],
 		["Interval boundaries", "fixed"],
 		["The timestamp identifies…", "start"],
 	])
@@ -350,6 +432,11 @@ test("a new file needs explicit mapping and provenance, and closing is guarded u
 		"Created by this test",
 	);
 	await until(() => !button("Import and review data").disabled);
+	return fixture;
+}
+
+test("a new file needs explicit mapping and provenance, and closing is guarded until recovery is durable", async (t) => {
+	const fixture = await prepareFile(t);
 	await act(async () => button("Import and review data").click());
 	await until(() => button("Use this profile in the open draft"));
 	const uploaded = JSON.parse(fixture.uploads[0]);
@@ -357,6 +444,129 @@ test("a new file needs explicit mapping and provenance, and closing is guarded u
 	assert.deepEqual(uploaded.mapping, mapping);
 	assert.equal(fixture.guard(), true);
 	assert.equal(fixture.attachments.length, 0);
+});
+
+test("close and reload are guarded while selected file bytes are still being read", async (t) => {
+	const fixture = await rig(t),
+		gate = deferred();
+	await until(
+		() =>
+			button("Import interval data") &&
+			!button("Import interval data").disabled,
+	);
+	await act(async () => button("Import interval data").click());
+	const bytes = new TextEncoder().encode(source);
+	await act(async () => {
+		const input = field("Source file");
+		Object.defineProperty(input, "files", {
+			configurable: true,
+			value: [{ size: bytes.length, arrayBuffer: () => gate.promise }],
+		});
+		input.dispatchEvent(new window.Event("change", { bubbles: true }));
+	});
+	assert.equal(button("Preview columns").disabled, true);
+	await act(async () => assert.equal(fixture.guard(), false));
+	assert.equal(
+		window.dispatchEvent(
+			new window.Event("beforeunload", { cancelable: true }),
+		),
+		false,
+	);
+	assert.deepEqual(fixture.uploads, []);
+	await act(async () => gate.resolve(bytes.buffer));
+	await until(() => !field("Column delimiter").disabled);
+	await act(async () => button("Cancel").click());
+	assert.equal(fixture.guard(), true);
+	assert.equal(
+		window.dispatchEvent(
+			new window.Event("beforeunload", { cancelable: true }),
+		),
+		true,
+	);
+});
+
+test("typed input refusal permits correction despite failed local writes and cleanup", async (t) => {
+	const fixture = await prepareFile(t, { storageDown: true, refuse: true });
+	await act(async () => button("Import and review data").click());
+	await until(
+		() =>
+			document.body.textContent.includes("Negative values are accepted only") &&
+			field("Measurement point"),
+	);
+	assert.equal(button("Check or retry this import"), undefined);
+	assert.ok(field("Measurement point"));
+	await act(async () => assert.equal(fixture.guard(), false));
+	fixture.setRefuse(false);
+	await choose("Measurement point", "net_import");
+	await act(async () => button("Import and review data").click());
+	await until(() => button("Use this profile in the open draft"));
+	const [refused, corrected] = fixture.uploads.map(JSON.parse);
+	assert.notEqual(refused.key, corrected.key);
+	assert.equal(refused.content_base64, corrected.content_base64);
+	assert.equal(corrected.mapping.measurement, "net_import");
+});
+
+test("a refused recovery is removed before slow cleanup and cannot regain false durable admission", async (t) => {
+	const a = command("Synthetic A"),
+		b = command("Synthetic B"),
+		gate = deferred();
+	const fixture = await rig(t, {
+		bodies: [a, b],
+		refuse: true,
+		cleanupGate: gate,
+	});
+	await until(() => button("Check or retry this import"));
+	await choose("Imports to review", JSON.parse(b).key);
+	await act(async () => button("Check or retry this import").click());
+	await until(() => fixture.cleanupStarted);
+	await act(async () => assert.equal(fixture.guard(), false));
+	assert.equal(field("Imports to review").disabled, true);
+	assert.equal(
+		[...field("Imports to review").options].some(
+			(option) => option.value === JSON.parse(b).key,
+		),
+		false,
+	);
+	await act(async () => gate.resolve());
+	await until(() => !button("Cancel").disabled);
+	await act(async () => button("Cancel").click());
+	await act(async () => button("Import interval data").click());
+	await choose("Imports to review", JSON.parse(a).key);
+	assert.equal(fixture.guard(), true);
+	fixture.setRefuse(false);
+	await act(async () => button("Check or retry this import").click());
+	await until(() => button("Use this profile in the open draft"));
+	assert.deepEqual(fixture.uploads, [b, a]);
+});
+
+test("confirmed server selection releases the source workflow despite unavailable browser recovery", async (t) => {
+	const fixture = await prepareFile(t, { storageDown: true, editor: true });
+	await act(async () => button("Import and review data").click());
+	await until(() => button("Use this profile in the open draft"));
+	await act(async () => button("Use this profile in the open draft").click());
+	await until(() => button("Remove draft selection"));
+	assert.equal(
+		document.body.textContent.includes(
+			"This profile selection is saved with the project.",
+		),
+		false,
+	);
+	await act(async () => button("Projects").click());
+	assert.equal(fixture.closes, 0);
+	await act(async () => button("Save project").click());
+	await until(() =>
+		document.body.textContent.includes(
+			"This profile selection is saved with the project.",
+		),
+	);
+	assert.equal(fixture.project.revision, 2);
+	assert.equal(
+		fixture.project.inputs.profile_selections.selected.net_import,
+		assetId,
+	);
+	assert.equal(button("Check or retry this import"), undefined);
+	await act(async () => button("Projects").click());
+	assert.equal(fixture.closes, 1);
 });
 
 test("a different native scope confirmed during the recovery write prevents an old upload dispatch", async (t) => {

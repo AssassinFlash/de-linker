@@ -3471,3 +3471,8 @@ msgstr "Keine Datei ausgewählt"
 #: build/planner/assets/planner.js
 msgid "Recovered source file"
 msgstr "Wiederhergestellte Quelldatei"
+
+#: ../../apps/planner/src/components/ProfileIntake.tsx
+#: build/planner/assets/planner.js
+msgid "This profile selection is saved with the project."
+msgstr "Diese Profilauswahl ist im Projekt gespeichert."

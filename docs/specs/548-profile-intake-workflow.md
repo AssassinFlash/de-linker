@@ -19,7 +19,8 @@ not features falsely attributed to the three documented competitors.
    publishes no blob, asset, receipt, quota write or project revision. It
    declares `csv_structure_only`; it neither parses dates/values nor certifies
    time-series quality. Preview replies are bounded by the deployment JSON
-   ceiling without silently truncating cell text.
+   ceiling without silently truncating cell text. Legal cells are bounded by
+   that source/reply contract, not Python csv's implicit default field cap.
 3. The user explicitly maps distinct timestamp/value and optional end/fold
    columns, measurement point, interval-average kW or interval-energy kWh,
    decimal separator, origin, source timezone and fixed duration or explicit
@@ -42,7 +43,9 @@ not features falsely attributed to the three documented competitors.
    disable an available server, but the open in-memory request remains frozen
    and the UI makes no across-refresh recovery promise.
 6. Unknown acknowledgement keeps the exact request. Typed pre-publication
-   400/413/415/422 input refusal can clear it for correction. Source-import
+   400/413/415/422 input refusal returns it to correction immediately, even
+   when browser cleanup fails. Its stale selector entry is removed and durable
+   admission revoked before awaiting cleanup. Source-import
    recovery survives until selection is durably stored in the project draft;
    selection failure or cleanup failure retains recovery. Same-scope native
    verification preserves local input; different confirmed scope fences old
@@ -64,7 +67,10 @@ not features falsely attributed to the three documented competitors.
    undoable local command and uses the same project Save/revision/conflict
    mechanism. Removing a selection preserves its immutable source and history.
    The UI distinguishes stored source, open draft selection and server save.
-9. Unprotected file input warns on reload and blocks project close until
+   An owned receipt selected in the server-confirmed project baseline completes
+   intake even when browser storage is unavailable; best-effort recovery cleanup
+   cannot invalidate that save. An editable selection alone grants no such proof.
+9. Unprotected file input, including its asynchronous byte-read stage, warns on reload and blocks project close until
    imported durably or explicitly cancelled. A persisted intent can be closed
    and reopened for explicit recovery. Authentication failures recheck native
    identity without an infinite retry loop; persistent failure needs a user

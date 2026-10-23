@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import csv
-import io
 import math
 import re
 from datetime import datetime, timedelta
@@ -12,6 +11,7 @@ from zoneinfo import ZoneInfo
 from .canonical import digest, encode
 from .csv_issue import CsvField, CsvIssue
 from .csv_mapping import CsvMapping
+from .csv_reader import source_reader
 from .errors import InvalidInput
 from .interval import Interval, utc
 from .power_series import PowerSeries
@@ -88,9 +88,7 @@ def read_profile(
     except UnicodeError as error:
         raise CsvIssue("encoding") from error
     zone = rules.zone()
-    reader = csv.reader(
-        io.StringIO(text, newline=""), delimiter=mapping.delimiter, strict=True
-    )
+    reader = source_reader(text, mapping.delimiter)
     completed_line = 0
     try:
         header = next(reader, [])

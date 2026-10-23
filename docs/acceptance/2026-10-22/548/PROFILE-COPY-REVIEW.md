@@ -93,3 +93,7 @@ Pre-delivery：
 - [ ] 固定 SHA Spec／Standards 和 EN／DE × desktop／mobile CUA。
 
 **当前不能写“文案定稿／已部署／界面已通过”。** 父线定稿后应记录：选择哪些 CSV ID、最终 EN／DE、应用 commit、gettext bundle 覆盖与实际显示证据。若父线修改建议文本，应保留 original → review → selected final 的轨迹。该记录不替代正式代码或视觉验收。
+
+## Server-confirmed selection notice
+
+The independent Spec reviewer approved the exact pair “This profile selection is saved with the project.” / “Diese Profilauswahl ist im Projekt gespeichert.” The parent selected and applied it. This notice requires an owned import receipt whose asset ID is present in the server-confirmed project baseline. An open draft selection keeps the earlier save reminder. Native gettext was regenerated for the actual `build/planner/assets/planner.js` entry; visual verification remains a separate gate.
