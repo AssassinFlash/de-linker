@@ -112,7 +112,11 @@ final class LinkLocalizer {
 			}
 			$source = urldecode( $pair[1] );
 			if ( $this->same_origin( $source ) ) {
-				$target = $this->url( $source, $language );
+				$key = 'source ' . $language . ' ' . $source;
+				if ( ! array_key_exists( $key, $this->resolved ) ) {
+					$this->resolved[ $key ] = $this->resolve( $source, $language, true );
+				}
+				$target = $this->resolved[ $key ];
 				if ( $target !== $source ) {
 					$field = $pair[0] . '=' . rawurlencode( $target );
 				}
@@ -148,10 +152,11 @@ final class LinkLocalizer {
 	/**
 	 * The URL of the same object in `$language`, uncached.
 	 *
-	 * @param string $url      URL, absolute or root-relative.
-	 * @param string $language Target language slug.
+	 * @param string $url           URL, absolute or root-relative.
+	 * @param string $language      Target language slug.
+	 * @param bool   $public_source Require a canonical public source before conversion.
 	 */
-	private function resolve( string $url, string $language ): string {
+	private function resolve( string $url, string $language, bool $public_source = false ): string {
 		$parts = wp_parse_url( $url );
 		$home  = $this->languages->home_url( Languages::SOURCE );
 		if ( ! is_array( $parts ) || ( isset( $parts['scheme'] ) && ! in_array( strtolower( $parts['scheme'] ), array( 'http', 'https' ), true ) ) ) {
@@ -162,7 +167,7 @@ final class LinkLocalizer {
 			return $url;
 		}
 		$path       = $parts['path'] ?? '/';
-		$translated = $this->translated( $path, $language );
+		$translated = $this->translated( $path, $language, $public_source );
 		if ( null === $translated || $translated === $path ) {
 			return $url;
 		}
@@ -177,15 +182,23 @@ final class LinkLocalizer {
 	 * or the home page; null when the path is already in the target language
 	 * or has no translation there.
 	 *
-	 * @param string $path     Path.
-	 * @param string $language Target language slug.
+	 * @param string $path          Path.
+	 * @param string $language      Target language slug.
+	 * @param bool   $public_source Require a canonical public source before conversion.
 	 */
-	private function translated( string $path, string $language ): ?string {
+	private function translated( string $path, string $language, bool $public_source = false ): ?string {
 		$home         = untrailingslashit( (string) wp_parse_url( $this->languages->home_url( Languages::TARGET ), PHP_URL_PATH ) );
 		$german       = '' !== $home && str_starts_with( trailingslashit( $path ), trailingslashit( $home ) );
 		$unprefixed   = $german ? '/' . ltrim( substr( $path, strlen( $home ) ), '/' ) : $path;
 		$url_language = $german ? Languages::TARGET : Languages::SOURCE;
 		if ( '' === trim( $unprefixed, '/' ) ) {
+			if ( $public_source ) {
+				$front = $this->languages->post_translation( (int) get_option( 'page_on_front' ), $url_language );
+				$post  = $this->public_post( $front );
+				if ( null === $post || 'page' !== $post->post_type ) {
+					return null;
+				}
+			}
 			return $this->languages->home_url( $language );
 		}
 
@@ -207,12 +220,16 @@ final class LinkLocalizer {
 			}
 		}
 		if ( $post_id > 0 ) {
-			if ( $this->languages->of_post( $post_id ) === $language ) {
+			// Frontend queries may automatically return the current language's
+			// twin. Resolve the URL's own language before deciding it is localized.
+			$source    = $this->languages->source_post( $post_id );
+			$original  = null === $source ? null : $this->languages->post_translation( $source, $url_language );
+			$canonical = null === $original ? false : get_permalink( $original );
+			if ( ! is_string( $canonical ) || untrailingslashit( $path ) !== untrailingslashit( (string) wp_parse_url( $canonical, PHP_URL_PATH ) ) || $url_language === $language || ( $public_source && null === $this->public_post( $original ) ) ) {
 				return null;
 			}
-			$source = $this->languages->source_post( $post_id );
-			$twin   = null === $source ? null : $this->languages->post_translation( $source, $language );
-			$link   = null === $twin ? false : get_permalink( $twin );
+			$twin = $this->languages->post_translation( $source, $language );
+			$link = null === $twin ? false : get_permalink( $twin );
 			return false === $link ? null : $link;
 		}
 
@@ -220,13 +237,16 @@ final class LinkLocalizer {
 		$slug     = (string) end( $segments );
 		foreach ( $this->taxonomy_bases() as $taxonomy => $bases ) {
 			if ( count( $segments ) > 1 && in_array( $segments[0], $bases, true ) ) {
-				$url = $this->term_url( $taxonomy, $slug, $url_language, $language );
-				return $url ?? $this->retired_category_url( $slug, $language );
+				$url = $this->term_url( $taxonomy, $slug, $url_language, $language, $public_source ? $path : null );
+				return $public_source ? $url : ( $url ?? $this->retired_category_url( $slug, $language ) );
 			}
 		}
 
 		$shop = (int) get_option( 'woocommerce_shop_page_id' );
 		if ( $shop > 0 && $this->is_page_path( $shop, $unprefixed, $url_language ) ) {
+			if ( $public_source && null === $this->public_post( $this->languages->post_translation( $shop, $url_language ) ) ) {
+				return null;
+			}
 			if ( $url_language === $language ) {
 				return null;
 			}
@@ -235,6 +255,16 @@ final class LinkLocalizer {
 			return false === $link ? null : $link;
 		}
 		return null;
+	}
+
+	/**
+	 * Public source objects retain the Contact validator's publication contract.
+	 *
+	 * @param int|null $post_id Native source ID.
+	 */
+	private function public_post( ?int $post_id ): ?WP_Post {
+		$post = null === $post_id ? null : get_post( $post_id );
+		return $post instanceof WP_Post && 'publish' === $post->post_status && '' === $post->post_password && in_array( $post->post_type, array( 'page', 'post', 'product' ), true ) ? $post : null;
 	}
 
 	/**
@@ -292,12 +322,13 @@ final class LinkLocalizer {
 	/**
 	 * The term in the URL's language, paired to the target language.
 	 *
-	 * @param string $taxonomy      Taxonomy.
-	 * @param string $slug          Term slug in the URL's language.
-	 * @param string $url_language  Language of the URL.
-	 * @param string $language      Target language.
+	 * @param string      $taxonomy      Taxonomy.
+	 * @param string      $slug          Term slug in the URL's language.
+	 * @param string      $url_language  Language of the URL.
+	 * @param string      $language      Target language.
+	 * @param string|null $source_path Exact canonical source path when translating contact context.
 	 */
-	private function term_url( string $taxonomy, string $slug, string $url_language, string $language ): ?string {
+	private function term_url( string $taxonomy, string $slug, string $url_language, string $language, ?string $source_path = null ): ?string {
 		$terms = get_terms(
 			array(
 				'taxonomy'   => $taxonomy,
@@ -310,6 +341,12 @@ final class LinkLocalizer {
 		$term  = is_array( $terms ) ? reset( $terms ) : false;
 		if ( ! $term instanceof WP_Term || $this->languages->of_term( $term->term_id ) === $language ) {
 			return null;
+		}
+		if ( null !== $source_path ) {
+			$canonical = get_term_link( $term->term_id, $taxonomy );
+			if ( ! is_taxonomy_viewable( $taxonomy ) || ! is_string( $canonical ) || untrailingslashit( $source_path ) !== untrailingslashit( (string) wp_parse_url( $canonical, PHP_URL_PATH ) ) ) {
+				return null;
+			}
 		}
 		$twin = $this->languages->term_translation( $term->term_id, $language );
 		$link = null === $twin ? null : get_term_link( $twin, $taxonomy );

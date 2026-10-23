@@ -30,6 +30,13 @@ final class LinkLocalizerTest extends TestCase {
 	private bool $unresolved_posts = false;
 
 	/**
+	 * Polylang can return the current language's twin for an English URL query.
+	 *
+	 * @var bool
+	 */
+	private bool $translated_posts = false;
+
+	/**
 	 * A direct native page lookup must still respect publication and password state.
 	 *
 	 * @var string
@@ -51,12 +58,15 @@ final class LinkLocalizerTest extends TestCase {
 	private function localizer(): LinkLocalizer {
 		PolylangDouble::mock(
 			array(
+				11 => 'en',
+				22 => 'de',
 				33 => 'en',
 				58 => 'de',
 				15 => 'en',
 				42 => 'de',
 			),
 			array(
+				11 => 22,
 				33 => 58,
 				15 => 42,
 			),
@@ -69,6 +79,16 @@ final class LinkLocalizerTest extends TestCase {
 			array(
 				46  => 150,
 				301 => 300,
+			),
+			'en',
+			array(),
+			array_fill_keys(
+				array( 11, 22, 33, 58, 15, 42 ),
+				array(
+					'post_type'     => 'page',
+					'post_status'   => $this->page_status,
+					'post_password' => $this->page_password,
+				)
 			)
 		);
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $component = -1 ) => -1 === $component ? parse_url( $url ) : parse_url( $url, $component ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- stands in for wp_parse_url.
@@ -77,12 +97,18 @@ final class LinkLocalizerTest extends TestCase {
 		WP_Mock::userFunction(
 			'url_to_postid',
 			array(
-				'return' => fn( string $url ) => $this->unresolved_posts ? 0 : ( array(
-					PolylangDouble::HOME . 'contact/'     => 33,
-					PolylangDouble::HOME . 'de/kontakt/'  => 58,
-					PolylangDouble::HOME . 'products/'    => 15,
-					PolylangDouble::HOME . 'de/produkte/' => 42,
-				)[ $url ] ?? 0 ),
+				'return' => function ( string $url ): int {
+					$id = array(
+						PolylangDouble::HOME . 'contact/'  => 33,
+						PolylangDouble::HOME . 'de/kontakt/' => 58,
+						PolylangDouble::HOME . 'products/' => 15,
+						PolylangDouble::HOME . 'de/produkte/' => 42,
+					)[ $url ] ?? 0;
+					return $this->unresolved_posts ? 0 : ( $this->translated_posts ? ( array(
+						33 => 58,
+						15 => 42,
+					)[ $id ] ?? $id ) : $id );
+				},
 			)
 		);
 		WP_Mock::userFunction(
@@ -110,6 +136,8 @@ final class LinkLocalizerTest extends TestCase {
 			'get_permalink',
 			array(
 				'return' => static fn( int $id ) => array(
+					11 => PolylangDouble::HOME,
+					22 => PolylangDouble::HOME . 'de/',
 					33 => PolylangDouble::HOME . 'contact/',
 					58 => PolylangDouble::HOME . 'de/kontakt/',
 					15 => PolylangDouble::HOME . 'products/',
@@ -152,9 +180,13 @@ final class LinkLocalizerTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_option',
 			array(
-				'return' => static fn( string $name ) => 'woocommerce_shop_page_id' === $name ? '15' : '',
+				'return' => static fn( string $name ) => array(
+					'woocommerce_shop_page_id' => '15',
+					'page_on_front'            => '11',
+				)[ $name ] ?? '',
 			)
 		);
+		WP_Mock::userFunction( 'is_taxonomy_viewable', array( 'return' => true ) );
 		WP_Mock::userFunction(
 			'get_page_uri',
 			array(
@@ -317,6 +349,13 @@ final class LinkLocalizerTest extends TestCase {
 		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'de/kontakt/', 'en' ) );
 	}
 
+	/** A translated query result does not mean the URL already belongs to that language. */
+	public function test_native_query_returning_the_current_language_twin_still_localizes_the_source_url(): void {
+		$this->translated_posts = true;
+		$this->assertSame( PolylangDouble::HOME . 'de/kontakt/', $this->localizer()->url( PolylangDouble::HOME . 'contact/', 'de' ) );
+		$this->assertSame( PolylangDouble::HOME . 'de/produkte/', $this->localizer()->url( PolylangDouble::HOME . 'products/', 'de' ) );
+	}
+
 	/** A fallback must not accept an alias, private page or protected page. */
 	public function test_native_page_fallback_requires_a_public_canonical_page(): void {
 		$this->unresolved_posts = true;
@@ -326,5 +365,28 @@ final class LinkLocalizerTest extends TestCase {
 		$this->page_status   = 'publish';
 		$this->page_password = 'restricted';
 		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'contact/' ) );
+	}
+
+	/** Unknown taxonomy parents stay rejected sources; ordinary redirect compatibility is separate. */
+	public function test_marked_source_does_not_turn_an_unknown_taxonomy_path_into_a_real_source(): void {
+		$source = PolylangDouble::HOME . 'product-category/definitely-not-a-real-parent/accessories/';
+		$html   = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
+		$this->assertSame( $html, $this->localizer()->localize( $html ) );
+		$this->assertSame( PolylangDouble::HOME . 'de/produkt-kategorie/zubehoer/', $this->localizer()->url( $source ) );
+		$valid  = PolylangDouble::HOME . 'product-category/accessories/';
+		$target = PolylangDouble::HOME . 'de/produkt-kategorie/zubehoer/';
+		$this->assertSame( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $target ) . '">Contact</a>', $this->localizer()->localize( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $valid ) . '">Contact</a>' ) );
+	}
+
+	/** Private and password-protected pages, including home, must not become accepted sources. */
+	public function test_marked_source_requires_a_public_unprotected_page(): void {
+		foreach ( array( 'private', 'password' ) as $restriction ) {
+			$this->page_status   = 'private' === $restriction ? 'private' : 'publish';
+			$this->page_password = 'password' === $restriction ? 'restricted' : '';
+			foreach ( array( PolylangDouble::HOME, PolylangDouble::HOME . 'contact/' ) as $source ) {
+				$html = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
+				$this->assertSame( $html, $this->localizer()->localize( $html ) );
+			}
+		}
 	}
 }

@@ -17,6 +17,9 @@ with `PLL_Admin` does not reproduce that frontend behavior. The existing
 resolver therefore needs a canonical, public native page lookup when URL lookup
 returns zero. The live FAQ template also replaces its saved page content: its
 two stored marked anchors are inventory records, not currently rendered entries.
+An actual HTTP diagnostic additionally proves native URL lookup can return the
+current German twin for an English source URL. The object's language alone must
+not classify that English URL as already localized.
 
 ## Required behavior
 
@@ -32,6 +35,11 @@ two stored marked anchors are inventory records, not currently rendered entries.
   addresses and relative source URLs cannot be converted into accepted public
   sources. Unknown source paths remain unknown. Source titles and IDs supplied
   by the browser remain non-authoritative.
+- Source conversion separately requires a current public object at its exact
+  canonical path. Unknown taxonomy parents and retired aliases must not become
+  accepted sources; ordinary link redirect compatibility remains separate.
+  Private or password-protected source pages cannot gain validity by conversion
+  into a public twin. Repeated source resolution uses the existing request cache.
 - Native static homepage options and Polylang pairs identify the actual public
   page before post or taxonomy resolution. Both language roots work regardless
   of the ambient request language or a filtered `page_on_front`. A missing,
@@ -46,6 +54,9 @@ two stored marked anchors are inventory records, not currently rendered entries.
   page through native `get_page_by_path` only if its current canonical path,
   published page type and empty password match. Do not change locale, suppress
   global filters or accept a private page or a noncanonical alias.
+- When native query translation returns the current-language twin, use its
+  native pair in the URL's own language and verify the canonical path before
+  deciding whether the URL already belongs to the target language.
 
 ## Implementation boundary
 
