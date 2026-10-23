@@ -136,3 +136,11 @@ controls remains visible. The readonly mobile preview is220px high rather than
 previous excess vertical letterboxing. Units have explicit inline separation
 from overview quantities. These are customer-presentation corrections only;
 they do not change a roof vertex, module pose or numerical result.
+
+The final native German staged-form check also showed that a refusal explanation
+placed at the start of the main content was above the viewport after the form
+had been revealed. The existing conditional message now occupies a full-width
+row in the sticky project bar, adjacent to the attempted navigation. It remains
+visible while the open form and exact values stay intact. The bar's existing
+ResizeObserver measures its actual expanded height; normal navigation continues
+using that value. No new wording or validation transition is introduced here.

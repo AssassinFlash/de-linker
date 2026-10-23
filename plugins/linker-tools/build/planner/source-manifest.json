@@ -15,7 +15,7 @@
     "src/components/ProfileLabels.ts": "7a1e87b612300751cbb54463453a33118f11a3dbac2fedd82b159c4a5573341a",
     "src/components/ProfileMapping.tsx": "c60b9615ee146cd4aee4af95073cda0a66dadcf8f1dcb5ea970266c51cc030d0",
     "src/components/ProfileReview.tsx": "34b3918d0dd5403658e1daf726b93739325cf1201c5ffcdf602f33e167168e3f",
-    "src/components/ProjectEditor.tsx": "c20d52ab3b13f41c99dfd7f7a0c09b6dd8cd3df2b6d6b485a262453a87960a23",
+    "src/components/ProjectEditor.tsx": "e1e6d5353cb8a19a0984d281ca62f57b38066696e721cafca991885b74605d28",
     "src/components/ProjectOverview.tsx": "60d6b51f1ce743b8ab2a5cae651f066efbec4a8e4d748774441ab792cf20016d",
     "src/components/RevisionComparison.tsx": "0a5de456a0e2e46e68099f96a05f4ce1398e3c069765411b3390bf15074f5b44",
     "src/components/SessionBoundary.tsx": "f76d1019895130fd24bb87848968074379e4f46f7c5f575caceb66f3b79aed11",
@@ -85,11 +85,11 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/SceneViewport-Cfc0UBCF.js": "86cc6c6b2c21387cf3ebb6353c127db31ad3895774088ad4776f075aa512978d",
-    "assets/planner-core-Cc6vfAFX.js": "46e91e47b9242ddb8a37d7b233e81027565a5518c93d38bdf18f8c700aa6e150",
-    "assets/planner.js": "6a8678a9c1b4a46a013d142b795ec0223fbecad68518d0198ff840868768927e",
+    "assets/SceneViewport-jH0p61hj.js": "230450a3f5998442af7c697981fb6673cc7287cedf4d7153eca59c9452a28b7f",
+    "assets/planner-core-BkIGcxZy.js": "d7db0dfae703acc2ad0844a31ac6484e451dd0d50a986bd0920c0b707347a223",
+    "assets/planner.js": "758ec5df3711f49c96df5278f60d959210e51482b6fb7175c098fa0623e3e8ab",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "200439424aad1b2f208c3aa63add4e9f41cad36b72efc941859b8d7c5bb996c1",
-    "windpress.scan.txt": "ee14b37b68cf834b89f7d62feceb5e95ba6cfd25bfdc2d0a3dec9c73c69322c6"
+    "vite-manifest.json": "b7a0159b3d6df52c8575906ff1a6d1803709660ddf84fd877e7abcb390fb539e",
+    "windpress.scan.txt": "ee7b0754e6037c1ec884d3512ba7ae39949ccd9d976644d945afcb76d78821d8"
   }
 }

@@ -68,6 +68,9 @@
   [data-linker-planner] .lp-new-project .lp-inline-actions { margin-top: 16px; }
   [data-linker-planner] .lp-new-project > .lp-field + .lp-field { margin-top: 16px; }
   [data-linker-planner] .lp-project-bar { position: sticky; top: var(--lp-site-header-height, 0px); z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 28px; background: rgb(255 255 255 / .83); backdrop-filter: blur(18px); border-bottom: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-project-bar:has(.lp-navigation-refusal) { flex-wrap: wrap; row-gap: 8px; }
+  [data-linker-planner] .lp-navigation-refusal { flex-basis: 100%; min-width: 0; }
+  [data-linker-planner] .lp-navigation-refusal .lp-notice { margin: 0; padding: 12px 14px; font-size: 12px; }
   [data-linker-planner] .lp-breadcrumb { display: flex; align-items: center; gap: 12px; font-size: 12px; min-width: 0; }
   [data-linker-planner] .lp-breadcrumb > span:last-of-type { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 22vw; }
   [data-linker-planner] .lp-mobile-workspace { display: none; }

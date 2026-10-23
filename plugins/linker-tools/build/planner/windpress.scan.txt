@@ -42,6 +42,7 @@ lp-layout-review
 lp-mobile-workspace
 lp-module-table
 lp-nav-mark
+lp-navigation-refusal
 lp-new-project
 lp-notice
 lp-object-actions

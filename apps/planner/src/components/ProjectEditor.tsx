@@ -306,6 +306,29 @@ export function ProjectEditor({
 							: __("Save project", "linker-tools")}
 					</button>
 				</div>
+				{((closeBlocked === "invalid" && !valid) ||
+					(closeBlocked === "recovery" &&
+						recoveryFailed &&
+						(dirty || draft.pending))) && (
+					<div className="lp-navigation-refusal">
+						<Notice error>
+							{!briefValid
+								? __(
+										"Correct the highlighted input before leaving this project.",
+										"linker-tools",
+									)
+								: !designValid
+									? __(
+											"Finish or cancel roof editing before leaving this workspace.",
+											"linker-tools",
+										)
+									: __(
+											"Save the project before leaving. Browser recovery could not be stored.",
+											"linker-tools",
+										)}
+						</Notice>
+					</div>
+				)}
 			</header>
 			<div className="lp-project-layout">
 				<aside className="lp-project-aside">
@@ -424,27 +447,6 @@ export function ProjectEditor({
 									</button>
 								))}
 							</div>
-						</Notice>
-					)}
-					{((closeBlocked === "invalid" && !valid) ||
-						(closeBlocked === "recovery" &&
-							recoveryFailed &&
-							(dirty || draft.pending))) && (
-						<Notice error>
-							{!briefValid
-								? __(
-										"Correct the highlighted input before leaving this project.",
-										"linker-tools",
-									)
-								: !designValid
-									? __(
-											"Finish or cancel roof editing before leaving this workspace.",
-											"linker-tools",
-										)
-									: __(
-											"Save the project before leaving. Browser recovery could not be stored.",
-											"linker-tools",
-										)}
 						</Notice>
 					)}
 					{recovered && (
