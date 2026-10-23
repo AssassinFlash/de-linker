@@ -81,7 +81,7 @@ def _table_columns(
     statuses: dict[str, str],
     shapes: set[str],
     observed: dict[str, tuple[set[int], bool]],
-) -> dict[str, TableColumns]:
+) -> tuple[dict[str, TableColumns], set[str]]:
     """A source column heading authorizes only the immediately following TableItem.
 
     The chunker records native reading-order provenance. No page radius, generated
@@ -96,6 +96,7 @@ def _table_columns(
             groups.setdefault((chunk.doc_sha256, chunk.source_table), []).append(chunk)
     labels_to_ids = {model.casefold(): pid for pid, model in models.items() if model}
     output: dict[str, TableColumns] = {}
+    conflicts: set[str] = set()
     for (_, table_id), parts in groups.items():
         first = parts[0]
         preceding = [by_id[cid] for cid in first.preceding_text if cid in by_id]
@@ -149,6 +150,25 @@ def _table_columns(
             for line in rows
         ):
             continue
+        # A native table's own model axis cannot be overwritten by the preceding
+        # text. Equal sets do not prove equal column order. Refuse the complete
+        # TableItem when a local axis is partial, different or reversed.
+        local_conflict = False
+        for line in rows:
+            cells = [cell.strip() for cell in line.split("|")[1:-1]]
+            local = [
+                [label for label, pattern in patterns.items() if pattern.search(cell)]
+                for cell in cells[1:]
+            ]
+            if any(local) and (
+                any(len(labels) != 1 for labels in local)
+                or [labels_to_ids.get(labels[0]) for labels in local if labels] != ids
+            ):
+                local_conflict = True
+                break
+        if local_conflict:
+            conflicts.update(part.id for part in parts)
+            continue
         offset = 0
         sources = []
         for chunk in preceding:
@@ -166,7 +186,7 @@ def _table_columns(
             "heading": " ".join(heading.group().split()),
         }
         output.update({part.id: columns for part in parts})
-    return output
+    return output, conflicts
 
 
 def codes(text: str) -> list[str]:
@@ -460,7 +480,9 @@ def scope_proofs(
         if blocked:
             ambiguous.add(chunk.doc_sha256)
             ambiguous_sections.add(section_key)
-    columns = _table_columns(relevant, models, patterns, statuses, shapes, observed)
+    columns, table_conflicts = _table_columns(
+        relevant, models, patterns, statuses, shapes, observed
+    )
     result: dict[str, ScopeProof] = {}
     for chunk in relevant:
         matched, blocked = observed[chunk.id]
@@ -472,7 +494,7 @@ def scope_proofs(
             in {"warranty", "certificate"}
         ]
         basis, origin = "passage", [chunk.id]
-        if blocked:
+        if blocked or chunk.id in table_conflicts:
             continue
         if matched:
             if not any(
