@@ -79,3 +79,34 @@ model setting was changed. Source-level request counts do not establish a
 production latency improvement. Root owns the actual HTTP EN/DE generic-family
 and exact-model readback after integration; vocabulary and its separate authority
 reads were deliberately not optimized here.
+
+## Input encoding boundary review
+
+Independent Spec/Standards review found that the ID collector recognized only
+integer/list values, while the HTTP encoder accepted strings and tuples. For
+example, S0 containing only product 1 did not reject `product_ids=(1, 2)` or
+`inverter_id="1", battery_id="2"`. PHP accepts those query values through native
+integer conversion, and a compatibility response may contain only a verdict,
+with no returned product ID for the later check. Publication of product 2 after
+S0 does not revoke product 1's original dependency, so final validation alone
+cannot repair that input mismatch.
+
+The client now strictly checks and copies its flat arguments before any authority
+or ability request. Product ID scalars must be positive native integers; product
+ID arrays must be native lists of those integers. Booleans, floats, strings,
+tuples, nested/null ID values and PHP-ambiguous field names are rejected. Other
+native scalar fields and simple non-ID arrays retain their existing forms. The
+exact checked argument copy is both inspected against S0 and encoded on the
+wire, with no PHP-equivalent key normalization left implicit.
+
+Seventeen verdict-only negative examples first failed with actual mock HTTP
+requests; after the fix all are rejected before HTTP. Two positive examples
+preserve integer pair/list forms and a published locale ID. These join the
+original scope/standalone/ASGI regressions; no product ID in the tool's response
+is needed to establish the input rejection. The focused ability suites passed
+45 cases. The complete Genie suite on this branch passed 2,204 tests, one skipped,
+six expected failures and 195 existing duplicate campaign cases deselected.
+Full strict mypy passed all 195 source files, and Ruff lint/format passed all
+200 Python files. This follow-on changes only the ability input boundary, its
+regression tests and this evidence; it does not change model, timeout, budget,
+PHP, publication clients or the final permission gates.

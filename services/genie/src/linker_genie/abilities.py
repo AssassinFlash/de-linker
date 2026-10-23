@@ -31,6 +31,7 @@ or forged token, or any other route, answers as a guest.
 
 from __future__ import annotations
 
+import re
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -99,6 +100,40 @@ class AbilityError(RuntimeError):
     def __init__(self, message: str, *, fatal: bool = False) -> None:
         super().__init__(message)
         self.fatal = fatal
+
+
+def _checked_arguments(arguments: dict[str, Any] | None) -> dict[str, Any]:
+    """Keep S0's ID checks and PHP's flat query interpretation identical."""
+    if arguments is None:
+        return {}
+    if type(arguments) is not dict:
+        raise AbilityError("Ability inputs must be named fields.")
+    checked = {}
+    for key, value in arguments.items():
+        # PHP query parsing normalizes dots/spaces and interprets brackets.
+        # Every native ability field is a plain snake-case schema property.
+        if not isinstance(key, str) or not re.fullmatch(r"[a-z][a-z0-9_]*", key):
+            raise AbilityError("Ability input field names are ambiguous.")
+        if key in {"product_id", "inverter_id", "battery_id"}:
+            if type(value) is not int or value < 1:
+                raise AbilityError("Product IDs must be positive native integers.")
+        elif key in {"product_ids", "draft_ids"}:
+            if type(value) is not list or any(
+                type(pid) is not int or pid < 1 for pid in value
+            ):
+                raise AbilityError("Product ID lists must contain native integers.")
+            value = list(value)
+        elif isinstance(value, (list, tuple)):
+            if any(
+                item is not None and type(item) not in {str, int, float, bool}
+                for item in value
+            ):
+                raise AbilityError("Ability input lists must contain scalar values.")
+            value = list(value)
+        elif value is not None and type(value) not in {str, int, float, bool}:
+            raise AbilityError("Ability inputs must be flat scalar fields.")
+        checked[key] = value
+    return checked
 
 
 class Abilities(Protocol):
@@ -174,21 +209,13 @@ class AbilityClient:
     ) -> Any:
         if name not in ABILITY_NAMES:
             raise AbilityError(f"unknown ability {name}")
+        arguments = _checked_arguments(arguments)
         # The slash in `linker/search-products` stays raw: the production site
         # sits behind LiteSpeed, which answers an encoded slash with 404
         # (measured 2026-10-14: `linker%2Fsearch-products` 404, the raw path
         # 200), and every ability name carries one. The name is checked against
         # the allowlist above, so nothing unquoted can slip through.
         path = f"/wp-json/wp-abilities/v1/abilities/{quote(name, safe='/')}/run"
-        # Read-only abilities take GET; the input rides as nested query params,
-        # which the abilities REST controller reads back as `input`.
-        params: dict[str, Any] = {}
-        for key, value in (arguments or {}).items():
-            if isinstance(value, (list, tuple)):
-                for index, item in enumerate(value):
-                    params[f"input[{key}][{index}]"] = item
-            else:
-                params[f"input[{key}]"] = value
         headers = (
             {USER_CONTEXT_HEADER: user_context}
             if user_context and name in USER_CONTEXT_ABILITIES
@@ -213,6 +240,15 @@ class AbilityClient:
                 snapshot.require_urls(list(document_urls(arguments)))
         except PublicationUnavailable as error:
             raise AbilityError(str(error), fatal=True) from error
+        # Encode the exact owned argument copy which passed the checks above.
+        # Read-only abilities take GET; native REST reads these as `input`.
+        params: dict[str, Any] = {}
+        for key, value in arguments.items():
+            if isinstance(value, list):
+                for index, item in enumerate(value):
+                    params[f"input[{key}][{index}]"] = item
+            else:
+                params[f"input[{key}]"] = value
         response = self._get(name, path, params, headers)
         if response.status_code == 401:
             # A login-gated ability asked without a user: the caller must ask
