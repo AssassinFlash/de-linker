@@ -203,6 +203,7 @@
   "measurement_notes": {
     "baseline": "The separately measured frozen baseline is reused only after manifest and native Woo identity snapshot hashes match. It never authorizes runtime facts.",
     "isolation": "The total 1817 native-unavailable passages comes from the baseline full immutable-cache scan. Final proof candidates are checked again for release; zero match.",
-    "timing": "trace.seconds decodes/rechunks cached Docling JSON; elapsed_seconds measures proof+replay after that. Neither is live HTTP/build duration."
+    "timing": "trace.seconds decodes/rechunks cached Docling JSON; elapsed_seconds measures proof+replay after that. Neither is live HTTP/build duration.",
+    "new_build_boundary": "This is an older immutable cached-index replay with 11413 associated chunks. The root session separately reports a current normal-worker build of 10894 chunks/142 documents. These replay scope/readiness counts are not measurements of that new build; its actual manifest/chunk_scopes/loaded/ack still require readback."
   }
 }
