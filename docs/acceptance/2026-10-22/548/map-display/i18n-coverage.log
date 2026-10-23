@@ -1,0 +1,5 @@
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=62 exempt=62 gap=0
+plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=0 JSON problems=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+i18n-coverage: clean

@@ -1,0 +1,34 @@
+
+> @linker/planner@0.1.0 build:check
+> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs
+
+Planner build matches its sources.
+✖ a lazy built chunk never executes the versioned WordPress entry again (1581.034ms)
+(node:61142) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/planner.js?ver=wordpress-version is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3313.9885
+
+✖ failing tests:
+
+test at tests/built-modules.mjs:8:1
+✖ a lazy built chunk never executes the versioned WordPress entry again (1581.034ms)
+  TypeError [Error]: window.URL.createObjectURL is not a function
+      at n (file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/MapViewport-Df164uVC.js:1:604)
+      at file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/MapViewport-Df164uVC.js:1:477270
+      at file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/MapViewport-Df164uVC.js:1:246
+      at file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/MapViewport-Df164uVC.js:1:361
+      at file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js:1:268
+      at file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/MapViewport-Df164uVC.js:748:234554
+      at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+      at async node:internal/modules/esm/loader:647:26
+      at async TestContext.<anonymous> (file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/tests/built-modules.mjs:54:18)
+      at async Test.run (node:internal/test_runner/test:1409:7)
