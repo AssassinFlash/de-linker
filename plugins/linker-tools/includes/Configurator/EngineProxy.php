@@ -265,7 +265,7 @@ final class EngineProxy {
 		if ( is_wp_error( $version ) ) {
 			return $version;
 		}
-		if ( '' !== $version && 'POST' === $method ) {
+		if ( '' !== $version ) {
 			$args['headers']['X-Linker-Engine-Version'] = $version;
 		}
 		if ( 'POST' === $method ) {

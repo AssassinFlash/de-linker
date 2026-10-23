@@ -213,7 +213,7 @@ final class Resources {
 			}
 			if ( ! empty( $permit['reused'] ) ) {
 				$retry_reply = $this->replies->read( (int) $permit['receipt']['outcome'], $identity->binding() );
-				return $engineering ? EnginePublication::reply( $retry_reply ) : $retry_reply;
+				return EnginePublication::reply( $retry_reply );
 			}
 		}
 

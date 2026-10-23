@@ -236,11 +236,23 @@ export function ResidentialPanel( {
 	}
 
 	async function addAll() {
+		if ( ! input || ! result?.selection_fingerprint ) {
+			setAddOutcome( 'partial' );
+			return;
+		}
 		setAdding( true );
 		setAddOutcome( 'none' );
-		const complete = await store.addAll( draftLines(), ( id, state ) =>
-			setStatuses( ( current ) => new Map( current ).set( id, state ) ),
-			{ kind: 'residential', input, selection_fingerprint: result?.selection_fingerprint }
+		const complete = await store.addAll(
+			draftLines(),
+			( id, state ) =>
+				setStatuses( ( current ) =>
+					new Map( current ).set( id, state )
+				),
+			{
+				kind: 'residential',
+				input,
+				selection_fingerprint: result?.selection_fingerprint,
+			}
 		);
 		setAddOutcome( complete ? 'complete' : 'partial' );
 		setAdding( false );
@@ -270,7 +282,11 @@ export function ResidentialPanel( {
 				// PDF is the engine's existing report/pdf answer for that input
 				// (logo stays on the download button; it is not part of the input).
 				const reportPdf = savingReport
-					? await engine.reportPdf( savingInput, null, result.selection_fingerprint )
+					? await engine.reportPdf(
+							savingInput,
+							null,
+							result.selection_fingerprint
+						)
 					: null;
 				const record = await saveSolution(
 					config.restUrl,

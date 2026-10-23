@@ -114,7 +114,7 @@ export interface Report {
 
 export interface ResidentialResult {
 	selection_fingerprint?: string;
-	publication?: Record<string, unknown>;
+	publication?: Record< string, unknown >;
 	status: 'solution' | 'no_candidate';
 	yield: {
 		kwh_year_range: Range;
@@ -252,7 +252,7 @@ export interface CommercialSystem {
 
 export interface CommercialResult {
 	selection_fingerprint?: string;
-	publication?: Record<string, unknown>;
+	publication?: Record< string, unknown >;
 	status: 'sized' | 'indicative';
 	load: {
 		intervals: number;

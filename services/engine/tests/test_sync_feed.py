@@ -186,7 +186,7 @@ def test_process_readback_failure_rolls_back_the_whole_generation(
     assert code == 1, logs
     assert restart.calls == 2
     assert feed.resolve().parent == contract.resolve().parent == old
-    assert len(list(feed.parent.glob("publication-generation-*"))) == 1
+    assert len(list(feed.parent.glob("publication-generation-*"))) == 2
 
 
 def test_retains_only_current_and_previous_generation(

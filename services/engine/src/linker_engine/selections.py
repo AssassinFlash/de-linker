@@ -21,6 +21,7 @@ from .publication import digest
 class Selections:
     def __init__(self, directory: Path) -> None:
         directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(directory, 0o700)
         self.path = directory / "selections.sqlite"
         with self.connect() as database:
             database.execute(

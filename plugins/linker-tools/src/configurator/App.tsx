@@ -34,7 +34,9 @@ export function App( { config, engine, store, initialSegment }: AppProps ) {
 	const clients = useMemo(
 		() => ( {
 			engine: engine ?? engineClient( config.engineUrl ),
-			store: store ?? storeClient( config.restUrl, undefined, config.restNonce ),
+			store:
+				store ??
+				storeClient( config.restUrl, undefined, config.restNonce ),
 		} ),
 		[ config, engine, store ]
 	);

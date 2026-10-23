@@ -17,6 +17,7 @@ import json
 import os
 import shutil
 import socket
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -151,6 +152,7 @@ def sync(
         fcntl.flock(lock, fcntl.LOCK_EX)
         generation: Path | None = None
         job = None
+        previous: Path | None = None
         try:
             if jobs is not None:
                 job = jobs(
@@ -206,6 +208,20 @@ def sync(
             (generation / "manifest.json").write_text(json.dumps(manifest))
             current = directory / "current"
             previous = current.resolve() if current.is_symlink() else None
+            if (
+                previous is None
+                and feed_target.is_file()
+                and compatibility_target.is_file()
+            ):
+                # Preserve the initial legacy pair before replacing regular
+                # files with managed links. Code rollback may need this pair.
+                previous = Path(
+                    tempfile.mkdtemp(dir=directory, prefix="publication-generation-")
+                )
+                (previous / "feed.json").write_bytes(feed_target.read_bytes())
+                (previous / "compatibility.json").write_bytes(
+                    compatibility_target.read_bytes()
+                )
             atomic_link(generation, current)
             # Only the initial migration changes these links. The process pins
             # the resolved feed generation, so it never reads a mixed contract.
@@ -273,6 +289,18 @@ def sync(
                 )
             ):
                 shutil.rmtree(generation)
+            if (
+                generation is not None
+                and (directory / "current").is_symlink()
+                and (directory / "current").resolve() == generation
+            ):
+                for obsolete in directory.glob("publication-generation-*"):
+                    if (
+                        obsolete not in {generation, previous}
+                        and obsolete.is_dir()
+                        and not obsolete.is_symlink()
+                    ):
+                        shutil.rmtree(obsolete)
             if jobs is not None and job is not None:
                 try:
                     jobs(
@@ -289,12 +317,27 @@ def sync(
                 except Exception:  # noqa: BLE001 -- the lease remains retryable.
                     pass
             log(
-                f"publication sync failed; previous loaded data retained: {type(error).__name__}: {error}"
+                f"publication sync did not complete; current Woo checks remain enforced: {type(error).__name__}: {error}"
             )
             return 1
 
 
+def cleanup_receipts() -> None:
+    directory = Path(
+        os.environ.get(
+            "LINKER_ENGINE_CACHE", str(Path.home() / ".cache" / "linker-engine")
+        )
+    )
+    path = directory / "private" / "selections.sqlite"
+    if path.is_file():
+        with sqlite3.connect(f"file:{path}?mode=rw", uri=True) as database:
+            database.execute(
+                "DELETE FROM selections WHERE expires < ?", (int(time.time()),)
+            )
+
+
 def main() -> int:
+    cleanup_receipts()
     return sync(jobs=job_request)
 
 

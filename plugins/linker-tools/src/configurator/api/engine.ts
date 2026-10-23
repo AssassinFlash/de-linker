@@ -130,6 +130,12 @@ export function engineClient(
 				} )
 			).json(),
 		reportPdf: async ( input, logo, selectionFingerprint ) =>
-			( await post( '/report/pdf', { input, logo, selection_fingerprint: selectionFingerprint } ) ).blob(),
+			(
+				await post( '/report/pdf', {
+					input,
+					logo,
+					selection_fingerprint: selectionFingerprint,
+				} )
+			).blob(),
 	};
 }

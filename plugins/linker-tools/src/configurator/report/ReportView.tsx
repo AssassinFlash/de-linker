@@ -87,7 +87,11 @@ export function ReportView( {
 	async function download() {
 		setPdf( 'working' );
 		try {
-			const blob = await engine.reportPdf( input, logo?.data ?? null, selectionFingerprint );
+			const blob = await engine.reportPdf(
+				input,
+				logo?.data ?? null,
+				selectionFingerprint
+			);
 			const url = URL.createObjectURL( blob );
 			const link = document.createElement( 'a' );
 			link.href = url;

@@ -207,12 +207,20 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         response.headers["Cache-Control"] = "private, no-store"
         snapshot: dict[str, Any] = {
             "version": current,
-            "source_revision": str(services().publication.feed.get("source_revision", "")),
-            "compatibility_revision": str(services().publication.feed.get("compatibility_revision", "")),
+            "source_revision": str(
+                services().publication.feed.get("source_revision", "")
+            ),
+            "compatibility_revision": str(
+                services().publication.feed.get("compatibility_revision", "")
+            ),
         }
         if request.query_params.get("ready") == "1":
             try:
-                snapshot["prepared_products"] = services().publication.view(services().engine).dependencies["products"]
+                snapshot["prepared_products"] = (
+                    services()
+                    .publication.view(services().engine)
+                    .dependencies["products"]
+                )
             except PublicationUnavailable as error:
                 raise unavailable(error, "publication_unavailable") from error
         return snapshot
@@ -328,9 +336,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         try:
             loaded = services()
             view = loaded.publication.view(loaded.engine)
+            view = View(
+                view.engine, {**view.dependencies, "products": [], "documents": []}
+            )
             result = loaded.roof.outline(request)
             loaded.publication.confirm(view)
-            result.publication = {**view.dependencies, "products": [], "documents": []}
+            result.publication = view.dependencies
             return result
         except PublicationUnavailable as error:
             raise unavailable(error, "publication_unavailable") from error
@@ -343,9 +354,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         loaded = services()
         try:
             view = loaded.publication.view(loaded.engine)
+            view = View(
+                view.engine, {**view.dependencies, "products": [], "documents": []}
+            )
             result = roof_service.pack_drawn(request, loaded.engine.products.module)
             loaded.publication.confirm(view)
-            result.publication = {**view.dependencies, "products": [], "documents": []}
+            result.publication = view.dependencies
             return result
         except PublicationUnavailable as error:
             raise unavailable(error, "publication_unavailable") from error
