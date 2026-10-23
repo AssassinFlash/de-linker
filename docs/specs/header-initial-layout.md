@@ -37,20 +37,28 @@ groups and the final contact action after all five groups are expanded.
 At 320px the two 140px product cards and their existing 10px gap exceed the
 288px content width by 2px. Cap each card at the smaller of its existing width
 and half the available rail width after the gap; let its image follow that
-width. Keep the three-card solutions rail horizontally browsable. Reserve the
-existing outline's 4px footprint inside the scrollport, offsetting that reserve
-at its sides so card alignment stays unchanged. The card outline must be fully
+width. Reserve the existing outline's 4px footprint around the cards, offsetting
+that reserve at the sides so card alignment stays unchanged. The card outline must be fully
 visible, including its top and left edges; use the existing 12px card corner
-radius and teal title on hover or keyboard focus. Give native scroll snapping
-the same 4px inset so aligning a card does not consume its focus space.
-While a card retains focus, let native focus scrolling reveal it without snap
-alignment overriding the focused target. Suspend snapping on that focused
-rail; keep every card's snap target and the same 4px scroll margin. Retained
-focus must also allow a subsequent finger swipe in either direction, including
-when the browser still marks the link focus-visible. Restore ordinary snapping
-when focus leaves the rail.
-Verify both rails, first/last
-card focus, true third-card scrolling and category consumers in EN/DE.
+radius and teal title on hover or keyboard focus.
+
+Native review rejected both horizontal alternatives: selecting one focused
+snap target traps a subsequent finger swipe, while suspending snapping still
+leaves a partially visible keyboard target in the in-app browser. Let these
+same cards wrap naturally when they cannot all fit. All three solution entries
+then remain visible without an undisclosed horizontal gesture or another JS
+scroll controller. Keep the existing card width, gaps and wider single-row
+presentation; the existing panel supplies native vertical scrolling when
+needed. This opened-panel bug fix is an explicit visual change; the closed
+header and normal desktop menus retain their parity gate. Verify both card
+groups, first/last focus, the third solution's real consumer and panel scroll
+end in EN/DE with and without the enhancement.
+
+The existing mobile CSS places Products above Solutions while both LC partials
+put Solutions first in source order. Move each complete Products block before
+Solutions, preserving every link, label and attribute. Native Tab, Shift+Tab
+and reading order must follow the unchanged visual sequence; no positive
+tabindex or JS keyboard reordering is needed.
 
 If someone has already opened the native panel at a desktop width while the
 enhancement is pending, keep it available until they close it. A fit that has
