@@ -10,18 +10,18 @@
 		"src/accounts/style.css": "4c94db9ad8053256d4a0dff433e50f29d24cbf313507650aac9b9e3511267b40",
 		"src/accounts/types.ts": "d3d3b5d1f8a691f990bbf3cec1a2510c4aec1132fd7af7c969d0602caeea5dab",
 		"src/css.d.ts": "da5bf71d48cf909584a01c80b445f730507068f5b34c920f352e2bfcf0315e4c",
-		"src/protection/client.ts": "48e161629c447b0defc10eac92a1dc5a04eb4c8ff063fb0a3a325aad42ccebc0",
+		"src/protection/client.ts": "415caa80459cb1ab8caf8288b572ab8d1cd34b395c0386054baa73c4b6d6e26a",
 		"src/protection/draft.ts": "422d06ce4e990e75daebf27dbb36c6064dc2c11d3df9e4de1aa8c8ca4be57224",
 		"src/protection/forms.ts": "9e50bdc3c5c528ebeb09d2383e4b804b5c10daea658ad33ae883b9424aab180c",
 		"src/protection/index.ts": "e3f7136800d19f5a2f383a46f94792eae22ab88977ca965c2533b72905c0a3e0",
-		"src/protection/types.ts": "1629765d4f7e2b2f5330ea20e76937551c252a32d61f06985e2ccddd2a11dcbb",
+		"src/protection/types.ts": "de7e504b873c6f4c54a980661fae4a516e2682e107f2fa13fe56eefa9f0d4e6c",
 		"webpack.config.js": "2cb64d1918918b81b390cc4621308d2a775f168a8573b36c68bb14f3ebc3884f"
 	},
 	"build": {
-		"build/accounts.asset.php": "1124301479c1da8772674e03ca70b8ca898f1b913642162222a0ea381ce51960",
-		"build/accounts.js": "b218e5fb42efd2bcf5d801f9cffeea684a8327f13ec63b5d2f78bbf279fb7f6d",
-		"build/protection.asset.php": "26240f02a82f421057ab657a70ac5870370c085f7ca891b08ebf7fed3b0cfaef",
-		"build/protection.js": "c625c304ab5da20aa7559b382c61941e95b8028ccb829da5c5f250073192dd94",
+		"build/accounts.asset.php": "bc2d6fcfc8d1e149cedffddfc4a00fb42442274a91991f3f739b9d02988e20c7",
+		"build/accounts.js": "2406df8c89e5e80cf48bfe4fe70f1d9eae0fbf420173264615a6e95491c8d5e4",
+		"build/protection.asset.php": "439b20d1afd7642db60e1501e4239bcbbaec7f3e645cf18be70a3aaa9044af36",
+		"build/protection.js": "b0e8ca2cf29b3296cfa2e6a85951b1608a9c40ec7f9b335aee12bba1b4b7431d",
 		"build/style-accounts-rtl.css": "76b9f280e93eec63bcf3e2e18a0c4f7fe191002c3bc9c01642b63983ee4d02ea",
 		"build/style-accounts.css": "bf3039f48fd4dfb07f9752fe763d29f52eee185031f5217edf999ea6fa62e516"
 	}
