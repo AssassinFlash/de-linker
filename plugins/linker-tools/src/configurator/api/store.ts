@@ -6,18 +6,30 @@
 /**
  * Internal dependencies
  */
-import type { Locale, StoreProduct, ResidentialInput } from '../types';
+import type {
+	Locale,
+	StoreProduct,
+	ResidentialInput,
+	CommercialInput,
+} from '../types';
 import { resourceFetch } from '../../protection/request';
 
 type Fetch = typeof fetch;
 
 export type AddStatus = 'pending' | 'added' | 'unverified' | 'retry';
 
-export interface SelectionProof {
-	kind: 'residential';
-	input: ResidentialInput;
-	selection_fingerprint: string;
-}
+export type SelectionProof =
+	| {
+			kind: 'residential';
+			input: ResidentialInput;
+			selection_fingerprint: string;
+	  }
+	| {
+			kind: 'commercial';
+			input: CommercialInput;
+			selection_fingerprint: string;
+			system_index: number;
+	  };
 
 export interface DraftLine {
 	productId: number;

@@ -29,6 +29,7 @@ final class Module {
 	 * @param AccountStatusNotice $status_notice   The pending or restricted account status notice.
 	 * @param AuthTemplates       $auth      The guest sign-in, register and lost-password pages.
 	 * @param AdminAccessNotice   $admin_access The explanation of Woo's admin protection.
+	 * @param SolutionDraftRoute  $draft_route Atomic current-design additions.
 	 */
 	public function __construct(
 		private readonly Menu $menu,
@@ -40,7 +41,8 @@ final class Module {
 		private readonly SolutionsRoute $route,
 		private readonly AccountStatusNotice $status_notice = new AccountStatusNotice(),
 		private readonly AuthTemplates $auth = new AuthTemplates(),
-		private readonly AdminAccessNotice $admin_access = new AdminAccessNotice()
+		private readonly AdminAccessNotice $admin_access = new AdminAccessNotice(),
+		private readonly SolutionDraftRoute $draft_route = new SolutionDraftRoute()
 	) {}
 
 	/**
@@ -66,7 +68,7 @@ final class Module {
 		add_action( 'wp_loaded', array( $this->solutions, 'add_to_draft' ), 30 );
 		add_action( 'woocommerce_load_cart_from_session', array( $this->solutions, 'claim' ) );
 		add_action( 'rest_api_init', array( $this->route, 'register' ) );
-		add_action( 'rest_api_init', array( new SolutionDraftRoute(), 'register' ) );
+		add_action( 'rest_api_init', array( $this->draft_route, 'register' ) );
 		add_action( 'woocommerce_account_documents_endpoint', array( $this->documents, 'render' ) );
 		add_action( 'template_redirect', array( $this->download, 'serve' ), 1 );
 	}

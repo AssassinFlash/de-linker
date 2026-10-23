@@ -26,6 +26,10 @@ final class SolutionDraftRoute {
 				'callback'            => array( $this, 'create' ),
 				'permission_callback' => array( $this, 'permission' ),
 				'args'                => array(
+					'system_index'          => array(
+						'type'    => 'integer',
+						'minimum' => 0,
+					),
 					'kind'                  => array(
 						'type'     => 'string',
 						'enum'     => SolutionsRoute::KINDS,
@@ -64,7 +68,8 @@ final class SolutionDraftRoute {
 		$result = ( new DesignProof() )->verify(
 			(string) $request->get_param( 'kind' ),
 			(array) $request->get_param( 'input' ),
-			(string) $request->get_param( 'selection_fingerprint' )
+			(string) $request->get_param( 'selection_fingerprint' ),
+			is_int( $request->get_param( 'system_index' ) ) ? $request->get_param( 'system_index' ) : null
 		);
 		if ( $result instanceof WP_Error ) {
 			return $result;

@@ -27,10 +27,18 @@ use WP_REST_Response;
  */
 final class SolutionsRouteTest extends TestCase {
 
-	/** Current Woo authority, independent of the browser body. */
+	/**
+	 * Current Woo authority, independent of the browser body.
+	 *
+	 * @var bool
+	 */
 	private bool $current = true;
 
-	/** @return array<string,mixed> A complete verified engine fixture. */
+	/**
+	 * Complete verified engine fixture.
+	 *
+	 * @return array<string,mixed>
+	 */
 	private static function result(): array {
 		return array(
 			'selection_fingerprint' => str_repeat( 'a', 64 ),
@@ -59,7 +67,11 @@ final class SolutionsRouteTest extends TestCase {
 		);
 	}
 
-	/** @return array<string,mixed> The immutable saved design. */
+	/**
+	 * The immutable saved design.
+	 *
+	 * @return array<string,mixed>
+	 */
 	private static function design(): array {
 		return array(
 			'kind'                  => 'residential',
@@ -184,7 +196,7 @@ final class SolutionsRouteTest extends TestCase {
 					$this->assertSame( 'POST', $options['methods'] );
 					$this->assertSame( array( $route, 'create' ), $options['callback'] );
 					$this->assertSame( '__return_true', $options['permission_callback'] );
-					$this->assertSame( array( 'kind', 'title', 'input', 'lines', 'selection_fingerprint', 'report_pdf' ), array_keys( $options['args'] ) );
+					$this->assertSame( array( 'system_index', 'kind', 'title', 'input', 'lines', 'selection_fingerprint', 'report_pdf' ), array_keys( $options['args'] ) );
 					$this->assertSame( SolutionsRoute::KINDS, $options['args']['kind']['enum'] );
 					$this->assertSame( array( 'product_id', 'quantity' ), $options['args']['lines']['items']['required'] );
 					$this->assertFalse( $options['args']['lines']['items']['additionalProperties'] );

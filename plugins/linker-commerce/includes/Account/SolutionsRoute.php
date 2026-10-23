@@ -57,6 +57,10 @@ final class SolutionsRoute {
 				// Guests may save too: their solution waits in their session until they log in.
 				'permission_callback' => '__return_true',
 				'args'                => array(
+					'system_index'          => array(
+						'type'    => 'integer',
+						'minimum' => 0,
+					),
 					'kind'                  => array(
 						'type'     => 'string',
 						'enum'     => self::KINDS,
@@ -113,7 +117,7 @@ final class SolutionsRoute {
 	public function create( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$kind   = (string) $request->get_param( 'kind' );
 		$input  = (array) $request->get_param( 'input' );
-		$result = $this->proof->verify( $kind, $input, (string) $request->get_param( 'selection_fingerprint' ) );
+		$result = $this->proof->verify( $kind, $input, (string) $request->get_param( 'selection_fingerprint' ), is_int( $request->get_param( 'system_index' ) ) ? $request->get_param( 'system_index' ) : null );
 		if ( $result instanceof WP_Error ) {
 			return $result;
 		}

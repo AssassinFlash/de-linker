@@ -244,6 +244,9 @@ final class SavedSolutions {
 		$snapshot = $this->snapshot( $solution_id );
 		$labels   = array();
 		$selected = is_array( $snapshot['selected'] ?? null ) ? $snapshot['selected'] : array();
+		if ( array() === $selected && is_int( $snapshot['selected_system_index'] ?? null ) && is_array( $snapshot['systems'][ $snapshot['selected_system_index'] ] ?? null ) ) {
+			$selected = $snapshot['systems'][ $snapshot['selected_system_index'] ];
+		}
 		foreach ( is_array( $selected['lines'] ?? null ) ? $selected['lines'] : array() as $line ) {
 			if ( is_array( $line ) && is_array( $line['product'] ?? null ) ) {
 				$product                                 = $line['product'];
