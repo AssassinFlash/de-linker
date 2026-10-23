@@ -18,16 +18,20 @@ new dependency is needed: LC owns composition and WindPress owns appearance.
 The panel opens below the header as a bounded, scrollable surface. This
 deliberately stops the opened navigation from growing the sticky header and
 pushing the page content. Record that intended open-state layout change in
-the visual evidence; the closed header and page content retain their layout.
+the visual evidence; the closed mobile header and page content retain their
+layout. The desktop gutter correction is separately recorded in
+`header-initial-layout.md` as an explicit closed-header visual bug fix.
 Check width, full panel scroll reach, final contact action, keyboard targets,
 focus visibility and stacking with existing page controls.
 The existing Genie launcher is 50px high, 20px above the viewport bottom,
-and visible above 860px (`plugins/linker-tools/src/genie/genie.css`). When
-that launcher exists, the folded panel reserves its footprint plus the
-existing 12px bottom gap and safe-area inset. At the actual scroll end,
-the whole contact action must be above the launcher; verify real hit targets
-along the action, not just a rectangle inside the viewport. Keep both the
-contact link and the Genie entry available.
+and visible above 860px (`plugins/linker-tools/src/genie/genie.css`). Its
+footprint also overlaps the Services row before the panel reaches its end,
+so bottom padding alone cannot protect the menu's full hit areas. While the
+native panel is open, hide only the collapsed launcher through its existing
+aria-expanded=false state. Restore it when the panel closes; retain an
+already open conversation and the menu's Genie link. Keep the existing12px
+panel bottom gap. Check the whole Services and Contact actions, launcher
+restoration and keyboard visibility, not just their centre points or bounds.
 The actual expanded state remains native; the summary has an explicit button
 role and controls reference so it remains discoverable when styled. The panel
 also changes the hamburger glyph to a close glyph through native open-state
