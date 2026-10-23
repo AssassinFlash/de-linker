@@ -342,10 +342,25 @@ final class EngineeringFeed {
 			if ( in_array( $product_id, $document['product_ids'], true ) ) {
 				$document['url']     = self::feed_url( $document['url'] );
 				$document['aliases'] = array_map( array( self::class, 'feed_url' ), $document['aliases'] );
+				$document['lang']    = self::document_language( $document['lang'] );
+				$document['type']    = Materials::document_kind( $document['role'] ?? '', $document['type'] );
 				$listed[]            = $document;
 			}
 		}
 		return $listed;
+	}
+
+	/**
+	 * Canonical language tags for the engine; unknown remains undetermined.
+	 *
+	 * @param string $label Stored Woo document language, left unchanged at source.
+	 */
+	private static function document_language( string $label ): string {
+		$language = strtolower( trim( $label ) );
+		if ( in_array( $language, array( 'mul', 'multi', 'en/de', 'de/en' ), true ) ) {
+			return 'mul';
+		}
+		return 1 === preg_match( '/^[a-z]{2}$/D', $language ) ? $language : 'und';
 	}
 
 	/**
