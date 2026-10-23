@@ -5847,3 +5847,40 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#: includes/Abilities/ReadSolution.php:64
+msgid "Returns this account's own saved historical snapshot and its selection basis. This does not recalculate a design or provide current product facts."
+msgstr "Liest die im eigenen Konto gespeicherte historische Lösung mit ihrer Auswahlgrundlage. Dabei werden weder die Planung neu berechnet noch aktuelle Produktdaten abgerufen."
+
+#: includes/Abilities/ReadSolution.php:180
+msgid "This saved solution has no recorded design details. Its saved documents are still available in your account."
+msgstr "Für diese gespeicherte Lösung sind keine Planungsdetails hinterlegt. Die gespeicherten Dokumente sind weiterhin in Ihrem Konto verfügbar."
+
+#: includes/Abilities/ReadSolution.php:183
+msgid "These saved design details are not available in Genie. Your saved solution and documents remain in your account."
+msgstr "Genie kann diese gespeicherten Planungsdetails nicht anzeigen. Ihre gespeicherte Lösung und die Dokumente bleiben in Ihrem Konto verfügbar."
+
+#: includes/Account/DesignProof.php:144
+msgid "This solution needs a new calculation before it can be saved or added to your solution draft."
+msgstr "Diese Lösung muss neu berechnet werden, bevor sie gespeichert oder zum Lösungsentwurf hinzugefügt werden kann."
+
+#: includes/Account/DesignProof.php:151
+msgid "The solution could not be checked. Please try again."
+msgstr "Die Lösung konnte nicht geprüft werden. Bitte versuchen Sie es erneut."
+
+#: includes/Account/SavedSolutions.php:275
+#, php-format
+msgid "Product %d"
+msgstr "Produkt %d"
+
+#: includes/Admin/DocumentsMetaBox.php:73
+msgid "Automatic preparation"
+msgstr "Automatische Aufbereitung"
+
+#: includes/Products/Publication/Module.php:59
+msgid "Public technical document"
+msgstr "Öffentliche technische Unterlage"
+
+#: includes/Products/Publication/Module.php:62
+msgid "Requires an associated published product. Clear to withdraw this document from every product."
+msgstr "Erfordert ein zugeordnetes, veröffentlichtes Produkt. Entfernen Sie das Häkchen, um diese Unterlage für alle Produkte zurückzuziehen."

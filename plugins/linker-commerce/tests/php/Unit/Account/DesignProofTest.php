@@ -49,6 +49,21 @@ final class DesignProofTest extends TestCase {
 		$this->assertInstanceOf( WP_Error::class, $proof->verify( 'residential', array( 'plz' => '39179' ), str_repeat( 'b', 64 ) ) );
 	}
 
+	/** An unreadable authority stops the action without claiming product withdrawal. */
+	public function test_authority_unavailability_preserves_a_verification_error(): void {
+		$proof = new DesignProof(
+			static function (): array {
+				throw new \RuntimeException( 'Current authority unavailable.' );
+			},
+			static fn (): array => array( 200, (string) json_encode( self::result() ) )
+		);
+		$error = $proof->verify( 'residential', array( 'plz' => '39179' ), str_repeat( 'a', 64 ) );
+		$this->assertInstanceOf( WP_Error::class, $error );
+		$this->assertSame( 'linker_solution_verification', $error->get_error_code() );
+		$this->assertSame( array( 'status' => 503 ), $error->get_error_data() );
+		$this->assertFalse( $proof->is_current( self::result() ) );
+	}
+
 	/** Commercial calls identify the customer's explicit card, never the first one. */
 	public function test_commercial_selection_requires_an_explicit_valid_index(): void {
 		$result = self::result();

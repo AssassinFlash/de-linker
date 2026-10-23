@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import copy
-from typing import Any
+from pathlib import Path
+from typing import Any, NoReturn
 
 import pytest
 from conftest import publication_manifest
@@ -25,14 +26,14 @@ def ids(value: Any) -> set[int]:
 
 @pytest.mark.parametrize("mode", ["off", "enforce"])
 def test_withdrawal_before_feed_sync(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path, mode: str
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path, mode: str
 ) -> None:
     monkeypatch.setenv("LINKER_ENGINE_GATE_MODE", mode)
     monkeypatch.setenv("GENIE_SERVICE_TOKEN", "test-service")
     monkeypatch.setenv("LINKER_ENGINE_CACHE", str(tmp_path))
     withdrawn: set[int] = set()
 
-    def current(self):
+    def current(self: Publication) -> dict[str, Any]:
         data = publication_manifest(self.feed)
         withdrawn.update(
             p["id"] for p in self.feed["products"] if p["brand"] == "EcoFlow"
@@ -60,7 +61,7 @@ def test_inflight_withdrawal_invalidates_every_candidate(
 ) -> None:
     calls = 0
 
-    def current(self):
+    def current(self: Publication) -> dict[str, Any]:
         nonlocal calls
         calls += 1
         data = publication_manifest(self.feed)
@@ -77,7 +78,7 @@ def test_inflight_withdrawal_invalidates_every_candidate(
 def test_unready_new_product_does_not_close_prepared_products(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    def current(self):
+    def current(self: Publication) -> dict[str, Any]:
         data = publication_manifest(self.feed)
         data["source_revision"] = "f" * 64
         data["products"].append(
@@ -117,7 +118,7 @@ def test_empty_current_set_is_normal_no_candidate(
 def test_source_failure_closes_current_work(
     client: TestClient, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    def unavailable(self):
+    def unavailable(self: Publication) -> NoReturn:
         raise PublicationUnavailable("synthetic failure")
 
     monkeypatch.setattr(Publication, "read", unavailable)
@@ -168,7 +169,7 @@ def test_pdf_and_trusted_selection_require_confirmed_result(
     )
     selected = first["selected"]["inverter"]["id"]
 
-    def withdrawn(self):
+    def withdrawn(self: Publication) -> dict[str, Any]:
         data = publication_manifest(self.feed)
         data["products"] = [p for p in data["products"] if p["product_id"] != selected]
         return data
@@ -187,7 +188,7 @@ def test_replaced_document_excludes_only_dependents(
 ) -> None:
     affected: set[int] = set()
 
-    def current(self):
+    def current(self: Publication) -> dict[str, Any]:
         data = copy.deepcopy(publication_manifest(self.feed))
         changed = data["documents"][0]
         affected.update(changed["product_ids"])
@@ -203,7 +204,7 @@ def test_replaced_document_excludes_only_dependents(
 
 
 def test_confirm_pdf_and_save_do_not_recompute(
-    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path
+    client: TestClient, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setenv("LINKER_ENGINE_GATE_MODE", "enforce")
     monkeypatch.setenv("GENIE_SERVICE_TOKEN", "confirmed-test")
@@ -216,7 +217,7 @@ def test_confirm_pdf_and_save_do_not_recompute(
     assert design.status_code == 200
     result = design.json()
 
-    def never_recompute(*args, **kwargs):
+    def never_recompute(*args: Any, **kwargs: Any) -> NoReturn:
         raise AssertionError("a confirmed result must never silently reselect")
 
     monkeypatch.setattr("linker_engine.residential.design", never_recompute)

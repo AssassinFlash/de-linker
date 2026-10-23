@@ -13,7 +13,7 @@ import json
 import subprocess
 import sys
 import threading
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from types import ModuleType
@@ -86,7 +86,12 @@ def feed_document() -> dict[str, Any]:
 
 
 def run(
-    sync: ModuleType, directory: Path, url: str, *, loaded=None, jobs=None
+    sync: ModuleType,
+    directory: Path,
+    url: str,
+    *,
+    loaded: Callable[[], dict[str, Any]] | None = None,
+    jobs: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None,
 ) -> tuple[int, Restarter, list[str], Path, Path]:
     state = directory / "state"
     state.mkdir(exist_ok=True)
@@ -98,7 +103,7 @@ def run(
     restarter = Restarter()
     lines: list[str] = []
 
-    def actual():
+    def actual() -> dict[str, Any]:
         document = json.loads(feed.read_text())
         return {
             "source_revision": document["source_revision"],
@@ -204,9 +209,9 @@ def test_retains_only_current_and_previous_generation(
 def test_jobs_ack_only_the_running_source(tmp_path: Path, feed_url: str) -> None:
     document = feed_document()
     (tmp_path / "feed.json").write_text(json.dumps(document))
-    calls = []
+    calls: list[tuple[str, dict[str, Any]]] = []
 
-    def jobs(action, payload):
+    def jobs(action: str, payload: dict[str, Any]) -> dict[str, Any]:
         calls.append((action, payload))
         return (
             {

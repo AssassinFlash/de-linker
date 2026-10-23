@@ -60,7 +60,8 @@ export const fixtures = {
 
 export interface FakeEngineOptions {
 	locale: Locale;
-	residential?: 'solution' | 'none' | 'unavailable' | 'never' | 'stale' | 'publication';
+	residential?:
+		'solution' | 'none' | 'unavailable' | 'never' | 'stale' | 'publication';
 	commercial?: 'sized' | 'indicative';
 	delay?: number;
 }
@@ -83,8 +84,12 @@ export function fakeEngine( options: FakeEngineOptions ) {
 			if ( options.residential === 'never' ) {
 				return new Promise( () => undefined );
 			}
-			if ( options.residential === 'stale' || options.residential === 'publication' ) {
-				const { EngineError } = await import( '../../src/configurator/api/engine' );
+			if (
+				options.residential === 'stale' ||
+				options.residential === 'publication'
+			) {
+				const { EngineError } =
+					await import( '../../src/configurator/api/engine' );
 				throw new EngineError( options.residential );
 			}
 			if ( options.residential === 'unavailable' ) {
@@ -144,7 +149,9 @@ export function fakeStore(
 		) {
 			lines.forEach( ( line ) => onStatus( line.productId, 'pending' ) );
 			await wait( 0 );
-			if ( outcome !== 'stale' ) { added.push( ...lines ); }
+			if ( outcome !== 'stale' ) {
+				added.push( ...lines );
+			}
 			lines.forEach( ( line ) => onStatus( line.productId, outcome ) );
 			return outcome === 'added';
 		},

@@ -34,17 +34,25 @@ final class AtomicSolutionDraft {
 	 */
 	public function add( array $result ): array|WP_Error {
 		$items = DesignProof::items( $result );
-		if ( array() === $items || ! $this->proof->is_current( $result ) ) {
+		if ( array() === $items ) {
 			return DesignProof::unavailable();
+		}
+		$current_error = $this->proof->current_error( $result );
+		if ( $current_error instanceof WP_Error ) {
+			return $current_error;
 		}
 		wc_load_cart();
 		$cart = WC()->cart;
-		foreach ( $items as $item ) {
-			$permit  = Publication::product( $item['product_id'] );
-			$product = null !== $permit ? wc_get_product( $item['product_id'] ) : false;
-			if ( ! $product instanceof \WC_Product ) {
-				return DesignProof::unavailable();
+		try {
+			foreach ( $items as $item ) {
+				$permit  = Publication::product( $item['product_id'] );
+				$product = null !== $permit ? wc_get_product( $item['product_id'] ) : false;
+				if ( ! $product instanceof \WC_Product ) {
+					return DesignProof::unavailable();
+				}
 			}
+		} catch ( \RuntimeException $error ) {
+			return DesignProof::verification_failed();
 		}
 		$before  = $cart->get_cart();
 		$notices = wc_get_notices();
@@ -61,8 +69,9 @@ final class AtomicSolutionDraft {
 					return $this->rollback( $cart, $before, $notices );
 				}
 			}
-			if ( ! $this->proof->is_current( $result ) ) {
-				return $this->rollback( $cart, $before, $notices );
+			$current_error = $this->proof->current_error( $result );
+			if ( $current_error instanceof WP_Error ) {
+				return $this->rollback( $cart, $before, $notices, $current_error );
 			}
 			$quantities = array();
 			foreach ( $cart->get_cart() as $line ) {
@@ -75,8 +84,9 @@ final class AtomicSolutionDraft {
 				}
 			}
 			$cart->calculate_totals();
-			if ( ! $this->proof->is_current( $result ) ) {
-				return $this->rollback( $cart, $before, $notices );
+			$current_error = $this->proof->current_error( $result );
+			if ( $current_error instanceof WP_Error ) {
+				return $this->rollback( $cart, $before, $notices, $current_error );
 			}
 			return array_map(
 				static fn ( array $item ): array => array(
@@ -96,11 +106,12 @@ final class AtomicSolutionDraft {
 	 * @param WC_Cart              $cart    Woo native draft.
 	 * @param array<string, mixed> $before  Exact previous contents.
 	 * @param array<string, mixed> $notices Previous native notices.
+	 * @param WP_Error|null        $error   Current-authority failure when known.
 	 */
-	private function rollback( WC_Cart $cart, array $before, array $notices ): WP_Error {
+	private function rollback( WC_Cart $cart, array $before, array $notices, ?WP_Error $error = null ): WP_Error {
 		$cart->set_cart_contents( $before );
 		$cart->calculate_totals();
 		wc_set_notices( $notices );
-		return DesignProof::unavailable();
+		return $error ?? DesignProof::unavailable();
 	}
 }
