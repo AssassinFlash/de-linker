@@ -156,12 +156,21 @@ final class Outbox {
 	 * Attempts a queued message again; runs on the Action Scheduler hook.
 	 *
 	 * @param int $job_id Job id.
+	 * @throws InitialReadFailure Native initial reads failed before any attempt.
 	 */
 	public function retry( int $job_id ): void {
 		// An outer transaction cannot arm an already held original notification.
-		if ( $this->jobs->held( $job_id ) ) {
-			return; }
-		if ( $this->jobs->transaction_active() ) {
+		try {
+			if ( $this->jobs->held( $job_id ) ) {
+				return;
+			}
+			$joined = $this->jobs->transaction_active();
+		} catch ( \Throwable $error ) {
+			// This witness ends before any attempt. It must never cover SMTP,
+			// a delivered ACK, or deletion whose external outcome is unknown.
+			throw new InitialReadFailure( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Typed cause only; the public diagnostic is fixed and never outputs native errors.
+		}
+		if ( $joined ) {
 			NativeTransaction::after_commit(
 				function () use ( $job_id ): void {
 					$this->retry( $job_id );

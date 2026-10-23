@@ -240,9 +240,9 @@ class ConversationMail {
 		if ( 1 !== preg_match( '/^(\d+)\.([0-9a-f]{64})$/', $token, $parts ) ) {
 			return self::result( self::EXPIRED, 'en' );
 		}
-		$id     = (int) $parts[1];
-		$result = self::result( self::UNAVAILABLE, 'en' );
-		$this->confirmation_lock(
+		$id        = (int) $parts[1];
+		$result    = self::result( self::UNAVAILABLE, 'en' );
+		$completed = $this->confirmation_lock(
 			$id,
 			function () use ( $id, $parts, &$result ): void {
 				clean_post_cache( $id );
@@ -287,7 +287,7 @@ class ConversationMail {
 				$result   = self::result( $status, $locale );
 			}
 		);
-		return $result;
+		return $completed ? $result : self::result( self::UNAVAILABLE, $result['locale'] );
 	}
 
 	/**
@@ -296,31 +296,35 @@ class ConversationMail {
 	 * @param int      $id Native conversation.
 	 * @param callable $work Source validation and original-job handoff only.
 	 */
-	private function confirmation_lock( int $id, callable $work ): void {
+	private function confirmation_lock( int $id, callable $work ): bool {
 		if ( ! class_exists( \Linker\Commerce\Mail\ConnectionFence::class ) ) {
-			return; // The native mail consumer is unavailable too; never consume the token.
+			return false; // The native mail consumer is unavailable too; never consume the token.
 		}
 		try {
-			\Linker\Commerce\Mail\ConnectionFence::run(
-				function () use ( $id, $work ): void {
+			return \Linker\Commerce\Mail\ConnectionFence::run(
+				function () use ( $id, $work ): bool {
 					global $wpdb;
 					$database = is_string( $wpdb->dbname ?? null ) ? $wpdb->dbname : ( defined( 'DB_NAME' ) ? (string) constant( 'DB_NAME' ) : '' );
 					$name     = 'linker-conversation-mail-' . md5( $database . '/' . $wpdb->prefix . '/' . $id );
 			   // phpcs:disable WordPress.DB.DirectDatabaseQuery -- Connection-owned bounded mutex, following Thread's native DB namespace.
 					if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 1)', $name ) ) ) {
-							return;
+								return false;
 					}
 					try {
 						$work();
 					} finally {
-						$wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) );
+						if ( '1' !== (string) $wpdb->get_var( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', $name ) ) ) {
+							throw new \RuntimeException( 'conversation_confirmation_unlock_unconfirmed' );
+						}
 					}
+					return true;
 			// phpcs:enable
 				}
 			);
 		} catch ( \Throwable $error ) {
-			// Keep the initialized unavailable result and its original token after unknown storage.
-			return;
+			// A callback may already have prepared a pending result before the
+			// final unlock failed. The caller must replace that tentative result.
+			return false;
 		}
 	}
 

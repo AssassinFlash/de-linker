@@ -405,6 +405,191 @@ final class ConnectionFenceTest extends IntegrationTestCase {
 		}
 	}
 
+	/** An actual failed single action must retain a later consumer for the same committed job.
+	 *
+	 * @testWith ["held",false]
+	 *           ["probe",false]
+	 *           ["held",true]
+	 *           ["bound",false]
+	 * @param string $entry Initial authoritative read.
+	 * @param bool   $schedule_failure Refuse the first native successor to exercise independent recovery.
+	 */
+	public function test_native_action_scheduler_first_read_failure_retains_original_job_consumer( string $entry, bool $schedule_failure ): void {
+		global $wpdb;
+		$before_capacity = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		$this->later(
+			static function () use ( $before_capacity ): void {
+				delete_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+				if ( false !== $before_capacity ) {
+					update_option( \Linker\Commerce\Protection\IntakeStore::OPTION, $before_capacity, false );
+				}
+			}
+		);
+		$customer = $this->customer();
+		$user     = get_userdata( $customer->get_id() );
+		self::assertInstanceOf( \WP_User::class, $user );
+		$message = \Linker\Commerce\Mail\Prepared::capture(
+			static function () use ( $user ): void {
+				wp_password_change_notification( $user );
+			}
+		);
+		self::assertInstanceOf( \Linker\Commerce\Mail\Message::class, $message );
+		self::assertTrue( \Linker\Commerce\Mail\NativeOrigin::valid( $message ) );
+		$store   = new \Linker\Commerce\Mail\JobStore();
+		$job     = $store->create( $message );
+		$actions = as_get_scheduled_actions(
+			array(
+				'hook'   => \Linker\Commerce\Mail\Outbox::HOOK,
+				'args'   => array( $job ),
+				'group'  => \Linker\Commerce\Mail\Outbox::GROUP,
+				'status' => 'pending',
+			),
+			'ids'
+		);
+		self::assertCount( 1, $actions );
+		$action    = (int) $actions[0];
+		$original  = $store->load( $job );
+		$capacity  = get_option( \Linker\Commerce\Protection\IntakeStore::OPTION );
+		$budget    = get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
+		$peer      = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
+		$hits      = 0;
+		$sent      = 0;
+		$kill      = static function ( string $sql ) use ( $entry, $job, $peer, &$hits ): string {
+			global $wpdb;
+			$target = 'probe' === $entry ? str_starts_with( $sql, 'SAVEPOINT linker_mail_' ) : str_starts_with( $sql, 'SELECT' ) && str_contains( $sql, $wpdb->postmeta ) && preg_match( '/\b' . $job . '\b/', $sql );
+			if ( 0 === $hits && $target ) {
+				++$hits;
+				$peer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
+			}
+			return $sql;
+		};
+		$transport = static function ( $pre ) use ( &$sent ) {
+			++$sent;
+			return null === $pre ? true : $pre;
+		};
+		$refused   = 0;
+		$refuse    = static function ( $pre, $timestamp, $hook, $args ) use ( $job, $schedule_failure, &$hits, &$refused ) {
+			if ( $schedule_failure && $hits > 0 && \Linker\Commerce\Mail\Outbox::HOOK === $hook && array( $job ) === $args ) {
+				++$refused;
+				return 0;
+			}
+			return $pre;
+		};
+		wp_cache_delete( $job, 'post_meta' );
+		add_filter( 'query', $kill, 999 );
+		add_filter( 'pre_wp_mail', $transport, -1000 );
+		add_filter( 'pre_as_schedule_single_action', $refuse, 10, 4 );
+		try {
+			\ActionScheduler_QueueRunner::instance()->process_action( $action, 'native first-read connection failure' );
+		} finally {
+			remove_filter( 'query', $kill, 999 );
+			remove_filter( 'pre_wp_mail', $transport, -1000 );
+			remove_filter( 'pre_as_schedule_single_action', $refuse, 10 );
+			self::assertTrue( $wpdb->db_connect( false ) );
+		}
+		$this->later(
+			static function () use ( $peer ): void {
+				$peer->close();
+			}
+		);
+		self::assertSame( 1, $hits );
+		self::assertSame( 'failed', \ActionScheduler::store()->get_status( $action ) );
+		self::assertSame( 0, $sent );
+		self::assertEquals( $original, $store->load( $job ) );
+		self::assertSame( $capacity, get_option( \Linker\Commerce\Protection\IntakeStore::OPTION ) );
+		self::assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+		$phase = get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true );
+		self::assertIsArray( $phase );
+		self::assertSame( 1, $phase['count'] );
+		self::assertSame( $action, $phase['action'] );
+		if ( $schedule_failure ) {
+			self::assertGreaterThan( 0, $refused );
+			self::assertSame( 0, $phase['scheduled'] );
+			self::assertSame( 'notification_not_accepted', get_option( \Linker\Commerce\Mail\CapacityHealth::OPTION )['reason'] );
+			self::assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+			update_post_meta( $job, \Linker\Commerce\Mail\NotificationHold::META, array( 'reason' => 'synthetic retained original' ) );
+			( new \Linker\Commerce\Mail\InitialReadRecovery( $store ) )->recover();
+			self::assertSame( $phase, get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true ) );
+			self::assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+			delete_post_meta( $job, \Linker\Commerce\Mail\NotificationHold::META );
+		}
+		/** This action is documented in Inquiry\Assessment\RecoverySchedule. */
+		do_action( \Linker\Commerce\Inquiry\Assessment\RecoverySchedule::HOOK ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- Actual existing recovery, not a fabricated retry.
+		self::assertTrue( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ), 'The committed native job must still have a pending consumer after its single action failed.' );
+		$phase    = get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true );
+		$recovery = new \Linker\Commerce\Mail\InitialReadRecovery( $store );
+		$recovery->failed( $action, new \Exception( 'native wrapper', 0, new \Linker\Commerce\Mail\InitialReadFailure( new \RuntimeException( 'synthetic initial read' ) ) ) );
+		$recovery->recover();
+		self::assertSame( $phase, get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true ), 'Duplicate native callbacks and heartbeat retain the same successor and failure count.' );
+		$pending = as_get_scheduled_actions(
+			array(
+				'hook'   => \Linker\Commerce\Mail\Outbox::HOOK,
+				'args'   => array( $job ),
+				'group'  => \Linker\Commerce\Mail\Outbox::GROUP,
+				'status' => 'pending',
+			),
+			'ids'
+		);
+		self::assertSame( array( $phase['scheduled'] ), array_map( 'intval', $pending ) );
+		if ( 'probe' === $entry ) {
+			add_filter( 'pre_wp_mail', $transport, -1000 );
+			try {
+				\ActionScheduler_QueueRunner::instance()->process_action( $phase['scheduled'], 'native recovered original notification' );
+			} finally {
+				remove_filter( 'pre_wp_mail', $transport, -1000 );
+			}
+			self::assertSame( 1, $sent, 'The recovered original, still natively authorized message reaches synthetic transport once.' );
+			self::assertNull( $store->load( $job ) );
+			self::assertSame( '', get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true ) );
+			return;
+		}
+		if ( 'bound' === $entry ) {
+			$maximum = count( \Linker\Commerce\Mail\Outbox::RETRY_DELAYS ) + 1;
+			for ( $failure = 2; $failure <= $maximum; ++$failure ) {
+				$hits = 0;
+				wp_cache_delete( $job, 'post_meta' );
+				add_filter( 'query', $kill, 999 );
+				try {
+					\ActionScheduler_QueueRunner::instance()->process_action( $phase['scheduled'], 'native bounded initial-read recovery' );
+				} finally {
+					remove_filter( 'query', $kill, 999 );
+					self::assertTrue( $wpdb->db_connect( false ) );
+				}
+				self::assertSame( 1, $hits );
+				$phase = get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true );
+				self::assertSame( $failure, $phase['count'] );
+				$recovery->failed( $action, new \Exception( 'late old callback', 0, new \Linker\Commerce\Mail\InitialReadFailure( new \RuntimeException( 'synthetic initial read' ) ) ) );
+				self::assertSame( $phase, get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true ) );
+			}
+			self::assertSame( 0, $phase['due'] );
+			self::assertSame( 0, $phase['scheduled'] );
+			$recovery->recover();
+			self::assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+			self::assertEquals( $original, $store->load( $job ) );
+			self::assertSame( $capacity, get_option( \Linker\Commerce\Protection\IntakeStore::OPTION ) );
+			self::assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+			return;
+		}
+		// A later failure outside the typed initial reads must never consume the
+		// previous phase again, even while the complete job is still retained.
+		$unknown = static function (): void {
+			throw new \RuntimeException( 'synthetic unknown external outcome' );
+		};
+		add_action( \Linker\Commerce\Mail\Outbox::HOOK, $unknown, 1 );
+		try {
+			\ActionScheduler_QueueRunner::instance()->process_action( $phase['scheduled'], 'native non-initial failure control' );
+		} finally {
+			remove_action( \Linker\Commerce\Mail\Outbox::HOOK, $unknown, 1 );
+		}
+		self::assertSame( 'failed', \ActionScheduler::store()->get_status( $phase['scheduled'] ) );
+		$recovery->recover();
+		self::assertSame( $phase, get_post_meta( $job, \Linker\Commerce\Mail\InitialReadRecovery::META, true ) );
+		self::assertFalse( as_has_scheduled_action( \Linker\Commerce\Mail\Outbox::HOOK, array( $job ), \Linker\Commerce\Mail\Outbox::GROUP ) );
+		self::assertEquals( $original, $store->load( $job ) );
+		self::assertSame( $budget, get_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION ) );
+	}
+
 	/**
 	 * Each new outer mutex is exercised through its native owner, not a replacement lock.
 	 *

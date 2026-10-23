@@ -166,3 +166,29 @@ first-SQL class: 17 tests / 141 assertions PASS. Commerce unit suite: 1757 tests
 The final strong-cache snapshot result and exact source head are attached to the
 coordinator's immutable handoff. Earlier broad runs stay tied to their original
 source; no later CI, CUA or production completion is inferred from these checks.
+
+
+## Actual scheduler and confirmation completion controls
+
+Fixed `5c20e4c` completed the full recorded snapshot batch with HPOS datastore cache,
+product-instance cache and Redis enabled: **431 tests / 5523 assertions, 0 skipped**.
+This result belongs to that exact preceding source, not the following repairs.
+
+The subsequent independent consumer review produced two native reds. An actual
+ActionScheduler QueueRunner consumed a committed security job, failed at its first
+hold-metadata SELECT after a server KILL, and left no pending consumer even after
+the existing minute recovery. Its complete job, attempts, capacity and quota were
+retained with zero transport. Separately, KILL at confirmation RELEASE_LOCK rolled
+back the caller/job/ACK and retained the token while incorrectly returning pending.
+The original GET_LOCK control still passed. The red run was 3 tests / 26 assertions,
+2 failures; its files were retained separately from the green controls.
+
+The targeted repaired controls cover actual scheduler hold/probe disconnects,
+refused native scheduling followed by independent minute repair, held-job refusal,
+duplicate and late callback identity, the finite existing retry sequence, an
+untyped failed successor which must not be rearmed, and one recovered original
+security message reaching **synthetic local capture** once. Confirmation tests use
+both native mutex phases and preserve German on the late failure. No real email,
+provider request, new message, new authorization or budget reset was used. Final
+fixed-head counts/static checks are recorded in the private coordinator handoff;
+this note does not assert a later complete suite, independent review, CI or release.

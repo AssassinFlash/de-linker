@@ -378,3 +378,34 @@ note metadata under its actual mutex. An unreadable history page or source is
 unknown, not evidence of empty debt or deletion. A verified deletion alone can
 release absent-source occupancy. No production disposition is authorized by a
 local mechanism test or by these historical aggregates.
+
+
+## Failed native consumer before its first attempt
+
+A native Action Scheduler single action becomes failed when its callback throws;
+keeping a durable job alone does not keep a pending consumer. Only failure in the
+Outbox retry's initial hold/transaction reads has a dedicated server-side typed
+witness. It proves that no quota reservation or transport was reached. Ordinary
+exceptions, later delivery/ACK uncertainty and browser data cannot produce this
+recovery authority.
+
+The native failed-execution callback verifies the exact mail hook/group and single
+integer job ID. It records a fixed phase on that same existing private, readable,
+unheld job, without changing Message, attempts, capacity or budgets. Scheduling the
+same job and consuming the phase into its one confirmed successor share a native
+transaction. Duplicate/late callbacks cannot advance a different successor.
+A scheduling failure retains the unscheduled phase for the existing independent
+minute heartbeat. That heartbeat reads only these marked jobs, bounded by the
+existing total native mail envelope. It never scans or releases historical held
+jobs. An erased/held/missing original is not scheduled.
+
+Pre-attempt recovery uses the existing Outbox RETRY_DELAYS in order, with at most
+that sequence's number of successors. Exhaustion retains the original job and a
+fixed health diagnostic for staff; it neither refunds debt nor invents a new
+message. Once a successor is confirmed, the old phase cannot recover any later
+untyped/after-transport failure. Every eventual attempt still passes the current
+mandatory send authorization and unchanged host quota.
+
+A confirmation callback's tentative pending result is not final until its own
+mutex release and ConnectionFence checks succeed. Failure returns unavailable,
+retains the known native locale and never claims an uncommitted job/ACK was saved.

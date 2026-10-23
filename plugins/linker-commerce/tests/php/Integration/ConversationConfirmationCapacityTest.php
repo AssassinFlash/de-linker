@@ -102,20 +102,27 @@ final class ConversationConfirmationCapacityTest extends IntegrationTestCase {
 		self::assertSame( 'pending', $this->mailer()->confirm( $token )['status'] );
 	}
 
-	/** The Tools confirmation's own first mutex cannot replay after losing its caller. */
-	public function test_confirmation_first_mutex_failure_keeps_token_and_original_transaction_unpublished(): void {
+	/** The Tools mutex must not claim acceptance after losing its caller.
+	 *
+	 * @testWith ["GET_LOCK"]
+	 *           ["RELEASE_LOCK"]
+	 * @param string $phase Native mutex SQL under fault.
+	 */
+	public function test_confirmation_first_mutex_failure_keeps_token_and_original_transaction_unpublished( string $phase ): void {
 		list( $id, $token ) = $this->source();
 		$this->seed( 0 );
-		$pending = get_post_meta( $id, ConversationMail::PENDING, true );
-		$budget  = get_option( OptionBudgetLedger::OPTION );
-		$before  = self::newest_mail_job();
+		$pending           = get_post_meta( $id, ConversationMail::PENDING, true );
+		$pending['locale'] = 'de';
+		update_post_meta( $id, ConversationMail::PENDING, $pending );
+		$budget = get_option( OptionBudgetLedger::OPTION );
+		$before = self::newest_mail_job();
 		global $wpdb;
 		$peer   = new \wpdb( (string) constant( 'DB_USER' ), (string) constant( 'DB_PASSWORD' ), (string) constant( 'DB_NAME' ), (string) constant( 'DB_HOST' ) );
 		$lock   = 'linker-conversation-mail-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $id );
 		$marker = 'synthetic-confirmation-caller-' . self::tag();
 		$hits   = 0;
-		$kill   = static function ( string $sql ) use ( $lock, $peer, &$hits ): string {
-			if ( 0 === $hits && str_contains( $sql, 'GET_LOCK(' ) && str_contains( $sql, $lock ) ) {
+		$kill   = static function ( string $sql ) use ( $phase, $lock, $peer, &$hits ): string {
+			if ( 0 === $hits && str_contains( $sql, $phase . '(' ) && str_contains( $sql, $lock ) ) {
 				++$hits;
 				global $wpdb;
 				$peer->query( 'KILL CONNECTION ' . $wpdb->__get( 'dbh' )->thread_id );
@@ -133,11 +140,7 @@ final class ConversationConfirmationCapacityTest extends IntegrationTestCase {
 		);
 		add_filter( 'query', $kill, 999 );
 		try {
-			try {
-				$result = $this->mailer()->confirm( $token );
-			} catch ( \Throwable $error ) {
-				$result = array( 'status' => 'unavailable' );
-			}
+			$result      = $this->mailer()->confirm( $token );
 			$caller_rows = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE option_name=%s', $wpdb->options, $marker ) );
 			$new_jobs    = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE post_type=%s AND ID>%d', $wpdb->posts, JobStore::POST_TYPE, $before ) );
 			$ack_rows    = (int) $peer->get_var( $peer->prepare( 'SELECT COUNT(*) FROM %i WHERE post_id=%d AND meta_key=%s', $wpdb->postmeta, $id, ConversationMail::ACCEPTED ) );
@@ -161,6 +164,9 @@ final class ConversationConfirmationCapacityTest extends IntegrationTestCase {
 				)
 			)
 		);
+		if ( 'RELEASE_LOCK' === $phase ) {
+			self::assertSame( 'de', $result['locale'] );
+		}
 		self::assertSame( 0, $caller_rows );
 		self::assertSame( 0, $new_jobs );
 		self::assertSame( 0, $ack_rows );
