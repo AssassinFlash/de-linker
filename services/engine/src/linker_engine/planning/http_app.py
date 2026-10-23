@@ -33,8 +33,10 @@ from .errors import (
     NotFound,
     NumericalFailure,
     PlanningError,
+    ServiceDraining,
     VersionUnavailable,
 )
+from .execution_identity import storage_binding
 from .geometry_import import GeometryImport
 from .geometry_import_selections import check_geometry_imports
 from .geometry_review import review_geometry
@@ -111,6 +113,7 @@ def create_private_app(
             InvalidInput: 422,
             CsvIssue: 422,
             VersionUnavailable: 503,
+            ServiceDraining: 503,
             LeaseLost: 409,
             NumericalFailure: 422,
         }.get(type(error), 500)
@@ -168,6 +171,8 @@ def create_private_app(
             "schema_version": 1,
             "runtime_sha256": energy.kernel.runtime.sha256,
             "models": dict(energy.kernel.models),
+            "execution_key": energy.kernel.execution_key(),
+            "storage_binding": storage_binding(workspace.database.path),
             "limits": {
                 "max_body_bytes": limits.max_body_bytes,
                 "max_csv_bytes": limits.max_csv_bytes,

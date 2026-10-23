@@ -91,9 +91,9 @@ login name *options:
 status:
     PHP={{ php }} {{ linker_local }} status
 
-# (Re)start the engine and Genie of the instance and write their addresses into it.
+# (Re)start owned services; --service engine leaves Genie running.
 [positional-arguments]
-serve name:
+serve name *options:
     PHP={{ php }} {{ linker_local }} serve "$@"
 
 # Run WP-CLI against the instance, e.g. `just wp a plugin list`.

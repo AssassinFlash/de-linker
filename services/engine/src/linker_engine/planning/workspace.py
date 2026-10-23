@@ -19,6 +19,8 @@ from .access import active_actor, positive_integer, project_row
 from .brief import validate_new_brief
 from .canonical import Object, digest, encode
 from .errors import Conflict, InvalidInput, NotFound, VersionUnavailable
+from .execution_control import require_accepting
+from .execution_identity import execution_key
 from .geometry import validate_project_geometry
 from .records import Actor, Context, JobState, Project, Run
 from .storage import Blobs, Database
@@ -211,6 +213,7 @@ class Workspace:
                 return self._run(
                     connection, actor, commands.receipt_string(receipt, "run_id")
                 )
+            require_accepting(connection)
             if project["revision"] != expected_revision:
                 raise Conflict("project inputs have changed")
             inputs = self._project(connection, actor, project_id, expected_revision)
@@ -226,6 +229,7 @@ class Workspace:
             run_id = uuid4().hex
             request = self.blobs.put_object({"manifest_sha256": manifest})
             now = self.clock()
+            job_id = uuid4().hex
             connection.execute(
                 "INSERT INTO runs "
                 "(id, project_id, revision, manifest_sha256, created_at) "
@@ -237,7 +241,12 @@ class Workspace:
                 "(id, run_id, kind, request_sha256, state, max_attempts, "
                 "available_at, created_at, updated_at) "
                 "VALUES (?, ?, 'evaluate', ?, 'queued', ?, ?, ?, ?)",
-                (uuid4().hex, run_id, request, max_attempts, now, now, now),
+                (job_id, run_id, request, max_attempts, now, now, now),
+            )
+            connection.execute(
+                "INSERT INTO evaluation_routes (job_id, schema_version, execution_sha256) "
+                "VALUES (?, 1, ?)",
+                (job_id, execution_key(resolved)),
             )
             commands.remember(
                 connection,

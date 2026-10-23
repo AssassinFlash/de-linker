@@ -10,6 +10,7 @@ from threading import Event, Thread
 from .canonical import Object, encode
 from .dependencies import verify_dependencies
 from .errors import InvalidInput, LeaseLost, PlanningError
+from .execution_identity import EvaluationRouting
 from .jobs import Jobs
 from .records import JobKind, Lease
 
@@ -51,6 +52,7 @@ class Worker:
         lease_seconds: float,
         heartbeat_seconds: float,
         retry_seconds: float,
+        routing: EvaluationRouting | None = None,
     ) -> None:
         if not name.strip() or not handlers:
             raise InvalidInput("worker identity and registered handlers required")
@@ -68,6 +70,7 @@ class Worker:
         self.lease_seconds = lease_seconds
         self.heartbeat_seconds = heartbeat_seconds
         self.retry_seconds = retry_seconds
+        self.routing = routing
 
     def _renew(self, lease: Lease, stop: Event, control: Control) -> None:
         while not stop.wait(self.heartbeat_seconds):
@@ -82,7 +85,10 @@ class Worker:
 
     def run_once(self) -> bool:
         lease = self.jobs.claim(
-            self.name, kinds=tuple(self.handlers), lease_seconds=self.lease_seconds
+            self.name,
+            kinds=tuple(self.handlers),
+            lease_seconds=self.lease_seconds,
+            routing=self.routing,
         )
         if lease is None:
             return False

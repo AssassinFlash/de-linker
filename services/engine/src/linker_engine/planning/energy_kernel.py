@@ -18,6 +18,7 @@ from .energy_inputs import BatteryParameters, EnergyInputs
 from .energy_metrics import metrics
 from .energy_preparation import prepare_energy
 from .errors import InvalidInput, VersionUnavailable
+from .execution_identity import execution_key
 from .flow_document import flow_document
 from .frozen_profiles import frozen_profile
 from .frozen_run import bind_energy_assets, frozen_manifest
@@ -49,6 +50,22 @@ class EnergyKernel:
         self.runtime = RuntimeSnapshot.capture()
         self.workspace.blobs.put(self.runtime.content)
 
+    def parameters(self) -> Object:
+        return {
+            "kind": self.kind,
+            "tolerance": self.tolerance.document(),
+            "max_intervals": self.max_intervals,
+        }
+
+    def execution_key(self) -> str:
+        return execution_key(
+            {
+                "code_sha256": self.runtime.sha256,
+                "models": dict(self.models),
+                "parameters": self.parameters(),
+            }
+        )
+
     def context(self, actor: Actor, project_id: str, scenario: EnergyInputs) -> Context:
         assets = Assets(self.workspace)
         pinned: dict[str, str] = {"runtime_bundle": self.runtime.sha256}
@@ -65,11 +82,7 @@ class EnergyKernel:
             self.runtime.sha256,
             dict(self.models),
             pinned,
-            {
-                "kind": self.kind,
-                "tolerance": self.tolerance.document(),
-                "max_intervals": self.max_intervals,
-            },
+            self.parameters(),
         )
 
     def __call__(self, lease: Lease, control: Control) -> Object:
@@ -88,11 +101,7 @@ class EnergyKernel:
                 "this worker cannot execute the pinned runtime/models"
             )
         parameters = context.get("parameters")
-        expected_parameters = {
-            "kind": self.kind,
-            "tolerance": self.tolerance.document(),
-            "max_intervals": self.max_intervals,
-        }
+        expected_parameters = self.parameters()
         if parameters != expected_parameters:
             raise VersionUnavailable(
                 "this worker cannot execute the pinned numerical settings"

@@ -54,6 +54,21 @@ CREATE TABLE IF NOT EXISTS jobs (
 CREATE UNIQUE INDEX IF NOT EXISTS evaluate_once ON jobs(run_id)
     WHERE kind = 'evaluate';
 CREATE INDEX IF NOT EXISTS jobs_available ON jobs(state, available_at, lease_until);
+-- Additive operator/cache extension. Core schema-v2 records and wire documents
+-- are unchanged; old unindexed jobs can be routed from their frozen manifests.
+CREATE TABLE IF NOT EXISTS evaluation_routes (
+    job_id TEXT PRIMARY KEY REFERENCES jobs(id),
+    schema_version INTEGER NOT NULL CHECK (schema_version = 1),
+    execution_sha256 TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS evaluation_routes_key
+    ON evaluation_routes(execution_sha256, job_id);
+CREATE TABLE IF NOT EXISTS execution_control (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    schema_version INTEGER NOT NULL CHECK (schema_version = 1),
+    draining INTEGER NOT NULL CHECK (draining IN (0, 1))
+);
+INSERT OR IGNORE INTO execution_control (id, schema_version, draining) VALUES (1, 1, 0);
 CREATE TABLE IF NOT EXISTS idempotency (
     actor TEXT NOT NULL,
     scope TEXT NOT NULL,

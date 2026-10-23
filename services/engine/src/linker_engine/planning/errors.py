@@ -31,6 +31,12 @@ class VersionUnavailable(PlanningError):
     code = "version_unavailable"
 
 
+class ServiceDraining(PlanningError):
+    """An operator closed new evaluation admission while preserving old work."""
+
+    code = "service_draining"
+
+
 class InvalidInput(PlanningError):
     """The command is not finite JSON or has an invalid lifecycle parameter."""
 

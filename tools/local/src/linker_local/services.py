@@ -14,7 +14,6 @@ import re
 import secrets
 import shutil
 import subprocess
-import tempfile
 import urllib.error
 import urllib.request
 from collections.abc import Callable, Mapping
@@ -23,6 +22,8 @@ from pathlib import Path
 
 from linker_local.checkout import Checkout
 from linker_local.instance import HOST, Instance
+from linker_local.planner_worker import PlannerWorker
+from linker_local.private_config import lifecycle_lock, publish_once
 from linker_local.processes import Background, ProcessError
 from linker_local.wpcli import WpCli, WpCliError
 
@@ -110,22 +111,52 @@ SERVICES = (
 )
 
 
-def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
+def serve(
+    instance: Instance, checkout: Checkout, wp: WpCli, *, only: str | None = None
+) -> list[str]:
+    with lifecycle_lock(instance.run_dir / "services.lock"):
+        return _serve(instance, checkout, wp, only=only)
+
+
+def _serve(
+    instance: Instance, checkout: Checkout, wp: WpCli, *, only: str | None
+) -> list[str]:
     """(Re)start both services from this checkout; return their URLs.
 
     The document index is found before anything restarts: a Genie without one
     would answer every document question with its fallback.
     """
     uv = _uv()
-    index = genie_index()
+    if only is not None and only not in ("engine", "genie"):
+        raise ProcessError("unknown local service selection")
+    selected = tuple(
+        service for service in SERVICES if only is None or service.name == only
+    )
+    index = (
+        genie_index() if any(service.name == "genie" for service in selected) else None
+    )
     token = service_token(wp)
+    worker: PlannerWorker | None = None
+    if any(service.name == "engine" for service in selected):
+        # First startup also needs the existing engine environment before its
+        # private control CLI can inspect or drain the workspace.
+        subprocess.run(
+            [str(uv), "sync", "--locked", "--project", str(checkout.service("engine"))],
+            check=True,
+        )
+        planner_environment(instance)
+        worker = PlannerWorker(instance, checkout.service("engine"), uv)
+        worker.ensure_policy()
+        worker.drain()
+        worker.stop()
     urls = []
-    for service in SERVICES:
+    for service in selected:
         project = checkout.service(service.name)
         port = service.port(instance)
-        subprocess.run(
-            [str(uv), "sync", "--locked", "--project", str(project)], check=True
-        )
+        if service.name != "engine":
+            subprocess.run(
+                [str(uv), "sync", "--locked", "--project", str(project)], check=True
+            )
         env = dict(os.environ)
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
@@ -146,6 +177,7 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
                 {"GENIE_SERVICE_TOKEN": token, "LINKER_ENGINE_GATE_MODE": "enforce"}
             )
         else:
+            assert index is not None
             env.update(genie_environment(instance, index.path, token))
         service.process(instance).restart(
             [
@@ -167,11 +199,16 @@ def serve(instance: Instance, checkout: Checkout, wp: WpCli) -> list[str]:
         )
         url = f"http://{HOST}:{port}"
         if service.name == "engine":
-            _planner_probe(url, token)
+            identity = _planner_probe(url, token)
+            assert worker is not None
+            worker.start(identity, START_TIMEOUT)
+            worker.control("resume")
             wp.run("option", "update", "linker_planner_url", url + "/planning")
+            urls.append("planner worker ready")
         wp.run("option", "update", service.option, url)
         urls.append(f"{service.name} {url}")
-    urls.append(index.line())
+    if index is not None:
+        urls.append(index.line())
     return urls
 
 
@@ -224,11 +261,25 @@ def genie_index(environ: Mapping[str, str] = os.environ) -> GenieIndex:
 
 def stop(instance: Instance) -> list[str]:
     """Stop the services; return the names of those that were running."""
-    return [service.name for service in SERVICES if service.process(instance).stop()]
+    with lifecycle_lock(instance.run_dir / "services.lock"):
+        return _stop(instance)
+
+
+def _stop(instance: Instance) -> list[str]:
+    worker = Background(
+        instance.run_dir / "planner-worker.pid", instance.log_dir / "planner-worker.log"
+    )
+    stopped = ["planner-worker"] if worker.stop() else []
+    return stopped + [
+        service.name for service in SERVICES if service.process(instance).stop()
+    ]
 
 
 def running(instance: Instance) -> list[str]:
-    return [
+    worker = Background(
+        instance.run_dir / "planner-worker.pid", instance.log_dir / "planner-worker.log"
+    )
+    return (["planner-worker"] if worker.pid() is not None else []) + [
         service.name
         for service in SERVICES
         if service.process(instance).pid() is not None
@@ -293,24 +344,11 @@ def planner_environment(instance: Instance) -> dict[str, str]:
             "absolute_kw": 1e-7,
             "relative": 1e-9,
         }
-        # Exclusive publication avoids overwriting an existing custom policy,
-        # even when two local runners initialise this instance concurrently.
-        with tempfile.NamedTemporaryFile(dir=directory, delete=False) as stream:
-            temporary = Path(stream.name)
-            stream.write(json.dumps(payload, indent=2).encode())
-            stream.flush()
-            os.fsync(stream.fileno())
-        try:
-            try:
-                os.link(temporary, config)
-            except FileExistsError:
-                pass
-        finally:
-            temporary.unlink(missing_ok=True)
+        publish_once(config, payload)
     return {"LINKER_PLANNER_CONFIG": str(config)}
 
 
-def _planner_probe(base: str, token: str) -> None:
+def _planner_probe(base: str, token: str) -> dict[str, object]:
     request = urllib.request.Request(
         base + "/planning/version",
         data=b'{"schema_version":1}',
@@ -330,6 +368,11 @@ def _planner_probe(base: str, token: str) -> None:
             or value["schema_version"] != 1
             or not isinstance(value.get("runtime_sha256"), str)
             or re.fullmatch(r"[a-f0-9]{64}", value["runtime_sha256"]) is None
+            or any(
+                not isinstance(value.get(name), str)
+                or re.fullmatch(r"[a-f0-9]{64}", value[name]) is None
+                for name in ("execution_key", "storage_binding")
+            )
             or not isinstance(value.get("limits"), dict)
             or any(
                 type(value["limits"].get(name)) is not int or value["limits"][name] <= 0
@@ -342,6 +385,7 @@ def _planner_probe(base: str, token: str) -> None:
             )
         ):
             raise ValueError("planning version response is invalid")
+        return value
     except (urllib.error.URLError, OSError, ValueError, TimeoutError) as error:
         raise ProcessError(
             "the private planning service did not pass readiness"

@@ -19,6 +19,7 @@ from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.csv_mapping import CsvMapping
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
+from linker_engine.planning.execution_control import ExecutionControl
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.numerical_tolerance import Tolerance
@@ -999,6 +1000,18 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
     }
     assert rig.replay("/runs/energy", evaluate_command)["result"] == run
     assert run["state"] == "queued" and run["result"] is None
+    control = ExecutionControl(rig.workspace)
+    control.set_draining(True)
+    assert rig.post("/runs/energy", evaluate_command) == run
+    refused = rig.client.post(
+        "/runs/energy",
+        json={"schema_version": 1, **evaluate_command, "key": "during-drain"},
+        headers=headers(),
+    )
+    assert refused.status_code == 503
+    assert refused.json()["error"]["code"] == "service_draining"
+    assert control.status()["pending"] == 1
+    control.set_draining(False)
     rig.post(
         "/projects/revise",
         {

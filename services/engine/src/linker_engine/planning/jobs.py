@@ -15,6 +15,8 @@ from uuid import uuid4
 from .canonical import Object
 from .dependencies import verify_dependencies
 from .errors import Conflict, InvalidInput, LeaseLost, VersionUnavailable
+from .evaluation_routes import EvaluationRoutes
+from .execution_identity import EvaluationRouting
 from .records import JobKind, Lease
 from .workspace import Workspace
 
@@ -38,7 +40,12 @@ class Jobs:
         self.workspace = workspace
 
     def claim(
-        self, worker: str, *, kinds: tuple[JobKind, ...], lease_seconds: float
+        self,
+        worker: str,
+        *,
+        kinds: tuple[JobKind, ...],
+        lease_seconds: float,
+        routing: EvaluationRouting | None = None,
     ) -> Lease | None:
         if (
             not worker.strip()
@@ -48,17 +55,38 @@ class Jobs:
             raise InvalidInput("worker and supported job kinds required")
         _duration(lease_seconds, "lease duration")
         workspace = self.workspace
+        routes = EvaluationRoutes(workspace) if routing is not None else None
+        if routes is not None:
+            if kinds != ("evaluate",):
+                raise InvalidInput("execution routing currently covers evaluation only")
+            assert routing is not None
+            routes.index_pending(routing.batch_size)
         with workspace.database.transaction() as connection:
             now = workspace.clock()
             # Only the placeholder count is interpolated; values are bound.
             placeholders = ",".join("?" for _ in kinds)
             while True:
+                routing_join = (
+                    "JOIN evaluation_routes ON evaluation_routes.job_id=jobs.id "
+                    "AND evaluation_routes.schema_version=1 "
+                    "AND evaluation_routes.execution_sha256=? "
+                    if routing is not None
+                    else ""
+                )
                 row = connection.execute(
-                    f"SELECT * FROM jobs WHERE kind IN ({placeholders}) AND "
-                    "((state IN ('queued', 'retry_wait') AND available_at<=?) "
-                    "OR (state='running' AND lease_until<=?)) "
-                    "ORDER BY available_at, created_at, id LIMIT 1",
-                    (*kinds, now, now),
+                    "SELECT jobs.*, runs.manifest_sha256 AS run_manifest "
+                    "FROM jobs JOIN runs ON runs.id=jobs.run_id "
+                    + routing_join
+                    + f"WHERE jobs.kind IN ({placeholders}) AND "
+                    "((jobs.state IN ('queued', 'retry_wait') AND jobs.available_at<=?) "
+                    "OR (jobs.state='running' AND jobs.lease_until<=?)) "
+                    "ORDER BY jobs.available_at, jobs.created_at, jobs.id LIMIT 1",
+                    (
+                        *((routing.key,) if routing is not None else ()),
+                        *kinds,
+                        now,
+                        now,
+                    ),
                 ).fetchone()
                 if row is None:
                     return None
@@ -74,6 +102,17 @@ class Jobs:
                     continue
                 try:
                     request = workspace.blobs.object(row["request_sha256"])
+                    if routes is not None and routing is not None:
+                        actual = routes.request_key(request, row["run_manifest"])
+                        if actual != routing.key:
+                            # A derived cache cannot make this executable own
+                            # another runtime's job or spend one of its attempts.
+                            connection.execute(
+                                "UPDATE evaluation_routes SET execution_sha256=? "
+                                "WHERE job_id=?",
+                                (actual, row["id"]),
+                            )
+                            continue
                 except (VersionUnavailable, InvalidInput):
                     error = workspace.blobs.put_object(
                         {"code": "version_unavailable", "retryable": False}
