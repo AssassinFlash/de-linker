@@ -24,11 +24,14 @@ search's visible outer edge is 8px rather than 7px. The first candidate's
 7px measurement is retained as rejected spacing evidence.
 
 Use the page's existing deep-ink token for this small text on the exposed
-gradient. Recorded 390px nearby background samples reached RGB(232,234,234),
-where the original muted color has only about 4.475:1 contrast. These are
-nearby background samples, not measurements behind every glyph. Keep the
-12px size and plain background, and verify the darker result in the native
-render; retain the earlier muted-color captures as contrast evidence.
+gradient. Native PNGs embed Display P3: diagnostic contrast calculations
+must convert their background samples through that ICC profile to sRGB,
+the space of the CSS colors. Preserve the initial unconverted calculations
+as provisional observations. Corrected EN520 samples beside the actual
+text line give about 4.418:1 and 4.475:1 for the muted token; the final ink
+gives about 10.84:1 to 11.91:1 across the recorded narrow layouts. Nearby
+samples are not measurements behind every glyph. Keep the 12px size and
+plain background, and retain the original PNGs unchanged for pixel checks.
 
 The wrapper already spaces the icon and input, so remove the input's extra
 horizontal padding at that breakpoint. Enlarge the native clear button to
