@@ -1290,4 +1290,58 @@ final class ResourceAdmissionTest extends TestCase {
 			$this->assertSame( 'linker_publication_changed', $reply->get_error_code() );
 		}
 	}
+
+	/** Native Genie actions and their retries use Genie proof while still checking Woo. */
+	public function test_native_genie_list_writes_and_replays_keep_their_proof_contract(): void {
+		wc_load_cart();
+		$before_cart  = WC()->cart->get_cart_contents();
+		$before_saved = WC()->session->get( \Linker\Commerce\Account\SavedSolutions::SESSION_KEY );
+		$product      = new \WC_Product_Simple();
+		$product->set_name( 'Current Genie receipt fixture' );
+		$product->set_status( 'publish' );
+		$id = $product->save();
+		try {
+			$dependencies = ( new \Linker\Tools\Genie\PublicationGuard() )->dependencies();
+			$this->assertIsArray( $dependencies );
+			$block  = array(
+				'type' => 'parts',
+				'add'  => array(
+					'items' => array(
+						array(
+							'product_id' => $id,
+							'quantity'   => 1,
+						),
+					),
+				),
+			);
+			$stream = ( new \Linker\Tools\Genie\DraftProof() )->stream( "event: block\ndata: " . wp_json_encode( $block ) . "\n\nevent: done\ndata: {}\n\n", $dependencies );
+			$this->assertIsString( $stream );
+			if ( 1 !== preg_match( '/^data: (.+)$/m', $stream, $matches ) ) {
+				$this->fail( 'The live Genie fixture did not produce its signed artifact.' );
+			}
+			$artifact = json_decode( $matches[1], true );
+			$requests = array();
+			foreach ( array(
+				'draft'    => 200,
+				'solution' => 202,
+			) as $path => $status ) {
+				$request = $this->request( '/linker-ai/v1/genie/' . $path, array( 'proof' => $artifact['add']['proof'] ), 'draft' === $path ? 'draft_write' : 'solution_save' );
+				$request->set_header( 'Nonce', wp_create_nonce( 'wc_store_api' ) );
+				$first = rest_do_request( $request );
+				$this->assertSame( $status, $first->get_status(), (string) wp_json_encode( $first->get_data() ) );
+				$request->set_header( 'X-Linker-Proof', '' );
+				$this->assertSame( $status, rest_do_request( $request )->get_status() );
+				$requests[] = $request;
+			}
+			$product->set_status( 'draft' );
+			$product->save();
+			foreach ( $requests as $request ) {
+				$this->assertSame( 409, rest_do_request( $request )->get_status(), 'A Genie consumer marker cannot bypass a current Woo withdrawal.' );
+			}
+		} finally {
+			WC()->cart->set_cart_contents( $before_cart );
+			WC()->session->set( \Linker\Commerce\Account\SavedSolutions::SESSION_KEY, $before_saved );
+			wp_delete_post( $id, true );
+		}
+	}
 }

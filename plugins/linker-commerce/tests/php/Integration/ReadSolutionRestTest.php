@@ -155,7 +155,11 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 				);
 		};
 		add_filter( 'pre_http_request', $transport, 10, 3 );
-		$this->later( static fn() => remove_filter( 'pre_http_request', $transport, 10 ) );
+		$this->later(
+			static function () use ( $transport ): void {
+				remove_filter( 'pre_http_request', $transport, 10 );
+			}
+		);
 	}
 
 	/**

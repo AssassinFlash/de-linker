@@ -90,7 +90,7 @@ class PublicationGuard {
 	 * @param array<string,mixed> $dependencies Current dependency proof.
 	 */
 	public function remember( WP_REST_Response $reply, array $dependencies ): void {
-		EnginePublication::remember( $reply, $dependencies );
+		EnginePublication::remember( $reply, $dependencies, 'genie' );
 	}
 
 	/**

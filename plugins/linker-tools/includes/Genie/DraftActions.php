@@ -12,6 +12,7 @@ use Linker\Commerce\Account\AtomicSolutionDraft;
 use Linker\Commerce\Account\DesignProof;
 use Linker\Commerce\Account\PrivateFiles;
 use Linker\Commerce\Account\SavedSolutions;
+use Linker\Tools\Protection\EnginePublication;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -171,6 +172,7 @@ final class DraftActions {
 	 */
 	private function response( array $data, int $status = 200 ): WP_REST_Response {
 		$reply = new WP_REST_Response( $data, $status );
+		EnginePublication::remember( $reply, $data['publication'], 'genie' );
 		$reply->header( 'Cache-Control', 'private, no-store' );
 		return $reply;
 	}

@@ -22,18 +22,26 @@ final class EnginePublication {
 	private static ?\WeakMap $proofs = null;
 
 	/**
+	 * Server-selected consumer of this proof.
+	 *
+	 * @var \WeakMap<WP_REST_Response,string>|null
+	 */
+	private static ?\WeakMap $kinds = null;
+
+	/**
 	 * Validate trusted service dependencies against the owning Woo module.
 	 *
 	 * @param array<string,mixed> $dependencies Trusted service dependencies.
+	 * @param string              $kind Server-selected proof consumer.
 	 */
-	public static function validate( array $dependencies ): true|WP_Error {
+	public static function validate( array $dependencies, string $kind = 'engineering' ): true|WP_Error {
 		if ( ! isset( $dependencies['products'], $dependencies['documents'] ) ) {
 			return self::failure();
 		}
 		if ( ! class_exists( Publication::class ) || ! class_exists( DesignProof::class ) ) {
 			return self::failure( 503 );
 		}
-		if ( ! DesignProof::has_engineering_proof( $dependencies ) ) {
+		if ( 'genie' !== $kind && ! DesignProof::has_engineering_proof( $dependencies ) ) {
 			return self::failure();
 		}
 		try {
@@ -49,10 +57,22 @@ final class EnginePublication {
 	 *
 	 * @param WP_REST_Response    $reply Native service response.
 	 * @param array<string,mixed> $dependencies Trusted service dependencies.
+	 * @param string              $kind Server-selected proof consumer.
 	 */
-	public static function remember( WP_REST_Response $reply, array $dependencies ): void {
+	public static function remember( WP_REST_Response $reply, array $dependencies, string $kind = 'engineering' ): void {
 		self::$proofs         ??= new \WeakMap();
 		self::$proofs[ $reply ] = $dependencies;
+		self::$kinds          ??= new \WeakMap();
+		self::$kinds[ $reply ] = 'genie' === $kind ? 'genie' : 'engineering';
+	}
+
+	/**
+	 * Browser JSON cannot select another consumer's proof contract.
+	 *
+	 * @param WP_REST_Response $reply Trusted native reply.
+	 */
+	public static function kind( WP_REST_Response $reply ): string {
+		return null !== self::$kinds && isset( self::$kinds[ $reply ] ) ? self::$kinds[ $reply ] : 'engineering';
 	}
 
 	/**
@@ -79,7 +99,7 @@ final class EnginePublication {
 		if ( is_wp_error( $reply ) || $reply->get_status() >= 400 ) {
 			return $reply;
 		}
-		$valid = self::validate( self::dependencies( $reply ) );
+		$valid = self::validate( self::dependencies( $reply ), self::kind( $reply ) );
 		return is_wp_error( $valid ) ? $valid : $reply;
 	}
 

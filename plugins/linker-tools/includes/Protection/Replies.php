@@ -71,11 +71,12 @@ final class Replies {
 		}
 		$data    = $reply->get_data();
 		$stored  = array(
-			'status'      => $reply->get_status(),
-			'headers'     => $reply->get_headers(),
-			'publication' => EnginePublication::dependencies( $reply ),
-			'binary'      => is_string( $data ),
-			'data'        => is_string( $data ) ? base64_encode( $data ) : $data, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary PDF bytes inside a native JSON receipt.
+			'status'           => $reply->get_status(),
+			'headers'          => $reply->get_headers(),
+			'publication'      => EnginePublication::dependencies( $reply ),
+			'publication_kind' => EnginePublication::kind( $reply ),
+			'binary'           => is_string( $data ),
+			'data'             => is_string( $data ) ? base64_encode( $data ) : $data, // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- Binary PDF bytes inside a native JSON receipt.
 		);
 		$updated = wp_update_post(
 			array(
@@ -102,8 +103,9 @@ final class Replies {
 			return new WP_Error( 'linker_resource_result', 'The saved result is unavailable.', array( 'status' => 409 ) );
 		}
 		$dependencies = is_array( $stored['publication'] ?? null ) ? $stored['publication'] : array();
+		$kind         = 'genie' === ( $stored['publication_kind'] ?? null ) ? 'genie' : 'engineering';
 		if ( array() !== $dependencies ) {
-			$valid = EnginePublication::validate( $dependencies );
+			$valid = EnginePublication::validate( $dependencies, $kind );
 			if ( is_wp_error( $valid ) ) {
 				return $valid;
 			}
@@ -111,7 +113,7 @@ final class Replies {
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Restore the authenticated private PDF response, never executable code.
 		$reply = new WP_REST_Response( ! empty( $stored['binary'] ) ? base64_decode( (string) $stored['data'], true ) : $stored['data'], (int) $stored['status'], (array) $stored['headers'] );
 		if ( array() !== $dependencies ) {
-			EnginePublication::remember( $reply, $dependencies );
+			EnginePublication::remember( $reply, $dependencies, $kind );
 		}
 		/**
 		 * Consumers can reject their older receipts that predate dependency proof.

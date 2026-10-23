@@ -46,6 +46,15 @@ final class EnginePublicationTest extends TestCase {
 		$this->assertSame( array(), EnginePublication::dependencies( new WP_REST_Response( '%PDF-other', 200 ) ) );
 	}
 
+	/** Consumer selection is trusted server metadata, not returned JSON. */
+	public function test_only_server_metadata_can_select_the_genie_contract(): void {
+		$reply = new WP_REST_Response( array( 'publication_kind' => 'genie' ) );
+		$this->assertSame( 'engineering', EnginePublication::kind( $reply ) );
+		EnginePublication::remember( $reply, array(), 'genie' );
+		$this->assertSame( 'genie', EnginePublication::kind( $reply ) );
+		$this->assertSame( 'engineering', EnginePublication::kind( new WP_REST_Response( $reply->get_data() ) ) );
+	}
+
 	/**
 	 * A cache provider that cannot refresh current Woo data is unavailable.
 	 *
