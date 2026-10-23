@@ -1269,6 +1269,8 @@ def test_failed_worker_generation_is_removed_without_deleting_shared_builds(
 ) -> None:
     from types import SimpleNamespace
 
+    from test_chunking import Words
+
     from index import build
     from publication_worker import record_build, run_job
 
@@ -1317,7 +1319,7 @@ def test_failed_worker_generation_is_removed_without_deleting_shared_builds(
                 tmp_path,
                 index_dir,
                 None,
-                None,
+                Words(),
                 lambda text: "en",
                 on_created=lambda path: record_build(index_dir, path),
             )

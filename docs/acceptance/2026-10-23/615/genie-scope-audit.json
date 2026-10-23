@@ -1,0 +1,208 @@
+{
+  "evidence": {
+    "cached_index": "/Users/chesterjohn/de-linker-data/index/builds/20261018T173840Z/index.sqlite",
+    "manifest_sha256": "88ebe244f924ebe9f59ade9540a9be17421bd305b865b0074844ebe38818b2f8",
+    "woo_identity_sha256": "3b07037e0b1ed27fa111f30b2cb594e389ce116d9d86b3d05d425e1b1a019d2e",
+    "woo_captured_at_utc": "2026-10-23T14:12:39+00:00",
+    "mode": "read-only cached corpus with native Woo identity snapshot; HTTP transport simulated from that snapshot, not live HTTP acceptance"
+  },
+  "scope": {
+    "products": 85,
+    "documents": 142,
+    "unique_shas": 142,
+    "all_cached_chunks": 33178,
+    "associated_chunks": 11413,
+    "no_synthetic_records": true
+  },
+  "before": {
+    "proven_chunks": 165,
+    "covered_document_shas": 43,
+    "products_with_any_passage": 85,
+    "ready_products": 1
+  },
+  "trace": {
+    "cached_parses_read": 142,
+    "native_chunks": 11413,
+    "exactly_matched_chunks": 11413,
+    "table_fragments_with_provenance": 1691,
+    "failures": [],
+    "seconds": 41.97
+  },
+  "after": {
+    "proven_chunks": 813,
+    "covered_document_shas": 76,
+    "products_with_any_passage": 85,
+    "ready_products_under_old_all_documents_rule": 5,
+    "available_products_under_new_safe_passage_rule": 70,
+    "preparation_complete": false,
+    "basis": {
+      "passage": 455,
+      "document_model": 43,
+      "common_terms": 51,
+      "section_model": 178,
+      "table_columns": 20,
+      "section": 39,
+      "woo_document": 27
+    }
+  },
+  "isolation": {
+    "passages_naming_native_unavailable_model": 1817,
+    "those_released": 0,
+    "unassociated_chunks_released": 0,
+    "withdraw_H2_10K_T3": {
+      "still_authorized_ids": 0,
+      "explicit_withdrawn_passages_released": 0
+    }
+  },
+  "golden": {
+    "current_associated_goldens": 632,
+    "before_with_evidence": 52,
+    "after_with_evidence": 154,
+    "failure_distribution": {
+      "unnamed_or_variant_page_without_proven_scope": 374,
+      "expected_page_available": 154,
+      "current_model_page_has_unknown_or_unassociated_scope": 72,
+      "expected_page_contains_unavailable_model": 32
+    },
+    "ranker": "offline BM25, no provider calls; page retrieval, not generated-answer acceptance",
+    "limited_replay": [
+      {
+        "id": "00506d0f0c-en",
+        "model": "CHS2-29.9K-T4-X",
+        "question": "Is the chint:DTSU666 meter listed as compatible with the CHS2-29.9K-T4-X?",
+        "before_page_hit": true,
+        "after_page_hit": false,
+        "after_hits": 12
+      },
+      {
+        "id": "005ddc4c7d-en",
+        "model": "BU3-5.0-TV2-PRO",
+        "question": "Which certification marks does the BU3-5.0-TV2-PRO carry?",
+        "before_page_hit": false,
+        "after_page_hit": false,
+        "after_hits": 3
+      },
+      {
+        "id": "0065e3e240-en",
+        "model": "GW261.2-BAT-LCD-G10",
+        "question": "What is the rated or maximum current of the GW261.2-BAT-LCD-G10?",
+        "before_page_hit": true,
+        "after_page_hit": true,
+        "after_hits": 10
+      },
+      {
+        "id": "009ea1c839-en",
+        "model": "HS2-10K-T2-X",
+        "question": "What user interface does the HS2-10K-T2-X have?",
+        "before_page_hit": false,
+        "after_page_hit": false,
+        "after_hits": 0
+      },
+      {
+        "id": "00cc9d826a-en",
+        "model": "GW125/261-ESA-LCN-G10",
+        "question": "What is the maximum AC output current of the GW125/261-ESA-LCN-G10?",
+        "before_page_hit": true,
+        "after_page_hit": false,
+        "after_hits": 16
+      },
+      {
+        "id": "0121878b05-en",
+        "model": "L260-OMNI",
+        "question": "What depth of discharge does the L260-OMNI allow?",
+        "before_page_hit": true,
+        "after_page_hit": true,
+        "after_hits": 13
+      },
+      {
+        "id": "015253f935-en",
+        "model": "GW30K-STS-G10",
+        "question": "How long is the product warranty of the GW30K-STS-G10?",
+        "before_page_hit": true,
+        "after_page_hit": false,
+        "after_hits": 4
+      },
+      {
+        "id": "015d0655fa-en",
+        "model": "GW3K-EHA-G20",
+        "question": "Is the GW5.1-BAT-D-G20 listed as compatible with the GW3K-EHA-G20?",
+        "before_page_hit": false,
+        "after_page_hit": false,
+        "after_hits": 16
+      },
+      {
+        "id": "0172d5937a-en",
+        "model": "GW80K-ETR-G10",
+        "question": "Which communication interfaces does the GW80K-ETR-G10 have?",
+        "before_page_hit": false,
+        "after_page_hit": false,
+        "after_hits": 2
+      },
+      {
+        "id": "01dfea3e55-en",
+        "model": "H2-30K-T3-DE",
+        "question": "How long is the product warranty of the H2-30K-T3-DE?",
+        "before_page_hit": true,
+        "after_page_hit": false,
+        "after_hits": 0
+      },
+      {
+        "id": "01f767ac23-en",
+        "model": "GW5.1-BAT-D-G20",
+        "question": "Which optional accessories are available for the GW5.1-BAT-D-G20?",
+        "before_page_hit": false,
+        "after_page_hit": false,
+        "after_hits": 8
+      },
+      {
+        "id": "0212b70d6e-en",
+        "model": "GW61.4-BAT-AC-G10",
+        "question": "What BMS does the GW61.4-BAT-AC-G10 use?",
+        "before_page_hit": true,
+        "after_page_hit": false,
+        "after_hits": 16
+      }
+    ],
+    "limited_before_page_hits": 7,
+    "limited_after_page_hits": 2
+  },
+  "examples": [
+    {
+      "chunk_id": "15e28e9db71c-p2-cb1b2751",
+      "page": 2,
+      "basis": "document_model",
+      "product_ids": [
+        2281
+      ],
+      "text": "◎50Hz or 60Hz"
+    },
+    {
+      "chunk_id": "1833312ad717-p1-cbb0d75e",
+      "page": 1,
+      "basis": "section",
+      "product_ids": [
+        3573
+      ],
+      "text": "| General parameters |  |\n| Connecting inverters No. [set] | 1 |\n| Inverter communication port | RS232 (USB joints) |\n| Remote communication port | Wi-Fi / Ethernet |\n| Data collection interval[min] | 1~30 [Optional], 10 [standard] |\n| Firmware update method | Serial port / Remote |\n| Access data method | APP (Bluetooth connection) / Remote server |\n| Status display | OLED |\n| Electric parameters |  |\n| Input voltage [V] | DC 5~7 (±5%) |\n| Static consumption [W] | <0.3 |\n| Max. instant consumpti"
+    },
+    {
+      "chunk_id": "2c1dd5c1e2f7-p121-41e1fa8a",
+      "page": 121,
+      "basis": "passage",
+      "product_ids": [
+        2093
+      ],
+      "text": "| Model Parameter | BU3-5.0-TV2-PRO |\n| Rated Capacity [Ah] | 100 |\n| Rated Energy [kWh] | 5.0 |\n| Usable Energy [kWh] | 4.5 |\n| Dimension (H*W*D) [mm] | 370*695*170 |\n| Weight [kg] | 52 |\n| Nominal Voltage [V] | 450 |\n| Operating Voltage [V] | 380-500 |\n| Max. Charging Current [A] | 7.9 |\n| Max. Discharging Current [A] | 7.9 |\n| Battery Designation | IFpP51/161/120/(1P16S)M/-30+50/90 |\n| Ingress Protection | IP65 |"
+    }
+  ],
+  "oracle_fixture_requests": {
+    "text_batches": 740
+  },
+  "elapsed_seconds": 97.22,
+  "source_commit": "e08a60c9287562cdef7f09b9cc2dde238fbb961a",
+  "measurement_notes": {
+    "baseline": "The separately measured frozen baseline is reused only after manifest and native Woo identity snapshot hashes match. It never authorizes runtime facts.",
+    "isolation": "The total 1817 native-unavailable passages comes from the baseline full immutable-cache scan. Final proof candidates are checked again for release; zero match.",
+    "timing": "trace.seconds decodes/rechunks cached Docling JSON; elapsed_seconds measures proof+replay after that. Neither is live HTTP/build duration."
+  }
+}
