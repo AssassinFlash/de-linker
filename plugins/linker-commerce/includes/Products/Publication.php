@@ -284,8 +284,9 @@ final class Publication {
 			return null;
 		}
 		$meta = get_post_meta( $id );
+		// Translation queue status and retry diagnostics are operational metadata.
 		foreach ( array_keys( $meta ) as $key ) {
-			if ( ( str_starts_with( (string) $key, '_linker_publication_' ) && ! in_array( $key, array( EvidenceBindings::META_KEY, EvidenceBindings::FAQ_META_KEY ), true ) ) || in_array( $key, array( '_edit_lock', '_edit_last' ), true ) ) {
+			if ( ( str_starts_with( (string) $key, '_linker_publication_' ) && ! in_array( $key, array( EvidenceBindings::META_KEY, EvidenceBindings::FAQ_META_KEY ), true ) ) || in_array( $key, array( '_edit_lock', '_edit_last', '_linker_i18n_status', '_linker_i18n_note' ), true ) ) {
 				unset( $meta[ $key ] );
 			}
 		}
