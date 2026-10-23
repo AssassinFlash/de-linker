@@ -1,0 +1,5 @@
+{
+  "fixed_sha": "cbf75a9cead3b3c87c0cb2f206a1cd7e6226551e",
+  "changed_engine_genie_php_files": [],
+  "method": "Git path delta against requested baseline; no broad native/engineering acceptance inferred"
+}

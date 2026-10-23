@@ -1,0 +1,67 @@
+▶ legacy initial fragment links reveal the corresponding active workspace without revising inputs
+  ✔ #lp-site (1311.606417ms)
+  ✔ #lp-brief-use (140.811084ms)
+  ✔ #lp-notes (209.637583ms)
+  ✔ #lp-load (170.327083ms)
+  ✔ #lp-profiles (303.512791ms)
+  ✔ #lp-design (113.26275ms)
+  ✔ #lp-overview (97.175125ms)
+✔ legacy initial fragment links reveal the corresponding active workspace without revising inputs (2348.786333ms)
+▶ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero
+  ✔ missing (71.148708ms)
+  ✔ all explicitly excluded (89.986542ms)
+✔ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero (161.759875ms)
+✔ multiple roof quantities use included objects across the document while preview names its first roof (65.153709ms)
+✔ overview plan is read-only and does not offer editor controls or create edits (74.475833ms)
+✔ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (157.698375ms)
+✔ unapplied geometry form blocks navigation until explicit cancel and keeps the raw values (116.88775ms)
+✔ an in-progress CSV file selection and raw delimiter remain mounted across workspace switches (57.665917ms)
+✔ revoked scope cannot switch the workspaces or alter its URL fragment (30.258292ms)
+✔ a completed geometry property edit remains one shared history step across the overview (174.888167ms)
+✔ SPEC COUNTEREXAMPLE: Site workspace navigation must reveal its first project-use/system-scope section (71.593125ms)
+✔ new native selector shares the active workspace, destination and unchanged document (151.485125ms)
+✔ native selector retains actually invalid raw brief input and restores its controlled selection (57.165083ms)
+✔ native selector cannot hide either a valid unapplied or invalid submitted geometry form (64.7025ms)
+✔ mixed brief and geometry edits retain one shared undo chain when navigating with the selector (86.440584ms)
+✔ file reading may finish in a hidden workspace without resetting the source or stealing destination focus (36.923458ms)
+▶ native-scope withdrawal fences selector admission and its deferred reveal
+  ✔ withdrawn before event (21.641083ms)
+  ✔ withdrawn before effect (26.988125ms)
+✔ native-scope withdrawal fences selector admission and its deferred reveal (48.959583ms)
+▶ each legacy initial fragment initializes the new selector without changing the old URL or project
+  ✔ #lp-site (24.978042ms)
+  ✔ #lp-brief-use (20.65725ms)
+  ✔ #lp-notes (20.716084ms)
+  ✔ #lp-load (26.457875ms)
+  ✔ #lp-profiles (21.726042ms)
+  ✔ #lp-design (20.491292ms)
+  ✔ #lp-overview (24.972667ms)
+✔ each legacy initial fragment initializes the new selector without changing the old URL or project (160.86525ms)
+✔ SPEC COUNTEREXAMPLE: a resolved brief refusal must not reappear when a valid unapplied roof form opens (68.177167ms)
+▶ all roof-editor form kinds use staged guidance after refusal and cancel resumes navigation
+  ✔ new roof (51.80725ms)
+  ✔ existing roof (50.381ms)
+  ✔ existing array (51.534291ms)
+  ✔ new array (67.326958ms)
+  ✔ existing module (107.285209ms)
+  ✔ new module (73.853ms)
+  ✔ source (68.029583ms)
+  ✔ coordinate reference (46.145291ms)
+  ✔ obstacle (46.382875ms)
+  ✔ keep-out (43.47725ms)
+  ✔ layout rules (44.763708ms)
+  ✔ roof removal confirmation (44.337625ms)
+✔ all roof-editor form kinds use staged guidance after refusal and cancel resumes navigation (696.680333ms)
+✔ invalid brief takes precedence over staged roof state until corrected, then cancellation clears refusal (57.463375ms)
+✔ validation cleanup preserves an in-flight save and a later edit beyond its acknowledgement (63.658042ms)
+✔ staged-form cancellation does not clear an uncertain save intent or change retry bytes (71.006542ms)
+✔ validation reset cannot erase unavailable recovery, close admission or the unsaved document (105.151917ms)
+✔ SPEC COUNTEREXAMPLE: refusal feedback must remain with the persistent workspace navigation (41.334083ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6784.054209

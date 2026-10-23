@@ -1,0 +1,18 @@
+✔ independent existing URL alias opens its workspace #lp-brief-use (521.18475ms)
+✔ independent existing URL alias opens its workspace #lp-notes (52.193916ms)
+✔ independent existing URL alias opens its workspace #lp-profiles (54.907459ms)
+✔ independent existing URL alias opens its workspace #lp-design (54.338333ms)
+✔ independent existing URL alias opens its workspace #unrecognised (55.9045ms)
+✔ independent unapplied roof form blocks navigation and cancellation restores it (131.766875ms)
+✔ empty overview retains unknown layout and actual explicit zero consumption en-US (81.926125ms)
+✔ multi-roof summary spans all layouts while preview names and draws only first roof en-US (14.820541ms)
+✔ empty overview retains unknown layout and actual explicit zero consumption de-DE (8.178125ms)
+✔ multi-roof summary spans all layouts while preview names and draws only first roof de-DE (9.267125ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1269.187875

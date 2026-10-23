@@ -1,0 +1,42 @@
+[
+  {
+    "name": "fixed-client-suite",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-cbf-jc9w0qg6/apps/planner",
+    "exit_code": 0,
+    "log": "fixed-client-suite.log",
+    "summary": "licit retry (86.413042ms)\n\u2714 recovery 503 has bounded verification and a working explicit retry (41.550084ms)\n\u2714 prior scope: now-saved edits do not reappear as unsaved (1524.700625ms)\n\u2714 prior scope: uncertain intent remains reviewable (78.016917ms)\n\u2714 current scope: now-saved edits do not reappear as unsaved (43.547209ms)\n\u2714 current scope: uncertain intent remains reviewable (54.996083ms)\n\u2714 clean-prior scope: now-saved edits do not reappear as unsaved (50.090208ms)\n\u2714 a deferred close refused during same-scope verification remains retryable (1696.157042ms)\n\u2714 same identity rechecks retain delayed edits and invalid raw numeric text (1768.77075ms)\n\u2714 Journal workspaces show one task while retaining real input nodes, values and undo history (165.293083ms)\n\u2714 failed storage and failed identity refresh preserve hidden edits until same owner returns (77.063084ms)\n\u2714 a confirmed different identity removes the former editor and does not grant its project (67.520583ms)\n\u2714 the actual project bar is observed after asynchronous draft opening and on resize (29.442167ms)\n\u2714 creation authentication failure rechecks once and explicitly retries the exact intent (28.985542ms)\n\u25b6 a former identity's delayed creation cannot dispatch or restore cache and navigation\n  \u2714 write (17.655125ms)\n  \u2714 clear (16.276875ms)\n\u2714 a former identity's delayed creation cannot dispatch or restore cache and navigation (34.379583ms)\n\u25b6 native confirmation fences pending creation, revision and navigation before React commits\n  \u2714 write (20.58475ms)\n  \u2714 clear (19.408625ms)\n  \u2714 revise (72.484625ms)\n  \u2714 close (52.016708ms)\n\u2714 native confirmation fences pending creation, revision and navigation before React commits (165.162416ms)\n\u2139 tests 54\n\u2139 suites 0\n\u2139 pass 54\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 4026.446417\n"
+  },
+  {
+    "name": "fixed-build-check",
+    "command": [
+      "npm",
+      "run",
+      "build:check"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-cbf-jc9w0qg6/apps/planner",
+    "exit_code": 0,
+    "log": "fixed-build-check.log",
+    "summary": "\n> @linker/planner@0.1.0 build:check\n> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs\n\nPlanner build matches its sources.\n\u2714 a lazy built chunk never executes the versioned WordPress entry again (176.253958ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 352.614042\n"
+  },
+  {
+    "name": "independent-mobile-overview-warning",
+    "command": [
+      "node",
+      "--no-warnings=ExperimentalWarning",
+      "--loader",
+      "./tests/tsx-loader.mjs",
+      "--test",
+      "tests/standards_overview_probe.test.mjs",
+      "tests/standards_mobile_probe.test.mjs",
+      "tests/standards_warning_probe.test.mjs"
+    ],
+    "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-cbf-jc9w0qg6/apps/planner",
+    "exit_code": 0,
+    "log": "independent-mobile-overview-warning.log",
+    "summary": "\u2714 independent mobile selector shares workspace/hash/input nodes and reveals the first Site section (798.615833ms)\n\u2714 independent mobile selector refuses invalid annual raw value and follows correction without losing it (115.018459ms)\n\u2714 independent mobile selector cannot hide an unapplied roof form and resumes after cancel (85.632458ms)\n\u2714 independent mobile selector obeys immediate native scope fence before a React recheck render (37.062417ms)\n\u2714 empty overview retains unknown layout and actual explicit zero consumption en-US (131.043375ms)\n\u2714 multi-roof summary spans all layouts while preview names and draws only first roof en-US (21.040166ms)\n\u2714 empty overview retains unknown layout and actual explicit zero consumption de-DE (15.867416ms)\n\u2714 multi-roof summary spans all layouts while preview names and draws only first roof de-DE (15.813042ms)\n\u2714 independent stale refusal stays cleared and staged roof/module wording remains accurate en-US (938.073334ms)\n\u2714 independent stale refusal stays cleared and staged roof/module wording remains accurate de-DE (153.170417ms)\n\u2139 tests 10\n\u2139 suites 0\n\u2139 pass 10\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 1733.7\n"
+  }
+]

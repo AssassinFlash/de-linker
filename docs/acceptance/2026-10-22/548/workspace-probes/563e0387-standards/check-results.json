@@ -1,0 +1,46 @@
+{
+  "fixed_sha": "563e038786330ba17aea339e96e9f54e961e4195",
+  "run_utc": "2026-10-23T09:43:22.209525+00:00",
+  "checks": [
+    {
+      "name": "fixed-client-suite",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-563e-e_fhkyzi/apps/planner",
+      "exit_code": 0,
+      "log": "fixed-client-suite.log",
+      "summary": " edits and invalid raw numeric text (1371.876584ms)\n\u2714 Journal workspaces show one task while retaining real input nodes, values and undo history (81.033125ms)\n\u2714 failed storage and failed identity refresh preserve hidden edits until same owner returns (72.599042ms)\n\u2714 a confirmed different identity removes the former editor and does not grant its project (43.547542ms)\n\u2714 the actual project bar is observed after asynchronous draft opening and on resize (28.927125ms)\n\u2714 creation authentication failure rechecks once and explicitly retries the exact intent (35.328875ms)\n\u25b6 a former identity's delayed creation cannot dispatch or restore cache and navigation\n  \u2714 write (17.264542ms)\n  \u2714 clear (16.009083ms)\n\u2714 a former identity's delayed creation cannot dispatch or restore cache and navigation (33.724792ms)\n\u25b6 native confirmation fences pending creation, revision and navigation before React commits\n  \u2714 write (15.5485ms)\n  \u2714 clear (14.729167ms)\n  \u2714 revise (52.280167ms)\n  \u2714 close (44.848958ms)\n\u2714 native confirmation fences pending creation, revision and navigation before React commits (128.126833ms)\n\u2139 tests 54\n\u2139 suites 0\n\u2139 pass 54\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 3333.26225\n"
+    },
+    {
+      "name": "fixed-build-check",
+      "command": [
+        "npm",
+        "run",
+        "build:check"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-563e-e_fhkyzi/apps/planner",
+      "exit_code": 0,
+      "log": "fixed-build-check.log",
+      "summary": "\n> @linker/planner@0.1.0 build:check\n> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs\n\nPlanner build matches its sources.\n\u2714 a lazy built chunk never executes the versioned WordPress entry again (178.145583ms)\n\u2139 tests 1\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 371.99525\n"
+    },
+    {
+      "name": "independent-workspaces",
+      "command": [
+        "node",
+        "--no-warnings=ExperimentalWarning",
+        "--loader",
+        "./tests/tsx-loader.mjs",
+        "--test",
+        "tests/standards_overview_probe.test.mjs",
+        "tests/standards_lifecycle_probe.test.mjs"
+      ],
+      "cwd": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-563e-e_fhkyzi/apps/planner",
+      "exit_code": 0,
+      "log": "independent-workspaces.log",
+      "summary": "\u2714 independent existing URL alias opens its workspace #lp-brief-use (521.18475ms)\n\u2714 independent existing URL alias opens its workspace #lp-notes (52.193916ms)\n\u2714 independent existing URL alias opens its workspace #lp-profiles (54.907459ms)\n\u2714 independent existing URL alias opens its workspace #lp-design (54.338333ms)\n\u2714 independent existing URL alias opens its workspace #unrecognised (55.9045ms)\n\u2714 independent unapplied roof form blocks navigation and cancellation restores it (131.766875ms)\n\u2714 empty overview retains unknown layout and actual explicit zero consumption en-US (81.926125ms)\n\u2714 multi-roof summary spans all layouts while preview names and draws only first roof en-US (14.820541ms)\n\u2714 empty overview retains unknown layout and actual explicit zero consumption de-DE (8.178125ms)\n\u2714 multi-roof summary spans all layouts while preview names and draws only first roof de-DE (9.267125ms)\n\u2139 tests 10\n\u2139 suites 0\n\u2139 pass 10\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 1269.187875\n"
+    }
+  ],
+  "copy_catalog_entries_checked": 19
+}

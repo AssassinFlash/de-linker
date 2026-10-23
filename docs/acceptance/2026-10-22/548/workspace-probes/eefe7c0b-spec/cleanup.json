@@ -1,0 +1,22 @@
+{
+  "owner": "/root/geographic_spec_e138",
+  "target": "eefe7c0b060214b60ba7a012ff206e668dbce6d3",
+  "base": "7e96b88dd902ea64fd27250494d3129783d7f307",
+  "source_files_sha_checked_and_removed": 121,
+  "source_bytes_removed": 711967,
+  "source_mismatches": [],
+  "generated_files_removed": 1,
+  "generated_bytes_removed": 22966,
+  "dependency_links_removed": [
+    "apps/planner/node_modules"
+  ],
+  "staging_root": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-eefe-5teovmwd",
+  "all_test_handles_completed": true,
+  "prior563_probe_archive_unchanged": true,
+  "free_before_bytes": 893211119616,
+  "free_after_bytes": 893212180480,
+  "observed_free_delta_bytes": 1060864,
+  "completed_utc": "2026-10-23T09:56:31.224798+00:00",
+  "scope": "Only owned SHA-pinned review snapshot, dependency link and disposable composed module reclaimed; parent implementation/native/prototype/other-chat fixture/production untouched. Free-space delta may include concurrent activity.",
+  "staging_root_absent": true
+}

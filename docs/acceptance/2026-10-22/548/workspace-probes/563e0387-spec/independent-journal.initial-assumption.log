@@ -1,0 +1,46 @@
+▶ legacy initial fragment links reveal the corresponding active workspace without revising inputs
+  ✔ #lp-site (480.599708ms)
+  ✔ #lp-brief-use (45.630833ms)
+  ✔ #lp-notes (42.833166ms)
+  ✔ #lp-load (44.077167ms)
+  ✔ #lp-profiles (43.651167ms)
+  ✔ #lp-design (41.636709ms)
+  ✔ #lp-overview (41.275ms)
+✔ legacy initial fragment links reveal the corresponding active workspace without revising inputs (741.101417ms)
+▶ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero
+  ✔ missing (42.79725ms)
+  ✔ all explicitly excluded (41.204833ms)
+✔ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero (84.382042ms)
+✔ multiple roof quantities use included objects across the document while preview names its first roof (30.82ms)
+✔ overview plan is read-only and does not offer editor controls or create edits (35.348333ms)
+✖ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (89.077ms)
+✔ unapplied geometry form blocks navigation until explicit cancel and keeps the raw values (52.085583ms)
+✔ an in-progress CSV file selection and raw delimiter remain mounted across workspace switches (38.642417ms)
+✔ revoked scope cannot switch the workspaces or alter its URL fragment (24.57075ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 16
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1804.833
+
+✖ failing tests:
+
+test at tests/independent-journal-probe.mjs:76:1
+✖ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (89.077ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'site' !== 'energy'
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-563e-djurgov9/apps/planner/tests/independent-journal-probe.mjs:86:70)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'site',
+    expected: 'energy',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

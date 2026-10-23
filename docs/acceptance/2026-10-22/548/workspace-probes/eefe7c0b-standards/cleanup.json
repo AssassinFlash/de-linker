@@ -1,0 +1,37 @@
+{
+  "fixed_sha": "eefe7c0b060214b60ba7a012ff206e668dbce6d3",
+  "owner": "/root/geographic_standards_e138",
+  "removed_root": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-eefe-kx9joza_",
+  "root_absent": true,
+  "sha_verified_source_files": 129,
+  "source_bytes": 3153024,
+  "source_mismatches": [],
+  "generated_files": 2,
+  "generated_bytes": 10915,
+  "links_removed": [
+    "apps/planner/node_modules"
+  ],
+  "unique_evidence_retained": [
+    "REVIEW.md",
+    "snapshot-manifest.json",
+    "run_review_checks.py",
+    "rebuild_snapshot.py",
+    "probe_overview.test.mjs",
+    "probe_mobile_append.mjs",
+    "fixed-client-suite.log",
+    "fixed-build-check.log",
+    "independent-mobile-overview.log",
+    "copy-unchanged.json",
+    "native-windpress-readback.json",
+    "check-results.json",
+    "execution-results.json",
+    "initial-metadata-parser-error.json",
+    "legacy-identifier-check.json",
+    "authority-delta-check.json"
+  ],
+  "free_before_bytes": 893194833920,
+  "free_after_bytes": 893198368768,
+  "observed_free_delta_bytes": 3534848,
+  "completed_utc": "2026-10-23T09:55:31.207068+00:00",
+  "scope": "Only reviewer-owned fixed graph and generated tests removed. Parent implementation, native instance, other review proofs and linked dependencies untouched. Native reads were metadata-only. Free delta includes concurrent activity."
+}

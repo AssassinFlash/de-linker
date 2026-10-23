@@ -1,0 +1,34 @@
+{
+  "fixed_sha": "563e038786330ba17aea339e96e9f54e961e4195",
+  "owner": "/root/geographic_standards_e138",
+  "removed_root": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-563e-e_fhkyzi",
+  "root_absent": true,
+  "sha_verified_source_files": 129,
+  "source_bytes": 3150651,
+  "source_mismatches": [],
+  "generated_files": 2,
+  "generated_bytes": 9448,
+  "links_removed": [
+    "apps/planner/node_modules"
+  ],
+  "unique_evidence_retained": [
+    "REVIEW.md",
+    "COPY-REVIEW.md",
+    "snapshot-manifest.json",
+    "run_review_checks.py",
+    "rebuild_snapshot.py",
+    "probe_overview.test.mjs",
+    "probe_lifecycle_append.mjs",
+    "fixed-client-suite.log",
+    "fixed-build-check.log",
+    "independent-workspaces.log",
+    "copy-catalog-check.json",
+    "check-results.json",
+    "legacy-identifier-check.json"
+  ],
+  "free_before_bytes": 894117715968,
+  "free_after_bytes": 894121160704,
+  "observed_free_delta_bytes": 3444736,
+  "completed_utc": "2026-10-23T09:47:30.028814+00:00",
+  "scope": "Only this reviewer-owned fixed graph/generated tests removed. Parent implementation, native instances, other chat fixture and linked dependencies untouched. Free delta includes concurrent activity."
+}

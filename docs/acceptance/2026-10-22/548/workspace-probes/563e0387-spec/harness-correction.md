@@ -1,0 +1,1 @@
+The initial German-locale probe incorrectly treated `1,` as invalid. The unchanged locale parser intentionally accepts a trailing decimal separator. The original failure log is retained; the probe now uses actually invalid `1,,` under de-DE. No product code changed. The corrected probe rechecks the invalid-input navigation guard.

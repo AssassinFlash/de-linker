@@ -1,0 +1,15 @@
+{
+  "observed_utc": "2026-10-23T10:13:21.695486+00:00",
+  "node": "v24.22.0",
+  "source_snapshot": "/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-f0df-69uydlbq",
+  "source_file_count": 121,
+  "repository": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548",
+  "dependency_symlinks": [
+    {
+      "path": "apps/planner/node_modules",
+      "target": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/apps/planner/node_modules"
+    }
+  ],
+  "execution": "Real React and Query mounted in JSDOM; synthetic in-memory storage, transport and geometry fixtures; no native browser, network or production calls",
+  "all_exec_handles_completed": true
+}

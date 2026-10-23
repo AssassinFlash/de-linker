@@ -1,0 +1,27 @@
+▶ legacy initial fragment links reveal the corresponding active workspace without revising inputs
+  ✔ #lp-site (366.256541ms)
+  ✔ #lp-brief-use (40.062667ms)
+  ✔ #lp-notes (35.6975ms)
+  ✔ #lp-load (37.643291ms)
+  ✔ #lp-profiles (39.336833ms)
+  ✔ #lp-design (38.524625ms)
+  ✔ #lp-overview (40.10925ms)
+✔ legacy initial fragment links reveal the corresponding active workspace without revising inputs (599.014209ms)
+▶ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero
+  ✔ missing (39.093833ms)
+  ✔ all explicitly excluded (49.290959ms)
+✔ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero (88.752167ms)
+✔ multiple roof quantities use included objects across the document while preview names its first roof (42.901459ms)
+✔ overview plan is read-only and does not offer editor controls or create edits (65.543709ms)
+✔ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (98.785708ms)
+✔ unapplied geometry form blocks navigation until explicit cancel and keeps the raw values (42.876666ms)
+✔ an in-progress CSV file selection and raw delimiter remain mounted across workspace switches (36.221084ms)
+✔ revoked scope cannot switch the workspaces or alter its URL fragment (21.416625ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1557.486292

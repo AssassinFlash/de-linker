@@ -1,0 +1,5 @@
+{
+  "kind": "review probe reconstruction",
+  "product_finding": false,
+  "error": "Initial compiled-rule regex expected CSS braces/properties with no formatting whitespace, while native compiler output retained whitespace. All fixed/test commands exited0. Parser corrected and metadata-only check rerun; application source unchanged."
+}

@@ -1,0 +1,45 @@
+{
+  "source": "f0df6762fc549bf9251d508a802bb38cd2c258fa",
+  "bar": {
+    "bottom": 194,
+    "height": 113,
+    "left": 0,
+    "right": 375,
+    "top": 81,
+    "width": 375,
+    "x": 0,
+    "y": 81
+  },
+  "entry": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=758ec5df3711f49c96df5278f60d959210e51482b6fb7175c098fa0623e3e8ab"
+  ],
+  "fonts": "loaded",
+  "heading": {
+    "bottom": 1423.203125,
+    "height": 1213.2109375,
+    "left": 16,
+    "right": 359,
+    "top": 209.9921875,
+    "width": 343,
+    "x": 16,
+    "y": 209.9921875
+  },
+  "invalid": 0,
+  "lang": "de-DE",
+  "project": "8c71ef3068ee465d86f093cece8406fa",
+  "refusal": null,
+  "state": "Gespeichert · Version 6",
+  "styles": [
+    "http://127.0.0.1:9347/wp-content/uploads/windpress/cache/tailwind.css?ver=1792749887"
+  ],
+  "workspace": "overview",
+  "warningsAndErrors": [],
+  "naturalViewportAfterEmulationReset": {
+    "clientWidth": 328,
+    "height": 767,
+    "previewTouchAction": "auto",
+    "scrollWidth": 328,
+    "titleWrap": "anywhere",
+    "width": 343
+  }
+}

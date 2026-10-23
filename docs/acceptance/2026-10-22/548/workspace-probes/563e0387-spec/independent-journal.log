@@ -1,0 +1,51 @@
+▶ legacy initial fragment links reveal the corresponding active workspace without revising inputs
+  ✔ #lp-site (363.170875ms)
+  ✔ #lp-brief-use (39.295542ms)
+  ✔ #lp-notes (36.905833ms)
+  ✔ #lp-load (37.274667ms)
+  ✔ #lp-profiles (38.773208ms)
+  ✔ #lp-design (36.12925ms)
+  ✔ #lp-overview (40.862125ms)
+✔ legacy initial fragment links reveal the corresponding active workspace without revising inputs (593.584916ms)
+▶ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero
+  ✔ missing (37.629583ms)
+  ✔ all explicitly excluded (47.310417ms)
+✔ missing inputs render unknown quantities; an explicitly empty layout can honestly render zero (85.338833ms)
+✔ multiple roof quantities use included objects across the document while preview names its first roof (42.416167ms)
+✔ overview plan is read-only and does not offer editor controls or create edits (58.403917ms)
+✔ switching workspaces retains the same raw inputs and one shared undo/redo document including source metadata (93.588958ms)
+✔ unapplied geometry form blocks navigation until explicit cancel and keeps the raw values (46.811167ms)
+✔ an in-progress CSV file selection and raw delimiter remain mounted across workspace switches (55.874417ms)
+✔ revoked scope cannot switch the workspaces or alter its URL fragment (25.61175ms)
+✔ a completed geometry property edit remains one shared history step across the overview (93.026875ms)
+✖ SPEC COUNTEREXAMPLE: Site workspace navigation must reveal its first project-use/system-scope section (39.138583ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1750.4865
+
+✖ failing tests:
+
+test at tests/independent-journal-probe.mjs:126:1
+✖ SPEC COUNTEREXAMPLE: Site workspace navigation must reveal its first project-use/system-scope section (39.138583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'lp-site'
+  - 'lp-brief-use'
+        ^
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/workspace-spec-563e-djurgov9/apps/planner/tests/independent-journal-probe.mjs:133:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'lp-site',
+    expected: 'lp-brief-use',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

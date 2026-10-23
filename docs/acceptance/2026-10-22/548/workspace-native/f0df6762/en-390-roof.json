@@ -1,0 +1,41 @@
+{
+  "active": "lp-design",
+  "bar": {
+    "bottom": 194,
+    "height": 113,
+    "left": 0,
+    "right": 375,
+    "top": 81,
+    "width": 375,
+    "x": 0,
+    "y": 81
+  },
+  "clientWidth": 375,
+  "header": {
+    "bottom": 81,
+    "height": 81,
+    "left": 0,
+    "right": 375,
+    "top": 0,
+    "width": 375,
+    "x": 0,
+    "y": 0
+  },
+  "height": 844,
+  "invalid": [],
+  "overview": {
+    "bottom": 0,
+    "height": 0,
+    "left": 0,
+    "right": 0,
+    "top": 0,
+    "width": 0,
+    "x": 0,
+    "y": 0
+  },
+  "scrollWidth": 375,
+  "scrollX": 0,
+  "scrollY": 167.5,
+  "width": 390,
+  "workspace": "design"
+}

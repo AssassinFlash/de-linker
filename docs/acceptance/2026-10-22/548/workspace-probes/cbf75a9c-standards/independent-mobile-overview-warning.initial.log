@@ -1,0 +1,39 @@
+✔ independent mobile selector shares workspace/hash/input nodes and reveals the first Site section (669.178958ms)
+✔ independent mobile selector refuses invalid annual raw value and follows correction without losing it (176.277542ms)
+✔ independent mobile selector cannot hide an unapplied roof form and resumes after cancel (78.892375ms)
+✔ independent mobile selector obeys immediate native scope fence before a React recheck render (32.28425ms)
+✔ empty overview retains unknown layout and actual explicit zero consumption en-US (94.199583ms)
+✔ multi-roof summary spans all layouts while preview names and draws only first roof en-US (18.1075ms)
+✔ empty overview retains unknown layout and actual explicit zero consumption de-DE (8.187417ms)
+✔ multi-roof summary spans all layouts while preview names and draws only first roof de-DE (9.745958ms)
+✔ independent stale refusal stays cleared and staged roof/module wording remains accurate en-US (843.136459ms)
+✖ independent stale refusal stays cleared and staged roof/module wording remains accurate de-DE (58.885458ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1358.415167
+
+✖ failing tests:
+
+test at tests/standards_warning_probe.test.mjs:162:2
+✖ independent stale refusal stays cleared and staged roof/module wording remains accurate de-DE (58.885458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'overview'
+  - 'energy'
+  
+      at TestContext.<anonymous> (file:///private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/journal-standards-cbf-jc9w0qg6/apps/planner/tests/standards_warning_probe.test.mjs:169:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'overview',
+    expected: 'energy',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

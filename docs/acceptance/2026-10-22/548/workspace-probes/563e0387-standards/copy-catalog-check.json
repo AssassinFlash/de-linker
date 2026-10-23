@@ -1,0 +1,138 @@
+{
+  "fixed_sha": "563e038786330ba17aea339e96e9f54e961e4195",
+  "messages": [
+    {
+      "english": "A place for the roof and its layout",
+      "german": "Hier entsteht Ihre Dachplanung",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Across the current roof layouts",
+      "german": "Aus den aktuellen Dachbelegungen",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Annual consumption and interval data",
+      "german": "Jahresverbrauch und Zeitreihendaten",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Basis not specified",
+      "german": "Grundlage nicht angegeben",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Continue your project",
+      "german": "Projekt weiterbearbeiten",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Current layout",
+      "german": "Aktuelle Belegung",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Current project",
+      "german": "Aktuelles Projekt",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Energy inputs",
+      "german": "Energiedaten",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Location, system scope and site conditions",
+      "german": "Standort, Systemumfang und Bedingungen vor Ort",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Module count and declared specifications",
+      "german": "Modulanzahl und angegebene Spezifikationen",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Open roof workspace",
+      "german": "Dachplanung öffnen",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Project overview",
+      "german": "Projektübersicht",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Project workspaces",
+      "german": "Projektbereiche",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Roof design is optional. A measured roof can be added here while the project information and energy inputs remain available in their workspaces.",
+      "german": "Die Dachplanung ist optional. Sie können hier ein vermessenes Dach anlegen; Projektangaben und Energiedaten bleiben in ihren Arbeitsbereichen erhalten.",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Roof faces, obstacles and module layout",
+      "german": "Dachflächen, Hindernisse und Modulbelegung",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Site and project",
+      "german": "Standort und Projekt",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Site information, roof layouts and energy inputs share this project. Each workspace can be completed as the design develops.",
+      "german": "Standort, Dachplanung und Energiedaten gehören zu demselben Projekt. Sie können die Angaben in den jeweiligen Arbeitsbereichen nach und nach ergänzen.",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "The overview describes the current inputs. Energy yield, equipment suitability and engineering release require their respective calculations and evidence.",
+      "german": "Die Übersicht zeigt Ihre aktuellen Eingaben. Für Ertrag, Geräteeignung und technische Freigabe sind die jeweiligen Berechnungen und Nachweise erforderlich.",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    },
+    {
+      "english": "Your project at a glance",
+      "german": "Ihr Projekt im Überblick",
+      "gnu_matches": true,
+      "wordpress_json_matches": true,
+      "forbidden_prose_dash": false
+    }
+  ]
+}

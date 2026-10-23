@@ -5,6 +5,13 @@ presentation: exposed yellow SDK/transport controls and JSON, excessive mobile
 blank space, cropped content and an overlapping step bar, plus a long form/report
 without the approved Journal workspace's hierarchy.
 
+Current checkpoint: the Journal presentation source at `f0df6762` has independent
+Spec and Standards PASS. Scoped responsive/native observations and the retained
+earlier failures are indexed in [the review record](WORKSPACE-VISUAL-REVIEW.md).
+The pending statements below describe their respective earlier checkpoints.
+This does not accept physical touch, final calculations, reports or production,
+and the complete unified-planner goal remains active.
+
 ## Verified origin and meaning
 
 The screenshots name built31ae1248. The separate local protection lifecycle

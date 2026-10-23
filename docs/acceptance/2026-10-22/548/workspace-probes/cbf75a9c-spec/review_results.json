@@ -1,0 +1,55 @@
+{
+  "axis": "Spec",
+  "target": "cbf75a9cead3b3c87c0cb2f206a1cd7e6226551e",
+  "base": "7e96b88dd902ea64fd27250494d3129783d7f307",
+  "verdict": "FAIL",
+  "findings": {
+    "missing_partial": [],
+    "scope_creep": [],
+    "incorrect": [
+      {
+        "priority": 2,
+        "id": "refusal_feedback_outside_persistent_workspace_navigation",
+        "source": "apps/planner/src/components/ProjectEditor.tsx:236-254,429-448",
+        "spec": "docs/acceptance/2026-10-22/548/WORKSPACE-VISUAL-CORRECTION.md:119-121",
+        "quote": "only after a refused departure, explains finishing or cancelling that edit",
+        "evidence": "Actual DOM preserves the staged form/input and renders the correct refusal Notice outside the sticky project bar that contains the attempted selector. Parent separately observed DE390 explanation above viewport during a long form.",
+        "probe": "refusal-probe-additions.mjs:91-99"
+      }
+    ]
+  },
+  "unchanged_prior_probes": {
+    "files": [
+      {
+        "path": "apps/planner/tests/independent-journal-probe.mjs",
+        "archive": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/workspace-probes/eefe7c0b-spec/apps/planner/tests/independent-journal-probe.mjs",
+        "sha256": "d0cf137f95dc530853ad9ac620afd30531e69250fb65b7631fd2294ce2fff9c8"
+      },
+      {
+        "path": "mobile-probe-additions.mjs",
+        "archive": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/workspace-probes/eefe7c0b-spec/mobile-probe-additions.mjs",
+        "sha256": "b9ac02bb38a80271ee1fc578a496fc1979f2162be18d75fbf7ff676e3125caec"
+      },
+      {
+        "path": "run_mobile_probe.py",
+        "archive": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-22/548/workspace-probes/eefe7c0b-spec/run_mobile_probe.py",
+        "sha256": "01f38e3df06e49bd9f11fcda1fff59ecdc19ec1f556fec12fa39a87dea50f50d"
+      }
+    ],
+    "passed": 36,
+    "both_previous_counterexamples_pass": true
+  },
+  "execution": {
+    "fixed_domain_data_pass": 54,
+    "fixed_dom_pass": 54,
+    "complete_independent_pass": 53,
+    "complete_independent_product_counterexample_fail": 1,
+    "roof_editor_form_contexts_pass": 12
+  },
+  "limits": [
+    "Actual fixed React/Query/JSDOM components with explicit synthetic storage/transport fixtures",
+    "No reviewer native WordPress, other-chat fixture, Computer Use or production action",
+    "Physical offscreen observation supplied separately by parent; no pixel or physical-touch acceptance",
+    "Full A-D/site goal remains active and unaccepted"
+  ]
+}
