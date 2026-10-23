@@ -128,7 +128,19 @@ final class SelectionFacts {
 			 */
 			$product_id = (int) apply_filters( 'linker_commerce_facts_product_id', $product_id );
 		}
-		$figures                             = self::figures( $product_id );
+		return self::from_figures( $product_id, self::figures( $product_id ) );
+	}
+
+	/**
+	 * Derive facts from the caller's authorized figure set without rereading raw meta.
+	 *
+	 * Engineering/knowledge consumers supply only current permitted evidence.
+	 * Native Woo categories and attributes remain the source for classification.
+	 *
+	 * @param int          $product_id Canonical product ID.
+	 * @param array<mixed> $figures Authorized figure entries.
+	 */
+	public static function from_figures( int $product_id, array $figures ): SelectionFactSet {
 		list( $ac_power_kw, $ac_apparent )   = self::ac_power( $figures );
 		list( $usable_kwh, $usable_range )   = self::energy( $figures, self::USABLE_KEYS );
 		list( $nominal_kwh, $nominal_range ) = self::energy( $figures, self::NOMINAL_KEYS );

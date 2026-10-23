@@ -99,6 +99,7 @@ final class EngineeringFeedController extends WP_REST_Controller {
 	public function get_items( $request ): object {
 		$since = $request->get_param( 'since' );
 
+		nocache_headers();
 		return (object) EngineeringFeed::feed( is_string( $since ) && '' !== $since ? $since : null );
 	}
 

@@ -21,6 +21,22 @@ use WP_Mock;
  * @covers \Linker\Commerce\Admin\DocumentsMetaBox
  */
 final class DocumentsMetaBoxTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\ManagedDocumentFixture;
+
+	/** Provide the real managed PDFs the editor may associate. */
+	public function setUp(): void {
+		parent::setUp();
+		WP_Mock::userFunction( 'get_option' )->andReturn( array() )->byDefault();
+		WP_Mock::userFunction( 'get_post_meta' )->andReturn( array() )->byDefault();
+		$this->managed_documents( array( '2026/10/manual.pdf', '2026/10/kept.pdf', '2026/10/gone.pdf', '2026/10/appended.pdf' ) );
+	}
+
+	/** Remove generated files after the editor case. */
+	public function tearDown(): void {
+		$this->remove_managed_documents();
+		parent::tearDown();
+	}
+
 
 
 	/**
@@ -98,7 +114,7 @@ final class DocumentsMetaBoxTest extends TestCase {
 		WP_Mock::userFunction(
 			'wp_parse_url',
 			array(
-				'return' => static fn ( string $url, int $component = -1 ): string => PHP_URL_HOST === $component && str_contains( $url, '127.0.0.1' ) ? '127.0.0.1' : '',
+				'return' => static fn ( string $url, int $component = -1 ) => parse_url( $url, $component ),
 			)
 		);
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'http://127.0.0.1:8927' ) );
@@ -167,12 +183,7 @@ final class DocumentsMetaBoxTest extends TestCase {
 		WP_Mock::userFunction(
 			'wp_parse_url',
 			array(
-				'return' => static function ( string $url, int $component = -1 ): string {
-					if ( PHP_URL_HOST !== $component ) {
-						return '';
-					}
-					return str_contains( $url, 'vendor.example' ) ? 'vendor.example' : '127.0.0.1';
-				},
+				'return' => static fn ( string $url, int $component = -1 ) => parse_url( $url, $component ),
 			)
 		);
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'http://127.0.0.1:8927' ) );
@@ -250,7 +261,7 @@ final class DocumentsMetaBoxTest extends TestCase {
 		WP_Mock::userFunction( 'sanitize_text_field', array( 'return' => static fn ( string $text ): string => trim( $text ) ) );
 		WP_Mock::userFunction( 'wp_unslash', array( 'return' => static fn ( $value ) => $value ) );
 		WP_Mock::userFunction( 'esc_url_raw', array( 'return' => static fn ( string $url ): string => $url ) );
-		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn (): string => '127.0.0.1' ) );
+		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn ( string $url, int $component = -1 ) => parse_url( $url, $component ) ) );
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'http://127.0.0.1:8927' ) );
 		// The list as the save reads it: the box's row, then the row another
 		// writer appended after the box was rendered.
