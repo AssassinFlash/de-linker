@@ -94,6 +94,7 @@ app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
 _log: TurnLog | None = None
 _client: AbilityClient | None = None
 _understander: Understander | None = None
+_vocabulary: StoreVocabulary | None = None
 _pages: page.PageReader | None = None
 _vision: Vision | None = None
 
@@ -145,13 +146,21 @@ def vision() -> Vision | None:
     return _vision
 
 
+def store_vocabulary() -> StoreVocabulary:
+    """The native Store API cache; each caller supplies its own turn permission."""
+    global _vocabulary
+    if _vocabulary is None:
+        _vocabulary = StoreVocabulary(_wp_url(), publication=current())
+    return _vocabulary
+
+
 def understander() -> Understander:
     """Product words from the site's Store API, Jev on OpenRouter, the customer's
     page read from the site, and their files read by deepseek-flash (understand.py)."""
     global _understander
     if _understander is None:
         _understander = Understander(
-            StoreVocabulary(_wp_url(), publication=current()).get,
+            store_vocabulary().get,
             jev.from_env(),
             pages=page_reader().read,
             see=vision(),
@@ -257,7 +266,11 @@ def _compute_turn(
         prepared: Prepared = (
             prepare(body)
             if prepare is not None
-            else understander().prepare(body, abilities)
+            else understander().prepare(
+                body,
+                abilities,
+                get_vocabulary=lambda: store_vocabulary().get(original_permission),
+            )
         )
     if prepared.timing is not None:
         clock.adopt(prepared.timing)
