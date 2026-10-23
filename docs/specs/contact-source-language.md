@@ -21,6 +21,15 @@ An actual HTTP diagnostic additionally proves native URL lookup can return the
 current German twin for an English source URL. The object's language alone must
 not classify that English URL as already localized.
 
+The rendered German utility invitation exposed a separate empty-link failure.
+Its native shortcode output contains a valid raw `Großspeicher` query title.
+Under the frontend's native URL parser, one byte of `ß` becomes an underscore;
+rebuilding from that parsed query produces invalid UTF-8 and HTML encoding
+empties the href. Address parsing remains necessary for origin and identity
+checks, but query and fragment transport must use the original bytes. The
+already-localized destination, a translated destination and reverse navigation
+all require the same preservation.
+
 ## Required behavior
 
 - An anchor explicitly carrying `data-linker-contact` localizes both its main
@@ -83,3 +92,5 @@ Real browser consumers must verify EN/DE at 1440 and 390, including navigation,
 source summary, inclusion choice and contact language switching without submit.
 Relevant checks and both independent review axes precede integration. Production
 and full-site coverage remain separate gates; local proof does not sign them.
+Native rendered acceptance also covers the generated German utility invitation
+itself, including actual navigation to a verified `Großspeicher` source summary.

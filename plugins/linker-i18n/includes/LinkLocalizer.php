@@ -100,11 +100,15 @@ final class LinkLocalizer {
 			return $url;
 		}
 		$localized = $this->url( $url, $language );
-		$parts     = wp_parse_url( $localized );
-		if ( ! is_array( $parts ) || ! isset( $parts['query'] ) ) {
+		$offset    = strpos( $localized, '?' );
+		$fragment  = strpos( $localized, '#' );
+		if ( false === $offset || ( false !== $fragment && $fragment < $offset ) ) {
 			return $localized;
 		}
-		$fields = explode( '&', $parts['query'] );
+		// Native URL parsing can replace bytes of an unencoded UTF-8 title.
+		// Parse the address for origin checks; edit only the original query bytes.
+		$length = ( false === $fragment ? strlen( $localized ) : $fragment ) - $offset - 1;
+		$fields = explode( '&', substr( $localized, $offset + 1, $length ) );
 		foreach ( $fields as &$field ) {
 			$pair = explode( '=', $field, 2 );
 			if ( 'source' !== urldecode( $pair[0] ) || ! isset( $pair[1] ) ) {
@@ -123,8 +127,7 @@ final class LinkLocalizer {
 			}
 		}
 		unset( $field );
-		$offset = strpos( $localized, '?' );
-		return false === $offset ? $localized : substr_replace( $localized, implode( '&', $fields ), $offset + 1, strlen( $parts['query'] ) );
+		return substr_replace( $localized, implode( '&', $fields ), $offset + 1, $length );
 	}
 
 	/**
@@ -174,7 +177,7 @@ final class LinkLocalizer {
 		if ( $relative ) {
 			$translated = (string) wp_parse_url( $translated, PHP_URL_PATH );
 		}
-		return $translated . ( isset( $parts['query'] ) ? '?' . $parts['query'] : '' ) . ( isset( $parts['fragment'] ) ? '#' . $parts['fragment'] : '' );
+		return $translated . substr( $url, strcspn( $url, '?#' ) );
 	}
 
 	/**

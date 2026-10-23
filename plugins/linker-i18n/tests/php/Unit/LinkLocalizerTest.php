@@ -316,6 +316,40 @@ final class LinkLocalizerTest extends TestCase {
 		);
 	}
 
+	/** Native URL parsing can sanitize individual bytes of an unencoded UTF-8 query. */
+	public function test_localized_links_preserve_raw_unicode_query_and_fragment_bytes(): void {
+		$links = $this->localizer();
+		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing(
+			static function ( string $url, int $component = -1 ) {
+				// The native frontend's parser changed the second byte of ß to an underscore.
+				$url = str_replace( 'ß', "\xC3_", $url );
+				return -1 === $component ? parse_url( $url ) : parse_url( $url, $component ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Native parser boundary control.
+			}
+		);
+		$query = '?intent=project&title=Großspeicher+für+Köln&empty=&source=';
+		$tail  = '&search=PV%20%2B+storage#Großspeicher?section=2';
+		$home  = PolylangDouble::HOME;
+		foreach ( array(
+			array( '/de/kontakt/', $home . 'de/', 'de', '/de/kontakt/', $home . 'de/' ),
+			array( '/contact/', $home, 'de', '/de/kontakt/', $home . 'de/' ),
+			array( '/de/kontakt/', $home . 'de/', 'en', '/contact/', $home ),
+		) as $case ) {
+			$input    = $case[0] . $query . rawurlencode( $case[1] ) . $tail;
+			$expected = $case[3] . $query . rawurlencode( $case[4] ) . $tail;
+			$this->assertSame(
+				'<a data-linker-contact="" href="' . htmlspecialchars( $expected, ENT_QUOTES | ENT_HTML5, 'UTF-8', false ) . '">Contact</a>',
+				$links->localize( '<a data-linker-contact="" href="' . htmlspecialchars( $input, ENT_QUOTES | ENT_HTML5, 'UTF-8', false ) . '">Contact</a>', $case[2] )
+			);
+			$this->assertSame( $case[3] . $query . rawurlencode( $case[1] ) . $tail, $links->url( $input, $case[2] ) );
+		}
+		foreach ( array( '#Großspeicher?source=unchanged', '?#Großspeicher' ) as $suffix ) {
+			$this->assertSame(
+				'<a data-linker-contact="" href="/de/kontakt/' . $suffix . '">Contact</a>',
+				$links->localize( '<a data-linker-contact="" href="/contact/' . $suffix . '">Contact</a>' )
+			);
+		}
+	}
+
 	/** Home paths follow native Polylang roots in both directions. */
 	public function test_contact_home_sources_work_in_both_directions(): void {
 		$home  = PolylangDouble::HOME;
