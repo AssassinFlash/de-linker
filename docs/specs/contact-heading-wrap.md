@@ -7,7 +7,7 @@ current columns. The headings inherit automatic German dictionary hyphenation
 from the site base. The existing installer heading already uses manual
 hyphenation to keep words readable.
 
-In the existing WindPress Contact styles, apply manual hyphenation only to
+In the existing WindPress Contact and shared marketing styles, apply manual hyphenation only to
 German Contact h1/h2/h3 and shared Contact invitation h2. Preserve the words,
 authored breaks, font family, widths, columns, spacing, body text and all interactions.
 English selectors must not match. Long words may still use existing wrapping;
@@ -24,7 +24,9 @@ the viewport; viewport containment alone misses this defect.
 
 LiveCanvas already supplies the heading markup. No composition or Woo behavior
 needs to change. Two inherited typography overrides belong in the existing
-WindPress pipeline. There is no new shortcode, handler or styling channel.
+WindPress pipeline. The article-only invitation stylesheet retains its exact
+existing bytes and selector contract; shared typography belongs in
+`marketing-rhythm.css`. There is no new shortcode, handler or styling channel.
 
 Before editing retain exact stylesheet preimages. Compile in the existing
 snapshot through native WindPress and log out after local administration.
