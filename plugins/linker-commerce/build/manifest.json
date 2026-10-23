@@ -18,8 +18,8 @@
 		"webpack.config.js": "2cb64d1918918b81b390cc4621308d2a775f168a8573b36c68bb14f3ebc3884f"
 	},
 	"build": {
-		"build/accounts.asset.php": "bc2d6fcfc8d1e149cedffddfc4a00fb42442274a91991f3f739b9d02988e20c7",
-		"build/accounts.js": "2406df8c89e5e80cf48bfe4fe70f1d9eae0fbf420173264615a6e95491c8d5e4",
+		"build/accounts.asset.php": "1124301479c1da8772674e03ca70b8ca898f1b913642162222a0ea381ce51960",
+		"build/accounts.js": "b218e5fb42efd2bcf5d801f9cffeea684a8327f13ec63b5d2f78bbf279fb7f6d",
 		"build/protection.asset.php": "439b20d1afd7642db60e1501e4239bcbbaec7f3e645cf18be70a3aaa9044af36",
 		"build/protection.js": "b0e8ca2cf29b3296cfa2e6a85951b1608a9c40ec7f9b335aee12bba1b4b7431d",
 		"build/style-accounts-rtl.css": "76b9f280e93eec63bcf3e2e18a0c4f7fe191002c3bc9c01642b63983ee4d02ea",
