@@ -148,11 +148,12 @@ final class SelectionContext {
 		if ( array() === $context ) {
 			return $result;
 		}
-		$source   = (string) $context['source'];
-		$id       = (int) $context['id'];
-		$homepage = self::home_page( (string) wp_parse_url( $source, PHP_URL_PATH ) );
-		if ( null !== $homepage && ( new Languages() )->exists( $language ) ) {
-			$source = ( new Languages() )->home_url( $language );
+		$source    = (string) $context['source'];
+		$id        = (int) $context['id'];
+		$homepage  = self::home_page( (string) wp_parse_url( $source, PHP_URL_PATH ) );
+		$languages = class_exists( Languages::class ) ? new Languages() : null;
+		if ( null !== $homepage && null !== $languages && $languages->exists( $language ) ) {
+			$source = $languages->home_url( $language );
 		} elseif ( 'term' === $context['type'] ) {
 			$twin = function_exists( 'pll_get_term' ) ? (int) pll_get_term( $id, $language ) : 0;
 			$link = $twin > 0 ? get_term_link( $twin ) : $source;
@@ -205,8 +206,8 @@ final class SelectionContext {
 			return null;
 		}
 		$front     = (int) get_option( 'page_on_front' );
-		$languages = new Languages();
-		if ( $languages->ready() ) {
+		$languages = class_exists( Languages::class ) ? new Languages() : null;
+		if ( null !== $languages && $languages->ready() ) {
 			foreach ( array( Languages::SOURCE, Languages::TARGET ) as $language ) {
 				$url = $languages->home_url( $language );
 				if ( self::same_path( $path, $url ) ) {

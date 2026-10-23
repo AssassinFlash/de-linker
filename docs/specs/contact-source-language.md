@@ -29,6 +29,8 @@ that every dynamic entry or consumer has been exercised.
   of the ambient request language or a filtered `page_on_front`. A missing,
   unpublished, protected or non-page front object is rejected; it must not fall
   back to the public language term.
+- If the companion language plugin is unavailable, WordPress still resolves the
+  static front page and ordinary public sources without a missing-class error.
 - Contact language switching carries a verified homepage using the native
   language root, rather than the front page slug returned outside the frontend.
   Existing intent and selected search/filter semantics continue to apply.

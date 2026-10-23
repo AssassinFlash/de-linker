@@ -18,8 +18,6 @@ use WP_Mock;
 use WP_Post;
 use WP_Term;
 
-require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
-
 /**
  * Public selection normalization at the native Contact boundary.
  *
@@ -244,6 +242,7 @@ final class SelectionContextTest extends TestCase {
 
 	/** A language-root collision must resolve the native static page and its actual title. */
 	public function test_static_home_pair_precedes_url_to_postid_and_language_taxonomy(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
 		$this->static_front = true;
 		foreach ( array( 14, 15 ) as $front ) {
 			$this->front_id = $front;
@@ -265,6 +264,7 @@ final class SelectionContextTest extends TestCase {
 
 	/** Unpublished, protected and missing homes cannot fall back to the public language term. */
 	public function test_unavailable_static_home_does_not_become_a_taxonomy_source(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
 		$this->static_front = true;
 		$this->status       = 'private';
 		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/' ) ) );
@@ -281,6 +281,7 @@ final class SelectionContextTest extends TestCase {
 
 	/** Contact language switching preserves a verified homepage and the selected search. */
 	public function test_home_language_switch_uses_the_root_instead_of_the_front_page_slug(): void {
+		require_once dirname( __DIR__, 5 ) . '/linker-i18n/includes/Languages.php';
 		$this->static_front = true;
 		foreach ( array( 'en', 'de' ) as $language ) {
 			$source = 'https://site.test/' . ( 'de' === $language ? 'de/' : '' );
@@ -299,6 +300,25 @@ final class SelectionContextTest extends TestCase {
 			$this->assertSame( array( 'q' => 'SAJ + 5' ), $transport['selection'] );
 			$this->assertSame( 'page', SelectionContext::normalize( $transport )['type'] );
 		}
+	}
+
+	/**
+	 * The companion plugin is optional, including on a site with a static front page.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_sources_remain_available_without_the_language_plugin(): void {
+		$this->assertFalse( class_exists( \Linker\I18n\Languages::class ) );
+		$this->static_front = true;
+		$home               = SelectionContext::normalize( array( 'source' => 'https://site.test/' ) );
+		$this->assertSame( 14, $home['id'] );
+		$this->assertSame( 'Home', $home['title'] );
+		$product = SelectionContext::normalize( array( 'source' => 'https://site.test/product/model/' ) );
+		$this->assertSame( 13, $product['id'] );
+		$this->assertSame( 'Current model', $product['title'] );
+		$this->front_id = 13;
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/' ) ) );
 	}
 
 	/** Message stays independent; exclusion changes the normalized protected fingerprint. */
