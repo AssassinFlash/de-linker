@@ -1133,4 +1133,101 @@ final class ResourceAdmissionTest extends TestCase {
 			remove_filter( 'pre_http_request', $fixture, 0 );
 		}
 	}
+	/** Current writes can reuse proof; a withdrawal invalidates both receipt routes. */
+	public function test_solution_save_and_draft_receipts_revalidate_current_products(): void {
+		foreach ( array(
+			'/linker/v1/solutions'       => 'solution_save',
+			'/linker/v1/solutions/draft' => 'draft_write',
+		) as $route => $action ) {
+			$product = new \WC_Product_Simple();
+			$product->set_name( 'Publication receipt fixture' );
+			$product->set_status( 'publish' );
+			$id = $product->save();
+			try {
+				$current = \Linker\Commerce\Products\Publication::product( $id );
+				$this->assertIsArray( $current );
+				$dependencies = array(
+					'products'  => array(
+						array(
+							'product_id'       => $current['product_id'],
+							'product_revision' => $current['product_revision'],
+						),
+					),
+					'documents' => array(),
+				);
+				$calls        = 0;
+				$handler      = array(
+					'callback' => static function () use ( &$calls, $dependencies ): WP_REST_Response {
+						++$calls;
+						return new WP_REST_Response(
+							array(
+								'saved'       => true,
+								'publication' => $dependencies,
+							)
+						);
+					},
+				);
+				$request      = $this->request( $route, array( 'input' => array( 'plz' => '80538' ) ), $action );
+				$resources    = new Resources();
+				$first        = $resources->dispatch( null, $request, '', $handler );
+				$this->assertInstanceOf( WP_REST_Response::class, $first );
+				$this->assertSame( 200, $first->get_status() );
+				$this->assertSame( 200, $resources->dispatch( null, $request, '', $handler )->get_status() );
+				$this->assertSame( 1, $calls );
+				$product->set_status( 'draft' );
+				$product->save();
+				$withdrawn = $resources->dispatch( null, $request, '', $handler );
+				$this->assertInstanceOf( WP_Error::class, $withdrawn );
+				$this->assertSame( 'linker_publication_changed', $withdrawn->get_error_code() );
+				$this->assertSame( 409, $withdrawn->get_error_data()['status'] );
+				$this->assertSame( 1, $calls );
+			} finally {
+				wp_delete_post( $id, true );
+			}
+		}
+	}
+
+	/** An already completed pre-contract write has no current publication proof. */
+	public function test_pre_contract_solution_receipt_cannot_replay_as_current_success(): void {
+		foreach ( array(
+			'/linker/v1/solutions'       => 'solution_save',
+			'/linker/v1/solutions/draft' => 'draft_write',
+		) as $route => $action ) {
+			$dependencies = array(
+				'products'  => array(),
+				'documents' => array(),
+			);
+			$handler      = array(
+				'callback' => static fn(): WP_REST_Response => new WP_REST_Response(
+					array(
+						'saved'       => true,
+						'publication' => $dependencies,
+					)
+				),
+			);
+			$request      = $this->request( $route, array( 'input' => array( 'plz' => '80538' ) ), $action );
+			$resources    = new Resources();
+			$this->assertSame( 200, $resources->dispatch( null, $request, '', $handler )->get_status() );
+			$receipts = get_posts(
+				array(
+					'post_type'      => Replies::TYPE,
+					'post_status'    => 'private',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+				)
+			);
+			$this->assertCount( 1, $receipts );
+			$stored = json_decode( (string) get_post_field( 'post_content', $receipts[0] ), true );
+			unset( $stored['publication'], $stored['data']['publication'] );
+			wp_update_post(
+				array(
+					'ID'           => $receipts[0],
+					'post_content' => wp_slash( (string) wp_json_encode( $stored ) ),
+				)
+			);
+			$reply = $resources->dispatch( null, $request, '', $handler );
+			$this->assertInstanceOf( WP_Error::class, $reply );
+			$this->assertSame( 'linker_publication_changed', $reply->get_error_code() );
+		}
+	}
 }

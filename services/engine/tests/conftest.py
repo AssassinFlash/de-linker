@@ -141,10 +141,92 @@ def client(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClie
     shutil.copytree(FIXTURES / "pvgis", cache / "pvgis")
     monkeypatch.setattr("linker_engine.pvgis._pvgis_fetch", no_network)
     monkeypatch.setattr("linker_engine.roof.lod2.fetch", munich_tile)
+    prepared = publication_feed(
+        json.loads((FIXTURES / "feed.json").read_text()),
+        json.loads((FIXTURES / "compatibility.json").read_text()),
+    )
+    feed_path = tmp_path / "published-feed.json"
+    feed_path.write_text(json.dumps(prepared))
     settings = Settings(
-        feed=FIXTURES / "feed.json",
+        feed=feed_path,
         compatibility=FIXTURES / "compatibility.json",
         cache=cache,
     )
     with TestClient(create_app(settings)) as test_client:
         yield test_client
+
+
+def publication_feed(raw: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any]:
+    """Real engineering facts with explicit synthetic Woo publication identities."""
+    import re
+
+    from linker_engine.publication import digest
+
+    raw = json.loads(json.dumps(raw))
+    raw["compatibility"] = contract
+    raw["compatibility_revision"] = digest([contract, raw["overlay"]])
+    for product in raw["products"]:
+        urls = {document["url"] for document in product["documents"]}
+        refs = [figure["citation"]["url"] for figure in product["figures"].values()]
+        for row in contract["pairs"] + contract["requirements"]:
+            if any(
+                re.search(row[key], product["model"])
+                for key in ("inverter", "battery")
+                if key in row
+            ):
+                refs.extend(document["url"] for document in row["documents"])
+        for url in refs:
+            if url not in urls:
+                product["documents"].append(
+                    {
+                        "url": url,
+                        "title": "Fixture evidence",
+                        "type": "manual",
+                        "lang": "en",
+                    }
+                )
+                urls.add(url)
+        for document in product["documents"]:
+            document.update(
+                document_id=digest(document["url"]),
+                document_revision=digest(document["url"]),
+                blob_sha256=digest(document["url"]),
+                product_ids=[product["id"]],
+            )
+        product["canonical_product_id"] = product["id"]
+        product["product_revision"] = digest(product)
+    raw["source_revision"] = digest(raw)
+    return raw
+
+
+def publication_manifest(feed: dict[str, Any]) -> dict[str, Any]:
+    docs: dict[str, Any] = {}
+    products = []
+    for product in feed["products"]:
+        products.append(
+            {
+                "product_id": product["canonical_product_id"],
+                "product_revision": product["product_revision"],
+                "documents": [d["document_id"] for d in product["documents"]],
+                "ready": {"engineering": False},
+            }
+        )
+        for doc in product["documents"]:
+            current = docs.setdefault(doc["document_id"], {**doc, "product_ids": []})
+            current["product_ids"].append(product["canonical_product_id"])
+    return {
+        "schema_version": 1,
+        "source_revision": feed["source_revision"],
+        "compatibility_revision": feed["compatibility_revision"],
+        "products": products,
+        "documents": list(docs.values()),
+    }
+
+
+@pytest.fixture(autouse=True)
+def no_publication_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    from linker_engine.publication import Publication
+
+    monkeypatch.setattr(
+        Publication, "read", lambda self: publication_manifest(self.feed)
+    )

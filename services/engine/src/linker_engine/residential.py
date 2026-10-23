@@ -829,6 +829,10 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
         (e for e in evaluations if e.eligible),
         key=lambda e: system_key(e, request.pv_kwp),
     )
+    if request.inverter_id is not None and not any(
+        e.inverter.id == request.inverter_id for e in eligible
+    ):
+        raise DesignInputError("inverter_id", "Requested inverter is not eligible")
     chosen = next(
         (e for e in eligible if e.inverter.id == request.inverter_id), None
     ) or (eligible[0] if eligible else None)
@@ -855,6 +859,12 @@ def design(engine: Engine, request: ResidentialInput) -> Design:
             if not e.eligible
         ],
     )
+
+    if request.battery_id is not None and (
+        chosen is None
+        or not any(b.config.battery.id == request.battery_id for b in chosen.batteries)
+    ):
+        raise DesignInputError("battery_id", "Requested battery is not eligible")
 
     selected: Selection | None = None
     metrics: MetricsResult | None = None

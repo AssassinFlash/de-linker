@@ -31,9 +31,17 @@ export interface SavedSolution {
 	url: string;
 }
 
+export class SolutionWriteError extends Error {
+	constructor( public readonly changed: boolean ) {
+		super( changed ? 'solution_changed' : 'solution_write_failed' );
+		this.name = 'SolutionWriteError';
+	}
+}
+
 export interface SolutionBody {
 	kind: 'residential';
 	title: string;
+	selectionFingerprint?: string;
 	input: ResidentialInput;
 	lines: DraftLine[];
 	/**
@@ -88,6 +96,7 @@ export async function saveSolution(
 			kind: body.kind,
 			title: body.title,
 			input: body.input,
+			selection_fingerprint: body.selectionFingerprint ?? '',
 			lines: body.lines.map( ( line ) => ( {
 				product_id: line.productId,
 				quantity: line.quantity,
@@ -96,7 +105,10 @@ export async function saveSolution(
 		} ),
 	} );
 	if ( ! response.ok ) {
-		throw new Error( `save ${ response.status }` );
+		const error = await response.json().catch( () => null );
+		throw new SolutionWriteError(
+			response.status === 409 && error?.code === 'linker_solution_changed'
+		);
 	}
 	return response.json();
 }

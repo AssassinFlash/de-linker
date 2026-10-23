@@ -77,6 +77,9 @@ export function resourceAction(
 	if ( path.endsWith( '/engine/report/pdf' ) ) {
 		return 'report_pdf';
 	}
+	if ( path.endsWith( '/linker/v1/solutions/draft' ) ) {
+		return 'draft_write';
+	}
 	if ( path.endsWith( '/linker/v1/solutions' ) ) {
 		return 'solution_save';
 	}

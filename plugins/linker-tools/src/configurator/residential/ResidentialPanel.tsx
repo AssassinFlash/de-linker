@@ -22,8 +22,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { EngineError, type EngineClient } from '../api/engine';
-import { saveSolution, type SavedSolution } from '../api/solutions';
+import {
+	SolutionWriteError,
+	saveSolution,
+	type SavedSolution,
+} from '../api/solutions';
 import type { AddStatus, StoreClient } from '../api/store';
+import {
+	selectionChangedText,
+	publicationUnavailableText,
+} from '../publication';
 import type { Config } from '../config';
 import { MobileNavigation } from '../MobileNavigation';
 import { ReportView, type AskState } from '../report/ReportView';
@@ -82,6 +90,12 @@ function designKey(
 
 function errorText( error: unknown ): string {
 	if ( error instanceof EngineError ) {
+		if ( error.kind === 'stale' ) {
+			return selectionChangedText();
+		}
+		if ( error.kind === 'publication' ) {
+			return publicationUnavailableText();
+		}
 		if ( error.kind === 'limited' ) {
 			return __(
 				'The calculation is temporarily unavailable. Your entries are still here. Please try again later.',
@@ -126,7 +140,7 @@ export function ResidentialPanel( {
 	);
 	const [ adding, setAdding ] = useState( false );
 	const [ addOutcome, setAddOutcome ] = useState<
-		'none' | 'complete' | 'partial'
+		'none' | 'complete' | 'unverified' | 'changed'
 	>( 'none' );
 	const [ saveState, setSaveState ] = useState< SaveState >( 'idle' );
 	const [ savedUrl, setSavedUrl ] = useState< string | null >( null );
@@ -142,6 +156,7 @@ export function ResidentialPanel( {
 	// promise both the Save button and Ask Genie await, and only for the design
 	// it was started for.
 	const askingKey = useRef< string | null >( null );
+	const askFailure = useRef< 'failed' | 'changed' >( 'failed' );
 	const saveInFlight = useRef< {
 		key: string;
 		promise: Promise< SavedSolution | null >;
@@ -236,12 +251,30 @@ export function ResidentialPanel( {
 	}
 
 	async function addAll() {
+		if ( ! input || ! result?.selection_fingerprint ) {
+			setAddOutcome( 'changed' );
+			return;
+		}
 		setAdding( true );
 		setAddOutcome( 'none' );
-		const complete = await store.addAll( draftLines(), ( id, state ) =>
-			setStatuses( ( current ) => new Map( current ).set( id, state ) )
+		let stale = false;
+		const complete = await store.addAll(
+			draftLines(),
+			( id, state ) => {
+				stale ||= state === 'stale';
+				setStatuses( ( current ) =>
+					new Map( current ).set( id, state )
+				);
+			},
+			{
+				kind: 'residential',
+				input,
+				selection_fingerprint: result?.selection_fingerprint,
+			}
 		);
-		setAddOutcome( complete ? 'complete' : 'partial' );
+		setAddOutcome(
+			complete ? 'complete' : stale ? 'changed' : 'unverified'
+		);
 		setAdding( false );
 	}
 
@@ -269,13 +302,18 @@ export function ResidentialPanel( {
 				// PDF is the engine's existing report/pdf answer for that input
 				// (logo stays on the download button; it is not part of the input).
 				const reportPdf = savingReport
-					? await engine.reportPdf( savingInput, null )
+					? await engine.reportPdf(
+							savingInput,
+							null,
+							result.selection_fingerprint
+						)
 					: null;
 				const record = await saveSolution(
 					config.restUrl,
 					config.restNonce,
 					{
 						kind: 'residential',
+						selectionFingerprint: result.selection_fingerprint,
 						title: `${ savingSelected.inverter.brand } ${ savingSelected.inverter.model }, ${ savingInput.plz }`,
 						input: savingInput,
 						lines: savingLines,
@@ -292,11 +330,18 @@ export function ResidentialPanel( {
 					setSaveState( 'saved' );
 				}
 				return record;
-			} catch {
+			} catch ( error ) {
+				const changed =
+					( error instanceof EngineError &&
+						error.kind === 'stale' ) ||
+					( error instanceof SolutionWriteError && error.changed );
+				askFailure.current = changed ? 'changed' : 'failed';
 				// One failure sentence: the Save button's own status for its
 				// click, the report's Ask status when Ask started the save.
 				if ( designEpoch.current === epoch ) {
-					setSaveState( fromAsk ? 'idle' : 'failed' );
+					setSaveState(
+						fromAsk ? 'idle' : changed ? 'changed' : 'failed'
+					);
 				}
 				return null;
 			}
@@ -327,6 +372,7 @@ export function ResidentialPanel( {
 		}
 		const epoch = designEpoch.current;
 		askingKey.current = key;
+		askFailure.current = 'failed';
 		setAskState( 'saving' );
 		let target: SavedSolution | null = null;
 		try {
@@ -349,7 +395,7 @@ export function ResidentialPanel( {
 			// The report carries the failure sentence; the Save status would
 			// repeat it (or still show a save the customer did not click).
 			setSaveState( 'idle' );
-			setAskState( 'failed' );
+			setAskState( askFailure.current );
 			return;
 		}
 		if ( target.id < 1 ) {
@@ -533,6 +579,7 @@ export function ResidentialPanel( {
 					</div>
 					<ReportView
 						report={ result.report }
+						selectionFingerprint={ result.selection_fingerprint }
 						input={ input }
 						engine={ engine }
 						onAsk={ ask }

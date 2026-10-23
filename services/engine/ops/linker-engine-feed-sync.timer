@@ -1,13 +1,10 @@
-# Nightly run of the feed and contract refresh (#354, #493). 03:40 UTC —
-# clear of the 03:30 window the old material-registry sync used — with the
-# same randomized delay; Persistent catches up after the VPS was down at the
-# scheduled time.
+# Woo pending jobs reconcile automatically; withdrawal never waits for this timer.
 [Unit]
-Description=Nightly Linker design engine data refresh
+Description=Prepare changed Woo engineering data automatically
 
 [Timer]
-OnCalendar=*-*-* 03:40:00 UTC
-RandomizedDelaySec=10m
+OnBootSec=1m
+OnUnitInactiveSec=1m
 Persistent=true
 Unit=linker-engine-feed-sync.service
 
