@@ -209,7 +209,7 @@ export function MapRoofProperties({
 					)}
 				</label>
 				{error && !invalidField && (
-					<div ref={result} tabIndex={-1}>
+					<div ref={result} tabIndex={-1} className="lp-focus-target">
 						<Notice error>{error}</Notice>
 					</div>
 				)}

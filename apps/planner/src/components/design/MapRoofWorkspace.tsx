@@ -24,6 +24,7 @@ import { readObject } from "../../data/readProtocol.ts";
 import { readLayoutReview } from "../../data/geometryReview.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { revealActionResult } from "../revealActionResult.ts";
 import { LazyMapViewport } from "./LazyMapViewport.tsx";
 import { MapRoofProperties } from "./MapRoofProperties.tsx";
 
@@ -69,7 +70,8 @@ export function MapRoofWorkspace({
 		[busy, setBusy] = useState(false),
 		[applied, setApplied] = useState(false);
 	const flight = useRef<AbortController | null>(null),
-		mounted = useRef(true);
+		mounted = useRef(true),
+		result = useRef<HTMLElement>(null);
 	const current = useRef({ geometry, active, drawing });
 	current.current = { geometry, active, drawing };
 	const stale = drawing !== null && !sameJson(drawing.before, geometry);
@@ -92,6 +94,9 @@ export function MapRoofWorkspace({
 			flight.current?.abort();
 		};
 	}, []);
+	useEffect(() => {
+		if (applied) revealActionResult(result.current);
+	}, [applied]);
 	function change(next: MapRoofDraft) {
 		if (busy || !client.isCurrentScope(session.query_scope)) return;
 		setError(null);
@@ -287,7 +292,9 @@ export function MapRoofWorkspace({
 	return (
 		<div className="lp-map-workspace">
 			<section
-				className="lp-map-drawing"
+				ref={result}
+				tabIndex={-1}
+				className="lp-map-drawing lp-focus-target"
 				aria-label={__("Map roof drawing", "linker-tools")}
 			>
 				<div className="lp-inline-actions">
@@ -404,7 +411,7 @@ export function MapRoofWorkspace({
 												__("Recorded corners: %d", "linker-tools"),
 												drawing.vertices.length,
 											)
-										: protectedResult || applied
+										: protectedResult
 											? __(
 													"Roof added to the project draft. Save project stores it with the project.",
 													"linker-tools",

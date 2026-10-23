@@ -98,6 +98,7 @@ async function rig(t) {
 		camera = { current: null };
 	let currentGeometry,
 		confirm,
+		replaceGeometry,
 		active = false,
 		invalidReview = false;
 	const client = {
@@ -113,6 +114,7 @@ async function rig(t) {
 			[confirmed, setConfirmed] = useState(geometry);
 		currentGeometry = document;
 		confirm = setConfirmed;
+		replaceGeometry = setDocument;
 		return React.createElement(MapRoofWorkspace, {
 			geometry: document,
 			confirmedGeometry: confirmed,
@@ -213,6 +215,7 @@ async function rig(t) {
 			return active;
 		},
 		confirm: async (value) => act(async () => confirm(value)),
+		replaceGeometry: async (value) => act(async () => replaceGeometry(value)),
 	};
 }
 test("real drawing UI resumes a one-point journal, stages a roof, checks inputs and joins one project command", async (t) => {
@@ -295,6 +298,22 @@ test("real drawing UI resumes a one-point journal, stages a roof, checks inputs 
 	assert.equal(r.geometry.roofs.length, geometry.roofs.length + 1);
 	assert.equal(r.geometry.roofs.at(-1).origin_enu[2], 8.125);
 	assert.equal(r.geometry.sources.at(-1).spatial_precision_m, null);
+	assert.ok(document.activeElement.classList.contains("lp-map-drawing"));
+	assert.match(
+		document.querySelector(".lp-drawing-status").textContent,
+		/Roof added to the project draft/,
+	);
+	const appliedGeometry = r.geometry;
+	await r.replaceGeometry(geometry);
+	assert.match(
+		document.querySelector(".lp-drawing-status").textContent,
+		/Drawing paused and retained/,
+	);
+	await r.replaceGeometry(appliedGeometry);
+	assert.match(
+		document.querySelector(".lp-drawing-status").textContent,
+		/Roof added to the project draft/,
+	);
 	assert.equal(
 		(await r.records()).length,
 		1,
