@@ -229,7 +229,8 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 .tv-mobile-summary::-webkit-details-marker{display:none}
 #tv-header-v2 .tv-mobile-summary svg{transition:transform 200ms cubic-bezier(.2,0,0,1)}
 #tv-header-v2 .tv-mobile-section[open] .tv-mobile-summary svg{transform:rotate(180deg)}
-#tv-header-v2 .tv-mobile-links{padding:0 0 6px;display:flex;flex-direction:column;gap:8px}
+/* Reuse the group's 8px gap so content clears the 2px focus outline and offset. */
+#tv-header-v2 .tv-mobile-links{padding:8px 0 6px;display:flex;flex-direction:column;gap:8px}
 #tv-header-v2 .tv-mobile-link{display:flex;flex-direction:column;padding:0;font-size:16px;color:var(--proto-ink);text-decoration:none;letter-spacing:0;border:1px solid var(--proto-neutral-200);border-radius:12px;box-shadow:none;background:#ffffff;overflow:hidden;transition:border-color 200ms cubic-bezier(.2,0,0,1)}
 #tv-header-v2 .tv-mobile-link:hover{border-color:var(--proto-teal-600)}
 #tv-header-v2 .tv-mobile-link-thumb{width:100%;height:84px;object-fit:cover;display:block;background:var(--proto-neutral-50)}

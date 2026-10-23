@@ -28,6 +28,12 @@ Keep the older button partial's desktop data-open guard limited to its direct
 container-child panel. The native details panel must follow its parent's open
 state even before the enhancement can supply a data-open attribute.
 
+Native keyboard review also shows an opened group's first card touching the
+summary's focus outline. Give every group body the existing 8px content gap at
+its top, clearing the 2px outline and 2px offset. Keep the summary's target,
+closed row geometry, content, and desktop menus unchanged. Recheck focused
+groups and the final contact action after all five groups are expanded.
+
 If someone has already opened the native panel at a desktop width while the
 enhancement is pending, keep it available until they close it. A fit that has
 room for the ordinary row must not dismiss that active menu. After it closes,
