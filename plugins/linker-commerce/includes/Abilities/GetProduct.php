@@ -9,8 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Products\EngineeringData;
-use Linker\Commerce\Products\SelectionFacts;
 use WC_Product;
 
 /**
@@ -19,6 +17,13 @@ use WC_Product;
  * `_linker_faq` when present.
  */
 final class GetProduct {
+	/**
+	 * Use the shared current authority.
+	 *
+	 * @param PublicationData $publication Current source reader.
+	 */
+	public function __construct( private readonly PublicationData $publication = new PublicationData() ) {}
+
 
 	/**
 	 * Ability name.
@@ -121,16 +126,18 @@ final class GetProduct {
 	 * @return array<string, mixed>
 	 */
 	public function execute( $input = array() ): array {
-		$input = (array) $input;
-		$id    = (int) ( $input['product_id'] ?? 0 );
-		$lang  = ProductText::lang( $input['lang'] ?? null );
-		if ( $id < 1 || 'product' !== get_post_type( $id ) || 'publish' !== get_post_status( $id ) ) {
+		$input    = (array) $input;
+		$id       = (int) ( $input['product_id'] ?? 0 );
+		$lang     = ProductText::lang( $input['lang'] ?? null );
+		$manifest = $this->publication->manifest();
+		if ( array() === $this->publication->published( array( $id ), $manifest ) ) {
 			return $this->empty( $id, $lang );
 		}
-		$product = wc_get_product( $id );
-		$facts   = SelectionFacts::for_product( $id );
+		$product      = wc_get_product( $id );
+		$facts        = $this->publication->facts( $id, $manifest );
+		$dependencies = $this->publication->dependencies( array( $id ), $manifest );
 
-		return array(
+		$result = array(
 			'product_id' => $id,
 			'title'      => ProductText::title( $id, $lang ),
 			'url'        => ProductText::url( $id ),
@@ -139,27 +146,13 @@ final class GetProduct {
 			'brand'      => ProductText::term_name( $id, 'pa_brand' ),
 			'series'     => ProductText::term_name( $id, 'pa_series' ),
 			'facts'      => $facts->to_array(),
-			'figures'    => (object) $this->figures( $id ),
+			'figures'    => (object) $this->publication->figures( $id, $manifest ),
 			'attributes' => (object) $this->attributes( $id ),
-			'documents'  => $this->documents( $id ),
+			'documents'  => $this->publication->documents( $id, $manifest ),
 			'faq'        => $this->faq( $id, $lang ),
 			'commerce'   => ProductCommerce::of( $id, $product instanceof WC_Product ? $product : null, $lang ),
 		);
-	}
-
-	/**
-	 * Cited figures as stored (the same rule as the engineering feed).
-	 *
-	 * @param int $product_id Product ID.
-	 * @return array<string, mixed>
-	 */
-	private function figures( int $product_id ): array {
-		$figures = get_post_meta( $product_id, SelectionFacts::FIGURES_META_KEY, true );
-		if ( is_string( $figures ) ) {
-			$figures = json_decode( $figures, true );
-		}
-
-		return is_array( $figures ) ? $figures : array();
+		return $this->publication->unchanged( $dependencies ) ? $result : $this->empty( $id, $lang );
 	}
 
 	/**
@@ -178,37 +171,6 @@ final class GetProduct {
 		}
 
 		return $out;
-	}
-
-	/**
-	 * Hosted documents of the product.
-	 *
-	 * @param int $product_id Product ID.
-	 * @return list<array<string, mixed>>
-	 */
-	private function documents( int $product_id ): array {
-		$documents = get_post_meta( $product_id, EngineeringData::DOCUMENTS_META_KEY, true );
-		if ( is_string( $documents ) ) {
-			$documents = json_decode( $documents, true );
-		}
-		if ( is_array( $documents ) && array() !== $documents ) {
-			return array_values( $documents );
-		}
-		$fallback = array();
-		foreach ( array(
-			'_delinker_datasheet_url' => 'datasheet',
-			'_delinker_manual_url'    => 'manual',
-		) as $key => $type ) {
-			$url = get_post_meta( $product_id, $key, true );
-			if ( is_string( $url ) && '' !== $url ) {
-				$fallback[] = array(
-					'url'  => $url,
-					'type' => $type,
-				);
-			}
-		}
-
-		return $fallback;
 	}
 
 	/**

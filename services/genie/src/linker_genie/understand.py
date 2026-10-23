@@ -197,7 +197,16 @@ class Understander:
                     for r in fresh
                 ]
                 route = Route(
-                    "scripted", no_cards=True, answer=upload_unavailable(language, identified=any(r.model and statuses.get(r.model.casefold()) == "unavailable" for r in blocked))
+                    "scripted",
+                    no_cards=True,
+                    answer=upload_unavailable(
+                        language,
+                        identified=any(
+                            r.model
+                            and statuses.get(r.model.casefold()) == "unavailable"
+                            for r in blocked
+                        ),
+                    ),
                 )
                 return Prepared(
                     route=route,

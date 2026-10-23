@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Abilities;
 
 use Linker\Commerce\Gating\CommerceState;
-use Linker\Commerce\Products\Compatibility;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\SelectionFactSet;
 use WC_Product;
@@ -27,6 +26,19 @@ use WC_Product;
  * and is not applied when prices are hidden.
  */
 final class SearchProducts {
+	/**
+	 * Current operation snapshot, refreshed for every selection.
+	 *
+	 * @var array<string,mixed>
+	 */
+	private array $publication_snapshot = array();
+	/**
+	 * Use the shared current authority.
+	 *
+	 * @param PublicationData $publication Current authority reader.
+	 */
+	public function __construct( private readonly PublicationData $publication = new PublicationData() ) {}
+
 
 	/**
 	 * Ability name.
@@ -297,10 +309,13 @@ final class SearchProducts {
 	 * @return array{qualified: list<array<string, mixed>>, excluded: array{by_reason: array<string, int>}, unknown_fields: string[], extreme?: array<string, mixed>}
 	 */
 	public function select( array $ids, array $input, string $lang, int $limit ): array {
-		$excluded  = array();
-		$qualified = array();
+		$this->publication_snapshot = $this->publication->manifest();
+		$ids                        = $this->publication->published( $ids, $this->publication_snapshot );
+		$dependencies               = $this->publication->dependencies( $ids, $this->publication_snapshot );
+		$excluded                   = array();
+		$qualified                  = array();
 		foreach ( $ids as $id ) {
-			$facts  = SelectionFacts::for_product( $id );
+			$facts  = $this->publication->facts( $id, $this->publication_snapshot );
 			$reason = $this->exclusion( $facts, $id, $input );
 			if ( null !== $reason ) {
 				$excluded[ $reason ] = ( $excluded[ $reason ] ?? 0 ) + 1;
@@ -374,7 +389,11 @@ final class SearchProducts {
 			$result['extreme'] = $extreme;
 		}
 
-		return $result;
+		return $this->publication->unchanged( $dependencies ) ? $result : array(
+			'qualified'      => array(),
+			'excluded'       => array( 'by_reason' => array() ),
+			'unknown_fields' => array(),
+		);
 	}
 
 	/**
@@ -1034,7 +1053,7 @@ final class SearchProducts {
 		}
 		$out = array();
 		foreach ( $batteries as $battery_id ) {
-			$answer = Compatibility::for_products( $id, $battery_id );
+			$answer = $this->publication->pairing( $id, $battery_id, $this->publication_snapshot );
 			if ( null === $answer || 'not_released' === $answer['verdict'] ) {
 				continue;
 			}
@@ -1062,7 +1081,7 @@ final class SearchProducts {
 	private function documented_batteries( int $id, array $batteries ): array {
 		$found = array();
 		foreach ( $batteries as $battery_id ) {
-			$answer = Compatibility::for_products( $id, $battery_id );
+			$answer = $this->publication->pairing( $id, $battery_id, $this->publication_snapshot );
 			if ( is_array( $answer ) && 'not_released' !== $answer['verdict'] ) {
 				$found[] = $battery_id;
 			}
@@ -1080,7 +1099,7 @@ final class SearchProducts {
 	private function battery_ids( array $ids ): array {
 		$batteries = array();
 		foreach ( $ids as $id ) {
-			$class = SelectionFacts::for_product( $id )->device_class;
+			$class = $this->publication->facts( $id, $this->publication_snapshot )->device_class;
 			if ( in_array( $class, self::BATTERY_CLASSES, true ) ) {
 				$batteries[] = $id;
 			}

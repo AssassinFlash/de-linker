@@ -60,6 +60,16 @@ def main() -> int:
     target = Path.home() / "Library" / "LaunchAgents" / f"{LABEL}.plist"
     if args.install:
         target.parent.mkdir(parents=True, exist_ok=True)
+        # Read the current launch definition before replacing it. Retain only one
+        # small previous plist for recovery; secrets are in neither definition.
+        subprocess.run(
+            ["launchctl", "print", f"gui/{os.getuid()}/{LABEL}"],
+            check=False,
+            capture_output=True,
+        )
+        if target.exists():
+            previous = target.with_suffix(".previous.plist")
+            previous.write_bytes(target.read_bytes())
         target.write_bytes(plistlib.dumps(plist))
         subprocess.run(
             ["launchctl", "bootout", f"gui/{os.getuid()}/{LABEL}"],

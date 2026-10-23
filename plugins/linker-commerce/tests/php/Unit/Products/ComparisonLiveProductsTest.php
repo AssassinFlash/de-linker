@@ -66,7 +66,7 @@ final class ComparisonLiveProductsTest extends TestCase {
 	public function test_the_rows_carry_the_live_figures_of_the_products(): void {
 		$this->mock_live_products( array( 4107, 1832 ) );
 
-		$comparison = ( new Comparison() )->of( array( 4107, 1832 ) );
+		$comparison = ( new Comparison( facts_reader: fn( int $id ) => $this->publication_data()->facts( $id, $this->publication_data()->manifest() ) ) )->of( array( 4107, 1832 ) );
 		$rows       = array_column( $comparison['rows'], 'values', 'field' );
 
 		$this->assertSame( array( 4107, 1832 ), array_column( $comparison['products'], 'product_id' ) );
@@ -75,7 +75,7 @@ final class ComparisonLiveProductsTest extends TestCase {
 		$this->assertSame( 20.0, $rows['pv_input_kw'][4107] );
 		$this->assertSame( 3, $rows['phase'][4107] );
 		$this->assertSame( 'home', $rows['application'][4107] );
-		$this->assertSame( 4.5, $rows['usable_kwh'][1832] );
+		$this->assertSame( 'unknown', $rows['usable_kwh'][1832] );
 		$this->assertSame( 5.0, $rows['nominal_kwh'][1832] );
 		$this->assertSame(
 			array(
@@ -96,8 +96,8 @@ final class ComparisonLiveProductsTest extends TestCase {
 	public function test_the_ability_is_the_same_assembly(): void {
 		$this->mock_live_products( array( 4107, 1832 ) );
 
-		$comparison = ( new Comparison() )->of( array( 4107, 1832 ) );
-		$ability    = ( new CompareProducts() )->execute(
+		$comparison = ( new Comparison( facts_reader: fn( int $id ) => $this->publication_data()->facts( $id, $this->publication_data()->manifest() ) ) )->of( array( 4107, 1832 ) );
+		$ability    = ( new CompareProducts( null, $this->publication_data() ) )->execute(
 			array(
 				'product_ids' => array( 4107, 1832 ),
 				'lang'        => 'en',
@@ -119,7 +119,7 @@ final class ComparisonLiveProductsTest extends TestCase {
 	public function test_the_german_build_keeps_the_values_and_translates_the_labels(): void {
 		$this->mock_live_products( array( 1832, 4107 ) );
 
-		$comparison = ( new Comparison() )->of( array( 1832, 4107 ), 'de' );
+		$comparison = ( new Comparison( facts_reader: fn( int $id ) => $this->publication_data()->facts( $id, $this->publication_data()->manifest() ) ) )->of( array( 1832, 4107 ), 'de' );
 		$rows       = array_column( $comparison['rows'], 'values', 'field' );
 		$labels     = array_column( $comparison['rows'], 'label', 'field' );
 

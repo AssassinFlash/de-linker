@@ -181,13 +181,18 @@ def main() -> int:
                 lambda text: str(py3langid.classify(text)[0]),
             )
             report = publish(directory, args.root, args.host)
-            # Retain local current and previous successful build; reusable parse,
-            # PDF and vector caches are content-addressed, not backup copies.
-            versions = sorted(p for p in (INDEX_DIR / "builds").iterdir() if p.is_dir())
+            # Prune only builds this worker owns. Existing bake-off/golden
+            # evidence in the shared build root is not ours to delete.
+            ledger = INDEX_DIR / "publication-worker-releases.json"
+            owned = json.loads(ledger.read_text()) if ledger.is_file() else []
+            owned = [str(path) for path in owned if Path(path).is_dir()]
+            owned.append(str(directory.resolve()))
             import shutil
-
-            for old in versions[:-2]:
-                shutil.rmtree(old)
+            for old in owned[:-2]:
+                candidate = Path(old)
+                if candidate.parent == (INDEX_DIR / "builds").resolve() and candidate != directory.resolve():
+                    shutil.rmtree(candidate)
+            ledger.write_text(json.dumps(owned[-2:], indent=1))
             return str(report["index_version"])
 
         def loaded() -> dict[str, Any]:

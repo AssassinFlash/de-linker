@@ -10,7 +10,6 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Genie;
 
 use Linker\Tools\Protection\Resources;
-use Linker\Tools\Protection\EnginePublication;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -89,6 +88,7 @@ class Proxy {
 	 * @param ConversationMail|null                                                                       $mail          Sends a conversation to the visitor; a default one is built when omitted.
 	 * @param Attachments|null                                                                            $attachments   Checks a turn's files; a default one is built when omitted.
 	 * @param string|null                                                                                 $token         The shared service token; read from TOKEN_CONSTANT when null (tests pass one).
+	 * @param PublicationGuard|null                                                                       $publication Current publication source.
 	 */
 	public function __construct(
 		private readonly Conversations $conversations,
@@ -98,15 +98,24 @@ class Proxy {
 		?PageContext $pages = null,
 		?ConversationMail $mail = null,
 		?Attachments $attachments = null,
-		?string $token = null
+		?string $token = null,
+		?PublicationGuard $publication = null
 	) {
 		$this->thread       = $thread ?? new Thread();
 		$this->user_context = $user_context ?? new UserContext();
 		$this->pages        = $pages ?? new PageContext();
 		$this->mail         = $mail ?? new ConversationMail( $conversations, $this->thread );
 		$this->attachments  = $attachments ?? new Attachments();
+		$this->publication  = $publication ?? new PublicationGuard();
 		$this->token        = $token ?? ( defined( self::TOKEN_CONSTANT ) ? (string) constant( self::TOKEN_CONSTANT ) : '' );
 	}
+
+	/**
+	 * Current publication permission at preparation and release.
+	 *
+	 * @var PublicationGuard
+	 */
+	private readonly PublicationGuard $publication;
 
 	/**
 	 * The shared service token; '' when the site has none.
@@ -507,7 +516,7 @@ class Proxy {
 		if ( array() !== $readings ) {
 			$body['readings'] = $readings;
 		}
-		$publication = PublicationGuard::dependencies();
+		$publication = $this->publication->dependencies();
 		if ( is_wp_error( $publication ) ) {
 			return $publication;
 		}
@@ -516,7 +525,7 @@ class Proxy {
 		if ( is_wp_error( $stream ) ) {
 			return $stream;
 		}
-		$permitted = PublicationGuard::validate( $publication );
+		$permitted = $this->publication->validate( $publication );
 		if ( is_wp_error( $permitted ) ) {
 			return $permitted;
 		}
@@ -559,7 +568,7 @@ class Proxy {
 				'stream'          => $split['stream'],
 			)
 		);
-		EnginePublication::remember( $reply, $publication );
+		$this->publication->remember( $reply, $publication );
 		return $reply;
 	}
 
