@@ -3,7 +3,8 @@
 The current EN/DE homepage has real phone clipping despite a document width
 that matches the viewport. At 320px, the nameplate control begins at x=6.641
 in English and x=-63.656 in German, outside the white dialog's x=20 edge.
-German also begins at x=6.344 at 390px. The phone operations bar pushes the
+German also begins at x=6.344 at 390px. At 561px, German leaves its inner footer at x=9.344 instead of x=40.
+The phone operations bar pushes the
 email control to x=332.391 at 320px German, beyond the screen's right edge.
 The three-column advantage selectors use 8px category labels and 12px titles,
 fragmenting German words. The customer quote keeps a 29px display size in a
@@ -11,8 +12,10 @@ fragmenting German words. The customer quote keeps a 29px display size in a
 columns with an 11px action label.
 
 Fix these demonstrated defects through the existing WindPress volume only.
-At the existing 560px control breakpoint, allow the nameplate control to wrap
-and grow, retain its camera icon and a minimum 44px target, keep the operations
+At the existing 640px phone-dialog breakpoint, allow the nameplate control to
+wrap and grow, and retain its camera icon and a minimum 44px target. This
+includes the demonstrated 561px overrun. At the existing 560px control
+breakpoint, keep the operations
 summary within its available space and give email a 44px target. Retain the
 existing vertical accordion pattern at this width instead of three narrow
 columns. Set its labels to 10px and titles to 18px; use the existing muted body
@@ -46,7 +49,7 @@ database copy for repeated visual checks.
 Verify EN/DE390/320 actual glyph/control containment, open operations details,
 hover/focus feedback, the real photo/accordion pairing and keyboard handling,
 all three preserved quote states and wrap, the scene link consumer and the
-true document end. Check desktop and 560/561/359/360 boundaries. Read the
+true document end. Check desktop and 640/641/560/561/359/360 boundaries. Read the
 actual platform font consumer and image natural dimensions. Save unchanged
 desktop and intentional phone differences separately; do not mask or waive
 the existing unresolved same-version raw screenshot differences. Source,
