@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Tools\Genie;
 
 use Linker\Tools\Protection\Resources;
+use Linker\Tools\Protection\EnginePublication;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -153,6 +154,7 @@ class Proxy {
 	 * Registers the routes; runs on rest_api_init.
 	 */
 	public function register(): void {
+		add_filter( 'linker_tools_restored_reply', array( PublicationGuard::class, 'restored' ), 10, 2 );
 		register_rest_route(
 			self::NAMESPACE,
 			self::ROUTE,
@@ -505,10 +507,18 @@ class Proxy {
 		if ( array() !== $readings ) {
 			$body['readings'] = $readings;
 		}
+		$publication = PublicationGuard::dependencies();
+		if ( is_wp_error( $publication ) ) {
+			return $publication;
+		}
 		$started = microtime( true );
 		$stream  = $this->post( $base . '/assistant/turn', $body );
 		if ( is_wp_error( $stream ) ) {
 			return $stream;
+		}
+		$permitted = PublicationGuard::validate( $publication );
+		if ( is_wp_error( $permitted ) ) {
+			return $permitted;
 		}
 		// An answered turn is the conversation's record, kept so a reload
 		// restores it. A second turn that snapped the same history is
@@ -543,12 +553,14 @@ class Proxy {
 				array( 'status' => 409 )
 			);
 		}
-		return new WP_REST_Response(
+		$reply = new WP_REST_Response(
 			array(
 				'conversation_id' => $conversation,
 				'stream'          => $split['stream'],
 			)
 		);
+		EnginePublication::remember( $reply, $publication );
+		return $reply;
 	}
 
 	/**

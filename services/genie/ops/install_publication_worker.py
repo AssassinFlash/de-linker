@@ -1,0 +1,98 @@
+"""Generate/install the user launchd preparation schedule from an existing private env.
+
+The plist contains a private env-file path, never secrets. The file is not sourced
+as shell code: its explicit KEY=value entries become process environment values.
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import plistlib
+import subprocess
+import sys
+from pathlib import Path
+
+LABEL = "com.linker.knowledge-publication"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--env-file", required=True, type=Path)
+    parser.add_argument(
+        "--interval-seconds",
+        required=True,
+        type=int,
+        help="Polling interval selected for the build machine's availability; revocation does not wait for it",
+    )
+    parser.add_argument("--lease-seconds", required=True, type=int)
+    parser.add_argument("--worker-id", required=True)
+    parser.add_argument("--loaded-url", required=True)
+    parser.add_argument("--host")
+    parser.add_argument("--install", action="store_true")
+    args = parser.parse_args()
+    env_file = args.env_file.expanduser().resolve(strict=True)
+    if env_file.stat().st_mode & 0o077:
+        parser.error("private env file must have mode 0600")
+    if args.interval_seconds <= 0 or args.lease_seconds <= 0:
+        parser.error("interval and lease must be positive")
+    program = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "run",
+        str(env_file),
+        "--worker-id",
+        args.worker_id,
+        "--lease-seconds",
+        str(args.lease_seconds),
+        "--loaded-url",
+        args.loaded_url,
+    ]
+    if args.host:
+        program += ["--host", args.host]
+    plist = {
+        "Label": LABEL,
+        "ProgramArguments": program,
+        "StartInterval": args.interval_seconds,
+        "RunAtLoad": True,
+        "WorkingDirectory": str(Path(__file__).resolve().parents[1]),
+    }
+    target = Path.home() / "Library" / "LaunchAgents" / f"{LABEL}.plist"
+    if args.install:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(plistlib.dumps(plist))
+        subprocess.run(
+            ["launchctl", "bootout", f"gui/{os.getuid()}/{LABEL}"],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        subprocess.run(
+            ["launchctl", "bootstrap", f"gui/{os.getuid()}", str(target)], check=True
+        )
+    else:
+        sys.stdout.buffer.write(plistlib.dumps(plist))
+    return 0
+
+
+def run_private(path: Path, arguments: list[str]) -> int:
+    if path.stat().st_mode & 0o077:
+        raise PermissionError("worker environment is not private")
+    for line in path.read_text().splitlines():
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        key, value = line.removeprefix("export ").split("=", 1)
+        os.environ[key.strip()] = value.strip().strip("'\"")
+    return subprocess.call(
+        [
+            sys.executable,
+            str(Path(__file__).with_name("publication_worker.py")),
+            *arguments,
+        ]
+    )
+
+
+if __name__ == "__main__":
+    if len(sys.argv) > 2 and sys.argv[1] == "run":
+        sys.exit(run_private(Path(sys.argv[2]), sys.argv[3:]))
+    sys.exit(main())
