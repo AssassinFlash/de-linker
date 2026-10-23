@@ -1,6 +1,9 @@
 import type { MapDrawingDraft } from "../../domain/mapDrawingDraft.ts";
 import type { MapRingTarget } from "../../domain/mapDrawingGeometry.ts";
-import type { MapFeatureTarget } from "../../domain/mapFeatureDraft.ts";
+import type {
+	MapFeatureDraft,
+	MapFeatureTarget,
+} from "../../domain/mapFeatureDraft.ts";
 import { mapFeatureRoof } from "../../domain/mapFeatureDraft.ts";
 import { mapRingMetadata } from "../../domain/mapDrawingGeometry.ts";
 import { __, sprintf } from "../../i18n.ts";
@@ -11,6 +14,12 @@ export function mapFeatureLabel(kind: MapFeatureTarget["kind"]): string {
 		: kind === "obstacle"
 			? __("Obstacle", "linker-tools")
 			: __("Keep-out area", "linker-tools");
+}
+
+export function mapFeatureContext(drawing: MapFeatureDraft): string {
+	return (
+		mapFeatureRoof(drawing).name + " · " + mapFeatureLabel(drawing.target.kind)
+	);
 }
 
 export function mapRingLabel(target: MapRingTarget): string {

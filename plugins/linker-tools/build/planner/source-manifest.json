@@ -34,8 +34,8 @@
     "src/components/design/LayoutRulesForm.tsx": "a0b3dd404aad3f3ba1b108b44c6279ca90eabd25752fbe370c1a057f36515509",
     "src/components/design/LazyMapViewport.tsx": "2d4d7999253517cd9479573000377b8317c78e8dc680fce68fe10aa7eb67e042",
     "src/components/design/LazySceneViewport.tsx": "1f19dab63d5068c7c8f9e9d8da406dc9fffe7a356cd66c4ea8897dc301088998",
-    "src/components/design/MapDrawingWorkspace.tsx": "00201814ef82c8efdc45c7fa282b2f6564493e08c8d0b7e9228707caed30d460",
-    "src/components/design/MapFeatureProperties.tsx": "54e5cdee68b2aca823d0ea8beea8d88930be6bc94bcea4bed3a0005267e6656f",
+    "src/components/design/MapDrawingWorkspace.tsx": "8f095cd3581b0ac674d55943ba9e6850ecb326c2e0c55fef32627ac03ceeaf7d",
+    "src/components/design/MapFeatureProperties.tsx": "89ae0d84d4cd6be2cd6d97dd2e5b7323862351cf782f0166a8e2358c0730700a",
     "src/components/design/MapFeatureSelector.tsx": "c812a5e4db6d39b35c06679d61a8ba7ec1d452de3bf439801707dbaa1f6e0b08",
     "src/components/design/MapRingProperties.tsx": "a97938881bc521438452df89ebc356853a221b6d900987cbecea03f23d98a3cc",
     "src/components/design/MapRingSelector.tsx": "f120456c54afeacad2fc20fed8d21f3c08fd4168129285767f677d971a61e448",
@@ -51,7 +51,7 @@
     "src/components/design/ShapeForm.tsx": "644f9d66062d5784203c953b6b43070c4b198de7d082f53a75193402a6c88b37",
     "src/components/design/SourceForm.tsx": "68461422fa31666da3aa6eeb4a6e87ce8f21a3a5bef1fe7fc145f9c7fb291d40",
     "src/components/design/ViewportBoundary.tsx": "6a2e00808146bf9c3081dd6ff6c0f6752a1aadb6301406d7569882075a9d5cce",
-    "src/components/design/mapDrawingLabels.ts": "883f937b29a36fb5db24b9be60b64381db93e0985d59a8ce911732f2c6da6adb",
+    "src/components/design/mapDrawingLabels.ts": "f3fc57c237169a79406adbee283758a4b4052ffb6cd452adf26d349f91d4a15f",
     "src/components/design/useMapPropertyFeedback.ts": "0d33e3ee980cc68e0eb6c4a7f99b9314fe757bccc819c110f820b1b7c79bfca5",
     "src/components/revealActionResult.ts": "06106ea02103765baf1bdb2b81085216b20c67855b72f047a0cc4fedf95da146",
     "src/contracts/brief.schema.json": "85b37c9425f34924b5ae2d04386a78d195dac2afbf26dc998e95b364a316580c",
@@ -127,12 +127,12 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-CWzVvPkG.js": "7229cb0fa60e093ee2127b4f0c36a8a0ce896023cd76fa69c3562e0c6a038a60",
-    "assets/SceneViewport-Dd4pwnYT.js": "1167a489c9991b0775dff1c24d2f3cdcffdb500e0db0079bb186d82f9d1830be",
-    "assets/planner-core-2m7KzItW.js": "ccdd95b4087dc6e1fcc6e9f94127ea710fa60345537f59ce5f9c8b249c97911c",
-    "assets/planner.js": "16aa8b494762a31e3bd7e5bf82c811e3e1bcbc38f99ce06b1cf603bbe86d9128",
+    "assets/MapViewport-BIYPV6Pm.js": "1ee54c14dd84a401999f377a4c4b3037948d9dea577c78fd94acf5b731b45369",
+    "assets/SceneViewport-D8UUQICS.js": "784110036cb21d7855f3d9f48e9d37aac3c3508eb303e5e2e1345256d79482dd",
+    "assets/planner-core-zj35rFxH.js": "22ae718ebcd602345d41ea6e6a5aaea35db8da04153bde9e7c8d9d8d4fca65fa",
+    "assets/planner.js": "af0ebbe7c3af75c54f054480a937e7c36a4948f6e653a5cf0c24059af6ce96f2",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "8a9b83d2c9f3270b9cbb5ee79190c246356845bbe6b22190a222d0ed94378a4e",
+    "vite-manifest.json": "c0c5b142ffa2b799a232a47535282803a4913458d28392a64ba1ebbae1ccddf8",
     "windpress.scan.txt": "bb5ce14116e7df9a7272603cd170b0bfd39e09517dc31825b09b52bb9dada6b1"
   }
 }

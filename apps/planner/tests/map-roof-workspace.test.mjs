@@ -309,6 +309,16 @@ for (const kind of ["hole", "obstacle", "keepout"])
 		);
 		await r.click("Draw a roof feature");
 		await until(() => r.active);
+		const featureLabel = {
+			hole: "Roof opening",
+			obstacle: "Obstacle",
+			keepout: "Keep-out area",
+		}[kind];
+		const context = ringGeometry.roofs[0].name + " · " + featureLabel;
+		assert.ok(
+			document.querySelector(".lp-map-drawing").textContent.includes(context),
+			"The collecting controls identify the selected parent and feature type",
+		);
 		const corners = bindMapRing(ringGeometry, {
 			kind: "obstacle",
 			id: "synthetic_obstacle",
@@ -333,6 +343,10 @@ for (const kind of ["hole", "obstacle", "keepout"])
 		await r.click("Open saved drawing");
 		await until(
 			() => r.active && document.querySelector('[data-map-status="ready"]'),
+		);
+		assert.ok(
+			document.querySelector(".lp-map-drawing").textContent.includes(context),
+			"The restored collecting controls retain the same context",
 		);
 		for (const point of points.slice(1)) await r.point(...point);
 		assert.equal((await r.records())[0].drawing.vertices.length, 5);

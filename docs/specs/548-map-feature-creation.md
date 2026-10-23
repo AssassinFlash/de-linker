@@ -8,6 +8,8 @@ provider request or separate scene is needed.
 - Explicitly choose a roof and a new opening, obstacle or keep-out area. The
   original whole geometry and parent roof plane stay fixed. New object IDs are
   independent of the local journal ID, including a separate recovery copy.
+  The selected roof and feature type remain visible while collecting corners
+  and after restoring an unfinished drawing, before the properties form opens.
 - Record an arbitrary open prefix, continue after pause/reload, remove the last
   corner, explicitly close/review, edit via the existing controller and continue
   adding corners. Partial work does not change the project or its undo history.

@@ -3,14 +3,11 @@ import type {
 	MapFeatureDraft,
 	MapFeatureFields,
 } from "../../domain/mapFeatureDraft.ts";
-import {
-	mapFeatureRoof,
-	mapFeatureSource,
-} from "../../domain/mapFeatureDraft.ts";
+import { mapFeatureSource } from "../../domain/mapFeatureDraft.ts";
 import { decimalSeparator } from "../../domain/decimal.ts";
 import { useMapPropertyFeedback } from "./useMapPropertyFeedback.ts";
 import { MapSourceDetails } from "./MapSourceDetails.tsx";
-import { mapFeatureLabel } from "./mapDrawingLabels.ts";
+import { mapFeatureContext } from "./mapDrawingLabels.ts";
 import { Notice } from "../Notice.tsx";
 import { __ } from "../../i18n.ts";
 
@@ -37,8 +34,7 @@ export function MapFeatureProperties({
 	continueDrawing: () => void;
 }) {
 	const { form, result } = useMapPropertyFeedback(error, invalidField),
-		errorId = useId(),
-		roof = mapFeatureRoof(drawing);
+		errorId = useId();
 	const invalid = (name: string) => ({
 		"aria-invalid": invalidField === name || undefined,
 		"aria-describedby": invalidField === name ? errorId : undefined,
@@ -54,9 +50,7 @@ export function MapFeatureProperties({
 			}}
 		>
 			<h3>{__("Feature properties", "linker-tools")}</h3>
-			<p>
-				{roof.name} · {mapFeatureLabel(drawing.target.kind)}
-			</p>
+			<p>{mapFeatureContext(drawing)}</p>
 			<p>
 				{__(
 					"The outline lies in the selected roof plane. Check the source details and feature properties before adding it to the project draft.",

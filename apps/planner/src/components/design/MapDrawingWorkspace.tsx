@@ -35,7 +35,7 @@ import { MapRingProperties } from "./MapRingProperties.tsx";
 import { MapRingSelector } from "./MapRingSelector.tsx";
 import { MapFeatureSelector } from "./MapFeatureSelector.tsx";
 import { MapFeatureProperties } from "./MapFeatureProperties.tsx";
-import { mapDrawingName } from "./mapDrawingLabels.ts";
+import { mapDrawingName, mapFeatureContext } from "./mapDrawingLabels.ts";
 
 export function MapDrawingWorkspace({
 	geometry,
@@ -428,6 +428,9 @@ export function MapDrawingWorkspace({
 						</button>
 					)}
 				</div>
+				{drawing?.schema_version === 3 && (
+					<p className="lp-profile-help">{mapFeatureContext(drawing)}</p>
+				)}
 				<p className="lp-profile-help">
 					{drawing?.schema_version === 3
 						? __(
