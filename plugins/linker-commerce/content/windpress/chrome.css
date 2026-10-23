@@ -260,7 +260,9 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 .tv-mobile-utility:active{transform:translateY(1px)}
 #tv-header-v2 .tv-mobile-utility svg{width:16px;height:16px;flex-shrink:0}
 #tv-header-v2 .tv-mobile-utility--ai{background:var(--proto-teal-50);border-color:rgba(12,127,115,.28);color:var(--proto-teal-600)}
-@media (min-width:1280px){#lc-header #tv-mobile-panel:not([data-open="true"]){display:none!important}}
+/* Only the old button partial has a direct container child. Native details
+   must reveal their panel through open before the enhancement sets data-open. */
+@media (min-width:1280px){#lc-header .tv-container>#tv-mobile-panel:not([data-open="true"]){display:none!important}}
 html.lia-narrow #lc-header #tv-mobile-panel[data-open="true"]{display:flex!important;flex-direction:column}
 #tv-header-v2 .tv-brand,#tv-header-v2 .tv-mobile-toggle,#tv-header-v2 .tv-header-cta,#tv-header-v2 .tv-header-utility,#tv-header-v2 .tv-header-icon-btn,#tv-header-v2 .tv-mobile-utility,#tv-header-v2 .tv-nav-link,#tv-header-v2 .tv-language-switch,#tv-header-v2 .tv-b2b-mobile-portal-link,#tv-header-v2 .tv-b2b-acct-btn{border-radius:8px!important}
 #tv-header-v2 .tv-mobile-link,#tv-header-v2 .tv-mega-link,#tv-header-v2 .tv-mega-featured,#tv-header-v2 .tv-mega-link-thumb,#tv-header-v2 .tv-mega-featured-img,#tv-header-v2 .tv-app-mega-stack-item,#tv-header-v2 .tv-app-mega-stack-thumb,#tv-header-v2 .tv-mobile-link-thumb{border-radius:12px!important}

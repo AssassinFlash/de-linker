@@ -24,6 +24,10 @@ then the existing compact/fold calculation. Normal enhanced geometry, text,
 links, desktop breakpoints, language-independent fit and the approved three-
 engine fold boundaries must remain unchanged.
 
+Keep the older button partial's desktop data-open guard limited to its direct
+container-child panel. The native details panel must follow its parent's open
+state even before the enhancement can supply a data-open attribute.
+
 If someone has already opened the native panel at a desktop width while the
 enhancement is pending, keep it available until they close it. A fit that has
 room for the ordinary row must not dismiss that active menu. After it closes,
