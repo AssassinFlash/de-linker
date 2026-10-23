@@ -254,6 +254,29 @@ def test_original_table_model_axis_must_match_preceding_column_order(
         )
 
 
+def test_different_current_associated_local_axis_refuses_whole_original_table() -> None:
+    raw = manifest()
+    document = next(d for d in raw["documents"] if d["blob_sha256"] == HCA)
+    other = next(p for p in raw["products"] if p["product_id"] == 3611)
+    document["product_ids"].append(other["product_id"])
+    other["documents"].append(document["document_id"])
+    source = pages(HCA)
+    position = next(
+        i for i, block in enumerate(source[1].blocks) if block.kind == "table"
+    )
+    original = source[1].blocks[position]
+    source[1].blocks[position] = replace(
+        original,
+        rows=(("Model", LABELS[0], LABELS[1], other["model"]), *original.rows),
+        header_rows=0,
+    )
+    selected = chunks(source=source)
+    proof = scope_proofs(selected, raw, authority(raw))
+    tables = [c for c in selected if c.source_table == "docling:p2:#/tables/0"]
+    assert len(tables) > 1
+    assert all(c.id not in proof for c in tables)
+
+
 def test_local_explicit_model_remains_narrower_than_the_previous_column_group() -> None:
     source = pages(HCA)
     source[1].blocks.append(

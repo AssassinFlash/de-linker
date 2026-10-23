@@ -141,6 +141,7 @@ def _table_columns(
         ordered = list(dict.fromkeys(label for _, label, _ in written))
         ids = [labels_to_ids[label] for label in ordered]
         if any(not observed[part.id][0].issubset(ids) for part in parts):
+            conflicts.update(part.id for part in parts)
             continue
         rows = [line for part in parts for line in part.text.splitlines()]
         if not rows or any(
