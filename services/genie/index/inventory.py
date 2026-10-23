@@ -35,21 +35,44 @@ DOWNLOAD_WORKERS = 4
 # keeps failing stops the run.
 DOWNLOAD_ATTEMPTS = 3
 
-# The documents field's own vocabulary (every `download_type` / `download_role` value
-# on the live products, 2026-10-09) mapped onto the spec's five types
-# (docs/specs/10-knowledge-index.md, Sources). Warranty, brochure and generic
-# "document" rows are `other`.
-_TYPE_BY_ROLE = {"compatibility_list": "compatibility"}
-_TYPE_BY_LABEL = {
+# Woo's EN/DE document vocabulary, matching Materials::document_kind. These are
+# labels, not inferred document contents. Role takes precedence over type.
+_DOCUMENT_KINDS = {
     "datasheet": "datasheet",
+    "datenblatt": "datasheet",
     "manual": "manual",
+    "user_manual": "manual",
+    "handbuch": "manual",
+    "anleitung": "manual",
     "installation manual": "manual",
     "certificate": "certificate",
+    "zertifikat": "certificate",
     "compatibility": "compatibility",
+    "compatibility_list": "compatibility",
+    "kompatibilität": "compatibility",
+    "kompatibilitätsliste": "compatibility",
+    "warranty": "warranty",
+    "garantie": "warranty",
+    "brochure": "brochure",
+    "broschüre": "brochure",
+    "document": "document",
+    "dokument": "document",
+    "other": "document",
 }
 # `download_language` values on the live products (2026-10-09): EN, DE, MUL, MULTI,
-# EN/DE, DE/EN, ES and empty. One language is that language; several are `multi`.
-_LANG_BY_LABEL = {"EN": "en", "DE": "de", "ES": "es"}
+# EN/DE, DE/EN, ES and empty. ISO 639 mul/und retain explicit multilingual/unstated
+# metadata; chunking detects those passages individually. Unknown tags must fail.
+_LANG_BY_LABEL = {
+    "EN": "en",
+    "DE": "de",
+    "ES": "es",
+    "MUL": "mul",
+    "MULTI": "mul",
+    "EN/DE": "mul",
+    "DE/EN": "mul",
+    "": "und",
+    "UND": "und",
+}
 
 
 @dataclass(frozen=True)
@@ -157,21 +180,33 @@ def _downloads(product: Mapping[str, Any], key: str) -> list[dict[str, Any]]:
     return [row for row in rows or [] if isinstance(row, dict)]
 
 
+def document_kind_of(label: str, role: str) -> str:
+    """Woo's explicit purpose, preserving warranty/certificate scope semantics."""
+    for value in (role, label):
+        normalized = value.strip().casefold()
+        if normalized in _DOCUMENT_KINDS:
+            return _DOCUMENT_KINDS[normalized]
+    if not label.strip() and not role.strip():
+        return "document"
+    raise ValueError(f"unknown Woo document purpose: role={role!r}, type={label!r}")
+
+
 def doc_type_of(label: str, role: str) -> str:
-    """The spec's type for one documents-field row."""
-    if role.strip().lower() in _TYPE_BY_ROLE:
-        return _TYPE_BY_ROLE[role.strip().lower()]
-    return _TYPE_BY_LABEL.get(label.strip().lower(), "other")
+    """The index spec's five types; raw Woo purpose remains in its manifest."""
+    kind = document_kind_of(label, role)
+    return (
+        kind
+        if kind in {"datasheet", "manual", "certificate", "compatibility"}
+        else "other"
+    )
 
 
 def lang_of(label: str) -> str:
-    """`en`, `de`, another ISO code, `multi` for several, or "" when unstated."""
+    """Normalize known Woo tags; an unknown tag is not evidence of multilingualism."""
     label = label.strip().upper()
-    if not label:
-        return ""
-    if label in _LANG_BY_LABEL:
-        return _LANG_BY_LABEL[label]
-    return "multi"
+    if label not in _LANG_BY_LABEL:
+        raise ValueError(f"unknown Woo document language: {label!r}")
+    return _LANG_BY_LABEL[label]
 
 
 def product_of(product: Mapping[str, Any]) -> Product:

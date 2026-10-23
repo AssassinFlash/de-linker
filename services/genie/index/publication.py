@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, TypedDict
 
 from index.chunking import Chunk
+from index.inventory import doc_type_of, document_kind_of, lang_of
 from linker_genie.embedding import sha256_of
 from linker_genie.publication import PublicationClient, Snapshot
 
@@ -175,6 +176,10 @@ def inventory(
     by_sha: dict[str, list[dict[str, Any]]] = {}
     pdf_dir.mkdir(parents=True, exist_ok=True)
     for document in current.documents.values():
+        # Preserve the original metadata in publication_manifest; only the build
+        # metadata is normalized. Reject unknown vocabulary before any download.
+        doc_type_of(str(document["type"]), str(document.get("role", "")))
+        lang_of(str(document["lang"]))
         sha = document["blob_sha256"]
         if not re.fullmatch(r"[a-f0-9]{64}", sha):
             raise ValueError("Woo document has no verified content SHA")
@@ -238,8 +243,10 @@ def inventory(
                     {str(current.products[pid].get("model", "")) for pid in pids}
                 ),
                 product_ids=pids,
-                doc_type=str(relations[0]["type"]),
-                lang=str(relations[0]["lang"]),
+                doc_type=doc_type_of(
+                    str(relations[0]["type"]), str(relations[0].get("role", ""))
+                ),
+                lang=lang_of(str(relations[0]["lang"])),
                 linked=True,
             )
         )
@@ -349,7 +356,10 @@ def scope_proofs(
         matched, blocked = observed[chunk.id]
         relations = documents[chunk.doc_sha256]
         general = [
-            doc for doc in relations if doc["type"] in {"warranty", "certificate"}
+            doc
+            for doc in relations
+            if document_kind_of(str(doc["type"]), str(doc.get("role", "")))
+            in {"warranty", "certificate"}
         ]
         basis, origin = "passage", [chunk.id]
         if blocked:

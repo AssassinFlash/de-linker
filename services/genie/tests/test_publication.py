@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import httpx
@@ -13,6 +15,7 @@ from index import corpus, store
 from index.chunking import Chunk
 from index.corpus import DocumentRow
 from index.publication import applicability, scope_proofs
+from index.publication import inventory as publication_inventory
 from linker_genie.knowledge import KnowledgeSearch
 from linker_genie.publication import (
     PublicationChanged,
@@ -110,6 +113,72 @@ def authority(
         return httpx.Response(200, json={"valid": valid})
 
     return PublicationClient("https://site.test", httpx.MockTransport(handle))
+
+
+@pytest.mark.parametrize(
+    "kind,role,language,expected_type,expected_language",
+    [
+        ("Datasheet", "", "EN", "datasheet", "en"),
+        ("Datenblatt", "", "DE", "datasheet", "de"),
+        ("Handbuch", "", "EN", "manual", "en"),
+        ("Kompatibilität", "", "MUL", "compatibility", "mul"),
+        ("Dokument", "quick_guide", "MULTI", "other", "mul"),
+        ("certificate", "certificate", "EN/DE", "certificate", "mul"),
+        ("certificate", "certificate", "DE/EN", "certificate", "mul"),
+        ("manual", "", "", "manual", "und"),
+        ("Datasheet", "user_manual", "en", "manual", "en"),
+    ],
+)
+def test_manifest_build_normalizes_metadata_without_changing_woo_source(
+    tmp_path: Path,
+    kind: str,
+    role: str,
+    language: str,
+    expected_type: str,
+    expected_language: str,
+) -> None:
+    raw = manifest()
+    pdf_bytes = b"verified cached PDF fixture"
+    sha = hashlib.sha256(pdf_bytes).hexdigest()
+    raw["documents"][0].update(
+        {"blob_sha256": sha, "type": kind, "role": role, "lang": language}
+    )
+    pdf_dir = tmp_path / "pdfs"
+    pdf_dir.mkdir()
+    (pdf_dir / f"{sha}.pdf").write_bytes(pdf_bytes)
+    out = tmp_path / "inventory.json"
+    documents = publication_inventory(
+        SimpleNamespace(base="https://site.test"), out, pdf_dir, raw
+    )
+    assert len(documents) == 1
+    assert (documents[0].doc_type, documents[0].lang) == (
+        expected_type,
+        expected_language,
+    )
+    assert json.loads(out.read_text())["publication_manifest"] == raw
+
+
+@pytest.mark.parametrize(
+    "field,value,reason",
+    [
+        ("lang", "unknown-language", "unknown Woo document language"),
+        ("type", "unknown-purpose", "unknown Woo document purpose"),
+    ],
+)
+def test_manifest_build_rejects_unknown_metadata_before_downloading(
+    tmp_path: Path, field: str, value: str, reason: str
+) -> None:
+    raw = manifest()
+    raw["documents"][0][field] = value
+    with pytest.raises(ValueError, match=reason):
+        publication_inventory(
+            SimpleNamespace(base="https://site.test"),
+            tmp_path / "inventory.json",
+            tmp_path / "pdfs",
+            raw,
+        )
+    assert not (tmp_path / "inventory.json").exists()
+    assert not list((tmp_path / "pdfs").iterdir())
 
 
 @pytest.fixture
@@ -449,7 +518,9 @@ def test_authored_common_terms_do_not_authorize_unnamed_technical_parameters(
     assert proof["terms"]["source_chunk_ids"] == ["declaration"]
 
 
-@pytest.mark.parametrize("purpose", ["warranty", "certificate"])
+@pytest.mark.parametrize(
+    "purpose", ["warranty", "certificate", "Garantie", "Zertifikat"]
+)
 def test_genuinely_model_free_general_document_uses_explicit_woo_purpose(
     purpose: str,
 ) -> None:
