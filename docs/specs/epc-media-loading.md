@@ -46,6 +46,8 @@ WindPress reserves the maximum real pane height with one overlapping grid;
 inactive panes remain in layout through visibility, inert and aria-hidden.
 No fixed text height or hidden/display-none shortcut. Without enhancement, hide
 the inoperative controls and show all three original descriptions in order.
+Align the unenhanced media column to the first description rather than centering
+it beside the combined height of all three descriptions; hide the empty pager.
 
 Approved action copy after adversarial review: **Play slideshow / Pause
 slideshow** and **Diashow abspielen / Diashow pausieren**. The native tab group

@@ -398,6 +398,12 @@ body[data-page]:is(
 #tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-content {
 	gap: var(--proto-space-7);
 }
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-media-wrap {
+	align-self: start;
+}
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-pagination {
+	display: none;
+}
 #tv-solutions-developers-v1 #sp-workbench.epc-media-ready .lk-sp-pane {
 	grid-row: 1;
 	visibility: hidden;
