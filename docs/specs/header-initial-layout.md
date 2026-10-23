@@ -64,8 +64,22 @@ The real native Tab sequence at 320px exposes another clipping case: after all
 product links, the third solution card's border box ends at 899.0625px in the
 900px viewport, cutting off its 2px outline plus 2px offset. Reserve that same
 4px footprint with block scroll margins on the existing panel links and group
-summaries. Verify the actual scrollport's inner edges with native keys, without
+summaries. Independent DE desktop readback then shows the outline ending at
+899.078125px while the client scrollport ends at899px. Native scrolling rounds
+to whole CSS pixels, so use5px: the same4px footprint plus the smallest whole
+pixel to protect against that rounding. Keep the strict boundary comparison;
+do not add a tolerance or discard the failed stable originals. Verify the
+actual scrollport's inner edges with native keys, without
 programmatically focusing each target. Keep the failed original evidence.
+
+At the1280px folded desktop boundary, Escape focuses the native summary at
+x1236px with width44px; its outline ends at1284px outside the1280px viewport.
+Give the desktop native disclosure the container's existing1rem end margin.
+This restores end breathing room and contains its focus ring, including before
+enhancement and after Escape. The disclosure is hidden while the ordinary
+desktop row is measured, so retain that row's geometry and fit boundaries.
+Recheck both languages, native initial opening and script adoption; preserve
+the recorded closed-state bug fix separately from unaffected pixel controls.
 
 The secondary product and all-items rows override the generic link text's
 existing 44px minimum with zero, rendering 36.5px and 40.796875px anchors.
