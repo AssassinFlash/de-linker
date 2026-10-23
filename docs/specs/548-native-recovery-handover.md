@@ -31,6 +31,10 @@ automatically resubmitted on login.
    revives a guest or relaxes current project ownership. An ambiguous key or a
    different command conflicts; no receipt is overwritten. Existing native
    quota acknowledgement must not prevent an engine-confirmed recovered result.
+   The original business key stays unchanged; the native resource journal is
+   separately scoped to its principal/quota binding. A dispatched attempt with
+   no engine receipt is not silently refunded; retry in a new native quota
+   context admits that attempt, instead of colliding on a globally raw UUID.
 6. Claim and mutations use the same DB transaction boundary. If a guest command
    committed before claim, retry returns its original resource/revision. If the
    guest never committed, retirement prevents a delayed guest write and the

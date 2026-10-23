@@ -19,8 +19,9 @@ export async function recoveryScopes(
 				signal,
 			),
 		);
+		if (!client.isCurrentScope(scope))
+			throw new ApiError(401, "session_changed");
 		if (
-			!client.isCurrentScope(scope) ||
 			Object.keys(page).sort().join() !== "next,schema_version,scopes" ||
 			page.schema_version !== 1 ||
 			!Array.isArray(page.scopes) ||

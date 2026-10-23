@@ -67,10 +67,7 @@ test("a delayed grant reply after native withdrawal cannot be used", async () =>
 			return { schema_version: 1, scopes: [numberScope(1)], next: null };
 		},
 	} as unknown as PlannerClient;
-	await assert.rejects(
-		recoveryScopes(client, scope),
-		/invalid_recovery_scopes/,
-	);
+	await assert.rejects(recoveryScopes(client, scope), /session_changed/);
 });
 
 test("discovered immutable intents retain exact original namespaces and bodies", async () => {

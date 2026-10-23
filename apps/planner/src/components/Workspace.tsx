@@ -8,6 +8,7 @@ import type { Configuration } from "../data/config.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
 import type { JsonObject, Project, Session } from "../data/protocol.ts";
+import { ApiError } from "../data/protocol.ts";
 import { readProject } from "../data/readProtocol.ts";
 import { readProjectPage } from "../data/projectIndex.ts";
 import { useSiteIntegration } from "../data/useSiteIntegration.ts";
@@ -44,12 +45,36 @@ export function Workspace({
 				? Promise.resolve([session.query_scope])
 				: recoveryScopes(client, session.query_scope, signal),
 	});
+	const recoveryAuthError =
+		recovery.error instanceof ApiError &&
+		([401, 403].includes(recovery.error.status) ||
+			recovery.error.code === "session_changed");
+	const recoveryRechecked = useRef(false);
+	useEffect(() => {
+		if (recovery.isSuccess) recoveryRechecked.current = false;
+		if (recoveryAuthError && !recoveryRechecked.current) {
+			recoveryRechecked.current = true;
+			recheck();
+		}
+	}, [recheck, recovery.isSuccess, recoveryAuthError]);
+	function retryRecovery() {
+		if (recoveryAuthError || !client.isCurrentScope(session.query_scope))
+			recheck();
+		else void recovery.refetch();
+	}
 	const previousSession = useRef(session);
 	useEffect(() => {
 		if (previousSession.current !== session) {
 			previousSession.current = session;
+			// A parallel owned read may have failed when admission was withdrawn.
+			// Retry those reads after native confirmation. Successful opening
+			// snapshots stay pinned, so revalidation cannot reset an open draft.
 			void cache.invalidateQueries({
-				queryKey: [session.query_scope, "recovery-scopes"],
+				predicate: (query) =>
+					query.queryKey[0] === session.query_scope &&
+					(query.queryKey[1] === "recovery-scopes" ||
+						query.queryKey[1] === "projects" ||
+						query.state.status === "error"),
 			});
 		}
 	}, [cache, session]);
@@ -216,10 +241,7 @@ export function Workspace({
 								"linker-tools",
 							)}
 						</p>
-						<button
-							className="lp-text-button"
-							onClick={() => void recovery.refetch()}
-						>
+						<button className="lp-text-button" onClick={retryRecovery}>
 							{__("Try again", "linker-tools")}
 						</button>
 					</Notice>

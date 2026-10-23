@@ -17,7 +17,7 @@
     "src/components/ProjectEditor.tsx": "c5aa5212cfc1316f4a1c739ed52423da16de1815100f0457e7e35834462eb49c",
     "src/components/RevisionComparison.tsx": "0a5de456a0e2e46e68099f96a05f4ce1398e3c069765411b3390bf15074f5b44",
     "src/components/SessionBoundary.tsx": "f76d1019895130fd24bb87848968074379e4f46f7c5f575caceb66f3b79aed11",
-    "src/components/Workspace.tsx": "fea0c4e96fa054fcb3158c357b710d1bae8481bd43e53a05e5d8704581d9e923",
+    "src/components/Workspace.tsx": "a7c3b5d29ce8320e513ec10e6d1a3eec035e50f043cd18c7303a9a4a5db434dd",
     "src/components/revealActionResult.ts": "573599ee99d6aa2051c23fbc23e9be7d898f64d9dbccbb2593b4ba4460168ff0",
     "src/contracts/brief.schema.json": "85b37c9425f34924b5ae2d04386a78d195dac2afbf26dc998e95b364a316580c",
     "src/contracts/profile-import.schema.json": "c16463c3196ae14c073ee9619ecec5149fe6642f4a83ad1c98164ca112220165",
@@ -32,9 +32,9 @@
     "src/data/protocol.ts": "605991bee3c996de49ad5a89e272452bdfc3d5817adb1833174ff717ee75bc91",
     "src/data/readProtocol.ts": "cc5ed373b3b0f3e99f2dbebe2729d6b999f7c294927aa5c61f81fe5163cfdae5",
     "src/data/recoveryIntents.ts": "e7a97f8c75511db4a0a06047452b38d78bd8aa2bf9c6ba8ec21d415e75918364",
-    "src/data/recoveryScopes.ts": "ff1231fc7554a90174e62e0c9dd32e1193c6f4d5f86ee6336ebe2b184ac95355",
+    "src/data/recoveryScopes.ts": "6f69052dc07c74913fd8e0d87378c6722ec8db434e21cfd5d7064bd70115a550",
     "src/data/useProjectBar.ts": "3228f0688127fbbc07df48b9d546c9eb77a68c0cbf2c59a08180d6b38af49295",
-    "src/data/useProjectDraft.ts": "467608fd6505bb9abccfbf726b886dd256dd4b469179f24c60783212556bc11e",
+    "src/data/useProjectDraft.ts": "72de0cff175d36d9fd8ad01dbfbc447f405e789c42a380c67854755080e7a6fb",
     "src/data/useSiteIntegration.ts": "dc96cfc404a2de8aa954769487061be4f51b50045db3aad0b34967cd7666ad59",
     "src/domain/brief.ts": "3799daa2c8144a81d3368b30a8491c6de1767da8efc7c6841c085614187121e9",
     "src/domain/coordinates.ts": "abedd6bbf4fd5d0a5aebce6900f6b71256647b67d8f465e432e32cf4879c25ff",
@@ -52,7 +52,7 @@
     "vite.config.ts": "a9c99cf04c71606380d2f00f9dcd1c4b9245193a5652429d99ee37b6c72d9099"
   },
   "build": {
-    "assets/planner.js": "7416d3a6c0e4126f36196155f63793f3155006975ea6bfaf64da8d60fe8d608d",
+    "assets/planner.js": "c423b8a43406eff736f057c8c19ddd3045800d8347850645cf6da3594691992d",
     "vite-manifest.json": "cccc8dc021bafcf5f4c568db7ac0921dd3e9fd0eeac4347fe8b21d8e7babcee1",
     "windpress.scan.txt": "68c8377a164e8f53d750e9bcd91c8cecde4d58da5c2e1c9a8badb2592f0ac495"
   }

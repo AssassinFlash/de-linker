@@ -76,7 +76,7 @@ final class Admission {
 				'target' => $target,
 			);
 		}
-		$id          = $command['key'];
+		$id          = $this->operation_id( $principal, $command['key'], $quota->binding() );
 		$fingerprint = $this->fingerprint( $principal, $path, $known->command_scope, $known->command_sha256 );
 		$ledger      = new Ledger();
 		// This lease covers only bounded RPC dispatch, not queued numerical work.
@@ -118,9 +118,14 @@ final class Admission {
 	 */
 	private function acknowledge( Principal $principal, string $path, array $command, string $command_scope, string $command_hash ): bool|WP_Error {
 		$id = $command['key'] ?? null;
-		if ( ! class_exists( Ledger::class ) || ! is_string( $id ) || ! wp_is_uuid( $id, 4 ) || false === get_option( Ledger::OPTION ) ) {
+		if ( ! class_exists( Ledger::class ) || ! class_exists( Identity::class ) || ! is_string( $id ) || ! wp_is_uuid( $id, 4 ) || false === get_option( Ledger::OPTION ) ) {
 			return true;
 		}
+		$quota = Identity::current();
+		if ( is_wp_error( $quota ) ) {
+			return true; // The permanent owned engine receipt is already confirmed.
+		}
+		$id          = $this->operation_id( $principal, $id, $quota->binding() );
 		$ledger      = new Ledger();
 		$fingerprint = $this->fingerprint( $principal, $path, $command_scope, $command_hash );
 		$receipt     = $ledger->lookup( $id, $fingerprint );
@@ -134,6 +139,25 @@ final class Admission {
 			return Failure::make( 'receipt_persistence', 503 );
 		}
 		return true;
+	}
+
+	/**
+	 * Namespace the transport journal by its actual native principal/binding.
+	 * The engine keeps the original business key and owns permanent replay.
+	 * An earlier dispatched attempt under a different native context retains
+	 * its charge; an absent engine receipt needs a new admitted attempt there.
+	 * Reusing a raw UUID globally otherwise rejects legitimate login recovery.
+	 *
+	 * @param Principal $principal Verified native principal.
+	 * @param string    $key Original client intent UUID.
+	 * @param string    $binding Existing native quota context.
+	 */
+	private function operation_id( Principal $principal, string $key, string $binding ): string {
+		// Preserve exact key bytes, matching the engine's opaque Key contract.
+		$hash = wp_hash( 'linker-planner-quota:v2|' . $principal->kind . '|' . $principal->subject . '|' . $binding . '|' . $key, 'auth', 'sha256' );
+		// Ledger::reserve/transition accept a UUID4-shaped local identifier.
+		// These format bits are protocol representation, not a new client key.
+		return substr( $hash, 0, 8 ) . '-' . substr( $hash, 8, 4 ) . '-4' . substr( $hash, 13, 3 ) . '-' . dechex( ( hexdec( $hash[16] ) & 3 ) | 8 ) . substr( $hash, 17, 3 ) . '-' . substr( $hash, 20, 12 );
 	}
 
 	/**

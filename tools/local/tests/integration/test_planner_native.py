@@ -395,6 +395,50 @@ def test_native_recovery_grants_paginate_without_omission_or_other_account_data(
 
 
 @contextmanager
+def failed_native_dispatch(instance: Instance) -> Iterator[str]:
+    """Local-only timeout after quota dispatch, before an engine mutation.
+
+    Unlike a missing engine during replay, this leaves an actual dispatched
+    native receipt with no permanent engine receipt. Recovery must handle both.
+    """
+    path = instance.wp_content / "mu-plugins/linker-planner-dispatch-acceptance.php"
+    assert not path.exists()
+    token = uuid.uuid4().hex
+    source = '''<?php
+if (PHP_SAPI !== 'cli-server' || !hash_equals('TOKEN', $_SERVER['HTTP_X_LINKER_PLANNER_FIXTURE'] ?? '')) { return; }
+add_filter('pre_http_request', static function ($pre, $args, $url) {
+    if (str_ends_with($url, '/projects/create') && !str_contains($url, '/operations/replay/')) { return new WP_Error('synthetic_dispatch_timeout', 'Synthetic local dispatch refusal'); }
+    return $pre;
+}, 10, 3);
+'''
+    path.write_text(source.replace("TOKEN", token))
+    path.chmod(0o600)
+    try:
+        yield token
+    finally:
+        path.unlink()
+
+
+def test_native_uncommitted_dispatched_guest_intent_can_retry_after_login(
+    local: tuple[Instance, WpCli], account: Account
+) -> None:
+    instance, _ = local
+    browser = Browser(instance.url)
+    browser.bootstrap()
+    command = {"schema_version": 1, "title": "Synthetic admitted but uncommitted request", "inputs": {}, "key": str(uuid.uuid4())}
+    with failed_native_dispatch(instance) as token:
+        reply = browser.rpc("rpc/projects/create", command, **{"X-Linker-Planner-Fixture": token})
+        assert reply.status == 503
+    assert browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}).object()["items"] == []
+    browser.login(account.login, account.password)
+    browser.bootstrap()
+    created = browser.rpc("rpc/projects/create", command)
+    assert created.status == 200, created.body
+    assert browser.rpc("rpc/projects/create", command).object() == created.object()
+    assert len(browser.rpc("rpc/projects/list", {"schema_version": 1, "page_size": 10, "after": None}).object()["items"]) == 1
+
+
+@contextmanager
 def failed_native_insert(instance: Instance) -> Iterator[str]:
     """Inject a native insert refusal in only this owned local HTTP instance.
 
@@ -548,14 +592,47 @@ echo wp_json_encode($result);
     assert cases[13] == {"status": 400, "largest_parser_input": 40}
 
 
+def test_native_journal_namespaces_owners_and_exact_engine_keys(local: tuple[Instance, WpCli]) -> None:
+    instance, wp = local
+    first, second = Browser(instance.url), Browser(instance.url)
+    first.bootstrap()
+    second.bootstrap()
+    key = str(uuid.uuid4())
+    while key.upper() == key:
+        key = str(uuid.uuid4())
+    command = {"schema_version": 1, "title": "Synthetic key namespace", "inputs": {}, "key": key}
+    preceding = native_operation_ids(wp)
+    own = first.rpc("rpc/projects/create", command)
+    foreign = second.rpc("rpc/projects/create", command)
+    # The native public gateway requires its canonical lowercase UUID shape.
+    # An uppercase variant is rejected before a new resource admission.
+    changed_key = first.rpc("rpc/projects/create", {**command, "key": key.upper()})
+    assert own.status == foreign.status == 200
+    assert changed_key.status == 400
+    assert own.object()["id"] != foreign.object()["id"]
+    assert len(native_operation_ids(wp) - preceding) == 2
+    assert first.read(foreign.object()).status == 404
+    assert first.rpc("rpc/projects/create", command).object() == own.object()
+    assert len(native_operation_ids(wp) - preceding) == 2
+
+
+def native_operation_ids(wp: WpCli) -> set[str]:
+    # Observe the actual native journal rather than recomputing its private ID.
+    return set(json.loads(wp.run("eval", 'echo wp_json_encode(array_keys(json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true)["receipts"] ?? array()));')))
+
+
 def test_permanent_engine_replay_uses_no_new_quota_after_native_receipt_forgetting(local: tuple[Instance, WpCli]) -> None:
     instance, wp = local
     browser = Browser(instance.url)
     browser.bootstrap()
     key = str(uuid.uuid4())
     command = {"schema_version": 1, "title": "Permanent replay evidence", "inputs": {"object": {}, "array": [], "one": 1.0}, "key": key}
+    preceding = native_operation_ids(wp)
     created = browser.rpc("rpc/projects/create", command)
     assert created.status == 200, created.body
+    inserted = native_operation_ids(wp) - preceding
+    assert len(inserted) == 1
+    native_id = inserted.pop()
     # Mimic the native journal's receipt-forgetting boundary for this fixture
     # UUID only; do not advance global time or delete other native receipts.
     before = wp.run("eval", '''
@@ -564,7 +641,7 @@ $state = json_decode(get_option($name), true);
 unset($state['receipts'][getenv('LINKER_PLANNER_FIXTURE_OPERATION')]);
 update_option($name, wp_json_encode($state), false);
 echo hash('sha256', wp_json_encode($state));
-''', env={"LINKER_PLANNER_FIXTURE_OPERATION": key})
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id})
     assert browser.rpc("rpc/projects/create", command).object() == created.object()
     after = wp.run("eval", 'echo hash("sha256", get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION));')
     assert before == after, "permanent replay must not reserve a new quota receipt"
@@ -613,8 +690,12 @@ def test_equivalent_wire_replay_settles_the_same_canonical_native_receipt(local:
     browser.bootstrap()
     key = str(uuid.uuid4())
     command = {"schema_version": 1, "title": "Canonical native receipt", "inputs": {"object": {}, "array": [], "one": 1.0}, "key": key}
+    preceding = native_operation_ids(wp)
     created = browser.rpc("rpc/projects/create", command)
     assert created.status == 200, created.body
+    inserted = native_operation_ids(wp) - preceding
+    assert len(inserted) == 1
+    native_id = inserted.pop()
     before = json.loads(wp.run("eval", '''
 $name = \\Linker\\Commerce\\Protection\\Ledger::OPTION;
 $state = json_decode(get_option($name), true);
@@ -622,7 +703,7 @@ $id = getenv('LINKER_PLANNER_FIXTURE_OPERATION');
 $state['receipts'][$id]['status'] = 'unresolved';
 update_option($name, wp_json_encode($state), false);
 echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
-''', env={"LINKER_PLANNER_FIXTURE_OPERATION": key}))
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id}))
     reply = browser.http(ROOT + "rpc/projects/create", body=json.dumps(command, indent=2, sort_keys=True).encode(), headers={
         "Content-Type": "application/json", "Origin": instance.url,
         "X-Linker-Planner-Nonce": browser.context["nonce"],
@@ -632,7 +713,7 @@ echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count
 $state = json_decode(get_option(\\Linker\\Commerce\\Protection\\Ledger::OPTION), true);
 $id = getenv('LINKER_PLANNER_FIXTURE_OPERATION');
 echo wp_json_encode(array('receipt' => $state['receipts'][$id], 'count' => count($state['receipts']), 'buckets' => $state['buckets']));
-''', env={"LINKER_PLANNER_FIXTURE_OPERATION": key}))
+''', env={"LINKER_PLANNER_FIXTURE_OPERATION": native_id}))
     assert after["receipt"]["status"] == "completed"
     assert before["count"] == after["count"] and before["buckets"] == after["buckets"]
     assert before["receipt"]["fingerprint"] == after["receipt"]["fingerprint"]

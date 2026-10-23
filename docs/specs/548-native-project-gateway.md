@@ -66,8 +66,9 @@ engineering reports, and does not replace any model channel.
    confirmation can precede React's next render and component cleanup.
 7. Public resource admission uses the existing native ledger for quota only,
    independent of ownership. New project creation, revisions, uploads and
-   calculation requests carry durable idempotency keys; replay cannot spend
-   the same operation again. Read/poll calls never spend a calculation unit.
+   calculation requests carry durable idempotency keys; a permanent engine
+   replay cannot spend the same operation again. Within one native quota
+   context an uncertain retry reuses its admission. Read/poll calls never spend a calculation unit.
    Operational ceilings are documented and do not imply engineering limits.
    Before a metered write, PHP asks the private engine's read-only
    `/operations/replay/{path}` for the same raw command. An existing owned
@@ -85,6 +86,14 @@ engineering reports, and does not replace any model channel.
    rather than implementing a second JSON
    canonicalisation rule. Equivalent wire formatting can recover and settle
    the same receipt; a changed domain intent conflicts.
+   The native transport journal uses a separate opaque identifier derived from
+   the native principal, quota binding and original intent key. This avoids a
+   raw UUID globally colliding after login or quota-cookie renewal. The engine
+   still receives the unchanged original key/body. If no engine receipt exists,
+   a previously dispatched attempt keeps its resource charge and a new native
+   quota context admits the explicitly retried attempt. Existing receipts are
+   not rewritten or refunded by inference. Evidence: the real native dispatched
+   timeout→login fixture previously returned409 despite zero engine projects.
 
 Acceptance requires real HTTP cookies/nonces and a running local site, not
 only mocks: two isolated guests, reload, native login/registration and logout,

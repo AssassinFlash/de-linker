@@ -71,7 +71,12 @@ export function useProjectDraft(
 			.then(async (stored) => {
 				if (!mounted) return;
 				let next = beginDraft(project);
-				if (stored && (isDirty(stored) || stored.pending)) {
+				if (
+					stored &&
+					(stored.pending ||
+						(isDirty(stored) &&
+							!sameJson(stored.history.current, project.inputs)))
+				) {
 					next = stored;
 					if (!stored.pending && project.revision !== stored.baseline.revision)
 						next = markConflict(stored, project);
@@ -84,7 +89,8 @@ export function useProjectDraft(
 					).filter(
 						(candidate) =>
 							candidate.draft.pending ||
-							!sameJson(candidate.draft.history.current, project.inputs),
+							(isDirty(candidate.draft) &&
+								!sameJson(candidate.draft.history.current, project.inputs)),
 					);
 					if (!mounted) return;
 					if (candidates.length === 1) {
