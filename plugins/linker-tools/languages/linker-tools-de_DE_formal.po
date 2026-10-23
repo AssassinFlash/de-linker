@@ -2186,3 +2186,7 @@ msgstr "Anfrage senden"
 #: includes/Protection/ReplyPrivacy.php
 msgid "Response"
 msgstr "Antwort"
+
+#: includes/Genie/DraftProof.php:204 src/genie/shared/cardActions.ts:93 src/genie/components/PartsCard.tsx:98 build/genie.js build/hero.js
+msgid "Genie needs to check this product list again before it can be saved or added."
+msgstr "Diese Produktliste muss Genie vor dem Speichern oder Hinzufügen erneut prüfen."
