@@ -15,7 +15,11 @@ use WP_Mock;
 use WP_Mock\Tools\TestCase;
 use WP_REST_Response;
 
-/** @covers \Linker\Tools\Protection\EnginePublication */
+/**
+ * A result receipt carries evidence, never publication authority.
+ *
+ * @covers \Linker\Tools\Protection\EnginePublication
+ */
 final class EnginePublicationTest extends TestCase {
 	/** No browser result or old PDF receipt grants current publication. */
 	public function test_a_success_without_proof_is_refused(): void {
@@ -30,8 +34,12 @@ final class EnginePublicationTest extends TestCase {
 
 	/** Binary data keeps proof without putting a large dependency set in headers. */
 	public function test_binary_proof_is_request_local_metadata(): void {
-		$reply = new WP_REST_Response( '%PDF-confirmed', 200 );
-		$dependencies = array( 'products' => array(), 'documents' => array(), 'compatibility_revision' => str_repeat( 'a', 64 ) );
+		$reply        = new WP_REST_Response( '%PDF-confirmed', 200 );
+		$dependencies = array(
+			'products'               => array(),
+			'documents'              => array(),
+			'compatibility_revision' => str_repeat( 'a', 64 ),
+		);
 		EnginePublication::remember( $reply, $dependencies );
 		$this->assertSame( $dependencies, EnginePublication::dependencies( $reply ) );
 		$this->assertSame( array(), $reply->get_headers() );
