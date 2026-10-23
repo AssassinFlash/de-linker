@@ -126,7 +126,8 @@
   [data-linker-planner] .lp-import-steps li { min-width: 0; padding: 12px 0; border-top: 2px solid var(--lp-line); color: var(--proto-neutral-500); font-size: 12px; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-import-steps li[aria-current="step"] { border-top-color: var(--proto-teal-700); color: var(--proto-teal-900); font-weight: 600; }
   [data-linker-planner] .lp-import-steps li > span { display: block; margin-bottom: 6px; font-family: var(--proto-font-mono); font-size: 10px; }
-  [data-linker-planner] .lp-import-review .lp-plan-svg { height: 300px; }
+  [data-linker-planner] .lp-import-review .lp-plan-view { padding-top: 0; }
+  [data-linker-planner] .lp-import-review .lp-plan-svg { height: 300px; touch-action: auto; }
   [data-linker-planner] .lp-profile-intake h3, [data-linker-planner] .lp-profile-review h3 { font-size: 17px; margin-block: 24px 16px; }
   [data-linker-planner] .lp-profile-intake .lp-inline-actions { margin-block: 20px; }
   [data-linker-planner] .lp-profile-intake form > fieldset > .grid + .grid { margin-top: 24px; }
