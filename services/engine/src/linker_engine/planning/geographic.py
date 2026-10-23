@@ -18,11 +18,17 @@ from pyproj.exceptions import ProjError
 from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
 from .errors import InvalidInput
-from .geometry import cross, dot, roof_coordinates
+from .geometry import cross, dot, sin_cos_degrees
 from .geometry_documents import PlaneFrame
+from .geometry_numerics import MAX_UV_RESOLUTION_M
 from .wire_numbers import MAX_WIRE_NUMBER
 
 type Finite = Annotated[float, Field(allow_inf_nan=False)]
+
+# A round-trip branch/convergence check, not source or measurement accuracy.
+# Metric representability is checked separately; an angular residual alone
+# cannot establish local metre precision, especially near the horizon.
+MAX_DIRECTION_RESIDUAL = 2e-12
 
 
 class GeographicReference(Document):
@@ -100,6 +106,21 @@ class GeographicBridge:
             raise InvalidInput("invalid local metric position")
         return self._transform(east_m, north_m, up_m, inverse=True)
 
+    def up_at(
+        self, longitude_deg: float, latitude_deg: float
+    ) -> tuple[float, float, float]:
+        """Geodetic vertical direction at a position, expressed in anchor ENU."""
+        if not -180 <= longitude_deg <= 180 or not -90 <= latitude_deg <= 90:
+            raise InvalidInput("invalid geographic position")
+        slon, clon = sin_cos_degrees(longitude_deg - self.reference.longitude_deg)
+        slat, clat = sin_cos_degrees(latitude_deg)
+        slat0, clat0 = sin_cos_degrees(self.reference.latitude_deg)
+        return (
+            clat * slon,
+            clat0 * slat - slat0 * clat * clon,
+            slat0 * slat + clat0 * clat * clon,
+        )
+
     def _transform(
         self, a: float, b: float, c: float, *, inverse: bool = False
     ) -> tuple[float, float, float]:
@@ -131,10 +152,61 @@ def horizontal_on_roof(
     normal = cross(roof.u_axis_enu, roof.v_axis_enu)
     if not math.isfinite(normal[2]) or normal[2] <= 0:
         raise InvalidInput("roof horizontal projection is not invertible")
-    up_m = (
-        dot(normal, roof.origin_enu) - normal[0] * east_m - normal[1] * north_m
-    ) / normal[2]
-    uv = roof_coordinates(roof, (east_m, north_m, up_m))
-    if not all(math.isfinite(v) and abs(v) <= MAX_WIRE_NUMBER for v in (*uv, up_m)):
+    # Solve the horizontal 2x2 system in the local chart. Constructing an
+    # absolute Up and then subtracting a large origin loses small slope detail.
+    east, north = east_m - roof.origin_enu[0], north_m - roof.origin_enu[1]
+    u, v = roof.u_axis_enu, roof.v_axis_enu
+    uv = (
+        (east * v[1] - north * v[0]) / normal[2],
+        (u[0] * north - u[1] * east) / normal[2],
+    )
+    if not all(math.isfinite(value) and abs(value) <= MAX_WIRE_NUMBER for value in uv):
         raise InvalidInput("roof projection exceeds numeric support")
+    return uv
+
+
+def geographic_on_roof(
+    bridge: GeographicBridge,
+    roof: PlaneFrame,
+    longitude_deg: float,
+    latitude_deg: float,
+) -> tuple[float, float]:
+    """Intersect a geodetic vertical line with the declared ENU roof plane.
+
+    The full zero-height position is retained. Dropping its curvature Up would
+    orthographically fold the far hemisphere into the local roof. Negative
+    derived ellipsoid heights are allowed: the zero convention is not ground.
+    """
+    base = bridge.forward(longitude_deg, latitude_deg, 0)
+    vertical = bridge.up_at(longitude_deg, latitude_deg)
+    u, v = roof.u_axis_enu, roof.v_axis_enu
+    normal = cross(u, v)
+    denominator = dot(normal, vertical)
+    if not math.isfinite(denominator) or denominator <= 0:
+        raise InvalidInput("geographic roof intersection is not forward-facing")
+    relative = (
+        base[0] - roof.origin_enu[0],
+        base[1] - roof.origin_enu[1],
+        base[2] - roof.origin_enu[2],
+    )
+    uv = (
+        dot(cross(v, vertical), relative) / denominator,
+        dot(cross(vertical, u), relative) / denominator,
+    )
+    point = tuple(
+        roof.origin_enu[axis] + u[axis] * uv[0] + v[axis] * uv[1] for axis in range(3)
+    )
+    # Reuse the accepted chart's binary64 granularity policy, also for the ENU
+    # point that crosses the geodetic boundary. This is not a radius/roof limit.
+    if any(
+        not math.isfinite(value)
+        or abs(value) > MAX_WIRE_NUMBER
+        or math.ulp(value) > MAX_UV_RESOLUTION_M
+        for value in (*uv, *point)
+    ):
+        raise InvalidInput("geographic roof intersection exceeds numeric support")
+    longitude, latitude, _derived_height = bridge.inverse(*point)
+    returned_vertical = bridge.up_at(longitude, latitude)
+    if math.dist(vertical, returned_vertical) > MAX_DIRECTION_RESIDUAL:
+        raise InvalidInput("geographic roof intersection cannot preserve its position")
     return uv

@@ -23,9 +23,18 @@ remain required work in the active unified workbench goal.
   WGS84 definition. No Mercator world unit, camera scale or empirical latitude
   factor owns engineering lengths. Numerical parity is distinct from source
   accuracy; an unknown source precision remains null.
-- Horizontal E/N points intersect the explicitly declared roof plane before UV
-  projection. The 3-4-5 fixture must retain 5m slope for 4m horizontal length.
-  Non-invertible planes and unsupported numerical results fail explicitly.
+- Local horizontal E/N points intersect the declared roof plane by a local 2×2
+  solve before UV projection. The 3-4-5 fixture must retain 5m slope for 4m
+  horizontal length, including when the absolute Up origin is large. Geographic
+  longitude/latitude is a separate operation: `geodetic_vertical_line_v1` retains
+  the full zero-height PROJ point and intersects its geodetic vertical line with
+  the declared plane. It never drops curvature Up. The plane-facing denominator
+  must be positive; back-facing, singular and unsupported numerical results fail.
+  Negative derived ellipsoid height is valid because zero is not ground.
+  UV and resulting ENU binary64 spacing must meet the existing 1e-9m arithmetic
+  granularity policy; an independent inverse direction residual of at most
+  2e-12 checks the geodetic branch. These are separate numerical support checks,
+  not a radius limit or a source/engineering accuracy guarantee.
   Existing metric UV/pose mathematics is reused unchanged; its helper accepts
   a read-only plane frame so no fictitious roof is needed during intake.
 
@@ -65,6 +74,11 @@ remain required work in the active unified workbench goal.
   project and declared conversion, never list order in a renderer. Native quota
   treats this as an upload and checks the same private receipt before charging
   retry. A read-only asset/replay never grants another project's source.
+- The explicit plane-intersection method belongs to the logical command, stable
+  IDs and immutable manifest. Missing/null method cannot prepare a new asset.
+  A missing legacy field is preserved exactly for an existing immutable receipt
+  lookup and may only replay that original result. A changed method under its
+  old key conflicts; the client cannot newly attach an unsupported old candidate.
 
 ## Project attachment and verification
 
@@ -73,6 +87,9 @@ remain required work in the active unified workbench goal.
   same-project ownership, source/manifest association, purpose and actual
   original-byte availability. Imported source metadata remains frozen even
   when a later project revision edits its measured geometry or source notes.
+  The current source's reference SHA must equal the attached original's content
+  SHA on every revision. Its editor field is read-only for a bound original;
+  direct API attempts to change it fail without saving a revision.
 - The client validates authoritative generated options/command/selection schemas
   without coercion or defaults. Prepared output has the correct project, source,
   original/hash, plane, one roof and all holes. Its geometry and attachment enter

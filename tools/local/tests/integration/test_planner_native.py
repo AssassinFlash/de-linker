@@ -263,6 +263,10 @@ def test_geometry_import_source_manifest_and_save_use_the_actual_native_gateway(
     assert saved.object()["revision"] == 2
     assert owner.rpc("rpc/projects/revise", change).object() == saved.object()
     assert owner.read(project).object()["inputs"] == inputs
+    tampered = json.loads(json.dumps(inputs))
+    tampered["geometry"]["sources"][0]["reference_sha256"] = "0" * 64
+    assert owner.rpc("rpc/projects/revise", {"schema_version": 1, "project_id": project["id"], "expected_revision": 2, "inputs": tampered, "key": str(uuid.uuid4())}).status == 422
+    assert owner.read(project).object()["revision"] == 2
     report = owner.rpc("rpc/geometry/review", {"schema_version": 1, "project_id": project["id"], "geometry": geometry})
     assert report.status == 200 and report.object()["module_count"] == 0
     assert report.object()["engineering_status"] == "not_evaluated"

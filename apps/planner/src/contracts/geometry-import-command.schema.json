@@ -98,6 +98,19 @@
 					"title": "Format",
 					"type": "string"
 				},
+				"plane_intersection_method": {
+					"anyOf": [
+						{
+							"const": "geodetic_vertical_line_v1",
+							"type": "string"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"default": null,
+					"title": "Plane Intersection Method"
+				},
 				"feature_index": {
 					"$ref": "#/$defs/Index"
 				},

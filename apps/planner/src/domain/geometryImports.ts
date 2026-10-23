@@ -18,6 +18,7 @@ import { readGeometry } from "./validateGeometry.ts";
 export interface GeometryImportOptions {
 	schema_version: 1;
 	format: "geojson_wgs84_horizontal_v1";
+	plane_intersection_method?: "geodetic_vertical_line_v1" | null;
 	feature_index: number;
 	polygon_index: number;
 	roof_name: string;
@@ -135,6 +136,8 @@ export function readPreparedGeometryImport(
 		prepared.elevation_basis !==
 			"user_declared_plane_relative_to_project_origin" ||
 		prepared.schema_version !== 1 ||
+		checked.plane_intersection_method !== "geodetic_vertical_line_v1" ||
+		prepared.plane_intersection_method !== checked.plane_intersection_method ||
 		!source ||
 		!roof ||
 		geometry.sources.length !== 1 ||

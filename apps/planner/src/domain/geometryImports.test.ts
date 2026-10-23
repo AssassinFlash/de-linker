@@ -108,6 +108,13 @@ test("import wire rejects wrong owner/version/hash, permissive source claims and
 	const changed = structuredClone(fixture);
 	changed.content_sha256 = "0".repeat(64);
 	assert.throws(() => readPreparedGeometryImport(changed, fixture.project_id));
+	const unsupportedMethod = structuredClone(fixture);
+	delete unsupportedMethod.metadata.geometry_import_options
+		.plane_intersection_method;
+	delete unsupportedMethod.metadata.geometry_import.plane_intersection_method;
+	assert.throws(() =>
+		readPreparedGeometryImport(unsupportedMethod, fixture.project_id),
+	);
 	const wrongFrame = structuredClone(fixture);
 	wrongFrame.metadata.geometry_import.geometry.coordinate_system.anchor.longitude_deg += 1;
 	assert.throws(() =>

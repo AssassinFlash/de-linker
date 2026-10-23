@@ -14,8 +14,8 @@ from shapely.geometry import Polygon
 
 from .assets import Asset, Assets
 from .canonical import Object, digest, encode
-from .errors import InvalidInput
-from .geographic import GeographicBridge, horizontal_on_roof
+from .errors import InvalidInput, VersionUnavailable
+from .geographic import GeographicBridge, geographic_on_roof
 from .geometry import read_geometry, unit
 from .geometry_documents import GeometrySource, RoofFace, SourcePermissions
 from .geometry_geojson import selected_polygon
@@ -52,7 +52,9 @@ class GeometryImport:
                 "basis": "user_owned_geometry_file_declaration",
                 "rights_basis": options.source.rights_note,
             },
-            "geometry_import_options": options.model_dump(mode="json"),
+            "geometry_import_options": options.model_dump(
+                mode="json", exclude_unset=True
+            ),
         }
 
     @classmethod
@@ -92,6 +94,10 @@ class GeometryImport:
         previous = self.previous(actor, project_id, content, options, key=key)
         if previous is not None:
             return previous
+        if options.plane_intersection_method != "geodetic_vertical_line_v1":
+            raise VersionUnavailable(
+                "new geometry imports require an explicit supported plane method"
+            )
         polygon, feature_id = selected_polygon(
             content, options.feature_index, options.polygon_index
         )
@@ -126,8 +132,9 @@ class GeometryImport:
         for ring in polygon.coordinates:
             points = []
             for longitude, latitude in ring[:-1]:
-                east, north, _curvature_up = bridge.forward(longitude, latitude, 0)
-                points.append(list(horizontal_on_roof(plane, east, north)))
+                points.append(
+                    list(geographic_on_roof(bridge, plane, longitude, latitude))
+                )
             rings.append(points)
         roof = RoofFace(
             id=f"roof_{identity}",
@@ -180,6 +187,7 @@ class GeometryImport:
                 "original_content_sha256": digest(content),
                 "source_feature_id": feature_id,
                 "projection": bridge.manifest(),
+                "plane_intersection_method": options.plane_intersection_method,
                 "geometry": geometry,
                 "geometry_sha256": digest(encode(geometry)),
                 "area_roof_plane_m2": shape.area,

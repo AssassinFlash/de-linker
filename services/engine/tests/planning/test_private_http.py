@@ -134,6 +134,26 @@ def test_geometry_import_has_owned_original_receipt_and_separate_project_save(
         },
     )
     assert saved["revision"] == 2 and saved["inputs"] == inputs
+    tampered = json.loads(json.dumps(inputs))
+    tampered["geometry"]["sources"][0]["reference_sha256"] = "0" * 64
+    refused_hash = rig.client.post(
+        "/projects/revise",
+        json={
+            "schema_version": 1,
+            "project_id": project_id,
+            "expected_revision": 2,
+            "inputs": tampered,
+            "key": "tampered-hash",
+        },
+        headers=headers(),
+    )
+    assert refused_hash.status_code == 422
+    assert (
+        rig.post("/projects/read", {"project_id": project_id, "revision": None})[
+            "revision"
+        ]
+        == 2
+    )
     original = rig.client.post(
         "/assets/content",
         json={"schema_version": 1, "project_id": project_id, "asset_id": asset["id"]},

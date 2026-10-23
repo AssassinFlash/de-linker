@@ -3,7 +3,8 @@
  * check these browser formulas; this is not a measurement accuracy claim. */
 import type { Vec2, Vec3 } from "./geometry.ts";
 import ellipsoid from "../contracts/wgs84-ellipsoid.json" with { type: "json" };
-import { cross, dot, roofCoordinates, sinCosDegrees } from "./coordinates.ts";
+import { cross, dot, sinCosDegrees } from "./coordinates.ts";
+import { requireUvResolution } from "./geometryNumerics.ts";
 import type { PlaneFrame } from "./geometry.ts";
 
 export interface GeographicReference {
@@ -111,7 +112,13 @@ export class GeographicBridge {
 		const p = Math.hypot(x, y);
 		if (p === 0) {
 			if (z === 0) throw new Error("geographic_inverse_undefined");
-			return [this.reference.longitude_deg, z > 0 ? 90 : -90, Math.abs(z) - b];
+			const result: Vec3 = [
+				this.reference.longitude_deg,
+				z > 0 ? 90 : -90,
+				Math.abs(z) - b,
+			];
+			geodetic(result);
+			return result;
 		}
 		let latitude = Math.atan2(z, p * (1 - e2)),
 			converged = false;
@@ -140,6 +147,21 @@ export class GeographicBridge {
 		geodetic(result);
 		return result;
 	}
+
+	/** Geodetic vertical direction at a position, in the fixed anchor ENU. */
+	upAt([longitude, latitude]: Vec2): Vec3 {
+		geodetic([longitude, latitude, 0]);
+		const [slon, clon] = sinCosDegrees(
+				longitude - this.reference.longitude_deg,
+			),
+			[slat, clat] = sinCosDegrees(latitude),
+			[slat0, clat0] = sinCosDegrees(this.reference.latitude_deg);
+		return [
+			clat * slon,
+			clat0 * slat - slat0 * clat * clon,
+			slat0 * slat + clat0 * clat * clon,
+		];
+	}
 }
 
 /** Map E/N -> the actual declared roof plane -> orthonormal U/V. */
@@ -147,10 +169,58 @@ export function horizontalOnRoof(roof: PlaneFrame, [east, north]: Vec2): Vec2 {
 	const normal = cross(roof.u_axis_enu, roof.v_axis_enu);
 	if (!Number.isFinite(normal[2]) || normal[2] <= 0)
 		throw new Error("geographic_roof_projection_invalid");
-	const up =
-			(dot(normal, roof.origin_enu) - normal[0] * east - normal[1] * north) /
-			normal[2],
-		uv = roofCoordinates(roof, [east, north, up]);
-	finite([up, ...uv]);
+	const de = east - roof.origin_enu[0],
+		dn = north - roof.origin_enu[1],
+		u = roof.u_axis_enu,
+		v = roof.v_axis_enu,
+		uv: Vec2 = [
+			(de * v[1] - dn * v[0]) / normal[2],
+			(u[0] * dn - u[1] * de) / normal[2],
+		];
+	finite(uv);
+	return uv;
+}
+
+/** geodetic_vertical_line_v1. Keep the full zero-height position, intersect its
+ * geodetic vertical with the plane, and reject the back-facing/unsupported
+ * branch. A negative derived ellipsoid height is allowed; zero is not ground. */
+export function geographicOnRoof(
+	bridge: GeographicBridge,
+	roof: PlaneFrame,
+	position: Vec2,
+): Vec2 {
+	const base = bridge.forward([...position, 0]),
+		vertical = bridge.upAt(position),
+		u = roof.u_axis_enu,
+		v = roof.v_axis_enu,
+		normal = cross(u, v),
+		denominator = dot(normal, vertical);
+	if (!Number.isFinite(denominator) || denominator <= 0)
+		throw new Error("geographic_roof_intersection_invalid");
+	const relative: Vec3 = [
+			base[0] - roof.origin_enu[0],
+			base[1] - roof.origin_enu[1],
+			base[2] - roof.origin_enu[2],
+		],
+		uv: Vec2 = [
+			dot(cross(v, vertical), relative) / denominator,
+			dot(cross(vertical, u), relative) / denominator,
+		],
+		at = (axis: 0 | 1 | 2) =>
+			roof.origin_enu[axis] + u[axis] * uv[0] + v[axis] * uv[1],
+		point: Vec3 = [at(0), at(1), at(2)];
+	finite([...uv, ...point]);
+	// The same accepted binary64 spacing policy applies to both the local chart
+	// and the ENU point crossing the geodetic boundary, independently of accuracy.
+	requireUvResolution([...uv, ...point]);
+	const [longitude, latitude] = bridge.inverse(point),
+		returnedVertical = bridge.upAt([longitude, latitude]);
+	// Branch/convergence budget only; metric representability is checked above.
+	if (
+		Math.hypot(
+			...vertical.map((value, axis) => value - returnedVertical[axis]!),
+		) > 2e-12
+	)
+		throw new Error("geographic_roof_position_unresolved");
 	return uv;
 }

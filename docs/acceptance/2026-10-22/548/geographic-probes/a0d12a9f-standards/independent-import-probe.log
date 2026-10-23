@@ -1,0 +1,14 @@
+{"actor": "user", "path": "/geometry/import", "status": 404, "decodeInvoked": false, "newBlobs": 0}
+.{"actor": "team", "path": "/geometry/import", "status": 404, "decodeInvoked": false, "newBlobs": 0}
+.{"actor": "user", "path": "/operations/replay/geometry/import", "status": 404, "decodeInvoked": false, "newBlobs": 0}
+.{"actor": "team", "path": "/operations/replay/geometry/import", "status": 404, "decodeInvoked": false, "newBlobs": 0}
+.{"sameDeclaredConversionStableDomainIDs": true, "missingOriginalRefused": true}
+.{"case": "bowtie", "newBlobs": 0, "privateValueEchoed": false}
+.{"case": "outside_hole", "newBlobs": 0, "privateValueEchoed": false}
+.{"case": "huge_coordinate", "newBlobs": 0, "privateValueEchoed": false}
+.{"case": "unicode_id", "newBlobs": 0, "privateValueEchoed": false}
+.{"case": "boolean_id", "newBlobs": 0, "privateValueEchoed": false}
+.{"case": "duplicate_key", "newBlobs": 0, "privateValueEchoed": false}
+.{"case": "deep_json", "newBlobs": 0, "privateValueEchoed": false}
+.
+12 passed in 0.45s

@@ -1,13 +1,13 @@
 {
-  "id": "705bc01bf7ef4a2fbe3a88eb6d384de3",
-  "project_id": "35d79ca449c94cfea24b56b4e1c9a21a",
+  "id": "cc50db9a4db14595901826e2669bffae",
+  "project_id": "fadd62a5da73432890521e75cd2f225f",
   "content_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
   "media_type": "application/geo+json",
   "purpose": "geometry_import_v1",
-  "metadata_sha256": "82930c574173a971ea11c015e95dee56b7f864d82201ddcb09dd0fc660893393",
+  "metadata_sha256": "af661ef15e4550f3e5912c4b554c1fd067010e47d738354563173df5e6d21257",
   "metadata": {
     "geometry_import": {
-      "area_roof_plane_m2": 187.66438362891626,
+      "area_roof_plane_m2": 187.66430950859078,
       "elevation_basis": "user_declared_plane_relative_to_project_origin",
       "engineering_status": "not_evaluated",
       "geometry": {
@@ -17,12 +17,12 @@
             "datum": "EPSG:4326",
             "latitude_deg": 50.94,
             "longitude_deg": 6.96,
-            "source_id": "source_a072bbf5989a6454022a0c595391e669"
+            "source_id": "source_22f5b02074242a360b1522d0f31469b5"
           },
           "height_reference": "relative_to_project_origin",
           "kind": "local_enu",
           "north_reference": "true_north",
-          "north_source_id": "source_a072bbf5989a6454022a0c595391e669",
+          "north_source_id": "source_22f5b02074242a360b1522d0f31469b5",
           "unit": "m"
         },
         "keepouts": [],
@@ -37,46 +37,46 @@
                 0.0
               ],
               [
-                14.057635093174873,
-                2.381399111368768e-05
+                14.057646091088232,
+                2.3814009744514944e-05
               ],
               [
-                14.057604940194,
-                13.90591490473454
+                14.057597585864213,
+                13.90590761029432
               ],
               [
                 -2.6992427029122135e-11,
-                13.905891090501406
+                13.905883796071086
               ]
             ],
             "holes_uv": [
               [
                 [
-                  5.623049212750141,
-                  5.5623602180638105
+                  5.623050675547586,
+                  5.5623616689456865
                 ],
                 [
-                  5.6230468004561,
-                  8.343538435720149
+                  5.623046795074092,
+                  8.343538427712893
                 ],
                 [
-                  8.434570200745691,
-                  8.343543198600976
+                  8.434570192672988,
+                  8.343543190594023
                 ],
                 [
-                  8.434573819094311,
-                  5.562364980560014
+                  8.434576013290787,
+                  5.562366431443335
                 ]
               ]
             ],
-            "id": "roof_a072bbf5989a6454022a0c595391e669",
+            "id": "roof_22f5b02074242a360b1522d0f31469b5",
             "name": "Synthetic 3-4-5 roof with opening",
             "origin_enu": [
               0.0,
               0.0,
               5.0
             ],
-            "source_id": "source_a072bbf5989a6454022a0c595391e669",
+            "source_id": "source_22f5b02074242a360b1522d0f31469b5",
             "u_axis_enu": [
               1.0,
               0.0,
@@ -94,7 +94,7 @@
           {
             "acquired_at_utc": null,
             "calibration_note": "Synthetic 3-4-5 plane, origin Up5m relative to the project; not a surveyed roof or known ellipsoid elevation.",
-            "id": "source_a072bbf5989a6454022a0c595391e669",
+            "id": "source_22f5b02074242a360b1522d0f31469b5",
             "kind": "user_drawing",
             "note": "Generated WGS84 source; not surveyed",
             "permissions": {
@@ -110,8 +110,9 @@
           }
         ]
       },
-      "geometry_sha256": "e09c55e3a3640bbd03937001ffcd5071d938d194dd9ceca3db253a6e7849f331",
+      "geometry_sha256": "eb5e91068fad254cc10469113aad8fe443f9d8c7aaad991e86acb9a1d88abb45",
       "original_content_sha256": "47770a0dc5034b54743dd2da28d1c855e2c8c047c7678d3688215d8e89d9eebc",
+      "plane_intersection_method": "geodetic_vertical_line_v1",
       "projection": {
         "grid_dependencies": [],
         "input_axis_order": "longitude_latitude_ellipsoid_height",
@@ -154,6 +155,7 @@
           -0.6
         ]
       },
+      "plane_intersection_method": "geodetic_vertical_line_v1",
       "polygon_index": 0,
       "reference": {
         "ellipsoid_height_m": 0.0,

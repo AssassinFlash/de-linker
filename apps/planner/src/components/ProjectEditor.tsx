@@ -33,6 +33,7 @@ import type { GeometryCommand } from "../domain/geometryCommands.ts";
 import { readGeometry } from "../domain/validateGeometry.ts";
 import geometryPolicy from "../contracts/geometry-policy.json" with { type: "json" };
 import { readObject } from "../data/readProtocol.ts";
+import { readGeometryImports } from "../domain/geometryImports.ts";
 
 export function ProjectEditor({
 	project,
@@ -138,6 +139,7 @@ export function ProjectEditor({
 	let brief;
 	let selections;
 	let geometry;
+	let geometryImports;
 	try {
 		brief =
 			draft.history.current.brief === undefined
@@ -148,6 +150,9 @@ export function ProjectEditor({
 			draft.history.current.geometry === undefined
 				? emptyGeometry()
 				: readGeometry(draft.history.current.geometry, geometryPolicy);
+		geometryImports = readGeometryImports(
+			draft.history.current.geometry_imports,
+		);
 	} catch {
 		return (
 			<Notice error>
@@ -503,6 +508,7 @@ export function ProjectEditor({
 						</section>
 						<DesignEditor
 							geometry={geometry}
+							geometryImports={geometryImports}
 							sceneModuleUrl={config.sceneModuleUrl ?? null}
 							commit={editGeometry}
 							locale={config.locale}

@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "format": "geojson_wgs84_horizontal_v1",
+  "plane_intersection_method": "geodetic_vertical_line_v1",
   "feature_index": 0,
   "polygon_index": 0,
   "roof_name": "Synthetic 3-4-5 roof with opening",

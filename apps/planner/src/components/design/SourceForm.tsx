@@ -9,7 +9,8 @@ export function SourceForm({
 	cancel,
 	onValidity,
 	source,
-}: GeometryFormProps & { source: Source }) {
+	referenceLocked = false,
+}: GeometryFormProps & { source: Source; referenceLocked?: boolean }) {
 	return (
 		<GeometryForm
 			title={__("Source properties", "linker-tools")}
@@ -25,7 +26,9 @@ export function SourceForm({
 						note: values.text("note"),
 						rights_note: values.text("rights"),
 						reference_url: values.text("url") || null,
-						reference_sha256: values.text("hash") || null,
+						reference_sha256: referenceLocked
+							? source.reference_sha256
+							: values.text("hash") || null,
 						acquired_at_utc: values.text("acquired") || null,
 						spatial_precision_m: values.number("precision", {
 							optional: true,
@@ -95,6 +98,7 @@ export function SourceForm({
 				name="hash"
 				label={__("Reference SHA-256", "linker-tools")}
 				value={source.reference_sha256 ?? ""}
+				readOnly={referenceLocked}
 				optional
 			/>
 			<label className="lp-field">

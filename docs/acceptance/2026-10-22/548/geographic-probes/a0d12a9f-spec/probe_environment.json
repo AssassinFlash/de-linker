@@ -1,0 +1,9 @@
+{
+  "python": "3.12.15",
+  "pyproj": "3.8.0",
+  "proj": "9.8.1",
+  "pydantic": "2.14.0",
+  "shapely": "2.2.0",
+  "actual_fixed_geographic_module": "/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/planning-spec-geo-a0d1-4iwo5atx/services/engine/src/linker_engine/planning/geographic.py",
+  "target": "a0d12a9f68b17db3ebade24bace5eb8a890c6e3f"
+}

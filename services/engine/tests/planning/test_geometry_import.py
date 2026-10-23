@@ -10,8 +10,14 @@ import pytest
 
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import digest
-from linker_engine.planning.errors import Conflict, InvalidInput, NotFound
-from linker_engine.planning.geometry import read_geometry
+from linker_engine.planning.errors import (
+    Conflict,
+    InvalidInput,
+    NotFound,
+    VersionUnavailable,
+)
+from linker_engine.planning.geographic import GeographicBridge
+from linker_engine.planning.geometry import on_roof, read_geometry
 from linker_engine.planning.geometry_geojson import selected_polygon
 from linker_engine.planning.geometry_import import (
     MAX_GEOMETRY_FILE_BYTES,
@@ -86,6 +92,7 @@ def test_original_bytes_manifest_opening_slope_and_receipt_are_preserved(
     assert geometry.sources[0].spatial_precision_m is None
     assert roof.origin_enu[2] == 5
     assert prepared["engineering_status"] == "not_evaluated"
+    assert prepared["plane_intersection_method"] == "geodetic_vertical_line_v1"
     assert workspace.get(USER, project.id).revision == 1
     assert workspace.get(USER, project.id).inputs == {}
     flat = options().model_copy(
@@ -95,9 +102,21 @@ def test_original_bytes_manifest_opening_slope_and_receipt_are_preserved(
     flat_manifest = flat_asset.metadata["geometry_import"]
     assert isinstance(flat_manifest, dict)
     flat_roof = read_geometry(flat_manifest["geometry"]).roofs[0]
-    for actual, expected in zip(roof.boundary_uv, flat_roof.boundary_uv, strict=True):
-        assert actual[0] == pytest.approx(expected[0], abs=1e-12)
-        assert actual[1] == pytest.approx(expected[1] / 0.8, abs=1e-12)
+    # Each declared plane must inverse to the actual original lon/lat. A pitched
+    # plane's height changes the horizontal position along geodetic vertical;
+    # treating the old flat E/N values as fixed would silently drop curvature.
+    polygon, _ = selected_polygon(content, 0, 0)
+    bridge = GeographicBridge(options().reference)
+    for candidate in [roof, flat_roof]:
+        for uv_ring, original in zip(
+            [candidate.boundary_uv, *candidate.holes_uv],
+            polygon.coordinates,
+            strict=True,
+        ):
+            for uv, lonlat in zip(uv_ring, original[:-1], strict=True):
+                assert bridge.inverse(*on_roof(candidate, *uv))[:2] == pytest.approx(
+                    lonlat, abs=1e-11
+                )
 
     def unexpected_transform(*_args: object, **_kwargs: object) -> None:
         raise AssertionError(
@@ -191,10 +210,89 @@ def test_attachment_requires_the_same_project_asset_and_source(tmp_path: Path) -
         },
     }
     check_geometry_imports(assets, USER, project.id, inputs)
+    edited = geometry.model_dump(mode="json")
+    edited["sources"][0]["note"] = "Updated source notes remain editable"
+    inputs["geometry"] = edited
+    check_geometry_imports(assets, USER, project.id, inputs)
+    edited["sources"][0]["reference_sha256"] = "0" * 64
+    with pytest.raises(InvalidInput):
+        check_geometry_imports(assets, USER, project.id, inputs)
+    edited["sources"][0]["reference_sha256"] = asset.content_sha256
     with pytest.raises(NotFound):
         check_geometry_imports(assets, USER, other.id, inputs)
     with pytest.raises(InvalidInput):
         check_geometry_imports(assets, USER, None, inputs)
+
+
+def test_method_is_part_of_command_identity_and_missing_method_only_replays_existing_receipt(
+    tmp_path: Path,
+) -> None:
+    workspace = Workspace(tmp_path)
+    project = workspace.create(USER, "Synthetic version boundary", {}, key="create")
+    assets = Assets(workspace)
+    intake = GeometryImport(assets)
+    legacy_values = options().model_dump(mode="json")
+    del legacy_values["plane_intersection_method"]
+    legacy = GeometryImportOptions.model_validate(legacy_values)
+    assert intake.logical(legacy)["geometry_import_options"] == legacy_values
+    with pytest.raises(VersionUnavailable):
+        intake.prepare(USER, project.id, source(), legacy, key="not-an-old-receipt")
+    assert intake.command(source(), legacy) != intake.command(source(), options())
+    # This represents a pre-upgrade immutable receipt. Its marker is never a
+    # newly qualified candidate; replay must not rerun or rewrite its operation.
+    old = assets.add(
+        USER,
+        project.id,
+        source(),
+        "application/geo+json",
+        "geometry_import_v1",
+        {**intake.logical(legacy), "legacy_result_marker": "unchanged"},
+        key="existing-receipt",
+        logical_metadata=intake.logical(legacy),
+    )
+    assert (
+        intake.prepare(USER, project.id, source(), legacy, key="existing-receipt")
+        == old
+    )
+    with pytest.raises(Conflict):
+        intake.prepare(USER, project.id, source(), options(), key="existing-receipt")
+
+
+@pytest.mark.parametrize("longitude", [179.9999, 89.9999])
+def test_global_or_horizon_source_cannot_publish_a_local_roof_asset(
+    tmp_path: Path, longitude: float
+) -> None:
+    workspace = Workspace(tmp_path)
+    project = workspace.create(USER, "Synthetic distant source", {}, key="create")
+    values = options().model_dump(mode="json")
+    values["reference"].update(longitude_deg=0, latitude_deg=0)
+    values["plane"].update(
+        origin_enu=[0, 0, 0], u_axis_enu=[1, 0, 0], v_axis_enu=[0, 1, 0]
+    )
+    content = json.dumps(
+        {
+            "type": "Polygon",
+            "coordinates": [
+                [
+                    [longitude, 0],
+                    [longitude + 0.00001, 0],
+                    [longitude + 0.00001, 0.00001],
+                    [longitude, 0.00001],
+                    [longitude, 0],
+                ]
+            ],
+        }
+    ).encode()
+    before = set(workspace.blobs.directory.rglob("*"))
+    with pytest.raises(InvalidInput):
+        GeometryImport(Assets(workspace)).prepare(
+            USER,
+            project.id,
+            content,
+            GeometryImportOptions.model_validate(values),
+            key="distant",
+        )
+    assert set(workspace.blobs.directory.rglob("*")) == before
 
 
 def test_size_and_base64_are_admitted_before_parsing() -> None:

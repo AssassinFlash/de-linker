@@ -1,0 +1,1480 @@
+..................EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE........... [ 67%]
+....EEEEEEEEEEEEEEEEEEEEEEEEEEEEEE                                       [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_geometry_import_has_owned_original_receipt_and_separate_project_save _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 96
+  def test_geometry_import_has_owned_original_receipt_and_separate_project_save(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_geometry_review_uses_owned_draft_without_publishing_or_saving _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 177
+  def test_geometry_review_uses_owned_draft_without_publishing_or_saving(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_geometry_save_refuses_bad_references_and_keeps_unfinished_polygon _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 209
+  def test_geometry_save_refuses_bad_references_and_keeps_unfinished_polygon(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_every_http_method_is_private_even_when_old_gate_mode_is_off[GET] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 258
+  @pytest.mark.parametrize(
+      "method", ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  )
+  def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_every_http_method_is_private_even_when_old_gate_mode_is_off[HEAD] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 258
+  @pytest.mark.parametrize(
+      "method", ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  )
+  def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_every_http_method_is_private_even_when_old_gate_mode_is_off[POST] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 258
+  @pytest.mark.parametrize(
+      "method", ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  )
+  def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_every_http_method_is_private_even_when_old_gate_mode_is_off[PUT] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 258
+  @pytest.mark.parametrize(
+      "method", ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  )
+  def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_every_http_method_is_private_even_when_old_gate_mode_is_off[PATCH] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 258
+  @pytest.mark.parametrize(
+      "method", ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  )
+  def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_every_http_method_is_private_even_when_old_gate_mode_is_off[DELETE] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 258
+  @pytest.mark.parametrize(
+      "method", ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  )
+  def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_every_http_method_is_private_even_when_old_gate_mode_is_off[OPTIONS] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 258
+  @pytest.mark.parametrize(
+      "method", ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+  )
+  def test_every_http_method_is_private_even_when_old_gate_mode_is_off(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_framework_and_unicode_errors_use_the_private_error_contract[POST-/unknown-{}-404-not_found] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 271
+  @pytest.mark.parametrize(
+      ("method", "path", "content", "status", "code"),
+      [
+          ("POST", "/unknown", b"{}", 404, "not_found"),
+          ("GET", "/projects/read", b"", 405, "method_not_allowed"),
+          ("POST", "/projects/read", b"\xff", 400, "invalid_input"),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"text":"\\ud800"},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"\\ud800":0},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+      ],
+  )
+  def test_framework_and_unicode_errors_use_the_private_error_contract(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_framework_and_unicode_errors_use_the_private_error_contract[GET-/projects/read--405-method_not_allowed] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 271
+  @pytest.mark.parametrize(
+      ("method", "path", "content", "status", "code"),
+      [
+          ("POST", "/unknown", b"{}", 404, "not_found"),
+          ("GET", "/projects/read", b"", 405, "method_not_allowed"),
+          ("POST", "/projects/read", b"\xff", 400, "invalid_input"),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"text":"\\ud800"},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"\\ud800":0},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+      ],
+  )
+  def test_framework_and_unicode_errors_use_the_private_error_contract(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_framework_and_unicode_errors_use_the_private_error_contract[POST-/projects/read-\xff-400-invalid_input] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 271
+  @pytest.mark.parametrize(
+      ("method", "path", "content", "status", "code"),
+      [
+          ("POST", "/unknown", b"{}", 404, "not_found"),
+          ("GET", "/projects/read", b"", 405, "method_not_allowed"),
+          ("POST", "/projects/read", b"\xff", 400, "invalid_input"),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"text":"\\ud800"},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"\\ud800":0},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+      ],
+  )
+  def test_framework_and_unicode_errors_use_the_private_error_contract(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_framework_and_unicode_errors_use_the_private_error_contract[POST-/projects/create-{"schema_version":1,"title":"x","inputs":{"text":"\ud800"},"key":"x"}-422-invalid_input] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 271
+  @pytest.mark.parametrize(
+      ("method", "path", "content", "status", "code"),
+      [
+          ("POST", "/unknown", b"{}", 404, "not_found"),
+          ("GET", "/projects/read", b"", 405, "method_not_allowed"),
+          ("POST", "/projects/read", b"\xff", 400, "invalid_input"),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"text":"\\ud800"},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"\\ud800":0},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+      ],
+  )
+  def test_framework_and_unicode_errors_use_the_private_error_contract(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_framework_and_unicode_errors_use_the_private_error_contract[POST-/projects/create-{"schema_version":1,"title":"x","inputs":{"\ud800":0},"key":"x"}-422-invalid_input] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 271
+  @pytest.mark.parametrize(
+      ("method", "path", "content", "status", "code"),
+      [
+          ("POST", "/unknown", b"{}", 404, "not_found"),
+          ("GET", "/projects/read", b"", 405, "method_not_allowed"),
+          ("POST", "/projects/read", b"\xff", 400, "invalid_input"),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"text":"\\ud800"},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+          (
+              "POST",
+              "/projects/create",
+              b'{"schema_version":1,"title":"x","inputs":{"\\ud800":0},"key":"x"}',
+              422,
+              "invalid_input",
+          ),
+      ],
+  )
+  def test_framework_and_unicode_errors_use_the_private_error_contract(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_unexpected_failure_has_a_code_without_private_exception_content _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 309
+  def test_unexpected_failure_has_a_code_without_private_exception_content(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_deep_small_json_is_rejected_before_recursive_union_error_amplification _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 326
+  def test_deep_small_json_is_rejected_before_recursive_union_error_amplification(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_http_rejects_unrepresentable_numbers_before_any_durable_write[9007199254740992] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 348
+  @pytest.mark.parametrize(
+      "number", [2**53, -(2**53), 9223372036854775809, 10**400, 1e100]
+  )
+  def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_http_rejects_unrepresentable_numbers_before_any_durable_write[-9007199254740992] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 348
+  @pytest.mark.parametrize(
+      "number", [2**53, -(2**53), 9223372036854775809, 10**400, 1e100]
+  )
+  def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_http_rejects_unrepresentable_numbers_before_any_durable_write[9223372036854775809] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 348
+  @pytest.mark.parametrize(
+      "number", [2**53, -(2**53), 9223372036854775809, 10**400, 1e100]
+  )
+  def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_http_rejects_unrepresentable_numbers_before_any_durable_write[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 348
+  @pytest.mark.parametrize(
+      "number", [2**53, -(2**53), 9223372036854775809, 10**400, 1e100]
+  )
+  def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_http_rejects_unrepresentable_numbers_before_any_durable_write[1e+100] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 348
+  @pytest.mark.parametrize(
+      "number", [2**53, -(2**53), 9223372036854775809, 10**400, 1e100]
+  )
+  def test_http_rejects_unrepresentable_numbers_before_any_durable_write(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_saved_intake_receipts_survive_an_installed_timezone_name_change _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 368
+  def test_saved_intake_receipts_survive_an_installed_timezone_name_change(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[posixrules] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 409
+  @pytest.mark.parametrize(
+      "zone",
+      ["posixrules", "localtime", "right/UTC", "posix/Europe/Oslo", "Europe/Imaginary"],
+  )
+  def test_new_brief_rejects_non_iana_names_before_publishing_any_bytes(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[localtime] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 409
+  @pytest.mark.parametrize(
+      "zone",
+      ["posixrules", "localtime", "right/UTC", "posix/Europe/Oslo", "Europe/Imaginary"],
+  )
+  def test_new_brief_rejects_non_iana_names_before_publishing_any_bytes(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[right/UTC] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 409
+  @pytest.mark.parametrize(
+      "zone",
+      ["posixrules", "localtime", "right/UTC", "posix/Europe/Oslo", "Europe/Imaginary"],
+  )
+  def test_new_brief_rejects_non_iana_names_before_publishing_any_bytes(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[posix/Europe/Oslo] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 409
+  @pytest.mark.parametrize(
+      "zone",
+      ["posixrules", "localtime", "right/UTC", "posix/Europe/Oslo", "Europe/Imaginary"],
+  )
+  def test_new_brief_rejects_non_iana_names_before_publishing_any_bytes(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[Europe/Imaginary] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 409
+  @pytest.mark.parametrize(
+      "zone",
+      ["posixrules", "localtime", "right/UTC", "posix/Europe/Oslo", "Europe/Imaginary"],
+  )
+  def test_new_brief_rejects_non_iana_names_before_publishing_any_bytes(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 430
+  def test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_permanent_http_replay_survives_days_without_writes_or_latest_revision _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 441
+  def test_permanent_http_replay_survives_days_without_writes_or_latest_revision(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_replay_has_no_public_or_team_mutation_authority[projects/create] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 492
+  @pytest.mark.parametrize(
+      "path",
+      [
+          "projects/create",
+          "projects/revise",
+          "profiles/csv",
+          "battery/scenario",
+          "runs/energy",
+      ],
+  )
+  def test_replay_has_no_public_or_team_mutation_authority(rig: Rig, path: str) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_replay_has_no_public_or_team_mutation_authority[projects/revise] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 492
+  @pytest.mark.parametrize(
+      "path",
+      [
+          "projects/create",
+          "projects/revise",
+          "profiles/csv",
+          "battery/scenario",
+          "runs/energy",
+      ],
+  )
+  def test_replay_has_no_public_or_team_mutation_authority(rig: Rig, path: str) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_replay_has_no_public_or_team_mutation_authority[profiles/csv] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 492
+  @pytest.mark.parametrize(
+      "path",
+      [
+          "projects/create",
+          "projects/revise",
+          "profiles/csv",
+          "battery/scenario",
+          "runs/energy",
+      ],
+  )
+  def test_replay_has_no_public_or_team_mutation_authority(rig: Rig, path: str) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_replay_has_no_public_or_team_mutation_authority[battery/scenario] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 492
+  @pytest.mark.parametrize(
+      "path",
+      [
+          "projects/create",
+          "projects/revise",
+          "profiles/csv",
+          "battery/scenario",
+          "runs/energy",
+      ],
+  )
+  def test_replay_has_no_public_or_team_mutation_authority(rig: Rig, path: str) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_replay_has_no_public_or_team_mutation_authority[runs/energy] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 492
+  @pytest.mark.parametrize(
+      "path",
+      [
+          "projects/create",
+          "projects/revise",
+          "profiles/csv",
+          "battery/scenario",
+          "runs/energy",
+      ],
+  )
+  def test_replay_has_no_public_or_team_mutation_authority(rig: Rig, path: str) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_replay_cannot_call_private_identity_or_unknown_command _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 519
+  def test_replay_cannot_call_private_identity_or_unknown_command(rig: Rig) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-16] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 529
+  @pytest.mark.parametrize(
+      "encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-32-le", "utf-32-be"]
+  )
+  def test_other_json_encodings_cannot_bypass_utf8_nesting_gate(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-16-le] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 529
+  @pytest.mark.parametrize(
+      "encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-32-le", "utf-32-be"]
+  )
+  def test_other_json_encodings_cannot_bypass_utf8_nesting_gate(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-16-be] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 529
+  @pytest.mark.parametrize(
+      "encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-32-le", "utf-32-be"]
+  )
+  def test_other_json_encodings_cannot_bypass_utf8_nesting_gate(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-32] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 529
+  @pytest.mark.parametrize(
+      "encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-32-le", "utf-32-be"]
+  )
+  def test_other_json_encodings_cannot_bypass_utf8_nesting_gate(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-32-le] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 529
+  @pytest.mark.parametrize(
+      "encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-32-le", "utf-32-be"]
+  )
+  def test_other_json_encodings_cannot_bypass_utf8_nesting_gate(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-32-be] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 529
+  @pytest.mark.parametrize(
+      "encoding", ["utf-16", "utf-16-le", "utf-16-be", "utf-32", "utf-32-le", "utf-32-be"]
+  )
+  def test_other_json_encodings_cannot_bypass_utf8_nesting_gate(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_validation_diagnostics_are_bounded_and_explicitly_truncated _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 552
+  def test_validation_diagnostics_are_bounded_and_explicitly_truncated(rig: Rig) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_browser_owner_context_and_schema_coercions_are_not_commands _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 753
+  def test_browser_owner_context_and_schema_coercions_are_not_commands(rig: Rig) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_owned_project_refresh_reopen_pagination_and_readonly_team _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 794
+  def test_owned_project_refresh_reopen_pagination_and_readonly_team(rig: Rig) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_full_http_csv_enqueue_worker_result_history_and_private_bytes _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 859
+  def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_file_page_caps_and_foreign_writes_do_not_publish_input_blobs _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1031
+  def test_file_page_caps_and_foreign_writes_do_not_publish_input_blobs(rig: Rig) -> None:
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_run_history_is_bounded_and_paged_without_loading_result_blobs _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1079
+  def test_run_history_is_bounded_and_paged_without_loading_result_blobs(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1109
+  @pytest.mark.parametrize("content", [b"x" * 10_001, None])
+  def test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication[None] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1109
+  @pytest.mark.parametrize("content", [b"x" * 10_001, None])
+  def test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_http_unknown_creation_and_csv_import_recover_original_after_native_claim _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1168
+  def test_http_unknown_creation_and_csv_import_recover_original_after_native_claim(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_column_inspection_is_owned_read_only_and_not_a_quality_release _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1216
+  def test_csv_column_inspection_is_owned_read_only_and_not_a_quality_release(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_column_inspection_validates_rows_beyond_the_displayed_sample _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1258
+  def test_csv_column_inspection_validates_rows_beyond_the_displayed_sample(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_legal_large_cells_follow_declared_source_limits_through_inspection_and_import _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1284
+  def test_legal_large_cells_follow_declared_source_limits_through_inspection_and_import(
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:1284
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\nPRIVATE-CELL;1\n-timestamp_format-2-timestamp] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-03-31T02:30;1\n-local_time_nonexistent-2-timestamp] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-10-27T02:30;1\n-local_time_ambiguous-2-timestamp] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n-number_format-2-value] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n-number_format-3-value] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;1e999\n-number_nonfinite-2-value] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;-1\n-value_sign-2-value] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n-interval_order-3-timestamp] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;1;extra\n-row_width-2-None] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;"1\n-csv_syntax-2-None] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power;power\n-headers-1-header] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n-empty-None-None] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n\xff-encoding-None-None] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1333
+  @pytest.mark.parametrize(
+      ("raw", "issue", "row", "field"),
+      [
+          (b"time;power\nPRIVATE-CELL;1\n", "timestamp_format", 2, "timestamp"),
+          (b"time;power\n2024-03-31T02:30;1\n", "local_time_nonexistent", 2, "timestamp"),
+          (b"time;power\n2024-10-27T02:30;1\n", "local_time_ambiguous", 2, "timestamp"),
+          (b"time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n", "number_format", 2, "value"),
+          (
+              b"time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n",
+              "number_format",
+              3,
+              "value",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1e999\n", "number_nonfinite", 2, "value"),
+          (b"time;power\n2024-01-01T00:00Z;-1\n", "value_sign", 2, "value"),
+          (
+              b"time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n",
+              "interval_order",
+              3,
+              "timestamp",
+          ),
+          (b"time;power\n2024-01-01T00:00Z;1;extra\n", "row_width", 2, None),
+          (b'time;power\n2024-01-01T00:00Z;"1\n', "csv_syntax", 2, None),
+          (b"time;power;power\n", "headers", 1, "header"),
+          (b"time;power\n", "empty", None, None),
+          (b"time;power\n\xff", "encoding", None, None),
+      ],
+  )
+  def test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_source_selection_cannot_relabel_measurement_or_reference_another_project _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1383
+  def test_source_selection_cannot_relabel_measurement_or_reference_another_project(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_integral_overflow_returns_typed_refusal_without_publishing[1e308] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1430
+  @pytest.mark.parametrize("second_value", [b"1e308", b"-1e308"])
+  def test_csv_integral_overflow_returns_typed_refusal_without_publishing(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_csv_integral_overflow_returns_typed_refusal_without_publishing[-1e308] _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1430
+  @pytest.mark.parametrize("second_value", [b"1e308", b"-1e308"])
+  def test_csv_integral_overflow_returns_typed_refusal_without_publishing(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_profile_preview_uses_full_pinned_interpretation_and_pages_without_filling_gaps _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1459
+  def test_profile_preview_uses_full_pinned_interpretation_and_pages_without_filling_gaps(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_preview_does_not_relabel_signed_net_import_as_gross_consumption _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1515
+  def test_preview_does_not_relabel_signed_net_import_as_gross_consumption(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+_ ERROR at setup of test_profile_preview_checks_owner_before_parsing_and_enforces_wire_page_bounds _
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 1545
+  def test_profile_preview_checks_owner_before_parsing_and_enforces_wire_page_bounds(
+file /private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py, line 244
+  @pytest.fixture
+  def rig(workspace: Workspace) -> Iterator[Rig]:
+E       fixture 'workspace' not found
+>       available fixtures: anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, capteesys, doctest_namespace, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, rig, subtests, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+/private/var/folders/mr/x4yftk6s7ql600b99wzjxs0w0000gn/T/standards-a0d1-s93fpq9x/services/engine/tests/planning/test_private_http.py:244
+=========================== short test summary info ============================
+ERROR tests/planning/test_private_http.py::test_geometry_import_has_owned_original_receipt_and_separate_project_save
+ERROR tests/planning/test_private_http.py::test_geometry_review_uses_owned_draft_without_publishing_or_saving
+ERROR tests/planning/test_private_http.py::test_geometry_save_refuses_bad_references_and_keeps_unfinished_polygon
+ERROR tests/planning/test_private_http.py::test_every_http_method_is_private_even_when_old_gate_mode_is_off[GET]
+ERROR tests/planning/test_private_http.py::test_every_http_method_is_private_even_when_old_gate_mode_is_off[HEAD]
+ERROR tests/planning/test_private_http.py::test_every_http_method_is_private_even_when_old_gate_mode_is_off[POST]
+ERROR tests/planning/test_private_http.py::test_every_http_method_is_private_even_when_old_gate_mode_is_off[PUT]
+ERROR tests/planning/test_private_http.py::test_every_http_method_is_private_even_when_old_gate_mode_is_off[PATCH]
+ERROR tests/planning/test_private_http.py::test_every_http_method_is_private_even_when_old_gate_mode_is_off[DELETE]
+ERROR tests/planning/test_private_http.py::test_every_http_method_is_private_even_when_old_gate_mode_is_off[OPTIONS]
+ERROR tests/planning/test_private_http.py::test_framework_and_unicode_errors_use_the_private_error_contract[POST-/unknown-{}-404-not_found]
+ERROR tests/planning/test_private_http.py::test_framework_and_unicode_errors_use_the_private_error_contract[GET-/projects/read--405-method_not_allowed]
+ERROR tests/planning/test_private_http.py::test_framework_and_unicode_errors_use_the_private_error_contract[POST-/projects/read-\xff-400-invalid_input]
+ERROR tests/planning/test_private_http.py::test_framework_and_unicode_errors_use_the_private_error_contract[POST-/projects/create-{"schema_version":1,"title":"x","inputs":{"text":"\ud800"},"key":"x"}-422-invalid_input]
+ERROR tests/planning/test_private_http.py::test_framework_and_unicode_errors_use_the_private_error_contract[POST-/projects/create-{"schema_version":1,"title":"x","inputs":{"\ud800":0},"key":"x"}-422-invalid_input]
+ERROR tests/planning/test_private_http.py::test_unexpected_failure_has_a_code_without_private_exception_content
+ERROR tests/planning/test_private_http.py::test_deep_small_json_is_rejected_before_recursive_union_error_amplification
+ERROR tests/planning/test_private_http.py::test_http_rejects_unrepresentable_numbers_before_any_durable_write[9007199254740992]
+ERROR tests/planning/test_private_http.py::test_http_rejects_unrepresentable_numbers_before_any_durable_write[-9007199254740992]
+ERROR tests/planning/test_private_http.py::test_http_rejects_unrepresentable_numbers_before_any_durable_write[9223372036854775809]
+ERROR tests/planning/test_private_http.py::test_http_rejects_unrepresentable_numbers_before_any_durable_write[10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000]
+ERROR tests/planning/test_private_http.py::test_http_rejects_unrepresentable_numbers_before_any_durable_write[1e+100]
+ERROR tests/planning/test_private_http.py::test_saved_intake_receipts_survive_an_installed_timezone_name_change
+ERROR tests/planning/test_private_http.py::test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[posixrules]
+ERROR tests/planning/test_private_http.py::test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[localtime]
+ERROR tests/planning/test_private_http.py::test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[right/UTC]
+ERROR tests/planning/test_private_http.py::test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[posix/Europe/Oslo]
+ERROR tests/planning/test_private_http.py::test_new_brief_rejects_non_iana_names_before_publishing_any_bytes[Europe/Imaginary]
+ERROR tests/planning/test_private_http.py::test_depth_check_ignores_brackets_quotes_and_escapes_inside_strings
+ERROR tests/planning/test_private_http.py::test_permanent_http_replay_survives_days_without_writes_or_latest_revision
+ERROR tests/planning/test_private_http.py::test_replay_has_no_public_or_team_mutation_authority[projects/create]
+ERROR tests/planning/test_private_http.py::test_replay_has_no_public_or_team_mutation_authority[projects/revise]
+ERROR tests/planning/test_private_http.py::test_replay_has_no_public_or_team_mutation_authority[profiles/csv]
+ERROR tests/planning/test_private_http.py::test_replay_has_no_public_or_team_mutation_authority[battery/scenario]
+ERROR tests/planning/test_private_http.py::test_replay_has_no_public_or_team_mutation_authority[runs/energy]
+ERROR tests/planning/test_private_http.py::test_replay_cannot_call_private_identity_or_unknown_command
+ERROR tests/planning/test_private_http.py::test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-16]
+ERROR tests/planning/test_private_http.py::test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-16-le]
+ERROR tests/planning/test_private_http.py::test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-16-be]
+ERROR tests/planning/test_private_http.py::test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-32]
+ERROR tests/planning/test_private_http.py::test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-32-le]
+ERROR tests/planning/test_private_http.py::test_other_json_encodings_cannot_bypass_utf8_nesting_gate[utf-32-be]
+ERROR tests/planning/test_private_http.py::test_validation_diagnostics_are_bounded_and_explicitly_truncated
+ERROR tests/planning/test_private_http.py::test_browser_owner_context_and_schema_coercions_are_not_commands
+ERROR tests/planning/test_private_http.py::test_owned_project_refresh_reopen_pagination_and_readonly_team
+ERROR tests/planning/test_private_http.py::test_full_http_csv_enqueue_worker_result_history_and_private_bytes
+ERROR tests/planning/test_private_http.py::test_file_page_caps_and_foreign_writes_do_not_publish_input_blobs
+ERROR tests/planning/test_private_http.py::test_run_history_is_bounded_and_paged_without_loading_result_blobs
+ERROR tests/planning/test_private_http.py::test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication[xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]
+ERROR tests/planning/test_private_http.py::test_csv_file_ceiling_and_bad_base64_are_rejected_before_asset_publication[None]
+ERROR tests/planning/test_private_http.py::test_http_unknown_creation_and_csv_import_recover_original_after_native_claim
+ERROR tests/planning/test_private_http.py::test_csv_column_inspection_is_owned_read_only_and_not_a_quality_release
+ERROR tests/planning/test_private_http.py::test_csv_column_inspection_validates_rows_beyond_the_displayed_sample
+ERROR tests/planning/test_private_http.py::test_legal_large_cells_follow_declared_source_limits_through_inspection_and_import
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\nPRIVATE-CELL;1\n-timestamp_format-2-timestamp]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-03-31T02:30;1\n-local_time_nonexistent-2-timestamp]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-10-27T02:30;1\n-local_time_ambiguous-2-timestamp]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;PRIVATE-CELL\n-number_format-2-value]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n\n2024-01-01T00:00Z;PRIVATE-CELL\n-number_format-3-value]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;1e999\n-number_nonfinite-2-value]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;-1\n-value_sign-2-value]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;1\n2024-01-01T00:10Z;2\n-interval_order-3-timestamp]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;1;extra\n-row_width-2-None]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n2024-01-01T00:00Z;"1\n-csv_syntax-2-None]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power;power\n-headers-1-header]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n-empty-None-None]
+ERROR tests/planning/test_private_http.py::test_csv_import_returns_safe_localizable_row_and_role_without_storing_bad_data[time;power\n\xff-encoding-None-None]
+ERROR tests/planning/test_private_http.py::test_source_selection_cannot_relabel_measurement_or_reference_another_project
+ERROR tests/planning/test_private_http.py::test_csv_integral_overflow_returns_typed_refusal_without_publishing[1e308]
+ERROR tests/planning/test_private_http.py::test_csv_integral_overflow_returns_typed_refusal_without_publishing[-1e308]
+ERROR tests/planning/test_private_http.py::test_profile_preview_uses_full_pinned_interpretation_and_pages_without_filling_gaps
+ERROR tests/planning/test_private_http.py::test_preview_does_not_relabel_signed_net_import_as_gross_consumption
+ERROR tests/planning/test_private_http.py::test_profile_preview_checks_owner_before_parsing_and_enforces_wire_page_bounds
+33 passed, 73 errors in 0.72s

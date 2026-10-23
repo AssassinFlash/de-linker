@@ -13,6 +13,7 @@ from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.geographic import (
     GeographicBridge,
     GeographicReference,
+    geographic_on_roof,
     horizontal_on_roof,
 )
 from linker_engine.planning.geometry_documents import RoofFace
@@ -102,3 +103,53 @@ def test_horizontal_projection_keeps_true_slope_length_and_relative_height() -> 
     assert horizontal_on_roof(roof, 5, 7) == pytest.approx((3, 5), abs=1e-12)
     with pytest.raises(InvalidInput):
         horizontal_on_roof(roof.model_copy(update={"v_axis_enu": [0, 0, -1]}), 5, 7)
+    high = roof.model_copy(update={"origin_enu": [0, 0, 1e15]})
+    assert horizontal_on_roof(high, 0, 0.1) == pytest.approx((0, 0.125), abs=1e-16)
+
+
+@pytest.mark.parametrize("up", [-100, 0, 20])
+def test_geodetic_vertical_intersection_has_independent_equator_solution(
+    up: float,
+) -> None:
+    bridge = GeographicBridge(
+        reference(height_basis="zero_height_horizontal_convention")
+    )
+    plane = RoofFace(
+        id="roof",
+        name="Analytic plane",
+        source_id="source",
+        origin_enu=[0, 0, up],
+        u_axis_enu=[1, 0, 0],
+        v_axis_enu=[0, 1, 0],
+        boundary_uv=[[0, 0], [10, 0], [10, 10]],
+        holes_uv=[],
+    )
+    longitude = 0.001
+    actual = geographic_on_roof(bridge, plane, longitude, 0)
+    assert actual == pytest.approx(
+        ((6378137 + up) * math.tan(math.radians(longitude)), 0), abs=1e-9
+    )
+    assert bridge.inverse(actual[0], actual[1], up)[:2] == pytest.approx(
+        (longitude, 0), abs=1e-12
+    )
+
+
+@pytest.mark.parametrize("longitude", [179.9999, 89.9999, 90])
+def test_geographic_roof_does_not_fold_far_hemisphere_or_accept_unresolvable_horizon(
+    longitude: float,
+) -> None:
+    bridge = GeographicBridge(
+        reference(height_basis="zero_height_horizontal_convention")
+    )
+    plane = RoofFace(
+        id="roof",
+        name="Local plane",
+        source_id="source",
+        origin_enu=[0, 0, 0],
+        u_axis_enu=[1, 0, 0],
+        v_axis_enu=[0, 1, 0],
+        boundary_uv=[[0, 0], [10, 0], [10, 10]],
+        holes_uv=[],
+    )
+    with pytest.raises(InvalidInput):
+        geographic_on_roof(bridge, plane, longitude, 0)

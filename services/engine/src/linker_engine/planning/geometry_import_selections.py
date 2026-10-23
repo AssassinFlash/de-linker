@@ -36,18 +36,21 @@ def check_geometry_imports(
     if not selections.selected:
         return
     geometry = read_geometry(inputs.get("geometry"))
-    source_ids = {source.id for source in geometry.sources}
+    sources = {source.id: source for source in geometry.sources}
     for source_id, asset_id in selections.selected.items():
-        if source_id not in source_ids:
+        if source_id not in sources:
             raise InvalidInput("import attachment requires its current geometry source")
         asset = assets.get(actor, project_id, asset_id)
         prepared = asset.metadata.get("geometry_import")
         if asset.purpose != PURPOSE or not isinstance(prepared, dict):
             raise InvalidInput("selected asset is not a geometry import")
+        if sources[source_id].reference_sha256 != asset.content_sha256:
+            raise InvalidInput("a bound original source hash cannot be changed")
         candidate = read_geometry(prepared.get("geometry"))
         if (
             len(candidate.sources) != 1
             or candidate.sources[0].id != source_id
+            or candidate.sources[0].reference_sha256 != asset.content_sha256
             or prepared.get("original_content_sha256") != asset.content_sha256
         ):
             raise VersionUnavailable("geometry source/manifest association is invalid")

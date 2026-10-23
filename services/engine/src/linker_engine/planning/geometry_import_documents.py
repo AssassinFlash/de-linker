@@ -30,6 +30,9 @@ class GeometryImportDeclaration(Document):
 class GeometryImportOptions(Document):
     schema_version: SchemaVersion
     format: Literal["geojson_wgs84_horizontal_v1"]
+    # Missing only identifies an immutable legacy receipt; fresh preparation
+    # requires the explicit method and includes it in command/stable-ID identity.
+    plane_intersection_method: Literal["geodetic_vertical_line_v1"] | None = None
     feature_index: Index
     polygon_index: Index
     roof_name: Text

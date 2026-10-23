@@ -24,6 +24,7 @@ async function mount(
 	t,
 	{
 		initial = emptyGeometry(),
+		geometryImports = { schema_version: 1, selected: {} },
 		locale = "en-GB",
 		query = async () => {
 			throw new Error("No request expected");
@@ -45,6 +46,7 @@ async function mount(
 		const latest = useRef(initial);
 		return React.createElement(DesignEditor, {
 			geometry,
+			geometryImports,
 			locale,
 			projectId: "1".repeat(32),
 			session: { query_scope: "2".repeat(64) },
@@ -131,6 +133,32 @@ test("invalid staged properties stay visible until corrected or cancelled", asyn
 	await click("Cancel properties");
 	assert.equal(app.valid, true);
 	assert.deepEqual(app.current, flat);
+});
+
+test("a bound original hash stays immutable while its source notes can be edited", async (t) => {
+	const initial = structuredClone(flat),
+		source = initial.sources[0];
+	source.reference_sha256 = "a".repeat(64);
+	const app = await mount(t, {
+		initial,
+		geometryImports: {
+			schema_version: 1,
+			selected: { [source.id]: "b".repeat(32) },
+		},
+	});
+	await click(source.note);
+	const hash = document.querySelector('[name="hash"]');
+	assert.equal(hash.readOnly, true);
+	await enter(document.querySelector('[name="note"]'), "Updated source notes");
+	// Even an out-of-band DOM change cannot detach the bound hash on submission.
+	await enter(hash, "0".repeat(64));
+	await click("Apply properties");
+	assert.equal(app.current.sources[0].note, "Updated source notes");
+	assert.equal(
+		app.current.sources[0].reference_sha256,
+		source.reference_sha256,
+	);
+	assert.equal(app.valid, true);
 });
 
 test("module exclusion updates the same plan, object selection and derived quantity", async (t) => {

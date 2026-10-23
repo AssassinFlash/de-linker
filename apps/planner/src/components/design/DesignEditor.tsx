@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { GeometryDocument } from "../../domain/geometry.ts";
+import type { GeometryImportSelections } from "../../domain/geometryImports.ts";
 import type { GeometryCommand } from "../../domain/geometryCommands.ts";
 import { roofDependents } from "../../domain/geometryCommands.ts";
 import { moduleSummary, panelPoses } from "../../domain/panelPoses.ts";
@@ -39,6 +40,7 @@ interface FormState {
 
 export function DesignEditor({
 	geometry,
+	geometryImports = { schema_version: 1, selected: {} },
 	sceneModuleUrl = null,
 	commit,
 	locale,
@@ -49,6 +51,7 @@ export function DesignEditor({
 	onValidity,
 }: {
 	geometry: GeometryDocument;
+	geometryImports?: GeometryImportSelections;
 	sceneModuleUrl?: string | null;
 	commit: (command: GeometryCommand) => boolean;
 	locale: string;
@@ -372,6 +375,10 @@ export function DesignEditor({
 							{form.kind === "source" && (
 								<SourceForm
 									{...formProps}
+									referenceLocked={
+										form.id !== null &&
+										Object.hasOwn(geometryImports.selected, form.id)
+									}
 									source={model!.sources.find(
 										(source) => source.id === form.id,
 									)!}

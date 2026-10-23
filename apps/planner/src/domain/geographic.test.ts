@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { GeographicBridge, horizontalOnRoof } from "./geographic.ts";
+import {
+	GeographicBridge,
+	horizontalOnRoof,
+	geographicOnRoof,
+} from "./geographic.ts";
 import type { GeographicReference } from "./geographic.ts";
 import type { RoofFace, Vec3 } from "./geometry.ts";
 
@@ -85,8 +89,61 @@ test("horizontal footprint is lifted onto a 3-4-5 plane before roof UV projectio
 		holes_uv: [],
 	};
 	close(horizontalOnRoof(roof, [5, 7]), [3, 5], [1e-12, 1e-12]);
+	close(
+		horizontalOnRoof({ ...roof, origin_enu: [0, 0, 1e15] }, [0, 0.1]),
+		[0, 0.125],
+		[1e-16, 1e-16],
+	);
 	assert.throws(
 		() => horizontalOnRoof({ ...roof, v_axis_enu: [0, 0, -1] }, [5, 7]),
 		/projection_invalid/,
 	);
+});
+
+test("geodetic line intersection retains curvature and supports negative derived heights", () => {
+	const bridge = new GeographicBridge({
+		schema_version: 1,
+		method: "wgs84_cart_topocentric_v1",
+		longitude_deg: 0,
+		latitude_deg: 0,
+		ellipsoid_height_m: 0,
+		height_basis: "zero_height_horizontal_convention",
+	});
+	for (const up of [-100, 0, 20]) {
+		const plane = {
+				origin_enu: [0, 0, up] as Vec3,
+				u_axis_enu: [1, 0, 0] as Vec3,
+				v_axis_enu: [0, 1, 0] as Vec3,
+			},
+			uv = geographicOnRoof(bridge, plane, [0.001, 0]);
+		close(
+			uv,
+			[(6378137 + up) * Math.tan((0.001 * Math.PI) / 180), 0],
+			[1e-9, 1e-9],
+		);
+		close(
+			bridge.inverse([uv[0], uv[1], up]).slice(0, 2),
+			[0.001, 0],
+			[1e-12, 1e-12],
+		);
+		for (const longitude of [179.9999, 89.9999, 90])
+			assert.throws(() => geographicOnRoof(bridge, plane, [longitude, 0]));
+	}
+});
+
+test("polar inverse applies the same output numeric guard as every other branch", () => {
+	for (const height of [0, Number.MAX_SAFE_INTEGER]) {
+		const bridge = new GeographicBridge({
+			schema_version: 1,
+			method: "wgs84_cart_topocentric_v1",
+			longitude_deg: 0,
+			latitude_deg: 90,
+			ellipsoid_height_m: height,
+			height_basis: "known_wgs84_ellipsoid",
+		});
+		assert.throws(
+			() => bridge.inverse([0, 0, Number.MAX_SAFE_INTEGER]),
+			/numeric_support/,
+		);
+	}
 });

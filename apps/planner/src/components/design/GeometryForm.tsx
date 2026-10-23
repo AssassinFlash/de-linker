@@ -188,6 +188,7 @@ export function GeometryText({
 	help,
 	optional = false,
 	multiline = false,
+	readOnly = false,
 }: {
 	name: string;
 	label: string;
@@ -195,6 +196,7 @@ export function GeometryText({
 	help?: string;
 	optional?: boolean;
 	multiline?: boolean;
+	readOnly?: boolean;
 }) {
 	const id = useId();
 	return (
@@ -205,6 +207,7 @@ export function GeometryText({
 					id={id}
 					name={name}
 					defaultValue={value}
+					readOnly={readOnly}
 					required={!optional}
 					maxLength={4096}
 					rows={4}
@@ -214,6 +217,7 @@ export function GeometryText({
 					id={id}
 					name={name}
 					defaultValue={value}
+					readOnly={readOnly}
 					required={!optional}
 					maxLength={4096}
 				/>
