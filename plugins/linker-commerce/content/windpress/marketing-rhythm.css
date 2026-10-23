@@ -77,6 +77,21 @@ html[lang^="de"] #theme-main .linker-contact-invitation h2 {
 	display: none;
 }
 
+/* WordPress formatting adds breaks around the utility hero's SVG and label.
+   These become anonymous flex gaps and push the label toward the capsule's
+   bottom. The same row also has breaks between its three native anchors. */
+#tv-utility-page-v1 .lk-hero-cta-row > br,
+#tv-utility-page-v1 .lk-hero-cta-row > a > br {
+	display: none;
+}
+
+@media (max-width: 600px) {
+	#tv-utility-page-v1 .lk-hero-cta-row .lk-btn-hero-ghost {
+		/* Retain the existing desktop label size on phones instead of 10px. */
+		font-size: var(--proto-size-xs);
+	}
+}
+
 :is(#service-redesign #start, #tv-solution-v1 #contact) .lk-cta-actions > a {
 	display: inline-flex;
 	align-items: center;
