@@ -79,7 +79,7 @@ export function readEquipmentResult(
 			}
 		}
 	}
-	const checks = assessment.checks.map(readObject),
+	const checks = assessment.checks.map((value) => readObject(value)),
 		expected = checks.some((c) => c.status === "violated")
 			? "violated"
 			: checks.some((c) => c.status === "unresolved")
