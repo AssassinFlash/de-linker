@@ -103,5 +103,186 @@
     ],
     "instruction": "Continue only actual remaining shared integration; reuse completed evidence, do not rebuild old tools, do not touch the owned planner instance",
     "planner_remaining_owner": "This planner line retains component fact binding, qualification, operation-level revalidation and full downstream/site delivery"
+  },
+  "module_binding": {
+    "at_utc": "2026-10-24T20:11:49.166802+00:00",
+    "source_commit": "9f3a6e3a",
+    "runtime_sha256": "4b71ef86a6a503ad8b85461b65ce9986d39777fb439113b84823c107acad315a",
+    "old_runtime": "68bd58cd925ea08548d2bffde7ab245c9c986426922cf85f54d8f1b73271fe96",
+    "worker_runtime": "4b71ef86a6a503ad8b85461b65ce9986d39777fb439113b84823c107acad315a",
+    "worker_pid": 70810,
+    "schema": 5,
+    "new_environment": false,
+    "new_instance": false,
+    "source_revision": "c4ac9cb2287bcdfbc855e81e3544f3e72d2df2dffc71360b75117dd88e00a555",
+    "sales_products": 85,
+    "reference_inputs": 1,
+    "module_templates": 1,
+    "sample": {
+      "parameters": {
+        "gamma_pdc_per_c": -0.0029,
+        "module_spec_id": "woo_8349",
+        "source": {
+          "document_sha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
+          "kind": "datasheet",
+          "note": "Trina Solar TSM-460NEG9R.28",
+          "page": 2,
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+          "woo": {
+            "product_id": 8349,
+            "product_revision": "2c90939bf2d7d91aa017779d1c6fe3a5598c0e5231a5070add2bb1bc4f8d0b82",
+            "reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+          }
+        }
+      },
+      "specification": {
+        "id": "woo_8349",
+        "length_m": 1.762,
+        "model": "Trina Solar TSM-460NEG9R.28",
+        "source": {
+          "document_sha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
+          "kind": "datasheet",
+          "note": "Trina Solar TSM-460NEG9R.28",
+          "page": 2,
+          "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+          "woo": {
+            "product_id": 8349,
+            "product_revision": "2c90939bf2d7d91aa017779d1c6fe3a5598c0e5231a5070add2bb1bc4f8d0b82",
+            "reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+          }
+        },
+        "stc_power_w": 460.0,
+        "thickness_m": 0.03,
+        "width_m": 1.134
+      }
+    },
+    "existing_rows_preserved": {
+      "projects": {
+        "rows": 166,
+        "sha256": "6b4581cdb9e33e2a1937ed8cc50a7b9edf021b46e0ff67f82cb6841a72092616"
+      },
+      "revisions": {
+        "rows": 235,
+        "sha256": "3595e04dcbc3c422b30ae4b5a153d51db9935fd8f8e71422fc92ed3448fc02e7"
+      },
+      "runs": {
+        "rows": 9,
+        "sha256": "203e36bc54422a7b676e429a7737e43f2e9d3296ed46ffa1d4560f21222018b9"
+      },
+      "project_assets": {
+        "rows": 47,
+        "sha256": "fde6eed9d9af38fcb81a4165a87430aea4532885fca26402b7d56083c1bfedc2"
+      }
+    },
+    "legacy_version_matches_loaded_generation": true,
+    "production_changed": false,
+    "native_module_workflow": "PASS",
+    "independent_review": {
+      "spec": "PASS including source-revision recovery and common contract-path fixes",
+      "standards": "PASS including restored planner-only DE messages"
+    },
+    "rollback": {
+      "runtime_sha256": "8a1e69665d8bc16827c3a3285652715cef4b66de18a18d727a441b7f863fa526",
+      "source_commit": "760328f1",
+      "module_and_parameter_wire_compatible": true,
+      "previous_68_carrier_cannot_read_new_woo_fields": true,
+      "limitation": "Stale module revision is refused as generic input error; corrected active pair has named recovery. Shared paths and translations are current workspace assets.",
+      "saved_project_read": {
+        "revision": 9,
+        "result": "PASS"
+      }
+    },
+    "retention": {
+      "removed": [
+        {
+          "path": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/68bd58cd925ea08548d2bffde7ab245c9c986426922cf85f54d8f1b73271fe96",
+          "logical_bytes": 1106510
+        },
+        {
+          "path": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/77dbdec63a0364d9a5eeb173883c1aff617d08b9eae3aa8b074eefb5d8ccd0d5",
+          "logical_bytes": 1045688
+        }
+      ],
+      "retained_carriers": 2,
+      "retained_planner_recoveries": 1,
+      "retained_pre_woo_database_recoveries": 1,
+      "free_bytes_before": 899403767808,
+      "free_bytes_after": 899406667776
+    },
+    "native_workflow": {
+      "at_utc": "2026-10-24T20:22:17.964260+00:00",
+      "project_id": "c7795bc2c1e14e389622015c809ace45",
+      "module_saved_revision": 8,
+      "pv_saved_revision": 9,
+      "energy_saved_revision": 11,
+      "new_pv_run": "908626650f4549ddb5696cb162900a9a",
+      "new_energy_run": "f43b6f9410f14363902630800d565c20",
+      "pv_energy_kwh": 13816.651031867383,
+      "interval_count": 8760,
+      "pv_and_energy_woo_proof_equal": true,
+      "woo_proof_sha256": "04df1b79f3fbe772f8efb77a075650fcd15346cd196852a1db9f070369c6e34f",
+      "weather_reused_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+      "source_refreshed": false,
+      "new_weather_fetch": false,
+      "old_result_retained": {
+        "id": "ab8810c5ffe64587a4664c26cb1fe9fc",
+        "result_sha256": "bf72f1ea57399fc79af1e02180a05f5b65e015a032593e4d7eea6aa5105c737e"
+      },
+      "original_project_preserved": {
+        "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+        "revision": 14,
+        "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+      },
+      "scenario_constraint_status": "violated",
+      "equipment_release": {
+        "reason": "explicit_scenario_replay_is_not_equipment_release",
+        "status": "not_assessed"
+      },
+      "country_assessment": {
+        "reason": "country_rules_are_a_separate_assessment",
+        "status": "not_assessed"
+      },
+      "changed_control_visuals": [
+        "EN1440",
+        "EN390",
+        "DE1440",
+        "DE390"
+      ],
+      "copied_full_year_test": false,
+      "screenshots": [
+        "docs/acceptance/2026-10-25/548/woo-module-de-1440.png",
+        "docs/acceptance/2026-10-25/548/woo-module-de-390.png",
+        "docs/acceptance/2026-10-25/548/woo-module-en-1440.png",
+        "docs/acceptance/2026-10-25/548/woo-module-en-390.png",
+        "docs/acceptance/2026-10-25/548/woo-module-native-result-de.png"
+      ]
+    },
+    "copy_review": {
+      "dimension": "Module selection and fact/source intake, not equipment qualification",
+      "pairs": {
+        "Choose a module": "Modul auswählen",
+        "Loading module data…": "Moduldaten werden geladen …",
+        "Module data could not be loaded.": "Die Moduldaten konnten nicht geladen werden.",
+        "Reload module data": "Moduldaten neu laden",
+        "No module specification is currently available.": "Derzeit ist keine Modulspezifikation verfügbar.",
+        "Dimensions, rated power at STC and the temperature coefficient come from Linker's product data.": "Abmessungen, STC-Nennleistung und Temperaturkoeffizient stammen aus den Produktdaten von Linker.",
+        "“Apply properties” updates the module values in this draft. “Save project” saves the changes.": "„Eigenschaften anwenden“ aktualisiert die Modulwerte in diesem Entwurf. „Projekt speichern“ speichert die Änderungen.",
+        "A new calculation requires an updated module selection.": "Für eine neue Berechnung muss die Modulauswahl aktualisiert werden.",
+        "Source document": "Quelldokument",
+        "Page %d": "Seite %d",
+        "The update takes the temperature coefficient and its source from the current product selection. Other settings for matching arrays are kept; entries for arrays outside the layout are removed. New arrays need model settings and a conversion group.": "Die Aktualisierung übernimmt den Temperaturkoeffizienten und dessen Quelle aus der aktuellen Produktauswahl. Die übrigen Einstellungen passender Teilfelder bleiben erhalten; Einträge für Teilfelder außerhalb der Belegung werden entfernt. Neue Teilfelder benötigen Modelleinstellungen und eine Zuordnung zur Leistungsumwandlung."
+      },
+      "review": "Independent energy_trace_copy review; revised STC condition, exact Apply/Save labels and coefficient-only update semantics",
+      "pre_delivery": {
+        "encyclopedia_loaded": true,
+        "hard_stops_1_to_9": true,
+        "no_invented_customer_trajectory": true,
+        "no_service_slice_inflation": true,
+        "no_duration_claim": true,
+        "no_slogan_formula": true,
+        "no_banned_brand": true,
+        "no_testimonial": true
+      }
+    }
   }
 }

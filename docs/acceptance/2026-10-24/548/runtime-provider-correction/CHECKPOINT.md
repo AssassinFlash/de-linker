@@ -2,7 +2,64 @@
 
 ## Current continuation: 2026-10-25
 
-The current native pair is `68bd58cd`, with the shared Woo source connection
+The current native HTTP/worker pair is `4b71ef86`, from reviewed source
+`9f3a6e3a`. The module editor now selects the current Woo-maintained reference;
+dimensions, STC power and the power-temperature coefficient are read-only and
+show the hosted source document and page. Applying properties changes the draft;
+saving creates a revision. The PV model takes its coefficient and citation from
+the same selection. No editable device-fact pack or fallback product list was
+introduced.
+
+New or changed module facts must equal their current Woo projection. An old
+product revision is rejected with `product_evidence_changed`; completed command
+receipts and owner-readable history remain available. PV context and profile
+metadata freeze the reference-only publication proof. The production worker
+rechecks it before and after PV preparation and before publishing energy replay;
+an unavailable or changed authority cannot produce a newly usable result. The
+native source-dependent create/revise/PV/energy requests now share the existing
+30-second transport budget; unrelated reads retain their normal budget. HTTP
+and worker resolve the compatibility file from the same loaded generation.
+
+The actual native example saved its module binding at revision 8, prepared a
+new PV curve at revision 9 (`908626650f4549ddb5696cb162900a9a`), and completed
+one energy replay at revision 11 (`f43b6f9410f14363902630800d565c20`). Both use
+the same frozen Woo proof. The existing official weather original was reused;
+there was no new provider retrieval, instance, environment or database recovery.
+The 8,760-interval curve totals 13,816.651 kWh. Energy replay retains the example's
+81.4% solar share / 37% PV self-use and its real reserve warning. These are
+example-scenario results, not equipment or country approval. The original roof
+project remains revision 14 with its unchanged input hash; the old revision-7
+result remains readable.
+
+Only the changed controls received EN/DE 1440/390 browser checks. The affected
+source/API and existing year-chain fixtures were extended once; a managed-worker
+case now checks production source-policy isolation instead of repeating another
+year replay. Spec and Standards passed the fixed candidate and then reviewed
+only three concrete corrections. The 11 new EN/DE strings have independent copy
+review; eight existing planner-only German translations were retained after
+regeneration. No passing unrelated suite or old visual matrix was repeated.
+
+The native install and browser proof are appended to the existing
+[`woo-source-native-install.json`](../../../2026-10-25/548/woo-source-native-install.json)
+under `module_binding`. Two superseded executable carriers (2,152,198 logical
+bytes) were reclaimed, leaving active `4b71ef86` and data-compatible rollback
+`8a1e6966`; available space increased by 2,895,872 bytes in that cleanup window.
+The retained rollback parses the newly saved geometry and PV parameters. Its
+older stale-source rejection is generic rather than the active version's named
+recovery; it does not grant stale product permission. The earlier `68bd58cd`
+carrier cannot read the added Woo binding fields and is not offered as a
+compatible rollback. The single verified planner recovery and pre-Woo SQL
+recovery remain. No production write occurred.
+
+Component binding is delivered locally. Device/country qualification,
+shading/electrical design, full BOM/report/PDF, site consumers, migration and
+review/production delivery remain within the same active full goal. Continue
+from these saved inputs and results; do not rebuild this source connection or
+rerun its passing evidence.
+
+## Prior source-read installation: 2026-10-25
+
+The earlier native pair was `68bd58cd`, with the shared Woo source connection
 described below. The earlier native energy/trace installation is recorded in
 [`trace-native-install.json`](../../../2026-10-25/548/trace-native-install.json)
 at source commit `b0159ef3`: that HTTP/worker pair was `77dbdec6`, and its
