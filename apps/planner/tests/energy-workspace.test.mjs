@@ -37,6 +37,8 @@ const click = async (text) => {
 test("actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response", async (t) => {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
+	window.requestAnimationFrame = (callback) => window.setTimeout(callback, 0);
+	window.cancelAnimationFrame = (frame) => window.clearTimeout(frame);
 	Object.defineProperty(globalThis, "indexedDB", {
 		value: new IDBFactory(),
 		configurable: true,
@@ -267,6 +269,11 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 	});
 	await until(
 		() => document.querySelector(".lp-run-result h3")?.textContent === "Queued",
+	);
+	await until(
+		() =>
+			document.activeElement ===
+			document.querySelector('.lp-run-result h3[tabindex="-1"]'),
 	);
 	assert.ok(
 		document.activeElement ===

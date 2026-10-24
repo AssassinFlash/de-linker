@@ -144,16 +144,21 @@ export function EnergyWorkspace({
 		visibleRunId = runs.run.data?.id;
 	useEffect(() => {
 		if (
-			active &&
-			view === "runs" &&
-			visibleRunId &&
-			visibleRunId === runs.runId
+			!active ||
+			view !== "runs" ||
+			!visibleRunId ||
+			visibleRunId !== runs.runId
 		)
+			return;
+		// Let the parent/native bar layout commit before restoring a result route.
+		const frame = window.requestAnimationFrame(() =>
 			revealActionResult(
 				runTarget.current?.querySelector<HTMLElement>(".lp-run-result h3") ??
 					null,
 				() => client.isCurrentScope(session.query_scope),
-			);
+			),
+		);
+		return () => window.cancelAnimationFrame(frame);
 		// Changing a selected calculation reveals its heading. Polling the same
 		// calculation never takes focus back from the reader's current control.
 	}, [view, visibleRunId, runs.runId, active, client, session.query_scope]);
