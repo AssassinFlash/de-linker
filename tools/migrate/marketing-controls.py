@@ -23,7 +23,7 @@ def _utility(content: str) -> tuple[str, str]:
 
 def _services(content: str) -> tuple[str, str]:
     states: list[str] = []
-    for tabs in ("stageTabs", "roleTabs"):
+    for tabs, select in (("stageTabs", "showStage"), ("roleTabs", "showRole")):
         old = (
             "if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {\n"
             "        event.preventDefault();\n"
@@ -37,6 +37,12 @@ def _services(content: str) -> tuple[str, str]:
             f"          : event.key === 'End' ? {tabs}.length - 1\n"
             "          : (i + (event.key === 'ArrowRight' ? 1 : -1) "
             f"+ {tabs}.length) % {tabs}.length;"
+        )
+        action = f"\n        {select}(next);\n        {tabs}[next].focus();"
+        old += action + "\n      }"
+        new += (
+            action + f"\n        {tabs}[next].scrollIntoView({{ block: 'nearest', "
+            "inline: 'nearest' });\n      }"
         )
         if content.count(old) == 1 and content.count(new) == 0:
             states.append("old")

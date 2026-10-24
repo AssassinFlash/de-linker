@@ -53,11 +53,17 @@ def handler(tabs: str, final: bool = False) -> str:
             "        const next = (i + (event.key === 'ArrowRight' ? 1 : -1) "
             f"+ {tabs}.length) % {tabs}.length;"
         )
+    select = "showStage" if tabs == "stageTabs" else "showRole"
+    scroll = (
+        f"        {tabs}[next].scrollIntoView({{ block: 'nearest', inline: 'nearest' }});\n"
+        if final
+        else ""
+    )
     return (
         f"{tabs}.forEach((tab, i) => {{\n"
         "  tab.addEventListener('keydown', (event) => {\n"
-        "      " + key_span + f"\n        {tabs}[next].click();\n"
-        f"        {tabs}[next].focus();\n      }}\n  }});\n}});\n"
+        "      " + key_span + f"\n        {select}(next);\n"
+        f"        {tabs}[next].focus();\n" + scroll + "      }\n  });\n});\n"
     )
 
 
@@ -168,3 +174,26 @@ def test_service_changed_or_ambiguous_handler_is_refused(tabs: str, fault: str) 
 def test_unreviewed_page_family_is_refused() -> None:
     with pytest.raises(ValueError, match="Only Utility and Services"):
         controls.plan_pair("home", utility("en"), utility("de"))
+
+
+@pytest.mark.parametrize("tabs", ["stageTabs", "roleTabs"])
+@pytest.mark.parametrize(
+    "fault", ["keyboard_only", "scroll_only", "missing_focus", "changed_target"]
+)
+def test_partial_or_drifted_focus_scroll_path_is_refused(tabs: str, fault: str) -> None:
+    scroll = f"        {tabs}[next].scrollIntoView({{ block: 'nearest', inline: 'nearest' }});\n"
+    old, final = handler(tabs), handler(tabs, True)
+    changed = {
+        "keyboard_only": final.replace(scroll, ""),
+        "scroll_only": old.replace(
+            f"{tabs}[next].focus();\n", f"{tabs}[next].focus();\n{scroll}"
+        ),
+        "missing_focus": old.replace(f"{tabs}[next].focus();", ""),
+        "changed_target": final.replace(
+            f"{tabs}[next].scrollIntoView", f"{tabs}[0].scrollIntoView"
+        ),
+    }[fault]
+    with pytest.raises(ValueError, match="Service key handler changed"):
+        controls.plan_pair(
+            "services", services("en").replace(old, changed), services("de")
+        )

@@ -26,6 +26,15 @@ EN/DE pairs and refuses ambiguous/partial structures. It replaces only the
 single href or the two specific key-handler spans. No customer text, URLs
 outside that fragment, labels, template, or other script may change.
 
+The actual600px End-key check selects the fifth stage and its pane while the
+card remains partially outside the rail. Native focus does not fully scroll
+that partially visible item into view. After each existing key-handler focus,
+use native `scrollIntoView({ block: 'nearest', inline: 'nearest' })` to expose
+the complete selected item, keeping the native8px scroll padding/margin.
+Bind each full handler span through its selection, focus and closing brace;
+refuse keyboard-only or scroll-only intermediate edits, duplicates and target
+drift. Verify both ends at320/390/600/601/800/801/820/821 and1440 widths.
+
 Apply both paired changes through the existing reviewed-pair transaction and
 native translation-baseline adoption. Keep a verified full recovery baseline,
 the current complete four-page scope and exact pair/baseline increment locally
