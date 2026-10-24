@@ -179,8 +179,8 @@
     },
     {
       "file": "artifact-audit.json",
-      "bytes": 558,
-      "sha256": "ef7258345e0092f9f37deb8928fa0d0c9aba4cdab41d1a00237a425bdf33f632"
+      "bytes": 693,
+      "sha256": "137b05d50fb25670477593cba405ce3ab130fc8ff761b0bfe8dccae0bd931cfb"
     },
     {
       "file": "cleanup.json",
@@ -218,6 +218,11 @@
       "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
     },
     {
+      "file": "map-readback.json",
+      "bytes": 3417,
+      "sha256": "a04321b61156c759628f8505234d47cc1462187f01fa39af7af14987e830de56"
+    },
+    {
       "file": "preservation.json",
       "bytes": 1455,
       "sha256": "b5dfcbae98cfb2594a9227f9ca8a21706619bf3ad211a9d3999231e484e5fe21"
@@ -253,6 +258,6 @@
       "sha256": "adbe2679a016996b4036b957085d8e2e478f4dfe4d280f71d524bdba164dc01f"
     }
   ],
-  "total_bytes_excluding_manifest": 186657,
+  "total_bytes_excluding_manifest": 190209,
   "local_markdown_links_verified": true
 }

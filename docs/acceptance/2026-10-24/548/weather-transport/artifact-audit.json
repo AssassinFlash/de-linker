@@ -15,5 +15,8 @@
     "skipped": "0",
     "time": "73.198"
   },
-  "all_command_exit_codes_zero": true
+  "all_command_exit_codes_zero": true,
+  "local_markdown_links_verified": true,
+  "map_body_and_comment_readback_verified": true,
+  "temporary_map_request_files_removed": 2
 }
