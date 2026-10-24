@@ -41,10 +41,13 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	hyphens: manual;
 }
 
-/* At the 29px phone title, inherited -0.035em tracking leaves 4px word gaps.
- * Return those gaps to 6.32px without changing the authored letter tracking. */
-#tv-contact-v1 .cp-hero h1 {
-	word-spacing: 0.08em;
+@media (max-width: 800px) {
+	/* At the 29px phone title, inherited -0.035em tracking leaves 4px word gaps.
+	 * Return those gaps to 6.32px without changing authored letter tracking.
+	 * The existing 800px form breakpoint keeps desktop title wrapping intact. */
+	#tv-contact-v1 .cp-hero h1 {
+		word-spacing: 0.08em;
+	}
 }
 
 #contact-form .linker-contact-card {

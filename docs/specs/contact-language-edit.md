@@ -91,9 +91,11 @@ hyphens. These are declared Contact-only visual corrections, validated at the
 same desktop and phone widths, including long German selection values.
 Native image review and separate English/German word ranges also found the
 heroes' inherited negative tracking compressed their phone word gaps to 4px
-at 29px type. Add 0.08em of word spacing only to the Contact heroes; preserve
-their letter tracking, type size, line-height and authored breaks. Verify actual
-word separation and wrapping in both languages at both widths.
+at 29px type. Add 0.08em of word spacing only to the phone Contact heroes,
+within the existing 800px form breakpoint; preserve their letter tracking,
+type size, line-height and authored breaks. A desktop-wide trial moved the
+English “next.” onto an extra line, so the desktop rule is retained unchanged.
+Verify actual word separation and wrapping in both languages at both widths.
 
 If storage fails, intercept only a click that would lose actual entries or a
 changed choice. Keep the original page and values, expose the existing error
