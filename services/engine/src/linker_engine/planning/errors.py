@@ -19,6 +19,12 @@ class Conflict(PlanningError):
     code = "conflict"
 
 
+class EvaluationRevisionChanged(Conflict):
+    """A new evaluation was refused before writing a run or receipt."""
+
+    code = "evaluation_revision_changed"
+
+
 class LeaseLost(PlanningError):
     """This worker can no longer publish or renew this attempt."""
 

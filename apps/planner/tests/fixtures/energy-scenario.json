@@ -1,0 +1,52 @@
+{
+	"schema_version": 1,
+	"battery": {
+		"usable_window_kwh": 5.0,
+		"charge_ac_kw": 5.0,
+		"discharge_ac_kw": 5.0,
+		"eta_charge": 0.9,
+		"eta_discharge": 0.9,
+		"internal_aux_kw": 0.0,
+		"standing_loss_rate_per_hour": 0.0
+	},
+	"source_note": "Explicit analytic scenario; no manufacturer or SKU approval",
+	"initial_inventory": {
+		"pv_kwh": 0,
+		"grid_kwh": 0,
+		"initial_unknown_kwh": 0,
+		"source_note": "Declared empty battery at simulation start"
+	},
+	"schedule": [
+		{
+			"id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+			"start_utc": "2024-03-30T23:00:00Z",
+			"end_utc": "2024-03-31T01:00:00Z",
+			"mode": "connected",
+			"reserve_kwh": 0,
+			"import_policy": "unlimited",
+			"import_cap_kw": null,
+			"export_policy": "unlimited",
+			"export_cap_kw": null,
+			"pv_enabled": true,
+			"allow_grid_charge": false
+		}
+	],
+	"terminal_policy": "none",
+	"terminal_min_kwh": null,
+	"battery_binding": {
+		"asset_id": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+		"parameters": {
+			"schema_version": 1,
+			"model": "constant_window_single_ac_bus_v1",
+			"parameter_basis": "explicit_scenario",
+			"usable_window_kwh": 5.0,
+			"charge_ac_kw": 5.0,
+			"discharge_ac_kw": 5.0,
+			"eta_charge": 0.9,
+			"eta_discharge": 0.9,
+			"internal_aux_kw": 0.0,
+			"standing_loss_rate_per_hour": 0.0
+		},
+		"source_note": "Explicit analytic scenario; no manufacturer or SKU approval"
+	}
+}

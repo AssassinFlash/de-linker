@@ -5229,3 +5229,756 @@ msgstr "Einige Objekt- oder Quellenangaben fehlen oder sind ungültig. Ihre Eing
 #: build/planner/assets/planner.js
 msgid "The outline lies in the selected roof plane. Check the source details and feature properties before adding it to the project draft."
 msgstr "Der Umriss liegt in der gewählten Dachebene. Prüfen Sie die Quellenangaben und Objekteigenschaften, bevor Sie das Objekt zum Projektentwurf hinzufügen."
+
+# Unified project energy workflow: independently reviewed English and German.
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:9
+msgid "The scenario needs gross-load, available-PV and separate AC auxiliary interval profiles."
+msgstr "Für dieses Szenario werden Zeitreihen der gesamten Standortlast, der verfügbaren PV-Leistung auf der AC-Seite und des separaten AC-Hilfsverbrauchs benötigt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:14
+msgid "The storage parameters need a source or assumption note."
+msgstr "Für die Speicherparameter fehlt noch die Angabe einer Quelle oder Annahme."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:19
+msgid "Storage values need attention. Efficiencies must be greater than 0% and no more than 100%; other storage values must be zero or greater."
+msgstr "Bitte prüfen Sie die Speicherwerte. Wirkungsgrade müssen über 0 % und dürfen höchstens 100 % betragen. Alle übrigen Speicherwerte müssen mindestens null sein."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:24
+msgid "The three starting-energy amounts and their basis are required. An empty starting inventory can be selected explicitly."
+msgstr "Die drei Energiemengen zu Beginn und ihre Grundlage müssen angegeben werden. Sie können die Anfangsenergie auch ausdrücklich auf null setzen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:29
+msgid "Initial stored energy exceeds the usable energy window."
+msgstr "Die gespeicherte Anfangsenergie ist größer als der nutzbare Energiebereich des Speichers."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:34
+msgid "The final-inventory requirement needs a choice and, when applicable, a minimum value."
+msgstr "Für die Speicherenergie am Ende fehlt noch eine Auswahl und gegebenenfalls der Mindestwert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:39
+msgid "An operating period is incomplete. An outage also needs a critical-load profile."
+msgstr "Für einen Betriebszeitraum fehlen noch Angaben. Bei einem Netzausfall wird zusätzlich ein Profil der kritischen Last benötigt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:44
+msgid "Period timestamps need a date, time and Z or a numeric UTC offset."
+msgstr "Die Zeitangaben benötigen Datum, Uhrzeit und entweder Z für UTC oder einen numerischen UTC-Versatz."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:49
+msgid "Reserved energy exceeds the usable energy window."
+msgstr "Die Energiereserve ist größer als der nutzbare Energiebereich des Speichers."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:54
+msgid "A specified import or export cap needs its value in kW. Zero is allowed."
+msgstr "Für eine gewählte Bezugs- oder Einspeisegrenze fehlt der Wert in kW. Null ist zulässig."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:59
+msgid "Grid charging cannot be enabled during an outage."
+msgstr "Bei einem Netzausfall kann das Laden aus dem Netz nicht freigegeben werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:64
+msgid "The storage settings have changed and need to be prepared again."
+msgstr "Die Speichereinstellungen wurden geändert. Das Szenario muss erneut vorbereitet werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:69
+msgid "The inputs changed before preparation finished. Your current draft remains open."
+msgstr "Die Eingaben wurden während der Vorbereitung geändert. Ihre aktuellen Eingaben bleiben geöffnet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:74
+msgid "The required profiles have no shared time range."
+msgstr "Die benötigten Profile haben keinen gemeinsamen Zeitraum."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:79
+msgid "New calculations are temporarily unavailable. This request remains available for retry."
+msgstr "Neue Berechnungen sind vorübergehend nicht möglich. Sie können diesen Auftrag später erneut senden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:84
+msgid "The saved revision or request has changed. The open inputs and original request are kept for review."
+msgstr "Die gespeicherte Version oder der Vorgang wurde geändert. Ihre offenen Eingaben und der ursprüngliche Vorgang bleiben zur Prüfung erhalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:89
+msgid "A newer input revision is saved on the server. This request did not create a calculation. Reopen the project to review the saved inputs."
+msgstr "Auf dem Server ist eine neuere Eingabeversion gespeichert. Für diesen Auftrag wurde keine Berechnung angelegt. Öffnen Sie das Projekt erneut, um die gespeicherten Eingaben zu prüfen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:95
+msgid "The scenario could not be accepted. Profile coverage, operating periods and storage settings need review."
+msgstr "Das Szenario konnte nicht übernommen werden. Bitte prüfen Sie die zeitliche Abdeckung der Profile, die Betriebszeiträume und die Speichereinstellungen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:105
+msgid "This calculation reply could not be verified. Saved calculations and the original request remain available."
+msgstr "Die Antwort zur Berechnung konnte nicht geprüft werden. Gespeicherte Berechnungen und der ursprüngliche Auftrag bleiben verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyError.tsx:110
+msgid "The request could not be confirmed. Your inputs remain open here."
+msgstr "Der Vorgang konnte nicht bestätigt werden. Ihre Eingaben bleiben hier geöffnet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectEditor.tsx:465
+msgid "Energy calculation"
+msgstr "Energieberechnung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:399
+msgid "Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used."
+msgstr "Berechnen Sie die Energieflüsse dieses Projekts für die gewählten Zeiträume. Mit jedem Ergebnis bleiben die verwendeten Eingaben, Quellen und das Berechnungsmodell gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:409
+msgid "Calculation workspace view"
+msgstr "Ansicht der Energieberechnung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:416
+msgid "Scenario settings"
+msgstr "Szenarioeinstellungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:423
+msgid "Saved calculations"
+msgstr "Gespeicherte Berechnungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:430
+msgid "This browser could not save or read the information needed to recover calculation requests. New requests are paused until this is available."
+msgstr "Der Browser konnte die Daten zur Wiederherstellung von Berechnungsaufträgen nicht speichern oder lesen. Bis dies wieder möglich ist, werden keine neuen Aufträge gesendet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:440
+msgid "Check browser storage"
+msgstr "Browserspeicher prüfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:449
+msgid "Stored requests"
+msgstr "Gespeicherte Vorgänge"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:451
+msgid "Retrying a calculation uses its original request and saved input revision. Restoring storage settings replaces those settings in your open draft."
+msgstr "Beim erneuten Senden einer Berechnung werden der ursprüngliche Auftrag und die dazu gespeicherte Eingabeversion verwendet. Wiederhergestellte Speichereinstellungen ersetzen die entsprechenden Werte in Ihren offenen Eingaben."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:463
+msgid "Saved storage settings"
+msgstr "Gespeicherte Speichereinstellungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:464
+#, javascript-format
+msgid "Calculation request · revision %d"
+msgstr "Berechnungsauftrag · Version %d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:479
+msgid "Restore and retry storage settings"
+msgstr "Speichereinstellungen wiederherstellen und erneut senden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:480
+msgid "Retry original calculation request"
+msgstr "Ursprünglichen Berechnungsauftrag erneut senden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:489
+msgid "Dismiss confirmed request"
+msgstr "Bestätigten Vorgang ausblenden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:499
+msgid "This scenario-settings format cannot be edited here. Its saved input and calculation history remain available."
+msgstr "Szenarioeinstellungen in diesem Format können hier nicht bearbeitet werden. Die gespeicherten Eingaben und bisherigen Berechnungen bleiben verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:508
+msgid "Interval sources"
+msgstr "Quellen der Zeitreihen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:516
+msgid "Selected in this draft"
+msgstr "Für diese Eingaben ausgewählt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:517
+msgid "Required"
+msgstr "Erforderlich"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:529
+msgid "Review energy inputs"
+msgstr "Energiedaten prüfen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:546
+msgid "Storage"
+msgstr "Speicher"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:548
+msgid "Starting state"
+msgstr "Anfangszustand"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:549
+msgid "Operation"
+msgstr "Betrieb"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:569
+msgid "Scenario prepared in this draft"
+msgstr "Szenario für die offenen Eingaben vorbereitet"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:570
+msgid "Scenario settings need preparation"
+msgstr "Szenario noch nicht vorbereitet"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:574
+msgid "Save project records these inputs before a new calculation can start."
+msgstr "Mit Projekt speichern werden diese Eingaben gesichert. Erst danach kann eine neue Berechnung starten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:578
+#, javascript-format
+msgid "A new calculation uses saved input revision %d."
+msgstr "Eine neue Berechnung verwendet die gespeicherte Eingabeversion %d."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:601
+msgid "Confirming request…"
+msgstr "Vorgang wird bestätigt…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:602
+msgid "Prepare scenario settings"
+msgstr "Szenario vorbereiten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:610
+msgid "Calculate saved scenario"
+msgstr "Gespeichertes Szenario berechnen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:620
+msgid "Saved calculation history could not be refreshed."
+msgstr "Die Liste der gespeicherten Berechnungen konnte nicht aktualisiert werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:630
+msgid "Refresh calculation history"
+msgstr "Berechnungsliste aktualisieren"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:636
+msgid "Reading saved calculations…"
+msgstr "Gespeicherte Berechnungen werden geladen…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:641
+msgid "Calculation history"
+msgstr "Bisherige Berechnungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:644
+msgid "No saved calculation is available on this page."
+msgstr "Auf dieser Seite sind keine gespeicherten Berechnungen vorhanden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:676
+msgid "Latest calculations"
+msgstr "Neueste Berechnungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:685
+msgid "Earlier calculations"
+msgstr "Ältere Berechnungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:695
+msgid "The selected calculation could not be refreshed. Any visible state is the last confirmed response."
+msgstr "Die gewählte Berechnung konnte nicht aktualisiert werden. Ein angezeigter Status entspricht der zuletzt bestätigten Antwort."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:705
+msgid "Refresh calculation status"
+msgstr "Berechnungsstatus aktualisieren"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:711
+msgid "Reading the saved calculation…"
+msgstr "Gespeicherte Berechnung wird geladen…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:738
+msgid "Confirming cancellation…"
+msgstr "Abbruch wird bestätigt…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:739
+msgid "Cancel calculation"
+msgstr "Berechnung abbrechen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:744
+msgid "Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed."
+msgstr "Der Abbruch konnte nicht bestätigt werden. Die Berechnung läuft möglicherweise noch. Sie können den Status auf dem Server aktualisieren."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:43
+#, javascript-format
+msgid "Operating period %d"
+msgstr "Betriebszeitraum %d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:47
+msgid "Start with UTC or offset"
+msgstr "Beginn (UTC oder Zeitversatz)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:56
+msgid "End with UTC or offset"
+msgstr "Ende (UTC oder Zeitversatz)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:254
+msgid "Grid condition"
+msgstr "Netzzustand"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:295
+msgid "Choose an option"
+msgstr "Bitte auswählen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:266
+msgid "Grid connected"
+msgstr "Mit Netzverbindung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:265
+msgid "Grid outage"
+msgstr "Netzausfall"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:85
+msgid "Reserved stored energy"
+msgstr "Energiereserve im Speicher"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:93
+msgid "PV available in this period"
+msgstr "PV in diesem Zeitraum verfügbar"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:106
+msgid "Available"
+msgstr "Verfügbar"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:107
+msgid "Unavailable"
+msgstr "Nicht verfügbar"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:112
+msgid "Grid charging allowed"
+msgstr "Laden aus dem Netz freigegeben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:129
+msgid "Allowed"
+msgstr "Freigegeben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:130
+msgid "Not allowed"
+msgstr "Nicht freigegeben"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:137
+msgid "Grid import limit"
+msgstr "Grenze für den Netzbezug"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:184
+msgid "No cap in this scenario"
+msgstr "Keine Begrenzung in diesem Szenario"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:187
+msgid "Specified cap"
+msgstr "Grenzwert festlegen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:161
+msgid "Import cap"
+msgstr "Maximale Bezugsleistung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:170
+msgid "Grid export limit"
+msgstr "Grenze für die Netzeinspeisung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:194
+msgid "Export cap"
+msgstr "Maximale Einspeiseleistung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:207
+msgid "During an outage, grid import, export and charging are zero. A critical-load profile and an explicit PV availability choice are required."
+msgstr "Bei einem Netzausfall sind Netzbezug, Netzeinspeisung und Laden aus dem Netz null. Erforderlich sind ein Profil der kritischen Last und eine ausdrückliche Auswahl zur PV-Verfügbarkeit."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/OperatingPeriodForm.tsx:215
+msgid "Remove operating period"
+msgstr "Betriebszeitraum entfernen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:12
+msgid "Usable stored energy"
+msgstr "Nutzbare Speicherenergie"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:14
+msgid "AC charging power"
+msgstr "AC-Ladeleistung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:16
+msgid "AC discharging power"
+msgstr "AC-Entladeleistung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:18
+msgid "Charging efficiency"
+msgstr "Ladewirkungsgrad"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:20
+msgid "Discharging efficiency"
+msgstr "Entladewirkungsgrad"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:22
+msgid "Internal auxiliary power"
+msgstr "Interner Hilfsverbrauch"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:24
+msgid "Standing-loss coefficient"
+msgstr "Koeffizient der zeitabhängigen Speicherverluste"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:161
+msgid "Sources, period and storage model"
+msgstr "Quellen, Zeitraum und Speichermodell"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:167
+msgid "Reading the sources used for this result…"
+msgstr "Quellen dieses Ergebnisses werden geladen…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:173
+msgid "The sources used for this result could not be read. The saved result still refers to its original sources."
+msgstr "Die Quellen dieses Ergebnisses konnten nicht geladen werden. Das gespeicherte Ergebnis bleibt den ursprünglichen Quellen zugeordnet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:183
+msgid "Retry reading sources"
+msgstr "Quellen erneut laden"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:198
+msgid "Original content SHA-256"
+msgstr "SHA-256 des Originalinhalts"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:205
+msgid "Source metadata SHA-256"
+msgstr "SHA-256 der Quellenmetadaten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:240
+msgid "The model uses a fixed internal energy window and separate AC conversion efficiencies. Battery export, temperature effects, ageing and switching behaviour are outside this energy calculation."
+msgstr "Das Modell rechnet mit einem festen nutzbaren Energiebereich im Speicher und getrennten Wirkungsgraden für die AC-Umwandlung. Die Netzeinspeisung aus dem Speicher, Temperatureinflüsse, Alterung und das Umschaltverhalten werden nicht berechnet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:248
+msgid "Calculated operating periods (UTC)"
+msgstr "Berechnete Betriebszeiträume (UTC)"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:255
+msgid "Source resolution"
+msgstr "Zeitauflösung der Quelle"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:279
+msgid "Reconstructed interval means"
+msgstr "Rekonstruierte Intervallmittelwerte"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunBasis.tsx:296
+msgid "Time alignment preserves interval energy under a constant-mean assumption. A finer display or operating boundary does not create new measured peaks."
+msgstr "Bei der zeitlichen Angleichung bleibt die Energie je Quellintervall erhalten. Innerhalb dieses Intervalls wird eine konstante mittlere Leistung angenommen. Eine feinere zeitliche Darstellung oder eine zusätzliche Grenze zwischen Betriebszeiträumen liefert keine neuen gemessenen Leistungsspitzen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:10
+msgid "Queued"
+msgstr "In der Warteschlange"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:12
+msgid "Calculating"
+msgstr "Berechnung läuft"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:14
+msgid "Waiting to retry"
+msgstr "Warten auf erneuten Versuch"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:16
+msgid "Calculation complete"
+msgstr "Berechnung abgeschlossen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:18
+msgid "Calculation failed"
+msgstr "Berechnung fehlgeschlagen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:20
+msgid "Calculation cancelled"
+msgstr "Berechnung abgebrochen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:26
+msgid "A model or source used by this calculation is unavailable. Its original inputs remain saved."
+msgstr "Ein für diese Berechnung verwendetes Modell oder eine Quelle ist nicht verfügbar. Die ursprünglichen Eingaben bleiben gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:31
+msgid "The saved scenario could not be calculated. Source coverage, operating periods or storage settings need attention."
+msgstr "Das gespeicherte Szenario konnte nicht berechnet werden. Bitte prüfen Sie die zeitliche Abdeckung der Quellen, die Betriebszeiträume und die Speichereinstellungen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:36
+msgid "The calculation exceeded the service's current processing limit. Its original inputs remain saved."
+msgstr "Die Berechnung überschreitet die aktuelle Verarbeitungsgrenze des Dienstes. Die ursprünglichen Eingaben bleiben gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:41
+msgid "The numerical checks could not establish a usable result. The saved inputs remain available."
+msgstr "Die numerischen Prüfungen haben kein verwertbares Ergebnis ergeben. Die gespeicherten Eingaben bleiben verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:46
+msgid "The calculation stopped before a result was published. Its original inputs remain saved."
+msgstr "Die Berechnung wurde beendet, bevor ein Ergebnis bereitgestellt werden konnte. Die ursprünglichen Eingaben bleiben gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:93
+msgid "Saved calculation"
+msgstr "Gespeicherte Berechnung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:98
+#, javascript-format
+msgid "Input revision %d"
+msgstr "Eingabeversion %d"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:103
+msgid "This calculation uses an earlier input snapshot. Open or newer project changes are excluded from its result."
+msgstr "Diese Berechnung beruht auf einem früheren Eingabestand. Offene oder neuere Projektänderungen sind im Ergebnis nicht enthalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:111
+msgid "Leaving this workspace does not cancel the calculation. Its status is saved on the server."
+msgstr "Die Berechnung wird beim Verlassen dieses Arbeitsbereichs nicht abgebrochen. Ihr Status bleibt auf dem Server gespeichert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:120
+msgid "The server has confirmed cancellation. Any earlier saved results remain available."
+msgstr "Der Server hat den Abbruch bestätigt. Bereits gespeicherte frühere Ergebnisse bleiben verfügbar."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:130
+msgid "The calculation checks need attention. The detailed checks identify unmet requirements or inconsistencies."
+msgstr "Bei den Berechnungsprüfungen wurden nicht erfüllte Anforderungen oder Unstimmigkeiten festgestellt. Die Einzelprüfungen zeigen die betroffenen Punkte."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:141
+msgid "Solar supplied to load"
+msgstr "Solarenergie zur Lastversorgung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:147
+msgid "Grid import"
+msgstr "Netzbezug"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:153
+msgid "Solar share of gross demand"
+msgstr "Solarer Deckungsanteil am Gesamtbedarf"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:157
+msgid "PV used or stored on site"
+msgstr "PV-Energie für Verbrauch und Speicherung vor Ort"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:162
+msgid "Figures cover the simulated periods. Solar supply includes PV-origin battery energy; grid-origin and unknown-origin inventory remain separate."
+msgstr "Die Werte gelten für die simulierten Zeiträume. Zur solaren Versorgung zählt auch gespeicherte Energie aus PV-Erzeugung. Energie aus dem Netz und Energie unbekannter Herkunft werden getrennt erfasst."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:169
+msgid "This calculation includes critical-load periods. A whole-site gross-demand percentage is therefore undefined."
+msgstr "Diese Berechnung enthält Zeiträume mit kritischer Last. Ein solarer Deckungsanteil für den Gesamtbedarf des Standorts ist deshalb nicht definiert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:178
+msgid "The solar share is undefined when gross demand is zero."
+msgstr "Bei einem Gesamtbedarf von null ist der solare Deckungsanteil nicht definiert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:186
+msgid "The PV-use percentage is undefined when generated PV energy is zero."
+msgstr "Wenn keine PV-Energie erzeugt wird, ist der Anteil der vor Ort genutzten oder gespeicherten PV-Energie nicht definiert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:194
+msgid "Equipment suitability: not assessed by this calculation."
+msgstr "Die Eignung der Geräte wird in dieser Berechnung nicht bewertet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:200
+msgid "Country requirements: not assessed by this calculation."
+msgstr "Landesspezifische Anforderungen werden in dieser Berechnung nicht bewertet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:208
+msgid "Energy totals and definitions"
+msgstr "Energiesummen und Definitionen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:212
+msgid "Simulated load demand"
+msgstr "Simulierter Strombedarf"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:216
+msgid "Generated AC PV energy"
+msgstr "Erzeugte PV-Energie auf der AC-Seite"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:220
+msgid "Unserved simulated load"
+msgstr "Ungedeckter simulierter Strombedarf"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:224
+msgid "Calculated intervals"
+msgstr "Berechnete Intervalle"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:229
+msgid "Solar share of gross demand divides PV energy delivered to gross site load by gross site demand. It is undefined for a mixed or critical-only load scope, or zero gross demand."
+msgstr "Der solare Deckungsanteil setzt die an die gesamte Standortlast gelieferte PV-Energie ins Verhältnis zum Gesamtstrombedarf des Standorts. Bei gemischten Lastbereichen, ausschließlich kritischer Last oder einem Gesamtbedarf von null ist dieser Anteil nicht definiert."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:235
+msgid "This percentage divides PV supplied to load, AC auxiliary demand and battery charging by generated PV after curtailment. Battery charging is counted before conversion losses, including energy still stored at the end. Curtailed PV is excluded from the denominator."
+msgstr "Dieser Anteil setzt die für Lastversorgung, AC-Hilfsverbrauch und Speicherladung eingesetzte PV-Energie ins Verhältnis zur PV-Erzeugung nach Abregelung. Für die Speicherladung zählt die zugeführte Energie vor Umwandlungsverlusten, auch wenn sie am Ende noch gespeichert ist. Abgeregelte PV-Energie ist im Nenner nicht enthalten."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:242
+msgid "Numerical verification details"
+msgstr "Details der numerischen Prüfung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:244
+msgid "These checks cover the declared energy model and scenario. Their numerical allowances address floating-point arithmetic; they are not installation safety margins."
+msgstr "Diese Prüfungen beziehen sich auf das angegebene Energiemodell und das Szenario. Die Rechentoleranzen berücksichtigen Abweichungen durch Gleitkommaarithmetik. Sie sind keine Sicherheitsreserven für die Installation."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:252
+msgid "Checks recorded with this result"
+msgstr "Mit diesem Ergebnis gespeicherte Prüfungen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:256
+msgid "Check reference"
+msgstr "Prüfkennung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:257
+msgid "Outcome"
+msgstr "Ergebnis"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:258
+msgid "Largest deviation"
+msgstr "Größte Abweichung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:259
+msgid "Arithmetic tolerance"
+msgstr "Rechentoleranz"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:272
+msgid "Met"
+msgstr "Erfüllt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:273
+msgid "Needs attention"
+msgstr "Prüfung erforderlich"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:291
+msgid "Calculation records"
+msgstr "Berechnungsnachweise"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:295
+msgid "Input SHA-256"
+msgstr "SHA-256 der Eingabedaten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:301
+msgid "Manifest SHA-256"
+msgstr "SHA-256 des Berechnungsmanifests"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:307
+msgid "Result SHA-256"
+msgstr "SHA-256 des Ergebnisses"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:313
+msgid "Runtime SHA-256"
+msgstr "SHA-256 der Berechnungsumgebung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/RunResult.tsx:319
+msgid "Energy trace SHA-256"
+msgstr "SHA-256 des Energieverlaufs"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:60
+msgid "Storage parameters"
+msgstr "Speicherparameter"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:62
+msgid "These values define a storage scenario at one AC connection. This calculation does not assess product suitability."
+msgstr "Diese Werte beschreiben ein Speicherszenario an einem AC-Anschlusspunkt. Die Eignung eines Produkts wird damit nicht bewertet."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:112
+msgid "Source or assumption for storage parameters"
+msgstr "Quelle oder Annahme für die Speicherparameter"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:126
+msgid "Storage model and units"
+msgstr "Speichermodell und Einheiten"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:128
+msgid "Usable stored energy is the model's internal energy window. Charging and discharging power are measured at the AC connection. The two efficiencies describe their separate conversion directions."
+msgstr "Die nutzbare Speicherenergie bezeichnet den internen Energiebereich des Modells. Lade- und Entladeleistung beziehen sich auf den AC-Anschluss. Für beide Umwandlungsrichtungen gilt jeweils der angegebene Wirkungsgrad."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:134
+msgid "Internal auxiliary power is drawn from stored energy. Separate AC auxiliary demand comes from its interval profile. Standing loss uses E × (1 − exp(−r × hours)), with r in 1/h. Zero losses are explicit scenario assumptions."
+msgstr "Der interne Hilfsverbrauch wird aus der gespeicherten Energie gedeckt. Für den separaten AC-Hilfsverbrauch gilt das zugehörige Zeitreihenprofil. Die zeitabhängigen Speicherverluste folgen E × (1 − exp(−r × hours)); dabei ist hours die Dauer in Stunden und r der Koeffizient in 1/h. Verlustwerte von null sind ausdrücklich gewählte Szenarioannahmen."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:140
+msgid "This model uses fixed capacity, power and efficiency. Temperature effects, ageing, shared DC ports, phase limits and switching behaviour require their own assessment."
+msgstr "Kapazität, Leistung und Wirkungsgrad bleiben in diesem Modell konstant. Temperatureinflüsse, Alterung, gemeinsam genutzte DC-Anschlüsse, Phasengrenzen und das Umschaltverhalten müssen gesondert bewertet werden."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:148
+msgid "Initial stored energy"
+msgstr "Gespeicherte Energie zu Beginn"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:150
+msgid "Stored energy keeps its origin throughout the calculation. Energy from the grid or an unknown source is excluded from the solar-supplied total."
+msgstr "Die Herkunft der gespeicherten Energie bleibt während der gesamten Berechnung nachvollziehbar. Energie aus dem Netz oder unbekannter Herkunft zählt nicht zur solaren Versorgung."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:163
+msgid "From PV"
+msgstr "Aus PV-Erzeugung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:165
+msgid "From the grid"
+msgstr "Aus dem Stromnetz"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:166
+msgid "Origin unknown"
+msgstr "Herkunft unbekannt"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:192
+msgid "Empty stored-energy inventory selected for the start of this scenario."
+msgstr "Für den Start dieses Szenarios wurde eine gespeicherte Energie von null gewählt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:200
+msgid "Start with an empty battery"
+msgstr "Anfangsenergie auf null setzen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:203
+msgid "Basis for the initial state"
+msgstr "Grundlage des Anfangszustands"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:220
+msgid "Operating periods"
+msgstr "Betriebszeiträume"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:222
+msgid "Periods must join without gaps or overlaps and stay within the source data. Timestamps include Z for UTC or an explicit offset, such as +01:00."
+msgstr "Die Betriebszeiträume müssen lückenlos und ohne Überschneidungen aneinander anschließen. Sie müssen vollständig durch die Quelldaten abgedeckt sein. Zeitangaben enthalten Z für UTC oder einen ausdrücklichen Zeitversatz, beispielsweise +01:00."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:234
+msgid "Checking profile coverage…"
+msgstr "Zeitliche Profilabdeckung wird geprüft…"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:235
+msgid "Use the shared profile range"
+msgstr "Gemeinsamen Profilzeitraum übernehmen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:281
+msgid "Add operating period"
+msgstr "Betriebszeitraum hinzufügen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:284
+msgid "Stored energy at the end of the calculation"
+msgstr "Speicherenergie am Ende der Berechnung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:297
+msgid "No minimum required"
+msgstr "Kein Mindestwert erforderlich"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:300
+msgid "Specify a minimum"
+msgstr "Mindestwert festlegen"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:307
+msgid "Minimum final stored energy"
+msgstr "Gespeicherte Mindestenergie am Ende"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:318
+msgid "How storage is operated"
+msgstr "Betriebsweise des Speichers"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:320
+msgid "PV supplies the simulated load and AC auxiliary demand first. Surplus PV charges the battery within the specified power and energy limits. The battery supplies remaining demand using stored energy above the reserve. When connected, the grid supplies any remaining demand within the import limit. This controller does not request grid charging. Remaining PV is exported within the export limit, then curtailed."
+msgstr "PV deckt zuerst die simulierte Last und den AC-Hilfsverbrauch. Mit überschüssiger PV-Energie wird der Speicher innerhalb der angegebenen Leistungs- und Energiegrenzen geladen. Für den verbleibenden Bedarf nutzt der Speicher die Energie oberhalb seiner Reserve. Bei bestehender Netzverbindung deckt das Netz den restlichen Bedarf bis zur Bezugsgrenze. Diese Regelung veranlasst kein Laden aus dem Netz. Verbleibende PV-Energie wird bis zur Einspeisegrenze ins Netz abgegeben und darüber hinaus abgeregelt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/ScenarioForm.tsx:326
+msgid "Stored energy continues across every period. The model excludes battery export and does not reset the battery at midnight or at the start of an outage."
+msgstr "Die gespeicherte Energie wird über alle Betriebszeiträume fortgeschrieben. Das Modell sieht keine Netzeinspeisung aus dem Speicher vor. Der Speicherzustand wird weder um Mitternacht noch zu Beginn eines Netzausfalls zurückgesetzt."
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:7
+msgid "Simulated demand supplied"
+msgstr "Deckung des simulierten Bedarfs"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:8
+msgid "AC auxiliary demand supplied"
+msgstr "Deckung des AC-Hilfsverbrauchs"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:9
+msgid "Internal auxiliary demand supplied"
+msgstr "Deckung des internen Hilfsverbrauchs"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:10
+msgid "Stored-energy reserve"
+msgstr "Energiereserve im Speicher"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:11
+msgid "Usable stored-energy limit"
+msgstr "Grenze der nutzbaren Speicherenergie"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:12
+msgid "Final stored-energy requirement"
+msgstr "Anforderung an die Speicherenergie am Ende"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:13
+msgid "AC charging-power limit"
+msgstr "Grenze der AC-Ladeleistung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/energy/verificationLabel.ts:14
+msgid "AC discharging-power limit"
+msgstr "Grenze der AC-Entladeleistung"
+
+#: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:193
+msgid "Scenario settings and saved calculations"
+msgstr "Szenarioeinstellungen und gespeicherte Berechnungen"

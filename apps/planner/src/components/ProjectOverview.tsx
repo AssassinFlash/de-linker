@@ -19,7 +19,7 @@ export function ProjectOverview({
 	brief: Brief;
 	geometry: GeometryDocument;
 	config: Configuration;
-	choose: (workspace: "site" | "energy" | "design") => void;
+	choose: (workspace: "site" | "energy" | "design" | "calculations") => void;
 }) {
 	const poses = useMemo(() => panelPoses(geometry), [geometry]),
 		summary = useMemo(() => moduleSummary(geometry), [geometry]),
@@ -181,6 +181,16 @@ export function ProjectOverview({
 							<strong>{__("Energy inputs", "linker-tools")}</strong>
 							<small>
 								{__("Annual consumption and interval data", "linker-tools")}
+							</small>
+						</span>
+						<Icon name="arrow" />
+					</button>
+					<button type="button" onClick={() => choose("calculations")}>
+						<Icon name="energy" />
+						<span>
+							<strong>{__("Energy calculation", "linker-tools")}</strong>
+							<small>
+								{__("Scenario settings and saved calculations", "linker-tools")}
 							</small>
 						</span>
 						<Icon name="arrow" />

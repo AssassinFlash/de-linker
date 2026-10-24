@@ -28,6 +28,7 @@ from .csv_issue import CsvIssue
 from .energy_service import EnergyService
 from .errors import (
     Conflict,
+    EvaluationRevisionChanged,
     InvalidInput,
     LeaseLost,
     NotFound,
@@ -110,6 +111,7 @@ def create_private_app(
         status = {
             NotFound: 404,
             Conflict: 409,
+            EvaluationRevisionChanged: 409,
             InvalidInput: 422,
             CsvIssue: 422,
             VersionUnavailable: 503,

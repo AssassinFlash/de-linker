@@ -15,7 +15,7 @@ export function BriefForm({
 	config: Configuration;
 	onChange: (brief: Brief) => void;
 	onValidity: (valid: boolean) => void;
-	workspace?: "overview" | "site" | "energy" | "design";
+	workspace?: "overview" | "site" | "energy" | "design" | "calculations";
 }) {
 	const id = useId();
 	const [invalid, setInvalid] = useState<Readonly<Record<string, boolean>>>({});

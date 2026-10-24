@@ -1,0 +1,184 @@
+{
+  "$defs": {
+    "Identifier": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "InitialInventory": {
+      "additionalProperties": false,
+      "properties": {
+        "pv_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "grid_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "initial_unknown_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "basis": {
+          "enum": [
+            "user_declared",
+            "synthetic_fixture"
+          ],
+          "title": "Basis",
+          "type": "string"
+        },
+        "source_note": {
+          "$ref": "#/$defs/Identifier"
+        }
+      },
+      "required": [
+        "pv_kwh",
+        "grid_kwh",
+        "initial_unknown_kwh",
+        "basis",
+        "source_note"
+      ],
+      "title": "InitialInventory",
+      "type": "object"
+    },
+    "Nonnegative": {
+      "minimum": 0,
+      "type": "number"
+    },
+    "ScheduleSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "start_utc": {
+          "title": "Start Utc",
+          "type": "string"
+        },
+        "end_utc": {
+          "title": "End Utc",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "connected",
+            "outage"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "reserve_kwh": {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        "import_cap_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "export_cap_kw": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Nonnegative"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pv_enabled": {
+          "title": "Pv Enabled",
+          "type": "boolean"
+        },
+        "allow_grid_charge": {
+          "title": "Allow Grid Charge",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "start_utc",
+        "end_utc",
+        "mode",
+        "reserve_kwh",
+        "import_cap_kw",
+        "export_cap_kw",
+        "pv_enabled",
+        "allow_grid_charge"
+      ],
+      "title": "ScheduleSegment",
+      "type": "object"
+    },
+    "SchemaVersion": {
+      "maximum": 1,
+      "minimum": 1,
+      "type": "integer"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "$ref": "#/$defs/SchemaVersion"
+    },
+    "gross_load_asset_id": {
+      "$ref": "#/$defs/Identifier"
+    },
+    "critical_load_asset_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "pv_available_asset_id": {
+      "$ref": "#/$defs/Identifier"
+    },
+    "aux_ac_asset_id": {
+      "$ref": "#/$defs/Identifier"
+    },
+    "battery_parameters_asset_id": {
+      "$ref": "#/$defs/Identifier"
+    },
+    "initial_inventory": {
+      "$ref": "#/$defs/InitialInventory"
+    },
+    "schedule": {
+      "items": {
+        "$ref": "#/$defs/ScheduleSegment"
+      },
+      "minItems": 1,
+      "title": "Schedule",
+      "type": "array"
+    },
+    "controller": {
+      "const": "self_consumption_with_reserve_v1",
+      "title": "Controller",
+      "type": "string"
+    },
+    "terminal_min_kwh": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "gross_load_asset_id",
+    "critical_load_asset_id",
+    "pv_available_asset_id",
+    "aux_ac_asset_id",
+    "battery_parameters_asset_id",
+    "initial_inventory",
+    "schedule",
+    "controller",
+    "terminal_min_kwh"
+  ],
+  "title": "EnergyInputs",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

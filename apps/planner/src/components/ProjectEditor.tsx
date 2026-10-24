@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Configuration } from "../data/config.ts";
 import type { PlannerClient } from "../data/PlannerClient.ts";
 import type { DraftStore } from "../data/DraftStore.ts";
-import type { Project, Session } from "../data/protocol.ts";
+import type { JsonObject, Project, Session } from "../data/protocol.ts";
 import { useProjectDraft } from "../data/useProjectDraft.ts";
 import { useProjectBar } from "../data/useProjectBar.ts";
 import {
@@ -41,13 +41,18 @@ import type { PreparedGeometryImport } from "../domain/geometryImports.ts";
 import type { GeometryDocument } from "../domain/geometry.ts";
 import { ProjectOverview } from "./ProjectOverview.tsx";
 import { revealActionResult } from "./revealActionResult.ts";
+import { EnergyWorkspace } from "./energy/EnergyWorkspace.tsx";
+import { invalidateEnergyReplay } from "../domain/energyScenario.ts";
+import { replacePlannerLocation } from "../data/plannerLocation.ts";
 
-type ProjectWorkspace = "overview" | "site" | "energy" | "design";
+type ProjectWorkspace =
+	"overview" | "site" | "energy" | "design" | "calculations";
 const workspaceHash = {
 	overview: "lp-overview",
 	site: "lp-site",
 	energy: "lp-load",
 	design: "lp-design",
+	calculations: "lp-calculations",
 } as const;
 const workspaceTarget = { ...workspaceHash, site: "lp-brief-use" } as const;
 const mapPropertyHashes: readonly string[] = [
@@ -56,6 +61,14 @@ const mapPropertyHashes: readonly string[] = [
 	"#lp-map-feature-properties",
 ];
 function workspaceFromHash(): ProjectWorkspace {
+	if (
+		window.location.hash === "#lp-calculations" ||
+		(!window.location.hash &&
+			/^[a-f0-9]{32}$/.test(
+				new URL(window.location.href).searchParams.get("run") ?? "",
+			))
+	)
+		return "calculations";
 	if (["#lp-site", "#lp-brief-use", "#lp-notes"].includes(window.location.hash))
 		return "site";
 	if (["#lp-load", "#lp-profiles"].includes(window.location.hash))
@@ -103,9 +116,13 @@ export function ProjectEditor({
 	} = useProjectDraft(project, session, client, store, recheck);
 	const [briefValid, setBriefValid] = useState(true);
 	const [designValid, setDesignValid] = useState(true);
-	const valid = briefValid && designValid;
+	const [energyValid, setEnergyValid] = useState(true);
+	const valid = briefValid && designValid && energyValid;
 	const [workspace, setWorkspace] =
 		useState<ProjectWorkspace>(workspaceFromHash);
+	const [calculationsOpened, setCalculationsOpened] = useState(
+		() => workspaceFromHash() === "calculations",
+	);
 	const workspaceFocus = useRef(false);
 	useEffect(() => {
 		if (!workspaceFocus.current) return;
@@ -135,8 +152,11 @@ export function ProjectEditor({
 			return;
 		}
 		workspaceFocus.current = true;
+		if (next === "calculations") setCalculationsOpened(true);
 		setWorkspace(next);
-		window.history.replaceState(null, "", "#" + workspaceHash[next]);
+		const url = new URL(window.location.href);
+		url.hash = workspaceHash[next];
+		replacePlannerLocation(url);
 	}
 	const editGeometry = useCallback(
 		(command: GeometryCommand): boolean => {
@@ -153,6 +173,20 @@ export function ProjectEditor({
 						geometry: readObject(applyGeometryCommand(geometry, command)),
 					});
 				});
+				return true;
+			} catch {
+				return false;
+			}
+		},
+		[client, session.query_scope, update],
+	);
+	const editEnergy = useCallback(
+		(operation: (inputs: JsonObject) => JsonObject): boolean => {
+			if (!client.isCurrentScope(session.query_scope)) return false;
+			try {
+				update((previous) =>
+					editDraft(previous, operation(previous.history.current)),
+				);
 				return true;
 			} catch {
 				return false;
@@ -281,6 +315,9 @@ export function ProjectEditor({
 						<option value="energy">
 							{__("Energy inputs", "linker-tools")}
 						</option>
+						<option value="calculations">
+							{__("Energy calculation", "linker-tools")}
+						</option>
 					</select>
 				</div>
 				<div className="lp-edit-actions">
@@ -289,7 +326,7 @@ export function ProjectEditor({
 							? __("Saving…", "linker-tools")
 							: draft.pending
 								? __("Save not confirmed", "linker-tools")
-								: !briefValid
+								: !briefValid || !energyValid
 									? __("Input needs attention", "linker-tools")
 									: !designValid
 										? __("Roof editing in progress", "linker-tools")
@@ -342,7 +379,7 @@ export function ProjectEditor({
 						(dirty || draft.pending))) && (
 					<div className="lp-navigation-refusal">
 						<Notice error>
-							{!briefValid
+							{!briefValid || !energyValid
 								? __(
 										"Correct the highlighted input before leaving this project.",
 										"linker-tools",
@@ -415,6 +452,17 @@ export function ProjectEditor({
 						>
 							<Icon name="energy" />
 							{__("Energy inputs", "linker-tools")}
+						</a>
+						<a
+							href="#lp-calculations"
+							aria-current={workspace === "calculations" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("calculations");
+							}}
+						>
+							<Icon name="energy" />
+							{__("Energy calculation", "linker-tools")}
 						</a>
 					</nav>
 					<div className="lp-source-note">
@@ -603,7 +651,7 @@ export function ProjectEditor({
 												};
 												delete chosen[role as Measurement];
 												return editDraft(previous, {
-													...previous.history.current,
+													...invalidateEnergyReplay(previous.history.current),
 													profile_selections: {
 														schema_version: 1,
 														selected: chosen,
@@ -647,7 +695,7 @@ export function ProjectEditor({
 										return false;
 									update((previous) =>
 										editDraft(previous, {
-											...previous.history.current,
+											...invalidateEnergyReplay(previous.history.current),
 											profile_selections: {
 												schema_version: 1,
 												selected: {
@@ -700,6 +748,33 @@ export function ProjectEditor({
 							/>
 						</div>
 					</fieldset>
+					{calculationsOpened && (
+						<div hidden={workspace !== "calculations"}>
+							<EnergyWorkspace
+								draft={draft}
+								edit={editEnergy}
+								flush={flush}
+								session={session}
+								client={client}
+								recheck={recheck}
+								locale={config.locale}
+								active={workspace === "calculations"}
+								recoveryScopes={recoveryScopes}
+								recoveryChecking={recoveryChecking}
+								onValidity={setEnergyValid}
+								openProfiles={() => chooseWorkspace("energy")}
+								blocked={
+									busy ||
+									recoveries.length > 0 ||
+									Boolean(draft.conflict) ||
+									!briefValid ||
+									!designValid ||
+									recoveryChecking ||
+									discoveryFailed
+								}
+							/>
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

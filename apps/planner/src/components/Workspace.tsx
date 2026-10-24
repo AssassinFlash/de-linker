@@ -84,6 +84,7 @@ export function Workspace({
 			const url = new URL(location.href);
 			if (id) url.searchParams.set("project", id);
 			else url.searchParams.delete("project");
+			url.searchParams.delete("run");
 			url.hash = "";
 			history.replaceState(null, "", url);
 			setSelected(id);

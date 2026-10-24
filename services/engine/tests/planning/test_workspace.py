@@ -13,6 +13,7 @@ from linker_engine.planning import commands
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.errors import (
     Conflict,
+    EvaluationRevisionChanged,
     InvalidInput,
     NotFound,
     VersionUnavailable,
@@ -91,6 +92,41 @@ def test_old_tab_cannot_overwrite_a_newer_revision(
     assert workspace.get(owner, project.id) == successful[0]
     with workspace.database.read() as connection:
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
+
+
+def test_new_stale_evaluation_has_a_distinct_premutation_refusal(
+    workspace: Workspace, owner: Actor, context: Context
+) -> None:
+    project = workspace.create(owner, "Explicit inputs", {"load": 1}, key="new")
+    original = workspace.evaluate(
+        owner, project.id, 1, context, key="original", max_attempts=2
+    )
+    workspace.revise(owner, project.id, 1, {"load": 2}, key="edit")
+    with pytest.raises(EvaluationRevisionChanged) as refused:
+        workspace.evaluate(
+            owner, project.id, 1, context, key="stale-new", max_attempts=2
+        )
+    assert refused.value.code == "evaluation_revision_changed"
+    assert len(workspace.runs(owner, project.id)) == 1
+    assert (
+        workspace.evaluate(
+            owner, project.id, 1, context, key="original", max_attempts=2
+        ).id
+        == original.id
+    )
+    with pytest.raises(Conflict) as collision:
+        workspace.evaluate(
+            owner, project.id, 1, context, key="original", max_attempts=3
+        )
+    assert type(collision.value) is Conflict
+    with workspace.database.read() as connection:
+        assert connection.execute("SELECT count(*) FROM jobs").fetchone()[0] == 1
+        assert (
+            connection.execute(
+                "SELECT count(*) FROM idempotency WHERE key='stale-new'"
+            ).fetchone()[0]
+            == 0
+        )
 
 
 def test_parallel_retry_enqueues_one_run(

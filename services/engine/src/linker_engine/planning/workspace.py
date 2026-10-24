@@ -18,7 +18,13 @@ from . import commands
 from .access import active_actor, positive_integer, project_row
 from .brief import validate_new_brief
 from .canonical import Object, digest, encode
-from .errors import Conflict, InvalidInput, NotFound, VersionUnavailable
+from .errors import (
+    Conflict,
+    EvaluationRevisionChanged,
+    InvalidInput,
+    NotFound,
+    VersionUnavailable,
+)
 from .execution_control import require_accepting
 from .execution_identity import execution_key
 from .geometry import validate_project_geometry
@@ -215,7 +221,7 @@ class Workspace:
                 )
             require_accepting(connection)
             if project["revision"] != expected_revision:
-                raise Conflict("project inputs have changed")
+                raise EvaluationRevisionChanged("project inputs have changed")
             inputs = self._project(connection, actor, project_id, expected_revision)
             manifest = self.blobs.put_object(
                 {

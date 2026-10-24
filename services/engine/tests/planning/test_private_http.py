@@ -1021,6 +1021,14 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
             "key": "newer",
         },
     )
+    stale_new = rig.client.post(
+        "/runs/energy",
+        json={"schema_version": 1, **evaluate_command, "key": "stale-new"},
+        headers=headers(),
+    )
+    assert stale_new.status_code == 409
+    assert stale_new.json() == {"error": {"code": "evaluation_revision_changed"}}
+    assert len(rig.workspace.runs(USER, project_id)) == 1
     assert Worker(
         Jobs(rig.workspace),
         "http-fixture-worker",
