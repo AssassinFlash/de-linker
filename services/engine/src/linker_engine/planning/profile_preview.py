@@ -9,6 +9,7 @@ from .errors import InvalidInput, VersionUnavailable
 from .frozen_profiles import frozen_profile
 from .interval import microseconds
 from .pv_profile import PURPOSE
+from .pv_profile_artifacts import prepared_profile
 from .records import Actor
 from .wire_numbers import check_wire_numbers
 
@@ -45,12 +46,17 @@ class ProfilePreview:
         timezone = asset.metadata.get("timezone_rules_sha256")
         if timezone is not None and not isinstance(timezone, str):
             raise VersionUnavailable("invalid pinned profile timezone reference")
-        series = frozen_profile(
-            self.assets.workspace.blobs,
-            asset.content_sha256,
-            asset.metadata_sha256,
-            timezone,
-        )
+        if asset.purpose == PURPOSE:
+            series = prepared_profile(
+                self.assets.workspace.blobs, asset.content_sha256, asset.metadata
+            )
+        else:
+            series = frozen_profile(
+                self.assets.workspace.blobs,
+                asset.content_sha256,
+                asset.metadata_sha256,
+                timezone,
+            )
         covered_us = sum(interval.duration_us for interval in series.intervals)
         span_us = microseconds(series.intervals[-1].end - series.intervals[0].start)
         gaps: list[Json] = []

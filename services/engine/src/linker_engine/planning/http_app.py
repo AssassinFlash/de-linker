@@ -38,7 +38,7 @@ from .errors import (
     VersionUnavailable,
 )
 from .execution_identity import storage_binding
-from .execution_registry import ExecutionRegistry
+from .execution_registry import service_registry
 from .geometry_import import GeometryImport
 from .geometry_import_selections import check_geometry_imports
 from .geometry_review import review_geometry
@@ -105,11 +105,7 @@ def create_private_app(
         pv.workspace is not workspace or pv.kernel.workspace is not workspace
     ):
         raise InvalidInput("HTTP and PV preparation must share the same authority")
-    registry = (
-        ExecutionRegistry(energy.kernel)
-        if pv is None
-        else ExecutionRegistry(energy.kernel, pv.kernel)
-    )
+    registry = service_registry(energy, pv)
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from .asset_publication import AssetResult
 from .canonical import Object, digest, encode
@@ -13,6 +13,19 @@ from .records import Lease
 from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
+
+if TYPE_CHECKING:
+    from .energy_service import EnergyService
+    from .pv_preparation import PvPreparationService
+
+
+def service_registry(
+    energy: EnergyService, pv: PvPreparationService | None
+) -> ExecutionRegistry:
+    """One executor-set authority for HTTP, worker startup and operator identity."""
+    if pv is None:
+        return ExecutionRegistry(energy.kernel)
+    return ExecutionRegistry(energy.kernel, pv.kernel)
 
 
 class RegisteredKernel(Protocol):

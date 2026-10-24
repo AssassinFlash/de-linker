@@ -9,6 +9,7 @@ from .power_series import PowerSeries
 from .pv_generation import generate_pv
 from .pv_parameters import PvGenerationLimits as PvGenerationLimits
 from .pv_parameters import PvGenerationParameters
+from .pv_profile_artifacts import model_dependencies
 from .pv_profile_preparation import PROFILE_PURPOSE, logical_profile, prepare_profile
 from .pv_source import PvSource
 from .pvgis_response import PvgisCapture
@@ -71,18 +72,6 @@ class PvProfileImport:
         )
 
 
-def _model_dependencies(metadata: Object) -> dict[str, str]:
-    dependencies = metadata.get("dependencies")
-    if not isinstance(dependencies, dict) or set(dependencies) != {
-        "pv_model_inputs",
-        "pv_model_witness",
-    }:
-        raise VersionUnavailable("PV model input and witness dependencies required")
-    if any(not isinstance(value, str) for value in dependencies.values()):
-        raise VersionUnavailable("PV model dependency hash required")
-    return {name: str(value) for name, value in dependencies.items()}
-
-
 def reference_dependencies(
     asset: Asset, inputs: Object, blobs: Blobs
 ) -> dict[str, str]:
@@ -94,7 +83,7 @@ def reference_dependencies(
         raise InvalidInput(
             "PV reference is stale for the selected geometry or model parameters"
         )
-    pinned = _model_dependencies(asset.metadata)
+    pinned = model_dependencies(asset.metadata)
     model_inputs = blobs.object(pinned["pv_model_inputs"])
     parameters = PvGenerationParameters.read(inputs.get("pv_generation"))
     if encode(model_inputs.get("geometry")) != encode(inputs.get("geometry")) or encode(
@@ -108,7 +97,7 @@ def reference_dependencies(
 def frozen_reference_profile(
     blobs: Blobs, raw_sha256: str, metadata: Object
 ) -> PowerSeries:
-    dependencies = _model_dependencies(metadata)
+    dependencies = model_dependencies(metadata)
     inputs_hash, witness_hash = (
         dependencies["pv_model_inputs"],
         dependencies["pv_model_witness"],

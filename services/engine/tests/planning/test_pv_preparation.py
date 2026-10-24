@@ -27,6 +27,7 @@ from linker_engine.planning.pv_preparation import (
     PvPreparationService,
     PvReferenceKernel,
 )
+from linker_engine.planning.pv_profile_artifacts import prepared_profile
 from linker_engine.planning.pv_source import PvSource
 from linker_engine.planning.records import Actor, Context, Lease, Project, Run
 from linker_engine.planning.weather_import import WeatherImport
@@ -328,6 +329,85 @@ def test_actual_private_command_receipt_worker_result_and_disabled_receipt_read(
             ).status_code
             == 503
         )
+
+
+def test_prepared_profile_http_preview_reads_original_output_without_pv_calculation(
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    project, kernel, run = pv_task(workspace, owner)
+    energy = EnergyService(
+        workspace,
+        EnergyKernel(workspace, TOLERANCE, max_intervals=9000),
+        max_attempts=1,
+    )
+    registry = ExecutionRegistry(energy.kernel, kernel)
+    assert Worker(
+        Jobs(workspace),
+        "preview-producer",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    ).run_once()
+    result = workspace.run(owner, run.id).result
+    assert result is not None
+    record = cast(Object, result["prepared_asset"])
+    asset = Assets(workspace).get(owner, project.id, str(record["id"]))
+    expected = frozen_profile(
+        workspace.blobs, asset.content_sha256, asset.metadata_sha256, None
+    )
+
+    def forbidden(*args: object, **kwargs: object) -> None:
+        pytest.fail("HTTP preview must not rerun the numerical PV model")
+
+    for module in ("pv_generation", "pv_profile", "pv_profile_preparation"):
+        monkeypatch.setattr(f"linker_engine.planning.{module}.generate_pv", forbidden)
+    assert (
+        prepared_profile(
+            workspace.blobs, asset.content_sha256, asset.metadata
+        ).document()
+        == expected.document()
+    )
+    with TestClient(
+        create_private_app(
+            workspace,
+            energy,
+            credential=lambda: TOKEN,
+            limits=HttpLimits(2_000_000, 1_000_000, 20, 32),
+        )
+    ) as client:
+        for offset in (0, 8758):
+            response = client.post(
+                "/profiles/preview",
+                json={
+                    "schema_version": 1,
+                    "project_id": project.id,
+                    "asset_id": asset.id,
+                    "offset": offset,
+                    "page_size": 2,
+                },
+                headers=headers(owner),
+            )
+            assert response.status_code == 200
+            page = response.json()
+            assert page["source"] == expected.source.document()
+            assert page["transformations"] == [
+                item.document() for item in expected.transformations
+            ]
+            assert page["summary"]["energy_kwh"] == expected.total_kwh
+            assert page["summary"]["interval_count"] == 8760
+            assert page["rows"] == [
+                {
+                    "interval_index": i,
+                    "start_utc": expected.intervals[i].start.isoformat(),
+                    "end_utc": expected.intervals[i].end.isoformat(),
+                    "interval_mean_kw": expected.values_kw[i],
+                }
+                for i in range(offset, offset + 2)
+            ]
 
 
 def test_managed_process_executes_both_registered_kinds_with_matching_readiness(

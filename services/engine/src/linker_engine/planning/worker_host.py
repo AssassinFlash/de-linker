@@ -18,7 +18,7 @@ from threading import Event
 from .canonical import Object, encode
 from .execution_control import ExecutionControl
 from .execution_identity import storage_binding
-from .execution_registry import ExecutionRegistry
+from .execution_registry import service_registry
 from .jobs import Jobs
 from .runtime_config import RuntimeConfig
 from .worker import Worker
@@ -74,11 +74,7 @@ def serve(
     with readiness_owner(ready):
         workspace, energy = settings.open()
         pv = settings.pv_service(workspace)
-        registry = (
-            ExecutionRegistry(energy.kernel)
-            if pv is None
-            else ExecutionRegistry(energy.kernel, pv.kernel)
-        )
+        registry = service_registry(energy, pv)
         if (registry.runtime.sha256, registry.execution_key()) != (
             expected_runtime,
             expected_execution,
@@ -172,11 +168,7 @@ def main(argv: list[str] | None = None) -> int:
         if arguments.command == "identity":
             workspace, energy = settings.open()
             pv = settings.pv_service(workspace)
-            registry = (
-                ExecutionRegistry(energy.kernel)
-                if pv is None
-                else ExecutionRegistry(energy.kernel, pv.kernel)
-            )
+            registry = service_registry(energy, pv)
             print(
                 encode(
                     {

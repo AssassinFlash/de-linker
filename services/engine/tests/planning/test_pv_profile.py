@@ -23,6 +23,7 @@ from linker_engine.planning.pv_profile import (
     PvGenerationLimits,
     PvProfileImport,
 )
+from linker_engine.planning.pv_profile_artifacts import prepared_profile
 from linker_engine.planning.records import Actor, Project
 from linker_engine.planning.workspace import Workspace
 
@@ -385,6 +386,43 @@ def test_model_cannot_claim_a_different_project_geometry_via_metadata_stamps(
         frozen_profile(
             workspace.blobs, forged.content_sha256, forged.metadata_sha256, None
         )
+    with pytest.raises(VersionUnavailable, match="differs from its pinned input"):
+        prepared_profile(workspace.blobs, forged.content_sha256, forged.metadata)
+
+
+@pytest.mark.parametrize(
+    "corruption", ["binding", "truncated", "negative", "energy", "axis"]
+)
+def test_prepared_output_projection_rejects_inconsistent_artifacts(
+    workspace: Workspace,
+    owner: Actor,
+    corruption: str,
+) -> None:
+    roof = project_with_roof(workspace, owner)
+    asset = import_pv(workspace, owner, roof)
+    dependencies = cast(Object, asset.metadata["dependencies"])
+    witness = cast(
+        dict[str, Any], workspace.blobs.object(str(dependencies["pv_model_witness"]))
+    )
+    if corruption == "binding":
+        witness["inputs"]["input_bundle_sha256"] = "0" * 64
+    elif corruption == "truncated":
+        witness["available_ac_w"].pop()
+    elif corruption == "negative":
+        witness["available_ac_w"][0] = -1
+    elif corruption == "energy":
+        witness["energy_kwh"] += 1
+    else:
+        witness["inputs"]["temporal_policy"]["target_axis_sha256"] = "0" * 64
+    changed: Object = {
+        **asset.metadata,
+        "dependencies": {
+            **dependencies,
+            "pv_model_witness": workspace.blobs.put_object(witness),
+        },
+    }
+    with pytest.raises(VersionUnavailable):
+        prepared_profile(workspace.blobs, asset.content_sha256, changed)
 
 
 def test_missing_witness_and_wrong_consumption_role_are_rejected(

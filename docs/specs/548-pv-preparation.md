@@ -27,6 +27,9 @@ The PV task freezes the selected owned weather content/metadata, the exact
 saved geometry/model parameters, runtime and operational settings. It reads
 only those dependencies, generates the actual complete reference profile and
 retains model input/witness bytes. A later project edit cannot alter it.
+Profile preview projects the retained values and interval axis from hash-verified
+artifacts without running the physical model again. A numerical worker still
+reproduces the reference from its frozen original when using it in a calculation.
 
 ## Publication and multiple numerical tasks
 
