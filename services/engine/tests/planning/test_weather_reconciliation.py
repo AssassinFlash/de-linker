@@ -15,6 +15,7 @@ from linker_engine.planning.canonical import encode
 from linker_engine.planning.errors import (
     Conflict,
     InvalidInput,
+    LeaseLost,
     ServiceDraining,
     VersionUnavailable,
 )
@@ -28,7 +29,7 @@ from linker_engine.planning.weather_journal import WeatherJournal
 from linker_engine.planning.weather_kernel import WeatherKernel
 from linker_engine.planning.weather_operator import WeatherOperator
 from linker_engine.planning.weather_reconciliation import WeatherReconciliation
-from linker_engine.planning.worker import Worker
+from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 
 from .conftest import Clock
@@ -265,6 +266,45 @@ def test_stop_observes_abort_terminal_without_changing_cancelled_original(
         WeatherOperator(workspace).resume(
             OPERATOR, run.id, weather.kernel, key="forbidden"
         )
+
+
+def test_replaced_recovery_lease_cannot_enter_abort_after_journal_observation(
+    workspace: Workspace,
+    owner: Actor,
+    clock: Clock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    adapter = SequenceAdapter()
+    _, run, weather, _, journal, intent = failed_start(workspace, owner, adapter)
+    journal.acknowledge(intent, remote("RUNNING"))
+    receipt = WeatherOperator(workspace).admit(OPERATOR, run.id, "stop", key="stop")
+    jobs = Jobs(workspace)
+    lease = jobs.claim("old-recovery", kinds=("reconcile_weather",), lease_seconds=1)
+    assert lease and lease.id == receipt["job_id"]
+    observe = WeatherJournal.observe
+
+    def observe_then_replace(self, current, observed):
+        retained = observe(self, current, observed)
+        clock.advance(2)
+        replacement = jobs.claim(
+            "replacement", kinds=("reconcile_weather",), lease_seconds=60
+        )
+        assert replacement and replacement.id == lease.id and replacement.attempt == 2
+        return retained
+
+    monkeypatch.setattr(WeatherJournal, "observe", observe_then_replace)
+    adapter.replies.append(Reply(200, provider("RUNNING")))
+    with pytest.raises(LeaseLost):
+        WeatherReconciliation(workspace, connection=weather.kernel.transport)(
+            lease, Control()
+        )
+    assert len(adapter.calls) == 1 and adapter.calls[0].method == "GET"
+    assert journal.current(intent).abort_sha256 is None
+    row = job(workspace, receipt["job_id"])
+    assert row["worker"] == "replacement" and row["state"] == "running"
+    assert (
+        workspace.run(owner, run.id).state == "failed" and asset_count(workspace) == 0
+    )
 
 
 def test_recovery_deadline_survives_retry_and_does_not_issue_provider_requests(

@@ -67,6 +67,7 @@ class KnownWeatherRun:
             observed = self.refresh()
             current = self.journal.current(self.intent)
             if observed.status not in TERMINAL and current.abort_sha256 is None:
+                self.task.check()
                 try:
                     # A late actual abort response remains evidence after lease loss.
                     reply = self.client.abort(observed.id, self.task.elapsed)
