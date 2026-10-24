@@ -137,6 +137,7 @@ msgstr "Diktat beenden"
 msgid "FAQ & Downloads"
 msgstr "FAQ & Downloads"
 
+#: build/planner/assets/planner.js
 #: build/genie.js:19 build/hero.js
 msgid "Contact Linker"
 msgstr "Linker kontaktieren"
@@ -6150,3 +6151,35 @@ msgstr "Diese Quelle konnte nicht vorbereitet werden. Ihre Projekteingaben bleib
 #: build/planner/assets/planner.js
 msgid "This project cannot be edited right now. The source has not been selected."
 msgstr "Das Projekt lässt sich derzeit nicht bearbeiten. Die Quelle wurde nicht ausgewählt."
+
+#: build/planner/assets/planner.js
+msgid "Weather source"
+msgstr "Wetterquelle"
+
+#: build/planner/assets/planner.js
+msgid "Radiation database"
+msgstr "Strahlungsdatenbank"
+
+#: build/planner/assets/planner.js
+msgid "Meteorological database"
+msgstr "Meteorologische Datenbank"
+
+#: build/planner/assets/planner.js
+msgid "Requested source year range"
+msgstr "Angefragter Zeitraum"
+
+#: build/planner/assets/planner.js
+msgid "Synthetic calculation year"
+msgstr "Synthetisches Berechnungsjahr"
+
+#: build/planner/assets/planner.js
+msgid "A typical meteorological year combines selected months from different years."
+msgstr "Ein typisches meteorologisches Jahr setzt sich aus ausgewählten Monaten verschiedener Jahre zusammen."
+
+#: build/planner/assets/planner.js
+msgid "The PV profile includes reconstructed interval averages. Shorter output intervals do not increase the time resolution of the original weather data."
+msgstr "Das PV-Profil enthält rekonstruierte Intervallmittelwerte. Die zeitliche Auflösung der ursprünglichen Wetterdaten bleibt auch bei kürzeren Ausgabeintervallen unverändert."
+
+#: build/planner/assets/planner.js
+msgid "PV model settings"
+msgstr "PV-Modelleinstellungen"

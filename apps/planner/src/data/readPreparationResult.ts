@@ -41,6 +41,7 @@ export function readPreparationResult(
 			result.manifest_sha256 === run.manifest_sha256 &&
 			result.runtime_sha256 === context.code_sha256 &&
 			sameJson(pinned, context.assets) &&
+			pinned.runtime_bundle === context.code_sha256 &&
 			Object.values(pinned).every(hash) &&
 			Object.values(dependencies).every(hash) &&
 			id(asset.id) &&
@@ -62,7 +63,10 @@ export function readPreparationResult(
 	if (kind === WEATHER_TASK) {
 		const summary = readObject(result.weather_summary);
 		require(
-			asset.purpose === "pvgis_tmy_weather_v1" &&
+			dependencies.acquisition_plan === pinned["weather_acquisition.plan"] &&
+				dependencies.runtime_bundle === pinned.runtime_bundle &&
+				dependencies.weather_original === asset.content_sha256 &&
+				asset.purpose === "pvgis_tmy_weather_v1" &&
 				metadata.source_type === asset.purpose &&
 				sameJson(summary, metadata.weather) &&
 				finite(summary.latitude_deg) &&
@@ -82,7 +86,8 @@ export function readPreparationResult(
 	} else {
 		const summary = readObject(result.profile_summary);
 		require(
-			asset.purpose === "pvlib_reference_profile_v1" &&
+			asset.content_sha256 === pinned["weather.raw"] &&
+				asset.purpose === "pvlib_reference_profile_v1" &&
 				metadata.profile_type === asset.purpose &&
 				metadata.derived_from_revision === run.revision &&
 				hash(metadata.geometry_sha256) &&

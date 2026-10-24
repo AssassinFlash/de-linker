@@ -175,7 +175,12 @@ export function usePlanningOperations({
 		setIntent(pending);
 		let dispatched = false;
 		try {
-			await store.write(originScope, path, body);
+			await store.write(
+				originScope,
+				path,
+				body,
+				JSON.parse(scopeKey) as string[],
+			);
 			if (!current()) return;
 			setStorageFailed(false);
 			setRecords((previous) => [
@@ -232,6 +237,15 @@ export function usePlanningOperations({
 				return;
 			}
 			if (!current()) return;
+			if (
+				cause instanceof ApiError &&
+				cause.code === "planning_operation_pending" &&
+				!dispatched
+			) {
+				setIntent(null);
+				setRefresh((value) => value + 1);
+				return;
+			}
 			setError(cause);
 			if (!dispatched) setStorageFailed(true);
 			if (

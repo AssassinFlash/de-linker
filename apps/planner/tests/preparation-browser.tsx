@@ -43,14 +43,30 @@ for (const weight of [400, 600] as const) {
 	);
 	document.fonts.add(await font.load());
 }
-const run = readRun(raw, project.id),
+const unknown = weather && options.get("status") === "unknown";
+const response: JsonObject = unknown
+	? { ...raw, state: "failed", result: null, result_sha256: null }
+	: raw;
+const observed = unknown
+	? {
+			...status,
+			task_state: "failed",
+			acquisition_state: "start_outcome_unknown",
+			observation: null,
+			capture_sha256: null,
+		}
+	: status;
+const run = readRun(response, project.id),
 	session = { query_scope: scope } as Session;
 const client = {
 	isCurrentScope: (value: string) => value === scope,
-	async query(path: string) {
+	async query(path: string, body: JsonObject) {
 		if (path === "projects/read") return project;
-		if (path === "assets/read") return raw.result.prepared_asset;
-		if (path === "runs/weather/status") return status;
+		if (path === "assets/read")
+			return body.asset_id === fixture.weather_run.result.prepared_asset.id
+				? fixture.weather_run.result.prepared_asset
+				: raw.result.prepared_asset;
+		if (path === "runs/weather/status") return observed;
 		throw new Error("unexpected_fixture_query");
 	},
 	send() {

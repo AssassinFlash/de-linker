@@ -107,6 +107,51 @@ test("a weather reply to a PV request cannot acknowledge or clear the original d
 	assert.equal(r.calls[1].body, r.calls[0].body);
 });
 
+test("an already-open second consumer cannot replace a lost weather request with a new PV request", async (t) => {
+	let lost = true;
+	const r = await rig(
+		t,
+		async () => {
+			if (lost) throw new TypeError("synthetic lost weather reply");
+			return json(preparation.weather_run);
+		},
+		{ projectId: preparation.weather_run.project_id, pair: true },
+	);
+	assert.equal(r.secondApi.records.length, 0);
+	await act(async () =>
+		r.api.start("runs/weather", {
+			expected_revision: preparation.weather_run.revision,
+		}),
+	);
+	await until(() => r.api.records.length === 1);
+	assert.equal(
+		r.secondApi.records.length,
+		0,
+		"this mounted consumer has a genuinely stale empty cache",
+	);
+	await act(async () =>
+		r.secondApi.start("runs/pv", {
+			expected_revision: preparation.pv_run.revision,
+		}),
+	);
+	await until(() => r.secondApi.records.length === 1);
+	assert.equal(
+		r.calls.length,
+		1,
+		"atomic browser admission prevented the second transport dispatch",
+	);
+	assert.equal(r.secondApi.records[0].path, "runs/weather");
+	assert.equal(
+		r.secondApi.storageFailed,
+		false,
+		"an existing operation is not a browser storage failure",
+	);
+	lost = false;
+	await act(async () => r.secondApi.retry(r.secondApi.records[0]));
+	assert.equal(r.calls.length, 2);
+	assert.equal(r.calls[0].body, r.calls[1].body);
+});
+
 async function rig(t, respond, options = {}) {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
@@ -118,6 +163,7 @@ async function rig(t, respond, options = {}) {
 		calls = [];
 	let owner = session,
 		api,
+		secondApi,
 		props = {
 			projectId,
 			session,
@@ -146,7 +192,16 @@ async function rig(t, respond, options = {}) {
 		root = createRoot(dom.element);
 	function Probe() {
 		api = usePlanningOperations({ ...props, client, recheck: () => {} });
-		return React.createElement("p", null, api.checking ? "Checking" : "Ready");
+		return React.createElement(
+			React.Fragment,
+			null,
+			React.createElement("p", null, api.checking ? "Checking" : "Ready"),
+			options.pair ? React.createElement(SecondProbe) : null,
+		);
+	}
+	function SecondProbe() {
+		secondApi = usePlanningOperations({ ...props, client, recheck: () => {} });
+		return null;
 	}
 	const render = async (next = {}) => {
 		props = { ...props, ...next };
@@ -163,12 +218,16 @@ async function rig(t, respond, options = {}) {
 	});
 	await render();
 	await until(() => !api.checking);
+	if (options.pair) await until(() => !secondApi.checking);
 	return {
 		client,
 		durable,
 		calls,
 		get api() {
 			return api;
+		},
+		get secondApi() {
+			return secondApi;
 		},
 		render,
 		async transition(next) {

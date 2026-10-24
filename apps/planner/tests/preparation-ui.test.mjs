@@ -78,7 +78,10 @@ async function sourceRig(t, kind, options = {}) {
 					return project;
 				}
 				if (path === "assets/read")
-					return options.asset ?? run.result.prepared_asset;
+					return kind === "pv" &&
+						body.asset_id === fixture.weather_run.result.prepared_asset.id
+						? fixture.weather_run.result.prepared_asset
+						: (options.asset ?? run.result.prepared_asset);
 				if (path === "runs/weather/status") return fixture.weather_status;
 				throw new Error("unexpected query " + path);
 			},
@@ -144,6 +147,8 @@ for (const kind of ["weather", "pv"]) {
 		}));
 		await act(async () => gate.resolve());
 		await until(() => selectButton() && !selectButton().disabled);
+		assert.match(document.body.textContent, /PVGIS-SARAH3/);
+		assert.match(document.body.textContent, /ERA5/);
 		assert.equal(
 			rig.edits,
 			0,
@@ -235,7 +240,7 @@ test("mixed history opens a real PV preparation result without invoking energy-r
 		);
 		const client = {
 			isCurrentScope: (value) => value === scope,
-			async query(path) {
+			async query(path, body) {
 				calls.push(path);
 				if (path === "projects/runs")
 					return {
@@ -254,7 +259,10 @@ test("mixed history opens a real PV preparation result without invoking energy-r
 					};
 				if (path === "runs/read") return run;
 				if (path === "projects/read") return project;
-				if (path === "assets/read") return run.result.prepared_asset;
+				if (path === "assets/read")
+					return body.asset_id === fixture.weather_run.result.prepared_asset.id
+						? fixture.weather_run.result.prepared_asset
+						: run.result.prepared_asset;
 				throw new Error("unexpected query " + path);
 			},
 			send() {

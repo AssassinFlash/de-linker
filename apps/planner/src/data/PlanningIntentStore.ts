@@ -5,6 +5,7 @@ import {
 	isPlanningOperation,
 } from "./planningProtocol.ts";
 import { readObject } from "./readProtocol.ts";
+import { ApiError } from "./protocol.ts";
 
 export interface PlanningIntent {
 	readonly scope: string;
@@ -174,7 +175,16 @@ export class PlanningIntentStore {
 		scope: string,
 		path: PlanningOperation,
 		body: string,
+		pendingScopes?: readonly string[],
 	): Promise<void> {
+		// Live dispatch supplies its native-authorised recovery scopes. Keeping
+		// the argument optional preserves raw recovery-envelope restoration.
+		if (
+			pendingScopes &&
+			(!pendingScopes.includes(scope) ||
+				pendingScopes.some((value) => !hex(value, 64)))
+		)
+			throw new Error("energy_recovery_invalid");
 		const request = identity(scope, path, body),
 			db = await this.open();
 		const transaction = db.transaction(STORE, "readwrite"),
@@ -185,39 +195,72 @@ export class PlanningIntentStore {
 			refusal = error;
 			transaction.abort();
 		};
-		scan(
-			store,
-			scope,
-			(records) => {
-				const old = records.find(
+		const scopes = [...new Set(pendingScopes ?? [scope])];
+		const records: PlanningIntent[] = [];
+		const admit = () => {
+			const own = records.filter((row) => row.scope === scope);
+			const old = own.find(
+				(row) =>
+					row.path === path &&
+					row.key === String(request.command.key).toLowerCase(),
+			);
+			if (old) {
+				if (old.body !== body) fail(new Error("energy_recovery_conflict"));
+				return;
+			}
+			if (
+				pendingScopes &&
+				records.some(
 					(row) =>
-						row.path === path &&
-						row.key === String(request.command.key).toLowerCase(),
-				);
-				if (old) {
-					if (old.body !== body) fail(new Error("energy_recovery_conflict"));
-					return;
-				}
-				if (
-					records.length >= MAX_INTENTS ||
-					records.reduce((n, row) => n + bytes(row.body), bytes(body)) >
-						MAX_BYTES
-				) {
-					fail(new Error("energy_recovery_limit"));
-					return;
-				}
-				store.put({
-					id: request.id,
-					schema_version: 1,
-					scope,
-					path,
-					body,
-					created_at: Date.now(),
-					result_id: null,
-				});
-			},
-			fail,
-		);
+						row.projectId === request.command.project_id &&
+						row.resultId === null,
+				)
+			) {
+				fail(new ApiError(409, "planning_operation_pending"));
+				return;
+			}
+			const budget = pendingScopes ? records : own;
+			if (
+				budget.length >= MAX_INTENTS ||
+				budget.reduce((n, row) => n + bytes(row.body), bytes(body)) > MAX_BYTES
+			) {
+				fail(new Error("energy_recovery_limit"));
+				return;
+			}
+			store.put({
+				id: request.id,
+				schema_version: 1,
+				scope,
+				path,
+				body,
+				created_at: Date.now(),
+				result_id: null,
+			});
+		};
+		const next = () => {
+			const current = scopes.shift();
+			if (current === undefined) {
+				admit();
+				return;
+			}
+			scan(
+				store,
+				current,
+				(found) => {
+					records.push(...found);
+					if (
+						records.length > MAX_INTENTS ||
+						records.reduce((n, row) => n + bytes(row.body), 0) > MAX_BYTES
+					) {
+						fail(new Error("energy_recovery_limit"));
+						return;
+					}
+					next();
+				},
+				fail,
+			);
+		};
+		next();
 		await committed.catch((error) => {
 			throw refusal ?? error;
 		});

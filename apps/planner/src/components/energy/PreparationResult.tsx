@@ -8,10 +8,12 @@ import { runTask } from "../../data/planningProtocol.ts";
 import { WEATHER_TASK } from "../../data/readPreparationResult.ts";
 import { readObject, readProject } from "../../data/readProtocol.ts";
 import { selectPreparation } from "../../domain/preparationSelection.ts";
+import { readPreparationWeather } from "../../data/preparationBasis.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { runStateLabel, taskLabel } from "./planningLabels.ts";
 import { WeatherProgress } from "./WeatherProgress.tsx";
+import { PreparationBasis } from "./PreparationBasis.tsx";
 
 export function PreparationResult({
 	run,
@@ -75,9 +77,35 @@ export function PreparationResult({
 						signal,
 					),
 				]);
+				const project = readProject(rawProject),
+					asset = readObject(rawAsset);
+				let weatherSource: unknown = asset;
+				if (!weather) {
+					const weatherId = readObject(
+						project.inputs.pv_preparation,
+					).weather_asset_id;
+					if (
+						typeof weatherId !== "string" ||
+						!/^[a-f0-9]{32}$/.test(weatherId)
+					)
+						throw new ApiError(502, "preparation_source_mismatch");
+					weatherSource = await client.query(
+						"assets/read",
+						{
+							schema_version: 1,
+							project_id: run.project_id,
+							asset_id: weatherId,
+						},
+						session.query_scope,
+						signal,
+					);
+					if (readObject(weatherSource).id !== weatherId)
+						throw new ApiError(502, "preparation_source_mismatch");
+				}
 				return {
-					project: readProject(rawProject),
-					asset: readObject(rawAsset),
+					project,
+					asset,
+					weather: readPreparationWeather(weatherSource, run),
 				};
 			} catch (cause) {
 				if (
@@ -288,6 +316,13 @@ export function PreparationResult({
 								? __("Use this weather source", "linker-tools")
 								: __("Use this PV profile", "linker-tools")}
 					</button>
+					{source.data && (
+						<PreparationBasis
+							weather={source.data.weather}
+							project={source.data.project}
+							pv={!weather}
+						/>
+					)}
 					<details className="lp-comparison">
 						<summary>{__("Source and task checksums", "linker-tools")}</summary>
 						<dl className="lp-run-facts">

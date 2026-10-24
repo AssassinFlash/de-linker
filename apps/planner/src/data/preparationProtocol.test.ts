@@ -11,6 +11,7 @@ import { readProject, readObject } from "./readProtocol.ts";
 import { readWeatherStatus, weatherStatusPending } from "./weatherStatus.ts";
 import { selectPreparation } from "../domain/preparationSelection.ts";
 import { readAsset } from "../domain/profiles.ts";
+import { readPreparationWeather } from "./preparationBasis.ts";
 import type { JsonObject } from "./protocol.ts";
 
 test("actual managed weather and complete-year PV publication are consumed as their own task kinds", () => {
@@ -107,6 +108,19 @@ test("a queued preparation acknowledgement must already bind the declared task m
 		changed.manifest.context.models.task = "different_task";
 		assert.throws(() => readRun(changed, original.project_id));
 	}
+});
+
+test("internally consistent source substitutions still fail their frozen task-role bindings", () => {
+	const weather = structuredClone(fixture.weather_run),
+		alternate = "0".repeat(64);
+	weather.result.dependencies.acquisition_plan = alternate;
+	weather.result.prepared_asset.metadata.dependencies.acquisition_plan =
+		alternate;
+	assert.throws(() => readRun(weather, weather.project_id));
+	const pv = structuredClone(fixture.pv_run);
+	pv.result.dependencies.prepared_asset_content = alternate;
+	pv.result.prepared_asset.content_sha256 = alternate;
+	assert.throws(() => readRun(pv, pv.project_id));
 });
 
 test("explicit weather selection preserves concurrent edits and rejects changed request/source proofs", () => {
@@ -218,4 +232,22 @@ test("weather observations distinguish acquisition, local publication and indepe
 	assert.throws(() =>
 		readWeatherStatus(fixture.weather_status, "0".repeat(32)),
 	);
+});
+
+test("source presentation joins actual PVGIS databases to the weather asset used by the frozen task", () => {
+	for (const original of [fixture.weather_run, fixture.pv_run]) {
+		const run = readRun(original, original.project_id),
+			originalWeather = fixture.weather_run.result.prepared_asset;
+		const metadata = readPreparationWeather(originalWeather, run);
+		const details = readObject(
+			readObject(readObject(metadata.weather).source).details,
+		);
+		assert.equal(details.radiation_database, "PVGIS-SARAH3");
+		assert.equal(details.meteo_database, "ERA5");
+		const changed = structuredClone(originalWeather);
+		changed.metadata_sha256 = "0".repeat(64);
+		assert.throws(() => readPreparationWeather(changed, run));
+		const foreign = { ...originalWeather, project_id: "0".repeat(32) };
+		assert.throws(() => readPreparationWeather(foreign, run));
+	}
 });

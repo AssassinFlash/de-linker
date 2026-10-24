@@ -70,6 +70,48 @@ test("changed bytes cannot replace, acknowledge or delete an original intent; ow
 	assert.deepEqual(await store.list([scope], "e".repeat(32)), []);
 });
 
+test("live admission is atomic across connections and operation kinds while exact recovery stays available", async (t) => {
+	const first = fresh(t),
+		second = new PlanningIntentStore(),
+		weather = command(),
+		pv = command();
+	const outcomes = await Promise.allSettled([
+		first.write(scope, "runs/weather", weather, [scope]),
+		second.write(scope, "runs/pv", pv, [scope]),
+	]);
+	assert.equal(
+		outcomes.filter((value) => value.status === "fulfilled").length,
+		1,
+	);
+	const rows = await first.list([scope], project);
+	assert.equal(rows.length, 1);
+	const original = rows[0]!;
+	await second.write(scope, original.path, original.body, [scope]);
+	await first.acknowledge(scope, original.path, original.body, asset);
+	const next = original.path === "runs/weather" ? "runs/pv" : "runs/weather";
+	await second.write(scope, next, command(), [scope]);
+	assert.equal(
+		(await first.list([scope], project)).length,
+		2,
+		"an acknowledged record does not block a new task",
+	);
+});
+
+test("live admission includes native-granted prior namespaces without reading unrelated scopes", async (t) => {
+	const store = fresh(t),
+		former = "f".repeat(64),
+		original = command();
+	await store.write(former, "runs/weather", original);
+	await assert.rejects(
+		store.write(scope, "runs/pv", command(), [scope, former]),
+		/planning_operation_pending/,
+	);
+	await store.write(former, "runs/weather", original, [scope, former]);
+	await store.write(scope, "runs/pv", command(), [scope]);
+	assert.equal((await store.list([scope], project)).length, 1);
+	assert.equal((await store.list([former], project))[0]!.body, original);
+});
+
 test("one UUID in different operation namespaces retains independent exact bodies", async (t) => {
 	const store = fresh(t),
 		key = crypto.randomUUID(),
