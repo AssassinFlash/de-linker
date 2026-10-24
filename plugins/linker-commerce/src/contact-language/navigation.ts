@@ -71,10 +71,7 @@ export function connectContactLanguage(): () => void {
 					input.options.length > 0 )
 			);
 		} );
-	const untouched = ( input: TextControl ) => {
-		if ( edited.has( input ) ) {
-			return false;
-		}
+	const atDefault = ( input: TextControl ) => {
 		if ( input instanceof HTMLSelectElement ) {
 			const initial = Array.from( input.options ).find(
 				( option ) => option.defaultSelected
@@ -83,6 +80,8 @@ export function connectContactLanguage(): () => void {
 		}
 		return input.value === input.defaultValue;
 	};
+	const untouched = ( input: TextControl ) =>
+		! edited.has( input ) && atDefault( input );
 	const acceptable = (
 		form: HTMLFormElement,
 		fields: unknown
@@ -271,18 +270,13 @@ export function connectContactLanguage(): () => void {
 				const input = control( form, key );
 				return (
 					input &&
-					( edited.has( input ) ||
-						( input instanceof HTMLSelectElement
-							? ! untouched( input )
-							: Boolean( input.value ) ) )
+					( input instanceof HTMLSelectElement
+						? ! atDefault( input )
+						: Boolean( input.value ) || ! atDefault( input ) )
 				);
 			} ) ||
-			( consent &&
-				( edited.has( consent ) ||
-					consent.checked !== consent.defaultChecked ) ) ||
-			( include &&
-				( edited.has( include ) ||
-					include.checked !== include.defaultChecked ) );
+			( consent && consent.checked !== consent.defaultChecked ) ||
+			( include && include.checked !== include.defaultChecked );
 		if ( ! dirty ) {
 			return;
 		}

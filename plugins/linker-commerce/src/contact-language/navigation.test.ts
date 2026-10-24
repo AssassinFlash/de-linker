@@ -524,6 +524,75 @@ test( 'storage failure keeps actual edits and offers a new translated tab; an un
 	expect( link.ownerDocument.activeElement ).toBe( link );
 } );
 
+test.each( [
+	'message',
+	'name',
+	'email',
+	'company',
+	'intent',
+	'implicit-select',
+	'consent',
+	'linker_contact_selection',
+] )(
+	'returning %s to its native default keeps blocked-storage navigation native',
+	( name ) => {
+		fixture();
+		if ( name === 'implicit-select' ) {
+			document
+				.querySelector( 'option[selected]' )!
+				.removeAttribute( 'selected' );
+		}
+		disconnect = connectContactLanguage();
+		const input = field( name === 'implicit-select' ? 'intent' : name );
+		if ( input.type === 'checkbox' ) {
+			input.checked = ! input.defaultChecked;
+			input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+			input.checked = input.defaultChecked;
+			input.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+		} else {
+			input.value =
+				input instanceof HTMLSelectElement ? 'project' : 'Edit';
+			input.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+			input.value = input instanceof HTMLSelectElement ? 'document' : '';
+			input.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+		}
+		const set = vi
+			.spyOn( Storage.prototype, 'setItem' )
+			.mockImplementation( () => {
+				throw new Error( 'quota' );
+			} );
+		expect( languageClick().defaultPrevented ).toBe( false );
+		expect( set ).not.toHaveBeenCalled();
+		expect( window.sessionStorage.getItem( key ) ).toBeNull();
+		expect(
+			document.querySelector< HTMLElement >(
+				'[data-linker-contact-draft-error]'
+			)!.hidden
+		).toBe( true );
+	}
+);
+
+test.each( [ 'message', 'name', 'email', 'company' ] )(
+	'clearing a server-prefilled %s still carries its explicit empty value',
+	( name ) => {
+		fixture();
+		field( name ).defaultValue = 'Server prefill';
+		disconnect = connectContactLanguage();
+		field( name ).value = '';
+		field( name ).dispatchEvent( new Event( 'input', { bubbles: true } ) );
+		expect( languageClick().defaultPrevented ).toBe( false );
+		const stored = JSON.parse( window.sessionStorage.getItem( key )! );
+		expect( stored.fields[ name ] ).toBe( '' );
+		disconnect();
+		window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+		fixture();
+		field( name ).defaultValue = 'Fresh target prefill';
+		disconnect = connectContactLanguage();
+		expect( field( name ) ).toHaveValue( '' );
+		expect( window.sessionStorage.getItem( key ) ).toBeNull();
+	}
+);
+
 test( 'active language prevents a destructive reload, while external and blank links remain native', () => {
 	fixture();
 	disconnect = connectContactLanguage();
