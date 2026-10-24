@@ -144,7 +144,7 @@ def _serve(
         project = engine_project(instance, checkout.service("engine"))
         engine_pinned = project != checkout.service("engine")
         planner_environment(instance)
-        worker = PlannerWorker(instance, project, uv)
+        worker = PlannerWorker(instance, project, uv, checkout=checkout)
         # First startup needs an environment for the private control CLI.
         # Never sync dependencies underneath an existing numerical process.
         if not (project / ".venv/bin/python").is_file():
@@ -329,12 +329,12 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
     holds — not a second source of products. A site that cannot answer is a
     broken `serve`, not a silently data-less engine.
     """
-    compatibility = checkout.root / "plugins/linker-commerce/data/compatibility.json"
-    if not compatibility.is_file():
-        raise ProcessError(f"{compatibility} is missing from this checkout")
     directory = instance.dir / "engine"
     directory.mkdir(exist_ok=True)
     feed = directory / "feed.json"
+    compatibility = checkout.engine_contract(feed)
+    if not compatibility.is_file():
+        raise ProcessError(f"{compatibility} is missing from the selected generation")
     url = instance.url + ENGINE_FEED_PATH
     try:
         with urllib.request.urlopen(url, timeout=ENGINE_FEED_TIMEOUT) as reply:

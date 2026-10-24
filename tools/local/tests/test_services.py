@@ -8,6 +8,7 @@ import pytest
 
 from linker_local.checkout import Checkout
 from linker_local.instance import Instance
+from linker_local.planner_worker import PlannerWorker
 from linker_local.processes import ProcessError
 from linker_local.services import (
     SERVICES,
@@ -147,6 +148,13 @@ def test_local_engine_uses_its_own_woo_authority(
         instance.dir.mkdir()
         try:
             environment = _engine_environment(instance, Checkout.here())
+            worker = PlannerWorker(
+                instance, Checkout.here().service("engine"), Path("uv")
+            )
+            assert (
+                worker.environment()["LINKER_ENGINE_COMPATIBILITY"]
+                == environment["LINKER_ENGINE_COMPATIBILITY"]
+            )
             feed = Path(environment["LINKER_ENGINE_FEED"])
             generation = feed.parent / "publication-generation-current"
             generation.mkdir()
@@ -155,6 +163,9 @@ def test_local_engine_uses_its_own_woo_authority(
             # must keep the exact worker-published bytes and their manifest.
             original = b'{ "products": [], "source_revision": "woo", "compatibility_revision": "contract" }'
             frozen.write_bytes(original)
+            (generation / "compatibility.json").write_bytes(
+                Checkout.here().engine_compatibility.read_bytes()
+            )
             (generation / "manifest.json").write_text(
                 json.dumps(
                     {"source_revision": "woo", "compatibility_revision": "contract"}
@@ -162,7 +173,14 @@ def test_local_engine_uses_its_own_woo_authority(
             )
             feed.unlink()
             feed.symlink_to(frozen)
-            _engine_environment(instance, Checkout.here())
+            managed = _engine_environment(instance, Checkout.here())
+            assert managed["LINKER_ENGINE_COMPATIBILITY"] == str(
+                generation / "compatibility.json"
+            )
+            assert (
+                worker.environment()["LINKER_ENGINE_COMPATIBILITY"]
+                == managed["LINKER_ENGINE_COMPATIBILITY"]
+            )
             assert frozen.read_bytes() == original
             (generation / "manifest.json").write_text(
                 json.dumps(

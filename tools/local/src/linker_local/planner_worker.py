@@ -14,6 +14,7 @@ from contextlib import closing
 from pathlib import Path
 from uuid import uuid4
 
+from .checkout import Checkout
 from .instance import Instance
 from .private_config import publish_once
 from .processes import POLL, Background, ProcessError
@@ -24,10 +25,18 @@ CONTROL_TIMEOUT = 10.0
 
 
 class PlannerWorker:
-    def __init__(self, instance: Instance, project: Path, uv: Path) -> None:
+    def __init__(
+        self,
+        instance: Instance,
+        project: Path,
+        uv: Path,
+        *,
+        checkout: Checkout | None = None,
+    ) -> None:
         self.instance = instance
         self.project = project
         self.uv = uv
+        self.checkout = checkout or Checkout.here()
         self.policy_file = instance.dir / "planner/worker.json"
         self.runtime_file = instance.dir / "planner/runtime.json"
         self.process = Background(
@@ -96,7 +105,7 @@ class PlannerWorker:
             # research credential to validate its frozen product dependencies.
             "LINKER_ENGINE_FEED": str(self.instance.dir / "engine/feed.json"),
             "LINKER_ENGINE_COMPATIBILITY": str(
-                self.instance.dir / "engine/compatibility.json"
+                self.checkout.engine_contract(self.instance.dir / "engine/feed.json")
             ),
             "LINKER_ENGINE_CACHE": str(self.instance.dir / "engine/cache"),
             "LINKER_PUBLICATION_URL": self.instance.url

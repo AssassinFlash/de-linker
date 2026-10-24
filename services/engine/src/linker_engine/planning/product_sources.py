@@ -22,7 +22,7 @@ from ..publication import (
 )
 from .canonical import Json, Object, decode_object, encode
 from .errors import Conflict, InvalidInput, ProductEvidenceChanged, VersionUnavailable
-from .geometry_documents import GeometryDocument, ModuleSpec
+from .geometry_documents import GeometryDocument, ModuleSource, ModuleSpec
 from .pv_parameters import PvGenerationParameters, PvModuleParameters
 from .pv_profile_preparation import PROFILE_PURPOSE
 from .woo_module import module_template
@@ -110,9 +110,24 @@ class ProductSources:
             ) from error
 
     @staticmethod
+    def _check_binding(source: ModuleSource, expected: ModuleSource) -> None:
+        old, current = source.woo, expected.woo
+        if (
+            old is not None
+            and current is not None
+            and (
+                old.product_id == current.product_id
+                and old.reference_input_id == current.reference_input_id
+                and old.product_revision != current.product_revision
+            )
+        ):
+            raise ProductEvidenceChanged("the saved Woo module revision changed")
+
+    @staticmethod
     def _check_module(module: ModuleSpec, basis: Object) -> None:
         template = cast(Object, basis["module"])
         expected = ModuleSpec.read(template["specification"])
+        ProductSources._check_binding(module.source, expected.source)
         if module != expected.model_copy(update={"id": module.id}):
             raise InvalidInput("choose the current Woo-maintained module specification")
 
@@ -162,6 +177,7 @@ class ProductSources:
             if module is None:
                 raise InvalidInput("PV module is outside the saved roof layout")
             self._check_module(module, basis)
+            self._check_binding(item.source, expected.source)
             if item != expected.model_copy(update={"module_spec_id": module.id}):
                 raise InvalidInput(
                     "PV coefficient must match its current Woo-maintained figure"

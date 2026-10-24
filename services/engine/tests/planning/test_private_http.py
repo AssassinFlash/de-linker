@@ -372,6 +372,25 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
             headers=headers(),
         )
         assert refused.status_code == 422
+        stale = json.loads(json.dumps(create["inputs"]))
+        stale["geometry"]["module_specs"][0]["source"]["woo"]["product_revision"] = (
+            "f" * 64
+        )
+        refused = private.post(
+            "/projects/revise",
+            json={
+                "schema_version": 1,
+                "project_id": created.json()["id"],
+                "expected_revision": 1,
+                "inputs": stale,
+                "key": "old-woo-revision",
+            },
+            headers=headers(),
+        )
+        assert (
+            refused.status_code == 409
+            and refused.json()["error"]["code"] == "product_evidence_changed"
+        )
         mode = "unavailable"
         replay = private.post("/projects/create", json=create, headers=headers())
         assert replay.status_code == 200 and replay.json() == created.json()

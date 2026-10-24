@@ -617,6 +617,10 @@ msgstr "Bezugspunkt U"
 msgid "Anchor V"
 msgstr "Bezugspunkt V"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/ProjectOverview.tsx:61
+#: ../../apps/planner/src/components/BriefForm.tsx:303
+#: ../../apps/planner/src/components/RevisionComparison.tsx:82
 #: src/configurator/commercial/CommercialPanel.tsx:258 build/configurator.js
 msgid "Annual consumption"
 msgstr "Jahresverbrauch"
@@ -775,6 +779,8 @@ msgstr "Mittlere Leistung in kW"
 msgid "Average power over each interval · kW"
 msgstr "Mittlere Leistung je Intervall · kW"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/GeometryIntake.tsx:614
 #: build/genie.js:16 build/hero.js
 msgid "Back"
 msgstr "Zurück"
@@ -965,6 +971,10 @@ msgstr "Berechnungsjahr"
 msgid "Calibration and measurement conditions"
 msgstr "Kalibrierung und Messbedingungen"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/NewProject.tsx:237
+#: ../../apps/planner/src/components/ProfileIntake.tsx:679
+#: ../../apps/planner/src/components/design/DesignEditor.tsx:504
 #: build/genie.js:10 build/genie.js:19 build/hero.js
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -1190,6 +1200,8 @@ msgstr "Bitte auswählen"
 msgid "Choose another photo"
 msgstr "Anderes Foto auswählen"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/GeometryIntake.tsx:559
 #: src/configurator/commercial/CommercialPanel.tsx:405 build/configurator.js
 msgid "Choose file"
 msgstr "Datei auswählen"
@@ -4392,6 +4404,9 @@ msgstr "Die Energiereserve ist größer als der nutzbare Energiebereich des Spei
 msgid "Reserved stored energy"
 msgstr "Energiereserve im Speicher"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/BriefForm.tsx:98
+#: ../../apps/planner/src/components/RevisionComparison.tsx:28
 #: src/configurator/App.tsx:56 build/configurator.js
 msgid "Residential"
 msgstr "Wohngebäude"
@@ -4817,6 +4832,8 @@ msgstr "Gespeichert · Version %d"
 msgid "Saving drawing in this browser…"
 msgstr "Zeichnung wird in diesem Browser gespeichert…"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/ProjectEditor.tsx:327
 #: build/genie.js:13 src/configurator/solution/Solution.tsx:333 build/hero.js
 #: src/genie/shared/cardActions.ts src/configurator/solution/Solution.tsx
 #: build/configurator.js build/genie.js
@@ -5153,6 +5170,11 @@ msgstr "Solarenergie zur Lastversorgung"
 msgid "Solution"
 msgstr "Lösung"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/Workspace.tsx:200
+#: ../../apps/planner/src/components/ToolIdentity.tsx:9
+#: ../../apps/planner/src/components/ProjectEditor.tsx:407
+#: ../../apps/planner/src/components/SessionBoundary.tsx:93
 #: src/configurator/App.tsx:97 build/configurator.js
 msgid "Solution Configurator"
 msgstr "Lösungskonfigurator"
@@ -6429,6 +6451,11 @@ msgstr "Die Umrechnung bestimmt die Einstrahlung auf die jeweilige Modulebene an
 msgid "True north with source reference"
 msgstr "Geografisch Nord mit Quellenangabe"
 
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/Workspace.tsx:246
+#: ../../apps/planner/src/components/SessionBoundary.tsx:104
+#: ../../apps/planner/src/components/energy/TraceExplorer.tsx:132
+#: ../../apps/planner/src/components/energy/PreparationResult.tsx:237
 #: includes/Genie/Entries.php build/genie.js:19 build/hero.js
 #: src/configurator/residential/ResidentialPanel.tsx:308 src/genie/App.tsx:1351
 #: build/configurator.js
