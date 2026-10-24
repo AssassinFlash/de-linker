@@ -215,7 +215,7 @@ test( 'malformed pending is removed before parsing, rather than surviving each v
 	expect( field( 'message' ) ).toHaveValue( '' );
 } );
 
-test( 'new destination edits, focus, empty values and bfcache pages are respected', () => {
+test( 'new destination edits, empty values and bfcache pages are respected', () => {
 	const stored = saveEdit();
 	stored.fields.name = '';
 	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
@@ -236,8 +236,255 @@ test( 'new destination edits, focus, empty values and bfcache pages are respecte
 	fixture();
 	field( 'message' ).focus();
 	disconnect = connectContactLanguage();
-	expect( field( 'message' ) ).toHaveValue( '' );
+	expect( field( 'message' ) ).toHaveValue( stored.fields.message );
+	expect( field( 'message' ).ownerDocument.activeElement ).toBe(
+		field( 'message' )
+	);
 	expect( window.sessionStorage.getItem( key ) ).toBeNull();
+} );
+
+test( 'a head entry keeps pending until the complete native form arrives', async () => {
+	const stored = saveEdit();
+	stored.fields.email = 'qa@example.test';
+	stored.consent = true;
+	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
+	window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+	document.body.replaceChildren();
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	expect( window.sessionStorage.getItem( key ) ).not.toBeNull();
+
+	fixture();
+	const consent = field( 'consent' );
+	consent.remove();
+	await Promise.resolve();
+	expect( window.sessionStorage.getItem( key ) ).not.toBeNull();
+	expect( field( 'message' ) ).toHaveValue( '' );
+	document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+	expect( window.sessionStorage.getItem( key ) ).not.toBeNull();
+	field( 'email' ).focus();
+	document.querySelector( 'form' )!.append( consent );
+	await Promise.resolve();
+
+	expect( field( 'message' ) ).toHaveValue( stored.fields.message );
+	expect( field( 'name' ) ).toHaveValue( stored.fields.name );
+	expect( field( 'email' ) ).toHaveValue( 'qa@example.test' );
+	expect( field( 'intent' ) ).toHaveValue( 'project' );
+	expect( field( 'consent' ) ).toBeChecked();
+	expect( field( 'linker_contact_selection' ) ).not.toBeChecked();
+	expect( field( 'email' ).ownerDocument.activeElement ).toBe(
+		field( 'email' )
+	);
+	expect( window.sessionStorage.getItem( key ) ).toBeNull();
+	field( 'message' ).value = 'Later target edit';
+	document.querySelector( 'form' )!.append( document.createElement( 'div' ) );
+	await Promise.resolve();
+	expect( field( 'message' ) ).toHaveValue( 'Later target edit' );
+} );
+
+test( 'a source click before the parser observer saves all fields and survives late readiness', async () => {
+	document.body.replaceChildren();
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	fixture();
+	field( 'message' ).value = 'Early source question';
+	field( 'name' ).value = 'Early source name';
+	field( 'email' ).value = 'qa@example.test';
+	field( 'company' ).value = 'Early company';
+	field( 'intent' ).value = 'project';
+	field( 'consent' ).checked = true;
+	field( 'linker_contact_selection' ).checked = false;
+	// No microtask checkpoint: the native click is the first complete-form check.
+	expect( languageClick().defaultPrevented ).toBe( false );
+	const serialized = window.sessionStorage.getItem( key );
+	expect( JSON.parse( serialized! ) ).toMatchObject( {
+		fields: {
+			message: 'Early source question',
+			name: 'Early source name',
+			email: 'qa@example.test',
+			company: 'Early company',
+			intent: 'project',
+		},
+		consent: true,
+		include: false,
+	} );
+	document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+	await Promise.resolve();
+	expect( window.sessionStorage.getItem( key ) ).toBe( serialized );
+} );
+
+test( 'a language click restores incoming state synchronously before saving the next handoff', () => {
+	const stored = saveEdit();
+	stored.consent = true;
+	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
+	window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+	document.body.replaceChildren();
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	fixture();
+	const link = document.querySelector< HTMLAnchorElement >(
+		'[data-linker-language-choice="de"]'
+	)!;
+	link.href = '/contact/?intent=document';
+	expect( languageClick().defaultPrevented ).toBe( false );
+	const next = JSON.parse( window.sessionStorage.getItem( key )! );
+	expect( next.fields ).toEqual( stored.fields );
+	expect( next.consent ).toBe( true );
+	expect( next.include ).toBe( false );
+	expect( next.target ).toBe(
+		window.location.origin + '/contact/?intent=document'
+	);
+} );
+
+test( 'early real edits including clear and checkbox return-to-default protect only those fields', async () => {
+	const stored = saveEdit();
+	stored.fields.email = 'qa@example.test';
+	stored.fields.company = 'Saved company';
+	stored.consent = true;
+	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
+	window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+	const form = fixture();
+	const company = field( 'company' );
+	company.remove();
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	field( 'message' ).value = 'Target typing';
+	field( 'message' ).dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	field( 'message' ).value = '';
+	field( 'message' ).dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	field( 'name' ).value = 'New target name';
+	field( 'name' ).dispatchEvent( new Event( 'change', { bubbles: true } ) );
+	field( 'intent' ).value = 'project';
+	field( 'intent' ).dispatchEvent( new Event( 'change', { bubbles: true } ) );
+	field( 'intent' ).value = 'document';
+	field( 'intent' ).dispatchEvent( new Event( 'change', { bubbles: true } ) );
+	for ( const name of [ 'consent', 'linker_contact_selection' ] ) {
+		field( name ).checked = ! field( name ).defaultChecked;
+		field( name ).dispatchEvent( new Event( 'change', { bubbles: true } ) );
+		field( name ).checked = field( name ).defaultChecked;
+		field( name ).dispatchEvent( new Event( 'change', { bubbles: true } ) );
+	}
+	field( 'email' ).focus();
+	form.append( company );
+	await Promise.resolve();
+	expect( field( 'message' ) ).toHaveValue( '' );
+	expect( field( 'name' ) ).toHaveValue( 'New target name' );
+	expect( field( 'intent' ) ).toHaveValue( 'document' );
+	expect( field( 'consent' ) ).not.toBeChecked();
+	expect( field( 'linker_contact_selection' ) ).toBeChecked();
+	expect( field( 'email' ) ).toHaveValue( 'qa@example.test' );
+	expect( field( 'company' ) ).toHaveValue( 'Saved company' );
+	expect( field( 'linker_contact_selection' ).value ).toBe(
+		'current-server-json'
+	);
+	expect( field( 'linker_contact_nonce' ) ).toHaveValue( 'fresh-nonce' );
+	expect( window.sessionStorage.getItem( key ) ).toBeNull();
+} );
+
+test( 'an in-progress composition protects its field before the first input event', async () => {
+	const stored = saveEdit();
+	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
+	window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+	const form = fixture();
+	const consent = field( 'consent' );
+	consent.remove();
+	disconnect = connectContactLanguage();
+	field( 'message' ).dispatchEvent(
+		new CompositionEvent( 'compositionstart', { bubbles: true } )
+	);
+	form.append( consent );
+	await Promise.resolve();
+	expect( field( 'message' ) ).toHaveValue( '' );
+	expect( field( 'name' ) ).toHaveValue( stored.fields.name );
+} );
+
+test( 'a dirty partial form keeps its current page without writing incomplete fields', async () => {
+	const stored = saveEdit();
+	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
+	window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+	const form = fixture();
+	const company = field( 'company' );
+	company.remove();
+	disconnect = connectContactLanguage();
+	field( 'message' ).value = 'Partial target edit';
+	field( 'message' ).dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	const incoming = window.sessionStorage.getItem( key );
+	const set = vi.spyOn( Storage.prototype, 'setItem' );
+	expect( languageClick().defaultPrevented ).toBe( true );
+	expect( set ).not.toHaveBeenCalled();
+	expect( window.sessionStorage.getItem( key ) ).toBe( incoming );
+	expect( field( 'message' ) ).toHaveValue( 'Partial target edit' );
+	expect(
+		document.querySelector( '[data-linker-contact-draft-error]' )
+	).toBeVisible();
+	form.append( company );
+	await Promise.resolve();
+	expect( field( 'message' ) ).toHaveValue( 'Partial target edit' );
+	expect( field( 'name' ) ).toHaveValue( stored.fields.name );
+} );
+
+test( 'a receipt arriving after the head entry consumes pending without a form', async () => {
+	const stored = saveEdit();
+	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
+	document.body.replaceChildren();
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	expect( window.sessionStorage.getItem( key ) ).not.toBeNull();
+	document.body.innerHTML =
+		'<div class="linker-contact-receipt">Received</div>';
+	await Promise.resolve();
+	expect( window.sessionStorage.getItem( key ) ).toBeNull();
+} );
+
+test( 'readiness clears a page without a form only once', () => {
+	document.body.replaceChildren();
+	window.sessionStorage.setItem( key, '{old malformed state' );
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	expect( window.sessionStorage.getItem( key ) ).not.toBeNull();
+	document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+	expect( window.sessionStorage.getItem( key ) ).toBeNull();
+	window.sessionStorage.setItem( key, 'new handoff' );
+	document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+	expect( window.sessionStorage.getItem( key ) ).toBe( 'new handoff' );
+} );
+
+test( 'a delegated native submit clears pending only for a Contact form', () => {
+	document.body.replaceChildren();
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	const form = fixture();
+	field( 'message' ).value = 'Ready to carry';
+	languageClick();
+	const pending = window.sessionStorage.getItem( key );
+	const other = document.createElement( 'form' );
+	document.body.append( other );
+	other.dispatchEvent( new Event( 'submit', { bubbles: true } ) );
+	expect( window.sessionStorage.getItem( key ) ).toBe( pending );
+	form.dispatchEvent( new Event( 'submit', { bubbles: true } ) );
+	expect( window.sessionStorage.getItem( key ) ).toBeNull();
+} );
+
+test( 'cleanup removes parser observation and all delegated listeners', async () => {
+	const stored = saveEdit();
+	window.sessionStorage.setItem( key, JSON.stringify( stored ) );
+	window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+	document.body.replaceChildren();
+	vi.spyOn( document, 'readyState', 'get' ).mockReturnValue( 'loading' );
+	disconnect = connectContactLanguage();
+	disconnect();
+	const form = fixture();
+	field( 'message' ).value = 'Keep after cleanup';
+	field( 'message' ).dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	expect( languageClick().defaultPrevented ).toBe( false );
+	form.dispatchEvent( new Event( 'submit', { bubbles: true } ) );
+	document.dispatchEvent( new Event( 'DOMContentLoaded' ) );
+	await Promise.resolve();
+	expect( field( 'message' ) ).toHaveValue( 'Keep after cleanup' );
+	expect( field( 'name' ) ).toHaveValue( '' );
+	expect( window.sessionStorage.getItem( key ) ).toBe(
+		JSON.stringify( stored )
+	);
 } );
 
 test.each( [

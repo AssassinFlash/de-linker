@@ -86,6 +86,7 @@ final class PluginTest extends TestCase {
 			)
 		);
 			WP_Mock::expectFilterAdded( 'the_content', array( new AnyInstance( ContactModule::class ), 'mount_form' ), 9 ); // @phpstan-ignore argument.type
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( new AnyInstance( ContactModule::class ), 'enqueue_language' ) ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)
 		WP_Mock::expectActionAdded( 'admin_post_nopriv_linker_contact', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Contact\Handler::class ), 'handle' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'admin_post_linker_contact', array( new \WP_Mock\Matcher\AnyInstance( \Linker\Commerce\Contact\Handler::class ), 'handle' ) ); // @phpstan-ignore argument.type
 		WP_Mock::expectActionAdded( 'woocommerce_admin_order_data_after_order_details', array( new AnyInstance( \Linker\Commerce\Contact\SelectionView::class ), 'admin' ) ); // @phpstan-ignore argument.type (WP_Mock AnyInstance matcher fixture)

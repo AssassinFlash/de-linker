@@ -10,7 +10,9 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Unit\Contact;
 
 use Linker\Commerce\Contact\Form;
+use Linker\Commerce\Contact\Handler;
 use Linker\Commerce\Contact\Module;
+use Linker\Commerce\Contact\SelectionView;
 use Linker\Commerce\Settings\Options;
 use Linker\Commerce\Tests\TestCase;
 use WP_Mock;
@@ -42,6 +44,119 @@ final class ModuleTest extends TestCase {
 	 * as a bare paragraph.
 	 */
 	private const STRIPPED_SAVE_FIXTURE = __DIR__ . '/../../Fixtures/contact-page-stripped-save.html';
+
+	/** The native enqueue action runs before WordPress prints the head scripts. */
+	public function test_registers_the_request_enqueue_hook(): void {
+		$module = $this->module();
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 1 ) );
+		$this->expect_action_on_any( 'admin_post_nopriv_linker_contact', Handler::class, 'handle' );
+		$this->expect_action_on_any( 'admin_post_linker_contact', Handler::class, 'handle' );
+		$this->expect_action_on_any( 'woocommerce_admin_order_data_after_order_details', SelectionView::class, 'admin' );
+		$this->expect_action_on_any( 'woocommerce_email_order_meta', SelectionView::class, 'email', 10, 4 );
+		// @phpstan-ignore argument.type (WP_Mock callback instance matcher)
+		WP_Mock::expectFilterAdded( 'woocommerce_privacy_remove_order_personal_data_meta', array( new WP_Mock\Matcher\AnyInstance( SelectionView::class ), 'erase' ) );
+		WP_Mock::expectFilterAdded( 'the_content', array( $module, 'mount_form' ), 9 );
+		WP_Mock::expectActionAdded( 'wp_enqueue_scripts', array( $module, 'enqueue_language' ) );
+
+		$module->register();
+		$this->assertConditionsMet();
+	}
+
+	/** The request identity is available before the page's loop or shortcode. */
+	public function test_enqueues_on_the_canonical_english_contact_request_without_a_loop(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $this->page( 28, 'contact' ) ) );
+		WP_Mock::userFunction(
+			'get_page_by_path',
+			array(
+				'args'   => array( 'contact' ),
+				'return' => $this->page( 28, 'contact' ),
+			)
+		);
+		WP_Mock::userFunction( 'get_post', array( 'times' => 0 ) );
+		$this->expect_language_entry();
+
+		$this->module()->enqueue_language();
+		$this->assertConditionsMet();
+	}
+
+	/** Only the canonical page's Polylang twin qualifies, independently of its slug. */
+	public function test_enqueues_on_the_native_german_contact_twin(): void {
+		$this->on_page( 6907, 'a-translated-slug', 6907 );
+		$this->expect_language_entry();
+
+		$this->module()->enqueue_language();
+		$this->assertConditionsMet();
+	}
+
+	/** A secondary loop cannot prevent the request's entry or acquire its form mount. */
+	public function test_enqueues_for_contact_while_leaving_secondary_loop_content_untouched(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $this->page( 28, 'contact' ) ) );
+		WP_Mock::userFunction( 'get_post', array( 'return' => $this->page( 50, 'aside' ) ) );
+		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => $this->page( 28, 'contact' ) ) );
+		$this->expect_language_entry();
+		$module  = $this->module();
+		$fixture = $this->fixture();
+
+		$module->enqueue_language();
+
+		$this->assertSame( $fixture, $module->mount_form( $fixture ) );
+	}
+
+	/** A contact post in another page's loop cannot turn that request into Contact. */
+	public function test_does_not_enqueue_on_an_unrelated_request_with_contact_in_the_loop(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $this->page( 99, 'about' ) ) );
+		WP_Mock::userFunction( 'get_post', array( 'return' => $this->page( 28, 'contact' ) ) );
+		WP_Mock::userFunction( 'get_page_by_path', array( 'return' => $this->page( 28, 'contact' ) ) );
+		WP_Mock::userFunction(
+			'pll_get_post',
+			array(
+				'args'   => array( 28, 'de' ),
+				'return' => 6907,
+			)
+		);
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 0 ) );
+
+		$this->module()->enqueue_language();
+		$this->assertConditionsMet();
+	}
+
+	/** A familiar translated slug without a native pair is insufficient. */
+	public function test_does_not_enqueue_for_an_unpaired_contact_slug(): void {
+		$this->on_page( 99, 'kontakt', null );
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 0 ) );
+
+		$this->module()->enqueue_language();
+		$this->assertConditionsMet();
+	}
+
+	/** A missing canonical page cannot establish Contact identity. */
+	public function test_does_not_enqueue_without_the_canonical_english_page(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $this->page( 28, 'contact' ) ) );
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 0 ) );
+
+		$this->module()->enqueue_language();
+		$this->assertConditionsMet();
+	}
+
+	/** Archives and non-page objects cannot carry the page's entry. */
+	public function test_does_not_enqueue_for_a_non_post_queried_object(): void {
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => (object) array( 'term_id' => 28 ) ) );
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 0 ) );
+
+		$this->module()->enqueue_language();
+		$this->assertConditionsMet();
+	}
+
+	/** A post with the same numeric identity is not a page. */
+	public function test_does_not_enqueue_for_a_non_page_post(): void {
+		$post            = $this->page( 28, 'contact' );
+		$post->post_type = 'post';
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $post ) );
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 0 ) );
+
+		$this->module()->enqueue_language();
+		$this->assertConditionsMet();
+	}
 
 	/**
 	 * The old mount becomes the form shortcode, and the fallback line goes —
@@ -217,6 +332,19 @@ final class ModuleTest extends TestCase {
 	 */
 	private function module(): Module {
 		return new Module();
+	}
+
+	/** The request queues the same generated external handle used by the shortcode. */
+	private function expect_language_entry(): void {
+		$asset = require dirname( __DIR__, 4 ) . '/build/contact-language.asset.php';
+		WP_Mock::userFunction( 'plugins_url', array( 'return' => 'https://linker.test/contact-language.js' ) );
+		WP_Mock::userFunction(
+			'wp_enqueue_script',
+			array(
+				'args'  => array( 'linker-contact-language', 'https://linker.test/contact-language.js', $asset['dependencies'], $asset['version'], false ),
+				'times' => 1,
+			)
+		);
 	}
 
 	/**

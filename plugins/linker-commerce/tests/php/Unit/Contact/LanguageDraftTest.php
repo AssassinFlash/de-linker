@@ -20,6 +20,32 @@ use WP_Mock;
  */
 final class LanguageDraftTest extends TestCase {
 
+	/** The same generated entry runs in the head without reading form or session state. */
+	public function test_enqueues_the_generated_classic_entry_in_the_head(): void {
+		$root  = dirname( __DIR__, 4 );
+		$asset = require $root . '/build/contact-language.asset.php';
+		WP_Mock::userFunction(
+			'plugins_url',
+			array(
+				'args'   => array( 'build/contact-language.js', $root . '/linker-commerce.php' ),
+				'return' => 'https://linker.test/contact-language.js',
+			)
+		);
+		WP_Mock::userFunction(
+			'wp_enqueue_script',
+			array(
+				'args'  => array( 'linker-contact-language', 'https://linker.test/contact-language.js', $asset['dependencies'], $asset['version'], false ),
+				'times' => 1,
+			)
+		);
+		WP_Mock::userFunction( 'get_current_user_id', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'wp_get_session_token', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'WC', array( 'times' => 0 ) );
+
+		LanguageDraft::enqueue();
+		$this->assertConditionsMet();
+	}
+
 	/** Paired pages share context; a different source or selection does not. */
 	public function test_pair_identity_is_independent_of_language_title_and_selection_order(): void {
 		$this->environment();

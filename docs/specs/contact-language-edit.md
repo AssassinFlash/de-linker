@@ -36,7 +36,11 @@ path in the new integrated fixture and browser evidence.
 
 Keep the native form, native language URLs, server-normalized public selection,
 submission, verification, nonce and failed-POST mechanisms. Load one small
-Commerce entry only when the Contact shortcode renders, including its receipt.
+Commerce entry in the canonical Contact request's native `wp_enqueue_scripts`
+phase, before the head script printer. Resolve the English page and its native
+Polylang German twin without rendering the form or reading recovery/session
+data. Use the same classic external head handle without async/defer; the
+shortcode's existing enqueue remains an idempotent fallback, including receipts.
 No new endpoint, Woo session, automatic submission or remote draft save. No
 private question or reply detail in a URL. The markup remains semantic and uses
 the existing WindPress form/error/action surface.
@@ -63,10 +67,24 @@ is not a prerequisite for keeping an explicit language handoff.
 Native server recovery wins as a complete package, including empty values and
 false choices. Otherwise restore exact text through value/checked, without
 trimming, truncating, HTML insertion or synthetic submission. Respect a target
-field that already differs from its native default; if focus is inside the
-target form when the late entry arrives, do not overwrite that active edit.
+field that already differs from its native default, and observe actual
+input/change/composition from the early entry so an edit followed by clearing
+or a checkbox change back to its default also wins. Focus alone is not an edit
+and must not discard valid text or checkbox choices.
 No pageshow reapplication over bfcache-preserved forms. A receipt or native
 submit also clears pending. These client values never grant business permission.
+
+The early entry installs one document-level controller before form controls
+become usable. Resolve the current native form when a language click occurs;
+wait for its five text controls, select options and consent control before
+consuming and validating an incoming record. Observe parser-created markup,
+and handle a complete form synchronously if a click precedes that observer.
+DOMContentLoaded only finishes absent-form or receipt cleanup. It must not gate
+binding or erase a new outgoing record after the form already consumed its
+incoming record. A dirty partial form keeps the original page and existing
+fallback rather than saving undefined fields. Disconnect observers and native
+listeners together. No second inline implementation, new storage key or
+additional private field is introduced.
 
 After a failed native POST explicitly excluded its source, the removed summary
 has no checkbox. Preserve that explicit false even if every text field is then
