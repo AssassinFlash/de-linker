@@ -75,3 +75,43 @@ existing14px token and retain their native44px targets. Reuse the completed
 initial-style/header/media evidence; check only these affected layouts, inputs
 and Installer initial/interactive scroll. No customer wording, model route,
 product fact or new testing framework changes are required.
+
+The subsequent phone control pass uses the same source and runtime. About's
+three portfolio toggles become full-width rows at640px and below, retaining
+the native selection mechanism, labels and focus behavior. Give the labels
+the existing14px token; the previous narrow columns fragmented long German
+category names. Services'12px hero introduction uses the existing16px body
+token and body leading. Utility's lower ghost action gets the same14px label
+size as its hero actions; its existing48px target remains. Verify the actual
+EN/DE phone controls and selected panel, the Services hero's containment and
+the lower Utility link. The desktop styles are outside the media query; reuse
+their previous evidence. No new unit tests are needed for these style changes.
+
+The same marketing pass repairs a separate current-offering mismatch. A native
+production read on2026-10-25 found all68 EcoFlow product records in draft while
+twelve published EN/DE marketing pages still named the range. Residential
+also linked directly to a withdrawn product. Apply the current-permission
+rule in609-product-publication.md: remove those present-tense chips, list
+entries and the withdrawn package accordion. Reuse the retained GoodWe
+package's already hosted photo for the decorative closing image. Preserve
+product records, original files and customer history; this is a guarded
+content correction, not another product authority or runtime brand blacklist.
+
+The frozen content delta binds six complete pairs to exact before/after
+hashes. Use the existing paired writer's whole-source comparison, baseline
+metadata, backslash preservation, readback and inverse payloads; no new
+text-redaction framework or literal-replacement tests are needed. The
+production prewrite check must still confirm current withdrawn status.
+Keep all other page bytes, retained product cards, claims and testimonials.
+The only prose edits close lists grammatically after removing a name: English
+uses GoodWe and SAJ / GoodWe, SAJ and Pylontech; German uses GoodWe und SAJ /
+GoodWe, SAJ und Pylontech. No product figures or new claims are introduced.
+The German Installer title receives an authored soft break between Speicher
+and lösungspartner; its visible words stay the same and manual hyphenation
+prevents the previous Speicherlö-/sungspartner split.
+
+Review this exact content delta and its retained claims once. Exercise the
+two retained Residential packages, native toggle states and affected links;
+inspect each changed language page's unique content. Reuse unrelated header,
+privacy, product-template, media-loading and performance evidence. The native
+current-offering read is a broader coverage finding, not a whole-site pass.

@@ -19,7 +19,11 @@
 /* These headings can move complete words to the next line. Keep authored
    hyphens; emergency wrapping still protects an unusually long token. */
 html[lang^="de"]
-	:is(#service-redesign .service-hero-rest, #tv-cs-page-v1 .lk-hero-title) {
+	:is(
+		#service-redesign .service-hero-rest,
+		#tv-cs-page-v1 .lk-hero-title,
+		#installer-journal .lk-hero-title
+	) {
 	-webkit-hyphens: manual;
 	hyphens: manual;
 	overflow-wrap: break-word;
@@ -28,10 +32,45 @@ html[lang^="de"]
 
 @media (max-width: 640px) {
 	/* Use the existing14px label token while retaining the native44px target. */
-	#tv-utility-page-v1 .lk-hero-cta-row a.lk-btn-hero-ghost {
+	#tv-utility-page-v1 a.lk-btn-hero-ghost {
 		font-size: var(--proto-size-sm);
 		line-height: 1.4;
 		white-space: normal;
+	}
+
+	/* The saved phone rule shrinks this project description to12px. Use the
+	   existing body size so the long German introduction remains readable. */
+	#service-redesign .lk-hero-desc {
+		font-size: var(--proto-size-md);
+		line-height: var(--proto-leading-body);
+	}
+
+	/* Three narrow columns split even a category label into several fragments.
+	   Keep the native toggle buttons and give each option the available width. */
+	#about-journal .chapter-tabs {
+		grid-template-columns: 1fr;
+	}
+
+	#about-journal .chapter-tab {
+		display: flex;
+		align-items: center;
+		gap: var(--proto-space-3, 12px);
+		min-height: 54px;
+		/* The saved mobile padding is important; override that declaration. */
+		padding: 12px 16px !important;
+		text-align: left;
+	}
+
+	#about-journal .chapter-tab span {
+		flex: 0 0 2ch;
+		font-size: 18px;
+	}
+
+	#about-journal .chapter-tab b {
+		font-size: var(--proto-size-sm);
+		line-height: 1.5;
+		-webkit-hyphens: manual;
+		hyphens: manual;
 	}
 }
 
@@ -350,10 +389,14 @@ html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
 #tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-content {
 	gap: var(--proto-space-7);
 }
-#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-media-wrap {
+#tv-solutions-developers-v1
+	#sp-workbench:not(.epc-media-ready)
+	.lk-sp-media-wrap {
 	align-self: start;
 }
-#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-pagination {
+#tv-solutions-developers-v1
+	#sp-workbench:not(.epc-media-ready)
+	.lk-sp-pagination {
 	display: none;
 }
 #tv-solutions-developers-v1 #sp-workbench.epc-media-ready .lk-sp-pane {
@@ -435,7 +478,9 @@ html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
 #tv-solutions-developers-v1 #sp-workbench .is-paused .epc-motion-play {
 	display: block;
 }
-#tv-solutions-developers-v1 #sp-workbench :is(.lk-sp-bar, .epc-motion-toggle):focus-visible {
+#tv-solutions-developers-v1
+	#sp-workbench
+	:is(.lk-sp-bar, .epc-motion-toggle):focus-visible {
 	outline: 2px solid var(--proto-teal-700);
 	outline-offset: 4px;
 }
