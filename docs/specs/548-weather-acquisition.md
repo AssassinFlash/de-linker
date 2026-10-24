@@ -190,3 +190,63 @@ controls, explicit selection/recovery UI, operator recovery operations and
 EN/DE 1440/390 acceptance remain required before the paired installation in
 this same complete goal. Detailed engineering and all downstream/production
 work remain required; this is not completion of the customer workflow.
+
+## Operator recovery and release quiescence
+
+Operator recovery is admitted privately into the existing leased queue as
+`reconcile_weather`, tied to the original run/manifest/plan. The commands are
+acknowledge a supplied known ID, observe an acknowledged run, capture its
+original, and stop an inactive producer's remote work. CLI admission uses an
+explicit storage binding and idempotency key and performs no provider request.
+Only a trusted private team identity may admit it; no customer RPC is added.
+One pending reconciliation per original run is allowed. Repeating the same
+command key returns its original job receipt without admitting another job.
+
+The same managed worker performs recovery even when new weather acquisition
+is disabled. It uses the original server-owned transport/source policy and
+credential injection, with no customer URL/header/Actor controls. Each explicit
+operator job has its own finite created-at elapsed budget and original attempt
+count; automatic retries do not reset either. This does not extend the original
+acquisition deadline. Known-run observation, polling, stopping and original
+capture share one implementation with acquisition and cancellation cleanup.
+There is no Actor-start method in the known-run module. A supplied ID must pass
+the pinned build and full nonce-bearing INPUT checks before acknowledgement.
+Capture and stop require a failed/cancelled producer and are checked again by
+the worker. Customer cancellation cannot cancel the independent recovery job.
+
+Recovery outputs retain their exact evidence dependencies under that job;
+they cannot publish owned assets, set the original run's result, change project
+inputs or turn cancellation into success. Retaining a verified original after
+the original acquisition deadline is permitted under the explicit recovery
+job's budget. It remains evidence until a valid evaluation publishes it.
+
+A separate explicit resume command can requeue a failed original evaluation
+only under its matching runtime, with a known acknowledged run, no pending
+maintenance and remaining original attempts. Its attempt count, maximum,
+deadline, immutable request and manifest never reset. After the original
+deadline, the complete verified capture must already be retained. Cancelled
+or successful producers and exhausted budgets cannot resume. Admission drain
+blocks new evaluation resumes, and their exact receipts remain replayable.
+
+Core schema 4 adds the reconciliation kind and active-operation uniqueness.
+Nonempty versions 1–3 migrate with the existing transactional parent/child
+queue rebuild; old archives migrate only after verification in their restore
+destination. Installation and rollback still require a matching code/database
+pair with all writers quiesced, not a code-only fallback.
+
+Release status reads the local queue and issued remote observations from the
+same database snapshot. It is quiescent only with admission closed, no pending
+compute/report/cleanup/reconciliation and no unknown or last-observed nonterminal
+remote starts. ABORTING remains unresolved. Missing/corrupt evidence fails
+closed. Local lifecycle draining must consume that decision. For an older
+executable lacking remote-aware status, a read-only check must prove its
+configured journal issued no starts; it must neither create nor migrate that
+database. Issued legacy operations require verified reconciliation.
+
+An unknown start without a verified provider identity remains unresolved.
+Operator admission offers no "assume no remote run" override; missing evidence
+cannot establish quiescence. The provider identity still has to be obtained
+and verified against the issued intent before the known-run operations apply.
+
+Native customer controls, credential wiring for actual installation, EN/DE
+1440/390, paired installation and the remaining full delivery remain required.

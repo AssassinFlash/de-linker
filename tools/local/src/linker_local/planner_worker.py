@@ -6,9 +6,11 @@ import json
 import math
 import os
 import re
+import sqlite3
 import subprocess
 import time
 from collections.abc import Mapping
+from contextlib import closing
 from pathlib import Path
 from uuid import uuid4
 
@@ -52,8 +54,7 @@ class PlannerWorker:
         )
         self._policy()
 
-    def environment(self) -> dict[str, str]:
-        # Numerical execution needs no service, provider or model credentials.
+    def _workspace(self) -> Path:
         runtime: object = json.loads(self.runtime_file.read_bytes())
         if (
             not isinstance(runtime, dict)
@@ -66,6 +67,11 @@ class PlannerWorker:
             raise ProcessError(
                 "local worker workspace must remain in its owned instance"
             )
+        return Path(runtime["directory"]).resolve()
+
+    def environment(self) -> dict[str, str]:
+        # Numerical execution needs no service, provider or model credentials.
+        self._workspace()
         names = (
             "PATH",
             "HOME",
@@ -121,7 +127,64 @@ class PlannerWorker:
             or value["pending"] < 0
         ):
             raise ProcessError("planning control returned an invalid status")
+        if "quiescent" in value or "remote_weather" in value:
+            remote = value.get("remote_weather")
+            if (
+                type(value.get("quiescent")) is not bool
+                or not isinstance(remote, dict)
+                or any(
+                    type(remote.get(key)) is not int or remote[key] < 0
+                    for key in ("unknown", "active", "terminal", "unresolved")
+                )
+                or remote["unresolved"] != remote["unknown"] + remote["active"]
+                or value["quiescent"]
+                != (
+                    value["draining"]
+                    and value["pending"] == 0
+                    and remote["unresolved"] == 0
+                )
+            ):
+                raise ProcessError(
+                    "planning control returned invalid remote quiescence"
+                )
         return value
+
+    def _drained(self, state: Mapping[str, object]) -> bool:
+        if state["pending"] != 0 or state.get("draining") is not True:
+            return False
+        if "quiescent" in state:
+            return state["quiescent"] is True
+        # A pre-upgrade executable has no remote-aware status. Prove locally
+        # that its journal has issued no remote starts, without migrating or
+        # creating its database. Any issued operation requires reconciliation.
+        database = self._workspace() / "workspace.sqlite"
+        if not database.exists():
+            raise ProcessError(
+                "legacy planning database is unavailable for drain verification"
+            )
+        try:
+            with closing(
+                sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)
+            ) as connection:
+                connection.execute("BEGIN")
+                table = connection.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name='weather_acquisitions'"
+                ).fetchone()
+                if (
+                    table is not None
+                    and connection.execute(
+                        "SELECT 1 FROM weather_acquisitions WHERE post_claimed=1 LIMIT 1"
+                    ).fetchone()
+                    is not None
+                ):
+                    raise ProcessError(
+                        "legacy planning status has issued remote weather; verified reconciliation required"
+                    )
+        except sqlite3.Error as error:
+            raise ProcessError(
+                "legacy planning database could not prove drain safety"
+            ) from error
+        return True
 
     def _policy(self) -> dict[str, object]:
         value: object = json.loads(self.policy_file.read_bytes())
@@ -230,7 +293,7 @@ class PlannerWorker:
             raise ProcessError(
                 "live worker readiness does not match the configured workspace"
             )
-        if state["pending"] == 0:
+        if self._drained(state):
             return
         # An unregistered/missing process is not a wait condition. Preserve
         # jobs for its actual retained executable rather than restarting over it.
@@ -248,7 +311,7 @@ class PlannerWorker:
         while time.monotonic() < deadline:
             if self.readiness() is None:
                 raise ProcessError("planning worker stopped while draining")
-            if self.control("status")["pending"] == 0:
+            if self._drained(self.control("status")):
                 return
             time.sleep(POLL)
         raise ProcessError(

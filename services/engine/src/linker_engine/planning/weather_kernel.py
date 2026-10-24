@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 from collections.abc import Callable
 
 from requests.adapters import BaseAdapter
@@ -17,18 +16,13 @@ from .frozen_run import frozen_manifest
 from .records import Context, Lease
 from .runtime_snapshot import RuntimeSnapshot
 from .weather_acquisition import WeatherAcquisition
+from .weather_connection import apify_credential
 from .weather_fetch_plan import WeatherFetchLimits, WeatherFetchPlan
 from .weather_inputs import WeatherAcquisitionInputs
 from .weather_journal import WeatherJournal
 from .weather_metadata import WEATHER_PURPOSE, weather_details, weather_identity
 from .worker import Control
 from .workspace import Workspace
-
-
-def apify_credential() -> str:
-    # The deployment injects this environment value; no credential goes into
-    # a runtime policy, context, immutable asset or customer command.
-    return os.environ.get("APIFY_TOKEN", "")
 
 
 class WeatherKernel:

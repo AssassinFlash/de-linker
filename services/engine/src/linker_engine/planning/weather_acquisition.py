@@ -15,7 +15,7 @@ from .canonical import encode
 from .errors import LeaseLost, PlanningError, VersionUnavailable
 from .pv_source import PvSource
 from .records import Lease
-from .weather_fetch_errors import WeatherPollingLimit, WeatherRemoteFailed
+from .weather_fetch_errors import WeatherPollingLimit
 from .weather_fetch_plan import WeatherFetchPlan
 from .weather_intent import WeatherIntent
 from .weather_journal import (
@@ -23,6 +23,8 @@ from .weather_journal import (
     WeatherJournal,
     WeatherStartUnknown,
 )
+from .weather_known_run import KnownWeatherRun
+from .weather_task import WeatherTask
 from .worker import Control
 
 LOG = logging.getLogger(__name__)
@@ -170,37 +172,10 @@ class WeatherAcquisition:
                     plan, intent.nonce, lambda: self._deadline(intent.deadline_at)
                 )
                 intent = self.journal.acknowledge(intent, observed)
-            # The durable elapsed budget survives attempts. This explicit poll
-            # count bounds each attempt; the task's max_attempts bounds retries.
-            polls = 0
-            while observed.status not in TERMINAL:
-                guard()
-                if polls >= plan.limits.max_polls:
-                    raise WeatherPollingLimit("weather polling budget exhausted")
-                observed = self.client.read(observed.id, guard)
-                intent = self.journal.observe(intent, observed)
-                polls += 1
-                guard()
-                if observed.status not in TERMINAL:
-                    remaining = intent.deadline_at - self.journal.workspace.clock()
-                    self._deadline(intent.deadline_at)
-                    control.wait(min(plan.limits.poll_seconds, remaining))
-            guard()
-            if observed.status != "SUCCEEDED":
-                raise WeatherRemoteFailed(
-                    "the acknowledged weather run did not succeed"
-                )
-            downloaded = self.client.download(observed, plan, intent.nonce, guard)
-            # Retaining verified late capture evidence grants no owned asset.
-            intent = self.journal.retain_capture(
-                intent,
-                downloaded.source,
-                downloaded.retain_evidence(self.journal.workspace.blobs),
+            task = WeatherTask(
+                self.journal.workspace, lease, control, intent.deadline_at
             )
-            guard()
-            captured = self.journal.captured_source(intent)
-            assert captured is not None
-            return captured
+            return KnownWeatherRun(self.journal, self.client, task, intent).capture()
         except LeaseLost:
             # A replacement lease may be resuming this same remote run. Only
             # confirmed local cancellation authorizes this old worker to abort.

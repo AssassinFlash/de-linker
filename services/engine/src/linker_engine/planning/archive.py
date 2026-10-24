@@ -59,6 +59,7 @@ def _check_database(path: Path, blobs: Blobs) -> None:
             "SELECT metadata_sha256 FROM project_assets "
             "UNION SELECT result_sha256 FROM runs WHERE result_sha256 IS NOT NULL "
             "UNION SELECT output_sha256 FROM jobs WHERE output_sha256 IS NOT NULL"
+            " UNION SELECT receipt_sha256 FROM idempotency"
         ).fetchall()
         for (sha256,) in documents:
             verify_dependencies(blobs, blobs.object(sha256))

@@ -318,7 +318,7 @@ class Workspace:
             project_row(connection, actor, run.project_id, write=True)
             connection.execute(
                 "UPDATE jobs SET state='cancelled', updated_at=? WHERE run_id=? "
-                "AND kind!='abort_weather' AND state IN ('queued', 'running', 'retry_wait')",
+                "AND kind NOT IN ('abort_weather','reconcile_weather') AND state IN ('queued', 'running', 'retry_wait')",
                 (self.clock(), run_id),
             )
             enqueue_cleanup(self, connection, run_id)

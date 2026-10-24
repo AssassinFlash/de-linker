@@ -36,6 +36,8 @@ Planning terms: a **weather source** is a retained original with its provenance
 and declared time interpretation. **Weather acquisition** obtains that source;
 selection into a project is a separate saved choice. **Remote cleanup** records
 the external provider's completion or stop status for a cancelled acquisition.
+**Weather reconciliation** verifies an issued external operation or retains its
+original data; it does not select a source or complete the original evaluation.
 
 ## Architecture in one breath
 

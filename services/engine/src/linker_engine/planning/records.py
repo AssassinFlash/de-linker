@@ -10,7 +10,9 @@ from .canonical import Object, decode_object, encode
 from .errors import InvalidInput
 
 type ActorKind = Literal["guest", "user", "team"]
-type JobKind = Literal["evaluate", "render_report", "abort_weather"]
+type JobKind = Literal[
+    "evaluate", "render_report", "abort_weather", "reconcile_weather"
+]
 type JobState = Literal[
     "queued", "running", "retry_wait", "succeeded", "failed", "cancelled"
 ]

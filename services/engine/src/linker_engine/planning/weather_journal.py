@@ -138,6 +138,15 @@ class WeatherJournal:
         with self.workspace.database.read() as connection:
             return self._intent(self._row(connection, intent))
 
+    def require_issued(
+        self, connection: sqlite3.Connection, intent: WeatherIntent
+    ) -> WeatherIntent:
+        """Bind private admission to the existing consumed start in its transaction."""
+        current = self._intent(self._row(connection, intent))
+        if current.may_start:
+            raise Conflict("weather start permit was never consumed")
+        return current
+
     def for_run(self, run_id: str) -> WeatherIntent:
         """Private worker/operator lookup; customer reads must use owned view."""
         with self.workspace.database.read() as connection:
@@ -328,6 +337,11 @@ class WeatherJournal:
                 "SELECT state,attempt,max_attempts,error_sha256 FROM jobs WHERE run_id=? AND kind='abort_weather'",
                 (run_id,),
             ).fetchone()
+            reconciliation = connection.execute(
+                "SELECT id,state,attempt,max_attempts,error_sha256,output_sha256 FROM jobs "
+                "WHERE run_id=? AND kind='reconcile_weather' ORDER BY created_at DESC,id DESC LIMIT 1",
+                (run_id,),
+            ).fetchone()
         status = "ready_to_start" if intent.may_start else "start_outcome_unknown"
         observed: Object | None = None
         if intent.observation_sha256 is not None:
@@ -344,6 +358,18 @@ class WeatherJournal:
             "observation": observed,
             "capture_sha256": intent.capture_sha256,
             "abort_sha256": intent.abort_sha256,
+            "reconciliation": None
+            if reconciliation is None
+            else {
+                "id": reconciliation["id"],
+                "state": reconciliation["state"],
+                "attempt": reconciliation["attempt"],
+                "max_attempts": reconciliation["max_attempts"],
+                "error": self.workspace.blobs.object(reconciliation["error_sha256"])
+                if reconciliation["error_sha256"]
+                else None,
+                "output_sha256": reconciliation["output_sha256"],
+            },
             "cleanup": None
             if cleanup is None
             else {

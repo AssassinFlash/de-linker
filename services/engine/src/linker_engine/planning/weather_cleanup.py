@@ -8,22 +8,20 @@ provider evidence; no cleanup path repeats the Actor start.
 from __future__ import annotations
 
 import sqlite3
+from collections.abc import Callable
 from uuid import uuid4
 
-from .apify_run import TERMINAL
+from .apify_transport import ApifyTransport
 from .apify_weather_client import ApifyWeatherClient
 from .canonical import Object, encode
 from .errors import InvalidInput, VersionUnavailable
 from .frozen_run import frozen_manifest
-from .jobs import Jobs
 from .records import Lease
-from .weather_fetch_errors import WeatherPollingLimit, WeatherProviderRejected
-from .weather_journal import (
-    WeatherDeadlineExceeded,
-    WeatherJournal,
-    WeatherStartUnknown,
-)
-from .weather_kernel import WeatherKernel
+from .weather_connection import weather_connection
+from .weather_fetch_plan import WeatherFetchLimits
+from .weather_journal import WeatherJournal, WeatherStartUnknown
+from .weather_known_run import KnownWeatherRun
+from .weather_task import WeatherTask
 from .worker import Control
 from .workspace import Workspace
 
@@ -64,9 +62,13 @@ def enqueue_cleanup(
 
 
 class WeatherCleanup:
-    def __init__(self, kernel: WeatherKernel) -> None:
-        self.kernel = kernel
-        self.workspace = kernel.workspace
+    def __init__(
+        self,
+        workspace: Workspace,
+        *,
+        connection: Callable[[WeatherFetchLimits], ApifyTransport] = weather_connection,
+    ) -> None:
+        self.workspace, self.connection = workspace, connection
 
     def __call__(self, lease: Lease, control: Control) -> Object:
         if lease.kind != "abort_weather":
@@ -87,61 +89,19 @@ class WeatherCleanup:
             ).fetchone()
         if row is None:
             raise VersionUnavailable("weather cleanup job is absent")
-        deadline = row["created_at"] + plan.limits.max_elapsed_seconds
-
-        def elapsed() -> None:
-            if self.workspace.clock() >= deadline:
-                raise WeatherDeadlineExceeded("weather cleanup deadline has passed")
-
-        def guard() -> None:
-            control.checkpoint()
-            with self.workspace.database.read() as connection:
-                Jobs(self.workspace).require_active(
-                    connection, lease, self.workspace.clock()
-                )
-            elapsed()
-
-        guard()
-        observed = journal.observation(intent)
-        if observed is None:
-            raise WeatherStartUnknown(
-                "cancelled start needs a verified provider identity"
-            )
-        if observed.status not in TERMINAL:
-            transport = self.kernel.transport(plan.limits)
-            try:
-                client = ApifyWeatherClient(transport)
-                guard()
-                observed = client.read(observed.id, guard)
-                intent = journal.observe(intent, observed)
-                if observed.status not in TERMINAL and intent.abort_sha256 is None:
-                    try:
-                        # Retain the actual abort reply before checking whether
-                        # its cleanup lease was lost during that request.
-                        observed = client.abort(observed.id, elapsed)
-                        intent = journal.abort_reply(intent, observed)
-                    except WeatherProviderRejected:
-                        latest = client.read(observed.id, guard)
-                        journal.observe(intent, latest)
-                        if latest.status not in TERMINAL:
-                            raise
-                        observed = latest
-                polls = 0
-                while observed.status not in TERMINAL:
-                    guard()
-                    if polls >= plan.limits.max_polls:
-                        raise WeatherPollingLimit(
-                            "weather cleanup polling budget exhausted"
-                        )
-                    remaining = deadline - self.workspace.clock()
-                    elapsed()
-                    control.wait(min(plan.limits.poll_seconds, remaining))
-                    observed = client.read(observed.id, guard)
-                    intent = journal.observe(intent, observed)
-                    polls += 1
-            finally:
-                transport.close()
-        guard()
+        task = WeatherTask(
+            self.workspace,
+            lease,
+            control,
+            row["created_at"] + plan.limits.max_elapsed_seconds,
+        )
+        task.check()
+        transport = self.connection(plan.limits)
+        try:
+            KnownWeatherRun(journal, ApifyWeatherClient(transport), task, intent).stop()
+        finally:
+            transport.close()
+        task.check()
         current = journal.current(intent)
         final = journal.observation(intent)
         if final is None:

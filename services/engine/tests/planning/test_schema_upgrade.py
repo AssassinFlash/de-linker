@@ -13,7 +13,10 @@ from linker_engine.planning.canonical import digest
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context
 from linker_engine.planning.storage import Database
+from linker_engine.planning.weather_journal import WeatherJournal
 from linker_engine.planning.workspace import Workspace
+
+from .test_weather_journal import operation, plan, remote
 
 LEGACY_JOBS = """
 CREATE TABLE jobs_old (
@@ -29,14 +32,22 @@ error_sha256 TEXT, output_sha256 TEXT, created_at REAL NOT NULL, updated_at REAL
 """
 
 
-def legacy(path: Path) -> None:
+def legacy(path: Path, *, version: int = 2) -> None:
     # Construct the independent old CHECK contract in this isolated fixture.
     # Disabling FKs is fixture preparation only, never production migration.
     connection = sqlite3.connect(path, isolation_level=None)
     try:
         connection.execute("PRAGMA foreign_keys=OFF")
         connection.execute("BEGIN IMMEDIATE")
-        connection.execute(LEGACY_JOBS)
+        assert version in (2, 3)
+        connection.execute(
+            LEGACY_JOBS
+            if version == 2
+            else LEGACY_JOBS.replace(
+                "'evaluate','render_report'",
+                "'evaluate','render_report','abort_weather'",
+            )
+        )
         connection.execute("INSERT INTO jobs_old SELECT * FROM jobs")
         connection.execute("DROP TABLE jobs")
         connection.execute("ALTER TABLE jobs_old RENAME TO jobs")
@@ -46,7 +57,7 @@ def legacy(path: Path) -> None:
         connection.execute(
             "CREATE INDEX jobs_available ON jobs(state,available_at,lease_until)"
         )
-        connection.execute("PRAGMA user_version=2")
+        connection.execute(f"PRAGMA user_version={version}")
         connection.commit()
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
     finally:
@@ -89,7 +100,7 @@ def test_nonempty_queue_upgrade_keeps_all_rows_leases_routes_and_receipts(
     reopened = Workspace(workspace.database.path.parent, clock=workspace.clock)
     assert rows(reopened.database.path) == before
     with reopened.database.read() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
         assert (
             connection.execute(
@@ -144,13 +155,22 @@ def test_failed_migration_after_parent_drop_rolls_back_original_version_and_rows
     assert rows(workspace.database.path) == before
 
 
+@pytest.mark.parametrize("version", [2, 3])
 def test_old_archive_verifies_and_restores_into_migrated_schema(
-    workspace: Workspace, owner: Actor, context: Context, tmp_path: Path
+    workspace: Workspace, owner: Actor, context: Context, tmp_path: Path, version: int
 ) -> None:
+    if version == 3:
+        weather_owner = Actor("user", "legacy-weather")
+        weather_run, lease = operation(workspace, weather_owner)
+        journal = WeatherJournal(workspace)
+        intent = journal.begin(lease, plan())
+        journal.authorize_post(lease, intent)
+        journal.acknowledge(intent, remote("RUNNING"))
+        workspace.cancel(weather_owner, weather_run.id)
     populated(workspace, owner, context)
     snapshot = tmp_path / "archive"
     archive.backup(workspace, snapshot)
-    legacy(snapshot / "workspace.sqlite")
+    legacy(snapshot / "workspace.sqlite", version=version)
     manifest = json.loads((snapshot / "backup.json").read_bytes())
     manifest["database_sha256"] = digest((snapshot / "workspace.sqlite").read_bytes())
     (snapshot / "backup.json").write_text(json.dumps(manifest))
@@ -159,4 +179,11 @@ def test_old_archive_verifies_and_restores_into_migrated_schema(
     restored = archive.restore(snapshot, tmp_path / "restored")
     assert rows(restored.database.path) == before
     with restored.database.read() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
+        if version == 3:
+            assert (
+                connection.execute(
+                    "SELECT COUNT(*) FROM jobs WHERE kind='abort_weather'"
+                ).fetchone()[0]
+                == 1
+            )

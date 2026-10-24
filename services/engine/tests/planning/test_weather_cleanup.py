@@ -45,7 +45,11 @@ def pending(workspace: Workspace, owner: Actor, *cleanup_replies: Reply):
     cleanup = Worker(
         Jobs(workspace),
         "cleanup",
-        {"abort_weather": WeatherCleanup(weather.kernel)},
+        {
+            "abort_weather": WeatherCleanup(
+                workspace, connection=weather.kernel.transport
+            )
+        },
         lease_seconds=300,
         heartbeat_seconds=1,
         retry_seconds=1,
@@ -181,7 +185,11 @@ def test_unknown_start_cleanup_fails_visibly_without_actor_post_or_local_success
     cleanup = Worker(
         Jobs(workspace),
         "cleanup",
-        {"abort_weather": WeatherCleanup(weather.kernel)},
+        {
+            "abort_weather": WeatherCleanup(
+                workspace, connection=weather.kernel.transport
+            )
+        },
         lease_seconds=300,
         heartbeat_seconds=1,
         retry_seconds=1,

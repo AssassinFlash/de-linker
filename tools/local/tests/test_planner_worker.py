@@ -2,6 +2,8 @@
 
 import json
 import os
+import sqlite3
+import subprocess
 import sys
 from pathlib import Path
 
@@ -185,3 +187,61 @@ def test_lifecycle_lock_refuses_a_second_manager_and_then_releases(
                 pytest.fail("second lifecycle manager acquired the lock")
     with lifecycle_lock(lock):
         pass
+
+
+def test_local_queue_empty_does_not_pass_unresolved_remote_work(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        worker,
+        "control",
+        lambda _: {"pending": 0, "draining": True, "quiescent": False, **IDENTITY},
+    )
+    with pytest.raises(ProcessError, match="no live matching worker"):
+        worker.drain()
+
+
+@pytest.mark.parametrize("issued", [False, True])
+def test_legacy_drain_requires_read_only_no_remote_start_proof(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch, issued: bool
+) -> None:
+    directory = Path(json.loads(worker.runtime_file.read_bytes())["directory"])
+    directory.mkdir(parents=True)
+    database = directory / "workspace.sqlite"
+    with sqlite3.connect(database) as connection:
+        connection.execute("CREATE TABLE weather_acquisitions (post_claimed INTEGER)")
+        connection.execute(
+            "INSERT INTO weather_acquisitions VALUES (?)", (int(issued),)
+        )
+        connection.execute("PRAGMA user_version=2")
+    original = database.read_bytes()
+    monkeypatch.setattr(
+        worker, "control", lambda _: {"pending": 0, "draining": True, **IDENTITY}
+    )
+    if issued:
+        with pytest.raises(ProcessError, match="issued remote weather"):
+            worker.drain()
+    else:
+        worker.drain()
+    assert database.read_bytes() == original
+
+
+def test_inconsistent_remote_quiescence_from_child_is_rejected(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    state = {
+        "schema_version": 1,
+        "pending": 0,
+        "draining": True,
+        "quiescent": True,
+        "remote_weather": {"unknown": 1, "active": 0, "terminal": 0, "unresolved": 1},
+    }
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            args, 0, json.dumps(state), ""
+        ),
+    )
+    with pytest.raises(ProcessError, match="invalid remote quiescence"):
+        worker.control("status")

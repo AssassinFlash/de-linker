@@ -1,12 +1,12 @@
 """Versioned planning persistence; no mutable physics in WP post metadata."""
 
-SCHEMA_VERSION = 3
-READABLE_SCHEMA_VERSIONS = (1, 2, 3)
+SCHEMA_VERSION = 4
+READABLE_SCHEMA_VERSIONS = (1, 2, 3, 4)
 
 JOBS_COLUMNS = """
     id TEXT PRIMARY KEY,
     run_id TEXT NOT NULL REFERENCES runs(id),
-    kind TEXT NOT NULL CHECK (kind IN ('evaluate', 'render_report', 'abort_weather')),
+    kind TEXT NOT NULL CHECK (kind IN ('evaluate', 'render_report', 'abort_weather', 'reconcile_weather')),
     request_sha256 TEXT NOT NULL,
     state TEXT NOT NULL CHECK (
         state IN ('queued', 'running', 'retry_wait', 'succeeded', 'failed', 'cancelled')
@@ -65,6 +65,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS evaluate_once ON jobs(run_id)
     WHERE kind = 'evaluate';
 CREATE UNIQUE INDEX IF NOT EXISTS weather_abort_once ON jobs(run_id)
     WHERE kind = 'abort_weather';
+CREATE UNIQUE INDEX IF NOT EXISTS weather_reconcile_pending ON jobs(run_id)
+    WHERE kind = 'reconcile_weather' AND state IN ('queued','running','retry_wait');
 CREATE INDEX IF NOT EXISTS jobs_available ON jobs(state, available_at, lease_until);
 -- Durable external-start evidence. This additive extension keeps the existing
 -- run/job/wire schemas; old archives acquire the empty table on private restore.

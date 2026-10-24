@@ -9,7 +9,7 @@ from .schema import EVALUATION_ROUTES_TABLE, JOBS_COLUMNS
 
 
 def upgrade_jobs(connection: sqlite3.Connection, current: int) -> None:
-    if current not in (1, 2):
+    if current not in (1, 2, 3):
         return
     existing = connection.execute(
         "SELECT sql FROM sqlite_master WHERE type='table' AND name='jobs'"

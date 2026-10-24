@@ -53,7 +53,13 @@ class Jobs:
             not worker.strip()
             or not kinds
             or any(
-                kind not in ("evaluate", "render_report", "abort_weather")
+                kind
+                not in (
+                    "evaluate",
+                    "render_report",
+                    "abort_weather",
+                    "reconcile_weather",
+                )
                 for kind in kinds
             )
         ):

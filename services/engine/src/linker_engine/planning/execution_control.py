@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from .canonical import Object
 from .errors import ServiceDraining, VersionUnavailable
 from .execution_identity import storage_binding
+from .weather_remote_state import remote_weather_state
 
 if TYPE_CHECKING:
     from .workspace import Workspace
@@ -46,14 +47,18 @@ class ExecutionControl:
                 row["state"]: row["count"]
                 for row in connection.execute(
                     "SELECT state, COUNT(*) AS count FROM jobs "
-                    "WHERE kind IN ('evaluate','abort_weather') AND state IN ('queued','running','retry_wait') "
+                    "WHERE state IN ('queued','running','retry_wait') "
                     "GROUP BY state"
                 )
             }
+            closed = draining(connection)
+            remote = remote_weather_state(connection, self.workspace.blobs)
             return {
                 "schema_version": 1,
                 "storage_binding": storage_binding(self.workspace.database.path),
-                "draining": draining(connection),
+                "draining": closed,
                 "pending": sum(states.values()),
                 "states": states,
+                "remote_weather": remote,
+                "quiescent": closed and not states and remote["unresolved"] == 0,
             }
