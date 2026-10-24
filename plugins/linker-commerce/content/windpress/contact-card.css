@@ -57,11 +57,11 @@ html[lang^="de"] #tv-contact-v1 p {
 	 * punctuation of Energieprojekts.; the 38px boxed afterword changes from
 	 * two to four English lines. Use the fluid section/card title tokens so
 	 * readable tracking fits the existing columns. Phone sizes stay authored. */
-	#tv-contact-v1 .cp-story h2 {
+	#tv-contact-v1.cp-page .cp-story h2 {
 		font-size: var(--proto-size-display);
 	}
 
-	#tv-contact-v1 .cp-afterword h2 {
+	#tv-contact-v1.cp-page .cp-afterword h2 {
 		font-size: var(--proto-size-3xl);
 	}
 }
