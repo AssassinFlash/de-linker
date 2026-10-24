@@ -130,6 +130,15 @@ language from home-scene-inquiry-copy-final.json. They replace the online-order
 promise with approved-account price visibility and team-prepared inquiry quotes.
 Keep all other non-image bytes, existing CTA and source context unchanged.
 
+The same closeout ports the exact reviewed4d79dd6b homepage-readability.css and
+220e7fbf homepage-focus.css. Both were still present in the local WindPress
+volume but absent from main and the production volume. Their unchanged content
+must be source-controlled and installed by the existing WindPressVolume; do not
+leave local acceptance dependent on those orphan files. Reuse their completed
+phone/boundary/native-control evidence. The current local compiled rendering
+already contains the exact two styles, so this port requires provenance and
+volume/readback checks, not another visual or performance matrix.
+
 The shared logo remains eager. Its original712×355 image is138826B; the existing
 300×150 derivative is29488B. Use WordPress's own candidate set. Sizes81px below
 1280px and105px above are the ceiling of the existing40/52px CSS heights times
