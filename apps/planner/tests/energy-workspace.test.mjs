@@ -215,7 +215,13 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 	);
 	const sourceNote = control("Source or assumption for storage parameters");
 	await enter(sourceNote, "");
+	button("Prepare scenario settings").focus();
 	await click("Prepare scenario settings");
+	assert.equal(
+		document.activeElement,
+		document.querySelector('.lp-focus-target[tabindex="-1"]'),
+		"the error receives focus from the explicit preparation action",
+	);
 	assert.match(
 		document.activeElement.textContent,
 		/storage parameters need a source/,
