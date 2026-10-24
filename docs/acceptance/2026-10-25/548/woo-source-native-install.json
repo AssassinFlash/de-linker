@@ -1,0 +1,97 @@
+{
+  "at_utc": "2026-10-24T18:32:30.803523+00:00",
+  "old_runtime": "77dbdec63a0364d9a5eeb173883c1aff617d08b9eae3aa8b074eefb5d8ccd0d5",
+  "runtime_sha256": "68bd58cd925ea08548d2bffde7ab245c9c986426922cf85f54d8f1b73271fe96",
+  "loaded_engine_version": "57176b75df4fc4a66169d431a42a8aae45152965631489b8eb83ff00a9ad6dc1",
+  "loaded_source_revision": "c4ac9cb2287bcdfbc855e81e3544f3e72d2df2dffc71360b75117dd88e00a555",
+  "products": 85,
+  "reference_inputs": 1,
+  "publication_products": 86,
+  "native_preparation_jobs": [
+    {
+      "action": "claim",
+      "status": 200,
+      "source_revision": null,
+      "prepared_products": 0
+    },
+    {
+      "action": "ack",
+      "status": 200,
+      "source_revision": "c4ac9cb2287bcdfbc855e81e3544f3e72d2df2dffc71360b75117dd88e00a555",
+      "prepared_products": 86
+    }
+  ],
+  "worker_runtime": "68bd58cd925ea08548d2bffde7ab245c9c986426922cf85f54d8f1b73271fe96",
+  "worker_pid": 94687,
+  "cache_control": "no-store, private",
+  "existing_rows_preserved": {
+    "projects": {
+      "rows": 166,
+      "sha256": "6b4581cdb9e33e2a1937ed8cc50a7b9edf021b46e0ff67f82cb6841a72092616"
+    },
+    "revisions": {
+      "rows": 235,
+      "sha256": "3595e04dcbc3c422b30ae4b5a153d51db9935fd8f8e71422fc92ed3448fc02e7"
+    },
+    "runs": {
+      "rows": 9,
+      "sha256": "203e36bc54422a7b676e429a7737e43f2e9d3296ed46ffa1d4560f21222018b9"
+    },
+    "project_assets": {
+      "rows": 47,
+      "sha256": "fde6eed9d9af38fcb81a4165a87430aea4532885fca26402b7d56083c1bfedc2"
+    }
+  },
+  "production_changed": false,
+  "pending": "Project product binding, equipment qualification and downstream handoff remain under the active planner goal",
+  "native_wordpress_transport": {
+    "route_registered": true,
+    "provider": "woocommerce",
+    "source_revision": "c4ac9cb2287bcdfbc855e81e3544f3e72d2df2dffc71360b75117dd88e00a555",
+    "sales_products": 85,
+    "references": 1,
+    "elapsed_seconds": 6.902
+  },
+  "publication_document_relations": 610,
+  "native_browser": {
+    "project_id": "c7795bc2c1e14e389622015c809ace45",
+    "revision": 7,
+    "saved_run": "ab8810c5ffe64587a4664c26cb1fe9fc",
+    "solar_share_percent": 81.4,
+    "pv_use_percent": 37,
+    "recalculated": false,
+    "visual_matrix_repeated": false
+  },
+  "independent_review": {
+    "spec": "PASS c03ffe5e versus 62fa735e",
+    "standards": "PASS c03ffe5e plus O_NOFOLLOW and exact-path transport-budget deltas; unchanged conclusions reused"
+  },
+  "resolved_native_failure": {
+    "cause": "Ordinary native transport timeout 5 seconds was below the measured 5.561 second current-product response, which performs two current Woo authority reads.",
+    "product_source_timeout_seconds": 30,
+    "ordinary_project_timeout_seconds": 5,
+    "validation_errors_not_erased": true
+  },
+  "native_guest_rpc": {
+    "status": 200,
+    "cookie_confirmed": true,
+    "sales_products": 85,
+    "references": 1,
+    "source_revision": "c4ac9cb2287bcdfbc855e81e3544f3e72d2df2dffc71360b75117dd88e00a555",
+    "elapsed_seconds": 5.873,
+    "cache_control": "no-store, private",
+    "temporary_guest_session_removed": true
+  },
+  "retention": {
+    "removed_carrier": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/052c98c14da24a7d5d04b9b09dbe201c1753285d20124900982711e7d2bfc1df",
+    "removed_logical_bytes": 1041317,
+    "retained_carriers": 2,
+    "planner_recovery_points": 1,
+    "woo_database_recovery_points": 1,
+    "free_bytes_before": 898031448064,
+    "free_bytes_after": 898032816128
+  },
+  "engine_source_commit": "c03ffe5e",
+  "local_adapter_source_commit": "b8f27ffe",
+  "native_transport_sha256": "2a5468e0cbdcd8691231c78ddd718b450363b605bd641cba9a9b7bcf8466f1cb"
+}

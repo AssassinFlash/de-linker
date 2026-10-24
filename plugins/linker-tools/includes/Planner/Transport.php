@@ -16,6 +16,14 @@ final class Transport {
 
 	/** Deployment resource policy, not a numerical/engineering threshold. */
 	public const MAX_REPLY_BYTES = 32 * 1024 * 1024;
+	/**
+	 * Product reads check current Woo permission before and after assembling the
+	 * response. Each shared Python Publication.read has a 10-second network budget;
+	 * this native route allows both checks plus cold-load/transport overhead.
+	 * Operational policy, not an engineering limit; ordinary project RPCs keep
+	 * their existing five-second budget.
+	 */
+	private const PRODUCT_SOURCE_TIMEOUT = 30.0;
 
 	/**
 	 * Select the native HTTP transport or a test adapter.
@@ -49,7 +57,7 @@ final class Transport {
 			$headers['X-Linker-Planner-Previous-Guest'] = $previous_guest;
 		}
 		$args     = array(
-			'timeout'             => 5.0,
+			'timeout'             => 'products/current' === $path ? self::PRODUCT_SOURCE_TIMEOUT : 5.0,
 			'redirection'         => 0,
 			'sslverify'           => true,
 			'limit_response_size' => self::MAX_REPLY_BYTES + 1,

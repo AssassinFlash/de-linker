@@ -56,16 +56,36 @@ under `/Users/chesterjohn/de-linker-local/p548/planner/` as
 `woo-source-semantic-readback.json` and `woo-before-source-sync.*`. They are
 development evidence and recovery, never an alternate runtime data source.
 
-The next bounded delivery adds `/planning/products/current` through the native
+This bounded delivery adds `/planning/products/current` through the native
 WordPress planner gateway, using the site's same lazy engineering service and
 shared `Publication` checks. It returns only the loaded/current/engineering-ready
 intersection and checks it again before returning; preparation workers keep
 their existing bootstrap path. No second product editor or feed is introduced.
 Frozen engine carriers now include the JSON validation schemas they execute;
-local restarts preserve worker-published generation bytes. This source change
-still requires native installation/readback. Project operation-level product
-binding, qualification and downstream handoff remain open; the read interface
-alone does not establish them.
+local restarts preserve worker-published generation bytes. Independent Standards
+review found a race during the first regular-file to managed-link swap; the
+bootstrap writer now uses `O_NOFOLLOW`. Its existing local test covers that
+specific race. Only the affected increment was rechecked and reviewed.
+
+The actual HTTP/worker pair is now `68bd58cd`, with schema 5 unchanged and the
+existing Python environment reused. The unmodified shared `sync-feed.py` used
+native Woo jobs, published one complete feed/compatibility generation, read
+the actually loaded generation and acknowledged all 86 prepared items. The
+private RPC returns 85 sales products and one reference; the native WordPress
+route is registered and its real PHP transport returns the same source. The
+ordinary five-second native timeout initially refused the measured 5.561-second
+double-authority read. Only `products/current` now has a 30-second budget,
+covering both existing ten-second authority budgets and loading/transport;
+other project commands retain five seconds. The native transport then returned
+success in 6.902 seconds. This resolved failure is retained in
+[`woo-source-native-install.json`](../../../2026-10-25/548/woo-source-native-install.json).
+
+All 166 projects, 235 revisions, nine runs and 47 owned assets are unchanged.
+The native browser reload shows the same saved revision-7 81.4%/37% result and
+its reserve warning, without recalculation or another visual matrix. This is
+local installation/readback, not a production release. Project operation-level
+product binding, qualification and downstream handoff remain open; the read
+interface alone does not establish them.
 
 The owner authorised notifying the collaborating conversation after actual
 connection and verification. That notification remains pending. Complete the
