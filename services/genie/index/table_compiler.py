@@ -419,7 +419,11 @@ def compile_scopes(
                 )
                 result[cid] = {
                     **proof,
-                    "source_chunk_ids": [part.id for part in parts],
+                    "source_chunk_ids": list(
+                        dict.fromkeys(
+                            [*proof["source_chunk_ids"], *(part.id for part in parts)]
+                        )
+                    ),
                     "table_projection": {
                         "source_sha256": sha,
                         "source_table": table,

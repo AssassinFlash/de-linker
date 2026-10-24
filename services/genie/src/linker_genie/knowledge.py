@@ -35,7 +35,7 @@ from linker_genie.publication import (
     PublicationUnavailable,
     current,
 )
-from linker_genie.retrieval import LANGS, DocumentIndex, default_index
+from linker_genie.retrieval import LANGS, DocumentIndex, ServingMismatch, default_index
 
 NAME = "linker/search-knowledge"
 # The input the model is told about (agent.INPUT_DOCS); `validate` reads the same shape.
@@ -108,7 +108,7 @@ class KnowledgeSearch:
             except EmbeddingError as error:
                 log.error("document search failed: %s", error)
                 raise
-            except (sqlite3.Error, OSError) as error:
+            except (sqlite3.Error, OSError, ServingMismatch) as error:
                 log.error("document index unavailable: %s", error)
                 raise KnowledgeUnavailable(f"{INDEX_UNAVAILABLE}: {error}") from error
         encoder = index.encoder.model if index.encoder is not None else None

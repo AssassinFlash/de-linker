@@ -5,6 +5,7 @@ from __future__ import annotations
 import gzip
 import hashlib
 import json
+import sqlite3
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
@@ -187,6 +188,56 @@ def test_h2_exact_current_column_reaches_real_retrieval_and_figure_hydration(
         assert all(
             "Nenn-Eingangsfrequenz [Hz] Max. Eingangsstrom" not in hit.text
             for hit in hits
+        )
+    finally:
+        loaded.close()
+
+
+def test_prior_current_model_restriction_survives_projection_store_and_runtime(
+    tmp_path: Path,
+) -> None:
+    original = chunks(H2_DE[:12])
+    table_at = next(i for i, c in enumerate(original) if c.source_cells)
+    table = original[table_at]
+    restriction = replace(
+        table,
+        id="authored-current-restriction",
+        kind="text",
+        section="H2-25K-T3 only",
+        source_headings=("H2-25K-T3 only",),
+        text="These technical data apply only to H2-25K-T3.",
+        source_table="",
+        source_cells=(),
+        source_rows=(),
+        preceding_text=(),
+    )
+    original.insert(table_at, restriction)
+    loaded = compiled_index(tmp_path, H2_DE[:12], original)
+    current = Snapshot.read(manifest())
+    try:
+        hits = loaded.search(
+            "Nennleistung AC", "de", [1179], publication=current, neighbours=True
+        )
+        other = loaded.search(
+            "Nennleistung AC", "de", [4107], publication=current, neighbours=True
+        )
+        with sqlite3.connect(tmp_path / "index.sqlite") as db:
+            proofs = [
+                json.loads(row[0])
+                for row in db.execute("SELECT proof FROM chunk_scopes")
+                if json.loads(row[0]).get("table_projection")
+            ]
+        target = next(h for h in hits if "| Nennleistung AC [W] | 25000 |" in h.text)
+        assert target.product_ids == (1179,)
+        assert not other
+        assert proofs
+        assert all(proof["product_ids"] == [1179] for proof in proofs)
+        assert all(
+            restriction.id in proof["source_chunk_ids"]
+            and {
+                c.id for c in original if c.source_table == table.source_table
+            }.issubset(proof["source_chunk_ids"])
+            for proof in proofs
         )
     finally:
         loaded.close()

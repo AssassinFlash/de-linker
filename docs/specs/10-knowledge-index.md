@@ -55,7 +55,7 @@ Woo 发布许可、处理完成和问题可回答范围各有含义：
 
 `recipe_revision` 自动覆盖构建、编译、运行时证明规则、发布程序和锁定依赖。只有代码或处理规则改变而 Woo 内容不变时，同样自动产生新作业。解析缓存另有处理程序身份。产品及 source revision 不包含准备状态，收据不会导致 Woo 源循环变化。
 
-索引记录预期 `serving_revision`；进程在启动时从不可变发布目录实际计算自身规则身份。`/knowledge/loaded` 分别报告二者，不能只凭 SQLite 自己声明的 recipe 就证明运行时匹配。确认同时核对当前 Woo source、recipe、实际 serving、索引代次、activation epoch 和精确已准备产品版本。
+索引记录预期 `serving_revision`；进程在启动时从不可变发布目录实际计算自身规则身份。`/knowledge/loaded` 分别报告二者，不能只凭 SQLite 自己声明的 recipe 就证明运行时匹配。受管索引的预期规则与实际进程不一致时，检索及片段授权立即拒绝；loaded 诊断仍可读取，供自动任务发布匹配的替代索引。确认同时核对当前 Woo source、recipe、实际 serving、索引代次、activation epoch 和精确已准备产品版本。
 
 每次新租约在原生锁中取得严格递增的 activation epoch，源变化、重试、代码更新及恢复均不归零。远端在排他锁内核对索引、实际运行规则和新鲜 Woo 租约；先持久记录 epoch 与目标，再原子切换。晚到的较低 epoch 不能替换已接受的新代次；同 epoch 只允许完全相同目标恢复中断。每次普通轮询都读取实际服务，即使 Woo 显示 ready；代次漂移通过原生锁中的当前收据比较重新排队。
 
