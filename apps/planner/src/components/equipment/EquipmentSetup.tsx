@@ -212,84 +212,89 @@ export function EquipmentSetup({
 			>
 				{__("Reload product data", "linker-tools")}
 			</button>
-			<fieldset disabled={disabled} className="lp-field-grid">
-				{choice(
-					"inverter_product_id",
-					__("Inverter or integrated storage system", "linker-tools"),
-					converters,
-				)}
-				{choice(
-					"battery_product_id",
-					__("Battery or storage system", "linker-tools"),
-					storage,
-				)}
-				<label className="lp-field">
-					<span>{__("Choose an operating mode", "linker-tools")}</span>
-					<select
-						value={
-							typeof setup.operating_mode === "string"
-								? setup.operating_mode
-								: ""
-						}
-						onChange={(event) =>
-							change({ operating_mode: event.currentTarget.value || null })
-						}
-					>
-						<option value="">
-							{__("Choose an operating mode", "linker-tools")}
-						</option>
-						<option value="grid_connected">
-							{__("Grid-connected", "linker-tools")}
-						</option>
-						<option value="backup">
-							{__("Backup operation", "linker-tools")}
-						</option>
-					</select>
-				</label>
-				<label className="lp-field">
-					<span>{__("Grid connection", "linker-tools")}</span>
-					<select
-						value={
-							typeof setup.grid_phase === "number"
-								? String(setup.grid_phase)
-								: ""
-						}
-						onChange={(event) =>
-							change({
-								grid_phase: event.currentTarget.value
-									? Number(event.currentTarget.value)
-									: null,
-							})
-						}
-					>
-						<option value="">—</option>
-						<option value="1">{__("Single-phase", "linker-tools")}</option>
-						<option value="3">{__("Three-phase", "linker-tools")}</option>
-					</select>
-				</label>
-				{number(
-					"modules_per_stack",
-					__("Battery modules per stack", "linker-tools"),
-					"",
-					true,
-				)}
-				{number(
-					"parallel_stacks",
-					__("Parallel stacks or systems", "linker-tools"),
-					"",
-					true,
-				)}
-				{number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
-				{number(
-					"required_usable_kwh",
-					__("Required usable energy", "linker-tools"),
-					"kWh",
-				)}
-				{number(
-					"required_discharge_ac_kw",
-					__("Required continuous AC discharge power", "linker-tools"),
-					"kW",
-				)}
+			<fieldset
+				disabled={disabled}
+				className="lp-scenario-fields lp-scenario-block"
+			>
+				<div className="lp-geometry-fields">
+					{choice(
+						"inverter_product_id",
+						__("Inverter or integrated storage system", "linker-tools"),
+						converters,
+					)}
+					{choice(
+						"battery_product_id",
+						__("Battery or storage system", "linker-tools"),
+						storage,
+					)}
+					<label className="lp-field">
+						<span>{__("Choose an operating mode", "linker-tools")}</span>
+						<select
+							value={
+								typeof setup.operating_mode === "string"
+									? setup.operating_mode
+									: ""
+							}
+							onChange={(event) =>
+								change({ operating_mode: event.currentTarget.value || null })
+							}
+						>
+							<option value="">
+								{__("Choose an operating mode", "linker-tools")}
+							</option>
+							<option value="grid_connected">
+								{__("Grid-connected", "linker-tools")}
+							</option>
+							<option value="backup">
+								{__("Backup operation", "linker-tools")}
+							</option>
+						</select>
+					</label>
+					<label className="lp-field">
+						<span>{__("Grid connection", "linker-tools")}</span>
+						<select
+							value={
+								typeof setup.grid_phase === "number"
+									? String(setup.grid_phase)
+									: ""
+							}
+							onChange={(event) =>
+								change({
+									grid_phase: event.currentTarget.value
+										? Number(event.currentTarget.value)
+										: null,
+								})
+							}
+						>
+							<option value="">—</option>
+							<option value="1">{__("Single-phase", "linker-tools")}</option>
+							<option value="3">{__("Three-phase", "linker-tools")}</option>
+						</select>
+					</label>
+					{number(
+						"modules_per_stack",
+						__("Battery modules per stack", "linker-tools"),
+						"",
+						true,
+					)}
+					{number(
+						"parallel_stacks",
+						__("Parallel stacks or systems", "linker-tools"),
+						"",
+						true,
+					)}
+					{number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
+					{number(
+						"required_usable_kwh",
+						__("Required usable energy", "linker-tools"),
+						"kWh",
+					)}
+					{number(
+						"required_discharge_ac_kw",
+						__("Required continuous AC discharge power", "linker-tools"),
+						"kW",
+					)}
+				</div>
 			</fieldset>
 			<details className="lp-comparison">
 				<summary>{__("Additional products", "linker-tools")}</summary>
