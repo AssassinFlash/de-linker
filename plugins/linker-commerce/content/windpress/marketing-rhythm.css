@@ -32,6 +32,7 @@ html[lang^="de"]
 
 @media (max-width: 640px) {
 	/* Use the existing14px label token while retaining the native44px target. */
+	#tv-utility-page-v1 .lk-hero-cta-row a.lk-btn-hero-ghost,
 	#tv-utility-page-v1 a.lk-btn-hero-ghost {
 		font-size: var(--proto-size-sm);
 		line-height: 1.4;
@@ -40,7 +41,7 @@ html[lang^="de"]
 
 	/* The saved phone rule shrinks this project description to12px. Use the
 	   existing body size so the long German introduction remains readable. */
-	#service-redesign .lk-hero-desc {
+	#service-redesign p.lk-hero-desc {
 		font-size: var(--proto-size-md);
 		line-height: var(--proto-leading-body);
 	}
@@ -66,7 +67,7 @@ html[lang^="de"]
 		font-size: 18px;
 	}
 
-	#about-journal .chapter-tab b {
+	#about-journal .chapter-tabs .chapter-tab b {
 		font-size: var(--proto-size-sm);
 		line-height: 1.5;
 		-webkit-hyphens: manual;
