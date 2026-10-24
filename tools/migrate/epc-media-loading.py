@@ -378,7 +378,12 @@ def _plan(content: str, language: str) -> tuple[str, str]:
         ),
     ):
         content = _replace(content, old, new)
-    return content, state
+    # Validate the produced workbench too: an extra old bar or future ID must
+    # never be carried into a result that its own repeat check would reject.
+    validated, final_state = _plan(content, language)
+    if final_state != "final":
+        raise ValueError("EPC conversion did not produce the complete final state")
+    return validated, state
 
 
 def plan_pair(english: str, german: str) -> tuple[str, str]:

@@ -128,28 +128,38 @@ def test_native_media_policy_drift_is_rejected(
 
 
 @pytest.mark.parametrize("side", (0, 1))
+@pytest.mark.parametrize("state", ("old", "final"))
 @pytest.mark.parametrize(
     "mutation",
     ("pager", "extra-bar", "duplicate-id", "extra-pane", "duplicate-attribute"),
 )
-def test_final_controls_must_be_one_complete_three_pane_workbench(
-    side: int, mutation: str
+def test_controls_must_produce_one_complete_three_pane_workbench(
+    side: int, state: str, mutation: str
 ) -> None:
-    final = list(media.plan_pair(*OLD))
+    final = list(OLD if state == "old" else media.plan_pair(*OLD))
     if mutation == "pager":
-        pager = media._pagination(("en", "de")[side])
+        if state == "final":
+            pager = media._pagination(("en", "de")[side])
+        else:
+            start = final[side].index('<div class="lk-sp-pagination">')
+            counter = final[side].index('id="sp-counter"', start)
+            end = final[side].index("</div>", counter) + len("</div>")
+            pager = final[side][start:end]
         final[side] = replace_one(final[side], pager, pager + pager)
     elif mutation == "extra-bar":
-        final[side] += '<button class="lk-sp-bar" type="button"></button>'
+        start = final[side].index('id="sp-workbench"')
+        end = final[side].index(">", start) + 1
+        extra = '<button class="lk-sp-bar" type="button"><span class="lk-sp-bar-fill"></span></button>'
+        final[side] = final[side][:end] + extra + final[side][end:]
     elif mutation == "duplicate-id":
-        final[side] += '<span id="epc-media-tab-0"></span>'
+        final[side] += '<span id="sp-counter"></span>'
     elif mutation == "extra-pane":
         final[side] += '<div class="lk-sp-pane"></div>'
     else:
         final[side] = replace_one(
             final[side],
-            'id="epc-media-tab-0"',
-            'id="epc-media-tab-0" id="other-tab"',
+            'id="sp-workbench"',
+            'id="sp-workbench" id="other-workbench"',
         )
     with pytest.raises(ValueError):
         media.plan_pair(*final)
