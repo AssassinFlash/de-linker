@@ -29,6 +29,7 @@ from linker_engine.planning.weather_journal import WeatherJournal
 from linker_engine.planning.weather_kernel import WeatherKernel
 from linker_engine.planning.weather_operator import WeatherOperator
 from linker_engine.planning.weather_reconciliation import WeatherReconciliation
+from linker_engine.planning.weather_submission import submission
 from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 
@@ -181,6 +182,52 @@ def test_late_verified_capture_then_explicit_remaining_attempt_publishes_without
     (workspace.blobs.directory / previous_failure[:2] / previous_failure).unlink()
     with pytest.raises(VersionUnavailable):
         archive.backup(workspace, tmp_path / "missing-receipt-child")
+
+
+@pytest.mark.parametrize("status", ["FAILED", "ABORTED"])
+def test_acknowledgement_retains_exact_verified_inputs_without_a_capture(
+    workspace: Workspace, owner: Actor, tmp_path: Path, status
+) -> None:
+    adapter = SequenceAdapter()
+    _, run, weather, _, journal, intent = failed_start(workspace, owner, adapter)
+    receipt = WeatherOperator(workspace).admit(
+        OPERATOR, run.id, "acknowledge", provider_run_id=remote().id, key="ack"
+    )
+    effective_original = (
+        b"\n" + json.dumps(effective(intent.nonce), indent=2).encode() + b"\n"
+    )
+    adapter.replies.extend(
+        [Reply(200, provider(status)), Reply(200, effective_original)]
+    )
+    assert maintenance(workspace, weather).run_once()
+    row = job(workspace, receipt["job_id"])
+    assert row["state"] == "succeeded"
+    output = workspace.blobs.object(row["output_sha256"])
+    dependencies = output["dependencies"]
+    assert (
+        workspace.blobs.read(dependencies["effective_input_original"])
+        == effective_original
+    )
+    assert workspace.blobs.object(
+        dependencies["submitted_input_original"]
+    ) == submission(plan(), intent.nonce)
+    assert (
+        journal.current(intent).capture_sha256 is None and asset_count(workspace) == 0
+    )
+    assert workspace.run(owner, run.id).state == "failed"
+    assert len(adapter.calls) == 2 and all(c.method == "GET" for c in adapter.calls)
+    archive.backup(workspace, tmp_path / "backup")
+    restored = archive.restore(tmp_path / "backup", tmp_path / "restored")
+    restored_row = job(restored, receipt["job_id"])
+    assert restored.blobs.object(restored_row["output_sha256"]) == output
+    assert (
+        restored.blobs.read(dependencies["effective_input_original"])
+        == effective_original
+    )
+    sha = dependencies["effective_input_original"]
+    (workspace.blobs.directory / sha[:2] / sha).unlink()
+    with pytest.raises(VersionUnavailable):
+        archive.backup(workspace, tmp_path / "missing-verified-input")
 
 
 def test_mismatched_recovery_nonce_cannot_acknowledge_or_start_anything(

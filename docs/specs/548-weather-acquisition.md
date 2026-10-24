@@ -224,6 +224,10 @@ they cannot publish owned assets, set the original run's result, change project
 inputs or turn cancellation into success. Retaining a verified original after
 the original acquisition deadline is permitted under the explicit recovery
 job's budget. It remains evidence until a valid evaluation publishes it.
+An acknowledgement output retains both the exact safe effective INPUT bytes
+received and its server-owned submitted input. This proof survives backup and
+restore even when the remote run has failed or aborted and cannot supply a
+weather capture. Missing referenced INPUT bytes invalidate the backup.
 
 A separate explicit resume command can requeue a failed original evaluation
 only under its matching runtime, with a known acknowledged run, no pending

@@ -15,6 +15,7 @@ from .weather_fetch_plan import WeatherFetchLimits
 from .weather_journal import WeatherJournal
 from .weather_known_run import KnownWeatherRun
 from .weather_reconcile_request import WeatherReconcileRequest
+from .weather_submission import submission
 from .weather_task import WeatherTask
 from .worker import Control
 from .workspace import Workspace
@@ -66,13 +67,22 @@ class WeatherReconciliation:
         )
         task.check()
         transport = self.connection(plan.limits)
+        verified_inputs: Object = {}
         try:
             client = ApifyWeatherClient(transport)
             remote = KnownWeatherRun(journal, client, task, intent)
             if request.action == "acknowledge":
                 assert request.provider_run_id is not None
                 observed = client.read(request.provider_run_id, task.check)
-                client.verified_input(observed, plan, intent.nonce, task.check)
+                effective = client.verified_input(
+                    observed, plan, intent.nonce, task.check
+                )
+                verified_inputs = {
+                    "submitted_input_original": self.workspace.blobs.put_object(
+                        submission(plan, intent.nonce)
+                    ),
+                    "effective_input_original": self.workspace.blobs.put(effective),
+                }
                 # Keep a verified late fact; this cannot complete an old task.
                 intent = journal.acknowledge(intent, observed)
             elif request.action == "observe":
@@ -89,6 +99,7 @@ class WeatherReconciliation:
         dependencies: Object = {
             "acquisition_plan": current.plan_sha256,
             "original_manifest": current.manifest_sha256,
+            **verified_inputs,
             **(
                 {"start_acknowledgement": current.acknowledgement_sha256}
                 if current.acknowledgement_sha256
