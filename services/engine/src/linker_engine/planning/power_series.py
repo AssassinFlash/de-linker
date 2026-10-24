@@ -9,6 +9,7 @@ from typing import Literal
 from .canonical import Json, Object
 from .errors import InvalidInput
 from .interval import Interval
+from .pv_reconstruction import PvReconstruction
 from .sample_reconstruction import SampleReconstruction
 from .series_source import SeriesSource
 from .series_transform import SeriesTransform
@@ -45,7 +46,9 @@ class PowerSeries:
     values_kw: tuple[float, ...]
     measurement: Measurement
     source: SeriesSource
-    transformations: tuple[SeriesTransform | SampleReconstruction, ...] = ()
+    transformations: tuple[
+        SeriesTransform | SampleReconstruction | PvReconstruction, ...
+    ] = ()
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "intervals", tuple(self.intervals))

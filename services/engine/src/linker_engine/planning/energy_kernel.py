@@ -35,7 +35,7 @@ class EnergyKernel:
     models = {
         "replay": kind,
         "battery": BatteryModel.version,
-        "profiles": "csv_and_explicit_pvgis_interval_means_v1",
+        "profiles": "csv_pvgis_and_geometry_bound_pv_reference_v2",
         "controller": "self_consumption_with_reserve_v1",
         "source_accounting": "proportional_mixing_v1",
     }
@@ -66,12 +66,15 @@ class EnergyKernel:
             }
         )
 
-    def context(self, actor: Actor, project_id: str, scenario: EnergyInputs) -> Context:
+    def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
+        scenario = EnergyInputs.from_project(inputs)
         assets = Assets(self.workspace)
         pinned: dict[str, str] = {"runtime_bundle": self.runtime.sha256}
         for role, asset_id in scenario.profiles().items():
             asset = assets.get(actor, project_id, asset_id)
-            pinned.update(profile_dependencies(asset, role))
+            pinned.update(
+                profile_dependencies(asset, role, inputs, self.workspace.blobs)
+            )
         battery = assets.get(actor, project_id, scenario.battery_parameters_asset_id)
         if battery.purpose != "battery_parameters_v1":
             raise InvalidInput("explicit battery-parameter asset is required")
@@ -123,7 +126,7 @@ class EnergyKernel:
             raise VersionUnavailable("runtime bundle and code identity differ")
         inputs = self.workspace.pinned_inputs(manifest)
         scenario = EnergyInputs.from_project(inputs)
-        bind_energy_assets(self.workspace, manifest, scenario, pinned)
+        bind_energy_assets(self.workspace, manifest, scenario, inputs, pinned)
         profiles = {
             role: frozen_profile(
                 self.workspace.blobs,

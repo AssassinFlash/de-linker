@@ -11,6 +11,7 @@ from .canonical import Object
 from .energy_inputs import Document, SchemaVersion
 from .errors import InvalidInput, VersionUnavailable
 from .power_series import Measurement
+from .pv_profile import PURPOSE
 from .records import Actor
 
 
@@ -42,8 +43,8 @@ def check_profile_selections(
                 raise InvalidInput(
                     "selected source has a different measurement boundary"
                 )
-        elif asset.purpose == "pvgis_system_profile_v1":
+        elif asset.purpose in ("pvgis_system_profile_v1", PURPOSE):
             if measurement != "pv_available_ac":
-                raise InvalidInput("PVGIS source cannot become a consumption profile")
+                raise InvalidInput("PV source cannot become a consumption profile")
         else:
             raise VersionUnavailable("selected profile format unavailable")

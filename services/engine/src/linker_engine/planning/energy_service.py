@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
 from .records import Actor, Run
 from .workspace import Workspace
@@ -20,8 +19,7 @@ class EnergyService:
         self, actor: Actor, project_id: str, expected_revision: int, *, key: str
     ) -> Run:
         project = self.workspace.get(actor, project_id, revision=expected_revision)
-        scenario = EnergyInputs.from_project(project.inputs)
-        context = self.kernel.context(actor, project_id, scenario)
+        context = self.kernel.context(actor, project_id, project.inputs)
         return self.workspace.evaluate(
             actor,
             project_id,

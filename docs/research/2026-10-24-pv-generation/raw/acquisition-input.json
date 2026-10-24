@@ -1,0 +1,24 @@
+{
+  "startUrls": [
+    {
+      "url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json"
+    }
+  ],
+  "crawlerType": "cheerio",
+  "maxCrawlDepth": 0,
+  "maxCrawlPages": 1,
+  "saveMarkdown": true,
+  "saveText": true,
+  "saveHtml": true,
+  "saveContentTypes": "application/json",
+  "htmlTransformer": "none",
+  "respectRobotsTxtFile": false,
+  "maxConcurrency": 1,
+  "requestTimeoutSecs": 90,
+  "maxRequestRetries": 1,
+  "minFileDownloadSpeedKBps": 1,
+  "customHttpHeaders": {
+    "Accept": "application/json",
+    "User-Agent": "python-requests/2.32.5"
+  }
+}

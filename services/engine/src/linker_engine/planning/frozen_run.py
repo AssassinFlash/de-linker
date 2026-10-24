@@ -35,7 +35,11 @@ def frozen_manifest(workspace: Workspace, lease: Lease, manifest_hash: str) -> O
 
 
 def bind_energy_assets(
-    workspace: Workspace, manifest: Object, scenario: EnergyInputs, pinned: Object
+    workspace: Workspace,
+    manifest: Object,
+    scenario: EnergyInputs,
+    inputs: Object,
+    pinned: Object,
 ) -> None:
     expected = {"runtime_bundle", "battery.raw", "battery.metadata"}
     references = {
@@ -69,7 +73,9 @@ def bind_energy_assets(
                     row["metadata_sha256"],
                     workspace.blobs.object(row["metadata_sha256"]),
                 )
-                dependencies = profile_dependencies(asset, role)
+                dependencies = profile_dependencies(
+                    asset, role, inputs, workspace.blobs
+                )
                 if any(
                     pinned.get(name) != value for name, value in dependencies.items()
                 ):

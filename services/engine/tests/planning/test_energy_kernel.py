@@ -421,8 +421,7 @@ def test_pinned_hash_substitution_cannot_override_the_input_asset_id(
 ) -> None:
     project = create_scenario(workspace, owner)
     kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
-    scenario = EnergyInputs.from_project(project.inputs)
-    context = kernel.context(owner, project.id, scenario)
+    context = kernel.context(owner, project.id, project.inputs)
     alternative = ProfileImport(Assets(workspace)).csv(
         owner,
         project.id,
@@ -452,9 +451,7 @@ def test_unknown_model_version_is_not_reinterpreted_by_the_current_worker(
 ) -> None:
     project = create_scenario(workspace, owner)
     kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
-    context = kernel.context(
-        owner, project.id, EnergyInputs.from_project(project.inputs)
-    )
+    context = kernel.context(owner, project.id, project.inputs)
     context = replace(context, models={**context.models, "battery": "unknown_v999"})
     run = workspace.evaluate(
         owner, project.id, 2, context, key="unknown-model", max_attempts=1
@@ -590,9 +587,7 @@ def test_real_worker_also_rejects_wrong_battery_schema_types(
 ) -> None:
     project = create_scenario(workspace, owner)
     kernel = EnergyKernel(workspace, TOLERANCE, max_intervals=100)
-    context = kernel.context(
-        owner, project.id, EnergyInputs.from_project(project.inputs)
-    )
+    context = kernel.context(owner, project.id, project.inputs)
     bad = Assets(workspace).add(
         owner,
         project.id,

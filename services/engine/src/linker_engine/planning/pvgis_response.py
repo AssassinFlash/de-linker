@@ -7,20 +7,20 @@ JRC's timestamp method and the selected radiation database take precedence.
 
 from __future__ import annotations
 
-import json
-import math
 import re
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Annotated, Literal, cast
+from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
 from .access import positive_integer
-from .canonical import Json, Object, decode_object, digest, encode
+from .canonical import Object, decode_object, digest, encode
 from .energy_inputs import Document, Identifier, SchemaVersion
 from .errors import InvalidInput
 from .interval import utc
+from .pvgis_document import number as _number
+from .pvgis_document import read_object
 from .pvgis_metadata import at, check_metadata
 from .pvgis_request import PvgisRequest
 
@@ -90,28 +90,6 @@ class PvgisSeries:
         }
 
 
-def _unique_object(pairs: list[tuple[str, Json]]) -> Object:
-    result: Object = {}
-    for key, value in pairs:
-        if key in result:
-            raise InvalidInput("duplicate provider JSON field")
-        result[key] = value
-    return result
-
-
-def _number(row: Object, name: str) -> float:
-    value = row.get(name)
-    if type(value) not in (int, float):
-        raise InvalidInput(f"finite numeric PVGIS {name} required")
-    try:
-        number = float(cast(float, value))
-    except OverflowError as error:
-        raise InvalidInput(f"representable numeric PVGIS {name} required") from error
-    if not math.isfinite(number):
-        raise InvalidInput(f"finite numeric PVGIS {name} required")
-    return number
-
-
 def read_pvgis(
     content: bytes,
     request: PvgisRequest,
@@ -133,14 +111,7 @@ def read_pvgis(
         # A real 200 text/html 'Request Rejected' was captured in research.
         # It must not become zero PV, valid JSON, or a successful source asset.
         raise InvalidInput("PVGIS capture is not the requested JSON response")
-    try:
-        parsed = json.loads(content, object_pairs_hook=_unique_object)
-        document = cast(Object, parsed)
-        if not isinstance(document, dict):
-            raise InvalidInput("PVGIS response must be an object")
-        encode(document)  # Reject NaN/Infinity/overflow, even in unused metadata.
-    except (ValueError, UnicodeError, RecursionError) as error:
-        raise InvalidInput("PVGIS response is not finite JSON") from error
+    document = read_object(content)
     check_metadata(document, request)
     rows = at(document, "outputs", "hourly")
     expected_rows = (request.end - request.start).days * 24

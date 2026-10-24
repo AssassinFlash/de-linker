@@ -8,6 +8,7 @@ from .canonical import Json, Object
 from .errors import InvalidInput, VersionUnavailable
 from .frozen_profiles import frozen_profile
 from .interval import microseconds
+from .pv_profile import PURPOSE
 from .records import Actor
 from .wire_numbers import check_wire_numbers
 
@@ -34,6 +35,7 @@ class ProfilePreview:
         expected_type = {
             "csv_profile_v1": None,
             "pvgis_system_profile_v1": "pvgis_system_profile_v1",
+            PURPOSE: PURPOSE,
         }
         if (
             asset.purpose not in expected_type
