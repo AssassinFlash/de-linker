@@ -1,0 +1,48 @@
+# Fixed identifiers already present in the published Commerce catalogue.
+# They have no current runtime callers. Keep their existing translations
+# available across extraction without merging an earlier generated POT.
+# Copyright (C) 2026 Linker Technology GmbH
+# This file is distributed under the same license as the Linker Commerce plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Linker Commerce 0.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-22T10:58:13+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: linker-commerce\n"
+
+#. Retained published catalogue identifier; no current runtime caller.
+msgid "Engineering components that are not products (data/engineering-overlay.json)."
+msgstr ""
+
+#. Retained published catalogue identifier; no current runtime caller.
+msgid "Model labels do not reject inquiries or stop team notifications."
+msgstr ""
+
+#. Retained published catalogue identifier; no current runtime caller.
+#. translators: %d: product ID.
+#, php-format
+msgid "Product %d is not available."
+msgstr ""
+
+#. Retained published catalogue identifier; no current runtime caller.
+#. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
+#, php-format
+msgid ""
+"Saved inquiries awaiting staff review: %1$d.\n"
+"Oldest inquiry: %2$s ago.\n"
+"Count checked: %3$s.\n"
+"Review saved inquiries: %4$s\n"
+"\n"
+"These inquiries are saved. Their individual team notifications have not been released."
+msgstr ""
+
+#. Retained published catalogue identifier; no current runtime caller.
+msgid "Saved inquiries need staff review"
+msgstr ""

@@ -4,5 +4,6 @@ module.exports = {
 	entry: {
 		accounts: './src/accounts/index.tsx',
 		protection: './src/protection/index.ts',
+		'contact-language': './src/contact-language/index.ts',
 	},
 };

@@ -36,6 +36,11 @@
  * and the side cards stack.
  */
 
+/* German headings keep words intact within their existing authored lines. */
+html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
+	hyphens: manual;
+}
+
 #contact-form .linker-contact-card {
 	display: grid;
 	/* 20px: the live rail's own margin-top under the card. */
@@ -155,6 +160,10 @@
 	padding-inline: var(--proto-control-pad-x);
 }
 
+#contact-form .linker-contact-card .linker-form-primary:not(:disabled):hover {
+	background: var(--proto-teal-700);
+}
+
 /* The row keeps its own layout: the card does not lean on the markup's
  * utility classes for it. Measured on the contactdesign instance 2026-10-15
  * (docs/acceptance/2026-10-15/contact-card/README.md): with the layout left to
@@ -266,6 +275,18 @@
 	outline-offset: var(--proto-focus-offset);
 }
 
+/* The language-storage fallback has a separate explanation and action.
+ * Use the contact field rhythm so a wrapped phone label never touches the prose. */
+#contact-form [data-linker-contact-draft-error]:not([hidden]) {
+	display: grid;
+	gap: var(--proto-space-4);
+}
+
+#contact-form [data-linker-contact-draft-error] .linker-form-primary {
+	justify-self: start;
+	max-inline-size: 100%;
+}
+
 /* 800px and below: the live card's own padding step (25px) and heading size.
  * The card box keeps the receipt's `:not()` selector here: without it this
  * rule is one class lighter than the box rule above and loses. */
@@ -372,6 +393,11 @@
 
 #contact-form .linker-contact-selection__summary dt {
 	color: var(--proto-ink-muted-deep);
+}
+
+#contact-form .linker-contact-selection__summary dd {
+	/* Product and document labels retain natural wrapping without invented hyphens. */
+	hyphens: none;
 }
 
 #contact-form .linker-contact-selection__excluded,
