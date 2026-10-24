@@ -1,0 +1,55 @@
+# Saved solar source and model settings
+
+This increment continues the complete unified Solution Configurator goal. The
+whole-system Linker identity in `548-product-identity.md` remains the product
+direction. A usable connected workflow must support that explanation; no source
+form or dependency list is a substitute for the full equipment/report/inquiry
+delivery.
+
+The calculation workspace gains a weather-source view. Its actual form edits a
+versioned `solar_setup` draft without automatically starting provider work.
+Weather, scenario and history views retain their mounted controls so switching
+views cannot discard unfinished numeric input. Incomplete numeric syntax blocks
+native saving and dispatch; explicit roof-coordinate replacement may replace
+unfinished coordinate text. Existing decimal fields retain their behavior;
+calendar-year fields use whole-number input and validation.
+
+Coordinates are explicit WGS 84 degrees or explicitly copied from the current
+roof reference point. No postcode-derived location, Germany default, assumed
+source period, terrain setting or synthetic year is inserted. Source years are
+whole ordered calendar years. The expected radiation database checks the
+provider's actual response; it is not a TMY database switch. Meteorology is ERA5.
+The interpretation preserves original selected dates and the reported irradiance
+offset, and uses an explicitly chosen non-leap synthetic UTC calculation year.
+Provider availability is not inferred from the one retained Berlin response.
+
+Preparation validates against the unmodified exported backend JSON schema and
+semantic year checks, then writes `weather_acquisition` in the open project
+draft. Native Save project must confirm the input revision before the request
+button enables. Dispatch uses the existing common planning-operation hook,
+atomic durable intent, exact revision/key command and task history. No browser
+provider credentials, actor choice, resource controls or arbitrary URL are sent.
+The start handler rechecks saved/current equality, scope, syntax, outstanding
+requests and project conflicts. Its late response is fenced by project/session
+lifetime. Result selection remains the existing explicit source-selection step.
+
+`solar_setup` also supports incomplete PV module/array/conversion drafts, read
+from an existing accepted `pv_generation` when no draft exists. Its untouched
+backend schema remains the final compiler contract. PV preparation checks the
+current nonempty active layout, exact module set, a non-overlapping complete
+partition into conversion groups, referenced north/location and complete safe
+module-source references. Changing PV settings invalidates compiled generation
+and prepared energy, while unrelated edits and the explicit historical weather
+selection remain. No default losses, temperature coefficient or inverter
+efficiency is invented. PV model entry controls and native PV start are still
+required in the same full goal; this increment does not claim they are delivered.
+
+The retained actual worker-produced fixture is shared by browser and service
+contract tests. It contains real retained TMY bytes with explicitly synthetic
+roof/model inputs and simulated provider transport. Isolated browser checks use
+the actual form, shared controller and reviewed EN/DE catalogs at 1440/390. They
+do not establish a native paired runtime install, live acquisition, weather
+availability throughout Europe, engineering/country release or production
+acceptance. Those remain full-goal gates, together with novice source discovery,
+complete model entry, equipment compatibility, complete BOM/report/PDF and all
+site/commerce consumers.

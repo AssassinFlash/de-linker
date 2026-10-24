@@ -5,6 +5,21 @@ import { Notice } from "../Notice.tsx";
 export function energyErrorText(error: unknown): string {
 	const code = error instanceof ApiError ? error.code : "";
 	switch (code) {
+		case "weather_parameters_incomplete":
+			return __(
+				"Weather settings need valid coordinates, whole source and calculation years, a radiation database and a terrain-horizon choice.",
+				"linker-tools",
+			);
+		case "weather_year_order":
+			return __(
+				"The last source year must be the same as or later than the first source year.",
+				"linker-tools",
+			);
+		case "weather_leap_axis":
+			return __(
+				"The calculation year must be a non-leap year. This model uses 8,760 hourly intervals.",
+				"linker-tools",
+			);
 		case "scenario_profiles_required":
 			return __(
 				"The scenario needs gross-load, available-PV and separate AC auxiliary interval profiles.",

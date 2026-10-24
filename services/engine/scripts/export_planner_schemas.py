@@ -10,6 +10,8 @@ import json
 from pathlib import Path
 
 from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
+from linker_engine.planning.pv_parameters import PvGenerationParameters
+from linker_engine.planning.weather_inputs import WeatherAcquisitionInputs
 
 TARGET = Path(__file__).resolve().parents[3] / "apps" / "planner" / "src" / "contracts"
 
@@ -28,6 +30,8 @@ def documents() -> dict[str, str]:
         for name, model in (
             ("battery-parameters", BatteryParameters),
             ("energy-inputs", EnergyInputs),
+            ("pv-generation", PvGenerationParameters),
+            ("weather-acquisition", WeatherAcquisitionInputs),
         )
     }
 

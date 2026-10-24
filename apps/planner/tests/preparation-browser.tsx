@@ -1,8 +1,17 @@
 /** Isolated visual consumer fixture. Not a production build entry or WP proof. */
+import { __ } from "../src/i18n.ts";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PreparationResult } from "../src/components/energy/PreparationResult.tsx";
+import { EnergyWorkspace } from "../src/components/energy/EnergyWorkspace.tsx";
+import {
+	beginDraft,
+	editDraft,
+	isDirty,
+	prepareSave,
+	acknowledgeSave,
+} from "../src/domain/draft.ts";
 import { ToolIdentity } from "../src/components/ToolIdentity.tsx";
 import { readRun } from "../src/data/planningProtocol.ts";
 import type { JsonObject, Session } from "../src/data/protocol.ts";
@@ -19,6 +28,7 @@ const options = new URLSearchParams(window.location.search),
 	project = weather ? fixture.weather_project : fixture.pv_project,
 	scope = "a".repeat(64),
 	status = structuredClone(fixture.weather_status);
+const setupMode = options.get("view") === "setup";
 const dictionary = german.locale_data.messages as Record<string, unknown>;
 document.documentElement.lang = de ? "de" : "en";
 window.wp = {
@@ -31,7 +41,13 @@ window.wp = {
 		},
 		sprintf(format, ...values) {
 			let index = 0;
-			return format.replace(/%[sd]/g, () => String(values[index++]));
+			return format.replace(
+				/%(?:(\d+)\$)?[sd]/g,
+				(_match, position: string | undefined) =>
+					String(
+						values[position === undefined ? index++ : Number(position) - 1],
+					),
+			);
 		},
 	},
 };
@@ -57,23 +73,140 @@ const observed = unknown
 		}
 	: status;
 const run = readRun(response, project.id),
-	session = { query_scope: scope } as Session;
+	session = {
+		query_scope: scope,
+		runtime: {
+			limits: {
+				max_json_depth: 32,
+				max_body_bytes: 16777216,
+				max_page_size: 100,
+			},
+		},
+	} as Session;
+let setupRun: JsonObject | null = null;
 const client = {
 	isCurrentScope: (value: string) => value === scope,
 	async query(path: string, body: JsonObject) {
+		if (setupMode && path === "projects/runs")
+			return {
+				items: setupRun
+					? [
+							{
+								id: setupRun.id,
+								project_id: project.id,
+								revision: setupRun.revision,
+								manifest_sha256: setupRun.manifest_sha256,
+								result_sha256: null,
+								state: "queued",
+								is_current: true,
+								created_at: 1700000000,
+								task_kind: "acquire_pvgis_tmy_weather_v1",
+							},
+						]
+					: [],
+				next: null,
+			};
+		if (setupMode && path === "runs/read") return setupRun;
 		if (path === "projects/read") return project;
 		if (path === "assets/read")
 			return body.asset_id === fixture.weather_run.result.prepared_asset.id
 				? fixture.weather_run.result.prepared_asset
 				: raw.result.prepared_asset;
-		if (path === "runs/weather/status") return observed;
+		if (path === "runs/weather/status")
+			return setupMode
+				? {
+						...observed,
+						task_state: "queued",
+						acquisition_state: "not_started",
+						observation: null,
+						capture_sha256: null,
+					}
+				: observed;
 		throw new Error("unexpected_fixture_query");
 	},
-	send() {
+	send(path: string, serialized: string) {
+		if (setupMode && path === "runs/weather") {
+			const body = JSON.parse(serialized) as JsonObject;
+			setupRun = {
+				...fixture.weather_run,
+				state: "queued",
+				result: null,
+				result_sha256: null,
+				revision: body.expected_revision!,
+				manifest: {
+					...fixture.weather_run.manifest,
+					revision: body.expected_revision!,
+				},
+			};
+			return Promise.resolve(setupRun);
+		}
 		throw new Error("fixture_has_no_mutation_transport");
 	},
 } as unknown as PlannerClient;
 let inputs: JsonObject = structuredClone(project.inputs);
+function SetupFixture() {
+	const initial = {
+		...project,
+		inputs:
+			options.get("blank") === "1"
+				? { geometry: project.inputs.geometry }
+				: project.inputs,
+	};
+	const [draft, setDraft] = useState(() => beginDraft(initial)),
+		[valid, setValid] = useState(true);
+	return (
+		<>
+			<main className="lp-editor-main">
+				<button
+					type="button"
+					className="lp-button"
+					disabled={!valid || !isDirty(draft)}
+					onClick={() =>
+						setDraft((current) => {
+							const next = prepareSave(current, crypto.randomUUID(), {
+									maxDepth: 32,
+									maxBytes: 16777216,
+								}),
+								intent = next.pending!;
+							return acknowledgeSave(next, intent, {
+								...project,
+								revision: intent.expectedRevision + 1,
+								input_sha256: "e".repeat(64),
+								inputs: intent.inputs,
+							});
+						})
+					}
+				>
+					{__("Save project", "linker-tools")}
+				</button>
+				<EnergyWorkspace
+					draft={draft}
+					edit={(operation) => {
+						try {
+							const next = editDraft(draft, operation(draft.history.current));
+							setDraft(next);
+							return true;
+						} catch {
+							return false;
+						}
+					}}
+					flush={async () => true}
+					session={session}
+					client={client}
+					recheck={() => {
+						throw new Error("fixture_identity_changed");
+					}}
+					locale={de ? "de-DE" : "en-GB"}
+					blocked={false}
+					active={true}
+					onValidity={setValid}
+					openProfiles={() => {}}
+				/>
+			</main>
+			<ToolIdentity />
+		</>
+	);
+}
 function Fixture() {
 	const [value, setValue] = useState(inputs);
 	return (
@@ -107,6 +240,6 @@ createRoot(target).render(
 	<QueryClientProvider
 		client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
 	>
-		<Fixture />
+		{setupMode ? <SetupFixture /> : <Fixture />}
 	</QueryClientProvider>,
 );

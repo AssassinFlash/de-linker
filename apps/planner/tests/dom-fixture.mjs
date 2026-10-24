@@ -89,12 +89,16 @@ export function setupDom() {
 	};
 }
 export async function until(predicate) {
-	for (let attempt = 0; attempt < 100; attempt++) {
+	// An iteration count is not a scheduling budget when test files run in
+	// parallel. Allow two seconds of wall time for the page's queued work; a
+	// successful condition still returns immediately after its next render.
+	const deadline = performance.now() + 2000;
+	do {
 		await act(async () => {
 			await new Promise((resolve) => setTimeout(resolve, 0));
 		});
 		if (predicate()) return;
-	}
+	} while (performance.now() < deadline);
 	throw new Error("Expected rendered state was not reached");
 }
 export async function enter(element, value) {

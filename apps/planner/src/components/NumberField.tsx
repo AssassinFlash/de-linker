@@ -6,6 +6,35 @@ import {
 	parseDecimal,
 } from "../domain/decimal.ts";
 
+function invalidNumberText(
+	integer: boolean,
+	min: number | undefined,
+	max: number | undefined,
+	locale: string,
+): string {
+	if (min !== undefined && max !== undefined)
+		return sprintf(
+			integer
+				? __(
+						"A whole number between %1$s and %2$s is required.",
+						"linker-tools",
+					)
+				: __("A number between %1$s and %2$s is required.", "linker-tools"),
+			formatDecimal(min, locale),
+			formatDecimal(max, locale),
+		);
+	if (min !== undefined)
+		return sprintf(
+			integer
+				? __("A whole number of %s or greater is required.", "linker-tools")
+				: __("A number of %s or greater is required.", "linker-tools"),
+			formatDecimal(min, locale),
+		);
+	return integer
+		? __("A valid whole number is required.", "linker-tools")
+		: __("A valid number is required.", "linker-tools");
+}
+
 export function NumberField({
 	label,
 	value,
@@ -13,6 +42,7 @@ export function NumberField({
 	locale,
 	min,
 	max,
+	integer = false,
 	onChange,
 	onValidity,
 }: {
@@ -22,6 +52,7 @@ export function NumberField({
 	locale: string;
 	min?: number;
 	max?: number;
+	integer?: boolean;
 	onChange: (value: number | null) => void;
 	onValidity: (valid: boolean) => void;
 }) {
@@ -41,7 +72,8 @@ export function NumberField({
 			number = parseDecimal(raw, locale);
 			allowed =
 				number === null ||
-				((min === undefined || number >= min) &&
+				((!integer || Number.isSafeInteger(number)) &&
+					(min === undefined || number >= min) &&
 					(max === undefined || number <= max));
 		} catch {
 			allowed = false;
@@ -58,7 +90,7 @@ export function NumberField({
 			<input
 				id={id}
 				type="text"
-				inputMode="decimal"
+				inputMode={integer ? "numeric" : "decimal"}
 				autoComplete="off"
 				value={text}
 				aria-invalid={!valid}
@@ -73,27 +105,15 @@ export function NumberField({
 				}}
 			/>
 			<small id={id + "-format"}>
-				{decimalSeparator(locale) === ","
-					? __("Decimal comma; no thousands separators.", "linker-tools")
-					: __("Decimal point; no thousands separators.", "linker-tools")}
+				{integer
+					? __("Whole numbers; no thousands separators.", "linker-tools")
+					: decimalSeparator(locale) === ","
+						? __("Decimal comma; no thousands separators.", "linker-tools")
+						: __("Decimal point; no thousands separators.", "linker-tools")}
 			</small>
 			{!valid && (
 				<small className="lp-field-error" id={id + "-error"}>
-					{min !== undefined && max !== undefined
-						? sprintf(
-								__(
-									"A number between %1$s and %2$s is required.",
-									"linker-tools",
-								),
-								formatDecimal(min, locale),
-								formatDecimal(max, locale),
-							)
-						: min !== undefined
-							? sprintf(
-									__("A number of %s or greater is required.", "linker-tools"),
-									formatDecimal(min, locale),
-								)
-							: __("A valid number is required.", "linker-tools")}
+					{invalidNumberText(integer, min, max, locale)}
 				</small>
 			)}
 		</label>

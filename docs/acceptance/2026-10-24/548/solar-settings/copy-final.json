@@ -1,0 +1,492 @@
+[
+  {
+    "msgid": "Typical-year weather",
+    "approved_en": "Typical-year weather",
+    "de": "Typisches Wetterjahr"
+  },
+  {
+    "msgid": "PVGIS supplies a typical meteorological year for a location and source period. The saved result records the returned databases, selected months and interpretation used for solar calculations.",
+    "approved_en": "PVGIS builds a typical weather year from representative months in the selected source period. The saved result records the returned databases, selected months and how their timestamps are used.",
+    "de": "PVGIS stellt aus repräsentativen Monaten des gewählten Zeitraums ein typisches Wetterjahr zusammen. Das gespeicherte Ergebnis hält die zurückgegebenen Datenbanken, die ausgewählten Monate und die Zuordnung der Zeitangaben fest."
+  },
+  {
+    "msgid": "Latitude",
+    "approved_en": "Latitude",
+    "de": "Breitengrad"
+  },
+  {
+    "msgid": "Longitude",
+    "approved_en": "Longitude",
+    "de": "Längengrad"
+  },
+  {
+    "msgid": "Use roof location",
+    "approved_en": "Use roof coordinates",
+    "de": "Dachkoordinaten übernehmen"
+  },
+  {
+    "msgid": "Coordinates use WGS 84. The roof reference point can supply them; a postcode is not used as a roof location.",
+    "approved_en": "The roof reference point can supply WGS 84 coordinates. A postcode alone does not locate the roof.",
+    "de": "Der Dachbezugspunkt kann Koordinaten im System WGS 84 liefern. Eine Postleitzahl allein bestimmt die Lage des Dachs nicht."
+  },
+  {
+    "msgid": "First source year",
+    "approved_en": "First source year",
+    "de": "Erstes Jahr des Quellzeitraums"
+  },
+  {
+    "msgid": "Last source year",
+    "approved_en": "Last source year",
+    "de": "Letztes Jahr des Quellzeitraums"
+  },
+  {
+    "msgid": "The available source years depend on the location and PVGIS database. These are whole calendar years used to select the typical months.",
+    "approved_en": "PVGIS selects representative months from this period. Use whole calendar years. Availability depends on the location and database.",
+    "de": "PVGIS wählt die repräsentativen Monate aus diesem Zeitraum aus. Geben Sie ganze Kalenderjahre an. Welche Jahre verfügbar sind, hängt vom Standort und von der Datenbank ab."
+  },
+  {
+    "msgid": "Expected radiation database",
+    "approved_en": "Expected radiation database",
+    "de": "Erwartete Strahlungsdatenbank"
+  },
+  {
+    "msgid": "Choose…",
+    "approved_en": "Choose…",
+    "de": "Bitte wählen…"
+  },
+  {
+    "msgid": "The TMY service chooses its radiation database. This choice checks the returned source; it does not switch the provider's database. The meteorological database must be ERA5.",
+    "approved_en": "PVGIS chooses the radiation database for the location. This field checks that choice; it does not change it. Meteorological data must come from ERA5.",
+    "de": "PVGIS bestimmt die Strahlungsdatenbank für den Standort. Diese Auswahl dient zur Prüfung der zurückgegebenen Quelle; sie ändert die von PVGIS verwendete Datenbank nicht. Die meteorologischen Daten müssen aus ERA5 stammen."
+  },
+  {
+    "msgid": "Terrain horizon",
+    "approved_en": "Terrain horizon",
+    "de": "Geländehorizont"
+  },
+  {
+    "msgid": "Include PVGIS terrain horizon",
+    "approved_en": "Include PVGIS terrain horizon",
+    "de": "PVGIS-Geländehorizont berücksichtigen"
+  },
+  {
+    "msgid": "Omit terrain horizon",
+    "approved_en": "Omit terrain horizon",
+    "de": "Geländehorizont nicht berücksichtigen"
+  },
+  {
+    "msgid": "A terrain horizon does not include nearby buildings, trees or roof obstacles.",
+    "approved_en": "A terrain horizon does not include nearby buildings, trees or roof obstacles.",
+    "de": "Der Geländehorizont berücksichtigt keine nahen Gebäude, Bäume oder Hindernisse auf dem Dach."
+  },
+  {
+    "msgid": "Calculation time axis",
+    "approved_en": "Calculation year",
+    "de": "Berechnungsjahr"
+  },
+  {
+    "msgid": "Synthetic calculation year",
+    "approved_en": "Synthetic calculation year",
+    "de": "Synthetisches Berechnungsjahr"
+  },
+  {
+    "msgid": "A non-leap year places the 8,760 typical-year intervals on a shared UTC calculation axis. Solar positions still use the original selected dates and the provider's irradiance-time offset. This is not a forecast for the chosen year.",
+    "approved_en": "A non-leap year places the 8,760 typical-year hours on a shared UTC timeline. Solar positions still use the original source dates and the provider's irradiance-time offset. The result is not a forecast for the chosen year.",
+    "de": "Die 8.760 Stunden des typischen Wetterjahres werden auf einer gemeinsamen UTC-Zeitachse in einem Jahr ohne Schalttag abgebildet. Für den Sonnenstand werden weiterhin die ursprünglichen Datumsangaben und der vom Anbieter angegebene Zeitversatz der Strahlungsdaten verwendet. Das Ergebnis ist keine Vorhersage für das gewählte Jahr."
+  },
+  {
+    "msgid": "Preparing these settings only changes the open draft. Save project records them before a weather request can start. A returned weather source is selected for the project separately.",
+    "approved_en": "Preparation updates the open draft. Save project records the settings before a weather request can start. Selecting a returned weather source is a separate step.",
+    "de": "Die Vorbereitung ändert zunächst die offenen Eingaben. Erst mit „Projekt speichern“ werden die Einstellungen gespeichert und für eine Wetterabfrage verfügbar. Eine zurückgegebene Wetterquelle wählen Sie anschließend gesondert für das Projekt aus."
+  },
+  {
+    "msgid": "These source settings cannot be edited here. The saved inputs and task history remain available.",
+    "approved_en": "These weather settings cannot be edited here. The saved inputs and task history remain available.",
+    "de": "Diese Wettereinstellungen können hier nicht bearbeitet werden. Die gespeicherten Eingaben und bisherigen Aufträge bleiben verfügbar."
+  },
+  {
+    "msgid": "Weather settings prepared in this draft",
+    "approved_en": "Weather settings prepared in this draft",
+    "de": "Wettereinstellungen für die offenen Eingaben vorbereitet"
+  },
+  {
+    "msgid": "Weather settings need preparation",
+    "approved_en": "Weather settings need preparation",
+    "de": "Wettereinstellungen noch nicht vorbereitet"
+  },
+  {
+    "msgid": "Save project records these inputs before a new calculation can start.",
+    "approved_en": "Save project records these inputs before a new calculation can start.",
+    "de": "Mit Projekt speichern werden diese Eingaben gesichert. Erst danach kann eine neue Berechnung starten."
+  },
+  {
+    "msgid": "A new calculation uses saved input revision %d.",
+    "approved_en": "A new calculation uses saved input revision %d.",
+    "de": "Eine neue Berechnung verwendet die gespeicherte Eingabeversion %d."
+  },
+  {
+    "msgid": "Prepare weather settings",
+    "approved_en": "Prepare weather settings",
+    "de": "Wettereinstellungen vorbereiten"
+  },
+  {
+    "msgid": "Acquire weather for saved inputs",
+    "approved_en": "Request weather for saved inputs",
+    "de": "Wetterdaten für gespeicherte Eingaben abfragen"
+  },
+  {
+    "msgid": "Energy calculation",
+    "approved_en": "Energy calculation",
+    "de": "Energieberechnung"
+  },
+  {
+    "msgid": "Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.",
+    "approved_en": "Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.",
+    "de": "Berechnen Sie die Energieflüsse dieses Projekts für die gewählten Zeiträume. Mit jedem Ergebnis bleiben die verwendeten Eingaben, Quellen und das Berechnungsmodell gespeichert."
+  },
+  {
+    "msgid": "Calculation workspace view",
+    "approved_en": "Calculation workspace view",
+    "de": "Ansicht der Energieberechnung"
+  },
+  {
+    "msgid": "Weather source",
+    "approved_en": "Weather source",
+    "de": "Wetterquelle"
+  },
+  {
+    "msgid": "Scenario settings",
+    "approved_en": "Scenario settings",
+    "de": "Szenarioeinstellungen"
+  },
+  {
+    "msgid": "Saved calculations",
+    "approved_en": "Saved calculations",
+    "de": "Gespeicherte Berechnungen"
+  },
+  {
+    "msgid": "This browser could not save or read the information needed to recover calculation requests. New requests are paused until this is available.",
+    "approved_en": "This browser could not save or read the information needed to recover calculation requests. New requests are paused until this is available.",
+    "de": "Der Browser konnte die Daten zur Wiederherstellung von Berechnungsaufträgen nicht speichern oder lesen. Bis dies wieder möglich ist, werden keine neuen Aufträge gesendet."
+  },
+  {
+    "msgid": "Check browser storage",
+    "approved_en": "Check browser storage",
+    "de": "Browserspeicher prüfen"
+  },
+  {
+    "msgid": "Stored requests",
+    "approved_en": "Stored requests",
+    "de": "Gespeicherte Vorgänge"
+  },
+  {
+    "msgid": "Retrying a calculation uses its original request and saved input revision. Restoring storage settings replaces those settings in your open draft.",
+    "approved_en": "Retrying a calculation uses its original request and saved input revision. Restoring storage settings replaces those settings in your open draft.",
+    "de": "Beim erneuten Senden einer Berechnung werden der ursprüngliche Auftrag und die dazu gespeicherte Eingabeversion verwendet. Wiederhergestellte Speichereinstellungen ersetzen die entsprechenden Werte in Ihren offenen Eingaben."
+  },
+  {
+    "msgid": "Saved storage settings",
+    "approved_en": "Saved storage settings",
+    "de": "Gespeicherte Speichereinstellungen"
+  },
+  {
+    "msgid": "Calculation request · revision %d",
+    "approved_en": "Calculation request · revision %d",
+    "de": "Berechnungsauftrag · Version %d"
+  },
+  {
+    "msgid": "Restore and retry storage settings",
+    "approved_en": "Restore and retry storage settings",
+    "de": "Speichereinstellungen wiederherstellen und erneut senden"
+  },
+  {
+    "msgid": "Retry original calculation request",
+    "approved_en": "Retry original calculation request",
+    "de": "Ursprünglichen Berechnungsauftrag erneut senden"
+  },
+  {
+    "msgid": "Dismiss confirmed request",
+    "approved_en": "Dismiss confirmed request",
+    "de": "Bestätigten Vorgang ausblenden"
+  },
+  {
+    "msgid": "This scenario-settings format cannot be edited here. Its saved input and calculation history remain available.",
+    "approved_en": "This scenario-settings format cannot be edited here. Its saved input and calculation history remain available.",
+    "de": "Szenarioeinstellungen in diesem Format können hier nicht bearbeitet werden. Die gespeicherten Eingaben und bisherigen Berechnungen bleiben verfügbar."
+  },
+  {
+    "msgid": "Interval sources",
+    "approved_en": "Interval sources",
+    "de": "Quellen der Zeitreihen"
+  },
+  {
+    "msgid": "Selected in this draft",
+    "approved_en": "Selected in this draft",
+    "de": "Für diese Eingaben ausgewählt"
+  },
+  {
+    "msgid": "Required",
+    "approved_en": "Required",
+    "de": "Erforderlich"
+  },
+  {
+    "msgid": "Review energy inputs",
+    "approved_en": "Review energy inputs",
+    "de": "Energiedaten prüfen"
+  },
+  {
+    "msgid": "Storage",
+    "approved_en": "Storage",
+    "de": "Speicher"
+  },
+  {
+    "msgid": "Starting state",
+    "approved_en": "Starting state",
+    "de": "Anfangszustand"
+  },
+  {
+    "msgid": "Operation",
+    "approved_en": "Operation",
+    "de": "Betrieb"
+  },
+  {
+    "msgid": "Scenario prepared in this draft",
+    "approved_en": "Scenario prepared in this draft",
+    "de": "Szenario für die offenen Eingaben vorbereitet"
+  },
+  {
+    "msgid": "Scenario settings need preparation",
+    "approved_en": "Scenario settings need preparation",
+    "de": "Szenario noch nicht vorbereitet"
+  },
+  {
+    "msgid": "Confirming request…",
+    "approved_en": "Confirming request…",
+    "de": "Vorgang wird bestätigt…"
+  },
+  {
+    "msgid": "Prepare scenario settings",
+    "approved_en": "Prepare scenario settings",
+    "de": "Szenario vorbereiten"
+  },
+  {
+    "msgid": "Calculate saved scenario",
+    "approved_en": "Calculate saved scenario",
+    "de": "Gespeichertes Szenario berechnen"
+  },
+  {
+    "msgid": "Saved calculation history could not be refreshed.",
+    "approved_en": "Saved calculation history could not be refreshed.",
+    "de": "Die Liste der gespeicherten Berechnungen konnte nicht aktualisiert werden."
+  },
+  {
+    "msgid": "Refresh calculation history",
+    "approved_en": "Refresh calculation history",
+    "de": "Berechnungsliste aktualisieren"
+  },
+  {
+    "msgid": "Reading saved calculations…",
+    "approved_en": "Reading saved calculations…",
+    "de": "Gespeicherte Berechnungen werden geladen…"
+  },
+  {
+    "msgid": "Calculation history",
+    "approved_en": "Calculation history",
+    "de": "Bisherige Berechnungen"
+  },
+  {
+    "msgid": "No saved calculation is available on this page.",
+    "approved_en": "No saved calculation is available on this page.",
+    "de": "Auf dieser Seite sind keine gespeicherten Berechnungen vorhanden."
+  },
+  {
+    "msgid": "Revision %d",
+    "approved_en": "Revision %d",
+    "de": "Version %d"
+  },
+  {
+    "msgid": "Latest calculations",
+    "approved_en": "Latest calculations",
+    "de": "Neueste Berechnungen"
+  },
+  {
+    "msgid": "Earlier calculations",
+    "approved_en": "Earlier calculations",
+    "de": "Ältere Berechnungen"
+  },
+  {
+    "msgid": "The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
+    "approved_en": "The selected calculation could not be refreshed. Any visible state is the last confirmed response.",
+    "de": "Die gewählte Berechnung konnte nicht aktualisiert werden. Ein angezeigter Status entspricht der zuletzt bestätigten Antwort."
+  },
+  {
+    "msgid": "Refresh calculation status",
+    "approved_en": "Refresh calculation status",
+    "de": "Berechnungsstatus aktualisieren"
+  },
+  {
+    "msgid": "Reading the saved calculation…",
+    "approved_en": "Reading the saved calculation…",
+    "de": "Gespeicherte Berechnung wird geladen…"
+  },
+  {
+    "msgid": "Confirming cancellation…",
+    "approved_en": "Confirming cancellation…",
+    "de": "Abbruch wird bestätigt…"
+  },
+  {
+    "msgid": "Cancel calculation",
+    "approved_en": "Cancel calculation",
+    "de": "Berechnung abbrechen"
+  },
+  {
+    "msgid": "Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed.",
+    "approved_en": "Cancellation could not be confirmed. The calculation may still be running; its server status can be refreshed.",
+    "de": "Der Abbruch konnte nicht bestätigt werden. Die Berechnung läuft möglicherweise noch. Sie können den Status auf dem Server aktualisieren."
+  },
+  {
+    "msgid": "Weather settings need a location, whole source years, database and horizon choices, and a whole calculation year.",
+    "approved_en": "Weather settings need valid coordinates, whole source and calculation years, a radiation database and a terrain-horizon choice.",
+    "de": "Für die Wettereinstellungen sind gültige Koordinaten, ganze Kalenderjahre für den Quellzeitraum und die Berechnung sowie eine Strahlungsdatenbank und eine Auswahl zum Geländehorizont erforderlich."
+  },
+  {
+    "msgid": "The last source year must be the same as or later than the first source year.",
+    "approved_en": "The last source year must be the same as or later than the first source year.",
+    "de": "Das letzte Jahr des Quellzeitraums darf nicht vor dem ersten liegen."
+  },
+  {
+    "msgid": "The synthetic calculation year must be a non-leap year for this 8,760-interval model.",
+    "approved_en": "The calculation year must be a non-leap year. This model uses 8,760 hourly intervals.",
+    "de": "Das Berechnungsjahr darf kein Schaltjahr sein. Dieses Modell verwendet 8.760 Stundenintervalle."
+  },
+  {
+    "msgid": "The scenario needs gross-load, available-PV and separate AC auxiliary interval profiles.",
+    "approved_en": "The scenario needs gross-load, available-PV and separate AC auxiliary interval profiles.",
+    "de": "Für dieses Szenario werden Zeitreihen der gesamten Standortlast, der verfügbaren PV-Leistung auf der AC-Seite und des separaten AC-Hilfsverbrauchs benötigt."
+  },
+  {
+    "msgid": "The storage parameters need a source or assumption note.",
+    "approved_en": "The storage parameters need a source or assumption note.",
+    "de": "Für die Speicherparameter fehlt noch die Angabe einer Quelle oder Annahme."
+  },
+  {
+    "msgid": "Storage values need attention. Efficiencies must be greater than 0% and no more than 100%; other storage values must be zero or greater.",
+    "approved_en": "Storage values need attention. Efficiencies must be greater than 0% and no more than 100%; other storage values must be zero or greater.",
+    "de": "Bitte prüfen Sie die Speicherwerte. Wirkungsgrade müssen über 0 % und dürfen höchstens 100 % betragen. Alle übrigen Speicherwerte müssen mindestens null sein."
+  },
+  {
+    "msgid": "The three starting-energy amounts and their basis are required. An empty starting inventory can be selected explicitly.",
+    "approved_en": "The three starting-energy amounts and their basis are required. An empty starting inventory can be selected explicitly.",
+    "de": "Die drei Energiemengen zu Beginn und ihre Grundlage müssen angegeben werden. Sie können die Anfangsenergie auch ausdrücklich auf null setzen."
+  },
+  {
+    "msgid": "Initial stored energy exceeds the usable energy window.",
+    "approved_en": "Initial stored energy exceeds the usable energy window.",
+    "de": "Die gespeicherte Anfangsenergie ist größer als der nutzbare Energiebereich des Speichers."
+  },
+  {
+    "msgid": "The final-inventory requirement needs a choice and, when applicable, a minimum value.",
+    "approved_en": "The final-inventory requirement needs a choice and, when applicable, a minimum value.",
+    "de": "Für die Speicherenergie am Ende fehlt noch eine Auswahl und gegebenenfalls der Mindestwert."
+  },
+  {
+    "msgid": "An operating period is incomplete. An outage also needs a critical-load profile.",
+    "approved_en": "An operating period is incomplete. An outage also needs a critical-load profile.",
+    "de": "Für einen Betriebszeitraum fehlen noch Angaben. Bei einem Netzausfall wird zusätzlich ein Profil der kritischen Last benötigt."
+  },
+  {
+    "msgid": "Period timestamps need a date, time and Z or a numeric UTC offset.",
+    "approved_en": "Period timestamps need a date, time and Z or a numeric UTC offset.",
+    "de": "Die Zeitangaben benötigen Datum, Uhrzeit und entweder Z für UTC oder einen numerischen UTC-Versatz."
+  },
+  {
+    "msgid": "Reserved energy exceeds the usable energy window.",
+    "approved_en": "Reserved energy exceeds the usable energy window.",
+    "de": "Die Energiereserve ist größer als der nutzbare Energiebereich des Speichers."
+  },
+  {
+    "msgid": "A specified import or export cap needs its value in kW. Zero is allowed.",
+    "approved_en": "A specified import or export cap needs its value in kW. Zero is allowed.",
+    "de": "Für eine gewählte Bezugs- oder Einspeisegrenze fehlt der Wert in kW. Null ist zulässig."
+  },
+  {
+    "msgid": "Grid charging cannot be enabled during an outage.",
+    "approved_en": "Grid charging cannot be enabled during an outage.",
+    "de": "Bei einem Netzausfall kann das Laden aus dem Netz nicht freigegeben werden."
+  },
+  {
+    "msgid": "The storage settings have changed and need to be prepared again.",
+    "approved_en": "The storage settings have changed and need to be prepared again.",
+    "de": "Die Speichereinstellungen wurden geändert. Das Szenario muss erneut vorbereitet werden."
+  },
+  {
+    "msgid": "The inputs changed before preparation finished. Your current draft remains open.",
+    "approved_en": "The inputs changed before preparation finished. Your current draft remains open.",
+    "de": "Die Eingaben wurden während der Vorbereitung geändert. Ihre aktuellen Eingaben bleiben geöffnet."
+  },
+  {
+    "msgid": "The required profiles have no shared time range.",
+    "approved_en": "The required profiles have no shared time range.",
+    "de": "Die benötigten Profile haben keinen gemeinsamen Zeitraum."
+  },
+  {
+    "msgid": "New calculations are temporarily unavailable. This request remains available for retry.",
+    "approved_en": "New calculations are temporarily unavailable. This request remains available for retry.",
+    "de": "Neue Berechnungen sind vorübergehend nicht möglich. Sie können diesen Auftrag später erneut senden."
+  },
+  {
+    "msgid": "The saved revision or request has changed. The open inputs and original request are kept for review.",
+    "approved_en": "The saved revision or request has changed. The open inputs and original request are kept for review.",
+    "de": "Die gespeicherte Version oder der Vorgang wurde geändert. Ihre offenen Eingaben und der ursprüngliche Vorgang bleiben zur Prüfung erhalten."
+  },
+  {
+    "msgid": "A newer input revision is saved on the server. This request did not create a calculation. Reopen the project to review the saved inputs.",
+    "approved_en": "A newer input revision is saved on the server. This request did not create a calculation. Reopen the project to review the saved inputs.",
+    "de": "Auf dem Server ist eine neuere Eingabeversion gespeichert. Für diesen Auftrag wurde keine Berechnung angelegt. Öffnen Sie das Projekt erneut, um die gespeicherten Eingaben zu prüfen."
+  },
+  {
+    "msgid": "The scenario could not be accepted. Profile coverage, operating periods and storage settings need review.",
+    "approved_en": "The scenario could not be accepted. Profile coverage, operating periods and storage settings need review.",
+    "de": "Das Szenario konnte nicht übernommen werden. Bitte prüfen Sie die zeitliche Abdeckung der Profile, die Betriebszeiträume und die Speichereinstellungen."
+  },
+  {
+    "msgid": "This calculation reply could not be verified. Saved calculations and the original request remain available.",
+    "approved_en": "This calculation reply could not be verified. Saved calculations and the original request remain available.",
+    "de": "Die Antwort zur Berechnung konnte nicht geprüft werden. Gespeicherte Berechnungen und der ursprüngliche Auftrag bleiben verfügbar."
+  },
+  {
+    "msgid": "The request could not be confirmed. Your inputs remain open here.",
+    "approved_en": "The request could not be confirmed. Your inputs remain open here.",
+    "de": "Der Vorgang konnte nicht bestätigt werden. Ihre Eingaben bleiben hier geöffnet."
+  },
+  {
+    "msgid": "Whole numbers; no thousands separators.",
+    "approved_en": "Whole numbers; no thousands separators.",
+    "de": "Ganze Zahlen ohne Tausendertrennzeichen."
+  },
+  {
+    "msgid": "A whole number between %1$s and %2$s is required.",
+    "approved_en": "A whole number between %1$s and %2$s is required.",
+    "de": "Eine ganze Zahl zwischen %1$s und %2$s ist erforderlich."
+  },
+  {
+    "msgid": "A whole number of %s or greater is required.",
+    "approved_en": "A whole number of %s or greater is required.",
+    "de": "Eine ganze Zahl ab %s ist erforderlich."
+  },
+  {
+    "msgid": "A valid whole number is required.",
+    "approved_en": "A valid whole number is required.",
+    "de": "Eine gültige ganze Zahl ist erforderlich."
+  },
+  {
+    "msgid": "Save project records these settings before a weather request can start.",
+    "approved_en": "Save project records these settings before a weather request can start.",
+    "de": "Diese Einstellungen müssen mit „Projekt speichern“ gesichert werden, bevor eine Wetterabfrage starten kann."
+  },
+  {
+    "msgid": "A weather request uses saved input revision %d.",
+    "approved_en": "A weather request uses saved input revision %d.",
+    "de": "Für die Wetterabfrage wird die gespeicherte Eingabeversion %d verwendet."
+  }
+]

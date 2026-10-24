@@ -11,6 +11,8 @@ export function ScenarioNumber({
 	onChange,
 	report,
 	max,
+	min = 0,
+	integer,
 }: {
 	field: string;
 	label: string;
@@ -20,6 +22,8 @@ export function ScenarioNumber({
 	onChange: (value: number | null) => void;
 	report: (field: string, valid: boolean) => void;
 	max?: number;
+	min?: number | null;
+	integer?: boolean;
 }) {
 	const validity = useCallback(
 		(valid: boolean) => report(field, valid),
@@ -32,8 +36,9 @@ export function ScenarioNumber({
 			value={value}
 			unit={unit}
 			locale={locale}
-			min={0}
+			{...(min === null ? {} : { min })}
 			{...(max === undefined ? {} : { max })}
+			{...(integer === undefined ? {} : { integer })}
 			onChange={onChange}
 			onValidity={validity}
 		/>

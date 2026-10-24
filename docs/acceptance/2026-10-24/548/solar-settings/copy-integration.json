@@ -1,0 +1,11 @@
+{
+  "reviewed_messages": 98,
+  "new_po_entries": 31,
+  "new_planner_bindings": 0,
+  "source_changes": [
+    "apps/planner/src/components/energy/EnergyError.tsx",
+    "apps/planner/src/components/energy/WeatherForm.tsx",
+    "apps/planner/src/components/energy/WeatherSetup.tsx"
+  ],
+  "review_sha256": "ae81ac54a655c45d475b62bdaee5fed091a9e7d4b539a308651c3ea4583764ba"
+}

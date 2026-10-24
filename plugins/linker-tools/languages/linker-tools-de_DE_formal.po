@@ -6183,3 +6183,128 @@ msgstr "Das PV-Profil enthält rekonstruierte Intervallmittelwerte. Die zeitlich
 #: build/planner/assets/planner.js
 msgid "PV model settings"
 msgstr "PV-Modelleinstellungen"
+
+
+#: build/planner/assets/planner.js
+msgid "Typical-year weather"
+msgstr "Typisches Wetterjahr"
+
+#: build/planner/assets/planner.js
+msgid "PVGIS builds a typical weather year from representative months in the selected source period. The saved result records the returned databases, selected months and how their timestamps are used."
+msgstr "PVGIS stellt aus repräsentativen Monaten des gewählten Zeitraums ein typisches Wetterjahr zusammen. Das gespeicherte Ergebnis hält die zurückgegebenen Datenbanken, die ausgewählten Monate und die Zuordnung der Zeitangaben fest."
+
+#: build/planner/assets/planner.js
+msgid "Use roof coordinates"
+msgstr "Dachkoordinaten übernehmen"
+
+#: build/planner/assets/planner.js
+msgid "The roof reference point can supply WGS 84 coordinates. A postcode alone does not locate the roof."
+msgstr "Der Dachbezugspunkt kann Koordinaten im System WGS 84 liefern. Eine Postleitzahl allein bestimmt die Lage des Dachs nicht."
+
+#: build/planner/assets/planner.js
+msgid "First source year"
+msgstr "Erstes Jahr des Quellzeitraums"
+
+#: build/planner/assets/planner.js
+msgid "Last source year"
+msgstr "Letztes Jahr des Quellzeitraums"
+
+#: build/planner/assets/planner.js
+msgid "PVGIS selects representative months from this period. Use whole calendar years. Availability depends on the location and database."
+msgstr "PVGIS wählt die repräsentativen Monate aus diesem Zeitraum aus. Geben Sie ganze Kalenderjahre an. Welche Jahre verfügbar sind, hängt vom Standort und von der Datenbank ab."
+
+#: build/planner/assets/planner.js
+msgid "Expected radiation database"
+msgstr "Erwartete Strahlungsdatenbank"
+
+#: build/planner/assets/planner.js
+msgid "Choose…"
+msgstr "Bitte wählen…"
+
+#: build/planner/assets/planner.js
+msgid "PVGIS chooses the radiation database for the location. This field checks that choice; it does not change it. Meteorological data must come from ERA5."
+msgstr "PVGIS bestimmt die Strahlungsdatenbank für den Standort. Diese Auswahl dient zur Prüfung der zurückgegebenen Quelle; sie ändert die von PVGIS verwendete Datenbank nicht. Die meteorologischen Daten müssen aus ERA5 stammen."
+
+#: build/planner/assets/planner.js
+msgid "Terrain horizon"
+msgstr "Geländehorizont"
+
+#: build/planner/assets/planner.js
+msgid "Include PVGIS terrain horizon"
+msgstr "PVGIS-Geländehorizont berücksichtigen"
+
+#: build/planner/assets/planner.js
+msgid "Omit terrain horizon"
+msgstr "Geländehorizont nicht berücksichtigen"
+
+#: build/planner/assets/planner.js
+msgid "A terrain horizon does not include nearby buildings, trees or roof obstacles."
+msgstr "Der Geländehorizont berücksichtigt keine nahen Gebäude, Bäume oder Hindernisse auf dem Dach."
+
+#: build/planner/assets/planner.js
+msgid "Calculation year"
+msgstr "Berechnungsjahr"
+
+#: build/planner/assets/planner.js
+msgid "A non-leap year places the 8,760 typical-year hours on a shared UTC timeline. Solar positions still use the original source dates and the provider's irradiance-time offset. The result is not a forecast for the chosen year."
+msgstr "Die 8.760 Stunden des typischen Wetterjahres werden auf einer gemeinsamen UTC-Zeitachse in einem Jahr ohne Schalttag abgebildet. Für den Sonnenstand werden weiterhin die ursprünglichen Datumsangaben und der vom Anbieter angegebene Zeitversatz der Strahlungsdaten verwendet. Das Ergebnis ist keine Vorhersage für das gewählte Jahr."
+
+#: build/planner/assets/planner.js
+msgid "Preparation updates the open draft. Save project records the settings before a weather request can start. Selecting a returned weather source is a separate step."
+msgstr "Die Vorbereitung ändert zunächst die offenen Eingaben. Erst mit „Projekt speichern“ werden die Einstellungen gespeichert und für eine Wetterabfrage verfügbar. Eine zurückgegebene Wetterquelle wählen Sie anschließend gesondert für das Projekt aus."
+
+#: build/planner/assets/planner.js
+msgid "These weather settings cannot be edited here. The saved inputs and task history remain available."
+msgstr "Diese Wettereinstellungen können hier nicht bearbeitet werden. Die gespeicherten Eingaben und bisherigen Aufträge bleiben verfügbar."
+
+#: build/planner/assets/planner.js
+msgid "Weather settings prepared in this draft"
+msgstr "Wettereinstellungen für die offenen Eingaben vorbereitet"
+
+#: build/planner/assets/planner.js
+msgid "Weather settings need preparation"
+msgstr "Wettereinstellungen noch nicht vorbereitet"
+
+#: build/planner/assets/planner.js
+msgid "Prepare weather settings"
+msgstr "Wettereinstellungen vorbereiten"
+
+#: build/planner/assets/planner.js
+msgid "Request weather for saved inputs"
+msgstr "Wetterdaten für gespeicherte Eingaben abfragen"
+
+#: build/planner/assets/planner.js
+msgid "Weather settings need valid coordinates, whole source and calculation years, a radiation database and a terrain-horizon choice."
+msgstr "Für die Wettereinstellungen sind gültige Koordinaten, ganze Kalenderjahre für den Quellzeitraum und die Berechnung sowie eine Strahlungsdatenbank und eine Auswahl zum Geländehorizont erforderlich."
+
+#: build/planner/assets/planner.js
+msgid "The last source year must be the same as or later than the first source year."
+msgstr "Das letzte Jahr des Quellzeitraums darf nicht vor dem ersten liegen."
+
+#: build/planner/assets/planner.js
+msgid "The calculation year must be a non-leap year. This model uses 8,760 hourly intervals."
+msgstr "Das Berechnungsjahr darf kein Schaltjahr sein. Dieses Modell verwendet 8.760 Stundenintervalle."
+
+#: build/planner/assets/planner.js
+msgid "Whole numbers; no thousands separators."
+msgstr "Ganze Zahlen ohne Tausendertrennzeichen."
+
+#: build/planner/assets/planner.js
+msgid "A whole number between %1$s and %2$s is required."
+msgstr "Eine ganze Zahl zwischen %1$s und %2$s ist erforderlich."
+
+#: build/planner/assets/planner.js
+msgid "A whole number of %s or greater is required."
+msgstr "Eine ganze Zahl ab %s ist erforderlich."
+
+#: build/planner/assets/planner.js
+msgid "A valid whole number is required."
+msgstr "Eine gültige ganze Zahl ist erforderlich."
+
+#: build/planner/assets/planner.js
+msgid "Save project records these settings before a weather request can start."
+msgstr "Diese Einstellungen müssen mit „Projekt speichern“ gesichert werden, bevor eine Wetterabfrage starten kann."
+
+#: build/planner/assets/planner.js
+msgid "A weather request uses saved input revision %d."
+msgstr "Für die Wetterabfrage wird die gespeicherte Eingabeversion %d verwendet."

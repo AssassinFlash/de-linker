@@ -42,6 +42,8 @@ import { RunResult } from "./RunResult.tsx";
 import { runStateLabel, taskLabel } from "./planningLabels.ts";
 import { PreparationResult } from "./PreparationResult.tsx";
 import { RunBasis } from "./RunBasis.tsx";
+import { WeatherSetup } from "./WeatherSetup.tsx";
+import { compileWeather, readSolarSetup } from "../../domain/solarSetup.ts";
 
 export function EnergyWorkspace({
 	draft,
@@ -88,7 +90,7 @@ export function EnergyWorkspace({
 	const setupDocument = draft.history.current.energy_scenario;
 	const setup = parsed.value,
 		selections = readSelections(draft.history.current.profile_selections);
-	const [view, setView] = useState<"scenario" | "runs">(() =>
+	const [view, setView] = useState<"weather" | "scenario" | "runs">(() =>
 			new URL(window.location.href).searchParams.has("run")
 				? "runs"
 				: "scenario",
@@ -96,7 +98,8 @@ export function EnergyWorkspace({
 		[section, setSection] = useState<"storage" | "initial" | "operation">(
 			"storage",
 		),
-		[syntaxValid, setSyntaxValid] = useState(true),
+		[scenarioValid, setScenarioValid] = useState(true),
+		[weatherValid, setWeatherValid] = useState(true),
 		[error, setError] = useState<unknown>(null),
 		[rangeBusy, setRangeBusy] = useState(false);
 	useEffect(() => {
@@ -108,7 +111,8 @@ export function EnergyWorkspace({
 		rangeFlight = useRef<AbortController | null>(null);
 	const projectId = draft.baseline.id,
 		admitted = client.isCurrentScope(session.query_scope),
-		dirty = isDirty(draft);
+		dirty = isDirty(draft),
+		syntaxValid = scenarioValid && weatherValid;
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
@@ -336,7 +340,46 @@ export function EnergyWorkspace({
 			setView("runs");
 		}
 	}
-	function chooseView(next: "scenario" | "runs") {
+	async function acquireWeather() {
+		if (
+			dirty ||
+			draft.pending ||
+			draft.conflict ||
+			blocked ||
+			!syntaxValid ||
+			!client.isCurrentScope(session.query_scope) ||
+			operations.busy ||
+			operations.checking ||
+			operations.storageFailed ||
+			unconfirmed.length
+		)
+			return;
+		try {
+			const inputs = draft.baseline.inputs;
+			if (
+				!sameJson(
+					compileWeather(readSolarSetup(inputs).weather),
+					inputs.weather_acquisition,
+				)
+			)
+				return;
+			const instance = lifetime.current;
+			const reply = await operations.start("runs/weather", {
+				expected_revision: draft.baseline.revision,
+			});
+			if (
+				reply?.path === "runs/weather" &&
+				instance === lifetime.current &&
+				client.isCurrentScope(session.query_scope)
+			) {
+				runs.accepted(reply.run);
+				setView("runs");
+			}
+		} catch (cause) {
+			if (client.isCurrentScope(session.query_scope)) setError(cause);
+		}
+	}
+	function chooseView(next: "weather" | "scenario" | "runs") {
 		setView(next);
 		if (next === "runs") {
 			if (runs.runId) runs.select(runs.runId);
@@ -464,6 +507,13 @@ export function EnergyWorkspace({
 			>
 				<button
 					type="button"
+					aria-pressed={view === "weather"}
+					onClick={() => chooseView("weather")}
+				>
+					{__("Weather source", "linker-tools")}
+				</button>
+				<button
+					type="button"
 					aria-pressed={view === "scenario"}
 					onClick={() => chooseView("scenario")}
 				>
@@ -551,6 +601,27 @@ export function EnergyWorkspace({
 					))}
 				</details>
 			)}
+			<div hidden={view !== "weather"}>
+				<WeatherSetup
+					draft={draft}
+					edit={edit}
+					locale={locale}
+					disabled={blocked || operations.busy || !admitted}
+					actionsDisabled={
+						blocked ||
+						!admitted ||
+						!syntaxValid ||
+						operations.busy ||
+						operations.checking ||
+						operations.storageFailed ||
+						unconfirmed.length > 0
+					}
+					valid={weatherValid}
+					onValidity={setWeatherValid}
+					onError={setError}
+					start={() => void acquireWeather()}
+				/>
+			</div>
 			<div hidden={view !== "scenario"}>
 				{Boolean(parsed.error) && (
 					<Notice error>
@@ -616,7 +687,7 @@ export function EnergyWorkspace({
 							locale={locale}
 							disabled={blocked || operations.busy || !admitted}
 							onChange={change}
-							onValidity={setSyntaxValid}
+							onValidity={setScenarioValid}
 							useProfileRange={() => void useRange()}
 							rangeBusy={rangeBusy}
 						/>
