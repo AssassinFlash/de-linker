@@ -108,5 +108,3 @@ Final scope/readback:
 - Production build/CSS/catalog bytes have no changes from the independently checked cf951e3d pin. The 99-message native-i18n/placeholder and generated-module checks above still apply.
 - The reported whole-engine mypy result is still 199 errors in 16 other files, not a green whole-engine gate. All 16 byte/hash comparisons to base passed independently; the whole broad suite was not rerun by this reviewer.
 - The sole in-process test store was automatically removed. No live service, real database, network, credential, browser session, backup, extra worktree or running instance was accessed or changed.
-
-

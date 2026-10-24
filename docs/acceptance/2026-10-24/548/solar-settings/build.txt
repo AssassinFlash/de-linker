@@ -14,7 +14,7 @@ computing gzip size...
 ../../plugins/linker-tools/build/planner/assets/MapViewport-BABdHBxq.js       1,189.29 kB │ gzip: 312.65 kB
 ../../plugins/linker-tools/build/planner/assets/SceneViewport-CpGCVmxY.js     1,548.46 kB │ gzip: 416.99 kB
 
-[plugin builtin:vite-reporter] 
+[plugin builtin:vite-reporter]
 (!) Some chunks are larger than 500 kB after minification. Consider:
 - Using dynamic import() to code-split the application
 - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
