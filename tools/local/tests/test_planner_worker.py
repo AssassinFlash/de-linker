@@ -117,6 +117,7 @@ def test_actual_process_group_generation_and_identity_are_required(
         pid = worker.process.pid()
         ready = worker.readiness(IDENTITY)
         assert pid is not None and ready is not None
+        assert isinstance(ready["pid"], int)
         assert os.getpgid(ready["pid"]) == pid
         assert worker.readiness(IDENTITY, "0" * 32) is None
         worker.start(IDENTITY, 3)

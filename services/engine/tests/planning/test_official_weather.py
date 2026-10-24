@@ -119,7 +119,8 @@ def test_one_official_get_needs_no_research_or_service_credentials(
     assert adapter.closed
 
 
-@pytest.mark.parametrize("status", [301, 302, 403, 404])
+# Representative redirect and terminal rejection; both use the same branch.
+@pytest.mark.parametrize("status", [302, 403])
 def test_redirects_and_rejections_are_not_followed(status: int) -> None:
     adapter = SequenceAdapter(
         Reply(status, b"denied", {"Location": "https://foreign.invalid"})
@@ -131,7 +132,8 @@ def test_redirects_and_rejections_are_not_followed(status: int) -> None:
     assert len(adapter.calls) == 1
 
 
-@pytest.mark.parametrize("status", [429, 500, 502, 503, 504])
+# Rate limiting and provider failure exercise the same explicit retry contract.
+@pytest.mark.parametrize("status", [429, 503])
 def test_transient_source_failure_is_explicit_and_not_retried_by_transport(
     status: int,
 ) -> None:

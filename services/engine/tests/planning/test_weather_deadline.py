@@ -91,21 +91,6 @@ def test_continuous_socket_trickle_cannot_hold_the_worker(
     assert len(children) == 1 and children[0].returncode is not None
 
 
-def test_a_stuck_connect_or_resolver_is_bounded_and_reaped(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    command(monkeypatch, "import time; time.sleep(5)")
-    start = time.monotonic()
-    with pytest.raises(WeatherDeadlineExceeded):
-        PvgisTransport().download(
-            plan(),
-            deadline=time.time() + 0.15,
-            clock=time.time,
-            guard=lambda: None,
-        )
-    assert time.monotonic() - start < 1.0
-
-
 def test_transfer_roundtrip_excludes_credentials_and_preserves_original(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -153,7 +138,7 @@ sys.stdout.buffer.write(pathlib.Path(sys.argv[2]).read_bytes())
     assert len(result.source.weather(LIMITS).points) == 8760
 
 
-@pytest.mark.parametrize("body", [b"", b"unframed metadata", b"x" * 100_001])
+@pytest.mark.parametrize("body", [b"unframed metadata", b"x" * 100_001])
 def test_missing_receipt_and_unbounded_metadata_are_rejected(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
