@@ -270,7 +270,7 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 	);
 	assert.ok(
 		document.activeElement ===
-			document.querySelector('.lp-run-content[tabindex="-1"]'),
+			document.querySelector('.lp-run-result h3[tabindex="-1"]'),
 		"the newly selected calculation is revealed after the long setup form collapses",
 	);
 	assert.equal(requests.filter((x) => x.path === "runs/energy").length, 1);

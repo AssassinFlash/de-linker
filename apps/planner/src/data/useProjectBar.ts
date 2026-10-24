@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { measurePlannerChrome } from "./measurePlannerChrome.ts";
 
 /** React 19 ref cleanup observes the actual bar after draft restoration, not
  * the earlier server-query state. Font, mobile and visibility changes resize it. */
@@ -7,11 +8,7 @@ export function useProjectBar() {
 		if (!bar) return;
 		const root = bar.closest<HTMLElement>("[data-linker-planner]");
 		if (!root) return;
-		const measure = () =>
-			root.style.setProperty(
-				"--lp-project-bar-height",
-				`${bar.offsetHeight}px`,
-			);
+		const measure = () => measurePlannerChrome(root);
 		const observer = new ResizeObserver(measure);
 		observer.observe(bar);
 		measure();

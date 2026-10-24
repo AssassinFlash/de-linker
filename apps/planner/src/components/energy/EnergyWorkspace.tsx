@@ -149,8 +149,10 @@ export function EnergyWorkspace({
 			visibleRunId &&
 			visibleRunId === runs.runId
 		)
-			revealActionResult(runTarget.current, () =>
-				client.isCurrentScope(session.query_scope),
+			revealActionResult(
+				runTarget.current?.querySelector<HTMLElement>(".lp-run-result h3") ??
+					null,
+				() => client.isCurrentScope(session.query_scope),
 			);
 		// Changing a selected calculation reveals its heading. Polling the same
 		// calculation never takes focus back from the reader's current control.
@@ -727,11 +729,7 @@ export function EnergyWorkspace({
 						</div>
 					</aside>
 				)}
-				<div
-					ref={runTarget}
-					className="lp-run-content lp-focus-target"
-					tabIndex={-1}
-				>
+				<div ref={runTarget} className="lp-run-content">
 					{runs.run.error && (
 						<Notice error>
 							<p>

@@ -101,7 +101,9 @@ export function RunResult({
 					<span className="lp-eyebrow">
 						{__("Saved calculation", "linker-tools")}
 					</span>
-					<h3>{runStateLabel(run.state)}</h3>
+					<h3 className="lp-focus-target" tabIndex={-1}>
+						{runStateLabel(run.state)}
+					</h3>
 				</div>
 				<span className="lp-run-revision">
 					{sprintf(__("Input revision %d", "linker-tools"), run.revision)}

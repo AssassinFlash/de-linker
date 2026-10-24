@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { PLANNER_NAVIGATION } from "./plannerLocation.ts";
+import { measurePlannerChrome } from "./measurePlannerChrome.ts";
 
 const workspaceHashes = new Set([
 	"#lp-overview",
@@ -48,12 +49,7 @@ export function useSiteIntegration(projectId: string | null): void {
 		const root = document.querySelector<HTMLElement>("[data-linker-planner]");
 		if (!root) return;
 		const header = document.getElementById("lc-header");
-		const measure = () => {
-			root.style.setProperty(
-				"--lp-site-header-height",
-				`${header?.offsetHeight ?? 0}px`,
-			);
-		};
+		const measure = () => measurePlannerChrome(root);
 		const observer = new ResizeObserver(measure);
 		if (header) observer.observe(header);
 		measure();

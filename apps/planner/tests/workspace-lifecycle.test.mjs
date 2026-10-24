@@ -446,6 +446,23 @@ test("the actual project bar is observed after asynchronous draft opening and on
 		)
 			observer.callback();
 	assert.equal(root.style.getPropertyValue("--lp-project-bar-height"), "108px");
+	// An explicit reveal can run before ResizeObserver/effect delivery, as it
+	// does while a saved calculation opens after a route reload.
+	height = 144;
+	root.style.removeProperty("--lp-site-header-height");
+	const target = root.querySelector("button");
+	let measuredAtScroll;
+	target.scrollIntoView = () => {
+		measuredAtScroll = [
+			root.style.getPropertyValue("--lp-site-header-height"),
+			root.style.getPropertyValue("--lp-project-bar-height"),
+		];
+	};
+	const { revealActionResult } =
+		await import("../src/components/revealActionResult.ts");
+	assert.equal(revealActionResult(target), true);
+	assert.deepEqual(measuredAtScroll, ["88px", "144px"]);
+	assert.ok(document.activeElement === target);
 });
 
 test("creation authentication failure rechecks once and explicitly retries the exact intent", async (t) => {
