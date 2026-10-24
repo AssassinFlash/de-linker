@@ -52,6 +52,20 @@ html[lang^="de"] #tv-contact-v1 p {
 	letter-spacing: var(--proto-track-title);
 }
 
+@media (min-width: 801px) {
+	/* At the existing desktop boundary, the 42px story title splits the final
+	 * punctuation of Energieprojekts.; the 38px boxed afterword changes from
+	 * two to four English lines. Use the fluid section/card title tokens so
+	 * readable tracking fits the existing columns. Phone sizes stay authored. */
+	#tv-contact-v1 .cp-story h2 {
+		font-size: var(--proto-size-display);
+	}
+
+	#tv-contact-v1 .cp-afterword h2 {
+		font-size: var(--proto-size-3xl);
+	}
+}
+
 @media (max-width: 800px) {
 	/* At the 29px phone title, inherited -0.035em tracking leaves 4px word gaps.
 	 * Return those gaps to 6.32px without changing authored letter tracking.
@@ -92,6 +106,7 @@ html[lang^="de"] #tv-contact-v1 p {
 		> summary:is(:hover, :focus-visible)
 		span[aria-hidden="true"] {
 		border-color: currentColor;
+		/* Reuse the white/16% overlay already used by blog-index.css. */
 		background: rgb(255 255 255 / 16%);
 	}
 
