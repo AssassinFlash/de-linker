@@ -113,6 +113,95 @@ test( 'expiry requires a new scoped proof and never reuses the completed one', a
 	f.client.reset( 'inquiry' );
 } );
 
+test( 'completed proof removes its widget and ignores its late expiry', async () => {
+	const f = fixture();
+	const states: string[] = [];
+	f.container.addEventListener( 'linker:protection', ( event ) =>
+		states.push( ( event as CustomEvent ).detail.state )
+	);
+	const proof = await f.client.proof( 'design', f.container );
+	const old = f.options();
+
+	expect( f.client.complete( 'design', proof ) ).toBe( true );
+	expect( f.client.ready( 'design', f.container ) ).toBe( '' );
+	expect( window.turnstile?.remove ).toHaveBeenCalledOnce();
+	old[ 'expired-callback' ]();
+	expect( states ).toEqual( [ 'checking', 'ready' ] );
+
+	await f.client.proof( 'design', f.container );
+	expect( f.fetch ).toHaveBeenCalledTimes( 4 );
+	expect( f.render ).toHaveBeenCalledTimes( 2 );
+	f.client.reset( 'design' );
+} );
+
+test( 'old completion and callbacks cannot retire or overwrite a newer scoped attempt', async () => {
+	const f = fixture();
+	const states: string[] = [];
+	f.container.addEventListener( 'linker:protection', ( event ) =>
+		states.push( ( event as CustomEvent ).detail.state )
+	);
+	const first = await f.client.proof( 'design', f.container );
+	const old = f.options();
+	f.client.reset( 'design' );
+	f.fetch.mockResolvedValueOnce( {
+		ok: true,
+		json: async () => ( { site_key: 'public', prepare: 'new-stamp' } ),
+	} );
+	f.fetch.mockResolvedValueOnce( {
+		ok: true,
+		json: async () => ( { proof: 'new-proof', ttl: 300 } ),
+	} );
+	await f.client.proof( 'design', f.container );
+
+	expect( f.client.complete( 'report_pdf', 'new-proof' ) ).toBe( false );
+	expect( f.client.complete( 'design', first ) ).toBe( false );
+	old[ 'expired-callback' ]();
+	old[ 'error-callback' ]();
+	expect( f.client.ready( 'design', f.container ) ).toBe( 'new-proof' );
+	expect( states ).toEqual( [ 'checking', 'ready', 'checking', 'ready' ] );
+	expect( window.turnstile?.remove ).toHaveBeenCalledTimes( 1 );
+	f.client.reset( 'design' );
+} );
+
+test( 'an old successful response cannot cancel a newer challenge still in progress', async () => {
+	const f = fixture();
+	const first = await f.client.proof( 'design', f.container );
+	const old = f.options();
+	f.client.reset( 'design' );
+	let current: TurnstileOptions | undefined;
+	f.render.mockImplementation( ( _container, options ) => {
+		current = options;
+		return 'new-widget';
+	} );
+	const work = f.client.proof( 'design', f.container );
+	await vi.waitFor( () => expect( current ).toBeDefined() );
+	expect( f.client.complete( 'design', first ) ).toBe( false );
+	old[ 'expired-callback' ]();
+	expect( window.turnstile?.remove ).toHaveBeenCalledTimes( 1 );
+	current!.callback( 'new-token' );
+	await expect( work ).resolves.toBe( 'server-proof' );
+	expect( f.fetch ).toHaveBeenCalledTimes( 4 );
+	f.client.reset( 'design' );
+} );
+
+test.each( [ 'expired-callback', 'error-callback' ] as const )(
+	'%s before proof use still fails without validation',
+	async ( callback ) => {
+		const f = fixture();
+		f.render.mockImplementation( ( _container, options ) => {
+			queueMicrotask( () => options[ callback ]() );
+			return 'failed-widget';
+		} );
+		await expect( f.client.proof( 'design', f.container ) ).rejects.toThrow(
+			callback === 'expired-callback'
+				? 'verification_expired'
+				: 'verification_widget'
+		);
+		expect( f.fetch ).toHaveBeenCalledTimes( 1 );
+		expect( f.client.ready( 'design', f.container ) ).toBe( '' );
+	}
+);
+
 test( 'provider script failure is retryable and never sends a token to validation', async () => {
 	const f = fixture();
 	delete window.turnstile;

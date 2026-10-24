@@ -59,7 +59,7 @@ final class Reviews {
 	 * @param WC_Order $order Inquiry as displayed to staff.
 	 */
 	public static function reference( WC_Order $order ): string {
-		return hash( 'sha256', (string) wp_json_encode( self::basis( $order ) ) );
+		return hash( 'sha256', (string) wp_json_encode( array( self::basis( $order ), SendAuthorization::reference( $order ) ) ) );
 	}
 
 	/**
@@ -179,6 +179,8 @@ final class Reviews {
 				}
 			}
 		);
+		if ( is_array( $result ) ) {
+			SendAuthorization::reviewed( $id, $operation, (string) ( $input['label'] ?? '' ) ); }
 		return $result;
 	}
 

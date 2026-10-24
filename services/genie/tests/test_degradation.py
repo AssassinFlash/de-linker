@@ -11,21 +11,24 @@ import io
 import json
 import sqlite3
 import urllib.error
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import httpx
+import pytest
 from baseline.grade import NEXT_STEP_BLOCKS
 from pydantic_ai.exceptions import ModelHTTPError, UnexpectedModelBehavior
 
-from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.abilities import Abilities, AbilityClient, AbilityError
 from linker_genie.cycle import TurnResult, fatal_class, run
 from linker_genie.embedding import EmbeddingError, GeminiEmbedder
 from linker_genie.facts import Document, Fact, TurnFacts, collect
 from linker_genie.failure import from_log, kind_of, note
+from linker_genie.jev import Reading
 from linker_genie.knowledge import KnowledgeSearch, KnowledgeUnavailable
+from linker_genie.lexicon import Vocabulary
 from linker_genie.page import PageUnavailable
 from linker_genie.route import Route
 from linker_genie.schema import (
@@ -50,6 +53,7 @@ from linker_genie.template import (
     finish,
     german_is_clean,
 )
+from linker_genie.understand import Understander
 
 _STOCK = (1179, 1181, 2063, 2064, 4107, 4108)
 _PRODUCTS = Route("products", show_products=True, no_handoff=True)
@@ -300,18 +304,20 @@ def _scenario(name: str, language: Locale) -> TurnResult:
         return run(request, _raise(_model(429)), route=_PRODUCTS, seed=_stock())
     if name == "m500-doc":
         return run(request, _raise(_model(500)), route=_DOCUMENTS, seed=_manual())
+    # These stock questions use the native products route. A documents route
+    # without show_products must not display cards, even on an index failure.
     if name == "idx-miss":
         return run(
             request,
             _raise(_index("unable to open database file")),
-            route=_DOCUMENTS,
+            route=_PRODUCTS,
             seed=_stock(),
         )
     if name == "idx-bad":
         return run(
             request,
             _raise(_index("file is not a database")),
-            route=_DOCUMENTS,
+            route=_PRODUCTS,
             seed=_stock(),
         )
     if name == "ab-500":
@@ -338,6 +344,50 @@ def _scenario(name: str, language: Locale) -> TurnResult:
     if name == "degraded-no-cards":
         return run(request, _raise(_ability("500")), route=_PRODUCTS)
     raise AssertionError(name)
+
+
+@pytest.mark.parametrize("language", ["en", "de"])
+def test_index_outage_stock_fixture_uses_the_native_products_route(
+    language: Locale, vocabulary: Vocabulary
+) -> None:
+    """The old hard-coded documents route contradicted these stock questions."""
+
+    class StockReading:
+        def read(
+            self,
+            message: str,
+            page: dict[str, Any],
+            history: Sequence[tuple[str, str]] = (),
+        ) -> Reading:
+            # A product-availability reading exercises the native planner,
+            # vocabulary and abilities without a model request.
+            return Reading("find_products", 0.99, 0.1, 0.05, 0.2, 0.0, 0.0)
+
+    client = AbilityClient(
+        "http://site.test",
+        transport=httpx.MockTransport(
+            lambda _: httpx.Response(
+                200,
+                json={"result": {"qualified": [{"product_id": pid} for pid in _STOCK]}},
+            )
+        ),
+    )
+    request = _question(language)
+    prepared = Understander(lambda: vocabulary, StockReading()).prepare(request, client)
+    assert prepared.route.name == "products"
+    assert prepared.route.show_products
+    assert not any(
+        call.ability.endswith("search-knowledge") for call in prepared.route.calls
+    )
+    result = run(
+        request,
+        _raise(_index("unable to open database file")),
+        route=prepared.route,
+        seed=_stock(),
+    )
+    assert result.fallback
+    _assert_degraded(result.output, language)
+    assert set(_cards(result.output)[0].product_ids) == set(_STOCK)
 
 
 def _cases_410() -> list[dict[str, Any]]:
@@ -834,6 +884,7 @@ def test_answer_passes_call_failures_into_the_run() -> None:
             prepared,
             Request(scope),
             lambda _ids: (TurnFacts(), []),
+            abilities=cast(Abilities, None),
         )
     finally:
         del app.state.generate

@@ -101,6 +101,7 @@ final class Form {
 	 */
 	public function render( $atts = array() ): string {
 		unset( $atts );
+		LanguageDraft::enqueue();
 		$state = $this->state_message();
 		if ( str_contains( $state, 'linker-form-success' ) ) {
 			// A sent message keeps the card's side cards, the way the live
@@ -121,8 +122,16 @@ final class Form {
 		$individual = isset( $previous['linker_individual_review'] ) && '1' === $previous['linker_individual_review'];
 		$field      = 'linker-form-input';
 		$label      = 'linker-form-label';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
+		$query    = wp_unslash( $_GET );
+		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );
+		$context  = array() !== $previous ? SelectionContext::normalize( json_decode( $raw, true ) ) : SelectionContext::query( $query );
+		$included = ! ( array() !== $previous && '' === $raw && '0' === ( $previous[ SelectionContext::INCLUDE_FIELD ] ?? '' ) );
+		// A native failed POST may have removed the optional source. Its language
+		// link still carries the current public URL context, not a private old JSON value.
+		$draft_context = ! $included && array() === $context ? SelectionContext::query( $query ) : $context;
 
-		$html  = '<form class="linker-contact-form" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		$html  = '<form class="linker-contact-form"' . LanguageDraft::attributes( array() !== $previous, $draft_context ) . ' method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
 		$html .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';
@@ -140,12 +149,9 @@ final class Form {
 		$html .= '<p>' . esc_html__( 'Tell us what you need. We’ll use the email below for your reply.', 'linker-commerce' ) . '</p>';
 		$html .= '</div>';
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only public navigation; canonical source and selection are revalidated.
-		$query    = wp_unslash( $_GET );
-		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );
-		$context  = array() !== $previous ? SelectionContext::normalize( json_decode( $raw, true ) ) : SelectionContext::query( $query );
-		$included = ! ( array() !== $previous && '' === $raw && '0' === ( $previous[ SelectionContext::INCLUDE_FIELD ] ?? '' ) );
-		$html    .= SelectionView::form( $context, $raw, $included );
+		$html .= LanguageDraft::notice();
+
+		$html .= SelectionView::form( $context, $raw, $included );
 
 		$html .= '<div class="linker-contact-question">';
 		$html .= '<label class="' . esc_attr( $label ) . '" for="linker-contact-message"><span>' . esc_html__( 'Your question', 'linker-commerce' ) . '</span>'
@@ -277,6 +283,7 @@ final class Form {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- a state the redirect added, not an action.
 		$state = isset( $_GET[ self::STATE_PARAM ] ) ? sanitize_key( (string) wp_unslash( $_GET[ self::STATE_PARAM ] ) ) : '';
 		return match ( $state ) {
+			'reception_full' => $this->notice( 'invalid', \Linker\Commerce\Protection\BusinessCapacity::message() ),
 			'saved_review' => $this->notice( 'sent', \Linker\Commerce\Protection\IntakeAdmin::saved_message() ),
 			'review_size' => $this->notice( 'invalid', __( 'This request is too large to save for review. Your entries and solution draft are still here. Please email sales@de-linker.com.', 'linker-commerce' ) ),
 			'review_full' => $this->notice( 'invalid', __( 'Your request has not been saved because the review queue is full. Your entries are still here. Please try again later or email sales@de-linker.com.', 'linker-commerce' ) ),

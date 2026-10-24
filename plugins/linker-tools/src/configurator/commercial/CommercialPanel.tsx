@@ -19,6 +19,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { EngineError, type EngineClient } from '../api/engine';
 import type { StoreClient } from '../api/store';
+import {
+	selectionChangedText,
+	publicationUnavailableText,
+} from '../publication';
 import type { Config } from '../config';
 import { Field } from '../Field';
 import { FilePicker } from '../FilePicker';
@@ -204,17 +208,31 @@ export function CommercialPanel( {
 				new Map( found.map( ( product ) => [ product.id, product ] ) )
 			);
 		} catch ( error ) {
-			setFailure(
-				error instanceof EngineError && error.kind === 'limited'
-					? __(
-							'The calculation is temporarily unavailable. Your entries are still here. Please try again later.',
-							'linker-tools'
-						)
-					: __(
-							'The load profile could not be read, or the calculation failed. Check the file and try again.',
-							'linker-tools'
-						)
-			);
+			if ( error instanceof EngineError && error.kind === 'stale' ) {
+				setFailure( selectionChangedText() );
+			} else if (
+				error instanceof EngineError &&
+				error.kind === 'publication'
+			) {
+				setFailure( publicationUnavailableText() );
+			} else if (
+				error instanceof EngineError &&
+				error.kind === 'limited'
+			) {
+				setFailure(
+					__(
+						'The calculation is temporarily unavailable. Your entries are still here. Please try again later.',
+						'linker-tools'
+					)
+				);
+			} else {
+				setFailure(
+					__(
+						'The load profile could not be read, or the calculation failed. Check the file and try again.',
+						'linker-tools'
+					)
+				);
+			}
 		}
 		setBusy( false );
 	}

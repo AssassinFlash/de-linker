@@ -77,8 +77,14 @@ competitor's screenshot is not evidence that this application works.
     stay visible. Old output cannot be relabelled as the current calculation.
 11. Equipment qualification precedes ranking and includes applicable modes,
     ports, limits, accessories, conditions, country and evidence. Real Woo
-    facts and hosted source versions feed a versioned capability contract;
-    a fixed-efficiency scenario replay is not SKU qualification. Search
+    product records are the sole maintenance authority for product facts,
+    publication, document associations and their source versions. The existing
+    publication manifest, engineering feed and preparation contracts supply
+    the versioned capability projection; no independent product list,
+    hand-entered capability pack or per-tool source is introduced. Missing
+    product evidence is diagnosed against that Woo source and its preparation
+    state before any change is proposed. A fixed-efficiency scenario replay
+    is not SKU qualification. Search
     exhaustion, infeasibility, unresolved evidence and out-of-scope differ.
 12. Summaries, detailed time windows, tables and exports use the same frozen
     result. Charts label units and resolution; display reduction cannot
@@ -125,3 +131,29 @@ Each path needs actual execution, both independent review axes and applicable
 EN/DE × 1440/390 Computer Use evidence. Path boundaries organise implementation;
 none is the completed tool. The overall goal stays active until all required
 paths and site consequences pass, with no post-delivery follow-up debt.
+
+## Shared Woo integration and collaboration handoff
+
+Owner correction, 2026-10-25: consult the existing product-data work before
+changing equipment inputs. The conversation “将 EcoFlow 产品下架为草稿”
+has already delivered the shared product/publication/knowledge preparation
+chain. Its contracts are [current publication](614-publication-contract.md),
+[engineering consumption](617-publication-engine.md), and the explicit
+[new-workbench integration boundary](618-planner-publication-alignment.md).
+The old feed in this worktree is not evidence that current Woo maintenance
+is missing product facts. Published permission, prepared evidence and model
+applicability must be inspected separately.
+
+This workstream integrates those existing contracts with its permanent
+project/revision/run/candidate identities. It retains all candidate and
+document dependencies, validates current permission before and after new
+operations, preserves historical snapshots, and checks the complete set again
+at report and Woo handoff boundaries. Derived typed values remain rebuildable
+from Woo-maintained records and documents. They create no second editable
+product authority.
+
+The owner has authorised notifying the collaborating conversation after the
+shared integration is actually connected and verified. That handoff must name
+the interfaces, source/runtime versions, relevant readback and remaining
+integration responsibilities so the other work can continue. Keep this handoff
+pending until those facts exist; importing shared code alone does not satisfy it.

@@ -30,6 +30,10 @@ final class ProformaIssuedEmailTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->reload_plugin_textdomain();
+		$GLOBALS['wpdb']         = Mockery::mock( \wpdb::class );
+		$GLOBALS['wpdb']->prefix = 'wp_';
+		$GLOBALS['wpdb']->allows( 'prepare' )->andReturn( 'lock' );
+		$GLOBALS['wpdb']->allows( 'get_var' )->andReturn( '1' );
 	}
 
 	/**
@@ -37,6 +41,7 @@ final class ProformaIssuedEmailTest extends TestCase {
 	 */
 	public function test_sends_the_link(): void {
 		$this->plain_text();
+		$this->options( array() );
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
 		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', ProformaIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
@@ -46,11 +51,27 @@ final class ProformaIssuedEmailTest extends TestCase {
 		$order->allows( 'get_meta' )->with( OrderLocale::META )->andReturn( 'en_US' );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( 'PI-2026-0001' );
 		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->andReturn( '1760000000' );
+		$order->allows( 'get_meta' )->with( ProformaIssuedEmail::ACCEPTED )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED )->andReturn( '' );
+		$order->allows( 'update_meta_data' );
+		$order->allows( 'save_meta_data' );
+		$order->allows( 'read_meta_data' );
+		$order->allows( 'has_status' )->with( \Linker\Commerce\Inquiry\Statuses::PROFORMA )->andReturnTrue();
+		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
+		WP_Mock::expectFilterAdded( 'pre_wp_mail', static fn (): bool => false, 9, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_log_enabled', static fn (): bool => false );
 		$order->allows( 'get_view_order_url' )->andReturn( 'https://example.test/my-account/inquiry/20/' );
 		$this->allow_locale_switch( 'en_US' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_proforma_issued', 'maria@example.test' );
 
-		$email = new ProformaIssuedEmail( '/plugin/linker-commerce.php' );
+		$email = new ProformaIssuedEmail(
+			'/plugin/linker-commerce.php',
+			static fn ( callable $work ) => $work(),
+			static function ( int $id ) use ( $order ): WC_Order {
+				unset( $id );
+				return $order;
+			}
+		);
 		$email->trigger( 20, $order );
 
 		$this->assertSame( 'PI-2026-0001', $email->placeholders['{proforma_number}'] );
@@ -94,11 +115,24 @@ final class ProformaIssuedEmailTest extends TestCase {
 		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', ProformaIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( ProformaIssuedEmail::ACCEPTED )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( ProformaIssuedEmail::PENDING )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED )->andReturn( '' );
+		$order->allows( 'read_meta_data' );
+		$order->allows( 'has_status' )->andReturnTrue();
+		WP_Mock::userFunction( 'wc_get_order', array( 'return' => $order ) );
 		$order->allows( 'get_billing_email' )->never();
 		$order->allows( 'get_meta' )->with( Issuer::ISSUED_META )->never();
 		WP_Mock::userFunction( 'switch_to_locale' )->never();
 
-		$email = new ProformaIssuedEmail( '/plugin/linker-commerce.php' );
+		$email = new ProformaIssuedEmail(
+			'/plugin/linker-commerce.php',
+			static fn ( callable $work ) => $work(),
+			static function ( int $id ) use ( $order ): WC_Order {
+				unset( $id );
+				return $order;
+			}
+		);
 		$email->trigger( 20, $order );
 
 		$this->assertSame( '', $email->placeholders['{proforma_number}'] );
@@ -140,6 +174,11 @@ final class ProformaIssuedEmailTest extends TestCase {
 		$this->expect_action_on_any( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', ProformaIssuedEmail::class, 'trigger', 10, 2 );
 		$order = Mockery::mock( WC_Order::class );
 		$order->allows( 'get_meta' )->with( Issuer::NUMBER_META )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( ProformaIssuedEmail::ACCEPTED )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( ProformaIssuedEmail::PENDING )->andReturn( '' );
+		$order->allows( 'get_meta' )->with( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED )->andReturn( '' );
+		$order->allows( 'read_meta_data' );
+		$order->allows( 'has_status' )->andReturnTrue();
 		$order->allows( 'get_billing_email' )->never();
 		WP_Mock::userFunction(
 			'wc_get_order',
@@ -150,7 +189,14 @@ final class ProformaIssuedEmailTest extends TestCase {
 		);
 		WP_Mock::userFunction( 'switch_to_locale' )->never();
 
-		$email = new ProformaIssuedEmail( '/plugin/linker-commerce.php' );
+		$email = new ProformaIssuedEmail(
+			'/plugin/linker-commerce.php',
+			static fn ( callable $work ) => $work(),
+			static function ( int $id ) use ( $order ): WC_Order {
+				unset( $id );
+				return $order;
+			}
+		);
 		$email->trigger( 20, false );
 
 		$this->assertSame( '', $email->recipient );

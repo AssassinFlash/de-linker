@@ -203,7 +203,7 @@ test( 'a reload of an unfinished stream shows the error and not an answer', () =
 	expect( restored.draft?.uploads ).toEqual( [ PDF ] );
 } );
 
-test( 'a reload after a 502 puts the question back; an answered question clears it', () => {
+test( 'a reload after a 502 keeps the question even beside historical matching text', () => {
 	const store = memory();
 	writeFailure( store, failureReducer( pending(), { type: 'upstream' } ) );
 	const lost = reconcile( readFailure( store ), [] );
@@ -214,7 +214,9 @@ test( 'a reload after a 502 puts the question back; an answered question clears 
 		user( DRAFT.question ),
 		assistant( 'The H2-10K-T3 is the current model.' ),
 	] );
-	expect( answered.phase ).toBe( 'clear' );
+	expect( answered.phase ).toBe( 'failed' );
+	expect( answered.kind ).toBe( 'upstream' );
+	expect( answered.draft?.text ).toBe( DRAFT.text );
 } );
 
 test( 'a reload during the request follows the thread the server kept', () => {

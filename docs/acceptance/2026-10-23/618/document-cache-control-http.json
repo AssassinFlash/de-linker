@@ -1,0 +1,59 @@
+{
+  "runtime": "local PHP native HTTP; LiteSpeed cache lookup not established",
+  "checks": [
+    {
+      "source": "current associated GoodWe original",
+      "method": "GET",
+      "range": false,
+      "status": 200,
+      "bytes": 1257524,
+      "cache_control": "no-store, private, max-age=0",
+      "litespeed_cache_control": "no-cache,no-store"
+    },
+    {
+      "source": "current associated GoodWe original",
+      "method": "HEAD",
+      "range": false,
+      "status": 200,
+      "bytes": 0,
+      "cache_control": "no-store, private, max-age=0",
+      "litespeed_cache_control": "no-cache,no-store"
+    },
+    {
+      "source": "current associated GoodWe original",
+      "method": "GET",
+      "range": true,
+      "status": 206,
+      "bytes": 5,
+      "cache_control": "no-store, private, max-age=0",
+      "litespeed_cache_control": "no-cache,no-store"
+    },
+    {
+      "source": "missing unassociated path",
+      "method": "GET",
+      "range": false,
+      "status": 410,
+      "bytes": 0,
+      "cache_control": "no-store, private, max-age=0",
+      "litespeed_cache_control": "no-cache,no-store"
+    },
+    {
+      "source": "missing unassociated path",
+      "method": "HEAD",
+      "range": false,
+      "status": 410,
+      "bytes": 0,
+      "cache_control": "no-store, private, max-age=0",
+      "litespeed_cache_control": "no-cache,no-store"
+    },
+    {
+      "source": "missing unassociated path",
+      "method": "GET",
+      "range": true,
+      "status": 410,
+      "bytes": 0,
+      "cache_control": "no-store, private, max-age=0",
+      "litespeed_cache_control": "no-cache,no-store"
+    }
+  ]
+}

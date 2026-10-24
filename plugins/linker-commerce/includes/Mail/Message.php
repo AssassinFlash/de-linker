@@ -40,16 +40,16 @@ final class Message {
 		return $headers;
 	}
 
-	/**
-	 * Sets up the message.
+	/** Sets up the message.
 	 *
-	 * @param string[] $to          Recipients.
-	 * @param string   $subject     Subject.
-	 * @param string   $body        Body.
-	 * @param string[] $headers     Header lines, "Name: value".
-	 * @param string[] $attachments Paths of attached files.
-	 * @param bool     $critical    Server-owned producer priority.
-	 * @param string   $category    Trusted native producer category.
+	 * @param string[]            $to          Recipients.
+	 * @param string              $subject     Subject.
+	 * @param string              $body        Body.
+	 * @param string[]            $headers     Header lines, "Name: value".
+	 * @param string[]            $attachments Paths of attached files.
+	 * @param bool                $critical    Server-owned producer priority.
+	 * @param string              $category    Trusted native producer category.
+	 * @param array<string,mixed> $origin Native producer/source witness.
 	 */
 	public function __construct(
 		public readonly array $to,
@@ -58,7 +58,8 @@ final class Message {
 		public readonly array $headers,
 		public readonly array $attachments,
 		public readonly bool $critical = false,
-		public readonly string $category = self::STANDARD
+		public readonly string $category = self::STANDARD,
+		public readonly array $origin = array()
 	) {
 	}
 
@@ -134,22 +135,25 @@ final class Message {
 		$headers[] = sprintf( 'From: %s <%s>', $from_name, $from_email );
 		$headers[] = sprintf( 'Content-Type: %s; charset=%s', $content_type, $charset );
 
+		$origin  = Producer::origin( $atts );
 		$subject = $atts['subject'] ?? '';
 		$body    = $atts['message'] ?? '';
-		return new self(
+		$message = new self(
 			self::lines( $atts['to'] ?? array(), ',' ),
 			is_string( $subject ) ? $subject : '',
 			is_string( $body ) ? $body : '',
 			$headers,
 			self::lines( $atts['attachments'] ?? array() ),
-			Producer::priority( $atts )
+			Producer::priority( $atts ),
+			self::STANDARD,
+			$origin
 		);
+		return NativeOrigin::seal( $message );
 	}
 
-	/**
-	 * The message as a JSON-ready array, for the queue.
+	/** The message as a JSON-ready array, for the queue.
 	 *
-	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[], critical: bool, category: string}
+	 * @return array{to: string[], subject: string, body: string, headers: string[], attachments: string[], critical: bool, category: string, origin: array<string,mixed>}
 	 */
 	public function to_array(): array {
 		return array(
@@ -160,6 +164,7 @@ final class Message {
 			'attachments' => $this->attachments,
 			'critical'    => $this->critical,
 			'category'    => $this->category,
+			'origin'      => $this->origin,
 		);
 	}
 
@@ -178,7 +183,8 @@ final class Message {
 			self::lines( $data['headers'] ?? array() ),
 			self::lines( $data['attachments'] ?? array() ),
 			true === ( $data['critical'] ?? false ),
-			self::REVIEW_REMINDER === ( $data['category'] ?? '' ) ? self::REVIEW_REMINDER : self::STANDARD
+			self::REVIEW_REMINDER === ( $data['category'] ?? '' ) ? self::REVIEW_REMINDER : self::STANDARD,
+			is_array( $data['origin'] ?? null ) ? $data['origin'] : array()
 		);
 	}
 

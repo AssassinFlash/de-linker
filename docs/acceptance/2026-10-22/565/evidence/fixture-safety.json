@@ -1,0 +1,103 @@
+{
+  "captured_utc": "2026-10-22T14:10:59.999713+00:00",
+  "dependency": {
+    "version": "0.17.0",
+    "status": "active",
+    "official_checksums": "Success: Verified 1 of 1 plugins."
+  },
+  "prepare_used": false,
+  "native": {
+    "instance": "m565",
+    "isolation_verified": true,
+    "ownership_readback_matches": true,
+    "synthetic_users": 4,
+    "synthetic_users_with_factor": 2,
+    "before_after_users_pages_options_ledger_equal": true,
+    "fixture_absent_after_cleanup": true
+  },
+  "offline_runner_cases": 8,
+  "offline_fixture_failures": [
+    {
+      "case": "initial-state-write",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "totp",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "application-password",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "page-language",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 1,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "german-language",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 1,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "user-state-write",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "page-state-write",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 1,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "late-state-write",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "failed-user-compensation",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": false,
+      "manual_cleanup_required_reported": true
+    }
+  ],
+  "scope": "Local safety-only follow-up; historical 36-check/82-screen buyer-path evidence preserved; no production/model/mail calls."
+}

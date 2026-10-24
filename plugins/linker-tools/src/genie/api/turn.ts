@@ -59,6 +59,8 @@ export interface CardsBlock {
 	type: 'cards';
 	product_ids: number[];
 	prices?: CardPrice[] | null;
+	/** Exact live action proofs, signed by WordPress after current validation. */
+	draft_proofs?: Record< string, string >;
 }
 
 /** A comparison of two to four products. */
@@ -97,6 +99,8 @@ export interface HandoffBlock {
 export interface DocumentBlock {
 	type: 'document';
 	ref: string;
+	document_id?: string;
+	document_revision?: string;
 	label: string | null;
 	url: string | null;
 	/** Original document title, preserved when history UI is localized. */
@@ -131,6 +135,7 @@ export interface PartsRow {
 
 /** The one solution-draft write: every confirmed row, merged by product. */
 export interface PartsAdd {
+	proof?: string;
 	items: { product_id: number; quantity: number }[];
 	products: number;
 	rows: number;
@@ -233,12 +238,13 @@ export class UnfinishedStreamError extends Error {
 }
 
 /**
- * How long the shell waits for one turn. The proxy gives the service the
- * same number (`Proxy::TURN_BUDGET`, 60, also the `wp_remote_post` timeout
- * in spec 13). A connection that never answers has to reach the upstream
- * failure; without this timer it waits forever.
+ * Bound verification preparation and the dispatched response separately, each
+ * using the existing 90-second client limit. The response phase covers the
+ * native resource operation window (Protection/Resources.php); verification
+ * precedes that operation and must not consume its response time. The service
+ * budget and admission lease stay unchanged (spec 13).
  */
-export const TURN_TIMEOUT_MS = 60_000;
+export const TURN_TIMEOUT_MS = 90_000;
 
 /**
  * The commit was refused because the stored thread moved while Genie was
@@ -347,11 +353,13 @@ export interface TurnRequest {
 	page: PageContext;
 	/** The files of this turn, apart from the messages (#236). */
 	uploads?: Upload[];
+	/** Actual resource UUID of this send, before the network request leaves. */
+	onOperation?: ( id: string ) => void;
 	/** Fetch for tests. */
 	fetcher?: Fetch;
 	/**
-	 * Aborts a connection that has not answered. The default is
-	 * `TURN_TIMEOUT_MS`.
+	 * Bounds proof preparation, then the dispatched request and response body.
+	 * Each phase defaults to `TURN_TIMEOUT_MS`.
 	 */
 	timeoutMs?: number;
 }
@@ -381,34 +389,55 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 		'AbortError'
 	);
 	const timedOut = new Promise< never >( ( _resolve, reject ) => {
-		timer = setTimeout( () => {
-			controller.abort();
-			reject( timeoutError );
-		}, timeoutMs );
+		controller.signal.addEventListener(
+			'abort',
+			() => reject( timeoutError ),
+			{ once: true }
+		);
 	} );
+	const restartDeadline = () => {
+		if ( timer !== undefined ) {
+			clearTimeout( timer );
+		}
+		timer = setTimeout( () => controller.abort(), timeoutMs );
+	};
+	restartDeadline();
 	// `fetcher` is called inside the promise. A throw before the request
 	// leaves is a rejection, so the timer below is cleared with every other
 	// failure. Promise.resolve(fetcher()) would let that throw escape first.
 	const attempt = Promise.resolve()
 		.then( () =>
-			resourceFetch( fetcher, turnUrl, {
-				method: 'POST',
-				credentials: 'same-origin',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': nonce,
+			resourceFetch(
+				( ...args ) => {
+					// resourceFetch calls its transport only after proof is ready.
+					// A late proof must never dispatch an already timed-out turn.
+					controller.signal.throwIfAborted();
+					restartDeadline();
+					return fetcher( ...args );
 				},
-				body: JSON.stringify( {
-					locale,
-					messages: messages.map( ( { role, content } ) => ( {
-						role,
-						content,
-					} ) ),
-					page,
-					...( uploads.length > 0 ? { attachments: uploads } : {} ),
-				} ),
-				signal: controller.signal,
-			} )
+				turnUrl,
+				{
+					method: 'POST',
+					credentials: 'same-origin',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-WP-Nonce': nonce,
+					},
+					body: JSON.stringify( {
+						locale,
+						messages: messages.map( ( { role, content } ) => ( {
+							role,
+							content,
+						} ) ),
+						page,
+						...( uploads.length > 0
+							? { attachments: uploads }
+							: {} ),
+					} ),
+					signal: controller.signal,
+				},
+				request.onOperation
+			)
 		)
 		.then(
 			( response ) => response,
@@ -511,6 +540,10 @@ export async function readThread(
 ): Promise< {
 	messages: TurnMessage[];
 	turn: Turn | null;
+	/** The existing proxy identity, when the read returned a real conversation. */
+	conversationId?: number;
+	/** Trusted completed operation returned by the owned Thread, never inferred. */
+	operationId?: string;
 	/** Always set here; optional for the callers' own stand-ins. */
 	contacts?: SentContact[];
 	/** Always set here; optional for the callers' own stand-ins. */
@@ -528,6 +561,8 @@ export async function readThread(
 			return empty;
 		}
 		const stored = ( await response.json() ) as {
+			conversation_id?: number;
+			operation_id?: string;
 			messages?: TurnMessage[];
 			stream?: string;
 			contacts?: Array< Partial< SentContact > >;
@@ -545,8 +580,13 @@ export async function readThread(
 				role: message.role,
 				content: message.content,
 			} ) );
+		const identity =
+			Number.isInteger( stored.conversation_id ) &&
+			( stored.conversation_id ?? 0 ) > 0
+				? { conversationId: stored.conversation_id }
+				: {};
 		if ( messages.length === 0 ) {
-			return empty;
+			return { ...empty, ...identity };
 		}
 		let turn: Turn | null = null;
 		if ( stored.stream ) {
@@ -562,6 +602,13 @@ export async function readThread(
 			turn = await restoreArtifacts( turn, artifacts, nonce, fetcher );
 		}
 		return {
+			...identity,
+			...( typeof stored.operation_id === 'string' &&
+			/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+				stored.operation_id
+			)
+				? { operationId: stored.operation_id }
+				: {} ),
 			messages: turn
 				? [ ...messages, assistantMessage( turn ) ]
 				: messages,
@@ -705,6 +752,7 @@ export async function deleteConversation(
 export const EMAIL_OUTCOMES = [
 	'sent',
 	'confirm',
+	'pending',
 	'invalid',
 	'unknown',
 	'empty',

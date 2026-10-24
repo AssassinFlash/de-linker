@@ -239,6 +239,11 @@
 	},
 	"additionalProperties": false,
 	"properties": {
+		"selection_fingerprint": {
+			"pattern": "^[a-f0-9]{64}$",
+			"title": "Selection Fingerprint",
+			"type": "string"
+		},
 		"input": {
 			"$ref": "#/$defs/ResidentialInput"
 		},
@@ -258,6 +263,7 @@
 		}
 	},
 	"required": [
+		"selection_fingerprint",
 		"input"
 	],
 	"title": "ReportRequest",

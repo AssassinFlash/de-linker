@@ -2,7 +2,18 @@
 
 from __future__ import annotations
 
+import hashlib
+
 from tokenizers import Tokenizer
+
+# The actual chunk tokenizer cached on the build Mac, measured 2026-10-24.
+# Pin both its upstream commit and canonical tokenizers serialization so a moving
+# repository default cannot silently change an already acknowledged recipe.
+CHUNK_TOKENIZER = "BAAI/bge-m3"
+CHUNK_TOKENIZER_REVISION = "5617a9f61b028005a4858fdac845db406aefb181"
+CHUNK_TOKENIZER_SHA256 = (
+    "dfbf70c4aa4fadbbc57a9f23f38b8c94d6c0aeb75e526b695564d559902ec69a"
+)
 
 
 class HFTokenizer:
@@ -13,8 +24,16 @@ class HFTokenizer:
 
     @classmethod
     def from_pretrained(cls, repo: str) -> HFTokenizer:
-        """The tokenizer published with a model on the Hugging Face hub."""
-        return cls(Tokenizer.from_pretrained(repo))
+        """Load the measured immutable chunk tokenizer, refusing changed bytes."""
+        if repo != CHUNK_TOKENIZER:
+            raise ValueError("knowledge builds require the pinned chunk tokenizer")
+        tokenizer = Tokenizer.from_pretrained(repo, revision=CHUNK_TOKENIZER_REVISION)
+        if (
+            hashlib.sha256(tokenizer.to_str().encode()).hexdigest()
+            != CHUNK_TOKENIZER_SHA256
+        ):
+            raise ValueError("chunk tokenizer differs from the preparation recipe")
+        return cls(tokenizer)
 
     def count(self, text: str) -> int:
         return len(self._tokenizer.encode(text, add_special_tokens=False).ids)

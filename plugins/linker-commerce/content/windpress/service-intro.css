@@ -119,6 +119,21 @@
 }
 #service-redesign #deliverables .service-intro :is(.capability-controls,.mt-visual,.mt-dock) { display: none; }
 @media (max-width: 800px) {
+	/* The retained photo chapter makes this container full width. The open
+	 * introduction has no photo overlay now: restore the shared24px gutter,
+	 * and remove the old ledger/invitation's duplicate inner gutter. */
+	#service-redesign section#deliverables {
+		padding-block: var(--proto-space-7);
+	}
+	#service-redesign section#deliverables > .lk-container {
+		width: calc(100% - 2 * var(--proto-space-gutter));
+	}
+	#service-redesign #deliverables .service-ledger {
+		padding-inline: 0;
+	}
+	#service-redesign #deliverables > .lk-container > .linker-contact-invitation {
+		margin-inline: 0;
+	}
 	#service-redesign #deliverables .service-intro { grid-template-columns: minmax(0, 1fr); gap: var(--proto-space-5); }
 	#service-redesign #deliverables .service-intro-stack { grid-column: 1; grid-row: 2; grid-template-columns: minmax(0, 1fr); }
 	#service-redesign #deliverables .stack-one { aspect-ratio: 3 / 2; }

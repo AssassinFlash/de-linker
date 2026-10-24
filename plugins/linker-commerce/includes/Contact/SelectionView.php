@@ -74,6 +74,8 @@ final class SelectionView {
 	private static function label( string $key ): string {
 		return match ( $key ) {
 			'q' => __( 'Search', 'linker-commerce' ),
+			'platform' => __( 'Product', 'linker-commerce' ),
+			'document' => __( 'Documents', 'linker-commerce' ),
 			'brand' => __( 'Brand', 'linker-commerce' ),
 			'application' => __( 'Application', 'linker-commerce' ),
 			'phase' => __( 'Phase', 'linker-commerce' ),
@@ -94,6 +96,9 @@ final class SelectionView {
 	 * @param string $value Sanitized selected value.
 	 */
 	private static function value( string $key, string $value ): string {
+		if ( 'document' === $key && 'Datasheets & certificates' === $value ) {
+			return __( 'Datasheets & certificates', 'linker-commerce' );
+		}
 		if ( 'sort' === $key ) {
 			return match ( $value ) {
 				'newest' => __( 'Newest first', 'linker-commerce' ),

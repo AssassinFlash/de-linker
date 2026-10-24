@@ -1,0 +1,64 @@
+{
+  "decision": "normal",
+  "basis": "business_request",
+  "reason": "classified",
+  "model": "typesafe/jev-1.13",
+  "rubric": "inquiry-mail-v1",
+  "raw": {
+    "primary": {
+      "model": "typesafe/jev-1.13-20260917",
+      "answers": {
+        "classification": {
+          "type": "choice",
+          "choice": "normal",
+          "confidence": null,
+          "probabilities": {
+            "normal": 0.93,
+            "malicious": 0.04,
+            "unknown": 0.02
+          }
+        },
+        "basis": {
+          "type": "choice",
+          "choice": "business_request",
+          "confidence": null,
+          "probabilities": {
+            "business_request": 0.93,
+            "service_or_complaint": 0.04,
+            "reporting_abuse": 0.02,
+            "fraud_or_phishing": 0.0,
+            "unsolicited_bulk_promotion": 0.0,
+            "meaningless_abuse": 0.0,
+            "insufficient_context": 0.0
+          }
+        }
+      }
+    },
+    "escalation": null
+  },
+  "binding": {
+    "protocol": "inquiry-mail-v1",
+    "policy": "inquiry-mail-v1",
+    "record_id": 123,
+    "snapshot_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "purpose": "inquiry_mail"
+  },
+  "usage": {
+    "primary": {
+      "attempts": 1,
+      "calls": [
+        {
+          "seconds": 0.000797,
+          "status": 200
+        }
+      ],
+      "usage": {}
+    },
+    "escalation": {
+      "attempts": 0,
+      "calls": [],
+      "usage": {}
+    }
+  },
+  "seconds": 0.001238
+}

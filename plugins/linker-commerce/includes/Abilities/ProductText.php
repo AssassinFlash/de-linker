@@ -9,6 +9,8 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
+use Linker\Commerce\Products\Publication;
+
 /**
  * The language of an ability request is `en` or `de`. Titles and permalinks
  * follow the translated product when Polylang is loaded (#9); otherwise the
@@ -43,12 +45,17 @@ final class ProductText {
 	 * @param 'en'|'de' $lang       Language.
 	 */
 	public static function translated_id( int $product_id, string $lang ): int {
+		if ( ! Publication::is_published( $product_id ) ) {
+			return 0;
+		}
 		if ( ! function_exists( 'pll_get_post' ) ) {
 			return $product_id;
 		}
-			$translated = pll_get_post( $product_id, 'de' === $lang ? 'de' : 'en' );
-
-			return 0 < $translated ? $translated : $product_id;
+		$translated = pll_get_post( $product_id, 'de' === $lang ? 'de' : 'en' );
+		if ( $translated < 1 ) {
+			return $product_id;
+		}
+		return Publication::is_published( $translated ) ? $translated : 0;
 	}
 
 	/**
@@ -58,7 +65,8 @@ final class ProductText {
 	 * @param 'en'|'de' $lang       Language.
 	 */
 	public static function title( int $product_id, string $lang ): string {
-		return (string) get_the_title( self::translated_id( $product_id, $lang ) );
+		$id = self::translated_id( $product_id, $lang );
+		return $id > 0 ? (string) get_the_title( $id ) : '';
 	}
 
 	/**
@@ -68,7 +76,10 @@ final class ProductText {
 	 * @param 'en'|'de'|null $lang    Language; omitted uses the stored post.
 	 */
 	public static function url( int $product_id, ?string $lang = null ): string {
-		$id  = null === $lang ? $product_id : self::translated_id( $product_id, $lang );
+		$id = null === $lang ? ( Publication::is_published( $product_id ) ? $product_id : 0 ) : self::translated_id( $product_id, $lang );
+		if ( $id < 1 ) {
+			return '';
+		}
 		$url = get_permalink( $id );
 
 		return is_string( $url ) ? $url : '';

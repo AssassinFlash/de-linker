@@ -56,5 +56,12 @@ deepseek-flash direct).
 
 ## Where the rules live
 
+Product and document publication has one business authority: WooCommerce. A
+public document association is a document's current permission to serve a
+published product; shared file bytes do not grant another product permission.
+A historical snapshot records the customer's earlier result, rather than the
+current product facts. The confirmed rules and acceptance cases are in
+`docs/specs/609-product-publication.md`.
+
 `AGENTS.md` is the binding rulebook (owner rulings by date, delivery gates,
 model routing). This file summarises; AGENTS.md decides.

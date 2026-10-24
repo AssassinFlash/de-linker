@@ -165,7 +165,27 @@ jobs:
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'ReviewReminderTest|MailBudgetRollbackTest|MailBudgetTest|InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest'
+            --filter 'ReviewReminderTest|PublicationHooksTest|MailBudgetRollbackTest|MailBudgetTest|InternalSmtpTest|NotificationRoutingTest|MailRetryTest|DigestTest|HealthMonitorTest|LanguageLinksInMailTest'
+
+      # Current #568 composition keeps the mandatory pre-send gate while adding
+      # persistent reception/job occupancy. Both native stores run the same real
+      # connection, source ACK, critical/reset/VAT, held-job and classifier fixtures.
+      # Registration adds its real SQL/ACK/erasure guards to each existing store run.
+      - name: business and native notification capacity in both stores
+        run: |
+          cd plugins/linker-commerce
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|RegistrationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
+          cd ../..
+          just wp smoke wc hpos sync --user=1
+          just wp smoke option update woocommerce_custom_orders_table_enabled yes
+          just wp smoke option update woocommerce_hpos_datastore_caching_enabled yes
+          just wp smoke option update woocommerce_feature_product_instance_caching_enabled yes
+          cd plugins/linker-commerce
+          LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
+            php vendor/bin/phpunit -c phpunit.integration.xml.dist \
+            --filter 'GlobalBusinessCapacityTest|SummaryEnvelopeTest|BusinessDispositionTest|MailCapacityTest|AtomicMailConnectionTest|ConnectionFenceTest|CriticalNotificationCapacityTest|VatNotificationCapacityTest|ConversationConfirmationCapacityTest|RegistrationCapacityTest|PreSendAuthorizationTest|ReviewReminderTest'
 
       # #414: the abilities route, including the customer token. The test
 
@@ -204,6 +224,15 @@ jobs:
       # mail tests, so Polylang setup does not change their instance.
       - name: page cache follows a save
         run: just page-cache-chain smoke
+
+      # Native authentication plus the existing reader on 201 synthetic rows per
+      # collection; no production binding, credential, model or external mail.
+      - name: inventory application credential scope
+        run: |
+          uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/inventory-access.py
+          uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/inventory-access.py
+          uv run --locked --project tools/local mypy --strict tools/checks/inventory-access.py
+          just inventory-access smoke
 
       # #521: native pre-dispatch resource/replay/privacy fixtures. The preceding
       # page-cache step installs the local-only service token. All HTTP is
@@ -245,7 +274,7 @@ jobs:
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
             --filter GenieInquiryTest
 
-      # The observation-only classifier uses fake service answers and local
+      # The mandatory pre-send classifier uses fake service answers and local
       # Outbox data. Includes private review history, native privacy, two real
       # PHP connections, and rollback after a failed metadata write.
       - name: inquiry assessment, customer evidence and staff review
@@ -253,7 +282,22 @@ jobs:
         run: |
           LINKER_WP_ROOT="$HOME/de-linker-local/smoke/wordpress" \
             php vendor/bin/phpunit -c phpunit.integration.xml.dist \
-            --filter 'InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest|SafeIntakeTest'
+            --filter 'PreSendAuthorizationTest|InquiryAssessmentTest|CustomerEvidenceTest|CustomerReviewTest|NotificationHoldTest|AssessmentAsyncTest|SafeIntakeTest'
+
+      # Official dependency only; test users/factors are synthetic and deleted.
+      # Native wp-login + Woo EN/DE, TOTP/recovery replay, customer and API lanes.
+      - name: administrator MFA without mandatory customer factors
+        run: |
+          if ! command -v msgcat >/dev/null; then
+            sudo apt-get update
+            sudo apt-get install -y gettext
+          fi
+          uv run --locked --project tools/local ruff check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
+          uv run --locked --project tools/local ruff format --check --config tools/local/pyproject.toml tools/checks/admin-mfa.py
+          uv run --locked --project tools/local mypy --strict tools/checks/admin-mfa.py
+          uv run --locked --project tools/local pytest -q tools/local/tests/test_admin_mfa.py
+          php plugins/linker-commerce/vendor/bin/phpcs --standard=plugins/linker-commerce/phpcs.xml.dist tests/e2e/fixtures/admin-mfa.php tests/e2e/fixtures/admin-mfa-public.php
+          just admin-mfa smoke --prepare
 
       # The cleanup runs even when an earlier step failed and the instance was
       # never built, so it reports rather than failing the job twice.

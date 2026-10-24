@@ -33,7 +33,7 @@ from linker_judges.budget import BudgetError, take
 from pydantic import BaseModel, ConfigDict
 
 from linker_genie import contact, ground, inquiry, jev, page, parts, summary, timing
-from linker_genie.abilities import AbilityClient
+from linker_genie.abilities import Abilities, AbilityClient
 from linker_genie.agent import (
     deepseek_access,
     make_generate,
@@ -46,9 +46,18 @@ from linker_genie.facts import TurnFacts
 from linker_genie.failure import from_log, is_row
 from linker_genie.gate import Gate
 from linker_genie.inquiry_assessment import AssessmentInput, assess
+from linker_genie.knowledge import SEARCH
 from linker_genie.language import turn_language
 from linker_genie.log import TurnLog
 from linker_genie.prices import LOOKUP_DEADLINE, Lookup, commerce_lookup, fill
+from linker_genie.publication import (
+    PublicationChanged,
+    PublicationUnavailable,
+    Snapshot,
+    current,
+    document_urls,
+    product_ids,
+)
 from linker_genie.route import simple_stock
 from linker_genie.schema import (
     MAX_REQUEST_BYTES,
@@ -85,6 +94,7 @@ app.add_middleware(Gate, limit=MAX_REQUEST_BYTES)
 _log: TurnLog | None = None
 _client: AbilityClient | None = None
 _understander: Understander | None = None
+_vocabulary: StoreVocabulary | None = None
 _pages: page.PageReader | None = None
 _vision: Vision | None = None
 
@@ -109,7 +119,7 @@ def ability_client() -> AbilityClient:
     if _client is None:
         # No service token, ever: the only identity is the customer's own
         # short-lived token, passed per call (linker_genie.abilities).
-        _client = AbilityClient(_wp_url())
+        _client = AbilityClient(_wp_url(), publication=current())
     return _client
 
 
@@ -121,7 +131,7 @@ def page_reader() -> page.PageReader:
     """The pages of the site this service serves (page.py, #234)."""
     global _pages
     if _pages is None:
-        _pages = page.PageReader(_wp_url())
+        _pages = page.PageReader(_wp_url(), publication=current())
     return _pages
 
 
@@ -136,16 +146,25 @@ def vision() -> Vision | None:
     return _vision
 
 
+def store_vocabulary() -> StoreVocabulary:
+    """The native Store API cache; each caller supplies its own turn permission."""
+    global _vocabulary
+    if _vocabulary is None:
+        _vocabulary = StoreVocabulary(_wp_url(), publication=current())
+    return _vocabulary
+
+
 def understander() -> Understander:
     """Product words from the site's Store API, Jev on OpenRouter, the customer's
     page read from the site, and their files read by deepseek-flash (understand.py)."""
     global _understander
     if _understander is None:
         _understander = Understander(
-            StoreVocabulary(_wp_url()).get,
+            store_vocabulary().get,
             jev.from_env(),
             pages=page_reader().read,
             see=vision(),
+            publication=current(),
         )
     return _understander
 
@@ -197,6 +216,41 @@ def assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
 
 
 def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
+    """Establish and recheck current authority around the complete computation.
+
+    A historical assistant message is a snapshot, never a fresh source. User
+    messages still carry project inputs; attached readings are re-identified in
+    Understander before any of their technical content enters the model.
+    """
+    authority = getattr(request.app.state, "publication", None) or current()
+    try:
+        snapshot = authority.snapshot()
+        snapshot.require_products(list(product_ids(body.page_context.model_dump())))
+        clean = body.model_copy(
+            update={"messages": [m for m in body.messages if m.role == "user"]}
+        )
+        response = _compute_turn(clean, request, snapshot)
+        authority.validate(snapshot)
+        return response
+    except PublicationChanged as error:
+        logger.warning("publication changed during turn")
+        raise HTTPException(status_code=409, detail="publication_changed") from error
+    except PublicationUnavailable as error:
+        logger.warning("publication authority unavailable")
+        raise HTTPException(
+            status_code=503, detail="publication_unavailable"
+        ) from error
+
+
+@app.post("/knowledge/loaded")
+def knowledge_loaded() -> dict[str, object]:
+    """Actually open the current release; workers acknowledge this process's version."""
+    return SEARCH.loaded()
+
+
+def _compute_turn(
+    body: TurnRequest, request: Request, original_permission: Snapshot
+) -> StreamingResponse:
     """One conversation turn, grounded and hydrated, as SSE."""
     started = time.monotonic()
     # The turn's passive phase timings (#336, timing.py): measurement only, no
@@ -206,12 +260,17 @@ def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     # behind, so the unfinished turns the p95 tail must not silently omit are
     # countable (TurnLog.start; ops/turn_latency.py reports them).
     start_token = turn_log().start(body.conversation_id, body.locale)
+    abilities = ability_client().for_turn(original_permission)
     prepare = getattr(request.app.state, "prepare", None)
     with timing.phase(clock, timing.UNDERSTAND):
         prepared: Prepared = (
             prepare(body)
             if prepare is not None
-            else understander().prepare(body, ability_client())
+            else understander().prepare(
+                body,
+                abilities,
+                get_vocabulary=lambda: store_vocabulary().get(original_permission),
+            )
         )
     if prepared.timing is not None:
         clock.adopt(prepared.timing)
@@ -223,10 +282,12 @@ def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     # The cards' price lookups end LOOKUP_DEADLINE s after the turn began, so the
     # turn stays inside the shell's timeout (prices.py).
     commerce = getattr(request.app.state, "commerce", None) or commerce_lookup(
-        ability_client(), body, started + LOOKUP_DEADLINE
+        abilities, body, started + LOOKUP_DEADLINE
     )
     try:
-        result, service_block = _answer(body, prepared, request, commerce, clock)
+        result, service_block = _answer(
+            body, prepared, request, commerce, clock, abilities=abilities
+        )
     except Exception as error:  # noqa: BLE001 - logged, then re-raised
         with timing.phase(clock, timing.LOG):
             turn_log().record(
@@ -290,6 +351,28 @@ def _assistant_turn(body: TurnRequest, request: Request) -> StreamingResponse:
     # answered by the service alone: no model ran (model-routing audits read
     # provider/model). The four model channels are unchanged; these routes are
     # sentences, not channels.
+    # Keep the computed facts/citations bound to their original input set. The
+    # outer handler freshly validates this same S0 immediately before SSE release.
+    permission = original_permission
+    permission.require_products(list(product_ids(shipped)))
+    permission.require_urls(list(document_urls(shipped)))
+    # Stored citations carry content identity. A historical same-URL link cannot
+    # silently point its old page references at newly replaced bytes.
+    for block in shipped["blocks"]:
+        if block.get("type") != "document" or not block.get("url"):
+            continue
+        url = block["url"].split("#")[0]
+        document = next(
+            (
+                d
+                for d in permission.documents.values()
+                if url in [d["url"], *d.get("aliases", [])]
+            ),
+            None,
+        )
+        if document is not None:
+            block["document_id"] = document["document_id"]
+            block["document_revision"] = document["document_revision"]
     code_made = prepared.route.name in (
         "person",
         "parts",
@@ -388,6 +471,8 @@ def _answer(
     request: Request,
     commerce: Lookup,
     clock: timing.Timing | None = None,
+    *,
+    abilities: Abilities,
 ) -> tuple[TurnResult, dict[str, object] | None]:
     """The turn's answer: the model's; the service's own for a request for a person
     (contact.answer; #243); a short-code clarification (route.answer); a scripted
@@ -562,7 +647,7 @@ def _answer(
             None,
         )
     generate = getattr(request.app.state, "generate", None) or make_generate(
-        ability_client(), prepared=prepared, pages=page_reader().read, clock=clock
+        abilities, prepared=prepared, pages=page_reader().read, clock=clock
     )
     # The same list the model tools append to during `generate` (inside
     # `run`). A tuple taken here would miss a search-products 500 the model

@@ -135,6 +135,72 @@ final class SiteGuardsSmokeTest extends TestCase {
 		self::assertStringContainsString( '"code":"rest_forbidden"', $response['body'] );
 	}
 
+	/** ACF's initialization-only filter must not erase the native permission refusal. */
+	public function test_rest_initialization_cannot_clear_the_user_guard(): void {
+		$script = <<<'PHP'
+wp_set_current_user( 0 );
+$initializations = 0;
+// ACF 6.3.1 initialize() returns null on both its disabled and completed paths.
+$initializer = static function () use ( &$initializations ): void {
+	++$initializations;
+};
+add_filter( 'rest_pre_dispatch', $initializer, 10, 3 );
+$read = static function ( string $route ): array {
+	$request = new WP_REST_Request( 'GET', $route );
+	$request->set_query_params( array( 'per_page' => 1, '_fields' => 'id' ) );
+	$response = rest_do_request( $request );
+	$data = $response->get_data();
+	return array( 'status' => $response->get_status(), 'code' => is_array( $data ) ? ( $data['code'] ?? '' ) : '' );
+};
+try {
+	$anonymous = $read( '/wp/v2/users' );
+	$item = $read( '/wP/v2/UsErS/1' );
+	$administrators = get_users( array( 'role' => 'administrator', 'fields' => 'ID', 'number' => 1 ) );
+	wp_set_current_user( (int) ( $administrators[0] ?? 0 ) );
+	$staff_capability = current_user_can( 'list_users' );
+	$staff = $read( '/wp/v2/users' );
+	wp_set_current_user( 0 );
+	$public = $read( '/wp/v2/types' );
+	echo wp_json_encode( array( 'anonymous' => $anonymous, 'item' => $item, 'staff_capability' => $staff_capability, 'staff' => $staff, 'public' => $public, 'initializations' => $initializations ) );
+} finally {
+	remove_filter( 'rest_pre_dispatch', $initializer, 10 );
+	wp_set_current_user( 0 );
+}
+PHP;
+		$result = json_decode( self::wp( array( 'eval', $script ) ), true );
+		self::assertIsArray( $result );
+		self::assertSame(
+			array(
+				'status' => 403,
+				'code'   => 'rest_forbidden',
+			),
+			$result['anonymous']
+		);
+		self::assertSame(
+			array(
+				'status' => 403,
+				'code'   => 'rest_forbidden',
+			),
+			$result['item']
+		);
+		self::assertTrue( $result['staff_capability'] );
+		self::assertSame(
+			array(
+				'status' => 200,
+				'code'   => '',
+			),
+			$result['staff']
+		);
+		self::assertSame(
+			array(
+				'status' => 200,
+				'code'   => '',
+			),
+			$result['public']
+		);
+		self::assertGreaterThanOrEqual( 4, $result['initializations'] );
+	}
+
 	/**
 	 * The engine pin is asserted as what it is on this machine: an installed
 	 * mu-plugin. What it does — hand WordPress's HTTP layer the pinned

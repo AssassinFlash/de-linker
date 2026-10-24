@@ -17,6 +17,7 @@ import {
 	waitFor,
 } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { webcrypto } from 'node:crypto';
 
 /**
  * Internal dependencies
@@ -283,6 +284,61 @@ test( 'retrying a failed hero turn sends it once', async () => {
 	expect(
 		screen.queryByText( 'Genie did not answer. Please try again.' )
 	).toBeNull();
+} );
+
+test( 'hero retry restores this request from a complete native Thread response', async () => {
+	const { readThread } =
+		await vi.importActual< typeof import( '../genie/api/turn' ) >(
+			'../genie/api/turn'
+		);
+	let stored: {
+		conversation_id: number;
+		operation_id?: string;
+		messages: TurnMessage[];
+		stream: string;
+	} = {
+		conversation_id: 563,
+		messages: [],
+		stream: '',
+	};
+	const read = () =>
+		readThread(
+			'/thread',
+			'n',
+			async () =>
+				new Response( JSON.stringify( stored ), { status: 200 } )
+		);
+	const send = vi.fn(
+		async ( request: {
+			messages: TurnMessage[];
+			onOperation?: ( id: string ) => void;
+		} ) => {
+			request.onOperation?.( '56300000-0000-4000-8000-000000000001' );
+			stored = {
+				...stored,
+				operation_id: '56300000-0000-4000-8000-000000000001',
+				messages: request.messages,
+				stream: 'event: block\ndata: {"type":"text","text":"Stored hero answer.","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n',
+			};
+			throw new Error( 'Ambiguous response after completion' );
+		}
+	);
+	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ) );
+	await act( async () => {
+		view.bridge().ask( 'saj' );
+	} );
+	fireEvent.click(
+		await screen.findByRole( 'button', { name: 'Try again' } )
+	);
+	await waitFor( () =>
+		expect(
+			screen.queryByText( 'Genie did not answer. Please try again.' )
+		).toBeNull()
+	);
+	expect( send ).toHaveBeenCalledTimes( 1 );
+	expect(
+		( await screen.findAllByText( 'Stored hero answer.' ) ).length
+	).toBeGreaterThan( 0 );
 } );
 
 test( 'a cut stream on the hero keeps the question and not the partial answer', async () => {
@@ -728,3 +784,127 @@ test( 'Hero initial scoped failure outage stays hidden and retry restores throug
 		vi.unstubAllGlobals();
 	}
 } );
+
+// Real native transport generates different UUIDs for otherwise identical turns
+// whose files or page context differ. A second tab's answer cannot satisfy A.
+test.each( [ 'same-operation', 'other-file', 'other-context' ] )(
+	'native hero retry identifies %s',
+	async ( scenario ) => {
+		vi.stubGlobal( 'crypto', webcrypto );
+		window.linkerPublicProtectionConfig = {
+			api: '/proof',
+			nonce: 'n',
+			mode: 'enforce',
+			language: 'en',
+		};
+		window.linkerPublicProtection = {
+			proof: async () => 'synthetic-proof',
+			reset: () => undefined,
+		};
+		try {
+			const actual =
+				await vi.importActual< typeof import( '../genie/api/turn' ) >(
+					'../genie/api/turn'
+				);
+			const stream =
+				'event: block\ndata: {"type":"text","text":"Completed native answer.","refs":[]}\n\nevent: done\ndata: {"ok":true}\n\n';
+			let stored: {
+				conversation_id: number;
+				operation_id?: string;
+				messages: TurnMessage[];
+				stream: string;
+			} = { conversation_id: 563, messages: [], stream: '' };
+			const requests: Array< {
+				id: string;
+				body: {
+					messages: TurnMessage[];
+					attachments?: Upload[];
+					page: unknown;
+				};
+			} > = [];
+			const transport: typeof fetch = async ( _url, init ) => {
+				const body = JSON.parse( String( init?.body ) );
+				const id = new Headers( init?.headers ).get(
+					'X-Linker-Operation'
+				)!;
+				requests.push( { id, body } );
+				if ( requests.length === 1 && scenario !== 'same-operation' ) {
+					return new Response( '{}', { status: 502 } );
+				}
+				stored = {
+					conversation_id: 563,
+					operation_id: id,
+					messages: body.messages,
+					stream,
+				};
+				return new Response( JSON.stringify( { stream } ), {
+					status: requests.length === 1 ? 502 : 200,
+				} );
+			};
+			const read = () =>
+				actual.readThread(
+					'/thread',
+					'n',
+					async () => new Response( JSON.stringify( stored ) )
+				);
+			const send = vi.fn(
+				( request: Parameters< typeof actual.sendTurn >[ 0 ] ) =>
+					actual.sendTurn( { ...request, fetcher: transport } )
+			);
+			const sessionA = new HeroSession( SESSION_CONFIG, read, send );
+			const file = new File( [ '%PDF-1.7 fileA' ], 'test.pdf', {
+				type: 'application/pdf',
+			} );
+			const view = renderHero( sessionA );
+			await act( async () => {
+				view.bridge().ask( 'Check test.pdf', [ file ] );
+			} );
+			expect( await screen.findByRole( 'alert' ) ).toBeInTheDocument();
+			const upload = requests[ 0 ].body.attachments![ 0 ];
+			if ( scenario !== 'same-operation' ) {
+				await actual.sendTurn( {
+					...SESSION_CONFIG,
+					messages: requests[ 0 ].body.messages,
+					uploads: [
+						scenario === 'other-file'
+							? { ...upload, data: 'ZmlsZUI=' }
+							: upload,
+					],
+					page:
+						scenario === 'other-context'
+							? { type: 'product', product_id: 2067 }
+							: SESSION_CONFIG.page,
+					fetcher: transport,
+				} );
+			}
+			fireEvent.click(
+				screen.getByRole( 'button', { name: 'Try again' } )
+			);
+			await waitFor( () =>
+				expect( requests ).toHaveLength(
+					scenario === 'same-operation' ? 1 : 3
+				)
+			);
+			await waitFor( () =>
+				expect( screen.queryByRole( 'alert' ) ).toBeNull()
+			);
+			expect( send ).toHaveBeenCalledTimes(
+				scenario === 'same-operation' ? 1 : 2
+			);
+			expect( requests ).toHaveLength(
+				scenario === 'same-operation' ? 1 : 3
+			);
+			expect(
+				new Set( requests.map( ( request ) => request.id ) ).size
+			).toBe( scenario === 'same-operation' ? 1 : 3 );
+			expect( requests.at( -1 )!.body.attachments ).toEqual( [ upload ] );
+			expect( requests.at( -1 )!.body.page ).toEqual(
+				SESSION_CONFIG.page
+			);
+		} finally {
+			delete window.linkerPublicProtectionConfig;
+			delete window.linkerPublicProtection;
+			vi.unstubAllGlobals();
+		}
+	}
+);

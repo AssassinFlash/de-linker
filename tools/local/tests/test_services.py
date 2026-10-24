@@ -1,11 +1,15 @@
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from threading import Thread
 
 import pytest
 
+from linker_local.checkout import Checkout
 from linker_local.instance import Instance
 from linker_local.processes import ProcessError
 from linker_local.services import (
     SERVICES,
+    _engine_environment,
     genie_environment,
     genie_index,
     planner_environment,
@@ -115,3 +119,33 @@ def test_no_index_fails_and_says_how_to_get_one(tmp_path: Path) -> None:
         error.value
     )
     assert "just index" in str(error.value)
+
+
+def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
+    paths: list[str] = []
+
+    class Feed(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            paths.append(self.path)
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b'{"products":[]}')
+
+        def log_message(self, format: str, *args: object) -> None:
+            pass
+
+    with HTTPServer(("127.0.0.1", 0), Feed) as server:
+        thread = Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        instance = Instance("a", server.server_port, 8889, 8890, tmp_path)
+        instance.dir.mkdir()
+        try:
+            environment = _engine_environment(instance, Checkout.here())
+        finally:
+            server.shutdown()
+            thread.join()
+    assert paths == ["/wp-json/linker/v1/engineering-feed"]
+    assert environment["LINKER_PUBLICATION_URL"] == (
+        instance.url + "/wp-json/linker/v1/publication/manifest"
+    )
+    assert Path(environment["LINKER_ENGINE_FEED"]).read_bytes() == b'{"products":[]}'

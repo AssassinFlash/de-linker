@@ -9,7 +9,7 @@ declare( strict_types = 1 );
 
 use Linker\Commerce\Inquiry\Assessment\AsyncRunner;
 use Linker\Commerce\Inquiry\Assessment\Lock;
-use Linker\Commerce\Inquiry\Assessment\Result;
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 
 $linker_commerce_root = getenv( 'LINKER_WP_ROOT' );
 if ( false === $linker_commerce_root ) {
@@ -28,6 +28,7 @@ $linker_commerce_token   = (string) ( $argv[2] ?? '' );
 $linker_commerce_barrier = (string) ( $argv[3] ?? '' );
 $linker_commerce_mode    = (string) ( $argv[4] ?? 'run' );
 require_once __DIR__ . '/AssessmentFixtureEnvironment.php';
+require_once __DIR__ . '/NormalMailAuthorizationFixture.php';
 \Linker\Commerce\Tests\Fixtures\AssessmentFixtureEnvironment::configure();
 if ( 'busy' === $linker_commerce_mode ) {
 	Lock::run(
@@ -47,9 +48,10 @@ add_filter(
 		}
 		file_put_contents( $linker_commerce_barrier, "called\n", FILE_APPEND | LOCK_EX );
 		usleep( 2000000 );
+		$request = json_decode( $args['body'], true );
 		return array(
 			'response' => array( 'code' => 200 ),
-			'body'     => wp_json_encode( Result::unknown( 'provider_budget_quota' ) ),
+			'body'     => wp_json_encode( NormalMailAuthorizationFixture::verdict( $request['binding'], 'unknown', 'insufficient_context', 'provider_budget_quota' ) ),
 		);
 	},
 	10,

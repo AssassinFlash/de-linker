@@ -29,6 +29,7 @@ use WP_Term;
  * @covers \Linker\Commerce\Presentation\ProductShortcodes
  */
 final class ProductShortcodesTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\PublishedDocumentView;
 
 	use MocksSelectionFacts;
 
@@ -1268,6 +1269,10 @@ final class ProductShortcodesTest extends TestCase {
 	 * @param array<string, mixed> $acf      The product's legacy ACF JSON branches.
 	 */
 	private function pdp( bool $in_stock, array $acf = array() ): ProductShortcodes {
+		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true );
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true );
+		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' );
 		$product = Mockery::mock( WC_Product::class );
 		$product->allows( 'get_id' )->andReturn( self::PDP );
 		$product->allows( 'get_name' )->andReturn( 'GoodWe GW60K-STS-G10' );
@@ -1362,7 +1367,7 @@ final class ProductShortcodesTest extends TestCase {
 			)
 		);
 
-		return new ProductShortcodes( new ProductFilters(), new ProductView() );
+		return new ProductShortcodes( new ProductFilters(), $this->published_document_view() );
 	}
 
 	/**

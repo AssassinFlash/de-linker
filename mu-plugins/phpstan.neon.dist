@@ -8,4 +8,6 @@ parameters:
 		- linker-engine-pin.php
 		- linker-site-guards.php
 		- linker-deploy-reset.php
+		- linker-publication-worker-access.php
+		- linker-inventory-access.php
 		- tests/php

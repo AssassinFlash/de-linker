@@ -28,13 +28,46 @@ use WP_User;
 final class NewCustomerEmailTest extends TestCase {
 
 	/**
+	 * Preserve the unit runner's native database seam.
+	 *
+	 * @var mixed
+	 */
+	private mixed $previous_database = null;
+
+	/** Restore only the test-owned readback seam. */
+	public function tearDown(): void {
+		$GLOBALS['wpdb'] = $this->previous_database; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Unit-only native readback fixture.
+		parent::tearDown();
+	}
+
+	/**
 	 * Settings: team mailbox and two blind copies; the customer is Maria Beispiel of Solarbau GmbH.
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		$this->previous_database = $GLOBALS['wpdb'] ?? null;
+		$GLOBALS['wpdb']         = new class() extends \wpdb { // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Unit-only native metadata readback.
+			/**
+			 * Native metadata readback succeeded in this legacy-user fixture.
+			 *
+			 * @var string
+			 */
+			public $last_error = '';
+			/** The unit double opens no connection. */
+			public function __construct() {}
+		};
 		$this->plain_text();
 		$this->reload_plugin_textdomain();
 		WP_Mock::userFunction( 'plugin_dir_path', array( 'return' => '/plugin/' ) );
+		// Legacy/unmanaged native users do not have a registration handoff source.
+		WP_Mock::userFunction( 'wp_cache_delete', array( 'return' => true ) );
+		WP_Mock::userFunction(
+			'metadata_exists',
+			array(
+				'args'   => array( 'user', WP_Mock\Functions::type( 'int' ), \Linker\Commerce\Registration\RegistrationNotices::META ),
+				'return' => false,
+			)
+		);
 		WP_Mock::userFunction( 'sanitize_email', array( 'return' => static fn ( string $email ): string => $email ) );
 		WP_Mock::userFunction( 'is_email', array( 'return' => static fn ( string $email ): bool => false !== filter_var( $email, FILTER_VALIDATE_EMAIL ) ) );
 		$this->options(
@@ -72,7 +105,7 @@ final class NewCustomerEmailTest extends TestCase {
 	 * The email with the same field reader the accounts page uses.
 	 */
 	private static function email(): NewCustomerEmail {
-		return new NewCustomerEmail( '/plugin/linker-commerce.php', new Options(), new RegistrationInformation( new Fields( new VatProfile( new ViesClient() ) ) ) );
+		return new NewCustomerEmail( '/plugin/linker-commerce.php', new Options(), new RegistrationInformation( new Fields( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) ) ) );
 	}
 
 	/**

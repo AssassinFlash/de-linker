@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Inquiry;
 
 use Linker\Commerce\Presentation\PageUrls;
+use Linker\Commerce\Mail\NativeTransaction;
 
 use Linker\Commerce\Contact\Submission;
 use WC_Order;
@@ -49,7 +50,7 @@ final class Sender {
 	 * @return WC_Order|WP_Error Received inquiry or validation failure.
 	 */
 	public function request( Submission $details, array $billing = array(), array|false|null $summary = null, array $context = array() ): WC_Order|WP_Error {
-		$error = $this->preflight( $details );
+		$error = \Linker\Commerce\Protection\BusinessCapacity::preflight() ?? $this->preflight( $details );
 		if ( $error instanceof WP_Error ) {
 			return $error;
 		}
@@ -65,26 +66,58 @@ final class Sender {
 			)
 		);
 		WC()->cart->calculate_totals();
-		$prepare = function ( WC_Order $order ) use ( $details, $summary, $context ): void {
-			$this->attach_summary( $order, $summary );
-			$this->prepare( $order, $details, 'proforma', $context );
+		$prepared_key = '';
+		$transaction  = null;
+		$prepare      = function ( WC_Order $order ) use ( $details, $summary, $context, &$prepared_key, &$transaction ): void {
+			$this->line_language( $order, $details->locale );
+			$awaited = null === $summary && false !== has_filter( self::SUMMARY_FILTER );
+			if ( $awaited ) {
+				$this->prepare( $order, $details, 'proforma', $context, true );
+				$this->attach_summary( $order, $summary );
+				Assessment\Queue::refresh_summary( $order );
+				\Linker\Commerce\Protection\BusinessCapacity::finalize( $order );
+			} else {
+				$this->attach_summary( $order, $summary );
+				$this->prepare( $order, $details, 'proforma', $context );
+			}
+			$prepared_key = (string) $order->get_meta( \Linker\Commerce\Protection\BusinessCapacity::KEY );
+			// Optional summary/provider work has finished before the first native write.
+			$transaction = new NativeTransaction();
 		};
 		add_action( 'woocommerce_checkout_create_order', $prepare );
 		try {
 			$id = WC()->checkout()->create_order( $data );
+			if ( $id instanceof WP_Error ) {
+				return $id;
+			}
+			$order = wc_get_order( $id );
+			if ( ! $order instanceof WC_Order ) {
+				return new WP_Error( 'linker_inquiry_create', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
+			}
+			$stored = \Linker\Commerce\Protection\BusinessCapacity::verify( $order, $prepared_key );
+			if ( $stored instanceof WP_Error ) {
+				return $stored;
+			}
+			$this->receive( $order, $details, 'proforma', $context );
+			if ( ! $transaction instanceof NativeTransaction ) {
+				return $this->unknown();
+			}
+			$transaction->commit();
+			WC()->cart->empty_cart();
+			return $order;
+		} catch ( \Linker\Commerce\Protection\CapacityFull $error ) {
+			return $error->problem;
+		} catch ( \Throwable $error ) {
+			return $this->unknown();
 		} finally {
 			remove_action( 'woocommerce_checkout_create_order', $prepare );
+			if ( $transaction instanceof NativeTransaction ) {
+				try {
+					$transaction->rollback();
+				} catch ( \Throwable $error ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch -- A lost commit is unknown; never reconnect to compensate.
+				}
+			}
 		}
-		if ( $id instanceof WP_Error ) {
-			return $id;
-		}
-		$order = wc_get_order( $id );
-		if ( ! $order instanceof WC_Order ) {
-			return new WP_Error( 'linker_inquiry_create', __( 'Please try sending your inquiry again.', 'linker-commerce' ) );
-		}
-		$this->receive( $order, $details, 'proforma', $context );
-		WC()->cart->empty_cart();
-		return $order;
 	}
 
 	/**
@@ -114,7 +147,11 @@ final class Sender {
 	 * @param Submission           $details Validated reply details and message.
 	 * @param array<string, mixed> $meta    Record meta a door adds before the mail goes (Genie's hand-off, #243).
 	 */
-	public function message( Submission $details, array $meta = array() ): WC_Order {
+	public function message( Submission $details, array $meta = array() ): WC_Order|WP_Error {
+		$capacity = \Linker\Commerce\Protection\BusinessCapacity::preflight();
+		if ( $capacity instanceof WP_Error ) {
+			return $capacity;
+		}
 		$order = new WC_Order();
 		$order->set_customer_id( get_current_user_id() );
 		$order->set_created_via( 'linker_contact' );
@@ -129,9 +166,19 @@ final class Sender {
 		$order->set_customer_note( $details->message );
 		$order->set_payment_method( ProformaGateway::ID );
 		foreach ( $meta as $key => $value ) {
-			$order->update_meta_data( (string) $key, $value );
+			if ( is_array( $value ) ) {
+				Assessment\StructuredMeta::update( $order, (string) $key, $value );
+			} else {
+				$order->update_meta_data( (string) $key, $value );
+			}
 		}
-		$this->receive( $order, $details, 'contact' );
+		try {
+			$this->receive( $order, $details, 'contact' );
+		} catch ( \Linker\Commerce\Protection\CapacityFull $error ) {
+			return $error->problem;
+		} catch ( \Throwable $error ) {
+			return $this->unknown();
+		}
 		return $order;
 	}
 
@@ -156,7 +203,7 @@ final class Sender {
 			$summary = apply_filters( self::SUMMARY_FILTER, null, 0 );
 		}
 		if ( is_array( $summary ) && isset( $summary['summary'] ) && '' !== (string) $summary['summary'] ) {
-			$order->update_meta_data( self::SUMMARY_META, $summary );
+			Assessment\StructuredMeta::update( $order, self::SUMMARY_META, $summary );
 		}
 	}
 
@@ -167,15 +214,18 @@ final class Sender {
 	 * @param Submission           $details Validated reply details.
 	 * @param string               $source proforma or contact.
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
+	 * @param bool                 $summary_awaited Reserve the proven native summary before dispatch.
 	 */
-	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
+	private function prepare( WC_Order $order, Submission $details, string $source, array $context = array(), bool $summary_awaited = false ): void {
 		$order->set_payment_method_title( '' );
 		$order->update_meta_data( OrderLocale::META, $details->locale );
 		$order->update_meta_data( '_linker_inquiry_source', $source );
 		$order->update_meta_data( '_linker_inquiry_topic', $details->intent );
-		if ( ! \Linker\Commerce\Protection\Intake::prepare( $order ) ) {
-			Assessment\Queue::prepare( $order, $context );
-		}
+		\Linker\Commerce\Protection\Intake::prepare( $order );
+		Assessment\Queue::prepare( $order, $context );
+		if ( 0 === $order->get_id() ) {
+			$order->update_meta_data( Assessment\SendAuthorization::MARKER, Assessment\SendVerdict::POLICY ); }
+		\Linker\Commerce\Protection\BusinessCapacity::prepare( $order, $summary_awaited ? SummaryEnvelope::additional_bytes( $order ) : 0 );
 	}
 
 	/**
@@ -185,24 +235,42 @@ final class Sender {
 	 * @param Submission           $details Validated reply details.
 	 * @param string               $source proforma or contact.
 	 * @param array<string, mixed> $context Trusted related Genie conversation/page.
+	 * @throws \Linker\Commerce\Protection\CapacityFull First save could not be verified.
 	 */
 	private function receive( WC_Order $order, Submission $details, string $source, array $context = array() ): void {
-		$this->line_language( $order, $details->locale );
-		$this->prepare( $order, $details, $source, $context );
-		// A real native id stabilizes the receipt reservation across a resumed save.
-		$order->save();
-		$held           = \Linker\Commerce\Mail\NotificationHold::held( $order );
-		$receipt_reason = $held ? 'review_hold' : ( 'enforce' === \Linker\Commerce\Protection\Configuration::active_mode()
-			? \Linker\Commerce\Protection\ReceiptBudget::reason( $details->email, $order->get_id() )
-			: ( ( new ReceiptLimit() )->take() ? '' : 'daily_cap' ) );
-		$order->update_meta_data( ReceiptLimit::SKIPPED_META, $receipt_reason );
-		// Unverified destinations receive only a fixed acknowledgement, never
-		// attacker-supplied names, products, notes or links.
-		$order->update_meta_data( '_linker_fixed_receipt', \Linker\Commerce\Protection\Business::enabled() ? 'yes' : '' );
-		$order->save();
-		// Woo loads transactional email listeners lazily. Load before the transition.
-		WC()->mailer();
-		$order->update_status( Statuses::RECEIVED );
+		if ( 0 === $order->get_id() ) {
+			$this->line_language( $order, $details->locale );
+			$this->prepare( $order, $details, $source, $context );
+		}
+		NativeTransaction::run(
+			function () use ( $order ): void {
+				// A real native id stabilizes the receipt reservation across a resumed save.
+				$order->save();
+				$stored = \Linker\Commerce\Protection\BusinessCapacity::verify( $order );
+				if ( $stored instanceof WP_Error ) {
+					throw new \Linker\Commerce\Protection\CapacityFull( $stored ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured WP_Error is escaped by the native form consumer.
+				}
+				$receipt_reason = 'assessment_pending';
+				$order->update_meta_data( ReceiptLimit::SKIPPED_META, $receipt_reason );
+				// Unverified destinations receive only a fixed acknowledgement, never
+				// attacker-supplied names, products, notes or links.
+				$order->update_meta_data( '_linker_fixed_receipt', \Linker\Commerce\Protection\Business::enabled() ? 'yes' : '' );
+				$order->save();
+				// Woo loads transactional email listeners lazily. Load before the transition.
+				WC()->mailer();
+				$order->update_status( Statuses::RECEIVED );
+				clean_post_cache( $order->get_id() );
+				$read = Assessment\CurrentSource::order( $order->get_id() );
+				if ( ! $read instanceof WC_Order || ! $read->has_status( Statuses::RECEIVED ) ) {
+					throw new \RuntimeException( 'inquiry_received_readback_failed' );
+				}
+			}
+		);
+	}
+
+	/** Native writes were not confirmed; preserve the original customer inputs/draft. */
+	private function unknown(): WP_Error {
+		return new WP_Error( 'linker_intake_pending', __( 'The request status could not be confirmed. Your entries are still here. Please check before sending a new request.', 'linker-commerce' ) );
 	}
 
 	/**
@@ -224,7 +292,9 @@ final class Sender {
 			$name = $twin > 0 ? get_post_field( 'post_title', $twin ) : '';
 			if ( '' !== $name ) {
 				$item->set_name( $name );
-				$item->save();
+				if ( $order->get_id() > 0 ) {
+					$item->save();
+				}
 			}
 		}
 	}

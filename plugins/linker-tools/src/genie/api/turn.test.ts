@@ -76,6 +76,41 @@ test( 'a stream without done is an error, not a partial answer', () => {
 	expect( isUnfinishedStream( new Error( 'turn 502' ) ) ).toBe( false );
 } );
 
+test( 'a completed service turn survives native request overhead beyond the model budget', async () => {
+	vi.useFakeTimers();
+	const fetcher = vi.fn( async () => {
+		await new Promise( ( resolve ) => setTimeout( resolve, 60_001 ) );
+		return {
+			ok: true,
+			json: async () => ( {
+				stream:
+					'event: block\ndata: {"type":"text","text":"25000 W","refs":[]}\n\n' +
+					'event: done\ndata: {"ok":true}\n\n',
+			} ),
+		} as Response;
+	} );
+	const outcome = sendTurn( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ { role: 'user', content: 'rated AC power' } ],
+		page: { type: 'category' },
+		fetcher,
+	} ).then(
+		( turn ) => turn,
+		( error: unknown ) => error
+	);
+	try {
+		await vi.advanceTimersByTimeAsync( 60_001 );
+		await expect( outcome ).resolves.toMatchObject( {
+			blocks: [ { type: 'text', text: '25000 W' } ],
+		} );
+		expect( vi.getTimerCount() ).toBe( 0 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
 test( 'a connection that never answers is the upstream timeout', async () => {
 	vi.useFakeTimers();
 	const fetcher = vi.fn( () => new Promise< Response >( () => undefined ) );
@@ -259,6 +294,7 @@ test( 'a reload reads the stored thread back and re-adds the last answer', async
 		'Two of them fit.',
 	] );
 	expect( thread.turn?.blocks ).toHaveLength( 2 );
+	expect( thread.conversationId ).toBe( 12 );
 	expect( thread.messages[ 1 ].turnId ).toBe( 9 );
 } );
 
@@ -336,6 +372,17 @@ test( 'an email answer reads the outcome from the route, refusals from their cod
 			confirm
 		)
 	).toEqual( { outcome: 'confirm', to: 'a@example.test', limit: 0 } );
+	expect(
+		await emailConversation(
+			'/c',
+			'n',
+			9,
+			'en',
+			undefined,
+			undefined,
+			answer( 202, { status: 'pending', to: 'a@example.test' } )
+		)
+	).toEqual( { outcome: 'pending', to: 'a@example.test', limit: 0 } );
 	expect(
 		JSON.parse( String( confirm.mock.calls[ 0 ]?.[ 1 ]?.body ) )
 	).toEqual( {
@@ -419,6 +466,8 @@ test( 'a complete answer near its connection deadline survives a slow auxiliary 
 			{
 				type: 'document',
 				ref: 'p3573.document.0',
+				document_id: 'doc',
+				document_revision: 'revision-1',
 				label: 'Old label · p. 1',
 				url: 'https://de-linker.test/file.pdf#page=1',
 			},
@@ -439,6 +488,24 @@ test( 'a complete answer near its connection deadline survives a slow auxiliary 
 					new Promise( ( resolve ) => {
 						release = () => resolve( { stream } );
 					} ),
+			} as unknown as Response;
+		}
+		if ( String( url ).endsWith( '/publication/manifest' ) ) {
+			return {
+				ok: true,
+				json: async () => ( {
+					schema_version: 1,
+					products: [
+						{ product_id: 3573, published_locale_ids: [ 3573 ] },
+					],
+					documents: [
+						{
+							document_id: 'doc',
+							document_revision: 'revision-1',
+							url: 'https://de-linker.test/file.pdf',
+						},
+					],
+				} ),
 			} as unknown as Response;
 		}
 		return {

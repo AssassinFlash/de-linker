@@ -434,14 +434,12 @@ def test_a_backup_swap_only_offers_configurations_that_hold_the_reserve(
         for battery in result.candidates.batteries
     )
     assert small.id not in [b.product.id for b in result.candidates.batteries]
-    swapped = design(
-        engine_without_backup,
-        **(C17 | {"inverter_id": h2.id, "battery_id": small.id}),
-    )
-    assert swapped.selected is not None
-    assert swapped.selected.battery is not None
-    assert swapped.selected.battery.usable_kwh >= swapped.sizing.reserve_kwh
-    assert swapped.selected.battery.product.id != small.id
+    with pytest.raises(residential.DesignInputError) as invalid:
+        design(
+            engine_without_backup,
+            **(C17 | {"inverter_id": h2.id, "battery_id": small.id}),
+        )
+    assert invalid.value.field == "battery_id"
 
 
 def test_a_backup_reserve_offers_the_above_limit_configuration_that_covers_it(

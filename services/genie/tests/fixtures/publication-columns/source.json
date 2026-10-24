@@ -1,0 +1,30 @@
+{
+  "source_manifest_sha256": "88ebe244f924ebe9f59ade9540a9be17421bd305b865b0074844ebe38818b2f8",
+  "source": "read-only Docling cache and native Woo publication manifest captured 2026-10-23",
+  "documents": [
+    {
+      "blob_sha256": "0fdeaf90548f35e00a605e8ae538c24f89f745be5195e85dbf466c2a7d2d9178",
+      "docling_sha256": "7b70cc42ce7e80453a3f259e477013d61c4edd9a3b0281ec9b1db51013c8bf58",
+      "bytes": 87764,
+      "fixture_bytes": 8897
+    },
+    {
+      "blob_sha256": "c95aef48b1ea4fbd0ae8729c104774ce2b5ee7137809fc8fe20642be2780bbfe",
+      "docling_sha256": "ea4cd70fdff97ce7253d84fc890e5ea0e8721f595ac030e9be3d88a59d6cde46",
+      "bytes": 112019,
+      "fixture_bytes": 19332
+    },
+    {
+      "blob_sha256": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+      "docling_sha256": "8baed6df4ee8e57e0c9137a7e0c98909186418ad0c643bbb10580c9f965b4ef2",
+      "bytes": 85731,
+      "fixture_bytes": 9077
+    },
+    {
+      "blob_sha256": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+      "docling_sha256": "fde33e7942303858169170b12fc60c8a78152da9c80cd32eff84a40802e77f02",
+      "bytes": 1975535,
+      "fixture_bytes": 201777
+    }
+  ]
+}

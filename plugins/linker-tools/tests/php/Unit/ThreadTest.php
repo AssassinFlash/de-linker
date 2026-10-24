@@ -829,6 +829,104 @@ final class ThreadTest extends TestCase {
 		$this->assertSame( $releases + 1, $this->releases );
 	}
 
+	/** A completed operation is bound to precisely the committed messages and stream. */
+	public function test_completed_operation_receipt_follows_the_committed_answer(): void {
+		$this->remember_meta();
+		$thread   = new Thread();
+		$messages = array(
+			array(
+				'role'    => 'user',
+				'content' => 'Check test.pdf',
+			),
+		);
+		$id       = '56300000-0000-4000-8000-000000000001';
+		$this->assertTrue( $thread->record( 51, $messages, $this->stream( 'File A.' ), array(), null, $id ) );
+		$this->assertSame( $id, $thread->read( 51 )['operation_id'] ?? '' );
+		update_post_meta( 51, Thread::STREAM, $this->stream( 'File B.' ) );
+		$this->assertArrayNotHasKey( 'operation_id', $thread->read( 51 ) );
+		update_post_meta( 51, Thread::MESSAGES, array() );
+		$this->assertArrayNotHasKey( 'operation_id', $thread->read( 51 ) );
+	}
+
+	/** Off/observe and old writers invalidate a former trusted completion. */
+	public function test_a_write_without_trusted_operation_clears_the_receipt(): void {
+		$this->remember_meta();
+		$thread   = new Thread();
+		$messages = array(
+			array(
+				'role'    => 'user',
+				'content' => 'Same question',
+			),
+		);
+		$this->assertTrue( $thread->record( 51, $messages, $this->stream( 'First.' ), array(), null, '56300000-0000-4000-8000-000000000001' ) );
+		$this->assertTrue( $thread->record( 51, $messages, $this->stream( 'Next.' ) ) );
+		$this->assertSame( array(), get_post_meta( 51, 'linker_genie_completion', true ) );
+		$this->assertArrayNotHasKey( 'operation_id', $thread->read( 51 ) );
+	}
+
+	/**
+	 * All members of the native commit restore together on a failed write.
+	 *
+	 * @dataProvider completion_failures
+	 * @param string $key Failed member.
+	 * @param bool   $raise Throw instead of returning false.
+	 */
+	public function test_failed_receipt_write_rolls_back_the_whole_completion( string $key, bool $raise ): void {
+		$armed = false;
+		$this->remember_meta( $key, $armed, $raise );
+		$thread   = new Thread();
+		$messages = array(
+			array(
+				'role'    => 'user',
+				'content' => 'Same question',
+			),
+		);
+		$id       = '56300000-0000-4000-8000-000000000001';
+		$this->assertTrue( $thread->record( 51, $messages, $this->stream( 'File A.' ), array(), null, $id ) );
+		$before = $thread->read( 51 );
+		$armed  = true;
+		$this->assertFalse(
+			$thread->record(
+				51,
+				array_merge(
+					$messages,
+					array(
+						array(
+							'role'    => 'assistant',
+							'content' => 'File A.',
+						),
+						array(
+							'role'    => 'user',
+							'content' => 'Next question',
+						),
+					)
+				),
+				$this->stream( 'File B.' ),
+				array(),
+				null,
+				'56300000-0000-4000-8000-000000000002'
+			)
+		);
+		$this->assertSame( $before, $thread->read( 51 ) );
+		$this->assertSame( $id, $thread->read( 51 )['operation_id'] ?? '' );
+	}
+
+	/**
+	 * Main data and receipt failures, including native exceptions.
+	 *
+	 * @return list<array{string, bool}>
+	 */
+	public static function completion_failures(): array {
+		return array(
+			array( Thread::MESSAGES, false ),
+			array( Thread::MESSAGES, true ),
+			array( Thread::STREAM, false ),
+			array( Thread::STREAM, true ),
+			array( Thread::COMPLETION, false ),
+			array( Thread::COMPLETION, true ),
+		);
+	}
+
 	/**
 	 * The stream write fails after the messages were replaced. The previous
 	 * messages come back and the commit is not a success (#373).

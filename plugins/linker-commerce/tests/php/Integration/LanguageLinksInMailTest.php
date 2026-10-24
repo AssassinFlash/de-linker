@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Inquiry\Emails\InquiryReceivedEmail;
+use Linker\Commerce\Tests\Fixtures\NormalMailAuthorizationFixture;
 use Linker\Commerce\Mail\JobStore;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
@@ -36,6 +37,11 @@ use WC_Order;
  * @coversNothing
  */
 final class LanguageLinksInMailTest extends IntegrationTestCase {
+	/** Real classification and native consumers.
+	 *
+	 * @var NormalMailAuthorizationFixture
+	 */
+	private NormalMailAuthorizationFixture $authorization;
 
 	/**
 	 * Captured outgoing mail calls, in send order.
@@ -57,6 +63,12 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	 */
 	protected function setUp(): void {
 		parent::setUp();
+		require_once dirname( __DIR__, 2 ) . '/fixtures/NormalMailAuthorizationFixture.php';
+		$this->authorization = NormalMailAuthorizationFixture::install(
+			function ( callable $remove ): void {
+				$this->later( $remove );
+			}
+		);
 		WC()->mailer();
 		foreach ( array( ApprovedEmail::ID, InquiryReceivedEmail::ID, ProformaIssuedEmail::ID ) as $id ) {
 			$name                    = 'woocommerce_' . $id . '_settings';
@@ -93,6 +105,11 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		delete_option( Throttle::OPTION );
 		$this->as_user( 1 );
 		$email = new ApprovedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+		$this->later(
+			static function () use ( $email ): void {
+				remove_action( \Linker\Commerce\Registration\Approval::CHANGED_ACTION . '_notification', array( $email, 'trigger' ), 10 );
+			}
+		);
 		$email->trigger( $english->get_id(), Approval::PENDING, Approval::APPROVED, '' );
 		$email->trigger( $german->get_id(), Approval::PENDING, Approval::APPROVED, '' );
 
@@ -119,15 +136,25 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 	public function test_admin_proforma_mail_links_follow_the_customer_language(): void {
 		$this->ensure_languages();
 		$order = $this->german_inquiry();
+		$order->set_status( \Linker\Commerce\Inquiry\Statuses::PROFORMA );
+		$order->save();
 
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
 		$this->as_user( 1 );
 		$email = new ProformaIssuedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+		$this->later(
+			static function () use ( $email ): void {
+				remove_action( 'woocommerce_order_status_inquiry-received_to_proforma-issued_notification', array( $email, 'trigger' ), 10 );
+			}
+		);
 		$email->trigger( $order->get_id(), $order );
 
 		$messages = $this->to_address( (string) $order->get_billing_email() );
 		$this->assertCount( 1, $messages, 'One German Proforma mail.' );
+		$this->assertCount( 1, $this->deliveries(), 'The original native handoff makes one actual tester delivery attempt beyond its preview.' );
+		$order->read_meta_data( true );
+		$this->assertSame( $order->get_meta( Issuer::NUMBER_META ), $order->get_meta( ProformaIssuedEmail::ACCEPTED ) );
 		$body = $messages[0]['body'];
 		$this->assertStringContainsString( 'Ihre Proformarechnung', $body, 'The body is German.' );
 
@@ -151,7 +178,14 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		delete_option( Throttle::OPTION );
 		$this->as_user( 0 );
 		$email = new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+		$this->later(
+			static function () use ( $email ): void {
+				remove_action( 'woocommerce_order_status_pending_to_inquiry-received_notification', array( $email, 'trigger' ), 10 );
+			}
+		);
 		$email->trigger( $order->get_id(), $order );
+		$this->assertSame( array(), $this->to_address( (string) $order->get_billing_email() ), 'Saved inquiry waits for a bound normal verdict.' );
+		$this->authorization->process( $order, true );
 
 		$messages = $this->to_address( (string) $order->get_billing_email() );
 		$this->assertCount( 1, $messages, 'One German receipt.' );
@@ -177,10 +211,21 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		update_option( Throttle::OPTION, array_fill( 0, Throttle::PER_MINUTE, time() ), false );
 		$this->as_user( 0 );
-		( new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->trigger( $order->get_id(), $order );
+		$email = new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+		$this->later(
+			static function () use ( $email ): void {
+				remove_action( 'woocommerce_order_status_pending_to_inquiry-received_notification', array( $email, 'trigger' ), 10 );
+			}
+		);
+		$email->trigger( $order->get_id(), $order );
 
-		$jobs = self::mail_jobs_after( $marker );
-		$this->assertCount( 1, $jobs, 'The German receipt is queued.' );
+		$this->assertSame( array(), self::mail_jobs_after( $marker ), 'No content job before classification.' );
+		$state = $this->authorization->process( $order );
+		$jobs  = array( $state['jobs']['receipt']['id'] );
+		$this->assertCount( 2, self::mail_jobs_after( $marker ), 'One team notification and one German receipt are queued after the normal verdict.' );
+		$stored = ( new JobStore() )->load( $jobs[0] );
+		$this->assertNotNull( $stored );
+		$this->assertSame( array( $order->get_billing_email() ), $stored['message']->to );
 
 		delete_option( \Linker\Commerce\Mail\OptionBudgetLedger::OPTION );
 		delete_option( Throttle::OPTION );
@@ -208,6 +253,40 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->assertStringNotContainsString( 'href="' . $this->english_page_url( 'myaccount' ) . 'register', $delivered[0]['body'] );
 	}
 
+	/** A cached team-mail instance must follow the actual native site locale on each render. */
+	public function test_cached_team_email_tracks_each_authoritative_site_locale(): void {
+		$before = get_option( 'WPLANG' );
+		$this->later(
+			static function () use ( $before ): void {
+				wp_cache_delete( 'WPLANG', 'options' );
+				wp_cache_delete( 'alloptions', 'options' );
+				false === $before ? delete_option( 'WPLANG' ) : update_option( 'WPLANG', $before );
+			}
+		);
+		$order = new \WC_Order();
+		$order->set_billing_email( self::TESTER );
+		$order->save();
+		$this->later(
+			static function () use ( $order ): void {
+				$order->delete( true );
+			}
+		);
+		$email = WC()->mailer()->get_emails()[ \Linker\Commerce\Inquiry\Emails\NewInquiryEmail::class ];
+		self::assertInstanceOf( \Linker\Commerce\Inquiry\Emails\NewInquiryEmail::class, $email );
+		foreach ( array( 'en_US', 'de_DE_formal', 'en_US' ) as $locale ) {
+			wp_cache_delete( 'WPLANG', 'options' );
+			wp_cache_delete( 'alloptions', 'options' );
+			update_option( 'WPLANG', 'en_US' === $locale ? '' : $locale );
+			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery -- Confirm the actual fixture-owned locale, not a stale option-cache readback.
+			$actual = $wpdb->get_var( $wpdb->prepare( 'SELECT option_value FROM %i WHERE option_name=%s', $wpdb->options, 'WPLANG' ) );
+			self::assertSame( 'en_US' === $locale ? '' : $locale, $actual ?? '', 'Native absence is WordPress default English.' );
+			$message = $email->capture( $order );
+			self::assertInstanceOf( \Linker\Commerce\Mail\Message::class, $message );
+			self::assertStringStartsWith( 'en_US' === $locale ? 'New inquiry #' : 'Neue Anfrage #', $message->subject );
+		}
+	}
+
 	/**
 	 * The review note of #243: an English and then a German customer mail in
 	 * one process. The second must not inherit the first language, and the
@@ -224,6 +303,11 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		delete_option( Throttle::OPTION );
 		$this->as_user( 1 );
 		$email = new ApprovedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' );
+		$this->later(
+			static function () use ( $email ): void {
+				remove_action( \Linker\Commerce\Registration\Approval::CHANGED_ACTION . '_notification', array( $email, 'trigger' ), 10 );
+			}
+		);
 
 		$email->trigger( $english->get_id(), Approval::PENDING, Approval::APPROVED, '' );
 		$email->trigger( $german->get_id(), Approval::PENDING, Approval::APPROVED, '' );
@@ -244,33 +328,51 @@ final class LanguageLinksInMailTest extends IntegrationTestCase {
 		$this->assertStringContainsString( 'href="' . $this->german_page_url( 'shop' ) . '"', $german_mail[0]['body'] );
 	}
 
+	/** Native workers can classify English and German sources in one PHP process. */
+	public function test_bound_inquiry_batch_keeps_each_recorded_language(): void {
+		$this->ensure_languages();
+		foreach ( array( 'en_US', 'de_DE_formal', 'en_US' ) as $locale ) {
+			$order = $this->german_inquiry();
+			$order->update_meta_data( '_linker_locale', $locale );
+			$order->save_meta_data();
+			( new InquiryReceivedEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php' ) )->trigger( $order->get_id(), $order );
+			$state   = $this->authorization->process( $order );
+			$receipt = ( new JobStore() )->load( $state['jobs']['receipt']['id'] );
+			$this->assertNotNull( $receipt );
+			$subject = 'de_DE_formal' === $locale ? 'Ihre Anfrage #' . $order->get_order_number() . ' ist eingegangen' : 'Your inquiry #' . $order->get_order_number() . ' has been received';
+			$this->assertSame( $subject, $receipt['message']->subject );
+			$this->assertStringContainsString( 'de_DE_formal' === $locale ? 'Dank für Ihre Anfrage' : 'Thank you for your inquiry', $receipt['message']->body );
+		}
+	}
+
 	/**
 	 * Records every wp_mail() call. The queue's own delivery passes the
 	 * recipients as a list; the chain's first call passes the recipient as a
 	 * string (the same distinction ApprovalTest reads).
 	 */
 	private function collect(): void {
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress's own hook, observed as the real mail path.
-		add_action(
-			'pre_wp_mail',
-			function ( $pre, array $atts ) {
-				$to           = $atts['to'] ?? '';
-				$this->sent[] = array(
-					'to'         => is_string( $to ) ? $to : '',
-					'recipients' => is_array( $to ) ? array_values( array_filter( $to, 'is_string' ) ) : array(),
-					'subject'    => (string) ( $atts['subject'] ?? '' ),
-					'body'       => (string) ( $atts['message'] ?? '' ),
-				);
-				return $pre;
-			},
-			5,
-			2
+		$collector = function ( $pre, array $atts ) {
+			$to           = $atts['to'] ?? '';
+			$this->sent[] = array(
+				'to'         => is_string( $to ) ? $to : '',
+				'recipients' => is_array( $to ) ? array_values( array_filter( $to, 'is_string' ) ) : array(),
+				'subject'    => (string) ( $atts['subject'] ?? '' ),
+				'body'       => (string) ( $atts['message'] ?? '' ),
+			);
+			return $pre;
+		};
+		add_filter( 'pre_wp_mail', $collector, 5, 2 );
+		$this->later(
+			static function () use ( $collector ): void {
+				remove_filter( 'pre_wp_mail', $collector, 5 );
+			}
 		);
 	}
 
 	/**
 	 * The calls the chain handed over for an address (the first leg).
 	 *
+	 * @phpstan-impure Captured mail changes after native background consumers.
 	 * @param string $address Recipient address.
 	 * @return list<array{to: string, recipients: list<string>, subject: string, body: string}>
 	 */

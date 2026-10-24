@@ -1,0 +1,23 @@
+# Site supplement for the official Two-Factor 0.17.0 German formal pack.
+# Only the observed missing administrator failure notice; vendor source unchanged.
+msgid ""
+msgstr ""
+"Project-Id-Version: Linker admin MFA 565\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-22 13:00+0000\n"
+"PO-Revision-Date: 2026-10-22 13:00+0000\n"
+"Last-Translator: Linker\n"
+"Language-Team: Linker\n"
+"Language: de_DE_formal\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. translators: 1: failed verification attempts, 2: time since last attempt.
+#: two-factor/class-two-factor-core.php:1158
+#, php-format
+msgid "%1$s failed verification code attempt on this account. The last attempt was %2$s ago. If you did not make this attempt, someone else may know your password. Change your password after you log in."
+msgid_plural "%1$s failed verification code attempts on this account. The last attempt was %2$s ago. If you did not make these attempts, someone else may know your password. Change your password after you log in."
+msgstr[0] "%1$s fehlgeschlagener Verifizierungsversuch für dieses Konto. Der letzte Versuch liegt %2$s zurück. Falls dieser Versuch nicht von Ihnen stammt, kennt möglicherweise jemand Ihr Passwort. Ändern Sie Ihr Passwort nach der Anmeldung."
+msgstr[1] "%1$s fehlgeschlagene Verifizierungsversuche für dieses Konto. Der letzte Versuch liegt %2$s zurück. Falls diese Versuche nicht von Ihnen stammen, kennt möglicherweise jemand Ihr Passwort. Ändern Sie Ihr Passwort nach der Anmeldung."

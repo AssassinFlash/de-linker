@@ -1,0 +1,342 @@
+{
+  "captured_utc": "2026-10-23T00:06:48.331989+00:00",
+  "instance": "i574cur",
+  "checks": [
+    {
+      "case": "attachment_deletion_paths_are_durably_fixture_owned",
+      "passed": true
+    },
+    {
+      "case": "initializer_runs_at_10_with_current_users_guard_at_20",
+      "passed": true
+    },
+    {
+      "case": "installed_without_binding_is_unconfigured",
+      "passed": true
+    },
+    {
+      "case": "unconfigured_does_not_claim_api_protection",
+      "passed": true
+    },
+    {
+      "case": "explicit_inactive_status",
+      "passed": true
+    },
+    {
+      "case": "valid_native_binding_is_active",
+      "passed": true
+    },
+    {
+      "case": "settings_route_has_native_unrelated_admin_positive_control",
+      "passed": true
+    },
+    {
+      "case": "selected_settings_denied_after_initializer",
+      "passed": true
+    },
+    {
+      "case": "current_anonymous_users_guard_survives_initializer",
+      "passed": true
+    },
+    {
+      "case": "selected_write_denied",
+      "passed": true
+    },
+    {
+      "case": "pdf_collection_read_allowed",
+      "passed": true
+    },
+    {
+      "case": "products_collection_read_allowed",
+      "passed": true
+    },
+    {
+      "case": "native_slash_normalization_keeps_same_collection",
+      "passed": true
+    },
+    {
+      "case": "native_embedded_author_subrequests_denied",
+      "passed": true
+    },
+    {
+      "case": "actual_reader_full_pagination_metadata_identical",
+      "passed": true
+    },
+    {
+      "case": "users_denied",
+      "passed": true
+    },
+    {
+      "case": "missing_pdf_filter_denied",
+      "passed": true
+    },
+    {
+      "case": "json_method_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "post_query_get_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "single_media_denied",
+      "passed": true
+    },
+    {
+      "case": "single_product_denied",
+      "passed": true
+    },
+    {
+      "case": "route_case_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "non_pdf_media_denied",
+      "passed": true
+    },
+    {
+      "case": "head_denied",
+      "passed": true
+    },
+    {
+      "case": "post_collection_denied",
+      "passed": true
+    },
+    {
+      "case": "put_denied",
+      "passed": true
+    },
+    {
+      "case": "patch_denied",
+      "passed": true
+    },
+    {
+      "case": "delete_denied",
+      "passed": true
+    },
+    {
+      "case": "options_denied",
+      "passed": true
+    },
+    {
+      "case": "query_method_delete_denied",
+      "passed": true
+    },
+    {
+      "case": "query_get_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "header_method_delete_denied",
+      "passed": true
+    },
+    {
+      "case": "post_get_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "header_get_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "batch_denied",
+      "passed": true
+    },
+    {
+      "case": "fake_binding_header_denied",
+      "passed": true
+    },
+    {
+      "case": "internal_read_denied",
+      "passed": true
+    },
+    {
+      "case": "internal_write_denied",
+      "passed": true
+    },
+    {
+      "case": "internal_batch_denied",
+      "passed": true
+    },
+    {
+      "case": "internal_query_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "internal_header_alias_denied",
+      "passed": true
+    },
+    {
+      "case": "denied_requests_leave_record_identical",
+      "passed": true
+    },
+    {
+      "case": "denied_subrequests_have_no_side_effect",
+      "passed": true
+    },
+    {
+      "case": "canary_callback_positive_control",
+      "passed": true
+    },
+    {
+      "case": "unrelated_uuid_same_admin_is_unchanged",
+      "passed": true
+    },
+    {
+      "case": "same_uuid_on_different_user_is_unchanged",
+      "passed": true
+    },
+    {
+      "case": "selected_nonrest_authentication_denied",
+      "passed": true
+    },
+    {
+      "case": "unrelated_nonrest_authentication_unchanged",
+      "passed": true
+    },
+    {
+      "case": "selected_xmlrpc_authentication_denied",
+      "passed": true
+    },
+    {
+      "case": "unrelated_xmlrpc_authentication_unchanged",
+      "passed": true
+    },
+    {
+      "case": "admin_native_password_cookie_login_unchanged",
+      "passed": true
+    },
+    {
+      "case": "customer_native_password_cookie_login_unchanged",
+      "passed": true
+    },
+    {
+      "case": "native_admin_cookie_rest_write_unchanged",
+      "passed": true
+    },
+    {
+      "case": "unresolved_active_binding_is_invalid",
+      "passed": true
+    },
+    {
+      "case": "invalid_binding_does_not_restore_selected_read",
+      "passed": true
+    },
+    {
+      "case": "invalid_binding_fails_closed_for_application_auth",
+      "passed": true
+    },
+    {
+      "case": "admin_cookie_unchanged_under_invalid_binding",
+      "passed": true
+    },
+    {
+      "case": "customer_cookie_unchanged_under_invalid_binding",
+      "passed": true
+    },
+    {
+      "case": "malformed_binding_invalid_and_closed",
+      "passed": true
+    },
+    {
+      "case": "parallel_requests_keep_per_request_scope",
+      "passed": true
+    },
+    {
+      "case": "anonymous_page_is_unchanged",
+      "passed": true
+    },
+    {
+      "case": "fake_identity_headers_cannot_authenticate",
+      "passed": true
+    },
+    {
+      "case": "native_credential_revoked_between_error_and_success_hooks",
+      "passed": true
+    },
+    {
+      "case": "revoked_mid_authentication_keeps_selected_scope",
+      "passed": true
+    },
+    {
+      "case": "all_owned_resources_deleted",
+      "passed": true
+    },
+    {
+      "case": "owned_upload_file_and_directory_deleted",
+      "passed": true
+    }
+  ],
+  "synthetic_rows_per_collection": 201,
+  "native_credential_usage_before": {
+    "credentials": 3,
+    "used": 0
+  },
+  "dispatch_order": {
+    "acf_initializer_10": true,
+    "null_initializer_10": false,
+    "users_guard_20": true,
+    "inventory_priority": 20
+  },
+  "settings_scope_control": {
+    "unrelated_admin_status": 200,
+    "selected_status": 403
+  },
+  "reader": {
+    "before": {
+      "media": {
+        "count": 202,
+        "total": 202,
+        "pages": 3,
+        "synthetic_count": 201,
+        "sha256": "986b1678b8389fbaaf5b354db85327aae1d17d30b87e17526cba822a2b2d0bc1",
+        "metadata_complete": true
+      },
+      "products": {
+        "count": 202,
+        "total": 202,
+        "pages": 3,
+        "synthetic_count": 201,
+        "sha256": "b7d2f63682b619d321d5053e85a4a9401f00e6e01578ddc301275062936076e6",
+        "metadata_complete": true
+      }
+    },
+    "after": {
+      "media": {
+        "count": 202,
+        "total": 202,
+        "pages": 3,
+        "synthetic_count": 201,
+        "sha256": "986b1678b8389fbaaf5b354db85327aae1d17d30b87e17526cba822a2b2d0bc1",
+        "metadata_complete": true
+      },
+      "products": {
+        "count": 202,
+        "total": 202,
+        "pages": 3,
+        "synthetic_count": 201,
+        "sha256": "b7d2f63682b619d321d5053e85a4a9401f00e6e01578ddc301275062936076e6",
+        "metadata_complete": true
+      }
+    }
+  },
+  "native_credential_usage_after": {
+    "credentials": 3,
+    "used": 3
+  },
+  "native_revocation": {
+    "deleted": true,
+    "core_success": true,
+    "forbidden_route_status": 403
+  },
+  "passed": true,
+  "cleanup": {
+    "fixture_absent": true,
+    "binding_status": "unconfigured",
+    "temporary_loader_absent": true,
+    "remaining_owned_resources": {
+      "users": 0,
+      "posts": 0
+    }
+  }
+}

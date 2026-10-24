@@ -197,3 +197,208 @@ body[data-page]:is(
 	#tv-header-v2 {
 	background: rgba(21, 53, 47, 0.8);
 }
+
+/* The saved workflow becomes a horizontal rail at1000px. Its native 2px
+   outline plus5px offset was clipped by overflow at the top and inline start.
+   An existing8px spacing token contains that7px ring; scroll padding keeps
+   native snap alignment inside the same inset. Retain the15px scrollbar gap. */
+@media (max-width: 1000px) {
+	#tv-utility-page-v1 #exec-deck-nav {
+		padding-block-start: var(--proto-space-2);
+		padding-inline: var(--proto-space-2);
+		scroll-padding-inline: var(--proto-space-2);
+	}
+}
+
+/* Services has a separate native rail at820px. Its2px ring+4px offset needs
+   the same8px inset on every side. Keep the ring white on its dark surface. */
+#service-redesign #services .ss-stage-tab:focus-visible {
+	outline-color: var(--proto-neutral-0);
+}
+
+@media (max-width: 820px) {
+	#service-redesign #services .ss-stage-nav {
+		/* Put the ring inset outside the original card area:601–820px uses
+		   fluid fr columns, which an inward16px padding would squeeze. */
+		width: calc(100% + 2 * var(--proto-space-2));
+		margin-inline: calc(-1 * var(--proto-space-2));
+		padding: var(--proto-space-2);
+		scroll-padding-inline: var(--proto-space-2);
+	}
+
+	#service-redesign #services .ss-stage-tab {
+		scroll-margin: var(--proto-space-2);
+	}
+}
+
+/* Every native engineering summary opens/closes content. A CSS plus/minus
+   uses the existing disclosure's12px bars, without adding spoken label text.
+   Include the fourth summary so the same state cue and alignment serve all. */
+#tv-utility-page-v1 #engineering .us-engineering-feature > summary {
+	/* Reuse the existing Utility phone hero action's44px minimum hit area. */
+	min-height: 44px;
+}
+
+#tv-utility-page-v1 #engineering .us-engineering-feature > summary > h4 {
+	flex: 1;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+/* A grid item's automatic minimum followed the longest German summary word
+   beyond the390px viewport without JS. Let the existing single column fit. */
+#tv-utility-page-v1 #engineering .us-engineering-layout > * {
+	min-width: 0;
+}
+
+#tv-utility-page-v1 #engineering .us-engineering-feature > summary::after {
+	content: "";
+	flex: 0 0 12px;
+	width: 12px;
+	height: 12px;
+	color: var(--us-green);
+	background:
+		linear-gradient(currentColor, currentColor) center / 12px 1.5px
+			no-repeat,
+		linear-gradient(currentColor, currentColor) center / 1.5px 12px
+			no-repeat;
+}
+
+#tv-utility-page-v1
+	#engineering
+	.us-engineering-feature[open]
+	> summary::after {
+	background-size:
+		12px 1.5px,
+		1.5px 0;
+}
+
+/* The base heading color overrides the hero's inherited white without JS.
+   State the existing white surface color on the actual heading itself. */
+#service-redesign .lk-hero-h1,
+#tv-utility-page-v1 .lk-hero-utility h1 {
+	color: var(--proto-neutral-0);
+}
+
+/* Match the existing Contact heading policy: retain the authored hyphen in
+   Grossspeicher-Plattformen without auto-hyphenating the rest of a word. */
+html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
+	-webkit-hyphens: manual;
+	hyphens: manual;
+}
+
+/* EPC media: keep all native descriptions readable without enhancement.
+ * In the enhanced grid, the longest real pane reserves the height, including
+ * long German copy. Inactive panes stay in layout and leave focus/reading.
+ */
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-content {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	align-content: center;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-slide {
+	visibility: hidden;
+	pointer-events: none;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-slide.active {
+	visibility: visible;
+	pointer-events: auto;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-pane {
+	display: flex;
+	grid-column: 1;
+	visibility: visible;
+	gap: var(--proto-space-4);
+}
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-content {
+	gap: var(--proto-space-7);
+}
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-media-wrap {
+	align-self: start;
+}
+#tv-solutions-developers-v1 #sp-workbench:not(.epc-media-ready) .lk-sp-pagination {
+	display: none;
+}
+#tv-solutions-developers-v1 #sp-workbench.epc-media-ready .lk-sp-pane {
+	grid-row: 1;
+	visibility: hidden;
+	pointer-events: none;
+}
+#tv-solutions-developers-v1 #sp-workbench.epc-media-ready .lk-sp-pane.active {
+	visibility: visible;
+	pointer-events: auto;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-pagination {
+	flex-wrap: wrap;
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-media-tabs {
+	display: flex;
+	flex: 1;
+	gap: var(--proto-space-2);
+}
+/* The existing progress line is 3px; the independent native hit area follows
+ * the site's existing44px Utility hero control instead of a 3px click target.
+ */
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar {
+	position: relative;
+	display: block;
+	min-width: 44px;
+	min-height: 44px;
+	height: 44px;
+	padding: 0;
+	border: 0;
+	border-radius: var(--proto-radius-sm);
+	background: transparent;
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar::before,
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar-fill {
+	position: absolute;
+	top: calc(50% - 1.5px);
+	right: 0;
+	bottom: auto;
+	left: 0;
+	height: 3px;
+	border-radius: var(--proto-radius-sm);
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar::before {
+	content: "";
+	background: var(--proto-line-journal);
+}
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar.active::before,
+#tv-solutions-developers-v1 #sp-workbench .lk-sp-bar:hover::before {
+	background: var(--proto-teal-700);
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle {
+	display: inline-flex;
+	flex: 0 0 44px;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	min-height: 44px;
+	padding: 0;
+	border: 1px solid var(--proto-line-journal);
+	border-radius: var(--proto-radius-pill);
+	background: var(--proto-neutral-0);
+	color: var(--proto-teal-700);
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle:hover {
+	background: var(--proto-teal-50);
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-toggle svg {
+	width: 18px;
+	height: 18px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+}
+#tv-solutions-developers-v1 #sp-workbench .epc-motion-play,
+#tv-solutions-developers-v1 #sp-workbench .is-paused .epc-motion-pause {
+	display: none;
+}
+#tv-solutions-developers-v1 #sp-workbench .is-paused .epc-motion-play {
+	display: block;
+}
+#tv-solutions-developers-v1 #sp-workbench :is(.lk-sp-bar, .epc-motion-toggle):focus-visible {
+	outline: 2px solid var(--proto-teal-700);
+	outline-offset: 4px;
+}

@@ -1,0 +1,68 @@
+{
+  "reviewed_baseline": "be262db2339a778bef9a1a7841cd608aa7529b5b",
+  "offline_review_reproduction": {
+    "kind": "isolated PHP core doubles; no WordPress/database/HTTP",
+    "before": {
+      "initial_auth_errors": [],
+      "binding_status": "invalid",
+      "forbidden_users_route_blocked": false
+    },
+    "after": {
+      "initial_auth_errors": [],
+      "binding_status": "invalid",
+      "forbidden_users_route_blocked": true
+    }
+  },
+  "native_ownership_red": {
+    "captured_utc": "2026-10-22T16:24:12.096130+00:00",
+    "failure": "Native inventory acceptance failed: attachment_deletion_paths_are_durably_fixture_owned",
+    "cleanup": {
+      "fixture_absent": true,
+      "binding_status": "unconfigured",
+      "temporary_loader_absent": true,
+      "remaining_owned_resources": {
+        "users": 0,
+        "posts": 0
+      }
+    }
+  },
+  "native_revocation_red": {
+    "captured_utc": "2026-10-22T16:25:35.676568+00:00",
+    "failure": "Native inventory acceptance failed: revoked_mid_authentication_keeps_selected_scope",
+    "events": {
+      "deleted": true,
+      "core_success": true
+    },
+    "route_status": "Exact status not retained in first runner; the expected 403 assertion failed.",
+    "cleanup": {
+      "fixture_absent": true,
+      "binding_status": "unconfigured",
+      "temporary_loader_absent": true,
+      "remaining_owned_resources": {
+        "users": 0,
+        "posts": 0
+      }
+    }
+  },
+  "native_green": {
+    "captured_utc": "2026-10-22T16:30:25.836380+00:00",
+    "passed": true,
+    "case_count": 62,
+    "events": {
+      "deleted": true,
+      "core_success": true,
+      "forbidden_route_status": 403
+    },
+    "reader_identical": true,
+    "cleanup": {
+      "fixture_absent": true,
+      "binding_status": "unconfigured",
+      "temporary_loader_absent": true,
+      "remaining_owned_resources": {
+        "users": 0,
+        "posts": 0
+      }
+    }
+  },
+  "limitations": "Local synthetic native event injection; no claim of real concurrent production revocation or production credential use."
+}
