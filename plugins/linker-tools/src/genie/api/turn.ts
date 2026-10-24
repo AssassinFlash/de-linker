@@ -238,12 +238,13 @@ export class UnfinishedStreamError extends Error {
 }
 
 /**
- * How long the shell waits for one turn. The proxy gives the service the
- * same number (`Proxy::TURN_BUDGET`, 60, also the `wp_remote_post` timeout
- * in spec 13). A connection that never answers has to reach the upstream
- * failure; without this timer it waits forever.
+ * Wait through the native resource operation's existing 90-second lease
+ * (Protection/Resources.php). The proxy's 60-second service/commit budget
+ * excludes browser proof preparation and native publication/receipt reads;
+ * using that inner budget here aborted valid answers in customer acceptance.
+ * The service budget and admission lease stay unchanged (spec 13).
  */
-export const TURN_TIMEOUT_MS = 60_000;
+export const TURN_TIMEOUT_MS = 90_000;
 
 /**
  * The commit was refused because the stored thread moved while Genie was

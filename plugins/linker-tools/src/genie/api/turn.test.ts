@@ -76,6 +76,41 @@ test( 'a stream without done is an error, not a partial answer', () => {
 	expect( isUnfinishedStream( new Error( 'turn 502' ) ) ).toBe( false );
 } );
 
+test( 'a completed service turn survives native request overhead beyond the model budget', async () => {
+	vi.useFakeTimers();
+	const fetcher = vi.fn( async () => {
+		await new Promise( ( resolve ) => setTimeout( resolve, 60_001 ) );
+		return {
+			ok: true,
+			json: async () => ( {
+				stream:
+					'event: block\ndata: {"type":"text","text":"25000 W","refs":[]}\n\n' +
+					'event: done\ndata: {"ok":true}\n\n',
+			} ),
+		} as Response;
+	} );
+	const outcome = sendTurn( {
+		turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+		nonce: 'n',
+		locale: 'en',
+		messages: [ { role: 'user', content: 'rated AC power' } ],
+		page: { type: 'category' },
+		fetcher,
+	} ).then(
+		( turn ) => turn,
+		( error: unknown ) => error
+	);
+	try {
+		await vi.advanceTimersByTimeAsync( 60_001 );
+		await expect( outcome ).resolves.toMatchObject( {
+			blocks: [ { type: 'text', text: '25000 W' } ],
+		} );
+		expect( vi.getTimerCount() ).toBe( 0 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
+
 test( 'a connection that never answers is the upstream timeout', async () => {
 	vi.useFakeTimers();
 	const fetcher = vi.fn( () => new Promise< Response >( () => undefined ) );
