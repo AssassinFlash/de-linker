@@ -238,11 +238,11 @@ export class UnfinishedStreamError extends Error {
 }
 
 /**
- * Wait through the native resource operation's existing 90-second lease
- * (Protection/Resources.php). The proxy's 60-second service/commit budget
- * excludes browser proof preparation and native publication/receipt reads;
- * using that inner budget here aborted valid answers in customer acceptance.
- * The service budget and admission lease stay unchanged (spec 13).
+ * Bound verification preparation and the dispatched response separately, each
+ * using the existing 90-second client limit. The response phase covers the
+ * native resource operation window (Protection/Resources.php); verification
+ * precedes that operation and must not consume its response time. The service
+ * budget and admission lease stay unchanged (spec 13).
  */
 export const TURN_TIMEOUT_MS = 90_000;
 
@@ -358,8 +358,8 @@ export interface TurnRequest {
 	/** Fetch for tests. */
 	fetcher?: Fetch;
 	/**
-	 * Aborts a connection that has not answered. The default is
-	 * `TURN_TIMEOUT_MS`.
+	 * Bounds proof preparation, then the dispatched request and response body.
+	 * Each phase defaults to `TURN_TIMEOUT_MS`.
 	 */
 	timeoutMs?: number;
 }
@@ -389,18 +389,32 @@ export async function sendTurn( request: TurnRequest ): Promise< Turn > {
 		'AbortError'
 	);
 	const timedOut = new Promise< never >( ( _resolve, reject ) => {
-		timer = setTimeout( () => {
-			controller.abort();
-			reject( timeoutError );
-		}, timeoutMs );
+		controller.signal.addEventListener(
+			'abort',
+			() => reject( timeoutError ),
+			{ once: true }
+		);
 	} );
+	const restartDeadline = () => {
+		if ( timer !== undefined ) {
+			clearTimeout( timer );
+		}
+		timer = setTimeout( () => controller.abort(), timeoutMs );
+	};
+	restartDeadline();
 	// `fetcher` is called inside the promise. A throw before the request
 	// leaves is a rejection, so the timer below is cleared with every other
 	// failure. Promise.resolve(fetcher()) would let that throw escape first.
 	const attempt = Promise.resolve()
 		.then( () =>
 			resourceFetch(
-				fetcher,
+				( ...args ) => {
+					// resourceFetch calls its transport only after proof is ready.
+					// A late proof must never dispatch an already timed-out turn.
+					controller.signal.throwIfAborted();
+					restartDeadline();
+					return fetcher( ...args );
+				},
 				turnUrl,
 				{
 					method: 'POST',
