@@ -353,7 +353,13 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
             ):
                 raise ValueError("managed feed needs shared publication preparation")
         else:
-            feed.write_bytes(raw)
+            # The first publication swap can race the check above. Never
+            # follow a managed link that appeared before opening this file.
+            descriptor = os.open(
+                feed, os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW, 0o600
+            )
+            with os.fdopen(descriptor, "wb") as output:
+                output.write(raw)
     except (
         urllib.error.URLError,
         OSError,

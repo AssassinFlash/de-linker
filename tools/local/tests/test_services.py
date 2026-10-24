@@ -1,4 +1,5 @@
 import json
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from threading import Thread
@@ -122,7 +123,9 @@ def test_no_index_fails_and_says_how_to_get_one(tmp_path: Path) -> None:
     assert "just index" in str(error.value)
 
 
-def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
+def test_local_engine_uses_its_own_woo_authority(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     paths: list[str] = []
 
     class Feed(BaseHTTPRequestHandler):
@@ -171,10 +174,27 @@ def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
             ):
                 _engine_environment(instance, Checkout.here())
             assert frozen.read_bytes() == original
+            feed.unlink()
+            feed.write_bytes(b"bootstrap")
+            original_open = os.open
+
+            def publication_swaps_before_open(path: Path, flags: int, mode: int) -> int:
+                assert path == feed
+                feed.unlink()
+                feed.symlink_to(frozen)
+                return original_open(path, flags, mode)
+
+            with monkeypatch.context() as race:
+                race.setattr(os, "open", publication_swaps_before_open)
+                with pytest.raises(
+                    ProcessError, match="could not read the engineering feed"
+                ):
+                    _engine_environment(instance, Checkout.here())
+            assert frozen.read_bytes() == original
         finally:
             server.shutdown()
             thread.join()
-    assert paths == ["/wp-json/linker/v1/engineering-feed"] * 3
+    assert paths == ["/wp-json/linker/v1/engineering-feed"] * 4
     assert environment["LINKER_PUBLICATION_URL"] == (
         instance.url + "/wp-json/linker/v1/publication/manifest"
     )
