@@ -75,6 +75,10 @@ class Chunk:
     # One copy on a TableItem's first chunk; unchanged native cell coordinates
     # distinguish a shared merged value from an empty, unproven neighbour.
     source_cells: tuple[SourceCell, ...] = ()
+    # Original headings encountered since the preceding emitted chunk. Keeping
+    # even empty heading transitions prevents a generic child from erasing a
+    # narrower authored parent before the applicability compiler sees it.
+    source_headings: tuple[str, ...] = ()
 
 
 def context_header(meta: DocumentMeta, section: str, page: int) -> str:
@@ -115,6 +119,7 @@ class _Chunker:
         self.chunks: list[Chunk] = []
         self._ids: set[str] = set()
         self._preceding_text: list[str] = []
+        self._pending_headings: list[str] = []
 
     def _tokens(self, header: str, lines: Sequence[str]) -> int:
         return self.tokenizer.count(header + "\n" + "\n".join(lines))
@@ -155,8 +160,10 @@ class _Chunker:
                 source_table=source_table,
                 preceding_text=preceding_text,
                 source_rows=source_rows,
+                source_headings=tuple(self._pending_headings),
             )
         )
+        self._pending_headings = []
 
     def _pieces(self, header: str, fixed: Sequence[str], line: str) -> list[str]:
         """`line` cut so that each piece fits a chunk after the header and `fixed`."""
@@ -267,6 +274,7 @@ class _Chunker:
                 texts = []
             if block.kind == "heading":
                 section = block.text
+                self._pending_headings.append(block.text)
                 self._preceding_text = []
             elif block.kind == "text":
                 # Keep the manufacturer's role sentence apart from following

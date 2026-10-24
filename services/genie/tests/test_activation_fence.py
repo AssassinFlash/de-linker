@@ -167,6 +167,58 @@ def test_staging_collision_preserves_other_invocation_files(tmp_path: Path) -> N
     assert (stage / "keep").read_text() == "owned upload"
 
 
+def test_failed_publish_reclaims_only_its_owned_incoming_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from test_publish import build
+
+    source = build(tmp_path, "20261024T100000Z")
+    root = tmp_path / "index"
+    other = index_release.prepare(root, "20261024T095000Z")
+    original = publish_index.release
+
+    def release(host: str | None, *args: str, **kwargs: Any) -> dict[str, object]:
+        if args[0] == "activate":
+            raise RuntimeError("lease replaced after upload")
+        return original(host, *args, **kwargs)
+
+    monkeypatch.setattr(publish_index, "release", release)
+    with pytest.raises(RuntimeError, match="lease replaced"):
+        publish_index.publish(source, str(root), None)
+    assert not (root / ".incoming-20261024T100000Z").exists()
+    assert Path(str(other["incoming"])).exists()
+
+
+def test_discard_refuses_other_owner_and_preserves_journal_recovery_target(
+    tmp_path: Path,
+) -> None:
+    prepared = index_release.prepare(tmp_path, "20261024T100000Z")
+    with pytest.raises(RuntimeError, match="ownership"):
+        index_release.discard(tmp_path, "20261024T100000Z", "not-the-owner")
+    index_release._journal(tmp_path, {"index_version": "20261024T100000Z"})
+    assert index_release.discard(
+        tmp_path, "20261024T100000Z", str(prepared["owner_token"])
+    ) == {"discarded": False}
+    assert Path(str(prepared["incoming"])).is_dir()
+
+
+def test_next_prepare_collects_expired_owned_uploads_only(tmp_path: Path) -> None:
+    import time
+
+    expired = index_release.prepare(tmp_path, "expired", {"lease_expires_at": 1})
+    live = index_release.prepare(
+        tmp_path, "live", {"lease_expires_at": int(time.time()) + 7200}
+    )
+    # First prepare already collected the expired owned lease.
+    assert not Path(str(expired["incoming"])).exists()
+    unknown = tmp_path / ".incoming-unknown"
+    unknown.mkdir()
+    (unknown / "keep").write_text("no ownership proof")
+    index_release.prepare(tmp_path, "next")
+    assert Path(str(live["incoming"])).is_dir()
+    assert (unknown / "keep").read_text() == "no ownership proof"
+
+
 def test_candidate_metadata_must_match_lease_before_native_verification(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

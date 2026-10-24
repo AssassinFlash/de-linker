@@ -18,13 +18,14 @@ from test_publication import authority
 from index import corpus, store
 from index.chunking import Chunk, DocumentMeta, chunk_document
 from index.corpus import DocumentRow
-from index.extract import Page, enrich_model_axes, pages_of
+from index.extract import Block, Page, enrich_model_axes, pages_of
 from index.inventory import doc_type_of
 from index.publication import ScopeProof, compile_publication, scope_proofs
 from linker_genie.figures import tag
 from linker_genie.publication import Snapshot
 from linker_genie.publication_scope import authorize_chunk
 from linker_genie.retrieval import DocumentIndex
+from linker_genie.table_projection import cells_digest, projection_id
 
 FIXTURES = Path(__file__).parent / "fixtures" / "publication-compiler"
 H2_DE = "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752"
@@ -47,6 +48,24 @@ def chunks(prefix: str) -> list[Chunk]:
     pdf = FIXTURES / f"{sha}.pdf"
     if pdf.is_file():
         pages = enrich_model_axes(pages, pdf)
+    else:
+        physical = json.loads(
+            gzip.decompress((FIXTURES / "physical-header-spans.json.gz").read_bytes())
+        ).get(sha, [])
+        for page in pages:
+            for i, block in enumerate(page.blocks):
+                cells = deepcopy(block.source_cells)
+                for cell in cells:
+                    for original in physical:
+                        if (
+                            original["page"] == page.number
+                            and original["table"] == block.source_id
+                            and original["row_start"] == cell["row_start"]
+                            and original["col_start"] == cell["col_start"]
+                            and original["text"] == cell["text"]
+                        ):
+                            cell["model_spans"] = original["model_spans"]
+                page.blocks[i] = replace(block, source_cells=cells)
     return chunk_document(
         DocumentMeta(
             sha,
@@ -470,3 +489,395 @@ def test_native_regression_fixtures_are_unchanged_original_bytes() -> None:
         pdf = FIXTURES / f"{sha}.pdf"
         if pdf.is_file():
             assert hashlib.sha256(pdf.read_bytes()).hexdigest() == sha
+    physical = source["physical_headers"]
+    assert (
+        hashlib.sha256((FIXTURES / physical["file"]).read_bytes()).hexdigest()
+        == physical["sha256"]
+    )
+
+
+def test_finer_manual_declaration_never_broadens_its_following_paragraph() -> None:
+    raw = manifest()
+    original = manual_chunks("2c1dd5c1e2f7")
+    first = replace(
+        original[-1],
+        id="variant-intro",
+        section="Installation",
+        text="These instructions apply only to HS3-12K-T2-W/G-PX.",
+    )
+    second = replace(
+        original[-1],
+        id="variant-continuation",
+        section="Installation",
+        text="Set the charging limit to 42 A before connecting the battery.",
+    )
+    selected, scopes = compile_publication(
+        [*original, first, second], raw, authority(raw), Words()
+    )
+    assert scopes[second.id]["product_ids"] == [1185]
+    for chunk in selected:
+        if chunk.text == second.text and chunk.id in scopes:
+            proof = scopes[chunk.id]
+            assert proof["product_ids"] == [1185]
+            assert authorize_chunk(
+                chunk.doc_sha256,
+                proof["product_ids"],
+                proof["associations"],
+                proof,
+                products=Snapshot.read(raw).products,
+                chunk_id=chunk.id,
+                text=chunk.text,
+            )
+
+
+def test_empty_child_heading_does_not_erase_an_authored_narrower_parent() -> None:
+    raw = manifest()
+    document = next(
+        d for d in raw["documents"] if d["blob_sha256"].startswith("770ccafa080c")
+    )
+    selected = chunk_document(
+        DocumentMeta(
+            document["blob_sha256"], document["title"], "", (), (), "manual", "en"
+        ),
+        [
+            Page(
+                1,
+                "docling",
+                [
+                    Block("heading", text="H2 Series"),
+                    Block(
+                        "text",
+                        text="The H2 series inverter manual gives operating and installation instructions for the products described here.",
+                    ),
+                ],
+            ),
+            Page(
+                2,
+                "docling",
+                [
+                    Block("heading", text="H2-10K-T3 only"),
+                    Block("heading", text="Installation procedure"),
+                    Block(
+                        "text",
+                        text="This variant requires a special bracket and a mounting clearance of 300 mm around the case.",
+                    ),
+                ],
+            ),
+        ],
+        Words(),
+        lambda _: "en",
+    )
+    compiled, scopes = compile_publication(selected, raw, authority(raw), Words())
+    assert not any(
+        "special bracket" in chunk.text and 1179 in product_ids(scopes, chunk.id)
+        for chunk in compiled
+    )
+
+
+def test_logical_column_offsets_cannot_override_original_value_positions() -> None:
+    raw = manifest()
+    original = chunks("0f0e75ad3f31")
+    native = next(c for c in original if c.source_cells)
+    cells = deepcopy(native.source_cells)
+    label = next(c for c in cells if c["text"] == "Rated AC Power [W]")
+    rated = [
+        c
+        for c in cells
+        if c["row_start"] == label["row_start"] and c["text"] in {"10000", "12000"}
+    ]
+    one, two = rated
+    one["col_start"], two["col_start"] = two["col_start"], one["col_start"]
+    one["col_end"], two["col_end"] = two["col_end"], one["col_end"]
+    mutated = [
+        replace(c, source_cells=cells) if c.id == native.id else c for c in original
+    ]
+    compiled, scopes = compile_publication(mutated, raw, authority(raw), Words())
+    assert not any(
+        "| Rated AC Power [W] | 12000 |" in c.text and 4107 in product_ids(scopes, c.id)
+        for c in compiled
+    )
+
+
+@pytest.mark.parametrize("reset", ["family", "numbered_sibling"])
+def test_only_a_proven_authored_scope_boundary_restores_family_instructions(
+    reset: str,
+) -> None:
+    raw = manifest()
+    document = next(
+        d for d in raw["documents"] if d["blob_sha256"].startswith("770ccafa080c")
+    )
+    headings = [
+        Block("heading", text="H2 Series"),
+        Block(
+            "text",
+            text="The H2 series inverter manual describes installation and operation.",
+        ),
+        Block("heading", text="2.1. H2-10K-T3 only"),
+        Block("heading", text="2.1.1. Installation procedure"),
+        Block(
+            "text",
+            text="This variant requires a special bracket and a mounting clearance of 300 mm.",
+        ),
+        Block(
+            "heading",
+            text="H2 Series" if reset == "family" else "2.2. General installation",
+        ),
+        Block(
+            "text",
+            text="Keep the equipment away from children and from explosive materials during installation.",
+        ),
+    ]
+    original = chunk_document(
+        DocumentMeta(
+            document["blob_sha256"], document["title"], "", (), (), "manual", "en"
+        ),
+        [Page(1, "docling", headings)],
+        Words(),
+        lambda _: "en",
+    )
+    compiled, scopes = compile_publication(original, raw, authority(raw), Words())
+    assert not any(
+        "special bracket" in c.text and 1179 in product_ids(scopes, c.id)
+        for c in compiled
+    )
+    assert any(
+        "explosive materials" in c.text and product_ids(scopes, c.id) == [1179]
+        for c in compiled
+    )
+
+
+@pytest.mark.parametrize(
+    "change", ["missing", "native_outside", "span_outside", "reverse_offsets"]
+)
+def test_single_model_header_requires_visible_physical_provenance(change: str) -> None:
+    raw = manifest()
+    original = chunks(H2_DE[:12])
+    native = next(c for c in original if c.source_cells)
+    cells = deepcopy(native.source_cells)
+    headers = [c for c in cells if c["row_start"] == 0 and c["col_start"] > 0]
+    if change == "missing":
+        headers[0].pop("model_spans", None)
+    elif change == "native_outside":
+        headers[0]["bbox"] = (-1000, -1000, -900, -900)
+    elif change == "span_outside":
+        headers[0]["model_spans"][0]["bbox"] = (-1000, -1000, -900, -900)
+    else:
+        a, b = headers[:2]
+        a["col_start"], b["col_start"] = b["col_start"], a["col_start"]
+        a["col_end"], b["col_end"] = b["col_end"], a["col_end"]
+    selected = [
+        replace(c, source_cells=cells) if c.id == native.id else c for c in original
+    ]
+    _, scopes = compile_publication(selected, raw, authority(raw), Words())
+    assert not any(p["basis"] == "table_projection" for p in scopes.values())
+
+
+def test_runtime_independently_refuses_a_family_grant_outside_its_author_restriction() -> (
+    None
+):
+    raw = manifest()
+    selected, scopes = compile_publication(
+        manual_chunks("2c1dd5c1e2f7"), raw, authority(raw), Words()
+    )
+    chunk = next(c for c in selected if product_ids(scopes, c.id) == [1186])
+    proof = deepcopy(scopes[chunk.id])
+    proof["author_restrictions"] = [
+        {
+            "kind": "declaration",
+            "quote": "These instructions apply only to HS3-12K-T2-W/G-PX.",
+            "source_chunk_id": proof["source_chunk_ids"][0],
+        }
+    ]
+    assert not authorize_chunk(
+        chunk.doc_sha256,
+        [1186],
+        proof["associations"],
+        proof,
+        products=Snapshot.read(raw).products,
+        chunk_id=chunk.id,
+        text=chunk.text,
+    )
+
+
+def test_runtime_rejects_column_swap_even_with_self_consistent_hashes_and_id() -> None:
+    raw = manifest()
+    selected, scopes = compile_publication(
+        chunks("0f0e75ad3f31"), raw, authority(raw), Words()
+    )
+    chunk = next(c for c in selected if product_ids(scopes, c.id) == [4107])
+    proof = deepcopy(scopes[chunk.id])
+    projection = proof["table_projection"]
+    cells = projection["source_cells"]
+    label = next(c for c in cells if c["text"] == "Rated AC Power [W]")
+    one, two = [
+        c
+        for c in cells
+        if c["row_start"] == label["row_start"] and c["text"] in {"10000", "12000"}
+    ]
+    one["col_start"], two["col_start"] = two["col_start"], one["col_start"]
+    one["col_end"], two["col_end"] = two["col_end"], one["col_end"]
+    wrong = chunk.text.replace(
+        "| Rated AC Power [W] | 10000 |", "| Rated AC Power [W] | 12000 |"
+    )
+    projection["source_cells_sha256"] = cells_digest(cells)
+    projection["text_sha256"] = hashlib.sha256(wrong.encode()).hexdigest()
+    cid = projection_id(
+        chunk.doc_sha256,
+        chunk.page,
+        projection["source_table"],
+        projection["model"],
+        wrong,
+    )
+    assert not authorize_chunk(
+        chunk.doc_sha256,
+        [4107],
+        proof["associations"],
+        proof,
+        products=Snapshot.read(raw).products,
+        chunk_id=cid,
+        text=wrong,
+    )
+
+
+def test_unnumbered_narrow_heading_cannot_borrow_a_previous_chapter_for_reset() -> None:
+    raw = manifest()
+    document = next(
+        d for d in raw["documents"] if d["blob_sha256"].startswith("770ccafa080c")
+    )
+    original = chunk_document(
+        DocumentMeta(
+            document["blob_sha256"], document["title"], "", (), (), "manual", "en"
+        ),
+        [
+            Page(
+                1,
+                "docling",
+                [
+                    Block("heading", text="H2 Series"),
+                    Block(
+                        "text",
+                        text="The H2 series manual describes installation and operation.",
+                    ),
+                    Block("heading", text="1. Overview"),
+                    Block(
+                        "text",
+                        text="General equipment information for the described products.",
+                    ),
+                    Block("heading", text="H2-10K-T3 only"),
+                    Block("heading", text="2. Installation"),
+                    Block(
+                        "text",
+                        text="This variant requires a special bracket and a mounting clearance of 300 mm.",
+                    ),
+                ],
+            )
+        ],
+        Words(),
+        lambda _: "en",
+    )
+    compiled, scopes = compile_publication(original, raw, authority(raw), Words())
+    assert not any(
+        "special bracket" in c.text and 1179 in product_ids(scopes, c.id)
+        for c in compiled
+    )
+
+
+@pytest.mark.parametrize("withdrawn", ["Energy Cabinet Pro", "CABINET"])
+def test_empty_unavailable_plain_woo_heading_is_identified_before_generic_child(
+    withdrawn: str,
+) -> None:
+    raw = manifest()
+    document = next(
+        d for d in raw["documents"] if d["blob_sha256"].startswith("770ccafa080c")
+    )
+    original = chunk_document(
+        DocumentMeta(
+            document["blob_sha256"], document["title"], "", (), (), "manual", "en"
+        ),
+        [
+            Page(
+                1,
+                "docling",
+                [
+                    Block("heading", text="H2 Series"),
+                    Block(
+                        "text",
+                        text="The H2 series manual describes installation and operation.",
+                    ),
+                    Block("heading", text=withdrawn),
+                    Block("heading", text="Installation procedure"),
+                    Block(
+                        "text",
+                        text="This variant requires a special bracket and a mounting clearance of 300 mm.",
+                    ),
+                ],
+            )
+        ],
+        Words(),
+        lambda _: "en",
+    )
+    compiled, scopes = compile_publication(
+        original, raw, authority(raw, extra_models={withdrawn: "unavailable"}), Words()
+    )
+    assert not any(
+        "special bracket" in c.text and 1179 in product_ids(scopes, c.id)
+        for c in compiled
+    )
+
+
+@pytest.mark.parametrize("prefix_repeats", [5330, 5400])
+def test_long_native_heading_is_identified_in_bounded_utf8_requests(
+    prefix_repeats: int,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = manifest()
+    document = next(
+        d for d in raw["documents"] if d["blob_sha256"].startswith("770ccafa080c")
+    )
+    # Exercise a model crossing byte 16,000 and a cut inside a UTF-8 code point.
+    heading = "ä " * prefix_repeats + "Energy Cabinet Pro"
+    original = chunk_document(
+        DocumentMeta(
+            document["blob_sha256"], document["title"], "", (), (), "manual", "en"
+        ),
+        [
+            Page(
+                1,
+                "docling",
+                [
+                    Block("heading", text="H2 Series"),
+                    Block(
+                        "text",
+                        text="The H2 series manual describes installation and operation.",
+                    ),
+                    Block("heading", text=heading),
+                    Block("heading", text="Installation procedure"),
+                    Block(
+                        "text",
+                        text="This variant requires a special bracket and a mounting clearance of 300 mm.",
+                    ),
+                ],
+            )
+        ],
+        Words(),
+        lambda _: "en",
+    )
+    # Generated metadata is not source evidence and must never be identified.
+    original = [replace(c, header=c.header + " GeneratedSecretModel") for c in original]
+    client = authority(raw, extra_models={"Energy Cabinet Pro": "unavailable"})
+    identify = client.identify_text
+    supplied: list[str] = []
+
+    def capture(text: str) -> dict[str, str]:
+        assert 0 < len(text.encode()) <= 16000
+        supplied.append(text)
+        return identify(text)
+
+    monkeypatch.setattr(client, "identify_text", capture)
+    compiled, scopes = compile_publication(original, raw, client, Words())
+    assert any("Energy Cabinet Pro" in text for text in supplied)
+    assert all("GeneratedSecretModel" not in text for text in supplied)
+    assert not any(
+        "special bracket" in c.text and 1179 in product_ids(scopes, c.id)
+        for c in compiled
+    )

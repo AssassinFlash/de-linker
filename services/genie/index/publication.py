@@ -11,6 +11,7 @@ import json
 import re
 import tempfile
 import urllib.request
+from collections.abc import Iterator
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, NotRequired, TypedDict
@@ -84,6 +85,7 @@ class ScopeProof(TypedDict):
     manual_scope: NotRequired[dict[str, Any]]
     table_projection: NotRequired[dict[str, Any]]
     family_scope: NotRequired[dict[str, Any]]
+    author_restrictions: NotRequired[list[dict[str, Any]]]
 
 
 def _table_columns(
@@ -367,27 +369,50 @@ def _mentions(text: str, label: str) -> bool:
     return _model_pattern(label).search(text) is not None
 
 
+def _authored_text_parts(chunk: Chunk) -> Iterator[str]:
+    """Bound original heading events and passage text for Woo identification."""
+    # Woo's exact-text endpoint allows 16,000 UTF-8 bytes. Its exact model-label
+    # contract allows 200 bytes; overlap preserves a label crossing a text window.
+    limit, overlap = 16000, 200
+    for text in (*chunk.source_headings, chunk.section + "\n" + chunk.text):
+        if not text.strip():
+            continue
+        data = text.encode()
+        start = 0
+        while start < len(data):
+            end = min(start + limit, len(data))
+            # Byte offsets may land inside an original UTF-8 code point.
+            while end < len(data) and data[end] & 0xC0 == 0x80:
+                end -= 1
+            yield data[start:end].decode()
+            if end == len(data):
+                break
+            start = end - overlap
+            while data[start] & 0xC0 == 0x80:
+                start -= 1
+
+
 def _recognized(chunks: list[Chunk], authority: PublicationClient) -> dict[str, str]:
     """Woo recognizes original bounded text, including multi-word draft labels.
 
     A build must not infer an unknown code's permission from an old index. The
     16,000-byte limit is the existing Woo exact-text endpoint's request contract.
-    Chunk text is bounded by the chunker's 512-token contract; headers are excluded.
+    Original empty ancestor headings retain scope; generated headers are excluded.
     """
     result: dict[str, str] = {}
     batch = ""
     seen = set()
     for chunk in chunks:
-        text = chunk.section + "\n" + chunk.text
-        if text in seen:
-            continue
-        seen.add(text)
-        if len(text.encode()) > 16000:
-            raise ValueError("authored chunk exceeds Woo identification text limit")
-        if len((batch + "\n" + text).encode()) > 16000:
-            result.update(authority.identify_text(batch))
-            batch = ""
-        batch += "\n" + text
+        for text in _authored_text_parts(chunk):
+            if text in seen:
+                continue
+            seen.add(text)
+            joined = batch + "\n" + text if batch else text
+            if len(joined.encode()) > 16000:
+                result.update(authority.identify_text(batch))
+                batch = text
+            else:
+                batch = joined
     if batch:
         result.update(authority.identify_text(batch))
     return result

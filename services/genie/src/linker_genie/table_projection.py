@@ -30,6 +30,7 @@ class SourceSpan(TypedDict):
     char_end: int
     page: int
     source_sha256: str
+    page_size: tuple[float, float]
 
 
 class SourceCell(TypedDict):
@@ -105,6 +106,14 @@ def read_cells(value: object) -> tuple[SourceCell, ...] | None:
                     type(n) not in (int, float) or not math.isfinite(n)
                     for n in span["bbox"]
                 )
+                or not isinstance(span.get("page_size"), (list, tuple))
+                or len(span["page_size"]) != 2
+                or any(
+                    type(n) not in (int, float) or not math.isfinite(n) or n <= 0
+                    for n in span["page_size"]
+                )
+                or not (0 <= span["bbox"][0] < span["bbox"][2] <= span["page_size"][0])
+                or not (0 <= span["bbox"][1] < span["bbox"][3] <= span["page_size"][1])
             ):
                 return None
         typed = SourceCell(
@@ -159,7 +168,9 @@ def _axis_labels(text: str) -> list[str]:
     return labels if not residual.strip(" \t,;•⚫") else []
 
 
-def model_axis(cells: Sequence[SourceCell]) -> list[str] | None:
+def _model_axis_data(
+    cells: Sequence[SourceCell],
+) -> tuple[list[str], list[float], tuple[float, float]] | None:
     """The first native header row supplies one exact ordered label per column.
 
     A merged model-list cell needs one original physical text span per value
@@ -170,6 +181,8 @@ def model_axis(cells: Sequence[SourceCell]) -> list[str] | None:
     if width < 2:
         return None
     axis: list[str] = []
+    positions: list[float] = []
+    page_size: tuple[float, float] | None = None
     col = 1
     while col < width:
         cell = cell_at(cells, 0, col)
@@ -184,27 +197,55 @@ def model_axis(cells: Sequence[SourceCell]) -> list[str] | None:
         labels = _axis_labels(cell["text"])
         if len(labels) != cell["col_end"] - cell["col_start"]:
             return None
-        if len(labels) > 1:
-            # Native reading order can put a middle header last even though
-            # its logical merged span has the right count. Only original PDF
-            # token boxes establish the physical label order in that span.
-            spans = cell.get("model_spans", [])
-            if len(spans) != len(labels) or sorted(
-                s["text"].casefold() for s in spans
-            ) != sorted(label.casefold() for label in labels):
-                return None
-            ordered = sorted(spans, key=lambda s: (s["bbox"][0] + s["bbox"][2]) / 2)
-            if any(
-                a["bbox"][2] >= b["bbox"][0]
-                for a, b in zip(ordered, ordered[1:], strict=False)
+        # A single-label native header needs the same visible text-layer proof
+        # as a merged one. Logical offsets cannot make hidden/off-crop text
+        # into the axis of a displayed table.
+        spans = cell.get("model_spans", [])
+        box = cell["bbox"]
+        if (
+            len(spans) != len(labels)
+            or sorted(s["text"].casefold() for s in spans)
+            != sorted(label.casefold() for label in labels)
+            or box is None
+            or cell["bbox_origin"] != "TOPLEFT"
+        ):
+            return None
+        ordered = sorted(spans, key=lambda s: (s["bbox"][0] + s["bbox"][2]) / 2)
+        if any(
+            a["bbox"][2] >= b["bbox"][0]
+            for a, b in zip(ordered, ordered[1:], strict=False)
+        ):
+            return None
+        for span in ordered:
+            sx, sy = (
+                (span["bbox"][0] + span["bbox"][2]) / 2,
+                (span["bbox"][1] + span["bbox"][3]) / 2,
+            )
+            if not (
+                box[0] <= sx <= box[2]
+                and min(box[1], box[3]) <= sy <= max(box[1], box[3])
             ):
                 return None
-            labels = [span["text"] for span in ordered]
+            size = (span["page_size"][0], span["page_size"][1])
+            if page_size is not None and page_size != size:
+                return None
+            page_size = size
+            positions.append(sx)
+        labels = [span["text"] for span in ordered]
         axis.extend(labels)
         col = cell["col_end"]
-    if len({label.casefold() for label in axis}) != len(axis):
+    if (
+        len({label.casefold() for label in axis}) != len(axis)
+        or any(a >= b for a, b in zip(positions, positions[1:], strict=False))
+        or page_size is None
+    ):
         return None
-    return axis
+    return axis, positions, page_size
+
+
+def model_axis(cells: Sequence[SourceCell]) -> list[str] | None:
+    data = _model_axis_data(cells)
+    return data[0] if data is not None else None
 
 
 def row_cells(
@@ -239,7 +280,30 @@ def row_cells(
         return None
     if not aligned_property(cells, label, value):
         return None
+    if not aligned_column(cells, value, column):
+        return None
     return label["text"], value["text"]
+
+
+def aligned_column(cells: Sequence[SourceCell], value: SourceCell, column: int) -> bool:
+    """The value's physical column must agree with the original header axis."""
+    data, box = _model_axis_data(cells), value["bbox"]
+    if data is None or box is None or value["bbox_origin"] != "TOPLEFT":
+        return False
+    _, positions, size = data
+    if not (
+        0 <= box[0] < box[2] <= size[0]
+        and 0 <= min(box[1], box[3]) < max(box[1], box[3]) <= size[1]
+    ):
+        return False
+    centre = (box[0] + box[2]) / 2
+    distances = [abs(centre - x) for x in positions]
+    nearest = [i + 1 for i, d in enumerate(distances) if d == min(distances)]
+    return (
+        len(nearest) == 1
+        and value["col_start"] <= nearest[0] < value["col_end"]
+        and value["col_start"] <= column < value["col_end"]
+    )
 
 
 def aligned_property(

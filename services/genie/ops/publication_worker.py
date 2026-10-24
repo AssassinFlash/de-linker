@@ -228,6 +228,7 @@ class Worker:
             raise RuntimeError("index activation requires a current native lease epoch")
         return {
             "epoch": job["activation_epoch"],
+            "lease_expires_at": job.get("lease_expires_at"),
             "job_id": job["job_id"],
             "source_revision": job["source_revision"],
             "recipe_revision": self.recipe,

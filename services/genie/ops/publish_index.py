@@ -81,19 +81,26 @@ def publish(
     expected = str(manifest["file"]["sha256"])
     if _sha256(build_dir / str(manifest["file"]["name"])) != expected:
         raise SystemExit(f"{build_dir}: index.sqlite does not match its manifest")
-    incoming = str(release(host, "prepare", root, version)["incoming"])
+    prepared = release(host, "prepare", root, version, activation=activation)
+    incoming = str(prepared["incoming"])
+    owner_token = str(prepared["owner_token"])
     target = incoming if host is None else f"{host}:{incoming}"
-    subprocess.run(
-        [
-            "rsync",
-            "-a",
-            str(build_dir / "index.sqlite"),
-            str(build_dir / "manifest.json"),
-            f"{target}/",
-        ],
-        check=True,
-    )
-    report = release(host, "activate", root, version, expected, activation=activation)
+    try:
+        subprocess.run(
+            [
+                "rsync",
+                "-a",
+                str(build_dir / "index.sqlite"),
+                str(build_dir / "manifest.json"),
+                f"{target}/",
+            ],
+            check=True,
+        )
+        report = release(
+            host, "activate", root, version, expected, activation=activation
+        )
+    finally:
+        release(host, "discard", root, version, owner_token)
     reported_activation = report.get("activation")
     if (
         report.get("current") != version

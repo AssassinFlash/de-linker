@@ -85,6 +85,11 @@ def parser_revision() -> str:
     return digest.hexdigest()
 
 
+# A converter process reports the implementation it imported, even if a developer
+# later edits its source path. Normal deployment releases remain immutable.
+PARSER_REVISION = parser_revision()
+
+
 def garbled_pages(page_texts: Sequence[str]) -> list[int]:
     """Physical page numbers (from 1) whose text layer is unreadable."""
     pages = []
@@ -153,7 +158,7 @@ def parse_one(
         docling=docling_version(),
         status="failed",
         pages=0,
-        parser_revision=parser_revision(),
+        parser_revision=PARSER_REVISION,
     )
     try:
         # These files are rebuildable parser outputs, never original PDFs. A
@@ -168,28 +173,49 @@ def parse_one(
             f"{error.module_name}: {error.error_message}" for error in result.errors
         ]
         status.status = str(result.status.value)
-        if result.document is not None and result.document.pages:
+        if (
+            status.status != "success"
+            or result.errors
+            or result.document is None
+            or set(result.document.pages) != set(range(1, status.pages + 1))
+            or status.pages < 1
+        ):
+            status.errors.append(
+                f"document: conversion {status.status} did not produce complete error-free output"
+            )
+            status.status = "failed"
+        else:
             _write_json(out_dir / "docling.json", result.document.model_dump_json())
-        pdf = pypdfium2.PdfDocument(str(pdf_path))
-        try:
-            for page in status.garbled_pages:
-                with tempfile.TemporaryDirectory() as scratch:
-                    image = Path(scratch) / f"p{page}.png"
-                    pdf[page - 1].render(scale=GARBLED_RENDER_SCALE).to_pil().save(
-                        image
-                    )
-                    ocr = converter.convert(str(image), raises_on_error=False)
-                    if ocr.document is None:
-                        status.status = "failed"
-                        status.errors.append(
-                            f"page {page}: OCR of the rendered page failed"
+            pdf = pypdfium2.PdfDocument(str(pdf_path))
+            try:
+                for page in status.garbled_pages:
+                    with tempfile.TemporaryDirectory() as scratch:
+                        image = Path(scratch) / f"p{page}.png"
+                        pdf[page - 1].render(scale=GARBLED_RENDER_SCALE).to_pil().save(
+                            image
                         )
-                        continue
-                    _write_json(
-                        out_dir / f"ocr-p{page}.json", ocr.document.model_dump_json()
-                    )
-        finally:
-            pdf.close()
+                        ocr = converter.convert(str(image), raises_on_error=False)
+                        status.errors.extend(
+                            f"page {page}: {error.module_name}: {error.error_message}"
+                            for error in ocr.errors
+                        )
+                        if (
+                            str(ocr.status.value) != "success"
+                            or ocr.errors
+                            or ocr.document is None
+                            or set(ocr.document.pages) != {1}
+                        ):
+                            status.status = "failed"
+                            status.errors.append(
+                                f"page {page}: OCR conversion {ocr.status.value} did not produce complete error-free one-page output"
+                            )
+                            continue
+                        _write_json(
+                            out_dir / f"ocr-p{page}.json",
+                            ocr.document.model_dump_json(),
+                        )
+            finally:
+                pdf.close()
     except Exception as error:  # noqa: BLE001 - recorded, the run continues
         status.status = "failed"
         status.errors.append("".join(traceback.format_exception_only(error)).strip())
@@ -269,7 +295,7 @@ def cached_status(out_dir: Path) -> ParseStatus | None:
         status
         if status is not None
         and status.docling == docling_version()
-        and status.parser_revision == parser_revision()
+        and status.parser_revision == PARSER_REVISION
         else None
     )
 

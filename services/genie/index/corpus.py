@@ -151,4 +151,5 @@ def read_chunks(directory: Path) -> Iterator[tuple[Chunk, bytes | None]]:
         encoded = row.pop("vector", None)
         row["preceding_text"] = tuple(row.get("preceding_text", ()))
         row["source_rows"] = tuple(row.get("source_rows", ()))
+        row["source_headings"] = tuple(row.get("source_headings", ()))
         yield Chunk(**row), base64.b64decode(encoded) if encoded is not None else None

@@ -197,6 +197,7 @@ def _pdf_model_spans(pdf: object, number: int, sha: str) -> list[SourceSpan]:
                         char_end=end,
                         page=number,
                         source_sha256=sha,
+                        page_size=(right - left, top - bottom),
                     )
                 )
             return output

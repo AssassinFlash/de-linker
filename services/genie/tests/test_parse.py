@@ -176,3 +176,113 @@ def test_next_run_retries_same_pdf_after_transient_failure_then_reuses_success(
     assert converter.calls == 2
     assert inventory_path.read_bytes() == original_inventory
     assert pdf.read_bytes() == original_pdf
+
+
+@pytest.mark.parametrize(
+    "failure", ["partial_success", "errors", "two_pages", "main_errors"]
+)
+def test_partial_or_erroneous_ocr_retries_and_never_becomes_successful_cache(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    import pypdfium2
+
+    directory = tmp_path / SHA
+    pdf = tmp_path / f"{SHA}.pdf"
+    pdf.write_bytes(b"unchanged original PDF")
+    with gzip.open(FIXTURE / "docling.json.gz", "rb") as source:
+        main = DoclingDocument.model_validate_json(source.read())
+    ocr_fixture = (
+        FIXTURE.parent
+        / "b296b6142e93eedb93fd4595a42be69da999fdeb1ab394d4c64307ca879beaed"
+        / "ocr-p2.json.gz"
+    )
+    with gzip.open(ocr_fixture, "rb") as source:
+        one_page = DoclingDocument.model_validate_json(source.read())
+    assert set(one_page.pages) == {1}
+
+    class Converter:
+        failed_attempt = True
+        calls = 0
+
+        def convert(self, path: str, **kwargs: Any) -> Any:
+            self.calls += 1
+            is_ocr = path.endswith(".png")
+            errors = []
+            if self.failed_attempt and (
+                (failure == "errors" and is_ocr)
+                or (failure == "main_errors" and not is_ocr)
+            ):
+                errors = [
+                    SimpleNamespace(
+                        module_name="fixture",
+                        error_message="transient extraction error",
+                    )
+                ]
+            status = (
+                "partial_success"
+                if self.failed_attempt and is_ocr and failure == "partial_success"
+                else "success"
+            )
+            document = (
+                main
+                if not is_ocr or (self.failed_attempt and failure == "two_pages")
+                else one_page
+            )
+            return SimpleNamespace(
+                document=document, errors=errors, status=SimpleNamespace(value=status)
+            )
+
+    class Pdf:
+        def __getitem__(self, number: int) -> "Pdf":
+            return self
+
+        def render(self, **kwargs: Any) -> "Pdf":
+            return self
+
+        def to_pil(self) -> "Pdf":
+            return self
+
+        def save(self, path: Path) -> None:
+            path.write_bytes(b"fixture rendered page")
+
+        def close(self) -> None:
+            pass
+
+    converter = Converter()
+    monkeypatch.setattr(parse, "docling_version", lambda: "docling fixture")
+    monkeypatch.setattr(
+        parse, "_page_texts", lambda path: ["readable page one", GARBLED]
+    )
+    monkeypatch.setattr(pypdfium2, "PdfDocument", lambda path: Pdf())
+    first = parse.parse_one(converter, pdf, directory)
+    assert first.status == "failed"
+    assert first.errors
+    assert parse.cached_status(directory) is None
+    converter.failed_attempt = False
+    second = parse.parse_one(converter, pdf, directory)
+    assert second.status == "success"
+    assert second.errors == []
+    assert parse.cached_status(directory) == second
+    assert pdf.read_bytes() == b"unchanged original PDF"
+
+
+def test_parse_status_uses_import_captured_identity_not_later_disk_measurement(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    directory = tmp_path / SHA
+    successful_cache(directory)
+    original = parse.parser_revision()
+    monkeypatch.setattr(parse, "parser_revision", lambda: "later-edited-disk-source")
+    monkeypatch.setattr(parse, "docling_version", lambda: "docling fixture")
+    assert parse.cached_status(directory) is not None
+    cached = parse.cached_status(directory)
+    assert cached is not None
+    assert cached.parser_revision == original
+
+    class FailedConverter:
+        def convert(self, *args: Any, **kwargs: Any) -> Any:
+            raise OSError("task-owned converter failure")
+
+    monkeypatch.setattr(parse, "_page_texts", lambda path: ["readable"])
+    failed = parse.parse_one(FailedConverter(), tmp_path / f"{SHA}.pdf", directory)
+    assert failed.parser_revision == original

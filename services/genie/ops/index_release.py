@@ -19,9 +19,11 @@ import fcntl
 import hashlib
 import json
 import os
+import secrets
 import shutil
 import sqlite3
 import sys
+import time
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError
@@ -33,6 +35,7 @@ INDEX_FILE = "index.sqlite"
 # more in case that one is bad too. Older releases are deleted when a new one goes live.
 KEEP = 3
 FENCE = ".activation.json"
+UPLOAD_OWNER = ".upload-owner.json"
 
 
 def _sha256(path: Path) -> str:
@@ -200,15 +203,77 @@ def status(root: Path) -> dict[str, object]:
     return report
 
 
-def prepare(root: Path, version: str) -> dict[str, object]:
+def _prune_expired_uploads(root: Path) -> None:
+    """Only our recorded expired leases; keep the journal's recoverable target."""
+    recovery = (
+        json.loads((root / FENCE).read_text()).get("index_version")
+        if (root / FENCE).is_file()
+        else None
+    )
+    for stage in root.glob(".incoming-*"):
+        if stage.is_symlink() or stage.name == f".incoming-{recovery}":
+            continue
+        marker = stage / UPLOAD_OWNER
+        if not marker.is_file():
+            continue
+        try:
+            owner = json.loads(marker.read_text())
+        except (OSError, ValueError):
+            continue
+        expires = owner.get("lease_expires_at")
+        if (
+            owner.get("managed_knowledge_upload") is True
+            and type(expires) is int
+            and 0 < expires <= time.time()
+        ):
+            shutil.rmtree(stage)
+
+
+def prepare(
+    root: Path, version: str, activation: dict[str, Any] | None = None
+) -> dict[str, object]:
     """An empty upload directory for one release."""
     if not version or Path(version).name != version or version.startswith("."):
         raise ValueError("invalid index version")
     incoming = root / f".incoming-{version}"
     if (root / version).exists():
         raise SystemExit(f"release {version} already exists under {root}")
-    incoming.mkdir(parents=True, exist_ok=False)
-    return {"incoming": str(incoming)}
+    root.mkdir(parents=True, exist_ok=True)
+    with (root / ".activation.lock").open("a+") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        _prune_expired_uploads(root)
+        incoming.mkdir(exist_ok=False)
+        owner_token = secrets.token_hex(16)
+        owner = {
+            "owner_token": owner_token,
+            "managed_knowledge_upload": activation is not None,
+            "lease_expires_at": activation.get("lease_expires_at")
+            if activation
+            else None,
+        }
+        (incoming / UPLOAD_OWNER).write_text(json.dumps(owner))
+    return {"incoming": str(incoming), "owner_token": owner_token}
+
+
+def discard(root: Path, version: str, owner_token: str) -> dict[str, object]:
+    """Reclaim only this invocation's failed upload, never a recoverable winner."""
+    if not version or Path(version).name != version or version.startswith("."):
+        raise ValueError("invalid index version")
+    with (root / ".activation.lock").open("a+") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        stage = root / f".incoming-{version}"
+        recovery = (
+            json.loads((root / FENCE).read_text()).get("index_version")
+            if (root / FENCE).is_file()
+            else None
+        )
+        if stage.is_symlink() or not stage.is_dir() or recovery == version:
+            return {"discarded": False}
+        owner = json.loads((stage / UPLOAD_OWNER).read_text())
+        if not owner_token or owner.get("owner_token") != owner_token:
+            raise RuntimeError("upload ownership differs")
+        shutil.rmtree(stage)
+        return {"discarded": True}
 
 
 def activate(
@@ -300,7 +365,10 @@ def rollback(root: Path) -> dict[str, object]:
 def main(argv: list[str]) -> int:
     command, root = argv[0], Path(argv[1])
     if command == "prepare":
-        result = prepare(root, argv[2])
+        activation = json.load(sys.stdin) if "--activation-stdin" in argv else None
+        result = prepare(root, argv[2], activation)
+    elif command == "discard":
+        result = discard(root, argv[2], argv[3])
     elif command == "activate":
         activation = json.load(sys.stdin) if "--activation-stdin" in argv else None
         result = activate(root, argv[2], argv[3], activation)

@@ -180,6 +180,7 @@ final class PreparationJobsTest extends TestCase {
 		$request['preparation_complete'] = false;
 		$request['unprepared_documents'] = $this->diagnostic( 'no_proven_passage' );
 		$result                          = ( new PreparationJobs() )->acknowledge( $request );
+		$this->assertIsArray( $result );
 		$this->assertTrue( $result['complete'] );
 		$this->assertSame( 'ready', $this->state['knowledge']['status'] );
 		$this->assertTrue( $this->state['knowledge']['materialization_complete'] );
@@ -196,6 +197,7 @@ final class PreparationJobsTest extends TestCase {
 		$request                         = $this->recipe_receipt();
 		$request['unprepared_documents'] = $this->diagnostic( 'document_unparsed' );
 		$result                          = ( new PreparationJobs() )->acknowledge( $request );
+		$this->assertIsArray( $result );
 		$this->assertFalse( $result['complete'] );
 		$this->assertSame( 'pending', $this->state['knowledge']['status'] );
 		$this->assertFalse( $this->state['knowledge']['materialization_complete'] );
@@ -207,6 +209,7 @@ final class PreparationJobsTest extends TestCase {
 		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'new-token' );
 		$result = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'b', 64 ) );
+		$this->assertIsArray( $result );
 		$this->assertIsArray( $result['job'] );
 		$this->assertNotSame( $old['job_id'], $result['job']['job_id'] );
 		$this->assertSame( $old['source_revision'], $result['job']['source_revision'] );
@@ -261,6 +264,7 @@ final class PreparationJobsTest extends TestCase {
 			'source_revision' => 'untouched-engine',
 		);
 		$result = ( new PreparationJobs() )->reactivate_recipe( str_repeat( 'a', 64 ), str_repeat( 'b', 64 ) );
+		$this->assertIsArray( $result );
 		$this->assertTrue( $result['accepted'] );
 		$this->assertSame( $request['source_revision'], $result['source_revision'] );
 		$this->assertSame( str_repeat( 'b', 64 ), $result['recipe_revision'] );
@@ -298,15 +302,19 @@ final class PreparationJobsTest extends TestCase {
 		WP_Mock::userFunction( 'delete_option' )->with( 'linker_publication_pending' )->andReturn( true );
 		WP_Mock::userFunction( 'wp_generate_password' )->andReturn( 'retry-token' );
 		$retry = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ) );
+		$this->assertIsArray( $retry );
 		$this->assertSame( 4, $retry['job']['activation_epoch'] );
 		$next = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'b', 64 ) );
+		$this->assertIsArray( $next );
 		$this->assertSame( 5, $next['job']['activation_epoch'] );
 		( new PreparationJobs() )->reactivate_recipe( str_repeat( 'b', 64 ), str_repeat( 'a', 64 ) );
 		$rollback = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ) );
+		$this->assertIsArray( $rollback );
 		$this->assertSame( 6, $rollback['job']['activation_epoch'] );
 		$this->state['knowledge']['source_revision'] = 'old-source';
 		( new PreparationJobs() )->reconcile();
 		$new_source = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ) );
+		$this->assertIsArray( $new_source );
 		$this->assertSame( 7, $new_source['job']['activation_epoch'] );
 		$this->assertArrayNotHasKey( 'activation_epoch', $this->state['engineering'] );
 	}
@@ -317,6 +325,7 @@ final class PreparationJobsTest extends TestCase {
 		$verify  = array_merge( $request, array( 'consumer' => 'knowledge' ) );
 		$before  = $this->state;
 		$result  = ( new PreparationJobs() )->verify_lease( $verify );
+		$this->assertIsArray( $result );
 		$this->assertTrue( $result['verified'] );
 		$this->assertSame( $before, $this->state );
 		foreach ( array( 'source_revision', 'recipe_revision', 'lease_token', 'activation_epoch' ) as $field ) {
@@ -348,6 +357,7 @@ final class PreparationJobsTest extends TestCase {
 		$before_products         = $this->state['knowledge']['loaded_products'];
 		$loaded['index_version'] = 'unacknowledged-generation';
 		$result                  = ( new PreparationJobs() )->claim( 'knowledge', 'mac', 600, str_repeat( 'a', 64 ), $loaded );
+		$this->assertIsArray( $result );
 		$this->assertSame( 4, $result['job']['activation_epoch'] );
 		$this->assertSame( $before_products, $this->state['knowledge']['loaded_products'] );
 		$this->assertSame( 'preparing', $this->state['knowledge']['status'] );

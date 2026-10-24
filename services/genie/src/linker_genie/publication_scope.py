@@ -11,6 +11,7 @@ from collections.abc import Mapping, Sequence
 from typing import Any
 
 from linker_genie.family_scope import valid_family_scope
+from linker_genie.source_models import model_pattern
 from linker_genie.source_roles import (
     manual_scope_models,
     meter_references,
@@ -28,6 +29,35 @@ def binding(association: Mapping[str, Any]) -> tuple[str, str, str, int, str]:
         int(association["product_id"]),
         str(association["product_revision"]),
     )
+
+
+def author_scope_allows(
+    scope: Mapping[str, Any],
+    wanted: set[int],
+    products: Mapping[int, Mapping[str, Any]],
+) -> bool:
+    """A finer authored scope cannot be broadened by a later family fallback."""
+    restrictions = scope.get("author_restrictions")
+    if not isinstance(restrictions, list) or not restrictions:
+        return False
+    for boundary in restrictions:
+        if (
+            not isinstance(boundary, dict)
+            or boundary.get("kind") not in {"heading", "declaration"}
+            or not isinstance(boundary.get("quote"), str)
+            or not boundary["quote"]
+            or boundary.get("source_chunk_id") not in scope.get("source_chunk_ids", [])
+        ):
+            return False
+        subjects = {
+            pid
+            for pid, product in products.items()
+            if product.get("model")
+            and model_pattern(str(product["model"])).search(boundary["quote"])
+        }
+        if not wanted.issubset(subjects):
+            return False
+    return True
 
 
 def authorize_chunk(
@@ -51,6 +81,9 @@ def authorize_chunk(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and "author_restrictions" in scope:
+        if products is None or not author_scope_allows(scope, wanted, products):
+            return []
     if scope is not None and (
         scope.get("basis") == "family_manual" or "family_scope" in scope
     ):

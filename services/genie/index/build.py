@@ -252,7 +252,11 @@ def chunk_all(
     ]
     for document in inventory.load(inventory_path):
         doc_dir = parsed_dir / document.sha256
-        status = parse.complete_status(doc_dir)
+        status = (
+            parse.cached_status(doc_dir)
+            if source_geometry
+            else parse.complete_status(doc_dir)
+        )
         pdf_path = pdf_dir / f"{document.sha256}.pdf"
         if status is None or not (doc_dir / "docling.json").is_file():
             error = failure_reason(
