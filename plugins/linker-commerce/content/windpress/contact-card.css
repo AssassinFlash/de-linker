@@ -41,12 +41,77 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	hyphens: manual;
 }
 
+/* Keep short German prose words intact, as in the existing draft fallback. */
+html[lang^="de"] #tv-contact-v1 p {
+	hyphens: manual;
+}
+
+/* The LC page's generic -0.035em display tracking crowds these smaller
+ * headings. Use the existing title token; leave the authored hero untouched. */
+#tv-contact-v1 :is(.cp-intro, .cp-story, .cp-afterword) h2 {
+	letter-spacing: var(--proto-track-title);
+}
+
+@media (min-width: 801px) {
+	/* At the existing desktop boundary, the 42px story title splits the final
+	 * punctuation of Energieprojekts.; the 38px boxed afterword changes from
+	 * two to four English lines. Use the fluid section/card title tokens so
+	 * readable tracking fits the existing columns. Phone sizes stay authored. */
+	#tv-contact-v1.cp-page .cp-story h2 {
+		font-size: var(--proto-size-display);
+	}
+
+	#tv-contact-v1.cp-page .cp-afterword h2 {
+		font-size: var(--proto-size-3xl);
+	}
+}
+
 @media (max-width: 800px) {
 	/* At the 29px phone title, inherited -0.035em tracking leaves 4px word gaps.
 	 * Return those gaps to 6.32px without changing authored letter tracking.
 	 * The existing 800px form breakpoint keeps desktop title wrapping intact. */
 	#tv-contact-v1 .cp-hero h1 {
 		word-spacing: 0.08em;
+	}
+
+	/* Match the site's 44px control target while retaining native details. */
+	#tv-contact-v1 .cp-mobile-intro > summary {
+		min-height: var(--proto-control-height);
+	}
+
+	#tv-contact-v1 .cp-mobile-intro > summary span[aria-hidden="true"] {
+		flex: 0 0 auto;
+		font-size: 0;
+	}
+
+	#tv-contact-v1 .cp-mobile-intro > summary span[aria-hidden="true"]::before {
+		content: "+";
+		font-size: var(--proto-size-sm);
+		font-weight: var(--proto-weight-semibold);
+	}
+
+	#tv-contact-v1
+		.cp-mobile-intro[open]
+		> summary
+		span[aria-hidden="true"]::before {
+		content: "−";
+	}
+
+	#tv-contact-v1 .cp-mobile-intro > summary:is(:hover, :focus-visible) {
+		color: var(--proto-canvas-white);
+	}
+
+	#tv-contact-v1
+		.cp-mobile-intro
+		> summary:is(:hover, :focus-visible)
+		span[aria-hidden="true"] {
+		border-color: currentColor;
+		/* Reuse the white/16% overlay already used by blog-index.css. */
+		background: rgb(255 255 255 / 16%);
+	}
+
+	#tv-contact-v1 .cp-mobile-intro > summary:focus-visible {
+		outline-color: var(--proto-canvas-white);
 	}
 }
 
@@ -90,7 +155,7 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	font-size: var(--proto-size-3xl);
 	font-weight: var(--proto-weight-semibold);
 	line-height: var(--proto-leading-display);
-	letter-spacing: -0.02em;
+	letter-spacing: var(--proto-track-title);
 	color: var(--proto-ink-deep);
 }
 
@@ -122,6 +187,7 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	font-size: var(--proto-size-lg);
 	font-weight: var(--proto-weight-semibold);
 	line-height: var(--proto-leading-title);
+	letter-spacing: var(--proto-track-title);
 	color: var(--proto-ink-deep);
 }
 
@@ -184,21 +250,18 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	gap: var(--proto-space-3);
 }
 
-/* The consent row lands here too — the markup's utility classes are inert
- * inside #theme-main (the compiled cache carries an unlayered
- * `:where(#lc-header, #lc-footer, body[data-page] #theme-main) :where(*){all:
- * revert}` that beats @layer utilities; measured, see the acceptance record).
- * Values are the live card's row (11px line on 1.85, an 18×18 box with a 2px
- * top margin, the link underlined with a 3px offset, 10px between box and
- * text); the colours are the site's tokens, in place of the card's old mint
- * and green. */
+/* The consent label owns its layout in WindPress. The page reset now lives
+ * in @layer components. Use the existing small-text token and control target
+ * so the entire native label remains readable and clickable at every width. */
 #contact-form .linker-contact-card .linker-form-consent {
 	display: flex;
 	align-items: flex-start;
 	gap: 10px;
-	font-size: 11px;
+	min-height: var(--proto-control-height);
+	font-size: var(--proto-size-xs);
 	line-height: 1.85;
 	color: var(--proto-neutral-500);
+	cursor: pointer;
 }
 
 #contact-form .linker-contact-card .linker-form-consent input[type="checkbox"] {
@@ -238,6 +301,7 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	font-size: var(--proto-size-lg);
 	font-weight: var(--proto-weight-semibold);
 	line-height: var(--proto-leading-title);
+	letter-spacing: var(--proto-track-title);
 	color: var(--proto-ink-deep);
 }
 
