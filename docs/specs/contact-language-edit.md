@@ -46,6 +46,11 @@ cleared. Only that removed recovery shape derives its navigation comparison from
 the current normalized public URL, matching the native language link; its removed
 display stays removed and no private selection JSON is copied to the target.
 
+The existing WindPress Contact volume separates the fallback explanation from
+its action with the standard field gap (`--proto-space-4`). The native link stays
+inside the card, wraps on phones and retains the existing keyboard focus ring.
+The hidden notice remains hidden; no PHP layout or extra CSS channel is added.
+
 If storage fails, intercept only a click that would lose actual entries or a
 changed choice. Keep the original page and values, expose the existing error
 surface and focus a native noopener new-tab link to the validated language URL.

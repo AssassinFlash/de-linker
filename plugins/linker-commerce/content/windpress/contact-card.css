@@ -272,6 +272,18 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	outline-offset: var(--proto-focus-offset);
 }
 
+/* The language-storage fallback has a separate explanation and action.
+ * Use the contact field rhythm so a wrapped phone label never touches the prose. */
+#contact-form [data-linker-contact-draft-error]:not([hidden]) {
+	display: grid;
+	gap: var(--proto-space-4);
+}
+
+#contact-form [data-linker-contact-draft-error] .linker-form-primary {
+	justify-self: start;
+	max-inline-size: 100%;
+}
+
 /* 800px and below: the live card's own padding step (25px) and heading size.
  * The card box keeps the receipt's `:not()` selector here: without it this
  * rule is one class lighter than the box rule above and loses. */
