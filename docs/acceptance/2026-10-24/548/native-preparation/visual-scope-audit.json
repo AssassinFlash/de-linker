@@ -1,0 +1,15 @@
+{
+  "visual_source_pin": "68a69ab3ffa8687a061a867d22cc42b354674518",
+  "final_source_pin": "ee667df1eaacf7d7b8f9972b0d05e8789dc565b3",
+  "byte_identical_rendered_sources": {
+    "apps/planner/src/components/energy/PreparationResult.tsx": true,
+    "apps/planner/src/components/energy/PreparationBasis.tsx": true,
+    "apps/planner/src/components/energy/WeatherProgress.tsx": true,
+    "apps/planner/src/components/ToolIdentity.tsx": true,
+    "plugins/linker-commerce/content/windpress/planner.css": true,
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": true
+  },
+  "all_equal": true,
+  "latest_change": "additional invalid-role refusals plus regression and generated bundle; no visible/copy/style change",
+  "matrix_no_horizontal_overflow": true
+}

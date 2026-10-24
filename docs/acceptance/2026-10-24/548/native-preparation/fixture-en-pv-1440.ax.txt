@@ -1,0 +1,52 @@
+Browser tab: 4, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:58673/tests/preparation-browser.html?lang=en&task=pv".
+1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=en&task=pv
+	2 container
+		3 heading PV generation profile, Value: 3
+			4 text PV generation profile
+		5 text Source ready
+		6 text Revision 3
+		7 definition list
+			8 container Modelled PV generation
+				9 text Modelled PV generation
+			10 container
+				11 text 2,943.945  kWh
+			12 container Start
+				13 text Start
+			14 text 1 Jan 2023, 00:00 UTC
+			15 container End
+				16 text End
+			17 text 1 Jan 2024, 00:00 UTC
+		18 text This is an unshaded reference profile. Site shading, equipment compatibility and country requirements remain unassessed.
+		19 text Preparation leaves your project inputs unchanged. Selecting a source updates the current open draft. Save project saves that selection on the server.
+		20 button Use this PV profile
+		21 container
+			22 definition list
+				23 container Weather source
+					24 text Weather source
+				25 container
+					26 text JRC PVGIS typical meteorological year  · PVGIS  5.3
+				27 container Radiation database
+					28 text Radiation database
+				29 text PVGIS-SARAH3
+				30 container Meteorological database
+					31 text Meteorological database
+				32 text ERA5
+				33 container Requested source year range
+					34 text Requested source year range
+				35 container
+					36 text 2005  /  2023
+				37 container Synthetic calculation year
+					38 text Synthetic calculation year
+				39 text 2023
+			40 text A typical meteorological year combines selected months from different years. The PV profile includes reconstructed interval averages. Shorter output intervals do not increase the time resolution of the original weather data.
+			41 button (collapsed) Original source and interpretation record, Secondary Actions: Expand
+				42 text Original source and interpretation record
+		43 button (collapsed) Source and task checksums, Secondary Actions: Expand
+			44 text Source and task checksums
+		45 text Solution Configurator
+		46 text by Linker
+		47 text Linker brings your inputs into an editable project for solar and storage planning.
+		48 button (collapsed) About this tool, Secondary Actions: Expand
+			49 text About this tool
+
+The focused UI element is 1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=en&task=pv

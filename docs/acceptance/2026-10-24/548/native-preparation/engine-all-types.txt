@@ -1,0 +1,289 @@
+tests/planning/test_geographic.py:71: error: Item "None" of "Ellipsoid | None" has no attribute "semi_major_metre"  [union-attr]
+tests/planning/test_geographic.py:72: error: Item "None" of "Ellipsoid | None" has no attribute "inverse_flattening"  [union-attr]
+tests/planning/test_pvgis_tmy.py:75: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("str" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported left operand type for > ("None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("int" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("float" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("list[Json]" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("bool" and "str")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("bool" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("bool" and "list[Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("bool" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("int" and "str")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("int" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("int" and "list[Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("int" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("float" and "str")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("float" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("float" and "list[Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("float" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("str" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("str" and "int")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("str" and "float")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("str" and "list[Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("str" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("list[Json]" and "str")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("list[Json]" and "None")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("list[Json]" and "int")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("list[Json]" and "float")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for > ("list[Json]" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("str" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported left operand type for > ("dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("int" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("float" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: error: Unsupported operand types for < ("list[Json]" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:419: note: Both left and right operands are unions
+tests/planning/test_geometry.py:419: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_geometry.py:419: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_geometry.py:419: note: Possible overload variants:
+tests/planning/test_geometry.py:419: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_geometry.py:419: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_geometry.py:419: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_geometry.py:420: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_geometry.py:420: error: Value of type "Any | str | int | float | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_geometry.py:420: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_geometry.py:420: note: Possible overload variants:
+tests/planning/test_geometry.py:420: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_geometry.py:420: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_geometry.py:420: error: Invalid index type "int" for "dict[str, Json]"; expected type "str"  [index]
+tests/planning/test_geometry.py:420: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_geometry.py:436: error: Item "None" of "bool | int | float | str | list[Json] | dict[str, Json] | None" has no attribute "__iter__" (not iterable)  [union-attr]
+tests/planning/test_geometry.py:436: error: Item "bool" of "bool | int | float | str | list[Json] | dict[str, Json] | None" has no attribute "__iter__" (not iterable)  [union-attr]
+tests/planning/test_geometry.py:436: error: Item "int" of "bool | int | float | str | list[Json] | dict[str, Json] | None" has no attribute "__iter__" (not iterable)  [union-attr]
+tests/planning/test_geometry.py:436: error: Item "float" of "bool | int | float | str | list[Json] | dict[str, Json] | None" has no attribute "__iter__" (not iterable)  [union-attr]
+tests/planning/test_geometry.py:437: error: Value of type "Any | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_geometry.py:437: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_geometry.py:437: note: Possible overload variants:
+tests/planning/test_geometry.py:437: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_geometry.py:437: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_geometry.py:437: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_geometry.py:456: error: Unsupported operand types for <= ("float" and "None")  [operator]
+tests/planning/test_geometry.py:456: error: Unsupported operand types for <= ("float" and "dict[str, Json]")  [operator]
+tests/planning/test_geometry.py:456: note: Left operand is of type "bool | int | float | str | list[Json] | dict[str, Json] | None"
+tests/planning/test_geometry.py:456: error: Unsupported operand types for >= ("str" and "float")  [operator]
+tests/planning/test_geometry.py:456: error: Unsupported operand types for >= ("list[Json]" and "float")  [operator]
+tests/planning/test_execution_routes.py:20: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_execution_routes.py:66: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_execution_routes.py:100: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_execution_routes.py:232: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_execution_routes.py:241: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_execution_routes.py:241: note: Use "-> None" if function does not return a value
+tests/planning/test_geometry_import.py:61: error: "ModelMetaclass" has no attribute "model_json_schema"  [attr-defined]
+tests/planning/test_geometry_import.py:207: error: Dict entry 1 has incompatible type "str": "dict[str, int | dict[str, str]]"; expected "str": "dict[str, object] | int | float | str | list[Json] | dict[str, Json] | None"  [dict-item]
+tests/planning/test_geometry_import.py:212: error: Argument 4 to "check_geometry_imports" has incompatible type "dict[str, dict[str, object] | int | float | str | list[Json] | dict[str, Json] | None]"; expected "dict[str, Json]"  [arg-type]
+tests/planning/test_geometry_import.py:216: error: Argument 4 to "check_geometry_imports" has incompatible type "dict[str, dict[str, object] | int | float | str | list[Json] | dict[str, Json] | None]"; expected "dict[str, Json]"  [arg-type]
+tests/planning/test_geometry_import.py:219: error: Argument 4 to "check_geometry_imports" has incompatible type "dict[str, dict[str, object] | int | float | str | list[Json] | dict[str, Json] | None]"; expected "dict[str, Json]"  [arg-type]
+tests/planning/test_geometry_import.py:222: error: Argument 4 to "check_geometry_imports" has incompatible type "dict[str, dict[str, object] | int | float | str | list[Json] | dict[str, Json] | None]"; expected "dict[str, Json]"  [arg-type]
+tests/planning/test_geometry_import.py:224: error: Argument 4 to "check_geometry_imports" has incompatible type "dict[str, dict[str, object] | int | float | str | list[Json] | dict[str, Json] | None]"; expected "dict[str, Json]"  [arg-type]
+tests/planning/test_brief.py:69: error: Dict entry 0 has incompatible type "str": "dict[str, object]"; expected "str": "int | float | str | list[Json] | dict[str, Json] | None"  [dict-item]
+tests/planning/test_brief.py:72: error: Dict entry 0 has incompatible type "str": "dict[str, object]"; expected "str": "int | float | str | list[Json] | dict[str, Json] | None"  [dict-item]
+tests/planning/test_brief.py:84: error: Dict entry 0 has incompatible type "str": "dict[str, object]"; expected "str": "int | float | str | list[Json] | dict[str, Json] | None"  [dict-item]
+tests/planning/test_weather_journal.py:120: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_journal.py:160: error: Redundant cast to "dict[str, Any]"  [redundant-cast]
+tests/planning/test_private_http.py:763: error: Argument 2 to "exercise_boundary" has incompatible type "list[dict[str, str]] | list[dict[str, Sequence[object]]]"; expected "list[MutableMapping[str, Any]]"  [arg-type]
+tests/planning/test_private_http.py:775: error: Need type annotation for "extra"  [var-annotated]
+tests/planning/test_guest_claims.py:99: error: Call to untyped function (unknown) in typed context  [no-untyped-call]
+tests/planning/test_schema_upgrade.py:67: error: Missing type arguments for generic type "dict"  [type-arg]
+tests/planning/test_schema_upgrade.py:126: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_schema_upgrade.py:126: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_schema_upgrade.py:131: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_apify_transport.py:41: error: Signature of "read1" incompatible with supertype "_io.BytesIO"  [override]
+tests/planning/test_apify_transport.py:41: note:      Superclass:
+tests/planning/test_apify_transport.py:41: note:          def read1(self, int | None = ..., /) -> bytes
+tests/planning/test_apify_transport.py:41: note:      Subclass:
+tests/planning/test_apify_transport.py:41: note:          def read1(self, amt: int = ..., *, decode_content: bool = ...) -> bytes
+tests/planning/test_apify_transport.py:69: error: Signature of "send" incompatible with supertype "requests.adapters.BaseAdapter"  [override]
+tests/planning/test_apify_transport.py:69: note:      Superclass:
+tests/planning/test_apify_transport.py:69: note:          def send(self, request: PreparedRequest, stream: bool = ..., timeout: float | tuple[float, float] | tuple[float, None] | None = ..., verify: bool | str = ..., cert: bytes | str | tuple[bytes | str, bytes | str] | None = ..., proxies: Mapping[str, str] | None = ...) -> Response
+tests/planning/test_apify_transport.py:69: note:      Subclass:
+tests/planning/test_apify_transport.py:69: note:          def send(self, request: PreparedRequest, **kwargs: Any) -> Response
+tests/planning/test_apify_transport.py:89: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_apify_transport.py:199: error: Argument 1 to "ReadTimeoutError" has incompatible type "None"; expected "ConnectionPool"  [arg-type]
+tests/planning/test_worker_host.py:63: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_worker_host.py:141: error: Returning Any from function declared to return "str | None"  [no-any-return]
+tests/planning/test_worker_host.py:146: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_worker_host.py:147: error: Returning Any from function declared to return "Run"  [no-any-return]
+tests/planning/test_worker_host.py:153: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_worker_host.py:200: error: Returning Any from function declared to return "Project"  [no-any-return]
+tests/planning/test_apify_weather_client.py:56: error: Dict entry 0 has incompatible type "str": "dict[str, str | None]"; expected "str": "int | float | str | list[Json] | dict[str, Json] | None"  [dict-item]
+tests/planning/test_apify_weather_client.py:89: error: Signature of "send" incompatible with supertype "requests.adapters.BaseAdapter"  [override]
+tests/planning/test_apify_weather_client.py:89: note:      Superclass:
+tests/planning/test_apify_weather_client.py:89: note:          def send(self, request: PreparedRequest, stream: bool = ..., timeout: float | tuple[float, float] | tuple[float, None] | None = ..., verify: bool | str = ..., cert: bytes | str | tuple[bytes | str, bytes | str] | None = ..., proxies: Mapping[str, str] | None = ...) -> Response
+tests/planning/test_apify_weather_client.py:89: note:      Subclass:
+tests/planning/test_apify_weather_client.py:89: note:          def send(self, request: PreparedRequest, **kwargs: Any) -> Response
+tests/planning/test_http_host.py:154: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_kernel.py:75: error: Signature of "send" incompatible with supertype "requests.adapters.BaseAdapter"  [override]
+tests/planning/test_weather_kernel.py:75: note:      Superclass:
+tests/planning/test_weather_kernel.py:75: note:          def send(self, request: PreparedRequest, stream: bool = ..., timeout: float | tuple[float, float] | tuple[float, None] | None = ..., verify: bool | str = ..., cert: bytes | str | tuple[bytes | str, bytes | str] | None = ..., proxies: Mapping[str, str] | None = ...) -> Response
+tests/planning/test_weather_kernel.py:75: note:      Subclass:
+tests/planning/test_weather_kernel.py:75: note:          def send(self, request: PreparedRequest, **kwargs: Any) -> Response
+tests/planning/test_weather_kernel.py:79: error: Argument 1 to "loads" has incompatible type "bytes | str | None"; expected "str | bytes | bytearray"  [arg-type]
+tests/planning/test_weather_kernel.py:97: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_kernel.py:116: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_kernel.py:116: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_weather_kernel.py:160: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:160: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:160: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:160: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:160: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:160: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:161: error: Argument 3 to "get" of "Assets" has incompatible type "Any | str | int | float | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_kernel.py:162: error: Argument 3 to "content" of "Assets" has incompatible type "Any | str | int | float | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_kernel.py:163: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:163: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:163: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:163: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:163: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:163: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:179: error: Value of type "dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:179: error: Value of type "int | float | str | list[Json] | dict[str, Json] | Any | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:179: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:179: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:179: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:179: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:179: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:269: error: Value of type "dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:269: error: Value of type "int | float | str | list[Json] | dict[str, Json] | Any | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:269: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:269: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:269: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:269: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:269: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:360: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_weather_kernel.py:396: error: Value of type "dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:396: error: Value of type "int | float | str | list[Json] | dict[str, Json] | Any | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:396: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:396: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:396: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:396: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:396: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:397: error: Argument 3 to "content" of "Assets" has incompatible type "Any | str | int | float | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_kernel.py:418: error: Value of type "dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:418: error: Value of type "int | float | str | list[Json] | dict[str, Json] | Any | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:418: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:418: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:418: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:418: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:418: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:419: error: Value of type "Any | str | int | float | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:419: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:419: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:419: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:419: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:419: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:475: error: Value of type "dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:475: error: Value of type "int | float | str | list[Json] | dict[str, Json] | Any | None" is not indexable  [index]
+tests/planning/test_weather_kernel.py:475: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_kernel.py:475: note: Possible overload variants:
+tests/planning/test_weather_kernel.py:475: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_kernel.py:475: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_kernel.py:475: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_kernel.py:476: error: Argument 3 to "content" of "Assets" has incompatible type "Any | str | int | float | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_kernel.py:515: error: Module "linker_engine.planning.runtime_snapshot" does not explicitly export attribute "version"  [attr-defined]
+tests/planning/test_weather_kernel.py:545: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_acquisition.py:176: error: Argument "after" to "Reply" has incompatible type "Callable[[], Run]"; expected "Callable[[], None] | None"  [arg-type]
+tests/planning/test_weather_acquisition.py:275: error: Argument "after" to "Reply" has incompatible type "Callable[[], Run]"; expected "Callable[[], None] | None"  [arg-type]
+tests/planning/test_weather_acquisition.py:302: error: Argument "after" to "Reply" has incompatible type "Callable[[], Run]"; expected "Callable[[], None] | None"  [arg-type]
+tests/planning/test_weather_reconciliation.py:59: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_reconciliation.py:85: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_reconciliation.py:85: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_weather_reconciliation.py:100: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_reconciliation.py:118: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:118: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_reconciliation.py:118: note: Possible overload variants:
+tests/planning/test_weather_reconciliation.py:118: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_reconciliation.py:118: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_reconciliation.py:118: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_reconciliation.py:134: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:149: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:181: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:181: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_reconciliation.py:181: note: Possible overload variants:
+tests/planning/test_weather_reconciliation.py:181: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_reconciliation.py:181: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_reconciliation.py:181: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_reconciliation.py:182: error: Unsupported operand types for / ("Path" and "list[Json]")  [operator]
+tests/planning/test_weather_reconciliation.py:182: error: Unsupported operand types for / ("Path" and "None")  [operator]
+tests/planning/test_weather_reconciliation.py:182: error: Unsupported operand types for / ("Path" and "int")  [operator]
+tests/planning/test_weather_reconciliation.py:182: error: Unsupported operand types for / ("Path" and "float")  [operator]
+tests/planning/test_weather_reconciliation.py:182: error: Unsupported operand types for / ("Path" and "dict[str, Json]")  [operator]
+tests/planning/test_weather_reconciliation.py:182: note: Right operand is of type "Any | str | list[Json] | int | float | dict[str, Json] | None"
+tests/planning/test_weather_reconciliation.py:182: note: Both left and right operands are unions
+tests/planning/test_weather_reconciliation.py:182: error: Value of type "Any | str | int | float | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:182: error: Invalid index type "slice[None, int, None]" for "dict[str, Json]"; expected type "str"  [index]
+tests/planning/test_weather_reconciliation.py:188: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_weather_reconciliation.py:203: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:208: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:208: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_reconciliation.py:208: note: Possible overload variants:
+tests/planning/test_weather_reconciliation.py:208: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_reconciliation.py:208: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_reconciliation.py:208: error: Argument 1 to "read" of "Blobs" has incompatible type "Any | str | int | float | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:208: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_reconciliation.py:212: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:212: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_reconciliation.py:212: note: Possible overload variants:
+tests/planning/test_weather_reconciliation.py:212: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_reconciliation.py:212: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_reconciliation.py:212: error: Argument 1 to "object" of "Blobs" has incompatible type "Any | str | int | float | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:212: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_reconciliation.py:221: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:224: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:224: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_reconciliation.py:224: note: Possible overload variants:
+tests/planning/test_weather_reconciliation.py:224: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_reconciliation.py:224: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_reconciliation.py:224: error: Argument 1 to "read" of "Blobs" has incompatible type "Any | str | int | float | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:224: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_reconciliation.py:227: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:227: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_reconciliation.py:227: note: Possible overload variants:
+tests/planning/test_weather_reconciliation.py:227: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_reconciliation.py:227: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_reconciliation.py:227: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_reconciliation.py:228: error: Unsupported operand types for / ("Path" and "list[Json]")  [operator]
+tests/planning/test_weather_reconciliation.py:228: error: Unsupported operand types for / ("Path" and "None")  [operator]
+tests/planning/test_weather_reconciliation.py:228: error: Unsupported operand types for / ("Path" and "int")  [operator]
+tests/planning/test_weather_reconciliation.py:228: error: Unsupported operand types for / ("Path" and "float")  [operator]
+tests/planning/test_weather_reconciliation.py:228: error: Unsupported operand types for / ("Path" and "dict[str, Json]")  [operator]
+tests/planning/test_weather_reconciliation.py:228: note: Right operand is of type "Any | str | list[Json] | int | float | dict[str, Json] | None"
+tests/planning/test_weather_reconciliation.py:228: note: Both left and right operands are unions
+tests/planning/test_weather_reconciliation.py:228: error: Value of type "Any | str | int | float | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:228: error: Invalid index type "slice[None, int, None]" for "dict[str, Json]"; expected type "str"  [index]
+tests/planning/test_weather_reconciliation.py:245: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:281: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:304: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:311: error: Unsupported right operand type for in ("str | None")  [operator]
+tests/planning/test_weather_reconciliation.py:333: error: Function is missing a type annotation  [no-untyped-def]
+tests/planning/test_weather_reconciliation.py:371: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:408: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_reconciliation.py:408: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_reconciliation.py:408: note: Possible overload variants:
+tests/planning/test_weather_reconciliation.py:408: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_reconciliation.py:408: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_reconciliation.py:408: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_reconciliation.py:452: error: Function is missing a type annotation for one or more parameters  [no-untyped-def]
+tests/planning/test_weather_reconciliation.py:560: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_reconciliation.py:604: error: Argument 2 to "job" has incompatible type "bool | int | float | str | list[Json] | dict[str, Json] | None"; expected "str"  [arg-type]
+tests/planning/test_weather_cleanup.py:30: error: Function is missing a return type annotation  [no-untyped-def]
+tests/planning/test_weather_cleanup.py:204: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_cleanup.py:204: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_cleanup.py:204: note: Possible overload variants:
+tests/planning/test_weather_cleanup.py:204: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_cleanup.py:204: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_cleanup.py:204: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_cleanup.py:205: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_cleanup.py:205: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_cleanup.py:205: note: Possible overload variants:
+tests/planning/test_weather_cleanup.py:205: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_cleanup.py:205: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_cleanup.py:205: error: Value of type "Any | str | int | float | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_cleanup.py:205: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+tests/planning/test_weather_cleanup.py:233: error: Value of type "bool | int | float | str | list[Json] | dict[str, Json] | None" is not indexable  [index]
+tests/planning/test_weather_cleanup.py:233: error: No overload variant of "__getitem__" of "list" matches argument type "str"  [call-overload]
+tests/planning/test_weather_cleanup.py:233: note: Possible overload variants:
+tests/planning/test_weather_cleanup.py:233: note:     def __getitem__(self, SupportsIndex, /) -> Json
+tests/planning/test_weather_cleanup.py:233: note:     def __getitem__(self, slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None], /) -> list[Json]
+tests/planning/test_weather_cleanup.py:233: error: Invalid index type "str" for "str"; expected type "SupportsIndex | slice[SupportsIndex | None, SupportsIndex | None, SupportsIndex | None]"  [index]
+Found 202 errors in 18 files (checked 221 source files)

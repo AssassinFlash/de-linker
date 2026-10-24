@@ -1,0 +1,39 @@
+[
+  {
+    "name": "review-fixed-app-tests",
+    "command": [
+      "npm",
+      "test"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "review-fixed-app-build",
+    "command": [
+      "npm",
+      "run",
+      "build"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "review-fixed-app-format",
+    "command": [
+      "npm",
+      "run",
+      "lint:format"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "review-fixed-php-style",
+    "command": [
+      "/opt/homebrew/opt/php@8.3/bin/php",
+      "vendor/bin/phpcs",
+      "includes/Planner/Admission.php",
+      "includes/Planner/Gateway.php",
+      "tests/php/Unit/PlannerTaskGatewayTest.php"
+    ],
+    "exit_code": 0
+  }
+]

@@ -1,0 +1,52 @@
+Browser tab: 4, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:58673/tests/preparation-browser.html?lang=de&task=pv".
+1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=de&task=pv
+	2 container
+		3 heading PV-Erzeugungsprofil, Value: 3
+			4 text PV-Erzeugungsprofil
+		5 text Quelle bereit
+		6 text Version 3
+		7 definition list
+			8 container Modellierte PV-Erzeugung
+				9 text Modellierte PV-Erzeugung
+			10 container
+				11 text 2.943,945  kWh
+			12 container Beginn
+				13 text Beginn
+			14 text 01.01.2023, 00:00 UTC
+			15 container Ende
+				16 text Ende
+			17 text 01.01.2024, 00:00 UTC
+		18 text Dieses Referenzprofil berücksichtigt keine Verschattung. Die Verschattung am Standort sowie Gerätekompatibilität und länderspezifische Anforderungen bleiben ungeprüft.
+		19 text Die Vorbereitung ändert Ihre Projekteingaben nicht. Ihre Auswahl gilt zunächst für den aktuell offenen Projektentwurf. Mit "Projekt speichern" wird diese Auswahl auf dem Server gespeichert.
+		20 button Dieses PV-Profil verwenden
+		21 container
+			22 definition list
+				23 container Wetterquelle
+					24 text Wetterquelle
+				25 container
+					26 text JRC PVGIS typical meteorological year  · PVGIS  5.3
+				27 container Strahlungsdatenbank
+					28 text Strahlungsdatenbank
+				29 text PVGIS-SARAH3
+				30 container Meteorologische Datenbank
+					31 text Meteorologische Datenbank
+				32 text ERA5
+				33 container Angefragter Zeitraum
+					34 text Angefragter Zeitraum
+				35 container
+					36 text 2005  /  2023
+				37 container Synthetisches Berechnungsjahr
+					38 text Synthetisches Berechnungsjahr
+				39 text 2023
+			40 text Ein typisches meteorologisches Jahr setzt sich aus ausgewählten Monaten verschiedener Jahre zusammen. Das PV-Profil enthält rekonstruierte Intervallmittelwerte. Die zeitliche Auflösung der ursprünglichen Wetterdaten bleibt auch bei kürzeren Ausgabeintervallen unverändert.
+			41 button (collapsed) Originalquelle und Interpretationsprotokoll, Secondary Actions: Expand
+				42 text Originalquelle und Interpretationsprotokoll
+		43 button (collapsed) Prüfsummen für Quelle und Auftrag, Secondary Actions: Expand
+			44 text Prüfsummen für Quelle und Auftrag
+		45 text Lösungskonfigurator
+		46 text von Linker
+		47 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+		48 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+			49 text Über dieses Werkzeug
+
+The focused UI element is 1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:58673/tests/preparation-browser.html?lang=de&task=pv
