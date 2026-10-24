@@ -81,6 +81,18 @@ worker registry using retained full-year TMY. This proves the local saved-model
 boundary; it does not establish an installed paired native runtime or live source
 acquisition.
 
+Independent form review reproduced percentage display artifacts (57 became a
+long binary-derived decimal) and a related parent-echo loss of a typed decimal
+separator. Percent/fraction presentation now shifts the declared decimal
+exponent rather than multiplying/dividing binary values; it does not impose
+an arbitrary precision cutoff. The shared numeric control preserves locally
+emitted text while its parent echoes that value. External value or locale
+changes still reformat, and explicit roof-coordinate replacement still resets
+the fields. The same percentage boundary is applied to storage-efficiency
+controls and their saved-basis display. Regression evidence includes actual
+German PV controls for 57%, 56%, negative coefficients, a trailing comma,
+conversion/storage efficiency and external restore/locale behavior.
+
 The retained actual worker-produced fixture is shared by browser and service
 contract tests. It contains real retained TMY bytes with explicitly synthetic
 roof/model inputs and simulated provider transport. Isolated browser checks use

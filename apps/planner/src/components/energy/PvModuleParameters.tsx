@@ -3,6 +3,7 @@ import type { ModuleSpec } from "../../domain/geometry.ts";
 import { __ } from "../../i18n.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { ParameterNote } from "./ParameterNote.tsx";
+import { toPercent, fromPercent } from "../../domain/decimal.ts";
 
 export function PvModuleParameters({
 	value,
@@ -31,13 +32,11 @@ export function PvModuleParameters({
 				locale={locale}
 				min={null}
 				report={report}
-				value={
-					value.gamma_pdc_per_c === null ? null : value.gamma_pdc_per_c * 100
-				}
+				value={toPercent(value.gamma_pdc_per_c)}
 				onChange={(number) =>
 					onChange({
 						...value,
-						gamma_pdc_per_c: number === null ? null : number / 100,
+						gamma_pdc_per_c: fromPercent(number),
 					})
 				}
 			/>

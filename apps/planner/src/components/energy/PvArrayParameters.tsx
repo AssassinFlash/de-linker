@@ -3,6 +3,7 @@ import { ARRAY_FACTORS } from "../../domain/solarSetup.ts";
 import { __ } from "../../i18n.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { ParameterNote } from "./ParameterNote.tsx";
+import { toPercent, fromPercent } from "../../domain/decimal.ts";
 
 function factorLabel(field: ArrayFactor): string {
 	switch (field) {
@@ -82,11 +83,11 @@ export function PvArrayParameters({
 							locale={locale}
 							report={report}
 							{...(scale === 1 ? {} : { max: 100 })}
-							value={number === null ? null : number * scale}
+							value={scale === 1 ? number : toPercent(number)}
 							onChange={(number) =>
 								onChange({
 									...value,
-									[field]: number === null ? null : number / scale,
+									[field]: scale === 1 ? number : fromPercent(number),
 								})
 							}
 						/>

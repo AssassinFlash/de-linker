@@ -6,6 +6,19 @@ export function decimalSeparator(locale: string): string {
 			.find((part) => part.type === "decimal")?.value ?? "."
 	);
 }
+
+/** Shift the number's declared decimal representation at the %/fraction boundary.
+ * Multiplication such as 0.57 * 100 creates display artifacts. Exponent shifting
+ * avoids that extra binary operation without rounding away declared digits. */
+function shiftPercent(value: number | null, exponent: 2 | -2): number | null {
+	if (value === null || Object.is(value, -0)) return value;
+	const [coefficient, power = "0"] = String(value).split("e");
+	return Number(`${coefficient}e${Number(power) + exponent}`);
+}
+export const toPercent = (value: number | null): number | null =>
+	shiftPercent(value, 2);
+export const fromPercent = (value: number | null): number | null =>
+	shiftPercent(value, -2);
 export function formatDecimal(value: number | null, locale: string): string {
 	return value === null
 		? ""

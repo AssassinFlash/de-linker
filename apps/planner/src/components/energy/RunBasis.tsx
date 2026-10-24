@@ -16,6 +16,7 @@ import { __ } from "../../i18n.ts";
 import { measurementLabel } from "../ProfileLabels.ts";
 import { Notice } from "../Notice.tsx";
 import { batteryPresentation } from "./batteryPresentation.ts";
+import { toPercent } from "../../domain/decimal.ts";
 
 export function RunBasis({
 	run,
@@ -209,7 +210,11 @@ export function RunBasis({
 								<div key={field}>
 									<dt>{presentation.label}</dt>
 									<dd>
-										{number(Number(model[field]) * presentation.scale)}{" "}
+										{number(
+											presentation.scale === 100
+												? toPercent(Number(model[field]))
+												: Number(model[field]),
+										)}{" "}
 										{presentation.unit}
 									</dd>
 								</div>

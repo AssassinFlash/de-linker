@@ -39,7 +39,7 @@ async function choose(text, value) {
 		node.dispatchEvent(new window.Event("change", { bubbles: true }));
 	});
 }
-async function mount(t, inputs) {
+async function mount(t, inputs, locale = "en-GB") {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 	Object.defineProperty(globalThis, "indexedDB", {
@@ -152,7 +152,7 @@ async function mount(t, inputs) {
 				session,
 				client,
 				recheck: () => {},
-				locale: "en-GB",
+				locale,
 				blocked: false,
 				active: true,
 				onValidity: setValid,
@@ -372,4 +372,44 @@ test("module headings hide internal identifiers and incomplete document referenc
 		document.querySelector(".lp-energy-workspace").textContent,
 		/module_private_X/,
 	);
+});
+
+test("German percentage edits retain exact text and decimal separators while storing model fractions", async (t) => {
+	const h = await mount(t, structuredClone(fixture.pv_project.inputs), "de-DE");
+	const gamma = control("Temperature coefficient of maximum power");
+	await enter(gamma, "-0,");
+	assert.equal(gamma.value, "-0,");
+	await enter(gamma, "-0,29");
+	assert.equal(gamma.value, "-0,29");
+	assert.equal(
+		h.current().history.current.solar_setup.pv.modules[0].gamma_pdc_per_c,
+		-0.0029,
+	);
+	await click("Array models");
+	await enter(control("Ground reflectance"), "57");
+	assert.equal(control("Ground reflectance").value, "57");
+	await enter(control("Irradiance retained after soiling"), "56");
+	assert.equal(control("Irradiance retained after soiling").value, "56");
+	await enter(control("Ground reflectance"), "0,");
+	assert.equal(control("Ground reflectance").value, "0,");
+	await enter(control("Ground reflectance"), "0,57");
+	assert.equal(control("Ground reflectance").value, "0,57");
+	assert.equal(
+		h.current().history.current.solar_setup.pv.arrays[0].albedo,
+		0.0057,
+	);
+	assert.equal(
+		h.current().history.current.solar_setup.pv.arrays[0].soiling_factor,
+		0.56,
+	);
+	await click("Power conversion");
+	await enter(control("Nominal conversion efficiency"), "57");
+	assert.equal(control("Nominal conversion efficiency").value, "57");
+	assert.equal(
+		h.current().history.current.solar_setup.pv.converters[0].eta_nominal,
+		0.57,
+	);
+	await click("Scenario settings");
+	await enter(control("Charging efficiency"), "57");
+	assert.equal(control("Charging efficiency").value, "57");
 });

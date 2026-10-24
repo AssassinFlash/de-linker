@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { __, sprintf } from "../i18n.ts";
 import {
 	decimalSeparator,
@@ -59,8 +59,19 @@ export function NumberField({
 	const id = useId();
 	const [text, setText] = useState(formatDecimal(value, locale));
 	const [valid, setValid] = useState(true);
+	const emitted = useRef<number | null | undefined>(undefined),
+		previousLocale = useRef(locale);
 	useEffect(() => {
-		setText(formatDecimal(value, locale));
+		// A parent echo must not replace locally typed syntax (e.g. "0," or
+		// "-0."). External value changes and locale changes still reformat.
+		if (
+			locale !== previousLocale.current ||
+			emitted.current === undefined ||
+			!Object.is(value, emitted.current)
+		)
+			setText(formatDecimal(value, locale));
+		emitted.current = undefined;
+		previousLocale.current = locale;
 		setValid(true);
 		onValidity(true);
 	}, [value, locale, onValidity]);
@@ -80,7 +91,10 @@ export function NumberField({
 		}
 		setValid(allowed);
 		onValidity(allowed);
-		if (allowed) onChange(number);
+		if (allowed) {
+			emitted.current = number;
+			onChange(number);
+		}
 	}
 	return (
 		<label className="lp-field" htmlFor={id}>

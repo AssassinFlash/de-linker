@@ -3,6 +3,7 @@ import type { PanelArray } from "../../domain/geometry.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { ParameterNote } from "./ParameterNote.tsx";
+import { toPercent, fromPercent } from "../../domain/decimal.ts";
 
 /** Conversion bounds use Positive/Efficiency in pv-generation.schema.json.
  * PVWatts pdc0/eta parameters and the shared clipping stage are pinned in
@@ -81,11 +82,11 @@ export function PvConverterParameters({
 						locale={locale}
 						max={100}
 						report={report}
-						value={value[field] === null ? null : value[field] * 100}
+						value={toPercent(value[field])}
 						onChange={(number) =>
 							onChange({
 								...value,
-								[field]: number === null ? null : number / 100,
+								[field]: fromPercent(number),
 							})
 						}
 					/>

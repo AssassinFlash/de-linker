@@ -3,6 +3,7 @@ import type { ScenarioDraft } from "../../domain/energyScenario.ts";
 import { BATTERY_FIELDS, emptyPeriod } from "../../domain/energyScenario.ts";
 import { __ } from "../../i18n.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
+import { toPercent, fromPercent } from "../../domain/decimal.ts";
 import { OperatingPeriodForm } from "./OperatingPeriodForm.tsx";
 import { batteryPresentation } from "./batteryPresentation.ts";
 
@@ -56,7 +57,7 @@ export function ScenarioForm({
 								label={presentation.label}
 								unit={presentation.unit}
 								locale={locale}
-								value={number === null ? null : number * presentation.scale}
+								value={presentation.scale === 100 ? toPercent(number) : number}
 								{...(presentation.max === undefined
 									? {}
 									: { max: presentation.max })}
@@ -67,7 +68,9 @@ export function ScenarioForm({
 										battery: {
 											...value.battery,
 											[field]:
-												number === null ? null : number / presentation.scale,
+												presentation.scale === 100
+													? fromPercent(number)
+													: number,
 										},
 										battery_binding: null,
 									})

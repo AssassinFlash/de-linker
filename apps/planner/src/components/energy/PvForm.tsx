@@ -56,7 +56,7 @@ export function PvForm({
 				</p>
 				<p>
 					{sprintf(
-						__("Current roof layout: %d active arrays.", "linker-tools"),
+						__("Active arrays in the current roof layout: %d.", "linker-tools"),
 						arrays.length,
 					)}
 				</p>

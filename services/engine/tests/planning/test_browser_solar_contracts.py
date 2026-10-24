@@ -172,11 +172,12 @@ def test_browser_pv_preparation_saves_and_executes_the_frozen_model(
                     "--eval",
                     """
 import { readSolarSetup, solarInputs, preparePvInputs, checkPvWeather } from './src/domain/solarSetup.ts';
+import { fromPercent } from './src/domain/decimal.ts';
 let text = ''; for await (const chunk of process.stdin) text += chunk;
 const inputs = JSON.parse(text), setup = readSolarSetup(inputs);
 // Same displayed-% to model-fraction boundary as the actual module form.
 const pv = {...setup.pv, modules: setup.pv.modules.map(module => ({...module,
-    gamma_pdc_per_c: -0.29 / 100}))};
+    gamma_pdc_per_c: fromPercent(-0.29)}))};
 const prepared = preparePvInputs(solarInputs(inputs, {...setup, pv}));
 checkPvWeather(prepared);
 process.stdout.write(JSON.stringify(prepared));

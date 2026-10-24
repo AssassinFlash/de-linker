@@ -6322,8 +6322,8 @@ msgid "This reference calculation estimates available AC generation from the sav
 msgstr "Diese Referenzberechnung schätzt die verfügbare AC-Erzeugung anhand der gespeicherten Dachbelegung und des ausgewählten typischen Wetterjahrs. Jedes Modulfeld wird mit pvlib als unverschattete Referenz bei gleichmäßiger Einstrahlung modelliert. Standortverschattung, Strangplanung, Geräteeignung und länderspezifische Freigaben sind gesondert zu prüfen."
 
 #: build/planner/assets/planner.js
-msgid "Current roof layout: %d active arrays."
-msgstr "Aktuelle Dachbelegung: %d aktive Modulfelder."
+msgid "Active arrays in the current roof layout: %d."
+msgstr "Aktive Modulfelder in der aktuellen Dachbelegung: %d."
 
 #: build/planner/assets/planner.js
 msgid "Update parameters for current roof layout"
