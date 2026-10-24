@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import runJson from "../../tests/fixtures/energy-run.json" with { type: "json" };
+import roofRunJson from "../../tests/fixtures/roof-energy-run.json" with { type: "json" };
 import { readRun, readRunPage } from "./planningProtocol.ts";
 import { readObject as objectDocument } from "./readProtocol.ts";
 import { ApiError } from "./protocol.ts";
@@ -22,6 +23,24 @@ test("actual managed two-hour result retains frozen identity, source origins and
 		readObject(run.result!.equipment_release).status,
 		"not_assessed",
 	);
+});
+
+test("native roof result binds the generated series to model inputs and retained weather", () => {
+	const run = readRun(roofRunJson, roofRunJson.project_id, roofRunJson.id);
+	assert.equal(run.result!.interval_count, 8760);
+	assert.deepEqual(run.result, roofRunJson.result);
+	for (const field of ["input_bundle_sha256", "weather_original_sha256"]) {
+		const changed = readObject(structuredClone(roofRunJson));
+		const interpretation = readObject(result(changed).profile_interpretation);
+		const periods = interpretation.operating_periods as readonly JsonObject[];
+		const profiles = readObject(periods[0]!.profiles);
+		const source = readObject(readObject(profiles.pv_available_ac).source);
+		readObject(source.details)[field] = "0".repeat(64);
+		assert.throws(
+			() => readRun(changed, roofRunJson.project_id),
+			(error: unknown) => error instanceof ApiError && error.status === 502,
+		);
+	}
 });
 
 test("result mutants cannot be presented as a validated customer result", () => {

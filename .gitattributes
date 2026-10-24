@@ -9,3 +9,6 @@ plugins/linker-tools/build/** linguist-generated=true
 
 # Exact official-page excerpts retain source whitespace and their recorded hashes.
 docs/research/2026-10-24-pv-managed-intake/raw/docs-*-excerpt.txt -whitespace
+
+# Preserve the browser's exact CSV download bytes, including CRLF.
+docs/acceptance/2026-10-25/548/trace-ui/de-intervals-1-100.csv -text

@@ -68,6 +68,7 @@ export default function EnergyFlowChart({
 			xAxis: {
 				type: "time",
 				axisLabel: {
+					hideOverlap: true,
 					formatter: (value: number) =>
 						new Intl.DateTimeFormat(locale, {
 							timeZone: "UTC",

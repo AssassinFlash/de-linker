@@ -38,3 +38,12 @@ Reviewed the two-line correction against `131e412e`: `useUTC: true` and
 Reran only the focused installed-library reproductions using those source
 settings: Berlin tooltip now reads `2023-01-01 00:00:00`; the singleton has a
 point symbol. Both P2 findings are closed. No remaining Spec blocker.
+
+## Roof-PV
+
+`4412c7f8`: source/input_bundle bind pv_model_inputs; weather_original binds raw;
+witness stays manifest-pinned. Fixture inspected. No blockers; no suites rerun.
+
+Mobile delta: `axisLabel.hideOverlap: true` suppresses colliding tick labels;
+UTC and plotted values stay unchanged. No Spec blocker; parent verifies EN/DE
+mobile readback.

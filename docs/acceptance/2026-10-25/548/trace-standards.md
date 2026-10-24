@@ -32,3 +32,13 @@ single-interval-symbol delta introduces no further Standards finding.
 Reused the parent's targeted HTTP/parser/CSV, mypy and frontend build/type
 results; no suite rerun or new tests. The parent owns the final corrected
 candidate build/manifest refresh and browser/site/service acceptance.
+
+**Validator delta at `4412c7f8`: PASS.** Reviewed `readEnergyResult.ts`, its
+existing-file regression and native roof fixture only. Generated model-input
+and original-weather pins remain distinct, matching the producer; CSV raw-byte
+checks remain intact. The fixture preserves its violated scenario status and
+contains no credentials or local paths. The regression checks native acceptance
+and both mismatched pins. Reused the parent's five passing protocol tests;
+no reruns or additional findings.
+
+390px delta: PASS; `axisLabel.hideOverlap` adds no Standards breach; no tests.

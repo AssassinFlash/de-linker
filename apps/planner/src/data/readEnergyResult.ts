@@ -180,13 +180,30 @@ export function readEnergyResult(
 			require(Object.keys(profiles).sort().join() === expected.sort().join());
 			for (const [role, rawProfile] of Object.entries(profiles)) {
 				const profile = readObject(rawProfile),
-					source = readObject(profile.source);
+					source = readObject(profile.source),
+					modelInput = pinned[role + ".pv_model_inputs"];
+				// A generated roof profile identifies its frozen model input
+				// bundle as the series source. The asset's raw bytes remain the
+				// original weather; CSV/system-output profiles identify raw bytes.
+				let sourceMatches = source.raw_sha256 === pinned[role + ".raw"];
+				if (modelInput !== undefined) {
+					const details = readObject(source.details);
+					sourceMatches =
+						role === "pv_available_ac" &&
+						source.origin === "modelled" &&
+						details.model === "uniform_unshaded_pvlib_reference_v1" &&
+						hash(modelInput) &&
+						hash(pinned[role + ".pv_model_witness"]) &&
+						source.raw_sha256 === modelInput &&
+						details.input_bundle_sha256 === modelInput &&
+						details.weather_original_sha256 === pinned[role + ".raw"];
+				}
 				require(
 					profile.measurement === role &&
 						typeof profile.reconstructed_means === "boolean" &&
 						positive(profile.effective_max_interval_seconds) &&
 						positive(source.native_max_interval_seconds) &&
-						source.raw_sha256 === pinned[role + ".raw"],
+						sourceMatches,
 				);
 			}
 		}
