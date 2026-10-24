@@ -122,7 +122,7 @@ final class EngineeringReferenceTest extends TestCase {
 		$this->assertSame( array(), $after['overlay'] );
 		$this->assertNotSame( $before['overlay'][0]['reference_revision'], Publication::manifest()['products'][0]['product_revision'] );
 		$this->assertSame( $before['compatibility_revision'], $after['compatibility_revision'] );
-		$this->assertSame( Publication::revision( EngineeringData::json( EngineeringData::COMPATIBILITY_FILE ) ), $after['compatibility_revision'] );
+		$this->assertSame( Publication::revision( EngineeringData::compatibility() ), $after['compatibility_revision'] );
 	}
 
 	/** A partial ready reference must not poison the rest of the engine feed. */

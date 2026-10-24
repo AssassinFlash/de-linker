@@ -350,13 +350,14 @@ final class EngineeringFeedTest extends TestCase {
 
 		$this->assertSame( 1, $feed['schema_version'] );
 		$this->assertSame( EngineeringData::compatibility_version(), $feed['compatibility_version'] );
-		$this->assertSame( 64, strlen( $feed['compatibility_version'] ), 'the version the data file states' );
+		$this->assertSame( 64, strlen( $feed['compatibility_version'] ), 'the current Woo projection version' );
 		$this->assertArrayHasKey( 'compatibility', $feed );
 		$contract = $feed['compatibility'];
 		$this->assertIsArray( $contract );
-		$this->assertSame( EngineeringData::json( EngineeringData::COMPATIBILITY_FILE ), $contract );
+		$this->assertSame( EngineeringData::compatibility(), $contract );
+		$this->assertSame( 'woocommerce', $feed['compatibility_origin'] );
 		$this->assertSame( $feed['compatibility_version'], $contract['version'] ?? null, 'the contract the feed carries states the version it reports' );
-		$this->assertNotEmpty( $contract['pairs'] ?? array() );
+		$this->assertSame( array(), $contract['pairs'] ?? null, 'Migration JSON cannot supply undeclared runtime pairs.' );
 		$this->assertIsArray( $feed['overlay'] );
 		$this->assertSame( array(), $feed['overlay'], 'The migration input cannot supply a runtime reference without a Woo record.' );
 		$this->assertNotEmpty( $feed['generated_at'] );

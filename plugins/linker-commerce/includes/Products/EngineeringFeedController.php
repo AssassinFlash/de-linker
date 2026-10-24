@@ -130,11 +130,15 @@ final class EngineeringFeedController extends WP_REST_Controller {
 					),
 					'compatibility_version' => array(
 						'type'        => 'string',
-						'description' => __( 'The version stated by data/compatibility.json.', 'linker-commerce' ),
+						'description' => __( 'The content version of the current Woo compatibility declarations.', 'linker-commerce' ),
 					),
 					'compatibility'         => array(
 						'type'        => 'object',
-						'description' => __( 'The compatibility contract itself (data/compatibility.json), so the engine\'s sync refreshes its copy from the same fetch; its version equals compatibility_version. Absent when the site cannot read the file.', 'linker-commerce' ),
+						'description' => __( 'Current Woo compatibility declarations with canonical product identities and verified hosted evidence; their version equals compatibility_version. Absent when the saved declaration structure is unsupported.', 'linker-commerce' ),
+					),
+					'compatibility_origin'  => array(
+						'type' => 'string',
+						'enum' => array( 'woocommerce' ),
 					),
 					'overlay'               => array(
 						'type'        => 'array',

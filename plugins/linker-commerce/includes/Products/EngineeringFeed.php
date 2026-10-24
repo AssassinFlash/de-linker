@@ -66,16 +66,17 @@ final class EngineeringFeed {
 			'schema_version'            => self::SCHEMA_VERSION,
 			'figure_projection_version' => 2,
 			'generated_at'              => gmdate( 'c' ),
-			'compatibility_version'     => EngineeringData::compatibility_version(),
+			'compatibility_version'     => 'missing',
 			'overlay'                   => self::references( $publication ),
 			'products'                  => array(),
 		);
-		// The contract itself, so the engine's sync refreshes its copy from the
-		// same fetch; a broken file stays out of the feed (it reads as null),
-		// and the engine keeps the contract it already has.
-		$compatibility = EngineeringData::json( EngineeringData::COMPATIBILITY_FILE );
+		// Use the same current Woo authority read as product/document projection.
+		// An invalid declaration envelope cannot fall back to a shipped contract.
+		$compatibility = EngineeringData::compatibility( $publication );
 		if ( null !== $compatibility ) {
-			$feed['compatibility'] = $compatibility;
+			$feed['compatibility']         = $compatibility;
+			$feed['compatibility_version'] = $compatibility['version'];
+			$feed['compatibility_origin']  = 'woocommerce';
 		}
 		$ids = self::product_ids( $since );
 		// One bulk load each: the items below read every product's meta and

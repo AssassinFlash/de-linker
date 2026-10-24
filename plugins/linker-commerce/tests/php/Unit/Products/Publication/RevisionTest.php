@@ -11,6 +11,8 @@ namespace Linker\Commerce\Tests\Unit\Products\Publication;
 
 use Linker\Commerce\Products\EngineeringData;
 use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\Publication\CompatibilityClaims;
+use Linker\Commerce\Products\Publication\CompatibilityMigration;
 use Linker\Commerce\Tests\Support\CurrentFaqProduct;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
@@ -34,6 +36,33 @@ final class RevisionTest extends TestCase {
 	public function tearDown(): void {
 		$this->remove_managed_documents();
 		parent::tearDown();
+	}
+
+	/** Only actual declarations enter product identity; recovery/empty fields do not. */
+	public function test_compatibility_claim_lifecycle_preserves_uninvolved_identity(): void {
+		$before = Publication::manifest();
+		$this->current_faq_meta[ CompatibilityClaims::META_KEY ] = '';
+		$this->assertSame( $before['products'][0]['product_revision'], Publication::manifest()['products'][0]['product_revision'] );
+		$this->current_faq_meta[ CompatibilityMigration::META_KEY ] = array(
+			'schema_version' => 1,
+			'before'         => '',
+		);
+		$this->current_faq_meta[ CompatibilityClaims::META_KEY ]    = array(
+			'schema_version' => 1,
+			'pairs'          => array(),
+			'requirements'   => array(),
+		);
+		$this->assertSame( $before['products'][0]['product_revision'], Publication::manifest()['products'][0]['product_revision'] );
+		$this->current_faq_meta[ CompatibilityClaims::META_KEY ]['pairs'][] = array(
+			'id'         => 'pending-maintenance',
+			'unresolved' => array( 'Evidence still required.' ),
+		);
+		$declared = Publication::manifest();
+		$this->assertNotSame( $before['products'][0]['product_revision'], $declared['products'][0]['product_revision'] );
+		$this->current_faq_meta[ CompatibilityClaims::META_KEY ]['pairs'] = array();
+		$cleared = Publication::manifest();
+		$this->assertNotSame( $declared['products'][0]['product_revision'], $cleared['products'][0]['product_revision'] );
+		$this->assertSame( $before['products'][0]['product_revision'], $cleared['products'][0]['product_revision'] );
 	}
 
 	/** The observed retry error-to-queued change preserves current dependencies. */

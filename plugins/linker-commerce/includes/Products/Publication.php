@@ -275,7 +275,7 @@ final class Publication {
 		unset( $product );
 		$manifest                    = array(
 			'schema_version'         => 1,
-			'compatibility_revision' => self::revision( EngineeringData::json( EngineeringData::COMPATIBILITY_FILE ) ),
+			'compatibility_revision' => self::revision( Publication\CompatibilityClaims::projection( array_values( $products ), array_values( $documents ) ) ),
 			'products'               => array_values( $products ),
 			'documents'              => array_values( $documents ),
 		);
@@ -299,6 +299,19 @@ final class Publication {
 			return null;
 		}
 		$meta = get_post_meta( $id );
+		// Migration receipts are operational recovery, not product facts. Only
+		// products with actual maintained claims acquire this fact identity.
+		unset( $meta[ Publication\CompatibilityMigration::META_KEY ] );
+		$claims = get_post_meta( $id, Publication\CompatibilityClaims::META_KEY, true );
+		if ( '' === $claims || array() === $claims ) {
+			unset( $meta[ Publication\CompatibilityClaims::META_KEY ] );
+		} elseif ( Publication\CompatibilityClaims::shape( $claims ) ) {
+			if ( array() === $claims['pairs'] && array() === $claims['requirements'] ) {
+				unset( $meta[ Publication\CompatibilityClaims::META_KEY ] );
+			} else {
+				$meta[ Publication\CompatibilityClaims::META_KEY ] = array( self::ordered( $claims ) );
+			}
+		}
 		// Translation queue status and retry diagnostics are operational metadata.
 		foreach ( array_keys( $meta ) as $key ) {
 			if ( ( str_starts_with( (string) $key, '_linker_publication_' ) && ! in_array( $key, array( EvidenceBindings::META_KEY, EvidenceBindings::FAQ_META_KEY ), true ) ) || in_array( $key, array( '_edit_lock', '_edit_last', '_linker_i18n_status', '_linker_i18n_note' ), true ) ) {

@@ -15,6 +15,7 @@ final class Module {
 	public function register(): void {
 		( new Visibility() )->register();
 		( new \Linker\Commerce\Products\EngineeringReference() )->register();
+		( new CompatibilityEditor() )->register();
 		$jobs   = new PreparationJobs();
 		$access = new DocumentAccess();
 		add_action( 'rest_api_init', array( new Controller(), 'register_routes' ) );
