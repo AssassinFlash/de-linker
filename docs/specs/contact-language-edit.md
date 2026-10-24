@@ -78,6 +78,8 @@ The existing WindPress Contact volume separates the fallback explanation from
 its action with the standard field gap (`--proto-space-4`). The native link stays
 inside the card, wraps on phones and retains the existing keyboard focus ring.
 The hidden notice remains hidden; no PHP layout or extra CSS channel is added.
+The German fallback explanation also wraps at word boundaries, keeping short
+words intact within its existing phone-width card.
 Enabled native Contact primary actions use the existing darker teal hover token;
 disabled submit controls keep their native state.
 

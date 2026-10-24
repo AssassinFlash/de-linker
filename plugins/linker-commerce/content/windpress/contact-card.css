@@ -282,6 +282,10 @@ html[lang^="de"] #tv-contact-v1 :is(h1, h2, h3) {
 	gap: var(--proto-space-4);
 }
 
+html[lang^="de"] #contact-form [data-linker-contact-draft-error] p {
+	hyphens: manual;
+}
+
 #contact-form [data-linker-contact-draft-error] .linker-form-primary {
 	justify-self: start;
 	max-inline-size: 100%;
