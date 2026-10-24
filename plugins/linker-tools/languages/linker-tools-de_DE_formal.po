@@ -7079,3 +7079,64 @@ msgstr "−180 bis 180, WGS 84 (EPSG:4326)."
 #: ../../apps/planner/src/components/design/CoordinatesForm.tsx:100
 msgid "−90 to 90. Both coordinates are required for a geographic anchor; empty fields leave it unknown."
 msgstr "−90 bis 90. Für einen geografischen Bezugspunkt sind beide Koordinaten erforderlich. Leere Felder bedeuten, dass der Bezugspunkt unbekannt ist."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:76
+msgid "Choose a module"
+msgstr "Modul auswählen"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:60
+msgid "Loading module data…"
+msgstr "Moduldaten werden geladen …"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:64
+#: ../../apps/planner/src/components/energy/PvSetup.tsx:127
+msgid "Module data could not be loaded."
+msgstr "Die Moduldaten konnten nicht geladen werden."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:100
+#: ../../apps/planner/src/components/energy/PvSetup.tsx:134
+msgid "Reload module data"
+msgstr "Moduldaten neu laden"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:70
+msgid "No module specification is currently available."
+msgstr "Derzeit ist keine Modulspezifikation verfügbar."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:55
+msgid "Dimensions, rated power at STC and the temperature coefficient come from Linker's product data."
+msgstr "Abmessungen, STC-Nennleistung und Temperaturkoeffizient stammen aus den Produktdaten von Linker."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:158
+msgid "“Apply properties” updates the module values in this draft. “Save project” saves the changes."
+msgstr "„Eigenschaften anwenden“ aktualisiert die Modulwerte in diesem Entwurf. „Projekt speichern“ speichert die Änderungen."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/ProjectEditor.tsx:556
+#: ../../apps/planner/src/components/energy/EnergyError.tsx:145
+#: ../../apps/planner/src/components/energy/PvModuleParameters.tsx:25
+msgid "A new calculation requires an updated module selection."
+msgstr "Für eine neue Berechnung muss die Modulauswahl aktualisiert werden."
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:151
+#: ../../apps/planner/src/components/energy/PvModuleParameters.tsx:43
+msgid "Source document"
+msgstr "Quelldokument"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/design/ModuleForm.tsx:154
+#: ../../apps/planner/src/components/energy/PvModuleParameters.tsx:45
+msgid "Page %d"
+msgstr "Seite %d"
+
+#: build/planner/assets/planner.js
+#: ../../apps/planner/src/components/energy/PvForm.tsx:92
+msgid "The update takes the temperature coefficient and its source from the current product selection. Other settings for matching arrays are kept; entries for arrays outside the layout are removed. New arrays need model settings and a conversion group."
+msgstr "Die Aktualisierung übernimmt den Temperaturkoeffizienten und dessen Quelle aus der aktuellen Produktauswahl. Die übrigen Einstellungen passender Teilfelder bleiben erhalten; Einträge für Teilfelder außerhalb der Belegung werden entfernt. Neue Teilfelder benötigen Modelleinstellungen und eine Zuordnung zur Leistungsumwandlung."

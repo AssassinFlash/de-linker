@@ -152,6 +152,27 @@ at report and Woo handoff boundaries. Derived typed values remain rebuildable
 from Woo-maintained records and documents. They create no second editable
 product authority.
 
+The module intake consumes the current shared Woo reference projection. Its
+dimensions, STC power, temperature coefficient, document bytes/page and
+canonical product revision populate a selection form; customers do not enter
+those product facts or document checksums. `ModuleSource.woo` is an optional
+backward-compatible saved identity, not a maintenance surface. New/edited
+module facts and newly prepared PV parameters must match the current approved,
+prepared Woo record. Unchanged historical projects remain readable and editable
+in their other fields. Exact completed command receipts replay privately even
+after a source is withdrawn; they grant no new calculation.
+
+PV preparation freezes a reference-only Woo proof in its context and validates
+it before computation and before publishing its owned profile. Energy replay
+of such a profile rechecks the same proof around execution. The numerical model
+continues using its frozen inputs. Current source changes return a named
+`product_evidence_changed` refusal; a new command rejected before writing does
+not strand a frozen client intent or pretend to be a project-version conflict.
+The deployment host and worker always enable the source policy; direct pure
+algorithm fixtures have a distinct execution key and cannot enter that worker.
+This binds the maintained module facts; it does not approve equipment pairings,
+country rules or the remaining downstream report/handoff operations.
+
 The owner has authorised notifying the collaborating conversation after the
 shared integration is actually connected and verified. That handoff must name
 the interfaces, source/runtime versions, relevant readback and remaining

@@ -134,6 +134,14 @@ test("module-source claims need complete references and safe URL schemes", () =>
 	const spec = document.module_specs[0]!;
 	for (const source of [
 		{ ...spec.source, kind: "datasheet" },
+		{
+			...spec.source,
+			woo: {
+				product_id: 42,
+				product_revision: "a".repeat(64),
+				reference_input_id: "synthetic_woo_reference",
+			},
+		},
 		{ ...spec.source, url: "javascript:alert(1)" },
 		{
 			...spec.source,

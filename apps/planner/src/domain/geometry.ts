@@ -54,6 +54,11 @@ export interface ModuleSpec {
 		document_sha256: string | null;
 		url: string | null;
 		page: number | null;
+		woo?: {
+			product_id: number;
+			product_revision: string;
+			reference_input_id: string;
+		} | null;
 	};
 }
 

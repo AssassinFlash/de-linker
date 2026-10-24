@@ -426,6 +426,8 @@ export function DesignEditor({
 							{form.kind === "module" && (
 								<ModuleForm
 									{...formProps}
+									client={client}
+									scope={session.query_scope}
 									module={
 										model?.module_specs.find(
 											(module) => module.id === form.id,

@@ -2,8 +2,8 @@
 
 This handler does physical replay. It is not an equipment/country release or
 the whole planner: those assessments compose with this same frozen run later.
-It reads pinned dependencies only; no network, OS timezone or latest-product
-lookup occurs during execution.
+Physical replay reads pinned inputs only. A configured source guard checks
+current Woo permission around the replay without substituting product facts.
 """
 
 from __future__ import annotations
@@ -23,6 +23,7 @@ from .flow_document import flow_document
 from .frozen_profiles import frozen_profile
 from .frozen_run import bind_energy_assets, frozen_manifest
 from .numerical_tolerance import Tolerance
+from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .records import Actor, Context, Lease
 from .runtime_snapshot import RuntimeSnapshot
@@ -41,12 +42,18 @@ class EnergyKernel:
     }
 
     def __init__(
-        self, workspace: Workspace, tolerance: Tolerance, *, max_intervals: int
+        self,
+        workspace: Workspace,
+        tolerance: Tolerance,
+        *,
+        max_intervals: int,
+        products: ProductSources | None = None,
     ) -> None:
         positive_integer(max_intervals, "maximum aligned intervals")
         self.workspace = workspace
         self.tolerance = tolerance
         self.max_intervals = max_intervals
+        self.products = products
         self.runtime = RuntimeSnapshot.capture()
         self.workspace.blobs.put(self.runtime.content)
 
@@ -55,6 +62,9 @@ class EnergyKernel:
             "kind": self.kind,
             "tolerance": self.tolerance.document(),
             "max_intervals": self.max_intervals,
+            "product_policy": "current_woo_profile_sources_v1"
+            if self.products
+            else "isolated_algorithm_fixture",
         }
 
     def execution_key(self) -> str:
@@ -72,6 +82,8 @@ class EnergyKernel:
         pinned: dict[str, str] = {"runtime_bundle": self.runtime.sha256}
         for role, asset_id in scenario.profiles().items():
             asset = assets.get(actor, project_id, asset_id)
+            if self.products is not None:
+                self.products.check_profile(asset.metadata)
             pinned.update(
                 profile_dependencies(asset, role, inputs, self.workspace.blobs)
             )
@@ -127,6 +139,11 @@ class EnergyKernel:
         inputs = self.workspace.pinned_inputs(manifest)
         scenario = EnergyInputs.from_project(inputs)
         bind_energy_assets(self.workspace, manifest, scenario, inputs, pinned)
+        if self.products is not None:
+            for role in scenario.profiles():
+                self.products.check_profile(
+                    self.workspace.blobs.object(dependency(f"{role}.metadata"))
+                )
         profiles = {
             role: frozen_profile(
                 self.workspace.blobs,
@@ -175,6 +192,11 @@ class EnergyKernel:
             }
         )
         control.checkpoint()
+        if self.products is not None:
+            for role in scenario.profiles():
+                self.products.check_profile(
+                    self.workspace.blobs.object(dependency(f"{role}.metadata"))
+                )
         return {
             "schema": 1,
             "kind": self.kind,

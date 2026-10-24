@@ -9,6 +9,7 @@ from urllib.parse import urlsplit
 from pydantic import Field, field_validator, model_validator
 
 from .energy_inputs import Document, SchemaVersion
+from .product_binding import WooReference
 
 # Wire string/integer limits, not engineering dimensions (548-design-geometry).
 type Identifier = Annotated[str, Field(pattern=r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")]
@@ -157,6 +158,9 @@ class ModuleSource(Document):
     document_sha256: Hash | None
     url: Text | None
     page: PositiveInteger | None
+    # Omitted in historical projects. New Woo selections bind the canonical
+    # record/version as well as the existing document bytes and page.
+    woo: WooReference | None = None
 
     _source_url = field_validator("url")(public_source_url)
 
@@ -166,6 +170,8 @@ class ModuleSource(Document):
             self.document_sha256 is None or self.url is None or self.page is None
         ):
             raise ValueError("datasheet claim needs document hash, URL and page")
+        if self.woo is not None and self.kind != "datasheet":
+            raise ValueError("Woo reference requires its maintained datasheet")
         return self
 
 

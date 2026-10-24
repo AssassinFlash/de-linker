@@ -86,6 +86,8 @@ export function GeometryForm({
 	submit,
 	cancel,
 	onValidity,
+	measurementHelp = true,
+	submitDisabled = false,
 }: {
 	title: string;
 	locale: string;
@@ -93,12 +95,14 @@ export function GeometryForm({
 	submit: (values: GeometryValues) => boolean;
 	cancel: () => void;
 	onValidity: (valid: boolean) => void;
+	measurementHelp?: boolean;
+	submitDisabled?: boolean;
 }) {
 	const [error, setError] = useState("");
 	const formRef = useRef<HTMLFormElement>(null);
 	useEffect(() => {
 		revealActionResult(
-			formRef.current?.querySelector<HTMLInputElement>("input") ?? null,
+			formRef.current?.querySelector<HTMLElement>("input, select") ?? null,
 		);
 	}, []);
 	function apply(event: FormEvent<HTMLFormElement>) {
@@ -152,21 +156,23 @@ export function GeometryForm({
 			onChange={() => onValidity(false)}
 		>
 			<h3>{title}</h3>
-			<p className="lp-profile-help">
-				{decimalSeparator(locale) === ","
-					? __(
-							"Lengths are in metres. Decimal comma; no thousands separators.",
-							"linker-tools",
-						)
-					: __(
-							"Lengths are in metres. Decimal point; no thousands separators.",
-							"linker-tools",
-						)}
-			</p>
+			{measurementHelp && (
+				<p className="lp-profile-help">
+					{decimalSeparator(locale) === ","
+						? __(
+								"Lengths are in metres. Decimal comma; no thousands separators.",
+								"linker-tools",
+							)
+						: __(
+								"Lengths are in metres. Decimal point; no thousands separators.",
+								"linker-tools",
+							)}
+				</p>
+			)}
 			{children}
 			{error && <Notice error>{error}</Notice>}
 			<div className="lp-inline-actions">
-				<button className="lp-button" type="submit">
+				<button className="lp-button" type="submit" disabled={submitDisabled}>
 					{__("Apply properties", "linker-tools")}
 				</button>
 				<button

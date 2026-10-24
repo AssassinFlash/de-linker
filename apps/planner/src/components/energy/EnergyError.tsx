@@ -140,6 +140,11 @@ export function energyErrorText(error: unknown): string {
 				"A newer input revision is saved on the server. This request did not create a calculation. Reopen the project to review the saved inputs.",
 				"linker-tools",
 			);
+		case "product_evidence_changed":
+			return __(
+				"A new calculation requires an updated module selection.",
+				"linker-tools",
+			);
 		case "invalid_input":
 		case "invalid_energy_inputs":
 			return __(

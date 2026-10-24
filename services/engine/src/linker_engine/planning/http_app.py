@@ -12,6 +12,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import cast
 
 from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
@@ -70,6 +71,7 @@ from .product_sources import ProductProvider, ProductSources
 from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
 from .pv_preparation import PvPreparationService, check_pv_preparation
+from .records import Actor
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .trace_window import TraceWindow
 from .weather_service import WeatherService
@@ -127,6 +129,16 @@ def create_private_app(
     products = (
         ProductSources(product_provider) if product_provider is not None else None
     )
+
+    def previous_result(actor: Actor, path: str, body: Command) -> Object | None:
+        # Reuse the existing durable receipt reader. Historical private replay
+        # never becomes a new operation or asks for current product permission.
+        if products is None:
+            return None
+        result = replays.read(actor, path, cast(Object, body.model_dump(mode="json")))
+        return (
+            cast(Object, result["result"]) if result["status"] == "replayed" else None
+        )
 
     @app.exception_handler(PlanningError)
     async def domain_error(_request: Request, error: PlanningError) -> JSONResponse:
@@ -245,9 +257,14 @@ def create_private_app(
     @app.post("/projects/create")
     def create(body: ProjectCreate, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "projects/create", body)
+        if previous is not None:
+            return previous
         check_profile_selections(assets, actor, None, body.inputs)
         check_geometry_imports(assets, actor, None, body.inputs)
         check_pv_preparation(assets, actor, None, body.inputs)
+        if products is not None:
+            products.check_project(body.inputs)
         return project_view(
             workspace.create(actor, body.title, body.inputs, key=body.key)
         )
@@ -271,11 +288,16 @@ def create_private_app(
     @app.post("/projects/revise")
     def revise(body: ProjectRevise, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
+        receipt = previous_result(actor, "projects/revise", body)
+        if receipt is not None:
+            return receipt
         # Reject a foreign writer before publishing even an orphan input blob.
-        workspace.get(actor, body.project_id)
+        previous = workspace.get(actor, body.project_id)
         check_profile_selections(assets, actor, body.project_id, body.inputs)
         check_geometry_imports(assets, actor, body.project_id, body.inputs)
         check_pv_preparation(assets, actor, body.project_id, body.inputs)
+        if products is not None:
+            products.check_project(body.inputs, previous.inputs)
         return project_view(
             workspace.revise(
                 actor,
@@ -334,9 +356,13 @@ def create_private_app(
 
     @app.post("/runs/energy")
     def evaluate(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/energy", body)
+        if previous is not None:
+            return previous
         return run_view(
             energy.evaluate(
-                verified_actor(request.scope, write=True),
+                actor,
                 body.project_id,
                 body.expected_revision,
                 key=body.key,
@@ -346,6 +372,9 @@ def create_private_app(
     @app.post("/runs/pv")
     def prepare_pv(body: EnergyEvaluate, request: Request) -> Object:
         actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/pv", body)
+        if previous is not None:
+            return previous
         if pv is None:
             raise VersionUnavailable("PV preparation is not configured")
         return run_view(

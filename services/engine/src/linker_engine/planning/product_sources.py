@@ -9,13 +9,23 @@ operation-level validation compose with this same authority.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Protocol
+from typing import Protocol, cast
 
 from ..engine import Engine
 from ..products import FeedError
-from ..publication import Publication, PublicationChanged, PublicationUnavailable
-from .canonical import Object, decode_object, encode
-from .errors import Conflict, VersionUnavailable
+from ..publication import (
+    Publication,
+    PublicationChanged,
+    PublicationUnavailable,
+    ReferenceEvidenceUnavailable,
+    View,
+)
+from .canonical import Json, Object, decode_object, encode
+from .errors import Conflict, InvalidInput, ProductEvidenceChanged, VersionUnavailable
+from .geometry_documents import GeometryDocument, ModuleSpec
+from .pv_parameters import PvGenerationParameters, PvModuleParameters
+from .pv_profile_preparation import PROFILE_PURPOSE
+from .woo_module import module_template
 
 
 class ProductProvider(Protocol):
@@ -24,9 +34,148 @@ class ProductProvider(Protocol):
     version: str
 
 
+def worker_product_provider() -> ProductProvider:
+    # Reuse the site's loader for the currently selected immutable generation.
+    # Run proofs stay frozen; current permission is checked independently.
+    from ..app import SOURCE, Services, Settings
+
+    return Services(Settings.from_environment(), SOURCE)
+
+
 class ProductSources:
     def __init__(self, load: Callable[[], ProductProvider]) -> None:
         self.load = load
+
+    def module_basis(self) -> Object:
+        """Freeze only the used reference, not unrelated sales candidates."""
+        try:
+            loaded = self.load()
+            view = loaded.publication.reference_view(loaded.engine)
+            identity = view.dependencies["reference_inputs"][0]["reference_input_id"]
+            raw = next(
+                row
+                for row in loaded.publication.feed["overlay"]
+                if row["id"] == identity
+            )
+            result = decode_object(
+                encode(
+                    {
+                        "schema_version": 1,
+                        "publication": view.dependencies,
+                        "module": module_template(raw),
+                    }
+                )
+            )
+            loaded.publication.confirm(
+                view, require_reference=True, require_prepared=True
+            )
+            return result
+        except (PublicationChanged, ReferenceEvidenceUnavailable) as error:
+            raise ProductEvidenceChanged("current Woo module data changed") from error
+        except (
+            PublicationUnavailable,
+            FeedError,
+            OSError,
+            KeyError,
+            ValueError,
+            RuntimeError,
+        ) as error:
+            raise VersionUnavailable(
+                "current Woo module data is unavailable"
+            ) from error
+
+    def confirm_basis(self, basis: Object) -> None:
+        scope = basis.get("publication")
+        if basis.get("schema_version") != 1 or not isinstance(scope, dict):
+            raise VersionUnavailable("pinned Woo module proof is missing")
+        try:
+            loaded = self.load()
+            loaded.publication.confirm(
+                View(loaded.engine, scope),
+                require_reference=True,
+                require_prepared=True,
+            )
+        except PublicationChanged as error:
+            raise ProductEvidenceChanged("current Woo module data changed") from error
+        except (
+            PublicationUnavailable,
+            FeedError,
+            OSError,
+            KeyError,
+            ValueError,
+            RuntimeError,
+        ) as error:
+            raise VersionUnavailable(
+                "current Woo module data is unavailable"
+            ) from error
+
+    @staticmethod
+    def _check_module(module: ModuleSpec, basis: Object) -> None:
+        template = cast(Object, basis["module"])
+        expected = ModuleSpec.read(template["specification"])
+        if module != expected.model_copy(update={"id": module.id}):
+            raise InvalidInput("choose the current Woo-maintained module specification")
+
+    def check_project(self, inputs: Object, previous: Object | None = None) -> None:
+        """Retain unchanged history; new/edited product facts must come from Woo."""
+        before = previous or {}
+        changed = inputs.get("geometry") != before.get("geometry")
+        pv_changed = inputs.get("pv_generation") != before.get("pv_generation")
+        if (not changed and not pv_changed) or "geometry" not in inputs:
+            return
+        geometry = GeometryDocument.read(inputs["geometry"])
+        old = (
+            GeometryDocument.read(before["geometry"])
+            if isinstance(before.get("geometry"), dict)
+            else None
+        )
+        edited = [
+            module
+            for module in geometry.module_specs
+            if old is None or module not in old.module_specs
+        ]
+        if not edited and not (pv_changed and "pv_generation" in inputs):
+            return
+        if any(module.source.woo is None for module in edited):
+            raise InvalidInput(
+                "choose a Woo-maintained module before adding product facts"
+            )
+        basis = self.module_basis()
+        for module in edited:
+            self._check_module(module, basis)
+        if pv_changed and "pv_generation" in inputs:
+            self.check_pv_inputs(inputs, basis)
+
+    def pv_basis(self, inputs: Object) -> Object:
+        basis = self.module_basis()
+        self.check_pv_inputs(inputs, basis)
+        return basis
+
+    def check_pv_inputs(self, inputs: Object, basis: Object) -> None:
+        geometry = GeometryDocument.read(inputs.get("geometry"))
+        parameters = PvGenerationParameters.read(inputs.get("pv_generation"))
+        template = cast(Object, basis["module"])
+        expected = PvModuleParameters.read(template["parameters"])
+        modules = {module.id: module for module in geometry.module_specs}
+        for item in parameters.modules:
+            module = modules.get(item.module_spec_id)
+            if module is None:
+                raise InvalidInput("PV module is outside the saved roof layout")
+            self._check_module(module, basis)
+            if item != expected.model_copy(update={"module_spec_id": module.id}):
+                raise InvalidInput(
+                    "PV coefficient must match its current Woo-maintained figure"
+                )
+
+    def check_profile(self, metadata: Object) -> None:
+        if metadata.get("profile_type") != PROFILE_PURPOSE:
+            return
+        basis = metadata.get("woo_module_inputs")
+        if not isinstance(basis, dict):
+            raise InvalidInput(
+                "prepare a PV profile from the current Woo-maintained module"
+            )
+        self.confirm_basis(basis)
 
     def current(self) -> Object:
         try:
@@ -40,6 +189,21 @@ class ProductSources:
                 for row in view.dependencies["reference_inputs"]
             }
             feed = loaded.publication.feed
+            references = [row for row in feed["overlay"] if row["id"] in reference_ids]
+            templates: list[Json] = []
+            diagnostics: list[Json] = []
+            for row in references:
+                try:
+                    templates.append(module_template(row))
+                except (VersionUnavailable, ValueError, KeyError) as error:
+                    diagnostics.append(
+                        {
+                            "product_id": row["canonical_product_id"],
+                            "reference_input_id": row["id"],
+                            "code": "module_projection_unavailable",
+                            "reason": str(error),
+                        }
+                    )
             result = decode_object(
                 encode(
                     {
@@ -51,9 +215,9 @@ class ProductSources:
                         "products": [
                             row for row in feed["products"] if row["id"] in ids
                         ],
-                        "references": [
-                            row for row in feed["overlay"] if row["id"] in reference_ids
-                        ],
+                        "references": references,
+                        "pv_modules": templates,
+                        "module_diagnostics": diagnostics,
                     }
                 )
             )
@@ -65,6 +229,7 @@ class ProductSources:
             PublicationUnavailable,
             FeedError,
             OSError,
+            KeyError,
             ValueError,
             RuntimeError,
         ) as error:

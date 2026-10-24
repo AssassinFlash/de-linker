@@ -323,6 +323,12 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
         assert reply.status_code == 200, reply.text
         assert reply.headers["cache-control"] == "no-store, private"
         result = reply.json()
+        template = result["pv_modules"][0]
+        specification = template["specification"]
+        assert specification["stc_power_w"] == 460
+        assert specification["width_m"] == 1.134
+        assert template["parameters"]["gamma_pdc_per_c"] == -0.0029
+        assert specification["source"]["woo"]["product_id"] == reference["product_id"]
         assert [row["id"] for row in result["products"]] == [chosen["product_id"]]
         assert [row["canonical_product_id"] for row in result["references"]] == [
             reference["product_id"]
@@ -335,6 +341,40 @@ def test_current_products_use_shared_woo_preparation_and_close_on_change(
             {key: row[key] for key in ("product_id", "product_revision")}
             for row in (chosen, reference)
         ]
+        geometry = json.loads(
+            (
+                Path(__file__).resolve().parents[4]
+                / "fixtures/planning/geometry-flat.json"
+            ).read_text()
+        )
+        geometry["module_specs"] = [
+            {**specification, "id": geometry["module_specs"][0]["id"]}
+        ]
+        create = {
+            "schema_version": 1,
+            "title": "Woo-bound fixture",
+            "inputs": {"geometry": geometry},
+            "key": "woo-create",
+        }
+        created = private.post("/projects/create", json=create, headers=headers())
+        assert created.status_code == 200, created.text
+        changed = json.loads(json.dumps(create["inputs"]))
+        changed["geometry"]["module_specs"][0]["stc_power_w"] += 1
+        refused = private.post(
+            "/projects/revise",
+            json={
+                "schema_version": 1,
+                "project_id": created.json()["id"],
+                "expected_revision": 1,
+                "inputs": changed,
+                "key": "fake-woo-figure",
+            },
+            headers=headers(),
+        )
+        assert refused.status_code == 422
+        mode = "unavailable"
+        replay = private.post("/projects/create", json=create, headers=headers())
+        assert replay.status_code == 200 and replay.json() == created.json()
         mode, calls = "changed", 0
         assert private.post(path, json=body, headers=headers()).status_code == 409
         mode = "unavailable"

@@ -25,6 +25,12 @@ class EvaluationRevisionChanged(Conflict):
     code = "evaluation_revision_changed"
 
 
+class ProductEvidenceChanged(Conflict):
+    """A new action was refused because its current Woo evidence changed."""
+
+    code = "product_evidence_changed"
+
+
 class LeaseLost(PlanningError):
     """This worker can no longer publish or renew this attempt."""
 

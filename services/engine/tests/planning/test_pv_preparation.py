@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import cast
 
 import pytest
+from conftest import publication_manifest
 from fastapi.testclient import TestClient
 
 from linker_engine.planning import archive
@@ -16,12 +17,19 @@ from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import Object, digest, encode
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
-from linker_engine.planning.errors import InvalidInput, LeaseLost, NotFound
+from linker_engine.planning.errors import (
+    InvalidInput,
+    LeaseLost,
+    NotFound,
+    ProductEvidenceChanged,
+    VersionUnavailable,
+)
 from linker_engine.planning.execution_identity import EvaluationRouting
 from linker_engine.planning.execution_registry import ExecutionRegistry
 from linker_engine.planning.frozen_profiles import frozen_profile
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
+from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.pv_physics import PvModelDomainExceeded
 from linker_engine.planning.pv_preparation import (
     PvPreparationService,
@@ -33,6 +41,7 @@ from linker_engine.planning.records import Actor, Context, Lease, Project, Run
 from linker_engine.planning.weather_import import WeatherImport
 from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
+from linker_engine.publication import Publication
 
 from .conftest import Clock
 from .test_energy_kernel import TOLERANCE, create_scenario
@@ -50,7 +59,9 @@ from .test_worker_host import (
 
 
 def pv_task(
-    workspace: Workspace, owner: Actor
+    workspace: Workspace,
+    owner: Actor,
+    products: ProductSources | None = None,
 ) -> tuple[Project, PvReferenceKernel, Run]:
     project = project_with_roof(workspace, owner)
     source = WeatherImport(Assets(workspace), LIMITS).tmy(
@@ -59,17 +70,29 @@ def pv_task(
         PvSource(raw(), request(), capture(), interpretation(), encode(PROVENANCE)),
         key="weather",
     )
+    inputs = dict(project.inputs)
+    if products is not None:
+        template = cast(Object, products.module_basis()["module"])
+        geometry = cast(Object, inputs["geometry"])
+        identifier = str(cast(list[Object], geometry["module_specs"])[0]["id"])
+        geometry["module_specs"] = [
+            {**cast(Object, template["specification"]), "id": identifier}
+        ]
+        parameters = cast(Object, inputs["pv_generation"])
+        parameters["modules"] = [
+            {**cast(Object, template["parameters"]), "module_spec_id": identifier}
+        ]
     project = workspace.revise(
         owner,
         project.id,
         1,
         {
-            **project.inputs,
+            **inputs,
             "pv_preparation": {"schema_version": 1, "weather_asset_id": source.id},
         },
         key="pv-settings",
     )
-    kernel = PvReferenceKernel(workspace, LIMITS)
+    kernel = PvReferenceKernel(workspace, LIMITS, products=products)
     run = PvPreparationService(workspace, kernel, max_attempts=2).evaluate(
         owner, project.id, project.revision, key="prepare-pv"
     )
@@ -89,10 +112,28 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
     workspace: Workspace,
     owner: Actor,
     context: Context,
+    client: TestClient,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    roof, pv, pv_run = pv_task(workspace, owner)
+    withdrawn = False
+
+    def current(publication: Publication) -> dict:
+        value = publication_manifest(publication.feed)
+        for row in value["products"]:
+            row["ready"]["engineering"] = True
+        if withdrawn:
+            value["products"] = [
+                row
+                for row in value["products"]
+                if row.get("engineering_role") != "reference_pv_module"
+            ]
+        return value
+
+    monkeypatch.setattr(Publication, "read", current)
+    products = ProductSources(client.app.state.planning_product_provider)
+    roof, pv, pv_run = pv_task(workspace, owner, products)
     energy_project = create_scenario(workspace, owner)
-    energy = EnergyKernel(workspace, TOLERANCE, max_intervals=9000)
+    energy = EnergyKernel(workspace, TOLERANCE, max_intervals=9000, products=products)
     energy_run = EnergyService(workspace, energy, max_attempts=2).evaluate(
         owner, energy_project.id, energy_project.revision, key="energy-run"
     )
@@ -125,6 +166,7 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
     result = completed.result
     record = cast(Object, result["prepared_asset"])
     asset = Assets(workspace).get(owner, roof.id, str(record["id"]))
+    assert "woo_module_inputs" in asset.metadata
     assert asset_count(workspace, roof.id) == 2
     profile = frozen_profile(
         workspace.blobs, asset.content_sha256, asset.metadata_sha256, None
@@ -147,6 +189,35 @@ def test_actual_shared_worker_prepares_pv_then_uses_it_in_full_year_energy(
         87600 - profile.total_kwh, rel=0, abs=1e-7
     )
     assert cast(Object, result["country_assessment"])["status"] == "not_assessed"
+    late = PvPreparationService(workspace, pv, max_attempts=1).evaluate(
+        owner, roof.id, replay_project.revision, key="withdraw-during-publication"
+    )
+    before = asset_count(workspace, roof.id)
+
+    def previously_proven_profile(*_args: object, **_kwargs: object) -> Object:
+        # Reuse the already verified physical output: only the publication
+        # boundary changes here, so another numerical replay adds no evidence.
+        nonlocal withdrawn
+        withdrawn = True
+        return dict(asset.metadata)
+
+    monkeypatch.setattr(
+        "linker_engine.planning.pv_preparation.prepare_profile",
+        previously_proven_profile,
+    )
+    assert worker.run_once()
+    rejected = workspace.run(owner, late.id)
+    assert rejected.state == "failed" and rejected.error == {
+        "code": "product_evidence_changed",
+        "retryable": False,
+    }
+    assert asset_count(workspace, roof.id) == before
+    with pytest.raises(ProductEvidenceChanged):
+        EnergyService(workspace, energy, max_attempts=1).evaluate(
+            owner, roof.id, replay_project.revision, key="new-use-of-withdrawn-profile"
+        )
+    assert workspace.run(owner, replay.id).result == replay_result
+    assert Assets(workspace).get(owner, roof.id, asset.id).metadata == asset.metadata
 
 
 def test_cancellation_after_actual_pv_computation_publishes_no_owned_asset(
@@ -410,15 +481,21 @@ def test_prepared_profile_http_preview_reads_original_output_without_pv_calculat
             ]
 
 
-def test_managed_process_executes_both_registered_kinds_with_matching_readiness(
+def test_managed_process_keeps_fixture_pv_outside_production_source_policy(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("LINKER_ENGINE_FEED", raising=False)
     settings = configuration(tmp_path, rows=9000).model_copy(
         update={"pv_preparation": LIMITS}
     )
     workspace, energy = settings.open()
     owner = Actor("user", "synthetic-mixed-process-owner")
     project, _, pv_run = pv_task(workspace, owner)
+    pv = settings.pv_service(workspace)
+    assert pv is not None
+    with pytest.raises(VersionUnavailable):
+        pv.evaluate(owner, project.id, project.revision, key="unconfigured-woo")
     energy_project = create_scenario(workspace, owner)
     energy_run = energy.evaluate(
         owner, energy_project.id, energy_project.revision, key="process-energy"
@@ -426,14 +503,13 @@ def test_managed_process_executes_both_registered_kinds_with_matching_readiness(
     process, ready, generation = launch(tmp_path / "processes", settings, label="mixed")
     try:
         wait_for(lambda: ready_generation(ready), lambda value: value == generation)
-        prepared, replayed = (
-            completed(workspace, owner, pv_run),
-            completed(workspace, owner, energy_run),
-        )
-        assert prepared.state == replayed.state == "succeeded"
-        assert prepared.result is not None
-        asset_id = str(cast(Object, prepared.result["prepared_asset"])["id"])
-        assert Assets(workspace).get(owner, project.id, asset_id)
+        replayed = completed(workspace, owner, energy_run)
+        assert replayed.state == "succeeded"
+        # A fixture-only PV job cannot enter a production-policy executor.
+        # The source-backed shared-worker test covers actual PV/energy above;
+        # do not repeat the full numerical year in this process-lifecycle case.
+        assert workspace.run(owner, pv_run.id).state == "queued"
+        assert asset_count(workspace, project.id) == 1
         assert process.poll() is None
     finally:
         stop(process)

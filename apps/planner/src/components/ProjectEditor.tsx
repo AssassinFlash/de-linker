@@ -109,6 +109,7 @@ export function ProjectEditor({
 		flush,
 		busy,
 		failed,
+		sourceChanged,
 		recoveryFailed,
 		recovered,
 		recoveries,
@@ -548,6 +549,21 @@ export function ProjectEditor({
 							{__(
 								"The save could not be confirmed. Your input is still here.",
 								"linker-tools",
+							)}
+							{sourceChanged && (
+								<p>
+									{__(
+										"A new calculation requires an updated module selection.",
+										"linker-tools",
+									)}{" "}
+									<button
+										type="button"
+										className="lp-text-button"
+										onClick={() => chooseWorkspace("design")}
+									>
+										{__("Review roof design", "linker-tools")}
+									</button>
+								</p>
 							)}
 						</Notice>
 					)}

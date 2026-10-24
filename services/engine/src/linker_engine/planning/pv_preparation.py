@@ -13,6 +13,7 @@ from .energy_inputs import Document, SchemaVersion
 from .errors import InvalidInput, VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
+from .product_sources import ProductSources
 from .pv_parameters import PvGenerationLimits, PvGenerationParameters
 from .pv_profile_preparation import PROFILE_PURPOSE, prepare_profile
 from .pv_source import PvSource
@@ -76,15 +77,28 @@ class PvReferenceKernel:
         "pvlib": "0.16.1",
     }
 
-    def __init__(self, workspace: Workspace, limits: PvGenerationLimits) -> None:
+    def __init__(
+        self,
+        workspace: Workspace,
+        limits: PvGenerationLimits,
+        *,
+        products: ProductSources | None = None,
+    ) -> None:
         self.workspace = workspace
+        self.products = products
         # Freeze deployment settings against later caller mutations.
         self.limits = PvGenerationLimits.read(limits.model_dump(mode="json"))
         self.runtime = RuntimeSnapshot.capture()
         self.workspace.blobs.put(self.runtime.content)
 
     def parameters(self) -> Object:
-        return {"kind": self.kind, "limits": {**self.limits.model_dump(mode="json")}}
+        return {
+            "kind": self.kind,
+            "limits": {**self.limits.model_dump(mode="json")},
+            "product_policy": "current_woo_reference_v1"
+            if self.products
+            else "isolated_algorithm_fixture",
+        }
 
     def execution_key(self) -> str:
         return execution_key(
@@ -98,14 +112,19 @@ class PvReferenceKernel:
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
         PvGenerationParameters.read(inputs.get("pv_generation"))
         source = selected_weather(Assets(self.workspace), actor, project_id, inputs)
+        pinned = {
+            "runtime_bundle": self.runtime.sha256,
+            "weather.raw": source.content_sha256,
+            "weather.metadata": source.metadata_sha256,
+        }
+        if self.products is not None:
+            pinned["woo.module_inputs"] = self.workspace.blobs.put_object(
+                self.products.pv_basis(inputs)
+            )
         return Context(
             self.runtime.sha256,
             dict(self.models),
-            {
-                "runtime_bundle": self.runtime.sha256,
-                "weather.raw": source.content_sha256,
-                "weather.metadata": source.metadata_sha256,
-            },
+            pinned,
             self.parameters(),
         )
 
@@ -125,9 +144,12 @@ class PvReferenceKernel:
         context = manifest.get("context")
         assert isinstance(context, dict)  # request_execution_key checked its shape.
         pinned = context.get("assets")
+        expected_assets = {"runtime_bundle", "weather.raw", "weather.metadata"}
+        if self.products is not None:
+            expected_assets.add("woo.module_inputs")
         if (
             not isinstance(pinned, dict)
-            or set(pinned) != {"runtime_bundle", "weather.raw", "weather.metadata"}
+            or set(pinned) != expected_assets
             or any(not isinstance(x, str) for x in pinned.values())
         ):
             raise VersionUnavailable("exact PV preparation dependencies required")
@@ -136,6 +158,13 @@ class PvReferenceKernel:
         for value in pinned.values():
             self.workspace.blobs.read(str(value))
         inputs = self.workspace.pinned_inputs(manifest)
+        product_basis = None
+        if self.products is not None:
+            product_basis = self.workspace.blobs.object(
+                str(pinned["woo.module_inputs"])
+            )
+            self.products.confirm_basis(product_basis)
+            self.products.check_pv_inputs(inputs, product_basis)
         selection = PvPreparationInputs.read(inputs.get("pv_preparation"))
         with self.workspace.database.read() as connection:
             row = connection.execute(
@@ -162,6 +191,9 @@ class PvReferenceKernel:
         metadata = prepare_profile(
             self.workspace.blobs, inputs, revision, source, self.limits
         )
+        if self.products is not None and product_basis is not None:
+            self.products.confirm_basis(product_basis)
+            metadata["woo_module_inputs"] = product_basis
         control.checkpoint()
         publication = AssetPublication.prepare(
             self.workspace.blobs,

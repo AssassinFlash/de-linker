@@ -7,6 +7,8 @@ import { ParameterNote } from "./ParameterNote.tsx";
 import { PvModuleParameters } from "./PvModuleParameters.tsx";
 import { PvArrayParameters } from "./PvArrayParameters.tsx";
 import { PvConverterParameters } from "./PvConverterParameters.tsx";
+import type { ModuleTemplate } from "../../data/moduleTemplates.ts";
+import { matchesModule } from "../../data/moduleTemplates.ts";
 
 export function PvForm({
 	value,
@@ -17,6 +19,7 @@ export function PvForm({
 	valid,
 	onChange,
 	onValidity,
+	moduleTemplates,
 }: {
 	value: PvDraft;
 	geometry: GeometryDocument;
@@ -26,6 +29,7 @@ export function PvForm({
 	valid: boolean;
 	onChange: (next: PvDraft) => void;
 	onValidity: (valid: boolean) => void;
+	moduleTemplates?: readonly ModuleTemplate[] | undefined;
 }) {
 	const [section, setSection] = useState<"modules" | "arrays" | "conversion">(
 			"modules",
@@ -44,6 +48,19 @@ export function PvForm({
 			group.array_ids.map((id) => [id, group.id] as const),
 		),
 	);
+	const moduleSelectionCurrent = [
+		...new Set(arrays.map((array) => array.module_spec_id)),
+	].every((id) => {
+		const specification = geometry.module_specs.find(
+			(module) => module.id === id,
+		);
+		return (
+			!!specification &&
+			!!moduleTemplates?.some((template) =>
+				matchesModule(specification, template),
+			)
+		);
+	});
 	return (
 		<fieldset className="lp-scenario-fields" disabled={disabled}>
 			<section className="lp-scenario-block">
@@ -63,14 +80,16 @@ export function PvForm({
 				<button
 					type="button"
 					className="lp-button lp-button-secondary"
-					disabled={!valid}
-					onClick={() => onChange(alignPv(value, geometry))}
+					disabled={
+						!valid || moduleTemplates === undefined || !moduleSelectionCurrent
+					}
+					onClick={() => onChange(alignPv(value, geometry, moduleTemplates))}
 				>
 					{__("Update parameters for current roof layout", "linker-tools")}
 				</button>
 				<p>
 					{__(
-						"The update keeps parameters for matching arrays and module specifications, creates empty fields for new entries and removes entries outside the active layout. It does not supply new model values or assign new arrays to conversion groups.",
+						"The update takes the temperature coefficient and its source from the current product selection. Other settings for matching arrays are kept; entries for arrays outside the layout are removed. New arrays need model settings and a conversion group.",
 						"linker-tools",
 					)}
 				</p>
@@ -106,15 +125,6 @@ export function PvForm({
 							(item) => item.id === module.module_spec_id,
 						)}
 						locale={locale}
-						report={report}
-						onChange={(next) =>
-							onChange({
-								...value,
-								modules: value.modules.map((item) =>
-									item.module_spec_id === module.module_spec_id ? next : item,
-								),
-							})
-						}
 					/>
 				))}
 			</div>

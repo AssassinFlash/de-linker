@@ -16,7 +16,7 @@ from starlette.routing import Mount, Route, Router
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .http_app import create_private_app
-from .product_sources import ProductProvider
+from .product_sources import ProductProvider, ProductSources, worker_product_provider
 from .runtime_config import RuntimeConfig
 
 LOG = logging.getLogger(__name__)
@@ -44,15 +44,17 @@ def configured_private_app(
 ) -> ASGIApp:
     try:
         settings = config or RuntimeConfig.from_environment()
-        workspace, energy = settings.open()
+        provider = product_provider or worker_product_provider
+        products = ProductSources(provider)
+        workspace, energy = settings.open(products=products)
         return create_private_app(
             workspace,
             energy,
             credential=lambda: os.environ.get("GENIE_SERVICE_TOKEN", ""),
             limits=settings.http_limits(),
-            pv=settings.pv_service(workspace),
+            pv=settings.pv_service(workspace, products=products),
             weather=settings.weather_service(workspace),
-            product_provider=product_provider,
+            product_provider=provider,
         )
     except Exception:
         LOG.exception("planning service configuration is unavailable")

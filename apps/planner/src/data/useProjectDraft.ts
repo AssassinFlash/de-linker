@@ -26,6 +26,7 @@ export function useProjectDraft(
 	const [draft, setDraft] = useState<Draft | null>(null);
 	const [busy, setBusy] = useState(false);
 	const [failed, setFailed] = useState(false);
+	const [sourceChanged, setSourceChanged] = useState(false);
 	const [recoveryFailed, setRecoveryFailed] = useState(false);
 	const [recovered, setRecovered] = useState(false);
 	const [recoveries, setRecoveries] = useState<readonly RecoveryCandidate[]>(
@@ -151,6 +152,7 @@ export function useProjectDraft(
 		setDraft(prepared);
 		setBusy(true);
 		setFailed(false);
+		setSourceChanged(false);
 		try {
 			// Local recovery failure is reported, and does not make an available
 			// server unavailable. The in-memory intent remains frozen for retry.
@@ -174,6 +176,9 @@ export function useProjectDraft(
 		} catch (error) {
 			if (!active.current) return;
 			setFailed(true);
+			setSourceChanged(
+				error instanceof ApiError && error.code === "product_evidence_changed",
+			);
 			if (
 				error instanceof ApiError &&
 				(error.status === 401 ||
@@ -183,7 +188,11 @@ export function useProjectDraft(
 				recheck();
 				return;
 			}
-			if (error instanceof ApiError && error.status === 409) {
+			if (
+				error instanceof ApiError &&
+				error.status === 409 &&
+				!isPreMutationInputRefusal(error)
+			) {
 				try {
 					const remote = readProject(
 						await client.query(
@@ -232,6 +241,7 @@ export function useProjectDraft(
 		flush,
 		busy,
 		failed,
+		sourceChanged,
 		recoveryFailed,
 		recovered,
 		recoveries,

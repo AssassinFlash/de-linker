@@ -92,6 +92,15 @@ class PlannerWorker:
             # using the existing, already-synced interpreter environment.
             "PYTHONPATH": str(self.project / "src"),
             "PYTHONDONTWRITEBYTECODE": "1",
+            # Current Woo permission is public; the worker needs no service or
+            # research credential to validate its frozen product dependencies.
+            "LINKER_ENGINE_FEED": str(self.instance.dir / "engine/feed.json"),
+            "LINKER_ENGINE_COMPATIBILITY": str(
+                self.instance.dir / "engine/compatibility.json"
+            ),
+            "LINKER_ENGINE_CACHE": str(self.instance.dir / "engine/cache"),
+            "LINKER_PUBLICATION_URL": self.instance.url
+            + "/wp-json/linker/v1/publication/manifest",
         }
         policy: object = json.loads(self.runtime_file.read_bytes())
         if isinstance(policy, dict) and policy.get("weather_acquisition") is not None:

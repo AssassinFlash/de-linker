@@ -9,6 +9,8 @@ import { readGeometry } from "./validateGeometry.ts";
 import type { GeometryDocument } from "./geometry.ts";
 import { sameJson } from "./draft.ts";
 import { invalidateEnergyReplay } from "./energyScenario.ts";
+import type { ModuleTemplate } from "./productModules.ts";
+import { matchesModule } from "./productModules.ts";
 
 export interface WeatherDraft extends JsonObject {
 	readonly schema_version: 1;
@@ -41,6 +43,10 @@ export interface ModuleDraft extends JsonObject {
 		readonly document_sha256: string | null;
 		readonly url: string | null;
 		readonly page: number | null;
+		readonly woo?: Exclude<
+			import("./geometry.ts").ModuleSpec["source"]["woo"],
+			undefined
+		>;
 	};
 }
 export const ARRAY_FACTORS = [
@@ -268,25 +274,36 @@ export function activePvGeometry(value: unknown): {
 		),
 	};
 }
-export function alignPv(value: PvDraft, geometryValue: unknown): PvDraft {
-	const { arrays } = activePvGeometry(geometryValue),
+export function alignPv(
+	value: PvDraft,
+	geometryValue: unknown,
+	templates?: readonly ModuleTemplate[],
+): PvDraft {
+	const { arrays, geometry } = activePvGeometry(geometryValue),
 		modules = [...new Set(arrays.map((array) => array.module_spec_id))];
 	return {
 		...value,
-		modules: modules.map(
-			(id) =>
-				value.modules.find((item) => item.module_spec_id === id) ?? {
-					module_spec_id: id,
-					gamma_pdc_per_c: null,
-					source: {
-						kind: "user_declared",
-						note: "",
-						url: null,
-						document_sha256: null,
-						page: null,
-					},
-				},
-		),
+		modules: modules.map((id) => {
+			const specification = geometry.module_specs.find(
+				(item) => item.id === id,
+			);
+			const template =
+				specification &&
+				templates?.find((item) => matchesModule(specification, item));
+			return template
+				? { ...template.parameters, module_spec_id: id }
+				: (value.modules.find((item) => item.module_spec_id === id) ?? {
+						module_spec_id: id,
+						gamma_pdc_per_c: null,
+						source: {
+							kind: "user_declared",
+							note: "",
+							url: null,
+							document_sha256: null,
+							page: null,
+						},
+					});
+		}),
 		arrays: arrays.map(
 			(array) =>
 				value.arrays.find((item) => item.array_id === array.id) ?? {

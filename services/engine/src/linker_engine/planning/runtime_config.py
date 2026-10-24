@@ -18,6 +18,7 @@ from .energy_kernel import EnergyKernel
 from .energy_service import EnergyService
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
+from .product_sources import ProductSources, worker_product_provider
 from .pv_parameters import PvGenerationLimits
 from .pv_preparation import PvPreparationService, PvReferenceKernel
 from .weather_fetch_plan import WeatherFetchLimits
@@ -60,12 +61,15 @@ class RuntimeConfig(Document):
             raise ValueError("planning configuration is absent")
         return cls.model_validate_json(Path(name).read_bytes())
 
-    def open(self) -> tuple[Workspace, EnergyService]:
+    def open(
+        self, *, products: ProductSources | None = None
+    ) -> tuple[Workspace, EnergyService]:
         workspace = Workspace(Path(self.directory))
         kernel = EnergyKernel(
             workspace,
             Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
             max_intervals=self.max_intervals,
+            products=products or ProductSources(worker_product_provider),
         )
         return workspace, EnergyService(
             workspace, kernel, max_attempts=self.max_attempts
@@ -79,12 +83,21 @@ class RuntimeConfig(Document):
             self.max_json_depth,
         )
 
-    def pv_service(self, workspace: Workspace) -> PvPreparationService | None:
+    def pv_service(
+        self,
+        workspace: Workspace,
+        *,
+        products: ProductSources | None = None,
+    ) -> PvPreparationService | None:
         if self.pv_preparation is None:
             return None
         return PvPreparationService(
             workspace,
-            PvReferenceKernel(workspace, self.pv_preparation),
+            PvReferenceKernel(
+                workspace,
+                self.pv_preparation,
+                products=products or ProductSources(worker_product_provider),
+            ),
             max_attempts=self.max_attempts,
         )
 

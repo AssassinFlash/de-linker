@@ -118,6 +118,8 @@ export function readGeometry(
 	}
 	for (const spec of value.module_specs) {
 		const source = spec.source;
+		if (source.woo && source.kind !== "datasheet")
+			throw new GeometryInputError("incomplete_module_reference", spec.id);
 		if (
 			source.kind === "datasheet" &&
 			(source.document_sha256 === null ||

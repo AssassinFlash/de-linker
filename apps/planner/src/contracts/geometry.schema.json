@@ -271,6 +271,17 @@
               "type": "null"
             }
           ]
+        },
+        "woo": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/WooReference"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -605,6 +616,35 @@
       "maxItems": 3,
       "minItems": 3,
       "type": "array"
+    },
+    "WooReference": {
+      "additionalProperties": false,
+      "properties": {
+        "product_id": {
+          "exclusiveMinimum": 0,
+          "maximum": 9007199254740991,
+          "title": "Product Id",
+          "type": "integer"
+        },
+        "product_revision": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Product Revision",
+          "type": "string"
+        },
+        "reference_input_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Reference Input Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "product_id",
+        "product_revision",
+        "reference_input_id"
+      ],
+      "title": "WooReference",
+      "type": "object"
     }
   },
   "additionalProperties": false,

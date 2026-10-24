@@ -648,6 +648,9 @@ export function EnergyWorkspace({
 			</div>
 			<div hidden={view !== "pv"}>
 				<PvSetup
+					client={client}
+					scope={session.query_scope}
+					active={active && view === "pv"}
 					draft={draft}
 					edit={edit}
 					locale={locale}
