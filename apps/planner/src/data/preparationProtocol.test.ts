@@ -123,6 +123,57 @@ test("internally consistent source substitutions still fail their frozen task-ro
 	assert.throws(() => readRun(pv, pv.project_id));
 });
 
+test("removing required source roles from every agreeing map cannot make them optional", () => {
+	const weather = readObject(structuredClone(fixture.weather_run));
+	const context = readObject(readObject(weather.manifest).context);
+	const result = readObject(weather.result);
+	const without = (value: JsonObject, key: string): JsonObject =>
+		Object.fromEntries(Object.entries(value).filter(([name]) => name !== key));
+	const changed = {
+		...weather,
+		manifest: {
+			...readObject(weather.manifest),
+			context: {
+				...context,
+				assets: without(readObject(context.assets), "weather_acquisition.plan"),
+			},
+		},
+		result: {
+			...result,
+			pinned_assets: without(
+				readObject(result.pinned_assets),
+				"weather_acquisition.plan",
+			),
+			dependencies: without(
+				readObject(result.dependencies),
+				"acquisition_plan",
+			),
+			prepared_asset: {
+				...readObject(result.prepared_asset),
+				metadata: {
+					...readObject(readObject(result.prepared_asset).metadata),
+					dependencies: without(
+						readObject(
+							readObject(readObject(result.prepared_asset).metadata)
+								.dependencies,
+						),
+						"acquisition_plan",
+					),
+				},
+			},
+		},
+	};
+	assert.throws(() => readRun(changed, fixture.weather_run.project_id));
+	const pv = structuredClone(fixture.pv_run);
+	delete (
+		pv.manifest.context.assets as Partial<typeof pv.manifest.context.assets>
+	)["weather.metadata"];
+	delete (pv.result.pinned_assets as Partial<typeof pv.result.pinned_assets>)[
+		"weather.metadata"
+	];
+	assert.throws(() => readRun(pv, pv.project_id));
+});
+
 test("explicit weather selection preserves concurrent edits and rejects changed request/source proofs", () => {
 	const run = readRun(fixture.weather_run, fixture.weather_run.project_id),
 		historical = readProject(fixture.weather_project),
