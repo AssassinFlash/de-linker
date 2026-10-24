@@ -1,0 +1,8 @@
+{
+  "unchanged_format_file": "tools/local/tests/integration/test_planner_native.py",
+  "base_pin": "cfe5a5f98a3c9f89d6643c04fa9f9383022ac664",
+  "sha256": "fc31101386cacd72cc4f7c07e46a9c4620901102597f2ed571eb8a76f291903f",
+  "bytes_identical_to_base": true,
+  "integration_setup_failure": "Direct invocation selected PHP8.5; repository integration requires just/PHP8.3. Fixture failed before creating any integration stack.",
+  "disposition": "Retained diagnostic failure. Final scoped verification covers all local unit tests and affected format scope; native stack integration remains required at paired installation."
+}

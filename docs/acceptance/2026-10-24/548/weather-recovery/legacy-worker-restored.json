@@ -1,0 +1,36 @@
+{
+  "ready": {
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "generation": "4c0db985f9b248b08bf798cf043d254a",
+    "name": "local-p548",
+    "pid": 71736,
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "process_group": 71736,
+  "process": "71736 71721 Sat Oct 24 16:41:02 2026     /opt/homebrew/Cellar/python@3.12/3.12.15_1/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python -m linker_engine.planning.worker_host serve --expected-runtime 9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1 --expected-execution dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116 --expected-storage ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9 --generation 4c0db985f9b248b08bf798cf043d254a",
+  "schema": 2,
+  "table_counts": {
+    "artifacts": 0,
+    "evaluation_routes": 6,
+    "execution_control": 1,
+    "handoffs": 0,
+    "idempotency": 326,
+    "jobs": 6,
+    "ownership_transfers": 43,
+    "principal_closures": 50,
+    "project_assets": 42,
+    "projects": 165,
+    "revisions": 228,
+    "runs": 6
+  },
+  "rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "all_database_rows_unchanged": true,
+  "runtime_policy_unchanged": true,
+  "worker_policy_unchanged": true,
+  "carrier": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+  "bytes": 689144,
+  "new_log_output": "INFO:__main__:planning worker ready: local-p548",
+  "cause_of_prior_exit": "Not established. Both recorded previous PID and process-group leader were absent; stale readiness was not accepted as liveness."
+}

@@ -1,0 +1,37 @@
+{
+  "schema": 2,
+  "table_counts": {
+    "artifacts": 0,
+    "evaluation_routes": 6,
+    "execution_control": 1,
+    "handoffs": 0,
+    "idempotency": 326,
+    "jobs": 6,
+    "ownership_transfers": 43,
+    "principal_closures": 50,
+    "project_assets": 42,
+    "projects": 165,
+    "revisions": 228,
+    "runs": 6
+  },
+  "rows_sha256": "b74d9b5e657e3180fc0182233bd1138e7a90f98fee47b3d62e1e9af4e5176295",
+  "protected_project": [
+    {
+      "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+      "revision": 14,
+      "updated_at": 1792793576.72418
+    }
+  ],
+  "old_ready": {
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "generation": "432df7025b634aa3a656e74fb9a96bb1",
+    "name": "local-p548",
+    "pid": 27398,
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "old_pid": "27394\nSat Oct 24 01:11:39 2026\n/opt/homebrew/bin/uv run --locked --no-sync --offline --project /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine python -m linker_engine.planning.worker_host serve --expected-runtime 9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1 --expected-execution dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116 --expected-storage ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9 --generation 432df7025b634aa3a656e74fb9a96bb1\n",
+  "runtime_policy_sha256": "a9703dd31e500d6bee015446a601f5e353995e539597fc817b3b86829be6403a",
+  "worker_policy_sha256": "047079c66c31459cf67aedaba43c61eef5abf1484d27c9ed3fa2369d515aecb6"
+}

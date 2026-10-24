@@ -1,0 +1,58 @@
+[
+  {
+    "label": "lint",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "src/linker_engine/planning",
+      "tests/planning"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "0969e0067f91c550ef24ce278780bc05469f3b6f",
+    "started_at_utc": "2026-10-24T08:43:46.503452+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.077
+  },
+  {
+    "label": "format",
+    "command": [
+      ".venv/bin/ruff",
+      "format",
+      "--check",
+      "src/linker_engine/planning",
+      "tests/planning"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "0969e0067f91c550ef24ce278780bc05469f3b6f",
+    "started_at_utc": "2026-10-24T08:43:46.505736+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.071
+  },
+  {
+    "label": "types",
+    "command": [
+      ".venv/bin/mypy",
+      "src/linker_engine/planning"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "0969e0067f91c550ef24ce278780bc05469f3b6f",
+    "started_at_utc": "2026-10-24T08:43:46.507538+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 0.819
+  },
+  {
+    "label": "tests",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml=/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/weather-recovery/engine-tests.xml"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "0969e0067f91c550ef24ce278780bc05469f3b6f",
+    "started_at_utc": "2026-10-24T08:43:46.509337+00:00",
+    "exit_code": 0,
+    "elapsed_seconds": 161.102
+  }
+]

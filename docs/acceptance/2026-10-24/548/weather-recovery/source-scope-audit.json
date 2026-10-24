@@ -1,0 +1,33 @@
+{
+  "source_pin": "c1ddef08c34075f1667972a62a95e3a0d2f55a6d",
+  "base": "cfe5a5f98a3c9f89d6643c04fa9f9383022ac664",
+  "changed_files": 28,
+  "engine_check_pin": "c1ddef08c34075f1667972a62a95e3a0d2f55a6d",
+  "local_verified_at_source": "704c4fddbe2e4de068f1d9f7fe9fd0ad3f16f914",
+  "local_changed_files_identical_at_final_pin": [
+    {
+      "path": "tools/local/src/linker_local/planner_worker.py",
+      "sha256": "064c965dfd68afc848ea20b6fa4a94de7d30f778575d3dfef2aa32b793a9461e"
+    },
+    {
+      "path": "tools/local/tests/test_planner_worker.py",
+      "sha256": "000d6aa819f17a08f55373f32d67fa31a72cda8674bd389fb774c20f62a0e7ab"
+    }
+  ],
+  "secret_scan_files": 77,
+  "credential_pattern_hits": [],
+  "legacy_identifier_scope": [
+    "services/engine/src",
+    "tools/local/src"
+  ],
+  "legacy_identifier_hits": 0,
+  "native_ui_accepted_by_this_increment": false,
+  "new_actor_starts": 0,
+  "live_new_schema_installed": false,
+  "review_report_hashes": {
+    "standards-review.md": "5fc7ac9eb440b1ffede7d1068e16fb14ddabc1e9fb19835d9f62588a23f9ec56",
+    "standards-final.md": "d2b0a3c48254ff5c2ff8e06ee678fe90cd13cefd8ed4b8033fdcc7982feb590b",
+    "spec-review.md": "d26fc6dd7c6bc8b4d31ddbeb4e079fafd2101cf9fc9466c57744584fe0bcee24",
+    "spec-final.md": "be894494591a7712c2ed193b0f1f054b33f8c555b07ae946af6f26e8e16115d8"
+  }
+}
