@@ -28,6 +28,8 @@ parameters:
 		# with this plugin's mail (ContactRequest, FormGuard, RateLimit).
 		- ../linker-tools/includes/Genie
 	scanFiles:
+		# Native designed-page predicate, supplied by installed LiveCanvas at runtime.
+		- ../../tools/php/livecanvas-stubs.php
 		# Native CMP API, supplied by its wordpress.org plugin at runtime.
 		- ../../tools/php/cookieyes-stubs.php
 		# The existing language helper is supplied by the companion plugin;
