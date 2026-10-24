@@ -1,0 +1,172 @@
+{
+  "base_pin": "4140663f950999b55fe3c3b5bd0dfff0ebf9049b",
+  "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+  "checked_at_utc": "2026-10-24T07:32:36.701510+00:00",
+  "diff_command": [
+    "git",
+    "diff",
+    "4140663f950999b55fe3c3b5bd0dfff0ebf9049b...cf310435d60749b89dd0de182c3bfe8189ef47a6"
+  ],
+  "commits": [
+    "cf310435d60749b89dd0de182c3bfe8189ef47a6 Preserve weather status ownership denials during guest transfer",
+    "a2dc8b4260fc5c6e73fe9acf3e8cdfe7944cfb2a Integrate managed weather source acquisition and durable cancellation cleanup"
+  ],
+  "file_count": 31,
+  "files": [
+    {
+      "path": "CONTEXT.md",
+      "bytes": 3075,
+      "sha256": "d7256f81d9bd9ba6b83e423ea5a4a051eb61832f33683846967c337879b541f4"
+    },
+    {
+      "path": "docs/specs/548-weather-acquisition.md",
+      "bytes": 11911,
+      "sha256": "e268b5e0320e3ca431567b2a32277e1f75b333fa7fca605cbf4315cbf1c4458f"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/execution_control.py",
+      "bytes": 2105,
+      "sha256": "1bb961125d6cb7cf4906c79c36d39dba94518541a256266cfcacb90edb85631f"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/execution_registry.py",
+      "bytes": 3402,
+      "sha256": "1e3b0a704dd19ea10542c9471e93d8e1e2ceb7e6bb6386ade39c2106117cc7d0"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_app.py",
+      "bytes": 16081,
+      "sha256": "c3dd488ae839849e39a66bb9b4e1228df829760f836365e1e26beb1144bee561"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_documents.py",
+      "bytes": 4059,
+      "sha256": "119a54ffa7bfc389594c85c91e3900d85e01390afeb4db539d2cfa99c3d2d392"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_host.py",
+      "bytes": 2751,
+      "sha256": "2017d4a34d9eedf57fde79da4b4552d042716aadedea4f37aa82fd58d4dcdeef"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/http_replay.py",
+      "bytes": 6846,
+      "sha256": "405b80287eac85e6d110b8614baf8d742f66a2f964743b4e1200a9d57aacb7ab"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/jobs.py",
+      "bytes": 11799,
+      "sha256": "8a1878cbd291cdc7c38e99b79ff7372c0da7f9d8e3c3764988aed1b06ba0157c"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/pv_preparation.py",
+      "bytes": 8626,
+      "sha256": "7140ce9088a1161d7e0ed3d378e362ae19351fb1ce3cea099e1c6eccf0ef2f1c"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/records.py",
+      "bytes": 2987,
+      "sha256": "1b929a2cebed71340f3bed46b6cd689dafcfcb15e3ae15324c419e943a2f872b"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/runtime_config.py",
+      "bytes": 3515,
+      "sha256": "7f12bb27d0d2acdb4878fbb84a4ecabd5464101272458a946d890198a8cdd6f3"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/runtime_snapshot.py",
+      "bytes": 2616,
+      "sha256": "27d1decd1625c9457e8f844cf92fb3a2fc35f68735debf469d609ec6534676ce"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/schema.py",
+      "bytes": 6283,
+      "sha256": "7a10e650cd006b830554f5d780fdc73902dcb24db2d244e69555e70828959f58"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/schema_upgrade.py",
+      "bytes": 1754,
+      "sha256": "d318c8980bfc2dd9ffec83e4d13784196d7a7f8c65fe865b2e95a96bdfd9e68e"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/storage.py",
+      "bytes": 6698,
+      "sha256": "8f8a6e5a8bce0ad6999f304ffa75e51a12a1ec71430b8dc9c22cb96adfea9925"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_cleanup.py",
+      "bytes": 6751,
+      "sha256": "b5cf3ea1145b7f4662deb5120dd8e3bee194e7673ae9625ddb787c61ba87c216"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_import.py",
+      "bytes": 1731,
+      "sha256": "abe79ed04a18b92d6a644c55433ca0c47028ac3849f53490bf914987cfed33d5"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_inputs.py",
+      "bytes": 725,
+      "sha256": "607491d3dfb094deafdf59dd991d0ed0ed0ccfe6e3efd9d10d7e39133f4a244e"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_journal.py",
+      "bytes": 15737,
+      "sha256": "35418c6f11edb989b39178fecadf160f02d8ce664759a76dfcacf219327819bb"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_kernel.py",
+      "bytes": 6944,
+      "sha256": "b7d556f62b8d9192e6c705690b64161450ecb68e0b1361db001244082ec9501f"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_metadata.py",
+      "bytes": 940,
+      "sha256": "9f94763ce4e20df5d5ad67bd01b98de5a8c2a0239a24d9008c74cf0e107836c5"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_service.py",
+      "bytes": 1155,
+      "sha256": "986502f967a8d404d47318a32177e85de8ef3d684fe01aae9f3664d802d4d615"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/weather_status.py",
+      "bytes": 730,
+      "sha256": "b1b34a3e9cb0a3704a7840997df5687f2ea1f62b63d9fdbaf28cb06e636b57b1"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/worker_host.py",
+      "bytes": 7781,
+      "sha256": "f6520430947632c5f07ab7de668132d3d93983f02291f2055e3e10e55c4cc9d6"
+    },
+    {
+      "path": "services/engine/src/linker_engine/planning/workspace.py",
+      "bytes": 14535,
+      "sha256": "7409854ce50142317c63d2f71add4112afeb50c8c1f3c2592c0b1558dfe1a1cc"
+    },
+    {
+      "path": "services/engine/tests/planning/test_guest_claims.py",
+      "bytes": 17291,
+      "sha256": "aa88571935ee073a55ece27a33a3748489f165e20e4c98efdc9c0ad0c2ac7951"
+    },
+    {
+      "path": "services/engine/tests/planning/test_schema_upgrade.py",
+      "bytes": 6397,
+      "sha256": "a265eb3631a9bd24dabc5f092b67651af12d642b479698fef829fbe424706e27"
+    },
+    {
+      "path": "services/engine/tests/planning/test_weather_cleanup.py",
+      "bytes": 8107,
+      "sha256": "f2107221e53af041c6eced3b2ea4e0cfd82bf140ac49743389d48fc6643a3a6b"
+    },
+    {
+      "path": "services/engine/tests/planning/test_weather_kernel.py",
+      "bytes": 21497,
+      "sha256": "f6e86e6abae09194133081642b74458e3692c01015827869f90f9e98ea2ce9ef"
+    },
+    {
+      "path": "services/engine/tests/planning/test_worker_host.py",
+      "bytes": 14536,
+      "sha256": "e15019b614aff95e08b19257d300367a8909b6c563ec8886df7a474343f79117"
+    }
+  ]
+}

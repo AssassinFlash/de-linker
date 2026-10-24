@@ -1,0 +1,54 @@
+[
+  {
+    "label": "lint",
+    "command": [
+      ".venv/bin/ruff",
+      "check",
+      "src/linker_engine/planning",
+      "tests/planning"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+    "exit_code": 0,
+    "elapsed_seconds": 0.042
+  },
+  {
+    "label": "format",
+    "command": [
+      ".venv/bin/ruff",
+      "format",
+      "--check",
+      "src/linker_engine/planning",
+      "tests/planning"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+    "exit_code": 0,
+    "elapsed_seconds": 0.012
+  },
+  {
+    "label": "types",
+    "command": [
+      ".venv/bin/mypy",
+      "src/linker_engine/planning"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+    "exit_code": 0,
+    "elapsed_seconds": 0.577
+  },
+  {
+    "label": "engine-tests",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "--junitxml=/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/managed-weather/engine-tests.xml"
+    ],
+    "cwd": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine",
+    "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+    "exit_code": 0,
+    "elapsed_seconds": 85.4
+  }
+]

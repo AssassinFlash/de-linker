@@ -1,0 +1,86 @@
+{
+  "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+  "checked_at_utc": "2026-10-24T07:39:08.355863+00:00",
+  "source_files_verified": 31,
+  "final_commands_verified": 4,
+  "junit": {
+    "tests": 798,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "new_integration_cases": 22,
+  "local_links_verified": [
+    {
+      "document": "REVIEWS.md",
+      "target": "standards-review.md"
+    },
+    {
+      "document": "REVIEWS.md",
+      "target": "standards-final.md"
+    },
+    {
+      "document": "REVIEWS.md",
+      "target": "spec-review.md"
+    },
+    {
+      "document": "REVIEWS.md",
+      "target": "commands.json"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "source-pin.json"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "../energy-workspace/VALIDATION.md"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "commands.json"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "engine-tests.stdout.txt"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "engine-tests.xml"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "../weather-transport/VALIDATION.md"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "preservation.json"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "pre-ownership-fix-checks/commands.json"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "initial-checks/commands.json"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "REVIEWS.md"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "legacy-and-marker-audit.json"
+    }
+  ],
+  "secret_pattern_findings": [],
+  "historical_standards_report_unchanged": true,
+  "source_scope": "backend managed-weather cumulative diff, not live/native/production acceptance",
+  "retention": {
+    "new_instances": 0,
+    "new_worktrees": 0,
+    "new_full_backups": 0,
+    "unique_log_sets": 3,
+    "log_sets_explanation": "Failed initial schema expectation; accepted pre-ownership pin; final ownership-corrected pin. Logs moved between stages, not copied.",
+    "unneeded_runtime_copies_created": 0
+  }
+}
