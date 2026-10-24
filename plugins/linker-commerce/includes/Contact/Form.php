@@ -127,8 +127,11 @@ final class Form {
 		$raw      = $previous[ SelectionContext::FIELD ] ?? ( is_string( $query[ SelectionContext::FIELD ] ?? null ) ? $query[ SelectionContext::FIELD ] : '' );
 		$context  = array() !== $previous ? SelectionContext::normalize( json_decode( $raw, true ) ) : SelectionContext::query( $query );
 		$included = ! ( array() !== $previous && '' === $raw && '0' === ( $previous[ SelectionContext::INCLUDE_FIELD ] ?? '' ) );
+		// A native failed POST may have removed the optional source. Its language
+		// link still carries the current public URL context, not a private old JSON value.
+		$draft_context = ! $included && array() === $context ? SelectionContext::query( $query ) : $context;
 
-		$html  = '<form class="linker-contact-form"' . LanguageDraft::attributes( array() !== $previous, $context ) . ' method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+		$html  = '<form class="linker-contact-form"' . LanguageDraft::attributes( array() !== $previous, $draft_context ) . ' method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
 		$html .= '<input type="hidden" name="action" value="' . esc_attr( self::ACTION ) . '" />';
 		$html .= '<input type="hidden" name="lang" value="' . esc_attr( $this->locale() ) . '" />';
 		$html .= '<input type="hidden" name="' . esc_attr( self::BACK_FIELD ) . '" value="' . esc_url( $this->current_url() ) . '" />';

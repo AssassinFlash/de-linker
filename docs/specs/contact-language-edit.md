@@ -40,6 +40,12 @@ target form when the late entry arrives, do not overwrite that active edit.
 No pageshow reapplication over bfcache-preserved forms. A receipt or native
 submit also clears pending. These client values never grant business permission.
 
+After a failed native POST explicitly excluded its source, the removed summary
+has no checkbox. Preserve that explicit false even if every text field is then
+cleared. Only that removed recovery shape derives its navigation comparison from
+the current normalized public URL, matching the native language link; its removed
+display stays removed and no private selection JSON is copied to the target.
+
 If storage fails, intercept only a click that would lose actual entries or a
 changed choice. Keep the original page and values, expose the existing error
 surface and focus a native noopener new-tab link to the validated language URL.

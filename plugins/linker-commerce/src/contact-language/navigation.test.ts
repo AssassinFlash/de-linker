@@ -177,6 +177,44 @@ test( 'server recovery including empty values wins, and receipts clear pending w
 	expect( window.sessionStorage.getItem( key ) ).toBeNull();
 } );
 
+test.each( [ 'kept', 'cleared' ] )(
+	'native recovery with an excluded source carries its %s edit and explicit false',
+	( mode ) => {
+		const form = fixture( 'actor-a', 'epc-layout', true );
+		field( 'message' ).defaultValue = 'Native recovered question';
+		field( 'linker_contact_selection' ).remove();
+		const excluded = document.createElement( 'fieldset' );
+		excluded.className = 'linker-contact-selection--excluded';
+		form.prepend( excluded );
+		disconnect = connectContactLanguage();
+		if ( mode === 'cleared' ) {
+			field( 'message' ).value = '';
+		}
+		languageClick();
+		const stored = JSON.parse( window.sessionStorage.getItem( key )! );
+		expect( stored.include ).toBe( false );
+		disconnect();
+		window.history.replaceState( null, '', '/de/kontakt/?intent=document' );
+		fixture();
+		disconnect = connectContactLanguage();
+		expect( field( 'message' ) ).toHaveValue(
+			mode === 'cleared' ? '' : 'Native recovered question'
+		);
+		expect( field( 'linker_contact_selection' ) ).not.toBeChecked();
+		expect( field( 'linker_contact_selection' ).value ).toBe(
+			'current-server-json'
+		);
+	}
+);
+
+test( 'malformed pending is removed before parsing, rather than surviving each visit', () => {
+	fixture();
+	window.sessionStorage.setItem( key, '{not json' );
+	disconnect = connectContactLanguage();
+	expect( window.sessionStorage.getItem( key ) ).toBeNull();
+	expect( field( 'message' ) ).toHaveValue( '' );
+} );
+
 test( 'new destination edits, focus, empty values and bfcache pages are respected', () => {
 	const stored = saveEdit();
 	stored.fields.name = '';

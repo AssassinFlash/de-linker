@@ -288,6 +288,8 @@ final class FormTest extends TestCase {
 		);
 		$_GET = array( \Linker\Commerce\Contact\SelectionContext::FIELD => $raw );
 		$html = ( new Form() )->render();
+		$this->assertSame( 1, preg_match( '/data-linker-contact-draft-context="([a-f0-9]+)"/', $html, $context_attribute ) );
+		$navigation_context = $context_attribute[1] ?? '';
 		$this->assertStringContainsString( 'Include this selection with my message', $html );
 		$this->assertStringContainsString( 'SAJ with no match', $html );
 		$this->assertStringContainsString( ' checked /><span>', $html );
@@ -333,6 +335,8 @@ final class FormTest extends TestCase {
 			$html = ( new Form() )->render();
 			$this->assertStringContainsString( 'required>My unchanged question.</textarea>', $html );
 			$this->assertStringContainsString( 'This selection will not be sent.', $html );
+			$this->assertStringContainsString( 'data-linker-contact-draft-context="' . $navigation_context . '"', $html, 'The native language URL keeps the public source identity after explicit exclusion.' );
+			$this->assertStringContainsString( 'data-linker-contact-recovered="1"', $html );
 			$this->assertStringNotContainsString( 'SAJ with no match', $html );
 			$this->assertStringNotContainsString( 'name="' . \Linker\Commerce\Contact\SelectionContext::FIELD . '"', $html );
 			$this->assertNull( $store['linker_form_recovery_contact'] );
@@ -353,7 +357,7 @@ final class FormTest extends TestCase {
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 5 ) );
 		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn ( mixed $value ): string => (string) json_encode( $value ) ) );
 		WP_Mock::userFunction( 'wp_get_session_token', array( 'return' => 'test-session' ) );
-		WP_Mock::userFunction( 'wp_hash', array( 'return' => 'opaque-test-owner' ) );
+		WP_Mock::userFunction( 'wp_hash', array( 'return' => static fn ( string $value ): string => hash( 'sha256', $value ) ) );
 		WP_Mock::userFunction( 'wp_enqueue_script', array( 'return' => null ) );
 		WP_Mock::userFunction( 'plugins_url', array( 'return' => 'http://site/wp-content/plugins/linker-commerce/build/contact-language.js' ) );
 		WP_Mock::userFunction( 'wp_create_nonce', array( 'return' => 'signed-time' ) );

@@ -70,6 +70,9 @@ export function connectContactLanguage(): () => void {
 	const include = form.querySelector< HTMLInputElement >(
 		'input[type="checkbox"][name="linker_contact_selection"]'
 	);
+	const removed = Boolean(
+		form.querySelector( '.linker-contact-selection--excluded' )
+	);
 	const consent = form.querySelector< HTMLInputElement >(
 		'input[type="checkbox"][name="consent"]'
 	);
@@ -183,6 +186,7 @@ export function connectContactLanguage(): () => void {
 			return;
 		}
 		const dirty =
+			removed ||
 			TEXT_FIELDS.some( ( key ) => {
 				const input = control( key );
 				return input instanceof HTMLSelectElement
@@ -215,7 +219,7 @@ export function connectContactLanguage(): () => void {
 				until: Date.now() + lifetime,
 				fields,
 				consent: Boolean( consent?.checked ),
-				include: include?.checked ?? null,
+				include: include?.checked ?? ( removed ? false : null ),
 			};
 			const serialized = JSON.stringify( draft );
 			window.sessionStorage.setItem( STORAGE_KEY, serialized );
