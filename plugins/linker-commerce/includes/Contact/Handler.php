@@ -91,6 +91,7 @@ final class Handler {
 		if ( $order instanceof WP_Error ) {
 			$code = $order->get_error_code();
 			return match ( $code ) {
+				'linker_business_capacity' => 'reception_full',
 				'linker_intake_size' => 'review_size',
 				'linker_intake_full' => 'review_full',
 				'linker_intake_grouped' => 'grouped',
@@ -104,7 +105,7 @@ final class Handler {
 			\Linker\Commerce\Protection\IntakeAdmin::remember( $order );
 			return 'saved_review';
 		}
-		return '' !== $order->get_meta( ReceiptLimit::SKIPPED_META ) ? 'sent_no_receipt' : 'sent';
+		return ! in_array( $order->get_meta( ReceiptLimit::SKIPPED_META ), array( '', 'assessment_pending' ), true ) ? 'sent_no_receipt' : 'sent';
 	}
 
 	/**

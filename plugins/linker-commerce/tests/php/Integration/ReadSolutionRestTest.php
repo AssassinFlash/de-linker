@@ -137,29 +137,45 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 				}
 			}
 		);
-		$transport = function ( $pre, $args, $url ) {
-				unset( $pre );
-				$this->engine[] = array(
-					'url'  => (string) $url,
-					'body' => (array) json_decode( (string) ( $args['body'] ?? '' ), true ),
-				);
-				return array(
-					'headers'  => array(),
-					'body'     => (string) wp_json_encode( $this->engine_result ),
-					'response' => array(
-						'code'    => 200,
-						'message' => 'OK',
-					),
-					'cookies'  => array(),
-					'filename' => null,
-				);
+		$http = function ( $pre, $args, $url ) {
+			if ( false !== $pre || 'http://engine.test:8443/design/residential' !== $url ) {
+				return $pre;
+			}
+			$this->engine[] = array(
+				'url'  => (string) $url,
+				'body' => (array) json_decode( (string) ( $args['body'] ?? '' ), true ),
+			);
+			return array(
+				'headers'  => array(),
+				'body'     => (string) wp_json_encode( $this->engine_result ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+				'cookies'  => array(),
+				'filename' => null,
+			);
 		};
-		add_filter( 'pre_http_request', $transport, 10, 3 );
+		add_filter( 'pre_http_request', $http, 10, 3 );
 		$this->later(
-			static function () use ( $transport ): void {
-				remove_filter( 'pre_http_request', $transport, 10 );
+			static function () use ( $http ): void {
+				remove_filter( 'pre_http_request', $http, 10 );
 			}
 		);
+	}
+
+	/** The engine fixture must preserve other requests and existing native responses. */
+	public function test_engine_double_preserves_other_requests_and_prior_responses(): void {
+		$prior = array(
+			'response' => array( 'code' => 200 ),
+			'body'     => '{"valid":true}',
+		);
+		// phpcs:disable WooCommerce.Commenting.CommentHooks, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Drive WordPress's actual HTTP short-circuit filter without issuing any network request.
+		$this->assertFalse( apply_filters( 'pre_http_request', false, array(), 'http://127.0.0.1:9/unrelated' ) );
+		$this->assertSame( $prior, apply_filters( 'pre_http_request', $prior, array(), 'http://127.0.0.1:9/unrelated' ) );
+		$this->assertSame( $prior, apply_filters( 'pre_http_request', $prior, array(), 'http://engine.test:8443/design/residential' ) );
+		// phpcs:enable
+		$this->assertSame( array(), $this->engine );
 	}
 
 	/**

@@ -124,6 +124,7 @@ final class PluginTest extends TestCase {
 		// The confirmation link of a guest's "email me" (ticket #235).
 		WP_Mock::expectActionAdded( 'admin_post_nopriv_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
 		WP_Mock::expectActionAdded( 'admin_post_' . ConversationMail::CONFIRM_ACTION, array( $mail, 'handle_link' ) );
+		WP_Mock::expectFilterAdded( 'linker_commerce_conversation_mail_source_current', array( $mail, 'source_current' ), 10, 3 );
 		/**
 		 * WP_Mock supports a nested instance matcher for a method callback.
 		 *

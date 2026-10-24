@@ -36,6 +36,16 @@ if ( ! class_exists( 'WC_Settings_API' ) ) {
 		public $form_fields = array();
 		public $settings    = array();
 		public $enabled     = 'no';
+		// Woo's native settings reload is exercised by bilingual native fixtures.
+		public function init_settings() {
+			$this->settings = get_option( 'woocommerce_' . $this->id . '_settings', null );
+			if ( ! is_array( $this->settings ) ) {
+				$this->settings = array();
+				foreach ( $this->form_fields as $key => $field ) {
+					$this->settings[ $key ] = $field['default'] ?? '';
+				}
+			}
+		}
 		public function get_option( $key, $empty_value = null ) {
 			return $this->settings[ $key ] ?? $empty_value;
 		}

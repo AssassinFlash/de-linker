@@ -11,6 +11,7 @@ namespace Linker\Commerce\Digest;
 
 use Linker\Commerce\Mail\LocaleSwitch;
 use Linker\Commerce\Mail\TeamEmail;
+use Linker\Commerce\Registration\PendingApprovals;
 use Linker\Commerce\Settings\Options;
 
 /**
@@ -85,8 +86,8 @@ final class DigestEmail extends TeamEmail {
 			if ( $block instanceof InquiriesAwaitingProforma ) {
 				/* translators: %d: number of inquiries waiting for a Proforma invoice. */
 				$parts[] = sprintf( __( '%d 条待开 PI', 'linker-commerce' ), $count );
-			} elseif ( 'pending_accounts' === $block->id() ) {
-				$pending = $count > 1 ? $count - 1 : ( empty( $entries[0]['url'] ) ? 0 : 1 );
+			} elseif ( $block instanceof PendingApprovals ) {
+				$pending = $block->pending_count();
 				if ( $pending > 0 ) {
 					/* translators: %d: number of customer accounts waiting for approval. */
 					$parts[] = sprintf( __( '%d 个待审客户', 'linker-commerce' ), $pending );

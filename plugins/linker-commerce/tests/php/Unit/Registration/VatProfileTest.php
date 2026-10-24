@@ -86,7 +86,7 @@ final class VatProfileTest extends TestCase {
 	public function test_first_check_is_not_announced(): void {
 		$this->answers = array( 'valid' );
 
-		$this->assertSame( VatProfile::VALID, ( new VatProfile( new ViesClient() ) )->update( 5, 'de 143 454 214', false ) );
+		$this->assertSame( VatProfile::VALID, ( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) )->update( 5, 'de 143 454 214', false ) );
 		$this->assertSame( 'DE143454214', $this->meta[ VatProfile::NUMBER_META ] );
 		$this->assertSame( 1, $this->vies_calls );
 	}
@@ -102,7 +102,7 @@ final class VatProfileTest extends TestCase {
 			VatProfile::NUMBER_META => 'DE000000000',
 		);
 
-		$this->assertSame( VatProfile::INVALID, ( new VatProfile( new ViesClient() ) )->update( 5, 'DE 000 000 000', true ) );
+		$this->assertSame( VatProfile::INVALID, ( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) )->update( 5, 'DE 000 000 000', true ) );
 		$this->assertSame( 0, $this->vies_calls );
 	}
 
@@ -118,7 +118,7 @@ final class VatProfileTest extends TestCase {
 		$this->answers = array( 'valid' );
 		WP_Mock::expectAction( VatProfile::CHANGED_ACTION, 5, VatProfile::INVALID, VatProfile::VALID );
 
-		$this->assertSame( VatProfile::VALID, ( new VatProfile( new ViesClient() ) )->update( 5, 'DE143454214', true ) );
+		$this->assertSame( VatProfile::VALID, ( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) )->update( 5, 'DE143454214', true ) );
 		$this->assertConditionsMet();
 	}
 
@@ -128,7 +128,7 @@ final class VatProfileTest extends TestCase {
 	public function test_unanswered_check_is_repeated(): void {
 		$this->answers = array( 'down', 'down', 'valid' );
 		WP_Mock::expectAction( VatProfile::CHANGED_ACTION, 5, VatProfile::UNVERIFIED, VatProfile::VALID );
-		$profile = new VatProfile( new ViesClient() );
+		$profile = new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() );
 
 		$this->assertSame( VatProfile::UNVERIFIED, $profile->update( 5, 'DE143454214', false ) );
 		$this->assertSame( 'MS_UNAVAILABLE', $this->meta[ VatProfile::DETAIL_META ] );
@@ -141,7 +141,7 @@ final class VatProfileTest extends TestCase {
 	 * No number, or one VIES cannot check, needs no call to VIES; a non-EU number is not checked again.
 	 */
 	public function test_without_a_checkable_number(): void {
-		$profile = new VatProfile( new ViesClient() );
+		$profile = new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() );
 
 		$this->assertSame( VatProfile::NONE, $profile->update( 5, '', false ) );
 		$this->assertSame( VatProfile::UNVERIFIED, $profile->update( 6, 'CHE-123.456.789 MWST', false ) );
@@ -163,7 +163,7 @@ final class VatProfileTest extends TestCase {
 		$order->allows( 'get_meta' )->with( '_' . VatProfile::VAT_META )->andReturn( 'DE143454214' );
 		$order->expects( 'update_meta_data' )->with( VatProfile::ORDER_STATUS, VatProfile::VALID );
 
-		( new VatProfile( new ViesClient() ) )->snapshot( $order );
+		( new VatProfile( new ViesClient(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() ) )->snapshot( $order );
 
 		$this->assertConditionsMet();
 	}
