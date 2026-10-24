@@ -13,6 +13,7 @@ from .canonical import Json, Object, decode_object, digest, encode
 from .errors import InvalidInput, NumericalFailure, VersionUnavailable
 from .power_series import PowerSeries
 from .pv_arrays import generation_arrays
+from .pv_conventions import CONVENTIONS
 from .pv_parameters import PvGenerationParameters
 from .pv_physics import array_power, checked, conversion_power, sun, values
 from .pv_reconstruction import PvReconstruction
@@ -125,19 +126,7 @@ def generate_pv(
         "weather_source": weather.source.document(),
         "temporal_policy": transformation.document(),
         "output_boundary": "scenario_ac_potential_before_site_export_and_storage_control",
-        "model_conventions": {
-            "solar_position": "nrel_numpy_spa",
-            "delta_t": "spa_year_month",
-            "atmospheric_refraction_deg": 0.5667,
-            "extraterrestrial_radiation": "spencer",
-            "solar_constant_w_m2": 1366.1,
-            "relative_airmass": "kastenyoung1989",
-            "perez_coefficients": "allsitescomposite1990",
-            "sapm_reference_irradiance_w_m2": 1000.0,
-            "pvwatts_dc_reference_temperature_c": 25.0,
-            "pvwatts_optional_low_light_adjustment": False,
-            "zero_irradiance_policy": "zero_ghi_dni_dhi_implies_zero_poa_before_clearness_model_v1",
-        },
+        "model_conventions": CONVENTIONS.document(),
         "not_assessed": [
             "near_field_and_inter_row_shading",
             "bifacial_rear_irradiance",

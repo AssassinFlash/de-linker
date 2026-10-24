@@ -27,6 +27,7 @@ from pvlib import (
 from .canonical import Json, Object
 from .errors import InvalidInput, NumericalFailure
 from .pv_arrays import GenerationArray
+from .pv_conventions import CONVENTIONS
 from .pv_parameters import PvArrayParameters, PvConversionParameters, PvModuleParameters
 from .pv_weather import WeatherSeries
 
@@ -74,10 +75,10 @@ def sun(weather: WeatherSeries) -> dict[str, Vector]:
             altitude=weather.altitude_m,
             pressure=weather_values(weather, "pressure_pa"),
             temperature=weather_values(weather, "air_temp_2m_c"),
-            method="nrel_numpy",
+            method=CONVENTIONS.solar_position,
             delta_t=delta_t,
-            atmos_refract=0.5667,
-            numthreads=1,
+            atmos_refract=CONVENTIONS.atmospheric_refraction_deg,
+            numthreads=CONVENTIONS.spa_numthreads,
         )
         # The same year/month delta-T calculation used by SPA's None route,
         # expanded here so the actual values are pinned in the witness.
@@ -89,9 +90,9 @@ def sun(weather: WeatherSeries) -> dict[str, Vector]:
             "dni_extra_w_m2": checked(
                 irradiance.get_extra_radiation(
                     dates,
-                    solar_constant=1366.1,
-                    method="spencer",
-                    epoch_year=2014,
+                    solar_constant=CONVENTIONS.solar_constant_w_m2,
+                    method=CONVENTIONS.extraterrestrial_radiation,
+                    epoch_year=CONVENTIONS.extraterrestrial_epoch_year,
                 ),
                 size,
                 "extraterrestrial DNI",
@@ -122,7 +123,9 @@ def array_power(
     # Perez takes relative, not pressure-corrected, airmass. Nighttime NaN in
     # this intermediate is part of pvlib's documented horizon handling; no
     # output NaN is accepted or repaired here.
-    airmass = atmosphere.get_relative_airmass(zenith, model="kastenyoung1989")
+    airmass = atmosphere.get_relative_airmass(
+        zenith, model=CONVENTIONS.relative_airmass
+    )
     dni, ghi, dhi = (
         weather_values(weather, key)
         for key in (
@@ -159,7 +162,7 @@ def array_power(
             albedo=parameter.albedo,
             surface_type=None,
             model=parameter.transposition,
-            model_perez="allsitescomposite1990",
+            model_perez=CONVENTIONS.perez_coefficients,
         )
         for key in components:
             components[key][lit] = checked(
@@ -202,7 +205,7 @@ def array_power(
             thermal.a,
             thermal.b,
             thermal.delta_t_c,
-            irrad_ref=1000.0,
+            irrad_ref=CONVENTIONS.sapm_reference_irradiance_w_m2,
         ),
         size,
         "cell temperature",
@@ -213,9 +216,9 @@ def array_power(
             cell,
             array.stc_power_w,
             module.gamma_pdc_per_c,
-            temp_ref=25.0,
-            k=None,
-            cap_adjustment=False,
+            temp_ref=CONVENTIONS.pvwatts_dc_reference_temperature_c,
+            k=CONVENTIONS.pvwatts_dc_k,
+            cap_adjustment=CONVENTIONS.pvwatts_optional_low_light_adjustment,
         ),
         size,
         "DC power",
