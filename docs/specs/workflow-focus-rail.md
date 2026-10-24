@@ -15,7 +15,7 @@ gap. Do not replace or shrink the existing outline to disguise clipping.
 Use the backed-up snapshot-backed9410 instance with all four native LiveCanvas
 flags enabled and the existing page bodies unchanged. Retain the exact CSS
 preimage and current scoped metadata backup; generate with official WindPress,
-then read all50 volume hashes and protected content before/after.
+then read the complete volume inventory and protected content before/after.
 
 Verify EN/DE390 plus320 stress and the1000/1001 boundary: normal and no-script
 rails, actual native keyboard selection through every card, both end positions,

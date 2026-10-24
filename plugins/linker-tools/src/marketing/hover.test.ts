@@ -43,9 +43,20 @@ function page( finePointer = true, mediaAvailable = true ) {
 		},
 		document: fixture,
 	} );
-	const pointer = ( type: string, target: Element, x = 20, y = 30 ) => {
+	const pointer = (
+		type: string,
+		target: Element,
+		x = 20,
+		y = 30,
+		relatedTarget: EventTarget | null = null
+	) => {
 		target.dispatchEvent(
-			new MouseEvent( type, { bubbles: true, clientX: x, clientY: y } )
+			new MouseEvent( type, {
+				bubbles: true,
+				clientX: x,
+				clientY: y,
+				relatedTarget,
+			} )
 		);
 	};
 	return { fixture, buttons, clicks, pointer };
@@ -90,6 +101,34 @@ test( 'movement between modules continues to switch both ways', () => {
 	pointer( 'mousemove', buttons[ 1 ], 10, 20 );
 	pointer( 'mousemove', buttons[ 0 ], 11, 20 );
 	expect( clicks ).toEqual( [ 1, 0 ] );
+} );
+
+test( 'a module with its own active marker clicks once per pointer entry', () => {
+	const { fixture, buttons, clicks, pointer } = page();
+	buttons[ 1 ].addEventListener( 'click', () => {
+		buttons[ 1 ].removeAttribute( 'aria-selected' );
+		buttons[ 1 ].classList.add( 'is-on' );
+	} );
+	const label = buttons[ 1 ].querySelector( 'span' )!;
+	pointer( 'mousemove', buttons[ 1 ], 10, 20 );
+	pointer( 'mousemove', label, 11, 20 );
+	pointer( 'mouseout', buttons[ 1 ], 11, 20, label );
+	pointer( 'mousemove', buttons[ 1 ], 12, 20 );
+	expect( clicks ).toEqual( [ 1 ] );
+	pointer( 'mousemove', fixture.querySelector( '#outside' )!, 13, 20 );
+	pointer( 'mousemove', label, 14, 20 );
+	expect( clicks ).toEqual( [ 1, 1 ] );
+} );
+
+test( 'leaving the viewport permits re-entry at the same coordinates', () => {
+	const { buttons, clicks, pointer } = page();
+	buttons[ 1 ].addEventListener( 'click', () => {
+		buttons[ 1 ].removeAttribute( 'aria-selected' );
+	} );
+	pointer( 'mousemove', buttons[ 1 ], 10, 20 );
+	pointer( 'mouseout', buttons[ 1 ], 10, 20 );
+	pointer( 'mousemove', buttons[ 1 ], 10, 20 );
+	expect( clicks ).toEqual( [ 1, 1 ] );
 } );
 
 test.each( [

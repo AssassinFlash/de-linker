@@ -73,6 +73,10 @@ the mismatch; restoring it reproduced the failure. Activate hover on actual
 Keep keyboard, ordinary click and non-hover pointers independent. Verify the
 real Home/End flow with the normal asset, genuine mouse movement, nested labels,
 unchanged coordinates and every existing selector consumer.
+Track the closest trigger identity so movement within one module clicks only
+once even when its local active marker differs. Clear that identity on movement
+outside a trigger or a viewport exit; re-entry can activate it again. Native
+clicks and keyboard changes stay independent of the hover-entry state.
 
 The no-script Services hero inherits white on its section but the base heading
 rule supplies dark ink directly to H1. Give only that actual H1 the existing
