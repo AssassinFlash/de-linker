@@ -236,10 +236,14 @@ function Fixture() {
 }
 const target = document.querySelector<HTMLElement>("[data-linker-planner]");
 if (!target) throw new Error("missing_fixture_root");
-createRoot(target).render(
+const fixtureRoot = createRoot(target);
+fixtureRoot.render(
 	<QueryClientProvider
 		client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
 	>
 		{setupMode ? <SetupFixture /> : <Fixture />}
 	</QueryClientProvider>,
 );
+// The standalone development entry can be replaced before Vite reloads it.
+// Release its former React root before a refreshed module mounts another one.
+import.meta.hot?.dispose(() => fixtureRoot.unmount());
