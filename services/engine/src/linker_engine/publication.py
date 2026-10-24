@@ -237,6 +237,57 @@ class Publication:
     def view(self, engine: Engine, *, require_reference: bool = False) -> View:
         return self._view(engine, self.read(), require_reference=require_reference)
 
+    def prepared_view(self, engine: Engine, *, include_reference: bool = False) -> View:
+        """Planner consumption of the current Woo-prepared intersection.
+
+        Preparation workers still use view()/prepared_products() to prove a
+        newly loaded generation before acknowledging it. Customer reads must
+        additionally respect Woo's current engineering readiness.
+        """
+        current = self.read()
+        ready = {
+            item["product_id"]
+            for item in current["products"]
+            if item.get("ready", {}).get("engineering") is True
+        }
+        reference = engine.products.reference_module
+        raw_reference = next(
+            (
+                row
+                for row in self.feed["overlay"]
+                if reference and row["id"] == reference.id
+            ),
+            None,
+        )
+        if (
+            raw_reference is None
+            or raw_reference.get("canonical_product_id") not in ready
+        ):
+            reference = None
+        prepared = replace(
+            engine,
+            products=replace(
+                engine.products,
+                products=tuple(p for p in engine.products.products if p.id in ready),
+                reference_module=reference,
+            ),
+        )
+        view = self._view(prepared, current)
+        if include_reference and reference is not None:
+            try:
+                scope = self._reference_scope(prepared, current)
+            except ReferenceEvidenceUnavailable:
+                # A reference cannot close unrelated prepared sales products.
+                return view
+            for kind in ("products", "documents", "reference_inputs"):
+                view.dependencies[kind] = list(
+                    {
+                        digest(row): row
+                        for row in [*view.dependencies[kind], *scope[kind]]
+                    }.values()
+                )
+        return view
+
     def _view(
         self,
         engine: Engine,
@@ -356,7 +407,13 @@ class Publication:
             dependencies,
         )
 
-    def confirm(self, view: View, *, require_reference: bool = False) -> None:
+    def confirm(
+        self,
+        view: View,
+        *,
+        require_reference: bool = False,
+        require_prepared: bool = False,
+    ) -> None:
         current = self.read()
         scope = view.dependencies
         if (
@@ -391,6 +448,12 @@ class Publication:
                 != product["product_revision"]
             ):
                 raise PublicationChanged("Product publication changed")
+            if (
+                require_prepared
+                and products[product["product_id"]].get("ready", {}).get("engineering")
+                is not True
+            ):
+                raise PublicationChanged("Product engineering preparation changed")
         for doc in scope["documents"]:
             item = docs.get(doc["document_id"], {})
             if item.get("document_revision") != doc["document_revision"] or doc[

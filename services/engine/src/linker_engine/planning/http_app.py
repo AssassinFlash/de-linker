@@ -66,6 +66,7 @@ from .http_documents import (
 from .http_index import project_page, run_page
 from .http_replay import HttpReplay
 from .http_views import asset_view, project_view, run_view
+from .product_sources import ProductProvider, ProductSources
 from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
 from .pv_preparation import PvPreparationService, check_pv_preparation
@@ -103,6 +104,7 @@ def create_private_app(
     limits: HttpLimits,
     pv: PvPreparationService | None = None,
     weather: WeatherService | None = None,
+    product_provider: Callable[[], ProductProvider] | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -122,6 +124,9 @@ def create_private_app(
     geometry_intake = GeometryImport(assets)
     previews = ProfilePreview(assets)
     replays = HttpReplay(workspace, energy, intake, geometry_intake)
+    products = (
+        ProductSources(product_provider) if product_provider is not None else None
+    )
 
     @app.exception_handler(PlanningError)
     async def domain_error(_request: Request, error: PlanningError) -> JSONResponse:
@@ -213,6 +218,15 @@ def create_private_app(
             except NotFound:
                 return {"schema_version": 1, "status": "retired"}
         return {"schema_version": 1, "status": "active"}
+
+    @app.post("/products/current")
+    def current_products(_body: Command, request: Request) -> Object:
+        actor = verified_actor(request.scope)
+        with workspace.database.read() as connection:
+            active_actor(connection, actor)
+        if products is None:
+            raise VersionUnavailable("current Woo product data is unavailable")
+        return products.current()
 
     @app.post("/identity/claim-session")
     def claim_session(body: SessionClaim, request: Request) -> Object:

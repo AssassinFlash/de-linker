@@ -58,6 +58,7 @@ def engine_project(instance: Instance, checkout: Path) -> Path:
                 or not (
                     name in {"pyproject.toml", "uv.lock"}
                     or (name.startswith("src/linker_engine/") and name.endswith(".py"))
+                    or (name.startswith("schemas/") and name.endswith(".json"))
                 )
             ):
                 raise ValueError("invalid executable file binding")
@@ -72,7 +73,11 @@ def engine_project(instance: Instance, checkout: Path) -> Path:
             str(path.relative_to(directory))
             for path in (directory / "src/linker_engine").rglob("*.py")
         }
-        declared = {name for name in files if name.startswith("src/")}
+        actual.update(
+            str(path.relative_to(directory))
+            for path in (directory / "schemas").rglob("*.json")
+        )
+        declared = {name for name in files if name.startswith(("src/", "schemas/"))}
         if actual != declared:
             raise ValueError("executable source inventory differs from its binding")
         environment = directory / ".venv"

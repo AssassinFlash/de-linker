@@ -27,6 +27,7 @@ def selected(tmp_path: Path) -> tuple[Instance, Path, Path, Path]:
         "src/linker_engine/__init__.py",
         "src/linker_engine/application.py",
         "src/linker_engine/planning/worker_host.py",
+        "schemas/feed.schema.json",
     ):
         path = release / name
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -52,7 +53,7 @@ def test_uninstalled_uses_checkout_and_installed_preserves_exact_selection(
 
 
 @pytest.mark.parametrize(
-    "change", ["altered", "missing", "extra", "symlink", "environment"]
+    "change", ["altered", "missing", "extra", "symlink", "environment", "schema"]
 )
 def test_changed_or_incomplete_release_is_never_replaced_by_checkout(
     tmp_path: Path, change: str
@@ -71,6 +72,8 @@ def test_changed_or_incomplete_release_is_never_replaced_by_checkout(
         foreign = tmp_path / "foreign.py"
         foreign.write_bytes(original)
         source.symlink_to(foreign)
+    elif change == "schema":
+        (release / "schemas/feed.schema.json").write_text("changed validation")
     else:
         (release / ".venv").unlink()
         foreign_environment = tmp_path / "foreign-environment"

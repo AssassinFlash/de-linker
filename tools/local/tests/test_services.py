@@ -1,3 +1,4 @@
+import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from threading import Thread
@@ -129,7 +130,9 @@ def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
             paths.append(self.path)
             self.send_response(200)
             self.end_headers()
-            self.wfile.write(b'{"products":[]}')
+            self.wfile.write(
+                b'{"products":[],"source_revision":"woo","compatibility_revision":"contract"}'
+            )
 
         def log_message(self, format: str, *args: object) -> None:
             pass
@@ -141,11 +144,38 @@ def test_local_engine_uses_its_own_woo_authority(tmp_path: Path) -> None:
         instance.dir.mkdir()
         try:
             environment = _engine_environment(instance, Checkout.here())
+            feed = Path(environment["LINKER_ENGINE_FEED"])
+            generation = feed.parent / "publication-generation-current"
+            generation.mkdir()
+            frozen = generation / "feed.json"
+            # Same source identity, deliberately different whitespace. Restart
+            # must keep the exact worker-published bytes and their manifest.
+            original = b'{ "products": [], "source_revision": "woo", "compatibility_revision": "contract" }'
+            frozen.write_bytes(original)
+            (generation / "manifest.json").write_text(
+                json.dumps(
+                    {"source_revision": "woo", "compatibility_revision": "contract"}
+                )
+            )
+            feed.unlink()
+            feed.symlink_to(frozen)
+            _engine_environment(instance, Checkout.here())
+            assert frozen.read_bytes() == original
+            (generation / "manifest.json").write_text(
+                json.dumps(
+                    {"source_revision": "stale", "compatibility_revision": "contract"}
+                )
+            )
+            with pytest.raises(
+                ProcessError, match="could not read the engineering feed"
+            ):
+                _engine_environment(instance, Checkout.here())
+            assert frozen.read_bytes() == original
         finally:
             server.shutdown()
             thread.join()
-    assert paths == ["/wp-json/linker/v1/engineering-feed"]
+    assert paths == ["/wp-json/linker/v1/engineering-feed"] * 3
     assert environment["LINKER_PUBLICATION_URL"] == (
         instance.url + "/wp-json/linker/v1/publication/manifest"
     )
-    assert Path(environment["LINKER_ENGINE_FEED"]).read_bytes() == b'{"products":[]}'
+    assert Path(environment["LINKER_ENGINE_FEED"]).read_bytes() == original

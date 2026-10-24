@@ -28,15 +28,44 @@ contract blocker; they did not rerun suites. One whitespace-only warning in
 upstream's generated `contact-language.asset.php` is inherited unchanged;
 the integration resolutions themselves pass the whitespace check.
 
-Native p548 `publication/manifest` and `engineering-feed` both answer using
-source `6d029b6ef5c5341a58f6a59bddb2f44bb6ba9821e89db511d962467dca204388`.
-This local snapshot still has 106 published product records, whereas the other
-conversation reports the current online 85 sales products. Its missing initial
-bindings/readiness are not evidence of missing owner-maintained product facts.
-Current Woo data/preparation alignment and new-workbench operation-level
-permission binding remain open. A live authenticated version read confirms the
-existing `77dbdec6` HTTP/worker pair is still running; this source merge has not
-been installed as a new Python runtime or deployed to production.
+The native p548 Woo records were then refreshed from a read-only capture of the
+current production Woo source
+`cc9e1356348df8ec0e2349971e4131d9339342ef4af2b35c2ce8ffe49916a108`.
+The isolated refresh updated 214 locale records, retained existing SKU, price
+and stock, withdrew the 21 old local groups already withdrawn at source, and
+created only the existing source's hidden reference records 8349/8350. Current
+local source is
+`c4ac9cb2287bcdfbc855e81e3544f3e72d2df2dffc71360b75117dd88e00a555`:
+85 sales products and one Woo reference. Product facts, units, figure citations,
+current documents/bytes and relationships have zero semantic differences from
+the captured source. Different instance revisions and document ordering are
+not substituted for product facts. All 144 source PDFs already had identical
+local bytes; no file download or production write occurred. Original project
+revision 14, example revision 7, non-product posts and accounts were preserved.
+
+The first local write exposed a real import error: the native document-save
+hook sets the managed flag, so copying only raw document metadata lost source
+associations previously supplemented by Woo's legacy fields. It was corrected
+by copying the source's complete effective document sets through native Woo
+CRUD. The zero-difference readback follows that correction; the initial error
+is not treated as a deficiency in owner-maintained facts.
+
+Private readbacks and the single verified pre-write SQL recovery are retained
+under `/Users/chesterjohn/de-linker-local/p548/planner/` as
+`woo-source-sync-readback.json`, `woo-document-association-readback.json`,
+`woo-source-semantic-readback.json` and `woo-before-source-sync.*`. They are
+development evidence and recovery, never an alternate runtime data source.
+
+The next bounded delivery adds `/planning/products/current` through the native
+WordPress planner gateway, using the site's same lazy engineering service and
+shared `Publication` checks. It returns only the loaded/current/engineering-ready
+intersection and checks it again before returning; preparation workers keep
+their existing bootstrap path. No second product editor or feed is introduced.
+Frozen engine carriers now include the JSON validation schemas they execute;
+local restarts preserve worker-published generation bytes. This source change
+still requires native installation/readback. Project operation-level product
+binding, qualification and downstream handoff remain open; the read interface
+alone does not establish them.
 
 The owner authorised notifying the collaborating conversation after actual
 connection and verification. That notification remains pending. Complete the

@@ -9,12 +9,14 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Callable
 
 from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route, Router
 from starlette.types import ASGIApp, Receive, Scope, Send
 
 from .http_app import create_private_app
+from .product_sources import ProductProvider
 from .runtime_config import RuntimeConfig
 
 LOG = logging.getLogger(__name__)
@@ -35,7 +37,11 @@ async def unavailable(scope: Scope, receive: Receive, send: Send) -> None:
     await response(scope, receive, send)
 
 
-def configured_private_app(config: RuntimeConfig | None = None) -> ASGIApp:
+def configured_private_app(
+    config: RuntimeConfig | None = None,
+    *,
+    product_provider: Callable[[], ProductProvider] | None = None,
+) -> ASGIApp:
     try:
         settings = config or RuntimeConfig.from_environment()
         workspace, energy = settings.open()
@@ -46,6 +52,7 @@ def configured_private_app(config: RuntimeConfig | None = None) -> ASGIApp:
             limits=settings.http_limits(),
             pv=settings.pv_service(workspace),
             weather=settings.weather_service(workspace),
+            product_provider=product_provider,
         )
     except Exception:
         LOG.exception("planning service configuration is unavailable")

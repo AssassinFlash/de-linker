@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import cast
 
 import pytest
+from conftest import publication_manifest
 from fastapi.testclient import TestClient
 from starlette.types import Message, Receive, Scope, Send
 
@@ -32,6 +33,7 @@ from linker_engine.planning.service_boundary import (
 )
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
+from linker_engine.publication import Publication, PublicationUnavailable
 
 TOKEN = "synthetic-private-service-token"
 USER = Actor("user", "wordpress:17")
@@ -274,6 +276,74 @@ def rig(workspace: Workspace) -> Iterator[Rig]:
     )
     with TestClient(app, raise_server_exceptions=False) as client:
         yield Rig(workspace, kernel, client)
+
+
+def test_current_products_use_shared_woo_preparation_and_close_on_change(
+    rig: Rig, client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Reuse the site's actual service loader and real engineering fixture.
+    provider = client.app.state.planning_product_provider
+    loaded = provider()
+    manifest = publication_manifest(loaded.publication.feed)
+    chosen = manifest["products"][0]
+    reference = next(
+        row
+        for row in manifest["products"]
+        if row.get("engineering_role") == "reference_pv_module"
+    )
+    chosen["ready"]["engineering"] = True
+    reference["ready"]["engineering"] = True
+    calls = 0
+    mode = "current"
+
+    def current(_self: Publication) -> dict:
+        nonlocal calls
+        calls += 1
+        if mode == "unavailable":
+            raise PublicationUnavailable("source offline")
+        value = json.loads(json.dumps(manifest))
+        if mode == "changed" and calls > 1:
+            value["products"][0]["ready"]["engineering"] = False
+        return value
+
+    monkeypatch.setattr(Publication, "read", current)
+    service = EnergyService(rig.workspace, rig.kernel, max_attempts=1)
+    app = create_private_app(
+        rig.workspace,
+        service,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 2, 16),
+        product_provider=provider,
+    )
+    body = {"schema_version": 1}
+    path = "/products/current"
+    with TestClient(app, raise_server_exceptions=False) as private:
+        assert private.post(path, json=body).status_code == 401
+        reply = private.post(path, json=body, headers=headers())
+        assert reply.status_code == 200, reply.text
+        assert reply.headers["cache-control"] == "no-store, private"
+        result = reply.json()
+        assert [row["id"] for row in result["products"]] == [chosen["product_id"]]
+        assert [row["canonical_product_id"] for row in result["references"]] == [
+            reference["product_id"]
+        ]
+        assert (
+            result["loaded_source_revision"]
+            == loaded.publication.feed["source_revision"]
+        )
+        assert result["publication"]["products"] == [
+            {key: row[key] for key in ("product_id", "product_revision")}
+            for row in (chosen, reference)
+        ]
+        mode, calls = "changed", 0
+        assert private.post(path, json=body, headers=headers()).status_code == 409
+        mode = "unavailable"
+        assert private.post(path, json=body, headers=headers()).status_code == 503
+    # An absent shared provider is unavailable, never a hand-entered fallback.
+    assert rig.client.post(path, json=body, headers=headers()).status_code == 503
+    snapshot = json.loads(rig.kernel.runtime.content)
+    names = {row["path"] for row in snapshot["files"]}
+    assert {"schemas/feed.schema.json", "schemas/compatibility.schema.json"} <= names
 
 
 @pytest.mark.parametrize(

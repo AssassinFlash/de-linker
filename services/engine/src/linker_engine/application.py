@@ -3,4 +3,7 @@
 from .app import app as legacy
 from .planning.http_host import EngineApplications, configured_private_app
 
-app = EngineApplications(legacy, configured_private_app())
+app = EngineApplications(
+    legacy,
+    configured_private_app(product_provider=legacy.state.planning_product_provider),
+)

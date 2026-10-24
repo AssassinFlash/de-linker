@@ -338,8 +338,29 @@ def _engine_environment(instance: Instance, checkout: Checkout) -> dict[str, str
     url = instance.url + ENGINE_FEED_PATH
     try:
         with urllib.request.urlopen(url, timeout=ENGINE_FEED_TIMEOUT) as reply:
-            feed.write_bytes(reply.read())
-    except (urllib.error.URLError, OSError, TimeoutError) as error:
+            raw = reply.read()
+        if feed.is_symlink():
+            # The shared publication worker swaps a complete generation. A
+            # restart must not write through its link into immutable bytes.
+            target = feed.resolve()
+            if not target.is_relative_to(directory.resolve()):
+                raise ValueError("managed feed is outside this instance")
+            manifest = json.loads((target.parent / "manifest.json").read_bytes())
+            current = json.loads(raw)
+            if any(
+                manifest[key] != current[key]
+                for key in ("source_revision", "compatibility_revision")
+            ):
+                raise ValueError("managed feed needs shared publication preparation")
+        else:
+            feed.write_bytes(raw)
+    except (
+        urllib.error.URLError,
+        OSError,
+        TimeoutError,
+        ValueError,
+        KeyError,
+    ) as error:
         raise ProcessError(
             f"could not read the engineering feed from {url}: {error}. "
             "Is the instance up with linker-commerce active?"

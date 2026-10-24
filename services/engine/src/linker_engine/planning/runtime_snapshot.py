@@ -32,6 +32,7 @@ class RuntimeSnapshot:
             *sorted(package.parent.rglob("*.py")),
             service / "pyproject.toml",
             service / "uv.lock",
+            *sorted((service / "schemas").rglob("*.json")),
         ]
         try:
             for path in paths:
@@ -62,6 +63,7 @@ class RuntimeSnapshot:
                 name: version(name)
                 for name in (
                     "pydantic",
+                    "jsonschema",
                     "requests",
                     "urllib3",
                     "pvlib",

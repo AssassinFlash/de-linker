@@ -168,6 +168,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 )
             return holder["services"]
 
+    # The private planner consumes this same loader; it has no second product
+    # registry or mutable feed cache. Construction remains lazy and locked.
+    app.state.planning_product_provider = services
+
     def unavailable(error: Exception, code: str) -> HTTPException:
         detail = {"error": code, "message": str(error)}
         if isinstance(error, ReferenceEvidenceUnavailable):
