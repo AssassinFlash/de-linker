@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import json
+import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
+
 import pytest
 import requests
 
 from linker_engine.planning.canonical import encode
-from linker_engine.planning.errors import LeaseLost
+from linker_engine.planning.errors import InvalidInput, LeaseLost
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor
 from linker_engine.planning.weather_acquisition import WeatherAcquisition
@@ -285,3 +290,96 @@ def test_control_wait_observes_revocation_without_sleeping() -> None:
     control.revoke()
     with pytest.raises(LeaseLost):
         control.wait(60)
+
+
+def test_unexpected_abort_failure_cannot_mask_original_cancellation(
+    workspace: Workspace, owner: Actor, caplog: pytest.LogCaptureFixture
+) -> None:
+    run, lease = operation(workspace, owner)
+    journal = WeatherJournal(workspace)
+    intent = journal.begin(lease, plan())
+    source, _ = client(
+        Reply(201, provider("READY"), after=lambda: workspace.cancel(owner, run.id)),
+        Reply(0, b"", error=RuntimeError("private unexpected failure sentinel")),
+    )
+    try:
+        with pytest.raises(LeaseLost):
+            WeatherAcquisition(journal, source).acquire(lease, plan(), Control())
+        assert journal.current(intent).remote_run_id == remote().id
+        assert journal.current(intent).abort_sha256 is None
+        assert "unexpected_cleanup_failure" in caplog.text
+        assert "private unexpected failure sentinel" not in caplog.text
+    finally:
+        source.transport.close()
+
+
+def test_database_read_failure_cannot_replace_lease_loss_or_authorize_abort(
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    run, lease = operation(workspace, owner)
+    journal = WeatherJournal(workspace)
+    intent = journal.begin(lease, plan())
+    control = Control()
+
+    @contextmanager
+    def unavailable() -> Iterator[sqlite3.Connection]:
+        raise sqlite3.OperationalError("private outage sentinel")
+        yield  # pragma: no cover - retain the context-manager shape
+
+    def cancelled_with_read_outage() -> None:
+        workspace.cancel(owner, run.id)
+        control.revoke()
+        monkeypatch.setattr(workspace.database, "read", unavailable)
+
+    source, adapter = client(
+        Reply(201, provider("READY"), after=cancelled_with_read_outage)
+    )
+    try:
+        with pytest.raises(LeaseLost):
+            WeatherAcquisition(journal, source).acquire(lease, plan(), control)
+        monkeypatch.undo()
+        assert (
+            len(adapter.calls) == 1
+            and journal.current(intent).remote_run_id == remote().id
+        )
+        assert journal.current(intent).abort_sha256 is None
+        assert (
+            "unexpected_cleanup_failure" in caplog.text
+            and "private outage sentinel" not in caplog.text
+        )
+    finally:
+        monkeypatch.undo()
+        source.transport.close()
+
+
+def test_full_download_with_invalid_source_units_is_not_retained_or_published(
+    workspace: Workspace,
+    owner: Actor,
+) -> None:
+    run, lease = operation(workspace, owner)
+    journal = WeatherJournal(workspace)
+    intent = journal.begin(lease, plan())
+    invalid = json.loads(raw())
+    invalid["meta"]["outputs"]["tmy_hourly"]["variables"]["SP"]["units"] = "kPa"
+    source, adapter = client(
+        Reply(201, provider("SUCCEEDED")),
+        Reply(200, encode(effective(intent.nonce))),
+        Reply(200, encode([record()])),
+        Reply(200, encode(invalid)),
+    )
+    try:
+        with pytest.raises(InvalidInput):
+            WeatherAcquisition(journal, source).acquire(lease, plan(), Control())
+        assert len(adapter.calls) == 4
+        assert journal.current(intent).capture_sha256 is None
+        assert workspace.run(owner, run.id).result is None
+        with workspace.database.read() as connection:
+            assert (
+                connection.execute("SELECT COUNT(*) FROM project_assets").fetchone()[0]
+                == 0
+            )
+    finally:
+        source.transport.close()

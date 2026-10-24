@@ -8,8 +8,8 @@
   "files": [
     {
       "file": "FINDINGS.md",
-      "bytes": 10814,
-      "sha256": "9c405fd7f8ea17e15c94707137f2b2f1bb8cbf5f1c9e4d615b429a63de2d133d"
+      "bytes": 13478,
+      "sha256": "7d5715716775b85385b33ed46e780a3e7999a1d7495397c1eb2b3582ba2a345c"
     },
     {
       "file": "raw/act-runs-post-responses.txt",
@@ -97,5 +97,9 @@
     "localMarkdownTargetsExist": true,
     "actualAPIFY_TOKENAbsent": true,
     "temporaryCredentialURLQueryAbsent": true
-  }
+  },
+  "scopeOfOriginalCounters": "research agent only; subsequent owner trials have separate counters",
+  "subsequentOwnerWeatherActorRunsStarted": 2,
+  "subsequentOwnerWeatherBodiesDownloaded": 1,
+  "subsequentOwnerEvidence": "../../acceptance/2026-10-24/548/weather-transport/ACTUAL-TRIAL.md"
 }

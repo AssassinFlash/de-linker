@@ -84,14 +84,23 @@ class WeatherAcquisition:
         self.journal.abort_reply(current, reply)
         return reply
 
-    def _cleanup(self, intent: WeatherIntent) -> None:
+    def _cleanup(
+        self, intent: WeatherIntent, *, cancelled_lease: Lease | None = None
+    ) -> None:
         try:
+            if cancelled_lease is not None and not self._cancelled(cancelled_lease):
+                return
             self.abort_known(intent)
-        except PlanningError as error:
+        except Exception as error:
             # A missing confirmation remains missing. Keep the known provider
             # identity for explicit recovery and never mask the original error.
+            code = (
+                error.code
+                if isinstance(error, PlanningError)
+                else "unexpected_cleanup_failure"
+            )
             LOG.warning(
-                "weather abort unconfirmed for task %s: %s", intent.run_id, error.code
+                "weather abort unconfirmed for task %s: %s", intent.run_id, code
             )
 
     def recover_acknowledgement(
@@ -181,8 +190,7 @@ class WeatherAcquisition:
         except LeaseLost:
             # A replacement lease may be resuming this same remote run. Only
             # confirmed local cancellation authorizes this old worker to abort.
-            if self._cancelled(lease):
-                self._cleanup(intent)
+            self._cleanup(intent, cancelled_lease=lease)
             raise
         except (WeatherDeadlineExceeded, WeatherPollingLimit):
             self._cleanup(intent)

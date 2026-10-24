@@ -22,9 +22,9 @@ def submission(plan: WeatherFetchPlan, nonce: str) -> Object:
     if not re.fullmatch(r"[a-f0-9]{32}", nonce):
         raise WeatherResponseInvalid("private weather intent correlation required")
     result = plan.actor_input()
-    # The retained successful primary weather request supplied this explicit
-    # HTTP client identity. Omitting it produced a 200/text-html rejection in
-    # the real correlated trial; never accept that page as weather data.
+    # The retained successful primary request supplied this explicit header.
+    # The first trial omitted it and received 200/text-html; a separate trial
+    # with it succeeded. Those observations do not establish header causality.
     result["customHttpHeaders"] = {
         "Accept": "application/json",
         "User-Agent": "python-requests/2.32.5",
