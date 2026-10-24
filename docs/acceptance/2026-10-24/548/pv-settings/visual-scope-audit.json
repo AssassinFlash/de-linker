@@ -1,0 +1,41 @@
+{
+  "final_pin": "310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be",
+  "earlier_captures_pin": "15f018d812556294901559e5956197f8e4bc74a8",
+  "production_javascript_and_styles_identical": true,
+  "paths": [
+    {
+      "path": "plugins/linker-tools/build/planner/assets/MapViewport-C-CroNFn.js",
+      "sha256": "4a4f25576bc30d7fe66c632ab266710f24e01436e8f61cd13cb8ade1cba0df7f",
+      "identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/SceneViewport-B5f8f0EV.js",
+      "sha256": "0b6aef77d2885d29663bb06bfc9b2036dd50c1f3c12cb30923b832b6156fa312",
+      "identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner-core-CIg22v_u.js",
+      "sha256": "2159d9f68d5d88df2e2429e00d969817b033d54c9dc2507e0194924a048fc9a6",
+      "identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner.js",
+      "sha256": "3444a4576b21d888c7f361aadaaeb6c2d8b94a33b28145f7e5bd90fed5840242",
+      "identical": true
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+      "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
+      "identical": true
+    },
+    {
+      "path": "plugins/linker-commerce/content/windpress/planner.css",
+      "sha256": "ac3d73eaae3800e99297f523a2a03137d84bc198f4aadfa81015f015495670c9",
+      "identical": true
+    }
+  ],
+  "final_de_catalog_closure": "Power conversion step -> Umwandlung",
+  "final_de_1440_captures_overwritten": true,
+  "final_de_390_step_views_overwritten": true,
+  "scope": "Actual components, synthetic roof/model, retained original weather, simulated transport; does not prove native installation or field accuracy"
+}

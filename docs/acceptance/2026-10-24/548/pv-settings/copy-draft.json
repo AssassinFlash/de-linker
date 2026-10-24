@@ -1,0 +1,499 @@
+[
+  {
+    "en": "Roof-to-PV model",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "This reference calculation estimates available AC generation from the saved roof layout and selected typical-year weather. It uses a uniform, unshaded pvlib model. Site shading, electrical strings and equipment or country approval need their own assessment.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Current roof layout: %d active arrays.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Update parameters to current roof layout",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Updating retains parameters for matching arrays and module specifications, adds empty fields for new ones and removes entries outside the active layout. It does not assign model values or conversion groups.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Modules",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Array models",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Power conversion",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Updating to the current roof layout creates the module parameter fields.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Updating to the current roof layout creates the array model fields.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Array outside the current layout",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Shared power conversion",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Each active array belongs to one conversion group. The model sums the arrays' DC maximum power before one shared conversion curve and AC cap. It assumes independent maximum-power tracking; it does not model electrical strings or verify a physical inverter.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Add conversion group",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Overall PV model assumptions",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvForm.tsx"
+    ]
+  },
+  {
+    "en": "Power temperature coefficient",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "This coefficient describes the change in maximum DC power per degree of cell temperature relative to 25 °C. A datasheet value of −0.29%/°C is entered as −0.29.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Temperature-coefficient evidence",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Choose a source",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "User-declared values",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Referenced datasheet",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Coefficient source and conditions",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Coefficient document reference",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "A datasheet reference needs its URL, SHA-256 and page. This records the reference; it does not fetch or verify the document.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Source document URL",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Source document SHA-256",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Source page",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvModuleParameters.tsx"
+    ]
+  },
+  {
+    "en": "Conversion group %d",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "Arrays converted together",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "PVWatts DC reference power",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "Nominal conversion efficiency",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "Reference curve efficiency",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "DC reference power must be greater than zero. It is the PVWatts curve reference, not the array's STC rating or a hardware input limit. Both efficiencies must be greater than 0% and no more than 100%.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "Conversion-model source and assumptions",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "Remove conversion group",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvConverterParameters.tsx"
+    ]
+  },
+  {
+    "en": "Ground reflectance",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "ASHRAE incidence coefficient b",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Sky-diffuse transmission",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Ground-diffuse transmission",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Spectral factor",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Soiling transmission",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "DC wiring transmission",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "DC mismatch transmission",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Irradiance transposition",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Choose a model",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Isotropic",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Transposition estimates irradiance on each module plane using the saved roof and mounting orientation. Transmission factors are the percentage retained: 98% means a 2% reduction. Ground reflectance is a reflected fraction.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Irradiance and loss assumptions",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Cell temperature model",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "SAPM uses plane irradiance, air temperature and wind at 10 m. Its a, b and ΔT coefficients depend on module construction and mounting. This form applies no mounting preset.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "SAPM coefficient a",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "SAPM coefficient b",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Cell-to-module temperature difference ΔT",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "Temperature-model source and mounting conditions",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvArrayParameters.tsx"
+    ]
+  },
+  {
+    "en": "PV model settings need an editable roof layout. Saved inputs and previous calculations remain in the project.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "Review roof design",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "Weather for this PV calculation",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "A weather source is selected in this draft. The calculation checks its saved source and location against the roof.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "A weather result must be selected from Saved calculations before PV generation can start.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "PV model prepared in this draft",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "PV model settings need preparation",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "Save project records the roof, model and weather selection before PV generation can start.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "PV generation uses saved input revision %d.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "Prepare PV model",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "Calculate PV for saved inputs",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/PvSetup.tsx"
+    ]
+  },
+  {
+    "en": "PV generation",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/EnergyWorkspace.tsx"
+    ]
+  },
+  {
+    "en": "The PV model needs complete module, array and conversion parameters with source notes. Fractions must be between 0% and 100%; conversion efficiencies and reference power must be greater than zero.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/EnergyError.tsx"
+    ]
+  },
+  {
+    "en": "PV parameters must match the current active roof layout. Each array needs one parameter set and exactly one conversion group, and each module specification needs its coefficient.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/EnergyError.tsx"
+    ]
+  },
+  {
+    "en": "PV generation needs roof coordinates and a declared north reference. These can be set in Roof design.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/EnergyError.tsx"
+    ]
+  },
+  {
+    "en": "PV generation needs a selected weather source. A completed weather result can be selected from Saved calculations.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/EnergyError.tsx"
+    ]
+  },
+  {
+    "en": "The weather coordinates differ from the roof reference point. Weather and roof location must match for this model.",
+    "de": "",
+    "source_files": [
+      "apps/planner/src/components/energy/EnergyError.tsx"
+    ]
+  }
+]

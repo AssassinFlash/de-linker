@@ -1,0 +1,125 @@
+Independent Standards evidence, 2026-10-24
+Repository: /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548
+Pinned base: c7232e3d91e80d87887ca3d1d398f92852dec021
+Pinned reviewed HEAD: 15f018d812556294901559e5956197f8e4bc74a8
+Initial and completion read of HEAD both returned the reviewed pin before report writing.
+Diff: git diff c7232e3d91e80d87887ca3d1d398f92852dec021...15f018d812556294901559e5956197f8e4bc74a8
+Commits:
+15f018d812556294901559e5956197f8e4bc74a8 Preserve decimal input across percentage conversion and parent echoes
+0e16d6d5298616d9eb757c4cbcd621b9d3407f04 Connect saved roof models to shared PV calculation workflow
+Runtime: Node v24.22.0; Python 3.12.15; pytest 9.1.1.
+
+Checks below were executed independently, not copied from implementation evidence.
+Full source, tests, spec delta, .po/.mo, planner JSON, WindPress additions and generated
+build binding were included. No other agent's Spec/copy report was opened.
+
+1. cwd=apps/planner
+$ npm run lint:types
+> @linker/planner@0.1.0 lint:types
+> tsc --noEmit
+Exit 0, no diagnostics.
+
+2. cwd=apps/planner
+$ npm run build:check
+> @linker/planner@0.1.0 build:check
+> node bin/build-manifest.mjs check && node --test tests/built-modules.mjs
+Planner build matches its sources.
+PASS a lazy built chunk never executes the versioned WordPress entry again
+tests 1; pass 1; fail 0; skipped 0; todo 0
+Exit 0.
+Node emitted MODULE_TYPELESS_PACKAGE_JSON when importing the emitted ESM from the
+existing linker-tools package for this test. Imports succeeded; no package config
+was changed. This was a binding/import check, not a rebuild or browser/site claim.
+
+3. cwd=apps/planner
+$ node --test src/domain/decimal.test.ts src/domain/solarSetup.test.ts
+PASS EN/DE numeric input rejects grouping instead of silently changing magnitude
+PASS percent boundaries shift declared decimal digits without binary multiplication artifacts or hidden rounding
+PASS solar drafts retain incomplete explicit choices without inventing parameter values
+PASS PV preflight requires a selected source and compares the effective weather request with roof coordinates
+PASS actual published worker fixture compiles identically, without model defaults or rounding
+PASS draft version, identities, constants, structure and numeric types stay strict
+PASS weather preparation checks year order, integer/range constraints and non-leap output axis
+PASS changing source/model inputs invalidates prepared documents and retains unrelated draft edits
+PASS PV preparation requires the current active layout, exact module set and partitioned conversion groups
+PASS PV source references require complete safe datasheet evidence before preparation
+PASS explicit weather replacement clears only the stale binding and prepared replay, so native saving can accept the new request
+tests 11; pass 11; fail 0; skipped 0; todo 0
+Exit 0; duration 530.010333 ms.
+
+4. cwd=apps/planner
+$ node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/number-field.test.mjs tests/pv-setup.test.mjs tests/weather-setup.test.mjs tests/energy-workspace.test.mjs
+PASS actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response
+PASS numeric input keeps locally entered syntax through parent echoes and resets for external values or locale
+PASS blank PV model can be completed through actual controls, keeps unfinished values across views, then sends one saved-revision task
+PASS conversion membership prevents a second assignment and requires complete model preparation after edits
+PASS PV dispatch refuses a weather/roof location mismatch and tolerates unsupported stored selections
+PASS module headings hide internal identifiers and incomplete document references explain the required evidence
+PASS German percentage edits retain exact text and decimal separators while storing model fractions
+PASS weather controls retain unfinished negative coordinates across views, require explicit preparation/save, then dispatch one frozen native request
+tests 8; pass 8; fail 0; skipped 0; todo 0
+Exit 0; duration 2470.060834 ms.
+These execute real React components with the existing JSDOM fixture; they do not
+prove installed native runtime or rendered visual acceptance.
+
+5. cwd=services/engine
+$ env PYTHONDONTWRITEBYTECODE=1 uv run --locked --no-sync pytest -p no:cacheprovider tests/planning/test_browser_solar_contracts.py
+============================= test session starts ==============================
+platform darwin -- Python 3.12.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/services/engine
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 2 items
+tests/planning/test_browser_solar_contracts.py ..                        [100%]
+============================== 2 passed in 2.37s ===============================
+Exit 0.
+The test fixture owns its temporary SQLite/private files. This ran the actual
+Node preparation boundary, private ASGI endpoint and worker registry using retained
+TMY bytes, with 8760 output intervals. It did not touch the task's running DB.
+No full-engine pytest/mypy result is claimed.
+
+6. cwd=repository root
+$ python3 tools/checks/i18n-validity.py
+i18n-validity: clean (8 catalogs)
+Exit 0.
+
+7. cwd=repository root
+$ python3 tools/checks/i18n-coverage.py
+plugins/linker-commerce/languages/linker-commerce-de_DE_formal.po: untranslated=62 exempt=62 gap=0
+plugins/linker-i18n/languages/linker-i18n-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: source gaps=0 JSON problems=0
+plugins/linker-tools/languages/linker-tools-de_DE_formal.po: untranslated=0 exempt=0 gap=0
+i18n-coverage: clean
+Exit 0. This gate uses native WP-CLI make-json with --no-purge in a temporary
+directory and compares shipped JSON byte-for-byte; the source catalog is unchanged.
+
+8. cwd=repository root; read-only inline Python check, Exit 0
+Compiled the current linker-tools-de_DE_formal.po with msgfmt --check -o -;
+parsed that byte stream and shipped .mo through gettext.GNUTranslations and
+asserted complete _catalog equality. Selected planner JSON by md5 of the actual
+plugin-relative entry build/planner/assets/planner.js; asserted every non-header
+JSON message equals its shipped MO translation.
+Shipped PO/MO semantic equality: PASS; entries=1503
+Planner script JSON matches shipped MO: PASS; messages=1001;
+file=linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json
+
+The same check obtained the pinned --unified=0 diff for apps/planner/src,
+apps/planner/tests, changed engine contract test, solar-settings spec and
+planner.css. It checked added lines only with the following regexes:
+legacy_identifiers: tv_b2b_|Linker_AI_|dlk-
+inline_layout_or_second_css: style=|\.css["']|tailwindcss
+unexpected_model_channels: api\.openai|aihubmix|deepseek|openrouter|gpt-[0-9]|claude|grok
+All three checks: 0 added-line hits; assertions passed.
+WindPress CSS remains the existing single stylesheet source. Accepted ADR 0002
+permits this isolated React 19/Vite application. No site-page redesign is inferred.
+
+Storage and ownership readback:
+- Read current main-repository docs/agents/local-storage.md before closure.
+- No service/instance/worktree/snapshot/backup was started, stopped or copied.
+- Preserved source files, compiled catalogs, other reports and the original DB.
+- Only assigned standards-initial.md and standards-tests.txt were authored.
+- Existing dependency directories were reused; no new dependency installation.
+- Native i18n helper uses an automatically removed TemporaryDirectory; pytest
+  uses its standard temporary fixture directories. No extra retained review clone.
+- Initial git status: only untracked docs/acceptance/2026-10-24/548/pv-settings/.
+  Before report writing the same status remained; no tracked source change.

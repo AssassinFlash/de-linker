@@ -1,0 +1,53 @@
+Independent cumulative PV Spec closure
+Source 310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be
+Accepted base c7232e3d91e80d87887ca3d1d398f92852dec021
+
+Actual-component independent React/DOM probe using real PV module/array/converter
+controls plus ScenarioForm, real NumberField and locale de-DE:
+PASS Ground reflectance entered/displayed 57, model fraction 0.57
+PASS Retained soiling entered/displayed 56, model fraction 0.56
+PASS Temperature coefficient entered/displayed -0,29, model fraction -0.0029
+PASS Nominal conversion efficiency entered/displayed 57, model fraction 0.57
+PASS Storage charging efficiency entered/displayed 57, model fraction 0.57
+PASS trailing 0, and -0, survive parent echoes; -0 model sign retained
+PASS 0,57 percent stores 0.0057, without a second scaling stage
+PASS invalid minus has aria-invalid=true
+PASS external restoration clears invalid text and restores -0,29
+PASS external 0.5700000000000001 displays 57,00000000000001
+PASS locale change reformats that value as 57.00000000000001
+PASS English -0. survives parent echo
+PASS original source fixture JSON unchanged
+PASS percent/fraction round trips for 0, -0, 0.56, 0.57, 0.9637, -0.0029,
+     0.5700000000000001, 1e-9 and -1e-12.
+
+Independently executed from apps/planner:
+node --test src/domain/decimal.test.ts src/domain/solarSetup.test.ts: 11 passed
+node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test
+  tests/number-field.test.mjs tests/pv-setup.test.mjs tests/weather-setup.test.mjs
+  tests/energy-operations.test.mjs tests/preparation-ui.test.mjs
+  tests/energy-workspace.test.mjs: 29 passed
+npm run build:check: source/build bindings match; 1 built-module test passed
+Total independently rerun Node tests: 41 passed.
+
+Actual backend contracts independently executed from services/engine:
+PYTHONDONTWRITEBYTECODE=1 uv run --no-sync python -B -m pytest -p no:cacheprovider
+  --basetemp <owned temporary fixture workspace>
+  tests/planning/test_browser_solar_contracts.py -q
+2 passed in 2.25s
+Real TS preparation, saved revision, owned weather import and registered Worker
+produce the complete 8760-interval PV result; source/revision and receipt preserved.
+Independent temporary contract workspace reclaimed: True
+
+Full-app log read, not rerun by this reviewer:
+app-tests-final.txt lines 142-145: tests 137, pass 137, fail 0
+app-tests-final.txt lines 331-334: tests 178, pass 178, fail 0
+
+git diff --check accepted-base...final-pin: passed.
+15f018d8...310bf2f4: no executable build asset or stylesheet changes.
+Frozen initial report SHA256:
+5b8a9b2e4ae9a934e13aa9bd4f97ecb4e5e9e04d38943e03e9e0d58fe8148a66
+Frozen initial test evidence SHA256:
+95121e38fae63a3b0fe8c49c903b4c3395b02e1c6e74d812e7b1ea7e04ce169b
+
+No network, live service, instance or persistent database was changed.
+Only the owned temporary contract workspace was created and reclaimed.

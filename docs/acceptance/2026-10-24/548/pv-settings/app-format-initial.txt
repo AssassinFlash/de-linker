@@ -1,0 +1,7 @@
+
+> @linker/planner@0.1.0 lint:format
+> prettier --check .
+
+Checking formatting...
+[warn] tests/preparation-browser.tsx
+[warn] Code style issues found in the above file. Run Prettier with --write to fix.

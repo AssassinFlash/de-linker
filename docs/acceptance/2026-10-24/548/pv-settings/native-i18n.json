@@ -1,0 +1,13 @@
+{
+  "source_pin": "310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be",
+  "native_wordpress_i18n": true,
+  "reviewed_messages": 73,
+  "all_exact": true,
+  "copy_sha256": "3876729b2fa10e408b656b9d4765cd05ab3bba35dc7ecf20c73317167101c6e5",
+  "integer_placeholder": "Umwandlungsgruppe 2",
+  "power_conversion_step": "Umwandlung",
+  "sources": {
+    "hooks.js": "4c953b49cb0ecedbd35c49595b319d572bf85a2b812025590a603b68054b2e38",
+    "i18n.js": "ebb49f07f8a99716698f285743733315d184c11c577dd50a79b8d97ab7566c4c"
+  }
+}

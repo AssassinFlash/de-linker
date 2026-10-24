@@ -1,0 +1,69 @@
+{
+  "at_utc": "2026-10-24T14:21:17.915644+00:00",
+  "removed_redundant_logs": [
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/app-tests.txt",
+      "bytes": 32919,
+      "sha256": "dec7f4ca5ce53d0894e3078b8907e3faf0d48d8dfcf378bf101840513a47ebb8",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/app-tests-initial.txt",
+      "bytes": 32822,
+      "sha256": "49d02d6bc29e0e52c128d9882781ac7e4220997381bafa2ae94e278b0787be92",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/app-format.txt",
+      "bytes": 125,
+      "sha256": "07e3f3d64aaf65e944001a0eb36c2a82af3bbe8f416742d085ac6df60b7ddceb",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/app-build.txt",
+      "bytes": 1284,
+      "sha256": "bfb2dca99fd9d7aa036f7bffa05185e7fee0596f472d3cbacb00998efcba4293",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/app-build-check.txt",
+      "bytes": 943,
+      "sha256": "0fb44e7c5478bfc74a41ffdde7197afd6aaedb157fb9f171e6948fcd77f630f9",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/app-build-check-initial.txt",
+      "bytes": 942,
+      "sha256": "155647436e68abc366f59eb46dc7035555c614fa21218536fd44e44454060b3a",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/app-build-check-final.txt",
+      "bytes": 944,
+      "sha256": "0769a925e82901cba5f8d9d9a9b6226bbeed0f84f4324160ec04b7b6397c738d",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/i18n-coverage.txt",
+      "bytes": 391,
+      "sha256": "f71c50b58bebe856c098aae4faffae2033e2a346d4e0817632bc09c95d510bfa",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/i18n-validity.txt",
+      "bytes": 34,
+      "sha256": "310f2181000a712c097eab33ee6f3ee172889c48175e6093beb396e57b1d081f",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    },
+    {
+      "path": "/Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/docs/acceptance/2026-10-24/548/pv-settings/german-copy.txt",
+      "bytes": 19,
+      "sha256": "b72d9acc49f012cfad8f645f563d6d5416c65432349205cb85c01d2a5235bd72",
+      "reason": "Superseded successful run; final equivalent passing log retained. Independent frozen reviews and unique failure/reproduction evidence retained."
+    }
+  ],
+  "bytes_removed": 70423,
+  "no_instance_worktree_full_backup_added": true,
+  "protected_originals_preserved": true,
+  "fixture_runtime_reclaimed": true
+}
