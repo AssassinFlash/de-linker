@@ -21,6 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from linker_local.checkout import Checkout
+from linker_local.engine_release import engine_project
 from linker_local.instance import HOST, Instance
 from linker_local.planner_worker import PlannerWorker
 from linker_local.private_config import lifecycle_lock, publish_once
@@ -138,13 +139,17 @@ def _serve(
     token = service_token(wp)
     worker: PlannerWorker | None = None
     engine_synced = False
+    engine_pinned = False
     if any(service.name == "engine" for service in selected):
-        project = checkout.service("engine")
+        project = engine_project(instance, checkout.service("engine"))
+        engine_pinned = project != checkout.service("engine")
         planner_environment(instance)
         worker = PlannerWorker(instance, project, uv)
         # First startup needs an environment for the private control CLI.
         # Never sync dependencies underneath an existing numerical process.
         if not (project / ".venv/bin/python").is_file():
+            if engine_pinned:
+                raise ProcessError("the retained engine environment is unavailable")
             if worker.process.pid() is not None:
                 raise ProcessError("live worker has no retained engine environment")
             subprocess.run(
@@ -152,20 +157,40 @@ def _serve(
             )
             engine_synced = True
         worker.ensure_policy()
+        target_release = worker.compatible_release()
+        # Validate provider injection before stopping either half of the pair.
+        worker.environment(weather=True)
+        if SERVICES[0].process(instance).pid() is not None:
+            current = _planner_probe(f"http://{HOST}:{instance.engine_port}", token)
+            if current["runtime_sha256"] != target_release["runtime_sha256"]:
+                raise ProcessError(
+                    "running planning HTTP differs from this executable; "
+                    "preserve it for a verified paired upgrade"
+                )
         worker.drain()
         worker.stop()
+        # Dependency synchronization must not replace files underneath either
+        # half of the old pair. Both identities were checked before draining.
+        SERVICES[0].process(instance).stop()
     urls = []
     for service in selected:
-        project = checkout.service(service.name)
+        project = (
+            worker.project
+            if service.name == "engine" and worker is not None
+            else checkout.service(service.name)
+        )
         port = service.port(instance)
-        if service.name != "engine" or not engine_synced:
+        if service.name != "engine" or (not engine_synced and not engine_pinned):
             subprocess.run(
                 [str(uv), "sync", "--locked", "--project", str(project)], check=True
             )
         env = dict(os.environ)
+        # Weather acquisition belongs to its private executor, not HTTP or
+        # Genie. The worker separately selects its only provider credential.
+        env.pop("APIFY_TOKEN", None)
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
-            source = checkout.root / "services/engine/src/linker_engine"
+            source = project / "src/linker_engine"
             release = hashlib.sha256()
             for path in sorted(source.rglob("*.py")):
                 release.update(path.read_bytes())
@@ -179,7 +204,12 @@ def _serve(
                 "--type=constant",
             )
             env.update(
-                {"GENIE_SERVICE_TOKEN": token, "LINKER_ENGINE_GATE_MODE": "enforce"}
+                {
+                    "GENIE_SERVICE_TOKEN": token,
+                    "LINKER_ENGINE_GATE_MODE": "enforce",
+                    "PYTHONPATH": str(project / "src"),
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                }
             )
         else:
             assert index is not None
@@ -189,6 +219,8 @@ def _serve(
                 str(uv),
                 "run",
                 "--locked",
+                "--no-sync",
+                "--offline",
                 "--project",
                 str(project),
                 "uvicorn",

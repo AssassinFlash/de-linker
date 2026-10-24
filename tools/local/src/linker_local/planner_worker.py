@@ -15,6 +15,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from .instance import Instance
+from .planner_provider import weather_environment
 from .private_config import publish_once
 from .processes import POLL, Background, ProcessError
 
@@ -69,8 +70,10 @@ class PlannerWorker:
             )
         return Path(runtime["directory"]).resolve()
 
-    def environment(self) -> dict[str, str]:
-        # Numerical execution needs no service, provider or model credentials.
+    def environment(self, *, weather: bool = False) -> dict[str, str]:
+        # Pure numerical execution and control need no provider credential.
+        # The explicitly enabled weather executor receives only its provider
+        # and network policy, never service or model credentials.
         self._workspace()
         names = (
             "PATH",
@@ -83,11 +86,90 @@ class PlannerWorker:
             "UV_CACHE_DIR",
             "UV_PYTHON",
         )
-        return {
+        environment = {
             **{name: os.environ[name] for name in names if name in os.environ},
             "LINKER_PLANNER_CONFIG": str(self.runtime_file),
             "LINKER_PLANNER_WORKER_CONFIG": str(self.policy_file),
+            # Explicit source root also supports an owned immutable release
+            # using the existing, already-synced interpreter environment.
+            "PYTHONPATH": str(self.project / "src"),
+            "PYTHONDONTWRITEBYTECODE": "1",
         }
+        if weather:
+            policy: object = json.loads(self.runtime_file.read_bytes())
+            if not isinstance(policy, dict):
+                raise ProcessError("local planner policy is not an object")
+            environment.update(weather_environment(policy))
+        return environment
+
+    def release(self) -> dict[str, object]:
+        """Inspect source/dependencies without opening the live project store."""
+        result = subprocess.run(
+            self.command("release"),
+            env=self.environment(),
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=CONTROL_TIMEOUT,
+        )
+        if result.returncode:
+            raise ProcessError("planning executable release probe failed")
+        try:
+            value: object = json.loads(result.stdout)
+        except ValueError as error:
+            raise ProcessError(
+                "planning release probe returned invalid JSON"
+            ) from error
+        if (
+            not isinstance(value, dict)
+            or set(value)
+            != {"schema_version", "runtime_sha256", "storage_schema_version"}
+            or type(value["schema_version"]) is not int
+            or value["schema_version"] != 1
+            or not isinstance(value["runtime_sha256"], str)
+            or re.fullmatch(r"[a-f0-9]{64}", value["runtime_sha256"]) is None
+            or type(value["storage_schema_version"]) is not int
+            or value["storage_schema_version"] <= 0
+        ):
+            raise ProcessError("planning release probe returned an invalid version")
+        return value
+
+    def compatible_release(self) -> dict[str, object]:
+        """Refuse implicit migration/downgrade and mismatched live executors."""
+        release = self.release()
+        database = self._workspace() / "workspace.sqlite"
+        if database.exists():
+            try:
+                with closing(
+                    sqlite3.connect(database.as_uri() + "?mode=ro", uri=True)
+                ) as connection:
+                    version = connection.execute("PRAGMA user_version").fetchone()[0]
+                    empty = (
+                        connection.execute(
+                            "SELECT 1 FROM sqlite_master WHERE type='table' LIMIT 1"
+                        ).fetchone()
+                        is None
+                    )
+                    if (
+                        not (empty and version == 0)
+                        and version != release["storage_schema_version"]
+                    ):
+                        raise ProcessError(
+                            "planning storage/executable versions differ; "
+                            "a verified paired upgrade and recovery point are required"
+                        )
+            except sqlite3.Error as error:
+                raise ProcessError(
+                    "planning storage version could not be read"
+                ) from error
+        if self.process.pid() is not None:
+            ready = self.readiness({"runtime_sha256": release["runtime_sha256"]})
+            if ready is None:
+                raise ProcessError(
+                    "running planning worker differs from this executable; "
+                    "preserve it for a verified paired upgrade"
+                )
+        return release
 
     def command(self, *arguments: str) -> list[str]:
         # Existing engine environment is synced before start; neither a new
@@ -269,7 +351,7 @@ class PlannerWorker:
                 "--generation",
                 generation,
             ),
-            self.environment(),
+            self.environment(weather=True),
         )
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:

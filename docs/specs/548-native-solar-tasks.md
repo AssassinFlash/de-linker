@@ -50,12 +50,14 @@ Source/task checksums are expandable technical details, not a claim of accuracy.
 
 ## Scope and integration gates
 
-The source/model input forms, their native start controls, production credential
-wiring, paired HTTP/worker/schema upgrade and full native end-to-end acquisition
-are still required by the full goal. Existing weather/PV backend specifications
-continue to govern those tasks. This increment supplies their shared durable
-transport, typed readers, history, status and explicit result consumers. It does
-not represent a completed customer acquisition workflow.
+The source/model input forms and shared saved-revision start controls now have
+local implementation and isolated acceptance in `548-solar-settings.md` and
+the `pv-settings` acceptance folder. Private provider wiring, paired
+HTTP/worker/schema upgrade and full native end-to-end acquisition remain
+required, governed by `548-native-solar-install.md`. Existing weather/PV
+backend specifications continue to govern those tasks. The shared durable
+transport, typed readers, history, status and explicit consumers do not alone
+represent a completed customer acquisition workflow.
 
 The current local project store remains schema 2 until that paired upgrade is
 ready. Do not restart a mutable worktree HTTP process with the newer schema

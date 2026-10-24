@@ -245,3 +245,127 @@ def test_inconsistent_remote_quiescence_from_child_is_rejected(
     )
     with pytest.raises(ProcessError, match="invalid remote quiescence"):
         worker.control("status")
+
+
+def test_weather_credentials_are_explicit_and_absent_from_control(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    policy = json.loads(worker.runtime_file.read_bytes())
+    policy["weather_acquisition"] = {}
+    worker.runtime_file.write_text(json.dumps(policy))
+    monkeypatch.setenv("APIFY_TOKEN", "synthetic-private-weather")
+    monkeypatch.setenv("HTTPS_PROXY", "http://synthetic-proxy.invalid")
+    monkeypatch.setenv("GENIE_SERVICE_TOKEN", "synthetic-private-service")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "synthetic-private-model")
+    ordinary = worker.environment()
+    weather = worker.environment(weather=True)
+    assert "APIFY_TOKEN" not in ordinary and "HTTPS_PROXY" not in ordinary
+    assert weather["APIFY_TOKEN"] == "synthetic-private-weather"
+    assert weather["HTTPS_PROXY"] == "http://synthetic-proxy.invalid"
+    assert "GENIE_SERVICE_TOKEN" not in weather and "OPENROUTER_API_KEY" not in weather
+    assert weather["PYTHONPATH"] == str(worker.project / "src")
+    monkeypatch.delenv("APIFY_TOKEN")
+    assert "APIFY_TOKEN" not in worker.environment()
+    with pytest.raises(ProcessError, match="requires APIFY_TOKEN"):
+        worker.environment(weather=True)
+
+
+@pytest.mark.parametrize("stored", [0, 2, 3, 5])
+def test_preflight_refuses_different_populated_schema_without_writing(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch, stored: int
+) -> None:
+    directory = Path(json.loads(worker.runtime_file.read_bytes())["directory"])
+    directory.mkdir(parents=True)
+    database = directory / "workspace.sqlite"
+    with sqlite3.connect(database) as connection:
+        connection.execute("CREATE TABLE projects(id TEXT)")
+        connection.execute("INSERT INTO projects VALUES ('retained')")
+        connection.execute(f"PRAGMA user_version={stored}")
+    original = database.read_bytes()
+    monkeypatch.setattr(
+        worker,
+        "release",
+        lambda: {
+            "schema_version": 1,
+            "runtime_sha256": "a" * 64,
+            "storage_schema_version": 4,
+        },
+    )
+    with pytest.raises(ProcessError, match="verified paired upgrade"):
+        worker.compatible_release()
+    assert database.read_bytes() == original
+    assert sorted(path.name for path in directory.iterdir()) == ["workspace.sqlite"]
+
+
+def test_matching_schema_and_truly_empty_store_can_start(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    release = {
+        "schema_version": 1,
+        "runtime_sha256": "a" * 64,
+        "storage_schema_version": 4,
+    }
+    monkeypatch.setattr(worker, "release", lambda: release)
+    assert worker.compatible_release() == release
+    directory = Path(json.loads(worker.runtime_file.read_bytes())["directory"])
+    directory.mkdir(parents=True)
+    database = directory / "workspace.sqlite"
+    with sqlite3.connect(database):
+        pass
+    assert worker.compatible_release() == release
+    with sqlite3.connect(database) as connection:
+        connection.execute("CREATE TABLE projects(id TEXT)")
+        connection.execute("PRAGMA user_version=4")
+    assert worker.compatible_release() == release
+
+
+def test_running_worker_with_another_runtime_is_preserved(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    child(worker, monkeypatch)
+    try:
+        monkeypatch.setattr(
+            worker,
+            "release",
+            lambda: {
+                "schema_version": 1,
+                "runtime_sha256": "d" * 64,
+                "storage_schema_version": 4,
+            },
+        )
+        pid = worker.process.pid()
+        with pytest.raises(ProcessError, match="running planning worker differs"):
+            worker.compatible_release()
+        assert worker.process.pid() == pid
+        assert worker.readiness(IDENTITY) is not None
+    finally:
+        worker.stop()
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "not-json",
+        "{}",
+        json.dumps(
+            {
+                "schema_version": 1,
+                "runtime_sha256": "a" * 64,
+                "storage_schema_version": True,
+            }
+        ),
+        json.dumps(
+            {"schema_version": 1, "runtime_sha256": "bad", "storage_schema_version": 4}
+        ),
+    ],
+)
+def test_invalid_release_reply_is_not_authority(
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch, reply: str
+) -> None:
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(args, 0, reply, ""),
+    )
+    with pytest.raises(ProcessError, match="release probe returned"):
+        worker.release()

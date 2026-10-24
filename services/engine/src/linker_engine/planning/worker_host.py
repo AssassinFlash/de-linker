@@ -21,6 +21,8 @@ from .execution_identity import storage_binding
 from .execution_registry import service_registry
 from .jobs import Jobs
 from .runtime_config import RuntimeConfig
+from .runtime_snapshot import RuntimeSnapshot
+from .schema import SCHEMA_VERSION
 from .weather_cleanup import WeatherCleanup
 from .weather_reconciliation import WeatherReconciliation
 from .worker import Worker
@@ -155,9 +157,24 @@ def main(argv: list[str] | None = None) -> int:
     control = commands.add_parser("control")
     control.add_argument("operation", choices=("status", "drain", "resume"))
     commands.add_parser("identity")
+    commands.add_parser("release")
     arguments = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO)
     try:
+        if arguments.command == "release":
+            # This probe imports no Workspace and reads no operator policy or
+            # project store. A service manager must be able to inspect the
+            # executable before deciding whether it may open/migrate a store.
+            print(
+                encode(
+                    {
+                        "schema_version": 1,
+                        "runtime_sha256": RuntimeSnapshot.capture().sha256,
+                        "storage_schema_version": SCHEMA_VERSION,
+                    }
+                ).decode()
+            )
+            return 0
         if arguments.command == "serve":
             if (
                 any(
