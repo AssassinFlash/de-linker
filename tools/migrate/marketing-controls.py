@@ -1,4 +1,4 @@
-"""Plan narrow corrections to existing Utility and Services controls.
+"""Plan narrow corrections to existing marketing controls.
 
 This module does not write WordPress. Use the existing reviewed_page_pair
 transport with a verified recovery baseline, a current scoped pair increment,
@@ -56,12 +56,52 @@ def _services(content: str) -> tuple[str, str]:
     return content, states[0]
 
 
+def _installer(content: str) -> tuple[str, str]:
+    start = "  function tabSet(tabSelector, panelSelector, activeAttr) {"
+    end = "  tabSet('.lk-timeline-node', '.lk-timeline-stage', 'data-active');"
+    if content.count(start) != 1 or content.count(end) != 1:
+        raise ValueError("Installer timeline changed; nothing planned")
+    first = content.index(start)
+    last = content.index(end, first) + len(end)
+    block = content[first:last]
+    edits = (
+        ("function show(index) {", "function show(index, reveal = true) {"),
+        (
+            "if (tabs[index]) tabs[index].scrollIntoView({block:'nearest',inline:'nearest'});",
+            "if (reveal && tabs[index]) tabs[index].scrollIntoView({block:'nearest',inline:'nearest'});",
+        ),
+        ("    show(0);", "    show(0, false);"),
+    )
+    fields = re.findall(r'<textarea\b[^>]*\sid="installer-mobile-query"[^>]*>', content)
+    if len(fields) != 1 or fields[0].count(" rows=") != 1:
+        raise ValueError("Expected one native Installer prompt")
+    if block.count(".scrollIntoView(") != 1:
+        raise ValueError("Installer scroll consumer changed; nothing planned")
+    old = all(block.count(a) == 1 and b not in block for a, b in edits)
+    final = all(a not in block and block.count(b) == 1 for a, b in edits)
+    field = fields[0]
+    if final and field.count('rows="3"') == 1:
+        return content, "final"
+    if not old or field.count('rows="2"') != 1:
+        raise ValueError(
+            "Partially changed Installer controls; inspect before retrying"
+        )
+    for before, after in edits:
+        block = block.replace(before, after, 1)
+    content = content[:first] + block + content[last:]
+    return content.replace(field, field.replace('rows="2"', 'rows="3"'), 1), "old"
+
+
 def plan_pair(family: str, english: str, german: str) -> tuple[str, str]:
     """Accept a complete old or final pair; preserve all other source bytes."""
-    if family not in {"utility", "services"}:
-        raise ValueError("Only Utility and Services are eligible")
-    root = "tv-utility-page-v1" if family == "utility" else "service-redesign"
-    transform = _utility if family == "utility" else _services
+    families = {
+        "utility": ("tv-utility-page-v1", _utility),
+        "services": ("service-redesign", _services),
+        "installer": ("installer-journal", _installer),
+    }
+    if family not in families:
+        raise ValueError("Only Utility, Services and Installer are eligible")
+    root, transform = families[family]
     planned: list[str] = []
     states: list[str] = []
     for content in (english, german):

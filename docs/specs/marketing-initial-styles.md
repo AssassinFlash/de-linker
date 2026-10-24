@@ -60,3 +60,18 @@ checked together. A later normal click does not prove its cause or repair.
 Current source/evidence owner is the existing full-site goal. Reuse its one
 worktree and9410 instance; retain small unique preimages and reclaim rebuildable
 runtime copies after acceptance. The page/state inventory is not a pass count.
+
+The next scoped readability correction reuses that installed baseline. Balance
+the Home title's two existing sentences; let its native two-row textarea use
+its real line height instead of the fixed52px height. Installer's actual German
+placeholder needs three rows: keep the wording, save rows=3 and respect native
+height. Its timeline initializer sets the first selection without revealing the
+tab; actual clicks and arrow keys retain nearest scrolling. Apply this through
+the existing guarded EN/DE marketing planner and paired writer.
+
+Keep complete words in the Services hero rest and Commercial title, retaining
+authored hyphens and emergency wrapping. Utility phone hero ghost links use the
+existing14px token and retain their native44px targets. Reuse the completed
+initial-style/header/media evidence; check only these affected layouts, inputs
+and Installer initial/interactive scroll. No customer wording, model route,
+product fact or new testing framework changes are required.
