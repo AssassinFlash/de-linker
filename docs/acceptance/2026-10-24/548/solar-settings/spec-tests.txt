@@ -1,0 +1,39 @@
+Independent Spec checks; source 235b917857ee3b427abacc001e9f2d0ab58c794a
+Base 367640fcf09eba92eb77b8e61aaedaa6957cdd7b
+
+Read-only replacement-weather reproduction, no DB or network:
+Actual TypeScript readSolarSetup -> solarInputs(toggle terrain horizon false to true)
+-> prepareWeatherInputs on tests/fixtures/preparation-flow.json pv_project.inputs.
+Passed resulting JSON into actual Python ProjectInputs.model_validate and
+check_pv_preparation, supplying the fixture's owned weather asset through a
+read-only Assets.get stub.
+
+original: native Save preflight PASS
+changed: native Save preflight PASS
+prepared: native Save preflight REJECTED InvalidInput: selected weather differs from the saved source request
+selected weather retained: True
+new acquisition horizon: True
+selected source horizon: False
+
+Targeted existing checks executed independently:
+node --test src/domain/solarSetup.test.ts: 7 passed
+node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/weather-setup.test.mjs: 1 passed
+npm run build:check: manifest source/build hashes match; 1 built-module test passed
+node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/energy-operations.test.mjs tests/preparation-ui.test.mjs tests/energy-workspace.test.mjs: 22 passed
+
+Actual backend exporter documents() compared in memory with checked-in files:
+battery-parameters.schema.json=True; energy-inputs.schema.json=True;
+pv-generation.schema.json=True; weather-acquisition.schema.json=True.
+Reviewed approved EN literals and native German JSON catalog: all 98 exact matches.
+
+Actual WeatherForm, de-DE, independent DOM probe:
+PASS incomplete minus retained and invalid; decimal comma accepted; decimal point
+rejected without changing saved number; fractional source year rejected.
+
+Independent malformed/contradictory probes, all rejected:
+weather extra resource authority; numeric-string year; unknown radiation database;
+wrong meteo database; leap century 2400; unsupported PV library;
+overlapping conversion assignments; unassigned active array;
+unreferenced north; credential-bearing module source URL.
+
+No source, catalog, runtime, service, instance or database was modified.

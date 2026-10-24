@@ -1,0 +1,74 @@
+Browser tab: 5, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=en&case=1440&source=cf951e3d".
+1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=en&case=1440&source=cf951e3d
+	2 container
+		3 button (disabled) Save project
+		4 container Energy calculation, ID: lp-calculations
+			5 text 07
+			6 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+				7 text Energy calculation
+			8 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+			9 container Calculation workspace view
+				10 checkbox Weather source, Value: 1
+				11 checkbox Scenario settings, Value: 0
+				12 checkbox Saved calculations, Value: 0
+			78 container
+				79 heading Typical-year weather, Value: 3
+					80 text Typical-year weather
+				81 text PVGIS builds a typical weather year from representative months in the selected source period. The saved result records the returned databases, selected months and how their timestamps are used.
+				82 container
+					83 text Latitude
+					84 text °
+					85 text field (settable) Latitude °, Value: 52.52
+					86 text Decimal point; no thousands separators.
+				87 container
+					88 text Longitude
+					89 text °
+					90 text field (settable) Longitude °, Value: 13.405
+					91 text Decimal point; no thousands separators.
+				92 button Use roof coordinates
+				93 text The roof reference point can supply WGS 84 coordinates. A postcode alone does not locate the roof.
+				94 container
+					95 text First source year
+					96 text field (settable) First source year, Value: 2005
+					97 text Whole numbers; no thousands separators.
+				98 container
+					99 text Last source year
+					100 text field (settable) Last source year, Value: 2023
+					101 text Whole numbers; no thousands separators.
+				102 text PVGIS selects representative months from this period. Use whole calendar years. Availability depends on the location and database.
+				103 container
+					104 text Expected radiation database
+					105 pop up button (collapsed, settable) Expected radiation database, Value: PVGIS-SARAH3, Secondary Actions: Expand
+						106 menu
+							107 Choose…
+							108 (selected) PVGIS-SARAH3
+							109 PVGIS-ERA5
+				110 text PVGIS chooses the radiation database for the location. This field checks that choice; it does not change it. Meteorological data must come from ERA5.
+				111 container
+					112 text Terrain horizon
+					113 pop up button (collapsed, settable) Terrain horizon, Value: Omit terrain horizon, Secondary Actions: Expand
+						114 menu
+							115 Choose…
+							116 Include PVGIS terrain horizon
+							117 (selected) Omit terrain horizon
+				118 text A terrain horizon does not include nearby buildings, trees or roof obstacles.
+				119 heading Calculation year, Value: 3
+					120 text Calculation year
+				121 container
+					122 text Synthetic calculation year
+					123 text field (settable) Synthetic calculation year, Value: 2023
+					124 text Whole numbers; no thousands separators.
+				125 text A non-leap year places the 8,760 typical-year hours on a shared UTC timeline. Solar positions still use the original source dates and the provider's irradiance-time offset. The result is not a forecast for the chosen year.
+				126 text Preparation updates the open draft. Save project records the settings before a weather request can start. Selecting a returned weather source is a separate step.
+				127 text Preparing changed weather settings clears the previous weather selection. The energy scenario must then be prepared again. Saved sources and results remain in the project history.
+			128 text Weather settings prepared in this draft
+			129 text A weather request uses saved input revision 2.
+			130 button Prepare weather settings
+			131 button Request weather for saved inputs
+		73 text Solution Configurator
+		74 text by Linker
+		75 text Linker brings your inputs into an editable project for solar and storage planning.
+		76 button (collapsed) About this tool, Secondary Actions: Expand
+			77 text About this tool
+
+The focused UI element is 10 checkbox Weather source, Value: 1

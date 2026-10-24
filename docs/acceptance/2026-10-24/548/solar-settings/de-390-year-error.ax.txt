@@ -1,0 +1,7 @@
+Browser tab: 5, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=de&case=390&source=cf951e3d".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+~					96 text field (settable) Erstes Jahr des Quellzeitraums, Value: 2005,5
+~					97 text Ganze Zahlen ohne Tausendertrennzeichen. Eine ganze Zahl zwischen 1 und 9998 ist erforderlich.
+~			130 button (disabled) Wettereinstellungen vorbereiten
+~			131 button (disabled) Wetterdaten für gespeicherte Eingaben abfragen
+The focused UI element is 96 text field (settable) Erstes Jahr des Quellzeitraums, Value: 2005,5

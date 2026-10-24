@@ -1,0 +1,13 @@
+# Independent cumulative Spec closure
+
+Source: `cf951e3d2219015c65943e0fc21b74b55bac7b0a`. Fixed accepted base: `367640fcf09eba92eb77b8e61aaedaa6957cdd7b`. Reviewed both commits cumulatively, including the initial full-diff audit and every subsequent source, test, specification, copy/catalog and generated-build change. The initial report remains frozen. No Standards report was read.
+
+**Open Spec findings: 0. The initial P1 is closed.** `apps/planner/src/domain/solarSetup.ts:373–387` now reconciles replacement preparation with the actual native save boundary: after validating the complete weather document, it removes the stale selected-weather binding and invalidates only the derived energy replay. Ordinary field editing retains the old selection; unchanged preparation retains both selection and replay. Geometry, PV model parameters, profile selections and unrelated inputs remain intact. This matches the clarified preparation consequences in `docs/specs/548-solar-settings.md:26–39`; it does not weaken the backend’s exact source/request binding.
+
+Independently reran the original TypeScript → Python counterexample: original, edited and prepared documents now all pass the actual native save preflight. Explicitly reattaching the old selected weather to the replacement request still raises `InvalidInput: selected weather differs from the saved source request`. Additional assertions verified preservation and that preparation does not mutate its original input object.
+
+Independently executed `services/engine/tests/planning/test_browser_solar_contracts.py`: the actual owned-weather importer, temporary SQLite/CAS workspace and ASGI `/projects/revise` accept replacement preparation with HTTP 200, preserve the historical asset and revision, and reject the mismatched reattachment with HTTP 422. The temporary workspace was removed after the test.
+
+Also reran 32 targeted Node tests, including shared durable admission, stale/uncertain requests, explicit selection, the weather form and built-module checks. Source/build hashes match; all 99 reviewed English literals and German catalog values match exactly. The added preparation notice accurately describes the explicit reset without implying loss of entered scenario parameters. Evidence is in `spec-closure-tests.txt`.
+
+This closes the source/contract finding for the scoped weather-form/native-start and PV compiler foundation. It does not accept a paired native runtime installation, live acquisition, field accuracy, complete PV controls/start, equipment/country release, reports/site consumers or the full Solution Configurator goal. Retained worker fixtures remain explicitly synthetic in roof/model inputs and simulated in provider transport.

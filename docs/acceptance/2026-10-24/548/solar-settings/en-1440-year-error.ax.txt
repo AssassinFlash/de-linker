@@ -1,0 +1,18 @@
+Browser tab: 5, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=en&blank=1&source=cf951e3d".
+The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
+Removed element IDs: 82-91
++				132 container
++					133 text Latitude
++					134 text °
++					135 text field (settable) Latitude °, Value: 52.52
++					136 text Decimal point; no thousands separators.
++				137 container
++					138 text Longitude
++					139 text °
++					140 text field (settable) Longitude °, Value: 13.405
++					141 text Decimal point; no thousands separators.
+~					96 text field (settable) First source year, Value: 2005.5
+~					97 text Whole numbers; no thousands separators. A whole number between 1 and 9998 is required.
+~			129 text Save project records these settings before a weather request can start.
+~			130 button (disabled) Prepare weather settings
+The focused UI element is 96 text field (settable) First source year, Value: 2005.5

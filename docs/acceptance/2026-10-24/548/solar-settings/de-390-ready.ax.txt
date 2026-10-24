@@ -1,0 +1,74 @@
+Browser tab: 5, Title: "Planning source consumer fixture", URL: "http://127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=de&case=390&source=cf951e3d".
+1 AXWebArea Planning source consumer fixture, URL: 127.0.0.1:50673/tests/preparation-browser.html?view=setup&task=weather&lang=de&case=390&source=cf951e3d
+	2 container
+		3 button (disabled) Projekt speichern
+		4 container Energieberechnung, ID: lp-calculations
+			5 text 07
+			6 heading Energieberechnung, Value: 2, ID: lp-calculations-heading
+				7 text Energieberechnung
+			8 text Berechnen Sie die Energieflüsse dieses Projekts für die gewählten Zeiträume. Mit jedem Ergebnis bleiben die verwendeten Eingaben, Quellen und das Berechnungsmodell gespeichert.
+			9 container Ansicht der Energieberechnung
+				10 checkbox Wetterquelle, Value: 1
+				11 checkbox Szenarioeinstellungen, Value: 0
+				12 checkbox Gespeicherte Berechnungen, Value: 0
+			78 container
+				79 heading Typisches Wetterjahr, Value: 3
+					80 text Typisches Wetterjahr
+				81 text PVGIS stellt aus repräsentativen Monaten des gewählten Zeitraums ein typisches Wetterjahr zusammen. Das gespeicherte Ergebnis hält die zurückgegebenen Datenbanken, die ausgewählten Monate und die Zuordnung der Zeitangaben fest.
+				82 container
+					83 text Breitengrad
+					84 text °
+					85 text field (settable) Breitengrad °, Value: 52,52
+					86 text Dezimalkomma; keine Tausendertrennzeichen.
+				87 container
+					88 text Längengrad
+					89 text °
+					90 text field (settable) Längengrad °, Value: 13,405
+					91 text Dezimalkomma; keine Tausendertrennzeichen.
+				92 button Dachkoordinaten übernehmen
+				93 text Der Dachbezugspunkt kann Koordinaten im System WGS 84 liefern. Eine Postleitzahl allein bestimmt die Lage des Dachs nicht.
+				94 container
+					95 text Erstes Jahr des Quellzeitraums
+					96 text field (settable) Erstes Jahr des Quellzeitraums, Value: 2005
+					97 text Ganze Zahlen ohne Tausendertrennzeichen.
+				98 container
+					99 text Letztes Jahr des Quellzeitraums
+					100 text field (settable) Letztes Jahr des Quellzeitraums, Value: 2023
+					101 text Ganze Zahlen ohne Tausendertrennzeichen.
+				102 text PVGIS wählt die repräsentativen Monate aus diesem Zeitraum aus. Geben Sie ganze Kalenderjahre an. Welche Jahre verfügbar sind, hängt vom Standort und von der Datenbank ab.
+				103 container
+					104 text Erwartete Strahlungsdatenbank
+					105 pop up button (collapsed, settable) Erwartete Strahlungsdatenbank, Value: PVGIS-SARAH3, Secondary Actions: Expand
+						106 menu
+							107 Bitte wählen…
+							108 (selected) PVGIS-SARAH3
+							109 PVGIS-ERA5
+				110 text PVGIS bestimmt die Strahlungsdatenbank für den Standort. Diese Auswahl dient zur Prüfung der zurückgegebenen Quelle; sie ändert die von PVGIS verwendete Datenbank nicht. Die meteorologischen Daten müssen aus ERA5 stammen.
+				111 container
+					112 text Geländehorizont
+					113 pop up button (collapsed, settable) Geländehorizont, Value: Geländehorizont nicht berücksichtigen, Secondary Actions: Expand
+						114 menu
+							115 Bitte wählen…
+							116 PVGIS-Geländehorizont berücksichtigen
+							117 (selected) Geländehorizont nicht berücksichtigen
+				118 text Der Geländehorizont berücksichtigt keine nahen Gebäude, Bäume oder Hindernisse auf dem Dach.
+				119 heading Berechnungsjahr, Value: 3
+					120 text Berechnungsjahr
+				121 container
+					122 text Synthetisches Berechnungsjahr
+					123 text field (settable) Synthetisches Berechnungsjahr, Value: 2023
+					124 text Ganze Zahlen ohne Tausendertrennzeichen.
+				125 text Die 8.760 Stunden des typischen Wetterjahres werden auf einer gemeinsamen UTC-Zeitachse in einem Jahr ohne Schalttag abgebildet. Für den Sonnenstand werden weiterhin die ursprünglichen Datumsangaben und der vom Anbieter angegebene Zeitversatz der Strahlungsdaten verwendet. Das Ergebnis ist keine Vorhersage für das gewählte Jahr.
+				126 text Die Vorbereitung ändert zunächst die offenen Eingaben. Erst mit „Projekt speichern“ werden die Einstellungen gespeichert und für eine Wetterabfrage verfügbar. Eine zurückgegebene Wetterquelle wählen Sie anschließend gesondert für das Projekt aus.
+				127 text Wenn Sie geänderte Wettereinstellungen vorbereiten, wird die bisherige Wetterauswahl aufgehoben. Das Energieszenario muss danach erneut vorbereitet werden. Gespeicherte Quellen und Ergebnisse bleiben im Projektverlauf erhalten.
+			128 text Wettereinstellungen für die offenen Eingaben vorbereitet
+			129 text Für die Wetterabfrage wird die gespeicherte Eingabeversion 2 verwendet.
+			130 button Wettereinstellungen vorbereiten
+			131 button Wetterdaten für gespeicherte Eingaben abfragen
+		73 text Lösungskonfigurator
+		74 text von Linker
+		75 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+		76 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+			77 text Über dieses Werkzeug
+
+The focused UI element is 10 checkbox Wetterquelle, Value: 1

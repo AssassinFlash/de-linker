@@ -1,0 +1,62 @@
+{
+  "visual_pin": "cf951e3d2219015c65943e0fc21b74b55bac7b0a",
+  "final_source": "471755229cf369f4a82711bd7b9f12d05e161154",
+  "verified_files": [
+    {
+      "path": "plugins/linker-commerce/content/windpress/planner.css",
+      "unchanged_since_visual_pin": true,
+      "sha256": "9c3158517e640b62c42552052616fc187630a9b9e39b03007f9befad7e240cc0"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/MapViewport-BABdHBxq.js",
+      "unchanged_since_visual_pin": true,
+      "sha256": "df1fd3464c3b6992ff51fffb30d83844dfe1610152fe03848d03b72eb8dba871"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/SceneViewport-CpGCVmxY.js",
+      "unchanged_since_visual_pin": true,
+      "sha256": "61359db6c29e43e97698708af4abfedc1ffc80438703b203492b1b590c551f4c"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner-core-B1Gn8Hx9.js",
+      "unchanged_since_visual_pin": true,
+      "sha256": "621d6c1b4a1996c6f285444ba7e8e6a2c7ddd1b016262dd7c6aebc89f3294111"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/planner.js",
+      "unchanged_since_visual_pin": true,
+      "sha256": "4101e22c2c082bfe55aeba8668d1bbb9151af0dba35f7c198ac0d4cd4c183dfd"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/assets/rolldown-runtime-BWaJ3C7D.js",
+      "unchanged_since_visual_pin": true,
+      "sha256": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/vite-manifest.json",
+      "unchanged_since_visual_pin": true,
+      "sha256": "4e3670d40d826b62d0d39fd20a03b8bf8b91677d41d7548daa643cc4f55a9a1f"
+    },
+    {
+      "path": "plugins/linker-tools/build/planner/windpress.scan.txt",
+      "unchanged_since_visual_pin": true,
+      "sha256": "26b1885ce0fda5c3ea67b47f2986c4d4980fa6c99e4f86f039949d7935428a4b"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json",
+      "unchanged_since_visual_pin": true,
+      "sha256": "c148087a0dae14aff5d0ceeb1c346db7b39fb69a54ad683278d6fe5f6471e31d"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo",
+      "unchanged_since_visual_pin": true,
+      "sha256": "3812615a494742c111c9b94dcb6577ea626988f950ec2699d373c9160a34612d"
+    },
+    {
+      "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+      "unchanged_since_visual_pin": true,
+      "sha256": "4b18b22a351bac609247741b41d86b2725e7ca19b2775f55dc6695536b58f657"
+    }
+  ],
+  "later_changes": "Source provenance comment and manifest hash, test helper annotations, and isolated development root disposal only; no rendered production behavior or copy changed."
+}

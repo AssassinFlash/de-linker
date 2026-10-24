@@ -1,0 +1,34 @@
+{
+  "owner": "unified-planner-548",
+  "purpose": "Temporary Vite component browser validation; uses existing owned source only, no separate WordPress instance or project DB",
+  "listener": "127.0.0.1:50673",
+  "pid": 66783,
+  "exec_session_id": 20338,
+  "observed_at_utc": "2026-10-24T12:08:34.815832+00:00",
+  "review_by_utc": "2026-10-24T13:08:34.815832+00:00",
+  "reclaim_condition": "Stop after final EN/DE screenshots in this turn; close only created fixture tab, reset viewport, verify listener absent. Preserve original p548 runtime.",
+  "stopped_at_utc": "2026-10-24T12:25:02.547370+00:00",
+  "listener_absent": true,
+  "created_tab_closed": true,
+  "viewport_reset": true,
+  "retained_user_tab": "2",
+  "new_wordpress_instances": 0,
+  "new_worktrees": 0,
+  "new_full_backups": 0,
+  "deleted_storage_copies": 0,
+  "claimed_storage_savings_bytes": 0,
+  "filesystem_available_bytes": 881878659072,
+  "restarts": [
+    {
+      "pid": 83021,
+      "exec_session_id": 14974,
+      "purpose": "Narrow browser verification of standalone fixture hot-reload root disposal",
+      "observed_at_utc": "2026-10-24T12:28:04.834929+00:00",
+      "review_by_utc": "2026-10-24T12:48:04.834929+00:00",
+      "reclaim_condition": "Immediately after HMR smoke this turn; retain no listener/tab.",
+      "stopped_at_utc": "2026-10-24T12:29:58.779522+00:00",
+      "listener_absent": true,
+      "created_tab_closed": true
+    }
+  ]
+}
