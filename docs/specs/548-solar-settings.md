@@ -25,7 +25,12 @@ Provider availability is not inferred from the one retained Berlin response.
 
 Preparation validates against the unmodified exported backend JSON schema and
 semantic year checks, then writes `weather_acquisition` in the open project
-draft. Native Save project must confirm the input revision before the request
+draft. When replacing the effective source request, this explicit preparation
+also clears the previous selected-weather binding and invalidates the prepared
+energy replay. It retains saved assets/results, profile selections, entered
+scenario/model parameters and unrelated edits. Unchanged preparation retains a
+matching selection. Ordinary field edits alone do not remove or adopt a source.
+Native Save project must confirm the input revision before the request
 button enables. Dispatch uses the existing common planning-operation hook,
 atomic durable intent, exact revision/key command and task history. No browser
 provider credentials, actor choice, resource controls or arbitrary URL are sent.

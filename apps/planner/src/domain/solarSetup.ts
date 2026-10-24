@@ -371,12 +371,20 @@ export function compilePv(
 	return value;
 }
 export function prepareWeatherInputs(inputs: JsonObject): JsonObject {
-	const setup = readSolarSetup(inputs);
-	return {
+	const setup = readSolarSetup(inputs),
+		weather = compileWeather(setup.weather);
+	const next: Record<string, Json> = {
 		...inputs,
 		solar_setup: setup,
-		weather_acquisition: compileWeather(setup.weather),
+		weather_acquisition: weather,
 	};
+	if (!sameJson(inputs.weather_acquisition, weather)) {
+		// Save must not bind a replacement request to the previous owned weather.
+		// Immutable sources/results stay in history; adoption is still explicit.
+		delete next.pv_preparation;
+		return invalidateEnergyReplay(next);
+	}
+	return next;
 }
 export function preparePvInputs(inputs: JsonObject): JsonObject {
 	const setup = readSolarSetup(inputs);

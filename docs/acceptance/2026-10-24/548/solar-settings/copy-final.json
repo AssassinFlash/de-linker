@@ -488,5 +488,10 @@
     "msgid": "A weather request uses saved input revision %d.",
     "approved_en": "A weather request uses saved input revision %d.",
     "de": "Für die Wetterabfrage wird die gespeicherte Eingabeversion %d verwendet."
+  },
+  {
+    "msgid": "Preparing changed weather settings clears the previous weather selection and prepared energy settings. Saved sources and results stay in the project history.",
+    "approved_en": "Preparing changed weather settings clears the previous weather selection. The energy scenario must then be prepared again. Saved sources and results remain in the project history.",
+    "de": "Wenn Sie geänderte Wettereinstellungen vorbereiten, wird die bisherige Wetterauswahl aufgehoben. Das Energieszenario muss danach erneut vorbereitet werden. Gespeicherte Quellen und Ergebnisse bleiben im Projektverlauf erhalten."
   }
 ]

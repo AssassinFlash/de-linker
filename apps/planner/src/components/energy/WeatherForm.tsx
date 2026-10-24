@@ -236,6 +236,12 @@ export function WeatherForm({
 						"linker-tools",
 					)}
 				</p>
+				<p>
+					{__(
+						"Preparing changed weather settings clears the previous weather selection. The energy scenario must then be prepared again. Saved sources and results remain in the project history.",
+						"linker-tools",
+					)}
+				</p>
 			</section>
 		</fieldset>
 	);

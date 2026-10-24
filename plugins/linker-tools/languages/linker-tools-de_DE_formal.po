@@ -6308,3 +6308,7 @@ msgstr "Diese Einstellungen müssen mit „Projekt speichern“ gesichert werden
 #: build/planner/assets/planner.js
 msgid "A weather request uses saved input revision %d."
 msgstr "Für die Wetterabfrage wird die gespeicherte Eingabeversion %d verwendet."
+
+#: build/planner/assets/planner.js
+msgid "Preparing changed weather settings clears the previous weather selection. The energy scenario must then be prepared again. Saved sources and results remain in the project history."
+msgstr "Wenn Sie geänderte Wettereinstellungen vorbereiten, wird die bisherige Wetterauswahl aufgehoben. Das Energieszenario muss danach erneut vorbereitet werden. Gespeicherte Quellen und Ergebnisse bleiben im Projektverlauf erhalten."

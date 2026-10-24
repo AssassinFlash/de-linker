@@ -253,3 +253,39 @@ test("PV source references require complete safe datasheet evidence before prepa
 		refusal("pv_parameters_incomplete"),
 	);
 });
+
+test("explicit weather replacement clears only the stale binding and prepared replay, so native saving can accept the new request", () => {
+	const original = {
+		...inputs(),
+		energy_replay: { schema_version: 1 },
+		profile_selections: {
+			schema_version: 1,
+			selected: { pv_available_ac: "a".repeat(32), gross_load: "b".repeat(32) },
+		},
+		unrelated: "keep",
+	};
+	const setup = readSolarSetup(original);
+	const changed = solarInputs(original, {
+		...setup,
+		weather: {
+			...setup.weather,
+			request: { ...setup.weather.request, use_terrain_horizon: true },
+		},
+	});
+	assert.deepEqual(
+		changed.pv_preparation,
+		original.pv_preparation,
+		"editing a field does not select or remove a source",
+	);
+	const prepared = prepareWeatherInputs(changed);
+	assert.equal(prepared.pv_preparation, undefined);
+	assert.equal(prepared.energy_replay, undefined);
+	assert.deepEqual(prepared.profile_selections, original.profile_selections);
+	assert.deepEqual(prepared.pv_generation, original.pv_generation);
+	assert.equal(prepared.unrelated, "keep");
+	assert.deepEqual(
+		prepareWeatherInputs(original).pv_preparation,
+		original.pv_preparation,
+		"preparing unchanged settings retains the matching selection",
+	);
+});
