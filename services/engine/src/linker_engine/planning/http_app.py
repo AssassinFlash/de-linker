@@ -27,6 +27,7 @@ from .canonical import Json, Object
 from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
 from .energy_service import EnergyService
+from .equipment_kernel import EquipmentService
 from .errors import (
     Conflict,
     EvaluationRevisionChanged,
@@ -107,6 +108,7 @@ def create_private_app(
     pv: PvPreparationService | None = None,
     weather: WeatherService | None = None,
     product_provider: Callable[[], ProductProvider] | None = None,
+    equipment: EquipmentService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -118,7 +120,15 @@ def create_private_app(
         weather.workspace is not workspace or weather.kernel.workspace is not workspace
     ):
         raise InvalidInput("HTTP and weather acquisition must share project authority")
-    registry = service_registry(energy, pv, weather)
+    if equipment is not None and (
+        equipment.workspace is not workspace
+        or equipment.kernel.workspace is not workspace
+        or product_provider is None
+    ):
+        raise InvalidInput(
+            "equipment qualification requires shared project and Woo authority"
+        )
+    registry = service_registry(energy, pv, weather, equipment)
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
@@ -379,6 +389,23 @@ def create_private_app(
             raise VersionUnavailable("PV preparation is not configured")
         return run_view(
             pv.evaluate(actor, body.project_id, body.expected_revision, key=body.key)
+        )
+
+    @app.post("/runs/equipment")
+    def qualify_equipment(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/equipment", body)
+        if previous is not None:
+            return previous
+        if equipment is None:
+            raise VersionUnavailable("equipment qualification is not configured")
+        return run_view(
+            equipment.evaluate(
+                actor,
+                body.project_id,
+                body.expected_revision,
+                key=body.key,
+            )
         )
 
     @app.post("/runs/trace")

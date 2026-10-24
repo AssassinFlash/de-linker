@@ -61,13 +61,14 @@ final class EngineeringFeed {
 	public static function feed( ?string $since = null ): array {
 		$publication = Publication::manifest();
 		$feed        = array(
-			'source_revision'        => $publication['source_revision'],
-			'compatibility_revision' => $publication['compatibility_revision'],
-			'schema_version'         => self::SCHEMA_VERSION,
-			'generated_at'           => gmdate( 'c' ),
-			'compatibility_version'  => EngineeringData::compatibility_version(),
-			'overlay'                => self::references( $publication ),
-			'products'               => array(),
+			'source_revision'           => $publication['source_revision'],
+			'compatibility_revision'    => $publication['compatibility_revision'],
+			'schema_version'            => self::SCHEMA_VERSION,
+			'figure_projection_version' => 2,
+			'generated_at'              => gmdate( 'c' ),
+			'compatibility_version'     => EngineeringData::compatibility_version(),
+			'overlay'                   => self::references( $publication ),
+			'products'                  => array(),
 		);
 		// The contract itself, so the engine's sync refreshes its copy from the
 		// same fetch; a broken file stays out of the feed (it reads as null),
@@ -183,6 +184,13 @@ final class EngineeringFeed {
 				'unit'     => $entry['unit'] ?? null,
 				'citation' => self::feed_citation( $entry['citation'] ),
 			);
+			// Conditions remain part of the maintained fact. A numeric value
+			// without its qualifier must never become an unconditional limit.
+			foreach ( array( 'qualifier', 'evidence_refs', 'value_de', 'columns' ) as $field ) {
+				if ( array_key_exists( $field, $entry ) ) {
+					$cited[ $key ][ $field ] = $entry[ $field ];
+				}
+			}
 		}
 
 		return $cited;

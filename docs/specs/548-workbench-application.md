@@ -173,6 +173,58 @@ algorithm fixtures have a distinct execution key and cannot enter that worker.
 This binds the maintained module facts; it does not approve equipment pairings,
 country rules or the remaining downstream report/handoff operations.
 
+### Equipment evidence and proposed-topology task
+
+The new `/runs/equipment` task is owned, revision-bound and idempotent through
+the same permanent command receipt and worker registry. `equipment_selection`
+contains selected Woo IDs and their exact current product revisions, physical
+module/stack counts, accessory IDs, phase, operating mode and project demand
+requirements. It contains no manufacturer limits or customer-editable product
+facts. A changed or withdrawn selected product rejects a new command with
+`product_evidence_changed`; completed private receipts still replay.
+
+The task freezes the whole loaded/current/prepared candidate pool, its document
+associations and the shared publication-filtered compatibility contract. It
+checks current permission before and after worker evaluation. It uses no legacy
+capacity ratios, postcode assumptions or old residential/commercial selection
+function. Proposed configurations are assessed before ranking. Automatic
+candidate search and ranking remain part of the overall implementation; this
+task does not claim to have implemented them.
+
+Equipment needs figure projection version 2. The Woo producer preserves
+`qualifier`, `evidence_refs`, explicit `columns` and existing language values;
+an old feed which discarded them cannot be accepted by this task. The compiler
+retains raw keys/values/units and current product/document revisions, source
+bytes SHA, physical page and figure hash. SI-prefix conversion follows the
+stored unit: active kW and apparent kVA stay distinct. Maximum and continuous
+values, module/system energy and operating/fault current are never merged.
+
+Ordered values remain table columns. Mapping to a module count requires
+explicit Woo-maintained column labels; matching array length and ascending
+numbers are insufficient evidence. A disjoint battery/converter voltage window
+is violated; a partly overlapping window remains unresolved for usable energy.
+A scalar whole-system window needs an explicit fixed-count fit. Free-text
+conditions are retained as unresolved conditions, never approved by a regex or
+language-model guess. A missing manufacturer listing is not proof of physical
+incompatibility. Required accessories use current unambiguous Woo identities
+and their documented per-system/stack/unit quantity basis.
+
+A `sales_unit_kind` figure, cited and maintained in the same Woo product, is
+required before converting an internal pack count into a saleable SKU count.
+The compiler does not infer that a cabinet SKU is one pack because one figure
+describes its internal module. Known conditional energy figures cannot become
+unconditional capacity. Missing sales-unit identity keeps that BOM line
+unresolved. No substitute capability pack is introduced.
+
+Each result contains satisfied/violated/unresolved checks, the source facts,
+manufacturer conditions and a provisional parts list. A successful task is
+not an approved system. Detailed string/port/continuous battery conversion,
+mode/transfer, integrated topology and country requirements remain explicit
+unresolved checks until their corresponding models and current source facts
+are implemented. The proposed-topology task alone never grants the final
+country-qualified report, complete-BOM or commerce-handoff state. This is an
+increment of path C, not completion of the full workbench or a scope reduction.
+
 The owner has authorised notifying the collaborating conversation after the
 shared integration is actually connected and verified. That handoff must name
 the interfaces, source/runtime versions, relevant readback and remaining

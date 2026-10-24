@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+from copy import deepcopy
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -164,3 +165,14 @@ class Compatibility:
             if item["kind"] == kind
             and _pattern(item["inverter"]).search(inverter_model)
         ]
+
+    def snapshot(self) -> dict[str, Any]:
+        """The exact scoped contract, including its unfulfilled conditions."""
+        return deepcopy(
+            {
+                "schema_version": 1,
+                "version": self.version,
+                "pairs": self._pairs,
+                "requirements": self._requirements,
+            }
+        )

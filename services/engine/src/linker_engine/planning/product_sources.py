@@ -84,19 +84,37 @@ class ProductSources:
                 "current Woo module data is unavailable"
             ) from error
 
-    def confirm_basis(self, basis: Object) -> None:
-        scope = basis.get("publication")
-        if basis.get("schema_version") != 1 or not isinstance(scope, dict):
-            raise VersionUnavailable("pinned Woo module proof is missing")
+    def equipment_basis(self) -> Object:
+        """Freeze the whole current candidate pool and its scoped pair claims."""
         try:
             loaded = self.load()
-            loaded.publication.confirm(
-                View(loaded.engine, scope),
-                require_reference=True,
-                require_prepared=True,
+            if loaded.publication.feed.get("figure_projection_version") != 2:
+                raise VersionUnavailable(
+                    "Woo condition-preserving figure projection must be prepared"
+                )
+            view = loaded.publication.prepared_view(loaded.engine)
+            ids = {p.id for p in view.engine.products.products}
+            result = decode_object(
+                encode(
+                    {
+                        "schema_version": 1,
+                        "figure_projection_version": 2,
+                        "publication": view.dependencies,
+                        "products": [
+                            row
+                            for row in loaded.publication.feed["products"]
+                            if row["id"] in ids
+                        ],
+                        "compatibility": view.engine.compatibility.snapshot(),
+                    }
+                )
             )
+            loaded.publication.confirm(view, require_prepared=True)
+            return result
         except PublicationChanged as error:
-            raise ProductEvidenceChanged("current Woo module data changed") from error
+            raise ProductEvidenceChanged(
+                "current Woo equipment data changed"
+            ) from error
         except (
             PublicationUnavailable,
             FeedError,
@@ -106,7 +124,32 @@ class ProductSources:
             RuntimeError,
         ) as error:
             raise VersionUnavailable(
-                "current Woo module data is unavailable"
+                "current Woo equipment data is unavailable"
+            ) from error
+
+    def confirm_basis(self, basis: Object, *, require_reference: bool = True) -> None:
+        scope = basis.get("publication")
+        if basis.get("schema_version") != 1 or not isinstance(scope, dict):
+            raise VersionUnavailable("pinned Woo product proof is missing")
+        try:
+            loaded = self.load()
+            loaded.publication.confirm(
+                View(loaded.engine, scope),
+                require_reference=require_reference,
+                require_prepared=True,
+            )
+        except PublicationChanged as error:
+            raise ProductEvidenceChanged("current Woo product data changed") from error
+        except (
+            PublicationUnavailable,
+            FeedError,
+            OSError,
+            KeyError,
+            ValueError,
+            RuntimeError,
+        ) as error:
+            raise VersionUnavailable(
+                "current Woo product data is unavailable"
             ) from error
 
     @staticmethod

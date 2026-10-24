@@ -74,6 +74,10 @@ class ProjectInputs(Command):
             from .weather_inputs import WeatherAcquisitionInputs
 
             WeatherAcquisitionInputs.model_validate(value["weather_acquisition"])
+        if "equipment_selection" in value:
+            from .equipment_inputs import EquipmentSelection
+
+            EquipmentSelection.model_validate(value["equipment_selection"])
         return value
 
 

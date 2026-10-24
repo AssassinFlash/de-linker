@@ -11,6 +11,7 @@ from . import commands
 from .access import active_actor, project_row
 from .canonical import Object
 from .energy_service import EnergyService
+from .equipment_kernel import EquipmentKernel
 from .errors import NotFound
 from .geometry_import import GeometryImport
 from .http_asset_intake import HttpAssetIntake
@@ -90,7 +91,7 @@ class HttpReplay:
                     )
                 )
             )
-        elif path in ("runs/energy", "runs/pv", "runs/weather"):
+        elif path in ("runs/energy", "runs/pv", "runs/weather", "runs/equipment"):
             evaluate = EnergyEvaluate.model_validate(value)
             command_scope = f"evaluate:{evaluate.project_id}"
             receipt, command_sha256 = self.receipt(
@@ -104,6 +105,8 @@ class HttpReplay:
                         if path == "runs/energy"
                         else PvReferenceKernel.kind
                         if path == "runs/pv"
+                        else EquipmentKernel.kind
+                        if path == "runs/equipment"
                         else WeatherKernel.kind
                     },
                 },
