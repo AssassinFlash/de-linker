@@ -32,6 +32,15 @@ of that inventory and its permissions. Reject unreadable enumeration, links,
 missing/additional public paths or changed modes before any live rename.
 Do not silently repair an intervening change at this last boundary.
 
+If this final check explicitly refuses the candidate in that SSH, first verify
+the whole unswitched preparation's identities: unchanged live paths, this
+attempt's single-file backup copies and absence markers, and its original
+empty private batch directory. Then remove only those preparation copies,
+markers and empty directory. Do not run rename recovery before a rename or
+clean up blindly after an uncertain transport result. A mixed plugin/MU/theme
+batch must be able to retry without manual edits; replaced preparations are
+retained for inspection instead of being deleted.
+
 This digest covers public paths and modes, not code-byte authenticity. The
 existing whole-source/release fingerprint checks remain independently needed.
 Normalizing a .next candidate is not a claim that every server ACL or browser
@@ -42,7 +51,8 @@ remain acceptance requirements.
 
 Regression fixtures use real restrictive staging, rsync, a cached stage,
 atomic rename/archive/rollback, private sibling files, and last-callback
-permission/path/link damage. The initial seven controls fail against the old
+permission/path/link damage, and a mixed existing/absent batch's refusal,
+retry, archive and rollback. The initial seven controls fail against the old
 publisher. Checks must preserve source/stage modes and private backup modes.
 
 The configured Cutover test suite and its static checks must pass; final

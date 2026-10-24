@@ -194,6 +194,176 @@ def test_preparation_never_follows_a_link_into_private_data(tmp_path: Path) -> N
     assert (live / "plugin.php").read_text() == "old code"
 
 
+def test_guard_refusal_cleans_only_its_mixed_preparation_and_allows_retry(
+    tmp_path: Path,
+) -> None:
+    """A refused directory/MU/theme batch leaves the old recovery record usable."""
+    target = Target(
+        "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
+    )
+    plugin = "wp-content/plugins/example"
+    mu = "wp-content/mu-plugins/guard.php"
+    style = "wp-content/themes/child/style.css"
+    added = "wp-content/plugins/added"
+    source = tmp_path / "source"
+    private_file(source / "assets" / "header.js", "previous browser code")
+    mu_source = tmp_path / "guard.php"
+    private_file(mu_source, "previous MU code")
+    previous = atomic.publish(
+        target,
+        [atomic.Artifact(source, plugin), atomic.Artifact(mu_source, mu)],
+        deploy_id="20261024T000000Z-prior",
+    )
+    atomic.archive(target, previous)
+    root = Path(atomic.backup_root(target))
+    prior_manifest = (Path(previous.backup_directory) / "manifest.json").read_bytes()
+    prior_pointer = (root / "latest").read_bytes()
+    old_directory = Path(target.path_of(plugin))
+    old_mu = Path(target.path_of(mu))
+    directory_inode = old_directory.stat().st_ino
+    mu_inode = old_mu.stat().st_ino
+    mu_mode = mode(old_mu)
+    private_file(source / "assets" / "header.js", "new browser code")
+    private_file(mu_source, "new MU code")
+    style_source = tmp_path / "style.css"
+    private_file(style_source, "new CSS")
+    artifacts = [
+        atomic.Artifact(source, plugin),
+        atomic.Artifact(mu_source, mu),
+        atomic.Artifact(style_source, style),
+        atomic.Artifact(source, added),
+    ]
+    refused_id = "20261024T000001Z-refused"
+
+    def damage() -> None:
+        incoming = old_directory.with_name(".example.next")
+        (incoming / "assets" / "header.js").chmod(0o600)
+
+    with pytest.raises(CutoverError, match="public.asset"):
+        atomic.publish(target, artifacts, deploy_id=refused_id, on_switch=damage)
+
+    assert old_directory.stat().st_ino == directory_inode
+    assert (
+        old_directory / "assets" / "header.js"
+    ).read_text() == "previous browser code"
+    assert old_mu.stat().st_ino == mu_inode
+    assert old_mu.read_text() == "previous MU code"
+    assert mode(old_mu) == mu_mode
+    assert not Path(target.path_of(style)).exists()
+    assert not Path(target.path_of(added)).exists()
+    assert (root / "latest").read_bytes() == prior_pointer
+    assert (
+        Path(previous.backup_directory) / "manifest.json"
+    ).read_bytes() == prior_manifest
+    assert not (root / refused_id).exists()
+    assert not list(Path(target.root).rglob("*.prev"))
+    assert not list(Path(target.root).rglob("*.prev-absent"))
+    assert not list(Path(target.root).rglob("*.failed"))
+
+    # A normal retry replaces the damaged .next candidates, without manual cleanup.
+    receipt = atomic.publish(target, artifacts, deploy_id=refused_id)
+    assert (old_directory / "assets" / "header.js").read_text() == "new browser code"
+    assert old_mu.read_text() == "new MU code"
+    assert mode(Path(target.path_of(style))) == 0o644
+    assert mode(Path(target.path_of(added)) / "assets" / "header.js") == 0o644
+    atomic.archive(target, receipt)
+    atomic.rollback(target, [artifact.relative for artifact in artifacts])
+    assert old_directory.stat().st_ino == directory_inode
+    assert (
+        old_directory / "assets" / "header.js"
+    ).read_text() == "previous browser code"
+    assert old_mu.read_text() == "previous MU code"
+    assert mode(old_mu) == mu_mode
+    assert not Path(target.path_of(style)).exists()
+    assert not Path(target.path_of(added)).exists()
+
+
+@pytest.mark.parametrize("replaced", ["copy", "marker", "batch"])
+def test_guard_refusal_retains_foreign_preparation_for_inspection(
+    tmp_path: Path, replaced: str
+) -> None:
+    """Refusal cannot delete a replaced backup, marker or batch directory."""
+    target = Target(
+        "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
+    )
+    relative = "wp-content/plugins/example"
+    live = Path(target.path_of(relative))
+    private_file(live / "assets" / "header.js", "old browser code")
+    mu = Path(target.path_of("wp-content/mu-plugins/guard.php"))
+    private_file(mu, "old MU code")
+    source = tmp_path / "source"
+    private_file(source / "assets" / "header.js", "new browser code")
+    mu_source = tmp_path / "guard.php"
+    private_file(mu_source, "new MU code")
+    style_source = tmp_path / "style.css"
+    private_file(style_source, "new CSS")
+    style = Path(target.path_of("wp-content/themes/child/style.css"))
+    deploy_id = "20261024T000001Z-replaced"
+    batch = Path(atomic.backup_root(target)) / deploy_id
+    copy = mu.with_name(".guard.php.prev")
+    marker = style.with_name(".style.css.prev-absent")
+    foreign = {"copy": copy, "marker": marker, "batch": batch}[replaced]
+    live_inode = live.stat().st_ino
+
+    def damage() -> None:
+        (live.with_name(".example.next") / "assets" / "header.js").chmod(0o600)
+        foreign.rename(tmp_path / "our-original-preparation")
+        if replaced == "batch":
+            foreign.mkdir(mode=0o700)
+        else:
+            # Even a replacement bearing this deploy id is not our saved inode.
+            private_file(foreign, deploy_id)
+
+    with pytest.raises(CutoverError, match="public.asset"):
+        atomic.publish(
+            target,
+            [
+                atomic.Artifact(source, relative),
+                atomic.Artifact(mu_source, "wp-content/mu-plugins/guard.php"),
+                atomic.Artifact(style_source, "wp-content/themes/child/style.css"),
+            ],
+            deploy_id=deploy_id,
+            on_switch=damage,
+        )
+
+    assert foreign.exists()
+    assert copy.exists()
+    assert marker.exists()
+    assert batch.exists()
+    assert live.stat().st_ino == live_inode
+    assert (live / "assets" / "header.js").read_text() == "old browser code"
+    assert mu.read_text() == "old MU code"
+    assert not style.exists()
+    assert not (batch.parent / "latest").exists()
+
+
+def test_uncertain_switch_transport_retains_preparation(tmp_path: Path) -> None:
+    """A missing final SSH result is never treated as an explicit guard refusal."""
+
+    class LostTransport(Target):
+        def shell(self, script: str) -> str:
+            if "TIMEFORMAT=" in script:
+                raise CutoverError("fixture SSH result unknown")
+            return super().shell(script)
+
+    target = LostTransport(
+        "fixture", str(tmp_path / "site"), "http://127.0.0.1", (), None, None
+    )
+    source = tmp_path / "guard.php"
+    private_file(source, "new MU code")
+    relative = "wp-content/mu-plugins/guard.php"
+    live = Path(target.path_of(relative))
+    private_file(live, "old MU code")
+    deploy_id = "20261024T000001Z-uncertain"
+
+    with pytest.raises(CutoverError, match="SSH result unknown"):
+        atomic.publish(target, [atomic.Artifact(source, relative)], deploy_id=deploy_id)
+
+    assert live.read_text() == "old MU code"
+    assert live.with_name(".guard.php.prev").read_text() == "old MU code"
+    assert (Path(atomic.backup_root(target)) / deploy_id).is_dir()
+
+
 def test_static_theme_file_is_readable_and_private_mu_file_and_neighbour_stay_private(
     tmp_path: Path,
 ) -> None:

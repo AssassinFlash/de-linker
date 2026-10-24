@@ -212,6 +212,48 @@ def _same_filesystem(target: Target, root: str, parents: list[str]) -> None:
         )
 
 
+def _discard_unswitched_preparation(
+    target: Target, manifest: Manifest, directory: str, before: dict[str, str]
+) -> str:
+    """Same-shell guard-refusal cleanup, never transport-error or rename recovery."""
+    batch = shlex.quote(directory)
+    checks = [
+        _IDENTITY,
+        f"test ! -L {batch}",
+        f'test "$(identity {batch})" = {shlex.quote(before[directory])}',
+        f'test -z "$(ls -A {batch})"',
+    ]
+    cleanup: list[str] = []
+    for entry in manifest.backups:
+        live = _quoted(target, entry.relative)
+        if entry.existed:
+            checks.append(
+                f'test "$(identity {live})" = '
+                + shlex.quote(before[target.path_of(entry.relative)])
+            )
+        else:
+            checks.append(f"test ! -e {live}\ntest ! -L {live}")
+        if entry.directory and entry.existed:
+            # The original live directory becomes .prev only after rename.
+            continue
+        names = _siblings(entry.relative)
+        prepared = _quoted(target, names.previous if entry.existed else names.absent)
+        checks.extend(
+            [
+                f"test -f {prepared}\ntest ! -L {prepared}",
+                f'test "$(identity {prepared})" = {shlex.quote(entry.inode)}',
+            ]
+        )
+        if not entry.existed:
+            checks.append(
+                f'test "$(cat {prepared})" = {shlex.quote(manifest.deploy_id)}'
+            )
+        cleanup.append(f"rm -f {prepared}")
+    # Validate the whole preparation before deleting any of it. A nonempty or
+    # replaced batch, changed live path or foreign marker is retained for review.
+    return "\n".join([*checks, *cleanup, f"rmdir {batch}"])
+
+
 def publish(
     target: Target,
     artifacts: list[Artifact],
@@ -274,7 +316,7 @@ def publish(
     )
     live_paths = [target.path_of(item.relative) for item in artifacts]
     next_paths = [target.path_of(_siblings(item.relative).next) for item in artifacts]
-    before = identities(target, live_paths + next_paths)
+    before = identities(target, [directory, *live_paths, *next_paths])
     prepare: list[str] = []
     for item, live_path in zip(artifacts, live_paths, strict=True):
         names = _siblings(item.relative)
@@ -358,8 +400,11 @@ def publish(
     )
     script = (
         "set -eu\n"
-        + public_assets.check_script(target, public_inventory, public_proof)
-        + "\nrestore_all() {\ntrap - EXIT HUP INT TERM\nset +e\n"
+        + "if ! "
+        + (public_assets.check_script(target, public_inventory, public_proof) or ":")
+        + "; then\n"
+        + _discard_unswitched_preparation(target, manifest, directory, before)
+        + "\nexit 1\nfi\nrestore_all() {\ntrap - EXIT HUP INT TERM\nset +e\n"
         + "\n".join(restore)
         + "\n}\ntrap restore_all EXIT\ntrap 'exit 1' HUP INT TERM\n"
     )
