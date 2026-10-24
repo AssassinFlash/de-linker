@@ -1963,8 +1963,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$this->as_user( (int) $staff[0] );
 			$before = get_option( 'linker_registration_dispositions', array() );
 		}
-		$killed = false;
-		$kill   = static function ( string $sql ) use ( $observer, $writer, &$killed ): string {
+		$killed          = false;
+		$original_thread = $wpdb->__get( 'dbh' )->thread_id;
+		$kill            = static function ( string $sql ) use ( $observer, $writer, &$killed ): string {
 			global $wpdb;
 			$target = 'privacy' === $writer ? RegistrationNotices::META : RegistrationSlots::OPTION;
 			if ( ! $killed && preg_match( '/^(INSERT|UPDATE) /', $sql ) && str_contains( $sql, $target ) ) {
@@ -1978,9 +1979,10 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 			$result = 'privacy' === $writer ? RegistrationNotices::erase( $id ) : RegistrationSlots::resolve_interrupted( $slot['key'], 'Synthetic killed audit cannot release this slot.' ); } finally {
 			remove_filter( 'query', $kill ); }
 			$this->assertTrue( $wpdb->db_connect( false ) );
-			$observer->close();
 			$this->assertTrue( $killed );
 			$this->assertFalse( $result );
+			$this->killed_worker_quiescent( $observer, $original_thread, $id, array_column( $before, 'job' ) );
+			$observer->close();
 			if ( 'privacy' === $writer ) {
 				$this->assertSame( $before, $this->notices( $id ) );
 				foreach ( $before as $plan ) {
@@ -1992,6 +1994,92 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 				$this->assertSame( $before, get_option( 'linker_registration_dispositions', array() ) );
 				$this->assertSame( 1, $this->summary()['interrupted'] );
 			}
+	}
+
+	/**
+	 * Confirm the killed server worker released its locks before the healthy control.
+	 * This waits for a fixture precondition, never retries a production operation.
+	 *
+	 * @param \wpdb          $observer Independent fixture connection.
+	 * @param int            $thread Original killed server connection.
+	 * @param int            $id Native fixture account, zero for a slot disposition.
+	 * @param array<int,int> $jobs Original fixture jobs.
+	 * @throws \RuntimeException The fixture cannot establish server teardown.
+	 */
+	private function killed_worker_quiescent( \wpdb $observer, int $thread, int $id, array $jobs ): void {
+		global $wpdb;
+		$keys = array( 'registration-capacity', 'intake-capacity', 'registration-notices-' . $id );
+		foreach ( $jobs as $job ) {
+			$keys[] = 'mail-job-' . $job;
+		}
+		// Five seconds is this fault fixture's teardown budget, not a runtime wait.
+		$deadline = microtime( true ) + 5;
+		$first    = null;
+		$attempts = 0;
+		$errors   = $observer->suppress_errors( true );
+		try {
+			do {
+				++$attempts;
+				$alive = (int) $observer->get_var( $observer->prepare( 'SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID=%d', $thread ) );
+				if ( '' !== $observer->last_error ) {
+					throw new \RuntimeException( 'registration_fixture_worker_read_failed' );
+				}
+				$held = 0;
+				foreach ( $keys as $key ) {
+					$name  = 'linker-assessment-' . md5( (string) constant( 'DB_NAME' ) . '/' . $wpdb->prefix . '/' . $key );
+					$owner = $observer->get_var( $observer->prepare( 'SELECT IS_USED_LOCK(%s)', $name ) );
+					if ( '' !== $observer->last_error ) {
+						throw new \RuntimeException( 'registration_fixture_lock_read_failed' );
+					}
+					$held += null !== $owner ? 1 : 0;
+				}
+				if ( false === $observer->query( 'START TRANSACTION' ) ) {
+					throw new \RuntimeException( 'registration_fixture_observer_transaction_failed' );
+				}
+				$clear = true;
+				try {
+					$queries = array( $observer->prepare( 'SELECT option_name FROM %i WHERE option_name IN (%s,%s,%s) FOR UPDATE NOWAIT', $wpdb->options, RegistrationSlots::OPTION, 'linker_registration_dispositions', IntakeStore::OPTION ) );
+					if ( $id > 0 ) {
+						$queries[] = $observer->prepare( 'SELECT umeta_id FROM %i WHERE user_id=%d FOR UPDATE NOWAIT', $wpdb->usermeta, $id );
+					}
+					foreach ( $jobs as $job ) {
+						$queries[] = $observer->prepare( 'SELECT ID FROM %i WHERE ID=%d FOR UPDATE NOWAIT', $wpdb->posts, $job );
+						$queries[] = $observer->prepare( 'SELECT meta_id FROM %i WHERE post_id=%d FOR UPDATE NOWAIT', $wpdb->postmeta, $job );
+					}
+					foreach ( $queries as $query ) {
+						if ( false === $observer->query( $query ) ) {
+							$clear = false;
+							break;
+						}
+					}
+				} finally {
+					$observer->query( 'ROLLBACK' );
+				}
+				$state   = array(
+					'worker_present'        => $alive,
+					'held_mutexes'          => $held,
+					'native_rows_available' => $clear,
+				);
+				$first ??= $state;
+				if ( 0 === $alive && 0 === $held && $clear ) {
+					fwrite(
+						STDERR,
+						'registration_kill_quiescence ' . wp_json_encode(
+							array(
+								'initial'      => $first,
+								'final'        => $state,
+								'observations' => $attempts,
+							)
+						) . PHP_EOL
+					);
+					return;
+				}
+				usleep( 10000 );
+			} while ( microtime( true ) < $deadline );
+			throw new \RuntimeException( 'registration_fixture_killed_worker_not_quiescent' );
+		} finally {
+			$observer->suppress_errors( $errors );
+		}
 	}
 
 	/** The committed native registration job already has recovery before any dispatch and consumes once. */
