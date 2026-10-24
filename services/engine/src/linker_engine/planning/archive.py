@@ -62,6 +62,30 @@ def _check_database(path: Path, blobs: Blobs) -> None:
         ).fetchall()
         for (sha256,) in documents:
             verify_dependencies(blobs, blobs.object(sha256))
+        # This additive table is absent in older core-v2 archives. Its exact
+        # source/progress refs and flattened capture children are authoritative
+        # recovery data, including when a start response was lost.
+        has_weather_journal = connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='weather_acquisitions'"
+        ).fetchone()
+        if has_weather_journal:
+            columns = (
+                "manifest_sha256",
+                "plan_sha256",
+                "acknowledgement_sha256",
+                "observation_sha256",
+                "capture_sha256",
+                "abort_sha256",
+            )
+            for row in connection.execute(
+                "SELECT manifest_sha256,plan_sha256,acknowledgement_sha256,observation_sha256,capture_sha256,abort_sha256 "
+                "FROM weather_acquisitions"
+            ):
+                for name, sha256 in zip(columns, row, strict=True):
+                    if sha256 is not None:
+                        blobs.read(sha256)
+                        if name == "capture_sha256":
+                            verify_dependencies(blobs, blobs.object(sha256))
         for (sha256,) in connection.execute("SELECT manifest_sha256 FROM runs"):
             manifest = blobs.object(sha256)
             context = manifest.get("context")

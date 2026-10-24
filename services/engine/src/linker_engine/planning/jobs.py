@@ -156,9 +156,10 @@ class Jobs:
             row["lease_token"],
         ) == (lease.run_id, lease.kind, lease.attempt, lease.worker, lease.token)
 
-    def _active(
+    def require_active(
         self, connection: sqlite3.Connection, lease: Lease, now: float
     ) -> sqlite3.Row:
+        """Fence a private worker mutation inside the caller's write transaction."""
         row = connection.execute(
             "SELECT * FROM jobs WHERE id=?", (lease.id,)
         ).fetchone()
@@ -175,7 +176,7 @@ class Jobs:
         _duration(lease_seconds, "lease duration")
         with self.workspace.database.transaction() as connection:
             now = self.workspace.clock()
-            self._active(connection, lease, now)
+            self.require_active(connection, lease, now)
             until = now + lease_seconds
             connection.execute(
                 "UPDATE jobs SET lease_until=?, updated_at=? WHERE id=?",
@@ -227,7 +228,7 @@ class Jobs:
                     asset.verify_published(connection)
                 return output
             now = workspace.clock()
-            self._active(connection, lease, now)
+            self.require_active(connection, lease, now)
             if asset is not None:
                 asset.publish(connection, lease.run_id, now)
             if lease.kind == "evaluate":
@@ -256,7 +257,7 @@ class Jobs:
         content = workspace.blobs.put_object(error)
         with workspace.database.transaction() as connection:
             now = workspace.clock()
-            row = self._active(connection, lease, now)
+            row = self.require_active(connection, lease, now)
             retry = retry_after is not None and row["attempt"] < row["max_attempts"]
             available = now + retry_after if retry and retry_after is not None else now
             connection.execute(
