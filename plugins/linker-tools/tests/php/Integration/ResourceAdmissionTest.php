@@ -18,6 +18,7 @@ use Linker\Commerce\Protection\Proof;
 use Linker\Tools\Genie\Attachments;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\PublicationGuard;
 use Linker\Tools\Genie\Thread;
 use Linker\Tools\Protection\Replies;
 use Linker\Tools\Protection\ResourcePolicy;
@@ -236,12 +237,17 @@ final class ResourceAdmissionTest extends TestCase {
 				$context = $resources->context( null );
 				$this->assertSame( 'genie', $context['action'] );
 				$this->assertMatchesRegularExpression( '/^[a-f0-9]{64}$/', $context['binding'] );
-				return new WP_REST_Response(
+				$response = new WP_REST_Response(
 					array(
 						'conversation_id' => 123,
 						'stream'          => 'synthetic',
 					)
 				);
+				$publication = new PublicationGuard();
+				$dependencies = $publication->dependencies();
+				$this->assertIsArray( $dependencies );
+				$publication->remember( $response, $dependencies );
+				return $response;
 			},
 		);
 		$first     = $resources->dispatch( null, $request, '', $handler );
@@ -250,7 +256,7 @@ final class ResourceAdmissionTest extends TestCase {
 		$this->assertNull( $resources->context( null ) );
 		$request->set_header( 'X-Linker-Proof', '' );
 		$second = $resources->dispatch( null, $request, '', $handler );
-		$this->assertInstanceOf( WP_REST_Response::class, $second );
+		$this->assertInstanceOf( WP_REST_Response::class, $second, is_wp_error( $second ) ? (string) wp_json_encode( array( $second->get_error_code(), $second->get_error_data() ) ) : '' );
 		$this->assertSame( $first->get_data(), $second->get_data() );
 		$this->assertSame( 1, $calls );
 	}
@@ -1382,7 +1388,8 @@ final class ResourceAdmissionTest extends TestCase {
 				$first = rest_do_request( $request );
 				$this->assertSame( $status, $first->get_status(), (string) wp_json_encode( $first->get_data() ) );
 				$request->set_header( 'X-Linker-Proof', '' );
-				$this->assertSame( $status, rest_do_request( $request )->get_status() );
+				$again = rest_do_request( $request );
+				$this->assertSame( $status, $again->get_status(), (string) wp_json_encode( $again->get_data() ) );
 				$requests[] = $request;
 			}
 			$product->set_status( 'draft' );
