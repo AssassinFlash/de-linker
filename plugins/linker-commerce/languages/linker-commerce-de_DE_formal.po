@@ -5851,3 +5851,11 @@ msgstr "Verwendungszweck"
 #: includes/Contact/SelectionView.php:101
 msgid "Datasheets & certificates"
 msgstr "Datenblätter und Zertifikate"
+
+#. Contact fallback opens the other language; German readers open the English page.
+msgid "Your entries could not be carried over to the other language version. They are still on this page."
+msgstr "Ihre Eingaben konnten nicht in die andere Sprachversion übernommen werden. Sie sind weiterhin auf dieser Seite vorhanden."
+
+#. Contact fallback opens the other language; German readers open the English page.
+msgid "Open the German page in a new tab"
+msgstr "Englische Seite in neuem Tab öffnen"

@@ -5363,3 +5363,11 @@ msgstr ""
 #: includes/Contact/SelectionView.php:101
 msgid "Datasheets & certificates"
 msgstr ""
+
+#: includes/Contact/LanguageDraft.php
+msgid "Your entries could not be carried over to the other language version. They are still on this page."
+msgstr ""
+
+#: includes/Contact/LanguageDraft.php
+msgid "Open the German page in a new tab"
+msgstr ""
