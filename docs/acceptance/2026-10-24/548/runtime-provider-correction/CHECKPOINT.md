@@ -256,3 +256,54 @@ logs and their resolved errors. Earlier `native-preservation.json` describes
 the pre-install checkpoint; `native-install.json` and the native readback are
 the later authoritative state. Native browser evidence here is one German
 viewport, not full final visual acceptance.
+
+
+## 2026-10-25 · Woo-native compatibility and automatic equipment search
+
+Source candidate `9eeb8d1c` is installed in the existing p548 instance. HTTP and
+worker both use runtime `3c1dbba58b5fd21805e84c6cf8d4f61370a43e30c4c1d9a7f8058256646cfafb`.
+The feed source is `673a44663c373bab68ebec33c4b42f3c84f666c86fa2c985dea9178e3e99e4bd`.
+Compatibility declarations now belong to native Woo product metadata and share
+one projection across PHP, Genie-facing abilities and the engine. Canonical IDs
+and document identities/revisions remain bound; the static contract is only a
+one-time migration input. The native migration changed 44 maintainers, retaining
+85 sales products plus one hidden reference; all 170 positive projected claims
+had current evidence. Unresolved source rows do not gain release permission.
+
+In the existing example project, the native browser prepared and saved demand
+revision 13, ran one real finite equipment search, read frozen checks, adopted
+H2-10K-T3 + BC2-HV1 + three BU2 modules, and saved revision 14. The search run is
+`10d121ed063349d49ab076753e52be11`; its 43 assessed combinations exhaust only the
+declared one-converter/external-assembly template. The selected result records
+4.5 × 3 = 13.5 kWh with the hosted source and page 2. Country, continuous power
+and other unresolved checks remain visible; this is not a complete-system
+release, optimal design or a final bill of materials.
+
+The actual save exposed a browser-number boundary: raw JSON `10` was compared
+with frozen `10.0`. The final fix compares strict EquipmentSelection models,
+retaining ownership, exact product identities/revisions, assessment hash and
+server-side current Woo validation for new adoption. The same existing native
+HTTP/worker fixture covers browser integer representation and refusal after
+withdrawal. The original search was reused after this fix; no weather, annual
+energy or second search was run. Previously accepted unaffected evidence is
+reused. Independent Spec and Standards passed the full candidate and only the
+necessary deltas; approved new EN/DE copy was retained. The saved-readiness
+caption also requires a clean saved draft.
+
+The original protected roof project stays at revision 14 with its original
+input hash. Old PV, annual energy and equipment results remain readable, and
+unrelated geometry, PV and energy inputs are unchanged by adoption. New EN/DE
+1440/390 captures cover the changed search controls and frozen-result views.
+Their index and native readback are consolidated in
+[`woo-source-native-install.json`](../../../2026-10-25/548/woo-source-native-install.json).
+
+The authorised source conversation was notified after real connection and
+adoption. Its prior accepted source checks are reused, with no request to
+retest. No production write, new instance, new dependency environment or full
+backup was added. Superseded executable carriers were removed; only current
+and previous remain, with the shared environment and existing recovery points.
+The full planner goal is active. Remaining topology/electrical/country work,
+equipment-coupled replay/comparison, complete BOM/report/PDF, site/commerce
+consumers, migration and review/production delivery remain explicit obligations.
+This local batch is closed; do not rerun its passing checks without a changed
+risk or a real failure.

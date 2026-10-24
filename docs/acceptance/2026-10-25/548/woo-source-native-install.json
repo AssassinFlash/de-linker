@@ -43,7 +43,7 @@
     }
   },
   "production_changed": false,
-  "pending": "Automatic whole-system candidate search/ranking, remaining continuous/electrical/country constraints, complete BOM/report/PDF, site consumers, migration and review/production delivery remain within the active planner goal",
+  "pending": "Full supported-topology search/ranking, remaining continuous/electrical/country constraints, equipment-coupled energy replay/comparison, complete BOM/report/PDF, site consumers, migration and review/production delivery remain within the active goal. Finite single-converter/external-assembly search and same-project candidate adoption are delivered locally.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -749,6 +749,104 @@
         "en": "This result records the proposed equipment and the checks covered here. Further assessment of the complete system is required.",
         "de": "Dieses Ergebnis dokumentiert die vorgeschlagene Geräteauswahl und die hier geprüften Anforderungen. Die Gesamtanlage muss noch weiter geprüft werden."
       }
+    ]
+  },
+  "equipment_search": {
+    "source_commit": "9eeb8d1c",
+    "runtime_sha256": "3c1dbba58b5fd21805e84c6cf8d4f61370a43e30c4c1d9a7f8058256646cfafb",
+    "source_revision": "673a44663c373bab68ebec33c4b42f3c84f666c86fa2c985dea9178e3e99e4bd",
+    "compatibility_revision": "a939cdb8036477d94f534dee354de58f93a48521c8de9bc6d8593cc045f8dc55",
+    "compatibility_origin": "woocommerce",
+    "canonical_woo_ids": true,
+    "sales_products": 85,
+    "reference_inputs": 1,
+    "migrated_maintainers": 44,
+    "positive_claims": 170,
+    "search": {
+      "project_id": "c7795bc2c1e14e389622015c809ace45",
+      "revision": 13,
+      "run_id": "10d121ed063349d49ab076753e52be11",
+      "runtime_sha256": "e0fa0c6b386431186edbb297af04f729bf4b376ac4e15e02306d5b051aba1099",
+      "candidate_id": "cb6e4681994c246ca40c639a3a0684bc6689bc9e583fd5479834076a5f55c68a",
+      "assessment_sha256": "87226d25d299f9da6efdad72903283dead1bff0469f86639f94869500a404275",
+      "completion": "exhausted_supported_domain",
+      "candidate_count": 43
+    },
+    "saved_adoption": {
+      "at_utc": "2026-10-24T23:38:05.176222+00:00",
+      "revision": 14,
+      "input_sha256": "32b9f95c200fe0c286e9e7552ccaf5377bfcbc63cae14bb6114125ba4ea43f1f",
+      "equipment_candidate": {
+        "assessment_sha256": "87226d25d299f9da6efdad72903283dead1bff0469f86639f94869500a404275",
+        "candidate_id": "cb6e4681994c246ca40c639a3a0684bc6689bc9e583fd5479834076a5f55c68a",
+        "run_id": "10d121ed063349d49ab076753e52be11"
+      },
+      "typed_selection_matches_frozen_candidate": true,
+      "other_project_inputs_unchanged": true,
+      "protected_project_unchanged": true,
+      "historical_runs_readable": {
+        "908626650f4549ddb5696cb162900a9a": "succeeded",
+        "f43b6f9410f14363902630800d565c20": "succeeded",
+        "c061bafe56e64948a6a349ba1b76dd5e": "succeeded"
+      },
+      "new_calculations": 1,
+      "production_changed": false
+    },
+    "usable_energy": {
+      "actual_kwh": 13.5,
+      "requirement_kwh": 10,
+      "formula": "4.5 kWh × 3 = 13.5 kWh",
+      "document_url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+      "page": 2
+    },
+    "readiness": {
+      "http_worker_match": true,
+      "schema": 5,
+      "existing_rows_preserved_during_install": {
+        "projects": 166,
+        "revisions": 240,
+        "runs": 12,
+        "jobs": 12
+      },
+      "genie_restarted": false,
+      "new_instance": false,
+      "new_environment": false
+    },
+    "review": {
+      "spec": "PASS, including final save normalization and readiness label delta",
+      "standards": "PASS, including current Woo save boundary and final deltas",
+      "copy": "Approved EN and formal DE; 21 used new strings"
+    },
+    "native_save_correction": "Compare strict EquipmentSelection fields so browser JSON 10 and frozen 10.0 represent the same demand. Frozen IDs, revisions, hash and current Woo proof are still checked.",
+    "visual_evidence": [
+      "woo-equipment-search-en-1440.png",
+      "woo-equipment-search-controls-en-1440.png",
+      "woo-equipment-search-en-390.png",
+      "woo-equipment-search-controls-en-390.png",
+      "woo-equipment-search-de-1440.png",
+      "woo-equipment-search-controls-de-1440.png",
+      "woo-equipment-search-de-390.png",
+      "woo-equipment-search-controls-de-390.png"
+    ],
+    "retention": {
+      "executable_carriers": 2,
+      "removed_superseded_carriers_this_batch": 3,
+      "reclaimed_bytes_on_executed_cleanup": 3080192,
+      "shared_environment_reused": true,
+      "full_backups_added": 0
+    },
+    "handoff": {
+      "thread_title": "将 EcoFlow 产品下架为草稿",
+      "sent": true,
+      "scope": "Woo-native declarations, shared projection, source/runtime, native adoption evidence; no repeated source verification requested"
+    },
+    "production_changed": false,
+    "not_covered": [
+      "Parallel converters and integrated/multiple-port topology search",
+      "Remaining electrical, continuous-power and country qualification",
+      "Hardware-coupled energy replay and alternative comparison",
+      "Complete BOM, report, PDF and commerce/site consumers",
+      "Full migration, review and production delivery"
     ]
   }
 }
