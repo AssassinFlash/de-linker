@@ -105,6 +105,28 @@ export function useEnergyRuns({
 		refetchInterval: (query) =>
 			query.state.data && runPending(query.state.data.state) ? POLL_MS : false,
 	});
+	const verifiedRunId = run.data?.id;
+	useEffect(() => {
+		// The first history page can arrive after the user opens this view. Keep
+		// its verified automatic selection in the URL too, for reload/language links.
+		if (
+			active &&
+			admitted &&
+			selected === null &&
+			verifiedRunId &&
+			verifiedRunId === runId
+		)
+			select(verifiedRunId);
+	}, [
+		active,
+		admitted,
+		selected,
+		verifiedRunId,
+		runId,
+		client,
+		projectId,
+		session.query_scope,
+	]);
 	function select(id: string) {
 		if (
 			!client.isCurrentScope(session.query_scope) ||
