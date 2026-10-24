@@ -158,6 +158,11 @@
       "sha256": "59cc4d21606d1f60735af82101c6094ef4d27a1054cb5061988711c9db04c37e"
     },
     {
+      "path": "map-readback.json",
+      "bytes": 3851,
+      "sha256": "53b8b69eb8e7432a1bf55f3cd01c7f6635511d5883dec4536631452b539aa81d"
+    },
+    {
       "path": "pre-input-evidence-fix-checks/engine-commands.json",
       "bytes": 1789,
       "sha256": "77cfcaded19a1f48c3771015f06cea79e26d9fa9f5aa638f49c5fc4e4fd9c8dc"
@@ -248,6 +253,6 @@
       "sha256": "5fc7ac9eb440b1ffede7d1068e16fb14ddabc1e9fb19835d9f62588a23f9ec56"
     }
   ],
-  "file_count": 49,
-  "total_bytes_excluding_manifest": 713546
+  "file_count": 50,
+  "total_bytes_excluding_manifest": 717397
 }
