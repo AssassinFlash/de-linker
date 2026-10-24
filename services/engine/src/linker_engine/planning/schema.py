@@ -1,7 +1,7 @@
 """Versioned planning persistence; no mutable physics in WP post metadata."""
 
-SCHEMA_VERSION = 4
-READABLE_SCHEMA_VERSIONS = (1, 2, 3, 4)
+SCHEMA_VERSION = 5
+READABLE_SCHEMA_VERSIONS = (1, 2, 3, 4, 5)
 
 JOBS_COLUMNS = """
     id TEXT PRIMARY KEY,
@@ -68,27 +68,15 @@ CREATE UNIQUE INDEX IF NOT EXISTS weather_abort_once ON jobs(run_id)
 CREATE UNIQUE INDEX IF NOT EXISTS weather_reconcile_pending ON jobs(run_id)
     WHERE kind = 'reconcile_weather' AND state IN ('queued','running','retry_wait');
 CREATE INDEX IF NOT EXISTS jobs_available ON jobs(state, available_at, lease_until);
--- Durable external-start evidence. This additive extension keeps the existing
--- run/job/wire schemas; old archives acquire the empty table on private restore.
-CREATE TABLE IF NOT EXISTS weather_acquisitions (
+-- Local official-source download state. No external job or credential.
+CREATE TABLE IF NOT EXISTS weather_downloads (
     run_id TEXT PRIMARY KEY REFERENCES runs(id),
     schema_version INTEGER NOT NULL CHECK (schema_version = 1),
     manifest_sha256 TEXT NOT NULL,
     plan_sha256 TEXT NOT NULL,
-    nonce TEXT NOT NULL,
-    post_claimed INTEGER NOT NULL CHECK (post_claimed IN (0, 1)),
     started_at REAL NOT NULL,
     deadline_at REAL NOT NULL CHECK (deadline_at > started_at),
-    remote_run_id TEXT,
-    acknowledgement_sha256 TEXT,
-    observation_sha256 TEXT,
-    capture_sha256 TEXT,
-    abort_sha256 TEXT,
-    CHECK ((remote_run_id IS NULL) = (acknowledgement_sha256 IS NULL)),
-    CHECK (remote_run_id IS NULL OR post_claimed = 1),
-    CHECK (observation_sha256 IS NULL OR remote_run_id IS NOT NULL),
-    CHECK (capture_sha256 IS NULL OR remote_run_id IS NOT NULL),
-    CHECK (abort_sha256 IS NULL OR remote_run_id IS NOT NULL)
+    capture_sha256 TEXT
 );
 -- Additive operator/cache extension. Core schema-v2 records and wire documents
 -- are unchanged; old unindexed jobs can be routed from their frozen manifests.

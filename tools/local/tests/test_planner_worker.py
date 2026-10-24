@@ -69,9 +69,14 @@ def test_private_policy_preserves_operator_choices(worker: PlannerWorker) -> Non
     assert json.loads(worker.policy_file.read_bytes())["drain_timeout_seconds"] == 7
 
 
+@pytest.mark.parametrize("weather_enabled", [False, True])
 def test_numerical_environment_does_not_inherit_credentials(
-    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch
+    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch, weather_enabled: bool
 ) -> None:
+    if weather_enabled:
+        policy = json.loads(worker.runtime_file.read_bytes())
+        policy["weather_acquisition"] = {}
+        worker.runtime_file.write_text(json.dumps(policy))
     for key in (
         "GENIE_SERVICE_TOKEN",
         "APIFY_TOKEN",
@@ -245,29 +250,6 @@ def test_inconsistent_remote_quiescence_from_child_is_rejected(
     )
     with pytest.raises(ProcessError, match="invalid remote quiescence"):
         worker.control("status")
-
-
-def test_weather_credentials_are_explicit_and_absent_from_control(
-    worker: PlannerWorker, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    policy = json.loads(worker.runtime_file.read_bytes())
-    policy["weather_acquisition"] = {}
-    worker.runtime_file.write_text(json.dumps(policy))
-    monkeypatch.setenv("APIFY_TOKEN", "synthetic-private-weather")
-    monkeypatch.setenv("HTTPS_PROXY", "http://synthetic-proxy.invalid")
-    monkeypatch.setenv("GENIE_SERVICE_TOKEN", "synthetic-private-service")
-    monkeypatch.setenv("OPENROUTER_API_KEY", "synthetic-private-model")
-    ordinary = worker.environment()
-    weather = worker.environment(weather=True)
-    assert "APIFY_TOKEN" not in ordinary and "HTTPS_PROXY" not in ordinary
-    assert weather["APIFY_TOKEN"] == "synthetic-private-weather"
-    assert weather["HTTPS_PROXY"] == "http://synthetic-proxy.invalid"
-    assert "GENIE_SERVICE_TOKEN" not in weather and "OPENROUTER_API_KEY" not in weather
-    assert weather["PYTHONPATH"] == str(worker.project / "src")
-    monkeypatch.delenv("APIFY_TOKEN")
-    assert "APIFY_TOKEN" not in worker.environment()
-    with pytest.raises(ProcessError, match="requires APIFY_TOKEN"):
-        worker.environment(weather=True)
 
 
 @pytest.mark.parametrize("stored", [0, 2, 3, 5])

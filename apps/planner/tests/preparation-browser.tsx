@@ -67,7 +67,7 @@ const observed = unknown
 	? {
 			...status,
 			task_state: "failed",
-			acquisition_state: "start_outcome_unknown",
+			acquisition_state: "fetching",
 			observation: null,
 			capture_sha256: null,
 		}

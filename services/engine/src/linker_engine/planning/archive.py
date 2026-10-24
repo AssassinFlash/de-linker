@@ -87,6 +87,18 @@ def _check_database(path: Path, blobs: Blobs) -> None:
                         blobs.read(sha256)
                         if name == "capture_sha256":
                             verify_dependencies(blobs, blobs.object(sha256))
+        has_downloads = connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='weather_downloads'"
+        ).fetchone()
+        if has_downloads:
+            for row in connection.execute(
+                "SELECT manifest_sha256,plan_sha256,capture_sha256 FROM weather_downloads"
+            ):
+                for sha256 in row:
+                    if sha256 is not None:
+                        blobs.read(sha256)
+                if row[2] is not None:
+                    verify_dependencies(blobs, blobs.object(row[2]))
         for (sha256,) in connection.execute("SELECT manifest_sha256 FROM runs"):
             manifest = blobs.object(sha256)
             context = manifest.get("context")

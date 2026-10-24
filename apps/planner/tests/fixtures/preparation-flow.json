@@ -1,111 +1,85 @@
 {
 	"schema_version": 1,
-	"provider_responses": "simulated; no external request",
+	"provider_responses": "Simulated single official HTTPS response with retained original JRC TMY bytes; no live network or research credentials",
 	"weather_run": {
-		"id": "dd6374c9e12a443f9b53647e8794d5b6",
-		"project_id": "45e8d28598ca434c92caae8575cf2744",
+		"id": "d01bb105c67c458380ae7d5802ab42a4",
+		"project_id": "688bc1561e314802aca2a0125acfe39f",
 		"revision": 2,
 		"state": "succeeded",
-		"is_current": true,
-		"manifest_sha256": "636aee915d0b7fa05d1e19af13ebe9a52e2a4332d90cecebe3192874c1d4a142",
+		"is_current": false,
+		"manifest_sha256": "e4d8cf29ee5156fa7919c0b94d1d37d19400fa5d84d9698271a052d0c266b448",
 		"manifest": {
 			"context": {
 				"assets": {
-					"runtime_bundle": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
-					"weather_acquisition.plan": "d23d3657e0a9e1f3ff48d76c4a63d5af20b98be8148889bef69daae6fd840988"
+					"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+					"weather_acquisition.plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0"
 				},
-				"code_sha256": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
+				"code_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
 				"models": {
-					"acquisition": "pinned_apify_correlated_original_v1",
+					"acquisition": "official_jrc_https_get_original_v1",
 					"task": "acquire_pvgis_tmy_weather_v1",
 					"weather": "pvgis_5_3_tmy_explicit_two_axes_v1"
 				},
 				"parameters": {
 					"kind": "acquire_pvgis_tmy_weather_v1",
 					"limits": {
-						"actor_memory_mb": 1024,
-						"actor_timeout_seconds": 180,
 						"connect_timeout_seconds": 5.0,
 						"max_elapsed_seconds": 60.0,
 						"max_metadata_bytes": 100000,
-						"max_polls": 10,
 						"max_response_bytes": 2000000,
-						"max_total_charge_usd": 0.05,
 						"max_weather_rows": 9000,
-						"minimum_download_kb_per_second": 1,
-						"poll_seconds": 1.0,
-						"read_timeout_seconds": 20.0,
-						"request_retries": 1,
-						"request_timeout_seconds": 90
+						"read_timeout_seconds": 20.0
 					}
 				}
 			},
 			"input_sha256": "1694640ee6fb0a3b2a5c3ead6573ee9ae1ac81db4afcc4e1fb77dbb974fa0077",
-			"project_id": "45e8d28598ca434c92caae8575cf2744",
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
 			"revision": 2,
 			"schema": 1
 		},
-		"result_sha256": "8fed69226e59b5dec52c97cf02b33f7f118a189b46c905c00e2f81fae3bc49ca",
+		"result_sha256": "26645b5f30df90f37e560b01732efd3599cac62770d4563a79ef48c6a9835c07",
 		"result": {
-			"acquisition_run_id": "YgxlVDzJ8c1fh03tT",
+			"acquisition_run_id": "d01bb105c67c458380ae7d5802ab42a4",
 			"dependencies": {
-				"acquisition_plan": "d23d3657e0a9e1f3ff48d76c4a63d5af20b98be8148889bef69daae6fd840988",
-				"capture.effective_input_original": "9aaeed994023dbf8dbe99e391d53aa59fe2c3e380164f59f324a4f236d2ffb67",
-				"capture.selected_dataset_record": "e1b12cf58b4ba04999ca3e7835b66ee7a6b3db83d4842de6c664f5a6ad868e45",
-				"capture.submitted_input_original": "478a4ddaabd5275825cfd5740125b0af6f6020e78bafa576925b7bda511b09d5",
-				"capture.transport_receipts": "0804f3c1ad69d14f5814bfcb1c8806a067fc075440eec38a7572b9e6782f6385",
-				"capture_evidence": "a2c2836eb33143f88d174b31cf8cbe348f476450abdb70e8c42f9d8ce20ddc2e",
-				"final_observation": "21d9bf97379cf502b5439db4207f8e891cad9e52385de103f48bbbc5bf3da6e5",
+				"acquisition_plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
+				"capture.transport_receipt": "6148805d41a061558040ebbcf39a313a731c32bfd07d9c58c6a298f38de56e24",
+				"capture_evidence": "c38a02959b3fe6b51eb8b601db6988c77853bd512814fe103e893d2fbb7e2795",
 				"prepared_asset_content": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-				"prepared_asset_metadata": "6ea668ee86dff745e9021c11c6ad9b319492789de634be1541b779c47920deca",
-				"runtime_bundle": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
-				"start_acknowledgement": "bee9883f07ea85ece03c7f93530f41e064954a7d433f69660dbac05112e1c90b",
-				"weather_capture": "56767564f4299002dcca5ba687e0adac1644aded2ca0e42e5d682bf8a0a26b8f",
+				"prepared_asset_metadata": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
+				"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"weather_capture": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492",
 				"weather_original": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 			},
 			"input_sha256": "1694640ee6fb0a3b2a5c3ead6573ee9ae1ac81db4afcc4e1fb77dbb974fa0077",
 			"kind": "acquire_pvgis_tmy_weather_v1",
-			"manifest_sha256": "636aee915d0b7fa05d1e19af13ebe9a52e2a4332d90cecebe3192874c1d4a142",
+			"manifest_sha256": "e4d8cf29ee5156fa7919c0b94d1d37d19400fa5d84d9698271a052d0c266b448",
 			"pinned_assets": {
-				"runtime_bundle": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
-				"weather_acquisition.plan": "d23d3657e0a9e1f3ff48d76c4a63d5af20b98be8148889bef69daae6fd840988"
+				"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"weather_acquisition.plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0"
 			},
 			"prepared_asset": {
 				"content_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-				"id": "d80ced95e358404093fa986200351a21",
+				"id": "c981f61c8a4743699e56acb6e56cfa31",
 				"media_type": "application/json",
 				"metadata": {
 					"acquisition_limits": {
-						"actor_memory_mb": 1024,
-						"actor_timeout_seconds": 180,
 						"connect_timeout_seconds": 5.0,
 						"max_elapsed_seconds": 60.0,
 						"max_metadata_bytes": 100000,
-						"max_polls": 10,
 						"max_response_bytes": 2000000,
-						"max_total_charge_usd": 0.05,
 						"max_weather_rows": 9000,
-						"minimum_download_kb_per_second": 1,
-						"poll_seconds": 1.0,
-						"read_timeout_seconds": 20.0,
-						"request_retries": 1,
-						"request_timeout_seconds": 90
+						"read_timeout_seconds": 20.0
 					},
 					"dependencies": {
-						"acquisition_plan": "d23d3657e0a9e1f3ff48d76c4a63d5af20b98be8148889bef69daae6fd840988",
-						"capture.effective_input_original": "9aaeed994023dbf8dbe99e391d53aa59fe2c3e380164f59f324a4f236d2ffb67",
-						"capture.selected_dataset_record": "e1b12cf58b4ba04999ca3e7835b66ee7a6b3db83d4842de6c664f5a6ad868e45",
-						"capture.submitted_input_original": "478a4ddaabd5275825cfd5740125b0af6f6020e78bafa576925b7bda511b09d5",
-						"capture.transport_receipts": "0804f3c1ad69d14f5814bfcb1c8806a067fc075440eec38a7572b9e6782f6385",
-						"capture_evidence": "a2c2836eb33143f88d174b31cf8cbe348f476450abdb70e8c42f9d8ce20ddc2e",
-						"final_observation": "21d9bf97379cf502b5439db4207f8e891cad9e52385de103f48bbbc5bf3da6e5",
-						"runtime_bundle": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
-						"start_acknowledgement": "bee9883f07ea85ece03c7f93530f41e064954a7d433f69660dbac05112e1c90b",
-						"weather_capture": "56767564f4299002dcca5ba687e0adac1644aded2ca0e42e5d682bf8a0a26b8f",
+						"acquisition_plan": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
+						"capture.transport_receipt": "6148805d41a061558040ebbcf39a313a731c32bfd07d9c58c6a298f38de56e24",
+						"capture_evidence": "c38a02959b3fe6b51eb8b601db6988c77853bd512814fe103e893d2fbb7e2795",
+						"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+						"weather_capture": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492",
 						"weather_original": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 					},
 					"provenance": {
-						"basis": "official_jrc_original_acquired_through_pinned_apify",
+						"basis": "official_jrc_https_original",
 						"label": "JRC PVGIS typical meteorological year",
 						"rights_basis": "JRC PVGIS usage conditions; source/database attribution and private permanent original retention"
 					},
@@ -122,21 +96,15 @@
 								"ac_interval_energy_preservation_claim": false,
 								"adapter": "pvgis_5_3_tmy_explicit_two_axes_v1",
 								"capture": {
-									"capture_basis": "pinned_apify_run_verified_input_dataset_and_authenticated_original_record",
-									"content_type": "application/json; charset=utf-8",
+									"capture_basis": "official_jrc_https_get_original_v1",
+									"content_type": "application/json",
 									"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
-									"received_at_utc": "2026-10-24T03:01:44.196Z",
+									"received_at_utc": "2023-11-14T22:13:20+00:00",
 									"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
 									"schema_version": 1,
 									"source_identifiers": {
-										"apify_actor_id": "aYG0l9s7dbB7j3gbS",
-										"apify_build_id": "bsZdc9Cal4wAwV0VW",
-										"apify_build_number": "0.3.101",
-										"apify_dataset_id": "ipV5QAq6PudF3QyVe",
-										"apify_key_value_store_id": "i3OvQkzJuDD6tihWH",
-										"apify_record_key": "file-weather",
-										"apify_run_id": "YgxlVDzJ8c1fh03tT",
-										"weather_intent_nonce": "c035e86475c0424d9fb25d84dfb4a9fc"
+										"api_version": "5.3",
+										"provider": "EC_JRC_PVGIS"
 									},
 									"status": 200
 								},
@@ -335,21 +303,15 @@
 						}
 					},
 					"weather_capture": {
-						"capture_basis": "pinned_apify_run_verified_input_dataset_and_authenticated_original_record",
-						"content_type": "application/json; charset=utf-8",
+						"capture_basis": "official_jrc_https_get_original_v1",
+						"content_type": "application/json",
 						"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
-						"received_at_utc": "2026-10-24T03:01:44.196Z",
+						"received_at_utc": "2023-11-14T22:13:20+00:00",
 						"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
 						"schema_version": 1,
 						"source_identifiers": {
-							"apify_actor_id": "aYG0l9s7dbB7j3gbS",
-							"apify_build_id": "bsZdc9Cal4wAwV0VW",
-							"apify_build_number": "0.3.101",
-							"apify_dataset_id": "ipV5QAq6PudF3QyVe",
-							"apify_key_value_store_id": "i3OvQkzJuDD6tihWH",
-							"apify_record_key": "file-weather",
-							"apify_run_id": "YgxlVDzJ8c1fh03tT",
-							"weather_intent_nonce": "c035e86475c0424d9fb25d84dfb4a9fc"
+							"api_version": "5.3",
+							"provider": "EC_JRC_PVGIS"
 						},
 						"status": 200
 					},
@@ -373,13 +335,13 @@
 						"use_terrain_horizon": false
 					}
 				},
-				"metadata_sha256": "6ea668ee86dff745e9021c11c6ad9b319492789de634be1541b779c47920deca",
-				"project_id": "45e8d28598ca434c92caae8575cf2744",
+				"metadata_sha256": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
+				"project_id": "688bc1561e314802aca2a0125acfe39f",
 				"purpose": "pvgis_tmy_weather_v1"
 			},
-			"project_id": "45e8d28598ca434c92caae8575cf2744",
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
 			"revision": 2,
-			"runtime_sha256": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
+			"runtime_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
 			"schema": 1,
 			"weather_summary": {
 				"altitude_m": 37.0,
@@ -391,21 +353,15 @@
 						"ac_interval_energy_preservation_claim": false,
 						"adapter": "pvgis_5_3_tmy_explicit_two_axes_v1",
 						"capture": {
-							"capture_basis": "pinned_apify_run_verified_input_dataset_and_authenticated_original_record",
-							"content_type": "application/json; charset=utf-8",
+							"capture_basis": "official_jrc_https_get_original_v1",
+							"content_type": "application/json",
 							"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
-							"received_at_utc": "2026-10-24T03:01:44.196Z",
+							"received_at_utc": "2023-11-14T22:13:20+00:00",
 							"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
 							"schema_version": 1,
 							"source_identifiers": {
-								"apify_actor_id": "aYG0l9s7dbB7j3gbS",
-								"apify_build_id": "bsZdc9Cal4wAwV0VW",
-								"apify_build_number": "0.3.101",
-								"apify_dataset_id": "ipV5QAq6PudF3QyVe",
-								"apify_key_value_store_id": "i3OvQkzJuDD6tihWH",
-								"apify_record_key": "file-weather",
-								"apify_run_id": "YgxlVDzJ8c1fh03tT",
-								"weather_intent_nonce": "c035e86475c0424d9fb25d84dfb4a9fc"
+								"api_version": "5.3",
+								"provider": "EC_JRC_PVGIS"
 							},
 							"status": 200
 						},
@@ -607,20 +563,20 @@
 		"error": null
 	},
 	"pv_run": {
-		"id": "6f74bd0c02354fab8b7e47456415ccf1",
-		"project_id": "45e8d28598ca434c92caae8575cf2744",
+		"id": "cc6d87835df44867a0a3a8954d4c143e",
+		"project_id": "688bc1561e314802aca2a0125acfe39f",
 		"revision": 3,
 		"state": "succeeded",
 		"is_current": true,
-		"manifest_sha256": "1e5c4b70a28bd1739c53747d15716f470123facef34894f7f1d0ad1cbafa3658",
+		"manifest_sha256": "96e569494389f292fca36a54173a8aeb0c9d1c7906a9f8c9101c15cde3ca6f1c",
 		"manifest": {
 			"context": {
 				"assets": {
-					"runtime_bundle": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
-					"weather.metadata": "6ea668ee86dff745e9021c11c6ad9b319492789de634be1541b779c47920deca",
+					"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+					"weather.metadata": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
 					"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 				},
-				"code_sha256": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
+				"code_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
 				"models": {
 					"generation": "uniform_unshaded_pvlib_reference_v1",
 					"pvlib": "0.16.1",
@@ -636,44 +592,44 @@
 					}
 				}
 			},
-			"input_sha256": "15d23374ab347b7b4a18bb43edde0ac6378f4273a909aa77c923d56d22d3b9d4",
-			"project_id": "45e8d28598ca434c92caae8575cf2744",
+			"input_sha256": "0ddf2dec18566e76350b3fecc7a482e573b6a355fa8803ac04f7ff0d3edc28a2",
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
 			"revision": 3,
 			"schema": 1
 		},
-		"result_sha256": "85c4a49d04140981b9c056ae809e50fc67f2f18e88a180cf814c96d2356ed85a",
+		"result_sha256": "2500f86bfef4ced3ed9397de88efb522a2e4e3d620013b9fe2ecc87a5573291a",
 		"result": {
 			"country_assessment": {
 				"status": "not_assessed"
 			},
 			"dependencies": {
 				"prepared_asset_content": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-				"prepared_asset_metadata": "d357aa3bff7a535d79fd7a25bf4ae27b319761e7b550ec1550e66087840f11fa",
-				"pv_model_inputs": "d1a8d563a8ae9e1b01eafd8ece85b66631dd1b9bde934f0c7e48dd681369c724",
-				"pv_model_witness": "884b436defd192b779f91081a328208a0d808059aad4857f75897b0b1509fa5e"
+				"prepared_asset_metadata": "155a4a01b9b422a2dec6110921016bce877406a8fcf5bec2b20eb6845961e0cf",
+				"pv_model_inputs": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
+				"pv_model_witness": "0d35d4d804efb690cd267b640f968e3c09ca214e5ee1fbebe3e6cfd7a8c46526"
 			},
 			"equipment_release": {
 				"status": "not_assessed"
 			},
-			"input_sha256": "15d23374ab347b7b4a18bb43edde0ac6378f4273a909aa77c923d56d22d3b9d4",
+			"input_sha256": "0ddf2dec18566e76350b3fecc7a482e573b6a355fa8803ac04f7ff0d3edc28a2",
 			"kind": "prepare_roof_pv_reference_v1",
-			"manifest_sha256": "1e5c4b70a28bd1739c53747d15716f470123facef34894f7f1d0ad1cbafa3658",
+			"manifest_sha256": "96e569494389f292fca36a54173a8aeb0c9d1c7906a9f8c9101c15cde3ca6f1c",
 			"near_shading_assessment": {
 				"status": "not_assessed"
 			},
 			"pinned_assets": {
-				"runtime_bundle": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
-				"weather.metadata": "6ea668ee86dff745e9021c11c6ad9b319492789de634be1541b779c47920deca",
+				"runtime_bundle": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
+				"weather.metadata": "c0a9f66f1826904482885e8a013986921d422c4fed3d7a0c94b3d6715fb72c08",
 				"weather.raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110"
 			},
 			"prepared_asset": {
 				"content_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
-				"id": "1bb977b6c46f4e08992e51a887742635",
+				"id": "0f963a8448dd4561a75543b5cdb07f43",
 				"media_type": "application/json",
 				"metadata": {
 					"dependencies": {
-						"pv_model_inputs": "d1a8d563a8ae9e1b01eafd8ece85b66631dd1b9bde934f0c7e48dd681369c724",
-						"pv_model_witness": "884b436defd192b779f91081a328208a0d808059aad4857f75897b0b1509fa5e"
+						"pv_model_inputs": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
+						"pv_model_witness": "0d35d4d804efb690cd267b640f968e3c09ca214e5ee1fbebe3e6cfd7a8c46526"
 					},
 					"derived_from_revision": 3,
 					"geometry_sha256": "f93d7aac1afe0dd07f968e067a6a08e5cf912803d64d0f1fb41d475ab92cce68",
@@ -691,7 +647,7 @@
 							{
 								"energy_preservation_claim": false,
 								"exact_interval_copy": false,
-								"input_document_sha256": "d1a8d563a8ae9e1b01eafd8ece85b66631dd1b9bde934f0c7e48dd681369c724",
+								"input_document_sha256": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
 								"input_max_interval_seconds": 3600,
 								"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
 								"method": "representative_pv_output_over_declared_intervals_v1",
@@ -710,28 +666,22 @@
 					"parameters_sha256": "250f2ceab7ec6598136f70fe160944e71f0d0169c73689f1c6e380713ba0b4f7",
 					"profile_type": "pvlib_reference_profile_v1",
 					"provenance": {
-						"basis": "official_jrc_original_acquired_through_pinned_apify",
+						"basis": "official_jrc_https_original",
 						"label": "JRC PVGIS typical meteorological year",
 						"rights_basis": "JRC PVGIS usage conditions; source/database attribution and private permanent original retention"
 					},
 					"retention": "permanent",
 					"schema": 1,
 					"weather_capture": {
-						"capture_basis": "pinned_apify_run_verified_input_dataset_and_authenticated_original_record",
-						"content_type": "application/json; charset=utf-8",
+						"capture_basis": "official_jrc_https_get_original_v1",
+						"content_type": "application/json",
 						"loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
-						"received_at_utc": "2026-10-24T03:01:44.196Z",
+						"received_at_utc": "2023-11-14T22:13:20+00:00",
 						"requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
 						"schema_version": 1,
 						"source_identifiers": {
-							"apify_actor_id": "aYG0l9s7dbB7j3gbS",
-							"apify_build_id": "bsZdc9Cal4wAwV0VW",
-							"apify_build_number": "0.3.101",
-							"apify_dataset_id": "ipV5QAq6PudF3QyVe",
-							"apify_key_value_store_id": "i3OvQkzJuDD6tihWH",
-							"apify_record_key": "file-weather",
-							"apify_run_id": "YgxlVDzJ8c1fh03tT",
-							"weather_intent_nonce": "c035e86475c0424d9fb25d84dfb4a9fc"
+							"api_version": "5.3",
+							"provider": "EC_JRC_PVGIS"
 						},
 						"status": 200
 					},
@@ -755,8 +705,8 @@
 						"use_terrain_horizon": false
 					}
 				},
-				"metadata_sha256": "d357aa3bff7a535d79fd7a25bf4ae27b319761e7b550ec1550e66087840f11fa",
-				"project_id": "45e8d28598ca434c92caae8575cf2744",
+				"metadata_sha256": "155a4a01b9b422a2dec6110921016bce877406a8fcf5bec2b20eb6845961e0cf",
+				"project_id": "688bc1561e314802aca2a0125acfe39f",
 				"purpose": "pvlib_reference_profile_v1"
 			},
 			"profile_summary": {
@@ -773,7 +723,7 @@
 					{
 						"energy_preservation_claim": false,
 						"exact_interval_copy": false,
-						"input_document_sha256": "d1a8d563a8ae9e1b01eafd8ece85b66631dd1b9bde934f0c7e48dd681369c724",
+						"input_document_sha256": "a032774f09c8055bd86615589639c7a417cbd6007599665e7550a7e5fb830181",
 						"input_max_interval_seconds": 3600,
 						"interval_assignment_basis": "explicit_model_policy_not_observed_interval_power",
 						"method": "representative_pv_output_over_declared_intervals_v1",
@@ -784,15 +734,15 @@
 					}
 				]
 			},
-			"project_id": "45e8d28598ca434c92caae8575cf2744",
+			"project_id": "688bc1561e314802aca2a0125acfe39f",
 			"revision": 3,
-			"runtime_sha256": "d1dfaa1d55826095f2364d600196272dc14150bdb5d0aa561f4cd41e6a8d6b4e",
+			"runtime_sha256": "47a14496e87b642b22a6be77d758ec5de4614be26de8851de569dcfbb2503aed",
 			"schema": 1
 		},
 		"error": null
 	},
 	"weather_project": {
-		"id": "45e8d28598ca434c92caae8575cf2744",
+		"id": "688bc1561e314802aca2a0125acfe39f",
 		"title": "Actual JRC typical weather / synthetic roof, not equipment qualification",
 		"revision": 2,
 		"input_sha256": "1694640ee6fb0a3b2a5c3ead6573ee9ae1ac81db4afcc4e1fb77dbb974fa0077",
@@ -977,10 +927,10 @@
 		}
 	},
 	"pv_project": {
-		"id": "45e8d28598ca434c92caae8575cf2744",
+		"id": "688bc1561e314802aca2a0125acfe39f",
 		"title": "Actual JRC typical weather / synthetic roof, not equipment qualification",
 		"revision": 3,
-		"input_sha256": "15d23374ab347b7b4a18bb43edde0ac6378f4273a909aa77c923d56d22d3b9d4",
+		"input_sha256": "0ddf2dec18566e76350b3fecc7a482e573b6a355fa8803ac04f7ff0d3edc28a2",
 		"inputs": {
 			"geometry": {
 				"arrays": [
@@ -1139,7 +1089,7 @@
 			},
 			"pv_preparation": {
 				"schema_version": 1,
-				"weather_asset_id": "d80ced95e358404093fa986200351a21"
+				"weather_asset_id": "c981f61c8a4743699e56acb6e56cfa31"
 			},
 			"weather_acquisition": {
 				"interpretation": {
@@ -1167,24 +1117,10 @@
 	},
 	"weather_status": {
 		"schema_version": 1,
-		"run_id": "dd6374c9e12a443f9b53647e8794d5b6",
+		"run_id": "d01bb105c67c458380ae7d5802ab42a4",
 		"task_state": "succeeded",
 		"acquisition_state": "captured",
-		"plan_sha256": "d23d3657e0a9e1f3ff48d76c4a63d5af20b98be8148889bef69daae6fd840988",
-		"observation": {
-			"actor_id": "aYG0l9s7dbB7j3gbS",
-			"build_id": "bsZdc9Cal4wAwV0VW",
-			"build_number": "0.3.101",
-			"dataset_id": "ipV5QAq6PudF3QyVe",
-			"finished_at": "2026-10-24T03:01:44.196Z",
-			"id": "YgxlVDzJ8c1fh03tT",
-			"started_at": "2026-10-24T03:01:29.953Z",
-			"status": "SUCCEEDED",
-			"store_id": "i3OvQkzJuDD6tihWH"
-		},
-		"capture_sha256": "56767564f4299002dcca5ba687e0adac1644aded2ca0e42e5d682bf8a0a26b8f",
-		"abort_sha256": null,
-		"reconciliation": null,
-		"cleanup": null
+		"plan_sha256": "cba7b972160b1324fa878de1a68983e7deff5db8d653ebbd74938bb7358806b0",
+		"capture_sha256": "e7580ae493fae7167f91a54ebf24966cbb23ef94c19a9cbe1dc81d5af0a6c492"
 	}
 }

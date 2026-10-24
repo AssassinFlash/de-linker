@@ -23,8 +23,6 @@ from .jobs import Jobs
 from .runtime_config import RuntimeConfig
 from .runtime_snapshot import RuntimeSnapshot
 from .schema import SCHEMA_VERSION
-from .weather_cleanup import WeatherCleanup
-from .weather_reconciliation import WeatherReconciliation
 from .worker import Worker
 from .worker_policy import WorkerPolicy
 from .workspace import Workspace
@@ -96,17 +94,6 @@ def serve(
             retry_seconds=policy.retry_seconds,
             routing=registry.routing(policy.routing_batch_size),
         )
-        cleanup = Worker(
-            Jobs(workspace),
-            policy.name + "-weather-cleanup",
-            {
-                "abort_weather": WeatherCleanup(workspace),
-                "reconcile_weather": WeatherReconciliation(workspace),
-            },
-            lease_seconds=policy.lease_seconds,
-            heartbeat_seconds=policy.heartbeat_seconds,
-            retry_seconds=policy.retry_seconds,
-        )
         stop = Event()
 
         def stopping(_signum: int, _frame: object) -> None:
@@ -129,8 +116,7 @@ def serve(
             publish_ready(ready, identity)
             LOG.info("planning worker ready: %s", policy.name)
             while not stop.is_set():
-                cleaned = cleanup.run_once()
-                if not worker.run_once() and not cleaned:
+                if not worker.run_once():
                     stop.wait(policy.poll_seconds)
             return 0
         finally:

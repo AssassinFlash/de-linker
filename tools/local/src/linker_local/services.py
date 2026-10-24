@@ -158,8 +158,6 @@ def _serve(
             engine_synced = True
         worker.ensure_policy()
         target_release = worker.compatible_release()
-        # Validate provider injection before stopping either half of the pair.
-        worker.environment(weather=True)
         if SERVICES[0].process(instance).pid() is not None:
             current = _planner_probe(f"http://{HOST}:{instance.engine_port}", token)
             if current["runtime_sha256"] != target_release["runtime_sha256"]:
@@ -185,9 +183,9 @@ def _serve(
                 [str(uv), "sync", "--locked", "--project", str(project)], check=True
             )
         env = dict(os.environ)
-        # Weather acquisition belongs to its private executor, not HTTP or
-        # Genie. The worker separately selects its only provider credential.
+        # Apify is an R&D tool, never a customer application dependency.
         env.pop("APIFY_TOKEN", None)
+        env.pop("APIFY_API_TOKEN", None)
         if service.name == "engine":
             env.update(_engine_environment(instance, checkout))
             source = project / "src/linker_engine"

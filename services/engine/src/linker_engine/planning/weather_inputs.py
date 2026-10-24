@@ -13,7 +13,7 @@ class WeatherAcquisitionInputs(Document):
     def plan(self, limits: WeatherFetchLimits) -> WeatherFetchPlan:
         return WeatherFetchPlan(
             schema_version=1,
-            kind="pvgis_tmy_apify_acquisition_v1",
+            kind="pvgis_tmy_official_https_acquisition_v1",
             request=self.request,
             interpretation=self.interpretation,
             limits=limits,

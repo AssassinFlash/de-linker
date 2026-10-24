@@ -9,6 +9,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+from linker_engine.planning import runtime_snapshot
 from linker_engine.planning.runtime_snapshot import RuntimeSnapshot
 from linker_engine.planning.schema import SCHEMA_VERSION
 
@@ -49,3 +52,26 @@ def test_real_release_command_needs_no_policy_secrets_or_workspace(
         assert database.read_bytes() == before
         assert sorted(path.name for path in directory.iterdir()) == ["workspace.sqlite"]
     assert not (tmp_path / "absent-policy.json").exists()
+
+
+def test_http_entry_changes_the_complete_executable_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    service = tmp_path / "engine"
+    package = service / "src/linker_engine/planning"
+    package.mkdir(parents=True)
+    (package / "runtime_snapshot.py").write_text("# isolated snapshot location")
+    application = package.parent / "application.py"
+    application.write_text("# original HTTP entry")
+    (service / "pyproject.toml").write_text("# isolated project")
+    (service / "uv.lock").write_text("# isolated lock")
+    monkeypatch.setattr(
+        runtime_snapshot, "__file__", str(package / "runtime_snapshot.py")
+    )
+    before = RuntimeSnapshot.capture()
+    application.write_text("# changed HTTP executable")
+    after = RuntimeSnapshot.capture()
+    assert before.sha256 != after.sha256
+    assert "src/linker_engine/application.py" in {
+        item["path"] for item in json.loads(after.content)["files"]
+    }

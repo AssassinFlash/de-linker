@@ -12,11 +12,9 @@ from linker_engine.planning import archive
 from linker_engine.planning.canonical import digest
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context
+from linker_engine.planning.schema import SCHEMA_VERSION
 from linker_engine.planning.storage import Database
-from linker_engine.planning.weather_journal import WeatherJournal
 from linker_engine.planning.workspace import Workspace
-
-from .test_weather_journal import operation, plan, remote
 
 LEGACY_JOBS = """
 CREATE TABLE jobs_old (
@@ -100,7 +98,7 @@ def test_nonempty_queue_upgrade_keeps_all_rows_leases_routes_and_receipts(
     reopened = Workspace(workspace.database.path.parent, clock=workspace.clock)
     assert rows(reopened.database.path) == before
     with reopened.database.read() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == SCHEMA_VERSION
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
         assert (
             connection.execute(
@@ -159,14 +157,6 @@ def test_failed_migration_after_parent_drop_rolls_back_original_version_and_rows
 def test_old_archive_verifies_and_restores_into_migrated_schema(
     workspace: Workspace, owner: Actor, context: Context, tmp_path: Path, version: int
 ) -> None:
-    if version == 3:
-        weather_owner = Actor("user", "legacy-weather")
-        weather_run, lease = operation(workspace, weather_owner)
-        journal = WeatherJournal(workspace)
-        intent = journal.begin(lease, plan())
-        journal.authorize_post(lease, intent)
-        journal.acknowledge(intent, remote("RUNNING"))
-        workspace.cancel(weather_owner, weather_run.id)
     populated(workspace, owner, context)
     snapshot = tmp_path / "archive"
     archive.backup(workspace, snapshot)
@@ -179,11 +169,4 @@ def test_old_archive_verifies_and_restores_into_migrated_schema(
     restored = archive.restore(snapshot, tmp_path / "restored")
     assert rows(restored.database.path) == before
     with restored.database.read() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
-        if version == 3:
-            assert (
-                connection.execute(
-                    "SELECT COUNT(*) FROM jobs WHERE kind='abort_weather'"
-                ).fetchone()[0]
-                == 1
-            )
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == SCHEMA_VERSION

@@ -11,7 +11,7 @@ Use the existing project, immutable revision, run, lease, cancellation and
 history authority. Numerical PV generation must not execute in an HTTP request.
 The command identifies the saved project revision and an idempotency key;
 the server resolves model choices, resources and owned source dependencies.
-Provider URLs, capture assertions, actor/build IDs and credentials are never
+Provider URLs, capture assertions and credentials are never
 browser-selected authority.
 
 Trusted TMY intake verifies the actual original response and capture against
@@ -19,9 +19,11 @@ the declared versioned request and interpretation before retaining an owned
 weather asset. Preserve acquisition IDs/build, original bytes, units, both
 time axes, provider/database attribution and permanent-retention basis. An
 already captured exact weather source may be reused without another fetch.
-Fresh external acquisition uses Apify as required by the owner, with explicit
-build/resource/retry policy and no ordinary-search/direct-fetch bypass.
-Indeterminate external start outcomes must not silently create repeated runs.
+Fresh customer acquisition uses the official JRC HTTPS API under the typed
+weather request and independent runtime resource policy. The owner clarified
+that Apify is exclusively an R&D research tool, so its account, token, Actor,
+Dataset and billing cannot be customer-product dependencies. R&D-acquired
+originals remain valid research/import evidence with their actual provenance.
 
 The PV task freezes the selected owned weather content/metadata, the exact
 saved geometry/model parameters, runtime and operational settings. It reads

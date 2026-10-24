@@ -69,7 +69,7 @@
     "src/components/energy/ScenarioForm.tsx": "eb15605426e5cdae799310042ea0844873450d3f8f1a3156458e3ecc65abce2d",
     "src/components/energy/ScenarioNumber.tsx": "f9a8bf92eebed1d8be983ab6cb69cbca6e4f9376813d0ed4884f624ca7c340d1",
     "src/components/energy/WeatherForm.tsx": "63eab23de32028105dce0ef3e490e4282dc7c3a6d755022e5d62d29e0ea1c02e",
-    "src/components/energy/WeatherProgress.tsx": "36be31c1331d5c69bbfb7640c15232b238f7b7cc9dc904a9187c60a970acb3bd",
+    "src/components/energy/WeatherProgress.tsx": "0ffff7142abef48c51c3efa41125a97caad7bbcc9b0c663e35dc42f9a190aef9",
     "src/components/energy/WeatherSetup.tsx": "af94254ecf575f4be7a01709c94ae4e96d31e5def9948073690ffab916578537",
     "src/components/energy/batteryPresentation.ts": "10ca8a468bef9ff79e264668f404549fcd73b50f65759b0951132f9523e85583",
     "src/components/energy/planningLabels.ts": "64e9e2b369d4fbef7b788b766a299dbe7414ab2ed082d37a3611f7bed6a3ba22",
@@ -127,7 +127,7 @@
     "src/data/useProjectBar.ts": "646d25e143d3757a6f28208598e2be459bd488bc36a75cddcced642b7f821763",
     "src/data/useProjectDraft.ts": "acacde557542c8617cadaa5813059f0c0a93178b900c948faff0a2db448a45e1",
     "src/data/useSiteIntegration.ts": "4ac1f023927da44a58f31e623aa33da01aad6cf598b3c977b5636d32b7deae3d",
-    "src/data/weatherStatus.ts": "a38cfa017c802010e8ebb7cae171a9667c8cc1f61c06613953b31600202362b7",
+    "src/data/weatherStatus.ts": "75fd5c763ec23228e368fa85f3d4f815441f79c9ed7266559d7f20c80b4ffb0d",
     "src/domain/brief.ts": "3799daa2c8144a81d3368b30a8491c6de1767da8efc7c6841c085614187121e9",
     "src/domain/coordinates.ts": "063d78214006fc8c8ffe4bdcbbc34cf55ff41569388c49c76cefde7a7b8d83f0",
     "src/domain/decimal.ts": "23b42c22173b9c6c568983628bb57ee6cede27539689c54936d8ac32908552e9",
@@ -166,12 +166,12 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/MapViewport-C-CroNFn.js": "4a4f25576bc30d7fe66c632ab266710f24e01436e8f61cd13cb8ade1cba0df7f",
-    "assets/SceneViewport-B5f8f0EV.js": "0b6aef77d2885d29663bb06bfc9b2036dd50c1f3c12cb30923b832b6156fa312",
-    "assets/planner-core-CIg22v_u.js": "2159d9f68d5d88df2e2429e00d969817b033d54c9dc2507e0194924a048fc9a6",
-    "assets/planner.js": "3444a4576b21d888c7f361aadaaeb6c2d8b94a33b28145f7e5bd90fed5840242",
+    "assets/MapViewport-BYU4ooK6.js": "f5135237f965de391b3946fa7e4ecb25029f3e065ebb3ef793d989a92a70abe2",
+    "assets/SceneViewport-DuxYZTB8.js": "044e5d6bd27c473065da349377f67700cba5df20e664e4e98cd9b3df7b3c846e",
+    "assets/planner-core-Dmy-FAjq.js": "77b90a57b7cedaa25123b21c9793bd147a6091f4285dbb0722d926e24389e08d",
+    "assets/planner.js": "2af256c87bc2305fad528562479161af4dc3051d361d5a77956d685719e1c3fe",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "84423bf834e6fdb549ab0f2fbb2101b3f3b243ae77c37d8bceb9fb55d640c289",
+    "vite-manifest.json": "73f72e05b7ba3a49fe1b3110a7641b0eabed386dd76c42d4e01998873b5b1294",
     "windpress.scan.txt": "f5f22ba2726920dee4d9f5a83c267995de69ea735943b0935d03156eb58104c4"
   }
 }

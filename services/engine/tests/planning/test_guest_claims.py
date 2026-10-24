@@ -22,6 +22,7 @@ from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.http_index import project_page
 from linker_engine.planning.numerical_tolerance import Tolerance
 from linker_engine.planning.records import Actor, Context
+from linker_engine.planning.schema import SCHEMA_VERSION
 from linker_engine.planning.service_boundary import PREVIOUS_GUEST_SCOPE
 from linker_engine.planning.workspace import Workspace
 
@@ -310,7 +311,7 @@ def test_v1_archive_upgrades_before_publication_without_changing_source(
     assert (snapshot / "workspace.sqlite").read_bytes() == before
     assert restored.get(GUEST, project.id).input_sha256 == project.input_sha256
     with restored.database.read() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 4
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == SCHEMA_VERSION
     GuestClaims(restored).claim(GUEST, USER, key="login")
     with pytest.raises(NotFound):
         restored.get(GUEST, project.id)

@@ -23,17 +23,19 @@ populated store is not treated as a new empty database. A verified recovery
 point, quiescent old pair and explicit paired upgrade are required to change
 versions. Never silently migrate simply to display new frontend controls.
 
-Pure numerical execution and lifecycle commands do not receive provider
-credentials. Only the explicitly configured weather executor receives
-APIFY_TOKEN from its private process environment, together with the proxy/CA
-variables used by the retained requests transport. Service and model secrets
-remain excluded. The current token is never printed, sent as a command/query
-argument, written to runtime JSON, published in the browser or copied into
-source/evidence. Missing/malformed tokens fail before stopping an existing
-pair; enabled-weather policy is explicit and no physical assumption is added.
-The HTTP and Genie launches omit APIFY_TOKEN. Each execution imports its
-declared project source root, including when an owned frozen release reuses
-the already-synced matching interpreter environment.
+All customer calculation, weather execution and lifecycle commands exclude
+research credentials. The owner clarified that Apify is an R&D-only tool;
+APIFY_TOKEN is never injected into customer HTTP, Genie or workers. Runtime
+weather access uses the typed official JRC HTTPS source, independent of any
+R&D account, Actor, Dataset or quota. Only public-source proxy/CA transport
+policy may be configured separately. No physical assumption is added.
+
+The executable runtime snapshot now binds the complete engine Python source,
+including application.py and the HTTP distribution, as well as project/lock
+bytes and actual tracked dependency versions. A planning-only inventory was
+insufficient to prove the pair's executable identity; the frozen initial
+Standards finding is retained as historical evidence and must be closed
+against this corrected source before installation.
 
 An installed `planner/engine-release.json` selects only a direct child of the
 same instance's `planner/runtime-releases`. It binds every source file and the
@@ -44,9 +46,9 @@ before lifecycle changes and does not sync that environment under an active
 frozen release. Selection installation is an explicit paired-upgrade operation;
 routine serve never silently selects current checkout source in its place.
 
-The real Apify account and retained Actor/build must pass authenticated
-readback before a live acquisition test. Read-only access proof is distinct
-from starting an Actor and publishing a validated owned weather source.
+An authenticated Apify GET was performed during the withdrawn proposal; it
+proved R&D account access only. It did not start an Actor, install a native
+service, or authorize product integration. It is not an installation gate.
 
 ## Installation and acceptance obligations
 

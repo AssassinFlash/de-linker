@@ -14,49 +14,15 @@ import { Notice } from "../Notice.tsx";
 function statusText(state: AcquisitionState): string {
 	switch (state) {
 		case "not_started":
-		case "ready_to_start":
 			return __("The weather request is waiting to start.", "linker-tools");
-		case "READY":
-			return __("The weather request is waiting to start.", "linker-tools");
-		case "RUNNING":
+		case "fetching":
 			return __(
-				"The weather provider is processing the saved request.",
-				"linker-tools",
-			);
-		case "TIMING-OUT":
-			return __(
-				"The provider is stopping the run after its time limit was reached. The stop is not yet confirmed.",
-				"linker-tools",
-			);
-		case "ABORTING":
-			return __(
-				"The provider accepted the stop request. The stop is not yet confirmed.",
-				"linker-tools",
-			);
-		case "SUCCEEDED":
-			return __(
-				"The provider has finished the request. A project source is ready only after the original data is validated and preparation succeeds.",
+				"Weather data is being downloaded from JRC PVGIS and checked.",
 				"linker-tools",
 			);
 		case "captured":
 			return __(
 				'The original weather data has passed validation and is retained. A project source is available only when the preparation status above shows "Source ready".',
-				"linker-tools",
-			);
-		case "ABORTED":
-			return __(
-				"The provider confirmed that the run was stopped.",
-				"linker-tools",
-			);
-		case "FAILED":
-		case "TIMED-OUT":
-			return __(
-				"The provider run ended without a usable weather source.",
-				"linker-tools",
-			);
-		case "start_outcome_unknown":
-			return __(
-				"The provider may have started this request. Linker must verify the original request. The system will not start it again automatically.",
 				"linker-tools",
 			);
 	}
@@ -123,54 +89,17 @@ export function WeatherProgress({
 				</Notice>
 			)}
 			{status.data && (
-				<>
-					<p role="status">
-						{["not_started", "ready_to_start"].includes(
-							status.data.acquisitionState,
-						) && !runPending(status.data.taskState)
-							? __(
-									"Weather preparation has ended. No provider start has been recorded.",
-									"linker-tools",
-								)
-							: statusText(status.data.acquisitionState)}
-					</p>
-					{status.data.cleanup !== null &&
-						["queued", "running", "retry_wait"].includes(
-							status.data.cleanup,
-						) && (
-							<p>
-								{__(
-									"Confirmation that the provider run has ended is still pending.",
-									"linker-tools",
-								)}
-							</p>
-						)}
-					{status.data.cleanup === "failed" && (
-						<Notice>
-							{__(
-								"The stop check failed. Any provider status shown is the last recorded observation.",
+				<p role="status">
+					{status.data.acquisitionState !== "captured" &&
+					!runPending(status.data.taskState)
+						? __(
+								"Weather preparation has ended without a validated weather source.",
 								"linker-tools",
-							)}
-						</Notice>
-					)}
-					{status.data.reconciliation !== null &&
-						["queued", "running", "retry_wait"].includes(
-							status.data.reconciliation,
-						) && (
-							<p>
-								{__(
-									"Verification of the recorded weather request is pending or in progress.",
-									"linker-tools",
-								)}
-							</p>
-						)}
-					{status.data.acquisitionState === "start_outcome_unknown" && (
-						<a href="mailto:sales@de-linker.com">
-							{__("Contact Linker", "linker-tools")}
-						</a>
-					)}
-				</>
+							)
+						: statusText(status.data.acquisitionState)}
+				</p>
 			)}
+
 			<button
 				type="button"
 				className="lp-text-button"

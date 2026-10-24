@@ -15,7 +15,6 @@ from pathlib import Path
 from uuid import uuid4
 
 from .instance import Instance
-from .planner_provider import weather_environment
 from .private_config import publish_once
 from .processes import POLL, Background, ProcessError
 
@@ -70,10 +69,9 @@ class PlannerWorker:
             )
         return Path(runtime["directory"]).resolve()
 
-    def environment(self, *, weather: bool = False) -> dict[str, str]:
-        # Pure numerical execution and control need no provider credential.
-        # The explicitly enabled weather executor receives only its provider
-        # and network policy, never service or model credentials.
+    def environment(self) -> dict[str, str]:
+        # Customer calculation and weather execution never receive research,
+        # service or model credentials. Apify belongs to R&D only.
         self._workspace()
         names = (
             "PATH",
@@ -95,11 +93,25 @@ class PlannerWorker:
             "PYTHONPATH": str(self.project / "src"),
             "PYTHONDONTWRITEBYTECODE": "1",
         }
-        if weather:
-            policy: object = json.loads(self.runtime_file.read_bytes())
-            if not isinstance(policy, dict):
-                raise ProcessError("local planner policy is not an object")
-            environment.update(weather_environment(policy))
+        policy: object = json.loads(self.runtime_file.read_bytes())
+        if isinstance(policy, dict) and policy.get("weather_acquisition") is not None:
+            # Public-source HTTPS needs only requests' proxy/CA policy. No
+            # research account, service token or model key is inherited.
+            network_names = (
+                "HTTP_PROXY",
+                "HTTPS_PROXY",
+                "ALL_PROXY",
+                "NO_PROXY",
+                "http_proxy",
+                "https_proxy",
+                "all_proxy",
+                "no_proxy",
+                "REQUESTS_CA_BUNDLE",
+                "CURL_CA_BUNDLE",
+            )
+            environment.update(
+                {name: os.environ[name] for name in network_names if name in os.environ}
+            )
         return environment
 
     def release(self) -> dict[str, object]:
@@ -210,7 +222,10 @@ class PlannerWorker:
         ):
             raise ProcessError("planning control returned an invalid status")
         if "quiescent" in value or "remote_weather" in value:
-            remote = value.get("remote_weather")
+            remote = value.get(
+                "remote_weather",
+                {"unknown": 0, "active": 0, "terminal": 0, "unresolved": 0},
+            )
             if (
                 type(value.get("quiescent")) is not bool
                 or not isinstance(remote, dict)
@@ -351,7 +366,7 @@ class PlannerWorker:
                 "--generation",
                 generation,
             ),
-            self.environment(weather=True),
+            self.environment(),
         )
         deadline = time.monotonic() + timeout
         while time.monotonic() < deadline:

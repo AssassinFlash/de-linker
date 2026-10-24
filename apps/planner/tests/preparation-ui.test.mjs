@@ -296,17 +296,13 @@ test("mixed history opens a real PV preparation result without invoking energy-r
 	assert.ok(calls.includes("runs/read"));
 });
 
-for (const state of ["ABORTING", "SUCCEEDED", "start_outcome_unknown"]) {
+for (const state of ["not_started", "fetching"]) {
 	test(`weather status ${state} never promises a usable source or sends provider work`, async (t) => {
 		const status = structuredClone(fixture.weather_status),
 			calls = [];
 		status.task_state = "cancelled";
 		status.acquisition_state = state;
 		status.capture_sha256 = null;
-		status.observation =
-			state === "start_outcome_unknown"
-				? null
-				: { ...status.observation, status: state };
 		const client = {
 			isCurrentScope: () => true,
 			async query(path) {
@@ -333,17 +329,7 @@ for (const state of ["ABORTING", "SUCCEEDED", "start_outcome_unknown"]) {
 				!/Reading weather|Checking weather/i.test(document.body.textContent),
 		);
 		const text = document.body.textContent;
-		if (state === "ABORTING")
-			assert.match(text, /not.*confirmed|not.*complete|still/i);
-		if (state === "SUCCEEDED")
-			assert.match(
-				text,
-				/only after the original data is validated and preparation succeeds/i,
-			);
-		if (state === "start_outcome_unknown") {
-			assert.match(text, /Linker|verification/i);
-			assert.ok(document.querySelector('a[href="mailto:sales@de-linker.com"]'));
-		}
+		assert.match(text, /ended without a validated weather source/);
 		assert.doesNotMatch(text, /Source ready/);
 		assert.equal(
 			calls.length,

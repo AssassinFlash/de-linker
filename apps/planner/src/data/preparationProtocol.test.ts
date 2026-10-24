@@ -257,7 +257,7 @@ test("PV selection preserves load edits, invalidates prepared energy and refuses
 	);
 });
 
-test("weather observations distinguish acquisition, local publication and independent cleanup", () => {
+test("weather observations distinguish local download and validated publication", () => {
 	const runId = fixture.weather_run.id;
 	const complete = readWeatherStatus(fixture.weather_status, runId);
 	assert.equal(complete.acquisitionState, "captured");
@@ -265,14 +265,18 @@ test("weather observations distinguish acquisition, local publication and indepe
 	const pending = readWeatherStatus(
 		{
 			...fixture.weather_status,
-			task_state: "cancelled",
-			cleanup: { state: "queued", attempt: 0, max_attempts: 2, error: null },
+			task_state: "running",
+			acquisition_state: "fetching",
+			capture_sha256: null,
 		},
 		runId,
 	);
 	assert.equal(weatherStatusPending(pending), true);
 	assert.throws(() =>
-		readWeatherStatus({ ...fixture.weather_status, observation: null }, runId),
+		readWeatherStatus(
+			{ ...fixture.weather_status, capture_sha256: null },
+			runId,
+		),
 	);
 	assert.throws(() =>
 		readWeatherStatus(

@@ -6584,3 +6584,11 @@ msgstr "Modulspezifikation außerhalb der aktuellen Dachbelegung"
 #: build/planner/assets/planner.js
 msgid "The coefficient document reference needs an HTTP or HTTPS URL without login credentials, a SHA-256 checksum with 64 characters (0-9 and a-f) and a page number that is a whole number greater than zero."
 msgstr "Der Dokumentverweis zum Koeffizienten benötigt eine HTTP- oder HTTPS-URL ohne Anmeldedaten, eine SHA-256-Prüfsumme aus 64 Zeichen (0-9 und a-f) und eine ganzzahlige Seitenzahl größer als null."
+
+#: build/planner/assets/planner.js
+msgid "Weather data is being downloaded from JRC PVGIS and checked."
+msgstr "Wetterdaten werden von JRC PVGIS heruntergeladen und geprüft."
+
+#: build/planner/assets/planner.js
+msgid "Weather preparation has ended without a validated weather source."
+msgstr "Die Wettervorbereitung wurde ohne validierte Wetterquelle beendet."

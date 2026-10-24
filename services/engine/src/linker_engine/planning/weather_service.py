@@ -2,7 +2,6 @@
 
 from .errors import InvalidInput
 from .records import Actor, Run
-from .weather_journal import WeatherJournal
 from .weather_kernel import WeatherKernel
 from .workspace import Workspace
 
@@ -14,7 +13,6 @@ class WeatherService:
         if kernel.workspace is not workspace:
             raise InvalidInput("weather acquisition must share project authority")
         self.workspace, self.kernel, self.max_attempts = workspace, kernel, max_attempts
-        self.journal = WeatherJournal(workspace)
 
     def evaluate(
         self, actor: Actor, project_id: str, expected_revision: int, *, key: str

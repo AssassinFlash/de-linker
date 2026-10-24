@@ -5,10 +5,8 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
-from typing import Any
 
 import pytest
-import requests
 from fastapi.testclient import TestClient
 
 from linker_engine.planning import runtime_snapshot
@@ -34,18 +32,11 @@ from linker_engine.planning.worker import Control, Worker
 from linker_engine.planning.workspace import Workspace
 
 from .conftest import Clock
-from .test_apify_weather_client import (
-    Reply,
-    SequenceAdapter,
-    effective,
-    provider,
-    record,
-)
 from .test_energy_kernel import TOLERANCE, create_scenario
+from .test_official_weather import Reply, SequenceAdapter, plan
 from .test_private_http import TOKEN, headers
 from .test_pv_profile import LIMITS, project_with_roof
 from .test_pvgis_tmy import raw
-from .test_weather_journal import plan
 from .test_worker_host import (
     completed,
     configuration,
@@ -67,31 +58,8 @@ def source_inputs() -> Object:
     }
 
 
-class WeatherAdapter(SequenceAdapter):
-    def __init__(self, *replies: Reply) -> None:
-        super().__init__(*replies)
-        self.nonce: str | None = None
-
-    def send(
-        self, request: requests.PreparedRequest, **kwargs: Any
-    ) -> requests.Response:
-        if request.method == "POST" and "/acts/" in (request.url or ""):
-            submitted = json.loads(request.body)
-            self.nonce = submitted["startUrls"][0]["userData"]["linker_weather_intent"]
-        if (request.url or "").endswith("/records/INPUT"):
-            assert self.nonce is not None
-            self.replies[0].body = encode(effective(self.nonce))
-        return super().send(request, **kwargs)
-
-
-def valid_adapter() -> WeatherAdapter:
-    return WeatherAdapter(
-        Reply(201, provider("READY")),
-        Reply(200, provider()),
-        Reply(200, b"{}"),
-        Reply(200, encode([record()])),
-        Reply(200, raw()),
-    )
+def valid_adapter() -> SequenceAdapter:
+    return SequenceAdapter(Reply(200, raw()))
 
 
 def services(workspace: Workspace, adapter: SequenceAdapter):
@@ -100,7 +68,6 @@ def services(workspace: Workspace, adapter: SequenceAdapter):
         WeatherKernel(
             workspace,
             plan().limits,
-            credential=lambda: "fixture-only",
             adapter_factory=lambda: adapter,
         ),
         max_attempts=2,
@@ -178,13 +145,12 @@ def test_shared_registry_acquires_source_then_explicit_saved_selection_prepares_
         result.state == "succeeded"
         and result.result["profile_summary"]["interval_count"] == 8760
     )
-    assert (
-        len(adapter.calls) == 5
-        and sum(call.method == "POST" for call in adapter.calls) == 1
+    assert len(adapter.calls) == 1 and all(
+        call.method == "GET" for call in adapter.calls
     )
 
 
-def test_atomic_source_publication_rolls_back_then_reuses_prepared_bytes_without_new_actor(
+def test_atomic_source_publication_rolls_back_then_reuses_prepared_bytes_without_another_download(
     workspace: Workspace, owner: Actor
 ) -> None:
     project = workspace.create(owner, "Weather", source_inputs(), key="project")
@@ -210,7 +176,7 @@ def test_atomic_source_publication_rolls_back_then_reuses_prepared_bytes_without
         asset_count(workspace) == 1
         and workspace.run(owner, run.id).state == "succeeded"
     )
-    assert len(adapter.calls) == 5
+    assert len(adapter.calls) == 1
 
 
 def test_replacement_reuses_completed_capture_after_original_network_deadline(
@@ -235,7 +201,7 @@ def test_replacement_reuses_completed_capture_after_original_network_deadline(
         workspace.run(owner, run.id).state == "succeeded"
         and asset_count(workspace) == 1
     )
-    assert len(adapter.calls) == 5
+    assert len(adapter.calls) == 1
 
 
 def test_cancel_after_capture_before_commit_cannot_publish_source(
@@ -354,7 +320,7 @@ def test_private_queue_receipt_status_and_disabled_history_use_no_provider_on_ht
             ).json()["acquisition_state"]
             == "captured"
         )
-    assert len(adapter.calls) == 5
+    assert len(adapter.calls) == 1
 
 
 def test_one_registry_executes_energy_and_weather_without_claiming_other_runtime(
@@ -446,7 +412,6 @@ def test_independent_managed_process_resumes_weather_capture_then_runs_energy_an
         WeatherKernel(
             workspace,
             plan().limits,
-            credential=lambda: "fixture-only",
             adapter_factory=lambda: adapter,
         ),
         max_attempts=2,
@@ -464,8 +429,8 @@ def test_independent_managed_process_resumes_weather_capture_then_runs_energy_an
     )
     scenario = create_scenario(workspace, owner)
     energy_run = energy.evaluate(owner, scenario.id, scenario.revision, key="energy")
-    # launch deliberately passes no APIFY_TOKEN: the independent worker must
-    # reuse the captured source, not issue another remote start or download.
+    # The independent process has no research/provider credentials and must
+    # reuse the captured source without another download.
     process, ready, generation = launch(tmp_path / "worker-process", settings)
     try:
         wait_for(lambda: ready_generation(ready), lambda value: value == generation)
@@ -496,7 +461,7 @@ def test_independent_managed_process_resumes_weather_capture_then_runs_energy_an
                 ).fetchone()[0]
                 == 2
             )
-        assert len(adapter.calls) == 5
+        assert len(adapter.calls) == 1
     finally:
         stop(process)
 

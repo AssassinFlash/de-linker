@@ -1,4 +1,4 @@
-"""Capture actual immutable release bytes before accepting energy runs.
+"""Capture the complete immutable engine distribution before accepting runs.
 
 Production packaging must retain this source/lock snapshot and the matching
 executable release. A different worker refuses an old run; reads never require
@@ -29,7 +29,7 @@ class RuntimeSnapshot:
         service = package.parents[2]
         files: list[Json] = []
         paths = [
-            *sorted(package.glob("*.py")),
+            *sorted(package.parent.rglob("*.py")),
             service / "pyproject.toml",
             service / "uv.lock",
         ]

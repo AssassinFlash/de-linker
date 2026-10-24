@@ -36,12 +36,12 @@ They block replacement requests across task kinds. Explicit retry sends the
 same bytes. Current native identity must be checked again before transport and
 selection; late responses cannot regain former authority.
 
-Weather progress distinguishes a provider request from retained validated
-original data and a published project source. READY is waiting, RUNNING is
-processing, ABORTING/TIMING-OUT are not confirmed terminal states, SUCCEEDED
-alone is not a usable project source, and an unknown start cannot be repeated
-automatically. The browser reads the local owned journal, with bounded visible
-polling during active local work or maintenance; it never polls the provider.
+Weather progress distinguishes a queued local download, an active official
+source read, retained validated original data and a published project source.
+A successful HTTP read alone is not a usable source. The browser polls only
+its owned local task journal during pending work. Official-source GET retries
+retain the original task's request, deadline and attempt budget; no external
+crawler job, account, start acknowledgement, stop or billing lifecycle exists.
 
 PV output remains an unshaded reference profile. Equipment release, country
 requirements and near shading remain explicitly unassessed. Dates are displayed
@@ -52,7 +52,7 @@ Source/task checksums are expandable technical details, not a claim of accuracy.
 
 The source/model input forms and shared saved-revision start controls now have
 local implementation and isolated acceptance in `548-solar-settings.md` and
-the `pv-settings` acceptance folder. Private provider wiring, paired
+the `pv-settings` acceptance folder. Official-source runtime transport, paired
 HTTP/worker/schema upgrade and full native end-to-end acquisition remain
 required, governed by `548-native-solar-install.md`. Existing weather/PV
 backend specifications continue to govern those tasks. The shared durable

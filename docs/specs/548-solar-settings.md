@@ -33,7 +33,7 @@ matching selection. Ordinary field edits alone do not remove or adopt a source.
 Native Save project must confirm the input revision before the request
 button enables. Dispatch uses the existing common planning-operation hook,
 atomic durable intent, exact revision/key command and task history. No browser
-provider credentials, actor choice, resource controls or arbitrary URL are sent.
+provider credentials, resource controls or arbitrary URL are sent.
 The start handler rechecks saved/current equality, scope, syntax, outstanding
 requests and project conflicts. Its late response is fenced by project/session
 lifetime. Result selection remains the existing explicit source-selection step.

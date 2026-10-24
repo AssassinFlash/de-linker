@@ -6,17 +6,15 @@ from collections.abc import Callable
 
 from requests.adapters import BaseAdapter
 
-from .apify_transport import ApifyTransport
-from .apify_weather_client import ApifyWeatherClient
 from .asset_publication import AssetPublication, AssetResult
 from .canonical import Object, encode
 from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
+from .pvgis_transport import PvgisTransport
 from .records import Context, Lease
 from .runtime_snapshot import RuntimeSnapshot
 from .weather_acquisition import WeatherAcquisition
-from .weather_connection import apify_credential
 from .weather_fetch_plan import WeatherFetchLimits, WeatherFetchPlan
 from .weather_inputs import WeatherAcquisitionInputs
 from .weather_journal import WeatherJournal
@@ -30,7 +28,7 @@ class WeatherKernel:
     models = {
         "task": kind,
         "weather": "pvgis_5_3_tmy_explicit_two_axes_v1",
-        "acquisition": "pinned_apify_correlated_original_v1",
+        "acquisition": "official_jrc_https_get_original_v1",
     }
 
     def __init__(
@@ -38,12 +36,11 @@ class WeatherKernel:
         workspace: Workspace,
         limits: WeatherFetchLimits,
         *,
-        credential: Callable[[], str] = apify_credential,
         adapter_factory: Callable[[], BaseAdapter] | None = None,
     ) -> None:
         self.workspace = workspace
         self.limits = WeatherFetchLimits.read(limits.model_dump(mode="json"))
-        self.credential, self.adapter_factory = credential, adapter_factory
+        self.adapter_factory = adapter_factory
         self.runtime = RuntimeSnapshot.capture()
         workspace.blobs.put(self.runtime.content)
 
@@ -75,13 +72,9 @@ class WeatherKernel:
             self.parameters(),
         )
 
-    def transport(self, limits: WeatherFetchLimits) -> ApifyTransport:
-        return ApifyTransport(
-            self.credential,
-            limits,
-            adapter=self.adapter_factory()
-            if self.adapter_factory is not None
-            else None,
+    def transport(self) -> PvgisTransport:
+        return PvgisTransport(
+            adapter=self.adapter_factory() if self.adapter_factory is not None else None
         )
 
     def __call__(self, lease: Lease, control: Control) -> AssetResult:
@@ -118,9 +111,9 @@ class WeatherKernel:
                 "weather plan differs from its frozen project inputs"
             )
         journal = WeatherJournal(self.workspace)
-        transport = self.transport(plan.limits)
+        transport = self.transport()
         try:
-            source = WeatherAcquisition(journal, ApifyWeatherClient(transport)).acquire(
+            source = WeatherAcquisition(journal, transport).acquire(
                 lease, plan, control
             )
         finally:
@@ -167,7 +160,7 @@ class WeatherKernel:
                 "pinned_assets": pinned,
                 "weather_summary": metadata["weather"],
                 "dependencies": metadata["dependencies"],
-                "acquisition_run_id": intent.remote_run_id,
+                "acquisition_run_id": lease.run_id,
             },
             publication,
         )

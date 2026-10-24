@@ -88,7 +88,8 @@ de-linker.com：Linker Technology GmbH 的 B2B 光伏储能询盘网站，WordPr
 
 ## 6. 研究与核实
 
-外部事实只走 Apify（令牌来自环境 `APIFY_TOKEN` / `~/.config/terravolt-builder/apify.env`，永不写入文件）。Apify 坏了就修，不绕开。
+研发调研、搜索、外部事实核实与资料获取只走 Apify（令牌来自环境 `APIFY_TOKEN` / `~/.config/terravolt-builder/apify.env`，永不写入仓库）。Apify 坏了就修，不绕开。
+业主 2026-10-24 澄清：Apify 只供研发使用，不能由此推定客户产品应集成 Apify。客户系统不得依赖研发 Apify 账号、Token、Actor、Dataset 或计费额度；运行时数据接入须另按官方数据源、接口、许可与产品架构设计和验收。
 能看、能试、能查的先做再说；只问业主只有业主知道的事。
 代码、注释、文档、旧 ADR 里的数字与规则都不是事实；追到业主裁定、行业证据或 Woo 原生能力三者之一，追不到就改。
 

@@ -311,8 +311,6 @@ class Workspace:
             return [self._run(connection, actor, row["id"]) for row in rows]
 
     def cancel(self, actor: Actor, run_id: str) -> Run:
-        from .weather_cleanup import enqueue_cleanup
-
         with self.database.transaction() as connection:
             run = self._run(connection, actor, run_id)
             project_row(connection, actor, run.project_id, write=True)
@@ -321,7 +319,6 @@ class Workspace:
                 "AND kind NOT IN ('abort_weather','reconcile_weather') AND state IN ('queued', 'running', 'retry_wait')",
                 (self.clock(), run_id),
             )
-            enqueue_cleanup(self, connection, run_id)
             return self._run(connection, actor, run_id)
 
     def claim_guest(
