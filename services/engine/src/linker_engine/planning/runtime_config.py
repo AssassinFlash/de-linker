@@ -18,6 +18,8 @@ from .energy_kernel import EnergyKernel
 from .energy_service import EnergyService
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
+from .pv_parameters import PvGenerationLimits
+from .pv_preparation import PvPreparationService, PvReferenceKernel
 from .workspace import Workspace
 
 type PositiveInteger = Annotated[int, Field(strict=True, gt=0)]
@@ -35,6 +37,9 @@ class RuntimeConfig(Document):
     absolute_kwh: Nonnegative
     absolute_kw: Nonnegative
     relative: Nonnegative
+    # Existing installed policies can run energy alone. Explicit PV limits
+    # enable the additional registered executor; no engineering defaults.
+    pv_preparation: PvGenerationLimits | None = None
 
     @model_validator(mode="after")
     def absolute_directory(self) -> Self:
@@ -68,4 +73,13 @@ class RuntimeConfig(Document):
             self.max_csv_bytes,
             self.max_page_size,
             self.max_json_depth,
+        )
+
+    def pv_service(self, workspace: Workspace) -> PvPreparationService | None:
+        if self.pv_preparation is None:
+            return None
+        return PvPreparationService(
+            workspace,
+            PvReferenceKernel(workspace, self.pv_preparation),
+            max_attempts=self.max_attempts,
         )

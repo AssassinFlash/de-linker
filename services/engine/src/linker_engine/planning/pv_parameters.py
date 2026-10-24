@@ -67,3 +67,9 @@ class PvGenerationParameters(Document):
     arrays: Annotated[list[PvArrayParameters], Field(min_length=1)]
     converters: Annotated[list[PvConversionParameters], Field(min_length=1)]
     source_note: Text
+
+
+class PvGenerationLimits(Document):
+    max_weather_bytes: Annotated[int, Field(strict=True, gt=0)]
+    max_weather_rows: Annotated[int, Field(strict=True, gt=0)]
+    max_array_steps: Annotated[int, Field(strict=True, gt=0)]

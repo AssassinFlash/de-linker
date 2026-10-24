@@ -1,0 +1,45 @@
+Get Actor run | Apify Documentation
+
+# Get Actor run
+
+GET 
+
+## /v2/actor-runs/:runId
+
+This is not a single endpoint, but an entire group of endpoints that lets you retrieve the run or any of its default storages.
+
+##### Convenience endpoints for Actor run default storages[](https://docs.apify.com/api/v2/actor-run-get#convenience-endpoints-for-actor-run-default-storages)
+
+*   [Dataset](https://docs.apify.com/api/v2/default-dataset)
+    
+*   [Key-value store](https://docs.apify.com/api/v2/default-key-value-store)
+    
+*   [Request queue](https://docs.apify.com/api/v2/default-request-queue)
+    
+
+Gets an object that contains all the details about a specific run of an Actor.
+
+By passing the optional `waitForFinish` parameter the API endpoint will synchronously wait for the run to finish. This is useful to avoid periodic polling when waiting for Actor run to complete. Note that the first response after completion can still show preliminary `stats`, costs, and event counts. For stable figures, wait about 10 seconds and call the endpoint again.
+
+This endpoint does not require the authentication token. Instead, calls are authenticated using a hard-to-guess ID of the run. However, if you access the endpoint without the token, certain attributes, such as `usageUsd` and `usageTotalUsd`, will be hidden.
+
+## Request[](https://docs.apify.com/api/v2/actor-run-get#request)
+
+### Path Parameters
+
+**runId** string required
+
+Actor run ID.
+
+  
+**Example:** `3KH8gEpp4d8uQSe8T`
+
+### Query Parameters
+
+**waitForFinish** double
+
+The maximum number of seconds the server waits for the run to finish. By default it is `0`, the maximum value is `60`. If the run finishes in time then the returned run object will have a terminal status (e.g. `SUCCEEDED`), otherwise it will have a transitional status (e.g. `RUNNING`).
+
+  
+**Example:** `60`
+

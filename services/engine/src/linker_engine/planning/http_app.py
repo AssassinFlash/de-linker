@@ -38,6 +38,7 @@ from .errors import (
     VersionUnavailable,
 )
 from .execution_identity import storage_binding
+from .execution_registry import ExecutionRegistry
 from .geometry_import import GeometryImport
 from .geometry_import_selections import check_geometry_imports
 from .geometry_review import review_geometry
@@ -66,6 +67,7 @@ from .http_replay import HttpReplay
 from .http_views import asset_view, project_view, run_view
 from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
+from .pv_preparation import PvPreparationService, check_pv_preparation
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .workspace import Workspace
 
@@ -95,9 +97,19 @@ def create_private_app(
     *,
     credential: Callable[[], str],
     limits: HttpLimits,
+    pv: PvPreparationService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
+    if pv is not None and (
+        pv.workspace is not workspace or pv.kernel.workspace is not workspace
+    ):
+        raise InvalidInput("HTTP and PV preparation must share the same authority")
+    registry = (
+        ExecutionRegistry(energy.kernel)
+        if pv is None
+        else ExecutionRegistry(energy.kernel, pv.kernel)
+    )
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
@@ -108,7 +120,7 @@ def create_private_app(
 
     @app.exception_handler(PlanningError)
     async def domain_error(_request: Request, error: PlanningError) -> JSONResponse:
-        status = {
+        statuses = {
             NotFound: 404,
             Conflict: 409,
             EvaluationRevisionChanged: 409,
@@ -118,7 +130,11 @@ def create_private_app(
             ServiceDraining: 503,
             LeaseLost: 409,
             NumericalFailure: 422,
-        }.get(type(error), 500)
+        }
+        status = next(
+            (status for kind, status in statuses.items() if isinstance(error, kind)),
+            500,
+        )
         # Private row/file values and exception traces are not returned.
         detail: Object = {"code": error.code}
         if isinstance(error, CsvIssue):
@@ -173,7 +189,7 @@ def create_private_app(
             "schema_version": 1,
             "runtime_sha256": energy.kernel.runtime.sha256,
             "models": dict(energy.kernel.models),
-            "execution_key": energy.kernel.execution_key(),
+            "execution_key": registry.execution_key(),
             "storage_binding": storage_binding(workspace.database.path),
             "limits": {
                 "max_body_bytes": limits.max_body_bytes,
@@ -212,6 +228,7 @@ def create_private_app(
         actor = verified_actor(request.scope, write=True)
         check_profile_selections(assets, actor, None, body.inputs)
         check_geometry_imports(assets, actor, None, body.inputs)
+        check_pv_preparation(assets, actor, None, body.inputs)
         return project_view(
             workspace.create(actor, body.title, body.inputs, key=body.key)
         )
@@ -239,6 +256,7 @@ def create_private_app(
         workspace.get(actor, body.project_id)
         check_profile_selections(assets, actor, body.project_id, body.inputs)
         check_geometry_imports(assets, actor, body.project_id, body.inputs)
+        check_pv_preparation(assets, actor, body.project_id, body.inputs)
         return project_view(
             workspace.revise(
                 actor,
@@ -304,6 +322,15 @@ def create_private_app(
                 body.expected_revision,
                 key=body.key,
             )
+        )
+
+    @app.post("/runs/pv")
+    def prepare_pv(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        if pv is None:
+            raise VersionUnavailable("PV preparation is not configured")
+        return run_view(
+            pv.evaluate(actor, body.project_id, body.expected_revision, key=body.key)
         )
 
     @app.post("/runs/trace")

@@ -1,0 +1,56 @@
+Get key-value store record | Apify Documentation
+
+# Get key-value store record
+
+GET 
+
+## /v2/key-value-stores/:storeId/records/:recordKey
+
+Gets a value stored in the key-value store under a specific key.
+
+The response body has the same `Content-Encoding` header as it was set in [Put record](https://docs.apify.com/api/v2/key-value-store-record-get#tag/Key-value-storesRecord/operation/keyValueStore_record_put).
+
+If the request does not define the `Accept-Encoding` HTTP header with the right encoding, the record will be decompressed.
+
+Most HTTP clients support decompression by default. After using the HTTP client with decompression support, the `Accept-Encoding` header is set by the client and body is decompressed automatically.
+
+Please note that for security reasons, Apify API can perform small modifications to HTML documents before they are served via this endpoint. To fetch the raw HTML content without any modifications, use the `attachment` query parameter.
+
+## Request[](https://docs.apify.com/api/v2/key-value-store-record-get#request)
+
+### Path Parameters
+
+**storeId** string required
+
+Key-value store ID or `username~store-name`.
+
+  
+**Example:** `WkzbQMuFYuamGv3YF`
+
+**recordKey** string required
+
+Key of the record.
+
+  
+**Example:** `someKey`
+
+### Query Parameters
+
+**attachment** boolean
+
+If `true` or `1`, the response will be served with `Content-Disposition: attachment` header, causing web browsers to offer downloading HTML records instead of displaying them.
+
+  
+**Example:** `true`
+
+**signature** string
+
+Signature used for the access.
+
+  
+**Example:** `2wTI46Bg8qWQrV7tavlPI`
+
+### Status 200
+*   **property name\*** any
+    
+    The response body contains the value of the record. The content type of the response is determined by the Content-Type header stored with the record.

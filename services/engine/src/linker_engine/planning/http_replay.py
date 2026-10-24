@@ -23,6 +23,7 @@ from .http_documents import (
     ProjectRevise,
 )
 from .http_views import asset_view, project_view, run_view
+from .pv_preparation import PvReferenceKernel
 from .records import Actor
 from .workspace import Workspace
 
@@ -88,7 +89,7 @@ class HttpReplay:
                     )
                 )
             )
-        elif path == "runs/energy":
+        elif path in ("runs/energy", "runs/pv"):
             evaluate = EnergyEvaluate.model_validate(value)
             command_scope = f"evaluate:{evaluate.project_id}"
             receipt, command_sha256 = self.receipt(
@@ -97,7 +98,11 @@ class HttpReplay:
                 evaluate.key,
                 {
                     "expected_revision": evaluate.expected_revision,
-                    "intent": {"kind": self.energy.kernel.kind},
+                    "intent": {
+                        "kind": self.energy.kernel.kind
+                        if path == "runs/energy"
+                        else PvReferenceKernel.kind
+                    },
                 },
                 project_id=evaluate.project_id,
             )

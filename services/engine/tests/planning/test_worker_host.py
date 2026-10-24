@@ -20,6 +20,7 @@ import pytest
 from linker_engine.planning.assets import Assets
 from linker_engine.planning.canonical import Object
 from linker_engine.planning.execution_identity import storage_binding
+from linker_engine.planning.execution_registry import ExecutionRegistry
 from linker_engine.planning.power_series import Measurement
 from linker_engine.planning.profile_import import ProfileImport
 from linker_engine.planning.records import Actor, Project, Run
@@ -86,9 +87,15 @@ def launch(
     policy_file = root / (label + "-worker.json")
     policy_file.write_text(policy.model_dump_json())
     workspace, energy = settings.open()
+    pv = settings.pv_service(workspace)
+    registry = (
+        ExecutionRegistry(energy.kernel)
+        if pv is None
+        else ExecutionRegistry(energy.kernel, pv.kernel)
+    )
     identity = {
         "runtime": energy.kernel.runtime.sha256,
-        "execution": energy.kernel.execution_key(),
+        "execution": registry.execution_key(),
         "storage": storage_binding(workspace.database.path),
     }
     if mismatch is not None:

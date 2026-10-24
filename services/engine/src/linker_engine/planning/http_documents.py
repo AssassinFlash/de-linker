@@ -62,6 +62,14 @@ class ProjectInputs(Command):
             from .geometry_import_selections import GeometryImports
 
             GeometryImports.model_validate(value["geometry_imports"])
+        if "pv_generation" in value:
+            from .pv_parameters import PvGenerationParameters
+
+            PvGenerationParameters.model_validate(value["pv_generation"])
+        if "pv_preparation" in value:
+            from .pv_preparation import PvPreparationInputs
+
+            PvPreparationInputs.model_validate(value["pv_preparation"])
         return value
 
 

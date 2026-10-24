@@ -1,0 +1,32 @@
+Abort Actor run | Apify Documentation
+
+# Abort Actor run
+
+POST 
+
+## /v2/actor-runs/:runId/abort
+
+Aborts an Actor run and returns an object that contains all the details about the run.
+
+Only runs that are starting or running are aborted. For runs with status `FINISHED`, `FAILED`, `ABORTING` and `TIMED-OUT` this call does nothing.
+
+## Request[](https://docs.apify.com/api/v2/actor-run-abort-post#request)
+
+### Path Parameters
+
+**runId** string required
+
+Actor run ID.
+
+  
+**Example:** `3KH8gEpp4d8uQSe8T`
+
+### Query Parameters
+
+**gracefully** boolean
+
+If true passed, the Actor run will abort gracefully. It will send `aborting` and `persistState` event into run and force-stop the run after 30 seconds. It is helpful in cases where you plan to resurrect the run later.
+
+  
+**Example:** `true`
+

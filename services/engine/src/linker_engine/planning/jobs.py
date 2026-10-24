@@ -12,6 +12,7 @@ import sqlite3
 from typing import cast
 from uuid import uuid4
 
+from .asset_publication import AssetPublication
 from .canonical import Object
 from .dependencies import verify_dependencies
 from .errors import Conflict, InvalidInput, LeaseLost, VersionUnavailable
@@ -70,7 +71,9 @@ class Jobs:
                 routing_join = (
                     "JOIN evaluation_routes ON evaluation_routes.job_id=jobs.id "
                     "AND evaluation_routes.schema_version=1 "
-                    "AND evaluation_routes.execution_sha256=? "
+                    "AND evaluation_routes.execution_sha256 IN ("
+                    + ",".join("?" for _ in routing.execution_keys)
+                    + ") "
                     if routing is not None
                     else ""
                 )
@@ -83,7 +86,7 @@ class Jobs:
                     "OR (jobs.state='running' AND jobs.lease_until<=?)) "
                     "ORDER BY jobs.available_at, jobs.created_at, jobs.id LIMIT 1",
                     (
-                        *((routing.key,) if routing is not None else ()),
+                        *(routing.execution_keys if routing is not None else ()),
                         *kinds,
                         now,
                         now,
@@ -105,7 +108,7 @@ class Jobs:
                     request = workspace.blobs.object(row["request_sha256"])
                     if routes is not None and routing is not None:
                         actual = routes.request_key(request, row["run_manifest"])
-                        if actual != routing.key:
+                        if actual not in routing.execution_keys:
                             # A derived cache cannot make this executable own
                             # another runtime's job or spend one of its attempts.
                             connection.execute(
@@ -180,9 +183,31 @@ class Jobs:
             )
             return until
 
-    def complete(self, lease: Lease, result: Object) -> str:
+    def complete(
+        self, lease: Lease, result: Object, *, asset: AssetPublication | None = None
+    ) -> str:
         """Publish bytes and success together; late or cancelled attempts lose."""
         workspace = self.workspace
+        if asset is not None:
+            if "prepared_asset" in result:
+                raise InvalidInput("prepared asset is supplied by durable publication")
+            children = result.get("dependencies", {})
+            if not isinstance(children, dict) or {
+                "prepared_asset_content",
+                "prepared_asset_metadata",
+            } & set(children):
+                raise InvalidInput(
+                    "prepared asset dependency roles are supplied by publication"
+                )
+            result = {
+                **result,
+                "prepared_asset": asset.document(workspace.blobs),
+                "dependencies": {
+                    **children,
+                    "prepared_asset_content": asset.content_sha256,
+                    "prepared_asset_metadata": asset.metadata_sha256,
+                },
+            }
         verify_dependencies(workspace.blobs, result)
         output = workspace.blobs.put_object(result)
         with workspace.database.transaction() as connection:
@@ -198,9 +223,13 @@ class Jobs:
             ):
                 if row["output_sha256"] != output:
                     raise Conflict("completed attempt has a different result")
+                if asset is not None:
+                    asset.verify_published(connection)
                 return output
             now = workspace.clock()
             self._active(connection, lease, now)
+            if asset is not None:
+                asset.publish(connection, lease.run_id, now)
             if lease.kind == "evaluate":
                 changed = connection.execute(
                     "UPDATE runs SET result_sha256=? "

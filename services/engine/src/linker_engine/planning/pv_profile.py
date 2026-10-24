@@ -2,30 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Annotated
-
-from pydantic import Field
-
 from .assets import Asset, Assets
 from .canonical import Object, digest, encode
-from .energy_inputs import Document
 from .errors import InvalidInput, VersionUnavailable
 from .power_series import PowerSeries
 from .pv_generation import generate_pv
+from .pv_parameters import PvGenerationLimits as PvGenerationLimits
 from .pv_parameters import PvGenerationParameters
+from .pv_profile_preparation import PROFILE_PURPOSE, logical_profile, prepare_profile
+from .pv_source import PvSource
 from .pvgis_response import PvgisCapture
 from .pvgis_tmy import tmy_weather
 from .pvgis_tmy_request import PvgisTmyInterpretation, PvgisTmyRequest
 from .records import Actor
 from .storage import Blobs
 
-PURPOSE = "pvlib_reference_profile_v1"
-
-
-class PvGenerationLimits(Document):
-    max_weather_bytes: Annotated[int, Field(strict=True, gt=0)]
-    max_weather_rows: Annotated[int, Field(strict=True, gt=0)]
-    max_array_steps: Annotated[int, Field(strict=True, gt=0)]
+PURPOSE = PROFILE_PURPOSE
 
 
 class PvProfileImport:
@@ -48,22 +40,8 @@ class PvProfileImport:
         self.assets.check_write(actor, project_id)
         workspace = self.assets.workspace
         project = workspace.get(actor, project_id, revision=revision)
-        geometry, parameters = (
-            project.inputs.get("geometry"),
-            project.inputs.get("pv_generation"),
-        )
-        logical: Object = {
-            "schema": 1,
-            "profile_type": PURPOSE,
-            "retention": "permanent",
-            "provenance": provenance,
-            "derived_from_revision": revision,
-            "geometry_sha256": digest(encode(geometry)),
-            "parameters_sha256": digest(encode(parameters)),
-            "weather_request": {**request.model_dump(mode="json")},
-            "weather_capture": capture.document(),
-            "weather_interpretation": {**interpretation.model_dump(mode="json")},
-        }
+        source = PvSource(content, request, capture, interpretation, encode(provenance))
+        logical = logical_profile(project.inputs, revision, source)
         previous = self.assets.receipt(
             actor,
             project_id,
@@ -77,51 +55,17 @@ class PvProfileImport:
         )
         if previous is not None:
             return previous
-        weather = tmy_weather(
-            content,
-            request,
-            capture,
-            interpretation,
-            max_bytes=self.limits.max_weather_bytes,
-            max_rows=self.limits.max_weather_rows,
-        )
-        result = generate_pv(
-            geometry,
-            weather,
-            PvGenerationParameters.read(parameters),
-            max_array_steps=self.limits.max_array_steps,
-        )
         # Permission was checked before parsing, calculating or publishing bytes.
-        inputs_hash = workspace.blobs.put(result.inputs_json)
-        witness_hash = workspace.blobs.put(result.witness_json)
+        metadata = prepare_profile(
+            workspace.blobs, project.inputs, revision, source, self.limits
+        )
         return self.assets.add(
             actor,
             project_id,
             content,
             "application/json",
             PURPOSE,
-            {
-                **logical,
-                "limits": {**self.limits.model_dump(mode="json")},
-                "dependencies": {
-                    "pv_model_inputs": inputs_hash,
-                    "pv_model_witness": witness_hash,
-                },
-                "interpretation": {
-                    "start_utc": result.profile.intervals[0].start.isoformat(),
-                    "end_utc": result.profile.intervals[-1].end.isoformat(),
-                    "interval_count": len(result.profile.intervals),
-                    "energy_kwh": result.profile.total_kwh,
-                    "measurement": "pv_available_ac",
-                    "origin": "modelled",
-                    "native_max_interval_seconds": weather.source.native_max_interval_seconds,
-                    "reconstructed_means": True,
-                    "transformations": [
-                        item.document() for item in result.profile.transformations
-                    ],
-                    "model_role": "unshaded_reference_scenario",
-                },
-            },
+            metadata,
             key=key,
             logical_metadata=logical,
         )

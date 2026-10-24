@@ -47,11 +47,28 @@ def execution_key(context: Object) -> str:
 class EvaluationRouting:
     key: str
     batch_size: int
+    compatible_keys: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
-        if re.fullmatch(r"[a-f0-9]{64}", self.key) is None:
+        if (
+            not isinstance(self.key, str)
+            or re.fullmatch(r"[a-f0-9]{64}", self.key) is None
+        ):
             raise InvalidInput("evaluation execution key required")
         positive_integer(self.batch_size, "routing batch size")
+        try:
+            object.__setattr__(self, "compatible_keys", tuple(self.compatible_keys))
+        except TypeError as error:
+            raise InvalidInput("compatible execution hashes required") from error
+        if any(
+            not isinstance(value, str) or re.fullmatch(r"[a-f0-9]{64}", value) is None
+            for value in self.compatible_keys
+        ) or len(set(self.compatible_keys)) != len(self.compatible_keys):
+            raise InvalidInput("unique compatible execution hashes required")
+
+    @property
+    def execution_keys(self) -> tuple[str, ...]:
+        return self.compatible_keys or (self.key,)
 
 
 def request_execution_key(

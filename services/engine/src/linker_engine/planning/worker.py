@@ -7,6 +7,7 @@ import math
 from collections.abc import Callable, Mapping
 from threading import Event, Thread
 
+from .asset_publication import AssetResult
 from .canonical import Object, encode
 from .dependencies import verify_dependencies
 from .errors import InvalidInput, LeaseLost, PlanningError
@@ -31,7 +32,7 @@ class Control:
         self._lost.set()
 
 
-type Executor = Callable[[Lease, Control], Object]
+type Executor = Callable[[Lease, Control], Object | AssetResult]
 
 
 class RetryableExecution(PlanningError):
@@ -102,10 +103,16 @@ class Worker:
         )
         heartbeat.start()
         output: Object | None = None
+        prepared: AssetResult | None = None
         failure: Object | None = None
         retry_after: float | None = None
         try:
-            output = self.handlers[lease.kind](lease, control)
+            reply = self.handlers[lease.kind](lease, control)
+            if isinstance(reply, AssetResult):
+                prepared = reply
+                output = reply.result
+            else:
+                output = reply
             if not isinstance(output, dict):
                 raise InvalidInput("executor result must be a JSON object")
             encode(output)
@@ -131,9 +138,23 @@ class Worker:
             if failure is not None:
                 self.jobs.fail(lease, failure, retry_after=retry_after)
             elif output is not None:
-                self.jobs.complete(lease, output)
+                self.jobs.complete(
+                    lease,
+                    output,
+                    asset=prepared.asset if prepared is not None else None,
+                )
         except LeaseLost:
             # Cancellation/another worker wins; no result or failure is written
             # over its state. A lost heartbeat leaves durable retry recovery.
             LOG.info("planning publication fenced for job %s", lease.id)
+        except PlanningError as error:
+            # A malformed prepared publication is a named task failure, not a
+            # success or an unbounded lease-recovery loop. The same lease fence
+            # still decides whether this attempt may publish that failure.
+            try:
+                self.jobs.fail(
+                    lease, {"code": error.code, "retryable": False}, retry_after=None
+                )
+            except LeaseLost:
+                LOG.info("planning publication failure fenced for job %s", lease.id)
         return True

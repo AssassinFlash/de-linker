@@ -17,7 +17,8 @@ from threading import Event
 
 from .canonical import Object, encode
 from .execution_control import ExecutionControl
-from .execution_identity import EvaluationRouting, storage_binding
+from .execution_identity import storage_binding
+from .execution_registry import ExecutionRegistry
 from .jobs import Jobs
 from .runtime_config import RuntimeConfig
 from .worker import Worker
@@ -72,7 +73,13 @@ def serve(
         raise ValueError("worker readiness must be outside the project workspace")
     with readiness_owner(ready):
         workspace, energy = settings.open()
-        if (energy.kernel.runtime.sha256, energy.kernel.execution_key()) != (
+        pv = settings.pv_service(workspace)
+        registry = (
+            ExecutionRegistry(energy.kernel)
+            if pv is None
+            else ExecutionRegistry(energy.kernel, pv.kernel)
+        )
+        if (registry.runtime.sha256, registry.execution_key()) != (
             expected_runtime,
             expected_execution,
         ):
@@ -82,11 +89,11 @@ def serve(
         worker = Worker(
             Jobs(workspace),
             policy.name,
-            {"evaluate": energy.kernel},
+            {"evaluate": registry},
             lease_seconds=policy.lease_seconds,
             heartbeat_seconds=policy.heartbeat_seconds,
             retry_seconds=policy.retry_seconds,
-            routing=EvaluationRouting(expected_execution, policy.routing_batch_size),
+            routing=registry.routing(policy.routing_batch_size),
         )
         stop = Event()
 
@@ -164,12 +171,18 @@ def main(argv: list[str] | None = None) -> int:
         settings = RuntimeConfig.from_environment()
         if arguments.command == "identity":
             workspace, energy = settings.open()
+            pv = settings.pv_service(workspace)
+            registry = (
+                ExecutionRegistry(energy.kernel)
+                if pv is None
+                else ExecutionRegistry(energy.kernel, pv.kernel)
+            )
             print(
                 encode(
                     {
                         "schema_version": 1,
                         "runtime_sha256": energy.kernel.runtime.sha256,
-                        "execution_key": energy.kernel.execution_key(),
+                        "execution_key": registry.execution_key(),
                         "storage_binding": storage_binding(workspace.database.path),
                     }
                 ).decode()

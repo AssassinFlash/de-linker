@@ -1,0 +1,16 @@
+{
+  "endpoint": "https://api.apify.com/v2/logs/lXvujgaIwxLKdgr07",
+  "status": 200,
+  "responseBytes": 6589,
+  "responseSha256": "185464d7119c3d0e4e1322c1cf6e0ea4f08ce93d9778259859bed7933693c9d2",
+  "previousAttempts": [],
+  "selectedErrorStatisticsLines": [
+    "2026-10-24T04:13:22.563Z ERROR CheerioCrawler: Request failed and reached maximum retries. Error: navigation: Download is starting.",
+    "2026-10-24T04:13:28.242Z ERROR CheerioCrawler: Request failed and reached maximum retries. Error: navigation: Download is starting.",
+    "2026-10-24T04:13:29.235Z INFO  CheerioCrawler: Final request statistics: {\"requestsFinished\":6,\"requestsFailed\":2,\"retryHistogram\":[8],\"requestAvgFailedDurationMillis\":3117,\"requestAvgFinishedDurationMillis\":768,\"requestsFinishedPerMinute\":30,\"requestsFailedPerMinute\":9,\"requestTotalDurationMillis\":10843,\"requestsTotal\":8,\"crawlerRuntimeMillis\":12046}",
+    "2026-10-24T04:13:29.236Z INFO  CheerioCrawler: Error analysis: {\"totalErrors\":2,\"uniqueErrors\":1,\"mostCommonErrors\":[\"2x: navigation: Download is starting. (file:///home/myuser/dist/request-handler.js:428:15)\"]}",
+    "2026-10-24T04:13:29.237Z INFO  CheerioCrawler: Finished! Total 8 requests: 6 succeeded, 2 failed. {\"terminal\":true}",
+    "2026-10-24T04:13:35.534Z INFO  FileDownload: Final request statistics: {\"requestsFinished\":2,\"requestsFailed\":0,\"retryHistogram\":[2],\"requestAvgFailedDurationMillis\":null,\"requestAvgFinishedDurationMillis\":2757,\"requestsFinishedPerMinute\":9,\"requestsFailedPerMinute\":0,\"requestTotalDurationMillis\":5513,\"requestsTotal\":2,\"crawlerRuntimeMillis\":13037}"
+  ],
+  "selection": "bounded error/statistics lines retained; URL queries omitted; complete raw log not retained"
+}

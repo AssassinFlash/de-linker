@@ -13,9 +13,10 @@ from uuid import uuid4
 
 from . import commands
 from .access import project_row
+from .asset_validation import validate_asset
 from .canonical import Object, digest
 from .dependencies import verify_dependencies
-from .errors import InvalidInput, NotFound
+from .errors import NotFound
 from .records import Actor
 from .workspace import Workspace
 
@@ -105,17 +106,7 @@ class Assets:
         key: str,
         logical_metadata: Object | None = None,
     ) -> Asset:
-        if not content or not media_type.strip() or not purpose.strip():
-            raise InvalidInput("nonempty asset, media type and purpose required")
-        if metadata.get("retention") != "permanent":
-            raise InvalidInput("this source needs a compliant temporary asset store")
-        provenance = metadata.get("provenance")
-        if not isinstance(provenance, dict) or any(
-            not isinstance(provenance.get(name), str)
-            or not str(provenance[name]).strip()
-            for name in ("label", "basis", "rights_basis")
-        ):
-            raise InvalidInput("source label, fact basis and retention rights required")
+        validate_asset(content, media_type, purpose, metadata)
         content_sha256 = digest(content)
         command = commands.command_hash(
             {
