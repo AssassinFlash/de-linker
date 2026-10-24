@@ -10,11 +10,13 @@ import hashlib
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from linker_genie.family_scope import valid_family_scope
 from linker_genie.source_roles import (
     manual_scope_models,
     meter_references,
     pack_model_row,
 )
+from linker_genie.table_projection import valid_projection
 
 
 def binding(association: Mapping[str, Any]) -> tuple[str, str, str, int, str]:
@@ -49,6 +51,30 @@ def authorize_chunk(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and (
+        scope.get("basis") == "family_manual" or "family_scope" in scope
+    ):
+        if products is None or not valid_family_scope(
+            scope,
+            product_ids,
+            products,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
+        ):
+            return []
+    if scope is not None and (
+        scope.get("basis") == "table_projection" or "table_projection" in scope
+    ):
+        if products is None or not valid_projection(
+            scope,
+            product_ids,
+            products,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
+        ):
+            return []
     if scope is not None and (
         scope.get("basis") == "manual_peripheral" or "referenced_products" in scope
     ):
@@ -121,6 +147,19 @@ def table_header(
 ) -> str | None:
     """Restore the proven original table columns in order, or refuse invalid proof."""
     if scope is None:
+        return ""
+    if scope.get("basis") == "table_projection" or "table_projection" in scope:
+        projection = scope.get("table_projection")
+        if not isinstance(projection, dict) or not valid_projection(
+            scope,
+            product_ids,
+            products,
+            sha=str(projection.get("source_sha256", "")),
+            chunk_id=chunk_id,
+            text=text,
+        ):
+            return None
+        # The compiled answer unit already contains its exact source-model axis.
         return ""
     if "table_columns" not in scope:
         return None if scope.get("basis") == "table_columns" else ""

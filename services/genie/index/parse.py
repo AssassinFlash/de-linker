@@ -3,13 +3,15 @@
 For every document the cache holds `<sha256>/docling.json` (the DoclingDocument),
 `ocr-p<N>.json` for each page whose text layer is unreadable (rendered and OCRed
 instead, see `garbled_pages`) and `status.json`. A document whose status records the
-current Docling version is not parsed again. Extraction into page blocks is
+current successful parser recipe and complete outputs is not parsed again.
+Failed or incomplete output is retried automatically on the next run. Extraction into page blocks is
 `index.extract`; this module only runs the converter.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -64,11 +66,23 @@ class ParseStatus:
     garbled_pages: list[int] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
     seconds: float = 0.0
+    parser_revision: str = ""
 
 
 def docling_version() -> str:
     """The parser identity recorded with every cached parse."""
     return f"docling {version('docling')}"
+
+
+def parser_revision() -> str:
+    """Actual converter implementation and locked dependencies, independent of Woo."""
+    root = Path(__file__).resolve().parents[1]
+    digest = hashlib.sha256()
+    for path in (Path(__file__).resolve(), root / "pyproject.toml", root / "uv.lock"):
+        name, content = path.relative_to(root).as_posix().encode(), path.read_bytes()
+        digest.update(len(name).to_bytes(8, "big") + name)
+        digest.update(len(content).to_bytes(8, "big") + content)
+    return digest.hexdigest()
 
 
 def garbled_pages(page_texts: Sequence[str]) -> list[int]:
@@ -135,9 +149,17 @@ def parse_one(
     started = time.monotonic()
     out_dir.mkdir(parents=True, exist_ok=True)
     status = ParseStatus(
-        sha256=sha, docling=docling_version(), status="failed", pages=0
+        sha256=sha,
+        docling=docling_version(),
+        status="failed",
+        pages=0,
+        parser_revision=parser_revision(),
     )
     try:
+        # These files are rebuildable parser outputs, never original PDFs. A
+        # failed retry must not expose successful-looking output from an older run.
+        for path in [out_dir / "docling.json", *out_dir.glob("ocr-p*.json")]:
+            path.unlink(missing_ok=True)
         texts = _page_texts(pdf_path)
         status.pages = len(texts)
         status.garbled_pages = garbled_pages(texts)
@@ -158,6 +180,7 @@ def parse_one(
                     )
                     ocr = converter.convert(str(image), raises_on_error=False)
                     if ocr.document is None:
+                        status.status = "failed"
                         status.errors.append(
                             f"page {page}: OCR of the rendered page failed"
                         )
@@ -194,14 +217,60 @@ def read_status(out_dir: Path) -> ParseStatus | None:
     path = out_dir / "status.json"
     if not path.is_file():
         return None
-    return ParseStatus(**json.loads(path.read_text(encoding="utf-8")))
+    try:
+        return ParseStatus(**json.loads(path.read_text(encoding="utf-8")))
+    except (OSError, ValueError, TypeError):
+        return None
+
+
+def complete_status(out_dir: Path) -> ParseStatus | None:
+    """A successful parse with complete readable artifacts, including required OCR.
+
+    Historical parser identity is allowed here for archived corpus fixtures.
+    Cache reuse adds the current implementation/dependency identity separately.
+    """
+    from docling_core.types.doc.document import DoclingDocument
+
+    status = read_status(out_dir)
+    if (
+        status is None
+        or status.status != "success"
+        or status.sha256 != out_dir.name
+        or type(status.pages) is not int
+        or status.pages < 1
+        or not isinstance(status.garbled_pages, list)
+        or any(
+            type(page) is not int or not 1 <= page <= status.pages
+            for page in status.garbled_pages
+        )
+    ):
+        return None
+    try:
+        document = DoclingDocument.model_validate_json(
+            (out_dir / "docling.json").read_bytes()
+        )
+        if set(document.pages) != set(range(1, status.pages + 1)):
+            return None
+        for page in status.garbled_pages:
+            ocr = DoclingDocument.model_validate_json(
+                (out_dir / f"ocr-p{page}.json").read_bytes()
+            )
+            if set(ocr.pages) != {1}:
+                return None
+    except (OSError, ValueError):
+        return None
+    return status
 
 
 def cached_status(out_dir: Path) -> ParseStatus | None:
-    """The cached status of one document, if it was parsed with this Docling."""
-    status = read_status(out_dir)
+    """Only successful complete output from the actual current parser is reusable."""
+    status = complete_status(out_dir)
     return (
-        status if status is not None and status.docling == docling_version() else None
+        status
+        if status is not None
+        and status.docling == docling_version()
+        and status.parser_revision == parser_revision()
+        else None
     )
 
 

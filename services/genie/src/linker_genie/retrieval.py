@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 import sqlite_vec
 
 from linker_genie.embedding import Embedder, query_encoder
+from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication_scope import authorize_chunk, table_header
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
@@ -209,7 +210,32 @@ class DocumentIndex:
         return {
             "index_version": self.version,
             "source_revision": self.source_revision,
+            "recipe_revision": (
+                self._db.execute(
+                    "SELECT value FROM meta WHERE key='recipe_revision'"
+                ).fetchone()
+                or ("",)
+            )[0],
+            "expected_serving_revision": (
+                self._db.execute(
+                    "SELECT value FROM meta WHERE key='serving_revision'"
+                ).fetchone()
+                or ("",)
+            )[0],
+            "serving_revision": RUNTIME_SERVING_REVISION,
+            "activation_epoch": int(
+                (
+                    self._db.execute(
+                        "SELECT value FROM meta WHERE key='activation_epoch'"
+                    ).fetchone()
+                    or ("0",)
+                )[0]
+            ),
             "products": ready,
+            "materialization_complete": self._db.execute(
+                "SELECT value FROM meta WHERE key='materialization_complete'"
+            ).fetchone()
+            == ("true",),
             "preparation_complete": self._db.execute(
                 "SELECT value FROM meta WHERE key='preparation_complete'"
             ).fetchone()

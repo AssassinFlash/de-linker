@@ -13,10 +13,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import shlex
 import subprocess
 import sys
 from collections.abc import Sequence
 from pathlib import Path
+from typing import Any
 
 from index_release import _sha256
 
@@ -25,9 +27,32 @@ RELEASE_SCRIPT = Path(__file__).with_name("index_release.py")
 DEFAULT_ROOT = "/opt/linker-genie/index"
 
 
-def release(host: str | None, *args: str) -> dict[str, object]:
+def release(
+    host: str | None, *args: str, activation: dict[str, Any] | None = None
+) -> dict[str, object]:
     """Run index_release.py with `args` on the host (or here) and return its report."""
-    if host is None:
+    if activation is not None:
+        arguments = [*args, "--activation-stdin"]
+        command = (
+            [sys.executable, str(RELEASE_SCRIPT), *arguments]
+            if host is None
+            else [
+                "ssh",
+                host,
+                "python3 -c "
+                + shlex.quote(RELEASE_SCRIPT.read_text(encoding="utf-8"))
+                + " "
+                + shlex.join(arguments),
+            ]
+        )
+        result = subprocess.run(
+            command,
+            input=json.dumps(activation),
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    elif host is None:
         command = [sys.executable, str(RELEASE_SCRIPT), *args]
         result = subprocess.run(command, check=True, capture_output=True, text=True)
     else:
@@ -43,7 +68,13 @@ def release(host: str | None, *args: str) -> dict[str, object]:
     return report
 
 
-def publish(build_dir: Path, root: str, host: str | None) -> dict[str, object]:
+def publish(
+    build_dir: Path,
+    root: str,
+    host: str | None,
+    *,
+    activation: dict[str, Any] | None = None,
+) -> dict[str, object]:
     """Upload one build as a release, verify it, and make it current."""
     manifest = json.loads((build_dir / "manifest.json").read_text(encoding="utf-8"))
     version = str(manifest["version"])
@@ -62,11 +93,20 @@ def publish(build_dir: Path, root: str, host: str | None) -> dict[str, object]:
         ],
         check=True,
     )
-    report = release(host, "activate", root, version, expected)
+    report = release(host, "activate", root, version, expected, activation=activation)
+    reported_activation = report.get("activation")
     if (
         report.get("current") != version
         or report.get("index_version") != version
         or not report.get("sha256_ok")
+        or (
+            activation is not None
+            and (
+                not isinstance(reported_activation, dict)
+                or reported_activation.get("epoch") != activation.get("epoch")
+                or reported_activation.get("index_version") != version
+            )
+        )
     ):
         raise SystemExit(f"published {version}, but the host reports {report}")
     return report

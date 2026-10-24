@@ -52,6 +52,9 @@ class Meta:
     # The encoder's fingerprint (linker_genie.embedding.Embedder.fingerprint).
     embedding: dict[str, str] | None = None
     publication: dict[str, Any] = field(default_factory=dict)
+    recipe_revision: str = ""
+    serving_revision: str = ""
+    activation_epoch: int = 0
 
 
 def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
@@ -63,6 +66,9 @@ def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
         "dimensions": str(meta.dimensions or 0),
         "embedding_fingerprint": json.dumps(meta.embedding or {}, sort_keys=True),
         "parser": meta.parser,
+        "recipe_revision": meta.recipe_revision,
+        "serving_revision": meta.serving_revision,
+        "activation_epoch": str(meta.activation_epoch),
         "source_revision": str(
             meta.publication.get("manifest", {}).get("source_revision", "")
         ),

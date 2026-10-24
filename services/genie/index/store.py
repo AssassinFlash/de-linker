@@ -136,8 +136,8 @@ def export(directory: Path, path: Path) -> None:
             ],
         )
         # Availability means at least one passage the current retrieval guard can
-        # actually release. Whole-job completion still requires every associated
-        # document to be parsed/proven and is reported separately below.
+        # release. Materialization success is independent of semantic coverage:
+        # deterministic lack of a proven passage must not rebuild forever.
         chunks_by_id = {chunk.id: chunk for chunk, _ in corpus.read_chunks(directory)}
         covered: dict[int, set[str]] = {}
         by_id = {d["document_id"]: d for d in manifest.get("documents", [])}
@@ -202,10 +202,15 @@ def export(directory: Path, path: Path) -> None:
                 )
         db.executemany("INSERT INTO publication_ready_products VALUES (?, ?)", ready)
         complete = not unprepared and len(ready) == len(manifest.get("products", []))
+        materialized = all(
+            document_status.get(document["blob_sha256"]) == "indexed"
+            for document in by_id.values()
+        ) and not any(row["reason"] == "document_unparsed" for row in unprepared)
         db.executemany(
             "INSERT INTO meta VALUES (?, ?)",
             [
                 ("preparation_complete", json.dumps(complete)),
+                ("materialization_complete", json.dumps(materialized)),
                 ("unprepared_documents", json.dumps(unprepared, sort_keys=True)),
             ],
         )

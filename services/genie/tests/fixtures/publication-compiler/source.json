@@ -1,0 +1,27 @@
+{
+  "source_revision": "cc9e1356348df8ec0e2349971e4131d9339342ef4af2b35c2ce8ffe49916a108",
+  "build": "20261024T080817Z",
+  "documents": [
+    {
+      "blob_sha256": "be488dc6630cddc8381e38c61c6bc7b41c50c711042cdb2547170bd85e68a752",
+      "docling_sha256": "1cb6d8d4ac032addc1d2c998754bb62ab3c5bf411e615ba26dd92fe773cbd1dd",
+      "source": "original cached Docling JSON; no cells/text rewritten"
+    },
+    {
+      "blob_sha256": "0f0e75ad3f318318d1ba3f1d84a0f2c1f4864555b2deb45f4a1d0fd4cfa7acd7",
+      "docling_sha256": "698edb713ca13b822d398ebb2dc5b25c5e713f5854a61f5472af06d99baeb5f6",
+      "source": "original cached Docling JSON; no cells/text rewritten",
+      "original_pdf": "Original immutable hosted PDF; physical text-layer header boxes verify cropped-page column order"
+    },
+    {
+      "blob_sha256": "0abea746ac338562cfa63d7e4976ca1d8204271f6d7c2f1d08a8dc4a1ca04465",
+      "docling_sha256": "96e778e375f1baad2378c186412add04bcbcfb3c1ead97adc83a5bd3a39bdc12",
+      "source": "original cached Docling JSON; no cells/text rewritten"
+    },
+    {
+      "blob_sha256": "b4a653fd2c0bdbff01337165df0567eb71488634eaa1c1420070fc170526c1c3",
+      "docling_sha256": "f997d542c86ed4776c4a02531a3e6f9c4ddaa0aa27e13ced85bfba94aef604fb",
+      "source": "original cached Docling JSON; no cells/text rewritten"
+    }
+  ]
+}

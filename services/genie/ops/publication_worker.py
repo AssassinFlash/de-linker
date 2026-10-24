@@ -30,7 +30,9 @@ if __package__ in {None, ""}:
 
 from index import build, inventory, parse  # noqa: E402
 from index.paths import INDEX_DIR, INVENTORY_PATH, PARSED_DIR, PDF_DIR  # noqa: E402
+from index.preparation import recipe_revision  # noqa: E402
 from index.publication import inventory as fetch_inventory  # noqa: E402
+from linker_genie.preparation import RUNTIME_SERVING_REVISION  # noqa: E402
 from linker_genie.publication import Snapshot  # noqa: E402
 from publish_index import publish  # noqa: E402
 
@@ -42,8 +44,13 @@ try:
     with urllib.request.urlopen(request, timeout=20) as response:
         loaded = json.load(response)
     loaded['preparation_complete'] = loaded.get('preparation_complete') is True
+    loaded['materialization_complete'] = loaded.get('materialization_complete') is True
+    loaded['recipe_revision'] = loaded.get('recipe_revision', '')
+    loaded['expected_serving_revision'] = loaded.get('expected_serving_revision', '')
+    loaded['serving_revision'] = loaded.get('serving_revision', '')
+    loaded['activation_epoch'] = loaded.get('activation_epoch', 0)
     loaded['unprepared_documents'] = loaded.get('unprepared_documents', [])
-    print(json.dumps({key: loaded[key] for key in ('index_version', 'source_revision', 'products', 'preparation_complete', 'unprepared_documents')}))
+    print(json.dumps({key: loaded[key] for key in ('index_version', 'source_revision', 'recipe_revision', 'expected_serving_revision', 'serving_revision', 'activation_epoch', 'products', 'materialization_complete', 'preparation_complete', 'unprepared_documents')}))
 except Exception:
     sys.exit(1)
 """
@@ -174,9 +181,15 @@ class Worker:
         lease_seconds: int,
         *,
         transport: httpx.BaseTransport | None = None,
+        recipe: str | None = None,
+        serving: str | None = None,
     ) -> None:
         self.jobs = jobs_url.rstrip("/")
         self.worker_id, self.lease = worker_id, lease_seconds
+        self.recipe = recipe_revision() if recipe is None else recipe
+        self.serving = RUNTIME_SERVING_REVISION if serving is None else serving
+        self._credentials = (user, password)
+        self._active_job: dict[str, Any] | None = None
         self.client = httpx.Client(
             auth=(user, password),
             timeout=120,
@@ -184,18 +197,54 @@ class Worker:
             headers={"Cache-Control": "no-cache"},
         )
 
-    def claim(self) -> dict[str, Any] | None:
+    def claim(
+        self,
+        loaded_receipt: dict[str, Any] | None = None,
+        loaded_unavailable: bool = False,
+    ) -> dict[str, Any] | None:
         response = self.client.post(
             self.jobs + "/claim",
             json={
                 "consumer": "knowledge",
                 "worker_id": self.worker_id,
                 "lease_seconds": self.lease,
+                "recipe_revision": self.recipe,
+                "loaded_receipt": loaded_receipt,
+                "loaded_unavailable": loaded_unavailable,
             },
         )
         response.raise_for_status()
         job: dict[str, Any] | None = response.json()["job"]
         return job
+
+    def activation(self) -> dict[str, Any]:
+        """Private stdin-only activation fence for this exact leased generation."""
+        job = self._active_job
+        if (
+            job is None
+            or type(job.get("activation_epoch")) is not int
+            or job["activation_epoch"] < 1
+        ):
+            raise RuntimeError("index activation requires a current native lease epoch")
+        return {
+            "epoch": job["activation_epoch"],
+            "job_id": job["job_id"],
+            "source_revision": job["source_revision"],
+            "recipe_revision": self.recipe,
+            "serving_revision": self.serving,
+            "verify_url": self.jobs + "/claim",
+            "verify_body": {
+                "operation": "verify",
+                "consumer": "knowledge",
+                "job_id": job["job_id"],
+                "source_revision": job["source_revision"],
+                "recipe_revision": self.recipe,
+                "lease_token": job["lease_token"],
+                "activation_epoch": job["activation_epoch"],
+            },
+            "username": self._credentials[0],
+            "password": self._credentials[1],
+        }
 
     def ack(
         self,
@@ -205,6 +254,10 @@ class Worker:
         products: list[dict[str, Any]] | None = None,
         preparation_complete: bool = False,
         unprepared_documents: list[dict[str, Any]] | None = None,
+        materialization_complete: bool = False,
+        index_version: str = "",
+        loaded_recipe_revision: str = "",
+        serving_revision: str = "",
     ) -> None:
         response = self.client.post(
             self.jobs + "/ack",
@@ -218,6 +271,13 @@ class Worker:
                 "prepared_products": products or [],
                 "preparation_complete": preparation_complete,
                 "unprepared_documents": unprepared_documents or [],
+                "recipe_revision": self.recipe,
+                "loaded_recipe_revision": loaded_recipe_revision,
+                "index_version": index_version,
+                "materialization_complete": materialization_complete,
+                "expected_serving_revision": self.serving,
+                "serving_revision": serving_revision,
+                "activation_epoch": job.get("activation_epoch", 0),
             },
         )
         response.raise_for_status()
@@ -225,24 +285,71 @@ class Worker:
             raise RuntimeError("Woo did not acknowledge the prepared generation")
 
     def one(self, prepare: Any, loaded: Any) -> bool:
-        job = self.claim()
+        before = None
+        unavailable = False
+        if self.recipe:
+            try:
+                before = loaded()
+                unavailable = not isinstance(before, dict)
+                if unavailable:
+                    before = None
+            except (Exception, SystemExit):
+                unavailable = True
+        job = self.claim(before, unavailable)
         if job is None:
             return False
         snapshot = Snapshot.read(job["manifest"])
         revision = snapshot.source_revision
         if revision != job["source_revision"]:
             raise RuntimeError("job manifest revision differs from its claimed source")
+        if job.get("recipe_revision", "") not in {"", self.recipe}:
+            raise RuntimeError("job recipe differs from the running worker")
         try:
+            self._active_job = job
+            if self.recipe and (
+                type(job.get("activation_epoch")) is not int
+                or job["activation_epoch"] < 1
+            ):
+                raise RuntimeError("native knowledge job has no activation lease epoch")
             version = prepare(job["manifest"])
             actual = loaded()
             if (
                 actual.get("source_revision") != revision
                 or actual.get("index_version") != version
+                or not isinstance(version, str)
+                or not version
+                or (bool(self.recipe) and actual.get("recipe_revision") != self.recipe)
+                or (
+                    bool(self.recipe)
+                    and (
+                        actual.get("expected_serving_revision") != self.serving
+                        or actual.get("serving_revision") != self.serving
+                        or type(actual.get("activation_epoch")) is not int
+                        or actual.get("activation_epoch") != job["activation_epoch"]
+                    )
+                )
             ):
                 raise RuntimeError(
                     "running Genie has not loaded the prepared generation"
                 )
             products = actual.get("products", [])
+            expected = {
+                pid: product["product_revision"]
+                for pid, product in snapshot.products.items()
+            }
+            if (
+                not isinstance(products, list)
+                or any(
+                    not isinstance(product, dict)
+                    or type(product.get("product_id")) is not int
+                    or product["product_id"] not in expected
+                    or product.get("product_revision")
+                    != expected[product["product_id"]]
+                    for product in products
+                )
+                or len({product["product_id"] for product in products}) != len(products)
+            ):
+                raise RuntimeError("running Genie returned invalid prepared products")
             partial = len(products) < len(snapshot.products)
             complete = (
                 actual.get("preparation_complete") is True
@@ -258,6 +365,16 @@ class Worker:
                 products=products,
                 preparation_complete=complete,
                 unprepared_documents=actual.get("unprepared_documents", []),
+                materialization_complete=(
+                    actual.get("materialization_complete") is True
+                    and not any(
+                        row.get("reason") == "document_unparsed"
+                        for row in actual.get("unprepared_documents", [])
+                    )
+                ),
+                index_version=version,
+                loaded_recipe_revision=actual.get("recipe_revision", ""),
+                serving_revision=actual.get("serving_revision", ""),
             )
         except (
             Exception,
@@ -266,6 +383,8 @@ class Worker:
             # No request URL, auth header or exception repr enters Woo/logs.
             self.ack(job, "", "knowledge preparation or loaded verification failed")
             raise
+        finally:
+            self._active_job = None
         return True
 
     def close(self) -> None:
@@ -356,9 +475,12 @@ def main() -> int:
                 build.document_embedder(build.DEFAULT_MODEL),
                 HFTokenizer.from_pretrained(build.CHUNK_TOKENIZER),
                 lambda text: str(py3langid.classify(text)[0]),
+                activation_epoch=worker.activation()["epoch"],
                 on_created=lambda directory: record_build(INDEX_DIR, directory),
             )
-            report = publish(directory, args.root, args.host)
+            activation = worker.activation()
+            activation.update(loaded_url=args.loaded_url, service_token=token)
+            report = publish(directory, args.root, args.host, activation=activation)
             return str(report["index_version"])
 
         def loaded() -> dict[str, Any]:
