@@ -11,6 +11,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from linker_cutover import public_assets
 from linker_cutover.target import CutoverError, Target
 
 
@@ -260,6 +261,8 @@ def publish(
             f"uploaded {artifact.relative} in {time.monotonic() - started:.1f}s",
             flush=True,
         )
+    public_inventory = [(item.relative, item.source.is_dir()) for item in artifacts]
+    public_proof = public_assets.prepare(target, public_inventory)
     _same_filesystem(
         target,
         root,
@@ -354,7 +357,9 @@ def publish(
         else f"rm -f {pointer}"
     )
     script = (
-        "set -eu\nrestore_all() {\ntrap - EXIT HUP INT TERM\nset +e\n"
+        "set -eu\n"
+        + public_assets.check_script(target, public_inventory, public_proof)
+        + "\nrestore_all() {\ntrap - EXIT HUP INT TERM\nset +e\n"
         + "\n".join(restore)
         + "\n}\ntrap restore_all EXIT\ntrap 'exit 1' HUP INT TERM\n"
     )
