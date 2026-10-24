@@ -268,6 +268,11 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 	await until(
 		() => document.querySelector(".lp-run-result h3")?.textContent === "Queued",
 	);
+	assert.ok(
+		document.activeElement ===
+			document.querySelector('.lp-run-content[tabindex="-1"]'),
+		"the newly selected calculation is revealed after the long setup form collapses",
+	);
 	assert.equal(requests.filter((x) => x.path === "runs/energy").length, 1);
 	assert.equal(requests.at(-1).body.expected_revision, 2);
 	assert.equal(new URL(location.href).searchParams.get("run"), actualRun.id);

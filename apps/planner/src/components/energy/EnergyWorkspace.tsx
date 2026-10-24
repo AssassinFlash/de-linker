@@ -140,6 +140,21 @@ export function EnergyWorkspace({
 		recheck,
 		active: active && view === "runs",
 	});
+	const runTarget = useRef<HTMLDivElement>(null),
+		visibleRunId = runs.run.data?.id;
+	useEffect(() => {
+		if (
+			active &&
+			view === "runs" &&
+			visibleRunId &&
+			visibleRunId === runs.runId
+		)
+			revealActionResult(runTarget.current, () =>
+				client.isCurrentScope(session.query_scope),
+			);
+		// Changing a selected calculation reveals its heading. Polling the same
+		// calculation never takes focus back from the reader's current control.
+	}, [view, visibleRunId, runs.runId, active, client, session.query_scope]);
 	let prepared = false;
 	try {
 		prepared =
@@ -712,7 +727,11 @@ export function EnergyWorkspace({
 						</div>
 					</aside>
 				)}
-				<div className="lp-run-content">
+				<div
+					ref={runTarget}
+					className="lp-run-content lp-focus-target"
+					tabIndex={-1}
+				>
 					{runs.run.error && (
 						<Notice error>
 							<p>
