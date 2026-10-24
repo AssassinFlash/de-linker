@@ -9,6 +9,7 @@ from pydantic import Field
 from .canonical import Object, encode
 from .energy_inputs import Document
 from .equipment_candidate_store import EquipmentCandidateStore
+from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput, VersionUnavailable
 from .product_sources import ProductSources
 from .records import Actor
@@ -46,9 +47,13 @@ def check_equipment_candidate(
         for row in cast(list[Object], search["candidates"])
         if row["id"] == choice.candidate_id
     )
-    if reply["assessment_sha256"] != choice.assessment_sha256 or encode(
+    # Browser JSON does not retain the textual distinction between 10 and
+    # 10.0. Compare strict typed fields, preserving ID and revision checks.
+    if reply[
+        "assessment_sha256"
+    ] != choice.assessment_sha256 or EquipmentSelection.read(
         inputs.get("equipment_selection")
-    ) != encode(candidate["selection"]):
+    ) != EquipmentSelection.read(candidate["selection"]):
         raise InvalidInput("candidate choice does not match the frozen selection")
     if previous is not None and encode(previous.get("equipment_candidate")) == encode(
         inputs["equipment_candidate"]

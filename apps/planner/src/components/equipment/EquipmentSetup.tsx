@@ -294,7 +294,7 @@ export function EquipmentSetup({
 						)}
 					</p>
 					<p>
-						{searchPrepared
+						{searchPrepared && !isDirty(draft)
 							? __(
 									"The saved requirements are ready for the search.",
 									"linker-tools",

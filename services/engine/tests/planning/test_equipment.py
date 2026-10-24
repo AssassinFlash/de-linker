@@ -318,7 +318,13 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         )
         assert detail.json()["assessment"]["selected_products"]
         selected_inputs = {
-            "equipment_selection": candidate["selection"],
+            # Native browser JSON writes whole-valued floats as integers.
+            "equipment_selection": {
+                **candidate["selection"],
+                "pv_dc_kw": 10,
+                "required_usable_kwh": 15,
+                "required_discharge_ac_kw": 5,
+            },
             "equipment_candidate": {
                 "run_id": searched.id,
                 "candidate_id": candidate["id"],
