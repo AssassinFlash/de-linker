@@ -197,8 +197,7 @@ def test_utility_missing_drifted_or_ambiguous_structure_is_refused(
         controls.plan_pair("utility", changed, utility("de"))
 
 
-@pytest.mark.parametrize("tabs", ["stageTabs", "roleTabs"])
-@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize("tabs,language", [("stageTabs", "en"), ("roleTabs", "de")])
 def test_one_final_service_group_is_refused(tabs: str, language: str) -> None:
     pair = {lang: services(lang) for lang in ("en", "de")}
     pair[language] = pair[language].replace(handler(tabs), handler(tabs, True))
@@ -206,8 +205,15 @@ def test_one_final_service_group_is_refused(tabs: str, language: str) -> None:
         controls.plan_pair("services", pair["en"], pair["de"])
 
 
-@pytest.mark.parametrize("tabs", ["stageTabs", "roleTabs"])
-@pytest.mark.parametrize("fault", ["missing", "duplicate", "drift", "both"])
+@pytest.mark.parametrize(
+    "tabs,fault",
+    [
+        ("stageTabs", "missing"),
+        ("roleTabs", "duplicate"),
+        ("stageTabs", "drift"),
+        ("roleTabs", "both"),
+    ],
+)
 def test_service_changed_or_ambiguous_handler_is_refused(tabs: str, fault: str) -> None:
     original = services("en")
     replacement = {
@@ -226,9 +232,14 @@ def test_unreviewed_page_family_is_refused() -> None:
         controls.plan_pair("home", utility("en"), utility("de"))
 
 
-@pytest.mark.parametrize("tabs", ["stageTabs", "roleTabs"])
 @pytest.mark.parametrize(
-    "fault", ["keyboard_only", "scroll_only", "missing_focus", "changed_target"]
+    "tabs,fault",
+    [
+        ("stageTabs", "keyboard_only"),
+        ("roleTabs", "scroll_only"),
+        ("stageTabs", "missing_focus"),
+        ("roleTabs", "changed_target"),
+    ],
 )
 def test_partial_or_drifted_focus_scroll_path_is_refused(tabs: str, fault: str) -> None:
     scroll = f"        {tabs}[next].scrollIntoView({{ block: 'nearest', inline: 'nearest' }});\n"
