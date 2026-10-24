@@ -61,6 +61,17 @@ verified full recovery baseline and current exact pair/meta increment. Reject
 drift; prove repeat/no-op, rollback and reapply, all saved bytes and backslashes.
 Preserve every unrelated page, template, partial, privacy text, user and inquiry.
 
+The final workbench must have exactly one canonical pager, three parsed native
+tab buttons, three slides/panes, one motion control and unique referenced IDs.
+Reject extra controls even outside the canonical pager. Preserve the audited
+hero eager/high-priority policy, native muted/inline/loop flags and MP4 types;
+both old and final media-policy drift must fail before a writer is invoked.
+Repository planner tests use the actual EN/DE media shape with only style blocks
+omitted, and cover content/anchor/backslash preservation, old/final identity,
+mixed/partial states, duplicate controls/IDs and media drift. The actual inserted
+photo helper is executed for About, Services and EPC as a separate consumer
+check. These pure tests do not replace native transaction or browser evidence.
+
 Verify EN/DE at1440/390,320 and the native760/800 boundaries where relevant:
 all three choices, focus/hover/pointer/touch, actual visible images and videos,
 manual keys, permanent pause across exits, explicit Play, reduced-motion changes,

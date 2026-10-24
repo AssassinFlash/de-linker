@@ -43,6 +43,30 @@ for repeated in (
 ):
     IMAGE_SOURCES[f"/wp-content/uploads/2026/09/linker-{repeated}.webp"] += 1
 VIDEO_NAMES = ("layout-for-planning", "sizing-for-the-site")
+# The actual three-pane workbench is the controller's complete consumer set.
+# Count parsed tags, so duplicate controls or IDs cannot hide in another pager.
+FINAL_WIDGETS = Counter(
+    {
+        "lk-sp-pagination": 1,
+        "epc-media-tabs": 1,
+        "epc-motion-toggle": 1,
+        "lk-sp-bar": 3,
+        "lk-sp-bar-fill": 3,
+        "lk-sp-pane": 3,
+        "lk-sp-slide": 3,
+    }
+)
+FINAL_IDS = Counter(
+    dict.fromkeys(
+        ["tv-solutions-developers-v1", "sp-workbench", "sp-counter"]
+        + [
+            f"{prefix}-{i}"
+            for prefix in ("epc-media-tab", "epc-media-title", "sp-pane")
+            for i in range(3)
+        ],
+        1,
+    )
+)
 OLD_LOCALIZATION = """      if(source){source.setAttribute('src',de);}else{v.setAttribute('src',de);}
       var poster=v.getAttribute('data-poster-de');
       if(poster){v.setAttribute('poster',poster);}
@@ -93,13 +117,30 @@ class EpcMedia(HTMLParser):
         self.video: str | None = None
         self.video_sources = 0
         self.heroes = 0
+        self.widgets: Counter[str] = Counter()
+        self.ids: Counter[str] = Counter()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = dict(attrs)
+        classes = (attributes.get("class") or "").split()
+        element_id = attributes.get("id")
+        if element_id is not None and element_id in FINAL_IDS:
+            self.ids[element_id] += 1
+        for name in classes:
+            if name in FINAL_WIDGETS:
+                self.widgets[name] += 1
+        audited = tag in {"img", "video", "source"} or any(
+            (name == "id" and value in FINAL_IDS)
+            or (
+                name == "class"
+                and bool(set((value or "").split()) & FINAL_WIDGETS.keys())
+            )
+            for name, value in attrs
+        )
+        if audited and len(attributes) != len(attrs):
+            raise ValueError("Ambiguous duplicate media or workbench attributes")
         if tag not in {"img", "video", "source"}:
             return
-        attributes = dict(attrs)
-        if len(attributes) != len(attrs):
-            raise ValueError("Ambiguous duplicate media attributes")
         raw = self.get_starttag_text()
         assert raw is not None
         original = raw
@@ -115,8 +156,12 @@ class EpcMedia(HTMLParser):
                 if (
                     source
                     != "/wp-content/uploads/2026/09/linker-german-b2b-supply-and-warranty.webp"
+                    or attributes.get("fetchpriority") != "high"
+                    or attributes.get("loading") not in {None, "eager"}
                 ):
-                    raise ValueError("Hero image changed; do not defer it")
+                    raise ValueError(
+                        "Hero source or eager/high-priority policy changed"
+                    )
             if self.state == "old" and any(
                 k in attributes for k in ("width", "height", "decoding")
             ):
@@ -137,8 +182,14 @@ class EpcMedia(HTMLParser):
             if (
                 attributes.get("data-src-de") != prefix + "-de.mp4"
                 or attributes.get("data-poster-de") != prefix + "-de-poster.webp"
+                or any(
+                    attributes.get(name) != ""
+                    for name in ("muted", "loop", "playsinline")
+                )
             ):
-                raise ValueError("Unexpected native German media mapping")
+                raise ValueError(
+                    "Native German mapping or muted inline loop policy changed"
+                )
             expected_language = "en" if self.state == "old" else self.language
             if attributes.get("poster") != prefix + f"-{expected_language}-poster.webp":
                 raise ValueError("Video poster drifted from the reviewed state")
@@ -171,8 +222,13 @@ class EpcMedia(HTMLParser):
             self.video_sources += 1
             prefix = f"/wp-content/uploads/2026/09/linker-bess-{self.video}"
             expected_language = "en" if self.state == "old" else self.language
-            if attributes.get("src") != prefix + f"-{expected_language}.mp4":
-                raise ValueError("Video source drifted from the reviewed state")
+            if (
+                attributes.get("src") != prefix + f"-{expected_language}.mp4"
+                or attributes.get("type") != "video/mp4"
+            ):
+                raise ValueError(
+                    "Video source or media type drifted from the reviewed state"
+                )
             if self.state == "old" and self.language == "de":
                 raw = _replace(raw, f'src="{prefix}-en.mp4"', f'src="{prefix}-de.mp4"')
         if raw != original:
@@ -251,7 +307,9 @@ def _plan(content: str, language: str) -> tuple[str, str]:
     if state == "final":
         if (
             parser.edits
-            or _pagination(language) not in content
+            or content.count(_pagination(language)) != 1
+            or parser.widgets != FINAL_WIDGETS
+            or parser.ids != FINAL_IDS
             or content.count(EPC_PREPARE) != 1
             or content.count(NEW_LOCALIZATION) != 1
         ):
