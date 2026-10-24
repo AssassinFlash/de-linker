@@ -91,3 +91,127 @@ test( 'an account menu served without hidden is closed on load', () => {
 	assert.equal( menu.id, 'linker-menu-account' );
 	assert.equal( button.getAttribute( 'aria-controls' ), menu.id );
 } );
+
+function mobilePage( open = false ) {
+	const dom = new JSDOM( `<!doctype html><html lang="en"><body>
+		<header id="tv-header-v2">
+			<details class="tv-mobile-navigation" ${ open ? 'open' : '' }>
+				<summary id="tv-mobile-toggle" role="button" aria-controls="tv-mobile-panel" aria-label="Open menu">Menu</summary>
+				<div id="tv-mobile-panel"><a href="/products/">Products</a></div>
+			</details>
+		</header><button id="outside">Outside</button>
+	</body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );
+	const { window } = dom;
+	window.eval( source );
+	return {
+		window,
+		details: window.document.querySelector( 'details' ),
+		toggle: window.document.querySelector( 'summary' ),
+		panel: window.document.querySelector( '#tv-mobile-panel' ),
+	};
+}
+
+test( 'an opening made before the enhancement is retained', () => {
+	const { details, toggle, panel } = mobilePage( true );
+	assert.equal( details.open, true );
+	assert.equal( panel.dataset.open, 'true' );
+	assert.equal( toggle.getAttribute( 'aria-label' ), 'Close menu' );
+	assert.equal( toggle.hasAttribute( 'aria-expanded' ), false );
+	assert.equal( toggle.getAttribute( 'aria-controls' ), panel.id );
+} );
+
+test( 'native summary activation is not toggled twice by the enhancement', async () => {
+	const { window, details, toggle, panel } = mobilePage();
+	toggle.click();
+	await new Promise( resolve => window.setTimeout( resolve, 0 ) );
+	assert.equal( details.open, true );
+	assert.equal( panel.dataset.open, 'true' );
+	toggle.click();
+	await new Promise( resolve => window.setTimeout( resolve, 0 ) );
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+} );
+
+test( 'Escape closes the actual native disclosure and returns focus', () => {
+	const { window, details, toggle, panel } = mobilePage( true );
+	panel.querySelector( 'a' ).focus();
+	window.document.activeElement.dispatchEvent( new window.KeyboardEvent( 'keydown', { key: 'Escape', bubbles: true } ) );
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+	assert.equal( window.document.activeElement, toggle );
+} );
+
+test( 'an outside click closes native open state as well as the CSS state', () => {
+	const { window, details, panel } = mobilePage( true );
+	window.document.querySelector( '#outside' ).click();
+	assert.equal( details.open, false );
+	assert.equal( panel.dataset.open, 'false' );
+} );
+
+function wideEarlyPage() {
+	const dom = new JSDOM( `<!doctype html><html lang="en"><head><style>
+		.tv-nav-frame { padding:0; column-gap:0; }
+		.tv-mobile-navigation { display:none; }
+		#tv-header-v2[data-tv-nav-folded="true"] .tv-mobile-navigation { display:block; }
+		#tv-header-v2[data-tv-nav-folded="true"] .tv-desktop-nav,
+		#tv-header-v2[data-tv-nav-folded="true"] .tv-header-cta { display:none; }
+	</style></head><body><header id="tv-header-v2"><div class="tv-nav-frame">
+		<a class="tv-brand" data-fixture-width="100" href="/">Home</a>
+		<div class="tv-desktop-nav" data-fixture-width="600"><div class="tv-nav-item">
+			<button class="tv-nav-link" aria-expanded="false">Products</button>
+			<div class="tv-mega-menu"><a href="/products/">All products</a></div>
+		</div></div>
+		<div class="tv-desktop-actions" data-fixture-width="200"></div>
+		<a class="tv-header-cta" data-fixture-width="100" href="/contact/">Contact</a>
+		<details class="tv-mobile-navigation" data-fixture-width="44" open>
+			<summary id="tv-mobile-toggle" aria-label="Open menu">Menu</summary>
+			<div id="tv-mobile-panel"><a href="/products/">Products</a></div>
+		</details>
+	</div></header><button id="outside">Outside</button></body></html>`, { runScripts: 'outside-only', pretendToBeVisual: true } );
+	const { window } = dom;
+	const frame = window.document.querySelector( '.tv-nav-frame' );
+	// JSDOM has no layout. These fixture boxes leave room for the normal row,
+	// so keeping an early opening cannot pass merely because the row is full.
+	Object.defineProperty( frame, 'clientWidth', { value: 1200 } );
+	window.HTMLElement.prototype.getBoundingClientRect = function () {
+		return { width: Number( this.getAttribute( 'data-fixture-width' ) ) };
+	};
+	window.matchMedia = () => ( { matches: true } );
+	window.ResizeObserver = class { observe() {} };
+	Object.defineProperty( window.document, 'fonts', { value: { ready: Promise.resolve() } } );
+	const toggle = window.document.querySelector( 'summary' );
+	toggle.focus();
+	window.eval( source );
+	return { window, toggle, details: window.document.querySelector( 'details' ), header: window.document.querySelector( 'header' ), primary: window.document.querySelector( '.tv-nav-link' ) };
+}
+
+test( 'an early desktop opening stays usable even when the full row fits', () => {
+	const { window, details, header } = wideEarlyPage();
+	assert.equal( details.open, true );
+	assert.equal( header.dataset.tvNavFolded, 'true' );
+	assert.equal( window.getComputedStyle( window.document.querySelector( '.tv-mobile-navigation' ) ).display, 'block' );
+	window.close();
+} );
+
+test( 'closing an early desktop opening restores the full row and keyboard focus', async () => {
+	const { window, toggle, details, header, primary } = wideEarlyPage();
+	assert.equal( details.open, true );
+	toggle.click();
+	await new Promise( resolve => window.requestAnimationFrame( () => window.requestAnimationFrame( resolve ) ) );
+	assert.equal( details.open, false );
+	assert.notEqual( header.dataset.tvNavFolded, 'true' );
+	assert.equal( window.document.activeElement, primary );
+	window.close();
+} );
+
+test( 'unfolding after an outside focus change does not take that focus', async () => {
+	const { window, details, header } = wideEarlyPage();
+	const outside = window.document.querySelector( '#outside' );
+	assert.equal( details.open, true );
+	outside.focus();
+	await new Promise( resolve => window.requestAnimationFrame( () => window.requestAnimationFrame( resolve ) ) );
+	assert.equal( details.open, false );
+	assert.notEqual( header.dataset.tvNavFolded, 'true' );
+	assert.equal( window.document.activeElement, outside );
+	window.close();
+} );
