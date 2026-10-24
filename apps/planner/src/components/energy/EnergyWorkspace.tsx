@@ -92,6 +92,11 @@ export function EnergyWorkspace({
 		[syntaxValid, setSyntaxValid] = useState(true),
 		[error, setError] = useState<unknown>(null),
 		[rangeBusy, setRangeBusy] = useState(false);
+	useEffect(() => {
+		// Undo/redo and profile edits also change the effective scenario, without
+		// passing through this form's onChange handler.
+		setError(null);
+	}, [setupDocument, draft.history.current.profile_selections]);
 	const lifetime = useRef(0),
 		rangeFlight = useRef<AbortController | null>(null);
 	const projectId = draft.baseline.id,

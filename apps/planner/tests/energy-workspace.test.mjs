@@ -237,7 +237,15 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 		0,
 		"an incomplete scenario creates no parameter asset",
 	);
-	await enter(sourceNote, scenario.source_note);
+	await act(async () => {
+		current = undoDraft(current);
+		setter(current);
+	});
+	assert.equal(
+		document.querySelector('[role="alert"]'),
+		null,
+		"Undo clears validation feedback for the superseded inputs",
+	);
 	const charge = control("AC charging power");
 	await enter(charge, "unfinished");
 	assert.equal(charge.getAttribute("aria-invalid"), "true");
