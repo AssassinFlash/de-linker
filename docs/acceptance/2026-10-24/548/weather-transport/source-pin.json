@@ -1,0 +1,25 @@
+{
+  "base": "79e56ea9011d5e241e7ee05d45018b2e6df8b253",
+  "source_pin": "0187cc9210baacf51764bec50da42405a40ac71b",
+  "intermediate_pins": [
+    "a37c4c16a0f0659214ea24791a2bcfd2747bd121",
+    "b9329c0e31db8ff42511ac66224e6ce0a00108f0"
+  ],
+  "changed_engine_sha256": {
+    "services/engine/pyproject.toml": "21c8e61de0f5708aea78dd3ce818295efb37c0c795ac1c9dac8492852248dde8",
+    "services/engine/src/linker_engine/planning/apify_json.py": "81736aa4d9459d5a18fa71821e2f86edbca77cf1efcbe2cca1a480d05515ba60",
+    "services/engine/src/linker_engine/planning/apify_response.py": "74dcdeb827622f6cf5755bd5d19398928fc1b1068b609847afd1157264ae62d0",
+    "services/engine/src/linker_engine/planning/apify_transport.py": "12fb5268974a72ce1d207aad0294d478ca16fe580862c79af307f97f8cce78fa",
+    "services/engine/src/linker_engine/planning/apify_weather_client.py": "2f7e979a7676819ad789c5019d8a744b759116b1182f6114cb75b3bc3269624c",
+    "services/engine/src/linker_engine/planning/weather_acquisition.py": "ff6cf81c5c22a134b23df6b8d4d9ac5fdaca782332cf759cb721ebaa6c0c3ed0",
+    "services/engine/src/linker_engine/planning/weather_download.py": "222b635a02bbe3a45d63f3ecf9a95af4370f110b1d84e4a806cb50eaecc5f930",
+    "services/engine/src/linker_engine/planning/weather_fetch_errors.py": "2f1dbd427093ae65249f26c42fbd96bf4cec04bf8791391deb6261e56fde392a",
+    "services/engine/src/linker_engine/planning/weather_journal.py": "2e6cda47519a7c6bd9fbe1a81c2b2988ba70b2b1b1215cbccb833844c5ebb64e",
+    "services/engine/src/linker_engine/planning/weather_submission.py": "c0b646221564e338f94cead0e0397fe0024f474687f012c8152fdec2d23aaee2",
+    "services/engine/src/linker_engine/planning/worker.py": "97d7ac01bdb88b9bd1f53fe25b3daa095b841ed15b2d2f30edfa0e3c58b961d2",
+    "services/engine/tests/planning/test_apify_transport.py": "f03d4976b26ace59587a6a990ac6301177250c20daed66b9b8a52f456883b141",
+    "services/engine/tests/planning/test_apify_weather_client.py": "be3a7937da53096cd485ed93acac96ba1c6574bc75fd0cb6a261e8bb84015bd1",
+    "services/engine/tests/planning/test_weather_acquisition.py": "4b2ce60b260cebd9016a4cd85cd9c0d7e1ee7f5ed6ce4dba1ce0ae230281e387",
+    "services/engine/uv.lock": "e5a465c8915eeee254dea925cb8c981456a6244bbbebe35d7fe7fb99ccf1ffe2"
+  }
+}
