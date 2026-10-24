@@ -81,6 +81,13 @@ clicks and keyboard changes stay independent of the hover-entry state.
 The no-script Services hero inherits white on its section but the base heading
 rule supplies dark ink directly to H1. Give only that actual H1 the existing
 white token, without changing normal typography or the rest of the page.
+The same actual no-script check exposes Utility's H1 to that base rule too;
+state the same existing white color on its actual hero H1. A German engineering
+summary's long word also expands its grid item's automatic minimum beyond the
+phone viewport. Give only that layout's direct children a zero minimum width
+and let those summary headings wrap an otherwise unbreakable word as needed.
+Preserve the native grid and normal desktop dimensions; verify no-script and
+normal English/German phone widths separately.
 German Utility's narrow H1 currently auto-hyphenates within "Plattformen".
 Use the existing Contact manual-hyphen policy on only this hero heading; retain
 the authored hyphen and verify complete words at 320/390/1000px.

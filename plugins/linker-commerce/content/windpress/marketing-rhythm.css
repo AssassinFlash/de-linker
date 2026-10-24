@@ -242,6 +242,13 @@ body[data-page]:is(
 #tv-utility-page-v1 #engineering .us-engineering-feature > summary > h4 {
 	flex: 1;
 	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+/* A grid item's automatic minimum followed the longest German summary word
+   beyond the390px viewport without JS. Let the existing single column fit. */
+#tv-utility-page-v1 #engineering .us-engineering-layout > * {
+	min-width: 0;
 }
 
 #tv-utility-page-v1 #engineering .us-engineering-feature > summary::after {
@@ -251,17 +258,25 @@ body[data-page]:is(
 	height: 12px;
 	color: var(--us-green);
 	background:
-		linear-gradient(currentColor, currentColor) center / 12px 1.5px no-repeat,
-		linear-gradient(currentColor, currentColor) center / 1.5px 12px no-repeat;
+		linear-gradient(currentColor, currentColor) center / 12px 1.5px
+			no-repeat,
+		linear-gradient(currentColor, currentColor) center / 1.5px 12px
+			no-repeat;
 }
 
-#tv-utility-page-v1 #engineering .us-engineering-feature[open] > summary::after {
-	background-size: 12px 1.5px, 1.5px 0;
+#tv-utility-page-v1
+	#engineering
+	.us-engineering-feature[open]
+	> summary::after {
+	background-size:
+		12px 1.5px,
+		1.5px 0;
 }
 
 /* The base heading color overrides the hero's inherited white without JS.
    State the existing white surface color on the actual heading itself. */
-#service-redesign .lk-hero-h1 {
+#service-redesign .lk-hero-h1,
+#tv-utility-page-v1 .lk-hero-utility h1 {
 	color: var(--proto-neutral-0);
 }
 
