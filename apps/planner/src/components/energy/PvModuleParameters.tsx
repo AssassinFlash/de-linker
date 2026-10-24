@@ -5,6 +5,13 @@ import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { ParameterNote } from "./ParameterNote.tsx";
 import { toPercent, fromPercent } from "../../domain/decimal.ts";
 
+/** Parameter and reference bounds are PvModuleParameters/ModuleSource, Text,
+ * Hash and PositiveInteger in pv-generation.schema.json. The PVWatts DC 25 °C
+ * reference and per-degree gamma definition are pinned in
+ * docs/research/2026-10-24-pv-generation/WEATHER-AND-MODELS.md (pvlib 0.16.1,
+ * pvsystem.pvwatts_dc). The unit boundary is recorded in section 4.2 of
+ * docs/research/2026-10-22-planning-implementation/NUMERICAL-MODELS.md.
+ * The displayed -0.29 example illustrates percentage entry, not a module default. */
 export function PvModuleParameters({
 	value,
 	specification,

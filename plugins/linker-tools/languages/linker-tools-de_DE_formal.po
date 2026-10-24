@@ -6343,7 +6343,7 @@ msgstr "Modelle der Modulfelder"
 
 #: build/planner/assets/planner.js
 msgid "Power conversion"
-msgstr "Leistungsumwandlung"
+msgstr "Umwandlung"
 
 #: build/planner/assets/planner.js
 msgid "Module parameter fields are created when the parameters are updated for the current roof layout."

@@ -62,7 +62,7 @@
     "src/components/energy/PvArrayParameters.tsx": "1879d8808cfdf8bcb77f67734cec639ca7a2855cad8ea87cd1a4159f7601028a",
     "src/components/energy/PvConverterParameters.tsx": "025cc111b604aabc283d186fec657051d95ee53dbfc2f3d835f61a207d998e00",
     "src/components/energy/PvForm.tsx": "a0e62a1f3a7777d8554095107e92a74602d9c521be58a632c659d8cf7cf24bad",
-    "src/components/energy/PvModuleParameters.tsx": "efdb6495b6e1fa0bdf818296db81e20a57b6b9a4ccfb1c3e213c16664af008b8",
+    "src/components/energy/PvModuleParameters.tsx": "a6558e79386a8160b7a4eb3d7181f0f01b0363647537b5a3ad5d0129a427d7f8",
     "src/components/energy/PvSetup.tsx": "8bf911b9b5b65926e4506bc17a53ac29baf12ab86b6bb04188f28ecd3c969bc1",
     "src/components/energy/RunBasis.tsx": "84c19e37b95ea41e410f44ede2c50d3eda8440ad999929190a43e63c701a57b5",
     "src/components/energy/RunResult.tsx": "5fa3b28c424e2adfdd0cf9e31fa3eeaa2712ad4590cc34ebf0cf729c82b7af2d",
