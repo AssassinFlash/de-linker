@@ -753,13 +753,14 @@ def test_streamed_cap_disconnect_length_mismatch_and_principal_overwrite() -> No
         ],
     )
     assert messages[0]["status"] == 413 and not actors
-    for raw_headers, chunks in (
+    length_cases: tuple[tuple[list[tuple[bytes, bytes]], list[Message]], ...] = (
         (wire_headers(), [{"type": "http.disconnect"}]),
         (
             wire_headers() + [(b"content-length", b"2")],
             [{"type": "http.request", "body": b"1"}],
         ),
-    ):
+    )
+    for raw_headers, chunks in length_cases:
         messages, actors, _ = exercise_boundary(raw_headers, chunks)
         assert messages[0]["status"] == 400 and not actors
     messages, actors, _ = exercise_boundary(
@@ -772,11 +773,12 @@ def test_streamed_cap_disconnect_length_mismatch_and_principal_overwrite() -> No
 
 
 def test_browser_owner_context_and_schema_coercions_are_not_commands(rig: Rig) -> None:
-    for extra in (
+    extra_commands: tuple[Object, ...] = (
         {"owner": FOREIGN.key},
         {"actor": {"kind": "team"}},
         {"context": {"models": {}}},
-    ):
+    )
+    for extra in extra_commands:
         response = rig.client.post(
             "/projects/create",
             headers=headers(),

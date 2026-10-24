@@ -13,6 +13,7 @@ import pytest
 from linker_engine.planning.canonical import Object, decode_object, encode
 from linker_engine.planning.errors import InvalidInput
 from linker_engine.planning.pv_generation import generate_pv
+from linker_engine.planning.pv_weather import WeatherSeries
 from linker_engine.planning.pvgis_response import PvgisCapture
 from linker_engine.planning.pvgis_tmy import tmy_weather
 from linker_engine.planning.pvgis_tmy_request import (
@@ -72,7 +73,7 @@ def interpretation() -> PvgisTmyInterpretation:
     )
 
 
-def parse(content: bytes | None = None):
+def parse(content: bytes | None = None) -> WeatherSeries:
     return tmy_weather(
         raw() if content is None else content,
         request(),
