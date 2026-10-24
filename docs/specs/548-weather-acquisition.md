@@ -211,6 +211,8 @@ acquisition deadline. Known-run observation, polling, stopping and original
 capture share one implementation with acquisition and cancellation cleanup.
 There is no Actor-start method in the known-run module. A supplied ID must pass
 the pinned build and full nonce-bearing INPUT checks before acknowledgement.
+Known-run state resolution checks the task fence first; a database outage
+cannot replace an already-known cancellation or lease loss.
 Capture and stop require a failed/cancelled producer and are checked again by
 the worker. Customer cancellation cannot cancel the independent recovery job.
 

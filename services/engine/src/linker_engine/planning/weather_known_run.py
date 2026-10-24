@@ -26,6 +26,7 @@ class KnownWeatherRun:
         intent: WeatherIntent,
     ) -> None:
         self.journal, self.client, self.task = journal, client, task
+        task.check()
         self.intent = journal.current(intent)
         self.plan = journal.plan(self.intent)
         if encode(self.plan.limits.model_dump(mode="json")) != encode(
