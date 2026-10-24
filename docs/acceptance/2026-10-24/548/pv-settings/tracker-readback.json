@@ -1,0 +1,15 @@
+{
+  "observed_at_utc": "2026-10-24T14:24:07.878704+00:00",
+  "map_title": "地图：统一方案工作台重构与全站交付",
+  "map_url": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "state": "OPEN",
+  "source": "310bf2f4b6cd9d5a7c8bfcf35965c38905ef08be",
+  "evidence": "44658434e9ad2d19b6751f1fe829ef6b99d030b9",
+  "previous_body_sha256": "09994eb553abe2a2c7baf97d01bac34daa8479f1d32b06290c0d16c51cc51d90",
+  "body_sha256": "fb141039ef097c59fc8f6d75e9af5eac2bab0897554182febe982f8703d586fa",
+  "comment_url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6385353020",
+  "exact_body_readback": true,
+  "exact_comment_readback": true,
+  "only_frontier_bullet_replaced": true,
+  "temporary_files_reclaimed": true
+}
