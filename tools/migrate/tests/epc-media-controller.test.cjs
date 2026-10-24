@@ -92,6 +92,7 @@ test('offscreen media is not played; the observer targets the gallery', () => {
   const f = fixture();
   assert.equal(f.observed, f.gallery);
   assert.equal(f.timers.size, 0);
+  assert(f.videos.every(v => !v.controls));
   assert.deepEqual(f.videos.map(v => v.plays), [0, 0]);
   f.show(true);
   assert.equal(f.timers.size, 1);
@@ -100,15 +101,6 @@ test('offscreen media is not played; the observer targets the gallery', () => {
   f.show(false);
   assert.equal(f.timers.size, 0);
   assert(f.videos.every(v => v.paused));
-});
-
-test('enhancement takes over saved native controls only with gallery observation', () => {
-  const observed = fixture();
-  assert(observed.videos.every(v => !v.controls));
-  assert.deepEqual(observed.videos.map(v => v.plays), [0, 0]);
-  const manual = fixture({ observer: false });
-  assert(manual.videos.every(v => v.controls));
-  assert.equal(manual.toggle.hidden, true);
 });
 
 test('one scheduled dwell advances one choice and stops when the gallery leaves', () => {

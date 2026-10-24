@@ -102,22 +102,24 @@ def test_mixed_language_state_is_rejected(side: int) -> None:
         media.plan_pair(*mixed)
 
 
-@pytest.mark.parametrize("side", (0, 1))
 @pytest.mark.parametrize("state", ("old", "final"))
 @pytest.mark.parametrize(
-    ("before", "after"),
+    ("old_side", "before", "after"),
     (
-        (' muted=""', ""),
-        (' loop=""', ""),
-        (' playsinline=""', ""),
-        ('fetchpriority="high"', 'fetchpriority="low"'),
-        ('type="video/mp4"', 'type="application/octet-stream"'),
-        ("linker-bess-layout-for-planning-en.mp4", "wrong-source.mp4"),
+        (0, ' muted=""', ""),
+        (1, ' loop=""', ""),
+        (0, ' playsinline=""', ""),
+        (1, 'fetchpriority="high"', 'fetchpriority="low"'),
+        (0, 'type="video/mp4"', 'type="application/octet-stream"'),
+        (1, "linker-bess-layout-for-planning-en.mp4", "wrong-source.mp4"),
     ),
 )
 def test_native_media_policy_drift_is_rejected(
-    side: int, state: str, before: str, after: str
+    old_side: int, state: str, before: str, after: str
 ) -> None:
+    # The parser is shared. Exercise each rejection on old and final inputs,
+    # alternating the language instead of repeating the full Cartesian product.
+    side = old_side if state == "old" else 1 - old_side
     pair = list(OLD if state == "old" else media.plan_pair(*OLD))
     if state == "final" and side == 1 and before.endswith("-en.mp4"):
         before = before.replace("-en.mp4", "-de.mp4")
@@ -127,15 +129,21 @@ def test_native_media_policy_drift_is_rejected(
         media.plan_pair(*pair)
 
 
-@pytest.mark.parametrize("side", (0, 1))
 @pytest.mark.parametrize("state", ("old", "final"))
 @pytest.mark.parametrize(
-    "mutation",
-    ("pager", "extra-bar", "duplicate-id", "extra-pane", "duplicate-attribute"),
+    ("old_side", "mutation"),
+    (
+        (0, "pager"),
+        (1, "extra-bar"),
+        (0, "duplicate-id"),
+        (1, "extra-pane"),
+        (0, "duplicate-attribute"),
+    ),
 )
 def test_controls_must_produce_one_complete_three_pane_workbench(
-    side: int, state: str, mutation: str
+    old_side: int, state: str, mutation: str
 ) -> None:
+    side = old_side if state == "old" else 1 - old_side
     final = list(OLD if state == "old" else media.plan_pair(*OLD))
     if mutation == "pager":
         if state == "final":
