@@ -39,6 +39,7 @@ export default function EnergyFlowChart({
 			last = page.rows.at(-1)!;
 		chart.setOption({
 			animation: false,
+			useUTC: true,
 			textStyle: { fontFamily: font, color: text },
 			color: [
 				"--proto-neutral-700",
@@ -89,7 +90,7 @@ export default function EnergyFlowChart({
 				name: labels[index],
 				type: "line",
 				yAxisIndex: field === "stored_kwh" ? 1 : 0,
-				showSymbol: false,
+				showSymbol: field === "stored_kwh" && page.rows.length === 1,
 				step: field === "stored_kwh" ? false : "end",
 				connectNulls: false,
 				data:

@@ -1,5 +1,4 @@
-import { Component, lazy, Suspense, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { Session } from "../../data/protocol.ts";
@@ -11,30 +10,9 @@ import {
 } from "../../data/traceWindow.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { ChartBoundary } from "./ChartBoundary.tsx";
 
 const EnergyFlowChart = lazy(() => import("./EnergyFlowChart.tsx"));
-
-class ChartBoundary extends Component<
-	{ children: ReactNode },
-	{ failed: boolean }
-> {
-	state = { failed: false };
-	static getDerivedStateFromError() {
-		return { failed: true };
-	}
-	render() {
-		return this.state.failed ? (
-			<Notice>
-				{__(
-					"The chart could not be displayed. The interval table and CSV remain available.",
-					"linker-tools",
-				)}
-			</Notice>
-		) : (
-			this.props.children
-		);
-	}
-}
 
 export function TraceExplorer({
 	run,

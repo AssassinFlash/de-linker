@@ -54,8 +54,9 @@
     "src/components/design/ViewportBoundary.tsx": "6a2e00808146bf9c3081dd6ff6c0f6752a1aadb6301406d7569882075a9d5cce",
     "src/components/design/mapDrawingLabels.ts": "f3fc57c237169a79406adbee283758a4b4052ffb6cd452adf26d349f91d4a15f",
     "src/components/design/useMapPropertyFeedback.ts": "0d33e3ee980cc68e0eb6c4a7f99b9314fe757bccc819c110f820b1b7c79bfca5",
+    "src/components/energy/ChartBoundary.tsx": "2e7f2128b15ae6534c813e524efacd1ee4265675e4b5d079faf24b975c9d4618",
     "src/components/energy/EnergyError.tsx": "96301059f33fdd31488d875ecc6c2672a17b53be03e578ed9afb6f14e192dfc6",
-    "src/components/energy/EnergyFlowChart.tsx": "24da1a4d9c82dfd01c4bfcddd1cdee0f6ce35cd95f475bc7ad2f43a4a1a62df2",
+    "src/components/energy/EnergyFlowChart.tsx": "550c9bb784a09609a97065572804e601191937b5ac2fb6726bff1f38e62fc3e1",
     "src/components/energy/EnergyWorkspace.tsx": "98a51886d500fba42ecac425547bdee523fc82456755215747fa1a9dcb169625",
     "src/components/energy/OperatingPeriodForm.tsx": "5b491c54d857df7df68901d8a5b45dca7959ae745eceaea122285d424b765190",
     "src/components/energy/ParameterNote.tsx": "9b43894b0f3c49eb5677c673c2f861bbacc1ed18c6171fbba4179cc00a60aee2",
@@ -70,7 +71,7 @@
     "src/components/energy/RunResult.tsx": "5fa3b28c424e2adfdd0cf9e31fa3eeaa2712ad4590cc34ebf0cf729c82b7af2d",
     "src/components/energy/ScenarioForm.tsx": "eb15605426e5cdae799310042ea0844873450d3f8f1a3156458e3ecc65abce2d",
     "src/components/energy/ScenarioNumber.tsx": "f9a8bf92eebed1d8be983ab6cb69cbca6e4f9376813d0ed4884f624ca7c340d1",
-    "src/components/energy/TraceExplorer.tsx": "4862b52f71da0d1516590a2c97dffc65f85580fc2a85c2d35124bb14e7c41ff1",
+    "src/components/energy/TraceExplorer.tsx": "e30815138650303089e32bfe5130a683ccf642961a17b21742e507e161c0d5ee",
     "src/components/energy/WeatherForm.tsx": "63eab23de32028105dce0ef3e490e4282dc7c3a6d755022e5d62d29e0ea1c02e",
     "src/components/energy/WeatherProgress.tsx": "0ffff7142abef48c51c3efa41125a97caad7bbcc9b0c663e35dc42f9a190aef9",
     "src/components/energy/WeatherSetup.tsx": "af94254ecf575f4be7a01709c94ae4e96d31e5def9948073690ffab916578537",
@@ -170,13 +171,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/EnergyFlowChart-B6y7xEje.js": "b467fe451d0fdf6b7a86700eec29789475c3bdfc4732d5cdc2434030aba2172f",
-    "assets/MapViewport-B3BL0fLe.js": "cb5e4e957ad05821536f8a7ea5988f5f73fd0c00d53adbdde3e91c8358e5be88",
-    "assets/SceneViewport-C6Ex14Y1.js": "ff72600599e5e4e889a4563b9e4bbff9a19413a1217a3a383b578868202dc1a3",
-    "assets/planner-core-DvXQDRMN.js": "62ad62b9c5caeecaa0de0801ea5469c19258c413087245d9f04db0f3fd9e6f8a",
-    "assets/planner.js": "bde59133d6a4ef5b385c674b49ca3eba9fbb407ab1e3d343a159e8a787e45b55",
+    "assets/EnergyFlowChart-Bczk1IVz.js": "dbcb9147ef75e8bd3f56d16c088b1b81ba70b3cc72d47b3e33f7da3e4573dc4e",
+    "assets/MapViewport-CL53GD2F.js": "bff182faebe6f9fae87c0af63431ad0c8629fc0dcb8665f77254fe1f4413962f",
+    "assets/SceneViewport-Bq-l-DAH.js": "08538464a46e7e735bdb952ff89a35a90faf3abdff0aae02b0e3e11df6f83ec0",
+    "assets/planner-core-DtJomKk6.js": "a27e55884b7644eca1a69c498c3fe65a45df0833e2a8d9c662385a64642d1859",
+    "assets/planner.js": "584ab036674f1ba4ae842720a1798abf991c5eccf6f5e5aa34d7eb8cfd5cf990",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "797e73539976d67207c514ea54728d66227d3f54915f130f3a0a0386ed01c94d",
+    "vite-manifest.json": "e5265e79b3465da8ee3bba2fc95869b3b96f67da40f4d468685656b76945b90b",
     "windpress.scan.txt": "eee0bec4c5a7a029f4f8514cf23d07b0d117d942e3e4a21a28aab1a415957bb3"
   }
 }
