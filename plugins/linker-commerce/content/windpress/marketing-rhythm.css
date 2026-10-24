@@ -197,3 +197,77 @@ body[data-page]:is(
 	#tv-header-v2 {
 	background: rgba(21, 53, 47, 0.8);
 }
+
+/* The saved workflow becomes a horizontal rail at1000px. Its native 2px
+   outline plus5px offset was clipped by overflow at the top and inline start.
+   An existing8px spacing token contains that7px ring; scroll padding keeps
+   native snap alignment inside the same inset. Retain the15px scrollbar gap. */
+@media (max-width: 1000px) {
+	#tv-utility-page-v1 #exec-deck-nav {
+		padding-block-start: var(--proto-space-2);
+		padding-inline: var(--proto-space-2);
+		scroll-padding-inline: var(--proto-space-2);
+	}
+}
+
+/* Services has a separate native rail at820px. Its2px ring+4px offset needs
+   the same8px inset on every side. Keep the ring white on its dark surface. */
+#service-redesign #services .ss-stage-tab:focus-visible {
+	outline-color: var(--proto-neutral-0);
+}
+
+@media (max-width: 820px) {
+	#service-redesign #services .ss-stage-nav {
+		/* Put the ring inset outside the original card area:601–820px uses
+		   fluid fr columns, which an inward16px padding would squeeze. */
+		width: calc(100% + 2 * var(--proto-space-2));
+		margin-inline: calc(-1 * var(--proto-space-2));
+		padding: var(--proto-space-2);
+		scroll-padding-inline: var(--proto-space-2);
+	}
+
+	#service-redesign #services .ss-stage-tab {
+		scroll-margin: var(--proto-space-2);
+	}
+}
+
+/* Every native engineering summary opens/closes content. A CSS plus/minus
+   uses the existing disclosure's12px bars, without adding spoken label text.
+   Include the fourth summary so the same state cue and alignment serve all. */
+#tv-utility-page-v1 #engineering .us-engineering-feature > summary {
+	/* Reuse the existing Utility phone hero action's44px minimum hit area. */
+	min-height: 44px;
+}
+
+#tv-utility-page-v1 #engineering .us-engineering-feature > summary > h4 {
+	flex: 1;
+	min-width: 0;
+}
+
+#tv-utility-page-v1 #engineering .us-engineering-feature > summary::after {
+	content: "";
+	flex: 0 0 12px;
+	width: 12px;
+	height: 12px;
+	color: var(--us-green);
+	background:
+		linear-gradient(currentColor, currentColor) center / 12px 1.5px no-repeat,
+		linear-gradient(currentColor, currentColor) center / 1.5px 12px no-repeat;
+}
+
+#tv-utility-page-v1 #engineering .us-engineering-feature[open] > summary::after {
+	background-size: 12px 1.5px, 1.5px 0;
+}
+
+/* The base heading color overrides the hero's inherited white without JS.
+   State the existing white surface color on the actual heading itself. */
+#service-redesign .lk-hero-h1 {
+	color: var(--proto-neutral-0);
+}
+
+/* Match the existing Contact heading policy: retain the authored hyphen in
+   Grossspeicher-Plattformen without auto-hyphenating the rest of a word. */
+html[lang^="de"] #tv-utility-page-v1 .lk-hero-utility h1 {
+	-webkit-hyphens: manual;
+	hyphens: manual;
+}
