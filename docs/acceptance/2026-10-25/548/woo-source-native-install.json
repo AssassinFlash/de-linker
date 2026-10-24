@@ -819,14 +819,14 @@
     },
     "native_save_correction": "Compare strict EquipmentSelection fields so browser JSON 10 and frozen 10.0 represent the same demand. Frozen IDs, revisions, hash and current Woo proof are still checked.",
     "visual_evidence": [
-      "woo-equipment-search-en-1440.png",
-      "woo-equipment-search-controls-en-1440.png",
-      "woo-equipment-search-en-390.png",
-      "woo-equipment-search-controls-en-390.png",
-      "woo-equipment-search-de-1440.png",
-      "woo-equipment-search-controls-de-1440.png",
-      "woo-equipment-search-de-390.png",
-      "woo-equipment-search-controls-de-390.png"
+      "woo-equipment-search-en-1440.jpg",
+      "woo-equipment-search-controls-en-1440.jpg",
+      "woo-equipment-search-en-390.jpg",
+      "woo-equipment-search-controls-en-390.jpg",
+      "woo-equipment-search-de-1440.jpg",
+      "woo-equipment-search-controls-de-1440.jpg",
+      "woo-equipment-search-de-390.jpg",
+      "woo-equipment-search-controls-de-390.jpg"
     ],
     "retention": {
       "executable_carriers": 2,
