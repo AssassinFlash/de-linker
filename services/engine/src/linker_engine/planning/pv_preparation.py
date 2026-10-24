@@ -19,6 +19,7 @@ from .pv_source import PvSource
 from .records import Actor, Context, Lease, Run
 from .runtime_snapshot import RuntimeSnapshot
 from .weather_import import WEATHER_PURPOSE
+from .weather_inputs import WeatherAcquisitionInputs
 from .worker import Control
 from .workspace import Workspace
 
@@ -44,6 +45,14 @@ def selected_weather(
     selection = PvPreparationInputs.read(inputs.get("pv_preparation"))
     asset = assets.get(actor, project_id, selection.weather_asset_id)
     require_weather_source(asset.purpose, asset.metadata)
+    if "weather_acquisition" in inputs:
+        requested = WeatherAcquisitionInputs.read(inputs["weather_acquisition"])
+        if asset.metadata.get("weather_request") != requested.request.model_dump(
+            mode="json"
+        ) or asset.metadata.get(
+            "weather_interpretation"
+        ) != requested.interpretation.model_dump(mode="json"):
+            raise InvalidInput("selected weather differs from the saved source request")
     return asset
 
 

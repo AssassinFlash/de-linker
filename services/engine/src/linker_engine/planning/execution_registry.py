@@ -17,15 +17,20 @@ from .workspace import Workspace
 if TYPE_CHECKING:
     from .energy_service import EnergyService
     from .pv_preparation import PvPreparationService
+    from .weather_service import WeatherService
 
 
 def service_registry(
-    energy: EnergyService, pv: PvPreparationService | None
+    energy: EnergyService,
+    pv: PvPreparationService | None,
+    weather: WeatherService | None = None,
 ) -> ExecutionRegistry:
     """One executor-set authority for HTTP, worker startup and operator identity."""
-    if pv is None:
-        return ExecutionRegistry(energy.kernel)
-    return ExecutionRegistry(energy.kernel, pv.kernel)
+    return ExecutionRegistry(
+        energy.kernel,
+        *(() if pv is None else (pv.kernel,)),
+        *(() if weather is None else (weather.kernel,)),
+    )
 
 
 class RegisteredKernel(Protocol):

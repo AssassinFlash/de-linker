@@ -311,14 +311,17 @@ class Workspace:
             return [self._run(connection, actor, row["id"]) for row in rows]
 
     def cancel(self, actor: Actor, run_id: str) -> Run:
+        from .weather_cleanup import enqueue_cleanup
+
         with self.database.transaction() as connection:
             run = self._run(connection, actor, run_id)
             project_row(connection, actor, run.project_id, write=True)
             connection.execute(
                 "UPDATE jobs SET state='cancelled', updated_at=? WHERE run_id=? "
-                "AND state IN ('queued', 'running', 'retry_wait')",
+                "AND kind!='abort_weather' AND state IN ('queued', 'running', 'retry_wait')",
                 (self.clock(), run_id),
             )
+            enqueue_cleanup(self, connection, run_id)
             return self._run(connection, actor, run_id)
 
     def claim_guest(

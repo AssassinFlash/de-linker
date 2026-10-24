@@ -288,7 +288,7 @@ def test_v1_archive_upgrades_before_publication_without_changing_source(
     snapshot = tmp_path / "v1-snapshot"
     archive.backup(workspace, snapshot)
     # Build the exact legacy table layout in this isolated archive, not in a
-    # live v2 Workspace. Live connections now fence unsupported versions.
+    # live Workspace. Live connections fence unsupported versions.
     connection = sqlite3.connect(snapshot / "workspace.sqlite")
     for trigger in (
         "retired_guest_insert",
@@ -306,11 +306,11 @@ def test_v1_archive_upgrades_before_publication_without_changing_source(
     manifest["database_sha256"] = digest((snapshot / "workspace.sqlite").read_bytes())
     (snapshot / "backup.json").write_text(json.dumps(manifest))
     before = (snapshot / "workspace.sqlite").read_bytes()
-    restored = archive.restore(snapshot, tmp_path / "v2-restored")
+    restored = archive.restore(snapshot, tmp_path / "current-restored")
     assert (snapshot / "workspace.sqlite").read_bytes() == before
     assert restored.get(GUEST, project.id).input_sha256 == project.input_sha256
     with restored.database.read() as connection:
-        assert connection.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert connection.execute("PRAGMA user_version").fetchone()[0] == 3
     GuestClaims(restored).claim(GUEST, USER, key="login")
     with pytest.raises(NotFound):
         restored.get(GUEST, project.id)

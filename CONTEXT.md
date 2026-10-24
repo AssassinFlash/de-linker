@@ -32,6 +32,11 @@ Anfrage eingegangen · Proforma invoice issued / Proformarechnung ausgestellt ·
 Completed / Abgeschlossen · Cancelled / Storniert. German cart words
 (Warenkorb …) are banned; stock tells status only, never amounts.
 
+Planning terms: a **weather source** is a retained original with its provenance
+and declared time interpretation. **Weather acquisition** obtains that source;
+selection into a project is a separate saved choice. **Remote cleanup** records
+the external provider's completion or stop status for a cancelled acquisition.
+
 ## Architecture in one breath
 
 React+TS on WordPress's own React for the existing plugin entries; the unified

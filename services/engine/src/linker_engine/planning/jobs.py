@@ -52,7 +52,10 @@ class Jobs:
         if (
             not worker.strip()
             or not kinds
-            or any(kind not in ("evaluate", "render_report") for kind in kinds)
+            or any(
+                kind not in ("evaluate", "render_report", "abort_weather")
+                for kind in kinds
+            )
         ):
             raise InvalidInput("worker and supported job kinds required")
         _duration(lease_seconds, "lease duration")
@@ -190,6 +193,8 @@ class Jobs:
         """Publish bytes and success together; late or cancelled attempts lose."""
         workspace = self.workspace
         if asset is not None:
+            if lease.kind != "evaluate":
+                raise InvalidInput("only an evaluation may publish a project source")
             if "prepared_asset" in result:
                 raise InvalidInput("prepared asset is supplied by durable publication")
             children = result.get("dependencies", {})

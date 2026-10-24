@@ -138,6 +138,16 @@ class WeatherJournal:
         with self.workspace.database.read() as connection:
             return self._intent(self._row(connection, intent))
 
+    def for_run(self, run_id: str) -> WeatherIntent:
+        """Private worker/operator lookup; customer reads must use owned view."""
+        with self.workspace.database.read() as connection:
+            row = connection.execute(
+                "SELECT * FROM weather_acquisitions WHERE run_id=?", (run_id,)
+            ).fetchone()
+            if row is None:
+                raise NotFound("weather acquisition not found")
+            return self._intent(row)
+
     def plan(self, intent: WeatherIntent) -> WeatherFetchPlan:
         current = self.current(intent)
         return WeatherFetchPlan.from_document(
@@ -305,6 +315,10 @@ class WeatherJournal:
             if row is None:
                 raise NotFound("weather acquisition not found")
             intent = self._intent(row)
+            cleanup = connection.execute(
+                "SELECT state,attempt,max_attempts,error_sha256 FROM jobs WHERE run_id=? AND kind='abort_weather'",
+                (run_id,),
+            ).fetchone()
         status = "ready_to_start" if intent.may_start else "start_outcome_unknown"
         observed: Object | None = None
         if intent.observation_sha256 is not None:
@@ -321,4 +335,14 @@ class WeatherJournal:
             "observation": observed,
             "capture_sha256": intent.capture_sha256,
             "abort_sha256": intent.abort_sha256,
+            "cleanup": None
+            if cleanup is None
+            else {
+                "state": cleanup["state"],
+                "attempt": cleanup["attempt"],
+                "max_attempts": cleanup["max_attempts"],
+                "error": self.workspace.blobs.object(cleanup["error_sha256"])
+                if cleanup["error_sha256"]
+                else None,
+            },
         }

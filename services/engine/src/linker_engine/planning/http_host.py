@@ -45,6 +45,7 @@ def configured_private_app(config: RuntimeConfig | None = None) -> ASGIApp:
             credential=lambda: os.environ.get("GENIE_SERVICE_TOKEN", ""),
             limits=settings.http_limits(),
             pv=settings.pv_service(workspace),
+            weather=settings.weather_service(workspace),
         )
     except Exception:
         LOG.exception("planning service configuration is unavailable")

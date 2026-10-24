@@ -114,7 +114,79 @@ is made that one successful repair establishes availability at every site or
 that a header alone caused the difference. Evidence is in
 `../acceptance/2026-10-24/548/weather-transport/`.
 
-The live p548 runtime has not been installed or modified. The managed weather
-executor/registration, explicit source selection, recovery controls and native
-EN/DE 1440/390 acceptance remain required in this same complete goal. This is
-a component checkpoint, not completion of the customer acquisition workflow.
+## Managed execution and durable cancellation integration
+
+Saved `weather_acquisition` inputs declare only the typed official source
+request and time interpretation. The deployment owns transport/resource
+policy, Actor/build, headers and credential. Private `/runs/weather` freezes
+the exact plan, project revision and actual runtime bundle before queuing.
+It performs no provider request. One service-registry factory supplies the
+energy/PV/weather execution set to HTTP, worker startup and operator identity;
+disabled weather policy remains compatible with energy-only configuration.
+Installed transport, numerical and geospatial library versions are part of
+the runtime identity as well as the source and lockfile.
+
+The weather kernel verifies the complete frozen plan against the run's saved
+inputs and its execution settings. It uses the durable acquisition module,
+the original-TMY interpreter and the same metadata projection as trusted
+weather import. Its prepared owned source commits atomically with successful
+evaluation. Cancellation, expired/replaced execution and publication failure
+cannot publish it. A retained capture survives a producer crash and can be
+published by a valid replacement without another provider operation.
+
+Completion does not change the saved project. Selection uses the existing
+explicit project-revision operation to set `pv_preparation.weather_asset_id`.
+When saved acquisition choices are present, a selected source must have that
+exact request and time interpretation. Changing the request cannot silently
+keep a source for another location/year/horizon. The existing managed PV
+preparation then consumes the selected source. Historical completion never
+replaces current saved inputs.
+
+Private `/runs/weather/status` first verifies current project ownership,
+distinguishes not-started tasks, and exposes original task state, provider
+observations, capture and cleanup state. It remains readable with acquisition
+disabled. The existing receipt endpoint replays a weather command without
+context compilation, admission spend or provider work. Foreign/retired readers
+and writers retain not-found behavior, including after guest ownership transfer.
+
+Local cancellation and a separate `abort_weather` job are committed in one
+transaction. One cleanup job per original run uses the existing leased queue
+and explicit original attempt budget. It remains eligible when the producer
+is in retry wait, failed or gone. Repeated cancellation cannot cancel or reset
+cleanup. Cleanup changes neither the original cancelled evaluation/result nor
+project assets. It reads the acknowledged provider identity, attempts abort
+when needed and polls for an actual terminal state; ABORTING is not a terminal
+success. A provider finishing between read and abort is read back accurately.
+Its elapsed budget starts at cleanup admission and persists across retries;
+polling/attempt counts remain bounded. Lost abort replies may be reconciled by
+reading that same known run, and no cleanup path can start an Actor. Unknown
+starts fail visibly pending verified provider recovery rather than guessing
+an ID or asserting that nothing was started.
+
+Core SQLite schema 3 adds this job kind. Versions 1 and 2 migrate inside the
+same immediate transaction with foreign keys kept on. The queue and its
+referencing routing rows retain IDs, attempts, leases, receipts and byte
+references. The referencing child is preserved and rebuilt with its parent;
+simply deferring a parent DROP was reproduced to fail at commit despite a
+clean final foreign-key query and is not used. An injected failure after the
+parent DROP must roll back the complete old schema and records. Old archives
+are verified before restore and migrate only in their new destination.
+
+This is a paired code/database change. An old schema-2 executable cannot be
+used as a code-only rollback after migration. Before installation/release,
+quiesce writers, drain compute and cleanup, retain and verify the prior
+code/database recovery point, then migrate/read back; rollback must restore
+the matching pair while writes remain closed. No live migration is authorised
+by a passing isolated fixture alone.
+
+The current integration must be checked through real SQLite/CAS, private HTTP,
+the actual managed worker and an independent worker-host process. Provider
+responses in integration fixtures are labelled simulated; the original TMY
+bytes and prior external-capture evidence remain retained. No new Actor is
+required merely to rerun the same protocol fixtures.
+
+The live p548 runtime has not been installed or modified. Native source/model
+controls, explicit selection/recovery UI, operator recovery operations and
+EN/DE 1440/390 acceptance remain required before the paired installation in
+this same complete goal. Detailed engineering and all downstream/production
+work remain required; this is not completion of the customer workflow.

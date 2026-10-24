@@ -20,6 +20,9 @@ from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
 from .pv_parameters import PvGenerationLimits
 from .pv_preparation import PvPreparationService, PvReferenceKernel
+from .weather_fetch_plan import WeatherFetchLimits
+from .weather_kernel import WeatherKernel
+from .weather_service import WeatherService
 from .workspace import Workspace
 
 type PositiveInteger = Annotated[int, Field(strict=True, gt=0)]
@@ -40,6 +43,7 @@ class RuntimeConfig(Document):
     # Existing installed policies can run energy alone. Explicit PV limits
     # enable the additional registered executor; no engineering defaults.
     pv_preparation: PvGenerationLimits | None = None
+    weather_acquisition: WeatherFetchLimits | None = None
 
     @model_validator(mode="after")
     def absolute_directory(self) -> Self:
@@ -81,5 +85,14 @@ class RuntimeConfig(Document):
         return PvPreparationService(
             workspace,
             PvReferenceKernel(workspace, self.pv_preparation),
+            max_attempts=self.max_attempts,
+        )
+
+    def weather_service(self, workspace: Workspace) -> WeatherService | None:
+        if self.weather_acquisition is None:
+            return None
+        return WeatherService(
+            workspace,
+            WeatherKernel(workspace, self.weather_acquisition),
             max_attempts=self.max_attempts,
         )

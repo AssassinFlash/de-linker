@@ -18,6 +18,7 @@ from uuid import uuid4
 from .canonical import Object, decode_object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
 from .schema import READABLE_SCHEMA_VERSIONS, SCHEMA, SCHEMA_VERSION
+from .schema_upgrade import upgrade_jobs
 
 
 def _sync_directory(directory: Path) -> None:
@@ -107,6 +108,7 @@ class Database:
             current = connection.execute("PRAGMA user_version").fetchone()[0]
             if current not in (0, *READABLE_SCHEMA_VERSIONS):
                 raise VersionUnavailable("unsupported planning database version")
+            upgrade_jobs(connection, current)
             # SQLite recognises complete trigger bodies. executescript would
             # release the already-held migration lock before running DDL.
             statement = ""

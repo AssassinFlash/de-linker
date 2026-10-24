@@ -7,8 +7,8 @@ from .canonical import Object, digest
 from .pv_parameters import PvGenerationLimits
 from .pv_source import PvSource
 from .records import Actor
-
-WEATHER_PURPOSE = "pvgis_tmy_weather_v1"
+from .weather_metadata import WEATHER_PURPOSE as WEATHER_PURPOSE
+from .weather_metadata import weather_details, weather_identity
 
 
 class WeatherImport:
@@ -19,12 +19,7 @@ class WeatherImport:
         self, actor: Actor, project_id: str, source: PvSource, *, key: str
     ) -> Asset:
         self.assets.check_write(actor, project_id)
-        logical: Object = {
-            "schema": 1,
-            "source_type": WEATHER_PURPOSE,
-            "retention": "permanent",
-            **source.metadata(),
-        }
+        logical: Object = weather_identity(source)
         previous = self.assets.receipt(
             actor,
             project_id,
@@ -38,7 +33,11 @@ class WeatherImport:
         )
         if previous is not None:
             return previous
-        weather = source.weather(self.limits)
+        details = weather_details(
+            source,
+            max_bytes=self.limits.max_weather_bytes,
+            max_rows=self.limits.max_weather_rows,
+        )
         return self.assets.add(
             actor,
             project_id,
@@ -48,13 +47,7 @@ class WeatherImport:
             {
                 **logical,
                 "limits": {**self.limits.model_dump(mode="json")},
-                "weather": {
-                    "latitude_deg": weather.latitude_deg,
-                    "longitude_deg": weather.longitude_deg,
-                    "altitude_m": weather.altitude_m,
-                    "interval_count": len(weather.points),
-                    "source": weather.source.document(),
-                },
+                "weather": details,
             },
             key=key,
             logical_metadata=logical,

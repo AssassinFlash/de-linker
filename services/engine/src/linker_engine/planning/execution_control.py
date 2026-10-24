@@ -46,7 +46,7 @@ class ExecutionControl:
                 row["state"]: row["count"]
                 for row in connection.execute(
                     "SELECT state, COUNT(*) AS count FROM jobs "
-                    "WHERE kind='evaluate' AND state IN ('queued','running','retry_wait') "
+                    "WHERE kind IN ('evaluate','abort_weather') AND state IN ('queued','running','retry_wait') "
                     "GROUP BY state"
                 )
             }

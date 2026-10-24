@@ -55,7 +55,23 @@ class RuntimeSnapshot:
             "machine": platform.machine(),
             "libc": list(platform.libc_ver()),
             "sqlite": sqlite3.sqlite_version,
-            "dependencies": {"pydantic": version("pydantic")},
+            # Installed versions matter as well as the retained lockfile. In
+            # particular raw HTTP read behavior and numerical/geospatial work
+            # cannot share an execution identity across different libraries.
+            "dependencies": {
+                name: version(name)
+                for name in (
+                    "pydantic",
+                    "requests",
+                    "urllib3",
+                    "pvlib",
+                    "numpy",
+                    "pandas",
+                    "scipy",
+                    "pyproj",
+                    "shapely",
+                )
+            },
             "files": files,
         }
         content = encode(document)

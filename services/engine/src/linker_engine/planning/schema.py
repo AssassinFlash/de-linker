@@ -1,9 +1,37 @@
 """Versioned planning persistence; no mutable physics in WP post metadata."""
 
-SCHEMA_VERSION = 2
-READABLE_SCHEMA_VERSIONS = (1, 2)
+SCHEMA_VERSION = 3
+READABLE_SCHEMA_VERSIONS = (1, 2, 3)
 
-SCHEMA = """
+JOBS_COLUMNS = """
+    id TEXT PRIMARY KEY,
+    run_id TEXT NOT NULL REFERENCES runs(id),
+    kind TEXT NOT NULL CHECK (kind IN ('evaluate', 'render_report', 'abort_weather')),
+    request_sha256 TEXT NOT NULL,
+    state TEXT NOT NULL CHECK (
+        state IN ('queued', 'running', 'retry_wait', 'succeeded', 'failed', 'cancelled')
+    ),
+    attempt INTEGER NOT NULL DEFAULT 0 CHECK (attempt >= 0),
+    max_attempts INTEGER NOT NULL CHECK (max_attempts > 0),
+    worker TEXT,
+    lease_token TEXT,
+    lease_until REAL,
+    available_at REAL NOT NULL,
+    error_sha256 TEXT,
+    output_sha256 TEXT,
+    created_at REAL NOT NULL,
+    updated_at REAL NOT NULL
+"""
+
+EVALUATION_ROUTES_TABLE = """
+CREATE TABLE IF NOT EXISTS evaluation_routes (
+    job_id TEXT PRIMARY KEY REFERENCES jobs(id),
+    schema_version INTEGER NOT NULL CHECK (schema_version = 1),
+    execution_sha256 TEXT NOT NULL
+);
+"""
+
+SCHEMA = f"""
 CREATE TABLE IF NOT EXISTS projects (
     id TEXT PRIMARY KEY,
     owner TEXT NOT NULL,
@@ -32,27 +60,11 @@ CREATE TABLE IF NOT EXISTS runs (
     FOREIGN KEY (project_id, revision) REFERENCES revisions(project_id, number)
 );
 CREATE INDEX IF NOT EXISTS runs_project ON runs(project_id, created_at);
-CREATE TABLE IF NOT EXISTS jobs (
-    id TEXT PRIMARY KEY,
-    run_id TEXT NOT NULL REFERENCES runs(id),
-    kind TEXT NOT NULL CHECK (kind IN ('evaluate', 'render_report')),
-    request_sha256 TEXT NOT NULL,
-    state TEXT NOT NULL CHECK (
-        state IN ('queued', 'running', 'retry_wait', 'succeeded', 'failed', 'cancelled')
-    ),
-    attempt INTEGER NOT NULL DEFAULT 0 CHECK (attempt >= 0),
-    max_attempts INTEGER NOT NULL CHECK (max_attempts > 0),
-    worker TEXT,
-    lease_token TEXT,
-    lease_until REAL,
-    available_at REAL NOT NULL,
-    error_sha256 TEXT,
-    output_sha256 TEXT,
-    created_at REAL NOT NULL,
-    updated_at REAL NOT NULL
-);
+CREATE TABLE IF NOT EXISTS jobs ({JOBS_COLUMNS});
 CREATE UNIQUE INDEX IF NOT EXISTS evaluate_once ON jobs(run_id)
     WHERE kind = 'evaluate';
+CREATE UNIQUE INDEX IF NOT EXISTS weather_abort_once ON jobs(run_id)
+    WHERE kind = 'abort_weather';
 CREATE INDEX IF NOT EXISTS jobs_available ON jobs(state, available_at, lease_until);
 -- Durable external-start evidence. This additive extension keeps the existing
 -- run/job/wire schemas; old archives acquire the empty table on private restore.
@@ -78,11 +90,7 @@ CREATE TABLE IF NOT EXISTS weather_acquisitions (
 );
 -- Additive operator/cache extension. Core schema-v2 records and wire documents
 -- are unchanged; old unindexed jobs can be routed from their frozen manifests.
-CREATE TABLE IF NOT EXISTS evaluation_routes (
-    job_id TEXT PRIMARY KEY REFERENCES jobs(id),
-    schema_version INTEGER NOT NULL CHECK (schema_version = 1),
-    execution_sha256 TEXT NOT NULL
-);
+{EVALUATION_ROUTES_TABLE}
 CREATE INDEX IF NOT EXISTS evaluation_routes_key
     ON evaluation_routes(execution_sha256, job_id);
 CREATE TABLE IF NOT EXISTS execution_control (

@@ -69,6 +69,8 @@ from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
 from .pv_preparation import PvPreparationService, check_pv_preparation
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
+from .weather_service import WeatherService
+from .weather_status import weather_status
 from .workspace import Workspace
 
 logger = logging.getLogger(__name__)
@@ -98,6 +100,7 @@ def create_private_app(
     credential: Callable[[], str],
     limits: HttpLimits,
     pv: PvPreparationService | None = None,
+    weather: WeatherService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -105,7 +108,11 @@ def create_private_app(
         pv.workspace is not workspace or pv.kernel.workspace is not workspace
     ):
         raise InvalidInput("HTTP and PV preparation must share the same authority")
-    registry = service_registry(energy, pv)
+    if weather is not None and (
+        weather.workspace is not workspace or weather.kernel.workspace is not workspace
+    ):
+        raise InvalidInput("HTTP and weather acquisition must share project authority")
+    registry = service_registry(energy, pv, weather)
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
@@ -342,6 +349,21 @@ def create_private_app(
                 "Content-Disposition": f'attachment; filename="{body.run_id}-energy-trace.json"'
             },
         )
+
+    @app.post("/runs/weather")
+    def acquire_weather(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        if weather is None:
+            raise VersionUnavailable("weather acquisition is not configured")
+        return run_view(
+            weather.evaluate(
+                actor, body.project_id, body.expected_revision, key=body.key
+            )
+        )
+
+    @app.post("/runs/weather/status")
+    def read_weather(body: RunRead, request: Request) -> Object:
+        return weather_status(workspace, verified_actor(request.scope), body.run_id)
 
     @app.post("/assets/read")
     def asset_read(body: AssetRead, request: Request) -> Object:

@@ -88,7 +88,8 @@ def launch(
     policy_file.write_text(policy.model_dump_json())
     workspace, energy = settings.open()
     pv = settings.pv_service(workspace)
-    registry = service_registry(energy, pv)
+    weather = settings.weather_service(workspace)
+    registry = service_registry(energy, pv, weather)
     identity = {
         "runtime": energy.kernel.runtime.sha256,
         "execution": registry.execution_key(),

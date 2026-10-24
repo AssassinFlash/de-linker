@@ -70,6 +70,10 @@ class ProjectInputs(Command):
             from .pv_preparation import PvPreparationInputs
 
             PvPreparationInputs.model_validate(value["pv_preparation"])
+        if "weather_acquisition" in value:
+            from .weather_inputs import WeatherAcquisitionInputs
+
+            WeatherAcquisitionInputs.model_validate(value["weather_acquisition"])
         return value
 
 
