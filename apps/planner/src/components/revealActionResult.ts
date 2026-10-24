@@ -10,9 +10,11 @@ export function revealActionResult(
 	if (root) measurePlannerChrome(root);
 	element.focus({ preventScroll: true });
 	if (!canReveal()) return false;
-	// A field's visible label carries its name/unit. Reveal that context while
-	// keeping keyboard focus on the editable control itself.
-	(element.closest("label") ?? element).scrollIntoView({
+	// Reveal a field label or the complete marked result heading (including its
+	// revision) while keeping keyboard focus on the semantic target itself.
+	(
+		element.closest("label, [data-action-result-context]") ?? element
+	).scrollIntoView({
 		block: "start",
 		behavior: "instant",
 	});

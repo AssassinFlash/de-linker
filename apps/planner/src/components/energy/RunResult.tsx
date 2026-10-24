@@ -96,7 +96,10 @@ export function RunResult({
 	};
 	return (
 		<div className="lp-run-result">
-			<div className="lp-run-heading">
+			<div
+				className="lp-run-heading lp-focus-target"
+				data-action-result-context=""
+			>
 				<div>
 					<span className="lp-eyebrow">
 						{__("Saved calculation", "linker-tools")}

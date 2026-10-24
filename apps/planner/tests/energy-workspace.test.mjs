@@ -39,6 +39,10 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
 	window.requestAnimationFrame = (callback) => window.setTimeout(callback, 0);
 	window.cancelAnimationFrame = (frame) => window.clearTimeout(frame);
+	let lastRevealed;
+	window.HTMLElement.prototype.scrollIntoView = function () {
+		lastRevealed = this;
+	};
 	Object.defineProperty(globalThis, "indexedDB", {
 		value: new IDBFactory(),
 		configurable: true,
@@ -279,6 +283,10 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 		document.activeElement ===
 			document.querySelector('.lp-run-result h3[tabindex="-1"]'),
 		"the newly selected calculation is revealed after the long setup form collapses",
+	);
+	assert.ok(
+		lastRevealed === document.querySelector(".lp-run-heading"),
+		"result status and input revision are revealed together",
 	);
 	assert.equal(requests.filter((x) => x.path === "runs/energy").length, 1);
 	assert.equal(requests.at(-1).body.expected_revision, 2);
