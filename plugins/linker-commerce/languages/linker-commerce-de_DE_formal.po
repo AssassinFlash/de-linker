@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-24T01:58:10+00:00\n"
+"POT-Creation-Date: 2026-10-24T02:19:25+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -16,26 +16,26 @@ msgstr ""
 "X-Domain: linker-commerce\n"
 "X-Generator: WP-CLI 2.12.0\n"
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid ""
 "Engineering components that are not products (data/engineering-overlay.json)."
 msgstr ""
 "Technische Komponenten, die keine Produkte sind (data/engineering-"
 "overlay.json)."
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid "Model labels do not reject inquiries or stop team notifications."
 msgstr ""
 "Modellbewertungen führen weder zur Ablehnung einer Anfrage noch zum Anhalten "
 "der Teambenachrichtigung."
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 #. translators: %d: product ID.
 #, php-format
 msgid "Product %d is not available."
 msgstr "Das Produkt %d ist nicht verfügbar."
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 #. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
 #, php-format
 msgid ""
@@ -55,7 +55,7 @@ msgstr ""
 "Diese Anfragen sind gespeichert. Die einzelnen Benachrichtigungen an das "
 "Team sind noch nicht freigegeben."
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid "Saved inquiries need staff review"
 msgstr "Gespeicherte Anfragen müssen vom Team geprüft werden"
 

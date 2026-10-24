@@ -1,4 +1,4 @@
-# Fixed identifiers already present in the published Commerce catalogue.
+# Fixed identifiers already present in the published Commerce message list.
 # They have no current runtime callers. Keep their existing translations
 # available across extraction without merging an earlier generated POT.
 # Copyright (C) 2026 Linker Technology GmbH
@@ -17,21 +17,21 @@ msgstr ""
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid "Engineering components that are not products (data/engineering-overlay.json)."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid "Model labels do not reject inquiries or stop team notifications."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 #. translators: %d: product ID.
 #, php-format
 msgid "Product %d is not available."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 #. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
 #, php-format
 msgid ""
@@ -43,6 +43,6 @@ msgid ""
 "These inquiries are saved. Their individual team notifications have not been released."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid "Saved inquiries need staff review"
 msgstr ""

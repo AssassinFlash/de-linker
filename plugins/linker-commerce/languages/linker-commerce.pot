@@ -9,27 +9,27 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-24T02:00:21+00:00\n"
+"POT-Creation-Date: 2026-10-24T02:20:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid ""
 "Engineering components that are not products (data/engineering-overlay.json)."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid "Model labels do not reject inquiries or stop team notifications."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 #. translators: %d: product ID.
 #, php-format
 msgid "Product %d is not available."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 #. translators: 1: count, 2: oldest age, 3: snapshot time, 4: native staff review URL.
 #, php-format
 msgid ""
@@ -42,7 +42,7 @@ msgid ""
 "released."
 msgstr ""
 
-#. Retained published catalogue identifier; no current runtime caller.
+#. Retained published message identifier; no current runtime caller.
 msgid "Saved inquiries need staff review"
 msgstr ""
 
