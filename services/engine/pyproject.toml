@@ -13,6 +13,7 @@ dependencies = [
     "reportlab>=4.4",
     "requests>=2.32",
     "shapely>=2.1",
+    "urllib3>=2.8",
     "uvicorn>=0.54.0",
 ]
 

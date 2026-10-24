@@ -542,6 +542,7 @@ dependencies = [
     { name = "reportlab" },
     { name = "requests" },
     { name = "shapely" },
+    { name = "urllib3" },
     { name = "uvicorn" },
 ]
 
@@ -569,6 +570,7 @@ requires-dist = [
     { name = "reportlab", specifier = ">=4.4" },
     { name = "requests", specifier = ">=2.32" },
     { name = "shapely", specifier = ">=2.1" },
+    { name = "urllib3", specifier = ">=2.8" },
     { name = "uvicorn", specifier = ">=0.54.0" },
 ]
 

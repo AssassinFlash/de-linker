@@ -1,0 +1,144 @@
+ORIGINAL LINES 45-75
+  
+**Example:** `256`
+
+**maxItems** double
+
+Specifies the maximum number of dataset items that will be charged for pay-per-result Actors. This does NOT guarantee that the Actor will return only this many items. It only ensures you won't be charged for more than this number of items. Only works for pay-per-result Actors. Value can be accessed in the actor run using `ACTOR_MAX_PAID_DATASET_ITEMS` environment variable.
+
+  
+**Example:** `1000`
+
+**maxTotalChargeUsd** double
+
+Specifies the maximum total cost of the run. Use it to cap the total amount charged for all pricing models. You can access the maximum cost in your Actor by using the `ACTOR_MAX_TOTAL_CHARGE_USD` environment variable.
+
+  
+**Example:** `5`
+
+**restartOnError** boolean
+
+Determines whether the run will be restarted if it fails.
+
+  
+**Example:** `false`
+
+**build** string
+
+Specifies the Actor build to run. It can be either a build tag or build number. By default, the run uses the build from its configuration (typically `latest`).
+
+  
+**Example:** `0.1.234`
+
+
+ORIGINAL LINES 103-112
+### Status 201
+
+**Response Headers**
+
+*   **Location**
+
+```
+{  "data": {    "id": "HG7ML7M8z78YcAPEB",    "actId": "HDSasDasz78YcAPEB",    "userId": "7sT5jcggjjA9fNcxF",    "actorTaskId": "KJHSKHausidyaJKHs",    "startedAt": "2019-11-30T07:34:24.202Z",    "finishedAt": "2019-12-12T09:30:12.202Z",    "status": "READY",    "statusMessage": "Actor is running",    "isStatusMessageTerminal": false,    "meta": {      "origin": "DEVELOPMENT",      "clientIp": "string",      "userAgent": "string",      "scheduleId": "string",      "scheduledAt": "2024-07-29T15:51:28.071Z"    },    "pricingInfo": {      "apifyMarginPercentage": 0.2,      "createdAt": "2024-07-29T15:51:28.071Z",      "startedAt": "2024-07-29T15:51:28.071Z",      "notifiedAboutFutureChangeAt": "2024-07-29T15:51:28.071Z",      "notifiedAboutChangeAt": "2024-07-29T15:51:28.071Z",      "reasonForChange": "string",      "isPriceChangeNotificationSuppressed": true,      "forceContainsSignificantPriceChange": true,      "pricingModel": "PAY_PER_EVENT",      "pricingPerEvent": {        "actorChargeEvents": {}      },      "minimalMaxTotalChargeUsd": 0    },    "stats": {      "inputBodyLen": 240,      "migrationCount": 0,      "rebootCount": 0,      "restartCount": 0,      "resurrectCount": 2,      "memAvgBytes": 267874071.9,      "memMaxBytes": 404713472,      "memCurrentBytes": 0,      "cpuAvgUsage": 33.7532101107538,      "cpuMaxUsage": 169.650735534941,      "cpuCurrentUsage": 0,      "netRxBytes": 103508042,      "netTxBytes": 4854600,      "durationMillis": 248472,      "runTimeSecs": 248.472,      "metamorph": 0,      "computeUnits": 0.13804    },    "chargedEventCounts": {      "actor-start": 1,      "page-crawled": 150,      "data-extracted": 75    },    "options": {      "build": "latest",      "timeoutSecs": 300,      "memoryMbytes": 1024,      "diskMbytes": 2048,      "maxItems": 1000,      "maxTotalChargeUsd": 5    },    "buildId": "7sT5jcggjjA9fNcxF",    "exitCode": 0,    "generalAccess": "RESTRICTED",    "defaultKeyValueStoreId": "eJNzqsbPiopwJcgGQ",    "defaultDatasetId": "wmKPijuyDnPZAPRMk",    "defaultRequestQueueId": "FL35cSF7jrxr3BY39",    "storageIds": {      "datasets": {        "default": "wmKPijuyDnPZAPRMk"      },      "keyValueStores": {        "default": "eJNzqsbPiopwJcgGQ"      },      "requestQueues": {        "default": "FL35cSF7jrxr3BY39"      }    },    "buildNumber": "0.0.36",    "containerUrl": "https://g8kd8kbc5ge8.runs.apify.net",    "isContainerServerReady": true,    "gitBranchName": "master",    "usage": {      "ACTOR_COMPUTE_UNITS": 3,      "DATASET_READS": 4,      "DATASET_WRITES": 4,      "KEY_VALUE_STORE_READS": 5,      "KEY_VALUE_STORE_WRITES": 3,      "KEY_VALUE_STORE_LISTS": 5,      "REQUEST_QUEUE_READS": 2,      "REQUEST_QUEUE_WRITES": 1,      "DATA_TRANSFER_INTERNAL_GBYTES": 1,      "DATA_TRANSFER_EXTERNAL_GBYTES": 3,      "PROXY_RESIDENTIAL_TRANSFER_GBYTES": 34,      "PROXY_SERPS": 3    },    "usageTotalUsd": 0.2654,    "usageUsd": {      "ACTOR_COMPUTE_UNITS": 0.0003,      "DATASET_READS": 0.0001,      "DATASET_WRITES": 0.0001,      "KEY_VALUE_STORE_READS": 0.0001,      "KEY_VALUE_STORE_WRITES": 0.00005,      "KEY_VALUE_STORE_LISTS": 0.0001,      "REQUEST_QUEUE_READS": 0.0001,      "REQUEST_QUEUE_WRITES": 0.0001,      "DATA_TRANSFER_INTERNAL_GBYTES": 0.001,      "DATA_TRANSFER_EXTERNAL_GBYTES": 0.003,      "PROXY_RESIDENTIAL_TRANSFER_GBYTES": 0.034,      "PROXY_SERPS": 0.003    },    "metamorphs": [      {        "createdAt": "2019-11-30T07:39:24.202Z",        "actorId": "nspoEjklmnsF2oosD",        "buildId": "ME6oKecqy5kXDS4KQ",        "inputKey": "INPUT-METAMORPH-1"      }    ],    "platformUsageBillingModel": "USER"  }}
+```
+
+
+ORIGINAL LINES 734-741
+### Status 400
+
+Bad request - invalid input parameters or request body.
+
+```
+{  "error": {    "type": "invalid-input",    "message": "Invalid input: The request body contains invalid data."  }}
+```
+
+
+ORIGINAL LINES 758-765
+### Status 401
+
+Unauthorized - authentication required or invalid token.
+
+```
+{  "error": {    "type": "invalid-token",    "message": "Authentication token is not valid."  }}
+```
+
+
+ORIGINAL LINES 782-789
+### Status 402
+
+Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+
+```
+{  "error": {    "type": "x402-payment-required",    "message": "Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org."  }}
+```
+
+
+ORIGINAL LINES 806-813
+### Status 403
+
+Forbidden - insufficient permissions to perform this action.
+
+```
+{  "error": {    "type": "insufficient-permissions",    "message": "You do not have permission to perform this action."  }}
+```
+
+
+ORIGINAL LINES 830-837
+### Status 404
+
+Not found - the requested resource does not exist.
+
+```
+{  "error": {    "type": "record-not-found",    "message": "The requested resource was not found."  }}
+```
+
+
+ORIGINAL LINES 854-861
+### Status 405
+
+Method not allowed.
+
+```
+{  "error": {    "type": "method-not-allowed",    "message": "This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET"  }}
+```
+
+
+ORIGINAL LINES 878-885
+### Status 408
+
+The HTTP request exceeded the timeout limit
+
+```
+{  "error": {    "type": "run-timeout-exceeded",    "message": "Actor run exceeded the timeout of 300 seconds for this API endpoint"  }}
+```
+
+
+ORIGINAL LINES 902-909
+### Status 413
+
+Payload too large - the request body exceeds the size limit.
+
+```
+{  "error": {    "type": "request-too-large",    "message": "The POST payload is too large (limit: 9437184 bytes, actual length: 10485760 bytes)."  }}
+```
+
+
+ORIGINAL LINES 926-933
+### Status 415
+
+Unsupported media type - the Content-Encoding of the request is not supported.
+
+```
+{  "error": {    "type": "unsupported-content-encoding",    "message": "Content-Encoding \"bla\" is not supported."  }}
+```
+
+
+ORIGINAL LINES 950-957
+### Status 429
+
+Too many requests - rate limit exceeded.
+
+```
+{  "error": {    "type": "rate-limit-exceeded",    "message": "You have exceeded the rate limit. Please try again later."  }}
+```
+

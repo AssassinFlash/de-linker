@@ -1,0 +1,110 @@
+ORIGINAL LINES 32-56
+Imagine a simple web crawler that accepts an array of start URLs and a JavaScript function to execute on each visited page. The input schema for such a crawler could be defined as follows:
+
+```
+{    "title": "Cheerio Crawler input",    "description": "To update crawler to another site, you need to change startUrls and pageFunction options!",    "type": "object",    "schemaVersion": 1,    "properties": {        "startUrls": {            "title": "Start URLs",            "type": "array",            "description": "URLs to start with",            "prefill": [                { "url": "http://example.com" },                { "url": "http://example.com/some-path" }            ],            "editor": "requestListSources"        },        "pageFunction": {            "title": "Page function",            "type": "string",            "description": "Function executed for each request",            "prefill": "async () => { return $('title').text(); }",            "editor": "javascript"        }    },    "required": ["startUrls", "pageFunction"]}
+```
+
+The generated input UI will be:
+
+![Apify Actor input schema example](/assets/images/input-schema-example-fa0b2cfdecdbe9dcdb2580759b8d1b12.png)
+
+If you switch the input to the **JSON** display using the toggle, then you will see the entered input stringified to `JSON`, as it will be passed to the Actor:
+
+```
+{    "startUrls": [    {        "url": "http://example.com"    },    {        "url": "http://example.com/some-path"    }    ],    "pageFunction": "async () => { return $('title').text(); }"}
+```
+
+## Structure[](https://docs.apify.com/actors/development/actor-definition/input-schema/specification/v1#structure)
+
+```
+{    "title": "Cheerio Crawler input",    "type": "object",    "schemaVersion": 1,    "properties": { /* define input fields here */ },    "required": []}
+```
+
+Property
+
+Type
+
+ORIGINAL LINES 776-800
+Example of request list sources configuration:
+
+```
+{    "title": "Start URLs",    "type": "array",    "description": "URLs to start with",    "prefill": [{ "url": "https://apify.com" }],    "editor": "requestListSources"}
+```
+
+Rendered input:
+
+![Apify Actor input schema start urls array](/assets/images/input-schema-start-urls-bef8993a2dd7f9700624e248f733f2e3.png)
+
+Example of an array:
+
+```
+{    "title": "Colors",    "type": "array",    "description": "Enter colors you know",    "prefill": ["Red", "White"],    "editor": "json"}
+```
+
+Rendered input:
+
+Properties:
+
+Property
+
+Value
+
+Required
+
+ORIGINAL LINES 806-830
+One of
+
+*   `json`
+*   `requestListSources`
+*   `pseudoUrls`
+*   `globs`
+*   `keyValue`
+*   `stringList`
+*   `fileupload`
+*   `select`
+*   `schemaBased`
+*   `hidden`
+
+Yes
+
+UI editor used for input.
+
+`placeholderKey`
+
+String
+
+No
+
+Placeholder displayed for  
+key field when no value is specified. Works only with `keyValue` editor.
+
+ORIGINAL LINES 893-920
+
+Usage of this field is based on the selected editor:
+
+*   `requestListSources` - value from this field can be used as input for the [RequestList](https://crawlee.dev/api/core/class/RequestList) class from Crawlee.
+*   `pseudoUrls` - is intended to be used with a combination of the [PseudoUrl](https://crawlee.dev/api/core/class/PseudoUrl) class and the [enqueueLinks()](https://crawlee.dev/api/core/function/enqueueLinks) function from Crawlee.
+
+Editor type `requestListSources` supports input in formats defined by the [sources](https://crawlee.dev/api/core/interface/RequestListOptions#sources) property of [RequestListOptions](https://crawlee.dev/api/core/interface/RequestListOptions).
+
+Editor type `globs` maps to the Crawlee's [GlobInput](https://crawlee.dev/api/core#GlobInput) used by the [UrlPatterObject](https://crawlee.dev/api/core#UrlPatternObject).
+
+Editor type `fileupload` enables users to specify a list of files as input. The input is passed to the Actor as an array of strings. The Actor author is responsible for interpreting the strings, including validating file existence and format. This editor simplifies the process for users to upload files to a key-value store of their choice.
+
+#### Select editor for arrays[](https://docs.apify.com/actors/development/actor-definition/input-schema/specification/v1#select-editor-for-arrays)
+
+The `select` editor for arrays allows users to pick multiple items from a dropdown list. This creates a multiselect field in the UI. You can either only allow users to select from a set of predefined values, or allow them to specify custom values in addition to suggested values.
+
+To correctly define options for multiselect, you need to define the `items` property and then provide values in `enum`/`enumSuggestedValues` and (optionally) labels in `enumTitles` properties.
+
+##### Select from predefined values[](https://docs.apify.com/actors/development/actor-definition/input-schema/specification/v1#select-from-predefined-values-1)
+
+When you need to restrict selections to a specific set of values, use the `enum` property:
+
+```
+{    "title": "Countries",    "description": "Select multiple countries",    "type": "array",    "editor": "select",    "items": {        "type": "string",        "enum": ["us", "de", "fr", "uk", "jp"],        "enumTitles": ["United States", "Germany", "France", "United Kingdom", "Japan"]    }}
+```
+
+This creates a multiselect dropdown where users can only select from the predefined values:
+

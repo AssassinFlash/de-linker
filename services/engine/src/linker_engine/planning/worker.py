@@ -31,6 +31,14 @@ class Control:
     def revoke(self) -> None:
         self._lost.set()
 
+    def wait(self, seconds: float) -> None:
+        """Interrupt a provider polling wait when this execution loses authority."""
+        if not math.isfinite(seconds) or seconds <= 0:
+            raise InvalidInput("positive finite execution wait required")
+        self.checkpoint()
+        self._lost.wait(seconds)
+        self.checkpoint()
+
 
 type Executor = Callable[[Lease, Control], Object | AssetResult]
 

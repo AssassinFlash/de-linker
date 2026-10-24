@@ -69,16 +69,52 @@ Primary contracts are retained in
 `research/2026-10-24-pv-managed-intake/FINDINGS.md`; application safeguards above
 are explicit engineering policy, not claims of provider exactly-once delivery.
 
-## Current implementation checkpoint
+## Transport and orchestration checkpoint
 
-The current source adds the typed pinned plan, selected provider-run document,
-durable intent/one-POST permit, late acknowledgement/progress/abort-reply
-records, immutable original capture, owned read projection and backup/restore
-references. It reuses the existing task lease fence and original-TMY parser.
-The journal only accepts the exact plan already pinned by the immutable run.
+The source now includes the fixed-origin authenticated transport, pinned client
+and durable acquisition orchestrator, alongside the accepted journal. Requests
+are outside write transactions. The transport rejects redirects before reading
+their bodies, has no implicit retries, bounds encoded and decoded bytes and
+checks lease/cancellation/deadline between raw reads. Connection/read timeouts
+are inactivity bounds; DNS/header reads are not advertised as immediately
+interruptible or a hard wall-clock guarantee. Per-attempt poll count and the
+task attempt count are bounded; the original elapsed deadline survives retries.
 
-No external HTTP client, weather executor, native control or new public/private
-RPC has been installed by this foundation checkpoint. No new Actor was started.
-The transport/orchestrator, explicit recovery and remote-abort execution,
-managed registration, source selection and native acceptance above remain
-required work in this same goal. This is not fresh-acquisition completion.
+Actual submission adds the journal nonce in `startUrls[].userData` and the
+explicit User-Agent from the retained successful primary request. This fixed
+server-owned submission rule belongs to the immutable code snapshot; it does
+not accept customer headers or change the original typed plan representation.
+Complete effective INPUT must equal the 51 known-safe pinned-build defaults
+overlaid with that exact submission before its original bytes are retained.
+Unknown/default changes fail visibly. Temporary dataset access queries are
+removed; the retained dataset document is explicitly a selected projection,
+with the full received response's hash/byte receipt rather than an exact copy.
+
+Cancelled tasks attempt a known run's abort and retain the actual response.
+ABORTING is not ABORTED. A lost old lease does not abort a run being resumed by
+its replacement; confirmed cancellation or the shared expired deadline may
+trigger cleanup. Cleanup failures keep the known ID and log only the named
+failure code; they do not mask the original failure or invent confirmation.
+Completed retained captures can be reused after the network deadline without
+another provider request, subject to the active local lease fence.
+
+Private recovery reads a supplied known provider ID and verifies the exact
+unique nonce-bearing INPUT before acknowledging it. It cannot extend the
+original deadline, repeat the start, requeue or publish a task. These are
+internal Python primitives; no operator RPC/UI is installed yet.
+
+Two new isolated weather trials exercised the real channel. The first provider
+run SUCCEEDED but returned HTTP 200/text-html rejection and was correctly
+rejected locally. A separate explicit task restored the known request header
+and succeeded with the exact 1,268,118-byte original, SHA256
+`5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110`.
+The nonce echo, full effective INPUT and strict original-TMY interpretation
+passed. One docs-only Actor also ran for primary-contract research. No claim
+is made that one successful repair establishes availability at every site or
+that a header alone caused the difference. Evidence is in
+`../acceptance/2026-10-24/548/weather-transport/`.
+
+The live p548 runtime has not been installed or modified. The managed weather
+executor/registration, explicit source selection, recovery controls and native
+EN/DE 1440/390 acceptance remain required in this same complete goal. This is
+a component checkpoint, not completion of the customer acquisition workflow.

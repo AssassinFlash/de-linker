@@ -1,0 +1,158 @@
+ORIGINAL LINES 1-53
+Get key-value store record | Apify Documentation
+
+# Get key-value store record
+
+GET 
+
+## /v2/key-value-stores/:storeId/records/:recordKey
+
+Gets a value stored in the key-value store under a specific key.
+
+The response body has the same `Content-Encoding` header as it was set in [Put record](https://docs.apify.com/api/v2/key-value-store-record-get#tag/Key-value-storesRecord/operation/keyValueStore_record_put).
+
+If the request does not define the `Accept-Encoding` HTTP header with the right encoding, the record will be decompressed.
+
+Most HTTP clients support decompression by default. After using the HTTP client with decompression support, the `Accept-Encoding` header is set by the client and body is decompressed automatically.
+
+Please note that for security reasons, Apify API can perform small modifications to HTML documents before they are served via this endpoint. To fetch the raw HTML content without any modifications, use the `attachment` query parameter.
+
+## Request[](https://docs.apify.com/api/v2/key-value-store-record-get#request)
+
+### Path Parameters
+
+**storeId** string required
+
+Key-value store ID or `username~store-name`.
+
+  
+**Example:** `WkzbQMuFYuamGv3YF`
+
+**recordKey** string required
+
+Key of the record.
+
+  
+**Example:** `someKey`
+
+### Query Parameters
+
+**attachment** boolean
+
+If `true` or `1`, the response will be served with `Content-Disposition: attachment` header, causing web browsers to offer downloading HTML records instead of displaying them.
+
+  
+**Example:** `true`
+
+**signature** string
+
+Signature used for the access.
+
+  
+**Example:** `2wTI46Bg8qWQrV7tavlPI`
+
+### Status 200
+
+ORIGINAL LINES 53-60
+### Status 200
+
+**Response Headers**
+
+```
+{  "message": "Hello, world!",  "count": 42}
+```
+
+
+ORIGINAL LINES 72-85
+### Status 302
+
+**Response Headers**
+
+*   **Location**
+
+### Status 400
+
+Bad request - invalid input parameters or request body.
+
+```
+{  "error": {    "type": "invalid-input",    "message": "Invalid input: The request body contains invalid data."  }}
+```
+
+
+ORIGINAL LINES 78-85
+### Status 400
+
+Bad request - invalid input parameters or request body.
+
+```
+{  "error": {    "type": "invalid-input",    "message": "Invalid input: The request body contains invalid data."  }}
+```
+
+
+ORIGINAL LINES 102-109
+### Status 401
+
+Unauthorized - authentication required or invalid token.
+
+```
+{  "error": {    "type": "invalid-token",    "message": "Authentication token is not valid."  }}
+```
+
+
+ORIGINAL LINES 126-133
+### Status 402
+
+Payment required - the user has exceeded their usage limit, does not have enough credits, or the request lacks authentication and payment credentials.
+
+```
+{  "error": {    "type": "x402-payment-required",    "message": "Please provide X402-PAYMENT-SIGNATURE header with the payment. See https://x402.org."  }}
+```
+
+
+ORIGINAL LINES 150-157
+### Status 403
+
+Forbidden - insufficient permissions to perform this action.
+
+```
+{  "error": {    "type": "insufficient-permissions",    "message": "You do not have permission to perform this action."  }}
+```
+
+
+ORIGINAL LINES 174-181
+### Status 404
+
+Not found - the requested resource does not exist.
+
+```
+{  "error": {    "type": "record-not-found",    "message": "The requested resource was not found."  }}
+```
+
+
+ORIGINAL LINES 198-205
+### Status 405
+
+Method not allowed.
+
+```
+{  "error": {    "type": "method-not-allowed",    "message": "This API end-point can only be accessed using the following HTTP methods: OPTIONS,GET"  }}
+```
+
+
+ORIGINAL LINES 222-229
+### Status 429
+
+Too many requests - rate limit exceeded.
+
+```
+{  "error": {    "type": "rate-limit-exceeded",    "message": "You have exceeded the rate limit. Please try again later."  }}
+```
+
+
+ORIGINAL LINES 61-66
+**Schema**
+
+*   **property name\*** any
+    
+    The response body contains the value of the record. The content type of the response is determined by the Content-Type header stored with the record.
+    

@@ -144,6 +144,12 @@ class WeatherJournal:
             self.workspace.blobs.object(current.plan_sha256)
         )
 
+    def observation(self, intent: WeatherIntent) -> ApifyRun | None:
+        current = self.current(intent)
+        if current.observation_sha256 is None:
+            return None
+        return ApifyRun.read(self.workspace.blobs.object(current.observation_sha256))
+
     def _record(
         self, intent: WeatherIntent, run: ApifyRun, *, kind: str
     ) -> WeatherIntent:

@@ -1,0 +1,71 @@
+[
+  {
+    "label": "build",
+    "endpoint": "https://api.apify.com/v2/actor-builds/bsZdc9Cal4wAwV0VW",
+    "httpStatus": 200,
+    "acquiredAtUTC": "2026-10-24T05:43:49.700578+00:00",
+    "responseBytes": 198197,
+    "responseSha256": "8883cebcd2f9e2e2bef4424e20aa057e853274f5975a28b473d0dc81d7f9d2d2",
+    "topLevelKeys": [
+      "id",
+      "actId",
+      "userId",
+      "startedAt",
+      "finishedAt",
+      "status",
+      "meta",
+      "stats",
+      "options",
+      "exitCode",
+      "inputSchema",
+      "readme",
+      "changelog",
+      "actorDefinition",
+      "buildNumber",
+      "imageDigest",
+      "actVersion",
+      "usage",
+      "usageTotalUsd",
+      "usageUsd"
+    ],
+    "buildNumber": "0.3.101",
+    "inputStartUrls": {
+      "title": "Start URLs",
+      "type": "array",
+      "description": "One or more URLs where the crawler will start. By default, it crawls only these URLs and their sub-pages (same URL path); use **Include URL patterns (globs)** to override this behavior.\n\nFor example, for start URL `https://example.com/blog`, it will crawl also `https://example.com/blog/post` or `https://example.com/blog/article`.",
+      "editor": "requestListSources",
+      "prefill": [
+        {
+          "url": "https://docs.apify.com/academy/scraping-basics-javascript"
+        }
+      ]
+    },
+    "readmeMatches": [
+      {
+        "line": 318,
+        "excerpt": "loader = apify.call_actor(\n    actor_id=\"apify/website-content-crawler\",\n    run_input={\"startUrls\": [{\"url\": \"https://docs.apify.com/\"}], \"maxCrawlPages\": 10},\n    dataset_mapping_function=lambda item: Document(\n        page_content=item[\"text\"] or \"\", metadata={\"source\": item[\"url\"]}"
+      },
+      {
+        "line": 366,
+        "excerpt": "    actor_id=\"apify/website-content-crawler\",\n    run_input={\n        \"startUrls\": [{\"url\": \"https://docs.llamaindex.ai/en/latest/\"}]\n    },\n    dataset_mapping_function=lambda item: Document("
+      }
+    ]
+  },
+  {
+    "label": "version",
+    "endpoint": "https://api.apify.com/v2/acts/aYG0l9s7dbB7j3gbS/versions/0.3",
+    "httpStatus": 200,
+    "acquiredAtUTC": "2026-10-24T05:43:49.701570+00:00",
+    "responseBytes": 109,
+    "responseSha256": "37de9f99cbe46a384c2c4758e21051f0d61c6dbcbb2ce68c57fdb7bbdb0962db",
+    "topLevelKeys": [
+      "versionNumber",
+      "sourceType",
+      "buildTag"
+    ],
+    "sourceType": "SOURCE_FILES",
+    "versionNumber": "0.3",
+    "sourceFileNames": [],
+    "sourceMatches": []
+  }
+]

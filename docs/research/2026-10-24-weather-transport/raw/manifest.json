@@ -1,0 +1,101 @@
+{
+  "purpose": "primary-source weather transport contracts and installed-client read behavior",
+  "owner": "/root/managed_worker_standards",
+  "weatherActorRunsStarted": 0,
+  "docsActorRunsStarted": 1,
+  "docsRunId": "a6I92wwUlGLV6ZcPd",
+  "newWeatherBodiesDownloaded": 0,
+  "files": [
+    {
+      "file": "FINDINGS.md",
+      "bytes": 10814,
+      "sha256": "9c405fd7f8ea17e15c94707137f2b2f1bb8cbf5f1c9e4d615b429a63de2d133d"
+    },
+    {
+      "file": "raw/act-runs-post-responses.txt",
+      "bytes": 7175,
+      "sha256": "c97bc4bbbb7f1c5fa916a3fbdd543af07a1a0e8d1bcfb3c97dcdd37014c7b481"
+    },
+    {
+      "file": "raw/actor-run-abort-post-responses.txt",
+      "bytes": 3847,
+      "sha256": "bf258321a49910101ba61986203fadb96fbd5d43746b8bc1758548ad4ae1b843"
+    },
+    {
+      "file": "raw/actor-run-get-responses.txt",
+      "bytes": 5233,
+      "sha256": "191ee714ca47b72a9884a253bb1eb1a067b56bc2227226667fd93e30e2f0212f"
+    },
+    {
+      "file": "raw/api-doc-response-provenance.json",
+      "bytes": 5698,
+      "sha256": "8139209753345007983acacf75bcbee728fff4ad9cddde44d82fedfbac7f8629"
+    },
+    {
+      "file": "raw/baseline-provenance.json",
+      "bytes": 1368,
+      "sha256": "75c52535c2b7a093a248ce2680eec96f5d551fac4b64eed0b6cd18084dfc03ff"
+    },
+    {
+      "file": "raw/correlation-docs-input.json",
+      "bytes": 445,
+      "sha256": "d5ca97e0408bceccc4b6f74fcc40534c5328022bc33c5ea5a1b0047f79064381"
+    },
+    {
+      "file": "raw/correlation-docs-provenance.json",
+      "bytes": 1413,
+      "sha256": "993ab1942779d11a58f6bc5f9905aaa3a50161add279290c46210a4f199225b2"
+    },
+    {
+      "file": "raw/correlation-docs-run.json",
+      "bytes": 1551,
+      "sha256": "9eb8458c4edf4018dece7d1bf88f64a3c8683a2d3eebb5b6cb58a234b8c09e47"
+    },
+    {
+      "file": "raw/dataset-items-get-responses.txt",
+      "bytes": 2252,
+      "sha256": "e437e0b1edcb3985bce9a87cb0d682ceb042dff17dbcbc52592e61ba8b6f0478"
+    },
+    {
+      "file": "raw/effective-input-safety.json",
+      "bytes": 2474,
+      "sha256": "1a18b9ed337bf376ed6ac08814193821aca3f87aa51348dfa6bb9d4b766703df"
+    },
+    {
+      "file": "raw/http-client-source.json",
+      "bytes": 16518,
+      "sha256": "29c04f258bc8c253f592946c258fae6afd4805db705013d30975e3ad2ce4f9cf"
+    },
+    {
+      "file": "raw/input-kv-readback.json",
+      "bytes": 3517,
+      "sha256": "d0a3b3da476ee3be8f0ad35259a8fdc16e5670b294e8f80bc7dee81d04061032"
+    },
+    {
+      "file": "raw/key-value-store-record-get-responses.txt",
+      "bytes": 3919,
+      "sha256": "d71e6ef08d39e939797ef856044c5d5b77cb2a0b66545328e2079ea7b1c821b5"
+    },
+    {
+      "file": "raw/request-list-sources-excerpt.txt",
+      "bytes": 5357,
+      "sha256": "d2c94fb4b0e514a2d97a2de3cbb48bec6fb18afb553cb3dcfaeb61a16826492c"
+    },
+    {
+      "file": "raw/start-url-correlation-probe.json",
+      "bytes": 2501,
+      "sha256": "1c8402a57d0c161ffe279e93d80aa124af8355b39535b6a3115c383538051d16"
+    },
+    {
+      "file": "raw/weather-effective-input-baseline.json",
+      "bytes": 1686,
+      "sha256": "361ce26601d9028ac3f76712f7be4977b99fc724c6a77054912ccfdd9a0cf5ab"
+    }
+  ],
+  "totalBytesExcludingManifest": 75768,
+  "checks": {
+    "localMarkdownTargetsExist": true,
+    "actualAPIFY_TOKENAbsent": true,
+    "temporaryCredentialURLQueryAbsent": true
+  }
+}
