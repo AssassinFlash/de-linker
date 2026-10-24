@@ -66,16 +66,16 @@ class Proxy {
 	public const TOKEN_HEADER = 'X-Linker-Service-Token';
 
 	/**
-	 * Seconds one turn may take, the model call and the commit lock together.
+	 * Seconds for the native HTTP operation and its remaining commit-lock wait.
 	 *
-	 * The wp_remote_post timeout is this number: a turn makes at most four
-	 * ability calls, each capped at twenty seconds in the service, plus the
-	 * model, and the browser's one request is this long. The commit lock
-	 * waits only for the seconds left after the model returns, so the two
-	 * waits do not add (#373). Thread::record's own ceiling is this same
-	 * number, used only when a commit has no model call in front of it.
+	 * Protection\Resources reserves the existing 90-second operation window.
+	 * The service keeps its existing model, tool and price limits; fresh Woo
+	 * publication checks surround that work and add transport time. Giving
+	 * this outer HTTP call the former 60-second limit cut off a valid answer
+	 * before SSE release during the 2026-10-24 public withdrawal check.
+	 * The commit lock receives only the unused remainder of this window.
 	 */
-	public const TURN_BUDGET = 60;
+	public const TURN_BUDGET = 90;
 
 	/**
 	 * Sets up the proxy.
@@ -689,11 +689,9 @@ class Proxy {
 					'X-Linker-Resource-Subject' => $this->resource_subject( $body ),
 				),
 				'body'    => (string) wp_json_encode( $body ),
-				// TURN_BUDGET: one turn makes at most four ability calls (each
-				// capped at twenty seconds in the service) plus the model's
-				// own latency, so the browser's single request must outlast
-				// the worst legitimate turn. The commit lock uses what is
-				// left of this same budget.
+				// Current Woo checks surround the service's bounded work.
+				// HTTP and the later commit lock share the native operation
+				// window; this does not extend model or price work limits.
 				'timeout' => (float) self::TURN_BUDGET,
 			)
 		);
