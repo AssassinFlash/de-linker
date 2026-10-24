@@ -31,7 +31,8 @@ body.admin-bar header#lc-header{top:32px;--lk-toolbar-offset:32px}
 #tv-header-v2 :where(a,button,input,summary,[tabindex]):focus-visible{outline:2px solid var(--proto-teal-600);outline-offset:2px;border-radius:4px}
 #tv-header-v2 .tv-brand{display:inline-flex;color:var(--proto-ink);align-items:center;min-height:44px;flex-shrink:0;text-decoration:none;touch-action:manipulation}
 #tv-header-v2 .tv-brand-mark{display:grid;gap:3px;line-height:1}
-#tv-header-v2 .tv-brand-logo{height:52px;width:auto;display:block}
+/* Original attachment is 712 by 355; keep its box across rounded WP derivatives. */
+#tv-header-v2 .tv-brand-logo{height:52px;width:auto;aspect-ratio:712/355;object-fit:contain;display:block}
 #tv-header-v2 .tv-mega-featured-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:inherit;font-size:12px;font-weight:800;line-height:1.2;letter-spacing:.16em;text-transform:uppercase;color:var(--proto-teal-600);margin:0 0 2px}
 #tv-header-v2 .tv-mega-featured-eyebrow::before{content:"";width:34px;height:2px;background:var(--proto-teal-600);flex-shrink:0}
 #tv-header-v2 .tv-nav-frame{display:flex;flex-direction:row;gap:clamp(.5rem,1vw,1rem);align-items:center;justify-content:space-between;width:100%;min-height:64px;padding:8px 16px;background:transparent;border:none;border-radius:0;box-shadow:none}

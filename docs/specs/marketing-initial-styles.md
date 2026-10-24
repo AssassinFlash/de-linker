@@ -115,3 +115,32 @@ two retained Residential packages, native toggle states and affected links;
 inspect each changed language page's unique content. Reuse unrelated header,
 privacy, product-template, media-loading and performance evidence. The native
 current-offering read is a broader coverage finding, not a whole-site pass.
+
+The next media pass finishes the existing reviewed Home candidate, rather than
+repeating its work. Production still lacks fifteen lazy-loading attributes.
+Reuse the exact c622a038 Home image delta: thirteen lazy images and three eager
+story images with low priority, all async with native intrinsic dimensions.
+The three eager stories prevent empty incoming slides. Keep the original hero,
+images, alt text, gallery/stage scripts and the already authorized testimonials.
+LiveCanvas removes `wp_filter_content_tags`, so raw LC markup requires explicit
+attributes. Do not add another Home responsive-image algorithm or migration.
+
+Also carry the already reviewed1b7fe3c1 scene heading and paragraph in each
+language from home-scene-inquiry-copy-final.json. They replace the online-order
+promise with approved-account price visibility and team-prepared inquiry quotes.
+Keep all other non-image bytes, existing CTA and source context unchanged.
+
+The shared logo remains eager. Its original712×355 image is138826B; the existing
+300×150 derivative is29488B. Use WordPress's own candidate set. Sizes81px below
+1280px and105px above are the ceiling of the existing40/52px CSS heights times
+712/355. Keep that original aspect ratio in WindPress so derivative rounding
+does not move the navigation. Resampling within the logo/photo pixels is a
+declared performance change; layout and all other content remain the baseline.
+
+Use the same existing9410 instance and paired writer. Reuse the completed Home
+24-observation performance comparison and gallery/stage/copy consumers; the local
+Home bodies already match that candidate exactly after the explicit origin
+bridge. New checks cover logo source selection, its reserved box and current
+Home rendering at1440/390 in EN/DE. No new performance samples, migration
+framework, literal attribute tests or broad matrix. The warm-cache public read
+only diagnoses sizing;81KB compressed CSS and91KB HTML do not prove speed.
