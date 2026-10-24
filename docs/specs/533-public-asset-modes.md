@@ -40,6 +40,8 @@ markers and empty directory. Do not run rename recovery before a rename or
 clean up blindly after an uncertain transport result. A mixed plugin/MU/theme
 batch must be able to retry without manual edits; replaced preparations are
 retained for inspection instead of being deleted.
+Empty-batch validation must fail on enumeration errors and inspect directory
+entries directly, without treating trimmed filename output as an empty result.
 
 This digest covers public paths and modes, not code-byte authenticity. The
 existing whole-source/release fingerprint checks remain independently needed.

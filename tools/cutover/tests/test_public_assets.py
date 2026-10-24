@@ -278,7 +278,9 @@ def test_guard_refusal_cleans_only_its_mixed_preparation_and_allows_retry(
     assert not Path(target.path_of(added)).exists()
 
 
-@pytest.mark.parametrize("replaced", ["copy", "marker", "batch"])
+@pytest.mark.parametrize(
+    "replaced", ["copy", "marker", "batch", "unreadable-batch", "newline-batch"]
+)
 def test_guard_refusal_retains_foreign_preparation_for_inspection(
     tmp_path: Path, replaced: str
 ) -> None:
@@ -302,11 +304,17 @@ def test_guard_refusal_retains_foreign_preparation_for_inspection(
     batch = Path(atomic.backup_root(target)) / deploy_id
     copy = mu.with_name(".guard.php.prev")
     marker = style.with_name(".style.css.prev-absent")
-    foreign = {"copy": copy, "marker": marker, "batch": batch}[replaced]
+    foreign = {"copy": copy, "marker": marker}.get(replaced, batch)
     live_inode = live.stat().st_ino
 
     def damage() -> None:
         (live.with_name(".example.next") / "assets" / "header.js").chmod(0o600)
+        if replaced in ("unreadable-batch", "newline-batch"):
+            name = "inspection-evidence" if replaced == "unreadable-batch" else "\n"
+            private_file(batch / name, "retain this private evidence")
+            if replaced == "unreadable-batch":
+                batch.chmod(0o000)
+            return
         foreign.rename(tmp_path / "our-original-preparation")
         if replaced == "batch":
             foreign.mkdir(mode=0o700)
@@ -326,6 +334,13 @@ def test_guard_refusal_retains_foreign_preparation_for_inspection(
             on_switch=damage,
         )
 
+    if replaced == "unreadable-batch":
+        batch.chmod(0o700)
+        assert (
+            batch / "inspection-evidence"
+        ).read_text() == "retain this private evidence"
+    elif replaced == "newline-batch":
+        assert (batch / "\n").read_text() == "retain this private evidence"
     assert foreign.exists()
     assert copy.exists()
     assert marker.exists()

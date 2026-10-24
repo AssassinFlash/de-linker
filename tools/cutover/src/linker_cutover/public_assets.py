@@ -145,9 +145,12 @@ def prepare(target: Target, artifacts: Iterable[tuple[str, bool]]) -> str | None
     command = _command(target, artifacts, normalize=True)
     if command:
         output = target.shell(command)
-        records = re.findall(
-            r"^LINKER_PUBLIC_ASSETS=([a-f0-9]{64})$", output, re.MULTILINE
-        )
+        records = [
+            match.group(1)
+            for match in re.finditer(
+                r"^LINKER_PUBLIC_ASSETS=([a-f0-9]{64})$", output, re.MULTILINE
+            )
+        ]
         if len(records) != 1:
             raise CutoverError("public asset preparation proof is unreadable")
         return records[0]

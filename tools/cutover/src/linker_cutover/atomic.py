@@ -221,7 +221,15 @@ def _discard_unswitched_preparation(
         _IDENTITY,
         f"test ! -L {batch}",
         f'test "$(identity {batch})" = {shlex.quote(before[directory])}',
-        f'test -z "$(ls -A {batch})"',
+        shlex.join(
+            [
+                "python3",
+                "-c",
+                "import os,sys\nwith os.scandir(sys.argv[1]) as entries:\n"
+                " if next(entries,None) is not None:raise RuntimeError('preparation batch not empty')",
+                directory,
+            ]
+        ),
     ]
     cleanup: list[str] = []
     for entry in manifest.backups:
