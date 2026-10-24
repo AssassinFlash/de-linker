@@ -185,11 +185,14 @@ responses in integration fixtures are labelled simulated; the original TMY
 bytes and prior external-capture evidence remain retained. No new Actor is
 required merely to rerun the same protocol fixtures.
 
-The live p548 runtime has not been installed or modified. Native source/model
-controls, explicit selection/recovery UI, operator recovery operations and
-EN/DE 1440/390 acceptance remain required before the paired installation in
-this same complete goal. Detailed engineering and all downstream/production
-work remain required; this is not completion of the customer workflow.
+The new acquisition/recovery runtime has not been installed in live p548.
+Its absent schema-2 worker was restored from its exact retained source/lock
+snapshot using the existing interpreter and unchanged policies; this changed
+the process identity, not its execution version or the database schema/rows.
+Native source/model controls, explicit selection/recovery UI and EN/DE
+1440/390 acceptance remain required before the paired installation in this
+same complete goal. Detailed engineering and all downstream/production work
+remain required; this is not completion of the customer workflow.
 
 ## Operator recovery and release quiescence
 
