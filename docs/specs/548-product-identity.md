@@ -22,6 +22,20 @@ bill of materials, report/PDF and site/commerce consumers. Their customer-facing
 explanations become part of this same system identity when those features have
 passed their own acceptance. This copy increment does not remove or replace them.
 
+The owner reiterated on 2026-10-24 that the product explanation must describe
+the whole system. Describe what Linker enables the customer to accomplish with
+one project: site and roof inputs, solar/storage analysis, evidence-based
+equipment decisions and a usable proposal with its parts/report and inquiry
+handoff. These remain the complete delivery target; only accepted capabilities
+are described as currently available. The contribution is the connected project
+workflow, its decisions and deliverables, rather than a list of dependencies.
+
+Apply that same product explanation to the accepted tool introduction, site
+entry points and report identity as those surfaces are delivered. The shared
+footer/disclosure is the persistent attribution and detailed-source access;
+it is not the entire product introduction. Component credits retain their
+specific roles within that overall Linker product identity.
+
 Credits identify the role of each actual component/service. A map provider must
 not be labelled as powering the whole configurator. Required map attribution
 stays with the map; this disclosure is additional, not a replacement. Distinguish
