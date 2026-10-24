@@ -3,11 +3,12 @@ import test from "node:test";
 import React, { act } from "react";
 import { IDBFactory } from "fake-indexeddb";
 import { setupDom, until, deferred } from "./dom-fixture.mjs";
-import { EnergyIntentStore } from "../src/data/EnergyIntentStore.ts";
+import { PlanningIntentStore } from "../src/data/PlanningIntentStore.ts";
 import { PlannerClient } from "../src/data/PlannerClient.ts";
-import { useEnergyOperations } from "../src/data/useEnergyOperations.ts";
+import { usePlanningOperations } from "../src/data/usePlanningOperations.ts";
 import result from "./fixtures/energy-run.json" with { type: "json" };
 import scenario from "./fixtures/energy-scenario.json" with { type: "json" };
+import preparation from "./fixtures/preparation-flow.json" with { type: "json" };
 
 const scope = "a".repeat(64),
 	projectId = result.project_id;
@@ -37,6 +38,75 @@ const json = (value, status = 200) =>
 		headers: { "Content-Type": "application/json" },
 	});
 
+for (const [path, value] of [
+	["runs/weather", preparation.weather_run],
+	["runs/pv", preparation.pv_run],
+]) {
+	test(`${path} uses the shared durable journal, blocks replacement after a lost reply, and retries the same frozen request`, async (t) => {
+		let lost = true,
+			r;
+		r = await rig(
+			t,
+			async (call) => {
+				const stored = await r.durable.list([scope], value.project_id);
+				assert.equal(
+					stored.length,
+					1,
+					"intent is durable before transport dispatch",
+				);
+				assert.equal(stored[0].body, call.body);
+				if (lost)
+					throw new TypeError("synthetic lost preparation acknowledgement");
+				return json(value);
+			},
+			{ projectId: value.project_id },
+		);
+		await act(async () =>
+			r.api.start(path, { expected_revision: value.revision }),
+		);
+		await until(() => r.api.records.length === 1);
+		const record = r.api.records[0];
+		await act(async () =>
+			r.api.start("runs/energy", { expected_revision: 999 }),
+		);
+		assert.equal(
+			r.calls.length,
+			1,
+			"unconfirmed source preparation blocks a replacement of any task kind",
+		);
+		lost = false;
+		let reply;
+		await act(async () => {
+			reply = await r.api.retry(record);
+		});
+		assert.equal(reply.path, path);
+		assert.equal(reply.run.id, value.id);
+		assert.equal(r.calls[1].body, r.calls[0].body);
+		assert.equal(JSON.parse(r.calls[1].body).expected_revision, value.revision);
+		await until(() => r.api.records.length === 0);
+		assert.deepEqual(await r.durable.list([scope], value.project_id), []);
+	});
+}
+
+test("a weather reply to a PV request cannot acknowledge or clear the original durable intent", async (t) => {
+	let wrong = true;
+	const r = await rig(
+		t,
+		async () => json(wrong ? preparation.weather_run : preparation.pv_run),
+		{ projectId: preparation.pv_run.project_id },
+	);
+	await act(async () =>
+		r.api.start("runs/pv", { expected_revision: preparation.pv_run.revision }),
+	);
+	await until(() => r.api.records.length === 1);
+	assert.equal(r.api.records[0].resultId, null);
+	assert.equal(r.api.error.code, "invalid_run_reply");
+	wrong = false;
+	await act(async () => r.api.retry(r.api.records[0]));
+	await until(() => r.api.records.length === 0);
+	assert.equal(r.calls[1].body, r.calls[0].body);
+});
+
 async function rig(t, respond, options = {}) {
 	const dom = setupDom(),
 		previous = Object.getOwnPropertyDescriptor(globalThis, "indexedDB");
@@ -44,7 +114,7 @@ async function rig(t, respond, options = {}) {
 		value: new IDBFactory(),
 		configurable: true,
 	});
-	const durable = new EnergyIntentStore(),
+	const durable = new PlanningIntentStore(),
 		calls = [];
 	let owner = session,
 		api,
@@ -75,7 +145,7 @@ async function rig(t, respond, options = {}) {
 	const { createRoot } = await import("react-dom/client"),
 		root = createRoot(dom.element);
 	function Probe() {
-		api = useEnergyOperations({ ...props, client, recheck: () => {} });
+		api = usePlanningOperations({ ...props, client, recheck: () => {} });
 		return React.createElement("p", null, api.checking ? "Checking" : "Ready");
 	}
 	const render = async (next = {}) => {

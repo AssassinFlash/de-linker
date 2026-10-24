@@ -50,7 +50,8 @@ export interface ProfileAsset extends JsonObject {
 	readonly content_sha256: string;
 	readonly metadata_sha256: string;
 	readonly media_type: string;
-	readonly purpose: "csv_profile_v1" | "pvgis_system_profile_v1";
+	readonly purpose:
+		"csv_profile_v1" | "pvgis_system_profile_v1" | "pvlib_reference_profile_v1";
 	readonly metadata: JsonObject;
 }
 export interface CsvInspection {
@@ -138,9 +139,11 @@ export function readAsset(value: unknown, projectId: string): ProfileAsset {
 		!hash(item.content_sha256) ||
 		!hash(item.metadata_sha256) ||
 		typeof item.media_type !== "string" ||
-		!["csv_profile_v1", "pvgis_system_profile_v1"].includes(
-			String(item.purpose),
-		)
+		![
+			"csv_profile_v1",
+			"pvgis_system_profile_v1",
+			"pvlib_reference_profile_v1",
+		].includes(String(item.purpose))
 	)
 		throw new ApiError(502, "invalid_profile_reply");
 	readObject(item.metadata);

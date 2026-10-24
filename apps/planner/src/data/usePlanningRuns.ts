@@ -3,13 +3,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { PlannerClient } from "./PlannerClient.ts";
 import type { Session } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
-import { readRun, readRunPage, runPending } from "./energyProtocol.ts";
-import type { EnergyRun, RunPage } from "./energyProtocol.ts";
+import { readRun, readRunPage, runPending } from "./planningProtocol.ts";
+import type { PlanningRun, RunPage } from "./planningProtocol.ts";
 import { replacePlannerLocation } from "./plannerLocation.ts";
 
 // Visible-task polling policy, not numerical progress or a completion deadline.
 const POLL_MS = 1000;
-export function useEnergyRuns({
+export function usePlanningRuns({
 	projectId,
 	session,
 	client,
@@ -141,7 +141,7 @@ export function useEnergyRuns({
 		url.hash = "lp-calculations";
 		replacePlannerLocation(url);
 	}
-	function accepted(value: EnergyRun) {
+	function accepted(value: PlanningRun) {
 		if (
 			!client.isCurrentScope(session.query_scope) ||
 			value.project_id !== projectId

@@ -5982,3 +5982,171 @@ msgstr "Grenze der AC-Entladeleistung"
 #: build/planner/assets/planner.js ../../apps/planner/src/components/ProjectOverview.tsx:193
 msgid "Scenario settings and saved calculations"
 msgstr "Szenarioeinstellungen und gespeicherte Berechnungen"
+
+#: build/planner/assets/planner.js
+msgid "This result belongs to an earlier saved revision. Its original inputs remain available."
+msgstr "Dieses Ergebnis gehört zu einer früher gespeicherten Version. Die damaligen Eingaben bleiben verfügbar."
+
+#: build/planner/assets/planner.js
+msgid "Altitude"
+msgstr "Höhe"
+
+#: build/planner/assets/planner.js
+msgid "Hourly weather records"
+msgstr "Stündliche Wetterdatensätze"
+
+#: build/planner/assets/planner.js
+msgid "Modelled PV generation"
+msgstr "Modellierte PV-Erzeugung"
+
+#: build/planner/assets/planner.js
+msgid "This is an unshaded reference profile. Site shading, equipment compatibility and country requirements remain unassessed."
+msgstr "Dieses Referenzprofil berücksichtigt keine Verschattung. Die Verschattung am Standort sowie Gerätekompatibilität und länderspezifische Anforderungen bleiben ungeprüft."
+
+#: build/planner/assets/planner.js
+msgid "Preparation leaves your project inputs unchanged. Selecting a source updates the current open draft. Save project saves that selection on the server."
+msgstr "Die Vorbereitung ändert Ihre Projekteingaben nicht. Ihre Auswahl gilt zunächst für den aktuell offenen Projektentwurf. Mit \"Projekt speichern\" wird diese Auswahl auf dem Server gespeichert."
+
+#: build/planner/assets/planner.js
+msgid "Checking the saved source…"
+msgstr "Gespeicherte Quelle wird geprüft…"
+
+#: build/planner/assets/planner.js
+msgid "The saved source could not be checked. Existing project inputs remain unchanged."
+msgstr "Die gespeicherte Quelle konnte nicht geprüft werden. Ihre bisherigen Projekteingaben bleiben unverändert."
+
+#: build/planner/assets/planner.js
+msgid "The source request, roof or model has changed. A source matching the current inputs is required."
+msgstr "Die Vorgaben für die Quelle, die Dachgeometrie oder das Modell haben sich geändert. Für die aktuellen Eingaben wird eine passende Quelle benötigt."
+
+#: build/planner/assets/planner.js
+msgid "Selected in the current draft"
+msgstr "Im aktuellen Projektentwurf ausgewählt"
+
+#: build/planner/assets/planner.js
+msgid "Use this weather source"
+msgstr "Diese Wetterquelle verwenden"
+
+#: build/planner/assets/planner.js
+msgid "Use this PV profile"
+msgstr "Dieses PV-Profil verwenden"
+
+#: build/planner/assets/planner.js
+msgid "Source and task checksums"
+msgstr "Prüfsummen für Quelle und Auftrag"
+
+#: build/planner/assets/planner.js
+msgid "Task manifest SHA-256"
+msgstr "SHA-256 des Auftragsmanifests"
+
+#: build/planner/assets/planner.js
+msgid "Execution environment SHA-256"
+msgstr "SHA-256 der Ausführungsumgebung"
+
+#: build/planner/assets/planner.js
+msgid "Source content SHA-256"
+msgstr "SHA-256 des Quelleninhalts"
+
+#: build/planner/assets/planner.js
+msgid "The weather request is waiting to start."
+msgstr "Der Wetterabruf wartet auf den Start."
+
+#: build/planner/assets/planner.js
+msgid "The weather provider is processing the saved request."
+msgstr "Der Anbieter bearbeitet den gespeicherten Wetterabruf."
+
+#: build/planner/assets/planner.js
+msgid "The provider is stopping the run after its time limit was reached. The stop is not yet confirmed."
+msgstr "Der Anbieter beendet den Abruf, weil das Zeitlimit erreicht wurde. Der Stopp ist noch nicht bestätigt."
+
+#: build/planner/assets/planner.js
+msgid "The provider accepted the stop request. The stop is not yet confirmed."
+msgstr "Der Anbieter hat die Stoppanforderung angenommen. Der Stopp ist noch nicht bestätigt."
+
+#: build/planner/assets/planner.js
+msgid "The provider has finished the request. A project source is ready only after the original data is validated and preparation succeeds."
+msgstr "Der Anbieter hat den Abruf abgeschlossen. Die Originaldaten müssen die Prüfung bestehen und die Vorbereitung muss erfolgreich abgeschlossen sein, bevor eine Projektquelle bereitsteht."
+
+#: build/planner/assets/planner.js
+msgid "The original weather data has passed validation and is retained. A project source is available only when the preparation status above shows \"Source ready\"."
+msgstr "Die ursprünglichen Wetterdaten sind geprüft und gespeichert. Als Projektquelle stehen sie erst bereit, wenn oben \"Quelle bereit\" angezeigt wird."
+
+#: build/planner/assets/planner.js
+msgid "The provider confirmed that the run was stopped."
+msgstr "Der Anbieter hat bestätigt, dass der Abruf gestoppt wurde."
+
+#: build/planner/assets/planner.js
+msgid "The provider run ended without a usable weather source."
+msgstr "Der Abruf beim Anbieter wurde ohne nutzbare Wetterquelle beendet."
+
+#: build/planner/assets/planner.js
+msgid "The provider may have started this request. Linker must verify the original request. The system will not start it again automatically."
+msgstr "Ob der Anbieter diesen Abruf gestartet hat, ist noch unklar. Die Klärung liegt bei Linker. Ein erneuter Start erfolgt nicht automatisch."
+
+#: build/planner/assets/planner.js
+msgid "Weather request status"
+msgstr "Status des Wetterabrufs"
+
+#: build/planner/assets/planner.js
+msgid "Loading weather request status…"
+msgstr "Status des Wetterabrufs wird geladen…"
+
+#: build/planner/assets/planner.js
+msgid "Weather status could not be refreshed. Any status shown comes from the last confirmed response."
+msgstr "Der Wetterstatus konnte nicht aktualisiert werden. Ein angezeigter Status stammt aus der letzten bestätigten Rückmeldung."
+
+#: build/planner/assets/planner.js
+msgid "Weather preparation has ended. No provider start has been recorded."
+msgstr "Die Wettervorbereitung ist beendet. Ein Start beim Anbieter ist nicht erfasst."
+
+#: build/planner/assets/planner.js
+msgid "Confirmation that the provider run has ended is still pending."
+msgstr "Die Bestätigung, dass der Abruf beim Anbieter beendet ist, steht noch aus."
+
+#: build/planner/assets/planner.js
+msgid "The stop check failed. Any provider status shown is the last recorded observation."
+msgstr "Die Prüfung des Stopps ist fehlgeschlagen. Ein angezeigter Status des Anbieters stammt aus der zuletzt erfassten Rückmeldung."
+
+#: build/planner/assets/planner.js
+msgid "Verification of the recorded weather request is pending or in progress."
+msgstr "Die Prüfung des gespeicherten Wetterabrufs steht noch aus oder läuft bereits."
+
+#: build/planner/assets/planner.js
+msgid "Refresh weather status"
+msgstr "Wetterstatus aktualisieren"
+
+#: build/planner/assets/planner.js
+msgid "Weather data preparation"
+msgstr "Vorbereitung der Wetterdaten"
+
+#: build/planner/assets/planner.js
+msgid "PV generation profile"
+msgstr "PV-Erzeugungsprofil"
+
+#: build/planner/assets/planner.js
+msgid "Saved task"
+msgstr "Gespeicherter Auftrag"
+
+#: build/planner/assets/planner.js
+msgid "Preparing source"
+msgstr "Quelle wird vorbereitet"
+
+#: build/planner/assets/planner.js
+msgid "Source ready"
+msgstr "Quelle bereit"
+
+#: build/planner/assets/planner.js
+msgid "Source preparation failed"
+msgstr "Vorbereitung der Quelle fehlgeschlagen"
+
+#: build/planner/assets/planner.js
+msgid "Source preparation cancelled"
+msgstr "Vorbereitung der Quelle abgebrochen"
+
+#: build/planner/assets/planner.js
+msgid "This source could not be prepared. Your project inputs remain unchanged."
+msgstr "Diese Quelle konnte nicht vorbereitet werden. Ihre Projekteingaben bleiben unverändert."
+
+#: build/planner/assets/planner.js
+msgid "This project cannot be edited right now. The source has not been selected."
+msgstr "Das Projekt lässt sich derzeit nicht bearbeiten. Die Quelle wurde nicht ausgewählt."

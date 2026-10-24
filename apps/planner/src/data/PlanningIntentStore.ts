@@ -1,11 +1,14 @@
 /** Browser recovery of exact battery/run requests, never project/job authority. */
-import type { EnergyOperation } from "./energyProtocol.ts";
-import { readEnergyOperation } from "./energyProtocol.ts";
+import type { PlanningOperation } from "./planningProtocol.ts";
+import {
+	readPlanningOperation,
+	isPlanningOperation,
+} from "./planningProtocol.ts";
 import { readObject } from "./readProtocol.ts";
 
-export interface EnergyIntent {
+export interface PlanningIntent {
 	readonly scope: string;
-	readonly path: EnergyOperation;
+	readonly path: PlanningOperation;
 	readonly projectId: string;
 	readonly key: string;
 	readonly body: string;
@@ -21,25 +24,21 @@ const DATABASE = "linker-planner-energy-intents-v1",
 const hex = (value: unknown, length: number): value is string =>
 	typeof value === "string" && new RegExp(`^[a-f0-9]{${length}}$`).test(value);
 const bytes = (body: string) => new TextEncoder().encode(body).length;
-function identity(scope: string, path: EnergyOperation, body: string) {
-	if (
-		!hex(scope, 64) ||
-		!["battery/scenario", "runs/energy"].includes(path) ||
-		bytes(body) > MAX_BYTES
-	)
+function identity(scope: string, path: PlanningOperation, body: string) {
+	if (!hex(scope, 64) || !isPlanningOperation(path) || bytes(body) > MAX_BYTES)
 		throw new Error("energy_recovery_invalid");
-	const command = readEnergyOperation(path, body);
+	const command = readPlanningOperation(path, body);
 	return {
 		id: scope + ":" + path + ":" + String(command.key).toLowerCase(),
 		command,
 	};
 }
-function record(value: unknown, scope: string): EnergyIntent {
+function record(value: unknown, scope: string): PlanningIntent {
 	const row = readObject(value);
 	if (
 		row.schema_version !== 1 ||
 		row.scope !== scope ||
-		(row.path !== "battery/scenario" && row.path !== "runs/energy") ||
+		!isPlanningOperation(row.path) ||
 		typeof row.body !== "string" ||
 		!Number.isSafeInteger(row.created_at) ||
 		(row.created_at as number) < 0 ||
@@ -68,10 +67,10 @@ function completed(transaction: IDBTransaction): Promise<void> {
 function scan(
 	store: IDBObjectStore,
 	scope: string,
-	done: (records: EnergyIntent[]) => void,
+	done: (records: PlanningIntent[]) => void,
 	fail: (error: unknown) => void,
 ) {
-	const result: EnergyIntent[] = [];
+	const result: PlanningIntent[] = [];
 	let size = 0;
 	const cursor = store.index("scope").openCursor(scope);
 	cursor.onerror = () => fail(new Error("energy_recovery_unavailable"));
@@ -93,7 +92,7 @@ function scan(
 	};
 }
 
-export class EnergyIntentStore {
+export class PlanningIntentStore {
 	private connection: Promise<IDBDatabase> | null = null;
 	private open(): Promise<IDBDatabase> {
 		if (this.connection) return this.connection;
@@ -135,16 +134,16 @@ export class EnergyIntentStore {
 	async list(
 		scopes: readonly string[],
 		projectId: string,
-	): Promise<readonly EnergyIntent[]> {
+	): Promise<readonly PlanningIntent[]> {
 		if (!hex(projectId, 32) || scopes.some((scope) => !hex(scope, 64)))
 			throw new Error("energy_recovery_invalid");
 		const db = await this.open(),
-			records: EnergyIntent[] = [];
+			records: PlanningIntent[] = [];
 		let size = 0;
 		for (const scope of new Set(scopes)) {
-			const found = await new Promise<EnergyIntent[]>((resolve, reject) => {
+			const found = await new Promise<PlanningIntent[]>((resolve, reject) => {
 				const transaction = db.transaction(STORE, "readonly");
-				let rows: EnergyIntent[] | null = null;
+				let rows: PlanningIntent[] | null = null;
 				transaction.oncomplete = () =>
 					rows === null
 						? reject(new Error("energy_recovery_unavailable"))
@@ -173,7 +172,7 @@ export class EnergyIntentStore {
 	}
 	async write(
 		scope: string,
-		path: EnergyOperation,
+		path: PlanningOperation,
 		body: string,
 	): Promise<void> {
 		const request = identity(scope, path, body),
@@ -225,7 +224,7 @@ export class EnergyIntentStore {
 	}
 	async acknowledge(
 		scope: string,
-		path: EnergyOperation,
+		path: PlanningOperation,
 		body: string,
 		resultId: string,
 	): Promise<void> {
@@ -234,14 +233,14 @@ export class EnergyIntentStore {
 	}
 	async clear(
 		scope: string,
-		path: EnergyOperation,
+		path: PlanningOperation,
 		body: string,
 	): Promise<void> {
 		await this.change(scope, path, body, null);
 	}
 	private async change(
 		scope: string,
-		path: EnergyOperation,
+		path: PlanningOperation,
 		body: string,
 		resultId: string | null,
 	): Promise<void> {
@@ -267,4 +266,4 @@ export class EnergyIntentStore {
 		await committed;
 	}
 }
-export const energyIntentStore = new EnergyIntentStore();
+export const planningIntentStore = new PlanningIntentStore();

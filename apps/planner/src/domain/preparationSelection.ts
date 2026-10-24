@@ -1,0 +1,63 @@
+import type { JsonObject, Project } from "../data/protocol.ts";
+import { ApiError } from "../data/protocol.ts";
+import type { PlanningRun } from "../data/planningProtocol.ts";
+import { readRun, runTask } from "../data/planningProtocol.ts";
+import { PV_TASK, WEATHER_TASK } from "../data/readPreparationResult.ts";
+import { readObject } from "../data/readProtocol.ts";
+import { sameJson } from "./draft.ts";
+import { invalidateEnergyReplay } from "./energyScenario.ts";
+import { readSelections } from "./profiles.ts";
+
+/** Explicit selection changes only its role; the caller supplies current edits. */
+export function selectPreparation(
+	inputs: JsonObject,
+	run: PlanningRun,
+	historical: Project,
+	ownedAsset: JsonObject,
+): JsonObject {
+	readRun(run, run.project_id, run.id);
+	if (
+		run.state !== "succeeded" ||
+		!run.result ||
+		historical.id !== run.project_id ||
+		historical.revision !== run.revision ||
+		historical.input_sha256 !== run.manifest.input_sha256 ||
+		!sameJson(ownedAsset, run.result.prepared_asset)
+	)
+		throw new ApiError(502, "preparation_source_mismatch");
+	const metadata = readObject(ownedAsset.metadata);
+	const assetId = ownedAsset.id;
+	if (typeof assetId !== "string" || !/^[a-f0-9]{32}$/.test(assetId))
+		throw new ApiError(502, "preparation_source_mismatch");
+	if (runTask(run) === WEATHER_TASK) {
+		if (inputs.weather_acquisition === undefined)
+			throw new ApiError(409, "preparation_source_changed");
+		const requested = readObject(inputs.weather_acquisition);
+		if (
+			!sameJson(requested.request, metadata.weather_request) ||
+			!sameJson(requested.interpretation, metadata.weather_interpretation)
+		)
+			throw new ApiError(409, "preparation_source_changed");
+		return {
+			...inputs,
+			pv_preparation: { schema_version: 1, weather_asset_id: assetId },
+		};
+	}
+	if (
+		runTask(run) !== PV_TASK ||
+		!sameJson(inputs.geometry, historical.inputs.geometry) ||
+		!sameJson(inputs.pv_preparation, historical.inputs.pv_preparation) ||
+		!sameJson(inputs.pv_generation, historical.inputs.pv_generation)
+	)
+		throw new ApiError(409, "preparation_source_changed");
+	return {
+		...invalidateEnergyReplay(inputs),
+		profile_selections: {
+			schema_version: 1,
+			selected: {
+				...readSelections(inputs.profile_selections).selected,
+				pv_available_ac: assetId,
+			},
+		},
+	};
+}

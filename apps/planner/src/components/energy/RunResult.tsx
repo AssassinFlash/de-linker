@@ -1,26 +1,11 @@
-import type { EnergyRun, RunState } from "../../data/energyProtocol.ts";
+import type { PlanningRun } from "../../data/planningProtocol.ts";
+import { runStateLabel } from "./planningLabels.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { verificationLabel } from "./verificationLabel.ts";
 
-export function runStateLabel(state: RunState): string {
-	switch (state) {
-		case "queued":
-			return __("Queued", "linker-tools");
-		case "running":
-			return __("Calculating", "linker-tools");
-		case "retry_wait":
-			return __("Waiting to retry", "linker-tools");
-		case "succeeded":
-			return __("Calculation complete", "linker-tools");
-		case "failed":
-			return __("Calculation failed", "linker-tools");
-		case "cancelled":
-			return __("Calculation cancelled", "linker-tools");
-	}
-}
-function failureText(run: EnergyRun): string {
+function failureText(run: PlanningRun): string {
 	switch (run.error?.code) {
 		case "version_unavailable":
 			return __(
@@ -56,7 +41,7 @@ export function RunResult({
 	dirty,
 	confirmedRevision,
 }: {
-	run: EnergyRun;
+	run: PlanningRun;
 	locale: string;
 	dirty: boolean;
 	confirmedRevision: number;

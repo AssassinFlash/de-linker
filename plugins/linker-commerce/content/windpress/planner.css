@@ -462,6 +462,9 @@
   [data-linker-planner] .lp-run-content { min-width: 0; }
   [data-linker-planner] .lp-run-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px 20px; margin-bottom: 24px; }
   [data-linker-planner] .lp-run-heading h3 { font-size: 22px; margin: 6px 0 0; }
+  [data-linker-planner] .lp-run-facts { display: grid; grid-template-columns: minmax(7rem, .8fr) minmax(0, 1.2fr); gap: 12px 24px; margin: 20px 0; }
+  [data-linker-planner] .lp-run-facts dt { color: var(--proto-neutral-600); }
+  [data-linker-planner] .lp-run-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
   [data-linker-planner] .lp-run-revision { font-size: 11px; color: var(--proto-neutral-600); }
   [data-linker-planner] .lp-energy-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 24px; margin: 0 0 20px; padding-block: 24px; border-block: 1px solid var(--lp-line); }
   [data-linker-planner] .lp-energy-metrics > div { min-width: 0; }

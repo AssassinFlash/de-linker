@@ -23,17 +23,24 @@ import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { JsonObject, Session } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
 import { replacePlannerLocation } from "../../data/plannerLocation.ts";
-import { useEnergyOperations } from "../../data/useEnergyOperations.ts";
-import { useEnergyRuns } from "../../data/useEnergyRuns.ts";
-import { readEnergyOperation, runPending } from "../../data/energyProtocol.ts";
-import type { EnergyIntent } from "../../data/EnergyIntentStore.ts";
+import { usePlanningOperations } from "../../data/usePlanningOperations.ts";
+import { usePlanningRuns } from "../../data/usePlanningRuns.ts";
+import {
+	readPlanningOperation,
+	runPending,
+	runTask,
+} from "../../data/planningProtocol.ts";
+import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
+import type { PlanningIntent } from "../../data/PlanningIntentStore.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
 import { revealActionResult } from "../revealActionResult.ts";
 import { measurementLabel } from "../ProfileLabels.ts";
 import { ScenarioForm } from "./ScenarioForm.tsx";
 import { EnergyError } from "./EnergyError.tsx";
-import { RunResult, runStateLabel } from "./RunResult.tsx";
+import { RunResult } from "./RunResult.tsx";
+import { runStateLabel, taskLabel } from "./planningLabels.ts";
+import { PreparationResult } from "./PreparationResult.tsx";
 import { RunBasis } from "./RunBasis.tsx";
 
 export function EnergyWorkspace({
@@ -121,7 +128,7 @@ export function EnergyWorkspace({
 			return null;
 		}
 	}, [draft.baseline.inputs.energy_replay]);
-	const operations = useEnergyOperations({
+	const operations = usePlanningOperations({
 		projectId,
 		session,
 		client,
@@ -138,7 +145,7 @@ export function EnergyWorkspace({
 				client.isCurrentScope(session.query_scope),
 			);
 	}, [actionError, active, client, session.query_scope]);
-	const runs = useEnergyRuns({
+	const runs = usePlanningRuns({
 		projectId,
 		session,
 		client,
@@ -258,7 +265,7 @@ export function EnergyWorkspace({
 			if (client.isCurrentScope(session.query_scope)) setError(cause);
 		}
 	}
-	async function recover(record: EnergyIntent) {
+	async function recover(record: PlanningIntent) {
 		if (
 			blocked ||
 			!syntaxValid ||
@@ -268,16 +275,16 @@ export function EnergyWorkspace({
 			return;
 		setError(null);
 		try {
-			if (record.path === "runs/energy") {
+			if (record.path !== "battery/scenario") {
 				const reply = await operations.retry(record);
-				if (reply?.path === "runs/energy") {
+				if (reply && reply.path !== "battery/scenario") {
 					runs.accepted(reply.run);
 					setView("runs");
 				}
 				return;
 			}
 			if (!setup) return;
-			const command = readEnergyOperation(record.path, record.body),
+			const command = readPlanningOperation(record.path, record.body),
 				parameters = readBatteryParameters(command.parameters);
 			const restored = readScenarioDraft({
 				...setup,
@@ -515,7 +522,7 @@ export function EnergyWorkspace({
 									: sprintf(
 											__("Calculation request · revision %d", "linker-tools"),
 											Number(
-												readEnergyOperation(record.path, record.body)
+												readPlanningOperation(record.path, record.body)
 													.expected_revision,
 											),
 										)}
@@ -708,7 +715,8 @@ export function EnergyWorkspace({
 								<strong>
 									{sprintf(__("Revision %d", "linker-tools"), run.revision)}
 								</strong>
-								<span>{runStateLabel(run.state)}</span>
+								{run.task_kind && <span>{taskLabel(run.task_kind)}</span>}
+								<span>{runStateLabel(run.state, run.task_kind)}</span>
 								<small>
 									{new Intl.DateTimeFormat(locale, {
 										dateStyle: "short",
@@ -764,20 +772,39 @@ export function EnergyWorkspace({
 					)}
 					{runs.run.data && (
 						<>
-							<RunResult
-								run={runs.run.data}
-								locale={locale}
-								dirty={dirty || Boolean(draft.pending)}
-								confirmedRevision={draft.baseline.revision}
-							/>
-							<RunBasis
-								key={runs.run.data.id}
-								run={runs.run.data}
-								session={session}
-								client={client}
-								recheck={recheck}
-								locale={locale}
-							/>
+							{[WEATHER_TASK, PV_TASK].includes(
+								runTask(runs.run.data) ?? "",
+							) ? (
+								<PreparationResult
+									key={runs.run.data.id}
+									run={runs.run.data}
+									inputs={draft.history.current}
+									edit={edit}
+									session={session}
+									client={client}
+									recheck={recheck}
+									locale={locale}
+									blocked={blocked || !syntaxValid}
+									active={active && view === "runs"}
+								/>
+							) : (
+								<>
+									<RunResult
+										run={runs.run.data}
+										locale={locale}
+										dirty={dirty || Boolean(draft.pending)}
+										confirmedRevision={draft.baseline.revision}
+									/>
+									<RunBasis
+										key={runs.run.data.id}
+										run={runs.run.data}
+										session={session}
+										client={client}
+										recheck={recheck}
+										locale={locale}
+									/>
+								</>
+							)}
 							{runPending(runs.run.data.state) && (
 								<button
 									type="button"

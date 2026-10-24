@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { IDBFactory } from "fake-indexeddb";
-import { EnergyIntentStore } from "./EnergyIntentStore.ts";
+import { PlanningIntentStore } from "./PlanningIntentStore.ts";
 import scenario from "../../tests/fixtures/energy-scenario.json" with { type: "json" };
 
 const scope = "a".repeat(64),
@@ -24,7 +24,7 @@ function fresh(t: { after: (fn: () => void) => void }) {
 		if (previous) Object.defineProperty(globalThis, "indexedDB", previous);
 		else Reflect.deleteProperty(globalThis, "indexedDB");
 	});
-	return new EnergyIntentStore();
+	return new PlanningIntentStore();
 }
 
 test("exact request survives a new store instance; duplicate writers and acknowledgement keep one immutable receipt", async (t) => {
@@ -35,7 +35,7 @@ test("exact request survives a new store instance; duplicate writers and acknowl
 		store.write(scope, "runs/energy", body),
 	]);
 	assert.equal(
-		(await new EnergyIntentStore().list([scope, scope], project)).length,
+		(await new PlanningIntentStore().list([scope, scope], project)).length,
 		1,
 	);
 	await store.acknowledge(scope, "runs/energy", body, asset);

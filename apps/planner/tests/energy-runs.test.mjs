@@ -3,7 +3,7 @@ import test from "node:test";
 import React, { act, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupDom, until, deferred } from "./dom-fixture.mjs";
-import { useEnergyRuns } from "../src/data/useEnergyRuns.ts";
+import { usePlanningRuns } from "../src/data/usePlanningRuns.ts";
 import actualRun from "./fixtures/energy-run.json" with { type: "json" };
 
 test("opening history after its first page loads pins the verified visible run in native links, only with current admission", async (t) => {
@@ -62,7 +62,7 @@ test("opening history after its first page loads pins the verified visible run i
 			setActive(next);
 			setVersion((value) => value + 1);
 		};
-		current = useEnergyRuns({
+		current = usePlanningRuns({
 			projectId: actualRun.project_id,
 			session: {
 				query_scope: scope,

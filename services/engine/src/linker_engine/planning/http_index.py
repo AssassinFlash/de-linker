@@ -89,6 +89,7 @@ def run_page(
             "manifest_sha256": row["manifest_sha256"],
             "result_sha256": row["result_sha256"],
             "is_current": row["revision"] == current_revision,
+            "task_kind": run_task(workspace.blobs.object(row["manifest_sha256"])),
         }
         for row in rows[:size]
     ]
@@ -99,3 +100,11 @@ def run_page(
         if last is None
         else {"before_created_at": last["created_at"], "before_id": last["id"]},
     }
+
+
+def run_task(manifest: Object) -> str | None:
+    """Index the frozen task declaration without loading any project inputs."""
+    context = manifest.get("context")
+    parameters = context.get("parameters") if isinstance(context, dict) else None
+    kind = parameters.get("kind") if isinstance(parameters, dict) else None
+    return kind if isinstance(kind, str) and kind.strip() else None

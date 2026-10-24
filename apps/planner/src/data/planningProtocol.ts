@@ -3,8 +3,30 @@ import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { readBatteryParameters } from "../domain/energyScenario.ts";
 import { readEnergyResult } from "./readEnergyResult.ts";
+import { readPreparationResult } from "./readPreparationResult.ts";
 
-export type EnergyOperation = "battery/scenario" | "runs/energy";
+export const RUN_OPERATIONS = {
+	"runs/energy": "single_ac_energy_replay_v1",
+	"runs/pv": "prepare_roof_pv_reference_v1",
+	"runs/weather": "acquire_pvgis_tmy_weather_v1",
+} as const;
+export type RunOperation = keyof typeof RUN_OPERATIONS;
+export type TaskKind = (typeof RUN_OPERATIONS)[RunOperation];
+export type PlanningOperation = "battery/scenario" | RunOperation;
+export function isPlanningOperation(
+	value: unknown,
+): value is PlanningOperation {
+	return (
+		value === "battery/scenario" ||
+		(typeof value === "string" && Object.hasOwn(RUN_OPERATIONS, value))
+	);
+}
+/** The immutable manifest identifies the task, independent of its state/result. */
+export function runTask(run: Pick<PlanningRun, "manifest">): string | null {
+	const context = readObject(run.manifest.context),
+		parameters = readObject(context.parameters);
+	return typeof parameters.kind === "string" ? parameters.kind : null;
+}
 export const RUN_STATES = [
 	"queued",
 	"running",
@@ -23,8 +45,9 @@ export interface RunSummary {
 	readonly state: RunState;
 	readonly is_current: boolean;
 	readonly created_at: number;
+	readonly task_kind?: string | null;
 }
-export interface EnergyRun extends Omit<RunSummary, "created_at"> {
+export interface PlanningRun extends Omit<RunSummary, "created_at"> {
 	readonly manifest: JsonObject;
 	readonly result: JsonObject | null;
 	readonly error: JsonObject | null;
@@ -52,12 +75,13 @@ const revision = (value: unknown): value is number =>
 const exact = (value: JsonObject, keys: readonly string[]) =>
 	Object.keys(value).sort().join() === [...keys].sort().join();
 
-export function readEnergyOperation(
-	path: EnergyOperation,
+export function readPlanningOperation(
+	path: PlanningOperation,
 	body: string,
 ): JsonObject {
 	const command = readObject(JSON.parse(body));
 	if (
+		!isPlanningOperation(path) ||
 		command.schema_version !== 1 ||
 		!hash(command.project_id, 32) ||
 		typeof command.key !== "string" ||
@@ -66,7 +90,7 @@ export function readEnergyOperation(
 		)
 	)
 		throw new ApiError(422, "invalid_energy_intent");
-	if (path === "runs/energy") {
+	if (path !== "battery/scenario") {
 		if (
 			!exact(command, [
 				"schema_version",
@@ -144,7 +168,8 @@ function readRunDocument(
 	value: unknown,
 	projectId: string,
 	expectedId?: string,
-): EnergyRun {
+	expectedTask?: TaskKind,
+): PlanningRun {
 	const row = readObject(value);
 	runIdentity(row, projectId);
 	if (
@@ -173,14 +198,31 @@ function readRunDocument(
 		!hash(context.code_sha256)
 	)
 		throw new ApiError(502, "invalid_run_reply");
-	readObject(context.models);
+	const models = readObject(context.models);
 	readObject(context.assets);
 	readObject(context.parameters);
+	const task = runTask({ manifest });
+	if (
+		(expectedTask !== undefined && task !== expectedTask) ||
+		(task === RUN_OPERATIONS["runs/energy"] && models.replay !== task) ||
+		((task === RUN_OPERATIONS["runs/pv"] ||
+			task === RUN_OPERATIONS["runs/weather"]) &&
+			models.task !== task)
+	)
+		throw new ApiError(502, "invalid_run_reply");
 	if (row.error !== null) readObject(row.error);
-	if (row.result !== null) readEnergyResult(row.result, row, manifest);
-	else if (row.state === "succeeded" || row.result_sha256 !== null)
+	if (row.result !== null) {
+		if (
+			task === RUN_OPERATIONS["runs/pv"] ||
+			task === RUN_OPERATIONS["runs/weather"]
+		)
+			readPreparationResult(row.result, row, manifest, task);
+		else if (task === RUN_OPERATIONS["runs/energy"])
+			readEnergyResult(row.result, row, manifest);
+		else throw new ApiError(502, "unsupported_run_model");
+	} else if (row.state === "succeeded" || row.result_sha256 !== null)
 		throw new ApiError(502, "invalid_run_result");
-	return row as unknown as EnergyRun;
+	return row as unknown as PlanningRun;
 }
 
 function readRunPageDocument(value: unknown, projectId: string): RunPage {
@@ -200,7 +242,13 @@ function readRunPageDocument(value: unknown, projectId: string): RunPage {
 				"state",
 				"is_current",
 				"created_at",
+				...(Object.hasOwn(summary, "task_kind") ? ["task_kind"] : []),
 			]) ||
+			(summary.task_kind !== undefined &&
+				summary.task_kind !== null &&
+				(typeof summary.task_kind !== "string" ||
+					!summary.task_kind.trim() ||
+					summary.task_kind.length > 128)) ||
 			typeof summary.created_at !== "number" ||
 			!Number.isFinite(summary.created_at) ||
 			!Number.isFinite(new Date(summary.created_at * 1000).getTime()) ||
@@ -230,9 +278,10 @@ export function readRun(
 	value: unknown,
 	projectId: string,
 	expectedId?: string,
-): EnergyRun {
+	expectedTask?: TaskKind,
+): PlanningRun {
 	try {
-		return readRunDocument(value, projectId, expectedId);
+		return readRunDocument(value, projectId, expectedId, expectedTask);
 	} catch (error) {
 		if (error instanceof ApiError && error.status === 502) throw error;
 		throw new ApiError(502, "invalid_run_reply");

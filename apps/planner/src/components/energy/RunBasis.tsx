@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { EnergyRun } from "../../data/energyProtocol.ts";
-import { readBatteryAsset } from "../../data/energyProtocol.ts";
+import type { PlanningRun } from "../../data/planningProtocol.ts";
+import { readBatteryAsset } from "../../data/planningProtocol.ts";
 import type { PlannerClient } from "../../data/PlannerClient.ts";
 import type { Session, JsonObject } from "../../data/protocol.ts";
 import { ApiError } from "../../data/protocol.ts";
@@ -24,7 +24,7 @@ export function RunBasis({
 	recheck,
 	locale,
 }: {
-	run: EnergyRun;
+	run: PlanningRun;
 	session: Session;
 	client: PlannerClient;
 	recheck: () => void;

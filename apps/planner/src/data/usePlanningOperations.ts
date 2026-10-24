@@ -4,38 +4,43 @@ import type { JsonObject, Session } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
 import { wire } from "./readProtocol.ts";
 import { isPreMutationInputRefusal } from "./inputRefusal.ts";
-import { energyIntentStore } from "./EnergyIntentStore.ts";
-import type { EnergyIntent, EnergyIntentStore } from "./EnergyIntentStore.ts";
+import { planningIntentStore } from "./PlanningIntentStore.ts";
+import type {
+	PlanningIntent,
+	PlanningIntentStore,
+} from "./PlanningIntentStore.ts";
 import {
 	readBatteryAsset,
-	readEnergyOperation,
+	readPlanningOperation,
 	readRun,
-} from "./energyProtocol.ts";
+	RUN_OPERATIONS,
+} from "./planningProtocol.ts";
 import type {
 	BatteryAsset,
-	EnergyOperation,
-	EnergyRun,
-} from "./energyProtocol.ts";
+	PlanningOperation,
+	PlanningRun,
+	RunOperation,
+} from "./planningProtocol.ts";
 
-export type EnergyJournal = Pick<
-	EnergyIntentStore,
+export type PlanningJournal = Pick<
+	PlanningIntentStore,
 	"list" | "write" | "acknowledge" | "clear"
 >;
-export type EnergyReply =
+export type PlanningReply =
 	| {
 			readonly path: "battery/scenario";
 			readonly asset: BatteryAsset;
-			readonly intent: EnergyIntent;
+			readonly intent: PlanningIntent;
 	  }
 	| {
-			readonly path: "runs/energy";
-			readonly run: EnergyRun;
-			readonly intent: EnergyIntent;
+			readonly path: RunOperation;
+			readonly run: PlanningRun;
+			readonly intent: PlanningIntent;
 	  };
 
 /** The same durable mutation path handles new and explicitly retried intents.
  * A grant permits recovery discovery, never automatic submission or authority. */
-export function useEnergyOperations({
+export function usePlanningOperations({
 	projectId,
 	session,
 	client,
@@ -43,7 +48,7 @@ export function useEnergyOperations({
 	recoveryScopes,
 	recoveryChecking = false,
 	confirmedBatteryId = null,
-	store = energyIntentStore,
+	store = planningIntentStore,
 }: {
 	projectId: string;
 	session: Session;
@@ -52,15 +57,15 @@ export function useEnergyOperations({
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	confirmedBatteryId?: string | null;
-	store?: EnergyJournal;
+	store?: PlanningJournal;
 }) {
-	const [records, setRecords] = useState<readonly EnergyIntent[]>([]),
+	const [records, setRecords] = useState<readonly PlanningIntent[]>([]),
 		[checking, setChecking] = useState(true),
 		[storageFailed, setStorageFailed] = useState(false),
 		[error, setError] = useState<unknown>(null),
 		[busy, setBusy] = useState(false),
 		[refresh, setRefresh] = useState(0),
-		[intent, setIntent] = useState<EnergyIntent | null>(null);
+		[intent, setIntent] = useState<PlanningIntent | null>(null);
 	const lifetime = useRef(0),
 		flight = useRef<AbortController | null>(null);
 	const admitted = client.isCurrentScope(session.query_scope);
@@ -94,7 +99,7 @@ export function useEnergyOperations({
 					JSON.parse(scopeKey) as string[],
 					projectId,
 				),
-				pending: EnergyIntent[] = [];
+				pending: PlanningIntent[] = [];
 			for (const record of found) {
 				if (!current()) return;
 				if (
@@ -132,11 +137,11 @@ export function useEnergyOperations({
 	]);
 
 	async function submit(
-		path: EnergyOperation,
+		path: PlanningOperation,
 		body: string,
 		originScope: string,
 		expectedResultId: string | null = null,
-	): Promise<EnergyReply | undefined> {
+	): Promise<PlanningReply | undefined> {
 		if (
 			flight.current ||
 			checking ||
@@ -146,7 +151,7 @@ export function useEnergyOperations({
 			!JSON.parse(scopeKey).includes(originScope)
 		)
 			return;
-		const command = readEnergyOperation(path, body);
+		const command = readPlanningOperation(path, body);
 		if (command.project_id !== projectId)
 			throw new Error("energy_recovery_invalid");
 		const controller = new AbortController(),
@@ -156,7 +161,7 @@ export function useEnergyOperations({
 			flight.current === controller &&
 			instance === lifetime.current &&
 			client.isCurrentScope(session.query_scope);
-		const pending: EnergyIntent = {
+		const pending: PlanningIntent = {
 			path,
 			body,
 			scope: originScope,
@@ -188,7 +193,7 @@ export function useEnergyOperations({
 				controller.signal,
 			);
 			if (!current()) return;
-			let reply: EnergyReply;
+			let reply: PlanningReply;
 			if (path === "battery/scenario")
 				reply = {
 					path,
@@ -196,7 +201,7 @@ export function useEnergyOperations({
 					intent: pending,
 				};
 			else {
-				const run = readRun(raw, projectId);
+				const run = readRun(raw, projectId, undefined, RUN_OPERATIONS[path]);
 				if (run.revision !== command.expected_revision)
 					throw new ApiError(502, "invalid_run_reply");
 				reply = { path, run, intent: pending };
@@ -208,7 +213,8 @@ export function useEnergyOperations({
 			setIntent({ ...pending, resultId });
 			try {
 				await store.acknowledge(originScope, path, body, resultId);
-				if (path === "runs/energy") await store.clear(originScope, path, body);
+				if (path !== "battery/scenario")
+					await store.clear(originScope, path, body);
 			} catch {
 				if (current()) setStorageFailed(true);
 			}
@@ -231,7 +237,7 @@ export function useEnergyOperations({
 			if (
 				dispatched &&
 				(isPreMutationInputRefusal(cause) ||
-					(path === "runs/energy" &&
+					(path !== "battery/scenario" &&
 						cause instanceof ApiError &&
 						cause.status === 409 &&
 						cause.code === "evaluation_revision_changed"))
@@ -269,7 +275,7 @@ export function useEnergyOperations({
 		busy,
 		intent,
 		refresh: () => setRefresh((value) => value + 1),
-		start: (path: EnergyOperation, fields: JsonObject) => {
+		start: (path: PlanningOperation, fields: JsonObject) => {
 			if (records.some((record) => record.resultId === null))
 				return Promise.resolve(undefined);
 			const body = wire(
@@ -284,9 +290,9 @@ export function useEnergyOperations({
 			);
 			return submit(path, body, session.query_scope);
 		},
-		retry: (record: EnergyIntent) =>
+		retry: (record: PlanningIntent) =>
 			submit(record.path, record.body, record.scope, record.resultId),
-		dismissAcknowledged: async (record: EnergyIntent) => {
+		dismissAcknowledged: async (record: PlanningIntent) => {
 			if (
 				flight.current ||
 				checking ||
