@@ -2,7 +2,8 @@
 import { afterEach, expect, test, vi } from 'vitest';
 import { resetLocaleData, setLocaleData } from '@wordpress/i18n';
 import { restoreArtifacts } from './historyArtifacts';
-import { readThread } from './turn';
+import { parseStream, readThread } from './turn';
+import { ARTIFACT_TIMEOUT_MS } from './product';
 
 afterEach( () => resetLocaleData( undefined, 'linker-tools' ) );
 
@@ -88,6 +89,37 @@ function fetchWith( current: unknown = product, ok = true ) {
 }
 
 const context = { restUrl: '/wp-json/', locale: 'en' as const };
+
+test( 'current native product and publication reads may finish after five seconds', async () => {
+	vi.useFakeTimers();
+	const immediate = fetchWith();
+	const fetcher = vi.fn( async ( ...args: Parameters< typeof fetch > ) => {
+		await new Promise( ( resolve ) => setTimeout( resolve, 10_000 ) );
+		return immediate( ...args );
+	} );
+	const restored = restoreArtifacts(
+		parseStream( stream ),
+		context,
+		'current-nonce',
+		fetcher
+	);
+	try {
+		await vi.advanceTimersByTimeAsync( 10_000 );
+		await expect( restored ).resolves.toMatchObject( {
+			blocks: [
+				{},
+				{
+					product_ids: [ 3573 ],
+					prices: [ { text: 'Net price after partner sign-in' } ],
+				},
+				{ url: PDF, sourceTitle: 'SAJ eSolar AIO3 Datasheet (EN)' },
+			],
+		} );
+		expect( vi.getTimerCount() ).toBe( 0 );
+	} finally {
+		vi.useRealTimers();
+	}
+} );
 
 test( 'a restored approved price becomes the current visitor line, without changing German transcript or PDF facts', async () => {
 	const fetcher = fetchWith();
@@ -300,7 +332,7 @@ test( 'a shared series PDF is attributed to the document ref product rather than
 } );
 
 test.each( [ 'headers', 'body' ] )(
-	'an auxiliary lookup that never resolves at %s is aborted at the five-second presentation budget',
+	'an auxiliary lookup that never resolves at %s is aborted within the bounded current-authority budget',
 	async ( stage ) => {
 		vi.useFakeTimers();
 		let signal: AbortSignal | undefined;
@@ -330,15 +362,17 @@ test.each( [ 'headers', 'body' ] )(
 			void result.then( () => {
 				settled = true;
 			} );
-			await vi.advanceTimersByTimeAsync( 4_999 );
+			await vi.advanceTimersByTimeAsync( ARTIFACT_TIMEOUT_MS - 1 );
 			expect( settled ).toBe( false );
 			await vi.advanceTimersByTimeAsync( 1 );
 			expect( settled ).toBe( true );
 			expect( signal?.aborted ).toBe( true );
 			const restored = await result;
 			expect( restored.turn?.blocks[ 1 ] ).toMatchObject( {
+				product_ids: [],
 				prices: [],
 			} );
+			expect( restored.turn?.blocks[ 2 ] ).toMatchObject( { url: null } );
 			expect( restored.messages[ 1 ].content ).toBe(
 				'Hier ist Ihr Datenblatt.'
 			);
