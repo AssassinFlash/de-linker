@@ -1,0 +1,27 @@
+{
+  "source_pin": "94d4b31c169a4e04197b9b33d6dcadd70d54e3a1",
+  "junit": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "672",
+    "time": "50.042",
+    "timestamp": "2026-10-24T11:58:27.425019+08:00",
+    "hostname": "chesterjohn-2.local"
+  },
+  "command_count": 4,
+  "json_documents_parsed": 15,
+  "markdown_local_links_missing": [],
+  "original_capture_root_relative_assets": [
+    {
+      "file": "docs/research/2026-10-24-pv-generation/raw/official-tmy-format.md",
+      "target": "/themes/contrib/oe_theme/dist/ec/images/logo/logo-ec--mute.svg",
+      "classification": "original captured website root-relative asset; not a repository file link"
+    }
+  ],
+  "changed_source_and_research_files": 37,
+  "legacy_identifier_file_hits": [],
+  "credential_pattern_file_hits": [],
+  "live_runtime_scope": "unchanged previous runtime, no new model native acceptance"
+}
