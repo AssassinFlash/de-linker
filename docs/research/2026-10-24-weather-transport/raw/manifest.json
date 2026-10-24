@@ -92,7 +92,7 @@
       "sha256": "361ce26601d9028ac3f76712f7be4977b99fc724c6a77054912ccfdd9a0cf5ab"
     }
   ],
-  "totalBytesExcludingManifest": 75768,
+  "totalBytesExcludingManifest": 78432,
   "checks": {
     "localMarkdownTargetsExist": true,
     "actualAPIFY_TOKENAbsent": true,

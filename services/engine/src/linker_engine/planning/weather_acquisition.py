@@ -125,6 +125,20 @@ class WeatherAcquisition:
         self.client.verified_input(run, plan, current.nonce, guard)
         return self.journal.acknowledge(current, run)
 
+    def _cleanup_if_stopped(
+        self, intent: WeatherIntent, lease: Lease, control: Control
+    ) -> None:
+        # A failed socket read can bypass the transport's next checkpoint.
+        # Inspect the stop state separately without replacing that failure.
+        try:
+            self._active(lease, control, intent.deadline_at)
+        except LeaseLost:
+            self._cleanup(intent, cancelled_lease=lease)
+        except WeatherDeadlineExceeded:
+            self._cleanup(intent)
+        except Exception:
+            LOG.warning("weather stop state unconfirmed for task %s", intent.run_id)
+
     def acquire(
         self, lease: Lease, plan: WeatherFetchPlan, control: Control
     ) -> PvSource:
@@ -194,4 +208,7 @@ class WeatherAcquisition:
             raise
         except (WeatherDeadlineExceeded, WeatherPollingLimit):
             self._cleanup(intent)
+            raise
+        except Exception:
+            self._cleanup_if_stopped(intent, lease, control)
             raise

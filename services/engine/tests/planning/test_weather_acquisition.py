@@ -383,3 +383,83 @@ def test_full_download_with_invalid_source_units_is_not_retained_or_published(
             )
     finally:
         source.transport.close()
+
+
+@pytest.mark.parametrize("stop", ["cancel", "deadline"])
+def test_network_failure_observes_concurrent_stop_and_attempts_known_abort(
+    workspace: Workspace,
+    owner: Actor,
+    clock: Clock,
+    stop: str,
+) -> None:
+    run, lease = operation(workspace, owner)
+    journal = WeatherJournal(workspace)
+    intent = journal.begin(lease, plan())
+
+    def stop_during_io() -> None:
+        if stop == "cancel":
+            workspace.cancel(owner, run.id)
+        else:
+            clock.advance(61)
+
+    source, adapter = client(
+        Reply(201, provider("READY")),
+        Reply(
+            0,
+            b"",
+            after=stop_during_io,
+            error=requests.ConnectionError("private network failure"),
+        ),
+        Reply(200, provider("ABORTING")),
+    )
+    try:
+        with pytest.raises(WeatherProviderUnavailable):
+            WeatherAcquisition(journal, source).acquire(lease, plan(), Control())
+        current = journal.current(intent)
+        assert current.remote_run_id == remote().id and current.abort_sha256 is not None
+        assert (
+            current.capture_sha256 is None and current.deadline_at == intent.deadline_at
+        )
+        assert journal.view(owner, run.id)["acquisition_state"] == "ABORTING"
+        assert [call.method for call in adapter.calls] == ["POST", "GET", "POST"]
+    finally:
+        source.transport.close()
+
+
+def test_failed_io_with_replaced_lease_keeps_remote_run_for_replacement(
+    workspace: Workspace,
+    owner: Actor,
+    clock: Clock,
+) -> None:
+    _, lease = operation(workspace, owner)
+    journal = WeatherJournal(workspace)
+    intent = journal.begin(lease, plan())
+    with workspace.database.transaction() as connection:
+        connection.execute(
+            "UPDATE jobs SET lease_until=? WHERE id=?", (clock.value + 0.5, lease.id)
+        )
+
+    def replace_during_io() -> None:
+        clock.advance(1)
+        assert (
+            Jobs(workspace).claim("replacement", kinds=("evaluate",), lease_seconds=300)
+            is not None
+        )
+
+    source, adapter = client(
+        Reply(201, provider("READY")),
+        Reply(
+            0,
+            b"",
+            after=replace_during_io,
+            error=requests.ConnectionError("private network failure"),
+        ),
+    )
+    try:
+        with pytest.raises(WeatherProviderUnavailable):
+            WeatherAcquisition(journal, source).acquire(lease, plan(), Control())
+        assert len(adapter.calls) == 2
+        assert journal.current(intent).remote_run_id == remote().id
+        assert journal.current(intent).abort_sha256 is None
+    finally:
+        source.transport.close()
