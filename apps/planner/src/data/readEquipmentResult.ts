@@ -33,6 +33,18 @@ export function readEquipmentResult(
 		!Array.isArray(assessment.selected_products)
 	)
 		throw new ApiError(502, "invalid_run_result");
+	for (const value of assessment.selected_products) {
+		const product = readObject(value);
+		if (
+			typeof product.product_id !== "number" ||
+			!Number.isSafeInteger(product.product_id) ||
+			product.product_id <= 0 ||
+			["model", "brand", "sku"].some(
+				(key) => key in product && typeof product[key] !== "string",
+			)
+		)
+			throw new ApiError(502, "invalid_run_result");
+	}
 	const ids = new Set<string>();
 	for (const value of assessment.checks) {
 		const check = readObject(value);
@@ -86,9 +98,9 @@ export function readEquipmentResult(
 			typeof line.product_id !== "number" ||
 			!Number.isSafeInteger(line.product_id) ||
 			line.product_id <= 0 ||
-			typeof line.model !== "string" ||
-			typeof line.brand !== "string" ||
-			typeof line.sku !== "string" ||
+			["model", "brand", "sku"].some(
+				(key) => key in line && typeof line[key] !== "string",
+			) ||
 			(line.quantity !== null &&
 				(typeof line.quantity !== "number" ||
 					!Number.isSafeInteger(line.quantity) ||

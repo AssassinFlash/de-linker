@@ -7419,3 +7419,53 @@ msgstr "Menge des Zubehörs"
 #: build/planner/assets/planner.js
 msgid "The documented voltage ranges do not overlap."
 msgstr "Die dokumentierten Spannungsbereiche überschneiden sich nicht."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "A new check requires current product data. Reload the data and prepare the selection again."
+msgstr "Für eine neue Prüfung sind aktuelle Produktdaten erforderlich. Laden Sie die Daten neu und bereiten Sie die Auswahl erneut vor."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "Choose products and prepare the selection before saving the project."
+msgstr "Wählen Sie Produkte aus und bereiten Sie die Auswahl vor, bevor Sie das Projekt speichern."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "Choose products to check their combination against the requirements entered here."
+msgstr "Wählen Sie Produkte aus, um die Kombination anhand der hier angegebenen Anforderungen zu prüfen."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "Equipment selection requires a product and valid quantities."
+msgstr "Für die Geräteauswahl sind ein Produkt und gültige Mengenangaben erforderlich."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "Product properties come from Linker's product data. Each result records the product data and documents used."
+msgstr "Die Produkteigenschaften stammen aus den Produktdaten von Linker. Jedes Ergebnis dokumentiert die verwendeten Produktdaten und Quelldokumente."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "Quantities are shown only when the product's sales unit and selected configuration are established."
+msgstr "Mengen werden nur angegeben, wenn Verkaufseinheit und gewählte Konfiguration feststehen."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "The cited data does not establish whether this requirement is met."
+msgstr "Die angegebenen Daten zeigen nicht, ob diese Anforderung erfüllt ist."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "The voltage ranges overlap only partly. The usable storage energy for this connection has not been established."
+msgstr "Die Spannungsbereiche überschneiden sich nur teilweise. Die über diesen Anschluss nutzbare Speicherenergie ist nicht belegt."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "This configuration requires a documented operating voltage range."
+msgstr "Für diese Konfiguration ist ein belegter Betriebsspannungsbereich erforderlich."
+
+#. Equipment copy: independent EN/DE review, energy_trace_copy.
+#: build/planner/assets/planner.js
+msgid "This result records the proposed equipment and the checks covered here. Further assessment of the complete system is required."
+msgstr "Dieses Ergebnis dokumentiert die vorgeschlagene Geräteauswahl und die hier geprüften Anforderungen. Die Gesamtanlage muss noch weiter geprüft werden."

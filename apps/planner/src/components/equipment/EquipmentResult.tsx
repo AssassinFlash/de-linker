@@ -44,6 +44,17 @@ export function EquipmentResult({
 		JsonObject[] | undefined;
 	const pair =
 		assessment?.manufacturer_pair && readObject(assessment.manufacturer_pair);
+	const selected = new Map(
+		((assessment?.selected_products ?? []) as JsonObject[]).map((product) => [
+			product.product_id,
+			product,
+		]),
+	);
+	function productDetail(line: JsonObject, key: string): string {
+		// Earlier receipts retain these labels in selected_products only.
+		const value = line[key] ?? selected.get(line.product_id)?.[key];
+		return typeof value === "string" ? value : "";
+	}
 	return (
 		<div className="lp-run-result">
 			<div
@@ -210,8 +221,11 @@ export function EquipmentResult({
 								{lines?.map((line, i) => (
 									<tr key={i}>
 										<td>
-											{String(line.brand)} {String(line.model)}
-											<small>{String(line.sku)}</small>
+											{productDetail(line, "brand")}{" "}
+											{productDetail(line, "model") || "—"}
+											{productDetail(line, "sku") && (
+												<small>{productDetail(line, "sku")}</small>
+											)}
 										</td>
 										<td>
 											{line.quantity === null

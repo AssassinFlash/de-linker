@@ -57,7 +57,7 @@
     "src/components/energy/ChartBoundary.tsx": "2e7f2128b15ae6534c813e524efacd1ee4265675e4b5d079faf24b975c9d4618",
     "src/components/energy/EnergyError.tsx": "173ffc7bc5aec41529097e18895a733e848e655320d304bdef92813a66d9a9c2",
     "src/components/energy/EnergyFlowChart.tsx": "6aea8bf01798fd6ec3f70e121f641a6f4f921dc36374161fa16d169ae03af519",
-    "src/components/energy/EnergyWorkspace.tsx": "67f7793aaa608e8fa89ef3d127a327a619d44360036ea3d15a66cbbde8f64dfe",
+    "src/components/energy/EnergyWorkspace.tsx": "82b617b3324360fa6bef3c38158dd315713337fee123b681836f72f32d4831d9",
     "src/components/energy/OperatingPeriodForm.tsx": "5b491c54d857df7df68901d8a5b45dca7959ae745eceaea122285d424b765190",
     "src/components/energy/ParameterNote.tsx": "9b43894b0f3c49eb5677c673c2f861bbacc1ed18c6171fbba4179cc00a60aee2",
     "src/components/energy/PreparationBasis.tsx": "8174cf10c94040edd8df256cbb9759cad926da7dcd4292ab0c8fd5cfcbfdf1f6",
@@ -78,7 +78,7 @@
     "src/components/energy/batteryPresentation.ts": "10ca8a468bef9ff79e264668f404549fcd73b50f65759b0951132f9523e85583",
     "src/components/energy/planningLabels.ts": "a962b25939a7e0c5757aabab25de4529aadc4d080130b21f54c8ac5bd38c5af4",
     "src/components/energy/verificationLabel.ts": "66ed05bb7c36f1253710541443e52cd1002adaed2663b27d560f5fd6dc2782d0",
-    "src/components/equipment/EquipmentResult.tsx": "0f787ec0bd4fd58c57f0f8b5b843b5ab1a96ad7f5d8372432408982e41222d6a",
+    "src/components/equipment/EquipmentResult.tsx": "cdaf4c2e4d2f79ef6b10cd879c1d34f15582b42609386dc9fce30595060ffd0b",
     "src/components/equipment/EquipmentSetup.tsx": "40673bd7d75d65b06d2427f4cbd640a5616b3351a576fd6b51e84e627dda1ad6",
     "src/components/equipment/equipmentLabels.ts": "99b51a3c1531855ef43a28f167a2cd52ad71f27deb8fd8262ea28a14caf6a9c1",
     "src/components/revealActionResult.ts": "dafb39861a3d4726ccefd76c11dc4f26c1bfd95ab23f6be3f388acb5a82a814e",
@@ -125,7 +125,7 @@
     "src/data/projectIndex.ts": "ee7fe2d8ae915643987003f403b149ef6d958ccebefaf3109caaf6b0c0f623c5",
     "src/data/protocol.ts": "37075559467fe70511162920e4872a830c04310de5cbe69ed3afed92d0eb0f6a",
     "src/data/readEnergyResult.ts": "c13433d9e805cd1af597a58081834903530e3e623a9fcc34516680cb8e228c64",
-    "src/data/readEquipmentResult.ts": "e97197d4f0b9f2d64e65456223fb1432177c70836426510da7984829e1032f75",
+    "src/data/readEquipmentResult.ts": "a51ac064e54634f877c7763bbf37d242cec9cbd901784b46bef7d1105397bb68",
     "src/data/readPreparationResult.ts": "8227b3596415f455ebc0aba525391ca59e666904256af7bb670e424f1e79b751",
     "src/data/readProtocol.ts": "cc5ed373b3b0f3e99f2dbebe2729d6b999f7c294927aa5c61f81fe5163cfdae5",
     "src/data/recoveryIntents.ts": "e7a97f8c75511db4a0a06047452b38d78bd8aa2bf9c6ba8ec21d415e75918364",
@@ -182,13 +182,13 @@
     "vite.config.ts": "124325835376cd0382f1a8c0652d2264597cb7ae6f054f05b7e1807bbf98916d"
   },
   "build": {
-    "assets/EnergyFlowChart-Ds_er7tT.js": "e1cc2362e45a77dd46dd42b6b15142eee40cde4714bd9f42199a4608544dc939",
-    "assets/MapViewport-C_doWgYC.js": "071f42cf923356207e92b4135c4cc9f88a4ba65202cd340d075b678ad5a5dda4",
-    "assets/SceneViewport-BO_XlOQ1.js": "1f7f63f035edcc21e770109a801ee10dfb7a48f3759bf3804cc11a6833aeaad9",
-    "assets/planner-core-CWnQEilR.js": "71b89a6d2cb9843e01ede9bafc61bbe2d81607865b269fc09a6169d15110c04c",
-    "assets/planner.js": "9a2f787c1bfa33a1f9acbf46dd2e1afa79e08d615828de033a8a49db37a6b25e",
+    "assets/EnergyFlowChart-D0JFtKu3.js": "fa4e6273d4138974678935b5152f98f1379cacde175c438b33840e7ada0b4a57",
+    "assets/MapViewport-CeBdcaUh.js": "ef879a3e2d58263d758825b378defd0c3f436b17c7469a1fd2a98cde58228bc6",
+    "assets/SceneViewport-DyuFi-j3.js": "11bc144b82070936e1fe2b2896757926ae9f7defaad1a43b91868921f8c2142c",
+    "assets/planner-core-0TjrVTGN.js": "8322131c5c9f60fc7c85034a48d47059fbccddb92837a1f9fef057cde01e8dbc",
+    "assets/planner.js": "1bd0224d349c6f9a27cad716747ad39e1e28685d2f3a783e701b52af5e9e8554",
     "assets/rolldown-runtime-BWaJ3C7D.js": "d0e9044430006c5bb48f477501a5af465f0a6377d2fcd7495aa215b8b75aaee3",
-    "vite-manifest.json": "410b4bdb9d9755d6b8e1bd7592877c37f8c9fa00c95713b2ccda57d51895f6dd",
+    "vite-manifest.json": "9998756fb2503be332c75de39050aa4dfada946cea611b9aadae9f5cc002fc33",
     "windpress.scan.txt": "209f75258e5f3e6cd5d0327169a99e45b265e1ed8d8259b345255c7dd4cb4f07"
   }
 }

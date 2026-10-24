@@ -308,6 +308,7 @@ export function EnergyWorkspace({
 				if (reply && reply.path !== "battery/scenario") {
 					runs.accepted(reply.run);
 					setView("runs");
+					openResults?.();
 				}
 				return;
 			}
