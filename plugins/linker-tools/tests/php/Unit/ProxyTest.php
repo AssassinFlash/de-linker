@@ -499,6 +499,48 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * A valid answer plus current-publication reads can exceed the old HTTP cutoff.
+	 * The HTTP adapter must still receive and record it within the native lease.
+	 */
+	public function test_turn_receives_a_valid_upstream_after_the_previous_http_cutoff(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Wire fixture.
+		WP_Mock::userFunction( 'sanitize_text_field', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'fixture-native-turn-budget' ) );
+		$stream = "event: meta\ndata: {}\n\nevent: done\ndata: {\"ok\":true}\n\n";
+		WP_Mock::userFunction(
+			'wp_remote_post',
+			array(
+				'return' => static function ( string $url, array $args ) use ( $stream ): array|WP_Error {
+					unset( $url );
+					// The observed public curl deadline was 60.001 s. Model the
+					// native adapter's timeout for a legitimate 65-second reply.
+					if ( $args['timeout'] <= 65 ) {
+						return new WP_Error( 'http_request_failed', 'upstream deadline elapsed' );
+					}
+					self::assertLessThanOrEqual( 90, $args['timeout'], 'The native resource operation remains bounded.' );
+					return array( 'body' => $stream );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => 200 ) );
+		WP_Mock::userFunction( 'wp_remote_retrieve_body', array( 'return' => $stream ) );
+		$thread                           = new RecordingThread();
+		$previous                         = $_COOKIE;
+		$_COOKIE['linker_public_browser'] = str_repeat( 'a', 32 );
+		try {
+			$answer = $this->proxy( null, $thread )->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+		} finally {
+			$_COOKIE = $previous;
+		}
+		$this->assertInstanceOf( WP_REST_Response::class, $answer );
+		$this->assertSame( $stream, $answer->get_data()['stream'] );
+		$this->assertNotNull( $thread->recorded );
+		$this->assertSame( $stream, $thread->recorded['stream'] );
+	}
+
+	/**
 	 * Native service transport preserves current-source status instead of a 502.
 	 *
 	 * @dataProvider publication_statuses
