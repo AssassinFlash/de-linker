@@ -262,11 +262,6 @@
         "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:101 label inside wp_register_ability() args; RestMeta.php show_in_rest."
       },
       {
-        "msgid": "Returns this account's own saved solution: its figures from the sizing engine and its selection basis. Requires a logged-in customer; another customer's solution is refused.",
-        "reason": "Ability description in the same JSON schema. Machine-facing contract text.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:102"
-      },
-      {
         "msgid": "A solution ID is required.",
         "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
         "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:204"
@@ -285,21 +280,6 @@
         "msgid": "This saved solution belongs to another account.",
         "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
         "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:214"
-      },
-      {
-        "msgid": "This saved solution cannot be read by the sizing engine.",
-        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:219"
-      },
-      {
-        "msgid": "The saved design could not be read.",
-        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:226"
-      },
-      {
-        "msgid": "The sizing engine did not answer.",
-        "reason": "WP_Error message returned as the ability REST error to the Genie service. Never rendered on a page.",
-        "evidence": "plugins/linker-commerce/includes/Abilities/ReadSolution.php:230"
       },
       {
         "msgid": "%d 条待开 PI",
