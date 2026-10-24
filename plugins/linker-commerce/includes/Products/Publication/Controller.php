@@ -73,7 +73,20 @@ final class Controller {
 			} elseif ( 'identify' === $path ) {
 				$data = $this->identify( $body );
 			} elseif ( 'jobs/claim' === $path ) {
-				$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ) );
+				if ( isset( $body['operation'] ) && 'verify' !== $body['operation'] ) {
+					return new WP_Error( 'invalid_job_request', 'Unknown preparation operation.', array( 'status' => 400 ) );
+				}
+				if ( 'verify' === ( $body['operation'] ?? '' ) ) {
+					$data = ( new PreparationJobs() )->verify_lease( $body );
+				} else {
+					$recipe      = $body['recipe_revision'] ?? '';
+					$loaded      = $body['loaded_receipt'] ?? null;
+					$unavailable = true === ( $body['loaded_unavailable'] ?? false );
+					if ( null !== $loaded && ! is_array( $loaded ) ) {
+						return new WP_Error( 'invalid_job_request', 'Loaded receipt must be an object.', array( 'status' => 400 ) );
+					}
+					$data = ( new PreparationJobs() )->claim( (string) ( $body['consumer'] ?? '' ), (string) ( $body['worker_id'] ?? '' ), (int) ( $body['lease_seconds'] ?? 0 ), is_string( $recipe ) ? $recipe : 'invalid', $loaded, $unavailable );
+				}
 			} else {
 				$data = ( new PreparationJobs() )->acknowledge( $body );
 			}

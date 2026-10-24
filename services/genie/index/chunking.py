@@ -15,11 +15,12 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal, Protocol
 
 from index.extract import Block, Page
 from linker_genie.source_roles import meter_references, pack_model_row
+from linker_genie.table_projection import SourceCell
 
 # Spec (docs/specs/10-knowledge-index.md, Build 2): at most 512 tokens per chunk.
 # Evidence behind it: arXiv 2605.27444 (2026-05, RAG over technical documents) found a
@@ -71,6 +72,13 @@ class Chunk:
     source_table: str = ""
     preceding_text: tuple[str, ...] = ()
     source_rows: tuple[int, ...] = ()
+    # One copy on a TableItem's first chunk; unchanged native cell coordinates
+    # distinguish a shared merged value from an empty, unproven neighbour.
+    source_cells: tuple[SourceCell, ...] = ()
+    # Original headings encountered since the preceding emitted chunk. Keeping
+    # even empty heading transitions prevents a generic child from erasing a
+    # narrower authored parent before the applicability compiler sees it.
+    source_headings: tuple[str, ...] = ()
 
 
 def context_header(meta: DocumentMeta, section: str, page: int) -> str:
@@ -111,6 +119,7 @@ class _Chunker:
         self.chunks: list[Chunk] = []
         self._ids: set[str] = set()
         self._preceding_text: list[str] = []
+        self._pending_headings: list[str] = []
 
     def _tokens(self, header: str, lines: Sequence[str]) -> int:
         return self.tokenizer.count(header + "\n" + "\n".join(lines))
@@ -151,8 +160,10 @@ class _Chunker:
                 source_table=source_table,
                 preceding_text=preceding_text,
                 source_rows=source_rows,
+                source_headings=tuple(self._pending_headings),
             )
         )
+        self._pending_headings = []
 
     def _pieces(self, header: str, fixed: Sequence[str], line: str) -> list[str]:
         """`line` cut so that each piece fits a chunk after the header and `fixed`."""
@@ -263,6 +274,7 @@ class _Chunker:
                 texts = []
             if block.kind == "heading":
                 section = block.text
+                self._pending_headings.append(block.text)
                 self._preceding_text = []
             elif block.kind == "text":
                 # Keep the manufacturer's role sentence apart from following
@@ -277,6 +289,7 @@ class _Chunker:
                     texts.append(block.text)
             else:
                 header_rows, rows = table_lines(block)
+                start = len(self.chunks)
                 self._pack(
                     page.number,
                     section,
@@ -288,6 +301,10 @@ class _Chunker:
                     tuple(self._preceding_text),
                     block.row_indices or tuple(range(len(block.rows))),
                 )
+                if block.source_cells and len(self.chunks) > start:
+                    self.chunks[start] = replace(
+                        self.chunks[start], source_cells=block.source_cells
+                    )
                 # The next independent TableItem needs its own original header.
                 self._preceding_text = []
         if texts:

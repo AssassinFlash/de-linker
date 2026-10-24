@@ -10,11 +10,14 @@ import hashlib
 from collections.abc import Mapping, Sequence
 from typing import Any
 
+from linker_genie.family_scope import valid_family_scope
+from linker_genie.source_models import model_pattern
 from linker_genie.source_roles import (
     manual_scope_models,
     meter_references,
     pack_model_row,
 )
+from linker_genie.table_projection import valid_projection
 
 
 def binding(association: Mapping[str, Any]) -> tuple[str, str, str, int, str]:
@@ -26,6 +29,35 @@ def binding(association: Mapping[str, Any]) -> tuple[str, str, str, int, str]:
         int(association["product_id"]),
         str(association["product_revision"]),
     )
+
+
+def author_scope_allows(
+    scope: Mapping[str, Any],
+    wanted: set[int],
+    products: Mapping[int, Mapping[str, Any]],
+) -> bool:
+    """A finer authored scope cannot be broadened by a later family fallback."""
+    restrictions = scope.get("author_restrictions")
+    if not isinstance(restrictions, list) or not restrictions:
+        return False
+    for boundary in restrictions:
+        if (
+            not isinstance(boundary, dict)
+            or boundary.get("kind") not in {"heading", "declaration"}
+            or not isinstance(boundary.get("quote"), str)
+            or not boundary["quote"]
+            or boundary.get("source_chunk_id") not in scope.get("source_chunk_ids", [])
+        ):
+            return False
+        subjects = {
+            pid
+            for pid, product in products.items()
+            if product.get("model")
+            and model_pattern(str(product["model"])).search(boundary["quote"])
+        }
+        if not wanted.issubset(subjects):
+            return False
+    return True
 
 
 def authorize_chunk(
@@ -49,6 +81,33 @@ def authorize_chunk(
     wanted = set(product_ids)
     if not wanted:
         return []
+    if scope is not None and "author_restrictions" in scope:
+        if products is None or not author_scope_allows(scope, wanted, products):
+            return []
+    if scope is not None and (
+        scope.get("basis") == "family_manual" or "family_scope" in scope
+    ):
+        if products is None or not valid_family_scope(
+            scope,
+            product_ids,
+            products,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
+        ):
+            return []
+    if scope is not None and (
+        scope.get("basis") == "table_projection" or "table_projection" in scope
+    ):
+        if products is None or not valid_projection(
+            scope,
+            product_ids,
+            products,
+            sha=sha,
+            chunk_id=chunk_id,
+            text=text,
+        ):
+            return []
     if scope is not None and (
         scope.get("basis") == "manual_peripheral" or "referenced_products" in scope
     ):
@@ -121,6 +180,19 @@ def table_header(
 ) -> str | None:
     """Restore the proven original table columns in order, or refuse invalid proof."""
     if scope is None:
+        return ""
+    if scope.get("basis") == "table_projection" or "table_projection" in scope:
+        projection = scope.get("table_projection")
+        if not isinstance(projection, dict) or not valid_projection(
+            scope,
+            product_ids,
+            products,
+            sha=str(projection.get("source_sha256", "")),
+            chunk_id=chunk_id,
+            text=text,
+        ):
+            return None
+        # The compiled answer unit already contains its exact source-model axis.
         return ""
     if "table_columns" not in scope:
         return None if scope.get("basis") == "table_columns" else ""

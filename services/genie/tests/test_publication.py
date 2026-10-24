@@ -17,6 +17,7 @@ from index.corpus import DocumentRow
 from index.publication import applicability, scope_proofs
 from index.publication import inventory as publication_inventory
 from linker_genie.knowledge import KnowledgeSearch
+from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication import (
     PublicationChanged,
     PublicationClient,
@@ -893,6 +894,11 @@ def test_actual_resolved_current_is_reopened_after_switch(
     assert search.loaded() == {
         "index_version": "build1",
         "source_revision": "source-1",
+        "recipe_revision": "",
+        "expected_serving_revision": "",
+        "serving_revision": RUNTIME_SERVING_REVISION,
+        "activation_epoch": 0,
+        "materialization_complete": True,
         "products": [
             {"product_id": 1, "product_revision": "p1"},
             {"product_id": 2, "product_revision": "p2"},
@@ -935,6 +941,7 @@ def test_worker_publishes_then_acknowledges_only_actual_loaded_generation() -> N
         "mac",
         600,
         transport=httpx.MockTransport(handle),
+        recipe="",
     )
     assert worker.one(
         lambda m: "build1",
@@ -987,6 +994,7 @@ def test_all_products_available_cannot_hide_unprepared_document_associations(
         "mac",
         600,
         transport=httpx.MockTransport(handle),
+        recipe="",
     )
     products = [
         {"product_id": p["product_id"], "product_revision": p["product_revision"]}
@@ -1039,6 +1047,7 @@ def test_worker_does_not_ack_ready_when_disk_changed_but_running_process_is_old(
         "mac",
         600,
         transport=httpx.MockTransport(handle),
+        recipe="",
     )
     with pytest.raises(RuntimeError, match="has not loaded"):
         worker.one(
@@ -1303,6 +1312,7 @@ def test_failed_worker_generation_is_removed_without_deleting_shared_builds(
         "mac",
         600,
         transport=httpx.MockTransport(handle),
+        recipe="",
     )
     monkeypatch.setattr(
         build, "chunk_all", lambda *args: SimpleNamespace(chunks=[], documents=[])

@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 import sqlite_vec
 
 from linker_genie.embedding import Embedder, query_encoder
+from linker_genie.preparation import RUNTIME_SERVING_REVISION
 from linker_genie.publication_scope import authorize_chunk, table_header
 
 # The release layout of ops/publish_index.py: /opt/linker-genie/index/<version>/ and a
@@ -149,6 +150,10 @@ class _Auto:
 AUTO = _Auto()
 
 
+class ServingMismatch(RuntimeError):
+    """A managed generation needs rebuilding for this process's serving rules."""
+
+
 class DocumentIndex:
     """A read-only connection to one built index."""
 
@@ -167,6 +172,8 @@ class DocumentIndex:
             )
         self.version = str(meta.get("version", ""))
         self.source_revision = str(meta.get("source_revision", ""))
+        self._recipe_revision = str(meta.get("recipe_revision", ""))
+        self._expected_serving_revision = str(meta.get("serving_revision", ""))
         self.embedding_model = str(meta.get("embedding_model", ""))
         self.encoder: Embedder | None
         if int(meta.get("dimensions", "0")) == 0:
@@ -209,7 +216,32 @@ class DocumentIndex:
         return {
             "index_version": self.version,
             "source_revision": self.source_revision,
+            "recipe_revision": (
+                self._db.execute(
+                    "SELECT value FROM meta WHERE key='recipe_revision'"
+                ).fetchone()
+                or ("",)
+            )[0],
+            "expected_serving_revision": (
+                self._db.execute(
+                    "SELECT value FROM meta WHERE key='serving_revision'"
+                ).fetchone()
+                or ("",)
+            )[0],
+            "serving_revision": RUNTIME_SERVING_REVISION,
+            "activation_epoch": int(
+                (
+                    self._db.execute(
+                        "SELECT value FROM meta WHERE key='activation_epoch'"
+                    ).fetchone()
+                    or ("0",)
+                )[0]
+            ),
             "products": ready,
+            "materialization_complete": self._db.execute(
+                "SELECT value FROM meta WHERE key='materialization_complete'"
+            ).fetchone()
+            == ("true",),
             "preparation_complete": self._db.execute(
                 "SELECT value FROM meta WHERE key='preparation_complete'"
             ).fetchone()
@@ -226,6 +258,17 @@ class DocumentIndex:
 
     def close(self) -> None:
         self._db.close()
+
+    def _require_serving(self) -> None:
+        # Imported rules can tighten what older compiler proofs established.
+        # Keep loaded() available so the worker can activate their replacement.
+        if (
+            self._recipe_revision
+            and self._expected_serving_revision != RUNTIME_SERVING_REVISION
+        ):
+            raise ServingMismatch(
+                "managed knowledge index needs matching serving rules"
+            )
 
     def documents_naming(self, query: str) -> list[str]:
         """The documents tagged with a model the query names by its code.
@@ -401,6 +444,7 @@ class DocumentIndex:
         `neighbours` the k hits come with their neighbours (`with_page_neighbours`);
         without, the result is the ranking alone, which the golden set scores.
         """
+        self._require_serving()
         if lang not in LANGS:
             raise ValueError(f"lang must be one of {LANGS}, not {lang!r}")
         permits = (
@@ -559,6 +603,7 @@ class DocumentIndex:
         A mixed-model chunk is released only while every model it contains is allowed.
         Old indexes have no proof tables and therefore authorize no chunks.
         """
+        self._require_serving()
         tables = {
             r[0]
             for r in self._db.execute(

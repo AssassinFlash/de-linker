@@ -52,16 +52,7 @@ final class PreparationJobs {
 				$state    = is_array( $state ) ? $state : array();
 				foreach ( self::CONSUMERS as $consumer ) {
 					if ( ( $state[ $consumer ]['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
-						$loaded             = $state[ $consumer ]['loaded_products'] ?? array();
-						$state[ $consumer ] = array(
-							'job_id'           => hash( 'sha256', $consumer . '/' . $manifest['source_revision'] ),
-							'consumer'         => $consumer,
-							'source_revision'  => $manifest['source_revision'],
-							'status'           => 'pending',
-							'loaded_products'  => $loaded,
-							'lease_expires_at' => 0,
-							'error'            => '',
-						);
+						$state[ $consumer ] = self::pending( $consumer, $manifest['source_revision'], $state[ $consumer ] ?? array(), (string) ( $state[ $consumer ]['recipe_revision'] ?? '' ) );
 					}
 				}
 				update_option( self::OPTION, $state, false );
@@ -73,23 +64,39 @@ final class PreparationJobs {
 	/**
 	 * Claim the current source under a bounded worker lease.
 	 *
-	 * @param string $consumer Consumer identity.
-	 * @param string $worker_id Worker identity.
-	 * @param int    $lease_seconds Requested lease, bounded to WordPress one day.
+	 * @param string                   $consumer Consumer identity.
+	 * @param string                   $worker_id Worker identity.
+	 * @param int                      $lease_seconds Requested lease, bounded to WordPress one day.
+	 * @param string                   $recipe_revision Actual knowledge compiler identity; empty is the legacy protocol.
+	 * @param array<string,mixed>|null $loaded_receipt Actual process readback; never grants product readiness.
+	 * @param bool                     $loaded_unavailable Actual process readback failed and requires repair when ready.
 	 * @return array<string,mixed>|WP_Error
 	 */
-	public function claim( string $consumer, string $worker_id, int $lease_seconds ): array|WP_Error {
-		if ( ! in_array( $consumer, self::CONSUMERS, true ) || '' === $worker_id || $lease_seconds < 1 || $lease_seconds > DAY_IN_SECONDS ) {
+	public function claim( string $consumer, string $worker_id, int $lease_seconds, string $recipe_revision = '', ?array $loaded_receipt = null, bool $loaded_unavailable = false ): array|WP_Error {
+		if ( ! in_array( $consumer, self::CONSUMERS, true ) || '' === $worker_id || $lease_seconds < 1 || $lease_seconds > DAY_IN_SECONDS || ( '' !== $recipe_revision && ( 'knowledge' !== $consumer || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $recipe_revision ) ) ) ) {
 			return new WP_Error( 'invalid_job_request', 'Invalid consumer, worker or lease.', array( 'status' => 400 ) );
 		}
 		$this->reconcile();
 		$result = array( 'job' => null );
 		$taken  = Lock::run(
 			'publication-jobs',
-			static function () use ( $consumer, $worker_id, $lease_seconds, &$result ): void {
+			static function () use ( $consumer, $worker_id, $lease_seconds, $recipe_revision, $loaded_receipt, $loaded_unavailable, &$result ): void {
 				$manifest = Publication::manifest();
 				$state    = get_option( self::OPTION, array() );
 				$job      = $state[ $consumer ] ?? array();
+				if ( 'knowledge' === $consumer && ( $job['recipe_revision'] ?? '' ) !== $recipe_revision ) {
+					if ( '' === $recipe_revision || in_array( $recipe_revision, $job['superseded_recipes'] ?? array(), true ) ) {
+						$result = new WP_Error( 'recipe_required', 'This knowledge job requires a recipe-aware worker.', array( 'status' => 409 ) );
+						return;
+					}
+					// Compiler corrections reprocess an unchanged Woo source and invalidate
+					// older leases. Loaded products remain a versioned serving receipt.
+					$job = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision );
+				}
+				if ( 'knowledge' === $consumer && '' !== $recipe_revision && 'ready' === ( $job['status'] ?? '' ) && ( $loaded_unavailable || ( null !== $loaded_receipt && ! self::matches_loaded( $job, $loaded_receipt ) ) ) ) {
+					$job          = self::pending( $consumer, $manifest['source_revision'], $job, $recipe_revision );
+					$job['error'] = 'The serving process differs from the acknowledged knowledge generation.';
+				}
 				if ( 'ready' === ( $job['status'] ?? '' ) || (int) ( $job['lease_expires_at'] ?? 0 ) > time() || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
 					return;
 				}
@@ -97,11 +104,87 @@ final class PreparationJobs {
 				$job['lease_expires_at'] = time() + $lease_seconds;
 				$job['worker_id']        = $worker_id;
 				$job['status']           = 'preparing';
-				$state[ $consumer ]      = $job;
+				if ( 'knowledge' === $consumer ) {
+					// Every lease, including retries, has a durable higher activation
+					// fence. Source/recipe changes and rollback never reset this counter.
+					$job['activation_epoch'] = (int) ( $job['activation_epoch'] ?? 0 ) + 1;
+				}
+				$state[ $consumer ] = $job;
 				update_option( self::OPTION, $state, false );
 				unset( $job['loaded_products'], $job['error'], $job['worker_id'], $job['status'] );
 				$job['manifest'] = $manifest;
-				$result['job']   = $job;
+				$result          = array( 'job' => $job );
+			}
+		);
+		return $taken ? $result : new WP_Error( 'publication_busy', 'Preparation queue is busy.', array( 'status' => 503 ) );
+	}
+
+	/**
+	 * Verify a leased activation immediately before the private VPS atomic switch.
+	 *
+	 * Reuses the authenticated claim route; no new permission or publication grant.
+	 *
+	 * @param array<string,mixed> $request Exact lease context, including activation epoch.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public function verify_lease( array $request ): array|WP_Error {
+		$result = new WP_Error( 'stale_job', 'The activation lease or current source has changed.', array( 'status' => 409 ) );
+		$taken  = Lock::run(
+			'publication-jobs',
+			static function () use ( $request, &$result ): void {
+				$manifest = Publication::manifest();
+				$state    = get_option( self::OPTION, array() );
+				$job      = $state['knowledge'] ?? array();
+				if ( 'knowledge' !== ( $request['consumer'] ?? '' ) || 'preparing' !== ( $job['status'] ?? '' ) || ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] || '' === ( $job['recipe_revision'] ?? '' ) || ( $request['recipe_revision'] ?? '' ) !== ( $job['recipe_revision'] ?? '' ) || ! self::same_epoch( $job, $request ) ) {
+					return;
+				}
+				$result = array(
+					'verified'         => true,
+					'activation_epoch' => $job['activation_epoch'],
+					'job_id'           => $job['job_id'],
+					'source_revision'  => $job['source_revision'],
+					'recipe_revision'  => $job['recipe_revision'],
+				);
+			}
+		);
+		return $taken ? $result : new WP_Error( 'publication_busy', 'Preparation queue is busy.', array( 'status' => 503 ) );
+	}
+
+	/**
+	 * Reactivate an installed older compiler during an explicitly verified rollback.
+	 *
+	 * Internal only: no REST route. The operator verifies the installed worker code
+	 * before this compare-and-swap; unknown hashes cannot become rollback targets.
+	 * This changes one preparation job, never Woo permission or serving facts.
+	 *
+	 * @param string $expected_current_recipe Compiler identity observed before rollback.
+	 * @param string $target_recipe Previously used compiler verified on the build host.
+	 * @return array<string,mixed>|WP_Error
+	 */
+	public function reactivate_recipe( string $expected_current_recipe, string $target_recipe ): array|WP_Error {
+		if ( 1 !== preg_match( '/^[a-f0-9]{64}$/D', $expected_current_recipe ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $target_recipe ) ) {
+			return new WP_Error( 'invalid_recipe_rollback', 'A rollback requires known compiler identities.', array( 'status' => 400 ) );
+		}
+		$result = new WP_Error( 'stale_recipe', 'The current compiler changed or the rollback target is unknown.', array( 'status' => 409 ) );
+		$taken  = Lock::run(
+			'publication-jobs',
+			static function () use ( $expected_current_recipe, $target_recipe, &$result ): void {
+				$manifest = Publication::manifest();
+				$state    = get_option( self::OPTION, array() );
+				$job      = $state['knowledge'] ?? array();
+				if ( ( $job['recipe_revision'] ?? '' ) !== $expected_current_recipe || ! in_array( $target_recipe, $job['superseded_recipes'] ?? array(), true ) ) {
+					return;
+				}
+				$job                       = self::pending( 'knowledge', $manifest['source_revision'], $job, $target_recipe );
+				$job['superseded_recipes'] = array_values( array_diff( $job['superseded_recipes'], array( $target_recipe ) ) );
+				$state['knowledge']        = $job;
+				update_option( self::OPTION, $state, false );
+				$result = array(
+					'accepted'        => true,
+					'job_id'          => $job['job_id'],
+					'source_revision' => $job['source_revision'],
+					'recipe_revision' => $job['recipe_revision'],
+				);
 			}
 		);
 		return $taken ? $result : new WP_Error( 'publication_busy', 'Preparation queue is busy.', array( 'status' => 503 ) );
@@ -121,12 +204,17 @@ final class PreparationJobs {
 				$manifest = Publication::manifest();
 				$state    = get_option( self::OPTION, array() );
 				foreach ( self::CONSUMERS as $consumer ) {
-					$job = $state[ $consumer ] ?? array();
-					if ( ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] ) {
+					$job    = $state[ $consumer ] ?? array();
+					$recipe = (string) ( $job['recipe_revision'] ?? '' );
+					if ( ( $job['job_id'] ?? '' ) !== ( $request['job_id'] ?? null ) || ! is_string( $request['lease_token'] ?? null ) || ! hash_equals( $job['lease_token'] ?? '', $request['lease_token'] ) || (int) ( $job['lease_expires_at'] ?? 0 ) <= time() || ( $request['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( $job['source_revision'] ?? '' ) !== $manifest['source_revision'] || ( 'knowledge' === $consumer && ( $request['recipe_revision'] ?? '' ) !== $recipe ) || ( '' !== $recipe && ( ! self::same_epoch( $job, $request ) ) ) ) {
 						continue;
 					}
 					if ( ! in_array( $request['status'] ?? '', array( 'ready', 'failed' ), true ) || ( 'ready' === $request['status'] && ( ! is_string( $request['loaded_revision'] ?? null ) || '' === $request['loaded_revision'] ) ) ) {
 						$result = new WP_Error( 'invalid_job_ack', 'A ready job requires the actual loaded revision.', array( 'status' => 400 ) );
+						return;
+					}
+					if ( 'ready' === $request['status'] && '' !== $recipe && ( ( $request['loaded_revision'] ?? '' ) !== $manifest['source_revision'] || ( $request['loaded_recipe_revision'] ?? '' ) !== $recipe || ! is_string( $request['index_version'] ?? null ) || 1 !== preg_match( '/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/D', $request['index_version'] ) || ! is_string( $request['expected_serving_revision'] ?? null ) || 1 !== preg_match( '/^[a-f0-9]{64}$/D', $request['expected_serving_revision'] ) || ( $request['serving_revision'] ?? '' ) !== $request['expected_serving_revision'] ) ) {
+						$result = new WP_Error( 'invalid_job_ack', 'A recipe-aware receipt requires the actual loaded source, recipe and index generation.', array( 'status' => 400 ) );
 						return;
 					}
 					$job['status']           = $request['status'];
@@ -144,7 +232,7 @@ final class PreparationJobs {
 						}
 						$loaded = array();
 						foreach ( $prepared as $product ) {
-							if ( ! is_array( $product ) || ! is_int( $product['product_id'] ?? null ) || ! isset( $expected[ $product['product_id'] ] ) || ( $product['product_revision'] ?? '' ) !== $expected[ $product['product_id'] ] ) {
+							if ( ! is_array( $product ) || ! is_int( $product['product_id'] ?? null ) || ! isset( $expected[ $product['product_id'] ] ) || isset( $loaded[ $product['product_id'] ] ) || ( $product['product_revision'] ?? '' ) !== $expected[ $product['product_id'] ] ) {
 								$result = new WP_Error( 'invalid_job_ack', 'Prepared products must match current source revisions.', array( 'status' => 400 ) );
 								return;
 							}
@@ -162,9 +250,20 @@ final class PreparationJobs {
 							}
 							$job['unprepared_documents'] = $diagnostics;
 							$job['preparation_complete'] = true === ( $request['preparation_complete'] ?? false ) && array() === $diagnostics && count( $loaded ) === count( $expected );
+							if ( '' !== $recipe ) {
+								$job['materialization_complete']  = true === ( $request['materialization_complete'] ?? false ) && ! in_array( 'document_unparsed', array_column( $diagnostics, 'reason' ), true );
+								$job['index_version']             = $request['index_version'];
+								$job['loaded_recipe_revision']    = $request['loaded_recipe_revision'];
+								$job['expected_serving_revision'] = $request['expected_serving_revision'];
+								$job['serving_revision']          = $request['serving_revision'];
+								$job['loaded_activation_epoch']   = $request['activation_epoch'];
+								$job['status']                    = $job['materialization_complete'] ? 'ready' : 'pending';
+							}
 							if ( ! $job['preparation_complete'] ) {
-								$job['status'] = 'pending';
-								$job['error']  = 'Some current document associations still lack proven passages.';
+								if ( '' === $recipe ) {
+									$job['status'] = 'pending';
+								}
+								$job['error'] = 'Some current document associations still lack proven passages.';
 							}
 						}
 					}
@@ -179,6 +278,92 @@ final class PreparationJobs {
 			}
 		);
 		return $result;
+	}
+
+	/**
+	 * A new job invalidates earlier leases but retains the actual serving receipt.
+	 *
+	 * @param string              $consumer Queue consumer.
+	 * @param string              $source Current Woo source.
+	 * @param array<string,mixed> $previous Previous serving receipt.
+	 * @param string              $recipe Knowledge compiler identity, empty for legacy/engineering.
+	 * @return array<string,mixed>
+	 */
+	private static function pending( string $consumer, string $source, array $previous, string $recipe ): array {
+		$superseded = $previous['superseded_recipes'] ?? array();
+		if ( '' !== ( $previous['recipe_revision'] ?? '' ) && ( $previous['recipe_revision'] ?? '' ) !== $recipe ) {
+			$superseded[] = $previous['recipe_revision'];
+		}
+		$job = array(
+			'job_id'           => hash( 'sha256', $consumer . '/' . $source . ( '' === $recipe ? '' : '/' . $recipe ) ),
+			'consumer'         => $consumer,
+			'source_revision'  => $source,
+			'recipe_revision'  => $recipe,
+			'status'           => 'pending',
+			'loaded_products'  => $previous['loaded_products'] ?? array(),
+			'lease_expires_at' => 0,
+			'error'            => '',
+		);
+		if ( 'knowledge' === $consumer ) {
+			// Only compiler hashes are retained: forgetting one could let an old
+			// still-running worker silently replace the newer compiler requirement.
+			$job['superseded_recipes']       = array_values( array_unique( $superseded ) );
+			$job['preparation_complete']     = false;
+			$job['materialization_complete'] = false;
+			$job['activation_epoch']         = (int) ( $previous['activation_epoch'] ?? 0 );
+			foreach ( array( 'loaded_revision', 'index_version', 'loaded_recipe_revision', 'expected_serving_revision', 'serving_revision', 'loaded_activation_epoch' ) as $key ) {
+				if ( isset( $previous[ $key ] ) ) {
+					$job[ $key ] = $previous[ $key ];
+				}
+			}
+		}
+		return $job;
+	}
+
+	/**
+	 * Reconcile the actual process with the receipt, without granting any readiness.
+	 *
+	 * @param array<string,mixed> $job Last acknowledged generation.
+	 * @param array<string,mixed> $loaded Actual serving process response.
+	 */
+	private static function matches_loaded( array $job, array $loaded ): bool {
+		foreach ( array(
+			'source_revision'           => 'loaded_revision',
+			'recipe_revision'           => 'loaded_recipe_revision',
+			'expected_serving_revision' => 'expected_serving_revision',
+			'serving_revision'          => 'serving_revision',
+			'index_version'             => 'index_version',
+			'activation_epoch'          => 'loaded_activation_epoch',
+		) as $actual => $stored ) {
+			if ( ! array_key_exists( $stored, $job ) || ( $loaded[ $actual ] ?? null ) !== $job[ $stored ] ) {
+				return false;
+			}
+		}
+		$products = $loaded['products'] ?? null;
+		if ( ! is_array( $products ) || ! array_is_list( $products ) ) {
+			return false;
+		}
+		$actual = array();
+		foreach ( $products as $product ) {
+			if ( ! is_array( $product ) || ! is_int( $product['product_id'] ?? null ) || ! is_string( $product['product_revision'] ?? null ) || isset( $actual[ $product['product_id'] ] ) ) {
+				return false;
+			}
+			$actual[ $product['product_id'] ] = $product['product_revision'];
+		}
+		$expected = $job['loaded_products'] ?? array();
+		ksort( $actual );
+		ksort( $expected );
+		return $actual === $expected;
+	}
+
+	/**
+	 * Only the exact positive native lease epoch can activate or acknowledge.
+	 *
+	 * @param array<string,mixed> $job Current queue state.
+	 * @param array<string,mixed> $request Leased operation.
+	 */
+	private static function same_epoch( array $job, array $request ): bool {
+		return isset( $request['activation_epoch'], $job['activation_epoch'] ) && is_int( $request['activation_epoch'] ) && 0 < $request['activation_epoch'] && $request['activation_epoch'] === $job['activation_epoch'];
 	}
 
 	/**

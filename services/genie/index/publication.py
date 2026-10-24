@@ -11,34 +11,33 @@ import json
 import re
 import tempfile
 import urllib.request
+from collections.abc import Iterator
 from dataclasses import asdict
 from pathlib import Path
 from typing import Any, NotRequired, TypedDict
 
-from index.chunking import Chunk
+from index.chunking import MAX_TOKENS, Chunk, Tokenizer
 from index.inventory import doc_type_of, document_kind_of, lang_of
 from linker_genie.embedding import sha256_of
 from linker_genie.publication import PublicationClient, Snapshot
+from linker_genie.source_models import (
+    family_labels as _family_labels,
+)
+from linker_genie.source_models import (
+    model_pattern as _model_pattern,
+)
+from linker_genie.source_models import (
+    model_shapes,
+)
+from linker_genie.source_models import (
+    unknown_models as _unknown_models,
+)
 from linker_genie.source_roles import (
     manual_scope_models,
     meter_references,
     pack_model_row,
 )
 
-# Tokens are supplied to Woo for recognition; having letters and digits does not
-# by itself make a frequency, ingress rating, standard or report number a model.
-CODE = re.compile(r"\b[A-Za-z0-9][A-Za-z0-9./-]*\b")
-MODEL_FIELD = re.compile(
-    r"\b(?:models?|product\s+model|model/type|type\s+designation|modell(?:e)?|typ)\b"
-    r"|型号(?:规格)?",
-    re.IGNORECASE,
-)
-ENGINEERING = re.compile(
-    r"(?:IP\d{2}[A-Z]?|(?:IEC|ISO|IEEE|VDE|EN|DIN|UN|UL)\d[\dA-Z./-]*"
-    r"|(?:RS|MPPT|PV|COM|DI|DO|AI|AO)\d+"
-    r"|[\d./-]+(?:[kmunMGT]?(?:Hz|Wh|W|VA|V|Ah|A|Ohm)|Vac|Vdc|Vd\.c|Ad\.c))",
-    re.IGNORECASE,
-)
 COMMON_SCOPE = re.compile(
     r"(?:covered\s+by|subject\s+to).{0,80}(?:these|this)\s+warranty"
     r"|warranty\s+terms\s+and\s+conditions.{0,80}(?:apply|cover)"
@@ -84,6 +83,9 @@ class ScopeProof(TypedDict):
     table_columns: NotRequired[TableColumns]
     referenced_products: NotRequired[list[dict[str, Any]]]
     manual_scope: NotRequired[dict[str, Any]]
+    table_projection: NotRequired[dict[str, Any]]
+    family_scope: NotRequired[dict[str, Any]]
+    author_restrictions: NotRequired[list[dict[str, Any]]]
 
 
 def _table_columns(
@@ -93,6 +95,7 @@ def _table_columns(
     statuses: dict[str, str],
     shapes: set[str],
     observed: dict[str, tuple[set[int], bool]],
+    families: set[str],
 ) -> tuple[dict[str, TableColumns], set[str]]:
     """A source column heading authorizes only the immediately following TableItem.
 
@@ -165,7 +168,7 @@ def _table_columns(
             or not labels.issubset(labels_to_ids)
             # This is an explicit model-column axis; unresolved codes here are
             # model candidates even when their family is absent from Woo.
-            or _unknown_models(tail, labels, shapes, section=True)
+            or _unknown_models(tail, labels, shapes, section=True, families=families)
         ):
             conflicts.update(part.id for part in parts)
             continue
@@ -293,6 +296,7 @@ def _manual_peripheral(
     source: Snapshot,
     patterns: dict[str, re.Pattern[str]],
     shapes: set[str],
+    families: set[str],
 ) -> list[dict[str, Any]]:
     """A literal meter role can support host compatibility, never meter facts."""
     if (
@@ -344,6 +348,7 @@ def _manual_peripheral(
         reference_labels.union(port_labels),
         shapes,
         section=True,
+        families=families,
     ):
         return []
     for prior in previous:
@@ -353,30 +358,38 @@ def _manual_peripheral(
             continue
         if any(
             pattern.search(prior.text) for pattern in patterns.values()
-        ) or _unknown_models(prior.text, set(), shapes, section=True):
+        ) or _unknown_models(
+            prior.text, set(), shapes, section=True, families=families
+        ):
             return []
     return references
 
 
-def codes(text: str) -> list[str]:
-    return sorted(
-        {
-            token
-            for token in CODE.findall(text)
-            if any(c.isalpha() for c in token) and any(c.isdigit() for c in token)
-        }
-    )
-
-
-def _model_pattern(label: str) -> re.Pattern[str]:
-    # A shorter published model must not authorize the ratings of a suffix variant.
-    written = r"\s+".join(re.escape(part) for part in label.split())
-    pattern = r"(?<![\w./-])" + written + r"(?![\w/-]|\.(?=\w))"
-    return re.compile(pattern, re.IGNORECASE)
-
-
 def _mentions(text: str, label: str) -> bool:
     return _model_pattern(label).search(text) is not None
+
+
+def _authored_text_parts(chunk: Chunk) -> Iterator[str]:
+    """Bound original heading events and passage text for Woo identification."""
+    # Woo's exact-text endpoint allows 16,000 UTF-8 bytes. Its exact model-label
+    # contract allows 200 bytes; overlap preserves a label crossing a text window.
+    limit, overlap = 16000, 200
+    for text in (*chunk.source_headings, chunk.section + "\n" + chunk.text):
+        if not text.strip():
+            continue
+        data = text.encode()
+        start = 0
+        while start < len(data):
+            end = min(start + limit, len(data))
+            # Byte offsets may land inside an original UTF-8 code point.
+            while end < len(data) and data[end] & 0xC0 == 0x80:
+                end -= 1
+            yield data[start:end].decode()
+            if end == len(data):
+                break
+            start = end - overlap
+            while data[start] & 0xC0 == 0x80:
+                start -= 1
 
 
 def _recognized(chunks: list[Chunk], authority: PublicationClient) -> dict[str, str]:
@@ -384,78 +397,25 @@ def _recognized(chunks: list[Chunk], authority: PublicationClient) -> dict[str, 
 
     A build must not infer an unknown code's permission from an old index. The
     16,000-byte limit is the existing Woo exact-text endpoint's request contract.
-    Chunk text is bounded by the chunker's 512-token contract; headers are excluded.
+    Original empty ancestor headings retain scope; generated headers are excluded.
     """
     result: dict[str, str] = {}
     batch = ""
     seen = set()
     for chunk in chunks:
-        text = chunk.section + "\n" + chunk.text
-        if text in seen:
-            continue
-        seen.add(text)
-        if len(text.encode()) > 16000:
-            raise ValueError("authored chunk exceeds Woo identification text limit")
-        if len((batch + "\n" + text).encode()) > 16000:
-            result.update(authority.identify_text(batch))
-            batch = ""
-        batch += "\n" + text
+        for text in _authored_text_parts(chunk):
+            if text in seen:
+                continue
+            seen.add(text)
+            joined = batch + "\n" + text if batch else text
+            if len(joined.encode()) > 16000:
+                result.update(authority.identify_text(batch))
+                batch = text
+            else:
+                batch = joined
     if batch:
         result.update(authority.identify_text(batch))
     return result
-
-
-def _unknown_models(
-    text: str, labels: set[str], shapes: set[str], *, section: bool = False
-) -> bool:
-    """Reject unresolved model references, not ordinary engineering tokens.
-
-    Model families come from Woo's supplied-label recognition and current models.
-    Author-written Model/Type axes and conjunctions beside a model also provide
-    model context; this keeps a foreign Z999 column out of a shared ratings table.
-    """
-    known_tokens = {token.casefold() for label in labels for token in codes(label)}
-    declared = {
-        token.casefold()
-        for line in text.splitlines()
-        if MODEL_FIELD.search(line)
-        for token in codes(line)
-    }
-    residual = text
-    for label in sorted(labels, key=len, reverse=True):
-        residual = re.sub(re.escape(label), " @MODEL@ ", residual, flags=re.IGNORECASE)
-    coupled = {
-        token.casefold()
-        for token in re.findall(
-            r"@MODEL@\s*(?:[,/&|]|and\b|or\b|und\b|oder\b)\s*([A-Za-z0-9][A-Za-z0-9./-]*)",
-            residual,
-            re.IGNORECASE,
-        )
-    }
-    for line in text.splitlines():
-        amendments = {s.casefold() for s in re.findall(r"\+\s*([A-Z]\d+)\b", line)}
-        for token in codes(line):
-            if (
-                token.casefold() in known_tokens
-                or token.casefold() in amendments
-                or ENGINEERING.fullmatch(token)
-            ):
-                continue
-            prefix = re.match(r"[A-Za-z]+", token)
-            if (
-                (prefix is not None and prefix[0].casefold() in shapes)
-                or any(
-                    token.casefold() == shape
-                    or token.casefold().startswith(shape + "-")
-                    for shape in shapes
-                    if any(c.isdigit() for c in shape)
-                )
-                or token.casefold() in declared
-                or token.casefold() in coupled
-                or section
-            ):
-                return True
-    return False
 
 
 def inventory(
@@ -575,7 +535,11 @@ def applicability(
 
 
 def scope_proofs(
-    chunks: list[Chunk], manifest: dict[str, Any], authority: PublicationClient
+    chunks: list[Chunk],
+    manifest: dict[str, Any],
+    authority: PublicationClient,
+    *,
+    _statuses: dict[str, str] | None = None,
 ) -> dict[str, ScopeProof]:
     """Prove authored model scope or a truly model-free Woo document purpose.
 
@@ -592,18 +556,11 @@ def scope_proofs(
     for document in source.documents.values():
         documents.setdefault(document["blob_sha256"], []).append(document)
     relevant = [chunk for chunk in chunks if chunk.doc_sha256 in documents]
-    statuses = _recognized(relevant, authority)
+    statuses = _recognized(relevant, authority) if _statuses is None else _statuses
     labels = set(statuses).union(current_labels)
+    families = _family_labels(labels)
     patterns = {label: _model_pattern(label) for label in labels}
-    shapes = set()
-    for label in labels:
-        leading = re.match(r"[A-Za-z]+", label)
-        if leading is not None and len(leading[0]) >= 2:
-            shapes.add(leading[0].casefold())
-        else:
-            first = re.split(r"[\s./-]", label)[0]
-            if len(first) >= 2:
-                shapes.add(first.casefold())
+    shapes = model_shapes(labels)
     observed: dict[str, tuple[set[int], bool]] = {}
     doc_models: dict[str, set[int]] = {}
     ambiguous: set[str] = set()
@@ -633,8 +590,10 @@ def scope_proofs(
             )
             or any(label not in current_labels for label in contained)
             or not matched.issubset(associated)
-            or _unknown_models(passage, contained, shapes)
-            or _unknown_models(chunk.section, contained, shapes, section=True)
+            or _unknown_models(passage, contained, shapes, families=families)
+            or _unknown_models(
+                chunk.section, contained, shapes, section=True, families=families
+            )
         )
         observed[chunk.id] = matched, blocked
         positive = matched.intersection(associated)
@@ -650,7 +609,7 @@ def scope_proofs(
             ambiguous.add(chunk.doc_sha256)
             ambiguous_sections.add(section_key)
     columns, table_conflicts = _table_columns(
-        relevant, models, patterns, statuses, shapes, observed
+        relevant, models, patterns, statuses, shapes, observed, families
     )
     manual_scopes = _manual_scopes(relevant, documents, models)
     result: dict[str, ScopeProof] = {}
@@ -666,7 +625,7 @@ def scope_proofs(
         basis, origin = "passage", [chunk.id]
         declaration = manual_scopes.get(chunk.doc_sha256)
         references = _manual_peripheral(
-            chunk, relevant, declaration, source, patterns, shapes
+            chunk, relevant, declaration, source, patterns, shapes, families
         )
         if references:
             assert declaration is not None
@@ -760,3 +719,20 @@ def scope_proofs(
                 result[chunk.id]["referenced_products"] = references
                 result[chunk.id]["manual_scope"] = declaration
     return result
+
+
+def compile_publication(
+    chunks: list[Chunk],
+    manifest: dict[str, Any],
+    authority: PublicationClient,
+    tokenizer: Tokenizer,
+    max_tokens: int = MAX_TOKENS,
+) -> tuple[list[Chunk], dict[str, ScopeProof]]:
+    """Original strict passages plus automatic per-model source answer units.
+
+    Run before embedding: the model must see the selected current column's
+    text, never the old multi-model text with merely narrower permission IDs.
+    """
+    from index.table_compiler import compile_scopes
+
+    return compile_scopes(chunks, manifest, authority, tokenizer, max_tokens)
