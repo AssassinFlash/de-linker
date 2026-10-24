@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "lp-table-scroll",
+    "rect": {
+      "bottom": 1365.296875,
+      "height": 345.5546875,
+      "left": 16,
+      "right": 374,
+      "top": 1019.7421875,
+      "width": 358,
+      "x": 16,
+      "y": 1019.7421875
+    },
+    "tag": "DIV"
+  },
+  "headings": [
+    "Energieberechnung",
+    "Bisherige Berechnungen",
+    "Berechnung abgeschlossen",
+    "Software und Datenquellen"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+  ],
+  "scroll": {
+    "pageWidth": 390,
+    "x": 0,
+    "y": 2350.5
+  },
+  "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations",
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

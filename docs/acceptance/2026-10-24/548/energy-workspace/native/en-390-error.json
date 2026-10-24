@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "lp-focus-target",
+    "rect": {
+      "bottom": 283.625,
+      "height": 73.59375,
+      "left": 16,
+      "right": 374,
+      "top": 210.03125,
+      "width": 358,
+      "x": 16,
+      "y": 210.03125
+    },
+    "tag": "DIV"
+  },
+  "headings": [
+    "Energy calculation",
+    "Interval sources",
+    "Storage parameters",
+    "Software and data credits"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=5515effff1fadfb1649f6ec05bde8838fb3e697e80169e8623c6d89cc0ab8f80"
+  ],
+  "scroll": {
+    "pageWidth": 390,
+    "x": 0,
+    "y": 401
+  },
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations",
+  "viewport": {
+    "height": 844,
+    "width": 390
+  }
+}

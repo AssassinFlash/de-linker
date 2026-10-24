@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-8252 logged-in wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 woocommerce-js lc-custom-header lc-custom-footer",
+    "rect": {
+      "bottom": 1480.8984375,
+      "height": 1675.8984375,
+      "left": 0,
+      "right": 1440,
+      "top": -195,
+      "width": 1440,
+      "x": 0,
+      "y": -195
+    },
+    "tag": "BODY"
+  },
+  "headings": [
+    "Energy calculation",
+    "Calculation history",
+    "Calculation cancelled",
+    "Software and data credits"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+  ],
+  "scroll": {
+    "pageWidth": 1440,
+    "x": 0,
+    "y": 195
+  },
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

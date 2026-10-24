@@ -1,0 +1,36 @@
+{
+  "runtime_policy_sha256": "a9703dd31e500d6bee015446a601f5e353995e539597fc817b3b86829be6403a",
+  "process_records": {
+    "engine": {
+      "pid": 27379,
+      "record_sha256": "c1e446aad474b27f93a69268090067f703435c7d807e98be713bfc5b99280a7b",
+      "actual_identity_sha256": "cc55a25d26fd183f076312fd3ee6f78ee55ddc2492aa9d3eb664bb132d2a7d41"
+    },
+    "genie": {
+      "pid": 37508,
+      "record_sha256": "cb7b935c1567d823ddc6bf562181bbef3291626f7e2060a24db7d1ff336f5e3b",
+      "actual_identity_sha256": "2ef35b04a550335509900d0f45fbe18b9b903bd72be3eb27e4f3f16b474b2161"
+    },
+    "server": {
+      "pid": 54888,
+      "record_sha256": "20882e6f8763d65fc7e729d7534b436377ead15578c6d7f31cd19ff94c78b3bc",
+      "actual_identity_sha256": "27f847f14daf34a7cc880f80791ea52b96acdf28da6940dc0b35dddddcab6b0a"
+    },
+    "planner-worker": {
+      "pid": 27394,
+      "record_sha256": "589682ff2c7132afa64cc8bcc2cdd664e2debddc67b61a677922dda514784e73",
+      "actual_identity_sha256": "d84c5b511b2fa03706990befb2f8019dd2315a90dc58217ea04b9e2127892b64"
+    }
+  },
+  "ready": {
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "generation": "432df7025b634aa3a656e74fb9a96bb1",
+    "name": "local-p548",
+    "pid": 27398,
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "worker_live_status": "S",
+  "disk_free_bytes": 905719508992
+}

@@ -1,0 +1,141 @@
+Browser tab: 2, Title: "Solution Configurator · Workspace review | Linker", URL: "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations".
+1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+	2 container
+		3 container Primary navigation
+			4 link Description: Linker home, Value: 127.0.0.1:9347/
+			5 link Description: Search products, Value: 127.0.0.1:9347/products/#search-box
+			6 container Language
+				7 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+				8 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			9 button (collapsed) Description: Open menu, ID: tv-mobile-toggle, Secondary Actions: Expand
+				10 image
+		11 container
+			12 button Projects
+			13 pop up button (collapsed, settable) Description: Project sections, Value: Energy calculation, Secondary Actions: Expand
+				14 menu
+					15 Project overview
+					16 Site and project
+					17 Roof design
+					18 Energy inputs
+					19 (selected) Energy calculation
+			20 text Saved · revision 3
+			21 button (disabled) Undo
+			22 button Redo
+			23 button (disabled) Save project
+			24 text CURRENT PROJECT
+			25 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				26 text Lyon · synthetic energy scenario · acceptance
+			27 text Site data and roof layouts are saved in the same project.
+			28 container Energy calculation, ID: lp-calculations
+				29 text 07
+				30 heading Energy calculation, Value: 2, ID: lp-calculations-heading
+					31 text Energy calculation
+				32 text Calculate this project's energy flows over the selected periods. Each saved result keeps the inputs, sources and model used.
+				33 container Calculation workspace view
+					34 checkbox Scenario settings, Value: 1
+					35 checkbox Saved calculations, Value: 0
+				38 heading Interval sources, Value: 3
+					39 text Interval sources
+				40 content list
+					41 container
+						42 text Total site load Selected in this draft
+					43 container
+						44 text Available PV output · AC Selected in this draft
+					45 container
+						46 text External auxiliary load · AC Selected in this draft
+				47 button Review energy inputs
+				48 content list
+					49 button 01 Storage
+						50 text 01
+						51 text Storage
+					52 button 02 Starting state
+						53 text 02
+						54 text Starting state
+					55 button 03 Operation
+						56 text 03
+						57 text Operation
+				58 container
+					59 heading Storage parameters, Value: 3
+						60 text Storage parameters
+					61 text These values define a storage scenario at one AC connection. This calculation does not assess product suitability.
+					62 container
+						63 text Usable stored energy kWh
+					64 text field (settable) Usable stored energy kWh, Value: 5
+					65 text Decimal point; no thousands separators.
+					66 container
+						67 text AC charging power kW
+					68 text field (settable) AC charging power kW, Value: 5
+					69 text Decimal point; no thousands separators.
+					70 container
+						71 text AC discharging power kW
+					72 text field (settable) AC discharging power kW, Value: 5
+					73 text Decimal point; no thousands separators.
+					74 container
+						75 text Charging efficiency %
+					76 text field (settable) Charging efficiency %, Value: 90
+					77 text Decimal point; no thousands separators.
+					78 container
+						79 text Discharging efficiency %
+					80 text field (settable) Discharging efficiency %, Value: 90
+					81 text Decimal point; no thousands separators.
+					82 container
+						83 text Internal auxiliary power kW
+					84 text field (settable) Internal auxiliary power kW, Value: 0
+					85 text Decimal point; no thousands separators.
+					86 container
+						87 text Standing-loss coefficient 1/h
+					88 text field (settable) Standing-loss coefficient 1/h, Value: 0
+					89 text Decimal point; no thousands separators.
+					90 text Source or assumption for storage parameters
+					91 text entry area (settable) Source or assumption for storage parameters, Value: Explicit analytic acceptance scenario: 5 kWh usable, 5 kW AC in/out, separate 90% efficiencies, zero auxiliary and standing losses. No manufacturer, SKU or equipment approval.
+					92 button (collapsed) Storage model and units, Secondary Actions: Expand
+						93 text Storage model and units
+				94 text Scenario prepared in this draft
+				95 text A new calculation uses saved input revision 3.
+				96 button Prepare scenario settings
+				97 button Calculate saved scenario
+			98 text Solution Configurator
+			99 text by Linker
+			100 text Linker brings your inputs into an editable project for solar and storage planning.
+			101 button (collapsed) About this tool, Secondary Actions: Expand
+				102 text About this tool
+		103 container tv-footer-v2
+			104 image Linker
+			105 container
+				106 text Language
+				107 container Language
+					108 link Description: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+					109 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			110 text LINKING
+			111 link Description: products, Value: 127.0.0.1:9347/products/
+			112 text ,
+			113 link Description: technology, Value: 127.0.0.1:9347/about/capability/
+			114 text and
+			115 link Description: service, Value: 127.0.0.1:9347/services-support/
+			116 text to create 
+			117 text lasting value
+			118 text  for energy partners in Europe.
+			119 tab group Footer navigation
+				120 tab (selected, settable, boolean) Solutions, Value: 1, ID: footer-tab-solutions
+				121 tab (selectable, settable, boolean) Services, Value: 0, ID: footer-tab-services
+				122 tab (selectable, settable, boolean) Plan with Linker, Value: 0, ID: footer-tab-planning
+				123 tab (selectable, settable, boolean) Account, Value: 0, ID: footer-tab-account
+				124 tab (selectable, settable, boolean) Contact Linker, Value: 0, ID: footer-tab-contact
+			125 container Description: Solutions, ID: footer-panel-solutions
+				126 heading Solutions, Value: 2
+					127 text Solutions
+				128 content list
+					129 link Description: Residential Storage, Value: 127.0.0.1:9347/solution/residential-storage/
+					130 link Description: Commercial Storage, Value: 127.0.0.1:9347/solution/commercial-storage/
+					131 link Description: Utility-Scale Storage, Value: 127.0.0.1:9347/solution/utility-storage/
+			132 text © 2026 Linker. All rights reserved.
+			133 container Legal
+				134 link Description: Imprint, Value: 127.0.0.1:9347/imprint/
+				135 link Description: Privacy Policy, Value: 127.0.0.1:9347/privacy-policy/
+				136 button Cookie settings
+				137 link Description: Terms of Sale, Value: 127.0.0.1:9347/terms-of-sale/
+				138 link Description: Refund & Returns, Value: 127.0.0.1:9347/refund-returns/
+			139 container
+				140 text Product fit · Inverter compatibility · Project support
+
+The focused UI element is 1 AXWebArea Solution Configurator · Workspace review | Linker, URL: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations

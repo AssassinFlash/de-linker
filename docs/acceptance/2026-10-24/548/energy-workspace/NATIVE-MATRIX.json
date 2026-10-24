@@ -1,0 +1,511 @@
+{
+  "application_source_pin": "ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a",
+  "matrix": [
+    {
+      "state": "success",
+      "language": "en",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 233.484375,
+          "height": 25.296875,
+          "left": 540.6796875,
+          "right": 757.890625,
+          "top": 208.1875,
+          "width": 217.2109375,
+          "x": 540.6796875,
+          "y": 208.1875
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "en-1440-current-result.json": {
+          "sha256": "5f4c2bc15acc36a7dbb700f5f14713ad685bfbbcd992d3f9998cb67dce58fd54",
+          "bytes": 892
+        },
+        "en-1440-current-result.jpg": {
+          "sha256": "6ac14a231549792f2b4de5028bc28418308d857b709e4d3e6550a9f98eab18a7",
+          "bytes": 87656
+        },
+        "en-1440-current-result.ax.txt": {
+          "sha256": "2e3688b4dd1e6baba8b39927860d711e5fd488f5ae4cd72cec9caf2ab4c85484",
+          "bytes": 8477
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "success",
+      "language": "en",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 261.5859375,
+          "height": 23,
+          "left": 16,
+          "right": 213.4609375,
+          "top": 238.5859375,
+          "width": 197.4609375,
+          "x": 16,
+          "y": 238.5859375
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "en-390-current-result.json": {
+          "sha256": "552d3b918a8f81fa5516198852b02018d2dcd36e75e5ca4d363ff67de38bf800",
+          "bytes": 874
+        },
+        "en-390-current-result.jpg": {
+          "sha256": "32e367b6452eafc6d05fb6fc31b678dcdc752dce5fbf394965f3a688492a92ab",
+          "bytes": 37770
+        },
+        "en-390-current-result.ax.txt": {
+          "sha256": "52a4ad4ca423b89a6c941366c00ecdca2c0bbbf7aad2373bab227de0328c25db",
+          "bytes": 6956
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "success",
+      "language": "de",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 233.4296875,
+          "height": 25.296875,
+          "left": 540.6796875,
+          "right": 822.3046875,
+          "top": 208.1328125,
+          "width": 281.625,
+          "x": 540.6796875,
+          "y": 208.1328125
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "de-1440-current-result.json": {
+          "sha256": "6b920c9bf06d256690a21d567b0a3f5076245c624bcf20c6717edc1bedbda6c7",
+          "bytes": 909
+        },
+        "de-1440-current-result.jpg": {
+          "sha256": "6410d03cd7b8c247add165c46b3214aa38eafa4f95310fd9b3a77f022cdefbd3",
+          "bytes": 99338
+        },
+        "de-1440-current-result.ax.txt": {
+          "sha256": "3a5e024af14dfe457371d06e14cd00472fe9e62d7105b87e69f15a344ddfb6cd",
+          "bytes": 9010
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "success",
+      "language": "de",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=14dacb74cda2451a95d00df374532af8#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 261.328125,
+          "height": 23,
+          "left": 16,
+          "right": 272.0234375,
+          "top": 238.328125,
+          "width": 256.0234375,
+          "x": 16,
+          "y": 238.328125
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "de-390-current-result.json": {
+          "sha256": "eb79cdb4750c8a8264d0b8da7b321476d12c1de4eda38ff1badcc554a7d3a471",
+          "bytes": 880
+        },
+        "de-390-current-result.jpg": {
+          "sha256": "e3ffcda38d94a5403afb26be2e4f187b5b85703080f01be470d5355be4e52c62",
+          "bytes": 40681
+        },
+        "de-390-current-result.ax.txt": {
+          "sha256": "71661bbc85a899f9ec9f6830a267920dac6242325ea00905cadcae15a196600a",
+          "bytes": 7422
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "failed",
+      "language": "en",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=43310088cfe74ba19bdb155fb3ce1598#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 233.484375,
+          "height": 25.296875,
+          "left": 540.6796875,
+          "right": 715.515625,
+          "top": 208.1875,
+          "width": 174.8359375,
+          "x": 540.6796875,
+          "y": 208.1875
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "en-1440-failure-final.json": {
+          "sha256": "5af95787045658214aca2d7e9758a6c6f787a6a344808a94af4a02467b046a34",
+          "bytes": 890
+        },
+        "en-1440-failure-final.jpg": {
+          "sha256": "78a5b2de59ac23cd3afc3ffabc94e01f714a865f7480e45262d752b096e22fb8",
+          "bytes": 89457
+        },
+        "en-1440-failure-final.ax.txt": {
+          "sha256": "b65d938e48029094bd7aa4d57e88afe97bf34cfa1e2a32c895feb3bee19cb948",
+          "bytes": 6987
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "failed",
+      "language": "en",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=43310088cfe74ba19bdb155fb3ce1598#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f3eea0738fbd08a4297369c602c22476339ec2d9e01bd34f72342da9bfa88748"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 356.8046875,
+          "height": 23,
+          "left": 16,
+          "right": 174.9453125,
+          "top": 333.8046875,
+          "width": 158.9453125,
+          "x": 16,
+          "y": 333.8046875
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "en-390-failure.json": {
+          "sha256": "f1433fd8d7621eb34651bc89ee517dc954f280e93243f676a769a85dd96b2e29",
+          "bytes": 872
+        },
+        "en-390-failure.jpg": {
+          "sha256": "d3553417477998c7c918e108aa576fc9df3ce007d2291bc1b56a432d42dd246d",
+          "bytes": 34206
+        },
+        "en-390-failure.ax.txt": {
+          "sha256": "188c0241a1d2c42c1e0c4fffe9fafae5883b1a864d8eb4a1ec3d684a46f04c2c",
+          "bytes": 5518
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "failed",
+      "language": "de",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=43310088cfe74ba19bdb155fb3ce1598#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 233.4296875,
+          "height": 25.296875,
+          "left": 540.6796875,
+          "right": 824.703125,
+          "top": 208.1328125,
+          "width": 284.0234375,
+          "x": 540.6796875,
+          "y": 208.1328125
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "de-1440-failure.json": {
+          "sha256": "7c21d9d0abfc1b33ca15fde2e4cb800ceb90ffa6f27ec5ee019a6fc4e08720c8",
+          "bytes": 913
+        },
+        "de-1440-failure.jpg": {
+          "sha256": "7b1c3734651400ac4cca3c35364475390bc0af44ac31d23974da0b1d199cdfc0",
+          "bytes": 98270
+        },
+        "de-1440-failure.ax.txt": {
+          "sha256": "56420c1c47152dc5790da037196295de871747d179cce01ea4ad378cf8b41122",
+          "bytes": 7397
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "failed",
+      "language": "de",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=43310088cfe74ba19bdb155fb3ce1598#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 261.546875,
+          "height": 23,
+          "left": 16,
+          "right": 274.203125,
+          "top": 238.546875,
+          "width": 258.203125,
+          "x": 16,
+          "y": 238.546875
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "de-390-failure.json": {
+          "sha256": "c5eb960c0900018010a973410ef1da8ba26c3ea1a119987da1e3586e3c80c520",
+          "bytes": 879
+        },
+        "de-390-failure.jpg": {
+          "sha256": "54e01a775dcab2ea6cbd0960206333c69f7647a0f4703ae19798a535940ef614",
+          "bytes": 40529
+        },
+        "de-390-failure.ax.txt": {
+          "sha256": "d7be02c38dfd41fae88c67ccf95349da7183f766bf6fa319628810197df4a021",
+          "bytes": 5812
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "cancelled",
+      "language": "en",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "wp-singular page-template page-template-page-templates page-template-empty page-template-page-templatesempty-php page page-id-8252 logged-in wp-custom-logo wp-embed-responsive wp-theme-picostrap5 wp-child-theme-picostrap5-child-base theme-picostrap5 woocommerce-js lc-custom-header lc-custom-footer",
+        "rect": {
+          "bottom": 1480.8984375,
+          "height": 1675.8984375,
+          "left": 0,
+          "right": 1440,
+          "top": -195,
+          "width": 1440,
+          "x": 0,
+          "y": -195
+        },
+        "tag": "BODY"
+      },
+      "files": {
+        "en-1440-cancelled.json": {
+          "sha256": "7f0c6e4f20298b3de3191b6e7f372a368e9366fc159ed3510ce252886ae21efd",
+          "bytes": 1142
+        },
+        "en-1440-cancelled.jpg": {
+          "sha256": "6f80f046bac00dbf5f5abe34dfb68dae7c597398acd3588350676bd87944e8f5",
+          "bytes": 83299
+        },
+        "en-1440-cancelled.ax.txt": {
+          "sha256": "67dc42e5037c1b53ea19d324c08d292f73bff859539bac226586f43233ba9eed",
+          "bytes": 7308
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "cancelled",
+      "language": "en",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 261.1953125,
+          "height": 23,
+          "left": 16,
+          "right": 213.8203125,
+          "top": 238.1953125,
+          "width": 197.8203125,
+          "x": 16,
+          "y": 238.1953125
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "en-390-cancelled.json": {
+          "sha256": "1d9c66c9d826523617b7454d2519c5dbcf4527fa211c708061b3bc4f62a3f8ba",
+          "bytes": 875
+        },
+        "en-390-cancelled.jpg": {
+          "sha256": "718c02a7f189cb3e007b0cd987b3121a146426e22a34221a87426fe17557c0af",
+          "bytes": 36664
+        },
+        "en-390-cancelled.ax.txt": {
+          "sha256": "cfe8f5af33f91988e9c84d8674a023cdcceab3c0d3edf872e927e0dd77f1ee92",
+          "bytes": 5621
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "cancelled",
+      "language": "de",
+      "viewport": {
+        "height": 1000,
+        "width": 1440
+      },
+      "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 233.4296875,
+          "height": 25.296875,
+          "left": 540.6796875,
+          "right": 806.9296875,
+          "top": 208.1328125,
+          "width": 266.25,
+          "x": 540.6796875,
+          "y": 208.1328125
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "de-1440-cancelled.json": {
+          "sha256": "22bf0be97976718b763d5f03b7b7fbab3388b507d8da38d9728426fe059e9eb2",
+          "bytes": 906
+        },
+        "de-1440-cancelled.jpg": {
+          "sha256": "08c26102e9f64b34c9d5a46f8c32a1f009628b5ab2363a0e2d976010a9bd62d3",
+          "bytes": 96212
+        },
+        "de-1440-cancelled.ax.txt": {
+          "sha256": "e17964c1702c94c18536ad897c6aef30c0e5647afee81dfd4edfa618f94a4fa6",
+          "bytes": 7491
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    },
+    {
+      "state": "cancelled",
+      "language": "de",
+      "viewport": {
+        "height": 844,
+        "width": 390
+      },
+      "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be&run=a0f51822d8ee4e0e98ff4112145ed767#lp-calculations",
+      "loaded_scripts": [
+        "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=52fb733a2fc7884b846623f07279ab9ca6d9cb6d788c73163c09cd088c1d197b"
+      ],
+      "focus": {
+        "classes": "lp-focus-target",
+        "rect": {
+          "bottom": 261.4375,
+          "height": 23,
+          "left": 16,
+          "right": 258.046875,
+          "top": 238.4375,
+          "width": 242.046875,
+          "x": 16,
+          "y": 238.4375
+        },
+        "tag": "H3"
+      },
+      "files": {
+        "de-390-cancelled.json": {
+          "sha256": "8a630e9f1528c3ac42419fbdd53e744329847f680aa749ea1f057b1aaa01c4a3",
+          "bytes": 872
+        },
+        "de-390-cancelled.jpg": {
+          "sha256": "8a209e6c1dd411e9546210b4b0576284a308cabf7e725a0fc1a881e96eb6d66f",
+          "bytes": 39634
+        },
+        "de-390-cancelled.ax.txt": {
+          "sha256": "b5a3243a4c612e3808011e388af9f843ec7212ac437161a151765f80df3a00db",
+          "bytes": 5904
+        }
+      },
+      "disposition": "Passed for the actual captured state; not a production or full-goal gate."
+    }
+  ],
+  "failed_intermediate_captures": [
+    "en-1440-incomplete",
+    "en-1440-result-initial",
+    "en-1440-result",
+    "en-1440-result-fixed",
+    "en-1440-result-reload-pass",
+    "en-1440-result-final",
+    "en-1440-failure"
+  ],
+  "intermediate_loading_capture": [
+    "en-390-earlier-inputs"
+  ],
+  "disposition_source": "VALIDATION.md names the specific defect and replacement for each intermediate capture. No blanket acceptance of the native directory.",
+  "private_admin_capture_excluded": true
+}

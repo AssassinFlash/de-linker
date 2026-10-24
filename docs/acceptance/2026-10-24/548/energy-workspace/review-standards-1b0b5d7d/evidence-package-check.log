@@ -1,0 +1,294 @@
+PACKAGE_FILES 237 BYTES 4685826
+PASS Parsed all 72 JSON files and decoded 184 text/code/log files
+PASS syntax/read cancel_worker_window.py
+PASS syntax/read readback_customer_run.py
+PASS reader enforces absolute 1e-12 with zero relative tolerance in both checks
+PASS Markdown link VALIDATION.md -> ../../../../specs/548-energy-workspace.md
+PASS Markdown link review-spec-1b0b5d7d/REPORT.md -> CLOSURE-4943.md
+PASS Markdown link review-spec-1b0b5d7d/REPORT.md -> CLOSURE-BD2C.md
+PASS Markdown link review-spec-1b0b5d7d/REPORT.md -> CLOSURE-3853.md
+PASS Markdown link review-spec-1b0b5d7d/REPORT.md -> CLOSURE-0836.md
+PASS Markdown link review-spec-1b0b5d7d/REPORT.md -> CLOSURE-CEB4.md
+PASS Markdown link review-standards-1b0b5d7d/report.md -> addendum-4943aef7.md
+PASS Markdown link review-standards-1b0b5d7d/report.md -> addendum-cda1b7df.md
+PASS Markdown link review-standards-1b0b5d7d/report.md -> addendum-443eb71d.md
+PASS Markdown link review-standards-1b0b5d7d/report.md -> addendum-ceb4a896.md
+PASS Markdown link review-standards-1b0b5d7d/addendum-bd2cba70.md -> addendum-cda1b7df.md
+PASS matrix source pin
+PASS all three terminal states x EN/DE x two widths present
+PASS unique matrix ('success', 'en', 1440)
+PASS matrix bytes/hash en-1440-current-result.json
+PASS matrix bytes/hash en-1440-current-result.jpg
+PASS matrix bytes/hash en-1440-current-result.ax.txt
+PASS matrix metadata ('success', 'en', 1440)
+PASS no page-width overflow ('success', 'en', 1440)
+PASS current success H3/current emitted hash ('success', 'en', 1440)
+PASS correct real run URL ('success', 'en', 1440)
+PASS unique matrix ('success', 'en', 390)
+PASS matrix bytes/hash en-390-current-result.json
+PASS matrix bytes/hash en-390-current-result.jpg
+PASS matrix bytes/hash en-390-current-result.ax.txt
+PASS matrix metadata ('success', 'en', 390)
+PASS no page-width overflow ('success', 'en', 390)
+PASS current success H3/current emitted hash ('success', 'en', 390)
+PASS correct real run URL ('success', 'en', 390)
+PASS unique matrix ('success', 'de', 1440)
+PASS matrix bytes/hash de-1440-current-result.json
+PASS matrix bytes/hash de-1440-current-result.jpg
+PASS matrix bytes/hash de-1440-current-result.ax.txt
+PASS matrix metadata ('success', 'de', 1440)
+PASS no page-width overflow ('success', 'de', 1440)
+PASS current success H3/current emitted hash ('success', 'de', 1440)
+PASS correct real run URL ('success', 'de', 1440)
+PASS unique matrix ('success', 'de', 390)
+PASS matrix bytes/hash de-390-current-result.json
+PASS matrix bytes/hash de-390-current-result.jpg
+PASS matrix bytes/hash de-390-current-result.ax.txt
+PASS matrix metadata ('success', 'de', 390)
+PASS no page-width overflow ('success', 'de', 390)
+PASS current success H3/current emitted hash ('success', 'de', 390)
+PASS correct real run URL ('success', 'de', 390)
+PASS unique matrix ('failed', 'en', 1440)
+PASS matrix bytes/hash en-1440-failure-final.json
+PASS matrix bytes/hash en-1440-failure-final.jpg
+PASS matrix bytes/hash en-1440-failure-final.ax.txt
+PASS matrix metadata ('failed', 'en', 1440)
+PASS no page-width overflow ('failed', 'en', 1440)
+PASS correct real run URL ('failed', 'en', 1440)
+PASS unique matrix ('failed', 'en', 390)
+PASS matrix bytes/hash en-390-failure.json
+PASS matrix bytes/hash en-390-failure.jpg
+PASS matrix bytes/hash en-390-failure.ax.txt
+PASS matrix metadata ('failed', 'en', 390)
+PASS no page-width overflow ('failed', 'en', 390)
+PASS correct real run URL ('failed', 'en', 390)
+PASS unique matrix ('failed', 'de', 1440)
+PASS matrix bytes/hash de-1440-failure.json
+PASS matrix bytes/hash de-1440-failure.jpg
+PASS matrix bytes/hash de-1440-failure.ax.txt
+PASS matrix metadata ('failed', 'de', 1440)
+PASS no page-width overflow ('failed', 'de', 1440)
+PASS correct real run URL ('failed', 'de', 1440)
+PASS unique matrix ('failed', 'de', 390)
+PASS matrix bytes/hash de-390-failure.json
+PASS matrix bytes/hash de-390-failure.jpg
+PASS matrix bytes/hash de-390-failure.ax.txt
+PASS matrix metadata ('failed', 'de', 390)
+PASS no page-width overflow ('failed', 'de', 390)
+PASS correct real run URL ('failed', 'de', 390)
+PASS unique matrix ('cancelled', 'en', 1440)
+PASS matrix bytes/hash en-1440-cancelled.json
+PASS matrix bytes/hash en-1440-cancelled.jpg
+PASS matrix bytes/hash en-1440-cancelled.ax.txt
+PASS matrix metadata ('cancelled', 'en', 1440)
+PASS no page-width overflow ('cancelled', 'en', 1440)
+PASS correct real run URL ('cancelled', 'en', 1440)
+PASS unique matrix ('cancelled', 'en', 390)
+PASS matrix bytes/hash en-390-cancelled.json
+PASS matrix bytes/hash en-390-cancelled.jpg
+PASS matrix bytes/hash en-390-cancelled.ax.txt
+PASS matrix metadata ('cancelled', 'en', 390)
+PASS no page-width overflow ('cancelled', 'en', 390)
+PASS correct real run URL ('cancelled', 'en', 390)
+PASS unique matrix ('cancelled', 'de', 1440)
+PASS matrix bytes/hash de-1440-cancelled.json
+PASS matrix bytes/hash de-1440-cancelled.jpg
+PASS matrix bytes/hash de-1440-cancelled.ax.txt
+PASS matrix metadata ('cancelled', 'de', 1440)
+PASS no page-width overflow ('cancelled', 'de', 1440)
+PASS correct real run URL ('cancelled', 'de', 1440)
+PASS unique matrix ('cancelled', 'de', 390)
+PASS matrix bytes/hash de-390-cancelled.json
+PASS matrix bytes/hash de-390-cancelled.jpg
+PASS matrix bytes/hash de-390-cancelled.ax.txt
+PASS matrix metadata ('cancelled', 'de', 390)
+PASS no page-width overflow ('cancelled', 'de', 390)
+PASS correct real run URL ('cancelled', 'de', 390)
+PASS 53 media renames recorded
+PASS unique media destinations
+PASS unchanged recorded JPEG bytes/name de-1440-cancelled.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-current-result.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-error.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-failure.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-first-history-reload.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-first-history-selection.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-initial.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-operation.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-original-roof-map.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-result.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-sources.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-storage.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-whole-system-identity-readback.jpg
+PASS unchanged recorded JPEG bytes/name de-1440-whole-tool-identity.jpg
+PASS unchanged recorded JPEG bytes/name de-390-cancelled.jpg
+PASS unchanged recorded JPEG bytes/name de-390-current-result.jpg
+PASS unchanged recorded JPEG bytes/name de-390-error.jpg
+PASS unchanged recorded JPEG bytes/name de-390-failure.jpg
+PASS unchanged recorded JPEG bytes/name de-390-initial.jpg
+PASS unchanged recorded JPEG bytes/name de-390-operation-fields.jpg
+PASS unchanged recorded JPEG bytes/name de-390-operation.jpg
+PASS unchanged recorded JPEG bytes/name de-390-result-reload.jpg
+PASS unchanged recorded JPEG bytes/name de-390-result.jpg
+PASS unchanged recorded JPEG bytes/name de-390-sources-loaded.jpg
+PASS unchanged recorded JPEG bytes/name de-390-storage.jpg
+PASS unchanged recorded JPEG bytes/name de-handoff-original-roof.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-cancelled.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-current-result.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-error-fixed.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-failure-final.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-failure.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-incomplete.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-queued.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-result-19be.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-result-final.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-result-fixed.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-result-initial.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-result-reload-pass.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-result.jpg
+PASS unchanged recorded JPEG bytes/name en-1440-storage.jpg
+PASS unchanged recorded JPEG bytes/name en-390-cancelled.jpg
+PASS unchanged recorded JPEG bytes/name en-390-current-result.jpg
+PASS unchanged recorded JPEG bytes/name en-390-earlier-inputs.jpg
+PASS unchanged recorded JPEG bytes/name en-390-earlier-result-confirmed.jpg
+PASS unchanged recorded JPEG bytes/name en-390-error.jpg
+PASS unchanged recorded JPEG bytes/name en-390-expanded-records.jpg
+PASS unchanged recorded JPEG bytes/name en-390-failure.jpg
+PASS unchanged recorded JPEG bytes/name en-390-initial.jpg
+PASS unchanged recorded JPEG bytes/name en-390-operation.jpg
+PASS unchanged recorded JPEG bytes/name en-390-sources-loaded.jpg
+PASS unchanged recorded JPEG bytes/name en-390-storage-fields.jpg
+PASS unchanged recorded JPEG bytes/name en-390-storage.jpg
+PASS unchanged recorded JPEG bytes/name en-390-undo-validation-pass.jpg
+PASS all native JPGs accounted for; no retained PNGs
+PASS no PNG-named JPEG remains
+PASS project preservation readback customer-cancelled.json
+PASS frozen project/revision/input identity customer-cancelled.json
+PASS runtime/binding agreement customer-cancelled.json
+PASS real run/job state customer-cancelled.json
+PASS no fabricated result customer-cancelled.json
+PASS immutable CAS bytes customer-cancelled.json b182d51b705e
+PASS project preservation readback customer-failure.json
+PASS frozen project/revision/input identity customer-failure.json
+PASS runtime/binding agreement customer-failure.json
+PASS real run/job state customer-failure.json
+PASS no fabricated result customer-failure.json
+PASS immutable CAS bytes customer-failure.json 79aa542666c8
+PASS immutable CAS bytes customer-failure.json e2adee2d8341
+PASS project preservation readback customer-success-after-resume.json
+PASS frozen project/revision/input identity customer-success-after-resume.json
+PASS runtime/binding agreement customer-success-after-resume.json
+PASS real run/job state customer-success-after-resume.json
+PASS CAS job output identity customer-success-after-resume.json
+PASS strict analytic absolute tolerance customer-success-after-resume.json
+PASS explicit unassessed boundaries customer-success-after-resume.json
+PASS immutable CAS bytes customer-success-after-resume.json b182d51b705e
+PASS immutable CAS bytes customer-success-after-resume.json 3f1e5d7bd5bb
+PASS immutable CAS bytes customer-success-after-resume.json d66c6f417ad6
+PASS project preservation readback customer-success.json
+PASS frozen project/revision/input identity customer-success.json
+PASS runtime/binding agreement customer-success.json
+PASS real run/job state customer-success.json
+PASS CAS job output identity customer-success.json
+PASS strict analytic absolute tolerance customer-success.json
+PASS explicit unassessed boundaries customer-success.json
+PASS immutable CAS bytes customer-success.json 0b588a9c25fc
+PASS immutable CAS bytes customer-success.json ea9b0e81630d
+PASS immutable CAS bytes customer-success.json 33fcdbe2983b
+PASS 164 unique protected initial project fingerprints
+PASS unchanged runtime policy fingerprint
+PASS unchanged Genie/PHP process records
+PASS recorded resumed/non-draining final worker
+PASS bounded 26.3-second worker hold/resume record
+PASS listed duplicate backup absent
+PASS deleted backup exactly matches committed base
+PASS private admin image moved outside repo with same recorded bytes
+PASS active WindPress volume equals current source
+PASS no credential literals detected in package text (identity hashes are not credentials)
+IGNORED_LOGS_COUNT 1
+Ignored logs require explicit evidence staging; original .log files exist and were read.
+ERROR_COUNT 0
+HEAD ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a
+FAIL all indexed evidence bytes match working files (237 indexed files)
+PASS required ignored raw log explicitly staged node-tests-final.log
+PASS required ignored raw log explicitly staged build-final.log
+PASS required ignored raw log explicitly staged engine-tests.log
+PASS required ignored raw log explicitly staged reader-final.log
+PASS required ignored raw log explicitly staged review-standards-1b0b5d7d/closure-checks-ceb4a896.log
+PASS required ignored raw log explicitly staged review-standards-1b0b5d7d/no-reveal-mutant-cda1b7df.log
+PASS raw-byte attributes limited to native AX/logs/reviewer raw text
+docs/acceptance/2026-10-24/548/energy-workspace/native/en-1440-current-result.ax.txt: text: unset
+docs/acceptance/2026-10-24/548/energy-workspace/native/en-1440-current-result.ax.txt: whitespace: unset
+docs/acceptance/2026-10-24/548/energy-workspace/node-tests-final.log: text: unset
+docs/acceptance/2026-10-24/548/energy-workspace/node-tests-final.log: whitespace: unset
+docs/acceptance/2026-10-24/548/energy-workspace/VALIDATION.md: text: auto
+docs/acceptance/2026-10-24/548/energy-workspace/VALIDATION.md: whitespace: unspecified
+apps/planner/src/data/useEnergyRuns.ts: text: auto
+apps/planner/src/data/useEnergyRuns.ts: whitespace: unspecified
+PASS no staged/working application delta from ceb4a896
+PASS native URL has only owned project/run references en-1440-result-reload-pass.json
+PASS native URL has only owned project/run references en-390-cancelled.json
+PASS native URL has only owned project/run references de-1440-error.json
+PASS native URL has only owned project/run references de-390-sources-loaded.json
+PASS native URL has only owned project/run references de-1440-original-roof-map.json
+PASS native URL has only owned project/run references en-1440-failure-final.json
+PASS native URL has only owned project/run references en-390-storage-fields.json
+PASS native URL has only owned project/run references de-1440-sources.json
+PASS native URL has only owned project/run references de-390-error.json
+PASS native URL has only owned project/run references en-390-undo-validation-pass.json
+PASS native URL has only owned project/run references en-1440-result-initial.json
+PASS native URL has only owned project/run references en-390-earlier-inputs.json
+PASS native URL has only owned project/run references en-390-sources-loaded.json
+PASS native URL has only owned project/run references de-1440-cancelled.json
+PASS native URL has only owned project/run references de-390-cancelled.json
+PASS native URL has only owned project/run references en-1440-result-final.json
+PASS native URL has only owned project/run references en-1440-cancelled.json
+PASS native URL has only owned project/run references de-1440-whole-tool-identity.json
+PASS native URL has only owned project/run references en-390-earlier-result-confirmed.json
+PASS native URL has only owned project/run references en-390-error.json
+PASS native URL has only owned project/run references de-1440-failure.json
+PASS native URL has only owned project/run references en-1440-result-19be.json
+PASS native URL has only owned project/run references en-1440-current-result.json
+PASS native URL has only owned project/run references de-390-result-reload.json
+PASS native URL has only owned project/run references de-1440-initial.json
+PASS native URL has only owned project/run references de-handoff-original-roof.json
+PASS native URL has only owned project/run references en-390-current-result.json
+PASS native URL has only owned project/run references en-390-operation.json
+PASS native URL has only owned project/run references de-1440-storage.json
+PASS native URL has only owned project/run references en-1440-queued.json
+PASS native URL has only owned project/run references de-1440-whole-system-identity-readback.json
+PASS native URL has only owned project/run references de-1440-first-history-selection.json
+PASS native URL has only owned project/run references de-1440-first-history-reload.json
+PASS native URL has only owned project/run references en-390-storage.json
+PASS native URL has only owned project/run references de-390-result.json
+PASS native URL has only owned project/run references de-390-failure.json
+PASS native URL has only owned project/run references de-390-initial.json
+PASS native URL has only owned project/run references de-390-operation.json
+PASS native URL has only owned project/run references de-390-current-result.json
+PASS native URL has only owned project/run references de-1440-current-result.json
+PASS native URL has only owned project/run references de-1440-operation.json
+PASS native URL has only owned project/run references de-390-operation-fields.json
+PASS native URL has only owned project/run references de-1440-result.json
+PASS native URL has only owned project/run references en-1440-failure.json
+PASS native URL has only owned project/run references en-1440-result-fixed.json
+PASS native URL has only owned project/run references en-1440-storage.json
+PASS native URL has only owned project/run references en-1440-result.json
+PASS native URL has only owned project/run references de-390-storage.json
+PASS native URL has only owned project/run references en-390-failure.json
+PASS native URL has only owned project/run references en-390-initial.json
+PASS native URL has only owned project/run references en-390-expanded-records.json
+PASS no credential-bearing JSON keys in evidence
+PASS two synthetic profile rows gross-load.csv
+PASS two synthetic profile rows aux-ac.csv
+PASS two synthetic profile rows pv-available.csv
+PASS two synthetic profile rows critical-load.csv
+PASS actual WindPress cache matches recorded 847448 bytes/hash
+Matching generated cache count 1
+PASS live owned worker identity matches recorded hold/resume process (command withheld)
+READER_FINAL {"state": "succeeded", "revision": 3, "run_id": "2c360c4679fe41cf8bd8f874036e58c4", "result_sha256": "ea9b0e81630d6f3d52d10488f66e14ddd4a473bb473c4da1b8ae71fd7c37423f", "preserved_original_projects": 164}  {"state": "succeeded", "revision": 5, "run_id": "14dacb74cda2451a95d00df374532af8", "result_sha256": "3f1e5d7bd5bb67d71e321bb2ec3f1d6244d04c64810c081594364f02b13c61e1", "preserved_original_projects": 164}  All checks passed! 
+VISUAL_READBACK inspected all12 terminal-state matrix images; complete visible context agrees with metadata; desktop pointer cancellation BODY is not keyboard-focus evidence.
+FINAL_ERRORS ['all indexed evidence bytes match working files (237 indexed files)'] INDEX_MISMATCHES ['docs/acceptance/2026-10-24/548/energy-workspace/VALIDATION.md']
+PASS final prose distinguishes readback checkout source_pin from historical creation and retains roof/location/module-to-PV-series, shading, source accuracy and complete-goal obligations: True
+PASS all12 terminal-state matrix screenshots visually inspected against their metadata; visual audit does not rerun native actions.
+PASS cached whitespace check: True
+FINAL_PACKAGING root will restage current VALIDATION.md plus evidence-package-audit.md and this small log, then perform final index/hash readback; checkpoint mismatch above is explicit, not silently accepted.
+AUDIT_BOUNDARY no worker-control fixture, reader, service restart, build, project creation or browser action was run by reviewer; immutable CAS files, process identity and existing cache were inspected read-only.

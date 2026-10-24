@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "lp-focus-target",
+    "rect": {
+      "bottom": 230.9296875,
+      "height": 52.796875,
+      "left": 266.5546875,
+      "right": 1405.4453125,
+      "top": 178.1328125,
+      "width": 1138.890625,
+      "x": 266.5546875,
+      "y": 178.1328125
+    },
+    "tag": "DIV"
+  },
+  "headings": [
+    "Energieberechnung",
+    "Quellen der Zeitreihen",
+    "Speicherparameter",
+    "Software und Datenquellen"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=5515effff1fadfb1649f6ec05bde8838fb3e697e80169e8623c6d89cc0ab8f80"
+  ],
+  "scroll": {
+    "pageWidth": 1440,
+    "x": 0,
+    "y": 396.5
+  },
+  "url": "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

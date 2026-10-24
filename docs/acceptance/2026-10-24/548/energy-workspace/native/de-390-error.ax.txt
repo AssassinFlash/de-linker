@@ -1,0 +1,143 @@
+Browser tab: 2, Title: "Lösungskonfigurator · Arbeitsbereich | Linker", URL: "http://127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations".
+1 AXWebArea Lösungskonfigurator · Arbeitsbereich | Linker, URL: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+	2 container
+		3 container Primäre Navigation
+			4 link Description: Linker-Startseite, Value: 127.0.0.1:9347/de/
+			5 link Description: Produkte suchen, Value: 127.0.0.1:9347/de/produkte/#search-box
+			6 container Sprache
+				7 link Description: EN, Help: English, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+				8 link Description: DE, Help: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			9 button (collapsed) Description: Menü öffnen, ID: tv-mobile-toggle, Secondary Actions: Expand
+				10 image
+		11 container
+			12 button Projekte
+			13 pop up button (collapsed, settable) Description: Projektbereiche, Value: Energieberechnung, Secondary Actions: Expand
+				14 menu
+					15 Projektübersicht
+					16 Standort und Projekt
+					17 Dachplanung
+					18 Energiedaten
+					19 (selected) Energieberechnung
+			20 text Ungespeicherte Änderungen
+			21 button Rückgängig
+			22 button (disabled) Wiederholen
+			23 button Projekt speichern
+			24 text AKTUELLES PROJEKT
+			25 heading Lyon · synthetic energy scenario · acceptance, Value: 1
+				26 text Lyon · synthetic energy scenario · acceptance
+			27 text Standortdaten und Dachbelegungen werden im selben Projekt gespeichert.
+			28 container Energieberechnung, ID: lp-calculations
+				29 text 07
+				30 heading Energieberechnung, Value: 2, ID: lp-calculations-heading
+					31 text Energieberechnung
+				32 text Berechnen Sie die Energieflüsse dieses Projekts für die gewählten Zeiträume. Mit jedem Ergebnis bleiben die verwendeten Eingaben, Quellen und das Berechnungsmodell gespeichert.
+				33 container Ansicht der Energieberechnung
+					34 checkbox Szenarioeinstellungen, Value: 1
+					35 checkbox Gespeicherte Berechnungen, Value: 0
+				116 container
+					117 text Für die Speicherparameter fehlt noch die Angabe einer Quelle oder Annahme.
+				118 heading Quellen der Zeitreihen, Value: 3
+					119 text Quellen der Zeitreihen
+				120 content list
+					121 container
+						122 text Gesamte Standortlast Für diese Eingaben ausgewählt
+					123 container
+						124 text Verfügbare PV-Leistung · AC Für diese Eingaben ausgewählt
+					125 container
+						126 text Externer Hilfsverbrauch · AC Für diese Eingaben ausgewählt
+				127 button Energiedaten prüfen
+				128 content list
+					129 button 01 Speicher
+						130 text 01
+						131 text Speicher
+					132 button 02 Anfangszustand
+						133 text 02
+						134 text Anfangszustand
+					135 button 03 Betrieb
+						136 text 03
+						137 text Betrieb
+				138 container
+					139 heading Speicherparameter, Value: 3
+						140 text Speicherparameter
+					141 text Diese Werte beschreiben ein Speicherszenario an einem AC-Anschlusspunkt. Die Eignung eines Produkts wird damit nicht bewertet.
+					142 container
+						143 text Nutzbare Speicherenergie kWh
+					144 text field (settable) Nutzbare Speicherenergie kWh, Value: 5
+					145 text Dezimalkomma; keine Tausendertrennzeichen.
+					146 container
+						147 text AC-Ladeleistung kW
+					148 text field (settable) AC-Ladeleistung kW, Value: 5
+					149 text Dezimalkomma; keine Tausendertrennzeichen.
+					150 container
+						151 text AC-Entladeleistung kW
+					152 text field (settable) AC-Entladeleistung kW, Value: 5
+					153 text Dezimalkomma; keine Tausendertrennzeichen.
+					154 container
+						155 text Ladewirkungsgrad %
+					156 text field (settable) Ladewirkungsgrad %, Value: 90
+					157 text Dezimalkomma; keine Tausendertrennzeichen.
+					158 container
+						159 text Entladewirkungsgrad %
+					160 text field (settable) Entladewirkungsgrad %, Value: 90
+					161 text Dezimalkomma; keine Tausendertrennzeichen.
+					162 container
+						163 text Interner Hilfsverbrauch kW
+					164 text field (settable) Interner Hilfsverbrauch kW, Value: 0
+					165 text Dezimalkomma; keine Tausendertrennzeichen.
+					166 container
+						167 text Koeffizient der zeitabhängigen Speicherverluste 1/h
+					168 text field (settable) Koeffizient der zeitabhängigen Speicherverluste 1/h, Value: 0
+					169 text Dezimalkomma; keine Tausendertrennzeichen.
+					170 text Quelle oder Annahme für die Speicherparameter
+					171 text entry area (settable) Quelle oder Annahme für die Speicherparameter
+					172 button (collapsed) Speichermodell und Einheiten, Secondary Actions: Expand
+						173 text Speichermodell und Einheiten
+				174 text Szenario noch nicht vorbereitet
+				175 text Mit Projekt speichern werden diese Eingaben gesichert. Erst danach kann eine neue Berechnung starten.
+				176 button Szenario vorbereiten
+				177 button (disabled) Gespeichertes Szenario berechnen
+			73 text Lösungskonfigurator
+			74 text von Linker
+			75 text Linker bündelt Ihre Angaben in einem bearbeitbaren Projekt für die PV- und Speicherplanung.
+			76 button (collapsed) Über dieses Werkzeug, Secondary Actions: Expand
+				77 text Über dieses Werkzeug
+		78 container tv-footer-v2
+			79 image Linker
+			80 container
+				81 text Sprache
+				82 container Sprache
+					83 link Description: Englisch, Value: 127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+					84 link Description: Deutsch, Value: 127.0.0.1:9347/de/planung-arbeitsbereich-test/?project=334e269920d540fe8573a66a1031e0be#lp-calculations
+			85 text WIR VERBINDEN
+			86 link Description: Produkte, Value: 127.0.0.1:9347/de/produkte/
+			87 text ,
+			88 link Description: Technologie, Value: 127.0.0.1:9347/de/ueber-uns/leistungsfaehigkeit/
+			89 text und
+			90 link Description: Service, Value: 127.0.0.1:9347/de/kundendienst/
+			91 text und schaffen 
+			92 text dauerhaften Wert
+			93 text  für Energiepartner in Europa.
+			94 tab group Fußzeilen-Navigation
+				95 tab (selected, settable, boolean) Lösungen, Value: 1, ID: footer-tab-solutions
+				96 tab (selectable, settable, boolean) Dienstleistungen, Value: 0, ID: footer-tab-services
+				97 tab (selectable, settable, boolean) Planen mit Linker, Value: 0, ID: footer-tab-planning
+				98 tab (selectable, settable, boolean) Konto, Value: 0, ID: footer-tab-account
+				99 tab (selectable, settable, boolean) Linker kontaktieren, Value: 0, ID: footer-tab-contact
+			100 container Description: Lösungen, ID: footer-panel-solutions
+				101 heading Lösungen, Value: 2
+					102 text Lösungen
+				103 content list
+					104 link Description: Heimspeicher, Value: 127.0.0.1:9347/de/loesung/heimspeicher/
+					105 link Description: Gewerbespeicher, Value: 127.0.0.1:9347/de/loesung/gewerbespeicher/
+					106 link Description: Großspeicher, Value: 127.0.0.1:9347/de/loesung/grossspeicher/
+			107 text © 2026 Linker. Alle Rechte vorbehalten.
+			108 container Rechtliches
+				109 link Description: Impressum, Value: 127.0.0.1:9347/de/impressum/
+				110 link Description: Datenschutzerklärung, Value: 127.0.0.1:9347/de/datenschutz/
+				111 button Cookie-Einstellungen
+				112 link Description: Verkaufsbedingungen, Value: 127.0.0.1:9347/de/verkaufsbedingungen/
+				113 link Description: Rückgabe & Erstattung, Value: 127.0.0.1:9347/de/rueckgabe-erstattung/
+			114 container
+				115 text Produkteignung · Wechselrichter-Kompatibilität · Projektunterstützung
+
+The focused UI element is 116 container

@@ -1,0 +1,35 @@
+{
+  "focus": {
+    "classes": "lp-focus-target",
+    "rect": {
+      "bottom": 130.484375,
+      "height": 25.296875,
+      "left": 540.6796875,
+      "right": 757.890625,
+      "top": 105.1875,
+      "width": 217.2109375,
+      "x": 540.6796875,
+      "y": 105.1875
+    },
+    "tag": "H3"
+  },
+  "headings": [
+    "Energy calculation",
+    "Calculation history",
+    "Calculation complete",
+    "Software and data credits"
+  ],
+  "scripts": [
+    "http://127.0.0.1:9347/wp-content/plugins/linker-tools/build/planner/assets/planner.js?ver=f15609e7b611722953d6f08611dcad2b962cca78b62eba3860dd8197f868a9cf"
+  ],
+  "scroll": {
+    "pageWidth": 1440,
+    "x": 0,
+    "y": 478
+  },
+  "url": "http://127.0.0.1:9347/planning-workspace-review/?project=334e269920d540fe8573a66a1031e0be&run=2c360c4679fe41cf8bd8f874036e58c4#lp-calculations",
+  "viewport": {
+    "height": 1000,
+    "width": 1440
+  }
+}

@@ -1,0 +1,43 @@
+Planner build matches its sources.
+(node:87134) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/build/planner/assets/planner.js?ver=wordpress-version is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/chesterjohn/Documents/de-linker-worktrees/unified-planner-548/plugins/linker-tools/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a lazy built chunk never executes the versioned WordPress entry again (206.795625ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 477.164125
+✔ opening history after its first page loads pins the verified visible run in native links, only with current admission (122.215417ms)
+✔ actual scenario controls retain raw input, require confirmed save, use one frozen revision, and preserve edits from a late preparation response (337.265625ms)
+✔ same identity rechecks retain delayed edits and invalid raw numeric text (975.33325ms)
+✔ reopening the #lp-map-roof-properties property link preserves the roof workspace and map recovery entry (66.810125ms)
+✔ reopening the #lp-map-ring-properties property link preserves the roof workspace and map recovery entry (41.82425ms)
+✔ reopening the #lp-map-feature-properties property link preserves the roof workspace and map recovery entry (32.572958ms)
+✔ Journal workspaces show one task while retaining real input nodes, values and undo history (175.051875ms)
+✔ failed storage and failed identity refresh preserve hidden edits until same owner returns (68.484625ms)
+✔ a confirmed different identity removes the former editor and does not grant its project (41.846125ms)
+✔ the actual project bar is observed after asynchronous draft opening and on resize (28.914458ms)
+✔ creation authentication failure rechecks once and explicitly retries the exact intent (26.783791ms)
+▶ a former identity's delayed creation cannot dispatch or restore cache and navigation
+  ✔ write (18.15425ms)
+  ✔ clear (15.149875ms)
+✔ a former identity's delayed creation cannot dispatch or restore cache and navigation (33.7295ms)
+▶ native confirmation fences pending creation, revision and navigation before React commits
+  ✔ write (18.340833ms)
+  ✔ clear (13.236917ms)
+  ✔ revise (46.380959ms)
+  ✔ close (53.768708ms)
+✔ native confirmation fences pending creation, revision and navigation before React commits (132.293709ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2127.060042

@@ -1,0 +1,210 @@
+{
+  "source_pin": "ceb4a896bd39ffaa4ca72ae24eff6b73f3af6f8a",
+  "project": {
+    "id": "334e269920d540fe8573a66a1031e0be",
+    "title": "Lyon \u00b7 synthetic energy scenario \u00b7 acceptance",
+    "revision": 5,
+    "input_sha256": "eacd6a0b685147be60064e04a88a4ecf534563f7f4a499afe5431850677d5c06",
+    "inputs": {
+      "brief": {
+        "annual_load": {
+          "basis": null,
+          "kwh": null,
+          "source_note": ""
+        },
+        "project_note": "Independent synthetic two-hour analytic scenario. No measured customer data, product approval, country release or annual forecast.",
+        "project_use": "commercial",
+        "schema_version": 1,
+        "site": {
+          "coordinate_basis": "not_provided",
+          "country_code": "FR",
+          "latitude": null,
+          "location_label": "Lyon \u00b7 synthetic acceptance data; not a surveyed site",
+          "longitude": null,
+          "timezone": "Europe/Paris"
+        },
+        "system_scope": "new_pv_storage"
+      },
+      "energy_replay": {
+        "aux_ac_asset_id": "1eea2c67bd6f4208b0b8009c71d2d8c1",
+        "battery_parameters_asset_id": "5524721cde3141edbe15a3d010adad12",
+        "controller": "self_consumption_with_reserve_v1",
+        "critical_load_asset_id": null,
+        "gross_load_asset_id": "78ebff94295449488b30936bb5f4f125",
+        "initial_inventory": {
+          "basis": "user_declared",
+          "grid_kwh": 0,
+          "initial_unknown_kwh": 0,
+          "pv_kwh": 0,
+          "source_note": "Analytic test starts with no stored energy of PV, grid or unknown origin. Explicit zero for each origin."
+        },
+        "pv_available_asset_id": "dad8505afd3b4dd7b3bf1f5d5059976a",
+        "schedule": [
+          {
+            "allow_grid_charge": false,
+            "end_utc": "2024-03-31T01:00:00+00:00",
+            "export_cap_kw": null,
+            "import_cap_kw": null,
+            "mode": "connected",
+            "pv_enabled": true,
+            "reserve_kwh": 0,
+            "start_utc": "2024-03-30T23:00:00+00:00"
+          }
+        ],
+        "schema_version": 1,
+        "terminal_min_kwh": null
+      },
+      "energy_scenario": {
+        "battery": {
+          "charge_ac_kw": 5,
+          "discharge_ac_kw": 5,
+          "eta_charge": 0.9,
+          "eta_discharge": 0.9,
+          "internal_aux_kw": 0,
+          "standing_loss_rate_per_hour": 0,
+          "usable_window_kwh": 5
+        },
+        "battery_binding": {
+          "asset_id": "5524721cde3141edbe15a3d010adad12",
+          "parameters": {
+            "charge_ac_kw": 5,
+            "discharge_ac_kw": 5,
+            "eta_charge": 0.9,
+            "eta_discharge": 0.9,
+            "internal_aux_kw": 0,
+            "model": "constant_window_single_ac_bus_v1",
+            "parameter_basis": "explicit_scenario",
+            "schema_version": 1,
+            "standing_loss_rate_per_hour": 0,
+            "usable_window_kwh": 5
+          },
+          "source_note": "Explicit analytic acceptance scenario: 5 kWh usable, 5 kW AC in/out, separate 90% efficiencies, zero auxiliary and standing losses. No manufacturer, SKU or equipment approval."
+        },
+        "initial_inventory": {
+          "grid_kwh": 0,
+          "initial_unknown_kwh": 0,
+          "pv_kwh": 0,
+          "source_note": "Analytic test starts with no stored energy of PV, grid or unknown origin. Explicit zero for each origin."
+        },
+        "schedule": [
+          {
+            "allow_grid_charge": false,
+            "end_utc": "2024-03-31T01:00:00+00:00",
+            "export_cap_kw": null,
+            "export_policy": "unlimited",
+            "id": "e1d590c66a9543668b9bb518c8aaca32",
+            "import_cap_kw": null,
+            "import_policy": "unlimited",
+            "mode": "connected",
+            "pv_enabled": true,
+            "reserve_kwh": 0,
+            "start_utc": "2024-03-30T23:00:00+00:00"
+          }
+        ],
+        "schema_version": 1,
+        "source_note": "Explicit analytic acceptance scenario: 5 kWh usable, 5 kW AC in/out, separate 90% efficiencies, zero auxiliary and standing losses. No manufacturer, SKU or equipment approval.",
+        "terminal_min_kwh": null,
+        "terminal_policy": "none"
+      },
+      "profile_selections": {
+        "schema_version": 1,
+        "selected": {
+          "aux_ac": "1eea2c67bd6f4208b0b8009c71d2d8c1",
+          "gross_load": "78ebff94295449488b30936bb5f4f125",
+          "pv_available_ac": "dad8505afd3b4dd7b3bf1f5d5059976a"
+        }
+      }
+    }
+  },
+  "run": {
+    "id": "a0f51822d8ee4e0e98ff4112145ed767",
+    "project_id": "334e269920d540fe8573a66a1031e0be",
+    "revision": 5,
+    "state": "cancelled",
+    "is_current": true,
+    "manifest_sha256": "b182d51b705e65b4b68f0f74c7f462f774cc907ba9f2da5b2e2d5d2d5b5e8335",
+    "manifest": {
+      "context": {
+        "assets": {
+          "aux_ac.metadata": "fc50a2f45a16bc11499068eb07c568babde5552f70fb7f2a43830f279e1ff96a",
+          "aux_ac.raw": "ce20d0bf1b7f7ce919b829946cf9e5529d54c70accd7477a17710ec43aa553ed",
+          "aux_ac.timezone": "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8",
+          "battery.metadata": "815e39e1ce32d19f020ca900d3246eed5d7df16468bc6542192b990c41c51f70",
+          "battery.raw": "fb320d4f38dd136b7db433f4c6d6bbc07940934495b47b1b5dba7dfa226ba1ea",
+          "gross_load.metadata": "d1a69329ce0f1713fd0c59e8c8919df72ad69a5451b91202590a1e4e44425dc2",
+          "gross_load.raw": "f45e890022e6d424395aa2855d214c24e6ec34c3462ce7edefddcbe3c8dd7e79",
+          "gross_load.timezone": "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8",
+          "pv_available_ac.metadata": "a655dc5093f7830c3a36f13da6ad26bc7c16a95854bd80f7588690a540b1f301",
+          "pv_available_ac.raw": "b132980864da027483e55225e24ff5b07a8fc5e80eec7dad787102315010d581",
+          "pv_available_ac.timezone": "ab77a1488a2dd4667a4f23072236e0d2845fe208405eec1b4834985629ba7af8",
+          "runtime_bundle": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1"
+        },
+        "code_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+        "models": {
+          "battery": "constant_window_single_ac_bus_v1",
+          "controller": "self_consumption_with_reserve_v1",
+          "profiles": "csv_and_explicit_pvgis_interval_means_v1",
+          "replay": "single_ac_energy_replay_v1",
+          "source_accounting": "proportional_mixing_v1"
+        },
+        "parameters": {
+          "kind": "single_ac_energy_replay_v1",
+          "max_intervals": 100000,
+          "tolerance": {
+            "absolute_kw": 1e-07,
+            "absolute_kwh": 1e-07,
+            "relative": 1e-09,
+            "role": "floating_point_arithmetic_not_engineering_margin"
+          }
+        }
+      },
+      "input_sha256": "eacd6a0b685147be60064e04a88a4ecf534563f7f4a499afe5431850677d5c06",
+      "project_id": "334e269920d540fe8573a66a1031e0be",
+      "revision": 5,
+      "schema": 1
+    },
+    "result_sha256": null,
+    "result": null,
+    "error": null
+  },
+  "job": {
+    "id": "c7a6a2bfd1014e86be10a61777a979f8",
+    "state": "cancelled",
+    "attempt": 0,
+    "worker": null,
+    "output_sha256": null,
+    "error_sha256": null
+  },
+  "version": {
+    "schema_version": 1,
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "models": {
+      "replay": "single_ac_energy_replay_v1",
+      "battery": "constant_window_single_ac_bus_v1",
+      "profiles": "csv_and_explicit_pvgis_interval_means_v1",
+      "controller": "self_consumption_with_reserve_v1",
+      "source_accounting": "proportional_mixing_v1"
+    },
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9",
+    "limits": {
+      "max_body_bytes": 16777216,
+      "max_csv_bytes": 8388608,
+      "max_page_size": 100,
+      "max_json_depth": 32
+    }
+  },
+  "ready": {
+    "execution_key": "dfe60fc2089c920a945bb269da56dcb9debe6ccd5f6e9e7e70b46f6c08f55116",
+    "generation": "432df7025b634aa3a656e74fb9a96bb1",
+    "name": "local-p548",
+    "pid": 27398,
+    "runtime_sha256": "9b66656acb26b65b88b09a44b8508a42094059af64b49e7038eedef0d92a10a1",
+    "schema_version": 1,
+    "storage_binding": "ec4c7866c5a15b82fcb94096a143b7e77f8801ac38153cb146e673fe1b3ea0d9"
+  },
+  "preserved_original_projects": 164,
+  "new_projects": [
+    "334e269920d540fe8573a66a1031e0be"
+  ]
+}

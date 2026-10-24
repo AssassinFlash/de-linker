@@ -1,0 +1,11 @@
+{
+  "source_pin": "1b0b5d7d0cafd29ca6ee9ed8ac6850ae228dc4eb",
+  "fixture_exact_managed_http_finished": true,
+  "german_final_entries": 187,
+  "mo_and_native_json_matches": 187,
+  "artifact_sha256": {
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo": "c68505fa5794928bf71bbb2e0ff9cd0a86d11778048b31d4ae716d01537e088a",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-cf89287c9001d7518d0d20e58c3eb721.json": "c857034f3390630b0e38a08fef91592d0ab8cd6fb4861cb8f6e997419cc3d7c0",
+    "apps/planner/tests/fixtures/energy-run.json": "1bc97440c584249451287e24cf564467f6c3fddeefaee10fe6d75633347b492a"
+  }
+}
