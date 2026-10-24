@@ -122,6 +122,17 @@ class RunRead(Command):
     run_id: Id
 
 
+class TraceRead(RunRead):
+    offset: Annotated[int, Field(strict=True, ge=0)] | None = None
+    page_size: Annotated[int, Field(strict=True, gt=0)] | None = None
+
+    @model_validator(mode="after")
+    def paired_window(self) -> TraceRead:
+        if (self.offset is None) != (self.page_size is None):
+            raise ValueError("trace window requires offset and page size")
+        return self
+
+
 class AssetRead(Command):
     project_id: Id
     asset_id: Id

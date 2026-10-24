@@ -1052,6 +1052,27 @@ def test_full_http_csv_enqueue_worker_result_history_and_private_bytes(
     trace = rig.client.post("/runs/trace", json=trace_body, headers=headers())
     assert trace.status_code == 200 and digest(trace.content) == result["trace_sha256"]
     assert len(json.loads(trace.content)["flows"]) == 2
+    window = rig.post("/runs/trace", {"run_id": run["id"], "offset": 1, "page_size": 1})
+    source = json.loads(trace.content)["flows"][1]
+    assert window["trace_sha256"] == result["trace_sha256"]
+    assert window["offset"] == 1 and window["next_offset"] is None
+    row = cast(list[Object], window["rows"])[0]
+    assert row["start_utc"] == source["frame"]["interval"]["start_utc"]
+    assert row["load_kw"] == source["frame"]["load_kw"]
+    assert row["stored_kwh"] == sum(source["after"].values())
+    bounded = {**trace_body, "offset": 0, "page_size": 1_000_000}
+    assert (
+        rig.client.post("/runs/trace", json=bounded, headers=headers()).status_code
+        == 422
+    )
+    assert (
+        rig.client.post(
+            "/runs/trace",
+            json={**trace_body, "offset": 0, "page_size": 1},
+            headers=headers(FOREIGN),
+        ).status_code
+        == 404
+    )
     for path in ("/runs/read", "/runs/trace", "/runs/cancel"):
         assert (
             rig.client.post(path, json=trace_body, headers=headers(FOREIGN)).status_code

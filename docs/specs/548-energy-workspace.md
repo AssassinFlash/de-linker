@@ -83,3 +83,21 @@ enqueue → managed calculation → result/history/reload plus cancellation/fail
 all relevant input hashes and historical status; independent copy and Spec /
 Standards reviews; EN/DE × 1440/390 native visual/keyboard checks. Preserve the
 existing p548 project v14; use a separately owned synthetic scenario for new input.
+
+
+## Saved interval exploration
+
+The energy result exposes a lazy ECharts SVG view beside an accessible table.
+The existing authenticated trace RPC keeps its original full-byte download;
+paired optional offset/page_size fields request a bounded exact window under
+the advertised deployment page limit. Ownership precedes trace access. The
+window is bound to the run, manifest and retained trace hash and never invokes
+an evaluation, aggregation, interpolation or newer source lookup.
+
+Power curves use stored interval means, with their actual UTC start/end;
+storage uses the sum of retained origin buckets at interval end. Zooming only
+changes display. Previous/next and a 1-based jump select exact intervals. CSV
+exports those same rows and unit-labelled columns without display rounding.
+A chart loading failure leaves the table and CSV usable. Session loss hides
+cached values and prevents an obsolete callback exporting another scope.
+The chart inherits site font/colour tokens and sizes through WindPress.

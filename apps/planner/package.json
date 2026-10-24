@@ -14,7 +14,8 @@
 		"lint:types": "tsc --noEmit",
 		"lint:js": "node --check bin/build-manifest.mjs",
 		"lint:format": "prettier --check .",
-		"test": "node --test src/domain/*.test.ts src/data/*.test.ts && node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/*.test.mjs"
+		"test": "node --test src/domain/*.test.ts src/data/*.test.ts && node --no-warnings=ExperimentalWarning --loader ./tests/tsx-loader.mjs --test tests/*.test.mjs",
+		"postinstall": "node bin/echarts-types.mjs"
 	},
 	"dependencies": {
 		"@react-three/drei": "10.7.9",

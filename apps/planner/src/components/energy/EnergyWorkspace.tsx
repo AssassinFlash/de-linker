@@ -39,6 +39,7 @@ import { measurementLabel } from "../ProfileLabels.ts";
 import { ScenarioForm } from "./ScenarioForm.tsx";
 import { EnergyError } from "./EnergyError.tsx";
 import { RunResult } from "./RunResult.tsx";
+import { TraceExplorer } from "./TraceExplorer.tsx";
 import { runStateLabel, taskLabel } from "./planningLabels.ts";
 import { PreparationResult } from "./PreparationResult.tsx";
 import { RunBasis } from "./RunBasis.tsx";
@@ -911,6 +912,17 @@ export function EnergyWorkspace({
 										dirty={dirty || Boolean(draft.pending)}
 										confirmedRevision={draft.baseline.revision}
 									/>
+									{runs.run.data.state === "succeeded" &&
+										typeof runs.run.data.result?.trace_sha256 === "string" && (
+											<TraceExplorer
+												key={runs.run.data.id}
+												run={runs.run.data}
+												client={client}
+												session={session}
+												locale={locale}
+												active={active && view === "runs"}
+											/>
+										)}
 									<RunBasis
 										key={runs.run.data.id}
 										run={runs.run.data}

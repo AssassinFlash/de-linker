@@ -61,6 +61,7 @@ from .http_documents import (
     ProjectRuns,
     RunRead,
     SessionClaim,
+    TraceRead,
 )
 from .http_index import project_page, run_page
 from .http_replay import HttpReplay
@@ -69,6 +70,7 @@ from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
 from .pv_preparation import PvPreparationService, check_pv_preparation
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
+from .trace_window import TraceWindow
 from .weather_service import WeatherService
 from .weather_status import weather_status
 from .workspace import Workspace
@@ -337,7 +339,18 @@ def create_private_app(
         )
 
     @app.post("/runs/trace")
-    def energy_trace(body: RunRead, request: Request) -> Response:
+    def energy_trace(body: TraceRead, request: Request) -> Response:
+        if body.offset is not None and body.page_size is not None:
+            if body.page_size > limits.max_page_size:
+                raise InvalidInput("trace window exceeds deployment page limit")
+            return JSONResponse(
+                TraceWindow(workspace).page(
+                    verified_actor(request.scope),
+                    body.run_id,
+                    offset=body.offset,
+                    page_size=body.page_size,
+                )
+            )
         run = workspace.run(verified_actor(request.scope), body.run_id)
         trace_hash = run.result.get("trace_sha256") if run.result else None
         if not isinstance(trace_hash, str):

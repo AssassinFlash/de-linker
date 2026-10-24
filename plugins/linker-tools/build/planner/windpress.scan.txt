@@ -27,6 +27,7 @@ lp-edit-actions
 lp-editor-main
 lp-editor-with-design
 lp-empty
+lp-energy-chart
 lp-energy-metrics
 lp-energy-recovery
 lp-energy-recovery-row
@@ -145,6 +146,9 @@ lp-tool-boundary
 lp-tool-button
 lp-tool-identity
 lp-tool-product
+lp-trace-controls
+lp-trace-explorer
+lp-trace-table
 lp-view-switch
 lp-workspace
 lp-workspace-footnote

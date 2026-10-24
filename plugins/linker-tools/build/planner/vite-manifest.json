@@ -1,13 +1,14 @@
 {
-  "_planner-core-Dmy-FAjq.js": {
-    "file": "assets/planner-core-Dmy-FAjq.js",
+  "_planner-core-DvXQDRMN.js": {
+    "file": "assets/planner-core-DvXQDRMN.js",
     "name": "planner-core",
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js"
     ],
     "dynamicImports": [
       "src/components/design/SceneViewport.tsx",
-      "src/components/design/MapViewport.tsx"
+      "src/components/design/MapViewport.tsx",
+      "src/components/energy/EnergyFlowChart.tsx"
     ]
   },
   "_rolldown-runtime-BWaJ3C7D.js": {
@@ -15,23 +16,33 @@
     "name": "rolldown-runtime"
   },
   "src/components/design/MapViewport.tsx": {
-    "file": "assets/MapViewport-BYU4ooK6.js",
+    "file": "assets/MapViewport-B3BL0fLe.js",
     "name": "MapViewport",
     "src": "src/components/design/MapViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-Dmy-FAjq.js"
+      "_planner-core-DvXQDRMN.js"
     ]
   },
   "src/components/design/SceneViewport.tsx": {
-    "file": "assets/SceneViewport-DuxYZTB8.js",
+    "file": "assets/SceneViewport-C6Ex14Y1.js",
     "name": "SceneViewport",
     "src": "src/components/design/SceneViewport.tsx",
     "isDynamicEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-Dmy-FAjq.js"
+      "_planner-core-DvXQDRMN.js"
+    ]
+  },
+  "src/components/energy/EnergyFlowChart.tsx": {
+    "file": "assets/EnergyFlowChart-B6y7xEje.js",
+    "name": "EnergyFlowChart",
+    "src": "src/components/energy/EnergyFlowChart.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-BWaJ3C7D.js",
+      "_planner-core-DvXQDRMN.js"
     ]
   },
   "src/main.tsx": {
@@ -41,7 +52,7 @@
     "isEntry": true,
     "imports": [
       "_rolldown-runtime-BWaJ3C7D.js",
-      "_planner-core-Dmy-FAjq.js"
+      "_planner-core-DvXQDRMN.js"
     ]
   }
 }

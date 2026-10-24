@@ -43,3 +43,13 @@ Apify provenance are recorded in
 [`STACK-EVIDENCE.md`](../research/2026-10-23-3d-workspace/STACK-EVIDENCE.md).
 Exact installed versions belong in the package lock. A passing package build
 does not establish browser, site-consumer or production acceptance.
+
+
+The energy chart uses the pinned ECharts SVG renderer and selected line/axis,
+legend, tooltip and zoom modules in a lazy chunk. ECharts 6.1.0's bundled
+indexed optional state declarations conflict with TypeScript's exact optional
+property checks. The reproducible postinstall patch in
+`apps/planner/bin/echarts-types.mjs` binds the original SHA and widens only the
+three base declaration properties to include the undefined values already
+admitted by their derived indexed properties. It changes no runtime code and
+keeps project-wide strict checking and library checking enabled.

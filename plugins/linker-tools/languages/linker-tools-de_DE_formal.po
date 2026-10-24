@@ -6592,3 +6592,71 @@ msgstr "Wetterdaten werden von JRC PVGIS heruntergeladen und geprüft."
 #: build/planner/assets/planner.js
 msgid "Weather preparation has ended without a validated weather source."
 msgstr "Die Wettervorbereitung wurde ohne validierte Wetterquelle beendet."
+
+#: build/planner/assets/planner.js
+msgid "Energy flows"
+msgstr "Energieflüsse"
+
+#: build/planner/assets/planner.js
+msgid "These saved values show mean power for each interval and stored energy at its end."
+msgstr "Die gespeicherten Werte zeigen die mittlere Leistung je Intervall und die Speicherenergie am jeweiligen Intervallende."
+
+#: build/planner/assets/planner.js
+msgid "Load"
+msgstr "Last"
+
+#: build/planner/assets/planner.js
+msgid "Available PV power"
+msgstr "Verfügbare PV-Leistung"
+
+#: build/planner/assets/planner.js
+msgid "Charging power"
+msgstr "Ladeleistung"
+
+#: build/planner/assets/planner.js
+msgid "Discharging power"
+msgstr "Entladeleistung"
+
+#: build/planner/assets/planner.js
+msgid "Grid export"
+msgstr "Netzeinspeisung"
+
+#: build/planner/assets/planner.js
+msgid "Stored energy"
+msgstr "Speicherenergie"
+
+#: build/planner/assets/planner.js
+msgid "Previous intervals"
+msgstr "Vorherige Intervalle"
+
+#: build/planner/assets/planner.js
+msgid "Download displayed intervals (CSV)"
+msgstr "Angezeigte Intervalle als CSV herunterladen"
+
+#: build/planner/assets/planner.js
+msgid "Interval values"
+msgstr "Intervallwerte"
+
+#: build/planner/assets/planner.js
+msgid "Loading interval values…"
+msgstr "Intervallwerte werden geladen…"
+
+#: build/planner/assets/planner.js
+msgid "Interval values could not be loaded."
+msgstr "Die Intervallwerte konnten nicht geladen werden."
+
+#: build/planner/assets/planner.js
+msgid "Intervals %1$d to %2$d of %3$d · UTC"
+msgstr "Intervalle %1$d bis %2$d von %3$d · UTC"
+
+#: build/planner/assets/planner.js
+msgid "First interval"
+msgstr "Erstes Intervall"
+
+#: build/planner/assets/planner.js
+msgid "Show intervals"
+msgstr "Intervalle anzeigen"
+
+#: build/planner/assets/planner.js
+msgid "The chart could not be displayed. The interval table and CSV remain available."
+msgstr "Das Diagramm konnte nicht angezeigt werden. Die Intervalltabelle und der CSV-Download sind weiterhin verfügbar."
