@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { compileEquipmentRequirements } from "../../domain/equipmentRequirements.ts";
 import type { Draft } from "../../domain/draft.ts";
 import { isDirty, sameJson } from "../../domain/draft.ts";
 import {
@@ -33,6 +34,8 @@ export function EquipmentSetup({
 	onValidity,
 	onError,
 	start,
+	search,
+	searchEnabled,
 	standalone,
 }: {
 	draft: Draft;
@@ -46,6 +49,8 @@ export function EquipmentSetup({
 	onValidity: (valid: boolean) => void;
 	onError: (error: unknown) => void;
 	start: () => void;
+	search: () => void;
+	searchEnabled: boolean;
 	standalone: boolean;
 }) {
 	const catalog = useEquipmentProducts(client, scope, active);
@@ -95,6 +100,17 @@ export function EquipmentSetup({
 			);
 	} catch {
 		/* Incomplete selections remain editable. */
+	}
+	let searchPrepared = false;
+	try {
+		searchPrepared =
+			!!setup &&
+			sameJson(
+				compileEquipmentRequirements(setup),
+				draft.history.current.equipment_requirements,
+			);
+	} catch {
+		/* Missing project demand stays editable. */
 	}
 	function change(patch: JsonObject) {
 		if (!disabled && client.isCurrentScope(scope)) {
@@ -182,12 +198,6 @@ export function EquipmentSetup({
 			) : (
 				<h3 id="lp-equipment-title">{__("Equipment", "linker-tools")}</h3>
 			)}
-			<p>
-				{__(
-					"Choose products to check their combination against the requirements entered here.",
-					"linker-tools",
-				)}
-			</p>
 			<p className="lp-profile-help">
 				{__(
 					"Product properties come from Linker's product data. Each result records the product data and documents used.",
@@ -217,16 +227,6 @@ export function EquipmentSetup({
 				className="lp-scenario-fields lp-scenario-block"
 			>
 				<div className="lp-geometry-fields">
-					{choice(
-						"inverter_product_id",
-						__("Inverter or integrated storage system", "linker-tools"),
-						converters,
-					)}
-					{choice(
-						"battery_product_id",
-						__("Battery or storage system", "linker-tools"),
-						storage,
-					)}
 					<label className="lp-field">
 						<span>{__("Choose an operating mode", "linker-tools")}</span>
 						<select
@@ -271,18 +271,6 @@ export function EquipmentSetup({
 							<option value="3">{__("Three-phase", "linker-tools")}</option>
 						</select>
 					</label>
-					{number(
-						"modules_per_stack",
-						__("Battery modules per stack", "linker-tools"),
-						"",
-						true,
-					)}
-					{number(
-						"parallel_stacks",
-						__("Parallel stacks or systems", "linker-tools"),
-						"",
-						true,
-					)}
 					{number("pv_dc_kw", __("PV array", "linker-tools"), "kWp")}
 					{number(
 						"required_usable_kwh",
@@ -296,118 +284,224 @@ export function EquipmentSetup({
 					)}
 				</div>
 			</fieldset>
-			<details className="lp-comparison">
-				<summary>{__("Additional products", "linker-tools")}</summary>
-				<label className="lp-field">
-					<span>{__("Choose a product", "linker-tools")}</span>
-					<select
-						value=""
-						disabled={blocked}
-						onChange={(event) => {
-							const id = Number(event.currentTarget.value);
-							if (id)
-								change({ accessory_product_ids: [...selectedAccessories, id] });
-						}}
-					>
-						<option value="">{__("Choose a product", "linker-tools")}</option>
-						{products
-							.filter(
-								(p) =>
-									p.id !== setup.inverter_product_id &&
-									p.id !== setup.battery_product_id &&
-									!selectedAccessories.includes(p.id),
-							)
-							.map((p) => (
-								<option key={p.id} value={p.id}>
-									{p.brand} {p.model}
-								</option>
-							))}
-					</select>
-				</label>
-				{selectedAccessories.map((id) => (
-					<label className="lp-field" key={id}>
-						<span>
-							<input
-								type="checkbox"
-								checked
-								disabled={disabled}
-								onChange={() =>
-									change({
-										accessory_product_ids: selectedAccessories.filter(
-											(value) => value !== id,
-										),
-									})
-								}
-							/>
-							{products.find((p) => p.id === id)?.model ??
-								__("Use current product data", "linker-tools")}
-						</span>
-					</label>
-				))}
-			</details>
-			<div className="lp-energy-submit">
-				<div>
-					<strong>
-						{prepared
-							? __("Equipment selection prepared in this draft", "linker-tools")
-							: __(
-									"Choose products and prepare the selection before saving the project.",
-									"linker-tools",
-								)}
-					</strong>
+
+			{searchEnabled && (
+				<>
 					<p>
-						{isDirty(draft) || draft.pending
+						{__(
+							"Find combinations using the requirements above. Selecting products is optional.",
+							"linker-tools",
+						)}
+					</p>
+					<p>
+						{searchPrepared
 							? __(
-									"Save project records these inputs before a new calculation can start.",
+									"The saved requirements are ready for the search.",
 									"linker-tools",
 								)
-							: sprintf(
-									__(
-										"A new calculation uses saved input revision %d.",
-										"linker-tools",
-									),
-									draft.baseline.revision,
+							: __(
+									"Prepare the search, then save the project.",
+									"linker-tools",
 								)}
 					</p>
-				</div>
-				<button
-					type="button"
-					className="lp-button lp-button-secondary"
-					disabled={
-						actionsDisabled ||
-						blocked ||
-						!valid ||
-						!setup.inverter_product_id ||
-						!setup.operating_mode
-					}
-					onClick={() => {
-						try {
-							const value = compileEquipment(setup, products);
-							edit((current) => ({ ...current, equipment_selection: value }));
-							onError(null);
-						} catch (error) {
-							onError(error);
+					<div className="lp-energy-submit">
+						<button
+							className="lp-button lp-button-secondary"
+							type="button"
+							disabled={disabled || !valid}
+							onClick={() => {
+								if (!setup) return;
+								try {
+									const requirements = compileEquipmentRequirements(setup);
+									if (client.isCurrentScope(scope)) {
+										edit((inputs) => ({
+											...inputs,
+											equipment_requirements: requirements,
+										}));
+										onError(null);
+									}
+								} catch (error) {
+									onError(error);
+								}
+							}}
+						>
+							{__("Prepare equipment search", "linker-tools")}
+						</button>
+						<button
+							className="lp-button"
+							type="button"
+							disabled={
+								!searchPrepared ||
+								isDirty(draft) ||
+								actionsDisabled ||
+								blocked ||
+								!valid
+							}
+							onClick={search}
+						>
+							{__("Find equipment combinations", "linker-tools")}
+						</button>
+					</div>
+				</>
+			)}
+			<details
+				className="lp-comparison"
+				open={typeof setup.inverter_product_id === "number"}
+			>
+				<summary>{__("Choose equipment manually", "linker-tools")}</summary>
+				<p>
+					{__(
+						"Choose products to check their combination against the requirements entered here.",
+						"linker-tools",
+					)}
+				</p>
+				<fieldset
+					disabled={disabled}
+					className="lp-scenario-fields lp-scenario-block"
+				>
+					<div className="lp-geometry-fields">
+						{choice(
+							"inverter_product_id",
+							__("Inverter or integrated storage system", "linker-tools"),
+							converters,
+						)}
+						{choice(
+							"battery_product_id",
+							__("Battery or storage system", "linker-tools"),
+							storage,
+						)}
+						{number(
+							"modules_per_stack",
+							__("Battery modules per stack", "linker-tools"),
+							"",
+							true,
+						)}
+						{number(
+							"parallel_stacks",
+							__("Parallel stacks or systems", "linker-tools"),
+							"",
+							true,
+						)}
+					</div>
+				</fieldset>
+				<details className="lp-comparison">
+					<summary>{__("Additional products", "linker-tools")}</summary>
+					<label className="lp-field">
+						<span>{__("Choose a product", "linker-tools")}</span>
+						<select
+							value=""
+							disabled={blocked}
+							onChange={(event) => {
+								const id = Number(event.currentTarget.value);
+								if (id)
+									change({
+										accessory_product_ids: [...selectedAccessories, id],
+									});
+							}}
+						>
+							<option value="">{__("Choose a product", "linker-tools")}</option>
+							{products
+								.filter(
+									(p) =>
+										p.id !== setup.inverter_product_id &&
+										p.id !== setup.battery_product_id &&
+										!selectedAccessories.includes(p.id),
+								)
+								.map((p) => (
+									<option key={p.id} value={p.id}>
+										{p.brand} {p.model}
+									</option>
+								))}
+						</select>
+					</label>
+					{selectedAccessories.map((id) => (
+						<label className="lp-field" key={id}>
+							<span>
+								<input
+									type="checkbox"
+									checked
+									disabled={disabled}
+									onChange={() =>
+										change({
+											accessory_product_ids: selectedAccessories.filter(
+												(value) => value !== id,
+											),
+										})
+									}
+								/>
+								{products.find((p) => p.id === id)?.model ??
+									__("Use current product data", "linker-tools")}
+							</span>
+						</label>
+					))}
+				</details>
+				<div className="lp-energy-submit">
+					<div>
+						<strong>
+							{prepared
+								? __(
+										"Equipment selection prepared in this draft",
+										"linker-tools",
+									)
+								: __(
+										"Choose products and prepare the selection before saving the project.",
+										"linker-tools",
+									)}
+						</strong>
+						<p>
+							{isDirty(draft) || draft.pending
+								? __(
+										"Save project records these inputs before a new calculation can start.",
+										"linker-tools",
+									)
+								: sprintf(
+										__(
+											"A new calculation uses saved input revision %d.",
+											"linker-tools",
+										),
+										draft.baseline.revision,
+									)}
+						</p>
+					</div>
+					<button
+						type="button"
+						className="lp-button lp-button-secondary"
+						disabled={
+							actionsDisabled ||
+							blocked ||
+							!valid ||
+							!setup.inverter_product_id ||
+							!setup.operating_mode
 						}
-					}}
-				>
-					{__("Prepare equipment selection", "linker-tools")}
-				</button>
-				<button
-					type="button"
-					className="lp-button"
-					disabled={
-						actionsDisabled ||
-						!valid ||
-						!prepared ||
-						isDirty(draft) ||
-						!!draft.pending ||
-						!!draft.conflict
-					}
-					onClick={start}
-				>
-					{__("Check saved equipment selection", "linker-tools")}
-				</button>
-			</div>
+						onClick={() => {
+							try {
+								const value = compileEquipment(setup, products);
+								edit((current) => ({ ...current, equipment_selection: value }));
+								onError(null);
+							} catch (error) {
+								onError(error);
+							}
+						}}
+					>
+						{__("Prepare equipment selection", "linker-tools")}
+					</button>
+					<button
+						type="button"
+						className="lp-button"
+						disabled={
+							actionsDisabled ||
+							!valid ||
+							!prepared ||
+							isDirty(draft) ||
+							!!draft.pending ||
+							!!draft.conflict
+						}
+						onClick={start}
+					>
+						{__("Check saved equipment selection", "linker-tools")}
+					</button>
+				</div>
+			</details>
 		</>
 	);
 }

@@ -1,11 +1,11 @@
 """Release verdicts for inverter and battery pairs, and the parts named around an inverter.
 
-Reads data/compatibility.json in the shape of `schemas/compatibility.schema.json`
-(docs/specs/8-engineering-data.md, target shape 3). The verdict has three
-values plus `unknown`, as the industry states releases: released, released
-with an accessory, not released (docs/research/2026-10-09/
-pv-wholesale-selection-tools.md, section 2.3). Only a manufacturer document
-makes a release; a pair no entry covers is `unknown`, never assumed.
+Reads the Woo-maintained projection in the shared engineering feed. New claims
+bind canonical product IDs as well as their descriptive model patterns. An
+ID-bound claim never applies to another product with the same model text.
+Older unbound data remains readable for retained migration inputs and fixtures.
+Only a current manufacturer statement makes a release; no matching statement
+means unknown, never an assumed pairing.
 """
 
 from __future__ import annotations
@@ -48,6 +48,7 @@ class Accessory:
     model: str
     quantity: int
     per: Literal["system", "stack", "unit"]
+    product_id: int | None = None
 
 
 @dataclass(frozen=True)
@@ -89,7 +90,8 @@ def _documents(raw: list[dict[str, Any]]) -> tuple[DocumentRef, ...]:
 
 def _accessories(raw: list[dict[str, Any]]) -> tuple[Accessory, ...]:
     return tuple(
-        Accessory(item["model"], item["quantity"], item["per"]) for item in raw
+        Accessory(item["model"], item["quantity"], item["per"], item.get("product_id"))
+        for item in raw
     )
 
 
@@ -110,12 +112,27 @@ class Compatibility:
     def load(cls, path: Path) -> Compatibility:
         return cls(json.loads(path.read_text()))
 
-    def pair(self, inverter_model: str, battery_model: str) -> PairResult:
+    def pair(
+        self,
+        inverter_model: str,
+        battery_model: str,
+        *,
+        inverter_id: int | None = None,
+        battery_id: int | None = None,
+    ) -> PairResult:
         matches = [
             pair
             for pair in self._pairs
             if _pattern(pair["inverter"]).search(inverter_model)
             and _pattern(pair["battery"]).search(battery_model)
+            and (
+                "inverter_product_id" not in pair
+                or pair["inverter_product_id"] == inverter_id
+            )
+            and (
+                "battery_product_id" not in pair
+                or pair["battery_product_id"] == battery_id
+            )
         ]
         if not matches:
             return PairResult("unknown")
@@ -150,7 +167,9 @@ class Compatibility:
             ),
         )
 
-    def requirements(self, inverter_model: str, kind: str) -> list[Requirement]:
+    def requirements(
+        self, inverter_model: str, kind: str, *, inverter_id: int | None = None
+    ) -> list[Requirement]:
         return [
             Requirement(
                 kind=item["kind"],
@@ -164,6 +183,10 @@ class Compatibility:
             for item in self._requirements
             if item["kind"] == kind
             and _pattern(item["inverter"]).search(inverter_model)
+            and (
+                "inverter_product_id" not in item
+                or item["inverter_product_id"] == inverter_id
+            )
         ]
 
     def snapshot(self) -> dict[str, Any]:

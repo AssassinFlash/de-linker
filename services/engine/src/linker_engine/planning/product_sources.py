@@ -92,6 +92,10 @@ class ProductSources:
                 raise VersionUnavailable(
                     "Woo condition-preserving figure projection must be prepared"
                 )
+            if loaded.publication.feed.get("compatibility_origin") != "woocommerce":
+                raise VersionUnavailable(
+                    "Woo-maintained compatibility claims must be prepared"
+                )
             view = loaded.publication.prepared_view(loaded.engine)
             ids = {p.id for p in view.engine.products.products}
             result = decode_object(
@@ -99,6 +103,7 @@ class ProductSources:
                     {
                         "schema_version": 1,
                         "figure_projection_version": 2,
+                        "compatibility_origin": "woocommerce",
                         "publication": view.dependencies,
                         "products": [
                             row
@@ -133,6 +138,13 @@ class ProductSources:
             raise VersionUnavailable("pinned Woo product proof is missing")
         try:
             loaded = self.load()
+            if (
+                basis.get("compatibility_origin") == "woocommerce"
+                and loaded.publication.feed.get("compatibility_origin") != "woocommerce"
+            ):
+                raise VersionUnavailable(
+                    "current Woo compatibility projection is unavailable"
+                )
             loaded.publication.confirm(
                 View(loaded.engine, scope),
                 require_reference=require_reference,
@@ -268,6 +280,7 @@ class ProductSources:
                     {
                         "schema_version": 1,
                         "provider": "woocommerce",
+                        "compatibility_origin": feed.get("compatibility_origin"),
                         "figure_projection_version": feed.get(
                             "figure_projection_version"
                         ),

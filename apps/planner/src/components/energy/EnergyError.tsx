@@ -145,6 +145,8 @@ export function energyErrorText(error: unknown): string {
 				"A new check requires current product data. Reload the data and prepare the selection again.",
 				"linker-tools",
 			);
+		case "equipment_requirements_incomplete":
+			return __("Enter the search requirements first.", "linker-tools");
 		case "equipment_selection_incomplete":
 			return __(
 				"Equipment selection requires a product and valid quantities.",

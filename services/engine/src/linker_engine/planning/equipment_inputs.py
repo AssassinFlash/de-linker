@@ -7,6 +7,7 @@ from typing import Annotated, Literal
 from pydantic import Field, model_validator
 
 from .energy_inputs import Document, Nonnegative, SchemaVersion
+from .equipment_requirements import GridPhase
 
 # Interoperable JSON integer ceiling, not a physical installation limit.
 type Count = Annotated[int, Field(strict=True, gt=0, le=9007199254740991)]
@@ -19,8 +20,9 @@ class EquipmentSelection(Document):
     modules_per_stack: Count | None
     parallel_stacks: Count | None
     accessory_product_ids: list[Count]
-    grid_phase: Literal[1, 3] | None
+    grid_phase: GridPhase | None
     operating_mode: Literal["grid_connected", "backup"]
+    # Installed-array STC nameplate rating, displayed in kWp, not AC demand.
     pv_dc_kw: Nonnegative | None
     required_usable_kwh: Nonnegative | None
     required_discharge_ac_kw: Nonnegative | None

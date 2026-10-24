@@ -34,7 +34,20 @@ import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
 import { EquipmentSetup } from "../equipment/EquipmentSetup.tsx";
 import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
-import { readEquipmentSelection } from "../../domain/equipment.ts";
+import {
+	readEquipmentSelection,
+	equipmentDraft,
+	changeEquipment,
+	compileEquipment,
+} from "../../domain/equipment.ts";
+import {
+	compileEquipmentRequirements,
+	readEquipmentRequirements,
+} from "../../domain/equipmentRequirements.ts";
+import { readEquipmentProducts } from "../../data/equipmentProducts.ts";
+import { SEARCH_TASK } from "../../data/equipmentSearch.ts";
+import type { EquipmentCandidate } from "../../data/equipmentSearch.ts";
+import { EquipmentSearchResult } from "../equipment/EquipmentSearchResult.tsx";
 import type { PlanningIntent } from "../../data/PlanningIntentStore.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -365,8 +378,86 @@ export function EnergyWorkspace({
 			setView("runs");
 		}
 	}
+	async function applyEquipment(candidate: EquipmentCandidate) {
+		const selectedRun = runs.run.data;
+		if (
+			!selectedRun ||
+			selectedRun.project_id !== projectId ||
+			blocked ||
+			draft.pending ||
+			draft.conflict
+		)
+			return;
+		const instance = lifetime.current,
+			originalSetup = equipmentDraft(draft.history.current);
+		const current = readEquipmentProducts(
+			await client.query(
+				"products/current",
+				{ schema_version: 1 },
+				session.query_scope,
+			),
+		);
+		if (
+			!client.isCurrentScope(session.query_scope) ||
+			instance !== lifetime.current
+		)
+			return;
+		if (
+			!current.prepared ||
+			Object.entries(candidate.selection.product_revisions).some(
+				([id, revision]) =>
+					!current.products.some(
+						(p) => String(p.id) === id && p.product_revision === revision,
+					),
+			)
+		)
+			throw new ApiError(409, "product_evidence_changed");
+		const applied = edit((inputs) => {
+			if (!sameJson(equipmentDraft(inputs), originalSetup))
+				throw new ApiError(409, "equipment_selection_changed");
+			const patch = Object.fromEntries(
+				(
+					[
+						"inverter_product_id",
+						"battery_product_id",
+						"modules_per_stack",
+						"parallel_stacks",
+						"accessory_product_ids",
+					] as const
+				).map((key) => [key, candidate.selection[key]]),
+			);
+			const next = changeEquipment(inputs, patch);
+			try {
+				const selection = compileEquipment(
+					equipmentDraft(next),
+					current.products,
+				);
+				return {
+					...next,
+					equipment_selection: selection,
+					...(sameJson(selection, candidate.selection)
+						? {
+								equipment_candidate: {
+									run_id: selectedRun.id,
+									candidate_id: candidate.id,
+									assessment_sha256: candidate.assessment_sha256,
+								},
+							}
+						: {}),
+				};
+			} catch {
+				return next;
+			}
+		});
+		if (applied) {
+			setError(null);
+			setView("equipment");
+			openEquipment?.();
+		}
+	}
 	async function startSolar(
-		path: "runs/weather" | "runs/pv" | "runs/equipment",
+		path:
+			"runs/weather" | "runs/pv" | "runs/equipment" | "runs/equipment-search",
 	) {
 		if (
 			dirty ||
@@ -383,8 +474,19 @@ export function EnergyWorkspace({
 			return;
 		try {
 			const inputs = draft.baseline.inputs;
-			const setup = path === "runs/equipment" ? null : readSolarSetup(inputs);
-			if (path === "runs/equipment") {
+			const setup = path.startsWith("runs/equipment")
+				? null
+				: readSolarSetup(inputs);
+			if (path === "runs/equipment-search") {
+				readEquipmentRequirements(inputs.equipment_requirements);
+				if (
+					!sameJson(
+						compileEquipmentRequirements(equipmentDraft(inputs)),
+						inputs.equipment_requirements,
+					)
+				)
+					return;
+			} else if (path === "runs/equipment") {
 				readEquipmentSelection(inputs.equipment_selection);
 			} else if (path === "runs/weather" && setup) {
 				if (
@@ -729,6 +831,10 @@ export function EnergyWorkspace({
 					onValidity={setEquipmentValid}
 					onError={setError}
 					start={() => void startSolar("runs/equipment")}
+					search={() => void startSolar("runs/equipment-search")}
+					searchEnabled={
+						session.runtime.models.equipment_search === SEARCH_TASK
+					}
 				/>
 			</div>
 			<div hidden={view !== "scenario"}>
@@ -966,6 +1072,25 @@ export function EnergyWorkspace({
 									locale={locale}
 									blocked={blocked || !syntaxValid}
 									active={active && view === "runs"}
+								/>
+							) : runTask(runs.run.data) === SEARCH_TASK ? (
+								<EquipmentSearchResult
+									key={runs.run.data.id}
+									run={runs.run.data}
+									locale={locale}
+									dirty={dirty || Boolean(draft.pending)}
+									confirmedRevision={draft.baseline.revision}
+									client={client}
+									scope={session.query_scope}
+									disabled={
+										blocked ||
+										!!draft.pending ||
+										!!draft.conflict ||
+										operations.busy ||
+										!syntaxValid
+									}
+									apply={applyEquipment}
+									onError={setError}
 								/>
 							) : runTask(runs.run.data) === EQUIPMENT_TASK ? (
 								<EquipmentResult

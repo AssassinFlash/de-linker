@@ -47,6 +47,8 @@ export const RPC_PATHS = [
 	"runs/energy",
 	"runs/pv",
 	"runs/equipment",
+	"runs/equipment-search",
+	"equipment/candidates/read",
 	"runs/weather",
 	"runs/weather/status",
 	"runs/trace",

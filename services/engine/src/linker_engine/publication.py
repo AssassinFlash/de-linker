@@ -380,11 +380,23 @@ class Publication:
             )
 
         def permitted_row(row: dict[str, Any]) -> bool:
+            bound = {
+                row[key]
+                for key in ("inverter_product_id", "battery_product_id")
+                if key in row
+            }
+            allowed_ids = {loaded[p.id]["canonical_product_id"] for p in allowed}
+            if bound and not bound.issubset(allowed_ids):
+                return False
             patterns = [row[key] for key in ("inverter", "battery") if key in row]
             relevant = {
                 loaded[p.id]["canonical_product_id"]
                 for p in allowed
-                if any(re.search(pattern, p.model) for pattern in patterns)
+                if (
+                    loaded[p.id]["canonical_product_id"] in bound
+                    if bound
+                    else any(re.search(pattern, p.model) for pattern in patterns)
+                )
             }
             return bool(relevant) and all(
                 bool(permitted_urls.get(doc["url"], set()) & relevant)

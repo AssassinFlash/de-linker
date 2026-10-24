@@ -75,7 +75,7 @@ class EquipmentKernel:
             raise VersionUnavailable("equipment publication proof is missing")
         basis = self.workspace.blobs.object(proof)
         self.products.confirm_basis(basis, require_reference=False)
-        assessment = assess_equipment(self.workspace.pinned_inputs(manifest), basis)
+        output = self.compute(self.workspace.pinned_inputs(manifest), basis, control)
         control.checkpoint()
         self.products.confirm_basis(basis, require_reference=False)
         return {
@@ -87,5 +87,8 @@ class EquipmentKernel:
             "manifest_sha256": sha,
             "runtime_sha256": self.runtime.sha256,
             "pinned_assets": pinned,
-            "assessment": assessment,
+            **output,
         }
+
+    def compute(self, inputs: Object, basis: Object, control: Control) -> Object:
+        return {"assessment": assess_equipment(inputs, basis)}

@@ -10,9 +10,8 @@ from __future__ import annotations
 import re
 from typing import Any, cast
 
-from ..compatibility import Compatibility
 from .canonical import Json, Object, decode_object, encode
-from .equipment_facts import compile_product
+from .equipment_evidence import EquipmentEvidence
 from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput, ProductEvidenceChanged
 
@@ -31,7 +30,11 @@ def selection_products(
     return products
 
 
-def assess_equipment(inputs: Object, basis: Object) -> Object:
+def assess_equipment(
+    inputs: Object, basis: Object, *, evidence: EquipmentEvidence | None = None
+) -> Object:
+    evidence = evidence or EquipmentEvidence(basis)
+    evidence.require_basis(basis)
     selection = EquipmentSelection.read(inputs.get("equipment_selection"))
     raw = cast(list[dict[str, Any]], basis["products"])
     products = selection_products(selection, basis)
@@ -46,7 +49,7 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
     }
     if not selected.issubset(products):
         raise InvalidInput("selected equipment is outside the current Woo-ready set")
-    typed = {key: compile_product(products[key]) for key in selected}
+    typed = {key: evidence.compiled(key) for key in selected}
     checks: list[Json] = []
 
     def add(
@@ -56,6 +59,7 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
         facts: list[dict[str, Any]] | None = None,
         actual: Json = None,
         required: Json = None,
+        derivation: Object | None = None,
     ) -> None:
         checks.append(
             {
@@ -65,20 +69,25 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
                 "facts": cast(list[Json], facts or []),
                 "actual": actual,
                 "required": required,
+                **({"derivation": derivation} if derivation is not None else {}),
             }
         )
 
     def fact(
-        product_id: int, key: str, quantity: str | None = None
+        product_id: int, key: str, quantity: str | tuple[str, ...] | None = None
     ) -> dict[str, Any] | None:
         fields = cast(dict[str, dict[str, Any]], typed[product_id]["facts"])
         found = fields.get(key)
-        if found is None or (quantity is not None and found["quantity"] != quantity):
+        if found is None or (
+            quantity is not None
+            and found["quantity"]
+            not in ((quantity,) if isinstance(quantity, str) else quantity)
+        ):
             return None
         return found
 
     def number(
-        product_id: int, key: str, quantity: str
+        product_id: int, key: str, quantity: str | tuple[str, ...]
     ) -> tuple[float | None, list[dict[str, Any]]]:
         found = fact(product_id, key, quantity)
         if found and found["status"] == "typed" and found["shape"] == "scalar":
@@ -90,7 +99,7 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
         requested: float | None,
         product_id: int,
         key: str,
-        quantity: str,
+        quantity: str | tuple[str, ...],
     ) -> None:
         if requested is None:
             add(identifier, "unresolved", "project_requirement_missing")
@@ -145,7 +154,7 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
             selection.pv_dc_kw,
             selection.inverter_product_id,
             "max_pv_input_power_w",
-            "active_power",
+            "pv_nameplate_power",
         )
         add(
             "pv_electrical_topology",
@@ -153,7 +162,20 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
             "string_ports_voltage_current_and_temperature_require_assessment",
         )
 
-    contract = Compatibility(cast(dict[str, Any], basis["compatibility"]))
+    contract = evidence.contract
+    installation = [
+        requirement
+        for kind in (
+            "meter",
+            *(("backup",) if selection.operating_mode == "backup" else ()),
+        )
+        for requirement in contract.requirements(
+            inverter["model"], kind, inverter_id=selection.inverter_product_id
+        )
+        if requirement.phase is None
+        or selection.grid_phase is None
+        or requirement.phase == selection.grid_phase
+    ]
     bom: list[Json] = [
         {
             "product_id": selection.inverter_product_id,
@@ -161,11 +183,96 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
             "basis": "selected_converter",
         }
     ]
+    count, stacks = selection.modules_per_stack, selection.parallel_stacks
+    pair_result = (
+        contract.pair(
+            inverter["model"],
+            products[selection.battery_product_id]["model"],
+            inverter_id=selection.inverter_product_id,
+            battery_id=selection.battery_product_id,
+        )
+        if selection.battery_product_id is not None
+        else None
+    )
+    requirements = list(pair_result.accessories) if pair_result else []
+    requirements.extend(
+        a for r in installation if not r.included for a in r.accessories
+    )
+    resolved: dict[int, tuple[int, str]] = {}
+    for accessory in requirements:
+        matches = [
+            p
+            for p in raw
+            if (
+                (
+                    accessory.product_id is None
+                    and re.search(accessory.model, p["model"])
+                )
+                or p["canonical_product_id"] == accessory.product_id
+            )
+        ]
+        accessory_multiplier = (
+            stacks
+            if accessory.per == "stack"
+            else 1
+            if accessory.per in {"system", "unit"}
+            else None
+        )
+        if len(matches) != 1 or accessory_multiplier is None:
+            add(
+                "required_accessory:" + accessory.model,
+                "unresolved",
+                "accessory_identity_or_quantity_unresolved",
+            )
+            continue
+        pid, quantity = (
+            matches[0]["canonical_product_id"],
+            accessory.quantity * accessory_multiplier,
+        )
+        if pid in resolved and resolved[pid] != (quantity, accessory.per):
+            add(
+                "required_accessory:" + str(pid),
+                "unresolved",
+                "accessory_quantity_rules_conflict",
+            )
+            continue
+        resolved[pid] = (quantity, accessory.per)
+        add(
+            "required_accessory:" + str(pid),
+            "satisfied" if pid in selection.accessory_product_ids else "violated",
+            "manufacturer_required_component",
+            actual=pid,
+        )
+    for pid, (quantity, per) in resolved.items():
+        if quantity > 9007199254740991:
+            raise InvalidInput("accessory quantity exceeds interoperable integers")
+        bom.append(
+            {
+                "product_id": pid,
+                "quantity": quantity,
+                "basis": "manufacturer_required_" + per,
+            }
+        )
+    for pid in selection.accessory_product_ids:
+        if pid not in resolved:
+            bom.append(
+                {
+                    "product_id": pid,
+                    "quantity": None,
+                    "basis": "selected_accessory_quantity_unresolved",
+                }
+            )
+            add(
+                "accessory_quantity:" + str(pid),
+                "unresolved",
+                "selected_accessory_quantity_requires_evidence",
+            )
+
     pairing: Json = None
     if selection.battery_product_id is not None:
         battery_id = selection.battery_product_id
-        battery = products[battery_id]
-        pair = contract.pair(inverter["model"], battery["model"])
+        pair = pair_result
+        assert pair is not None
         pairing = {
             "verdict": pair.verdict,
             "conditions": [{"en": text.en, "de": text.de} for text in pair.conditions],
@@ -180,7 +287,6 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
             if pair.released
             else "manufacturer_release_not_established",
         )
-        count, stacks = selection.modules_per_stack, selection.parallel_stacks
         low, high = pair.modules if pair.modules is not None else (None, None)
         if low is None or high is None or count is None:
             add("modules_per_stack", "unresolved", "cited_configuration_count_missing")
@@ -196,82 +302,17 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
         add(
             "parallel_stacks",
             "unresolved"
-            if stacks is None or parallel is None
+            if stacks is None or (parallel is None and stacks != 1)
             else "satisfied"
-            if stacks <= parallel
+            if stacks == 1 or (parallel is not None and stacks <= parallel)
             else "violated",
-            "parallel_topology_limit",
+            "single_stack_without_parallel_connection"
+            if stacks == 1
+            else "parallel_topology_limit",
             refs,
             stacks,
             parallel,
         )
-
-        requirements = list(pair.accessories)
-        if selection.operating_mode == "backup":
-            requirements.extend(
-                a
-                for r in contract.requirements(inverter["model"], "backup")
-                for a in r.accessories
-            )
-        resolved: dict[int, tuple[int, str]] = {}
-        for accessory in requirements:
-            matches = [p for p in raw if re.search(accessory.model, p["model"])]
-            accessory_multiplier = (
-                stacks
-                if accessory.per == "stack"
-                else 1
-                if accessory.per in {"system", "unit"}
-                else None
-            )
-            if len(matches) != 1 or accessory_multiplier is None:
-                add(
-                    "required_accessory:" + accessory.model,
-                    "unresolved",
-                    "accessory_identity_or_quantity_unresolved",
-                )
-                continue
-            pid, quantity = (
-                matches[0]["canonical_product_id"],
-                accessory.quantity * accessory_multiplier,
-            )
-            if pid in resolved and resolved[pid] != (quantity, accessory.per):
-                add(
-                    "required_accessory:" + str(pid),
-                    "unresolved",
-                    "accessory_quantity_rules_conflict",
-                )
-                continue
-            resolved[pid] = (quantity, accessory.per)
-            add(
-                "required_accessory:" + str(pid),
-                "satisfied" if pid in selection.accessory_product_ids else "violated",
-                "manufacturer_required_component",
-                actual=pid,
-            )
-        for pid, (quantity, per) in resolved.items():
-            if quantity > 9007199254740991:
-                raise InvalidInput("accessory quantity exceeds interoperable integers")
-            bom.append(
-                {
-                    "product_id": pid,
-                    "quantity": quantity,
-                    "basis": "manufacturer_required_" + per,
-                }
-            )
-        for pid in selection.accessory_product_ids:
-            if pid not in resolved:
-                bom.append(
-                    {
-                        "product_id": pid,
-                        "quantity": None,
-                        "basis": "selected_accessory_quantity_unresolved",
-                    }
-                )
-                add(
-                    "accessory_quantity:" + str(pid),
-                    "unresolved",
-                    "selected_accessory_quantity_requires_evidence",
-                )
 
         inv_range = fact(
             selection.inverter_product_id, "battery_voltage_range_v", "voltage"
@@ -408,6 +449,13 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
             refs,
             total,
             required,
+            derivation={
+                "operation": "multiply",
+                "factors": [value, multiplier],
+                "unit": "kWh",
+            }
+            if total is not None
+            else None,
         )
         if selection.required_discharge_ac_kw is not None:
             # Maximum DC current and fault current do not establish sustained
@@ -469,6 +517,19 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
                 "equipment_status": equipment_status,
                 "checks": checks,
                 "manufacturer_pair": pairing,
+                "installation_requirements": [
+                    {
+                        "kind": r.kind,
+                        "included": r.included,
+                        "conditions": [
+                            {"en": text.en, "de": text.de} for text in r.conditions
+                        ],
+                        "documents": [
+                            {"url": doc.url, "page": doc.page} for doc in r.documents
+                        ],
+                    }
+                    for r in installation
+                ],
                 "selected_products": [typed[key] for key in sorted(typed)],
                 "provisional_bill_of_materials": [
                     {

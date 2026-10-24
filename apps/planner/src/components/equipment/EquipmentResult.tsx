@@ -1,9 +1,11 @@
 import type { PlanningRun } from "../../data/planningProtocol.ts";
+import { runTask } from "../../data/planningProtocol.ts";
+import type { ReactNode } from "react";
 import type { Json, JsonObject } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
-import { runStateLabel } from "../energy/planningLabels.ts";
+import { runStateLabel, taskLabel } from "../energy/planningLabels.ts";
 import {
 	equipmentCheckLabel,
 	equipmentReason,
@@ -32,13 +34,22 @@ export function EquipmentResult({
 	locale,
 	dirty,
 	confirmedRevision,
+	assessmentOverride,
+	children,
 }: {
 	run: PlanningRun;
 	locale: string;
 	dirty: boolean;
 	confirmedRevision: number;
+	assessmentOverride?: JsonObject | null;
+	children?: ReactNode;
 }) {
-	const assessment = run.result ? readObject(run.result.assessment) : null;
+	const assessment =
+		assessmentOverride !== undefined
+			? assessmentOverride
+			: run.result
+				? readObject(run.result.assessment)
+				: null;
 	const checks = assessment?.checks as JsonObject[] | undefined;
 	const lines = assessment?.provisional_bill_of_materials as
 		JsonObject[] | undefined;
@@ -62,11 +73,9 @@ export function EquipmentResult({
 				data-action-result-context=""
 			>
 				<div>
-					<span className="lp-eyebrow">
-						{__("Equipment checks", "linker-tools")}
-					</span>
+					<span className="lp-eyebrow">{taskLabel(runTask(run))}</span>
 					<h3 className="lp-focus-target" tabIndex={-1}>
-						{runStateLabel(run.state, "qualify_woo_equipment_v1")}
+						{runStateLabel(run.state, runTask(run))}
 					</h3>
 				</div>
 				<span>
@@ -89,6 +98,7 @@ export function EquipmentResult({
 					)}
 				</Notice>
 			)}
+			{children}
 			{assessment && (
 				<>
 					<Notice error={assessment.overall_status === "violated"}>
@@ -106,7 +116,7 @@ export function EquipmentResult({
 						const unit =
 							(
 								{
-									pv_dc_input: "kW",
+									pv_dc_input: "kWp",
 									usable_energy: "kWh",
 									continuous_battery_ac_output: "kW",
 									converter_identity: "kW",
@@ -142,6 +152,14 @@ export function EquipmentResult({
 											</dd>
 										</div>
 									</dl>
+								)}
+								{check.derivation && (
+									<p>
+										{(readObject(check.derivation).factors as number[])
+											.map((v) => text(v, locale))
+											.join(" × ")}{" "}
+										= {text(check.actual, locale)} kWh
+									</p>
 								)}
 								{facts.length > 0 && (
 									<div>
@@ -202,6 +220,43 @@ export function EquipmentResult({
 							"linker-tools",
 						)}
 					</p>
+					{Array.isArray(assessment.installation_requirements) &&
+						assessment.installation_requirements.length > 0 && (
+							<details className="lp-comparison">
+								<summary>
+									{__("Components and manufacturer conditions", "linker-tools")}
+								</summary>
+								{assessment.installation_requirements.map((value, i) => {
+									const r = readObject(value);
+									return (
+										<div key={i}>
+											{Array.isArray(r.conditions) &&
+												r.conditions.map((v, j) => (
+													<p key={j}>{qualifier(v, locale)}</p>
+												))}
+											{Array.isArray(r.documents) &&
+												r.documents.map((value, k) => {
+													const doc = readObject(value);
+													return (
+														<p key={k}>
+															<a
+																href={String(doc.url)}
+																target="_blank"
+																rel="noreferrer"
+															>
+																{__("Source document", "linker-tools")}
+															</a>
+															{typeof doc.page === "number"
+																? ` · ${sprintf(__("Page %d", "linker-tools"), doc.page)}`
+																: ""}
+														</p>
+													);
+												})}
+										</div>
+									);
+								})}
+							</details>
+						)}
 					<h4>{__("Provisional bill of materials", "linker-tools")}</h4>
 					<p>
 						{__(

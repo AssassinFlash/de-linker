@@ -56,6 +56,9 @@ def configured_private_app(
             weather=settings.weather_service(workspace),
             product_provider=provider,
             equipment=settings.equipment_service(workspace, products=products),
+            equipment_search=settings.equipment_search_service(
+                workspace, products=products
+            ),
         )
     except Exception:
         LOG.exception("planning service configuration is unavailable")

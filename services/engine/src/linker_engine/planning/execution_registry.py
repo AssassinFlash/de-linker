@@ -26,6 +26,7 @@ def service_registry(
     pv: PvPreparationService | None,
     weather: WeatherService | None = None,
     equipment: EquipmentService | None = None,
+    equipment_search: EquipmentService | None = None,
 ) -> ExecutionRegistry:
     """One executor-set authority for HTTP, worker startup and operator identity."""
     return ExecutionRegistry(
@@ -33,6 +34,7 @@ def service_registry(
         *(() if pv is None else (pv.kernel,)),
         *(() if weather is None else (weather.kernel,)),
         *(() if equipment is None else (equipment.kernel,)),
+        *(() if equipment_search is None else (equipment_search.kernel,)),
     )
 
 

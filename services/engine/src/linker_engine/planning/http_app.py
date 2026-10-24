@@ -27,6 +27,8 @@ from .canonical import Json, Object
 from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
 from .energy_service import EnergyService
+from .equipment_candidate_choice import check_equipment_candidate
+from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_service import EquipmentService
 from .errors import (
     Conflict,
@@ -53,6 +55,7 @@ from .http_documents import (
     CsvImport,
     CsvInspect,
     EnergyEvaluate,
+    EquipmentCandidateRead,
     GeometryImportCommand,
     GeometryReview,
     ProfilePreviewRead,
@@ -109,6 +112,7 @@ def create_private_app(
     weather: WeatherService | None = None,
     product_provider: Callable[[], ProductProvider] | None = None,
     equipment: EquipmentService | None = None,
+    equipment_search: EquipmentService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -128,7 +132,13 @@ def create_private_app(
         raise InvalidInput(
             "equipment qualification requires shared project and Woo authority"
         )
-    registry = service_registry(energy, pv, weather, equipment)
+    if equipment_search is not None and (
+        equipment_search.workspace is not workspace
+        or equipment_search.kernel.workspace is not workspace
+        or product_provider is None
+    ):
+        raise InvalidInput("equipment search requires shared project and Woo authority")
+    registry = service_registry(energy, pv, weather, equipment, equipment_search)
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
@@ -220,7 +230,14 @@ def create_private_app(
         return {
             "schema_version": 1,
             "runtime_sha256": energy.kernel.runtime.sha256,
-            "models": dict(energy.kernel.models),
+            "models": {
+                **energy.kernel.models,
+                **(
+                    {"equipment_search": equipment_search.kernel.kind}
+                    if equipment_search is not None
+                    else {}
+                ),
+            },
             "execution_key": registry.execution_key(),
             "storage_binding": storage_binding(workspace.database.path),
             "limits": {
@@ -273,6 +290,9 @@ def create_private_app(
         check_profile_selections(assets, actor, None, body.inputs)
         check_geometry_imports(assets, actor, None, body.inputs)
         check_pv_preparation(assets, actor, None, body.inputs)
+        check_equipment_candidate(
+            workspace, actor, None, body.inputs, products=products
+        )
         if products is not None:
             products.check_project(body.inputs)
         return project_view(
@@ -306,6 +326,14 @@ def create_private_app(
         check_profile_selections(assets, actor, body.project_id, body.inputs)
         check_geometry_imports(assets, actor, body.project_id, body.inputs)
         check_pv_preparation(assets, actor, body.project_id, body.inputs)
+        check_equipment_candidate(
+            workspace,
+            actor,
+            body.project_id,
+            body.inputs,
+            products=products,
+            previous=previous.inputs,
+        )
         if products is not None:
             products.check_project(body.inputs, previous.inputs)
         return project_view(
@@ -406,6 +434,26 @@ def create_private_app(
                 body.expected_revision,
                 key=body.key,
             )
+        )
+
+    @app.post("/runs/equipment-search")
+    def equipment_find(body: EnergyEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/equipment-search", body)
+        if previous is not None:
+            return previous
+        if equipment_search is None:
+            raise VersionUnavailable("equipment search is not configured")
+        return run_view(
+            equipment_search.evaluate(
+                actor, body.project_id, body.expected_revision, key=body.key
+            )
+        )
+
+    @app.post("/equipment/candidates/read")
+    def equipment_candidate(body: EquipmentCandidateRead, request: Request) -> Object:
+        return EquipmentCandidateStore(workspace).read(
+            verified_actor(request.scope), body.run_id, body.candidate_id
         )
 
     @app.post("/runs/trace")

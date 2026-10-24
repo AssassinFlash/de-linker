@@ -78,6 +78,14 @@ class ProjectInputs(Command):
             from .equipment_inputs import EquipmentSelection
 
             EquipmentSelection.model_validate(value["equipment_selection"])
+        if "equipment_requirements" in value:
+            from .equipment_requirements import EquipmentRequirements
+
+            EquipmentRequirements.model_validate(value["equipment_requirements"])
+        if "equipment_candidate" in value:
+            from .equipment_candidate_choice import EquipmentCandidateChoice
+
+            EquipmentCandidateChoice.model_validate(value["equipment_candidate"])
         return value
 
 
@@ -124,6 +132,10 @@ class EnergyEvaluate(Command):
 
 class RunRead(Command):
     run_id: Id
+
+
+class EquipmentCandidateRead(RunRead):
+    candidate_id: Annotated[str, Field(pattern=r"^[a-f0-9]{64}$")]
 
 
 class TraceRead(RunRead):

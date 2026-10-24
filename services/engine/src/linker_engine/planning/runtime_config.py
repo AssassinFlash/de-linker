@@ -17,6 +17,8 @@ from .energy_inputs import Document, Nonnegative, SchemaVersion
 from .energy_kernel import EnergyKernel
 from .energy_service import EnergyService
 from .equipment_kernel import EquipmentKernel
+from .equipment_search_kernel import EquipmentSearchKernel
+from .equipment_search_limits import EquipmentSearchLimits
 from .equipment_service import EquipmentService
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
@@ -47,6 +49,7 @@ class RuntimeConfig(Document):
     # enable the additional registered executor; no engineering defaults.
     pv_preparation: PvGenerationLimits | None = None
     weather_acquisition: WeatherFetchLimits | None = None
+    equipment_search: EquipmentSearchLimits | None = None
 
     @model_validator(mode="after")
     def absolute_directory(self) -> Self:
@@ -119,6 +122,21 @@ class RuntimeConfig(Document):
             workspace,
             EquipmentKernel(
                 workspace, products or ProductSources(worker_product_provider)
+            ),
+            max_attempts=self.max_attempts,
+        )
+
+    def equipment_search_service(
+        self, workspace: Workspace, *, products: ProductSources | None = None
+    ) -> EquipmentService | None:
+        if self.equipment_search is None:
+            return None
+        return EquipmentService(
+            workspace,
+            EquipmentSearchKernel(
+                workspace,
+                products or ProductSources(worker_product_provider),
+                self.equipment_search,
             ),
             max_attempts=self.max_attempts,
         )

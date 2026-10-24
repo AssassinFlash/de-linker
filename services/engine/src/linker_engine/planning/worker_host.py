@@ -78,7 +78,11 @@ def serve(
         pv = settings.pv_service(workspace)
         weather = settings.weather_service(workspace)
         registry = service_registry(
-            energy, pv, weather, settings.equipment_service(workspace)
+            energy,
+            pv,
+            weather,
+            settings.equipment_service(workspace),
+            settings.equipment_search_service(workspace),
         )
         if (registry.runtime.sha256, registry.execution_key()) != (
             expected_runtime,
@@ -190,7 +194,11 @@ def main(argv: list[str] | None = None) -> int:
             pv = settings.pv_service(workspace)
             weather = settings.weather_service(workspace)
             registry = service_registry(
-                energy, pv, weather, settings.equipment_service(workspace)
+                energy,
+                pv,
+                weather,
+                settings.equipment_service(workspace),
+                settings.equipment_search_service(workspace),
             )
             print(
                 encode(

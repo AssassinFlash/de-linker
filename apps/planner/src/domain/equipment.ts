@@ -3,6 +3,7 @@ import schema from "../contracts/equipment-selection.schema.json" with { type: "
 import type { Json, JsonObject } from "../data/protocol.ts";
 import { ApiError } from "../data/protocol.ts";
 import { readObject } from "../data/readProtocol.ts";
+import { readEquipmentRequirements } from "./equipmentRequirements.ts";
 import type { EquipmentProduct } from "../data/equipmentProducts.ts";
 
 export interface EquipmentSelection extends JsonObject {
@@ -84,6 +85,11 @@ export function equipmentDraft(inputs: JsonObject): JsonObject {
 	}
 	if (inputs.equipment_selection !== undefined)
 		return readEquipmentSelection(inputs.equipment_selection);
+	if (inputs.equipment_requirements !== undefined)
+		return {
+			...equipmentDraft({}),
+			...readEquipmentRequirements(inputs.equipment_requirements),
+		};
 	return {
 		schema_version: 1,
 		inverter_product_id: null,
@@ -107,6 +113,7 @@ export function changeEquipment(
 		equipment_setup: { ...equipmentDraft(inputs), ...patch },
 	};
 	delete next.equipment_selection;
+	delete next.equipment_candidate;
 	return next;
 }
 export function compileEquipment(

@@ -7469,3 +7469,108 @@ msgstr "Für diese Konfiguration ist ein belegter Betriebsspannungsbereich erfor
 #: build/planner/assets/planner.js
 msgid "This result records the proposed equipment and the checks covered here. Further assessment of the complete system is required."
 msgstr "Dieses Ergebnis dokumentiert die vorgeschlagene Geräteauswahl und die hier geprüften Anforderungen. Die Gesamtanlage muss noch weiter geprüft werden."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Choose equipment manually"
+msgstr "Geräte manuell auswählen"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Combinations assessed"
+msgstr "Geprüfte Kombinationen"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Components and manufacturer conditions"
+msgstr "Komponenten und Herstellervorgaben"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Enter the search requirements first."
+msgstr "Geben Sie zuerst die Anforderungen für die Suche ein."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Equipment combination"
+msgstr "Gerätekombination"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Equipment search"
+msgstr "Gerätesuche"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Equipment search finished"
+msgstr "Gerätesuche beendet"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Find combinations using the requirements above. Selecting products is optional."
+msgstr "Die Suche verwendet die oben angegebenen Anforderungen. Die Produktauswahl ist optional."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Find equipment combinations"
+msgstr "Gerätekombinationen suchen"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "No combinations were found using the available documented configurations."
+msgstr "Auf Grundlage der verfügbaren dokumentierten Konfigurationen wurde keine Kombination gefunden."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Prepare equipment search"
+msgstr "Gerätesuche vorbereiten"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Prepare the search, then save the project."
+msgstr "Bereiten Sie die Suche vor und speichern Sie anschließend das Projekt."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Search complete within the stated scope."
+msgstr "Suche im angegebenen Umfang abgeschlossen."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Search incomplete: the search limit was reached. Some configurations remain unchecked."
+msgstr "Suche unvollständig: Das Suchlimit wurde erreicht. Einige Konfigurationen wurden nicht geprüft."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Search scope"
+msgstr "Umfang der Suche"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Searching for equipment combinations…"
+msgstr "Gerätekombinationen werden gesucht…"
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Some products or combinations lack the supporting data needed for this search."
+msgstr "Für einige Produkte oder Kombinationen fehlen die für diese Suche erforderlichen Angaben."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "The combination details could not be loaded."
+msgstr "Die Angaben zur Kombination konnten nicht geladen werden."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "The saved requirements are ready for the search."
+msgstr "Die gespeicherten Anforderungen stehen für die Suche bereit."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "This search assesses combinations of one inverter and one external battery assembly. Parallel inverter systems, multiple battery ports and integrated storage systems require separate assessment."
+msgstr "Die Suche prüft Kombinationen aus einem Wechselrichter und einem separaten Batteriesystem. Parallele Wechselrichtersysteme, mehrere Batterieanschlüsse und integrierte Speichersysteme müssen gesondert geprüft werden."
+
+#. Equipment search: independent EN/DE copy review.
+#: build/planner/assets/planner.js
+msgid "Use this combination in the project"
+msgstr "Kombination ins Projekt übernehmen"

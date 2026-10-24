@@ -187,9 +187,9 @@ The task freezes the whole loaded/current/prepared candidate pool, its document
 associations and the shared publication-filtered compatibility contract. It
 checks current permission before and after worker evaluation. It uses no legacy
 capacity ratios, postcode assumptions or old residential/commercial selection
-function. Proposed configurations are assessed before ranking. Automatic
-candidate search and ranking remain part of the overall implementation; this
-task does not claim to have implemented them.
+function. Proposed configurations are assessed before ranking. The separate automatic search below enumerates the currently implemented
+documented topology domain. Full-system topology expansion and ranking after
+qualification remain in the same overall implementation.
 
 Equipment needs figure projection version 2. The Woo producer preserves
 `qualifier`, `evidence_refs`, explicit `columns` and existing language values;
@@ -230,3 +230,58 @@ shared integration is actually connected and verified. That handoff must name
 the interfaces, source/runtime versions, relevant readback and remaining
 integration responsibilities so the other work can continue. Keep this handoff
 pending until those facts exist; importing shared code alone does not satisfy it.
+
+### Automatic equipment search and candidate selection
+
+Compatibility declarations are maintained on native Woo products, alongside
+their cited document identities and revisions. The feed carries the shared
+`compatibility_origin: "woocommerce"` projection and canonical product IDs;
+new equipment commands require that projection. The former static contract is
+an explicit one-time migration input only. It is not a runtime fallback or a
+second maintenance source. Historical frozen results retain their original
+evidence.
+
+`/runs/equipment-search` uses the same revision-bound command journal, owned
+worker, Woo preparation, pinned whole-product pool and before/after authority
+checks as proposed-equipment checking. `equipment_requirements` holds only
+project phase, mode, installed-array STC rating (kWp), required usable energy
+and required continuous AC discharge power. Saved drafts can retain unprepared
+settings; execution rejects requirements that differ from the current saved
+settings. Search availability is explicitly advertised by the configured
+service. The deployment supplies an operational work budget; it is never a
+physical limit or an infeasibility claim.
+
+The implemented template is one converter with one external battery assembly,
+or no battery when both storage demands are explicitly zero. Current
+manufacturer-listed pairings, intersected documented module-count bounds and
+unambiguous required components generate selections. No missing count,
+parallel capability, sales-unit identity or manufacturer condition is invented.
+The same assessment function checks every selection. A single external
+assembly does not require evidence for inter-assembly parallel operation.
+Wp/kWp are PV nameplate quantities, distinct from continuous active AC power;
+an unlabeled active-power field cannot establish an installed STC array limit.
+Meter requirements apply even when no battery is chosen, and included
+components retain their manufacturer conditions and document links.
+
+The result distinguishes exhausted supported domain, unresolved evidence,
+violated requirements and an unfinished search caused by its work budget. It
+records its domain, omitted topology types, source gaps and every generated
+selection. Canonical product/count order is a display order, not a performance
+ranking. Country and remaining topology obligations continue to prevent a
+fully qualified result; this increment cannot claim global search exhaustion,
+optimality, complete engineering release or final BOM coverage.
+
+Candidate checks are immutable. Common fact blobs are stored once and candidate
+assessments refer to them, avoiding repeated large evidence payloads.
+`/equipment/candidates/read` accepts a run and candidate identity, verifies
+private run ownership and membership, and reassembles the stored checks without
+fetching current products or recomputing a historical assessment.
+
+Applying a candidate rechecks its exact Woo product revisions. It preserves
+unrelated project edits and refuses a late application over changed equipment
+settings. Current project demand is preserved. When the prepared selection
+exactly matches the saved candidate, `equipment_candidate` binds its run,
+candidate and assessment hash; project writes verify ownership, same-project
+lineage and exact selection. Changed demand instead requires a new assessment
+and is not relabelled as the old candidate. This binding is available for the
+remaining report, BOM and commerce consumers.

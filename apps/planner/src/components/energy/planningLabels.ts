@@ -1,9 +1,11 @@
 import { __ } from "../../i18n.ts";
 import type { RunState } from "../../data/planningProtocol.ts";
 import { PV_TASK, WEATHER_TASK } from "../../data/readPreparationResult.ts";
+import { SEARCH_TASK } from "../../data/equipmentSearch.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
 
 export function taskLabel(kind: string | null | undefined): string {
+	if (kind === SEARCH_TASK) return __("Equipment search", "linker-tools");
 	if (kind === EQUIPMENT_TASK) return __("Equipment checks", "linker-tools");
 	if (kind === WEATHER_TASK)
 		return __("Weather data preparation", "linker-tools");
@@ -18,6 +20,8 @@ export function runStateLabel(state: RunState, kind?: string | null): string {
 		case "queued":
 			return __("Queued", "linker-tools");
 		case "running":
+			if (kind === SEARCH_TASK)
+				return __("Searching for equipment combinations…", "linker-tools");
 			if (kind === EQUIPMENT_TASK)
 				return __("Checking equipment selection", "linker-tools");
 			return preparing
@@ -26,6 +30,8 @@ export function runStateLabel(state: RunState, kind?: string | null): string {
 		case "retry_wait":
 			return __("Waiting to retry", "linker-tools");
 		case "succeeded":
+			if (kind === SEARCH_TASK)
+				return __("Equipment search finished", "linker-tools");
 			if (kind === EQUIPMENT_TASK)
 				return __("Equipment check complete", "linker-tools");
 			return preparing

@@ -19,6 +19,8 @@ from .canonical import Json, Object, decode_object, digest, encode
 _UNITS: dict[str, tuple[str, str, float]] = {
     "W": ("active_power", "kW", 0.001),
     "kW": ("active_power", "kW", 1),
+    "Wp": ("pv_nameplate_power", "kWp", 0.001),
+    "kWp": ("pv_nameplate_power", "kWp", 1),
     "VA": ("apparent_power", "kVA", 0.001),
     "kVA": ("apparent_power", "kVA", 1),
     "Wh": ("energy", "kWh", 0.001),
@@ -150,6 +152,7 @@ def compile_product(product: dict[str, Any]) -> Object:
                 unit_spec[0]
                 in {
                     "active_power",
+                    "pv_nameplate_power",
                     "apparent_power",
                     "energy",
                     "voltage",

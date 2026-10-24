@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 
 import pytest
 from conftest import SHIPPED_COMPATIBILITY
@@ -160,3 +161,36 @@ def test_the_shipped_contract_and_the_fixture_agree_on_the_reviewed_cells(
     assert [(a.model, a.quantity) for a in shipped.accessories] == [
         (a.model, a.quantity) for a in fixture.accessories
     ]
+
+
+def test_canonical_ids_prevent_same_model_products_from_borrowing_claims() -> None:
+    raw = json.loads(SHIPPED_COMPATIBILITY.read_text())
+    raw["pairs"] = [
+        p
+        for p in raw["pairs"]
+        if re.search(p["inverter"], "H2-10K-T3")
+        and re.search(p["battery"], "BU2-5.0-HV1")
+    ]
+    raw["requirements"] = [
+        r for r in raw["requirements"] if re.search(r["inverter"], "H2-10K-T3")
+    ]
+    for pair in raw["pairs"]:
+        pair.update(inverter_product_id=4107, battery_product_id=2090)
+        for accessory in pair.get("accessories", []):
+            accessory["product_id"] = 2092
+    for row in raw["requirements"]:
+        row["inverter_product_id"] = 4107
+    contract = Compatibility(raw)
+    matched = contract.pair(
+        "H2-10K-T3", "BU2-5.0-HV1", inverter_id=4107, battery_id=2090
+    )
+    assert matched.released and matched.accessories[0].product_id == 2092
+    assert (
+        contract.pair(
+            "H2-10K-T3", "BU2-5.0-HV1", inverter_id=4108, battery_id=2090
+        ).verdict
+        == "unknown"
+    )
+    assert contract.pair("H2-10K-T3", "BU2-5.0-HV1").verdict == "unknown"
+    assert contract.requirements("H2-10K-T3", "meter", inverter_id=4107)
+    assert not contract.requirements("H2-10K-T3", "meter", inverter_id=4108)

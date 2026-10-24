@@ -25,10 +25,16 @@ from linker_engine.planning.canonical import Object
 from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_assessment import assess_equipment
+from linker_engine.planning.equipment_candidate_choice import check_equipment_candidate
+from linker_engine.planning.equipment_candidate_store import EquipmentCandidateStore
 from linker_engine.planning.equipment_facts import compile_product
 from linker_engine.planning.equipment_kernel import EquipmentKernel
+from linker_engine.planning.equipment_requirements import EquipmentRequirements
+from linker_engine.planning.equipment_search import search_equipment
+from linker_engine.planning.equipment_search_kernel import EquipmentSearchKernel
+from linker_engine.planning.equipment_search_limits import EquipmentSearchLimits
 from linker_engine.planning.equipment_service import EquipmentService
-from linker_engine.planning.errors import VersionUnavailable
+from linker_engine.planning.errors import InvalidInput, VersionUnavailable
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
@@ -126,6 +132,7 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
     assert checks["battery_voltage"]["status"] == voltage_status
     assert checks["continuous_battery_ac_output"]["status"] == "unresolved"
     assert checks["battery_sales_unit"]["status"] == "satisfied"
+    assert checks["parallel_stacks"]["status"] == "satisfied"
     assert checks["usable_energy"]["status"] == (
         "satisfied" if count == 3 else "unresolved"
     )
@@ -214,8 +221,18 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
     with pytest.raises(VersionUnavailable):
         source.equipment_basis()
     feed["figure_projection_version"] = 2
+    with pytest.raises(VersionUnavailable):
+        source.equipment_basis()
+    feed["compatibility_origin"] = "woocommerce"
     equipment = EquipmentService(
         workspace, EquipmentKernel(workspace, source), max_attempts=1
+    )
+    search = EquipmentService(
+        workspace,
+        EquipmentSearchKernel(
+            workspace, source, EquipmentSearchLimits(work_budget=1000)
+        ),
+        max_attempts=1,
     )
     energy = EnergyService(
         workspace, EnergyKernel(workspace, TOLERANCE, max_intervals=10), max_attempts=1
@@ -226,9 +243,10 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         credential=lambda: TOKEN,
         limits=HttpLimits(100_000, 10_000, 10, 32),
         equipment=equipment,
+        equipment_search=search,
         product_provider=lambda: shared,
     )
-    registry = service_registry(energy, None, None, equipment)
+    registry = service_registry(energy, None, None, equipment, search)
     worker = Worker(
         Jobs(workspace),
         "equipment-only-path",
@@ -244,7 +262,17 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
             json={
                 "schema_version": 1,
                 "title": "Cited equipment fixture",
-                "inputs": inputs(feed, 3),
+                "inputs": {
+                    **inputs(feed, 3),
+                    "equipment_requirements": {
+                        "schema_version": 1,
+                        "grid_phase": 3,
+                        "operating_mode": "grid_connected",
+                        "pv_dc_kw": 10,
+                        "required_usable_kwh": 15,
+                        "required_discharge_ac_kw": 5,
+                    },
+                },
                 "key": "equipment-project",
             },
             headers=headers(),
@@ -266,9 +294,73 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert completed.state == "succeeded" and completed.result is not None
         proof = completed.result["pinned_assets"]["woo.equipment_inputs"]
         assert workspace.blobs.object(proof)["figure_projection_version"] == 2
+        search_command = {**command, "key": "search-first"}
+        found = client.post(
+            "/runs/equipment-search", json=search_command, headers=headers()
+        )
+        assert found.status_code == 200, found.text
+        assert worker.run_once()
+        searched = workspace.run(owner, found.json()["id"])
+        assert searched.state == "succeeded", searched.error
+        candidate = searched.result["search"]["candidates"][0]
+        detail = client.post(
+            "/equipment/candidates/read",
+            json={
+                "schema_version": 1,
+                "run_id": searched.id,
+                "candidate_id": candidate["id"],
+            },
+            headers=headers(),
+        )
+        assert (
+            detail.status_code == 200
+            and detail.json()["assessment_sha256"] == candidate["assessment_sha256"]
+        )
+        assert detail.json()["assessment"]["selected_products"]
+        selected_inputs = {
+            "equipment_selection": candidate["selection"],
+            "equipment_candidate": {
+                "run_id": searched.id,
+                "candidate_id": candidate["id"],
+                "assessment_sha256": candidate["assessment_sha256"],
+            },
+        }
+        check_equipment_candidate(
+            workspace, owner, pid, selected_inputs, products=source
+        )
+        selected_inputs["equipment_candidate"]["assessment_sha256"] = "0" * 64
+        with pytest.raises(InvalidInput):
+            check_equipment_candidate(
+                workspace, owner, pid, selected_inputs, products=source
+            )
+        selected_inputs["equipment_candidate"]["assessment_sha256"] = candidate[
+            "assessment_sha256"
+        ]
+        withdrawn = True
+        refused_adoption = client.post(
+            "/projects/revise",
+            json={
+                "schema_version": 1,
+                "project_id": pid,
+                "expected_revision": 1,
+                "inputs": selected_inputs,
+                "key": "adopt-withdrawn-candidate",
+            },
+            headers=headers(),
+        )
+        assert refused_adoption.status_code == 409, refused_adoption.text
+        assert workspace.get(owner, pid).revision == 1
+        withdrawn = False
         offline = True
         replayed = client.post("/runs/equipment", json=command, headers=headers())
         assert replayed.status_code == 200 and replayed.json()["id"] == first
+        historical_search = client.post(
+            "/runs/equipment-search", json=search_command, headers=headers()
+        )
+        assert (
+            historical_search.status_code == 200
+            and historical_search.json()["id"] == searched.id
+        )
         offline = False
         second_inputs = {**inputs(feed, 3), "project_note": "second qualification"}
         workspace.revise(owner, pid, 1, second_inputs, key="second-input")
@@ -295,3 +387,45 @@ def test_native_command_worker_receipt_and_inflight_withdrawal_use_one_frozen_po
         assert refused.state == "failed" and refused.result is None
         assert refused.error["code"] == "product_evidence_changed"
         assert workspace.run(owner, first).result == completed.result
+
+
+def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible(
+    feed: dict, workspace: Workspace
+) -> None:
+    basis = {
+        "products": [p for p in feed["products"] if p["id"] in [4107, 2090, 2092]],
+        "compatibility": feed["compatibility"],
+    }
+    demand = {
+        "equipment_requirements": {
+            "schema_version": 1,
+            "grid_phase": 3,
+            "operating_mode": "grid_connected",
+            "pv_dc_kw": 10,
+            "required_usable_kwh": 15,
+            "required_discharge_ac_kw": 5,
+        }
+    }
+    store = EquipmentCandidateStore(workspace)
+    with pytest.raises(InvalidInput):
+        EquipmentRequirements.read(
+            {**demand["equipment_requirements"], "grid_phase": True}
+        )
+    result = search_equipment(
+        demand, basis, EquipmentSearchLimits(work_budget=100), store, lambda: None
+    )
+    assert result["completion"] == "exhausted_supported_domain"
+    rows = result["candidates"]
+    assert [r["selection"]["modules_per_stack"] for r in rows] == [2, 3, 4, 5]
+    assert all(r["selection"]["accessory_product_ids"] == [2092] for r in rows)
+    assert rows[1]["status"] == "violated" and rows[2]["status"] == "unresolved"
+    assert result["qualified_count"] == 0
+    compact = workspace.blobs.object(rows[2]["assessment_sha256"])
+    assert "facts" not in compact["selected_products"][0]
+    assert all("facts" not in c for c in compact["checks"])
+    limited = search_equipment(
+        demand, basis, EquipmentSearchLimits(work_budget=2), store, lambda: None
+    )
+    assert (
+        limited["completion"] == "budget_exhausted" and len(limited["candidates"]) == 1
+    )

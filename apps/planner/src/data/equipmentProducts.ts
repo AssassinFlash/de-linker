@@ -41,7 +41,12 @@ export function readEquipmentProducts(value: unknown) {
 	});
 	if (new Set(products.map((p) => p.id)).size !== products.length)
 		throw new ApiError(502, "invalid_product_reply");
-	return { products, prepared: row.figure_projection_version === 2 };
+	return {
+		products,
+		prepared:
+			row.figure_projection_version === 2 &&
+			row.compatibility_origin === "woocommerce",
+	};
 }
 export function useEquipmentProducts(
 	client: PlannerClient,

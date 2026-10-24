@@ -4,6 +4,7 @@ import { readObject } from "./readProtocol.ts";
 import { readBatteryParameters } from "../domain/energyScenario.ts";
 import { readEnergyResult } from "./readEnergyResult.ts";
 import { readPreparationResult } from "./readPreparationResult.ts";
+import { SEARCH_TASK, readEquipmentSearchResult } from "./equipmentSearch.ts";
 import { EQUIPMENT_TASK, readEquipmentResult } from "./readEquipmentResult.ts";
 
 export const RUN_OPERATIONS = {
@@ -11,6 +12,7 @@ export const RUN_OPERATIONS = {
 	"runs/pv": "prepare_roof_pv_reference_v1",
 	"runs/weather": "acquire_pvgis_tmy_weather_v1",
 	"runs/equipment": EQUIPMENT_TASK,
+	"runs/equipment-search": SEARCH_TASK,
 } as const;
 export type RunOperation = keyof typeof RUN_OPERATIONS;
 export type TaskKind = (typeof RUN_OPERATIONS)[RunOperation];
@@ -208,6 +210,7 @@ function readRunDocument(
 		(expectedTask !== undefined && task !== expectedTask) ||
 		(task === RUN_OPERATIONS["runs/energy"] && models.replay !== task) ||
 		((task === RUN_OPERATIONS["runs/equipment"] ||
+			task === SEARCH_TASK ||
 			task === RUN_OPERATIONS["runs/pv"] ||
 			task === RUN_OPERATIONS["runs/weather"]) &&
 			models.task !== task)
@@ -222,6 +225,8 @@ function readRunDocument(
 			readPreparationResult(row.result, row, manifest, task);
 		else if (task === RUN_OPERATIONS["runs/energy"])
 			readEnergyResult(row.result, row, manifest);
+		else if (task === SEARCH_TASK)
+			readEquipmentSearchResult(row.result, row, manifest);
 		else if (task === EQUIPMENT_TASK)
 			readEquipmentResult(row.result, row, manifest);
 		else throw new ApiError(502, "unsupported_run_model");

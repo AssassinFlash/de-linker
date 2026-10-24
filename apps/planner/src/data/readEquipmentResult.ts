@@ -6,6 +6,25 @@ import { sameJson } from "../domain/draft.ts";
 export const EQUIPMENT_TASK = "qualify_woo_equipment_v1";
 const status = (s: unknown) =>
 	["satisfied", "violated", "unresolved"].includes(String(s));
+function documentReference(value: unknown, requirePage = false) {
+	const source = readObject(value);
+	if (
+		typeof source.url !== "string" ||
+		((requirePage || source.page != null) &&
+			(typeof source.page !== "number" ||
+				!Number.isSafeInteger(source.page) ||
+				source.page < 1))
+	)
+		throw new ApiError(502, "invalid_run_result");
+	const url = new URL(source.url);
+	if (
+		url.protocol !== "https:" ||
+		!["de-linker.com", "www.de-linker.com"].includes(url.hostname) ||
+		url.username ||
+		url.password
+	)
+		throw new ApiError(502, "invalid_run_result");
+}
 export function readEquipmentResult(
 	value: unknown,
 	run: JsonObject,
@@ -33,6 +52,34 @@ export function readEquipmentResult(
 		!Array.isArray(assessment.selected_products)
 	)
 		throw new ApiError(502, "invalid_run_result");
+	readEquipmentAssessment(assessment);
+	return result;
+}
+
+export function readEquipmentAssessment(value: unknown): JsonObject {
+	const assessment = readObject(value);
+	if (
+		!status(assessment.equipment_status) ||
+		!["unresolved", "violated"].includes(String(assessment.overall_status)) ||
+		!Array.isArray(assessment.checks) ||
+		!Array.isArray(assessment.provisional_bill_of_materials) ||
+		!Array.isArray(assessment.selected_products)
+	)
+		throw new ApiError(502, "invalid_run_result");
+	if (assessment.installation_requirements !== undefined) {
+		if (!Array.isArray(assessment.installation_requirements))
+			throw new ApiError(502, "invalid_run_result");
+		for (const value of assessment.installation_requirements) {
+			const r = readObject(value);
+			if (
+				!Array.isArray(r.conditions) ||
+				!Array.isArray(r.documents) ||
+				typeof r.included !== "boolean"
+			)
+				throw new ApiError(502, "invalid_run_result");
+			for (const doc of r.documents) documentReference(doc);
+		}
+	}
 	for (const value of assessment.selected_products) {
 		const product = readObject(value);
 		if (
@@ -56,26 +103,25 @@ export function readEquipmentResult(
 			!Array.isArray(check.facts)
 		)
 			throw new ApiError(502, "invalid_run_result");
+		if (check.derivation !== undefined) {
+			const d = readObject(check.derivation);
+			if (
+				d.operation !== "multiply" ||
+				d.unit !== "kWh" ||
+				!Array.isArray(d.factors) ||
+				d.factors.length !== 2 ||
+				!d.factors.every(
+					(v) => typeof v === "number" && Number.isFinite(v) && v >= 0,
+				) ||
+				typeof check.actual !== "number"
+			)
+				throw new ApiError(502, "invalid_run_result");
+		}
 		ids.add(check.id);
 		for (const value of check.facts) {
 			const fact = readObject(value);
 			if (fact.source !== null) {
-				const source = readObject(fact.source);
-				if (
-					typeof source.url !== "string" ||
-					typeof source.page !== "number" ||
-					!Number.isSafeInteger(source.page) ||
-					source.page < 1
-				)
-					throw new ApiError(502, "invalid_run_result");
-				const url = new URL(source.url);
-				if (
-					url.protocol !== "https:" ||
-					!["de-linker.com", "www.de-linker.com"].includes(url.hostname) ||
-					url.username ||
-					url.password
-				)
-					throw new ApiError(502, "invalid_run_result");
+				documentReference(fact.source, true);
 			}
 		}
 	}
@@ -108,5 +154,5 @@ export function readEquipmentResult(
 		)
 			throw new ApiError(502, "invalid_run_result");
 	}
-	return result;
+	return assessment;
 }
