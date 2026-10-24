@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'linker.contact.language.v1';
+const FORM_SELECTOR = 'form[data-linker-contact-draft-owner]';
 const TEXT_FIELDS = [
 	'message',
 	'name',
@@ -41,25 +42,14 @@ function address( value: string ): string {
 
 /** A single explicit language click, never an autosave or a submission. */
 export function connectContactLanguage(): () => void {
-	let stored: unknown;
-	try {
-		const raw = window.sessionStorage.getItem( STORAGE_KEY );
-		// Consume before inspecting or restoring, including receipt/failed-POST pages.
-		window.sessionStorage.removeItem( STORAGE_KEY );
-		stored = JSON.parse( raw || 'null' );
-	} catch {
-		stored = null;
-	}
-	const form = document.querySelector< HTMLFormElement >(
-		'form[data-linker-contact-draft-owner]'
-	);
-	if ( ! form ) {
-		return () => {};
-	}
-	const owner = form.dataset.linkerContactDraftOwner || '';
-	const context = form.dataset.linkerContactDraftContext || '';
-	const lifetime = Number( form.dataset.linkerContactDraftLifetime );
-	const control = ( field: TextField ): TextControl | null => {
+	const edited = new WeakSet< Element >();
+	let consumed = false;
+	const currentForm = () =>
+		document.querySelector< HTMLFormElement >( FORM_SELECTOR );
+	const control = (
+		form: HTMLFormElement,
+		field: TextField
+	): TextControl | null => {
 		const input = form.elements.namedItem( field );
 		return input instanceof HTMLInputElement ||
 			input instanceof HTMLTextAreaElement ||
@@ -67,16 +57,35 @@ export function connectContactLanguage(): () => void {
 			? input
 			: null;
 	};
-	const include = form.querySelector< HTMLInputElement >(
-		'input[type="checkbox"][name="linker_contact_selection"]'
-	);
-	const removed = Boolean(
-		form.querySelector( '.linker-contact-selection--excluded' )
-	);
-	const consent = form.querySelector< HTMLInputElement >(
-		'input[type="checkbox"][name="consent"]'
-	);
-	const acceptable = ( fields: unknown ): fields is Fields => {
+	const checkbox = ( form: HTMLFormElement, name: string ) =>
+		form.querySelector< HTMLInputElement >(
+			`input[type="checkbox"][name="${ name }"]`
+		);
+	const complete = ( form: HTMLFormElement ) =>
+		Boolean( checkbox( form, 'consent' ) ) &&
+		TEXT_FIELDS.every( ( key ) => {
+			const input = control( form, key );
+			return (
+				input &&
+				( ! ( input instanceof HTMLSelectElement ) ||
+					input.options.length > 0 )
+			);
+		} );
+	const atDefault = ( input: TextControl ) => {
+		if ( input instanceof HTMLSelectElement ) {
+			const initial = Array.from( input.options ).find(
+				( option ) => option.defaultSelected
+			);
+			return input.value === ( initial || input.options[ 0 ] )?.value;
+		}
+		return input.value === input.defaultValue;
+	};
+	const untouched = ( input: TextControl ) =>
+		! edited.has( input ) && atDefault( input );
+	const acceptable = (
+		form: HTMLFormElement,
+		fields: unknown
+	): fields is Fields => {
 		if (
 			! fields ||
 			typeof fields !== 'object' ||
@@ -88,7 +97,7 @@ export function connectContactLanguage(): () => void {
 		return (
 			Object.keys( record ).length === TEXT_FIELDS.length &&
 			TEXT_FIELDS.every( ( key ) => {
-				const input = control( key );
+				const input = control( form, key );
 				const value = record[ key ];
 				if ( ! input || typeof value !== 'string' ) {
 					return false;
@@ -101,59 +110,118 @@ export function connectContactLanguage(): () => void {
 			} )
 		);
 	};
-	try {
-		const draft = stored as Partial< Draft > | null;
-		if (
-			draft &&
-			draft.version === 1 &&
-			owner &&
-			draft.owner === owner &&
-			context &&
-			draft.context === context &&
-			Number.isFinite( lifetime ) &&
-			lifetime > 0 &&
-			typeof draft.until === 'number' &&
-			draft.until > Date.now() &&
-			draft.until <= Date.now() + lifetime &&
-			typeof draft.target === 'string' &&
-			address( window.location.href ) === draft.target &&
-			form.dataset.linkerContactRecovered !== '1' &&
-			typeof draft.consent === 'boolean' &&
-			( draft.include === null || typeof draft.include === 'boolean' ) &&
-			acceptable( draft.fields )
-		) {
-			// A late bundle must not replace an edit already made on this page.
-			if ( ! form.contains( form.ownerDocument.activeElement ) ) {
+	const clear = () => {
+		try {
+			window.sessionStorage.removeItem( STORAGE_KEY );
+		} catch {
+			// Native validation and submission keep their existing owners.
+		}
+	};
+	const consume = ( form: HTMLFormElement | null ) => {
+		if ( consumed ) {
+			return;
+		}
+		consumed = true;
+		observer.disconnect();
+		try {
+			const raw = window.sessionStorage.getItem( STORAGE_KEY );
+			// Once the native form is complete, consume before inspecting any state.
+			window.sessionStorage.removeItem( STORAGE_KEY );
+			const draft = JSON.parse(
+				raw || 'null'
+			) as Partial< Draft > | null;
+			if ( ! form ) {
+				return;
+			}
+			const owner = form.dataset.linkerContactDraftOwner || '';
+			const context = form.dataset.linkerContactDraftContext || '';
+			const lifetime = Number( form.dataset.linkerContactDraftLifetime );
+			if (
+				draft &&
+				draft.version === 1 &&
+				owner &&
+				draft.owner === owner &&
+				context &&
+				draft.context === context &&
+				Number.isFinite( lifetime ) &&
+				lifetime > 0 &&
+				typeof draft.until === 'number' &&
+				draft.until > Date.now() &&
+				draft.until <= Date.now() + lifetime &&
+				typeof draft.target === 'string' &&
+				address( window.location.href ) === draft.target &&
+				form.dataset.linkerContactRecovered !== '1' &&
+				typeof draft.consent === 'boolean' &&
+				( draft.include === null ||
+					typeof draft.include === 'boolean' ) &&
+				acceptable( form, draft.fields )
+			) {
 				for ( const key of TEXT_FIELDS ) {
-					const input = control( key )!;
-					const untouched =
-						input instanceof HTMLSelectElement
-							? Boolean(
-									input.selectedOptions[ 0 ]?.defaultSelected
-								)
-							: input.value === input.defaultValue;
-					if ( untouched ) {
+					const input = control( form, key )!;
+					if ( untouched( input ) ) {
 						input.value = draft.fields[ key ];
 					}
 				}
-				if ( consent && consent.checked === consent.defaultChecked ) {
+				const consent = checkbox( form, 'consent' )!;
+				const include = checkbox( form, 'linker_contact_selection' );
+				if (
+					! edited.has( consent ) &&
+					consent.checked === consent.defaultChecked
+				) {
 					consent.checked = draft.consent;
 				}
 				if (
 					include &&
 					draft.include !== null &&
+					! edited.has( include ) &&
 					include.checked === include.defaultChecked
 				) {
 					include.checked = draft.include;
 				}
 			}
+		} catch {
+			// Invalid, expired or unrelated state was already removed. The native form wins.
 		}
-	} catch {
-		// Invalid, expired or unrelated state was already removed. The native form wins.
-	}
+	};
+	const restore = () => {
+		const form = currentForm();
+		if ( document.querySelector( '.linker-contact-receipt' ) ) {
+			consume( null );
+		} else if ( form && complete( form ) ) {
+			consume( form );
+		}
+	};
+	const observer = new MutationObserver( restore );
+	const edit = ( event: Event ) => {
+		const input = event.target;
+		if (
+			( input instanceof HTMLInputElement ||
+				input instanceof HTMLTextAreaElement ||
+				input instanceof HTMLSelectElement ) &&
+			input.form?.matches( FORM_SELECTOR ) &&
+			( TEXT_FIELDS.includes( input.name as TextField ) ||
+				[ 'consent', 'linker_contact_selection' ].includes(
+					input.name
+				) )
+		) {
+			edited.add( input );
+		}
+	};
+	const fallback = ( form: HTMLFormElement, link: HTMLAnchorElement ) => {
+		const error = form.querySelector< HTMLElement >(
+			'[data-linker-contact-draft-error]'
+		);
+		const action = error?.querySelector< HTMLAnchorElement >(
+			'[data-linker-contact-draft-new-tab]'
+		);
+		if ( error && action ) {
+			action.href = link.href;
+			error.hidden = false;
+			action.focus();
+		}
+	};
 	const click = ( event: MouseEvent ) => {
 		if (
-			! form.isConnected ||
 			event.defaultPrevented ||
 			event.button !== 0 ||
 			event.altKey ||
@@ -162,6 +230,10 @@ export function connectContactLanguage(): () => void {
 			event.shiftKey ||
 			! ( event.target instanceof Element )
 		) {
+			return;
+		}
+		const form = currentForm();
+		if ( ! form ) {
 			return;
 		}
 		const link = event.target.closest< HTMLAnchorElement >(
@@ -185,21 +257,40 @@ export function connectContactLanguage(): () => void {
 		} catch {
 			return;
 		}
+		// A click may run before the parser's queued MutationObserver callback.
+		restore();
+		const include = checkbox( form, 'linker_contact_selection' );
+		const consent = checkbox( form, 'consent' );
+		const removed = Boolean(
+			form.querySelector( '.linker-contact-selection--excluded' )
+		);
 		const dirty =
 			removed ||
 			TEXT_FIELDS.some( ( key ) => {
-				const input = control( key );
-				return input instanceof HTMLSelectElement
-					? ! input.selectedOptions[ 0 ]?.defaultSelected
-					: Boolean( input?.value );
+				const input = control( form, key );
+				return (
+					input &&
+					( input instanceof HTMLSelectElement
+						? ! atDefault( input )
+						: Boolean( input.value ) || ! atDefault( input ) )
+				);
 			} ) ||
 			( consent && consent.checked !== consent.defaultChecked ) ||
 			( include && include.checked !== include.defaultChecked );
 		if ( ! dirty ) {
 			return;
 		}
+		if ( ! complete( form ) ) {
+			// Keep a partial parser edit here; never serialize missing controls.
+			event.preventDefault();
+			fallback( form, link );
+			return;
+		}
+		const owner = form.dataset.linkerContactDraftOwner || '';
+		const context = form.dataset.linkerContactDraftContext || '';
+		const lifetime = Number( form.dataset.linkerContactDraftLifetime );
 		const fields = Object.fromEntries(
-			TEXT_FIELDS.map( ( key ) => [ key, control( key )?.value ] )
+			TEXT_FIELDS.map( ( key ) => [ key, control( form, key )!.value ] )
 		);
 		try {
 			if (
@@ -207,7 +298,7 @@ export function connectContactLanguage(): () => void {
 				! context ||
 				! Number.isFinite( lifetime ) ||
 				lifetime <= 0 ||
-				! acceptable( fields )
+				! acceptable( form, fields )
 			) {
 				throw new Error( 'contact_language_fields' );
 			}
@@ -218,7 +309,7 @@ export function connectContactLanguage(): () => void {
 				target,
 				until: Date.now() + lifetime,
 				fields,
-				consent: Boolean( consent?.checked ),
+				consent: consent!.checked,
 				include: include?.checked ?? ( removed ? false : null ),
 			};
 			const serialized = JSON.stringify( draft );
@@ -228,35 +319,46 @@ export function connectContactLanguage(): () => void {
 			}
 		} catch {
 			event.preventDefault();
-			try {
-				window.sessionStorage.removeItem( STORAGE_KEY );
-			} catch {
-				// The original page remains open even when storage is unavailable.
-			}
-			const error = form.querySelector< HTMLElement >(
-				'[data-linker-contact-draft-error]'
-			);
-			const fallback = error?.querySelector< HTMLAnchorElement >(
-				'[data-linker-contact-draft-new-tab]'
-			);
-			if ( error && fallback ) {
-				fallback.href = link.href;
-				error.hidden = false;
-				fallback.focus();
-			}
+			clear();
+			fallback( form, link );
 		}
 	};
+	const submit = ( event: Event ) => {
+		if (
+			event.target instanceof HTMLFormElement &&
+			event.target.matches( FORM_SELECTOR )
+		) {
+			consumed = true;
+			observer.disconnect();
+			clear();
+		}
+	};
+	const ready = () => {
+		if (
+			! currentForm() ||
+			document.querySelector( '.linker-contact-receipt' )
+		) {
+			consume( null );
+		}
+	};
+	document.addEventListener( 'input', edit, true );
+	document.addEventListener( 'change', edit, true );
+	document.addEventListener( 'compositionstart', edit, true );
 	document.addEventListener( 'click', click );
-	const clear = () => {
-		try {
-			window.sessionStorage.removeItem( STORAGE_KEY );
-		} catch {
-			// Native validation and submission keep their existing owners.
-		}
-	};
-	form.addEventListener( 'submit', clear );
+	document.addEventListener( 'submit', submit, true );
+	document.addEventListener( 'DOMContentLoaded', ready, { once: true } );
+	observer.observe( document, { childList: true, subtree: true } );
+	restore();
+	if ( document.readyState !== 'loading' ) {
+		ready();
+	}
 	return () => {
+		observer.disconnect();
+		document.removeEventListener( 'input', edit, true );
+		document.removeEventListener( 'change', edit, true );
+		document.removeEventListener( 'compositionstart', edit, true );
 		document.removeEventListener( 'click', click );
-		form.removeEventListener( 'submit', clear );
+		document.removeEventListener( 'submit', submit, true );
+		document.removeEventListener( 'DOMContentLoaded', ready );
 	};
 }

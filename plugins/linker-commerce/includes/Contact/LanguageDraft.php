@@ -16,7 +16,7 @@ final class LanguageDraft {
 	/** Matches the existing Protection\FormRecovery five-minute retry lifetime. */
 	public const LIFETIME_SECONDS = 300;
 
-	/** The entry is loaded only when the native Contact shortcode is rendered. */
+	/** Queue the head entry early; shortcode rendering reuses this native handle. */
 	public static function enqueue(): void {
 		$root = dirname( __DIR__, 2 );
 		$file = $root . '/build/contact-language.asset.php';
@@ -24,7 +24,7 @@ final class LanguageDraft {
 			return;
 		}
 		$asset = require $file;
-		wp_enqueue_script( 'linker-contact-language', plugins_url( 'build/contact-language.js', $root . '/linker-commerce.php' ), $asset['dependencies'], $asset['version'], true );
+		wp_enqueue_script( 'linker-contact-language', plugins_url( 'build/contact-language.js', $root . '/linker-commerce.php' ), $asset['dependencies'], $asset['version'], false );
 	}
 
 	/**
