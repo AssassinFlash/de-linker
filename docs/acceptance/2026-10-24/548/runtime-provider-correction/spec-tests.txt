@@ -1,0 +1,87 @@
+Independent Spec verification, 2026-10-24
+Pinned source: d734dee733c4e841e964992e582136c5391dfe83
+Base: eaacd408638e3db4609fbee68c9031e5aebe4ada
+No Standards report was read. No native store/process/config was changed.
+No external endpoint was contacted. Tests use temporary SQLite/CAS and simulated providers.
+
+Command (cwd services/engine):
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider tests/planning/test_official_weather.py tests/planning/test_weather_journal.py tests/planning/test_weather_kernel.py tests/planning/test_release_probe.py tests/planning/test_schema_upgrade.py -q
+Result: exit 0
+.......................................                                  [100%]
+39 passed in 11.37s
+
+Command (cwd tools/local):
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -p no:cacheprovider tests/test_engine_release.py tests/test_planner_launch.py tests/test_planner_worker.py -q
+Result: exit 0
+.....................................                                    [100%]
+37 passed in 0.78s
+
+Independent adversarial streaming probe (cwd services/engine):
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python - <<'PY'
+import socket
+import threading
+import time
+import requests
+from requests.adapters import BaseAdapter
+from urllib3.response import HTTPResponse
+from linker_engine.planning.pvgis_transport import PvgisTransport
+from linker_engine.planning.weather_journal import WeatherDeadlineExceeded
+from tests.planning.test_official_weather import plan
+
+reader, writer = socket.socketpair()
+reader.settimeout(0.08)
+body = b'{"slow":true}'
+
+def stream():
+    try:
+        for byte in body:
+            writer.send(bytes([byte]))
+            time.sleep(0.03)
+    finally:
+        writer.close()
+
+class SocketAdapter(BaseAdapter):
+    def send(self, request, **kwargs):
+        response = requests.Response()
+        response.status_code = 200
+        response.headers['Content-Type'] = 'application/json'
+        response.headers['Content-Length'] = str(len(body))
+        response.url = request.url
+        response.request = request
+        response.raw = HTTPResponse(body=reader.makefile('rb'), preload_content=False)
+        threading.Thread(target=stream, daemon=True).start()
+        return response
+    def close(self):
+        reader.close()
+
+budget = 0.10
+selected = plan().model_copy(update={'limits': plan().limits.model_copy(update={'connect_timeout_seconds': 0.08, 'read_timeout_seconds': 0.08, 'max_elapsed_seconds': budget})})
+started = time.time()
+deadline = started + budget
+
+def guard():
+    if time.time() >= deadline:
+        raise WeatherDeadlineExceeded('probe deadline')
+
+transport = PvgisTransport(adapter=SocketAdapter())
+try:
+    transport.download(selected, deadline=deadline, clock=time.time, guard=guard)
+    outcome = 'accepted'
+except WeatherDeadlineExceeded:
+    outcome = 'deadline_exceeded'
+finally:
+    transport.close()
+elapsed = time.time() - started
+print(f'socketpair streamed-response probe: outcome={outcome}; deadline_budget_s={budget:.2f}; socket_read_timeout_s=0.08; byte_interval_s=0.03; observed_elapsed_s={elapsed:.3f}')
+print('All I/O was an isolated local socketpair; no official source or external endpoint was contacted.')
+assert outcome == 'deadline_exceeded'
+assert elapsed > budget * 3, elapsed
+print('REPRODUCED: blocking raw.read(65536) can exceed the frozen overall budget while bytes arrive inside every inactivity timeout.')
+PY
+
+Result: exit 0
+socketpair streamed-response probe: outcome=deadline_exceeded; deadline_budget_s=0.10; socket_read_timeout_s=0.08; byte_interval_s=0.03; observed_elapsed_s=0.443
+All I/O was an isolated local socketpair; no official source or external endpoint was contacted.
+REPRODUCED: blocking raw.read(65536) can exceed the frozen overall budget while bytes arrive inside every inactivity timeout.
+
+Boundary: this verifies fixture/source behavior. It does not verify native installation, current official-provider availability, EN/DE browser rendering, numerical engineering release, deployment or production.

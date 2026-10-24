@@ -1,0 +1,12 @@
+[
+  {
+    "en": "Weather data is being downloaded from JRC PVGIS and checked.",
+    "final_en": "Weather data is being downloaded from JRC PVGIS and checked.",
+    "de": "Wetterdaten werden von JRC PVGIS heruntergeladen und geprüft."
+  },
+  {
+    "en": "Weather preparation has ended without a validated weather source.",
+    "final_en": "Weather preparation has ended without a validated weather source.",
+    "de": "Die Wettervorbereitung wurde ohne validierte Wetterquelle beendet."
+  }
+]

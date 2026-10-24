@@ -1,0 +1,24 @@
+{
+  "at_utc": "2026-10-24T14:24:41.382419+00:00",
+  "credential_source": "APIFY_TOKEN environment; value not retained",
+  "http_get_only": true,
+  "actor_started": false,
+  "checks": [
+    {
+      "route": "/v2/users/me",
+      "status": 200,
+      "authenticated": true
+    },
+    {
+      "route": "/v2/acts/aYG0l9s7dbB7j3gbS/builds/bsZdc9Cal4wAwV0VW",
+      "status": 200,
+      "authenticated": true,
+      "build": {
+        "id": "bsZdc9Cal4wAwV0VW",
+        "buildNumber": "0.3.101",
+        "status": "SUCCEEDED",
+        "actId": "aYG0l9s7dbB7j3gbS"
+      }
+    }
+  ]
+}

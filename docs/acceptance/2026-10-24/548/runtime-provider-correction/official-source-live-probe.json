@@ -1,0 +1,26 @@
+{
+  "at_utc": "2026-10-24T15:46:19.823980+00:00",
+  "test": "actual supervised credential-free official JRC public GET; no crawler/Actor; bounded HTTP child",
+  "research_credentials_in_parent": false,
+  "native_store_touched": false,
+  "source": {
+    "schema_version": 1,
+    "requested_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+    "loaded_url": "https://re.jrc.ec.europa.eu/api/v5_3/tmy?lat=52.52&lon=13.405&startyear=2005&endyear=2023&usehorizon=0&outputformat=json",
+    "status": 200,
+    "content_type": "application/json",
+    "received_at_utc": "2026-10-24T15:46:29.516476+00:00",
+    "capture_basis": "official_jrc_https_get_original_v1",
+    "source_identifiers": {
+      "api_version": "5.3",
+      "provider": "EC_JRC_PVGIS"
+    }
+  },
+  "validated": true,
+  "intervals": 8760,
+  "raw_sha256": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+  "bytes": 1268118,
+  "same_as_previous_direct_probe": true,
+  "retained_original": "official-tmy-original.json",
+  "elapsed_seconds": 9.900713920593262
+}

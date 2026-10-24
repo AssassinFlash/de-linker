@@ -1,0 +1,62 @@
+[
+  {
+    "log": "local-format.txt",
+    "args": [
+      ".venv/bin/ruff",
+      "format",
+      "src/linker_local/engine_release.py",
+      "src/linker_local/planner_provider.py",
+      "src/linker_local/planner_worker.py",
+      "src/linker_local/services.py",
+      "tests/test_engine_release.py",
+      "tests/test_planner_provider.py",
+      "tests/test_planner_worker.py",
+      "tests/test_planner_launch.py"
+    ],
+    "code": 0,
+    "seconds": 0.052
+  },
+  {
+    "log": "local-style.txt",
+    "args": [
+      ".venv/bin/ruff",
+      "check",
+      "src/linker_local/engine_release.py",
+      "src/linker_local/planner_provider.py",
+      "src/linker_local/planner_worker.py",
+      "src/linker_local/services.py",
+      "tests/test_engine_release.py",
+      "tests/test_planner_provider.py",
+      "tests/test_planner_worker.py",
+      "tests/test_planner_launch.py"
+    ],
+    "code": 0,
+    "seconds": 0.022
+  },
+  {
+    "log": "local-tests.txt",
+    "args": [
+      ".venv/bin/pytest",
+      "-q",
+      "tests/test_engine_release.py",
+      "tests/test_planner_provider.py",
+      "tests/test_planner_worker.py",
+      "tests/test_planner_launch.py",
+      "tests/test_services.py"
+    ],
+    "code": 0,
+    "seconds": 0.909
+  },
+  {
+    "log": "local-types.txt",
+    "args": [
+      ".venv/bin/mypy",
+      "src/linker_local",
+      "tests/test_engine_release.py",
+      "tests/test_planner_provider.py",
+      "tests/test_planner_launch.py"
+    ],
+    "code": 0,
+    "seconds": 0.27
+  }
+]

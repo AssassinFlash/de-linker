@@ -1,0 +1,12 @@
+{
+  "source_commit": "911839a6c41bbae2e8c1a9f4f9be88400b35145c",
+  "roots": [
+    "services/engine/src",
+    "tools/local/src",
+    "apps/planner/src",
+    "plugins/linker-tools/build/planner"
+  ],
+  "secret_pattern_paths": [],
+  "apify_runtime_endpoint_paths": [],
+  "pass": true
+}
