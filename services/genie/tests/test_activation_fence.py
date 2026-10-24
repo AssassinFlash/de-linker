@@ -219,6 +219,36 @@ def test_next_prepare_collects_expired_owned_uploads_only(tmp_path: Path) -> Non
     assert (unknown / "keep").read_text() == "no ownership proof"
 
 
+def test_success_reclaims_upload_after_superseding_its_journal_hold(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(index_release, "_verify_activation", lambda _: None)
+    first_version, next_version = "20261024T100000Z", "20261024T100100Z"
+    first_sha, first = candidate(tmp_path, 1, first_version)
+    journal = index_release._journal
+
+    def crash_after_journal(root: Path, value: dict[str, Any]) -> None:
+        journal(root, value)
+        raise RuntimeError("interrupted before incoming rename")
+
+    monkeypatch.setattr(index_release, "_journal", crash_after_journal)
+    with pytest.raises(RuntimeError, match="before incoming rename"):
+        index_release.activate(tmp_path, first_version, first_sha, first)
+    abandoned = tmp_path / f".incoming-{first_version}"
+    marker = abandoned / index_release.UPLOAD_OWNER
+    owner = json.loads(marker.read_text())
+    owner.update(managed_knowledge_upload=True, lease_expires_at=1)
+    marker.write_text(json.dumps(owner))
+
+    # Preparation preserves the only journal recovery target even when expired.
+    next_sha, next_activation = candidate(tmp_path, 2, next_version)
+    assert abandoned.is_dir()
+    monkeypatch.setattr(index_release, "_journal", journal)
+    report = index_release.activate(tmp_path, next_version, next_sha, next_activation)
+    assert report["current"] == next_version
+    assert not abandoned.exists()
+
+
 def test_candidate_metadata_must_match_lease_before_native_verification(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

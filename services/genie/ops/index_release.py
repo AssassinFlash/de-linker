@@ -342,6 +342,9 @@ def activate(
             incoming.rename(root / version)
             _sync_directory(root)
         _switch(root, version)
+        # A newer journal releases the old crashed upload's recovery hold.
+        # Collect it now even if the settled Woo queue never prepares again.
+        _prune_expired_uploads(root)
         for old in releases(root)[:-KEEP]:
             if old != current(root):
                 shutil.rmtree(root / old)
