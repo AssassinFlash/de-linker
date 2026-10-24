@@ -268,6 +268,9 @@ class ProductSources:
                     {
                         "schema_version": 1,
                         "provider": "woocommerce",
+                        "figure_projection_version": feed.get(
+                            "figure_projection_version"
+                        ),
                         "loaded_engine_version": loaded.version,
                         "loaded_source_revision": feed["source_revision"],
                         "publication": view.dependencies,

@@ -142,7 +142,12 @@ export function energyErrorText(error: unknown): string {
 			);
 		case "product_evidence_changed":
 			return __(
-				"A new calculation requires an updated module selection.",
+				"A new check requires current product data. Reload the data and prepare the selection again.",
+				"linker-tools",
+			);
+		case "equipment_selection_incomplete":
+			return __(
+				"Equipment selection requires a product and valid quantities.",
 				"linker-tools",
 			);
 		case "invalid_input":

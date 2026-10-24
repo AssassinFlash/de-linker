@@ -26,7 +26,8 @@ from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_assessment import assess_equipment
 from linker_engine.planning.equipment_facts import compile_product
-from linker_engine.planning.equipment_kernel import EquipmentKernel, EquipmentService
+from linker_engine.planning.equipment_kernel import EquipmentKernel
+from linker_engine.planning.equipment_service import EquipmentService
 from linker_engine.planning.errors import VersionUnavailable
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
@@ -52,6 +53,14 @@ def feed() -> dict:
     controller["figures"]["system_operating_voltage_range_v"]["columns"] = [
         {"modules_per_stack": count} for count in (1, 2, 3, 4, 5)
     ]
+    battery = next(p for p in raw["products"] if p["id"] == 2090)
+    battery["figures"]["sales_unit_kind"] = {
+        "value": "battery_module",
+        "unit": None,
+        "citation": copy.deepcopy(
+            battery["figures"]["module_energy_kwh_usable"]["citation"]
+        ),
+    }
     return publication_feed(
         raw,
         json.loads(SHIPPED_COMPATIBILITY.read_text()),
@@ -116,9 +125,9 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
     checks = {item["id"]: item for item in result["checks"]}
     assert checks["battery_voltage"]["status"] == voltage_status
     assert checks["continuous_battery_ac_output"]["status"] == "unresolved"
-    assert checks["battery_sales_unit"]["status"] == "unresolved"
-    assert not any(
-        line["product_id"] == 2090 for line in result["provisional_bill_of_materials"]
+    assert checks["battery_sales_unit"]["status"] == "satisfied"
+    assert checks["usable_energy"]["status"] == (
+        "satisfied" if count == 3 else "unresolved"
     )
     assert result["country_assessment"]["status"] == "unresolved"
     if count == 3:
@@ -135,6 +144,38 @@ def test_stack_window_is_not_a_flattened_range_or_a_fault_current_power(
         )
         assert (
             next(c for c in unproven["checks"] if c["id"] == "battery_voltage")[
+                "status"
+            ]
+            == "unresolved"
+        )
+        unknown_unit = copy.deepcopy(feed)
+        del next(p for p in unknown_unit["products"] if p["id"] == 2090)["figures"][
+            "sales_unit_kind"
+        ]
+        unresolved = assess_equipment(
+            inputs(feed, 3),
+            {
+                "products": unknown_unit["products"],
+                "compatibility": unknown_unit["compatibility"],
+            },
+        )
+        assert not any(
+            line["product_id"] == 2090
+            for line in unresolved["provisional_bill_of_materials"]
+        )
+        scalar = copy.deepcopy(feed)
+        table = next(p for p in scalar["products"] if p["id"] == 2092)["figures"][
+            "system_operating_voltage_range_v"
+        ]
+        table["value"] = "268.8~345.6"
+        no_count = inputs(feed, 3)
+        no_count["equipment_selection"]["modules_per_stack"] = None
+        unresolved = assess_equipment(
+            no_count,
+            {"products": scalar["products"], "compatibility": scalar["compatibility"]},
+        )
+        assert (
+            next(c for c in unresolved["checks"] if c["id"] == "battery_voltage")[
                 "status"
             ]
             == "unresolved"

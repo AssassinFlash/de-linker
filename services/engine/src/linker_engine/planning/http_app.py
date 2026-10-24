@@ -27,7 +27,7 @@ from .canonical import Json, Object
 from .csv_inspection import inspect_csv
 from .csv_issue import CsvIssue
 from .energy_service import EnergyService
-from .equipment_kernel import EquipmentService
+from .equipment_service import EquipmentService
 from .errors import (
     Conflict,
     EvaluationRevisionChanged,

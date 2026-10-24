@@ -2322,6 +2322,7 @@ msgstr "Netzzustand"
 msgid "Grid connected"
 msgstr "Mit Netzverbindung"
 
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:271 build/hero.js
 #: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js
 #: build/genie.js
@@ -3695,6 +3696,7 @@ msgstr "Übergreifende Annahmen des PV-Modells"
 msgid "PNG or JPEG, at most 500 kB."
 msgstr "PNG oder JPEG, höchstens 500 kB."
 
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:200 build/configurator.js
 msgid "PV array"
 msgstr "PV-Leistung"
@@ -4030,6 +4032,7 @@ msgstr "Datenschutzerklärung"
 msgid "Processing interval data…"
 msgstr "Zeitreihendaten werden verarbeitet…"
 
+#: build/planner/assets/planner.js
 #: build/genie.js:1 build/hero.js
 msgid "Product"
 msgstr "Produkt"
@@ -4155,6 +4158,7 @@ msgstr "Projekte"
 msgid "Projects from the guest session are still being linked to your account."
 msgstr "Projekte aus der Gastsitzung werden noch Ihrem Konto zugeordnet."
 
+#: build/planner/assets/planner.js
 #: src/configurator/solution/Solution.tsx:382 build/configurator.js
 msgid "Quantity"
 msgstr "Menge"
@@ -4431,6 +4435,7 @@ msgstr "Modul wieder aufnehmen"
 msgid "Restore unsent draft"
 msgstr "Bisherigen Entwurf wiederherstellen"
 
+#: build/planner/assets/planner.js
 #: src/configurator/commercial/CommercialPanel.tsx:155
 #: src/configurator/commercial/CommercialPanel.tsx:518 build/configurator.js
 msgid "Result"
@@ -5069,6 +5074,7 @@ msgstr "Deckung des simulierten Bedarfs"
 msgid "Simulated load demand"
 msgstr "Simulierter Strombedarf"
 
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:289 build/configurator.js
 msgid "Single-phase"
 msgstr "Einphasig"
@@ -6410,6 +6416,7 @@ msgstr "Diese Quelle konnte nicht vorbereitet werden. Ihre Projekteingaben bleib
 msgid "Three steps. The result follows the inputs you enter."
 msgstr "Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
 
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:280 build/configurator.js
 msgid "Three-phase"
 msgstr "Dreiphasig"
@@ -6540,6 +6547,7 @@ msgstr "Frühere Umrechnungsmethode nicht unterstützt"
 msgid "Update parameters for current roof layout"
 msgstr "Parameter an aktuelle Dachbelegung anpassen"
 
+#: build/planner/assets/planner.js
 #: src/configurator/commercial/CommercialResult.tsx:197
 #: src/configurator/commercial/CommercialResult.tsx:235 build/configurator.js
 msgid "Usable energy"
@@ -7167,3 +7175,247 @@ msgstr "Seite %d"
 #: ../../apps/planner/src/components/energy/PvForm.tsx:92
 msgid "The update takes the temperature coefficient and its source from the current product selection. Other settings for matching arrays are kept; entries for arrays outside the layout are removed. New arrays need model settings and a conversion group."
 msgstr "Die Aktualisierung übernimmt den Temperaturkoeffizienten und dessen Quelle aus der aktuellen Produktauswahl. Die übrigen Einstellungen passender Teilfelder bleiben erhalten; Einträge für Teilfelder außerhalb der Belegung werden entfernt. Neue Teilfelder benötigen Modelleinstellungen und eine Zuordnung zur Leistungsumwandlung."
+
+#: ../../apps/planner/src/components/ProjectEditor.tsx:325
+#: ../../apps/planner/src/components/ProjectEditor.tsx:481
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx:576
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:180
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:183
+#: build/planner/assets/planner.js
+msgid "Equipment"
+msgstr "Geräte"
+
+#: ../../apps/planner/src/components/energy/planningLabels.ts:7
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:55
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:45
+#: build/planner/assets/planner.js
+msgid "Equipment checks"
+msgstr "Prüfung der Geräteauswahl"
+
+#: ../../apps/planner/src/components/energy/planningLabels.ts:22
+#: build/planner/assets/planner.js
+msgid "Checking equipment selection"
+msgstr "Geräteauswahl wird geprüft"
+
+#: ../../apps/planner/src/components/energy/planningLabels.ts:30
+#: build/planner/assets/planner.js
+msgid "Equipment check complete"
+msgstr "Prüfung der Geräteauswahl abgeschlossen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:128
+#: build/planner/assets/planner.js
+msgid "Requirement"
+msgstr "Anforderung"
+
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:137
+#: build/planner/assets/planner.js
+msgid "Product data used"
+msgstr "Verwendete Produktdaten"
+
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:181
+#: build/planner/assets/planner.js
+msgid "Manufacturer conditions"
+msgstr "Herstellervorgaben"
+
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:194
+#: build/planner/assets/planner.js
+msgid "Provisional bill of materials"
+msgstr "Vorläufige Stückliste"
+
+#: ../../apps/planner/src/components/equipment/EquipmentResult.tsx:218
+#: build/planner/assets/planner.js
+msgid "Quantity not determined"
+msgstr "Menge nicht ermittelt"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:133
+#: build/planner/assets/planner.js
+msgid "No separate battery"
+msgstr "Keine separate Batterie"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:134
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:297
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:307
+#: build/planner/assets/planner.js
+msgid "Choose a product"
+msgstr "Produkt auswählen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:199
+#: build/planner/assets/planner.js
+msgid "Product data could not be loaded."
+msgstr "Die Produktdaten konnten nicht geladen werden."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:204
+#: build/planner/assets/planner.js
+msgid "Current product data is being prepared."
+msgstr "Aktuelle Produktdaten werden vorbereitet."
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:213
+#: build/planner/assets/planner.js
+msgid "Reload product data"
+msgstr "Produktdaten neu laden"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:218
+#: build/planner/assets/planner.js
+msgid "Inverter or integrated storage system"
+msgstr "Wechselrichter oder integriertes Speichersystem"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:223
+#: build/planner/assets/planner.js
+msgid "Battery or storage system"
+msgstr "Batterie oder Speichersystem"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:227
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:239
+#: build/planner/assets/planner.js
+msgid "Choose an operating mode"
+msgstr "Betriebsart auswählen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:242
+#: build/planner/assets/planner.js
+msgid "Grid-connected"
+msgstr "Netzparallelbetrieb"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:245
+#: build/planner/assets/planner.js
+msgid "Backup operation"
+msgstr "Ersatzstrombetrieb"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:272
+#: build/planner/assets/planner.js
+msgid "Battery modules per stack"
+msgstr "Batteriemodule je Stack"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:278
+#: build/planner/assets/planner.js
+msgid "Parallel stacks or systems"
+msgstr "Parallele Stacks oder Systeme"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:285
+#: build/planner/assets/planner.js
+msgid "Required usable energy"
+msgstr "Benötigte nutzbare Speicherenergie"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:290
+#: build/planner/assets/planner.js
+msgid "Required continuous AC discharge power"
+msgstr "Benötigte AC-Dauerleistung bei Entladung"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:295
+#: build/planner/assets/planner.js
+msgid "Additional products"
+msgstr "Zusätzliche Produkte"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:338
+#: build/planner/assets/planner.js
+msgid "Use current product data"
+msgstr "Aktuelle Produktdaten übernehmen"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:347
+#: build/planner/assets/planner.js
+msgid "Equipment selection prepared in this draft"
+msgstr "Geräteauswahl in diesem Entwurf vorbereitet"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:388
+#: build/planner/assets/planner.js
+msgid "Prepare equipment selection"
+msgstr "Geräteauswahl vorbereiten"
+
+#: ../../apps/planner/src/components/equipment/EquipmentSetup.tsx:403
+#: build/planner/assets/planner.js
+msgid "Check saved equipment selection"
+msgstr "Gespeicherte Geräteauswahl prüfen"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:5
+#: build/planner/assets/planner.js
+msgid "Checked requirements met"
+msgstr "Geprüfte Anforderungen erfüllt"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:7
+#: build/planner/assets/planner.js
+msgid "Requirements not met"
+msgstr "Anforderungen nicht erfüllt"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:8
+#: build/planner/assets/planner.js
+msgid "Further checks required"
+msgstr "Weitere Prüfung erforderlich"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:13
+#: build/planner/assets/planner.js
+msgid "Converter output"
+msgstr "Ausgang des Umrichters"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:15
+#: build/planner/assets/planner.js
+msgid "Grid phases"
+msgstr "Netzphasen"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:17
+#: build/planner/assets/planner.js
+msgid "PV input power"
+msgstr "PV-Eingangsleistung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:19
+#: build/planner/assets/planner.js
+msgid "PV strings and inputs"
+msgstr "PV-Strings und Eingänge"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:21
+#: build/planner/assets/planner.js
+msgid "Manufacturer pairing"
+msgstr "Herstellerangaben zur Kombination"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:23
+#: build/planner/assets/planner.js
+msgid "Module count"
+msgstr "Anzahl der Module"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:25
+#: build/planner/assets/planner.js
+msgid "Parallel arrangement"
+msgstr "Parallelschaltung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:27
+#: build/planner/assets/planner.js
+msgid "Required accessory"
+msgstr "Erforderliches Zubehör"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:29
+#: build/planner/assets/planner.js
+msgid "Battery voltage"
+msgstr "Batteriespannung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:31
+#: build/planner/assets/planner.js
+msgid "Sales unit"
+msgstr "Verkaufseinheit"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:35
+#: build/planner/assets/planner.js
+msgid "Continuous AC discharge power"
+msgstr "AC-Dauerleistung bei Entladung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:37
+#: build/planner/assets/planner.js
+msgid "Battery discharge path"
+msgstr "Entladepfad der Batterie"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:39
+#: build/planner/assets/planner.js
+msgid "Backup transfer"
+msgstr "Umschaltung auf Ersatzstrom"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:41
+#: build/planner/assets/planner.js
+msgid "Integrated storage system"
+msgstr "Integriertes Speichersystem"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:43
+#: build/planner/assets/planner.js
+msgid "Accessory quantity"
+msgstr "Menge des Zubehörs"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts:50
+#: build/planner/assets/planner.js
+msgid "The documented voltage ranges do not overlap."
+msgstr "Die dokumentierten Spannungsbereiche überschneiden sich nicht."

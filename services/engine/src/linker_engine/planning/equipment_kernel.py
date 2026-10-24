@@ -5,11 +5,11 @@ from __future__ import annotations
 from .canonical import Object
 from .equipment_assessment import assess_equipment, selection_products
 from .equipment_inputs import EquipmentSelection
-from .errors import InvalidInput, VersionUnavailable
+from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
 from .product_sources import ProductSources
-from .records import Actor, Context, Lease, Run
+from .records import Actor, Context, Lease
 from .runtime_snapshot import RuntimeSnapshot
 from .worker import Control
 from .workspace import Workspace
@@ -89,26 +89,3 @@ class EquipmentKernel:
             "pinned_assets": pinned,
             "assessment": assessment,
         }
-
-
-class EquipmentService:
-    def __init__(
-        self, workspace: Workspace, kernel: EquipmentKernel, *, max_attempts: int
-    ) -> None:
-        if workspace is not kernel.workspace:
-            raise InvalidInput("equipment qualification must share project authority")
-        self.workspace, self.kernel, self.max_attempts = workspace, kernel, max_attempts
-
-    def evaluate(
-        self, actor: Actor, project_id: str, expected_revision: int, *, key: str
-    ) -> Run:
-        project = self.workspace.get(actor, project_id, revision=expected_revision)
-        return self.workspace.evaluate(
-            actor,
-            project_id,
-            expected_revision,
-            self.kernel.context(actor, project_id, project.inputs),
-            key=key,
-            max_attempts=self.max_attempts,
-            intent={"kind": self.kernel.kind},
-        )

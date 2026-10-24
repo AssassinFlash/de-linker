@@ -276,6 +276,7 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
         inv_range = fact(
             selection.inverter_product_id, "battery_voltage_range_v", "voltage"
         )
+        voltage_status = "unresolved"
         operating: dict[str, Any] | None = None
         for pid in [battery_id, *selection.accessory_product_ids]:
             found = fact(pid, "system_operating_voltage_range_v", "voltage")
@@ -310,7 +311,11 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
                 elif found["shape"] == "interval":
                     minimum, _ = number(pid, "modules_per_stack_min", "count")
                     maximum, _ = number(pid, "modules_per_stack_max", "count")
-                    if count is None or minimum == maximum == count:
+                    if (
+                        count is not None
+                        and minimum is not None
+                        and minimum == maximum == count
+                    ):
                         operating = found
                 if operating is not None:
                     break
@@ -329,6 +334,7 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
                 if il <= bl <= bh <= ih
                 else "unresolved"
             )
+            voltage_status = status
             add(
                 "battery_voltage",
                 status,
@@ -362,6 +368,7 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
             "cited_sales_unit_basis"
             if multiplier is not None
             else "sales_unit_basis_not_established",
+            [sales] if sales else [],
         )
         if multiplier is not None:
             if battery_id != selection.inverter_product_id:
@@ -381,9 +388,12 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
         value, refs = (
             number(battery_id, energy_key, "energy") if energy_key else (None, [])
         )
-        total = (
+        rated_total = (
             value * multiplier if value is not None and multiplier is not None else None
         )
+        # Capacity at the battery's own rated window does not prove usable
+        # energy through a narrower converter window. No V-SOC curve is inferred.
+        total = rated_total if voltage_status == "satisfied" else None
         required = selection.required_usable_kwh
         add(
             "usable_energy",
@@ -392,7 +402,9 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
             else "satisfied"
             if total >= required
             else "violated",
-            "cited_usable_energy_and_sales_basis",
+            "cited_usable_energy_and_sales_basis"
+            if voltage_status == "satisfied"
+            else "usable_energy_requires_full_voltage_window",
             refs,
             total,
             required,
@@ -413,12 +425,24 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
                 "battery_continuous_output_ports_and_conversion_require_assessment",
             )
     else:
+        requirements_known_empty = (
+            selection.required_usable_kwh == 0
+            and selection.required_discharge_ac_kw == 0
+        )
+        requirements_positive = any(
+            value is not None and value > 0
+            for value in (
+                selection.required_usable_kwh,
+                selection.required_discharge_ac_kw,
+            )
+        )
         add(
             "battery",
             "satisfied"
-            if selection.required_usable_kwh in (None, 0)
-            and selection.required_discharge_ac_kw in (None, 0)
-            else "violated",
+            if requirements_known_empty
+            else "violated"
+            if requirements_positive
+            else "unresolved",
             "no_battery_selected",
         )
 
@@ -446,7 +470,21 @@ def assess_equipment(inputs: Object, basis: Object) -> Object:
                 "checks": checks,
                 "manufacturer_pair": pairing,
                 "selected_products": [typed[key] for key in sorted(typed)],
-                "provisional_bill_of_materials": bom,
+                "provisional_bill_of_materials": [
+                    {
+                        **cast(Object, line),
+                        "model": products[cast(dict[str, Any], line)["product_id"]][
+                            "model"
+                        ],
+                        "brand": products[cast(dict[str, Any], line)["product_id"]][
+                            "brand"
+                        ],
+                        "sku": products[cast(dict[str, Any], line)["product_id"]][
+                            "sku"
+                        ],
+                    }
+                    for line in bom
+                ],
                 "bill_of_materials_status": "unresolved"
                 if any(cast(dict[str, Any], c)["status"] != "satisfied" for c in checks)
                 else "equipment_checks_satisfied",

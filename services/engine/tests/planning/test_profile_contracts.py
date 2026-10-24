@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from linker_engine.planning.http_documents import CsvImport
+from linker_engine.planning.equipment_inputs import EquipmentSelection
 from linker_engine.planning.profile_selections import ProfileSelections
 
 
@@ -14,6 +15,7 @@ def test_profile_contracts_match_the_published_browser_schemas() -> None:
     for name, model in (
         ("profile-import", CsvImport),
         ("profile-selections", ProfileSelections),
+        ("equipment-selection", EquipmentSelection),
     ):
         assert (
             json.loads((root / f"{name}.schema.json").read_text())

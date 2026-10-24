@@ -38,6 +38,7 @@ lp-energy-workspace
 lp-eyebrow
 lp-field
 lp-field-error
+lp-field-grid
 lp-field-summary
 lp-file-button
 lp-file-name

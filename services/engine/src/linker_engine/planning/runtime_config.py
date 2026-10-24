@@ -16,7 +16,8 @@ from pydantic import Field, model_validator
 from .energy_inputs import Document, Nonnegative, SchemaVersion
 from .energy_kernel import EnergyKernel
 from .energy_service import EnergyService
-from .equipment_kernel import EquipmentKernel, EquipmentService
+from .equipment_kernel import EquipmentKernel
+from .equipment_service import EquipmentService
 from .http_app import HttpLimits
 from .numerical_tolerance import Tolerance
 from .product_sources import ProductSources, worker_product_provider

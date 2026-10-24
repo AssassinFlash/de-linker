@@ -31,6 +31,10 @@ import {
 	runTask,
 } from "../../data/planningProtocol.ts";
 import { WEATHER_TASK, PV_TASK } from "../../data/readPreparationResult.ts";
+import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
+import { EquipmentSetup } from "../equipment/EquipmentSetup.tsx";
+import { EquipmentResult } from "../equipment/EquipmentResult.tsx";
+import { readEquipmentSelection } from "../../domain/equipment.ts";
 import type { PlanningIntent } from "../../data/PlanningIntentStore.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
@@ -67,6 +71,9 @@ export function EnergyWorkspace({
 	onValidity,
 	openProfiles,
 	openDesign,
+	equipmentFocus = false,
+	openEquipment,
+	openResults,
 }: {
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
@@ -82,6 +89,9 @@ export function EnergyWorkspace({
 	onValidity: (valid: boolean) => void;
 	openProfiles: () => void;
 	openDesign?: () => void;
+	equipmentFocus?: boolean;
+	openEquipment?: () => void;
+	openResults?: () => void;
 }) {
 	const parsed = useMemo(() => {
 		try {
@@ -99,11 +109,12 @@ export function EnergyWorkspace({
 	const setupDocument = draft.history.current.energy_scenario;
 	const setup = parsed.value,
 		selections = readSelections(draft.history.current.profile_selections);
-	const [view, setView] = useState<"weather" | "pv" | "scenario" | "runs">(
-			() =>
-				new URL(window.location.href).searchParams.has("run")
-					? "runs"
-					: "scenario",
+	const [selectedView, setView] = useState<
+			"weather" | "pv" | "scenario" | "equipment" | "runs"
+		>(() =>
+			new URL(window.location.href).searchParams.has("run")
+				? "runs"
+				: "scenario",
 		),
 		[section, setSection] = useState<"storage" | "initial" | "operation">(
 			"storage",
@@ -111,8 +122,10 @@ export function EnergyWorkspace({
 		[scenarioValid, setScenarioValid] = useState(true),
 		[weatherValid, setWeatherValid] = useState(true),
 		[pvValid, setPvValid] = useState(true),
+		[equipmentValid, setEquipmentValid] = useState(true),
 		[error, setError] = useState<unknown>(null),
 		[rangeBusy, setRangeBusy] = useState(false);
+	const view = equipmentFocus ? "equipment" : selectedView;
 	useEffect(() => {
 		// Undo/redo and profile edits also change the effective scenario, without
 		// passing through this form's onChange handler.
@@ -123,7 +136,7 @@ export function EnergyWorkspace({
 	const projectId = draft.baseline.id,
 		admitted = client.isCurrentScope(session.query_scope),
 		dirty = isDirty(draft),
-		syntaxValid = scenarioValid && weatherValid && pvValid;
+		syntaxValid = scenarioValid && weatherValid && pvValid && equipmentValid;
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
@@ -351,7 +364,9 @@ export function EnergyWorkspace({
 			setView("runs");
 		}
 	}
-	async function startSolar(path: "runs/weather" | "runs/pv") {
+	async function startSolar(
+		path: "runs/weather" | "runs/pv" | "runs/equipment",
+	) {
 		if (
 			dirty ||
 			draft.pending ||
@@ -367,13 +382,15 @@ export function EnergyWorkspace({
 			return;
 		try {
 			const inputs = draft.baseline.inputs;
-			const setup = readSolarSetup(inputs);
-			if (path === "runs/weather") {
+			const setup = path === "runs/equipment" ? null : readSolarSetup(inputs);
+			if (path === "runs/equipment") {
+				readEquipmentSelection(inputs.equipment_selection);
+			} else if (path === "runs/weather" && setup) {
 				if (
 					!sameJson(compileWeather(setup.weather), inputs.weather_acquisition)
 				)
 					return;
-			} else {
+			} else if (setup) {
 				if (
 					!sameJson(compilePv(setup.pv, inputs.geometry), inputs.pv_generation)
 				)
@@ -391,12 +408,15 @@ export function EnergyWorkspace({
 			) {
 				runs.accepted(reply.run);
 				setView("runs");
+				openResults?.();
 			}
 		} catch (cause) {
 			if (client.isCurrentScope(session.query_scope)) setError(cause);
 		}
 	}
-	function chooseView(next: "weather" | "pv" | "scenario" | "runs") {
+	function chooseView(
+		next: "weather" | "pv" | "scenario" | "equipment" | "runs",
+	) {
 		setView(next);
 		if (next === "runs") {
 			if (runs.runId) runs.select(runs.runId);
@@ -501,9 +521,11 @@ export function EnergyWorkspace({
 			className="lp-section lp-energy-workspace"
 			id="lp-calculations"
 			tabIndex={-1}
-			aria-labelledby="lp-calculations-heading"
+			aria-labelledby={
+				equipmentFocus ? "lp-equipment-title" : "lp-calculations-heading"
+			}
 		>
-			<div className="lp-section-heading">
+			<div className="lp-section-heading" hidden={equipmentFocus}>
 				<span className="lp-index">07</span>
 				<div>
 					<h2 id="lp-calculations-heading">
@@ -521,6 +543,7 @@ export function EnergyWorkspace({
 				className="lp-energy-switch"
 				role="group"
 				aria-label={__("Calculation workspace view", "linker-tools")}
+				hidden={equipmentFocus}
 			>
 				<button
 					type="button"
@@ -542,6 +565,15 @@ export function EnergyWorkspace({
 					onClick={() => chooseView("scenario")}
 				>
 					{__("Scenario settings", "linker-tools")}
+				</button>
+				<button
+					type="button"
+					aria-pressed={view === "equipment"}
+					onClick={() =>
+						openEquipment ? openEquipment() : chooseView("equipment")
+					}
+				>
+					{__("Equipment", "linker-tools")}
 				</button>
 				<button
 					type="button"
@@ -669,6 +701,33 @@ export function EnergyWorkspace({
 					onError={setError}
 					start={() => void startSolar("runs/pv")}
 					openDesign={openDesign}
+				/>
+			</div>
+			<div
+				hidden={view !== "equipment"}
+				id="lp-equipment"
+				className="lp-focus-target"
+				tabIndex={-1}
+			>
+				<EquipmentSetup
+					draft={draft}
+					edit={edit}
+					client={client}
+					scope={session.query_scope}
+					standalone={equipmentFocus}
+					active={active && view === "equipment"}
+					locale={locale}
+					disabled={blocked || operations.busy || !admitted}
+					actionsDisabled={
+						blocked ||
+						operations.busy ||
+						operations.checking ||
+						operations.storageFailed ||
+						unconfirmed.length > 0
+					}
+					onValidity={setEquipmentValid}
+					onError={setError}
+					start={() => void startSolar("runs/equipment")}
 				/>
 			</div>
 			<div hidden={view !== "scenario"}>
@@ -906,6 +965,13 @@ export function EnergyWorkspace({
 									locale={locale}
 									blocked={blocked || !syntaxValid}
 									active={active && view === "runs"}
+								/>
+							) : runTask(runs.run.data) === EQUIPMENT_TASK ? (
+								<EquipmentResult
+									run={runs.run.data}
+									locale={locale}
+									dirty={dirty || Boolean(draft.pending)}
+									confirmedRevision={draft.baseline.revision}
 								/>
 							) : (
 								<>

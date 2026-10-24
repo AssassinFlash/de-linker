@@ -46,13 +46,14 @@ import { invalidateEnergyReplay } from "../domain/energyScenario.ts";
 import { replacePlannerLocation } from "../data/plannerLocation.ts";
 
 type ProjectWorkspace =
-	"overview" | "site" | "energy" | "design" | "calculations";
+	"overview" | "site" | "energy" | "design" | "calculations" | "equipment";
 const workspaceHash = {
 	overview: "lp-overview",
 	site: "lp-site",
 	energy: "lp-load",
 	design: "lp-design",
 	calculations: "lp-calculations",
+	equipment: "lp-equipment",
 } as const;
 const workspaceTarget = { ...workspaceHash, site: "lp-brief-use" } as const;
 const mapPropertyHashes: readonly string[] = [
@@ -61,6 +62,7 @@ const mapPropertyHashes: readonly string[] = [
 	"#lp-map-feature-properties",
 ];
 function workspaceFromHash(): ProjectWorkspace {
+	if (window.location.hash === "#lp-equipment") return "equipment";
 	if (
 		window.location.hash === "#lp-calculations" ||
 		(!window.location.hash &&
@@ -121,8 +123,8 @@ export function ProjectEditor({
 	const valid = briefValid && designValid && energyValid;
 	const [workspace, setWorkspace] =
 		useState<ProjectWorkspace>(workspaceFromHash);
-	const [calculationsOpened, setCalculationsOpened] = useState(
-		() => workspaceFromHash() === "calculations",
+	const [calculationsOpened, setCalculationsOpened] = useState(() =>
+		["calculations", "equipment"].includes(workspaceFromHash()),
 	);
 	const workspaceFocus = useRef(false);
 	useEffect(() => {
@@ -153,7 +155,8 @@ export function ProjectEditor({
 			return;
 		}
 		workspaceFocus.current = true;
-		if (next === "calculations") setCalculationsOpened(true);
+		if (next === "calculations" || next === "equipment")
+			setCalculationsOpened(true);
 		setWorkspace(next);
 		const url = new URL(window.location.href);
 		url.hash = workspaceHash[next];
@@ -319,6 +322,7 @@ export function ProjectEditor({
 						<option value="calculations">
 							{__("Energy calculation", "linker-tools")}
 						</option>
+						<option value="equipment">{__("Equipment", "linker-tools")}</option>
 					</select>
 				</div>
 				<div className="lp-edit-actions">
@@ -464,6 +468,17 @@ export function ProjectEditor({
 						>
 							<Icon name="energy" />
 							{__("Energy calculation", "linker-tools")}
+						</a>
+						<a
+							href="#lp-equipment"
+							aria-current={workspace === "equipment" ? "page" : undefined}
+							onClick={(event) => {
+								event.preventDefault();
+								chooseWorkspace("equipment");
+							}}
+						>
+							<Icon name="layers" />
+							{__("Equipment", "linker-tools")}
 						</a>
 					</nav>
 					<div className="lp-source-note">
@@ -765,7 +780,9 @@ export function ProjectEditor({
 						</div>
 					</fieldset>
 					{calculationsOpened && (
-						<div hidden={workspace !== "calculations"}>
+						<div
+							hidden={workspace !== "calculations" && workspace !== "equipment"}
+						>
 							<EnergyWorkspace
 								draft={draft}
 								edit={editEnergy}
@@ -774,7 +791,12 @@ export function ProjectEditor({
 								client={client}
 								recheck={recheck}
 								locale={config.locale}
-								active={workspace === "calculations"}
+								active={
+									workspace === "calculations" || workspace === "equipment"
+								}
+								equipmentFocus={workspace === "equipment"}
+								openEquipment={() => chooseWorkspace("equipment")}
+								openResults={() => chooseWorkspace("calculations")}
 								recoveryScopes={recoveryScopes}
 								recoveryChecking={recoveryChecking}
 								onValidity={setEnergyValid}

@@ -16,7 +16,7 @@ from .workspace import Workspace
 
 if TYPE_CHECKING:
     from .energy_service import EnergyService
-    from .equipment_kernel import EquipmentService
+    from .equipment_service import EquipmentService
     from .pv_preparation import PvPreparationService
     from .weather_service import WeatherService
 
