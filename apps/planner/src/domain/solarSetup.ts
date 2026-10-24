@@ -255,7 +255,7 @@ export function compileWeather(value: WeatherDraft): JsonObject {
 		throw new ApiError(422, "weather_leap_axis");
 	return value;
 }
-export function activePvGeometry(value: Json | undefined): {
+export function activePvGeometry(value: unknown): {
 	geometry: GeometryDocument;
 	arrays: GeometryDocument["arrays"];
 } {
@@ -268,10 +268,7 @@ export function activePvGeometry(value: Json | undefined): {
 		),
 	};
 }
-export function alignPv(
-	value: PvDraft,
-	geometryValue: Json | undefined,
-): PvDraft {
+export function alignPv(value: PvDraft, geometryValue: unknown): PvDraft {
 	const { arrays } = activePvGeometry(geometryValue),
 		modules = [...new Set(arrays.map((array) => array.module_spec_id))];
 	return {
@@ -322,10 +319,7 @@ export function alignPv(
 		})),
 	};
 }
-export function compilePv(
-	value: PvDraft,
-	geometryValue: Json | undefined,
-): JsonObject {
+export function compilePv(value: PvDraft, geometryValue: unknown): JsonObject {
 	if (!checkPv(value)) throw new ApiError(422, "pv_parameters_incomplete");
 	const { geometry, arrays } = activePvGeometry(geometryValue);
 	const sameSet = (actual: readonly string[], expected: readonly string[]) =>
@@ -393,4 +387,30 @@ export function preparePvInputs(inputs: JsonObject): JsonObject {
 		solar_setup: setup,
 		pv_generation: compilePv(setup.pv, inputs.geometry),
 	};
+}
+
+/** UI preflight only; the service independently verifies the owned source bytes. */
+export function checkPvWeather(inputs: JsonObject): void {
+	const selected = readObject(inputs.pv_preparation ?? {});
+	if (
+		Object.keys(selected).sort().join() !== "schema_version,weather_asset_id" ||
+		selected.schema_version !== 1 ||
+		typeof selected.weather_asset_id !== "string" ||
+		!/^[a-f0-9]{32}$/.test(selected.weather_asset_id)
+	)
+		throw new ApiError(422, "pv_weather_required");
+	if (inputs.weather_acquisition !== undefined) {
+		const weather = readSolarSetup({
+			weather_acquisition: inputs.weather_acquisition,
+		}).weather;
+		compileWeather(weather);
+		const { geometry } = activePvGeometry(inputs.geometry),
+			anchor = geometry.coordinate_system.anchor;
+		if (
+			!anchor ||
+			anchor.latitude_deg !== weather.request.latitude_deg ||
+			anchor.longitude_deg !== weather.request.longitude_deg
+		)
+			throw new ApiError(422, "pv_weather_location_mismatch");
+	}
 }

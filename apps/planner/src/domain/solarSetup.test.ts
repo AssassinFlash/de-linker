@@ -11,6 +11,7 @@ import {
 	prepareWeatherInputs,
 	preparePvInputs,
 	emptyConverter,
+	checkPvWeather,
 } from "./solarSetup.ts";
 
 const inputs = () => structuredClone(fixture.pv_project.inputs);
@@ -33,6 +34,54 @@ test("solar drafts retain incomplete explicit choices without inventing paramete
 	);
 	assert.deepEqual(readSolarSetup({ solar_setup: blank }), blank);
 	assert.equal(emptyConverter().eta_nominal, null);
+});
+
+test("PV preflight requires a selected source and compares the effective weather request with roof coordinates", () => {
+	const original = inputs();
+	assert.doesNotThrow(() => checkPvWeather(original));
+	assert.throws(
+		() => checkPvWeather({ ...original, pv_preparation: {} }),
+		refusal("pv_weather_required"),
+	);
+	assert.throws(
+		() =>
+			checkPvWeather({
+				...original,
+				pv_preparation: {
+					...(original.pv_preparation as object),
+					unexpected: true,
+				},
+			}),
+		refusal("pv_weather_required"),
+	);
+	assert.throws(
+		() =>
+			checkPvWeather({
+				...original,
+				weather_acquisition: {
+					...readSolarSetup(original).weather,
+					request: {
+						...readSolarSetup(original).weather.request,
+						latitude_deg: 51,
+					},
+				},
+			}),
+		refusal("pv_weather_location_mismatch"),
+	);
+	const setup = readSolarSetup(original);
+	// An unprepared draft weather choice is not the source selected for this run.
+	assert.doesNotThrow(() =>
+		checkPvWeather({
+			...original,
+			solar_setup: {
+				...setup,
+				weather: {
+					...setup.weather,
+					request: { ...setup.weather.request, latitude_deg: 51 },
+				},
+			},
+		}),
+	);
 });
 
 test("actual published worker fixture compiles identically, without model defaults or rounding", () => {

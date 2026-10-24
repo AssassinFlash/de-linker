@@ -436,6 +436,13 @@
   [data-linker-planner] .lp-scenario-steps span { display: block; font: 10px var(--proto-font-mono); margin-bottom: 6px; color: var(--proto-teal-700); }
   [data-linker-planner] .lp-scenario-fields { min-width: 0; padding: 0; margin: 0; border: 0; }
   [data-linker-planner] .lp-scenario-block > h3 { font-size: 18px; margin: 0 0 12px; }
+  [data-linker-planner] .lp-pv-parameters { padding-block: 24px; border-top: 1px solid var(--lp-line); }
+  [data-linker-planner] .lp-pv-parameters h4 { font-size: 16px; font-weight: 600; margin: 0 0 20px; }
+  [data-linker-planner] .lp-pv-parameters > p { font-size: 13px; color: var(--proto-neutral-600); }
+  [data-linker-planner] .lp-pv-membership { border: 0; padding: 0; margin: 24px 0; }
+  [data-linker-planner] .lp-pv-membership legend { font-size: 13px; font-weight: 600; margin-bottom: 12px; }
+  [data-linker-planner] .lp-pv-array-choice { display: flex; align-items: center; gap: 12px; padding-block: 12px; border-bottom: 1px solid var(--lp-line); font-size: 13px; }
+  [data-linker-planner] .lp-pv-array-choice input { flex: 0 0 auto; width: 18px; height: 18px; accent-color: var(--proto-accent); }
   [data-linker-planner] .lp-scenario-block .lp-geometry-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-block: 24px; }
   [data-linker-planner] .lp-scenario-block > .lp-field { margin-block: 24px; }
   [data-linker-planner] .lp-scenario-block > .lp-comparison { margin-top: 28px; padding-block: 20px; border-top: 1px solid var(--lp-line); font-size: 12px; color: var(--proto-neutral-600); }

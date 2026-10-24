@@ -763,6 +763,7 @@ export function ProjectEditor({
 								recoveryChecking={recoveryChecking}
 								onValidity={setEnergyValid}
 								openProfiles={() => chooseWorkspace("energy")}
+								openDesign={() => chooseWorkspace("design")}
 								blocked={
 									busy ||
 									recoveries.length > 0 ||

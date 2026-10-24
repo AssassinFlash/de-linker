@@ -43,7 +43,13 @@ import { runStateLabel, taskLabel } from "./planningLabels.ts";
 import { PreparationResult } from "./PreparationResult.tsx";
 import { RunBasis } from "./RunBasis.tsx";
 import { WeatherSetup } from "./WeatherSetup.tsx";
-import { compileWeather, readSolarSetup } from "../../domain/solarSetup.ts";
+import { PvSetup } from "./PvSetup.tsx";
+import {
+	compileWeather,
+	compilePv,
+	checkPvWeather,
+	readSolarSetup,
+} from "../../domain/solarSetup.ts";
 
 export function EnergyWorkspace({
 	draft,
@@ -59,6 +65,7 @@ export function EnergyWorkspace({
 	recoveryChecking = false,
 	onValidity,
 	openProfiles,
+	openDesign,
 }: {
 	draft: Draft;
 	edit: (operation: (inputs: JsonObject) => JsonObject) => boolean;
@@ -73,6 +80,7 @@ export function EnergyWorkspace({
 	recoveryChecking?: boolean;
 	onValidity: (valid: boolean) => void;
 	openProfiles: () => void;
+	openDesign?: () => void;
 }) {
 	const parsed = useMemo(() => {
 		try {
@@ -90,16 +98,18 @@ export function EnergyWorkspace({
 	const setupDocument = draft.history.current.energy_scenario;
 	const setup = parsed.value,
 		selections = readSelections(draft.history.current.profile_selections);
-	const [view, setView] = useState<"weather" | "scenario" | "runs">(() =>
-			new URL(window.location.href).searchParams.has("run")
-				? "runs"
-				: "scenario",
+	const [view, setView] = useState<"weather" | "pv" | "scenario" | "runs">(
+			() =>
+				new URL(window.location.href).searchParams.has("run")
+					? "runs"
+					: "scenario",
 		),
 		[section, setSection] = useState<"storage" | "initial" | "operation">(
 			"storage",
 		),
 		[scenarioValid, setScenarioValid] = useState(true),
 		[weatherValid, setWeatherValid] = useState(true),
+		[pvValid, setPvValid] = useState(true),
 		[error, setError] = useState<unknown>(null),
 		[rangeBusy, setRangeBusy] = useState(false);
 	useEffect(() => {
@@ -112,7 +122,7 @@ export function EnergyWorkspace({
 	const projectId = draft.baseline.id,
 		admitted = client.isCurrentScope(session.query_scope),
 		dirty = isDirty(draft),
-		syntaxValid = scenarioValid && weatherValid;
+		syntaxValid = scenarioValid && weatherValid && pvValid;
 	useEffect(() => {
 		lifetime.current++;
 		return () => {
@@ -340,7 +350,7 @@ export function EnergyWorkspace({
 			setView("runs");
 		}
 	}
-	async function acquireWeather() {
+	async function startSolar(path: "runs/weather" | "runs/pv") {
 		if (
 			dirty ||
 			draft.pending ||
@@ -356,19 +366,25 @@ export function EnergyWorkspace({
 			return;
 		try {
 			const inputs = draft.baseline.inputs;
-			if (
-				!sameJson(
-					compileWeather(readSolarSetup(inputs).weather),
-					inputs.weather_acquisition,
+			const setup = readSolarSetup(inputs);
+			if (path === "runs/weather") {
+				if (
+					!sameJson(compileWeather(setup.weather), inputs.weather_acquisition)
 				)
-			)
-				return;
+					return;
+			} else {
+				if (
+					!sameJson(compilePv(setup.pv, inputs.geometry), inputs.pv_generation)
+				)
+					return;
+				checkPvWeather(inputs);
+			}
 			const instance = lifetime.current;
-			const reply = await operations.start("runs/weather", {
+			const reply = await operations.start(path, {
 				expected_revision: draft.baseline.revision,
 			});
 			if (
-				reply?.path === "runs/weather" &&
+				reply?.path === path &&
 				instance === lifetime.current &&
 				client.isCurrentScope(session.query_scope)
 			) {
@@ -379,7 +395,7 @@ export function EnergyWorkspace({
 			if (client.isCurrentScope(session.query_scope)) setError(cause);
 		}
 	}
-	function chooseView(next: "weather" | "scenario" | "runs") {
+	function chooseView(next: "weather" | "pv" | "scenario" | "runs") {
 		setView(next);
 		if (next === "runs") {
 			if (runs.runId) runs.select(runs.runId);
@@ -514,6 +530,13 @@ export function EnergyWorkspace({
 				</button>
 				<button
 					type="button"
+					aria-pressed={view === "pv"}
+					onClick={() => chooseView("pv")}
+				>
+					{__("PV generation", "linker-tools")}
+				</button>
+				<button
+					type="button"
 					aria-pressed={view === "scenario"}
 					onClick={() => chooseView("scenario")}
 				>
@@ -619,7 +642,29 @@ export function EnergyWorkspace({
 					valid={weatherValid}
 					onValidity={setWeatherValid}
 					onError={setError}
-					start={() => void acquireWeather()}
+					start={() => void startSolar("runs/weather")}
+				/>
+			</div>
+			<div hidden={view !== "pv"}>
+				<PvSetup
+					draft={draft}
+					edit={edit}
+					locale={locale}
+					disabled={blocked || operations.busy || !admitted}
+					actionsDisabled={
+						blocked ||
+						!admitted ||
+						!syntaxValid ||
+						operations.busy ||
+						operations.checking ||
+						operations.storageFailed ||
+						unconfirmed.length > 0
+					}
+					valid={pvValid}
+					onValidity={setPvValid}
+					onError={setError}
+					start={() => void startSolar("runs/pv")}
+					openDesign={openDesign}
 				/>
 			</div>
 			<div hidden={view !== "scenario"}>

@@ -1,10 +1,45 @@
 import { ApiError } from "../../data/protocol.ts";
 import { __ } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { GeometryInputError } from "../../domain/validateGeometry.ts";
 
 export function energyErrorText(error: unknown): string {
-	const code = error instanceof ApiError ? error.code : "";
+	const code =
+		error instanceof ApiError || error instanceof GeometryInputError
+			? error.code
+			: "";
 	switch (code) {
+		case "incomplete_module_reference":
+		case "invalid_source_url":
+			return __(
+				"The coefficient document reference needs an HTTP or HTTPS URL without login credentials, a SHA-256 checksum with 64 characters (0-9 and a-f) and a page number that is a whole number greater than zero.",
+				"linker-tools",
+			);
+		case "pv_parameters_incomplete":
+			return __(
+				"The PV model needs complete module, array and conversion parameters with source notes. Percentage factors must be between 0% and 100%; conversion efficiencies must be greater than 0% and no more than 100%, and DC reference power must be greater than zero.",
+				"linker-tools",
+			);
+		case "pv_layout_changed":
+			return __(
+				"PV parameters must match the active roof layout. Each array needs one parameter set and exactly one conversion group; each module specification needs its temperature coefficient.",
+				"linker-tools",
+			);
+		case "pv_location_required":
+			return __(
+				"PV generation needs roof coordinates and a declared north reference. These can be set in Roof design.",
+				"linker-tools",
+			);
+		case "pv_weather_required":
+			return __(
+				"PV generation needs a selected weather source. A completed weather result can be selected in Saved calculations.",
+				"linker-tools",
+			);
+		case "pv_weather_location_mismatch":
+			return __(
+				"The weather coordinates differ from the roof reference point. This model requires weather and roof coordinates to match.",
+				"linker-tools",
+			);
 		case "weather_parameters_incomplete":
 			return __(
 				"Weather settings need valid coordinates, whole source and calculation years, a radiation database and a terrain-horizon choice.",

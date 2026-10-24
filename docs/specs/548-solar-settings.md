@@ -46,8 +46,40 @@ partition into conversion groups, referenced north/location and complete safe
 module-source references. Changing PV settings invalidates compiled generation
 and prepared energy, while unrelated edits and the explicit historical weather
 selection remain. No default losses, temperature coefficient or inverter
-efficiency is invented. PV model entry controls and native PV start are still
-required in the same full goal; this increment does not claim they are delivered.
+efficiency is invented.
+
+The PV generation view now edits that same draft through module, array-model
+and power-conversion sections. All remain mounted across view changes, including
+unfinished signed and locale-specific numeric text. An explicit layout update
+retains matching parameters, adds incomplete entries for new active arrays and
+module specifications, and prunes obsolete entries. It never assigns numerical
+values or converter membership. Each active array must belong to exactly one
+conversion group. The UI prevents assigning an already assigned array to a
+second group; the compiler independently validates the complete partition.
+
+Module temperature coefficients are displayed in percent per degree Celsius
+and converted once to 1/degree Celsius. Array transmission factors are retained
+percentages, not loss percentages. Ground albedo is a reflected fraction. SAPM
+a/b/deltaT and their mounting/source note remain explicit; b uses s/m and deltaT
+is defined at reference irradiance 1000 W/m². Conversion groups have explicit
+PVWatts DC reference W and nominal/reference efficiencies. A shared conversion
+curve acts after summed array DC; independent already-clipped AC values are not
+substituted. Bounds mirror the exported actual service schema. Document-reference
+controls record an unverified reference; they do not acquire a datasheet or
+establish its scientific/equipment authority. A novice model/source selection
+workflow remains part of the full product delivery.
+
+Prepare PV model compiles the current active geometry/model into the open draft.
+Save project must confirm geometry, model and the selected owned weather before
+the shared controller can send the minimal saved-revision PV command. The start
+handler rechecks model equality, source selection, any declared effective weather
+request's exact coordinates, syntax, scope, conflicts and outstanding intents.
+The service independently validates the owned source and frozen model. Dispatch
+and recovery use the same durable operation/history path as weather and energy.
+The actual browser-to-ASGI contract executes the prepared model through the real
+worker registry using retained full-year TMY. This proves the local saved-model
+boundary; it does not establish an installed paired native runtime or live source
+acquisition.
 
 The retained actual worker-produced fixture is shared by browser and service
 contract tests. It contains real retained TMY bytes with explicitly synthetic

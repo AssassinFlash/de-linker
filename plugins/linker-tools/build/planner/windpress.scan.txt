@@ -106,6 +106,9 @@ lp-project-row
 lp-project-row-icon
 lp-project-rows
 lp-project-title
+lp-pv-array-choice
+lp-pv-membership
+lp-pv-parameters
 lp-rail-caption
 lp-rail-current
 lp-rail-session

@@ -100,7 +100,9 @@ const client = {
 								state: "queued",
 								is_current: true,
 								created_at: 1700000000,
-								task_kind: "acquire_pvgis_tmy_weather_v1",
+								task_kind: weather
+									? "acquire_pvgis_tmy_weather_v1"
+									: "prepare_roof_pv_reference_v1",
 							},
 						]
 					: [],
@@ -125,16 +127,17 @@ const client = {
 		throw new Error("unexpected_fixture_query");
 	},
 	send(path: string, serialized: string) {
-		if (setupMode && path === "runs/weather") {
+		if (setupMode && path === (weather ? "runs/weather" : "runs/pv")) {
 			const body = JSON.parse(serialized) as JsonObject;
+			const template = weather ? fixture.weather_run : fixture.pv_run;
 			setupRun = {
-				...fixture.weather_run,
+				...template,
 				state: "queued",
 				result: null,
 				result_sha256: null,
 				revision: body.expected_revision!,
 				manifest: {
-					...fixture.weather_run.manifest,
+					...template.manifest,
 					revision: body.expected_revision!,
 				},
 			};

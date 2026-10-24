@@ -6312,3 +6312,275 @@ msgstr "Für die Wetterabfrage wird die gespeicherte Eingabeversion %d verwendet
 #: build/planner/assets/planner.js
 msgid "Preparing changed weather settings clears the previous weather selection. The energy scenario must then be prepared again. Saved sources and results remain in the project history."
 msgstr "Wenn Sie geänderte Wettereinstellungen vorbereiten, wird die bisherige Wetterauswahl aufgehoben. Das Energieszenario muss danach erneut vorbereitet werden. Gespeicherte Quellen und Ergebnisse bleiben im Projektverlauf erhalten."
+
+#: build/planner/assets/planner.js
+msgid "PV generation model"
+msgstr "PV-Ertragsmodell"
+
+#: build/planner/assets/planner.js
+msgid "This reference calculation estimates available AC generation from the saved roof layout and selected typical-year weather. It uses a uniform, unshaded array model implemented with pvlib. Site shading, string design, equipment suitability and country-specific approval need separate assessment."
+msgstr "Diese Referenzberechnung schätzt die verfügbare AC-Erzeugung anhand der gespeicherten Dachbelegung und des ausgewählten typischen Wetterjahrs. Jedes Modulfeld wird mit pvlib als unverschattete Referenz bei gleichmäßiger Einstrahlung modelliert. Standortverschattung, Strangplanung, Geräteeignung und länderspezifische Freigaben sind gesondert zu prüfen."
+
+#: build/planner/assets/planner.js
+msgid "Current roof layout: %d active arrays."
+msgstr "Aktuelle Dachbelegung: %d aktive Modulfelder."
+
+#: build/planner/assets/planner.js
+msgid "Update parameters for current roof layout"
+msgstr "Parameter an aktuelle Dachbelegung anpassen"
+
+#: build/planner/assets/planner.js
+msgid "The update keeps parameters for matching arrays and module specifications, creates empty fields for new entries and removes entries outside the active layout. It does not supply new model values or assign new arrays to conversion groups."
+msgstr "Beim Abgleich bleiben die Parameter passender Modulfelder und Modulspezifikationen erhalten. Neue Einträge erhalten leere Eingabefelder; Einträge außerhalb der aktiven Dachbelegung werden entfernt. Neue Modellwerte oder Gruppenzuordnungen werden dabei nicht festgelegt."
+
+#: build/planner/assets/planner.js
+msgid "Modules"
+msgstr "Module"
+
+#: build/planner/assets/planner.js
+msgid "Array models"
+msgstr "Modelle der Modulfelder"
+
+#: build/planner/assets/planner.js
+msgid "Power conversion"
+msgstr "Leistungsumwandlung"
+
+#: build/planner/assets/planner.js
+msgid "Module parameter fields are created when the parameters are updated for the current roof layout."
+msgstr "Die Eingabefelder für Modulparameter entstehen beim Abgleich mit der aktuellen Dachbelegung."
+
+#: build/planner/assets/planner.js
+msgid "Array model fields are created when the parameters are updated for the current roof layout."
+msgstr "Die Eingabefelder für Modulfeldmodelle entstehen beim Abgleich mit der aktuellen Dachbelegung."
+
+#: build/planner/assets/planner.js
+msgid "Array outside the current layout"
+msgstr "Modulfeld außerhalb der aktuellen Dachbelegung"
+
+#: build/planner/assets/planner.js
+msgid "Shared power conversion"
+msgstr "Gemeinsame Leistungsumwandlung"
+
+#: build/planner/assets/planner.js
+msgid "Each active array must belong to exactly one conversion group. The model sums each group's array DC power after the declared losses, then applies one shared PVWatts conversion curve and AC output limit. Each array is assumed to have independent maximum-power tracking. Electrical strings and physical inverter suitability need separate assessment."
+msgstr "Jedes aktive Modulfeld muss genau einer Umwandlungsgruppe zugeordnet sein. Das Modell addiert die DC-Leistungen der Gruppe nach den angegebenen Verlusten und wendet eine gemeinsame PVWatts-Kennlinie mit einer AC-Leistungsgrenze an. Es setzt eine unabhängige MPP-Regelung je Modulfeld voraus. Strangplanung und Eignung eines konkreten Wechselrichters sind gesondert zu prüfen."
+
+#: build/planner/assets/planner.js
+msgid "Add conversion group"
+msgstr "Umwandlungsgruppe hinzufügen"
+
+#: build/planner/assets/planner.js
+msgid "Overall PV model assumptions"
+msgstr "Übergreifende Annahmen des PV-Modells"
+
+#: build/planner/assets/planner.js
+msgid "Temperature coefficient of maximum power"
+msgstr "Temperaturkoeffizient der maximalen Leistung"
+
+#: build/planner/assets/planner.js
+msgid "The coefficient gives the relative change in maximum DC power for each 1 °C change in cell temperature, referenced to 25 °C. For a datasheet value of -0.29%/°C, the field value is -0.29."
+msgstr "Der Koeffizient beschreibt die relative Änderung der maximalen DC-Leistung je 1 °C Zelltemperaturänderung, bezogen auf 25 °C. Bei einer Datenblattangabe von -0,29 %/°C lautet der Eingabewert -0,29."
+
+#: build/planner/assets/planner.js
+msgid "Temperature-coefficient source"
+msgstr "Quelle des Temperaturkoeffizienten"
+
+#: build/planner/assets/planner.js
+msgid "Choose a source"
+msgstr "Quelle auswählen"
+
+#: build/planner/assets/planner.js
+msgid "Coefficient source and conditions"
+msgstr "Quelle und Bedingungen des Koeffizienten"
+
+#: build/planner/assets/planner.js
+msgid "Coefficient document reference"
+msgstr "Dokumentverweis zum Koeffizienten"
+
+#: build/planner/assets/planner.js
+msgid "A datasheet reference requires its URL, SHA-256 checksum and page number. This records the reference without downloading or verifying the document."
+msgstr "Ein Datenblattverweis benötigt die URL, die SHA-256-Prüfsumme und die Seitenzahl. Der Verweis wird erfasst; das Dokument wird dabei weder heruntergeladen noch geprüft."
+
+#: build/planner/assets/planner.js
+msgid "Conversion group %d"
+msgstr "Umwandlungsgruppe %d"
+
+#: build/planner/assets/planner.js
+msgid "Arrays converted together"
+msgstr "Modulfelder mit gemeinsamer Umwandlung"
+
+#: build/planner/assets/planner.js
+msgid "PVWatts DC reference power"
+msgstr "PVWatts-DC-Referenzleistung"
+
+#: build/planner/assets/planner.js
+msgid "Nominal conversion efficiency"
+msgstr "Nennwirkungsgrad der Umwandlung"
+
+#: build/planner/assets/planner.js
+msgid "PVWatts reference efficiency"
+msgstr "PVWatts-Referenzwirkungsgrad"
+
+#: build/planner/assets/planner.js
+msgid "This reference power sets the PVWatts conversion curve; the model's AC output limit is reference power × nominal efficiency. It must be greater than zero. Array STC power and inverter hardware input limits are separate values. Both efficiencies must be greater than 0% and no more than 100%."
+msgstr "Diese DC-Referenzleistung bestimmt die PVWatts-Kennlinie. Die AC-Leistungsgrenze des Modells entspricht Referenzleistung × Nennwirkungsgrad. Die Referenzleistung muss größer als null sein; beide Wirkungsgrade müssen über 0 % und höchstens 100 % betragen. STC-Leistung des Modulfelds und Hardware-Eingangsgrenzen des Wechselrichters sind gesonderte Werte."
+
+#: build/planner/assets/planner.js
+msgid "Conversion-model source and assumptions"
+msgstr "Quelle und Annahmen des Umwandlungsmodells"
+
+#: build/planner/assets/planner.js
+msgid "Remove conversion group"
+msgstr "Umwandlungsgruppe entfernen"
+
+#: build/planner/assets/planner.js
+msgid "Ground reflectance"
+msgstr "Bodenreflexionsgrad"
+
+#: build/planner/assets/planner.js
+msgid "ASHRAE incidence-angle coefficient b"
+msgstr "ASHRAE-Koeffizient b für den Einfallswinkel"
+
+#: build/planner/assets/planner.js
+msgid "Retained sky-diffuse irradiance"
+msgstr "Verbleibender Anteil der Himmelsdiffusstrahlung"
+
+#: build/planner/assets/planner.js
+msgid "Retained ground-reflected irradiance"
+msgstr "Verbleibende bodenreflektierte Einstrahlung"
+
+#: build/planner/assets/planner.js
+msgid "Spectral factor"
+msgstr "Spektraler Korrekturfaktor"
+
+#: build/planner/assets/planner.js
+msgid "Irradiance retained after soiling"
+msgstr "Verbleibende Einstrahlung nach Verschmutzung"
+
+#: build/planner/assets/planner.js
+msgid "DC power retained after wiring losses"
+msgstr "Verbleibende DC-Leistung nach Leitungsverlusten"
+
+#: build/planner/assets/planner.js
+msgid "DC power retained after mismatch losses"
+msgstr "Verbleibende DC-Leistung nach Mismatch-Verlusten"
+
+#: build/planner/assets/planner.js
+msgid "Irradiance transposition"
+msgstr "Umrechnung der Einstrahlung auf die Modulebene"
+
+#: build/planner/assets/planner.js
+msgid "Choose a model"
+msgstr "Modell auswählen"
+
+#: build/planner/assets/planner.js
+msgid "Isotropic"
+msgstr "Isotrop"
+
+#: build/planner/assets/planner.js
+msgid "Transposition estimates irradiance on each module plane using the saved roof and mounting orientation. Ground reflectance is the share reflected by the ground. The remaining percentage factors describe the share retained: 98% means a 2% reduction."
+msgstr "Die Umrechnung bestimmt die Einstrahlung auf die jeweilige Modulebene anhand der gespeicherten Dach- und Montageausrichtung. Der Bodenreflexionsgrad gibt den vom Boden reflektierten Anteil an. Alle übrigen Prozentfaktoren beschreiben den verbleibenden Anteil: 98 % entsprechen einer Minderung um 2 %."
+
+#: build/planner/assets/planner.js
+msgid "Irradiance and loss assumptions"
+msgstr "Annahmen zu Einstrahlung und Verlusten"
+
+#: build/planner/assets/planner.js
+msgid "Cell temperature model"
+msgstr "Modell der Zelltemperatur"
+
+#: build/planner/assets/planner.js
+msgid "SAPM estimates cell temperature from plane-of-array irradiance, air temperature and wind speed at 10 m. Its a, b and ΔT coefficients depend on module construction and mounting; ΔT is specified at 1000 W/m². No mounting preset is applied."
+msgstr "Das SAPM-Modell berechnet die Zelltemperatur aus der Einstrahlung auf die Modulebene, der Lufttemperatur und der Windgeschwindigkeit in 10 m Höhe. Die Koeffizienten a, b und ΔT hängen von Modulaufbau und Montage ab; ΔT bezieht sich auf 1000 W/m². Es wird kein Montageparametersatz vorausgewählt."
+
+#: build/planner/assets/planner.js
+msgid "SAPM coefficient a"
+msgstr "SAPM-Koeffizient a"
+
+#: build/planner/assets/planner.js
+msgid "SAPM coefficient b"
+msgstr "SAPM-Koeffizient b"
+
+#: build/planner/assets/planner.js
+msgid "Cell-to-module ΔT at 1000 W/m²"
+msgstr "Zell-Modul-Temperaturdifferenz ΔT bei 1000 W/m²"
+
+#: build/planner/assets/planner.js
+msgid "Temperature-model source and mounting conditions"
+msgstr "Quelle des Temperaturmodells und Montagebedingungen"
+
+#: build/planner/assets/planner.js
+msgid "PV model settings need an editable roof layout. Saved inputs and previous calculations remain in the project."
+msgstr "Die PV-Modelleinstellungen benötigen eine bearbeitbare Dachbelegung. Gespeicherte Eingaben und bisherige Berechnungen bleiben im Projekt erhalten."
+
+#: build/planner/assets/planner.js
+msgid "Review roof design"
+msgstr "Dachplanung ansehen"
+
+#: build/planner/assets/planner.js
+msgid "Weather for this PV calculation"
+msgstr "Wetter für diese PV-Berechnung"
+
+#: build/planner/assets/planner.js
+msgid "A weather source is selected in this draft. Before calculation, the saved weather record and its location are checked against the roof inputs."
+msgstr "In diesem Entwurf ist eine Wetterquelle ausgewählt. Vor der Berechnung werden der gespeicherte Wetterdatensatz und sein Standort mit den Angaben zur Dachplanung abgeglichen."
+
+#: build/planner/assets/planner.js
+msgid "A completed weather result must be selected in Saved calculations before PV generation can start."
+msgstr "Für die PV-Berechnung muss in der Ansicht Gespeicherte Berechnungen ein abgeschlossener Wetterdatensatz ausgewählt sein."
+
+#: build/planner/assets/planner.js
+msgid "PV model prepared in this draft"
+msgstr "PV-Modell in diesem Entwurf vorbereitet"
+
+#: build/planner/assets/planner.js
+msgid "PV model settings need preparation"
+msgstr "PV-Modelleinstellungen noch nicht vorbereitet"
+
+#: build/planner/assets/planner.js
+msgid "The roof layout, PV model and weather selection must be recorded with Save project before PV generation can start."
+msgstr "Für die PV-Berechnung müssen Dachplanung, PV-Modell und Wetterauswahl mit Projekt speichern gesichert sein."
+
+#: build/planner/assets/planner.js
+msgid "PV generation uses saved input revision %d."
+msgstr "Die PV-Berechnung verwendet den gespeicherten Eingabestand %d."
+
+#: build/planner/assets/planner.js
+msgid "Prepare PV model"
+msgstr "PV-Modell vorbereiten"
+
+#: build/planner/assets/planner.js
+msgid "Calculate PV for saved inputs"
+msgstr "PV für gespeicherte Eingaben berechnen"
+
+#: build/planner/assets/planner.js
+msgid "PV generation"
+msgstr "PV-Erzeugung"
+
+#: build/planner/assets/planner.js
+msgid "The PV model needs complete module, array and conversion parameters with source notes. Percentage factors must be between 0% and 100%; conversion efficiencies must be greater than 0% and no more than 100%, and DC reference power must be greater than zero."
+msgstr "Für das PV-Modell fehlen gültige Modul-, Modulfeld- oder Umwandlungsparameter einschließlich Quellenangaben. Prozentfaktoren müssen zwischen 0 % und 100 % liegen. Umwandlungswirkungsgrade müssen über 0 % und höchstens 100 % betragen; die DC-Referenzleistung muss größer als null sein."
+
+#: build/planner/assets/planner.js
+msgid "PV parameters must match the active roof layout. Each array needs one parameter set and exactly one conversion group; each module specification needs its temperature coefficient."
+msgstr "Die PV-Parameter müssen zur aktiven Dachbelegung passen. Jedes Modulfeld benötigt einen Parametersatz und genau eine Umwandlungsgruppe; für jede Modulspezifikation muss der Temperaturkoeffizient vorliegen."
+
+#: build/planner/assets/planner.js
+msgid "PV generation needs roof coordinates and a declared north reference. These can be set in Roof design."
+msgstr "Die PV-Berechnung benötigt Dachkoordinaten und einen festgelegten Nordbezug. Beides lässt sich in der Dachplanung einstellen."
+
+#: build/planner/assets/planner.js
+msgid "PV generation needs a selected weather source. A completed weather result can be selected in Saved calculations."
+msgstr "Für die PV-Berechnung muss eine Wetterquelle ausgewählt sein. Ein abgeschlossener Wetterdatensatz lässt sich in der Ansicht Gespeicherte Berechnungen auswählen."
+
+#: build/planner/assets/planner.js
+msgid "The weather coordinates differ from the roof reference point. This model requires weather and roof coordinates to match."
+msgstr "Die Wetterkoordinaten stimmen nicht mit dem Dachbezugspunkt überein. Für dieses Modell müssen Wetter- und Dachkoordinaten identisch sein."
+
+#: build/planner/assets/planner.js
+msgid "Module specification outside the current layout"
+msgstr "Modulspezifikation außerhalb der aktuellen Dachbelegung"
+
+#: build/planner/assets/planner.js
+msgid "The coefficient document reference needs an HTTP or HTTPS URL without login credentials, a SHA-256 checksum with 64 characters (0-9 and a-f) and a page number that is a whole number greater than zero."
+msgstr "Der Dokumentverweis zum Koeffizienten benötigt eine HTTP- oder HTTPS-URL ohne Anmeldedaten, eine SHA-256-Prüfsumme aus 64 Zeichen (0-9 und a-f) und eine ganzzahlige Seitenzahl größer als null."
