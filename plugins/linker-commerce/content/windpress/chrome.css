@@ -219,10 +219,11 @@ body:has(#tv-header-v2 .tv-mobile-navigation[open]) .linker-genie-peek{visibilit
 #tv-header-v2[data-tv-actions-compact="true"] .tv-desktop-actions .tv-b2b-acct-btn .tv-b2b-acct-avatar{width:22px;height:22px}
 #tv-header-v2 .tv-mobile-panel{display:none;padding:4px 0 12px;border-top:1px solid var(--proto-neutral-200);max-height:calc(100dvh - var(--lk-header-h));overflow-y:auto;overscroll-behavior:contain}
 #tv-header-v2 .tv-mobile-panel[data-open="true"]{display:flex;flex-direction:column}
-/* Native Tab scrolling needs the existing 2px outline and 2px offset plus
-   1px for native whole-pixel scrolling: DE desktop readback loses .078125px
-   from a 4px margin. Keep the actual outline inside the client scrollport. */
-#tv-header-v2 .tv-mobile-panel :is(a[href],summary){scroll-margin-block:5px}
+/* Native Tab scrolling needs the 2px outline, 2px offset, 1px panel border
+   and 1px for native whole-pixel scrolling. At 320px a 5px margin leaves
+   EN Blog/DE Configurator outlines .0859375px/.109375px beyond the client
+   scrollport, while the border box itself fits. Keep the strict inner edge. */
+#tv-header-v2 .tv-mobile-panel :is(a[href],summary){scroll-margin-block:6px}
 #tv-header-v2 [data-tv-mobile-primary="products"]{order:1}
 #tv-header-v2 [data-tv-mobile-primary="solutions"]{order:2}
 #tv-header-v2 [data-tv-mobile-primary="ai"]{order:3}

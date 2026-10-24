@@ -70,10 +70,14 @@ product links, the third solution card's border box ends at 899.0625px in the
 900px viewport, cutting off its 2px outline plus 2px offset. Reserve that same
 4px footprint with block scroll margins on the existing panel links and group
 summaries. Independent DE desktop readback then shows the outline ending at
-899.078125px while the client scrollport ends at899px. Native scrolling rounds
-to whole CSS pixels, so use5px: the same4px footprint plus the smallest whole
-pixel to protect against that rounding. Keep the strict boundary comparison;
-do not add a tolerance or discard the failed stable originals. Verify the
+899.078125px while the client scrollport ends at899px. A5px margin then still
+clips the EN Blog and DE Configurator outlines at320px: their bottom edges
+reach899.0859375px and899.109375px against that899px client edge. Native readback
+confirms the panel border box ends at900px, with a1px bottom border and whole
+pixel scroll positions. Use6px: the existing4px outline footprint, that1px
+border, and the smallest whole pixel for scroll rounding. Keep the strict
+boundary comparison; do not add a tolerance or discard the failed stable
+originals. Verify the
 actual scrollport's inner edges with native keys, without
 programmatically focusing each target. Keep the failed original evidence.
 
