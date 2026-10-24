@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from requests.adapters import BaseAdapter
-
 from .asset_publication import AssetPublication, AssetResult
 from .canonical import Object, encode
 from .errors import VersionUnavailable
@@ -15,6 +13,7 @@ from .pvgis_transport import PvgisTransport
 from .records import Context, Lease
 from .runtime_snapshot import RuntimeSnapshot
 from .weather_acquisition import WeatherAcquisition
+from .weather_download import WeatherDownloader
 from .weather_fetch_plan import WeatherFetchLimits, WeatherFetchPlan
 from .weather_inputs import WeatherAcquisitionInputs
 from .weather_journal import WeatherJournal
@@ -36,11 +35,11 @@ class WeatherKernel:
         workspace: Workspace,
         limits: WeatherFetchLimits,
         *,
-        adapter_factory: Callable[[], BaseAdapter] | None = None,
+        transport_factory: Callable[[], WeatherDownloader] | None = None,
     ) -> None:
         self.workspace = workspace
         self.limits = WeatherFetchLimits.read(limits.model_dump(mode="json"))
-        self.adapter_factory = adapter_factory
+        self.transport_factory = transport_factory
         self.runtime = RuntimeSnapshot.capture()
         workspace.blobs.put(self.runtime.content)
 
@@ -72,10 +71,8 @@ class WeatherKernel:
             self.parameters(),
         )
 
-    def transport(self) -> PvgisTransport:
-        return PvgisTransport(
-            adapter=self.adapter_factory() if self.adapter_factory is not None else None
-        )
+    def transport(self) -> WeatherDownloader:
+        return self.transport_factory() if self.transport_factory else PvgisTransport()
 
     def __call__(self, lease: Lease, control: Control) -> AssetResult:
         control.checkpoint()

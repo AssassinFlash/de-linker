@@ -25,6 +25,14 @@ size, content type, response status, URL and complete data/metadata checks.
 HTML refusal pages, error JSON, incomplete axes or changed provider echoes
 fail visibly; they never become zero generation or a valid source.
 
+Blocking DNS/TLS/headers/body reads run in a disposable HTTP child. Its parent
+checks lease/cancellation while supervising the original wall-clock and
+monotonic overall budget, then kills and reaps that owned child on loss or
+expiry. A child-owned exit timer also bounds a transfer if its parent dies.
+No workspace, application service token or research credential enters the
+HTTP child. This avoids treating a socket inactivity timeout as an overall
+deadline when a source continuously trickles bytes.
+
 Retain original response bytes, exact request/response capture, interpretation
 and source rights/attribution. Validate the complete TMY using the existing
 trusted interpreter, preserve its two temporal axes, and record hashes in the

@@ -1,8 +1,8 @@
 """Acquire only the official source; retries are bounded idempotent GETs."""
 
 from .pv_source import PvSource
-from .pvgis_transport import PvgisTransport
 from .records import Lease
+from .weather_download import WeatherDownloader
 from .weather_fetch_plan import WeatherFetchPlan
 from .weather_journal import WeatherJournal
 from .weather_task import WeatherTask
@@ -10,7 +10,7 @@ from .worker import Control
 
 
 class WeatherAcquisition:
-    def __init__(self, journal: WeatherJournal, transport: PvgisTransport) -> None:
+    def __init__(self, journal: WeatherJournal, transport: WeatherDownloader) -> None:
         self.journal, self.transport = journal, transport
 
     def acquire(

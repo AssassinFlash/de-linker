@@ -11,7 +11,7 @@ import requests
 from requests.adapters import BaseAdapter
 from urllib3.response import HTTPResponse
 
-from linker_engine.planning.pvgis_transport import PvgisTransport
+from linker_engine.planning.pvgis_http_transfer import PvgisHttpTransfer
 from linker_engine.planning.weather_fetch_errors import (
     WeatherProviderRejected,
     WeatherProviderUnavailable,
@@ -104,7 +104,7 @@ def test_one_official_get_needs_no_research_or_service_credentials(
     for name in ("APIFY_TOKEN", "APIFY_API_TOKEN", "GENIE_SERVICE_TOKEN"):
         monkeypatch.setenv(name, "synthetic-never-forward")
     adapter = SequenceAdapter(Reply(200, raw()))
-    transport = PvgisTransport(adapter=adapter)
+    transport = PvgisHttpTransfer(adapter=adapter)
     downloaded = transport.download(
         plan(), deadline=60, clock=lambda: 0, guard=lambda: None
     )
@@ -125,7 +125,7 @@ def test_redirects_and_rejections_are_not_followed(status: int) -> None:
         Reply(status, b"denied", {"Location": "https://foreign.invalid"})
     )
     with pytest.raises(WeatherProviderRejected):
-        PvgisTransport(adapter=adapter).download(
+        PvgisHttpTransfer(adapter=adapter).download(
             plan(), deadline=60, clock=lambda: 0, guard=lambda: None
         )
     assert len(adapter.calls) == 1
@@ -137,7 +137,7 @@ def test_transient_source_failure_is_explicit_and_not_retried_by_transport(
 ) -> None:
     adapter = SequenceAdapter(Reply(status, b"unavailable"))
     with pytest.raises(WeatherProviderUnavailable):
-        PvgisTransport(adapter=adapter).download(
+        PvgisHttpTransfer(adapter=adapter).download(
             plan(), deadline=60, clock=lambda: 0, guard=lambda: None
         )
     assert len(adapter.calls) == 1
@@ -161,7 +161,7 @@ def test_wrong_original_identity_or_incomplete_body_is_not_accepted(
     reply: Reply,
 ) -> None:
     with pytest.raises(WeatherResponseInvalid):
-        PvgisTransport(adapter=SequenceAdapter(reply)).download(
+        PvgisHttpTransfer(adapter=SequenceAdapter(reply)).download(
             plan(), deadline=60, clock=lambda: 0, guard=lambda: None
         )
 
@@ -177,12 +177,12 @@ def test_streaming_byte_budget_and_original_elapsed_deadline() -> None:
     )
     adapter = SequenceAdapter(Reply(200, b"x" * 11))
     with pytest.raises(WeatherResponseTooLarge):
-        PvgisTransport(adapter=adapter).download(
+        PvgisHttpTransfer(adapter=adapter).download(
             selected, deadline=60, clock=lambda: 0, guard=lambda: None
         )
     empty = SequenceAdapter()
     with pytest.raises(WeatherDeadlineExceeded):
-        PvgisTransport(adapter=empty).download(
+        PvgisHttpTransfer(adapter=empty).download(
             plan(), deadline=60, clock=lambda: 60, guard=lambda: None
         )
     assert not empty.calls

@@ -23,6 +23,7 @@ from linker_engine.planning.pv_preparation import (
     PvReferenceKernel,
     check_pv_preparation,
 )
+from linker_engine.planning.pvgis_http_transfer import PvgisHttpTransfer
 from linker_engine.planning.records import Actor
 from linker_engine.planning.weather_journal import WeatherJournal
 from linker_engine.planning.weather_kernel import WeatherKernel
@@ -68,7 +69,7 @@ def services(workspace: Workspace, adapter: SequenceAdapter):
         WeatherKernel(
             workspace,
             plan().limits,
-            adapter_factory=lambda: adapter,
+            transport_factory=lambda: PvgisHttpTransfer(adapter=adapter),
         ),
         max_attempts=2,
     )
@@ -412,7 +413,7 @@ def test_independent_managed_process_resumes_weather_capture_then_runs_energy_an
         WeatherKernel(
             workspace,
             plan().limits,
-            adapter_factory=lambda: adapter,
+            transport_factory=lambda: PvgisHttpTransfer(adapter=adapter),
         ),
         max_attempts=2,
     )
