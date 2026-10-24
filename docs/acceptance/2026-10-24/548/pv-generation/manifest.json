@@ -77,6 +77,11 @@
       "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
     },
     {
+      "path": "map-readback.json",
+      "bytes": 3188,
+      "sha256": "caa973a466170f71eb2a8c070b6d5bc41503864f333e8e6bf51508084d44c077"
+    },
+    {
       "path": "preservation.json",
       "bytes": 1283,
       "sha256": "c5c4d4dafe96a156afad5240af7cca5b6a7020685f185056be38e14cb7122065"
