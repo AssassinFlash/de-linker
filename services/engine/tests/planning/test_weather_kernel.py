@@ -526,3 +526,46 @@ def test_installed_transport_version_changes_execution_identity_and_leaves_old_w
         workspace, service_registry(changed_energy, None, replacement)
     ).run_once()
     assert workspace.run(owner, run.id).state == "queued" and adapter.calls == []
+
+
+def test_status_does_not_turn_ownership_denial_during_guest_transfer_into_not_started(
+    workspace: Workspace,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    guest, user = Actor("guest", "status-race"), Actor("user", "status-account")
+    project = workspace.create(
+        guest, "Status ownership race", source_inputs(), key="project"
+    )
+    adapter = valid_adapter()
+    weather, energy = services(workspace, adapter)
+    run = weather.evaluate(guest, project.id, 1, key="weather")
+    original = workspace.run
+    calls = 0
+
+    def transfer_before_second_owned_read(actor: Actor, run_id: str):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            workspace.claim_guest(guest, user, project.id, key="claim-during-status")
+        return original(actor, run_id)
+
+    monkeypatch.setattr(workspace, "run", transfer_before_second_owned_read)
+    with TestClient(
+        create_private_app(
+            workspace,
+            energy,
+            credential=lambda: TOKEN,
+            limits=HttpLimits(2_000_000, 1_000_000, 20, 32),
+            weather=weather,
+        )
+    ) as client:
+        response = client.post(
+            "/runs/weather/status",
+            json={"schema_version": 1, "run_id": run.id},
+            headers=headers(guest),
+        )
+        assert (
+            response.status_code == 404
+            and response.json()["error"]["code"] == "not_found"
+        )
+    assert calls == 2 and not adapter.calls

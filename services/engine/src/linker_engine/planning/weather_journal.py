@@ -306,13 +306,22 @@ class WeatherJournal:
             raise VersionUnavailable("retained weather capture has no original")
         return PvSource.read(self.workspace.blobs, raw_hash, metadata)
 
-    def view(self, actor: Actor, run_id: str) -> Object:
+    def view(
+        self, actor: Actor, run_id: str, *, allow_not_started: bool = False
+    ) -> Object:
         local = self.workspace.run(actor, run_id)
         with self.workspace.database.read() as connection:
             row = connection.execute(
                 "SELECT * FROM weather_acquisitions WHERE run_id=?", (run_id,)
             ).fetchone()
             if row is None:
+                if allow_not_started:
+                    return {
+                        "schema_version": 1,
+                        "run_id": run_id,
+                        "task_state": local.state,
+                        "acquisition_state": "not_started",
+                    }
                 raise NotFound("weather acquisition not found")
             intent = self._intent(row)
             cleanup = connection.execute(

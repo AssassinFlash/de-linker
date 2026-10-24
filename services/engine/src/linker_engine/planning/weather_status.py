@@ -14,12 +14,4 @@ def weather_status(workspace: Workspace, actor: Actor, run_id: str) -> Object:
     models = context.get("models") if isinstance(context, dict) else None
     if not isinstance(models, dict) or models.get("task") != WeatherKernel.kind:
         raise NotFound("weather task not found")
-    try:
-        return WeatherJournal(workspace).view(actor, run_id)
-    except NotFound:
-        return {
-            "schema_version": 1,
-            "run_id": run_id,
-            "task_state": run.state,
-            "acquisition_state": "not_started",
-        }
+    return WeatherJournal(workspace).view(actor, run_id, allow_not_started=True)
