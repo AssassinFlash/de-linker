@@ -6,6 +6,11 @@ import { ScenarioNumber } from "./ScenarioNumber.tsx";
 
 /** The editable request and its interpretation remain project inputs, not an
  * external request made while a control changes. Only an explicit start sends it. */
+// Coordinate/year bounds below mirror weather-acquisition.schema.json $defs:
+// PvgisTmyRequest's latitude/longitude Finite aliases and Year (1 through 9998).
+// These protocol bounds do not establish provider coverage. The 8,760-hour,
+// non-leap interpretation is documented with the retained primary-source data
+// in docs/research/2026-10-24-pv-generation/WEATHER-AND-MODELS.md.
 export function WeatherForm({
 	value,
 	anchor,
