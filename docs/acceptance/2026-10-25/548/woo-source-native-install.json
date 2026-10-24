@@ -93,5 +93,15 @@
   },
   "engine_source_commit": "c03ffe5e",
   "local_adapter_source_commit": "b8f27ffe",
-  "native_transport_sha256": "2a5468e0cbdcd8691231c78ddd718b450363b605bd641cba9a9b7bcf8466f1cb"
+  "native_transport_sha256": "2a5468e0cbdcd8691231c78ddd718b450363b605bd641cba9a9b7bcf8466f1cb",
+  "coordination": {
+    "at_utc": "2026-10-24T18:41:54.410088+00:00",
+    "status": "handoff_sent_after_native_source_readback",
+    "recipients": [
+      "01a1684e-e0ef-7951-9c25-64cc89eda28f",
+      "01a15e9f-a4e6-72b1-8e70-6c663590796b"
+    ],
+    "instruction": "Continue only actual remaining shared integration; reuse completed evidence, do not rebuild old tools, do not touch the owned planner instance",
+    "planner_remaining_owner": "This planner line retains component fact binding, qualification, operation-level revalidation and full downstream/site delivery"
+  }
 }

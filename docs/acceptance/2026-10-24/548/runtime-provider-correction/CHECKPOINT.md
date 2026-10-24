@@ -2,14 +2,15 @@
 
 ## Current continuation: 2026-10-25
 
-The native energy/trace installation and rolled retention state supersede the
-earlier weather/PV checkpoint below. See
+The current native pair is `68bd58cd`, with the shared Woo source connection
+described below. The earlier native energy/trace installation is recorded in
 [`trace-native-install.json`](../../../2026-10-25/548/trace-native-install.json)
-at source commit `b0159ef3`: the actual HTTP/worker pair is `77dbdec6`, the
-example is revision 7, and its saved 8760-interval result, chart/table/CSV and
-real scenario warning were read without rerunning the calculation. The old
-schema-2 recovery/carrier were reclaimed; one current-schema recovery and its
-matching rollback remain.
+at source commit `b0159ef3`: that HTTP/worker pair was `77dbdec6`, and its
+revision-7 saved 8760-interval result, chart/table/CSV and real scenario warning
+were read without rerunning the calculation. Current installation preserves
+that result. The schema-2 recovery and superseded source carriers were
+reclaimed; one current-schema recovery, current carrier and rollback carrier
+remain. The separate single pre-Woo-write database recovery is retained.
 
 After the owner's product-source correction, the relevant conversations and
 upstream `614/617/618` contracts were read. Already-reviewed `origin/main`
@@ -87,11 +88,22 @@ local installation/readback, not a production release. Project operation-level
 product binding, qualification and downstream handoff remain open; the read
 interface alone does not establish them.
 
-The owner authorised notifying the collaborating conversation after actual
-connection and verification. That notification remains pending. Complete the
-shared integration first, then send its interfaces, versions, readback and
-remaining responsibilities so their integration work can continue. The full
-planner goal remains active.
+The real native guest path also completed its two-step Woo bootstrap and
+returned HTTP 200 with the same 85+1 source in 5.873 seconds. Its temporary
+Woo guest session was removed. No identity gate, source guard or original
+project was bypassed. The superseded `052c98c1` executable carrier (1,041,317
+logical bytes) and one duplicate raw sync output were reclaimed. The active
+`68bd58cd` and verified rollback `77dbdec6` are the only two retained carriers.
+
+After these actual source-connection readbacks, the owner's authorised handoff
+was sent to the product-authority conversation and the full-site repair
+conversation. It included the new interfaces, source/runtime versions, evidence
+and remaining ownership; it expressly asked them to reuse completed evidence,
+continue only real outstanding integration and avoid expanding the old tools.
+The product conversation had already completed its published scope, so the
+message did not invent a new requirement to rerun it. Component fact binding,
+qualification and downstream operations remain this planner line's work. The
+full planner goal remains active.
 
 ## Earlier weather/PV installation checkpoint
 
