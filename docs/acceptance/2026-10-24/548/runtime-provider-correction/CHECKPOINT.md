@@ -1,8 +1,65 @@
 # Product runtime correction and native installation
 
-## Current continuation: 2026-10-25
+## Current equipment continuation: 2026-10-25
 
-The current native HTTP/worker pair is `4b71ef86`, from reviewed source
+The owned p548 pair now runs immutable engine `55371f8a` from backend source
+`78bb5954`, with the final equipment UI at `8bf91d4e`. Equipment selection is a
+step in the same project, revision, saved-request journal and result history.
+It uses the existing native Woo source and publication preparation; no new
+product registry, fallback list or editable manufacturer fact pack was added.
+
+Woo feed projection 2 retains conditions, explicit table columns and document
+relationships. Four local Woo records received source-cited sales-unit roles;
+BC2's existing voltage table received its five documented module-count column
+labels. Existing physical numbers were preserved. The normal Woo CRUD hooks
+and shared preparation worker published source `da32e7fb` and acknowledged all
+86 items. The internal sales-unit key is excluded from public product figures.
+These local maintenance changes and their scoped recovery are recorded in the
+owned instance; production was not changed.
+
+The saved example advanced to revision 12 and completed equipment run
+`c061bafe56e64948a6a349ba1b76dd5e`. Its selection is H2-10K-T3, three
+BU2-5.0-HV1 modules and one BC2-HV1 controller. The frozen Woo evidence supports
+13.5 kWh usable energy against the entered 10 kWh requirement, with the source
+value of 4.5 kWh per module linked to page 2 of the hosted document. The displayed
+provisional BOM contains one inverter, one controller and three modules.
+Voltage, count, sale-unit and accessory checks retain their individual reasons.
+Continuous battery AC output, complete electrical topology, manufacturer
+conditions, parallel configuration and country release remain unresolved; the
+screen explicitly requires further assessment. A completed task does not grant
+approval of the complete system.
+
+Spec and Standards reviewed the new task and only subsequent affected deltas.
+This batch fixed the identified voltage/capacity gating, historical result
+compatibility, result navigation, German extraction and an actual native-result
+read failure. The existing successful result was read again after the parser
+fix; it was not recomputed. The final form reuses the existing WindPress desktop
+two-column/mobile one-column layout. EN/DE 1440/390 control and result views are
+in the existing acceptance directory. The existing year, weather, roof and
+unaffected visual evidence were reused; no new full suite or test script was
+introduced. The actual product-view, shared workspace DOM and affected backend
+passes support this increment, together with the native workflow.
+
+The installation, actual result, source bindings, copy review and screenshots
+are appended under `equipment_binding` in the existing
+[`woo-source-native-install.json`](../../../2026-10-25/548/woo-source-native-install.json).
+One superseded carrier was removed (1,223,247 logical bytes); observed free space
+increased by 1,658,880 bytes in that cleanup window. Only active `55371f8a` and
+previous `4b71ef86` remain, sharing the retained environment. The previous
+runtime requires its prior feed, four-product metadata recovery and previous
+UI assets; it cannot execute the new equipment task. Storage remains schema 5,
+and the original roof project's revision 14 and input hash are unchanged.
+No new instance, environment or full database backup was created.
+
+This batch delivers source-bound proposed-equipment checking locally. Automatic
+whole-system candidate search/ranking, remaining continuous/electrical/country
+constraints, complete BOM/report/PDF, site consumers, migration and
+review/production release remain in the same active full goal. Continue from
+this saved project and run; passing evidence for this batch is closed.
+
+## Prior module-binding continuation: 2026-10-25
+
+The preceding native HTTP/worker pair was `4b71ef86`, from reviewed source
 `9f3a6e3a`. The module editor now selects the current Woo-maintained reference;
 dimensions, STC power and the power-temperature coefficient are read-only and
 show the hosted source document and page. Applying properties changes the draft;

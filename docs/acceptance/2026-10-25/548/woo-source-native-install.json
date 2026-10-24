@@ -43,7 +43,7 @@
     }
   },
   "production_changed": false,
-  "pending": "Project product binding, equipment qualification and downstream handoff remain under the active planner goal",
+  "pending": "Automatic whole-system candidate search/ranking, remaining continuous/electrical/country constraints, complete BOM/report/PDF, site consumers, migration and review/production delivery remain within the active planner goal",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -284,5 +284,471 @@
         "no_testimonial": true
       }
     }
+  },
+  "equipment_binding": {
+    "source_commit": "78bb5954",
+    "runtime_sha256": "55371f8ab35f04ae4044393453550ed52d521b9f1333786e6030adaa35e24a83",
+    "previous_runtime": "4b71ef86a6a503ad8b85461b65ce9986d39777fb439113b84823c107acad315a",
+    "rows_before": {
+      "schema": 5,
+      "projects": 166,
+      "revisions": 239,
+      "runs": 11
+    },
+    "new_instance": false,
+    "new_environment": false,
+    "production_changed": false,
+    "status": "installed",
+    "source_revision": "da32e7fbad0b25ce589b0e4e6f6a6a4badf1bf13863fc11eb5e2efecceea1887",
+    "prepared_products": 86,
+    "figure_projection_version": 2,
+    "worker_pid": 79421,
+    "http_worker_identity_match": true,
+    "rows_after": {
+      "schema": 5,
+      "projects": 166,
+      "revisions": 239,
+      "runs": 11
+    },
+    "legacy_resource_version_match": true,
+    "installed_at_utc": "2026-10-24T21:27:22.181235+00:00",
+    "native_result": {
+      "run_id": "c061bafe56e64948a6a349ba1b76dd5e",
+      "revision": 12,
+      "state": "succeeded",
+      "manifest_sha256": "322fa1b027d054d62522cde8ecf25305cf6919369e4107da29600c33e4d45f33",
+      "result_sha256": "5977cfe32da0d3e1c120a167db7b9fba2c3d3a2e305b1d4e1816f59dee539db9",
+      "checks": [
+        {
+          "id": "converter_identity",
+          "status": "satisfied",
+          "reason": "cited_nominal_active_ac_output_required",
+          "actual": 10.0,
+          "required": null
+        },
+        {
+          "id": "grid_phase",
+          "status": "satisfied",
+          "reason": "woocommerce_phase_attribute",
+          "actual": 3,
+          "required": 3
+        },
+        {
+          "id": "pv_dc_input",
+          "status": "unresolved",
+          "reason": "current_cited_limit_missing_or_conditional",
+          "actual": null,
+          "required": 10.0
+        },
+        {
+          "id": "pv_electrical_topology",
+          "status": "unresolved",
+          "reason": "string_ports_voltage_current_and_temperature_require_assessment",
+          "actual": null,
+          "required": null
+        },
+        {
+          "id": "manufacturer_pair",
+          "status": "unresolved",
+          "reason": "manufacturer_conditions_require_assessment",
+          "actual": null,
+          "required": null
+        },
+        {
+          "id": "modules_per_stack",
+          "status": "satisfied",
+          "reason": "manufacturer_pair_module_count",
+          "actual": 3,
+          "required": [
+            2,
+            5
+          ]
+        },
+        {
+          "id": "parallel_stacks",
+          "status": "unresolved",
+          "reason": "parallel_topology_limit",
+          "actual": 1,
+          "required": null
+        },
+        {
+          "id": "required_accessory:2092",
+          "status": "satisfied",
+          "reason": "manufacturer_required_component",
+          "actual": 2092,
+          "required": null
+        },
+        {
+          "id": "battery_voltage",
+          "status": "satisfied",
+          "reason": "full_voltage_window_containment",
+          "actual": null,
+          "required": null
+        },
+        {
+          "id": "battery_sales_unit",
+          "status": "satisfied",
+          "reason": "cited_sales_unit_basis",
+          "actual": null,
+          "required": null
+        },
+        {
+          "id": "usable_energy",
+          "status": "satisfied",
+          "reason": "cited_usable_energy_and_sales_basis",
+          "actual": 13.5,
+          "required": 10.0
+        },
+        {
+          "id": "continuous_battery_ac_output",
+          "status": "unresolved",
+          "reason": "current_cited_limit_missing_or_conditional",
+          "actual": null,
+          "required": 5.0
+        },
+        {
+          "id": "battery_discharge_path",
+          "status": "unresolved",
+          "reason": "battery_continuous_output_ports_and_conversion_require_assessment",
+          "actual": null,
+          "required": null
+        }
+      ],
+      "bill_of_materials": [
+        {
+          "basis": "selected_converter",
+          "brand": "SAJ",
+          "model": "H2-10K-T3",
+          "product_id": 4107,
+          "quantity": 1,
+          "sku": "DLK-SAJ-H210KT3"
+        },
+        {
+          "basis": "manufacturer_required_system",
+          "brand": "SAJ",
+          "model": "BC2-HV1",
+          "product_id": 2092,
+          "quantity": 1,
+          "sku": "DLK-SAJ-BC2HV1"
+        },
+        {
+          "basis": "battery_module",
+          "brand": "SAJ",
+          "model": "BU2-5.0-HV1",
+          "product_id": 2090,
+          "quantity": 3,
+          "sku": "DLK-SAJ-BU250HV1"
+        }
+      ]
+    },
+    "final_ui_source_commit": "8bf91d4e",
+    "overall_status": "unresolved",
+    "product_dependency_source": "da32e7fbad0b25ce589b0e4e6f6a6a4badf1bf13863fc11eb5e2efecceea1887",
+    "native_parser_current_and_old_receipt": "PASS; actual frozen run, no recalculation",
+    "independent_review": {
+      "spec": "PASS: 4487e150..7a9c409b, then affected deltas through 8bf91d4e",
+      "standards": "PASS: 4487e150..7a9c409b, then affected deltas through 8bf91d4e"
+    },
+    "protected_project_unchanged": true,
+    "retention": {
+      "carriers": 2,
+      "removed": [
+        {
+          "path": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/8a1e69665d8bc16827c3a3285652715cef4b66de18a18d727a441b7f863fa526",
+          "logical_bytes": 1223247
+        }
+      ],
+      "free_bytes_delta": 1658880
+    },
+    "rollback": "Prior runtime requires the prior feed, four Woo metadata recovery and previous UI assets; cannot execute the new equipment task. Saved project storage remains schema 5.",
+    "native_browser": {
+      "project_id": "c7795bc2c1e14e389622015c809ace45",
+      "revision": 12,
+      "run_id": "c061bafe56e64948a6a349ba1b76dd5e",
+      "input_products": [
+        4107,
+        2090,
+        2092
+      ],
+      "battery_modules_per_stack": 3,
+      "parallel_stacks": 1,
+      "required_usable_kwh": 10,
+      "source_usable_energy_per_module_kwh": 4.5,
+      "result_usable_energy_kwh": 13.5,
+      "source_page": 2,
+      "source_url": "https://de-linker.com/wp-content/uploads/2026/09/B2-5-25K-HV1HV5-datasheet-EN-BEU.pdf",
+      "bill_of_materials": [
+        {
+          "product_id": 4107,
+          "quantity": 1
+        },
+        {
+          "product_id": 2092,
+          "quantity": 1
+        },
+        {
+          "product_id": 2090,
+          "quantity": 3
+        }
+      ],
+      "visuals": [
+        "woo-equipment-en-1440-controls.png",
+        "woo-equipment-en-1440-result.png",
+        "woo-equipment-en-390-controls.png",
+        "woo-equipment-en-390-result.png",
+        "woo-equipment-de-1440-controls.png",
+        "woo-equipment-de-1440-result.png",
+        "woo-equipment-de-390-controls.png",
+        "woo-equipment-de-390-result.png"
+      ]
+    },
+    "verification": {
+      "backend": "Reused affected equipment/profile-contract and managed-worker passes recorded before native install",
+      "product_view": "PASS; internal sales-unit metadata excluded from public figures",
+      "workspace_dom": "PASS; existing scenario/save/task path case reused",
+      "types_build": "PASS; affected TypeScript build; subsequent markup/parser-only changes rebuilt",
+      "receipt_parser": "PASS; actual succeeded native result and same frozen result with earlier BOM row shape",
+      "new_year_or_weather_execution": false,
+      "additional_test_scripts": false,
+      "previous_module_and_energy_checks_repeated": false,
+      "native_result_read_issue": "Fixed array callback forwarding its index into the JSON depth argument; same result read after fix, no recomputation"
+    }
+  },
+  "equipment_copy_review": {
+    "initial_draft_commit": "78bb5954",
+    "reviewer": "energy_trace_copy",
+    "final_commit": "62973f1c",
+    "existing_translations_preserved": true,
+    "new_messages_without_review": 0,
+    "final_pairs": [
+      {
+        "en": "Equipment",
+        "de": "Geräte"
+      },
+      {
+        "en": "Equipment checks",
+        "de": "Prüfung der Geräteauswahl"
+      },
+      {
+        "en": "Checking equipment selection",
+        "de": "Geräteauswahl wird geprüft"
+      },
+      {
+        "en": "Equipment check complete",
+        "de": "Prüfung der Geräteauswahl abgeschlossen"
+      },
+      {
+        "en": "Requirement",
+        "de": "Anforderung"
+      },
+      {
+        "en": "Product data used",
+        "de": "Verwendete Produktdaten"
+      },
+      {
+        "en": "Manufacturer conditions",
+        "de": "Herstellervorgaben"
+      },
+      {
+        "en": "Provisional bill of materials",
+        "de": "Vorläufige Stückliste"
+      },
+      {
+        "en": "Quantity not determined",
+        "de": "Menge nicht ermittelt"
+      },
+      {
+        "en": "No separate battery",
+        "de": "Keine separate Batterie"
+      },
+      {
+        "en": "Choose a product",
+        "de": "Produkt auswählen"
+      },
+      {
+        "en": "Product data could not be loaded.",
+        "de": "Die Produktdaten konnten nicht geladen werden."
+      },
+      {
+        "en": "Current product data is being prepared.",
+        "de": "Aktuelle Produktdaten werden vorbereitet."
+      },
+      {
+        "en": "Reload product data",
+        "de": "Produktdaten neu laden"
+      },
+      {
+        "en": "Inverter or integrated storage system",
+        "de": "Wechselrichter oder integriertes Speichersystem"
+      },
+      {
+        "en": "Battery or storage system",
+        "de": "Batterie oder Speichersystem"
+      },
+      {
+        "en": "Choose an operating mode",
+        "de": "Betriebsart auswählen"
+      },
+      {
+        "en": "Grid-connected",
+        "de": "Netzparallelbetrieb"
+      },
+      {
+        "en": "Backup operation",
+        "de": "Ersatzstrombetrieb"
+      },
+      {
+        "en": "Battery modules per stack",
+        "de": "Batteriemodule je Stack"
+      },
+      {
+        "en": "Parallel stacks or systems",
+        "de": "Parallele Stacks oder Systeme"
+      },
+      {
+        "en": "Required usable energy",
+        "de": "Benötigte nutzbare Speicherenergie"
+      },
+      {
+        "en": "Required continuous AC discharge power",
+        "de": "Benötigte AC-Dauerleistung bei Entladung"
+      },
+      {
+        "en": "Additional products",
+        "de": "Zusätzliche Produkte"
+      },
+      {
+        "en": "Use current product data",
+        "de": "Aktuelle Produktdaten übernehmen"
+      },
+      {
+        "en": "Equipment selection prepared in this draft",
+        "de": "Geräteauswahl in diesem Entwurf vorbereitet"
+      },
+      {
+        "en": "Prepare equipment selection",
+        "de": "Geräteauswahl vorbereiten"
+      },
+      {
+        "en": "Check saved equipment selection",
+        "de": "Gespeicherte Geräteauswahl prüfen"
+      },
+      {
+        "en": "Checked requirements met",
+        "de": "Geprüfte Anforderungen erfüllt"
+      },
+      {
+        "en": "Requirements not met",
+        "de": "Anforderungen nicht erfüllt"
+      },
+      {
+        "en": "Further checks required",
+        "de": "Weitere Prüfung erforderlich"
+      },
+      {
+        "en": "Converter output",
+        "de": "Ausgang des Umrichters"
+      },
+      {
+        "en": "Grid phases",
+        "de": "Netzphasen"
+      },
+      {
+        "en": "PV input power",
+        "de": "PV-Eingangsleistung"
+      },
+      {
+        "en": "PV strings and inputs",
+        "de": "PV-Strings und Eingänge"
+      },
+      {
+        "en": "Manufacturer pairing",
+        "de": "Herstellerangaben zur Kombination"
+      },
+      {
+        "en": "Module count",
+        "de": "Anzahl der Module"
+      },
+      {
+        "en": "Parallel arrangement",
+        "de": "Parallelschaltung"
+      },
+      {
+        "en": "Required accessory",
+        "de": "Erforderliches Zubehör"
+      },
+      {
+        "en": "Battery voltage",
+        "de": "Batteriespannung"
+      },
+      {
+        "en": "Sales unit",
+        "de": "Verkaufseinheit"
+      },
+      {
+        "en": "Continuous AC discharge power",
+        "de": "AC-Dauerleistung bei Entladung"
+      },
+      {
+        "en": "Battery discharge path",
+        "de": "Entladepfad der Batterie"
+      },
+      {
+        "en": "Backup transfer",
+        "de": "Umschaltung auf Ersatzstrom"
+      },
+      {
+        "en": "Integrated storage system",
+        "de": "Integriertes Speichersystem"
+      },
+      {
+        "en": "Accessory quantity",
+        "de": "Menge des Zubehörs"
+      },
+      {
+        "en": "The documented voltage ranges do not overlap.",
+        "de": "Die dokumentierten Spannungsbereiche überschneiden sich nicht."
+      },
+      {
+        "en": "A new check requires current product data. Reload the data and prepare the selection again.",
+        "de": "Für eine neue Prüfung sind aktuelle Produktdaten erforderlich. Laden Sie die Daten neu und bereiten Sie die Auswahl erneut vor."
+      },
+      {
+        "en": "Choose products and prepare the selection before saving the project.",
+        "de": "Wählen Sie Produkte aus und bereiten Sie die Auswahl vor, bevor Sie das Projekt speichern."
+      },
+      {
+        "en": "Choose products to check their combination against the requirements entered here.",
+        "de": "Wählen Sie Produkte aus, um die Kombination anhand der hier angegebenen Anforderungen zu prüfen."
+      },
+      {
+        "en": "Equipment selection requires a product and valid quantities.",
+        "de": "Für die Geräteauswahl sind ein Produkt und gültige Mengenangaben erforderlich."
+      },
+      {
+        "en": "Product properties come from Linker's product data. Each result records the product data and documents used.",
+        "de": "Die Produkteigenschaften stammen aus den Produktdaten von Linker. Jedes Ergebnis dokumentiert die verwendeten Produktdaten und Quelldokumente."
+      },
+      {
+        "en": "Quantities are shown only when the product's sales unit and selected configuration are established.",
+        "de": "Mengen werden nur angegeben, wenn Verkaufseinheit und gewählte Konfiguration feststehen."
+      },
+      {
+        "en": "The cited data does not establish whether this requirement is met.",
+        "de": "Die angegebenen Daten zeigen nicht, ob diese Anforderung erfüllt ist."
+      },
+      {
+        "en": "The voltage ranges overlap only partly. The usable storage energy for this connection has not been established.",
+        "de": "Die Spannungsbereiche überschneiden sich nur teilweise. Die über diesen Anschluss nutzbare Speicherenergie ist nicht belegt."
+      },
+      {
+        "en": "This configuration requires a documented operating voltage range.",
+        "de": "Für diese Konfiguration ist ein belegter Betriebsspannungsbereich erforderlich."
+      },
+      {
+        "en": "This result records the proposed equipment and the checks covered here. Further assessment of the complete system is required.",
+        "de": "Dieses Ergebnis dokumentiert die vorgeschlagene Geräteauswahl und die hier geprüften Anforderungen. Die Gesamtanlage muss noch weiter geprüft werden."
+      }
+    ]
   }
 }
