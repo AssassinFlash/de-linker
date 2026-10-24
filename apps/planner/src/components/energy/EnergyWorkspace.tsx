@@ -29,6 +29,7 @@ import { readEnergyOperation, runPending } from "../../data/energyProtocol.ts";
 import type { EnergyIntent } from "../../data/EnergyIntentStore.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { revealActionResult } from "../revealActionResult.ts";
 import { measurementLabel } from "../ProfileLabels.ts";
 import { ScenarioForm } from "./ScenarioForm.tsx";
 import { EnergyError } from "./EnergyError.tsx";
@@ -124,6 +125,14 @@ export function EnergyWorkspace({
 		recoveryChecking,
 		confirmedBatteryId,
 	});
+	const actionError = error ?? operations.error,
+		errorTarget = useRef<HTMLDivElement>(null);
+	useEffect(() => {
+		if (actionError && active)
+			revealActionResult(errorTarget.current, () =>
+				client.isCurrentScope(session.query_scope),
+			);
+	}, [actionError, active, client, session.query_scope]);
 	const runs = useEnergyRuns({
 		projectId,
 		session,
@@ -434,7 +443,11 @@ export function EnergyWorkspace({
 					{__("Saved calculations", "linker-tools")}
 				</button>
 			</div>
-			<EnergyError error={error ?? operations.error} />
+			{Boolean(actionError) && (
+				<div ref={errorTarget} className="lp-focus-target" tabIndex={-1}>
+					<EnergyError error={actionError} />
+				</div>
+			)}
 			{operations.storageFailed && (
 				<Notice error>
 					<p>

@@ -213,6 +213,19 @@ test("actual scenario controls retain raw input, require confirmed save, use one
 			button("Prepare scenario settings") &&
 			!button("Prepare scenario settings").disabled,
 	);
+	const sourceNote = control("Source or assumption for storage parameters");
+	await enter(sourceNote, "");
+	await click("Prepare scenario settings");
+	assert.match(
+		document.activeElement.textContent,
+		/storage parameters need a source/,
+	);
+	assert.equal(
+		requests.length,
+		0,
+		"an incomplete scenario creates no parameter asset",
+	);
+	await enter(sourceNote, scenario.source_note);
 	const charge = control("AC charging power");
 	await enter(charge, "unfinished");
 	assert.equal(charge.getAttribute("aria-invalid"), "true");
