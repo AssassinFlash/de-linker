@@ -15,6 +15,7 @@ import type { Measurement } from "../../domain/profiles.ts";
 import { __ } from "../../i18n.ts";
 import { measurementLabel } from "../ProfileLabels.ts";
 import { Notice } from "../Notice.tsx";
+import { batteryPresentation } from "./batteryPresentation.ts";
 
 export function RunBasis({
 	run,
@@ -140,18 +141,6 @@ export function RunBasis({
 					value,
 				)
 			: "—";
-	const parameterLabels = {
-		usable_window_kwh: __("Usable stored energy", "linker-tools"),
-		charge_ac_kw: __("AC charging power", "linker-tools"),
-		discharge_ac_kw: __("AC discharging power", "linker-tools"),
-		eta_charge: __("Charging efficiency", "linker-tools"),
-		eta_discharge: __("Discharging efficiency", "linker-tools"),
-		internal_aux_kw: __("Internal auxiliary power", "linker-tools"),
-		standing_loss_rate_per_hour: __(
-			"Standing-loss coefficient",
-			"linker-tools",
-		),
-	};
 	return (
 		<details
 			className="lp-comparison lp-run-basis"
@@ -215,22 +204,13 @@ export function RunBasis({
 					)}
 					<dl className="lp-field-summary">
 						{BATTERY_FIELDS.map((field) => {
-							const efficiency =
-								field === "eta_charge" || field === "eta_discharge";
+							const presentation = batteryPresentation(field);
 							return (
 								<div key={field}>
-									<dt>{parameterLabels[field]}</dt>
+									<dt>{presentation.label}</dt>
 									<dd>
-										{efficiency
-											? number(Number(model[field]) * 100)
-											: number(model[field])}{" "}
-										{efficiency
-											? "%"
-											: field === "usable_window_kwh"
-												? "kWh"
-												: field === "standing_loss_rate_per_hour"
-													? "1/h"
-													: "kW"}
+										{number(Number(model[field]) * presentation.scale)}{" "}
+										{presentation.unit}
 									</dd>
 								</div>
 							);

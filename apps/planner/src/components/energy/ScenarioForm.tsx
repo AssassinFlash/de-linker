@@ -1,29 +1,10 @@
 import { useCallback, useRef } from "react";
 import type { ScenarioDraft } from "../../domain/energyScenario.ts";
 import { BATTERY_FIELDS, emptyPeriod } from "../../domain/energyScenario.ts";
-import type { BatteryField } from "../../domain/energyScenario.ts";
 import { __ } from "../../i18n.ts";
 import { ScenarioNumber } from "./ScenarioNumber.tsx";
 import { OperatingPeriodForm } from "./OperatingPeriodForm.tsx";
-
-function batteryLabel(field: BatteryField): string {
-	switch (field) {
-		case "usable_window_kwh":
-			return __("Usable stored energy", "linker-tools");
-		case "charge_ac_kw":
-			return __("AC charging power", "linker-tools");
-		case "discharge_ac_kw":
-			return __("AC discharging power", "linker-tools");
-		case "eta_charge":
-			return __("Charging efficiency", "linker-tools");
-		case "eta_discharge":
-			return __("Discharging efficiency", "linker-tools");
-		case "internal_aux_kw":
-			return __("Internal auxiliary power", "linker-tools");
-		case "standing_loss_rate_per_hour":
-			return __("Standing-loss coefficient", "linker-tools");
-	}
-}
+import { batteryPresentation } from "./batteryPresentation.ts";
 
 export function ScenarioForm({
 	value,
@@ -66,28 +47,19 @@ export function ScenarioForm({
 				</p>
 				<div className="lp-geometry-fields">
 					{BATTERY_FIELDS.map((field) => {
-						const efficiency =
-								field === "eta_charge" || field === "eta_discharge",
+						const presentation = batteryPresentation(field),
 							number = value.battery[field];
 						return (
 							<ScenarioNumber
 								key={field}
 								field={field}
-								label={batteryLabel(field)}
-								unit={
-									efficiency
-										? "%"
-										: field === "usable_window_kwh"
-											? "kWh"
-											: field === "standing_loss_rate_per_hour"
-												? "1/h"
-												: "kW"
-								}
+								label={presentation.label}
+								unit={presentation.unit}
 								locale={locale}
-								value={
-									number === null ? null : efficiency ? number * 100 : number
-								}
-								{...(efficiency ? { max: 100 } : {})}
+								value={number === null ? null : number * presentation.scale}
+								{...(presentation.max === undefined
+									? {}
+									: { max: presentation.max })}
 								report={report}
 								onChange={(number) =>
 									onChange({
@@ -95,11 +67,7 @@ export function ScenarioForm({
 										battery: {
 											...value.battery,
 											[field]:
-												number === null
-													? null
-													: efficiency
-														? number / 100
-														: number,
+												number === null ? null : number / presentation.scale,
 										},
 										battery_binding: null,
 									})
