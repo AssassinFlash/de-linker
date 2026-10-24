@@ -1,0 +1,23 @@
+{
+  "checked_at_utc": "2026-10-24T07:42:06.258562+00:00",
+  "map_title": "地图：统一方案工作台重构与全站交付",
+  "map_url": "https://github.com/AssassinFlash/de-linker/issues/548",
+  "map_state": "OPEN",
+  "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
+  "evidence_commit": "c03a7445e29f18a11971644a691ca35432363c8f",
+  "verified_remote_head": "c03a7445e29f18a11971644a691ca35432363c8f",
+  "before_body_sha256": "10d9492bd82dbd0393463bc8903077c83d6518861c191b9a27c6647774ac91ce",
+  "readback_body_sha256": "934d69bd5d3d963dfe41d4764e3dc060ecaf7aa81050886e6e385c150e93371a",
+  "body_verified_exact": true,
+  "only_current_frontier_replaced": true,
+  "comment_url": "https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6381577608",
+  "comment_sha256": "bf0a27462414ddef90c77a8708353b7ffe415d1f7b8db82029f622dd6f2ff55c",
+  "comment_verified_exact": true,
+  "comment_body": "统一方案工作台的托管气象获取已完成本轮后台集成，完整目标继续。\n\n- 来源请求、时间解释、项目版本、运行代码与资源策略被冻结；HTTP只排队和读状态，实际获取由同一托管worker/注册器完成。原件、解释和依赖沿用已有单一通道，来源与成功结果原子提交。后台完成不会覆盖保存输入，显式选择后的PV任务才消费它。\n- 取消与abort清理同事务入队，producer等待重试/退出时仍可处理；重复取消不重置预算，不把ABORTING写成ABORTED，未知远端启动需要已核对证据，不重复启动Actor。清理不能把原取消结果变成功或发布来源。\n- 核心schema3的非空迁移、父表删除后的故障回滚和旧归档恢复已实测；保留租约、尝试次数、路由和回执。实际安装前须关闭写入、排空与核对未决远端状态、验证匹配恢复点，代码和数据库成对更新/回滚。当前p548仍是schema2，没有安装或重启。\n- 最终798项测试通过，含22项新增用例及独立worker-host进程；lint、format156、严格types119通过。Standards最初的访客转账号时权限错误已修正，最终Standards和独立Spec完整31文件复核均零未关闭发现。初始失败和797通过的旧日志保留原判定，没有替换成最终证据。\n- 本轮新增Actor为0；集成测试的provider响应为模拟，原始TMY和此前真实采集证据继续留存。164个基线项目与原屋顶保存版本14、运行策略和完整worker身份读回未变；没有新增运行实例、工作树或整站备份。\n- 源码 `cf310435d60749b89dd0de182c3bfe8189ef47a6`；[完整验证](https://github.com/AssassinFlash/de-linker/blob/c03a7445e29f18a11971644a691ca35432363c8f/docs/acceptance/2026-10-24/548/managed-weather/VALIDATION.md)、[独立双轴评审](https://github.com/AssassinFlash/de-linker/blob/c03a7445e29f18a11971644a691ca35432363c8f/docs/acceptance/2026-10-24/548/managed-weather/REVIEWS.md)。\n\n下一步在同一目标完成operator恢复/核对及原生来源、模型、获取进度、显式选择和恢复交互，经英德1440/390验收后成对安装。详细工程、真实设备与国家覆盖、完整BOM/报告/PDF、站点入口与Genie/Woo/Solution draft/询盘、迁移和生产读回继续完成；本轮没有缩减范围或结案。",
+  "temporary_purpose": "p548 managed-weather map frontier/comment update and exact readback",
+  "owner": "p548",
+  "temporary_request_files_removed": 2,
+  "temporary_request_bytes_removed": 15756,
+  "temporary_directory_removed": true,
+  "disk_free_bytes_after": 904123465728
+}

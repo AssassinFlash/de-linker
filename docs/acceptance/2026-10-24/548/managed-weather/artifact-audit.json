@@ -1,6 +1,6 @@
 {
   "source_pin": "cf310435d60749b89dd0de182c3bfe8189ef47a6",
-  "checked_at_utc": "2026-10-24T07:39:08.355863+00:00",
+  "checked_at_utc": "2026-10-24T07:42:52.874986+00:00",
   "source_files_verified": 31,
   "final_commands_verified": 4,
   "junit": {
@@ -70,6 +70,10 @@
     {
       "document": "VALIDATION.md",
       "target": "legacy-and-marker-audit.json"
+    },
+    {
+      "document": "VALIDATION.md",
+      "target": "map-readback.json"
     }
   ],
   "secret_pattern_findings": [],
@@ -82,5 +86,9 @@
     "unique_log_sets": 3,
     "log_sets_explanation": "Failed initial schema expectation; accepted pre-ownership pin; final ownership-corrected pin. Logs moved between stages, not copied.",
     "unneeded_runtime_copies_created": 0
-  }
+  },
+  "map_exact_readback_verified": true,
+  "map_only_current_frontier_changed": true,
+  "map_temporary_request_files_removed": 2,
+  "map_temporary_request_bytes_removed": 15756
 }

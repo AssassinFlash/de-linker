@@ -122,3 +122,9 @@ remain required next within this same goal. Detailed shading/electrical
 calculation, actual equipment/country coverage, BOM/report/PDF, site entries,
 Genie/Woo/Solution draft/inquiry, migration and production readback also remain
 required. This checkpoint does not narrow those obligations.
+
+Progress was recorded on the existing [unified-workbench map](https://github.com/AssassinFlash/de-linker/issues/548#issuecomment-6381577608).
+[map-readback.json](map-readback.json) verifies the exact comment and the targeted
+frontier replacement; all other map content, including the whole-system Linker
+identity and complete delivery scope, was preserved. Both temporary request
+files were deleted after the readback.

@@ -12,13 +12,13 @@
     },
     {
       "path": "VALIDATION.md",
-      "bytes": 7734,
-      "sha256": "f8c0e5f41356bcdb7cfecb06cf6c34d502e52895f8eea73cab59a89d46af7fd9"
+      "bytes": 8154,
+      "sha256": "c0fff0dff70175b0eb24a473b07c8dcaf7e624fa07e70788aadc1426cce366ab"
     },
     {
       "path": "artifact-audit.json",
-      "bytes": 2156,
-      "sha256": "2ab563befe7f5ad317641e4504c2bf54a896c9204fd77f8ac462f5e1e3d78f13"
+      "bytes": 2416,
+      "sha256": "15fde9c87ef867641dc11235247d1590219349462372ee6310cd0a58ed4ba9d2"
     },
     {
       "path": "commands.json",
@@ -79,6 +79,11 @@
       "path": "lint.stdout.txt",
       "bytes": 19,
       "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "path": "map-readback.json",
+      "bytes": 3579,
+      "sha256": "3f0832b9014c51ec2ec2b75703abbf07453300fa9e22801ddc8d1fdbc6b155a6"
     },
     {
       "path": "pre-ownership-fix-checks/commands.json",
