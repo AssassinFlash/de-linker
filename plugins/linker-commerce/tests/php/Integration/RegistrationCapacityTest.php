@@ -2020,8 +2020,8 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 		try {
 			do {
 				++$attempts;
-				$alive = (int) $observer->get_var( $observer->prepare( 'SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID=%d', $thread ) );
-				if ( '' !== $observer->last_error ) {
+				$alive = $observer->get_var( $observer->prepare( 'SELECT COUNT(*) FROM information_schema.PROCESSLIST WHERE ID=%d', $thread ) );
+				if ( ! is_string( $alive ) || ! ctype_digit( $alive ) ) {
 					throw new \RuntimeException( 'registration_fixture_worker_read_failed' );
 				}
 				$held = 0;
@@ -2047,6 +2047,9 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 						$queries[] = $observer->prepare( 'SELECT meta_id FROM %i WHERE post_id=%d FOR UPDATE NOWAIT', $wpdb->postmeta, $job );
 					}
 					foreach ( $queries as $query ) {
+						if ( ! is_string( $query ) ) {
+							throw new \RuntimeException( 'registration_fixture_observer_prepare_failed' );
+						}
 						if ( false === $observer->query( $query ) ) {
 							$clear = false;
 							break;
@@ -2061,7 +2064,7 @@ final class RegistrationCapacityTest extends IntegrationTestCase {
 					'native_rows_available' => $clear,
 				);
 				$first ??= $state;
-				if ( 0 === $alive && 0 === $held && $clear ) {
+				if ( '0' === $alive && 0 === $held && $clear ) {
 					fwrite(
 						STDERR,
 						'registration_kill_quiescence ' . wp_json_encode(
