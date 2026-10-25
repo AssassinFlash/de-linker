@@ -44,6 +44,28 @@ final class DocumentFiles {
 	 * @return array{path:string,url:string,relative:string,blob_sha256:string}|null
 	 */
 	public static function resolve( string $url ): ?array {
+		$file = self::locate( $url );
+		if ( null === $file ) {
+			return null;
+		}
+		$path = $file['path'];
+		$sha  = self::$reading && isset( self::$hashes[ $path ] ) ? self::$hashes[ $path ] : hash_file( 'sha256', $path );
+		if ( self::$reading && false !== $sha ) {
+			self::$hashes[ $path ] = $sha;
+		}
+		return false === $sha ? null : $file + array( 'blob_sha256' => $sha );
+	}
+
+	/**
+	 * Validate a current hosted path without claiming its content version.
+	 *
+	 * Listing metadata needs a readable managed PDF; cited facts and downloads
+	 * still call resolve() to inspect the actual bytes.
+	 *
+	 * @param string $url Hosted URL.
+	 * @return array{path:string,url:string,relative:string}|null
+	 */
+	public static function locate( string $url ): ?array {
 		$uploads = wp_upload_dir();
 		$parts   = wp_parse_url( $url );
 		if ( ! is_array( $parts ) || isset( $parts['query'] ) || isset( $parts['user'] ) || isset( $parts['pass'] ) ) {
@@ -71,15 +93,10 @@ final class DocumentFiles {
 		if ( false === $root || false === $file || ! str_starts_with( $file, $root . DIRECTORY_SEPARATOR ) || ! is_file( $file ) || ! is_readable( $file ) ) {
 			return null;
 		}
-		$sha = self::$reading && isset( self::$hashes[ $file ] ) ? self::$hashes[ $file ] : hash_file( 'sha256', $file );
-		if ( self::$reading && false !== $sha ) {
-			self::$hashes[ $file ] = $sha;
-		}
-		return false === $sha ? null : array(
-			'path'        => $file,
-			'relative'    => $relative,
-			'url'         => rtrim( $uploads['baseurl'], '/' ) . '/' . implode( '/', array_map( 'rawurlencode', explode( '/', $relative ) ) ),
-			'blob_sha256' => $sha,
+		return array(
+			'path'     => $file,
+			'relative' => $relative,
+			'url'      => rtrim( $uploads['baseurl'], '/' ) . '/' . implode( '/', array_map( 'rawurlencode', explode( '/', $relative ) ) ),
 		);
 	}
 

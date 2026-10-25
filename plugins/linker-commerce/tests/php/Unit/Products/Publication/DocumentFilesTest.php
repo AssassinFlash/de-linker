@@ -40,6 +40,9 @@ final class DocumentFilesTest extends TestCase {
 		$two = DocumentFiles::resolve( rtrim( home_url(), '/' ) . '/wp-content/uploads/2026/alias.pdf' );
 		self::assertNotNull( $one );
 		self::assertNotNull( $two );
+		$metadata = $one;
+		unset( $metadata['blob_sha256'] );
+		self::assertSame( $metadata, DocumentFiles::locate( $one['url'] ) );
 		self::assertSame( $one['blob_sha256'], $two['blob_sha256'] );
 		self::assertNotSame( DocumentFiles::id( $one['url'] ), DocumentFiles::id( $two['url'] ) );
 	}
@@ -48,6 +51,7 @@ final class DocumentFilesTest extends TestCase {
 	public function test_unsafe_or_private_paths_fail_closed(): void {
 		foreach ( array( '/wp-content/uploads/2026/../2026/manual.pdf', '/wp-content/uploads/%2e%2e/manual.pdf', '/wp-content/uploads/proforma/private.pdf', '/wp-content/uploads/solution-reports/private.pdf', '/wp-content/uploads/2026/missing.pdf' ) as $path ) {
 			self::assertNull( DocumentFiles::resolve( rtrim( home_url(), '/' ) . $path ), $path );
+			self::assertNull( DocumentFiles::locate( rtrim( home_url(), '/' ) . $path ), $path );
 		}
 		self::assertNull( DocumentFiles::resolve( 'https://vendor.example/wp-content/uploads/2026/manual.pdf' ) );
 		self::assertNull( DocumentFiles::resolve( rtrim( home_url(), '/' ) . '/wp-content/uploads/2026/manual.pdf?override=1' ) );
