@@ -524,6 +524,18 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         report = build_report(
             {**frozen_report, "locale": locale, "generated_at": "2026-10-25T00:00:00Z"}
         )
+        assert (
+            frozen_report["equipment"]
+            == saved.result["equipment_binding"]["assessment"]
+        )
+        assert (
+            frozen_report["woo_bases"]["equipment"]
+            == frozen_report["woo_bases"]["energy_equipment"]
+        )
+        bom = next(section for section in report.sections if section.id == "bom")
+        assert bom.table is not None
+        assert len(bom.table.rows) == 3
+        assert any(row[0] == "3" and battery["model"] in row[1] for row in bom.table.rows)
         section = next(section for section in report.sections if section.id == "energy")
         dc_rows = [row for row in section.rows if "(DC)" in row.label]
         assert len(dc_rows) == 2 and all(row.value.endswith("kWh") for row in dc_rows)

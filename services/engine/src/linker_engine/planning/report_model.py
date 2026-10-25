@@ -75,6 +75,14 @@ def build_report(source: Object) -> Report:
             )
         )
         for index, check in enumerate(cast(list[dict[str, Any]], assessment["checks"])):
+            if isinstance(source.get("energy_equipment"), dict) and check["id"] in {
+                "scenario_operating_mode",
+                "scenario_parameter_basis",
+                "scenario_model_domain",
+            }:
+                # These checks and their stated scope appear together in the
+                # dedicated energy-equipment section below.
+                continue
             unit = {
                 "converter_identity": "kW",
                 "pv_dc_input": "kWp",

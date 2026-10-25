@@ -611,3 +611,40 @@ limits, supported topology search/ranking and country engineering release,
 complete BOM/consumers, affected site/Genie/commerce integration, migration and
 review/production delivery remain in the same active complete goal. This local
 reference comparison does not prove all-Europe or production acceptance.
+
+
+### 2026-10-25 · Bound energy equipment reaches reports and native draft previews
+
+An actual handoff gap was found: selecting only a hardware-bound energy run left
+its report without the saved equipment list, so the existing draft transfer was
+unavailable. The report now inherits that run's frozen assessment and quantities
+when no separate equipment assessment was selected. Its original Woo proof is
+reused under the existing equipment permission gate; original input/selection
+matching and before/after publication checks still apply. Explicit equipment
+assessments are unchanged. Three scenario-only checks remain in their dedicated
+report section instead of being duplicated among general equipment checks.
+
+The completed four-module Berlin run was reused without a physical calculation.
+Native EN/DE reports each have four pages and their downloaded PDF hashes match
+retained assets. The equipment table contains H2-10K-T3 ×1, BC2-HV1 ×1 and
+BU2-5.0-HV1 ×4. Each immutable handoff carries the same quantities/PDF identity.
+Native Woo previews in both languages confirm 0→1, 0→1 and 0→4; confirmation was
+not submitted, the cart was unchanged, and no inquiry or mail was sent. The
+unchanged native cart/inquiry writer keeps its prior acceptance evidence.
+
+Spec/Standards increment reviews, the existing short DC case with equipment-list
+assertions, the affected existing AC case and changed-file static checks passed.
+No new test runner, calculation, product source, frontend build, style compile,
+full-site UI matrix or commerce/inquiry matrix was added. The changed native
+content was inspected in EN desktop report and DE mobile preview; existing
+report/transfer layout and language coverage remains valid. Checks stopped at
+pass. Temporary PDF render images and the superseded code carrier were reclaimed.
+The owned p548 HTTP/worker pair is `21ca02d6`, Woo source remains `ee916454`, one
+instance and current plus one rollback remain. Saved revision 20 and the protected
+roof revision/hash are unchanged; production is unchanged. Exact identities are
+in the existing installation JSON's `energy_report_products` section.
+
+This fixes the selected-product bridge. PV/installation components and full
+engineering BOM/exports, manufacturer/country qualification, remaining site/
+Genie/commerce consumers, migration and review/production delivery remain in the
+same complete goal; the provisional product list is not a full installation BOM.

@@ -301,6 +301,13 @@ equipment checks and source documents. Each distinct current Woo permission
 proof is checked at source capture and before/after rendering. Proofs and source
 results are referenced by their existing content hashes; this does not create
 another maintained product source or duplicate whole-product snapshots.
+When the selected energy run already binds equipment and no separate equipment
+analysis is selected, its frozen assessment and quantities supply the report's
+equipment list and existing Woo handoff. The exact consumed Woo proof remains
+the authority; report generation performs no new equipment calculation or
+latest-product selection. Explicit separate analyses retain their existing
+selection checks. Scenario-specific checks remain in their dedicated report
+section and are not duplicated among the general equipment sections.
 Screen and PDF consume one Report model, with a shared model hash. Only the
 successful worker transaction publishes the owned PDF asset and result.
 Existing receipts and generated files remain privately readable as history.

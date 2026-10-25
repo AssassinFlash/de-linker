@@ -164,6 +164,17 @@ def report_sources(
         pinned_energy = cast(Object, energy["pinned_assets"])
         if isinstance(binding, dict):
             bases["energy_equipment"] = pinned_energy["woo.equipment_inputs"]
+            if assessment is None:
+                bound_assessment = binding.get("assessment")
+                if not isinstance(bound_assessment, dict):
+                    raise VersionUnavailable(
+                        "the energy equipment assessment is missing"
+                    )
+                # The selected run already froze these quantities and its Woo
+                # proof. Do not require another equipment calculation or read
+                # a newer product snapshot to fill the report and handoff.
+                assessment = bound_assessment
+                bases["equipment"] = pinned_energy["woo.equipment_inputs"]
         for role, asset_id in scenario.profiles().items():
             asset = Assets(workspace).get(actor, project.id, asset_id)
             try:
