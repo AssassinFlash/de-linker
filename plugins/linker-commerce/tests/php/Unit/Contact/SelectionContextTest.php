@@ -60,13 +60,31 @@ final class SelectionContextTest extends TestCase {
 	 * @var bool
 	 */
 	private bool $missing_home = false;
+	/**
+	 * Native same-slug lookup may resolve either member of the product pair.
+	 *
+	 * @var int
+	 */
+	private int $product_lookup = 13;
+	/**
+	 * Publication is checked on the matched twin as well.
+	 *
+	 * @var string
+	 */
+	private string $twin_status = 'publish';
+	/**
+	 * The matched twin retains the native password restriction.
+	 *
+	 * @var string
+	 */
+	private string $twin_password = '';
 	/** Current native public object answers, not a proposed browser title. */
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
 		WP_Mock::userFunction( 'home_url', array( 'return' => 'https://site.test/' ) );
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn ( string $url, int $component = -1 ) => parse_url( $url, $component ) ) );
-		WP_Mock::userFunction( 'url_to_postid', array( 'return' => static fn ( string $url ): int => str_contains( $url, '/products/' ) ? 12 : ( str_contains( $url, '/product/model/' ) ? 13 : 0 ) ) );
+		WP_Mock::userFunction( 'url_to_postid', array( 'return' => fn ( string $url ): int => str_contains( $url, '/products/' ) ? 12 : ( str_contains( $url, '/product/model/' ) || str_contains( $url, '/de/produkt/modell/' ) ? $this->product_lookup : 0 ) ) );
 		WP_Mock::userFunction(
 			'get_post',
 			array(
@@ -78,9 +96,10 @@ final class SelectionContextTest extends TestCase {
 							12 => 'Current products',
 							14 => 'Home',
 							15 => 'Startseite',
+							16 => 'Aktuelles Modell',
 						)[ $id ] ?? 'Current model',
-						'post_status'   => $this->status,
-						'post_password' => $this->password,
+						'post_status'   => 16 === $id ? $this->twin_status : $this->status,
+						'post_password' => 16 === $id ? $this->twin_password : $this->password,
 					)
 				),
 			)
@@ -93,6 +112,7 @@ final class SelectionContextTest extends TestCase {
 					12 => 'https://site.test/products/',
 					14 => 'https://site.test/',
 					15 => 'https://site.test/de/home/',
+					16 => 'https://site.test/de/produkt/modell/',
 				)[ $post instanceof WP_Post ? $post->ID : $post ] ?? 'https://site.test/product/model/',
 			)
 		);
@@ -143,6 +163,61 @@ final class SelectionContextTest extends TestCase {
 			)
 		);
 		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'private-test-salt' ) );
+	}
+
+	/**
+	 * A same-slug language lookup must identify the object at the requested canonical URL.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_wrong_language_product_lookup_uses_the_exact_public_twin(): void {
+		$this->native_product_pair();
+		$context = SelectionContext::normalize(
+			array(
+				'source' => 'https://site.test/de/produkt/modell/',
+				'title'  => 'Forged title',
+			)
+		);
+		$this->assertSame( 16, $context['id'] );
+		$this->assertSame( 'Aktuelles Modell', $context['title'] );
+		$this->assertSame( 'https://site.test/de/produkt/modell/', $context['source'] );
+		$this->product_lookup = 16;
+		$context              = SelectionContext::normalize( array( 'source' => 'https://site.test/product/model/' ) );
+		$this->assertSame( 13, $context['id'] );
+		$this->assertSame( 'Current model', $context['title'] );
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/fake/de/produkt/modell/' ) ) );
+	}
+
+	/**
+	 * A public counterpart never makes a private or protected source acceptable.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_language_pair_lookup_keeps_publication_and_password_boundaries(): void {
+		$this->native_product_pair();
+		$this->twin_status = 'private';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/produkt/modell/' ) ) );
+		$this->twin_status   = 'publish';
+		$this->twin_password = 'restricted';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/de/produkt/modell/' ) ) );
+		$this->twin_password = '';
+		$this->status        = 'private';
+		$this->assertSame( array(), SelectionContext::normalize( array( 'source' => 'https://site.test/product/model/' ) ) );
+	}
+
+	/** The optional API exists only inside the two isolated pair fixtures. */
+	private function native_product_pair(): void {
+		WP_Mock::userFunction(
+			'pll_get_post_translations',
+			array(
+				'return' => static fn ( int $id ): array => in_array( $id, array( 13, 16 ), true ) ? array(
+					'en' => 13,
+					'de' => 16,
+				) : array(),
+			)
+		);
 	}
 
 	/** All public object types keep canonical title and only selected navigation fields. */

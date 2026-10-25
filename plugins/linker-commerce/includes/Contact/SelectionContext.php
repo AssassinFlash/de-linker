@@ -47,6 +47,15 @@ final class SelectionContext {
 		$post = $id > 0 ? get_post( $id ) : null;
 		if ( $post instanceof WP_Post && 'publish' === $post->post_status && '' === $post->post_password && in_array( $post->post_type, array( 'product', 'page', 'post' ), true ) ) {
 			$canonical = null === $homepage ? (string) get_permalink( $post ) : $homepage['source'];
+			if ( null === $homepage && ! self::same_path( $path, $canonical ) ) {
+				// Native product lookup can return the other language's same-slug twin.
+				$twin = self::translation_at_path( $post, $path );
+				if ( null !== $twin ) {
+					$post      = $twin;
+					$id        = $twin->ID;
+					$canonical = (string) get_permalink( $twin );
+				}
+			}
 			if ( self::same_path( $path, $canonical ) && ( null === $homepage || 'page' === $post->post_type ) ) {
 				$source = array(
 					'type'   => $post->post_type,
@@ -104,6 +113,28 @@ final class SelectionContext {
 				'url'       => add_query_arg( array_map( static fn( $item ): string => rawurlencode( (string) $item ), $selection ), $source['source'] ),
 			)
 		);
+	}
+
+	/**
+	 * Only a current public native twin at the exact requested path can replace a lookup.
+	 *
+	 * @param WP_Post $post Public native lookup result.
+	 * @param string  $path Requested canonical path.
+	 */
+	private static function translation_at_path( WP_Post $post, string $path ): ?WP_Post {
+		if ( ! function_exists( 'pll_get_post_translations' ) ) {
+			return null;
+		}
+		foreach ( pll_get_post_translations( $post->ID ) as $id ) {
+			if ( $id === $post->ID ) {
+				continue;
+			}
+			$twin = get_post( $id );
+			if ( $twin instanceof WP_Post && $twin->post_type === $post->post_type && 'publish' === $twin->post_status && '' === $twin->post_password && self::same_path( $path, (string) get_permalink( $twin ) ) ) {
+				return $twin;
+			}
+		}
+		return null;
 	}
 
 	/**

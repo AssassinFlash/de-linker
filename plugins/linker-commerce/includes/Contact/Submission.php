@@ -124,7 +124,7 @@ final class Submission {
 			$raw       = $post[ SelectionContext::FIELD ] ?? '';
 			$selection = SelectionContext::normalize( is_string( $raw ) ? json_decode( $raw, true ) : null );
 			if ( array() === $selection ) {
-				return new WP_Error( 'linker_contact_selection', __( 'Please review the product selection or exclude it before sending.', 'linker-commerce' ) );
+				return new WP_Error( 'linker_contact_selection', __( 'These details could not be loaded. To send your message without them, uncheck “Include these details with my message”.', 'linker-commerce' ) );
 			}
 		}
 		return new self( $name, strtolower( $email ), $company, $message, $intent, OrderLocale::current( $language ), $selection );
