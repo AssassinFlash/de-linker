@@ -141,7 +141,8 @@ export function readReportResult(
 			typeof csv.id !== "string" ||
 			!csv.id ||
 			csv.project_id !== run.project_id ||
-			csv.purpose !== "planning_materials_csv_v1" ||
+			(csv.purpose !== "planning_materials_csv_v1" &&
+				csv.purpose !== "planning_materials_csv_v2") ||
 			csv.media_type !== "text/csv" ||
 			!hash(csv.content_sha256) ||
 			!hash(csv.metadata_sha256) ||

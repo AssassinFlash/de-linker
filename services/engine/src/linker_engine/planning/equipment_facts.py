@@ -209,6 +209,7 @@ def compile_product(product: dict[str, Any]) -> Object:
                 "brand": product["brand"],
                 "device_class": product["device_class"],
                 "facts": facts,
+                "package_contents": product.get("package_contents"),
             }
         )
     )

@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-25T10:20:37+00:00\n"
+"POT-Creation-Date: 2026-10-25T21:37:47+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -542,6 +542,7 @@ msgstr "Dokument"
 
 #: includes/Account/DocumentDownload.php:121
 #: includes/Account/DocumentDownload.php:124
+#: includes/Planning/ReportDownload.php:160
 msgid "This document is not available."
 msgstr "Dieses Dokument ist nicht verfügbar."
 
@@ -833,6 +834,7 @@ msgid "Value"
 msgstr "Wert"
 
 #: includes/Admin/FiguresMetaBox.php:77
+#: includes/Products/Publication/PackageContentsEditor.php:82
 msgid "Unit"
 msgstr "Einheit"
 
@@ -1092,7 +1094,10 @@ msgstr "Diese Angaben mit meiner Nachricht senden"
 msgid ""
 "These details could not be loaded. To send your message without them, "
 "uncheck “Include these details with my message”."
-msgstr "Diese Angaben konnten nicht geladen werden. Um Ihre Nachricht ohne diese Angaben zu senden, entfernen Sie das Häkchen bei „Diese Angaben mit meiner Nachricht senden“."
+msgstr ""
+"Diese Angaben konnten nicht geladen werden. Um Ihre Nachricht ohne diese "
+"Angaben zu senden, entfernen Sie das Häkchen bei „Diese Angaben mit meiner "
+"Nachricht senden“."
 
 #: includes/Contact/SelectionView.php:64
 msgid "Product selection"
@@ -2389,18 +2394,19 @@ msgstr "Website"
 msgid "Please try sending your inquiry again."
 msgstr "Bitte senden Sie Ihre Anfrage erneut."
 
-#: includes/Inquiry/Sender.php:130
+#: includes/Inquiry/Sender.php:134
 msgid "Please add a product or write a message."
 msgstr "Bitte fügen Sie ein Produkt hinzu oder schreiben Sie eine Nachricht."
 
-#: includes/Inquiry/Sender.php:137 includes/Protection/Business.php:61
+#: includes/Inquiry/Sender.php:141 includes/Planning/Context.php:47
+#: includes/Protection/Business.php:61
 msgid ""
 "Your solution draft changed. Please review it and send your inquiry again."
 msgstr ""
 "Ihr Lösungsentwurf hat sich geändert. Bitte prüfen Sie die Produkte und "
 "senden Sie Ihre Anfrage erneut."
 
-#: includes/Inquiry/Sender.php:273 includes/Protection/BusinessCapacity.php:167
+#: includes/Inquiry/Sender.php:280 includes/Protection/BusinessCapacity.php:167
 #: includes/Protection/BusinessCapacity.php:173
 #: includes/Protection/Intake.php:213 includes/Protection/Intake.php:279
 #: includes/Protection/IntakeStore.php:56
@@ -2489,6 +2495,29 @@ msgstr "SMTP konfiguriert"
 #: includes/Mail/SmtpHealth.php:58
 msgid "SMTP not configured"
 msgstr "SMTP nicht konfiguriert"
+
+#: includes/Planning/Context.php:190 includes/Planning/Context.php:255
+#: includes/Planning/Context.php:257
+msgid "Planning project"
+msgstr "Planungsprojekt"
+
+#. translators: 1: project title, 2: saved input revision.
+#: includes/Planning/Context.php:240
+#, php-format
+msgid "%1$s · input revision %2$d"
+msgstr "%1$s · Eingabeversion %2$d"
+
+#: includes/Planning/Context.php:253
+msgid "Quantities differ from the planning report."
+msgstr "Die Mengen weichen vom Planungsbericht ab."
+
+#: includes/Planning/Context.php:255 includes/Planning/Context.php:261
+msgid "Planning report"
+msgstr "Planungsbericht"
+
+#: includes/Planning/Context.php:261 includes/Proforma/AdminBox.php:72
+msgid "Download PDF"
+msgstr "PDF herunterladen"
 
 #: includes/Presentation/AccountLinks.php:31
 #: includes/Presentation/AccountLinks.php:51
@@ -2652,7 +2681,7 @@ msgstr "Vergleichstabelle der Produkte"
 #: includes/Presentation/ProductShortcodes.php:173
 #: includes/Presentation/ProductShortcodes.php:1560
 #: includes/Storefront/ArchiveSchema.php:176
-#: includes/Storefront/ProductView.php:677
+#: includes/Storefront/ProductView.php:681
 #: templates/myaccount/linker-saved-solutions.php:29
 #: templates/myaccount/linker-saved-solutions.php:41
 msgid "Products"
@@ -3510,53 +3539,53 @@ msgid "The feed schema version, the contract with the engine (#14)."
 msgstr ""
 
 #: includes/Products/EngineeringFeedController.php:133
-msgid "The version stated by data/compatibility.json."
-msgstr "Die in data/compatibility.json angegebene Version."
+msgid "The content version of the current Woo compatibility declarations."
+msgstr "Die Inhaltsversion der aktuellen Woo-Kompatibilitätserklärungen."
 
 #: includes/Products/EngineeringFeedController.php:137
 msgid ""
-"The compatibility contract itself (data/compatibility.json), so the engine's "
-"sync refreshes its copy from the same fetch; its version equals "
-"compatibility_version. Absent when the site cannot read the file."
+"Current Woo compatibility declarations with canonical product identities and "
+"verified hosted evidence; their version equals compatibility_version. Absent "
+"when the saved declaration structure is unsupported."
 msgstr ""
-"Der Kompatibilitätsvertrag selbst (data/compatibility.json), damit die "
-"Synchronisierung der Engine ihre Kopie aus demselben Abruf erneuert; seine "
-"Version entspricht compatibility_version. Fehlt, wenn die Website die Datei "
-"nicht lesen kann."
+"Aktuelle Woo-Kompatibilitätserklärungen mit kanonischen Produktidentitäten "
+"und geprüften eigenen Quellen; ihre Version entspricht "
+"compatibility_version. Fehlt, wenn die gespeicherte Erklärungsstruktur nicht "
+"unterstützt wird."
 
-#: includes/Products/EngineeringFeedController.php:141
+#: includes/Products/EngineeringFeedController.php:145
 msgid "Current Woo engineering reference records with bound document evidence."
 msgstr ""
 "Aktuelle Woo-Referenzdatensätze für die Systemauslegung mit gebundenen "
 "Dokumentnachweisen."
 
-#: includes/Products/EngineeringFeedController.php:176
+#: includes/Products/EngineeringFeedController.php:180
 msgid "One entry per published product."
 msgstr "Ein Eintrag je veröffentlichtem Produkt."
 
-#: includes/Products/EngineeringFeedController.php:190
+#: includes/Products/EngineeringFeedController.php:194
 msgid "Rated AC power in kW, or unknown (#7 SelectionFactSet)."
 msgstr "AC-Nennleistung in kW oder unbekannt (#7 SelectionFactSet)."
 
-#: includes/Products/EngineeringFeedController.php:194
+#: includes/Products/EngineeringFeedController.php:198
 msgid "Maximum PV input power in kW, or unknown."
 msgstr "Maximale PV-Eingangsleistung in kW oder unbekannt."
 
-#: includes/Products/EngineeringFeedController.php:198
+#: includes/Products/EngineeringFeedController.php:202
 msgid "Usable energy in kWh, or unknown."
 msgstr "Nutzbare Energie in kWh oder unbekannt."
 
-#: includes/Products/EngineeringFeedController.php:202
+#: includes/Products/EngineeringFeedController.php:206
 msgid "Nominal energy in kWh, or unknown."
 msgstr "Nennenergie in kWh oder unbekannt."
 
-#: includes/Products/EngineeringFeedController.php:206
+#: includes/Products/EngineeringFeedController.php:210
 msgid "Energy range in kWh the product data states; null when it states none."
 msgstr ""
 "Energiebereich in kWh, den die Produktdaten angeben; null, wenn keiner "
 "angegeben ist."
 
-#: includes/Products/EngineeringFeedController.php:210
+#: includes/Products/EngineeringFeedController.php:214
 msgid ""
 "Figure entries with a citation of a hosted document; a value without one is "
 "not in the feed."
@@ -3882,17 +3911,306 @@ msgstr "Artikelnummer."
 msgid "The product page."
 msgstr "Die Produktseite."
 
-#: includes/Products/Publication/Module.php:163
+#: includes/Products/Publication/CompatibilityEditor.php:35
+msgid "Manufacturer compatibility declarations"
+msgstr "Kompatibilitätserklärungen des Herstellers"
+
+#: includes/Products/Publication/CompatibilityEditor.php:46
+#: includes/Products/Publication/PackageContentsEditor.php:51
+msgid "Maintain these declarations on the English source product."
+msgstr "Pflegen Sie diese Erklärungen im englischen Quellprodukt."
+
+#: includes/Products/Publication/CompatibilityEditor.php:51
+#: includes/Products/Publication/PackageContentsEditor.php:56
+#: includes/Products/Publication/PackageContentsEditor.php:64
+msgid ""
+"The stored declarations have an unsupported format. They remain saved and "
+"unavailable for new releases."
+msgstr ""
+"Die gespeicherten Erklärungen haben ein nicht unterstütztes Format. Sie "
+"bleiben gespeichert und sind für neue Freigaben nicht verfügbar."
+
+#: includes/Products/Publication/CompatibilityEditor.php:56
+msgid ""
+"Choose Woo products and their associated hosted documents. Conditions remain "
+"in English and German. Confirm the evidence explicitly when changing a "
+"declaration or accepting a new document version."
+msgstr ""
+"Wählen Sie Woo-Produkte und ihre zugeordneten Dokumente. Bedingungen bleiben "
+"auf Englisch und Deutsch erhalten. Bestätigen Sie die Quelle ausdrücklich, "
+"wenn Sie eine Erklärung ändern oder eine neue Dokumentversion übernehmen."
+
+#: includes/Products/Publication/CompatibilityEditor.php:58
+msgid "Battery pairings"
+msgstr "Batteriekombinationen"
+
+#: includes/Products/Publication/CompatibilityEditor.php:58
+msgid "Required components"
+msgstr "Erforderliche Komponenten"
+
+#: includes/Products/Publication/CompatibilityEditor.php:81
+msgid "Battery product"
+msgstr "Batterieprodukt"
+
+#: includes/Products/Publication/CompatibilityEditor.php:86
+msgid "Choose a verdict"
+msgstr "Beurteilung auswählen"
+
+#: includes/Products/Publication/CompatibilityEditor.php:87
+msgid "Released"
+msgstr "Freigegeben"
+
+#: includes/Products/Publication/CompatibilityEditor.php:88
+msgid "Released with required accessory"
+msgstr "Mit erforderlichem Zubehör freigegeben"
+
+#: includes/Products/Publication/CompatibilityEditor.php:89
+msgid "No manufacturer release"
+msgstr "Keine Herstellerfreigabe"
+
+#: includes/Products/Publication/CompatibilityEditor.php:93
+msgid "Modules per stack: maximum"
+msgstr "Module je Stack: Maximum"
+
+#: includes/Products/Publication/CompatibilityEditor.php:93
+msgid "Modules per stack: minimum"
+msgstr "Module je Stack: Minimum"
+
+#: includes/Products/Publication/CompatibilityEditor.php:102
+msgid "Choose a requirement"
+msgstr "Anforderung auswählen"
+
+#: includes/Products/Publication/CompatibilityEditor.php:103
+#: includes/Products/Publication/PackageContentsEditor.php:99
+msgid "Meter"
+msgstr "Zähler"
+
+#: includes/Products/Publication/CompatibilityEditor.php:104
+#: includes/Products/Publication/PackageContentsEditor.php:100
+msgid "Backup"
+msgstr "Ersatzstrom"
+
+#: includes/Products/Publication/CompatibilityEditor.php:105
+#: includes/Products/Publication/PackageContentsEditor.php:101
+msgid "Parallel controller"
+msgstr "Parallelsteuerung"
+
+#: includes/Products/Publication/CompatibilityEditor.php:112
+msgid "Included status"
+msgstr "Lieferumfang auswählen"
+
+#: includes/Products/Publication/CompatibilityEditor.php:113
+msgid "Included"
+msgstr "Enthalten"
+
+#: includes/Products/Publication/CompatibilityEditor.php:114
+msgid "Separate required product"
+msgstr "Separat erforderliches Produkt"
+
+#: includes/Products/Publication/CompatibilityEditor.php:118
+msgid "Maximum converter units"
+msgstr "Maximale Anzahl Wechselrichter"
+
+#: includes/Products/Publication/CompatibilityEditor.php:118
+msgid "Phases (1 or 3)"
+msgstr "Phasen (1 oder 3)"
+
+#: includes/Products/Publication/CompatibilityEditor.php:138
+msgid "Accessory"
+msgstr "Zubehör"
+
+#: includes/Products/Publication/CompatibilityEditor.php:144
+msgid "Quantity basis"
+msgstr "Mengenbezug"
+
+#: includes/Products/Publication/CompatibilityEditor.php:145
+msgid "Per system"
+msgstr "Je System"
+
+#: includes/Products/Publication/CompatibilityEditor.php:146
+msgid "Per stack"
+msgstr "Je Stack"
+
+#: includes/Products/Publication/CompatibilityEditor.php:147
+msgid "Per converter unit"
+msgstr "Je Wechselrichter"
+
+#: includes/Products/Publication/CompatibilityEditor.php:154
+#: includes/Products/Publication/PackageContentsEditor.php:105
+msgid "Choose associated document"
+msgstr "Zugeordnetes Dokument auswählen"
+
+#: includes/Products/Publication/CompatibilityEditor.php:161
+#: includes/Products/Publication/PackageContentsEditor.php:111
+msgid "Unavailable source"
+msgstr "Quelle nicht verfügbar"
+
+#: includes/Products/Publication/CompatibilityEditor.php:168
+#: includes/Products/Publication/PackageContentsEditor.php:116
+msgid ""
+"I verified this declaration against the selected current document version."
+msgstr ""
+"Ich habe diese Erklärung anhand der ausgewählten aktuellen Dokumentversion "
+"geprüft."
+
+#: includes/Products/Publication/CompatibilityEditor.php:169
+msgid "Remove declaration"
+msgstr "Erklärung entfernen"
+
+#: includes/Products/Publication/CompatibilityEditor.php:202
+msgid "Compatibility declarations were preserved: "
+msgstr "Kompatibilitätserklärungen wurden beibehalten: "
+
+#: includes/Products/Publication/CompatibilityEditor.php:411
+msgid "Unavailable product"
+msgstr "Produkt nicht verfügbar"
+
+#: includes/Products/Publication/Module.php:165
 msgid "Public technical document"
 msgstr "Öffentliche technische Unterlage"
 
-#: includes/Products/Publication/Module.php:166
+#: includes/Products/Publication/Module.php:168
 msgid ""
 "Requires an associated published product. Clear to withdraw this document "
 "from every product."
 msgstr ""
 "Erfordert ein zugeordnetes, veröffentlichtes Produkt. Entfernen Sie das "
 "Häkchen, um diese Unterlage für alle Produkte zurückzuziehen."
+
+#: includes/Products/Publication/PackageContents.php:38
+msgid ""
+"A current Woo product, item identity and English/German names are required."
+msgstr ""
+"Ein aktuelles Woo-Produkt, eine Komponentenkennung und Namen auf Englisch "
+"und Deutsch sind erforderlich."
+
+#: includes/Products/Publication/PackageContents.php:42
+#: includes/Products/Publication/PackageContentsEditor.php:283
+msgid ""
+"Package quantities need a positive value, an explicit unit and a whole count "
+"for pieces or pairs."
+msgstr ""
+"Für Mengen sind ein positiver Wert und eine Einheit erforderlich. Stück- und "
+"Paarzahlen müssen ganzzahlig sein."
+
+#: includes/Products/Publication/PackageContents.php:45
+msgid ""
+"Package evidence must be a current document of this product with its PDF "
+"page."
+msgstr ""
+"Als Quelle ist ein aktuelles, diesem Produkt zugeordnetes Dokument mit PDF-"
+"Seitenangabe erforderlich."
+
+#: includes/Products/Publication/PackageContents.php:48
+msgid ""
+"Package contents require confirmation against these document bytes and "
+"version."
+msgstr ""
+"Der Lieferumfang muss anhand dieser Datei und Dokumentversion bestätigt "
+"werden."
+
+#: includes/Products/Publication/PackageContents.php:85
+msgid "Unsupported package contents format."
+msgstr "Das Format des Lieferumfangs wird nicht unterstützt."
+
+#: includes/Products/Publication/PackageContents.php:90
+#: includes/Products/Publication/PackageContentsEditor.php:176
+msgid "Package item identities must be distinct."
+msgstr "Die Komponentenkennungen müssen eindeutig sein."
+
+#: includes/Products/Publication/PackageContentsEditor.php:41
+msgid "Manufacturer package contents"
+msgstr "Herstellerseitiger Lieferumfang"
+
+#: includes/Products/Publication/PackageContentsEditor.php:70
+msgid ""
+"List only additional components supplied with one Woo sales unit. Each quantity needs a "
+"current associated document and its PDF page. Site cable runs and "
+"installation quantities are separate."
+msgstr ""
+"Erfassen Sie nur die zusätzlichen Komponenten, die mit einer Woo-Verkaufseinheit "
+"geliefert werden. Jede Menge benötigt ein aktuell zugeordnetes Dokument mit "
+"PDF-Seitenangabe. Standortspezifische Leitungswege und Installationsmengen "
+"gehören nicht zu diesen Angaben zum Lieferumfang."
+
+#: includes/Products/Publication/PackageContentsEditor.php:73
+msgid "New supplied component"
+msgstr "Neue mitgelieferte Komponente"
+
+#: includes/Products/Publication/PackageContentsEditor.php:76
+msgid "Component name (DE)"
+msgstr "Komponentenname (DE)"
+
+#: includes/Products/Publication/PackageContentsEditor.php:76
+msgid "Component name (EN)"
+msgstr "Komponentenname (EN)"
+
+#: includes/Products/Publication/PackageContentsEditor.php:80
+msgid "Quantity per sales unit"
+msgstr "Menge je Verkaufseinheit"
+
+#: includes/Products/Publication/PackageContentsEditor.php:87
+msgid "Choose unit"
+msgstr "Einheit wählen"
+
+#: includes/Products/Publication/PackageContentsEditor.php:88
+msgid "Pieces"
+msgstr "Stück"
+
+#: includes/Products/Publication/PackageContentsEditor.php:89
+msgid "Pairs"
+msgstr "Paare"
+
+#: includes/Products/Publication/PackageContentsEditor.php:93
+msgid "Component function"
+msgstr "Komponentenfunktion"
+
+#: includes/Products/Publication/PackageContentsEditor.php:98
+msgid "Other supplied component"
+msgstr "Weitere mitgelieferte Komponente"
+
+#: includes/Products/Publication/PackageContentsEditor.php:104
+msgid "Source document"
+msgstr "Quelldokument"
+
+#: includes/Products/Publication/PackageContentsEditor.php:114
+msgid "PDF page"
+msgstr "PDF-Seite"
+
+#: includes/Products/Publication/PackageContentsEditor.php:117
+msgid "Remove component"
+msgstr "Komponente entfernen"
+
+#: includes/Products/Publication/PackageContentsEditor.php:153
+msgid "Package contents were preserved: "
+msgstr "Der gespeicherte Lieferumfang wurde beibehalten: "
+
+#: includes/Products/Publication/PackageContentsEditor.php:169
+#: includes/Products/Publication/PackageContentsEditor.php:223
+msgid "The submitted package contents are incomplete."
+msgstr "Die übermittelten Angaben zum Lieferumfang sind unvollständig."
+
+#: includes/Products/Publication/PackageContentsEditor.php:189
+msgid ""
+"Use a decimal point for quantities. Enter the PDF page number as a positive "
+"whole number."
+msgstr ""
+"Verwenden Sie bei Mengen einen Dezimalpunkt. Die PDF-Seitenzahl muss eine "
+"positive ganze Zahl sein."
+
+#: includes/Products/Publication/PackageContentsEditor.php:218
+msgid "Confirm each new or changed component against its current source."
+msgstr ""
+"Bestätigen Sie jede neue oder geänderte Komponente anhand ihrer aktuellen "
+"Quelle."
+
+#: includes/Products/Publication/PackageContentsEditor.php:290
+msgid ""
+"The quantity cannot be represented without rounding. Check the value and "
+"unit."
+msgstr ""
+"Die Menge kann ohne Rundung nicht dargestellt werden. Prüfen Sie den Wert "
+"und die Einheit."
 
 #: includes/Products/SelectionFactSet.php:86
 msgid "Product category the product is selected in."
@@ -3954,11 +4272,6 @@ msgstr "Ausgestellt am %s"
 #, php-format
 msgid "Valid until %s"
 msgstr "Gültig bis %s"
-
-#: includes/Planning/Context.php
-#: includes/Proforma/AdminBox.php:72
-msgid "Download PDF"
-msgstr "PDF herunterladen"
 
 #: includes/Proforma/AdminBox.php:83
 msgid ""
@@ -6112,6 +6425,19 @@ msgstr ""
 msgid "Reference"
 msgstr "Verwendungszweck"
 
+#~ msgid "The version stated by data/compatibility.json."
+#~ msgstr "Die in data/compatibility.json angegebene Version."
+
+#~ msgid ""
+#~ "The compatibility contract itself (data/compatibility.json), so the "
+#~ "engine's sync refreshes its copy from the same fetch; its version equals "
+#~ "compatibility_version. Absent when the site cannot read the file."
+#~ msgstr ""
+#~ "Der Kompatibilitätsvertrag selbst (data/compatibility.json), damit die "
+#~ "Synchronisierung der Engine ihre Kopie aus demselben Abruf erneuert; "
+#~ "seine Version entspricht compatibility_version. Fehlt, wenn die Website "
+#~ "die Datei nicht lesen kann."
+
 #~ msgid "Please review the product selection or exclude it before sending."
 #~ msgstr ""
 #~ "Bitte prüfen Sie die Produktauswahl oder wählen Sie sie vor dem Senden ab."
@@ -6472,160 +6798,3 @@ msgstr "Verwendungszweck"
 #~ msgid_plural "products"
 #~ msgstr[0] "Produkt"
 #~ msgstr[1] "Produkte"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Manufacturer compatibility declarations"
-msgstr "Kompatibilitätserklärungen des Herstellers"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Maintain these declarations on the English source product."
-msgstr "Pflegen Sie diese Erklärungen im englischen Quellprodukt."
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "The stored declarations have an unsupported format. They remain saved and unavailable for new releases."
-msgstr "Die gespeicherten Erklärungen haben ein nicht unterstütztes Format. Sie bleiben gespeichert und sind für neue Freigaben nicht verfügbar."
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Choose Woo products and their associated hosted documents. Conditions remain in English and German. Confirm the evidence explicitly when changing a declaration or accepting a new document version."
-msgstr "Wählen Sie Woo-Produkte und ihre zugeordneten Dokumente. Bedingungen bleiben auf Englisch und Deutsch erhalten. Bestätigen Sie die Quelle ausdrücklich, wenn Sie eine Erklärung ändern oder eine neue Dokumentversion übernehmen."
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Battery pairings"
-msgstr "Batteriekombinationen"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Required components"
-msgstr "Erforderliche Komponenten"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Battery product"
-msgstr "Batterieprodukt"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Choose a verdict"
-msgstr "Beurteilung auswählen"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Released"
-msgstr "Freigegeben"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Released with required accessory"
-msgstr "Mit erforderlichem Zubehör freigegeben"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "No manufacturer release"
-msgstr "Keine Herstellerfreigabe"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Modules per stack: minimum"
-msgstr "Module je Stack: Minimum"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Modules per stack: maximum"
-msgstr "Module je Stack: Maximum"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Choose a requirement"
-msgstr "Anforderung auswählen"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Meter"
-msgstr "Zähler"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Backup"
-msgstr "Ersatzstrom"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Parallel controller"
-msgstr "Parallelsteuerung"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Included status"
-msgstr "Lieferumfang auswählen"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Included"
-msgstr "Enthalten"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Separate required product"
-msgstr "Separat erforderliches Produkt"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Phases (1 or 3)"
-msgstr "Phasen (1 oder 3)"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Maximum converter units"
-msgstr "Maximale Anzahl Wechselrichter"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Accessory"
-msgstr "Zubehör"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Quantity basis"
-msgstr "Mengenbezug"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Per system"
-msgstr "Je System"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Per stack"
-msgstr "Je Stack"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Per converter unit"
-msgstr "Je Wechselrichter"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Choose associated document"
-msgstr "Zugeordnetes Dokument auswählen"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Unavailable source"
-msgstr "Quelle nicht verfügbar"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "I verified this declaration against the selected current document version."
-msgstr "Ich habe diese Erklärung anhand der ausgewählten aktuellen Dokumentversion geprüft."
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Remove declaration"
-msgstr "Erklärung entfernen"
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Compatibility declarations were preserved: "
-msgstr "Kompatibilitätserklärungen wurden beibehalten: "
-
-#: includes/Products/Publication/CompatibilityEditor.php
-msgid "Unavailable product"
-msgstr "Produkt nicht verfügbar"
-
-#: includes/Products/EngineeringFeedController.php
-msgid "The content version of the current Woo compatibility declarations."
-msgstr "Die Inhaltsversion der aktuellen Woo-Kompatibilitätserklärungen."
-
-#: includes/Products/EngineeringFeedController.php
-msgid "Current Woo compatibility declarations with canonical product identities and verified hosted evidence; their version equals compatibility_version. Absent when the saved declaration structure is unsupported."
-msgstr "Aktuelle Woo-Kompatibilitätserklärungen mit kanonischen Produktidentitäten und geprüften eigenen Quellen; ihre Version entspricht compatibility_version. Fehlt, wenn die gespeicherte Erklärungsstruktur nicht unterstützt wird."
-
-
-#: includes/Planning/Context.php
-msgid "Planning project"
-msgstr "Planungsprojekt"
-
-#: includes/Planning/Context.php
-msgid "%1$s · input revision %2$d"
-msgstr "%1$s · Eingabeversion %2$d"
-
-#: includes/Planning/Context.php
-msgid "Planning report"
-msgstr "Planungsbericht"
-
-#: includes/Planning/Context.php
-msgid "Quantities differ from the planning report."
-msgstr "Die Mengen weichen vom Planungsbericht ab."

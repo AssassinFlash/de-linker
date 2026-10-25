@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import csv
 import io
+import math
+from decimal import Decimal
 from typing import Any, cast
 
 from .canonical import Json, Object, encode
@@ -17,6 +19,7 @@ from .report_copy import text
 
 def project_materials(source: Object) -> Object:
     lines: list[Json] = []
+    covered_inclusions: set[str] = set()
     equipment = source.get("equipment")
     if isinstance(equipment, dict):
         products = {
@@ -40,6 +43,7 @@ def project_materials(source: Object) -> Object:
                     "product_id": line["product_id"],
                     **identity,
                     "quantity": line.get("quantity"),
+                    "unit": "piece",
                     "basis": line["basis"],
                     "source": {
                         "woo_basis": cast(Object, source.get("woo_bases", {})).get(
@@ -53,10 +57,56 @@ def project_materials(source: Object) -> Object:
                     },
                 }
             )
+            package = product.get("package_contents")
+            if isinstance(package, dict) and package.get("status") == "documented":
+                parent_quantity = line.get("quantity")
+                for item in cast(list[Object], package["items"]):
+                    known = type(parent_quantity) is int and parent_quantity > 0
+                    quantity = None
+                    if known:
+                        total = Decimal(str(item["quantity"])) * cast(
+                            int, parent_quantity
+                        )
+                        quantity = float(total) if item["unit"] == "m" else int(total)
+                    # Same exact-number browser transport bound as the source
+                    # contracts; a large product cannot publish an unsafe total.
+                    if quantity is not None and (
+                        not math.isfinite(quantity) or quantity > 2**53 - 1
+                    ):
+                        quantity = None
+                    lines.append(
+                        {
+                            "id": f"package:{line['product_id']}:{item['id']}",
+                            "handling": "manufacturer_included",
+                            "parent_product_id": line["product_id"],
+                            "parent_label": " ".join(
+                                str(identity[key])
+                                for key in ("brand", "model")
+                                if identity[key]
+                            ),
+                            "label": item["label"],
+                            "quantity": quantity,
+                            "unit": item["unit"],
+                            "basis": "cited_contents_per_woo_sales_unit",
+                            "source": {
+                                "woo_basis": cast(
+                                    Object, source.get("woo_bases", {})
+                                ).get("equipment"),
+                                "document": item["source"],
+                                "per_sales_unit": item["quantity"],
+                                "parent_quantity": parent_quantity,
+                            },
+                        }
+                    )
+                    if line.get("basis") == "selected_converter":
+                        covered_inclusions.add(cast(str, item["role"]))
         for index, requirement in enumerate(
             cast(list[Object], equipment.get("installation_requirements", []))
         ):
-            if requirement.get("included") is True:
+            if (
+                requirement.get("included") is True
+                and requirement["kind"] not in covered_inclusions
+            ):
                 lines.append(
                     {
                         "id": f"included:{index}:{requirement['kind']}",
@@ -64,6 +114,7 @@ def project_materials(source: Object) -> Object:
                         "kind": requirement["kind"],
                         # An inclusion statement is not a documented count.
                         "quantity": None,
+                        "unit": "piece",
                         "basis": "manufacturer_included",
                         "conditions": requirement.get("conditions", []),
                         "source": {"documents": requirement.get("documents", [])},
@@ -81,6 +132,7 @@ def project_materials(source: Object) -> Object:
                     "product_id": woo["product_id"],
                     "model": part["model"],
                     "quantity": part["quantity"],
+                    "unit": "piece",
                     "basis": "saved_layout",
                     "source": citation,
                     "array_ids": part["array_ids"],
@@ -89,8 +141,8 @@ def project_materials(source: Object) -> Object:
                 }
             )
     return {
-        "schema_version": 1,
-        "kind": "project_materials_v1",
+        "schema_version": 2,
+        "kind": "project_materials_v2",
         "project_id": source["project_id"],
         "revision": source["revision"],
         "input_sha256": source["input_sha256"],
@@ -104,6 +156,8 @@ def project_materials(source: Object) -> Object:
 
 def material_name(line: Object, locale: str) -> str:
     if line["handling"] == "manufacturer_included":
+        if isinstance(line.get("label"), dict):
+            return cast(str, cast(Object, line["label"])[locale])
         return text(f"material_{line['kind']}", locale)
     return " ".join(str(line[key]) for key in ("brand", "model") if line.get(key))
 
@@ -116,7 +170,27 @@ def material_reference(line: Object) -> str:
 
 
 def material_scope(line: Object, locale: str) -> str:
+    if line["handling"] == "manufacturer_included" and line.get("quantity") is not None:
+        scope = text("material_included_documented", locale)
+        parent = line.get("parent_label")
+        return f"{scope} · {parent}" if parent else scope
     return text(f"material_{line['handling']}", locale)
+
+
+def material_unit(line: Object, locale: str) -> str:
+    return text(f"material_unit_{line.get('unit', 'piece')}", locale)
+
+
+def material_quantity(line: Object, locale: str) -> str:
+    value = line.get("quantity")
+    if type(value) not in (int, float) or not math.isfinite(cast(float, value)):
+        return "—"
+    shown = format(Decimal(str(value)), ",f")
+    if "." in shown:
+        shown = shown.rstrip("0").rstrip(".")
+    if locale == "de":
+        shown = shown.translate(str.maketrans(",.", ".,"))
+    return f"{shown} {material_unit(line, locale)}"
 
 
 def _cell(value: Any) -> str:
@@ -146,6 +220,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 "material_source",
                 "material_snapshot",
                 "material_assessment",
+                "material_unit",
             )
         ]
     )
@@ -176,6 +251,7 @@ def materials_csv(materials: Object, sha256: str, locale: str) -> bytes:
                 provenance,
                 sha256,
                 text("material_installation_open", locale),
+                material_unit(line, locale),
             )
         )
     # BOM ensures Excel also recognizes German names as UTF-8.

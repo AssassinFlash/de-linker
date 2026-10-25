@@ -622,9 +622,14 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
             )
             == 3
         )
-        assert any(row[0] == "5" and "460" in row[1] for row in bom.table.rows)
         assert any(
-            row[0] == "3" and battery["model"] in row[1] for row in bom.table.rows
+            row[0] == ("5 pc" if locale == "en" else "5 St.") and "460" in row[1]
+            for row in bom.table.rows
+        )
+        assert any(
+            row[0] == ("3 pc" if locale == "en" else "3 St.")
+            and battery["model"] in row[1]
+            for row in bom.table.rows
         )
         part_table = next(
             section for section in report.sections if section.id == "pv-components"

@@ -46,6 +46,34 @@ wp linker-commerce publication migrate-compatibility --rollback --apply
 
 apply 重新核对预览的源 hash、当前修订与每项 before，通过正常 Woo `update_meta_data/save` 写入，不改 SKU、价格、库存、分类和发布状态。`_linker_compatibility_migration` 仅保存本次 before 与 after 摘要，rollback 只恢复仍与迁移 after 一致的记录，保护后续人工编辑。执行者使用本批已有的恢复记录保留完整预览，并遵守写入前已有备份要求；本轮实现本身不写任何实际 WP 数据。
 
+## 厂家随附清单（2026-10-26）
+
+随附件是 Woo 商品自身的资料，维护在 canonical 英文商品的
+`Manufacturer package contents` 原生元框，保存为 `_linker_package_contents`。
+每项记录稳定 ID、EN/DE 名称、每一销售单位的正数数量、明确的 piece/pair/m
+单位、可选功能角色及关联手册的绝对 PDF 页码。piece/pair 必须整计数。
+产品原生属性不能表达整组项目与文件字节版本，grouped products 会制造不属于
+独立销售商品的身份；这里沿用 WordPress meta、原生编辑器和 Woo CRUD，不建
+另一产品库或随附件 SKU。产品所有非运行 meta 已纳入现有事实指纹，保存继续
+触发同一准备/撤权链。未维护字段时 feed 保持原有形状。
+
+新建、修改和换文档版本须明确确认。普通保存保留旧绑定；当前文件的字节、修订
+或产品关联不匹配时，投影成为 `unresolved` 且整组 items 为空，不能继续引用
+旧的正面数量。表单完整标记、原项目 ID 集及明确删除保护未提交或被截断的数据。
+资料原件和客户已生成的历史报告遵循既有历史读取规则。
+
+`EngineeringFeed` 为有维护数据的产品增加可选 `package_contents`，由同一次
+Publication 组装验证。它含状态及带原文档 ID/字节/修订/URL/页码的项目。
+引擎先接受此可选合同，之后才启用新的 Woo 数据；兼容合同的 pairs/requirements
+形状不变。资料以 Woo 关联的手册为准，不从条件文字或型号名称猜数量。
+
+统一物料模型 `project_materials_v2` 用已确定的 Woo 销售单位数乘每单位随附量，
+保留单位与来源；父项数量未确定或总量超出共同传输边界时不给假总量。带明确
+meter/backup/parallel_controller 角色的随附件替代同角色的泛化未知行，销售交接
+仍只加入原 Woo 销售行。通信成品线一根、长度 10 m 不等于现场敷设 10 m。
+屏幕/PDF显示数量和单位，CSV v2 在原有列后附单位；读取端兼容 v1/v2，
+历史导出原件不重写。计量长度使用十进制乘法，避免二进制小数误差进入清单。
+
 ## 文档维护入口（票 #68，GAP-17）
 
 商品编辑器的 "Documents" meta box（`Linker\Commerce\Admin\DocumentsMetaBox`）维护

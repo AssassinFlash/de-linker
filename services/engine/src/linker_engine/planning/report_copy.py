@@ -355,6 +355,18 @@ TEXT = {
     "material_handling": ("Supply scope", "Lieferumfang"),
     "material_source": ("Quantity basis and sources", "Mengengrundlage und Quellen"),
     "material_assessment": ("Planning status", "Planungsstand"),
+    "material_unit": ("Unit", "Einheit"),
+    "material_unit_piece": ("pc", "St."),
+    "material_unit_pair": ("pair", "Paar"),
+    "material_unit_m": ("m", "m"),
+    "material_included_documented": (
+        "Included with the equipment",
+        "Mit dem Gerät mitgeliefert",
+    ),
+    "material_package_source": (
+        "Manufacturer package contents",
+        "Herstellerseitiger Lieferumfang",
+    ),
     "pv_components_roof_scope": (
         "Module counts come from the saved roof used by the selected equipment check. The modules are design references; electrical and mounting suitability require project-specific assessment.",
         "Die Stückzahlen stammen aus der gespeicherten Dachbelegung der ausgewählten Geräteprüfung. Die Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden.",

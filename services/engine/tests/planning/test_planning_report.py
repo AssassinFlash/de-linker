@@ -69,6 +69,38 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         )
     feed = request.getfixturevalue("equipment_feed")
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    # Synthetic quantities exercise the Woo projection, not a real packing list.
+    for pid, quantity, role, name in (
+        (4107, 1, "meter", "Fixture supplied meter"),
+        (2090, 2, "other", "Fixture supplied connector"),
+    ):
+        product = next(p for p in feed["products"] if p["id"] == pid)
+        doc = product["documents"][0]
+        product["package_contents"] = {
+            "status": "documented",
+            "items": [
+                {
+                    "id": f"fixture-{pid}",
+                    "label": {"en": name, "de": name},
+                    "quantity": quantity,
+                    "unit": "piece",
+                    "role": role,
+                    "source": {
+                        **{
+                            key: doc[key]
+                            for key in (
+                                "document_id",
+                                "document_revision",
+                                "blob_sha256",
+                                "url",
+                            )
+                        },
+                        "product_id": pid,
+                        "page": 1,
+                    },
+                }
+            ],
+        }
     shared = SimpleNamespace(
         engine=replace(engine, products=Products.from_feed(feed)),
         publication=Publication(feed),
@@ -169,6 +201,20 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert {row[2] for row in csv_rows[1:]} >= {"1", "3"}
         assert all(row[7] == result["materials_sha256"] for row in csv_rows[1:])
         assert {row[3] for row in csv_rows[1:]} >= {"SAJ H2-10K-T3", "SAJ BU2-5.0-HV1"}
+        supplied = [
+            line
+            for line in materials["lines"]
+            if line["handling"] == "manufacturer_included"
+        ]
+        assert {
+            (line["parent_product_id"], line["quantity"], line["unit"])
+            for line in supplied
+        } == {(4107, 1, "piece"), (2090, 6, "piece")}
+        assert all(row[9] == "pc" for row in csv_rows[1:])
+        from linker_engine.planning.project_materials import material_quantity
+
+        assert material_quantity({"quantity": 0.00001, "unit": "m"}, "en") == "0.00001 m"
+        assert material_quantity({"quantity": 1234.5, "unit": "m"}, "de") == "1.234,5 m"
         unsafe = copy.deepcopy(materials)
         unsafe["lines"][0]["brand"], unsafe["lines"][0]["model"] = "", " =1+1"
         german_csv = list(

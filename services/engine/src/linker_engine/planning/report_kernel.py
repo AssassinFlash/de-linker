@@ -29,7 +29,7 @@ class ReportKernel:
     models = {
         "task": kind,
         "report": "frozen_project_report_v1",
-        "materials": "project_materials_v1",
+        "materials": "project_materials_v2",
     }
 
     def __init__(self, workspace: Workspace, products: ProductSources) -> None:
@@ -145,7 +145,7 @@ class ReportKernel:
                 materials, cast(str, dependencies["materials_model"]), report.locale
             ),
             "text/csv",
-            "planning_materials_csv_v1",
+            "planning_materials_csv_v2",
             {
                 "retention": "permanent",
                 "provenance": {

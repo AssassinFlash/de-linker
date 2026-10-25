@@ -133,6 +133,11 @@ final class EngineeringFeed {
 			$item[ $field ] = self::term_name( $product_id, $taxonomy );
 		}
 
+		$contents = Publication\PackageContents::projection( $product_id, $publication );
+		if ( null !== $contents ) {
+			$item['package_contents'] = $contents;
+		}
+
 		return $item;
 	}
 

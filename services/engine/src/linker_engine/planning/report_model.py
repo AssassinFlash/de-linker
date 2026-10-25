@@ -10,6 +10,7 @@ from .canonical import Object
 from .comparison_report import comparison_sections
 from .project_materials import (
     material_name,
+    material_quantity,
     material_reference,
     material_scope,
     project_materials,
@@ -259,11 +260,23 @@ def build_report(source: Object) -> Report:
         materials = project_materials(source)
     lines = cast(list[Object], materials["lines"])
     if lines:
+        material_documents: dict[tuple[str, int], ReportRow] = {}
+        for line in lines:
+            origin = line.get("source")
+            citation = origin.get("document") if isinstance(origin, dict) else None
+            if isinstance(citation, dict):
+                url, page = cast(str, citation["url"]), cast(int, citation["page"])
+                material_documents[(url, page)] = ReportRow(
+                    label=f"{text('source', locale)} · {text('page', locale)} {page}",
+                    value=text("material_package_source", locale),
+                    href=url,
+                )
         sections.append(
             ReportSection(
                 id="bom",
                 title=text("bom", locale),
                 paragraphs=[text("bom_scope", locale)],
+                rows=list(material_documents.values()),
                 table=ReportTable(
                     columns=[
                         text("quantity", locale),
@@ -274,7 +287,7 @@ def build_report(source: Object) -> Report:
                     column_weights=[0.6, 1.7, 1, 1.7],
                     rows=[
                         [
-                            number(line.get("quantity"), locale),
+                            material_quantity(line, locale),
                             material_name(line, locale),
                             material_reference(line),
                             material_scope(line, locale),
