@@ -43,7 +43,7 @@
     }
   },
   "production_changed": false,
-  "pending": "Full supported-topology search/ranking, remaining continuous/electrical/country constraints, equipment-coupled energy replay/comparison, complete BOM/report/PDF, site consumers, migration and review/production delivery remain within the active goal. Finite single-converter/external-assembly search and same-project candidate adoption are delivered locally.",
+  "pending": "Finite independent-AC and shared-DC Woo-backed local calculation/report paths are delivered within their stated domains. Continuous performance, remaining electrical/topology/country release, supported search/ranking/comparison, complete BOM/consumers, site integration, migration and review/production delivery remain in the active full goal.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "shared_dc_native_frontend",
+  "current_frontier": "shared_dc_conditioned_source",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -1622,6 +1622,166 @@
     "validation_stopped_after_pass": true,
     "annual_pv_commerce_full_matrix_repeated": false,
     "production_changed_by_548": false,
-    "temporary_copy_mapping_removed": true
+    "temporary_copy_mapping_removed": true,
+    "status": "Historical frontier; real-product condition interpretation and native path are superseded by shared_dc_conditioned_source."
+  },
+  "shared_dc_conditioned_source": {
+    "parent_commit": "ea5e6f7a139b868dfe69c30a18f7252dc6716888",
+    "at_utc": "2026-10-25T10:31:45.008408+00:00",
+    "scope": "Interpret maintained Woo conditions/columns and port labels, preserve absent/null/value in durable recovery, and complete a bounded native real-SKU DC scenario without recomputing annual PV.",
+    "source_authority": "Current Woo records and prepared native feed only. No new product source, runtime research dependency, device fact editor or manufacturer-performance assumption.",
+    "closed_defects": [
+      "Current normal-current direction/port/series-stack/module-count/temperature qualifiers are matched explicitly and retained as conditional evidence.",
+      "Configured system power and operating voltage use one explicitly labelled module-count column; redundant unit/value mismatches and unscoped generic rated_power_w remain unresolved/refused.",
+      "Current BAT1/BAT2 labels are derived from Woo; no invented port labels for sources that already name them.",
+      "Optional historical temperature preserves absent/null/value when restoring durable commands.",
+      "Unrelated compatibility/source revision changes no longer invalidate a reference-only PV proof when current native component, documents, reference identity and preparation/permission still match."
+    ],
+    "independent_review": {
+      "spec": "PASS including bounded recovery/system-power and reference-only publication deltas",
+      "standards": "PASS including the same deltas; prior unaffected conclusions reused",
+      "copy": "PASS after bounded EN/DE edits; compiled catalog contains reviewed strings"
+    },
+    "necessary_verification": {
+      "existing_short_conditioned_source_fixture": "Passed after maintained qualifier/table/temperature adaptation; unchanged core physics not rerun afterwards.",
+      "unscoped_system_power_counterexample": "Passed after correcting the existing fixture construction.",
+      "reference_only_counterexample": "Passed: unrelated compatibility revision accepted; coefficient/document/reference-withdrawal changes refused.",
+      "static_and_build": "Changed Python Ruff/strict mypy, TypeScript/Vite/source manifest and built-module check passed.",
+      "unchanged_annual_pv_ac_commerce": "Existing valid results reused; no whole-year recalculation or whole-site matrix.",
+      "native_flow": "Browser -> native WordPress gateway -> private service preparation -> saved revision -> registered worker -> result/trace -> EN/DE report -> native PDF downloads."
+    },
+    "native_install": {
+      "runtime_sha256": "afcc3f3c8753bc65225a9fb27de3283fcc4f205133debbd35a1ccfb0b12f6e0e",
+      "worker_runtime": "afcc3f3c8753bc65225a9fb27de3283fcc4f205133debbd35a1ccfb0b12f6e0e",
+      "source_revision": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d",
+      "schema_migration": false,
+      "new_full_backups": 0,
+      "new_instances": 0,
+      "retained_runtime_carriers": 2,
+      "rollback_runtime": "81ae51778de58372f0900252097b7692fb1c101b43b3bdae6e048aa6e6653174",
+      "retired_logical_bytes_this_batch": 2616837,
+      "free_bytes_after": 953910001664
+    },
+    "native_scenario": {
+      "project_id": "c7795bc2c1e14e389622015c809ace45",
+      "title": "Berlin · Beispielprojekt · PV und Speicher",
+      "prior_revision": 14,
+      "prior_input_sha256": "32b9f95c200fe0c286e9e7552ccaf5377bfcbc63cae14bb6114125ba4ea43f1f",
+      "revision": 18,
+      "input_sha256": "3b45f11144b6760b03a2914e31a24e68b2ebd8b5ed366a032edbd0f83b316e76",
+      "period_start_utc": "2023-06-16T09:00:00Z",
+      "period_end_utc": "2023-06-16T11:00:00Z",
+      "source_profiles_reused": {
+        "aux_ac": "34f39e414cbe4668bfa9db3666f6adf4",
+        "gross_load": "8d2a0c8e19974f1ea509b1aaecb7b5eb",
+        "pv_available_ac": "4790cc9c56a44d32b59fe91fe1e1b519"
+      },
+      "declared_assumptions": {
+        "source_note": "Declared reference assumptions: DC/DC 98% each way, storage 99% each way, forward inverter 96%, fixed battery temperature 20 °C, zero internal and DC auxiliary demand and standing loss. No reverse charging. These are scenario assumptions, not manufacturer performance data.",
+        "pv_converter_id": "converter",
+        "battery_port_id": "BAT1",
+        "battery_temperature_c": 20,
+        "aux_dc_kw": 0,
+        "losses": {
+          "eta_bus_to_battery": 0.98,
+          "eta_battery_to_bus": 0.98,
+          "eta_store_charge": 0.99,
+          "eta_store_discharge": 0.99,
+          "eta_inverter_forward": 0.96,
+          "eta_inverter_reverse": null,
+          "internal_aux_kw": 0,
+          "standing_loss_rate_per_hour": 0
+        }
+      },
+      "pv_nameplate_kw": 11.04,
+      "product_revisions": {
+        "4107": "e8a443e695abd1b470e1e7b01cab217b4b6f044069cd18c77e387ab9d170f3c1",
+        "2090": "50dfef9a099f38de79651c1a1d6786b27516fe86ccb0c34929892beddc9995da",
+        "2092": "9989925c8b737d000383bc54d7943a64f667fda78e0510247eebfb477c7ef90b"
+      },
+      "scope": "two-hour reference scenario; real Woo equipment, retained modelled PV and synthetic load; no engineering release",
+      "original_revision_14_preserved_sha256": "32b9f95c200fe0c286e9e7552ccaf5377bfcbc63cae14bb6114125ba4ea43f1f",
+      "run_id": "37101494e75844d7bb146ca95c499052",
+      "result_sha256": "4c26e7c4152ed781c3fd937a7f4203f5c5bc17b5bfcafba561980d82ced6a48a",
+      "manifest_sha256": "e21dceee3bc521b09329bf6551470c1c5ef34e3c0ce1ba8d9c9876c47fbbade1",
+      "trace_sha256": "e4d8073c78a407c986e1196dc5e559a997b20e777cc304867f2021d272090b9d",
+      "interval_count": 2,
+      "scenario_constraint_status": "satisfied",
+      "numerical_verification_passed": true,
+      "rated_bank_kw": 9.216,
+      "conservative_terminal_bound_kw": 8.064,
+      "usable_energy_kwh": 13.5,
+      "metrics": {
+        "gross_load_kwh": 1.102572669562,
+        "pv_generated_dc_kwh": 9.633826476562845,
+        "pv_export_ac_kwh": 0.797758511290759,
+        "grid_import_kwh": 0.0,
+        "unserved_load_kwh": 0.0,
+        "stored_final": {
+          "grid_kwh": 0.0,
+          "initial_unknown_kwh": 0.0,
+          "pv_kwh": 7.3914649281280065
+        }
+      },
+      "reserve_kwh": 0,
+      "baseline_context": "Empty starting inventory and explicitly zero reserved energy; prior reserve conflict remains in revision 16."
+    },
+    "retained_input_conflict": {
+      "run_id": "716eadd074f047af8605f195989d5527",
+      "revision": 16,
+      "reason": "Inherited 1 kWh reserve with explicitly empty initial inventory correctly fails the reserve check. Baseline revision 18 explicitly changes the scenario reserve to 0; original failed requirement remains in history.",
+      "not_erased_or_relabelled": true
+    },
+    "reports": {
+      "en": {
+        "run_id": "6bc2d430abe54d15b0eed6bfd95acb55",
+        "asset_id": "3b91337ee95544a3b9f53852389079b0",
+        "sha256": "fdbde2d75400ae402317660955948ad77c949fa5bad80ba07e300909913fd124",
+        "file": "dc-native-report-en.pdf",
+        "pages": 2,
+        "temperature_and_dc_totals_readback": true,
+        "changed_content_page_visually_inspected": 2,
+        "native_browser_download_matches_retained_asset": true
+      },
+      "de": {
+        "run_id": "2184313a7ace438d8b1ad8529a6a98cc",
+        "asset_id": "7d2ff8093ba24fc9a84c1c53022a5c40",
+        "sha256": "f87cc2383f8db612279fed5517e83f5ff71fae272e309cd1df65725de64ae423",
+        "file": "dc-native-report-de.pdf",
+        "pages": 2,
+        "temperature_and_dc_totals_readback": true,
+        "changed_content_page_visually_inspected": 2,
+        "native_browser_download_matches_retained_asset": true
+      }
+    },
+    "native_ui": {
+      "matrix": [
+        "EN 1440x900",
+        "EN 390x844",
+        "DE 1440x900",
+        "DE 390x844"
+      ],
+      "scope": "Added temperature/port settings and source wording; same actual current Woo selection. Native result/report inspected in desktop. No unrelated full-site matrix.",
+      "screenshots": [
+        "dc-settings-en-desktop.png",
+        "dc-settings-de-mobile.png",
+        "dc-native-result-en-desktop.png"
+      ],
+      "no_unsaved_preview_edits": true,
+      "viewport_restored": true
+    },
+    "protected_roof": {
+      "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+      "revision": 14,
+      "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+    },
+    "remaining_full_goal": [
+      "Continuous/thermal/dynamic manufacturer performance, unknown instantaneous converter limits and manufacturer terminal/stack topology release.",
+      "Supported topology search/ranking and energy scenario comparison beyond the finite local models.",
+      "Country-specific electrical, mounting, fire, structural and grid requirements; all-Europe coverage is not certified by this two-hour German reference.",
+      "Complete released BOM and report consumers, affected site/Genie/Woo/commerce routes, old data/link migration and review/production deployment/readback."
+    ],
+    "production_changed_by_548": false,
+    "validation_stopped_after_pass": true
   }
 }

@@ -82,6 +82,17 @@ def _values(raw: str | int | float, factor: float) -> tuple[str, Json]:
     return "text", text
 
 
+def numeric_value(raw: str | int | float, unit: str) -> tuple[str, str, str, Json]:
+    """The same SI projection for an explicitly maintained table cell.
+
+    This validates redundant column values against the cited raw table; it
+    does not infer a column from a model name or introduce device limits.
+    """
+    quantity, canonical_unit, factor = _UNITS[unit]
+    shape, value = _values(raw, factor)
+    return quantity, canonical_unit, shape, value
+
+
 def _source(product: dict[str, Any], key: str, figure: dict[str, Any]) -> Object | None:
     citation = figure.get("citation")
     if not isinstance(citation, dict):

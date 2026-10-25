@@ -213,6 +213,24 @@ export function RunBasis({
 						</>
 					)}
 					<dl className="lp-field-summary">
+						{dc && (
+							<div>
+								<dt>
+									{__("Battery temperature for this scenario", "linker-tools")}
+								</dt>
+								<dd>
+									{(() => {
+										const temperature = readObject(
+											readObject(run.result!.prepared_dc_parameters)
+												.loss_scenario,
+										).battery_temperature_c;
+										return typeof temperature === "number"
+											? number(temperature) + " °C"
+											: __("Not specified", "linker-tools");
+									})()}
+								</dd>
+							</div>
+						)}
 						{(dc
 							? (["usable_window_kwh", ...DC_LOSS_FIELDS] as const)
 							: BATTERY_FIELDS

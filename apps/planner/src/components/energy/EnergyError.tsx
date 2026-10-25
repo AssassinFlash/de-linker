@@ -4,6 +4,36 @@ import { Notice } from "../Notice.tsx";
 import { GeometryInputError } from "../../domain/validateGeometry.ts";
 
 export function energyErrorText(error: unknown): string {
+	if (error instanceof ApiError) {
+		switch (error.evidenceIssue?.constraint_id) {
+			case "battery_operating_temperature_required":
+				return __(
+					"The selected battery needs a declared operating temperature for this scenario.",
+					"linker-tools",
+				);
+			case "battery_temperature_outside_condition":
+				return __(
+					"The declared battery temperature is outside a documented operating range. Review the scenario temperature and source details.",
+					"linker-tools",
+				);
+			case "module_count_outside_condition":
+			case "module_count_column_required":
+				return __(
+					"A documented configuration could not be matched to the selected module count. Review the equipment selection and source details.",
+					"linker-tools",
+				);
+			case "column_value_unit_mismatch":
+				return __(
+					"Values or units in the selected product table could not be matched consistently. This calculation could not be prepared.",
+					"linker-tools",
+				);
+			case "uninterpreted_condition":
+				return __(
+					"A documented condition could not be checked for this scenario. Review the source details.",
+					"linker-tools",
+				);
+		}
+	}
 	const code =
 		error instanceof ApiError || error instanceof GeometryInputError
 			? error.code

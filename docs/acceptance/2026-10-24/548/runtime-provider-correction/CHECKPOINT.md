@@ -504,37 +504,58 @@ WordPress delivery. p548, production, runtime carriers and full backups were
 unchanged; existing annual, PV, workspace and commerce evidence remains closed.
 
 
-### 2026-10-25 · DC frontend and current Woo source connected locally
+### 2026-10-25 · Conditioned Woo source and native DC result delivered locally
 
-The shared-DC preparation path, immutable results, report selection, trace and
-CSV consumers are connected to the existing Journal workspace. AC and DC source
-notes stay separate. Source citations and model efficiencies are validated before
-presentation; definite pre-queue evidence refusals and historical receipts no
-longer strand the request journal. Existing completed native DC fixture bytes
-were reused for the browser consumer; annual/PV physics was not rerun.
+The Journal workbench now interprets the maintained Woo quantity categories,
+normal-current direction/port and stack-temperature conditions, and explicitly
+labelled module-count power/voltage columns. Raw conditions remain attached to
+the facts. Actual source labels BAT1/BAT2 are selectable; no alternate product
+source or editable manufacturer fact pack was added. Historical durable requests
+preserve temperature absent/null/value when restored.
 
-The current three-product Woo handoff was merged into p548 through native
-maintenance fields and source events. Original PDF hashes matched; unrelated
-product fields, SKU/status/language pairs and saved projects were retained.
-The managed engineering preparation was claimed/acknowledged and loaded.
-HTTP and worker now share `aa5334f0`; local source is `ee916454`. Exactly two
-runtime carriers remain: new current and previous current. No new environment,
-instance or full backup was created. The temporary copy-review mapping was
-removed after checking the compiled German catalog.
+A real native calculation exposed an unrelated dependency defect: a sales
+compatibility revision invalidated an unchanged reference-only PV proof. The
+adapter now obtains current native reference permission/preparation and compares
+the complete module, document and reference identities before reusing retained
+output. Equipment proofs retain their compatibility gate. Old PV bytes, original
+proof and all saved history remain intact; no annual model recomputation occurs.
 
-The remaining real-product defect is now precise: current Woo qualifiers include
-quantity categories, direction/ports, stack temperature conditions and explicit
-module-count column objects. The existing DC interpreter supports a narrower
-condition vocabulary. That interpreter and its explicit scenario/domain inputs
-must be extended; the maintained product facts must not be flattened or rewritten
-to make an example pass. The reused Lyon example contains an AC CSV, which is
-not an admissible retained DC PV source. A real-product native DC calculation,
-curve/report/PDF and production acceptance are therefore still open. Full-goal
-site/commerce/country/topology/migration work remains in the same map.
+The existing Berlin example advanced from revision 14 to 18 with current Woo
+H2-10K-T3, three BU2-5.0-HV1 modules and BC2-HV1. Its original revision 14 is
+preserved. The protected roof example remains revision 14 with the same hash.
+The short period uses retained PV DC output and declared synthetic load, fixed
+20 °C battery temperature and explicit reference losses. Woo supplies 13.5 kWh
+usable energy, the selected 9.216 kW system-rated column and a conservative
+8.064 kW terminal-current bound. These bounds do not prove continuous performance.
 
-Spec, Standards and EN/DE copy reviews passed this scoped frontend batch. Only
-its settings surface received EN/DE × 1440/390 UI inspection; saved calculations
-were preserved, preview edits undone and viewport restored. Detailed identities,
-remaining constraints and two retained images are in the existing installation
-JSON. Shared-source owner was notified as soon as the local dependency loaded;
-its knowledge work does not wait for the rest of this goal.
+Native browser preparation, save, registered-worker execution and the result
+completed as run `37101494e75844d7bb146ca95c499052`. Numerical verification and
+scenario constraints pass for that finite two-hour baseline. The preceding run
+`716eadd074f047af8605f195989d5527` correctly records the inherited conflict of
+empty initial inventory and a 1 kWh reserve; only the baseline's reserve was
+explicitly changed to zero. That earlier failure remains visible in history.
+The real trace is retained. EN/DE reports were generated from the same completed
+run and downloaded through the native browser; both PDF hashes match their
+retained owned assets. The new temperature/scope content and actual DC totals
+are readable in the two-page PDFs.
+
+The paired HTTP/worker runtime is `afcc3f3c` on unchanged local Woo source
+`ee916454`. Only current plus one rollback carrier remain; two superseded code
+carriers and the two temporary PDF render images were reclaimed. No new instance,
+environment or full backup was created, and production was not changed by this
+line. Changed settings received bounded EN/DE × 1440/390 inspection; the actual
+result/report was inspected, no preview edits remain and viewport is restored.
+
+Spec, Standards and EN/DE copy reviews passed the affected code and their bounded
+repair deltas. The existing short source-path test, two discriminating source
+counterexamples, changed-file static checks and frontend build suffice for this
+batch. Already-passed annual/PV/AC/commerce and unrelated UI coverage were reused.
+The single installation JSON's `shared_dc_conditioned_source` section holds exact
+identities, retained images/PDFs, source conditions and remaining requirements.
+
+Continuous/thermal manufacturer performance, unknown instantaneous converter
+limits, supported wiring/topology and country release, broader search/comparison,
+complete BOM/consumer integration, affected site routes, migration and review/
+production delivery remain within the same active goal. The finite German
+reference is neither an all-Europe engineering release nor production acceptance.
+Shared-source owner was already unblocked as soon as its dependency loaded.

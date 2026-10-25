@@ -99,10 +99,13 @@ export interface ScenarioDraft extends JsonObject {
 	} | null;
 }
 
-const object = (properties: Record<string, object>): object => ({
+const object = (
+	properties: Record<string, object>,
+	optional: readonly string[] = [],
+): object => ({
 	type: "object",
 	properties,
-	required: Object.keys(properties),
+	required: Object.keys(properties).filter((key) => !optional.includes(key)),
 	additionalProperties: false,
 });
 const nullable = (value: object): object => ({
@@ -130,17 +133,21 @@ const checkParts = ajv.compile<JsonObject>({
 const draftShape = object({
 	schema_version: { type: "integer", const: 1 },
 	coupling: { enum: ["independent_ac", "shared_dc"], type: "string" },
-	dc: object({
-		source_note: text,
-		pv_converter_id: text,
-		battery_port_id: text,
-		aux_dc_kw: nullable({ type: "number" }),
-		losses: object(
-			Object.fromEntries(
-				DC_LOSS_FIELDS.map((key) => [key, nullable({ type: "number" })]),
+	dc: object(
+		{
+			source_note: text,
+			pv_converter_id: text,
+			battery_port_id: text,
+			battery_temperature_c: nullable({ type: "number" }),
+			aux_dc_kw: nullable({ type: "number" }),
+			losses: object(
+				Object.fromEntries(
+					DC_LOSS_FIELDS.map((key) => [key, nullable({ type: "number" })]),
+				),
 			),
-		),
-	}),
+		},
+		["battery_temperature_c"],
+	),
 	battery: object(
 		Object.fromEntries(
 			BATTERY_FIELDS.map((key) => [key, nullable({ type: "number" })]),
@@ -263,6 +270,8 @@ export function scenarioParts(
 	readonly inputs: JsonObject;
 } {
 	const dc = draft.coupling === "shared_dc";
+	if (dc && !draft.dc?.source_note.trim())
+		throw new ApiError(422, "battery_source_required");
 	if (dc && !equipmentSelection)
 		throw new ApiError(422, "dc_equipment_required");
 	if (dc && (!draft.dc?.pv_converter_id.trim() || draft.dc.aux_dc_kw === null))
@@ -274,6 +283,9 @@ export function scenarioParts(
 				parameter_basis: "explicit_loss_scenario_with_woo_equipment",
 				...draft.dc?.losses,
 				battery_port_id: draft.dc?.battery_port_id,
+				...(draft.dc!.battery_temperature_c === undefined
+					? {}
+					: { battery_temperature_c: draft.dc!.battery_temperature_c }),
 				source_note: draft.dc!.source_note,
 			})
 		: scenarioBattery(draft);

@@ -74,7 +74,10 @@ class HttpAssetIntake:
 
     @staticmethod
     def battery_content(body: BatteryScenario) -> bytes:
-        return encode(body.parameters.model_dump(mode="json"))
+        # Preserve an older durable request's exact parameter shape when an
+        # additive optional condition was absent. New explicit fields retain
+        # their null/value; they are never backfilled into an old command hash.
+        return encode(body.parameters.model_dump(mode="json", exclude_unset=True))
 
     @staticmethod
     def battery_metadata(body: BatteryScenario) -> Object:

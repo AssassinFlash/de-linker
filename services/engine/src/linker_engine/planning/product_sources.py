@@ -21,6 +21,8 @@ from ..publication import (
     View,
 )
 from .canonical import Json, Object, decode_object, encode
+from .equipment_fact_resolution import declared_battery_ports
+from .equipment_facts import compile_product
 from .errors import Conflict, InvalidInput, ProductEvidenceChanged, VersionUnavailable
 from .geometry_documents import GeometryDocument, ModuleSource, ModuleSpec
 from .pv_parameters import PvGenerationParameters, PvModuleParameters
@@ -136,6 +138,33 @@ class ProductSources:
         scope = basis.get("publication")
         if basis.get("schema_version") != 1 or not isinstance(scope, dict):
             raise VersionUnavailable("pinned Woo product proof is missing")
+        if require_reference and set(basis) == {
+            "schema_version",
+            "publication",
+            "module",
+        }:
+            # PV preparation uses only this reference component. A sales
+            # compatibility update must not invalidate unchanged module output.
+            # Obtain a fresh native permission/preparation proof, then require
+            # exact component, document and reference identities. Retained
+            # profile bytes and their original publication proof stay intact.
+            current = self.module_basis()
+            current_scope = cast(Object, current["publication"])
+            if (
+                set(scope) != set(current_scope)
+                or basis["module"] != current["module"]
+                or any(
+                    scope.get(key) != current_scope.get(key)
+                    for key in (
+                        "engineering_contract",
+                        "products",
+                        "documents",
+                        "reference_inputs",
+                    )
+                )
+            ):
+                raise ProductEvidenceChanged("current Woo module data changed")
+            return
         try:
             loaded = self.load()
             if (
@@ -290,6 +319,13 @@ class ProductSources:
                         "products": [
                             row for row in feed["products"] if row["id"] in ids
                         ],
+                        "dc_battery_ports": {
+                            str(row["canonical_product_id"]): cast(Json, ports)
+                            for row in feed["products"]
+                            if row["id"] in ids
+                            and (ports := declared_battery_ports(compile_product(row)))
+                            is not None
+                        },
                         "references": references,
                         "pv_modules": templates,
                         "module_diagnostics": diagnostics,

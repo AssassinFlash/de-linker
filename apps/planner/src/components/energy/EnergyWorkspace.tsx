@@ -404,9 +404,18 @@ export function EnergyWorkspace({
 				...(dc
 					? {
 							dc: {
-								...setup.dc,
+								...Object.fromEntries(
+									Object.entries(setup.dc ?? {}).filter(
+										([key]) => key !== "battery_temperature_c",
+									),
+								),
 								source_note: command.source_note,
 								battery_port_id: parameters.battery_port_id,
+								...(parameters.battery_temperature_c === undefined
+									? {}
+									: {
+											battery_temperature_c: parameters.battery_temperature_c,
+										}),
 								losses: Object.fromEntries(
 									[
 										"eta_bus_to_battery",
@@ -1045,6 +1054,9 @@ export function EnergyWorkspace({
 							)}
 						</ol>
 						<ScenarioForm
+							client={client}
+							scope={session.query_scope}
+							active={active && view === "scenario"}
 							equipmentSelection={equipmentSelection}
 							converters={converterIds}
 							key={setup.coupling ?? "independent_ac"}

@@ -41,8 +41,18 @@ export function readEquipmentProducts(value: unknown) {
 	});
 	if (new Set(products.map((p) => p.id)).size !== products.length)
 		throw new ApiError(502, "invalid_product_reply");
+	const dcPorts = readObject(row.dc_battery_ports ?? {});
+	for (const [id, ports] of Object.entries(dcPorts))
+		if (
+			!products.some((p) => String(p.id) === id) ||
+			!Array.isArray(ports) ||
+			ports.some((p) => typeof p !== "string" || !p.trim()) ||
+			new Set(ports).size !== ports.length
+		)
+			throw new ApiError(502, "invalid_product_reply");
 	return {
 		products,
+		dcPorts: dcPorts as Readonly<Record<string, readonly string[]>>,
 		prepared:
 			row.figure_projection_version === 2 &&
 			row.compatibility_origin === "woocommerce",

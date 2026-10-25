@@ -12,6 +12,7 @@ from typing import Any, cast
 
 from .canonical import Json, Object, decode_object, encode
 from .equipment_evidence import EquipmentEvidence
+from .equipment_fact_resolution import FactContext, FactUse, resolve_fact
 from .equipment_inputs import EquipmentSelection
 from .errors import InvalidInput, ProductEvidenceChanged
 
@@ -50,6 +51,7 @@ def assess_equipment(
     if not selected.issubset(products):
         raise InvalidInput("selected equipment is outside the current Woo-ready set")
     typed = {key: evidence.compiled(key) for key in selected}
+    fact_context = FactContext(selection, products)
     checks: list[Json] = []
 
     def add(
@@ -87,11 +89,19 @@ def assess_equipment(
         return found
 
     def number(
-        product_id: int, key: str, quantity: str | tuple[str, ...]
+        product_id: int,
+        key: str,
+        quantity: str | tuple[str, ...],
+        use: FactUse = "numeric",
     ) -> tuple[float | None, list[dict[str, Any]]]:
         found = fact(product_id, key, quantity)
-        if found and found["status"] == "typed" and found["shape"] == "scalar":
-            return float(found["value"]), [found]
+        resolved = (
+            resolve_fact(cast(Object, found), fact_context, use).fact if found else None
+        )
+        if resolved and resolved["shape"] == "scalar":
+            return float(cast(float, resolved["value"])), [
+                cast(dict[str, Any], resolved)
+            ]
         return None, [found] if found else []
 
     def limit(
@@ -100,11 +110,12 @@ def assess_equipment(
         product_id: int,
         key: str,
         quantity: str | tuple[str, ...],
+        use: FactUse = "numeric",
     ) -> None:
         if requested is None:
             add(identifier, "unresolved", "project_requirement_missing")
             return
-        value, refs = number(product_id, key, quantity)
+        value, refs = number(product_id, key, quantity, use)
         if value is None:
             add(
                 identifier,
@@ -125,7 +136,10 @@ def assess_equipment(
 
     inverter = products[selection.inverter_product_id]
     converter_power, converter_refs = number(
-        selection.inverter_product_id, "ac_output_kw_nominal", "active_power"
+        selection.inverter_product_id,
+        "ac_output_kw_nominal",
+        "active_power",
+        "nominal_ac_output",
     )
     add(
         "converter_identity",
@@ -155,6 +169,7 @@ def assess_equipment(
             selection.inverter_product_id,
             "max_pv_input_power_w",
             "pv_nameplate_power",
+            "pv_nameplate_limit",
         )
         add(
             "pv_electrical_topology",
@@ -319,47 +334,31 @@ def assess_equipment(
         )
         voltage_status = "unresolved"
         operating: dict[str, Any] | None = None
+        candidates: list[dict[str, Any]] = []
         for pid in [battery_id, *selection.accessory_product_ids]:
             found = fact(pid, "system_operating_voltage_range_v", "voltage")
-            if found and found["status"] == "typed":
-                if found["shape"] == "ordered_values" and count is not None:
-                    values = found["value"]
-                    labels = found["columns"]
-                    if (
-                        len(labels) == len(values)
-                        and all(
-                            isinstance(label, dict)
-                            and set(label) == {"modules_per_stack"}
-                            and type(label["modules_per_stack"]) is int
-                            for label in labels
-                        )
-                        and len({label["modules_per_stack"] for label in labels})
-                        == len(labels)
-                    ):
-                        indices = [
-                            i
-                            for i, label in enumerate(labels)
-                            if label["modules_per_stack"] == count
-                        ]
-                        column = values[indices[0]] if len(indices) == 1 else None
-                        if column is not None and column["shape"] == "interval":
-                            operating = {
-                                **found,
-                                "shape": "interval",
-                                "value": column["value"],
-                                "selected_module_count": count,
-                            }
-                elif found["shape"] == "interval":
-                    minimum, _ = number(pid, "modules_per_stack_min", "count")
-                    maximum, _ = number(pid, "modules_per_stack_max", "count")
-                    if (
-                        count is not None
-                        and minimum is not None
-                        and minimum == maximum == count
-                    ):
-                        operating = found
-                if operating is not None:
-                    break
+            voltage_projection = (
+                resolve_fact(
+                    cast(Object, found), fact_context, "battery_operating_voltage"
+                ).fact
+                if found
+                else None
+            )
+            if not voltage_projection or voltage_projection["shape"] != "interval":
+                continue
+            if voltage_projection.get("selected_module_count") == count and count is not None:
+                candidates.append(cast(dict[str, Any], voltage_projection))
+            else:
+                minimum, _ = number(pid, "modules_per_stack_min", "count")
+                maximum, _ = number(pid, "modules_per_stack_max", "count")
+                if count is not None and minimum == maximum == count:
+                    candidates.append(cast(dict[str, Any], voltage_projection))
+        if (
+            candidates
+            and len({encode(cast(Json, item["value"])) for item in candidates}) == 1
+        ):
+            operating = candidates[0]
+
         if (
             inv_range
             and inv_range["status"] == "typed"

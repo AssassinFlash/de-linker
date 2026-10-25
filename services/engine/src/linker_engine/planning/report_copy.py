@@ -3,6 +3,14 @@
 from __future__ import annotations
 
 TEXT = {
+    "dc_battery_temperature": (
+        "Battery temperature for this scenario",
+        "Batterietemperatur im Szenario",
+    ),
+    "dc_temperature_scope": (
+        "Battery temperature is a fixed scenario condition used to check the documented charging and discharging temperature ranges. It is not inferred from outdoor weather. This model uses fixed loss assumptions and does not simulate temperature changes.",
+        "Die angegebene Batterietemperatur gilt für das gesamte Szenario als konstant und wird mit den dokumentierten Temperaturbereichen für Laden und Entladen abgeglichen. Sie wird nicht aus Wetterdaten abgeleitet. Das Modell verwendet feste Verlustannahmen und bildet keine Temperaturänderungen ab.",
+    ),
     "title": ("Project planning report", "Projektplanungsbericht"),
     "subtitle": (
         "Saved project inputs and selected calculation results",

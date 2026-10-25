@@ -1,3 +1,4 @@
+import type { PlannerClient } from "../../data/PlannerClient.ts";
 import { useCallback, useRef } from "react";
 import type { ScenarioDraft } from "../../domain/energyScenario.ts";
 import { BATTERY_FIELDS, emptyPeriod } from "../../domain/energyScenario.ts";
@@ -22,6 +23,9 @@ export function ScenarioForm({
 	equipmentSelection,
 	converters,
 	openEquipment,
+	client,
+	scope,
+	active,
 }: {
 	value: ScenarioDraft;
 	locale: string;
@@ -34,6 +38,9 @@ export function ScenarioForm({
 	equipmentSelection: JsonObject | null;
 	converters: readonly string[];
 	openEquipment: () => void;
+	client: PlannerClient;
+	scope: string;
+	active: boolean;
 }) {
 	const validity = useRef(new Map<string, boolean>());
 	const report = useCallback(
@@ -73,6 +80,14 @@ export function ScenarioForm({
 				</label>
 				{dc && (
 					<DcStorageForm
+						client={client}
+						scope={scope}
+						active={active && section === "storage"}
+						inverterId={
+							typeof equipmentSelection?.inverter_product_id === "number"
+								? equipmentSelection.inverter_product_id
+								: null
+						}
 						value={value}
 						locale={locale}
 						onChange={onChange}

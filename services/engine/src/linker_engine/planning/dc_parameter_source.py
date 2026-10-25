@@ -8,20 +8,37 @@ continuous performance. No Wp, VA, peak or fault value is promoted to active kW.
 from __future__ import annotations
 
 import re
-from typing import cast
+from typing import Any, cast
 
 from .canonical import Object, digest, encode
 from .dc_energy_parameters import DcLossScenario, DcPreparedParameters
 from .equipment_assessment import assess_equipment, selection_products
 from .equipment_evidence import EquipmentEvidence
+from .equipment_fact_resolution import (
+    FactContext,
+    FactUse,
+    declared_battery_ports,
+    resolve_fact,
+)
 from .equipment_inputs import EquipmentSelection
 from .errors import EvidenceMissing, MethodDomainExceeded, ProductEvidenceChanged
 
 
 class _Facts:
-    def __init__(self, basis: Object, selection: EquipmentSelection) -> None:
+    def __init__(
+        self, basis: Object, selection: EquipmentSelection, assumptions: DcLossScenario
+    ) -> None:
         self.evidence = EquipmentEvidence(basis)
         self.selection = selection
+        self.context = FactContext(
+            selection,
+            {
+                r["canonical_product_id"]: r
+                for r in cast(list[dict[str, Any]], basis["products"])
+            },
+            assumptions.battery_temperature_c,
+            assumptions.battery_port_id,
+        )
         self.used: Object = {}
 
     def find(
@@ -32,6 +49,7 @@ class _Facts:
         *,
         required: bool = True,
         per_port: bool = False,
+        use: FactUse = "numeric",
     ) -> Object | None:
         all_facts = cast(Object, self.evidence.compiled(pid)["facts"])
         found: list[Object] = []
@@ -39,52 +57,42 @@ class _Facts:
             value = all_facts.get(key)
             if not isinstance(value, dict) or value.get("quantity") != quantity:
                 continue
-            qualifier = value.get("qualifier")
-            scope_matched = qualifier == {"scope": "per_battery_port"} or (
-                self.selection.parallel_stacks == 1
-                and qualifier
-                == {"scope": "per_battery_port", "connection": "one_stack_per_port"}
-            )
-            if value.get("status") != "typed" and not (
-                per_port and scope_matched and value.get("status") == "conditional"
-            ):
+            projected = resolve_fact(value, self.context, use)
+            if projected.fact is None:
+                if (
+                    value.get("source") is not None
+                    and value.get("status") == "conditional"
+                ):
+                    raise EvidenceMissing(
+                        f"woo_dc_condition:{pid}:{key}",
+                        product_id=pid,
+                        fact_id=key,
+                        constraint_id=projected.issue,
+                    )
                 continue
+            value = projected.fact
+            qualifier = value.get("qualifier")
+            scope_matched = (
+                isinstance(qualifier, dict)
+                and qualifier.get("scope") == "per_battery_port"
+            )
             explicitly_per_port = "_per_battery_port_" in key or "_per_port_" in key
             if per_port and not (scope_matched or explicitly_per_port):
                 continue
-            if value.get("shape") == "ordered_values":
-                columns, values = value.get("columns"), value.get("value")
-                if (
-                    not isinstance(columns, list)
-                    or not isinstance(values, list)
-                    or len(columns) != len(values)
-                ):
-                    continue
-                matched = [
-                    item
-                    for column, item in zip(columns, values, strict=True)
-                    if isinstance(column, dict)
-                    and column
-                    == {"modules_per_stack": self.selection.modules_per_stack}
-                ]
-                if len(matched) != 1 or not isinstance(matched[0], dict):
-                    continue
-                value = {
-                    **value,
-                    "shape": matched[0].get("shape"),
-                    "value": matched[0].get("value"),
-                    "selected_modules_per_stack": self.selection.modules_per_stack,
-                }
-            if value.get("shape") != "scalar":
-                continue
-            if type(value.get("value")) not in (int, float):
+            if value.get("shape") != "scalar" or type(value.get("value")) not in (
+                int,
+                float,
+            ):
                 continue
             self.used[f"{pid}.{key}"] = value
-            if per_port and scope_matched:
+            if "condition_match" in value:
                 self.used[f"{pid}.{key}.condition_match"] = {
-                    "scope": "per_battery_port",
+                    "scope": qualifier.get("scope")
+                    if isinstance(qualifier, dict)
+                    else None,
                     "parallel_stacks": self.selection.parallel_stacks,
                     "connection_matched": qualifier,
+                    "matched_scenario": value["condition_match"],
                 }
             found.append(value)
         if not found:
@@ -113,8 +121,11 @@ class _Facts:
         *,
         required: bool = True,
         per_port: bool = False,
+        use: FactUse = "numeric",
     ) -> float | None:
-        fact = self.find(pid, keys, quantity, required=required, per_port=per_port)
+        fact = self.find(
+            pid, keys, quantity, required=required, per_port=per_port, use=use
+        )
         return float(cast(float, fact["value"])) if fact else None
 
     def capability(self, pid: int, key: str) -> bool | None:
@@ -156,7 +167,7 @@ def prepare_dc_parameters(
         raise MethodDomainExceeded(
             "shared DC currently requires one explicitly configured battery stack"
         )
-    facts = _Facts(basis, selection)
+    facts = _Facts(basis, selection, assumptions)
     inv, battery = selection.inverter_product_id, selection.battery_product_id
     assessment = assess_equipment(
         {
@@ -196,15 +207,31 @@ def prepare_dc_parameters(
         ("battery_port_count", "number_of_battery_ports", "n_battery_ports"),
         "count",
     )
-    if port_match is None or port_count is None or int(port_match[1]) > port_count:
+    ports = declared_battery_ports(facts.evidence.compiled(inv))
+    if (
+        port_count is None
+        or (ports is not None and assumptions.battery_port_id not in ports)
+        or (ports is None and (port_match is None or int(port_match[1]) > port_count))
+    ):
         raise EvidenceMissing(
             "woo_dc_fact:explicit_selected_battery_port",
             product_id=inv,
             fact_id="battery_port_count",
             constraint_id="selected_battery_port",
         )
-    battery_charge = facts.number(battery, ("max_charge_current_a",), "current")
-    battery_discharge = facts.number(battery, ("max_discharge_current_a",), "current")
+    facts.context = FactContext(
+        selection,
+        facts.context.products,
+        assumptions.battery_temperature_c,
+        assumptions.battery_port_id,
+        int(port_count),
+    )
+    battery_charge = facts.number(
+        battery, ("max_charge_current_a",), "current", use="normal_charge_current"
+    )
+    battery_discharge = facts.number(
+        battery, ("max_discharge_current_a",), "current", use="normal_discharge_current"
+    )
     port_charge = facts.number(
         inv,
         (
@@ -214,6 +241,7 @@ def prepare_dc_parameters(
         ),
         "current",
         per_port=True,
+        use="normal_charge_current",
     )
     port_discharge = facts.number(
         inv,
@@ -224,12 +252,14 @@ def prepare_dc_parameters(
         ),
         "current",
         per_port=True,
+        use="normal_discharge_current",
     )
     rated_bank = facts.number(
         battery,
-        ("system_rated_dc_power_w", "system_rated_dc_power_kw"),
+        ("system_rated_dc_power_w", "system_rated_dc_power_kw", "rated_power_w"),
         "active_power",
         required=False,
+        use="bank_rated_dc_power",
     )
     if rated_bank is None:
         rated_module = facts.number(
@@ -251,6 +281,7 @@ def prepare_dc_parameters(
             "rated_output_power_kw",
         ),
         "active_power",
+        use="nominal_ac_output",
     )
     forward_dc = facts.number(
         inv, ("shared_inverter_max_dc_input_power_kw",), "active_power", required=False

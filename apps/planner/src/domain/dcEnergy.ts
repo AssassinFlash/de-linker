@@ -15,6 +15,7 @@ export interface DcLossScenario extends JsonObject {
 	readonly model: typeof DC_MODEL;
 	readonly parameter_basis: "explicit_loss_scenario_with_woo_equipment";
 	readonly battery_port_id: string;
+	readonly battery_temperature_c?: number | null;
 	readonly eta_bus_to_battery: number;
 	readonly eta_battery_to_bus: number;
 	readonly eta_store_charge: number;
@@ -41,6 +42,7 @@ export interface DcScenarioDraft extends JsonObject {
 	readonly source_note: string;
 	readonly pv_converter_id: string;
 	readonly battery_port_id: string;
+	readonly battery_temperature_c?: number | null;
 	readonly aux_dc_kw: number | null;
 	readonly losses: Readonly<Record<DcLossField, number | null>>;
 }
@@ -49,6 +51,7 @@ export function emptyDcScenario(): DcScenarioDraft {
 		source_note: "",
 		pv_converter_id: "",
 		battery_port_id: "",
+		battery_temperature_c: null,
 		aux_dc_kw: null,
 		losses: Object.fromEntries(
 			DC_LOSS_FIELDS.map((key) => [key, null]),

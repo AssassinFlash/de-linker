@@ -7914,3 +7914,31 @@ msgstr "Die Berechnung am gemeinsamen Wechselrichter benötigt eine PV-Gruppe, d
 #: build/planner/assets/planner.js
 msgid "This connection or operating mode is outside the selected calculation model. Review the system connection and operating periods."
 msgstr "Diese Verbindung oder Betriebsart wird vom ausgewählten Berechnungsmodell nicht abgedeckt. Prüfen Sie die Systemanbindung und die Betriebszeiträume."
+
+#: build/planner/assets/planner.js
+msgid "A documented condition could not be checked for this scenario. Review the source details."
+msgstr "Eine dokumentierte Bedingung konnte für dieses Szenario nicht ausgewertet werden. Prüfen Sie die Quelldetails."
+
+#: build/planner/assets/planner.js
+msgid "A documented configuration could not be matched to the selected module count. Review the equipment selection and source details."
+msgstr "Der gewählten Modulanzahl konnte keine dokumentierte Konfiguration eindeutig zugeordnet werden. Prüfen Sie die Geräteauswahl und die Quelldetails."
+
+#: build/planner/assets/planner.js
+msgid "Battery temperature for this scenario"
+msgstr "Batterietemperatur im Szenario"
+
+#: build/planner/assets/planner.js
+msgid "Battery temperature is a fixed scenario condition used to check the documented charging and discharging temperature ranges. It is not inferred from outdoor weather. This model uses fixed loss assumptions and does not simulate temperature changes."
+msgstr "Die angegebene Batterietemperatur gilt für das gesamte Szenario als konstant und wird mit den dokumentierten Temperaturbereichen für Laden und Entladen abgeglichen. Sie wird nicht aus Wetterdaten abgeleitet. Das Modell verwendet feste Verlustannahmen und bildet keine Temperaturänderungen ab."
+
+#: build/planner/assets/planner.js
+msgid "The declared battery temperature is outside a documented operating range. Review the scenario temperature and source details."
+msgstr "Die angegebene Batterietemperatur liegt außerhalb eines dokumentierten Betriebsbereichs. Prüfen Sie die Temperatur im Szenario und die Quelldetails."
+
+#: build/planner/assets/planner.js
+msgid "The selected battery needs a declared operating temperature for this scenario."
+msgstr "Für die ausgewählte Batterie ist eine Angabe zur Betriebstemperatur im Szenario erforderlich."
+
+#: build/planner/assets/planner.js
+msgid "Values or units in the selected product table could not be matched consistently. This calculation could not be prepared."
+msgstr "Die Werte oder Einheiten der ausgewählten Produkttabelle ließen sich nicht konsistent zuordnen. Die Berechnung konnte nicht vorbereitet werden."

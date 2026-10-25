@@ -9,6 +9,7 @@ from __future__ import annotations
 import copy
 import json
 from dataclasses import replace
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -136,7 +137,7 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     battery = next(row for row in feed["products"] if row["id"] == 2090)
 
     def figure(
-        product: dict, key: str, value: float, unit: str, citation: dict
+        product: dict, key: str, value: float | str, unit: str, citation: dict
     ) -> None:
         product["figures"][key] = {
             "value": value,
@@ -152,13 +153,67 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     ):
         figure(inverter, key, 50, "A", inv_citation)
         inverter["figures"][key]["qualifier"] = {
+            "quantity_kind": "maximum",
             "scope": "per_battery_port",
-            "connection": "one_stack_per_port",
+            "direction": "discharge" if "discharge" in key else "charge",
+            "ports": ["BAT1", "BAT2"],
+            "source_expression": "2*50 A",
         }
     figure(inverter, "n_battery_ports", 2, "units", inv_citation)
-    figure(inverter, "rated_ac_power_kw", 10, "kW", inv_citation)
+    figure(inverter, "ac_output_kw_nominal", 10000, "W", inv_citation)
+    inverter["figures"]["ac_output_kw_nominal"]["qualifier"] = {
+        "quantity_kind": "rated_active_power",
+        "scope": "on_grid_ac_output",
+    }
     for key in ("max_charge_current_a", "max_discharge_current_a"):
         figure(battery, key, 30, "A", battery_citation)
+        battery["figures"][key]["qualifier"] = {
+            "quantity_kind": "maximum",
+            "scope": "series_stack",
+            "direction": "discharge" if "discharge" in key else "charge",
+            "module_count_min": 1,
+            "module_count_max": 5,
+            "operating_temperature_c": [-10 if "discharge" in key else 0, 50],
+        }
+    controller = next(row for row in feed["products"] if row["id"] == 2092)
+    from linker_engine.planning.equipment_facts import numeric_value
+
+    voltage = controller["figures"]["system_operating_voltage_range_v"]
+    _, _, _, values = numeric_value(voltage["value"], voltage["unit"])
+    voltage["qualifier"] = {
+        "quantity_kind": "operating_range",
+        "scope": "battery_system",
+        "module_count_basis": "columns",
+    }
+    voltage["columns"] = [
+        {
+            "module_count": i,
+            "min": column["value"][0],
+            "max": column["value"][1],
+            "unit": "V",
+        }
+        for i, column in enumerate(values, 1)
+    ]
+    figure(
+        battery,
+        "rated_power_w",
+        "3072 / 6144 / 9216 / 12288 / 15360",
+        "W",
+        battery_citation,
+    )
+    rated = battery["figures"]["rated_power_w"]
+    rated["qualifier"] = {
+        "quantity_kind": "rated",
+        "scope": "battery_system",
+        "module_count_basis": "columns",
+        "battery_module": battery["model"],
+        "control_module": controller["model"],
+    }
+    rated["columns"] = [
+        {"module_count": i, "value": int(value.strip()), "unit": "W"}
+        for i, value in enumerate(rated["value"].split("/"), 1)
+    ]
+
     feed = publication_feed(feed, feed["compatibility"])
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
     loaded = SimpleNamespace(
@@ -276,7 +331,8 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
             "schema_version": 1,
             "model": "constant_window_shared_dc_bus_v1",
             "parameter_basis": "explicit_loss_scenario_with_woo_equipment",
-            "battery_port_id": "battery-1",
+            "battery_port_id": "BAT1",
+            "battery_temperature_c": 20,
             "eta_bus_to_battery": 1,
             "eta_battery_to_bus": 1,
             "eta_store_charge": 1,
@@ -317,6 +373,29 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
                 },
             }
         }
+
+        for temperature, reason in [
+            (None, "battery_operating_temperature_required"),
+            (-5, "battery_temperature_outside_condition"),
+        ]:
+            refused = client.post(
+                "/battery/scenario",
+                json={
+                    **body,
+                    "key": f"dc-temperature-{temperature}",
+                    "parameters": {
+                        **body["parameters"],
+                        "battery_temperature_c": temperature,
+                    },
+                },
+                headers=headers(owner),
+            )
+            assert refused.status_code == 422
+            assert refused.json()["error"]["details"] == {
+                "product_id": 2090,
+                "fact_id": "max_charge_current_a",
+                "constraint_id": reason,
+            }
         prepared = client.post("/battery/scenario", json=body, headers=headers(owner))
         assert prepared.status_code == 200, prepared.text
         assert (
@@ -449,9 +528,98 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         dc_rows = [row for row in section.rows if "(DC)" in row.label]
         assert len(dc_rows) == 2 and all(row.value.endswith("kWh") for row in dc_rows)
         assert "DC" in section.paragraphs[0] and "AC" in section.paragraphs[0]
-    assert saved.result["prepared_dc_parameters"]["source_facts"][
-        "4107.max_battery_charge_a"
-    ]["qualifier"] == {"scope": "per_battery_port", "connection": "one_stack_per_port"}
+    facts = saved.result["prepared_dc_parameters"]["source_facts"]
+    assert (
+        facts["4107.max_battery_charge_a"]["qualifier"]
+        == inverter["figures"]["max_battery_charge_a"]["qualifier"]
+    )
+    assert facts["4107.max_battery_charge_a"]["status"] == "conditional"
+    assert (
+        facts["2090.max_charge_current_a"]["condition_match"]["battery_temperature_c"]
+        == 20
+    )
+    assert facts["2090.rated_power_w"]["value"] == 9.216
+    assert facts["2090.rated_power_w"]["selected_module_count"] == 3
+    assert (
+        saved.result["prepared_dc_parameters"]["battery"]["charge_power_limit_kw"]
+        == 9.216
+    )
+    # A table declared in W cannot silently carry a mismatching duplicate cell.
+    from linker_engine.planning.equipment_fact_resolution import (
+        FactContext,
+        resolve_fact,
+    )
+    from linker_engine.planning.equipment_inputs import EquipmentSelection
+
+    bad = copy.deepcopy(compile_product(battery)["facts"]["rated_power_w"])
+    bad["columns"][2]["unit"] = "Wp"
+    context = FactContext(
+        EquipmentSelection.read(project.inputs["equipment_selection"]),
+        {p["canonical_product_id"]: p for p in feed["products"]},
+        20,
+        "BAT1",
+        2,
+    )
+    assert (
+        resolve_fact(bad, context, "bank_rated_dc_power").issue
+        == "column_value_unit_mismatch"
+    )
+    # Retained historical raw request bytes keep their original durable identity.
+    from linker_engine.planning.http_asset_intake import HttpAssetIntake
+    from linker_engine.planning.http_documents import BatteryScenario
+
+    historic = json.loads(
+        (
+            Path(__file__).resolve().parents[4]
+            / "apps/planner/tests/fixtures/dc-energy-run.json"
+        ).read_text()
+    )["run"]["result"]
+    old = historic["prepared_dc_parameters"]["loss_scenario"]
+    old_body = BatteryScenario.model_validate({**body, "parameters": old})
+    assert (
+        digest(HttpAssetIntake.battery_content(old_body))
+        == historic["pinned_assets"]["battery.raw"]
+    )
+
+
+def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
+    feed: dict, engine: Engine, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    loaded = SimpleNamespace(
+        engine=replace(engine, products=Products.from_feed(feed)),
+        publication=Publication(feed),
+        version="fixture",
+    )
+    withdrawn = False
+
+    def current(self: Publication) -> dict:
+        manifest = publication_manifest(self.feed)
+        for row in manifest["products"]:
+            row["ready"]["engineering"] = True
+        if withdrawn:
+            manifest["products"] = [
+                row
+                for row in manifest["products"]
+                if row.get("engineering_role") != "reference_pv_module"
+            ]
+        return manifest
+
+    monkeypatch.setattr(Publication, "read", current)
+    source = ProductSources(lambda: loaded)
+    proof = source.module_basis()
+    proof["publication"]["compatibility_revision"] = "0" * 64
+    source.confirm_basis(proof)
+    changed = copy.deepcopy(proof)
+    changed["module"]["parameters"]["gamma_pdc_per_c"] = -0.01
+    with pytest.raises(ProductEvidenceChanged):
+        source.confirm_basis(changed)
+    changed = copy.deepcopy(proof)
+    changed["publication"]["documents"][0]["blob_sha256"] = "0" * 64
+    with pytest.raises(ProductEvidenceChanged):
+        source.confirm_basis(changed)
+    withdrawn = True
+    with pytest.raises(ProductEvidenceChanged):
+        source.confirm_basis(proof)
 
 
 def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
@@ -461,6 +629,30 @@ def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
     original = row["figures"]["backup_power_kw"]
     original["unit"] = "kVA"
     original["qualifier"] = {"en": "With the specified transfer equipment."}
+    from linker_engine.planning.equipment_fact_resolution import (
+        FactContext,
+        resolve_fact,
+    )
+    from linker_engine.planning.equipment_inputs import EquipmentSelection
+
+    battery = copy.deepcopy(next(p for p in feed["products"] if p["id"] == 2090))
+    battery["figures"]["rated_power_w"] = {
+        "value": 3072,
+        "unit": "W",
+        "citation": copy.deepcopy(
+            battery["figures"]["module_energy_kwh_usable"]["citation"]
+        ),
+    }
+    generic = compile_product(battery)["facts"]["rated_power_w"]
+    context = FactContext(
+        EquipmentSelection.read(inputs(feed, 3)["equipment_selection"]),
+        {p["canonical_product_id"]: p for p in feed["products"]},
+    )
+    assert (
+        resolve_fact(generic, context, "bank_rated_dc_power").issue
+        == "system_power_basis_required"
+    )
+
     compiled = compile_product(row)
     figure = compiled["facts"]["backup_power_kw"]
     assert figure["quantity"] == "apparent_power" and figure["unit"] == "kVA"

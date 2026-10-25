@@ -1,6 +1,6 @@
 """Versioned native DC parameter snapshot; device facts are server-derived Woo data.
 
-Only loss/auxiliary assumptions are scenario inputs. Product voltage, current,
+Only loss/auxiliary assumptions and operating conditions are scenario inputs. Product voltage, current,
 power, energy and selected-port capability are never customer-supplied fields.
 """
 
@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Annotated, Literal
 
-from pydantic import Field, model_validator
+from pydantic import Field, field_validator, model_validator
 
 from .canonical import Object
 from .dc_battery_model import DcBatteryModel, DcPort, SharedBridge
@@ -28,6 +28,7 @@ class DcLossScenario(Document):
     model: Literal["constant_window_shared_dc_bus_v1"]
     parameter_basis: Literal["explicit_loss_scenario_with_woo_equipment"]
     battery_port_id: Identifier
+    battery_temperature_c: Annotated[float, Field(allow_inf_nan=False)] | None = None
     eta_bus_to_battery: PositiveEfficiency
     eta_battery_to_bus: PositiveEfficiency
     eta_store_charge: PositiveEfficiency
@@ -37,6 +38,13 @@ class DcLossScenario(Document):
     internal_aux_kw: Nonnegative
     standing_loss_rate_per_hour: Nonnegative
     source_note: Identifier
+
+    @field_validator("source_note")
+    @classmethod
+    def nonempty_source(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("an explicit assumption/source note is required")
+        return value
 
 
 class DcPortDocument(Document):

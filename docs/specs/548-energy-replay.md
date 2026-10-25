@@ -193,19 +193,49 @@ PV, shared DC or DC/DC power limits remain null and unassessed; the calculation
 still respects the known current/voltage and shared AC constraints. Array Wp,
 apparent VA, peak and fault current never fill those gaps. Existing Woo
 `max_battery_charge_a` and `max_battery_discharge_a` require explicit per-port
-scope; a `one_stack_per_port` qualifier is matched only for the modeled single
-stack. Unknown additional qualifiers are refused, and the original qualifier
-and conditional status remain retained. Manufacturer performance remains
-unestablished by this fixed-loss planning scenario.
+scope. Current source port labels are selected as published; count-only legacy
+sources retain their separately checked numeric selection. The product response
+exposes derived `dc_battery_ports` without creating another maintenance source.
+A `one_stack_per_port` condition is matched only for the modeled single stack.
+
+`equipment_fact_resolution` is the shared condition/column seam used by device
+qualification and DC preparation. It retains the raw qualifier and conditional
+status while recording the matching scenario. Known quantity categories remain
+distinct: on-grid rated active AC output, STC PV nameplate, normal maximum
+current, rated DC system power and operating voltage. Fault current, VA and Wp
+cannot substitute for another quantity. Unknown conditions remain unresolved.
+
+A current's documented direction, series-stack/module-count scope and battery
+temperature range must match. `battery_temperature_c` is optional for historical
+requests or unconditional sources; a source requiring it refuses a missing or
+out-of-range value. It declares a fixed scenario condition and neither derives
+battery temperature from weather nor adds a thermal model. The report and saved
+source view retain it. Optional absent conditions are excluded when reconstructing
+an original durable request, preserving historical raw command hashes.
+
+System tables select exactly one explicit `module_count` or legacy
+`modules_per_stack` column. Duplicate/missing identities, unrecognized column
+conditions, mismatching redundant values/units or conflicting system windows
+remain unresolved/refused. Source model labels do not infer column count;
+explicit battery/control-module conditions match the selected Woo products.
+Manufacturer performance remains unestablished by this fixed-loss scenario.
+
+Retained PV profiles carry a reference-only Woo proof. Before a new calculation,
+the current native reference permission/preparation proof must match the complete
+module, document and reference identities. An unrelated sales compatibility or
+source revision may change without forcing a new PV simulation. Component facts,
+document bytes and publication eligibility must still match; the retained profile
+and its original evidence remain unchanged. Equipment proofs retain their full
+compatibility-revision gate.
 
 Missing source data returns only canonical product/fact/constraint IDs, not
 exception text. AC and DC share the hardware operating-mode check. Trace rows
 state the DC PV-bus, DC battery-terminal and AC-grid boundaries. Report projection
 uses DC generation/curtailment and AC grid flows with reviewed EN/DE scope text.
 
-A short synthetic current-Woo fixture has exercised the private HTTP command,
-asset retry, durable worker, source binding, trace and report projection; an
-affected AC representative remains passing. This closes the service integration
-batch, not WordPress/browser/native-PDF acceptance. The owned p548 runtime is
-unchanged. Real source preparation, browser controls/readers and native result
-and report delivery still have to be completed within the same full goal.
+The existing short native service fixture covers the conditioned source path,
+HTTP preparation/refusal/retry, durable worker, source binding, trace and report
+projection. Existing AC and historical browser fixtures remain their respective
+regressions. Installation, browser and PDF evidence is maintained in the existing
+[548 installation record](../acceptance/2026-10-25/548/woo-source-native-install.json),
+including the current frontier and all remaining full-goal requirements.

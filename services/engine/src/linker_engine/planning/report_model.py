@@ -355,13 +355,28 @@ def build_report(source: Object) -> Report:
                 )
             )
         energy_rows.append(row("intervals", number(energy["interval_count"], locale)))
+        temperature = None
+        if dc:
+            parameters = cast(Object, energy.get("prepared_dc_parameters", {}))
+            temperature = cast(Object, parameters.get("loss_scenario", {})).get(
+                "battery_temperature_c"
+            )
+            if temperature is not None:
+                energy_rows.append(
+                    row("dc_battery_temperature", number(temperature, locale, "°C"))
+                )
         sections.append(
             ReportSection(
                 id="energy",
                 title=text("energy", locale),
                 paragraphs=[
                     text("scenario_dc_scope" if dc else "scenario_scope", locale)
-                ],
+                ]
+                + (
+                    [text("dc_temperature_scope", locale)]
+                    if temperature is not None
+                    else []
+                ),
                 rows=energy_rows,
             )
         )
