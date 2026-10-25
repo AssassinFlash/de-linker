@@ -244,10 +244,22 @@
 	});
 
 	/** Every row of the page: what the search reads, and where the row lives. */
+	function rowProducts(row) {
+		try {
+			var products = JSON.parse(row.getAttribute("data-library-products") || "[]");
+			return Array.isArray(products) ? products.filter(function (product) {
+				return typeof product === "string" && product.trim() !== "";
+			}) : [];
+		} catch (error) {
+			return [];
+		}
+	}
+
 	var index = [];
 	cards.forEach(function (card) {
 		card.rows.forEach(function (row, position) {
 			var title = row.querySelector(".linker-library-qa-q, .linker-library-doc-title");
+			var products = rowProducts(row);
 			row.setAttribute("data-library-position", String(position));
 			row.setAttribute("data-library-order", String(index.length));
 			index.push({
@@ -259,7 +271,8 @@
 				group: row.getAttribute("data-library-group") || card.title,
 				product: (row.querySelector(".linker-library-qa-product") || {}).textContent || "",
 				title: title ? title.textContent : row.textContent,
-				text: row.textContent,
+				text: row.textContent + " " + products.join(" "),
+				products: products,
 			});
 		});
 	});
@@ -303,6 +316,16 @@
 		});
 	}
 
+	/** Explain a hit whose missing query terms occur in a related product. */
+	function matchedProduct(hit, query) {
+		var missing = terms(query).filter(function (term) {
+			return !matches(hit.el.textContent, term);
+		});
+		return missing.length ? hit.products.filter(function (product) {
+			return matches(product, missing.join(" "));
+		})[0] || "" : "";
+	}
+
 	/** A row's clone with the query marked, for the flat result list. */
 	function cloneRow(hit, query) {
 		var clone = hit.el.cloneNode(true);
@@ -314,6 +337,11 @@
 			if (where) {
 				where.hidden = !query || !!(question && matches(question.textContent, query));
 			}
+		}
+		var product = matchedProduct(hit, query);
+		var covers = clone.querySelector(".linker-library-doc-covers");
+		if (covers && product && i18n.coversProduct) {
+			covers.textContent = label("coversProduct").replace("%s", function () { return product; });
 		}
 		mark(clone, query);
 		prepareThumbnails(clone);
@@ -728,9 +756,10 @@
 				text.textContent = hit.title;
 				var meta = scope.document.createElement("span");
 				meta.className = "linker-library-sug-meta";
-				meta.textContent = hit.group + (hit.product ? " · " + hit.product : "") + " · " + hitKind(hit);
+				var product = hit.product || matchedProduct(hit, query);
+				meta.textContent = hit.group + (product ? " · " + product : "") + " · " + hitKind(hit);
 				item.appendChild(mark(text, query));
-				item.appendChild(meta);
+				item.appendChild(mark(meta, query));
 				if (state.suggest.length === state.suggestIndex) {
 					item.classList.add("is-active");
 					item.setAttribute("aria-selected", "true");

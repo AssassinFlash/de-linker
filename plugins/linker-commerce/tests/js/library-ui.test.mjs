@@ -342,6 +342,51 @@ test('a document row keeps its tile slot in the flat result list, thumbnail or n
  assert.ok(rows.some((row) => row.querySelector('.linker-library-thumb.is-type')), 'a row without a page image keeps its type tile');
 });
 
+test('a shared document is searchable by a covered model and explains that match', () => {
+ const dom = fixture();
+ const sourceRow = dom.window.document.querySelector('.linker-library-doc');
+ sourceRow.querySelector('.linker-library-doc-title').textContent = 'GoodWe ESA Series manual';
+ sourceRow.setAttribute('data-library-products', JSON.stringify(['GoodWe GW8K-EHA-G20', 'GoodWe GW10K-EHA-G20']));
+ const config = dom.window.document.querySelector('#linker-library-config');
+ config.textContent = config.textContent.replace('"i18n":{', '"i18n":{"coversProduct":"für %s",');
+ const doc = boot(dom);
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'GW10K-EHA-G20 manual';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '1');
+ doc.querySelector('#linker-library-tab-documents').click();
+ const result = doc.querySelector('[data-library-results] .linker-library-doc');
+ assert.ok(result);
+ assert.equal(result.querySelector('.linker-library-doc-covers').textContent, 'für GoodWe GW10K-EHA-G20');
+ assert.ok(result.querySelector('.linker-library-doc-covers mark'));
+ assert.equal(result.querySelector('.linker-library-dl').href, 'https://de-linker.test/a.pdf');
+ assert.equal(sourceRow.querySelector('.linker-library-doc-covers').textContent, 'covers 2 products');
+ input.value = 'unrelated-model';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '0');
+ input.value = '';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
+ assert.equal(sourceRow.querySelector('.linker-library-doc-covers').textContent, 'covers 2 products');
+ dom.window.close();
+});
+
+test('invalid association metadata cannot break ordinary document search', () => {
+ const dom = fixture();
+ const rows = dom.window.document.querySelectorAll('.linker-library-doc');
+ rows[0].setAttribute('data-library-products', '{broken');
+ rows[1].setAttribute('data-library-products', '{"product":"not a list"}');
+ rows[2].setAttribute('data-library-products', '[null,12,"",{},"GW10K-EHA-G20"]');
+ const doc = boot(dom);
+ const input = doc.querySelector('.linker-library-q');
+ input.value = 'GW10K-EHA-G20';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '1');
+ input.value = 'DTSU666';
+ input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
+ assert.equal(doc.querySelector('#linker-library-tab-documents .linker-library-n').textContent, '25');
+ dom.window.close();
+});
+
 for (const outcome of ['load', 'error', 'cached-load', 'cached-error']) {
  test(`a search clone reconciles its own thumbnail: ${outcome}`, () => {
   const dom = fixture();
