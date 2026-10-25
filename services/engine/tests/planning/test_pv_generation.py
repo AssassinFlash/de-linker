@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import json
 import math
+from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, cast
@@ -20,6 +21,7 @@ from linker_engine.planning.errors import (
 )
 from linker_engine.planning.interval import Interval
 from linker_engine.planning.pv_arrays import generation_arrays
+from linker_engine.planning.pv_dc_profile import from_generation, prepared_dc_profile
 from linker_engine.planning.pv_generation import generate_pv
 from linker_engine.planning.pv_parameters import PvGenerationParameters
 from linker_engine.planning.pv_physics import (
@@ -28,8 +30,10 @@ from linker_engine.planning.pv_physics import (
     array_power,
     conversion_power,
 )
+from linker_engine.planning.pv_profile_preparation import PROFILE_PURPOSE
 from linker_engine.planning.pv_weather import WeatherPoint, WeatherSeries
 from linker_engine.planning.series_source import SeriesSource
+from linker_engine.planning.workspace import Workspace
 
 ROOT = Path(__file__).resolve().parents[4]
 NOTE = (
@@ -251,6 +255,43 @@ def test_shared_conversion_caps_combined_dc_and_keeps_a_loss_witness() -> None:
     assert 2000 == pytest.approx(960 + reduced + clipped, rel=0, abs=1e-9)
     single = group.model_copy(update={"array_ids": ["first"]})
     assert conversion_power(single, outputs, 1)[0].tolist() == [960]
+
+
+def test_dc_projection_reads_unclipped_stage_with_the_same_pinned_time_policy(
+    workspace: Workspace,
+) -> None:
+    raw_hash = workspace.blobs.put(b"owned synthetic DC-stage weather fixture")
+    meteo = weather()
+    meteo = replace(
+        meteo,
+        source=SeriesSource(
+            raw_hash, "synthetic", "UTC", 3600, encode({"basis": NOTE})
+        ),
+    )
+    document = parameter_document()
+    document["converters"][0]["reference_dc_power_w"] = 1000
+    roof = geometry()
+    result = generate_pv(
+        roof, meteo, PvGenerationParameters.read(document), max_array_steps=10
+    )
+    direct = from_generation(result, "converter")
+    metadata: Object = {
+        "schema": 1,
+        "profile_type": PROFILE_PURPOSE,
+        "retention": "permanent",
+        "geometry_sha256": digest(encode(roof)),
+        "dependencies": {
+            "pv_model_inputs": workspace.blobs.put(result.inputs_json),
+            "pv_model_witness": workspace.blobs.put(result.witness_json),
+        },
+    }
+    retained = prepared_dc_profile(workspace.blobs, raw_hash, metadata, "converter")
+    assert retained.document() == direct.document()
+    assert direct.values_kw[0] > result.profile.values_kw[0]
+    assert result.profile.values_kw[0] == pytest.approx(0.96)
+    assert direct.transformations == result.profile.transformations
+    assert direct.document()["value_semantics"] == "reconstructed_interval_average"
+    assert direct.source.document()["details"] == retained.source.document()["details"]
 
 
 @pytest.mark.parametrize("model", ["isotropic", "haydavies", "perez", "perez-driesse"])

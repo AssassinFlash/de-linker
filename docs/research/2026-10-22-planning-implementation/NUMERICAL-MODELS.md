@@ -259,3 +259,121 @@ D = min(deficit, discharge_cap, eta_d×max(E−E_guard,0)/Δt)
 | [get_total_irradiance](https://pvlib-python.readthedocs.io/en/stable/reference/generated/pvlib.irradiance.get_total_irradiance.html) | `03dc995832ff78050ed19fbc2cedce6c3f4f9daeb47a1e2338ea8e742c003a16` |
 
 本文给出的是可实施/可验收合同与证据，不是新生产Kernel已经通过。官方公式、守恒推导、项目实现选择、既有执行结果和仍未知的SKU/现场证据在上文分别标明。
+
+## 12. 下一批实现决策：共享DC端口执行器与可替换电池状态核心
+
+2026-10-25。问题限定为：已有PV/负荷时序与Woo设备事实后，怎样执行真实AC/DC耦合和连续储能状态。本节只补实施决策，继承§8已完成的参考检查；未重跑17条、全年、页面或SKU测试，也未修改运行环境。结论是：**立即实现具名的`constant_window_shared_dc_bus_v1`，共享DC端口执行器与电池状态核心分开；现有AC模型继续服务独立PCS拓扑；`PySAM.BatteryStateful`作为参数齐备时的可替换细物理核心。** 共享端口与能量账本采用下面的明确合同，其成熟依据是SSC的母线分流与共享逆变器结构；本节的固定窗口执行器属于本站实施选择，不宣称已经封装、执行或等价于完整SSC调度。
+
+### 12.1 两个PySAM入口的实际能力与选择
+
+| 入口 | 可接的输入、执行边界 | 本批采用方式 |
+| --- | --- | --- |
+| `import PySAM.Battery as Battery`；`Battery.default("CustomGenerationBatteryResidential")`或Commercial | `SystemOutput.gen`是已给定发电kW，`Load.load`是AC负荷kW；`BatterySystem.batt_ac_or_dc=1`为AC；`BatteryDispatch.batt_dispatch_choice=2`与`batt_custom_dispatch`可接每步电池命令（AC连接为kW AC，DC连接为kW DC）；一次`execute()`运行年度/多年。`gen`为INOUT，执行后已包含储能影响，必须另存原始输入。 | 仅适合将来对**规则完整年、独立AC PCS**作外部基准；不取代当前任意区间replay。通用发电模块明确拒绝DC连接。 |
+| `import PySAM.BatteryStateful as BatteryStateful`；`BatteryStateful.new()` | 只含电池电压、容量、热和寿命状态；`Controls.control_mode=0`接A，`=1`接kW，均为**电池DC端子**；`setup()`一次，之后每步`execute()`。没有PV、负荷、PCS、共享逆变器、实际BMS功率/电流上限或本站policy。 | 参数和时间域合格才启用；外部端口执行器仍负责功率、电流、共享逆变器、计量和来源账本。其估计`P_chargeable/P_dischargeable`不能代替厂商连续功率。 |
+| SAM详细PV Battery / `PySAM.Pvsamv1`的集成储能通道 | SAM在PV链内将PV DC与储能交给同一共享逆变器；官方说明它会假定该逆变器具有双向/混合能力，实际选中的逆变器可以并不支持。 | 作为端口结构依据；不通过换一个配置名给任意Woo逆变器补出双向、备电或共享端口能力，也不为接已给定PV时序重新运行一套PV模型。 |
+
+上述API、单位及命令模式见继承的[Battery API](https://nrel-pysam.readthedocs.io/en/main/modules/Battery.html)、[BatteryStateful API](https://nrel-pysam.readthedocs.io/en/main/modules/BatteryStateful.html)。[SAM Cell and System](https://samrepo.nlr.gov/help/battery_storage_btm.html#powerconverters)明确区分固定效率的电池转换器与带负载效率曲线的PV逆变器，并说明DC模式的双向假设。新的官方源码证据固定为SSC提交`c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8`：[cmod_battery.cpp L2373–2386](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/ssc/cmod_battery.cpp#L2373-L2386)按`8760 / 每年gen条数`取得小时步长，[L2505–2507](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/ssc/cmod_battery.cpp#L2505-L2507)直接抛出`Generic system requires AC-connected battery.`。因此短周、不规则区间、闰年或明确UTC时轴不能靠填入任意长度数组进入该通用模块。
+
+本机只读复用旧研究隔离安装/uv缓存，实际distribution为`nlr-pysam==8.0.0`、SSC **308**，native build信息为`OS X 64 bit GNU/C++ Aug 13 2026 01:34:50`。只做API/默认参数读回及native错误文本检查；没有安装到当前engine环境。该wheel包含上面的AC限制错误文本；本轮读取的固定SSC源码不是这份wheel构建提交的证明，不能据此声称二进制逐行同版。既有四项Stateful运行证据仍以§8的固定结果为准。
+
+### 12.2 固定窗口DC模型的最小输入域
+
+首个域是**一个PV DC母线、一台共享逆变器、一个电池栈连接一个已指明的电池端口、一个AC负荷/电网计量点**。同台逆变器未使用的第二电池端口不增加本配置的电流、功率或容量。多栈/多变流器、逐相不平衡、瞬态切换、无功和热降额曲线另经对应端口/模式模型承载；相关任务越过已实现域时准确返回`MethodDomainExceeded`。并网/停电可用性与功率分别由输入给出，拥有DC端口不证明孤岛、黑启动或PV在停电时仍可用。
+
+| 参数组 | 必填内容及单位；缺项规则 |
+| --- | --- |
+| 时间与PV阶段 | 与AC负荷同一`TimeAxis`；PV输入是`pv_dc_available_kw_at_bus`，保留逐阵列未削顶DC、MPPT/DC线路后的DC母线产物及已施加损失。PVGIS系统AC或已削顶AC不能反除效率重建这项输入；缺失返回`EvidenceMissing(pv_dc_stage)`。 |
+| 电池状态 | 明确的usable内部窗口`E_window_kwh`、初始`E`与来源分量、正常/停电reserve和terminal要求；`eta_store_charge/eta_store_discharge`定义**DC端子↔该内部库存**的方向效率，`internal_aux_kw`、standing-loss模型和顺序显式给定。若设备可用kWh已含DOD，不再扣第二次。参数来源可为厂商事实或明确场景；场景不能转成型号验收。 |
+| 电池端口 | 选中`battery_port_id`，该栈与该端口各自充/放电连续kW、最大电流A、工作V范围、适用SOC/温度/模式及限值为逐口/总计的范围；同一配置逐项取交集。peak/fault电流不可变成连续电流，端口数不可乘成一口额定值。 |
+| 电池DC/DC | `eta_bus_to_battery`、`eta_battery_to_bus`及各方向kW/A/V能力，边界为DC母线↔电池端子。设备事实若只提供一个双向固定效率，须保存该事实的适用声明；若只有系统最大效率/Euro加权效率，不能补出这两个值。 |
+| 共享逆变器 | 每模式实际共享`forward_ac_kw`、适用的共享DC输入约束及单独PV输入约束；固定窗口首版使用具名`fixed_directional_efficiency`模型的`eta_inv_forward/eta_inv_reverse`。未来曲线可替换此函数，现版本不将最大效率当逐时效率。支持反向充电必须有明确true及反向AC/DC能力；unknown保留为unknown，相关命令返回`EvidenceMissing(reverse_conversion)`；明确false的路径不进入可执行图。 |
+| 运行与控制 | `pv_charge_allowed/grid_charge_allowed/battery_export_allowed`、母线辅助负荷与供应端、import/export cap、正常/停电能力、policy优先级；每项皆有显式值或缺项状态。首版沿用禁止电池外送的指标域。逆变器支持反向与policy允许电网充电是两项条件。 |
+
+简化模型不生成虚构的逐步电池电压。只有厂商工作电压范围与电流上限时，可选择显式`voltage_floor_current_cap`保守规划包络：每方向`P_dc_cap = min(适用连续DC kW, I_max_A × V_operating_min_V / 1000, 所选PCS端口能力)`，并保存使用的电压下界及适用条件。这是由`P=VI`推得的**电流安全上界约束**，不证明真实电池在所有SOC/温度都持续交付该功率；其余降额/连续能力证据仍单独判断。不能用名义电压把最大电流直接当全程恒功率，也不能用最大工作电压放宽该保守包络。缺少有效工作范围或持续能力时，计算保留具体缺项，不生成“通用电池”。
+
+### 12.3 可直接编码的共享端口方程与步进
+
+以下是本站的固定方向效率模型；所有功率kW、时间h、库存kWh。`C_b/D_b`是**电池DC端子**实际充/放电，非AC等效功率；`S_dc`是已声明DC路径损失后的可用PV母线功率；`K_dc`为未进入任何用电路径的PV削顶/限发。每个设备端口能力先按mode/state求出，再执行命令，最后才推进同一库存：
+
+```text
+C_bus = C_b / eta_bus_to_battery
+D_bus = eta_battery_to_bus × D_b
+x_inv_dc = S_dc + D_bus − C_bus − Aux_DC_served − K_dc
+
+x_inv_dc >= 0:  P_inv_ac = eta_inv_forward × x_inv_dc
+x_inv_dc <  0:  P_inv_ac = x_inv_dc / eta_inv_reverse
+
+P_inv_ac + G_import = L_served + Aux_AC_served + G_export
+E_next = E_after_explicit_internal_losses
+         + eta_store_charge × C_b × dt
+         − D_b × dt / eta_store_discharge
+
+C_b >= 0; D_b >= 0; C_b × D_b = 0; 0 <= K_dc <= S_dc
+−P_reverse_ac_cap <= P_inv_ac <= P_forward_ac_cap
+```
+
+负`x_inv_dc`需有真实反向路径、policy允许、模式可用、反向功率与电网余量全部满足。它是**同一桥的净反向**，不创建同时满功率正向/反向两个独立逆变器；客户负荷仍可在共享逆变器正向发电时由电网补足。若适用无功能力域，`P_forward_ac_cap`另受`P²+Q²≤S²`约束；首版没有Q模型时，不给要求该能力的任务放行。辅助负荷无源可供时记录未供量，不靠负库存满足守恒。
+
+SSC的对应成熟结构为：[powerflow L689–701](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/shared/lib_battery_powerflow.cpp#L689-L701)将电池端DC按DC/DC方向换到母线，再与PV DC相加；[L719–769](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/shared/lib_battery_powerflow.cpp#L719-L769)分出PV充电、余下PV与允许的电网充电；[L781–813](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/shared/lib_battery_powerflow.cpp#L781-L813)只将净DC送给共享逆变器，并将电网补入的DC除以转换效率得到AC需求；[L876–896](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/shared/lib_battery_powerflow.cpp#L876-L896)对合并DC执行一次逆变器转换。这支持上述端口分工，不代表应继承SSC的通用效率/缺参补值。
+
+实现按以下顺序落地，不等待完整电化学资料：
+
+1. **PV适配层交出DC产物。** 保留现有PV计算的模块/阵列未削顶DC与每个损失阶段；独立PCS继续消费对应AC产物，DC共享机消费实际DC母线产物。两条入口用阶段类型校验，不能靠一个无单位`generation`字段混用。
+2. **执行器先分DC充电，再执行共享转换。** policy先保留PV服务负荷/辅助需求所需的DC，再允许其余PV在削顶前充电；剩余出力在共享逆变器与电网出口约束下转换/限发。放电先受窗口、reserve、电池/所选端口DC能力限制，再受PV占用后的**同一逆变器余量**限制。单纯固定效率、无其他DC损失时，余量为`max(P_forward_ac_cap/eta_inv_forward − S_dc, 0)`；有DC辅助、PV限发或不同优先级时，用上面的实际母线式重新计算。不得先放掉电池再把合并AC截断而丢弃电池能量。
+3. **所有命令只按实际量推进E。** 约束后的`C_b/D_b`进入窗口状态核心；缺供、未交付命令、PV削顶/出口限发和各方向转换损失分别输出。每次试算若需缩小命令，必须从同一前态重放，只提交最后可行步。SSC也以保存前态→运行电池→计算powerflow→核限→恢复前态迭代的方式协调物理状态与端口，见[dispatch L427–467](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/shared/lib_battery_dispatch.cpp#L427-L467)。本站固定窗口有解析界限时直接求该界限，不照搬SSC的迭代次数、误差阈值或缺参fallback。
+4. **保持来源与损失阶段。** PV/grid在DC母线进入电池各自分账，依次通过实际DC/DC和库存充电效率；放电先从库存按§6混合扣除，再过电池端子→DC母线→共享逆变器。共享转换只施加一次；PV与电池的实际共享转换损失按声明分配约定归属，不能分别计算`F(PV)+F(battery)`。没有PV时的grid充放仍贡献0太阳能。PV已在DC充入电池的部分不再先过PV AC转换；其以后放电才经过共享逆变器。
+5. **独立verify重建双母线与状态。** 返回并核对`PV_to_battery_bus_dc/PV_to_inverter_dc/battery_to_inverter_dc/grid_to_inverter_ac`、共享逆变器DC/AC净方向、逐路径损失、PV削顶与其他限发、AC供需、DC供需、窗口与来源前后态、端口和模式上限。不把SAM的AC等效`system_to_batt`当真实DC充电量。所有屏幕/报告继续引用同一run固定的阶段、事实hash和状态。
+
+**只新增能区别这个域的解析验收，未在本轮执行：** ①PV DC12kW、共享AC10kW、效率1、battery有2kW充电余量时，应PV→load/export10、PV→battery2，不能先削到10而丢掉可充2；②PV8、battery请求放5、共享AC10、效率1时实际放电≤2，未交付≥3，E只扣实际2；③反向能力false时grid充电不执行，有能力且显式`eta_inv_reverse=.9`时电池母线需9kW对应10kW AC输入，不能按8.1或9计购电；④两个50A端口、只选一口与30A电池限流时不得得到100A能力。实际型号验收继续需要自己的事实与输入，合成例中的效率1/.9只属于夹具。
+
+### 12.4 Stateful的精确启用条件和Python接法
+
+`BatteryStateful`的Li-ion原件要求如下；这是模型必填合同，不要求把所有产品都强行拟合进它。[官方参数API](https://nrel-pysam.readthedocs.io/en/main/modules/BatteryStateful.html#paramscell-group)、[源码参数构造 L427–563](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/ssc/cmod_battery_stateful.cpp#L427-L563)。
+
+| 组 | 显式输入、单位与条件 |
+| --- | --- |
+| `Controls` | `control_mode`；`dt_hr`小时；`input_power`kW DC或`input_current`A。正号放电、负号充电；两模式只选一个。 |
+| `ParamsCell`基础 | `chem=1`、`initial_SOC/minimum_SOC/maximum_SOC`百分数；`Vnom_default`为**单电芯**额定V、`Qfull`单电芯Ah、`resistance`单电芯Ω；不能将系统电压/整柜电阻填进单电芯字段。 |
+| 电压模型 | `voltage_choice=0`需`Qexp/Qnom` Ah、`Vfull/Vexp/Vnom/Vcut` V、放电曲线的`C_rate`；或`voltage_choice=1`并提供`voltage_matrix`两列`[DOD%, cell V]`。系统工作V范围不等于该DOD电压曲线。 |
+| 寿命 | `life_model`明确选型；若`=0`需`cycling_matrix=[DOD%, cycle#, capacity%]`和`calendar_choice`；`calendar_choice=1`还需`calendar_q0/a/b/c`，`=2`需`calendar_matrix=[day#,capacity%]`。预设NMC/LMO-LTO寿命模型不能仅因产品写“锂电池”就套用。 |
+| `ParamsPack` | `nominal_energy`kWh、`nominal_voltage`V、`mass`kg、`surface_area`m²、`Cp` J/(kg·K)、`h` W/(m²·K)、`T_room_init`°C；`life_model=0`还需`cap_vs_temp=[°C,capacity%]`。每段环境温度可通过`StatePack.T_room`更新。 |
+| 附加选项 | `loss_choice`及匹配的charge/discharge/idle或schedule loss（kW）、拼写为`availabilty_loss`的百分比数组、`replacement_option`及对应条件字段，全部显式固定。关闭老化/更换、零附加损失或恒温都是具名模型/情景选择，不能静默当SKU事实。 |
+
+```python
+import PySAM.BatteryStateful as BatteryStateful
+
+model = BatteryStateful.new()
+model.assign({
+    "Controls": {"control_mode": 1, "dt_hr": fixed_dt_hr, "input_power": 0.0},
+    "ParamsCell": resolved_params_cell,
+    "ParamsPack": resolved_params_pack,
+})
+model.setup()
+for frame in regular_frames:
+    model.StatePack.T_room = frame.battery_room_temperature_c
+    model.Controls.input_power = frame.deliverable_battery_dc_kw
+    model.execute()
+    actual_dc_kw = model.StatePack.P
+    pack_state = model.StatePack.export()
+    cell_state = model.StateCell.export()
+```
+
+`resolved_*`由完整、固定来源参数编译；代码中的`input_power=0`只是setup控制初值，循环使用首个**真实**区间命令，不额外执行一段“初始化充放电”推进时间。实际交付读`StatePack.P`，并保存`I/V/Q/Q_max/SOC/T_batt/loss_kw/last_idx`及完整`StateCell`；请求值不等于交付值，不能仅按请求更新外部账本。`Q`的Ah、瞬时V×Q、名义kWh×SOC和可交付AC kWh各有边界；不能用其中一个强制覆盖另一个。读回状态/恢复前态的机制见[setup/exec L573–659](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/ssc/cmod_battery_stateful.cpp#L573-L659)。新Stateful执行器的checkpoint恢复、与本站来源账本耦合及端口再约束尚未执行验证，不能沿用旧四项检查声称这些能力已通过。
+
+**启用还有两个硬边界。** 其setup按`ceil(pack V / cell V)`和`round(pack kWh / 每串电量)`推导串并数量，见[参数构造 L440–450](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/ssc/cmod_battery_stateful.cpp#L440-L450)；因此必须核对该派生结构与真实模块/串栈，保留有效模型参数与实际状态，不能把输入的pack值当精确实物结构。其次，exec虽支持修改步长，但仍用`last_idx`与整数`steps_per_hour=(size_t)(1/dt_hr)`换算日历，见[L630–645](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/ssc/cmod_battery_stateful.cpp#L630-L645)；大于1小时可使steps_per_hour为0，不规则步长也不能仅靠索引保全日历语义。本站初始适配域限定**固定`dt_hr=1/n`、n为正整数、显式日历起点及附加损失/更换映射**，长区间须按声明规则细分；不规则轴继续用固定窗口核心，或返回细物理模型越域，不做无记录的重采样。这个保守域是源码审查后的本站选择，不声称官方模型完全不支持其他用法。
+
+### 12.5 Woo事实、场景与有效默认值
+
+厂商事实仍只由Woo维护。编译器从同一Woo快照及其托管资料提取字段和来源，不新建手工SKU能力包；每项至少带`product_id/model_variant/document_hash/page/field_scope/unit/mode/conditions`，以及`verified/unknown/conflicting`状态。需要供给的字段就是§12.2中的端口图、逐口/总计限值、容量与工作V/SOC范围、模式能力、转换效率证据和设备组合/BMS兼容条件；若启用Stateful，再提供§12.4的型号匹配电芯与热/寿命数据。资料有`No. of BAT`或`2×50A`只证明其明确范围；没有来源不得变成单口100A、两个独立满功率PCS或任意并联栈。
+
+本地`Battery.default("CustomGenerationBatteryResidential")`读回包含25年、AC/DC方向96%、DC/DC99%、通用电芯/热/寿命和自动更换；`BatteryStateful.default("LFPGraphite")`也带研究用电芯曲线、内阻、热及寿命值。这些是**库配置**，不属于Woo设备事实。SAM库的最大效率、`SharedInverter`对负功率沿用正向模型的处理也不能证明某型号有对应反向路径；该实现见[SharedInverter L248–290](https://github.com/NatLabRockies/ssc/blob/c92cbf05e3fc1411a91c0fb9b48827dd2104c7f8/shared/lib_shared_inverter.cpp#L248-L290)。原件只有最大效率或Euro加权效率时，保留这两个事实，固定方向模型需要的路径效率保持缺项；允许用户/研究明确提供的效率场景参与计算，但结果同时保留`hardware_and_evidence_state=EvidenceMissing`，不把场景折成产品事实或型号放行。
+
+因此本批可完成的具体交付是：**接出PV未削顶DC阶段、实现并独立复核共享端口执行器、将现有连续窗口与来源核心接到电池DC边界、从Woo编译实际配置并逐项返回计算与硬件证据状态。** 缺少转换曲线不阻止这个执行器及其解析边界完成；它阻止把该设备的未证效率/模式写成已验证预测。此后资料补齐只替换对应有效参数或状态核心，不再重建拓扑/连续库存/来源账本。
+
+### 12.6 本轮新增取证与已证边界
+
+外部新增读取均走既有`apify/website-content-crawler`，只作研发。首次raw URL run `0sx9fqPCGpz32WXG8`虽报告6成功，日志实际说明`text/plain`不可解析、dataset为空；随后HTML run `x7QXHaEtmLSqYbx4b`仍只取得元数据。诊断并读取Actor输入schema后，将`htmlTransformer=none`、`removeElementsCssSelector=dummy_keep_everything`保留GitHub嵌入JSON，run **hnCi4zEJVbrch0N3y** / dataset **ht7eRZxfcgPj9dhLd**取得`cmod_battery.cpp`真实`rawLines`和提交ID；再用固定提交URL，run **C8OmjYTo6oPY5ZRgz** / dataset **3IvYZBOpFVd0wrlv1**取得其余5个官方源文件。全程未绕开Apify、未输出/保存令牌、未创建新raw目录；没有把抓取成功计数当源码已取得。
+
+实际使用的新源码为`cmod_battery.cpp`、`cmod_battery_stateful.cpp`、`lib_battery_powerflow.cpp`、`lib_battery_dispatch.cpp`与`lib_shared_inverter.cpp`，固定提交均为上文`c92cbf05…`。可在上述dataset从保留的GitHub嵌入JSON提取`rawLines`复核；其中Stateful/powerflow/dispatch/shared-inverter按`"\n".join(rawLines)+"\n"`的UTF-8 SHA256依次为`6fff3319311f2846e4f25c9cd801f99ec71eedda2a241d621dabb4519d5648fa`、`e6e0b52a8eeb994be84c782588c2adbb64b3c62033582c2daace2dcc57a05c99`、`18bbdb9523b70e4b3bb614c3b01ef235e37d19b64edfae97640c42707a0093c6`、`439d1757242412fbf17301279303671d3e6a82053087ba794a99ed60a5333f64`。
+
+本节已证：官方Python入口/参数/端口单位、通用Battery拒绝DC、Stateful分工与源码时间/结构边界、SSC共享逆变器母线结构、本地既有库实际版本与默认值。尚未声称完成：本站DC执行器、Stateful适配器、真实SKU效率拟合、年度一致性、厂商EMS可执行性或线上验收。主线可直接按§12.2–12.3实现，验收仅追加能区分新DC域的代表用例，其他既有有效覆盖继续复用。

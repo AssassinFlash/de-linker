@@ -445,3 +445,31 @@ equipment-coupled physical models, remaining topologies/electrical/country rules
 complete BOM, comparison, remaining site consumers, migration and review/production
 delivery still require implementation and acceptance. The explicit scenario's
 efficiencies and losses have not become manufacturer performance by this linkage.
+
+
+### 2026-10-25 · Shared DC physical core implemented and reviewed
+
+The next missing physical domain now has executable code: PV may charge before
+shared-inverter clipping, PV and battery share the same bridge headroom, one
+selected battery port intersects the stack current/power/voltage envelope, and
+reverse support/efficiency remains explicit. Continuous source inventory and
+all unserved supply remain in separately metered DC-terminal/DC-bus/AC flows.
+The PV adapter reads existing immutable pre-conversion DC artifacts with the
+original producer time policy; it never reconstructs DC by dividing clipped AC.
+
+Four distinct DC analytic cases passed. Review found and closed an overly loose
+inventory boundary and a grid-charge permission branch that changed PV load
+priority. The same cases now refuse the cross-window initial state, microsecond
+empty-inventory and export-before-load counterexamples. Exact inventory work
+reuses the existing witness; source transfers retain kW meaning and hard
+boundaries cannot borrow an absolute kWh allowance. One retained-producer DC
+projection case passed independently and its unchanged result was reused.
+Spec and Standards final bounded reviews passed; ruff and strict mypy passed.
+
+This core has not been connected to native commands or customer controls. The
+owned p548 runtime and production were not changed. Existing AC, annual, PV,
+workspace, report, draft and inquiry conclusions remain closed and were not
+rerun. No environment, dependency, backup, runtime carrier or new evidence
+report was created. The full goal remains active; the next dependency is the
+native Woo-backed parameter/profile and command/result/report/UI connection.
+The same installation JSON now records this frontier as `shared_dc_core`.

@@ -1443,5 +1443,47 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "equipment_energy"
+  "current_frontier": "shared_dc_core",
+  "shared_dc_core": {
+    "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
+    "model": "constant_window_shared_dc_bus_v1",
+    "base_commit": "c697d15f",
+    "product_authority": "existing_Woo_publication_only_no_new_product_facts",
+    "physical_domain": "one_selected_battery_port_one_PV_DC_bus_one_shared_bridge",
+    "pv_stage": "retained_converter_DC_before_reference_AC_conversion_with_original_reconstruction_policy",
+    "implemented": [
+      "PV_charging_before_shared_inverter_clipping",
+      "PV_and_battery_share_one_forward_AC_DC_limit",
+      "separate_reverse_capability_and_directional_efficiency",
+      "selected_port_and_battery_current_intersection_at_voltage_floor",
+      "continuous_source_inventory_and_explicit_unserved_supply",
+      "independent_dual_bus_source_and_exact_inventory_checks"
+    ],
+    "focused_acceptance": {
+      "shared_dc": "4 passed in 0.02s; four distinct domain cases, with review counterexamples in the same cases",
+      "pv_projection": "1 passed in 0.82s; direct producer and retained artifact projections agree; unchanged result reused",
+      "static": "ruff passed; strict mypy passed for five new source modules and the three final changed verifier/dispatcher modules",
+      "review_repairs": [
+        "cross_window_initial_inventory_and_microsecond_empty_inventory_refused",
+        "grid_charge_permission_does_not_override_PV_load_priority",
+        "local_representation_ULPs_do_not_lend_absolute_energy_to_hard_inventory"
+      ],
+      "spec_review": "PASS; final bounded repair review",
+      "standards_review": "PASS; final bounded repair review"
+    },
+    "reused_closed_evidence": [
+      "existing_AC_replay",
+      "annual_PV_and_energy",
+      "equipment_search",
+      "EN_DE_desktop_mobile_workspace",
+      "report_PDF",
+      "native_draft_and_inquiry"
+    ],
+    "runtime_changed": false,
+    "native_instance_changed": false,
+    "production_changed": false,
+    "dependencies_changed": false,
+    "remaining_connection": "native_DC_parameter_and_profile_persistence_Woo_preparation_command_result_report_and_customer_UI",
+    "release_boundary": "explicit_fixed_efficiency_scenario_core_is_not_manufacturer_performance_or_native_customer_acceptance"
+  }
 }

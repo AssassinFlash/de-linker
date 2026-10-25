@@ -59,3 +59,15 @@ class NumericalFailure(PlanningError):
     """A calculation produced values outside finite numerical representation."""
 
     code = "numerical_failure"
+
+
+class EvidenceMissing(PlanningError):
+    """A requested physical path lacks explicit supporting parameters."""
+
+    code = "evidence_missing"
+
+
+class MethodDomainExceeded(PlanningError):
+    """The requested physical topology/mode is outside this model's domain."""
+
+    code = "method_domain_exceeded"

@@ -146,3 +146,25 @@ supply/reset traces must fail the independent verifier. Full native-resolution
 peak tasks, ideal optimization, PV/electrical/geometry/equipment/country facts
 and site/HTTP consumers remain in the same active delivery and are required
 before overall production acceptance.
+
+
+## Shared DC core boundary (2026-10-25)
+
+`constant_window_shared_dc_bus_v1` now implements a separate physical core for
+one PV DC bus, one selected battery port and one shared bridge. Its terminal,
+bus and AC boundaries, fixed directional efficiencies, mode capabilities,
+priority and source accounting are defined in
+[NUMERICAL-MODELS.md §12](../research/2026-10-22-planning-implementation/NUMERICAL-MODELS.md#12-下一批实现决策共享dc端口执行器与可替换电池状态核心).
+`pv_dc_profile` projects the existing producer's retained pre-conversion DC
+without reversing clipped AC or changing its reconstructed time policy. The
+independent DC verifier reuses the exact inventory witness and preserves the
+hard-boundary and short-interval rules above. Grid-charge permission does not
+change the stated PV-to-load priority.
+
+This is an implemented and reviewed core, not an additional native command or
+customer control yet. The existing AC command/schema and its acceptance stay
+unchanged. Native parameter/profile persistence, current Woo preparation,
+command/result/report and customer presentation must be connected before DC
+is offered. All product facts must continue through Woo; explicit scenario
+efficiencies do not qualify a manufacturer's equipment. No PySAM dependency,
+new runtime data source or local instance was introduced for this core.
