@@ -1,4 +1,9 @@
 // @vitest-environment jsdom
+import {
+	installNativeIdentityFixture,
+	renderOwned,
+	currentOwnedRaw,
+} from '../genie/testing/nativeIdentity';
 
 /**
  * The conversation the hero unfolds (ticket #232): the header and its two
@@ -9,13 +14,7 @@
 /**
  * External dependencies
  */
-import {
-	act,
-	fireEvent,
-	render,
-	screen,
-	waitFor,
-} from '@testing-library/react';
+import { act, fireEvent, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { webcrypto } from 'node:crypto';
 
@@ -135,6 +134,8 @@ function session( stored: TurnMessage[] = [], turn: Turn | null = null ) {
 	};
 }
 
+installNativeIdentityFixture();
+
 beforeEach( () => {
 	sessionStorage.clear();
 } );
@@ -143,7 +144,7 @@ afterEach( () => {
 	sessionStorage.clear();
 } );
 
-function renderHero(
+async function renderHero(
 	heroSession: HeroSession,
 	overrides: Partial< {
 		onContinue: () => void;
@@ -163,7 +164,7 @@ function renderHero(
 		requestPicker: overrides.requestPicker ?? vi.fn(),
 	};
 	let bridge: HeroBridge | null = null;
-	render(
+	await renderOwned(
 		<HeroConversation
 			config={ CONFIG }
 			session={ heroSession }
@@ -177,7 +178,7 @@ function renderHero(
 }
 
 test( 'the unfolded conversation names Genie and offers both exits', async () => {
-	const { onContinue, onClose } = renderHero( session().session );
+	const { onContinue, onClose } = await renderHero( session().session );
 
 	expect(
 		screen.getByText( "Genie - Linker's AI assistant" )
@@ -198,7 +199,9 @@ test( 'the unfolded conversation names Genie and offers both exits', async () =>
 } );
 
 test( 'the hero shows the conversation the dock stored', async () => {
-	const { onConversation } = renderHero( session( DOCK_THREAD ).session );
+	const { onConversation } = await renderHero(
+		session( DOCK_THREAD ).session
+	);
 
 	expect(
 		await screen.findByText( 'Which inverters fit a three-phase home?' )
@@ -211,7 +214,7 @@ test( 'the hero shows the conversation the dock stored', async () => {
 
 test( 'a question asked through the hero gets a real answer and counts as a conversation', async () => {
 	const answers = session();
-	const { bridge, onConversation } = renderHero( answers.session );
+	const { bridge, onConversation } = await renderHero( answers.session );
 
 	await act( async () => {
 		bridge().ask( 'Which inverters fit a three-phase home?' );
@@ -238,7 +241,7 @@ test( 'a failed first turn puts the question back and shows the retry sentence',
 		throw new Error( 'turn 502' );
 	} );
 	const setPrompt = vi.fn();
-	const { bridge } = renderHero(
+	const { bridge } = await renderHero(
 		new HeroSession( SESSION_CONFIG, read, send ),
 		{ setPrompt }
 	);
@@ -247,8 +250,10 @@ test( 'a failed first turn puts the question back and shows the retry sentence',
 		bridge().ask( 'saj' );
 	} );
 
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		'Genie did not answer. Please try again.'
+	await waitFor( () =>
+		expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+			'Genie did not answer. Please try again.'
+		)
 	);
 	expect( setPrompt ).toHaveBeenLastCalledWith( 'saj' );
 	expect( screen.queryByText( 'saj' ) ).toBeNull();
@@ -263,7 +268,7 @@ test( 'retrying a failed hero turn sends it once', async () => {
 		.fn()
 		.mockRejectedValueOnce( new Error( 'turn 502' ) )
 		.mockResolvedValueOnce( reply( 'Recovered' ) );
-	const { bridge } = renderHero(
+	const { bridge } = await renderHero(
 		new HeroSession( SESSION_CONFIG, read, send )
 	);
 
@@ -323,7 +328,9 @@ test( 'hero retry restores this request from a complete native Thread response',
 			throw new Error( 'Ambiguous response after completion' );
 		}
 	);
-	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ) );
+	const view = await renderHero(
+		new HeroSession( SESSION_CONFIG, read, send )
+	);
 	await act( async () => {
 		view.bridge().ask( 'saj' );
 	} );
@@ -347,16 +354,21 @@ test( 'a cut stream on the hero keeps the question and not the partial answer', 
 		throw new UnfinishedStreamError();
 	} );
 	const setPrompt = vi.fn();
-	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ), {
-		setPrompt,
-	} );
+	const view = await renderHero(
+		new HeroSession( SESSION_CONFIG, read, send ),
+		{
+			setPrompt,
+		}
+	);
 
 	await act( async () => {
 		view.bridge().ask( 'backup for 10 kW' );
 	} );
 
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		'Genie did not answer. Please try again.'
+	await waitFor( () =>
+		expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+			'Genie did not answer. Please try again.'
+		)
 	);
 	expect( screen.getByText( 'backup for 10 kW' ) ).toBeInTheDocument();
 	expect( screen.queryByText( '10 kW from a cut stream' ) ).toBeNull();
@@ -370,9 +382,12 @@ test( 'a cut stream on the hero keeps the file, and removing it takes it off the
 		.mockRejectedValueOnce( new UnfinishedStreamError() )
 		.mockResolvedValueOnce( reply( 'Recovered' ) );
 	const setPrompt = vi.fn();
-	const view = renderHero( new HeroSession( SESSION_CONFIG, read, send ), {
-		setPrompt,
-	} );
+	const view = await renderHero(
+		new HeroSession( SESSION_CONFIG, read, send ),
+		{
+			setPrompt,
+		}
+	);
 	const file = new File( [ '%PDF-1.4' ], 'datasheet.pdf', {
 		type: 'application/pdf',
 	} );
@@ -381,8 +396,10 @@ test( 'a cut stream on the hero keeps the file, and removing it takes it off the
 		view.bridge().ask( 'backup for 10 kW', [ file ] );
 	} );
 
-	expect( await screen.findByRole( 'alert' ) ).toHaveTextContent(
-		'Genie did not answer. Please try again.'
+	await waitFor( () =>
+		expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+			'Genie did not answer. Please try again.'
+		)
 	);
 	expect( setPrompt ).toHaveBeenLastCalledWith( '' );
 	expect( screen.getByText( 'datasheet.pdf' ) ).toBeInTheDocument();
@@ -416,7 +433,7 @@ test( 'a conflicting turn puts the question back and re-reads the thread', async
 		throw new TurnError( 409, 'linker_genie_turn_conflict' );
 	} );
 	const setPrompt = vi.fn();
-	const { bridge } = renderHero(
+	const { bridge } = await renderHero(
 		new HeroSession( SESSION_CONFIG, read, send ),
 		{ setPrompt }
 	);
@@ -460,7 +477,7 @@ test( 'the nameplate card confirms into an ordinary question', async () => {
 		],
 		turn
 	);
-	renderHero( answers.session );
+	await renderHero( answers.session );
 
 	const confirm = await screen.findByRole( 'button', {
 		name: 'Yes, show its documents',
@@ -490,7 +507,7 @@ test( 'the manual model exit fills the hero follow-up field', async () => {
 			},
 		],
 	};
-	const { setPrompt, focusPrompt } = renderHero(
+	const { setPrompt, focusPrompt } = await renderHero(
 		session(
 			[
 				{ role: 'user', content: 'Attached: nameplate.jpg' },
@@ -510,7 +527,7 @@ test( 'the manual model exit fills the hero follow-up field', async () => {
 
 test( 'a picked PDF is prepared, sent apart from the messages, and read', async () => {
 	const answers = session();
-	const { bridge } = renderHero( answers.session );
+	const { bridge } = await renderHero( answers.session );
 	const file = new File( [ '%PDF-1.4\n%%EOF' ], 'datasheet.pdf', {
 		type: 'application/pdf',
 	} );
@@ -534,7 +551,7 @@ test( 'a picked PDF is prepared, sent apart from the messages, and read', async 
 
 test( 'a file type Genie cannot read is refused before any turn', async () => {
 	const answers = session();
-	const { bridge } = renderHero( answers.session );
+	const { bridge } = await renderHero( answers.session );
 	const file = new File( [ 'plain text' ], 'notes.txt', {
 		type: 'text/plain',
 	} );
@@ -556,7 +573,7 @@ test( 'the #243 contact card renders in the hero', async () => {
 		meta: null,
 		blocks: [ { type: 'contact', reason: 'asked' } ],
 	};
-	renderHero(
+	await renderHero(
 		session(
 			[
 				{ role: 'user', content: 'Can I talk to a person?' },
@@ -577,7 +594,7 @@ test( 'the #250 inquiry confirmation card renders in the hero', async () => {
 		meta: null,
 		blocks: [ { type: 'action', name: 'send_inquiry', args: {} } ],
 	};
-	renderHero(
+	await renderHero(
 		session(
 			[
 				{ role: 'user', content: 'Please send an inquiry.' },
@@ -620,12 +637,11 @@ test( 'a scoped marketing failure is never painted by Hero for another principal
 		} ) )
 	);
 	try {
-		const calls = renderHero( session().session );
-		await waitFor( () =>
-			expect(
-				sessionStorage.getItem( 'linker-genie-turn-failure' )
-			).toBeNull()
-		);
+		const calls = await renderHero( session().session );
+		expect(
+			JSON.parse( sessionStorage.getItem( 'linker-genie-turn-failure' )! )
+				.text
+		).toBe( original );
 		expect( calls.setPrompt ).not.toHaveBeenCalledWith( original );
 		expect( document.body.textContent ).not.toContain( original );
 	} finally {
@@ -654,7 +670,7 @@ test( 'Hero retry checks the entry owner after the shared-thread refresh', async
 	);
 	try {
 		const model = session();
-		const calls = renderHero( model.session );
+		const calls = await renderHero( model.session );
 		await waitFor( () =>
 			expect( calls.setPrompt ).toHaveBeenCalledWith( original )
 		);
@@ -701,7 +717,7 @@ for ( const action of [ 'send', 'retry' ] as const ) {
 		);
 		try {
 			const model = session();
-			const calls = renderHero( model.session );
+			const calls = await renderHero( model.session );
 			await waitFor( () =>
 				expect( calls.setPrompt ).toHaveBeenCalledWith( original )
 			);
@@ -715,13 +731,17 @@ for ( const action of [ 'send', 'retry' ] as const ) {
 			);
 			expect( model.send ).not.toHaveBeenCalled();
 			expect( calls.setPrompt ).toHaveBeenLastCalledWith( original );
-			expect( screen.getByText( 'keep.pdf' ) ).toBeInTheDocument();
-			const record = JSON.parse(
-				sessionStorage.getItem( 'linker-genie-turn-failure' )!
-			);
+			expect( screen.queryByText( 'keep.pdf' ) ).toBeNull();
+			const record = JSON.parse( currentOwnedRaw()! );
 			expect( record.entryScope ).toBe( 'a'.repeat( 64 ) );
 			expect( record.uploads ).toEqual( [ upload ] );
 			available = true;
+			await act( async () =>
+				fireEvent.click(
+					screen.getByRole( 'button', { name: 'Try again' } )
+				)
+			);
+			expect( model.send ).not.toHaveBeenCalled();
 			await act( async () =>
 				fireEvent.click(
 					screen.getByRole( 'button', { name: 'Try again' } )
@@ -764,7 +784,7 @@ test( 'Hero initial scoped failure outage stays hidden and retry restores throug
 	);
 	try {
 		const model = session();
-		const calls = renderHero( model.session );
+		const calls = await renderHero( model.session );
 		await screen.findByRole( 'button', { name: 'Try again' } );
 		expect( calls.setPrompt ).not.toHaveBeenCalledWith( original );
 		expect(
@@ -855,11 +875,15 @@ test.each( [ 'same-operation', 'other-file', 'other-context' ] )(
 			const file = new File( [ '%PDF-1.7 fileA' ], 'test.pdf', {
 				type: 'application/pdf',
 			} );
-			const view = renderHero( sessionA );
+			const view = await renderHero( sessionA );
 			await act( async () => {
 				view.bridge().ask( 'Check test.pdf', [ file ] );
 			} );
-			expect( await screen.findByRole( 'alert' ) ).toBeInTheDocument();
+			await waitFor( () =>
+				expect( screen.getByRole( 'alert' ) ).toHaveTextContent(
+					'Genie did not answer. Please try again.'
+				)
+			);
 			const upload = requests[ 0 ].body.attachments![ 0 ];
 			if ( scenario !== 'same-operation' ) {
 				await actual.sendTurn( {

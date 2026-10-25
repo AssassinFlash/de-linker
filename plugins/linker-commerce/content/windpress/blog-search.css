@@ -3,3 +3,5 @@
  */
 #tv-blog-search-v1 .journal-feed { margin-top: 0; }
 #tv-blog-search-v1 .journal-intro h1 { overflow-wrap: anywhere; }
+/* Match the existing journal search button control token. */
+#tv-blog-search-v1 .journal-search input[type="search"] { min-height: var(--proto-control-height); }

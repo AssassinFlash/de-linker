@@ -1,0 +1,42 @@
+<!-- Native Installer826/6869 timeline consumer, read2026-10-24. Styles and unrelated content omitted. -->
+<main id="installer-journal"><textarea id="installer-mobile-query" placeholder="Search by inverter model, battery capacity, backup setups, or manuals..." rows="2"></textarea>
+<script>
+  function tabSet(tabSelector, panelSelector, activeAttr) {
+    const tabs = [...page.querySelectorAll(tabSelector)];
+    const panels = [...page.querySelectorAll(panelSelector)];
+    function show(index) {
+      tabs.forEach((tab, i) => {
+        tab.setAttribute('aria-selected', i === index ? 'true' : 'false');
+        tab.tabIndex = i === index ? 0 : -1;
+      });
+      panels.forEach((panel, i) => {
+        panel.setAttribute(activeAttr, i === index ? 'true' : 'false');
+        panel.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+        const video = panel.querySelector('video');
+        if (video) {
+          const preview = video.closest('.lk-stage-preview');
+          if (i !== index) {
+            video.pause();
+            video.controls = false;
+            preview?.classList.remove('is-playing');
+          } else if (!mobileDemo.matches || preview?.classList.contains('is-playing')) {
+            video.play().catch(() => {});
+          } else video.pause();
+        }
+      });
+      if (tabs[index]) tabs[index].scrollIntoView({block:'nearest',inline:'nearest'});
+    }
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => show(i));
+      tab.addEventListener('keydown', event => {
+        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+        event.preventDefault();
+        const next = (i + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        show(next);
+        tabs[next].focus();
+      });
+    });
+    show(0);
+  }
+  tabSet('.lk-timeline-node', '.lk-timeline-stage', 'data-active');
+</script></main>

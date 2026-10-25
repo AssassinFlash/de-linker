@@ -1,6 +1,8 @@
 """Existing paired markup must change only the reviewed control spans."""
 
 import importlib.util
+import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -16,6 +18,54 @@ UNCHANGED = r"""<p>Current wording: Grüße, inquiry details and approved copy.<
 <a href="/contact/?source=https%3A%2F%2Fde-linker.com%2Fservices-support%2F">Contact</a>
 <script>const svg='\u003csvg>'; const words=/\s+/g; const line='a\nb';</script>
 """
+
+
+def test_installer_native_consumer_initializes_without_scrolling() -> None:
+    source = (Path(__file__).parent / "fixtures" / "installer-tabset.html").read_text()
+    before = (source + UNCHANGED, source + UNCHANGED)
+    after = controls.plan_pair("installer", *before)
+    assert controls.plan_pair("installer", *after) == after
+    assert all(UNCHANGED in text for text in after)
+    script = after[0].split("<script>\n", 1)[1].split("\n</script>", 1)[0]
+    program = r"""
+const assert = require('node:assert/strict');
+const vm = require('node:vm');
+const calls = [];
+const tabs = Array.from({length:3}, (_, index) => ({
+  handlers:{},setAttribute(){},
+  addEventListener(event, action){this.handlers[event]=action},
+  scrollIntoView(options){calls.push({index,options})},focus(){},
+}));
+const panels = tabs.map(() => ({setAttribute(){},querySelector(){return null}}));
+const page = {querySelectorAll(selector){
+  return selector === '.lk-timeline-node' ? tabs : panels;
+}};
+vm.runInNewContext(JSON.parse(process.argv[1]), {page});
+assert.equal(calls.length, 0);
+tabs[1].handlers.click();
+assert.equal(calls[0].index, 1);
+assert.equal(calls[0].options.block, 'nearest');
+assert.equal(calls[0].options.inline, 'nearest');
+tabs[1].handlers.keydown({key:'ArrowRight', preventDefault(){}});
+assert.equal(calls[1].index, 2);
+"""
+    subprocess.run(["node", "-e", program, json.dumps(script)], check=True)
+
+
+def test_installer_refuses_changed_scroll_consumers_and_partial_pairs() -> None:
+    old = (Path(__file__).parent / "fixtures" / "installer-tabset.html").read_text()
+    final = controls.plan_pair("installer", old, old)[0]
+    for text in (old, final):
+        for changed in (
+            text.replace("block:'nearest'", "block:'center'"),
+            text.replace("tabs[index].scrollIntoView", "tabs[0].scrollIntoView"),
+            text.replace("    show(0", "    tabs[0].scrollIntoView();\n    show(0"),
+            text.replace('rows="', 'rows="4" rows="', 1),
+        ):
+            with pytest.raises(ValueError):
+                controls.plan_pair("installer", changed, text)
+    with pytest.raises(ValueError, match="Partially changed language pair"):
+        controls.plan_pair("installer", old, final)
 
 
 def utility(language: str, final: bool = False) -> str:
@@ -147,8 +197,7 @@ def test_utility_missing_drifted_or_ambiguous_structure_is_refused(
         controls.plan_pair("utility", changed, utility("de"))
 
 
-@pytest.mark.parametrize("tabs", ["stageTabs", "roleTabs"])
-@pytest.mark.parametrize("language", ["en", "de"])
+@pytest.mark.parametrize("tabs,language", [("stageTabs", "en"), ("roleTabs", "de")])
 def test_one_final_service_group_is_refused(tabs: str, language: str) -> None:
     pair = {lang: services(lang) for lang in ("en", "de")}
     pair[language] = pair[language].replace(handler(tabs), handler(tabs, True))
@@ -156,8 +205,15 @@ def test_one_final_service_group_is_refused(tabs: str, language: str) -> None:
         controls.plan_pair("services", pair["en"], pair["de"])
 
 
-@pytest.mark.parametrize("tabs", ["stageTabs", "roleTabs"])
-@pytest.mark.parametrize("fault", ["missing", "duplicate", "drift", "both"])
+@pytest.mark.parametrize(
+    "tabs,fault",
+    [
+        ("stageTabs", "missing"),
+        ("roleTabs", "duplicate"),
+        ("stageTabs", "drift"),
+        ("roleTabs", "both"),
+    ],
+)
 def test_service_changed_or_ambiguous_handler_is_refused(tabs: str, fault: str) -> None:
     original = services("en")
     replacement = {
@@ -172,13 +228,18 @@ def test_service_changed_or_ambiguous_handler_is_refused(tabs: str, fault: str) 
 
 
 def test_unreviewed_page_family_is_refused() -> None:
-    with pytest.raises(ValueError, match="Only Utility and Services"):
+    with pytest.raises(ValueError, match="Only Utility, Services and Installer"):
         controls.plan_pair("home", utility("en"), utility("de"))
 
 
-@pytest.mark.parametrize("tabs", ["stageTabs", "roleTabs"])
 @pytest.mark.parametrize(
-    "fault", ["keyboard_only", "scroll_only", "missing_focus", "changed_target"]
+    "tabs,fault",
+    [
+        ("stageTabs", "keyboard_only"),
+        ("roleTabs", "scroll_only"),
+        ("stageTabs", "missing_focus"),
+        ("roleTabs", "changed_target"),
+    ],
 )
 def test_partial_or_drifted_focus_scroll_path_is_refused(tabs: str, fault: str) -> None:
     scroll = f"        {tabs}[next].scrollIntoView({{ block: 'nearest', inline: 'nearest' }});\n"

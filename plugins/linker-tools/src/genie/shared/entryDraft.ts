@@ -1,5 +1,6 @@
 /** Marketing handoff ownership. Text/filenames only; never prepared bytes. */
 import type { GenieConfig } from '../config';
+import { durableNativeScope } from './nativeScope';
 
 export type EntryMode = 'compose' | 'attach' | 'nameplate' | 'voice';
 export interface EntryDraft {
@@ -22,10 +23,6 @@ interface Recovery {
 	parked: ComposerDraft | null;
 }
 export const ENTRY_KEY = 'linker-genie-entry-draft';
-const TAB_KEY = 'linker-genie-entry-tab';
-/** Same auxiliary-read budget as current product metadata; never holds a model turn. */
-const CONTEXT_BUDGET_MS = 5000;
-
 export function isEntryDraft( value: unknown ): value is EntryDraft {
 	if ( ! value || typeof value !== 'object' ) {
 		return false;
@@ -51,82 +48,15 @@ export function newEntryId(): string {
 }
 
 /**
- * Fresh server identity is required before any cached text may be rendered.
- * @param config Current native REST identity.
- */
-async function readEntryScope(
-	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >
-): Promise< string > {
-	let tab = sessionStorage.getItem( TAB_KEY );
-	if ( ! tab ) {
-		tab = newEntryId();
-		sessionStorage.setItem( TAB_KEY, tab );
-	}
-	const controller = new AbortController();
-	// `finally` clears this timer on every return and throw.
-	// eslint-disable-next-line @wordpress/no-unused-vars-before-return
-	const timer = window.setTimeout(
-		() => controller.abort(),
-		CONTEXT_BUDGET_MS
-	);
-	try {
-		const response = await fetch(
-			`${ config.restUrl }linker-ai/v1/genie/entry-context`,
-			{
-				method: 'POST',
-				credentials: 'same-origin',
-				cache: 'no-store',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-WP-Nonce': config.restNonce,
-				},
-				body: JSON.stringify( { tab } ),
-				signal: controller.signal,
-			}
-		);
-		if ( ! response.ok ) {
-			throw new Error( 'entry-context' );
-		}
-		const result: unknown = await response.json();
-		if (
-			! result ||
-			typeof result !== 'object' ||
-			! ( 'scope' in result ) ||
-			typeof result.scope !== 'string' ||
-			! /^[a-f0-9]{64}$/.test( result.scope )
-		) {
-			throw new Error( 'entry-context' );
-		}
-		return result.scope;
-	} finally {
-		window.clearTimeout( timer );
-	}
-}
-
-const contextReads = new Map< string, Promise< string > >();
-/**
- * Coalesce only initial concurrent reads, so a new guest mints one browser epoch.
- * Transport/ownership checks bypass an earlier read that may predate an identity change.
- * @param config Current native REST identity.
- * @param fresh  Require a new server request immediately before consumption.
+ * Marketing durable handoff cannot acknowledge a memory-only tab.
+ * @param config
+ * @param fresh
  */
 export function entryScope(
 	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >,
 	fresh = false
 ): Promise< string > {
-	if ( fresh ) {
-		return readEntryScope( config );
-	}
-	const key = `${ config.restUrl }|${ config.restNonce }`;
-	const pending = contextReads.get( key );
-	if ( pending ) {
-		return pending;
-	}
-	const read = readEntryScope( config ).finally( () =>
-		contextReads.delete( key )
-	);
-	contextReads.set( key, read );
-	return read;
+	return durableNativeScope( config, fresh );
 }
 
 export function readEntryRecovery( scope: string ): Recovery {
@@ -206,11 +136,42 @@ export function rememberEntry( draft: EntryDraft ): boolean {
 			: [ ...record.entries, draft ],
 	} ) );
 }
-export function finishEntry( draft: EntryDraft ): void {
-	updateEntryRecovery( draft.scope, ( record ) => ( {
-		...record,
-		entries: record.entries.filter( ( item ) => item.id !== draft.id ),
-	} ) );
+export function finishEntry( draft: EntryDraft ): boolean {
+	try {
+		// Completion is exact removal, never a foreign-scope read with cleanup side effects.
+		const raw = sessionStorage.getItem( ENTRY_KEY );
+		const record = JSON.parse( raw ?? 'null' ) as Recovery | null;
+		if (
+			! record ||
+			record.scope !== draft.scope ||
+			! Array.isArray( record.entries )
+		) {
+			return false;
+		}
+		const target = record.entries.find( ( item ) => item.id === draft.id );
+		if ( ! target ) {
+			return true;
+		}
+		if (
+			target.scope !== draft.scope ||
+			target.text !== draft.text ||
+			target.mode !== draft.mode ||
+			target.sourcePath !== draft.sourcePath
+		) {
+			return false;
+		}
+		const encoded = JSON.stringify( {
+			...record,
+			entries: record.entries.filter( ( item ) => item.id !== draft.id ),
+		} );
+		if ( sessionStorage.getItem( ENTRY_KEY ) !== raw ) {
+			return false;
+		}
+		sessionStorage.setItem( ENTRY_KEY, encoded );
+		return sessionStorage.getItem( ENTRY_KEY ) === encoded;
+	} catch {
+		return false;
+	}
 }
 export function entryAck(
 	draft: EntryDraft,

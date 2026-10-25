@@ -1,0 +1,13 @@
+# b472 generated build and translation readback
+
+The parent authorized generation after both independent source reviews passed b472. The tools plugin was built through its existing `npm run build` (`wp-scripts build` and native source/build manifest writer), followed by the existing `just i18n-tools` (`wp i18n make-json --no-purge`, `msgfmt --check`). This avoids the broader `just build` wrapper's unrelated commerce build and dependency work.
+
+All **19 product hashes and 22 test hashes remain identical** to the reviewed source; aggregate remains `b472f3259aeb32e17419745942c5653ffbbe82e1332914e385929300290dfb1a`. No product or test semantics changed. `checks.json` gives every before/after generated-file SHA and command exit. Original pre-generation files and final changed outputs are copied in the private evidence directory; `records.json` embeds the raw command logs and test-report bytes.
+
+The initial native JSON generation reproduced the existing catalog gap: the approved warning's PO reference listed only `src/genie/App.tsx src/hero/Hero.tsx`, so it was absent from runtime `build/genie.js` and `build/hero.js` catalogs. Native extraction of those actual compiled entries identifies the warning at `build/genie.js:85` and `build/hero.js:67`. Only those two file references were appended to that one PO metadata line. Every non-reference PO byte, including every English/German msgid/msgstr, is unchanged. Native JSON/MO were then regenerated; both runtime catalogs contain the previously approved German warning. No new wording or translation was invented.
+
+Final checks: **642 JavaScript tests pass, 0 fail, 0 pending**; standalone catalog is **7/7 pass**. Full-plugin ESLint, TypeScript, Prettier and committed build-manifest checks pass. Native i18n coverage and catalog validity pass. Three webpack asset/entrypoint/performance warnings remain visible in the successful build log; they are not hidden or treated as failures.
+
+Two diagnostic failures are preserved honestly. Initial full native extraction exceeded this CLI process's default 128M parser memory; the successful scoped extraction uses the two relevant entries and the existing tooling's process-local 1G bound, without changing global PHP configuration. A catalog launch from repository cwd failed on relative source-path reads despite Vitest `--root`; running the unchanged test from its required plugin cwd passes 7/7. Neither diagnostic led to weakened assertions or global settings changes.
+
+This is generated-output and local source/test evidence. It does not cover runtime 9270, a browser, a real model/mail request, production, merge or deployment. Those gates remain with the parent. No commit or broad staging was performed.

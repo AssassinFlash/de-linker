@@ -47,16 +47,17 @@ final class SelectionViewTest extends TestCase {
 			),
 		);
 		$html    = SelectionView::form( $context, '', true );
+		$this->assertStringContainsString( '<legend>Related details</legend>', $html );
 		$this->assertStringContainsString( 'name="' . SelectionContext::INCLUDE_FIELD . '" value="0"', $html );
 		$this->assertStringContainsString( ' checked /><span>', $html );
 		$this->assertStringNotContainsString( 'type="hidden" name="' . SelectionContext::FIELD . '"', $html );
-		$this->assertStringContainsString( 'This selection will not be sent.', $html );
+		$this->assertStringContainsString( 'These details will not be sent.', $html );
 		$this->assertStringContainsString( '&lt;img src=x', $html );
 		$this->assertStringNotContainsString( '<img', $html );
 		$this->assertStringContainsString( '3-phase', $html );
 		$this->assertStringContainsString( 'Up to 6 kW', $html );
 		$this->assertStringNotContainsString( ' checked', SelectionView::form( $context, '', false ) );
-		$this->assertStringContainsString( 'This selection could not be loaded.', SelectionView::form( array(), '{invalid', true ) );
+		$this->assertStringContainsString( 'These details could not be loaded.', SelectionView::form( array(), '{invalid', true ) );
 	}
 
 	/** Selected request labels are escaped, removable and present in the team/admin view. */
@@ -72,6 +73,7 @@ final class SelectionViewTest extends TestCase {
 			),
 		);
 		$html     = SelectionView::form( $context, '', true );
+		$this->assertStringContainsString( '<legend>Product selection</legend>', $html );
 		$this->assertStringContainsString( '<dt>Product</dt>', $html );
 		$this->assertStringContainsString( '<dt>Documents</dt>', $html );
 		$this->assertStringContainsString( 'Datasheets &amp; certificates', $html );
@@ -87,6 +89,41 @@ final class SelectionViewTest extends TestCase {
 		ob_start();
 		$view->admin( $order );
 		$this->assertStringContainsString( '<dt>Product</dt>', (string) ob_get_clean() );
+		$direct = array(
+			'type'      => 'product',
+			'source'    => 'https://site/products/example/',
+			'url'       => 'https://site/products/example/',
+			'title'     => 'Example product',
+			'selection' => array(),
+		);
+		$this->assertStringContainsString( '<legend>Product selection</legend>', SelectionView::form( $direct, '', true ) );
+	}
+
+	/** A page link is not a selected product in the form or the native team record. */
+	public function test_source_page_has_the_same_accurate_heading_in_each_consumer(): void {
+		$context = array(
+			'type'      => 'page',
+			'source'    => 'https://site/services-support/',
+			'url'       => 'https://site/services-support/',
+			'title'     => 'Services & Support',
+			'selection' => array(),
+		);
+		$html    = SelectionView::form( $context, '', true );
+		$this->assertStringContainsString( '<legend>Related page</legend>', $html );
+		$this->assertStringNotContainsString( 'Product selection', $html );
+		$this->assertStringContainsString( 'Include these details with my message', $html );
+		$order = Mockery::mock( \WC_Order::class );
+		$order->shouldReceive( 'get_meta' )->with( SelectionContext::META )->andReturn( json_encode( $context ) );
+		$view = new SelectionView();
+		ob_start();
+		$view->admin( $order );
+		$this->assertStringContainsString( '<h3>Related page</h3>', (string) ob_get_clean() );
+		ob_start();
+		$view->email( $order, true, false, null );
+		$this->assertStringContainsString( '<h2>Related page</h2>', (string) ob_get_clean() );
+		ob_start();
+		$view->email( $order, true, true, null );
+		$this->assertStringStartsWith( "Related page\nServices & Support\n", (string) ob_get_clean() );
 	}
 
 	/**

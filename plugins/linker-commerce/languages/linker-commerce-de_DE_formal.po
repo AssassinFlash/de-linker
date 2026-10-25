@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Linker Commerce 0.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/linker-commerce\n"
-"POT-Creation-Date: 2026-10-24T02:19:25+00:00\n"
+"POT-Creation-Date: 2026-10-25T10:20:37+00:00\n"
 "PO-Revision-Date: 2026-10-09 00:00+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -638,7 +638,7 @@ msgid "Saved solutions"
 msgstr "Gespeicherte Lösungen"
 
 #: includes/Account/Menu.php:51 includes/Account/Menu.php:86
-#: includes/Admin/DocumentsMetaBox.php:54 includes/Contact/SelectionView.php:78
+#: includes/Admin/DocumentsMetaBox.php:54 includes/Contact/SelectionView.php:95
 #: includes/Presentation/AccountTemplates.php:475
 #: includes/Presentation/LibraryPage.php:380
 #: includes/Presentation/ProductShortcodes.php:878
@@ -1080,34 +1080,39 @@ msgstr ""
 "Ihre Eingaben konnten nicht in die andere Sprachversion übernommen werden. "
 "Sie sind weiterhin auf dieser Seite vorhanden."
 
-#: includes/Contact/SelectionView.php:43 includes/Contact/SelectionView.php:141
-#: includes/Contact/SelectionView.php:164
-#: includes/Contact/SelectionView.php:171
+#: includes/Contact/SelectionView.php:46 includes/Contact/SelectionView.php:51
+msgid "These details will not be sent."
+msgstr "Diese Angaben werden nicht mitgesendet."
+
+#: includes/Contact/SelectionView.php:48
+msgid "Include these details with my message"
+msgstr "Diese Angaben mit meiner Nachricht senden"
+
+#: includes/Contact/SelectionView.php:50 includes/Contact/Submission.php:127
+msgid ""
+"These details could not be loaded. To send your message without them, "
+"uncheck “Include these details with my message”."
+msgstr "Diese Angaben konnten nicht geladen werden. Um Ihre Nachricht ohne diese Angaben zu senden, entfernen Sie das Häkchen bei „Diese Angaben mit meiner Nachricht senden“."
+
+#: includes/Contact/SelectionView.php:64
 msgid "Product selection"
 msgstr "Produktauswahl"
 
-#: includes/Contact/SelectionView.php:46 includes/Contact/SelectionView.php:51
-msgid "This selection will not be sent."
-msgstr "Diese Auswahl wird nicht mitgesendet."
+#: includes/Contact/SelectionView.php:67
+msgid "Related page"
+msgstr "Zugehörige Seite"
 
-#: includes/Contact/SelectionView.php:48
-msgid "Include this selection with my message"
-msgstr "Diese Auswahl meiner Nachricht beifügen"
+#: includes/Contact/SelectionView.php:69
+msgid "Related details"
+msgstr "Zugehörige Angaben"
 
-#: includes/Contact/SelectionView.php:50
-msgid ""
-"This selection could not be loaded. You can exclude it and send your message."
-msgstr ""
-"Diese Auswahl konnte nicht geladen werden. Sie können sie abwählen und Ihre "
-"Nachricht senden."
-
-#: includes/Contact/SelectionView.php:76
+#: includes/Contact/SelectionView.php:93
 #: includes/Presentation/ProductShortcodes.php:185
 #: includes/Presentation/ProductShortcodes.php:1964
 msgid "Search"
 msgstr "Suchen"
 
-#: includes/Contact/SelectionView.php:77
+#: includes/Contact/SelectionView.php:94
 #: includes/Inquiry/Assessment/EvidenceView.php:61
 #: includes/Products/EngineeringReference.php:80
 #: templates/emails/linker-genie-handoff.php:63
@@ -1115,75 +1120,75 @@ msgstr "Suchen"
 msgid "Product"
 msgstr "Produkt"
 
-#: includes/Contact/SelectionView.php:79
+#: includes/Contact/SelectionView.php:96
 #: includes/Presentation/ProductShortcodes.php:304
 msgid "Brand"
 msgstr "Marke"
 
-#: includes/Contact/SelectionView.php:80
+#: includes/Contact/SelectionView.php:97
 #: includes/Presentation/ProductShortcodes.php:303
 #: includes/Storefront/ProductView.php:286
 msgid "Application"
 msgstr "Anwendung"
 
-#: includes/Contact/SelectionView.php:81
+#: includes/Contact/SelectionView.php:98
 #: includes/Presentation/ProductShortcodes.php:305
 #: includes/Products/Materials.php:775
 msgid "Phase"
 msgstr "Phase"
 
-#: includes/Contact/SelectionView.php:82
+#: includes/Contact/SelectionView.php:99
 #: includes/Presentation/ProductShortcodes.php:306
 msgid "Power"
 msgstr "Leistung"
 
-#: includes/Contact/SelectionView.php:83
+#: includes/Contact/SelectionView.php:100
 msgid "Minimum power (kW)"
 msgstr "Mindestleistung (kW)"
 
-#: includes/Contact/SelectionView.php:84
+#: includes/Contact/SelectionView.php:101
 msgid "Maximum power (kW)"
 msgstr "Höchstleistung (kW)"
 
-#: includes/Contact/SelectionView.php:85
+#: includes/Contact/SelectionView.php:102
 msgid "Minimum capacity (kWh)"
 msgstr "Mindestkapazität (kWh)"
 
-#: includes/Contact/SelectionView.php:86
+#: includes/Contact/SelectionView.php:103
 msgid "Maximum capacity (kWh)"
 msgstr "Höchstkapazität (kWh)"
 
-#: includes/Contact/SelectionView.php:87
+#: includes/Contact/SelectionView.php:104
 #: includes/Presentation/ProductShortcodes.php:417
 #: includes/Vocabulary/Terms.php:68
 msgid "Sort products"
 msgstr "Produkte sortieren"
 
-#: includes/Contact/SelectionView.php:100
+#: includes/Contact/SelectionView.php:117
 msgid "Datasheets & certificates"
 msgstr "Datenblätter und Zertifikate"
 
-#: includes/Contact/SelectionView.php:104
+#: includes/Contact/SelectionView.php:121
 #: includes/Presentation/ProductShortcodes.php:407
 msgid "Newest first"
 msgstr "Neueste zuerst"
 
-#: includes/Contact/SelectionView.php:105
+#: includes/Contact/SelectionView.php:122
 #: includes/Presentation/ProductShortcodes.php:408
 msgid "Name A-Z"
 msgstr "Name A-Z"
 
-#: includes/Contact/SelectionView.php:106
+#: includes/Contact/SelectionView.php:123
 #: includes/Presentation/ProductShortcodes.php:409
 msgid "Power high-low"
 msgstr "Leistung hoch-niedrig"
 
-#: includes/Contact/SelectionView.php:107
+#: includes/Contact/SelectionView.php:124
 #: includes/Presentation/ProductShortcodes.php:410
 msgid "Power low-high"
 msgstr "Leistung niedrig-hoch"
 
-#: includes/Contact/SelectionView.php:108
+#: includes/Contact/SelectionView.php:125
 #: includes/Presentation/ProductShortcodes.php:406
 msgid "Recommended"
 msgstr "Empfohlen"
@@ -1203,11 +1208,6 @@ msgstr "Bitte schreiben Sie Ihre Nachricht."
 #: includes/Contact/Submission.php:117
 msgid "Please agree to the use of your details for the reply."
 msgstr "Bitte stimmen Sie der Verwendung Ihrer Angaben für die Antwort zu."
-
-#: includes/Contact/Submission.php:127
-msgid "Please review the product selection or exclude it before sending."
-msgstr ""
-"Bitte prüfen Sie die Produktauswahl oder wählen Sie sie vor dem Senden ab."
 
 #: includes/Digest/DigestEmail.php:47 includes/Digest/DigestEmail.php:120
 msgid "Daily digest"
@@ -6111,6 +6111,23 @@ msgstr ""
 #: templates/proforma/proforma.php:177
 msgid "Reference"
 msgstr "Verwendungszweck"
+
+#~ msgid "Please review the product selection or exclude it before sending."
+#~ msgstr ""
+#~ "Bitte prüfen Sie die Produktauswahl oder wählen Sie sie vor dem Senden ab."
+
+#~ msgid "This selection will not be sent."
+#~ msgstr "Diese Auswahl wird nicht mitgesendet."
+
+#~ msgid "Include this selection with my message"
+#~ msgstr "Diese Auswahl meiner Nachricht beifügen"
+
+#~ msgid ""
+#~ "This selection could not be loaded. You can exclude it and send your "
+#~ "message."
+#~ msgstr ""
+#~ "Diese Auswahl konnte nicht geladen werden. Sie können sie abwählen und "
+#~ "Ihre Nachricht senden."
 
 #, php-format
 #~ msgid ""

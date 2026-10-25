@@ -1,0 +1,733 @@
+{
+  "source_aggregate": "b472f3259aeb32e17419745942c5653ffbbe82e1332914e385929300290dfb1a",
+  "product_source_frozen": true,
+  "status": "SOURCE CANDIDATE FROZEN; independent review required; not built or browser/deployment accepted",
+  "all_js": {
+    "command": "node_modules/.bin/vitest run --maxWorkers=2 --reporter=json --outputFile=/tmp/voice-retained-all-js-final2.json",
+    "passed": 641,
+    "failed": 1,
+    "pending": 0,
+    "test_files": 63,
+    "failures": [
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/i18n.test.ts",
+        "title": "every genie text has a German translation",
+        "status": "failed",
+        "failure": [
+          "AssertionError: expected [ Array(1) ] to deeply equal []\n    at /Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/i18n.test.ts:122:20\n    at file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:1628:35\n    at file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:26\n    at file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3321:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3316:10)\n    at file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3301:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3259:10)\n    at file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:3882:64"
+        ]
+      }
+    ],
+    "files": [
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/bin/build-manifest.test.ts",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/entries.test.tsx",
+        "passed": 3,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/App.test.tsx",
+        "passed": 28,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/MobileNavigation.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/Steps.test.tsx",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/config.test.ts",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/i18n.test.ts",
+        "passed": 6,
+        "failed": 1,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/stock.test.ts",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/App.test.tsx",
+        "passed": 61,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/CardLinks.test.tsx",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/CardPrice.test.tsx",
+        "passed": 7,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/CardStates.test.tsx",
+        "passed": 2,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/PartsApp.test.tsx",
+        "passed": 1,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/Race.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/StockBadge.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/config.test.ts",
+        "passed": 2,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/failureOwnership.consumer.test.tsx",
+        "passed": 78,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/resourceOwnership.consumer.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+        "passed": 41,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/marketing/entries.test.tsx",
+        "passed": 37,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/hero/Hero.test.tsx",
+        "passed": 19,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/hero/controller.test.tsx",
+        "passed": 18,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/hero/session.test.ts",
+        "passed": 9,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/hero/state.test.ts",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/preview/controller.test.ts",
+        "passed": 15,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/preview/rules.test.ts",
+        "passed": 9,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/shared/ProductCard.test.tsx",
+        "passed": 1,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/api/engine.test.ts",
+        "passed": 5,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/api/solutions.test.ts",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/api/store.test.ts",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/commercial/CommercialPanel.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/roof/RoofStep.test.tsx",
+        "passed": 2,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/roof/geometry.test.ts",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/configurator/utility/UtilityForm.test.tsx",
+        "passed": 2,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/api/historyArtifacts.test.ts",
+        "passed": 15,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/api/turn.test.ts",
+        "passed": 14,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/attachments/prepare.test.ts",
+        "passed": 26,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/blocks.test.ts",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/cardActions.test.tsx",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/conversation.test.ts",
+        "passed": 10,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/dictation.test.ts",
+        "passed": 6,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/draftContext.test.ts",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/editingAuthority.test.ts",
+        "passed": 1,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/entryDraft.test.ts",
+        "passed": 2,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/entryFailure.test.ts",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/failure.test.ts",
+        "passed": 18,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/nativeScope.test.ts",
+        "passed": 5,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/ownedFailure.test.ts",
+        "passed": 17,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/useComposerSize.test.tsx",
+        "passed": 4,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/shared/useFailure.test.tsx",
+        "passed": 3,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/protection/inquiryHandoff.consumer.test.tsx",
+        "passed": 6,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/protection/inquiryHandoff.ownership.test.ts",
+        "passed": 20,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/protection/inquiryHandoff.test.ts",
+        "passed": 3,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/protection/request.test.ts",
+        "passed": 10,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/ActionView.test.tsx",
+        "passed": 3,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/ContactCard.test.tsx",
+        "passed": 7,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/CopyReply.test.tsx",
+        "passed": 1,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/DocumentLink.test.tsx",
+        "passed": 2,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/HelperFooter.test.tsx",
+        "passed": 3,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/InquiryCard.test.tsx",
+        "passed": 8,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/MessageBody.test.tsx",
+        "passed": 3,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/PartsCard.test.tsx",
+        "passed": 6,
+        "failed": 0,
+        "pending": 0
+      },
+      {
+        "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/components/Reply.test.tsx",
+        "passed": 2,
+        "failed": 0,
+        "pending": 0
+      }
+    ]
+  },
+  "fixed_fd04_final_test_bytes": {
+    "command": "node_modules/.bin/vitest run --root <fixed-fd04-before-tree> --maxWorkers=1 src/genie/voiceOwnership.consumer.test.tsx -t \"Restore cannot|quota fallback from|stale empty|additionally edited|sending a stale|success consumes only|clearing stale retained\" --reporter=json",
+    "test_sha256": "8828fa93f44350893a3543f1a3206a9111f9d83bcc5c6818f5d25a85441dcbd2",
+    "passed": 1,
+    "failed": 7,
+    "pending": 33,
+    "note": "Seven new cases fail; broad targeted pattern also matches one original passing normal control. 33 other cases are unselected only in this diagnostic run; final full suite has zero pending. Final test bytes were copied unchanged into the fixed fd04 source tree.",
+    "selected_cases": [
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "a native same-owner check before the first voice byte does not discard the accepted editor",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "B voice accepted before React commits remains owned after showStored revalidates its empty snapshot",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "explicitly clearing voice text cancels that recognition, so a late result cannot recreate it",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "switching native owners stops A and cannot paint or persist its late voice into B",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "Close stops recognition and reopening does not accept its late result",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "an old same-owner onEnd cannot release the stop handle of a newer recognition",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "New conversation invalidates an active voice before it can write into the new thread",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "an accepted transcript waits for native same-owner verification",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "an accepted transcript waits for native same-owner verification even if recognition naturally ends first",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "Stop dictation cancels queued voice bytes before native verification returns",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "Close cancels queued voice bytes before native verification returns",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "New conversation cancels queued voice bytes before native verification returns",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "different native owner cancels queued voice bytes before native verification returns",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "pending accepted voice survives pagehide and a fresh A remount without an automatic turn",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "pending accepted voice survives pagehide and a fresh A remount after natural recognition end without an automatic turn",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "pending heard A words remain quarantined in B and are explicitly restorable only after fresh A",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "A1 success consumes only A1 after A2 pending voice synchronously checkpoints",
+        "status": "passed",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "pagehide retains prepared PDF and displayed text together with pending voice under the original attempt",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "explicit Stop removes only undisplayed voice and preserves displayed text plus the prepared PDF",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "Stop cannot overwrite a later revision of the same attempt",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "explicit Stop preserves an existing reselection name without keeping the undisplayed phrase",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "a pending voice storage failure retains only original A memory ownership and shows the existing warning after explicit restore",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "a second pending phrase cannot overwrite a later accepted revision or its reselection names, including after verification and pagehide",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "pending voice continues across a different retained attempt without replacing that other draft",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "pending voice continues when an earlier distinct attempt is successfully consumed",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "Stop after another attempt changes the bucket cancels only queued words",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "Stop after another attempt changes the bucket cancels only queued words and retains displayed text and PDF",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "a target whose bytes changed without a revision bump is not a safe independent-attempt rebase",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "a temporarily unreadable checkpoint retains the next heard phrase under original A memory ownership",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "a newer durable revision remains intact and reachable beside the unsaved voice copy after a read failure",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "both existing variants restore with their files and missing names, then memory success leaves durable reachable",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "selected durable success preserves the unsaved memory version for fresh A and exposes neither to B",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "clearing the selected memory text and file consumes only it, leaving the newer durable selection restorable",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "clearing selected durable text, missing name and file leaves the unsaved memory version restorable",
+        "status": "skipped",
+        "failure": []
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "Restore cannot replace a newer memory revision with the stale mounted editor",
+        "status": "failed",
+        "failure": [
+          "AssertionError: expected 'First accepted phrase Second accepted\u2026' to be 'Newer accepted memory revision' // Object.is equality\n    at /Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx:1229:31\n    at async file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "quota fallback from a restored durable editor retains the other actual memory copy",
+        "status": "failed",
+        "failure": [
+          "AssertionError: expected [ \u2026(2) ] to include 'First accepted phrase Second accepted\u2026'\n    at Proxy.<anonymous> (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:2077:15)\n    at Proxy.<anonymous> (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:1944:14)\n    at Proxy.methodWrapper (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/node_modules/chai/index.js:1737:25)\n    at /Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx:1262:55\n    at async file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "stale empty editor cannot consume a newer memory revision on pagehide",
+        "status": "failed",
+        "failure": [
+          "AssertionError: expected false to be true // Object.is equality\n    at /Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx:1322:4\n    at async file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "an additionally edited stale UI and the newer memory revision both remain explicitly restorable",
+        "status": "failed",
+        "failure": [
+          "AssertionError: expected [ \u2026(2) ] to deeply equal ArrayContaining{\u2026}\n    at /Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx:1358:24\n    at async file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "sending a stale unchanged editor cannot promote the newly read memory revision",
+        "status": "failed",
+        "failure": [
+          "AssertionError: expected \"vi.fn()\" to not be called at all, but actually been called 1 times\n\nReceived:\n\n  1st vi.fn() call:\n\n    Array [\n      Object {\n        \"locale\": \"en\",\n        \"messages\": Array [\n          Object {\n            \"content\": \"First accepted phrase Second accepted phrase\n    Attached: voice-project.pdf\",\n            \"role\": \"user\",\n          },\n        ],\n        \"nonce\": \"native-browser-voice-fixture\",\n        \"page\": Object {\n          \"type\": \"other\",\n        },\n        \"restUrl\": \"/wp-json/\",\n        \"turnUrl\": \"/wp-json/linker-ai/v1/genie/turn\",\n        \"uploads\": Array [\n          Object {\n            \"data\": \"JVBERi0xLjQKYWNjZXB0ZWQgZml4dHVyZQolJUVPRg==\",\n            \"name\": \"voice-project.pdf\",\n            \"type\": \"application/pdf\",\n          },\n        ],\n      },\n    ]\n\n\nNumber of calls: 1\n\n    at Proxy.<anonymous> (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:2214:51)\n    at Proxy.<anonymous> (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:1944:14)\n    at Proxy.methodWrapper (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/node_modules/chai/index.js:1737:25)\n    at /Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx:1388:25\n    at async file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "success consumes only the selected retained copy, leaving the other actual copies reachable for A and invisible to B",
+        "status": "failed",
+        "failure": [
+          "Error: expect(element).toHaveValue(Newer accepted memory revision)\n\nExpected the element to have value:\n  Newer accepted memory revision\nReceived:\n  Additional accepted UI words\n    at Proxy.__VITEST_EXTEND_ASSERTION__ (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:2584:12)\n    at Proxy.<anonymous> (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:1944:14)\n    at Proxy.methodWrapper (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/node_modules/chai/index.js:1737:25)\n    at /Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx:1421:20\n    at async file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      },
+      {
+        "file": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx",
+        "title": "clearing stale retained UI cannot delete a later retained revision or its missing file names",
+        "status": "failed",
+        "failure": [
+          "Error: expect(element).toHaveValue(Additional accepted UI words)\n\nExpected the element to have value:\n  Additional accepted UI words\nReceived:\n  Later durable project revision\n    at Proxy.__VITEST_EXTEND_ASSERTION__ (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:2584:12)\n    at Proxy.<anonymous> (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/index.C4tKZ0yW.js:1944:14)\n    at Proxy.methodWrapper (file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/node_modules/chai/index.js:1737:25)\n    at /Users/chesterjohn/de-linker-data/privacy-visual-20261021/voice-retained-fd04-before-20261022T062140887955Z/src/genie/voiceOwnership.consumer.test.tsx:1491:20\n    at async file:///Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/node_modules/vitest/dist/chunks/run.BTlFXlnv.js:2783:20"
+        ]
+      }
+    ]
+  },
+  "new_cases_on_frozen_candidate": [
+    {
+      "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+      "title": "Restore cannot replace a newer memory revision with the stale mounted editor",
+      "status": "passed",
+      "failure": []
+    },
+    {
+      "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+      "title": "quota fallback from a restored durable editor retains the other actual memory copy",
+      "status": "passed",
+      "failure": []
+    },
+    {
+      "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+      "title": "stale empty editor cannot consume a newer memory revision on pagehide",
+      "status": "passed",
+      "failure": []
+    },
+    {
+      "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+      "title": "an additionally edited stale UI and the newer memory revision both remain explicitly restorable",
+      "status": "passed",
+      "failure": []
+    },
+    {
+      "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+      "title": "sending a stale unchanged editor cannot promote the newly read memory revision",
+      "status": "passed",
+      "failure": []
+    },
+    {
+      "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+      "title": "success consumes only the selected retained copy, leaving the other actual copies reachable for A and invisible to B",
+      "status": "passed",
+      "failure": []
+    },
+    {
+      "file": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx",
+      "title": "clearing stale retained UI cannot delete a later retained revision or its missing file names",
+      "status": "passed",
+      "failure": []
+    }
+  ],
+  "static_checks": {
+    "prettier": {
+      "exit": 0,
+      "log": "voice-retained-format-check.log"
+    },
+    "eslint": {
+      "exit": 0,
+      "log": "voice-retained-eslint-final2.log"
+    },
+    "typescript": {
+      "exit": 0,
+      "log": "voice-retained-tsc-final2.log"
+    }
+  },
+  "known_generated_gap": "Only pre-existing generated catalog failure: src/configurator/i18n.test.ts every genie text has a German translation, missing approved memory-only warning. Parent owns build/i18n after source reviews. No catalog or copy changed.",
+  "earlier_runs": "Original no-worker-limit full run overloaded this machine and recorded timeouts. Its complete logs remain in the private snapshot. A subsequent bounded run exposed two real missing-only normal recovery regressions; these were fixed without editing the old tests. Final bounded run has only the pre-existing generated catalog gap.",
+  "evidence_boundary": "Actual App plus existing production wrapper/journal, native identity and native SpeechRecognition fixture, actual PDF preparation, DOM input/click/pagehide. sendTurn and history are fixtures. No real model, browser UI, native instance, mail, account/order write or production operation."
+}

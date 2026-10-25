@@ -109,5 +109,50 @@ final class VisibilityReadTest extends TestCase {
 		$this->assertSame( array(), $ids );
 		$this->assertSame( 1, $candidate_reads );
 		$this->assertSame( 5, $refreshes, 'Candidate selection and permission use one fresh assembly.' );
+		// General search must retain pages/posts while excluding every current
+		// forbidden product, including drafts and engineering-only references.
+		$persisted[11] = 'publish';
+		$persisted[12] = 'publish';
+		WP_Mock::userFunction( 'get_post_stati' )->andReturn( array( 'publish', 'draft', 'private' ) );
+		WP_Mock::userFunction( 'absint' )->andReturnUsing( static fn ( mixed $value ): int => abs( (int) $value ) );
+		$include = array();
+		$writes  = array();
+		$mixed   = Mockery::mock( \WP_Query::class );
+		$mixed->allows( 'get' )->with( 'post_type' )->andReturn( array( 'post', 'page', 'product' ) );
+		$mixed->allows( 'get' )->with( 'linker_publication_internal' )->andReturn( false );
+		$mixed->allows( 'get' )->with( 'post__in' )->andReturnUsing(
+			static function () use ( &$include ): array {
+				return $include;
+			}
+		);
+		$mixed->allows( 'get' )->with( 'post__not_in' )->andReturn( array( 91 ) );
+		$mixed->allows( 'is_preview' )->andReturn( false );
+		$mixed->allows( 'set' )->andReturnUsing(
+			static function ( string $key, array $ids ) use ( &$writes ): void {
+				$writes[ $key ] = $ids;
+			}
+		);
+		$visibility->query( $mixed );
+		$this->assertSame( array( 91, 13, 14 ), $writes['post__not_in'] ?? null );
+		$this->assertArrayNotHasKey( 'post__in', $writes, 'A product-only allow-list would erase matching pages and posts.' );
+		$this->assertSame( 6, $refreshes );
+
+		// WordPress gives post__in precedence over post__not_in. Filter that
+		// original list itself instead of adding an ineffective deny-list.
+		$include = array( 11, '014', '-13', 100 );
+		$writes  = array();
+		$visibility->query( $mixed );
+		/**
+		 * Mockery applies captured set() writes outside static analysis.
+		 *
+		 * @var array<string, list<int>> $writes
+		 */
+		$this->assertSame( array( 11, 100 ), $writes['post__in'] ?? null );
+		$this->assertArrayNotHasKey( 'post__not_in', $writes );
+		$this->assertSame( 7, $refreshes );
+		$include = array( 13, 14 );
+		$visibility->query( $mixed );
+		$this->assertSame( array( 0 ), $writes['post__in'], 'An empty filtered include list must never become an unrestricted query.' );
+		$this->assertSame( 8, $refreshes );
 	}
 }

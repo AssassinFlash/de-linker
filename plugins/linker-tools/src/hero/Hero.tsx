@@ -13,7 +13,7 @@
  * WordPress dependencies
  */
 import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -43,6 +43,8 @@ import { Compare } from '../genie/components/Compare';
 import { ContactCard, ContactSent } from '../genie/components/ContactCard';
 import { GenieCard } from '../genie/components/GenieCard';
 import { InquiryCard, InquirySent } from '../genie/components/InquiryCard';
+import { MissingFiles } from '../genie/components/MissingFiles';
+import { OwnedRecovery } from '../genie/components/OwnedRecovery';
 import { Reply } from '../genie/components/Reply';
 import { Transcript } from '../genie/components/Transcript';
 import type { GenieConfig } from '../genie/config';
@@ -54,25 +56,20 @@ import {
 	failureText,
 	omittedFileNotice,
 	pageFailureStore,
-	readFailure,
 	presentFailure,
 	reconcile,
 	refusalReason,
 	retryMessages,
 	settleTurnFailure,
-	writeFailure,
 	type FailureDraft,
 } from '../genie/shared/failure';
 import {
 	EntryScopeError,
-	assertEntryScope,
 	verifiedEntryFailure,
 } from '../genie/shared/entryFailure';
-import {
-	newEntryId,
-	readEntryRecovery,
-	updateEntryRecovery,
-} from '../genie/shared/entryDraft';
+import { newEntryId, updateEntryRecovery } from '../genie/shared/entryDraft';
+import { useDraftContext } from '../genie/shared/useDraftContext';
+import type { DraftContext, DraftLease } from '../genie/shared/draftContext';
 import { useFailure } from '../genie/shared/useFailure';
 import { HeroSession } from './session';
 
@@ -87,6 +84,7 @@ export interface HeroBridge {
 	 * @param files The files just picked, if any.
 	 */
 	ask: ( text: string, files?: ArrayLike< File > ) => void;
+	mode: ( mode: 'attach' | 'nameplate' | 'voice' ) => void;
 }
 
 /** Everything the page hands the conversation. */
@@ -108,6 +106,8 @@ export interface HeroConversationProps {
 	readPrompt?: () => { text: string; version: number };
 	/** Opens the page's file picker. */
 	requestPicker: () => void;
+	requestVoice?: () => void;
+	context?: DraftContext;
 }
 
 type Phase = 'ask' | 'waiting' | 'error';
@@ -123,19 +123,16 @@ export function HeroConversation( {
 	focusPrompt,
 	readPrompt = emptyPrompt,
 	requestPicker,
+	requestVoice,
+	context,
 }: HeroConversationProps ) {
 	const [ thread, setThread ] = useState< TurnMessage[] >( [] );
 	const [ turn, setTurn ] = useState< Turn | null >( null );
 	const [ phase, setPhase ] = useState< Phase >( 'ask' );
 	const [ refused, setRefused ] = useState( '' );
 	const [ recoveryBlocked, setRecoveryBlocked ] = useState( false );
+	const [ hydrated, setHydrated ] = useState( false );
 	const [ recoveryAttempt, setRecoveryAttempt ] = useState( 0 );
-	const [ deferredRecovery, setDeferredRecovery ] = useState< {
-		scope: string;
-		text: string;
-		uploads: Upload[];
-		missing: string[];
-	} | null >( null );
 	// The stored thread moved while Genie was answering (#373). The question
 	// goes back into the page's field; it was not stored.
 	const [ conflict, setConflict ] = useState( '' );
@@ -150,26 +147,79 @@ export function HeroConversation( {
 	const turnAt = useRef( -1 );
 	const sending = useRef( false );
 	const entryOwnerScope = useRef< string | undefined >( undefined );
-	const recoveryPending = useRef(
-		!! readFailure( pageFailureStore() )?.entryId
-	);
+	const recoveryPending = useRef( true );
 	const closeRef = useRef< HTMLButtonElement >( null );
-	const files = useAttachments();
+	const ownerCleanup = useRef< () => void >( () => undefined );
+	const draftContext = useDraftContext(
+		config,
+		() => ownerCleanup.current(),
+		context
+	);
+	const [ retainedMode, setRetainedMode ] = useState<
+		'attach' | 'nameplate' | 'voice' | null
+	>( null );
+	const files = useAttachments( draftContext );
 	// The bridge is registered once; the refs keep it calling the latest
 	// render's send and file state.
 	const filesRef = useRef( files );
 	filesRef.current = files;
 	const {
 		failureState,
+		adoptFailure,
+		detachFailure,
+		unsaved,
+		deferredFailure,
+		deferFailure,
+		exchangeFailure,
+		returnToEditing,
+		parkFailure,
+		preserveEditor,
+		ignoreCurrentCandidate,
 		omitted,
 		setOmitted,
 		commitFailure,
 		placeChips,
 		openRetry,
 		payloadOrRestore,
-	} = useFailure( files );
+	} = useFailure( files, draftContext );
+	ownerCleanup.current = () => {
+		session.invalidate();
+		detachFailure();
+		setPrompt( '' );
+		filesRef.current.clear();
+		sending.current = false;
+		setPhase( 'ask' );
+		setThread( [] );
+		setTurn( null );
+		setContacts( [] );
+		setInquiries( [] );
+		setLive( '' );
+		setRefused( '' );
+		setConflict( '' );
+		setPendingSend( null );
+		entryOwnerScope.current = undefined;
+		setHydrated( false );
+		recoveryPending.current = true;
+	};
 	const omittedRef = useRef( omitted );
 	omittedRef.current = omitted;
+	useEffect(
+		() =>
+			draftContext.beforeLeave( () => {
+				preserveEditor( {
+					text: readPrompt().text,
+					uploads: filesRef.current.uploads,
+					missing: [
+						...omittedRef.current,
+						...filesRef.current.picked
+							.filter( ( item ) => item.state !== 'ready' )
+							.map( ( item ) => item.name ),
+					],
+				} );
+			} ),
+		[ draftContext, preserveEditor, readPrompt ]
+	);
+
 	const sendRef = useRef< ( text: string ) => void >( () => undefined );
 	const [ store ] = useState( () => storeClient( config.restUrl ) );
 	const {
@@ -188,12 +238,20 @@ export function HeroConversation( {
 	// The conversation the browser already has: the dock's thread, or what
 	// the hero itself asked before it was folded and unfolded again.
 	useEffect( () => {
+		if ( draftContext.phase !== 'ready' ) {
+			return;
+		}
 		let cancelled = false;
-		const promptBefore = readPrompt();
+		const hasPendingOwner = () => failureState.current.phase === 'pending';
+		const lease = draftContext.capture();
 		void session
 			.load()
 			.then( async ( stored ) => {
-				if ( cancelled || 'clear' !== failureState.current.phase ) {
+				if (
+					cancelled ||
+					! draftContext.valid( lease ) ||
+					hasPendingOwner()
+				) {
 					// A send on this mount already owns the thread. Applying
 					// the read that started earlier would wipe it.
 					return;
@@ -205,106 +263,59 @@ export function HeroConversation( {
 				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
 				const checked = await verifiedEntryFailure(
 					config,
-					pageFailureStore()
+					pageFailureStore(),
+					draftContext
 				);
-				if (
-					! checked &&
-					readFailure( pageFailureStore() )?.entryId &&
-					! cancelled
-				) {
+				if ( ! checked && ! cancelled ) {
 					setRecoveryBlocked( true );
-				}
-				if (
-					! checked &&
-					! readFailure( pageFailureStore() )?.entryId
-				) {
-					recoveryPending.current = false;
 				}
 				if (
 					! checked ||
 					! checked.unchanged() ||
 					cancelled ||
-					failureState.current.phase !== 'clear'
+					! draftContext.valid( lease ) ||
+					checked.identity.scope !== lease?.scope ||
+					hasPendingOwner()
 				) {
 					return;
 				}
-				if ( checked.record?.entryScope ) {
-					const now = readPrompt();
-					const filesNow = filesRef.current;
-					if ( sending.current || filesNow.busy ) {
-						setRecoveryBlocked( true );
-						return;
-					}
-					if (
-						now.text ||
-						now.version !== promptBefore.version ||
-						filesNow.picked.length
-					) {
-						const candidate = {
-							scope: checked.record.entryScope,
-							text: checked.record.text,
-							uploads: checked.record.uploads,
-							missing: checked.record.omitted,
-						};
-						const existing = readEntryRecovery(
-							candidate.scope
-						).parked;
-						if (
-							existing &&
-							( existing.text !== candidate.text ||
-								JSON.stringify( existing.missing ) !==
-									JSON.stringify( [
-										...candidate.missing,
-										...candidate.uploads.map(
-											( file ) => file.name
-										),
-									] ) )
-						) {
-							setRecoveryBlocked( true );
-							return;
-						}
-						const saved = updateEntryRecovery(
-							candidate.scope,
-							( record ) => {
-								if ( record.parked ) {
-									return record;
-								}
-								return {
-									...record,
-									composer: {
-										text: now.text,
-										missing: filesNow.uploads.map(
-											( file ) => file.name
-										),
-									},
-									parked: {
-										text: candidate.text,
-										missing: [
-											...candidate.missing,
-											...candidate.uploads.map(
-												( file ) => file.name
-											),
-										],
-									},
-								};
-							}
-						);
-						if ( ! saved ) {
-							setRecoveryBlocked( true );
-							return;
-						}
-						entryOwnerScope.current = candidate.scope;
-						setDeferredRecovery( candidate );
-						recoveryPending.current = false;
-						setRecoveryBlocked( false );
-						return;
-					}
+				recoveryPending.current = false;
+				setHydrated( true );
+				const now = readPrompt();
+				const occupied =
+					!! now.text ||
+					filesRef.current.picked.length > 0 ||
+					omittedRef.current.length > 0;
+				if (
+					checked.candidate &&
+					checked.record?.editing &&
+					draftContext.editor?.attempt ===
+						checked.record.owner?.attempt &&
+					now.text === checked.record.text &&
+					JSON.stringify( filesRef.current.uploads ) ===
+						JSON.stringify( checked.record.uploads ) &&
+					JSON.stringify( omittedRef.current ) ===
+						JSON.stringify( checked.record.omitted )
+				) {
+					ignoreCurrentCandidate( checked.candidate );
+					setRecoveryBlocked( false );
+					return;
+				}
+				const reconciled = reconcile( checked.record, stored.messages );
+				if (
+					checked.candidate &&
+					reconciled.phase !== 'clear' &&
+					( ! checked.record?.entryId || occupied )
+				) {
+					deferFailure( checked.candidate );
+					setRecoveryBlocked( false );
+					return;
 				}
 				setRecoveryBlocked( false );
 				entryOwnerScope.current = checked.record?.entryScope;
 				recoveryPending.current = false;
-				const restored = writeFailure(
-					pageFailureStore(),
+				const restored = adoptFailure(
+					checked.candidate,
 					reconcile( checked.record, stored.messages )
 				);
 				failureState.current = restored;
@@ -338,76 +349,82 @@ export function HeroConversation( {
 		config,
 		recoveryAttempt,
 		readPrompt,
+		draftContext,
+		draftContext.identity?.scope,
+		adoptFailure,
+		deferFailure,
+		ignoreCurrentCandidate,
 	] );
 
-	const restoreDeferred = async () => {
-		const candidate = deferredRecovery;
-		if ( ! candidate || sending.current || filesRef.current.busy ) {
+	const restoreOwnedFailure = async () => {
+		const candidate = deferredFailure;
+		const lease = draftContext.capture();
+		if (
+			! candidate ||
+			! lease ||
+			sending.current ||
+			filesRef.current.busy
+		) {
 			return;
 		}
 		const before = readPrompt();
 		const picked = filesRef.current.picked;
-		const missingBefore = omittedRef.current;
-		try {
-			await assertEntryScope( config, candidate.scope );
-			const now = readPrompt();
-			if (
-				sending.current ||
-				filesRef.current.busy ||
-				now.version !== before.version ||
-				now.text !== before.text ||
-				filesRef.current.picked !== picked ||
-				omittedRef.current !== missingBefore
-			) {
-				return;
-			}
-			const next =
-				now.text ||
-				filesRef.current.uploads.length ||
-				omittedRef.current.length
-					? {
-							scope: candidate.scope,
-							text: now.text,
-							uploads: [ ...filesRef.current.uploads ],
-							missing: [ ...omittedRef.current ],
-						}
-					: null;
-			if (
-				! updateEntryRecovery( candidate.scope, ( record ) => ( {
-					...record,
-					composer: {
-						text: candidate.text,
-						missing: [
-							...candidate.missing,
-							...candidate.uploads.map( ( file ) => file.name ),
-						],
-					},
-					parked: next
-						? {
-								text: next.text,
-								missing: [
-									...next.missing,
-									...next.uploads.map(
-										( file ) => file.name
-									),
-								],
-							}
-						: null,
-				} ) )
-			) {
-				setRecoveryBlocked( true );
-				return;
-			}
-			entryOwnerScope.current = candidate.scope;
-			setPrompt( candidate.text );
-			placeChips( candidate.uploads );
-			setOmitted( candidate.missing );
-			setDeferredRecovery( next );
-			setRecoveryBlocked( false );
-			setPhase( 'ask' );
-		} catch {
-			setRecoveryBlocked( true );
+		const missing = omittedRef.current;
+
+		if (
+			! ( await draftContext.authorize( lease ) ) ||
+			readPrompt().text !== before.text ||
+			readPrompt().version !== before.version ||
+			filesRef.current.picked !== picked ||
+			omittedRef.current !== missing ||
+			sending.current ||
+			filesRef.current.busy
+		) {
+			return;
 		}
+		const displaced =
+			before.text || filesRef.current.uploads.length || missing.length
+				? {
+						phase: 'editing' as const,
+						kind: null,
+						draft: {
+							...failureState.current.draft,
+							editing: true,
+							text: before.text,
+							question:
+								buildQuestion(
+									before.text,
+									filesRef.current.uploads
+								) || missing.join( '\n' ),
+							uploads: filesRef.current.uploads,
+							omitted: missing,
+						},
+					}
+				: null;
+		const restored = exchangeFailure(
+			candidate,
+			displaced,
+			session.messages
+		);
+		if ( ! restored?.draft ) {
+			return;
+		}
+		entryOwnerScope.current = restored.draft.entryScope;
+		if ( restored.phase === 'editing' ) {
+			setPrompt( restored.draft.text );
+			placeChips( restored.draft.uploads );
+			setOmitted( restored.draft.omitted );
+			setPhase( 'ask' );
+			return;
+		}
+		if ( ! restored.kind ) {
+			return;
+		}
+		const composer = composerFor( restored.kind, restored.draft );
+		setPrompt( composer.field );
+		placeChips( composer.chips );
+		setOmitted( composer.omitted );
+		setPhase( 'error' );
 	};
 
 	// The conversation has the focus when it unfolds; the page's trigger gets
@@ -442,42 +459,76 @@ export function HeroConversation( {
 		async (
 			error: unknown,
 			before: TurnMessage[],
-			draft: FailureDraft
+			draft: FailureDraft,
+			lease: DraftLease
 		) => {
 			const settled = settleTurnFailure( error, before, draft );
+			// A newly accepted next question is a different editor from this turn.
+			draftContext.checkpoint();
 			if ( 'resource' === settled.action ) {
-				commitFailure( { type: 'upstream' } );
-				placeChips( draft.uploads );
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: draft.uploads,
+					missing: draft.omitted,
+				} );
 				setThread( before );
-				setPrompt( settled.field );
-				setRefused( settled.reason );
+				if ( returned ) {
+					placeChips( draft.uploads );
+					setPrompt( settled.field );
+					setRefused( settled.reason );
+				}
 				setPhase( 'ask' );
 				return;
 			}
 			if ( 'refusal' === settled.action ) {
-				commitFailure( { type: 'abandon' } );
-				placeChips( [] );
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: [],
+					missing: [],
+				} );
+				if ( returned ) {
+					placeChips( [] );
+				}
 				setThread( before );
-				setPrompt( settled.field );
+				if ( returned ) {
+					setPrompt( settled.field );
+				}
 				setRefused( refusalText( refusalReason( settled.reason ) ) );
 				setPhase( 'ask' );
 				return;
 			}
 			if ( 'conflict' === settled.action ) {
-				commitFailure( { type: 'abandon' } );
 				const stored = await session.reload();
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					return;
+				}
 				setThread( stored.messages );
 				setTurn( stored.turn );
 				setContacts( stored.contacts ?? [] );
 				setInquiries( stored.inquiries ?? [] );
 				turnAt.current = stored.turn ? stored.messages.length - 1 : -1;
-				setPrompt( settled.field );
+				draftContext.checkpoint();
+				if (
+					returnToEditing( {
+						text: settled.field,
+						uploads: draft.uploads,
+						missing: draft.omitted,
+					} )
+				) {
+					setPrompt( settled.field );
+					placeChips( draft.uploads );
+				}
 				setConflict( turnConflictText() );
 				setPhase( 'ask' );
 				return;
 			}
-			const failed = commitFailure( { type: settled.kind } );
-			const draftNow = failed.draft ?? draft;
+			commitFailure( { type: settled.kind } );
+			if ( draftContext.editor ) {
+				parkFailure();
+				setPhase( 'ask' );
+				return;
+			}
+			const draftNow = failureState.current.draft ?? draft;
 			const view = presentFailure(
 				settled.kind,
 				before,
@@ -489,11 +540,45 @@ export function HeroConversation( {
 			placeChips( view.chips );
 			setPhase( 'error' );
 		},
-		[ commitFailure, session, setPrompt, placeChips ]
+		[
+			commitFailure,
+			session,
+			setPrompt,
+			placeChips,
+			draftContext,
+			returnToEditing,
+			parkFailure,
+			failureState,
+		]
+	);
+
+	const retainUnverifiedTurn = useCallback(
+		(
+			lease: DraftLease,
+			draft: FailureDraft,
+			kind: 'upstream' | 'truncated' = 'upstream'
+		) => {
+			if ( ! draftContext.owns( lease ) ) {
+				return;
+			}
+			commitFailure( { type: kind } );
+			if ( draftContext.editor ) {
+				parkFailure();
+				setPhase( 'ask' );
+				return;
+			}
+			setPrompt( draft.text );
+			setPhase( 'error' );
+		},
+		[ draftContext, commitFailure, setPrompt, parkFailure ]
 	);
 
 	const send = useCallback(
 		async ( text: string ) => {
+			const lease = draftContext.capture();
+			if ( ! lease ) {
+				return;
+			}
 			const picked = filesRef.current.uploads;
 			const question = buildQuestion( text, picked );
 			if (
@@ -501,7 +586,7 @@ export function HeroConversation( {
 				recoveryPending.current ||
 				sending.current ||
 				filesRef.current.busy ||
-				( entryOwnerScope.current && omittedRef.current.length > 0 )
+				omittedRef.current.length > 0
 			) {
 				return;
 			}
@@ -517,7 +602,13 @@ export function HeroConversation( {
 						}
 					: {} ),
 			};
-			commitFailure( { type: 'send', draft } );
+			const pending = commitFailure( { type: 'send', draft } );
+			if (
+				pending.phase !== 'pending' ||
+				pending.draft?.question !== question
+			) {
+				return;
+			}
 			sending.current = true;
 			setRefused( '' );
 			setConflict( '' );
@@ -534,9 +625,20 @@ export function HeroConversation( {
 				const result = await session.ask(
 					question,
 					picked,
-					draft.entryScope
+					lease.scope,
+					{
+						authorize: () => draftContext.authorize( lease ),
+						settle: () => draftContext.settle( lease ),
+					}
 				);
-				filesRef.current.clear();
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					retainUnverifiedTurn( lease, draft );
+					return;
+				}
+				if ( ! draftContext.editor ) {
+					filesRef.current.clear();
+				}
+				draftContext.checkpoint();
 				commitFailure( { type: 'answered' } );
 				setThread( result.messages );
 				setTurn( result.answer );
@@ -546,8 +648,12 @@ export function HeroConversation( {
 				setLive( assistantMessage( result.answer ).content );
 				setPhase( 'ask' );
 			} catch ( error ) {
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					retainUnverifiedTurn( lease, draft );
+					return;
+				}
 				if ( error instanceof EntryScopeError && error.changed ) {
-					commitFailure( { type: 'abandon' } );
+					void draftContext.verify().catch( () => undefined );
 					setPrompt( '' );
 					placeChips( [] );
 					setPhase( 'ask' );
@@ -556,19 +662,30 @@ export function HeroConversation( {
 				}
 				// ask() commits the thread only after the proxy answered, so
 				// session.messages is the thread this question was not added to.
-				await handleTurnError( error, session.messages, draft );
+				await handleTurnError( error, session.messages, draft, lease );
 			} finally {
-				sending.current = false;
+				if ( draftContext.owns( lease ) ) {
+					sending.current = false;
+				}
 			}
 		},
-		[ session, setPrompt, commitFailure, handleTurnError, placeChips ]
+		[
+			session,
+			setPrompt,
+			commitFailure,
+			handleTurnError,
+			placeChips,
+			draftContext,
+			retainUnverifiedTurn,
+		]
 	);
 	sendRef.current = send;
 
 	// One resend. The machine leaves `failed` before the request, so a
 	// second click does not send.
 	const retry = useCallback( async () => {
-		if ( sending.current || recoveryPending.current ) {
+		const lease = draftContext.capture();
+		if ( ! lease || sending.current || recoveryPending.current ) {
 			return;
 		}
 		const opened = openRetry( session.messages );
@@ -593,9 +710,20 @@ export function HeroConversation( {
 			const result = await session.retry(
 				payload.question,
 				payload.uploads,
-				draft.entryScope
+				lease.scope,
+				{
+					authorize: () => draftContext.authorize( lease ),
+					settle: () => draftContext.settle( lease ),
+				}
 			);
-			filesRef.current.clear();
+			if ( ! ( await draftContext.settle( lease ) ) ) {
+				retainUnverifiedTurn( lease, draft );
+				return;
+			}
+			if ( ! draftContext.editor ) {
+				filesRef.current.clear();
+			}
+			draftContext.checkpoint();
 			commitFailure( { type: 'answered' } );
 			setThread( result.messages );
 			setTurn( result.answer );
@@ -605,21 +733,32 @@ export function HeroConversation( {
 			setLive( assistantMessage( result.answer ).content );
 			setPhase( 'ask' );
 		} catch ( error ) {
+			if ( ! ( await draftContext.settle( lease ) ) ) {
+				retainUnverifiedTurn( lease, draft );
+				return;
+			}
 			if ( error instanceof EntryScopeError && error.changed ) {
-				commitFailure( { type: 'abandon' } );
+				void draftContext.verify().catch( () => undefined );
 				setPrompt( '' );
 				placeChips( [] );
 				setPhase( 'ask' );
 				setRefused( __( 'Genie could not load.', 'linker-tools' ) );
 				return;
 			}
-			await handleTurnError( error, session.messages, {
-				...draft,
-				question: payload?.question ?? draft.question,
-				uploads: payload?.uploads ?? draft.uploads,
-			} );
+			await handleTurnError(
+				error,
+				session.messages,
+				{
+					...draft,
+					question: payload?.question ?? draft.question,
+					uploads: payload?.uploads ?? draft.uploads,
+				},
+				lease
+			);
 		} finally {
-			sending.current = false;
+			if ( draftContext.owns( lease ) ) {
+				sending.current = false;
+			}
 		}
 	}, [
 		session,
@@ -629,33 +768,53 @@ export function HeroConversation( {
 		openRetry,
 		payloadOrRestore,
 		placeChips,
+		draftContext,
+		retainUnverifiedTurn,
 	] );
 
+	const updateMissing = useCallback(
+		( names: string[] ) => {
+			if ( ! draftContext.capture() ) {
+				return;
+			}
+			if (
+				entryOwnerScope.current &&
+				! updateEntryRecovery(
+					entryOwnerScope.current,
+					( record ) => ( {
+						...record,
+						composer: {
+							text: readPrompt().text,
+							missing: [
+								...names,
+								...files.uploads.map( ( file ) => file.name ),
+							],
+						},
+					} )
+				)
+			) {
+				return;
+			}
+			setOmitted( names );
+			if ( draftContext.editor ) {
+				preserveEditor( {
+					text: readPrompt().text,
+					uploads: files.uploads,
+					missing: names,
+				} );
+			}
+		},
+		[ draftContext, files.uploads, preserveEditor, readPrompt, setOmitted ]
+	);
 	useEffect( () => {
-		if ( ! entryOwnerScope.current || omittedRef.current.length === 0 ) {
-			return;
-		}
 		const ready = new Set( files.uploads.map( ( file ) => file.name ) );
 		const names = omittedRef.current.filter(
 			( name ) => ! ready.has( name )
 		);
-		if (
-			names.length !== omittedRef.current.length &&
-			updateEntryRecovery( entryOwnerScope.current, ( record ) => ( {
-				...record,
-				composer: {
-					text: readPrompt().text,
-					missing: [
-						...names,
-						...files.uploads.map( ( file ) => file.name ),
-					],
-				},
-			} ) )
-		) {
-			omittedRef.current = names;
-			setOmitted( names );
+		if ( names.length !== omittedRef.current.length ) {
+			updateMissing( names );
 		}
-	}, [ files.uploads, readPrompt, setOmitted ] );
+	}, [ files.uploads, updateMissing ] );
 
 	// Files were picked for the hero: once they are prepared, send them as
 	// the turn's question (a photo or a document is itself the question).
@@ -672,13 +831,20 @@ export function HeroConversation( {
 	const bridgeAsk = useCallback(
 		( text: string, picked?: ArrayLike< File > ) => {
 			if ( picked && picked.length > 0 ) {
-				setPendingSend( { text } );
+				if ( ! draftContext.acceptEditor() ) {
+					return;
+				}
+				// A file accepted during an earlier turn belongs to the next editor.
+				// Its preparation must not queue a send after that turn settles.
+				if ( ! sending.current ) {
+					setPendingSend( { text } );
+				}
 				filesRef.current.add( picked );
 				return;
 			}
 			void sendRef.current( text );
 		},
-		[]
+		[ draftContext ]
 	);
 
 	// One ask and one "type the model" for every card in the hero — the same
@@ -689,13 +855,18 @@ export function HeroConversation( {
 		[ bridgeAsk ]
 	);
 	const typeModelCard = useCallback( () => {
+		if ( ! draftContext.acceptEditor() ) {
+			return;
+		}
 		setPrompt( typeModelPrompt() );
 		focusPrompt();
-	}, [ setPrompt, focusPrompt ] );
+	}, [ setPrompt, focusPrompt, draftContext ] );
 
 	useEffect( () => {
-		onReady( { ask: bridgeAsk } );
-	}, [ onReady, bridgeAsk ] );
+		if ( draftContext.phase === 'ready' && hydrated ) {
+			onReady( { ask: bridgeAsk, mode: setRetainedMode } );
+		}
+	}, [ onReady, bridgeAsk, draftContext, draftContext.phase, hydrated ] );
 
 	const blocks: Block[] = turn?.blocks ?? [];
 	const cardIds = idsOf( blocks, 'cards' );
@@ -762,9 +933,9 @@ export function HeroConversation( {
 				) }
 			</p>
 			<p className="screen-reader-text" role="status" aria-live="polite">
-				{ live }
+				{ draftContext.phase === 'ready' ? live : '' }
 			</p>
-			{ thread.length > 0 ? (
+			{ thread.length > 0 && draftContext.phase === 'ready' ? (
 				<Transcript
 					followKey={
 						'waiting' === phase
@@ -931,11 +1102,20 @@ export function HeroConversation( {
 						: null }
 				</Transcript>
 			) : null }
+			<OwnedRecovery
+				candidate={
+					draftContext.phase === 'ready' ? deferredFailure : null
+				}
+				restore={ () => {
+					void restoreOwnedFailure();
+				} }
+				busy={ phase === 'waiting' || files.busy }
+			/>
 			<AttachmentChips
-				picked={ files.picked }
+				picked={ draftContext.phase === 'ready' ? files.picked : [] }
 				onRemove={ files.remove }
 			/>
-			{ refused ? (
+			{ refused && draftContext.phase === 'ready' ? (
 				<p role="alert" className="linker-genie-app__refused">
 					{ refused }
 					{ config.requestPageUrl ? (
@@ -943,12 +1123,24 @@ export function HeroConversation( {
 							{ ' ' }
 							<a
 								href={ config.requestPageUrl }
-								onClick={ () =>
-									rememberInquiry(
-										config.requestPageUrl!,
-										readPrompt().text
-									)
-								}
+								onClick={ () => {
+									// The hero field lives outside React. Read its
+									// current bytes with its accepted editor.
+									const owner = draftContext.editor;
+									const prompt = readPrompt();
+									if (
+										owner &&
+										draftContext.editor === owner &&
+										draftContext.capture()?.scope ===
+											owner.scope
+									) {
+										rememberInquiry(
+											config.requestPageUrl!,
+											prompt.text,
+											owner.scope
+										);
+									}
+								} }
 							>
 								{ __( 'Send an inquiry', 'linker-tools' ) }
 							</a>
@@ -956,98 +1148,71 @@ export function HeroConversation( {
 					) : null }
 				</p>
 			) : null }
-			{ deferredRecovery ? (
-				<section
-					className="linker-genie-app__photo-prompt"
-					data-genie-parked-draft
-				>
-					<p>
-						<strong>
-							{ __( 'Current unsent draft', 'linker-tools' ) }
-						</strong>
-					</p>
-					<p>{ deferredRecovery.text }</p>
-					{ [
-						...deferredRecovery.missing,
-						...deferredRecovery.uploads.map(
-							( file ) => file.name
-						),
-					].map( ( name ) => (
-						<p key={ name }>{ name }</p>
-					) ) }
+			{ unsaved ||
+			( draftContext.identity?.persistent === false &&
+				( readPrompt().text || files.picked.length > 0 ) ) ? (
+				<p className="linker-genie-app__refused" role="status">
+					{ __(
+						'This question could not be saved. It may be lost if you refresh or leave this page.',
+						'linker-tools'
+					) }
+				</p>
+			) : null }
+			{ retainedMode && draftContext.phase === 'ready' ? (
+				<section className="linker-genie-app__photo-prompt">
 					<button
 						type="button"
 						className="linker-genie-app__prompt"
-						disabled={ phase === 'waiting' }
-						onClick={ restoreDeferred }
+						onClick={
+							retainedMode === 'voice'
+								? requestVoice
+								: requestPicker
+						}
 					>
-						{ __( 'Restore unsent draft', 'linker-tools' ) }
+						{ retainedMode === 'voice'
+							? __( 'Dictate', 'linker-tools' )
+							: __( 'Choose a file', 'linker-tools' ) }
 					</button>
 				</section>
 			) : null }
-			{ recoveryBlocked ? (
+			{ draftContext.phase !== 'ready' || recoveryBlocked ? (
 				<div className="linker-genie-app__error" role="alert">
-					<p>{ __( 'Genie could not load.', 'linker-tools' ) }</p>
+					<p>
+						{ draftContext.phase === 'loading'
+							? __( 'Opening Genie…', 'linker-tools' )
+							: __( 'Genie could not load.', 'linker-tools' ) }
+					</p>
 					<button
 						type="button"
 						className="linker-genie-app__prompt"
-						onClick={ () =>
-							setRecoveryAttempt( ( attempt ) => attempt + 1 )
-						}
+						onClick={ () => {
+							void draftContext
+								.verify()
+								.then( () =>
+									setRecoveryAttempt(
+										( attempt ) => attempt + 1
+									)
+								)
+								.catch( () => undefined );
+						} }
 					>
 						{ __( 'Try again', 'linker-tools' ) }
 					</button>
 				</div>
 			) : null }
-			{ entryOwnerScope.current && phase === 'ask' && omitted.length ? (
-				<div className="linker-genie-app__refused">
-					{ omitted.map( ( name ) => (
-						<p key={ name }>
-							{ sprintf(
-								// translators: %s is the name of a file that must be selected again.
-								__(
-									'Select %s again before sending.',
-									'linker-tools'
-								),
-								name
-							) }{ ' ' }
-							<button
-								type="button"
-								className="linker-genie-app__prompt"
-								onClick={ () => {
-									const names = omitted.filter(
-										( item ) => item !== name
-									);
-									if (
-										updateEntryRecovery(
-											entryOwnerScope.current!,
-											( record ) => ( {
-												...record,
-												composer: {
-													text: readPrompt().text,
-													missing: names,
-												},
-											} )
-										)
-									) {
-										setOmitted( names );
-									}
-								} }
-							>
-								{ __( 'Remove', 'linker-tools' ) }
-							</button>
-						</p>
-					) ) }
-					<button
-						type="button"
-						className="linker-genie-app__prompt"
-						onClick={ requestPicker }
-					>
-						{ __( 'Choose a file', 'linker-tools' ) }
-					</button>
-				</div>
+			{ phase === 'ask' && draftContext.phase === 'ready' ? (
+				<MissingFiles
+					names={ omitted }
+					remove={ ( name ) =>
+						updateMissing(
+							omitted.filter( ( item ) => item !== name )
+						)
+					}
+					choose={ requestPicker }
+				/>
 			) : null }
-			{ 'error' === phase ? (
+
+			{ 'error' === phase && draftContext.phase === 'ready' ? (
 				<>
 					<p role="alert" className="linker-genie-app__error">
 						{ failureText() }

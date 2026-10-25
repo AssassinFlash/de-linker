@@ -1,7 +1,9 @@
-/** Scope validation for the shared failed-turn readers and transport consumers. */
+/** The single verified failed-draft selector used by both surfaces and their controller. */
 import type { GenieConfig } from '../config';
-import { entryScope } from './entryDraft';
-import { FAILURE_KEY, readFailure, type FailureStore } from './failure';
+import type { DraftContext } from './draftContext';
+import { nativeScope } from './nativeScope';
+import { FAILURE_KEY, type FailureStore } from './failure';
+import { FailureJournal } from './ownedFailure';
 
 export class EntryScopeError extends Error {
 	constructor( public readonly changed: boolean ) {
@@ -9,20 +11,20 @@ export class EntryScopeError extends Error {
 	}
 }
 /**
- * Validate immediately before transport, after any queued history/metadata read.
- * @param config   Current native REST identity.
- * @param expected Scope of the entry-derived text/files, absent for legacy turns.
+ * Fresh verification after queued thread/metadata reads; required for ordinary and entry bytes.
+ * @param config   The currently mounted native routes and REST nonce.
+ * @param expected The immutable owner expected by this operation.
  */
 export async function assertEntryScope(
 	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >,
 	expected?: string
 ): Promise< void > {
 	if ( ! expected ) {
-		return;
+		throw new EntryScopeError( true );
 	}
 	let scope: string;
 	try {
-		scope = await entryScope( config, true );
+		scope = ( await nativeScope( config, true ) ).scope;
 	} catch {
 		throw new EntryScopeError( false );
 	}
@@ -31,35 +33,46 @@ export async function assertEntryScope(
 	}
 }
 /**
- * No cached private text is returned before verification. Compare exact stored bytes
- * after the await so a late reader cannot remove/reconcile a newer failed turn.
- * @param config Current native REST identity.
- * @param store  Shared failure record, never a conversation/history store.
+ * Never return private bytes before authority; unknown v1 and foreign scopes stay untouched.
+ * @param config  The currently mounted native routes and REST nonce.
+ * @param store   The underlying tab storage adapter.
+ * @param context The mounted surface identity and epoch.
  */
 export async function verifiedEntryFailure(
 	config: Pick< GenieConfig, 'restUrl' | 'restNonce' >,
-	store: FailureStore
+	store: FailureStore,
+	context?: DraftContext
 ) {
-	const raw = store.getItem( FAILURE_KEY );
-	const record = readFailure( store );
-	if ( record?.entryId ) {
-		try {
-			await assertEntryScope(
-				config,
-				record.entryScope || 'missing-scope'
-			);
-		} catch ( error ) {
-			if (
-				error instanceof EntryScopeError &&
-				error.changed &&
-				store.getItem( FAILURE_KEY ) === raw
-			) {
-				store.removeItem( FAILURE_KEY );
-			}
+	let legacyRaw: string | null = null;
+	let legacyReadable = false;
+	try {
+		legacyRaw = store.getItem( FAILURE_KEY );
+		legacyReadable = true;
+	} catch {
+		/* Memory-only candidates still require native verification. */
+	}
+	const previousScope = context?.identity?.scope;
+	try {
+		const identity = context
+			? await context.verify( true )
+			: await nativeScope( config, true );
+		if ( legacyReadable && store.getItem( FAILURE_KEY ) !== legacyRaw ) {
 			return null;
 		}
+		const journal = new FailureJournal( store, identity );
+		// An old reader can invalidate its surface, but cannot migrate/select the next owner's record.
+		const candidate =
+			previousScope && previousScope !== identity.scope
+				? null
+				: journal.candidate( context?.editor?.attempt );
+		return {
+			identity,
+			journal,
+			candidate,
+			record: candidate?.record ?? null,
+			unchanged: () => ! candidate || journal.matches( candidate.cursor ),
+		};
+	} catch {
+		return null;
 	}
-	return store.getItem( FAILURE_KEY ) === raw
-		? { record, unchanged: () => store.getItem( FAILURE_KEY ) === raw }
-		: null;
 }

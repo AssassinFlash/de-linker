@@ -1,0 +1,299 @@
+// @vitest-environment jsdom
+/** Actual ordinary producers; native identity, history and model HTTP are explicit fixtures. */
+import {
+	act,
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+	cleanup,
+} from '@testing-library/react';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
+import { App, resetTurnLane } from './App';
+import { readConfig, type GenieConfig } from './config';
+import { sendTurn } from './api/turn';
+import { FAILURE_KEY } from './shared/failure';
+import { startHero } from '../hero/controller';
+vi.mock( './api/turn', async ( original ) => {
+	const actual = await original< typeof import( './api/turn' ) >();
+	return { ...actual, sendTurn: vi.fn() };
+} );
+const CONFIG: GenieConfig = {
+	surface: 'helper',
+	locale: 'en',
+	pageType: 'home',
+	productId: 0,
+	turnUrl: '/wp-json/linker-ai/v1/genie/turn',
+	threadUrl: '/wp-json/linker-ai/v1/genie/conversation',
+	conversationsUrl: '/wp-json/linker-ai/v1/genie/conversations',
+	voteUrl: '/wp-json/linker-ai/v1/genie/turn',
+	restUrl: '/wp-json/',
+	restNonce: 'n',
+	disclosure: 'You are chatting with an AI system.',
+	accountUrl: '/my-account/',
+	workspaceUrl: '/genie/',
+	prompts: [],
+	page: { type: 'home', url: '/', title: 'Home page' },
+	signedIn: false,
+	retentionDays: 90,
+	mailStarted: '100.sig',
+	mailStartedNonce: 'sig',
+	contactUrl: '/wp-json/linker-ai/v1/genie/contact',
+	inquiryUrl: '/wp-json/linker-ai/v1/genie/inquiry',
+};
+
+const HERO = `
+<section class="hero-cinematic">
+  <div class="hero-stage">
+    <p class="hero-badge">Solar &amp; battery storage</p>
+    <h1 class="hero-title">Linking Value.</h1>
+    <p class="hero-subtitle">We link storage systems.</p>
+    <div class="hero-dialog">
+      <textarea class="hero-prompt" placeholder="Search equipment models, battery pairings, or datasheets..." rows="2"></textarea>
+      <div class="hero-dialog-footer">
+        <button type="button" data-linker-assistant-open="nameplate">Identify by nameplate photo</button>
+        <button type="button" data-linker-assistant-open="attach">Attach</button>
+        <button type="button" data-linker-assistant-open="voice">Voice</button>
+        <a class="hero-send" href="/linker-advisor/">Send</a>
+      </div>
+    </div>
+    <div class="hero-capsules">
+      <a class="hero-capsule" href="/linker-advisor/">10 kW storage systems</a>
+    </div>
+    <p class="hero-footnote">On file.</p>
+  </div>
+</section>`;
+
+let principal = 'A';
+let rejected = false;
+let stop = () => {};
+const text = 'Private A engineering quotation';
+const fileText = '%PDF-1.4\nPRIVATE-A-BOM-COSTS';
+const filename = 'A-private-costs.pdf';
+const captures: Array< {
+	principal: string;
+	request: Parameters< typeof sendTurn >[ 0 ];
+} > = [];
+beforeEach( () => {
+	sessionStorage.clear();
+	resetTurnLane();
+	principal = 'A';
+	rejected = false;
+	captures.length = 0;
+	vi.mocked( sendTurn )
+		.mockReset()
+		.mockImplementation( async ( request ) => {
+			captures.push( { principal, request } );
+			if ( principal === 'A' ) throw new Error( 'upstream' );
+			return {
+				blocks: [
+					{
+						type: 'text',
+						text: 'Answer for current principal',
+						refs: [],
+					},
+				],
+				done: true,
+			};
+		} );
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async ( url ) => {
+			if ( String( url ).includes( 'entry-context' ) )
+				return {
+					ok: true,
+					json: async () => ( {
+						scope: ( principal === 'A' ? 'a' : 'b' ).repeat( 64 ),
+					} ),
+				};
+			if ( String( url ).endsWith( '/conversations' ) )
+				return {
+					ok: true,
+					json: async () => ( { conversations: [], current_id: 0 } ),
+				};
+			return rejected
+				? { ok: false, status: 403 }
+				: {
+						ok: true,
+						json: async () => ( { messages: [], stream: '' } ),
+					};
+		} )
+	);
+} );
+afterEach( () => {
+	stop();
+	cleanup();
+	document.body.innerHTML = '';
+	sessionStorage.clear();
+	vi.unstubAllGlobals();
+	resetTurnLane();
+} );
+function config() {
+	const mount = document.createElement( 'div' );
+	mount.dataset.surface = 'workspace';
+	mount.dataset.restNonce = 'nonce-' + principal;
+	return readConfig( mount );
+}
+function workspace() {
+	document.body.innerHTML = '';
+	const ui = render( <App config={ config() } /> );
+	return {
+		field: () =>
+			screen.getByRole< HTMLTextAreaElement >( 'textbox', {
+				name: 'Ask Genie',
+			} ),
+		stop: () => ui.unmount(),
+	};
+}
+function home() {
+	document.body.innerHTML = HERO;
+	const hero = document.querySelector< HTMLElement >( '.hero-cinematic' )!;
+	const end = startHero( hero, {
+		config: { ...CONFIG, restNonce: 'nonce-' + principal },
+	} );
+	return {
+		field: () =>
+			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!,
+		stop: end,
+	};
+}
+
+for ( const surface of [ 'workspace', 'home' ] as const ) {
+	for ( const next of [ 'B', 'guest' ] as const ) {
+		for ( const blocked of [ false, true ] ) {
+			test(
+				'legacy investigation text ' +
+					surface +
+					' A to ' +
+					next +
+					' with ' +
+					( blocked ? '403' : 'empty' ) +
+					' history',
+				async () => {
+					let ui = surface === 'workspace' ? workspace() : home();
+					stop = ui.stop;
+					if ( surface === 'workspace' )
+						act( () =>
+							window.dispatchEvent(
+								new CustomEvent( 'linker-genie-open' )
+							)
+						);
+					await act( async () => {} );
+					fireEvent.change( ui.field(), { target: { value: text } } );
+					await act( async () =>
+						fireEvent.click(
+							surface === 'home'
+								? document.querySelector( '.hero-send' )!
+								: screen.getByRole( 'button', { name: 'Send' } )
+						)
+					);
+					await screen.findByText(
+						'Genie did not answer. Please try again.'
+					);
+					const stored = JSON.parse(
+						sessionStorage.getItem( FAILURE_KEY )!
+					);
+					expect( stored.entryId ).toBeUndefined();
+					expect( stored.entryScope ).toBeUndefined();
+					expect( stored.text ).toBe( text );
+					ui.stop();
+					cleanup();
+					resetTurnLane();
+					principal = next;
+					rejected = blocked;
+					ui = surface === 'workspace' ? workspace() : home();
+					stop = ui.stop;
+					await waitFor( () =>
+						expect( ui.field().value ).toBe( text )
+					);
+					expect( sessionStorage.getItem( FAILURE_KEY ) ).toContain(
+						text
+					);
+					await act( async () =>
+						fireEvent.click(
+							screen.getByRole( 'button', { name: 'Try again' } )
+						)
+					);
+					await waitFor( () => expect( captures.length ).toBe( 2 ) );
+					const after = captures[ 1 ];
+					expect( after.principal ).toBe( next );
+					expect( after.request.messages.at( -1 ).content ).toContain(
+						text
+					);
+					expect(
+						vi
+							.mocked( fetch )
+							.mock.calls.some( ( [ url ] ) =>
+								String( url ).includes( 'entry-context' )
+							)
+					).toBe( false );
+				}
+			);
+		}
+	}
+}
+for ( const target of [ 'workspace', 'home' ] as const ) {
+	for ( const blocked of [ false, true ] ) {
+		test(
+			'legacy investigation attachment home A to ' +
+				target +
+				' guest with ' +
+				( blocked ? '403' : 'empty' ) +
+				' history',
+			async () => {
+				let ui = home();
+				stop = ui.stop;
+				const file = new File( [ fileText ], filename, {
+					type: 'application/pdf',
+				} );
+				await act( async () =>
+					fireEvent.change(
+						document.querySelector( 'input[type=file]' )!,
+						{ target: { files: [ file ] } }
+					)
+				);
+				await screen.findByText(
+					'Genie did not answer. Please try again.'
+				);
+				const stored = JSON.parse(
+					sessionStorage.getItem( FAILURE_KEY )!
+				);
+				expect( stored.entryId ).toBeUndefined();
+				expect( stored.entryScope ).toBeUndefined();
+				expect( stored.uploads[ 0 ].name ).toBe( filename );
+				expect( atob( stored.uploads[ 0 ].data ) ).toBe( fileText );
+				ui.stop();
+				cleanup();
+				resetTurnLane();
+				principal = 'guest';
+				rejected = blocked;
+				ui = target === 'workspace' ? workspace() : home();
+				stop = ui.stop;
+				if ( target === 'home' ) await screen.findByText( filename );
+				else
+					await screen.findByText(
+						'Genie did not answer. Please try again.'
+					);
+				await act( async () =>
+					fireEvent.click(
+						screen.getByRole( 'button', { name: 'Try again' } )
+					)
+				);
+				await waitFor( () => expect( captures.length ).toBe( 2 ) );
+				const after = captures[ 1 ];
+				expect( after.principal ).toBe( 'guest' );
+				expect( after.request.uploads[ 0 ].name ).toBe( filename );
+				expect( atob( after.request.uploads[ 0 ].data ) ).toBe(
+					fileText
+				);
+				expect(
+					vi
+						.mocked( fetch )
+						.mock.calls.some( ( [ url ] ) =>
+							String( url ).includes( 'entry-context' )
+						)
+				).toBe( false );
+			}
+		);
+	}
+}

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-24T02:20:35+00:00\n"
+"POT-Creation-Date: 2026-10-25T10:20:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: linker-commerce\n"
@@ -596,7 +596,7 @@ msgid "Saved solutions"
 msgstr ""
 
 #: includes/Account/Menu.php:51 includes/Account/Menu.php:86
-#: includes/Admin/DocumentsMetaBox.php:54 includes/Contact/SelectionView.php:78
+#: includes/Admin/DocumentsMetaBox.php:54 includes/Contact/SelectionView.php:95
 #: includes/Presentation/AccountTemplates.php:475
 #: includes/Presentation/LibraryPage.php:380
 #: includes/Presentation/ProductShortcodes.php:878
@@ -982,32 +982,39 @@ msgid ""
 "are still on this page."
 msgstr ""
 
-#: includes/Contact/SelectionView.php:43 includes/Contact/SelectionView.php:141
-#: includes/Contact/SelectionView.php:164
-#: includes/Contact/SelectionView.php:171
-msgid "Product selection"
-msgstr ""
-
 #: includes/Contact/SelectionView.php:46 includes/Contact/SelectionView.php:51
-msgid "This selection will not be sent."
+msgid "These details will not be sent."
 msgstr ""
 
 #: includes/Contact/SelectionView.php:48
-msgid "Include this selection with my message"
+msgid "Include these details with my message"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:50
+#: includes/Contact/SelectionView.php:50 includes/Contact/Submission.php:127
 msgid ""
-"This selection could not be loaded. You can exclude it and send your message."
+"These details could not be loaded. To send your message without them, "
+"uncheck “Include these details with my message”."
 msgstr ""
 
-#: includes/Contact/SelectionView.php:76
+#: includes/Contact/SelectionView.php:64
+msgid "Product selection"
+msgstr ""
+
+#: includes/Contact/SelectionView.php:67
+msgid "Related page"
+msgstr ""
+
+#: includes/Contact/SelectionView.php:69
+msgid "Related details"
+msgstr ""
+
+#: includes/Contact/SelectionView.php:93
 #: includes/Presentation/ProductShortcodes.php:185
 #: includes/Presentation/ProductShortcodes.php:1964
 msgid "Search"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:77
+#: includes/Contact/SelectionView.php:94
 #: includes/Inquiry/Assessment/EvidenceView.php:61
 #: includes/Products/EngineeringReference.php:80
 #: templates/emails/linker-genie-handoff.php:63
@@ -1015,75 +1022,75 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:79
+#: includes/Contact/SelectionView.php:96
 #: includes/Presentation/ProductShortcodes.php:304
 msgid "Brand"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:80
+#: includes/Contact/SelectionView.php:97
 #: includes/Presentation/ProductShortcodes.php:303
 #: includes/Storefront/ProductView.php:286
 msgid "Application"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:81
+#: includes/Contact/SelectionView.php:98
 #: includes/Presentation/ProductShortcodes.php:305
 #: includes/Products/Materials.php:775
 msgid "Phase"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:82
+#: includes/Contact/SelectionView.php:99
 #: includes/Presentation/ProductShortcodes.php:306
 msgid "Power"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:83
+#: includes/Contact/SelectionView.php:100
 msgid "Minimum power (kW)"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:84
+#: includes/Contact/SelectionView.php:101
 msgid "Maximum power (kW)"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:85
+#: includes/Contact/SelectionView.php:102
 msgid "Minimum capacity (kWh)"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:86
+#: includes/Contact/SelectionView.php:103
 msgid "Maximum capacity (kWh)"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:87
+#: includes/Contact/SelectionView.php:104
 #: includes/Presentation/ProductShortcodes.php:417
 #: includes/Vocabulary/Terms.php:68
 msgid "Sort products"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:100
+#: includes/Contact/SelectionView.php:117
 msgid "Datasheets & certificates"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:104
+#: includes/Contact/SelectionView.php:121
 #: includes/Presentation/ProductShortcodes.php:407
 msgid "Newest first"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:105
+#: includes/Contact/SelectionView.php:122
 #: includes/Presentation/ProductShortcodes.php:408
 msgid "Name A-Z"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:106
+#: includes/Contact/SelectionView.php:123
 #: includes/Presentation/ProductShortcodes.php:409
 msgid "Power high-low"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:107
+#: includes/Contact/SelectionView.php:124
 #: includes/Presentation/ProductShortcodes.php:410
 msgid "Power low-high"
 msgstr ""
 
-#: includes/Contact/SelectionView.php:108
+#: includes/Contact/SelectionView.php:125
 #: includes/Presentation/ProductShortcodes.php:406
 msgid "Recommended"
 msgstr ""
@@ -1102,10 +1109,6 @@ msgstr ""
 
 #: includes/Contact/Submission.php:117
 msgid "Please agree to the use of your details for the reply."
-msgstr ""
-
-#: includes/Contact/Submission.php:127
-msgid "Please review the product selection or exclude it before sending."
 msgstr ""
 
 #: includes/Digest/DigestEmail.php:47 includes/Digest/DigestEmail.php:120
