@@ -184,3 +184,12 @@ SEO metadata remains a separate unfinished part of the same whole-site goal.
 Reuse existing writer, functional and performance evidence; new browser reads
 address changed wording and wrapping, and publication requires a fresh data
 backup, guarded writes and actual online readback.
+
+The final source CI encountered an unrelated mutable acceptance dependency:
+the official Two-Factor0.17.0 German translation URL now serves a different
+catalog. Keep the already reviewed21180-byte ZIP with the local acceptance
+tool, retaining its existing SHA-256 and exact three-member allowlist. Native
+gettext merging and runtime MFA behavior remain unchanged. This removes an
+upstream moving input from CI without accepting unreviewed translation PHP
+or changing production security. Reuse unaffected source/browser results;
+check the pinned archive and the tool's existing focused checks.

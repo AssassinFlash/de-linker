@@ -360,11 +360,10 @@ def prepare(wp: WpCli) -> dict[str, str]:
         )
     elif current["status"] != "active":
         wp.run("plugin", "activate", "two-factor")
-    # Same native translation-download mechanism as linker-local's Woo packs.
-    language = fetch(
-        f"https://downloads.wordpress.org/translation/plugin/two-factor/{VERSION}/de_DE_formal.zip",
-        name=f"two-factor-{VERSION}-de_DE_formal.zip",
-    )
+    # The official translation URL can change within a pinned plugin version.
+    # Keep the already reviewed archive reproducible; its checksum and strict
+    # member allowlist still protect every catalog before extraction.
+    language = REPO / "tools/admin-mfa" / f"two-factor-{VERSION}-de_DE_formal.zip"
     if hashlib.sha256(language.read_bytes()).hexdigest() != LANGUAGE_SHA256:
         raise RuntimeError(
             "Official language archive changed; review it before loading."
