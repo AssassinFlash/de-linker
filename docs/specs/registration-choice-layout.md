@@ -53,8 +53,14 @@ scrolling so the field takes priority. Initialization does not scroll. This
 uses the existing heading and shared header spacing; no new words, markup,
 network request, listener, CSS size or business mechanism is introduced.
 
-Work from the deployed 1dce2406 source and an owned, fully loaded snapshot
-instance. Back up its full database and exact source before changes. Preserve
+The original c15d77b6 candidate was verified against 1dce2406. Its three
+implementation/test files are unchanged when integrated with current main
+9461de70 (the accepted marketing publication). Reuse its meaningful unit
+checks, CI39864470153 and original EN/DE viewport cases. Use the existing
+home_image_loading snapshot instance at8888 for the affected integration
+check; do not recreate the retired registration instance. Before production
+publication, keep the required complete SQL recovery point and exact previous
+code, then read back the affected runtime and UI. Preserve
 EN/DE privacy source fingerprints and backslashes. Record actual custom-font
 requests and actual consumers independently: a successful request or loaded
 FontFaceSet does not establish which font renders a label.
@@ -68,3 +74,14 @@ or calling a model. Record intended auth reflow separately from unchanged
 surfaces. Follow native WindPress Generate/present/readback, source and Spec
 review, meaningful checks/CI and eventual production readback as distinct
 gates; local screenshots alone do not close the full-site objective.
+
+
+Delivery follows AGENTS.md section0.1. The previous repeated pixel captures
+found unchanged authentication/header regions and unstable pixels confined
+to the untouched footer. Preserve those real failures and their boundary;
+they are not a reason to repeat unrelated full-page samples or withhold this
+reviewed authentication correction. New browser checks answer only current
+base integration, the affected fonts/choice feedback/name tracks and website
+error/Back behavior. Initial full-site coverage and any separate footer
+defect remain open. No copy, inquiry, account approval, mail or security
+configuration changes are included.
