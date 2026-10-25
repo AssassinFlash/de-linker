@@ -108,11 +108,11 @@ final class Visibility {
 			$denied = array_values( array_diff( array_map( 'intval', $ids ), $allowed ) );
 			if ( is_array( $include ) && array() !== $include ) {
 				// Native WP_Query gives post__in precedence over post__not_in.
-				$include = array_values( array_diff( $include, $denied ) );
+				$include = array_values( array_diff( array_map( 'absint', $include ), $denied ) );
 				$query->set( 'post__in', array() === $include ? array( 0 ) : $include );
 			} else {
 				$exclude = $query->get( 'post__not_in' );
-				$exclude = is_array( $exclude ) ? array_map( 'intval', $exclude ) : array();
+				$exclude = is_array( $exclude ) ? array_map( 'absint', $exclude ) : array();
 				$query->set( 'post__not_in', array_values( array_unique( array_merge( $exclude, $denied ) ) ) );
 			}
 			return;

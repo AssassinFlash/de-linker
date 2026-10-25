@@ -139,13 +139,18 @@ final class LanguageLinks {
 			}
 			$kept[ $query_key ] = rawurlencode( sanitize_text_field( wp_unslash( $_GET[ $query_key ] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- same public address.
 		}
+		// Preserve the journal form's explicit scope when general search spans the site.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation, exact known type only.
+		if ( isset( $kept['s'], $_GET['post_type'] ) && \is_string( $_GET['post_type'] ) && 'post' === sanitize_text_field( wp_unslash( $_GET['post_type'] ) ) ) {
+			$kept['post_type'] = 'post';
+		}
 		// A Contact handoff is revalidated, rather than retaining arbitrary transport JSON.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- public GET navigation.
 		$contact = \Linker\Commerce\Contact\SelectionContext::language_query( wp_unslash( $_GET ), $lang );
 		foreach ( $contact as $key => $value ) {
 			$kept[ $key ] = rawurlencode( $value );
 		}
-		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ) ), $url ) );
+		$url = (string) add_query_arg( $kept, remove_query_arg( array_merge( self::LANGUAGE_QUERY_KEYS, array( 'post_type', 'cbq', 'intent', \Linker\Commerce\Contact\SelectionContext::FIELD ) ), $url ) );
 		/**
 		 * Reapply Polylang's native URL translation after retaining request context.
 		 *

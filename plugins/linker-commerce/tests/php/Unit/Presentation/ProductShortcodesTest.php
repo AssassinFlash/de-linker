@@ -341,6 +341,12 @@ final class ProductShortcodesTest extends TestCase {
 		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/?s=inverter', array( 'http://linker.test/de/?s=inverter', 'de' ) );
 		$this->assertSame( 'http://linker.test/de/?s=inverter', $this->url( 'de' ) );
 		$this->assertSame( 'http://linker.test/?s=inverter', $this->url( 'en' ) );
+
+		$_GET['post_type'] = 'post';
+		$this->filter_returns( 'pll_translation_url', 'http://linker.test/de/?s=inverter&post_type=post', array( 'http://linker.test/de/?s=inverter&post_type=post', 'de' ) );
+		$this->assertSame( 'http://linker.test/de/?s=inverter&post_type=post', $this->url( 'de' ), 'Journal scope must not silently become a general search in the other language.' );
+		$_GET['post_type'] = array( 'post' );
+		$this->assertSame( 'http://linker.test/de/?s=inverter', $this->url( 'de' ), 'Malformed type lists do not become preserved journal scope.' );
 	}
 
 	/**

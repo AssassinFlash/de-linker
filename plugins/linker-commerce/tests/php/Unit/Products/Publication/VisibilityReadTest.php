@@ -114,6 +114,7 @@ final class VisibilityReadTest extends TestCase {
 		$persisted[11] = 'publish';
 		$persisted[12] = 'publish';
 		WP_Mock::userFunction( 'get_post_stati' )->andReturn( array( 'publish', 'draft', 'private' ) );
+		WP_Mock::userFunction( 'absint' )->andReturnUsing( static fn ( mixed $value ): int => abs( (int) $value ) );
 		$include = array();
 		$writes  = array();
 		$mixed   = Mockery::mock( \WP_Query::class );
@@ -138,7 +139,7 @@ final class VisibilityReadTest extends TestCase {
 
 		// WordPress gives post__in precedence over post__not_in. Filter that
 		// original list itself instead of adding an ineffective deny-list.
-		$include = array( 11, 14, 100 );
+		$include = array( 11, '014', '-13', 100 );
 		$writes  = array();
 		$visibility->query( $mixed );
 		$this->assertSame( array( 11, 100 ), $writes['post__in'] ?? null );

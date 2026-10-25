@@ -13,12 +13,15 @@ the missing recovery capability unresolved.
 
 WordPress owns the main search, publication permissions and pagination.
 LiveCanvas owns both language templates and their native contextual loops.
-WindPress already supplies every used journal/search class; no new CSS, app,
-endpoint, model, query transport or PHP layout is introduced.
+WindPress supplies the existing journal/search classes. The existing search
+stylesheet gives the search input a44px minimum touch height; no new stylesheet,
+app, endpoint, model, query transport or PHP layout is introduced.
 
 - Implicit public searches use post/page/product. Attachments and internal
   document types are outside the public results. Explicit requests, including
-  journal forms with post_type=post, retain their native type scope.
+  journal forms with post_type=post, retain their native type scope. The
+  existing header/footer language switch preserves that exact journal scope;
+  malformed type lists are not promoted into it.
 - The search LC templates preserve the complete existing journal branch when
   post_type is post. General search gets an appropriate results branch, public
   navigation, generic titles/images and a query input; it does not show product
@@ -26,13 +29,20 @@ endpoint, model, query transport or PHP layout is introduced.
 - Product publication must also hold within mixed post-type queries. A global
   product-only post__in would erase matching pages and posts. Read the native
   product status census, exclude forbidden product IDs, and retain other types.
-  If a caller already has post__in, filter that list directly: core WP_Query
+  If a caller already has post__in, normalize its IDs with native absint
+  before filtering that list directly: core WP_Query
   gives it precedence over post__not_in. An emptied include list becomes [0].
 - Product-only collections retain their existing path. Engineering reference
   inputs, unpublished source/mirror pairs and private products stay outside
   customer results. No product facts, status or metadata are written.
-- Customer marketing/privacy bodies, source context, forms and notifications
-  are outside this change. The 404 form and promise stay intact.
+- The actual German404 search form also submitted to the English root.
+  Correct that single GET form action in its existing LC twin through native
+  WP_HTML_Tag_Processor and explicit pll_home_url(de). Preserve all remaining
+  markup, wording, metadata, pairs and backslashes; do not add a template,
+  PHP layout or client redirect. Its source has no role attribute, so match
+  the unique GET form and require exactly one before any save.
+- Marketing/privacy bodies, source context, business forms and notifications
+  are outside this change. The404 search promise stays intact.
 
 ## Minimum acceptance and current evidence
 
@@ -53,8 +63,10 @@ required before closing the issue.
 
 ## UI wording draft
 
-EN / DE: Search the site / Website durchsuchen; Search routes / Suchbereiche;
+EN / DE: Search the site / Website durchsuchen; Search sections / Suchbereiche;
 Results / Ergebnisse; No matching results found. / Keine passenden Ergebnisse
 gefunden.; Try another search term. / Versuchen Sie einen anderen Suchbegriff.
-Other navigation and search labels reuse existing terms. Adversarial review is
-pending; this document does not claim completed review or acceptance.
+Other navigation and search labels reuse existing terms. Adversarial review approved the four other pairs and changed only the EN
+ARIA draft Search routes to Search sections. These are necessary interface
+labels, not marketing-body edits. Native/browser/production acceptance remains
+pending.

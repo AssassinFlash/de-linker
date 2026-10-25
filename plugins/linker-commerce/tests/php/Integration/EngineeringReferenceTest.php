@@ -27,6 +27,93 @@ use WP_REST_Request;
  * @coversNothing
  */
 final class EngineeringReferenceTest extends IntegrationTestCase {
+	/** Actual main-query SQL retains public content without reintroducing forbidden products. */
+	public function test_mixed_site_search_keeps_pages_and_posts_with_current_product_permission(): void {
+		$tag      = 'sitesearch' . self::tag();
+		$products = array();
+		foreach ( array(
+			'sale'      => 'publish',
+			'reference' => 'publish',
+			'draft'     => 'draft',
+			'private'   => 'private',
+		) as $role => $status ) {
+			$product = new \WC_Product_Simple();
+			$product->set_name( $tag . ' ' . $role );
+			$product->set_status( $status );
+			if ( 'reference' === $role ) {
+				EngineeringReference::configure( $product );
+				$product->update_meta_data( EngineeringReference::ROLE_META_KEY, EngineeringReference::PV_MODULE );
+			}
+			$products[ $role ] = $product->save();
+			$this->retain_fixture_product( $products[ $role ] );
+		}
+		$content = array();
+		foreach ( array( 'page', 'post' ) as $type ) {
+			$id = wp_insert_post(
+				array(
+					'post_type'   => $type,
+					'post_status' => 'publish',
+					'post_title'  => $tag . ' ' . $type,
+				)
+			);
+			$this->assertIsInt( $id );
+			$this->assertGreaterThan( 0, $id );
+			$content[ $type ] = $id;
+			$this->later( static fn () => wp_delete_post( $id, true ) );
+		}
+		$original = $GLOBALS['wp_the_query'];
+		$run      = static function ( array $extra = array() ) use ( $tag ): \WP_Query {
+			$query                   = new \WP_Query();
+			$GLOBALS['wp_the_query'] = $query; // Native is_main_query() identity, restored in finally below.
+			$query->query(
+				array_merge(
+					array(
+						's'                => $tag,
+						'post_type'        => 'any',
+						'posts_per_page'   => 2,
+						'paged'            => 1,
+						'fields'           => 'ids',
+						'orderby'          => 'ID',
+						'order'            => 'ASC',
+						'lang'             => '',
+						'suppress_filters' => true,
+					),
+					$extra
+				)
+			);
+			return $query;
+		};
+		try {
+			$first = $run();
+			$this->assertSame( array( 'post', 'page', 'product' ), $first->get( 'post_type' ) );
+			$this->assertSame( 3, (int) $first->found_posts );
+			$this->assertSame( 2, (int) $first->max_num_pages );
+			$second = $run( array( 'paged' => 2 ) );
+			$all    = array_map( 'intval', array_merge( $first->posts, $second->posts ) );
+			$want   = array( $products['sale'], $content['page'], $content['post'] );
+			sort( $all );
+			sort( $want );
+			$this->assertSame( $want, $all );
+			$included = $run(
+				array(
+					'post_status'    => 'any',
+					'posts_per_page' => -1,
+					'post__in'       => array( '0' . $products['reference'], -$products['draft'], '0' . $products['private'], $content['page'], $products['sale'] ),
+				)
+			);
+			$this->assertSame( array( $products['sale'], $content['page'] ), array_map( 'intval', $included->posts ) );
+			$empty = $run(
+				array(
+					'post_status' => 'any',
+					'post__in'    => array( '0' . $products['reference'], -$products['draft'] ),
+				)
+			);
+			$this->assertSame( array(), $empty->posts );
+		} finally {
+			$GLOBALS['wp_the_query'] = $original;
+		}
+	}
+
 	/** Feed metadata is canonical while native Woo facts and proof versions are retained. */
 	public function test_legacy_document_metadata_is_derived_without_rewriting_woo(): void {
 		$input                                       = $this->input();
