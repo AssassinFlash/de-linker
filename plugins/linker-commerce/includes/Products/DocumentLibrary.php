@@ -53,7 +53,7 @@ final class DocumentLibrary {
 	 * @return array<string,mixed>
 	 */
 	private function current(): array {
-		return is_callable( $this->publication ) ? ( $this->publication )() : Publication::manifest();
+		return is_callable( $this->publication ) ? ( $this->publication )() : Publication::library_read();
 	}
 
 	/**
@@ -134,7 +134,7 @@ final class DocumentLibrary {
 	 * Both panels share one fresh authority assembly and product list.
 	 *
 	 * Nothing is retained on this object: another call reads Woo and document
-	 * bytes again. Independent answers()/documents() callers stay fresh too.
+	 * cited bytes again. Independent answers()/documents() callers stay fresh too.
 	 *
 	 * @param 'en'|'de' $lang Language of the answer rows.
 	 * @return array{answers: list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>, documents: list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>}

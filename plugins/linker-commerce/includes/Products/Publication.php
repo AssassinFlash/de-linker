@@ -179,6 +179,25 @@ final class Publication {
 	}
 
 	/**
+	 * Fresh library rows, with byte identity only for potential FAQ sources.
+	 *
+	 * This projection has no manifest/product/document revisions or readiness.
+	 * Uncited rows expose listing metadata, never a claimed content hash; the
+	 * original download gate independently resolves and authorizes actual bytes.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public static function library_read(): array {
+		self::refresh_runtime();
+		DocumentFiles::begin_read();
+		try {
+			return self::assemble( true );
+		} finally {
+			DocumentFiles::end_read();
+		}
+	}
+
+	/**
 	 * Authorize one original PDF without hashing unrelated technical documents.
 	 *
 	 * @param array<string,string> $file The caller's resolved hosted PDF.
@@ -285,10 +304,12 @@ final class Publication {
 	/**
 	 * Assemble this authority read, hashing each real file at most once.
 	 *
+	 * @param bool $library Only library metadata and current cited FAQ bytes.
 	 * @return array<string,mixed>
 	 */
-	private static function assemble(): array {
+	private static function assemble( bool $library = false ): array {
 		$ids                    = self::candidate_ids();
+		$citation_ids           = $library ? self::faq_document_ids( $ids ) : array();
 		$products               = array();
 		$documents              = array();
 		$attachment_permissions = array();
@@ -299,7 +320,12 @@ final class Publication {
 			}
 			$id = self::canonical_id( $locale_id );
 			if ( ! isset( $products[ $id ] ) ) {
-				$record = self::product_record( $id );
+				$record = $library ? array(
+					'product_id'           => $id,
+					'locale_product_ids'   => array(),
+					'published_locale_ids' => array(),
+					'documents'            => array(),
+				) : self::product_record( $id );
 				if ( null === $record ) {
 					continue;
 				}
@@ -308,22 +334,23 @@ final class Publication {
 					if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
 						continue;
 					}
-					$file = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
+					$needs_bytes = ! $library || self::row_is_cited( $row, $citation_ids );
+					$file        = $needs_bytes ? DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) ) : DocumentFiles::locate( (string) ( $row['url'] ?? '' ) );
 					if ( null === $file || ! self::attachment_allows( $file['url'], $attachment_permissions ) ) {
 						continue;
 					}
 					$document_id = DocumentFiles::id( $file['url'] );
 					if ( ! isset( $documents[ $document_id ] ) ) {
 						$aliases = array( $file['url'] );
-						foreach ( (array) ( $row['aliases'] ?? array() ) as $alias ) {
+						foreach ( isset( $file['blob_sha256'] ) ? (array) ( $row['aliases'] ?? array() ) : array() as $alias ) {
 							$resolved = is_string( $alias ) ? DocumentFiles::resolve( $alias ) : null;
-							if ( null !== $resolved && $resolved['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $resolved['url'], $attachment_permissions ) ) {
+							if ( null !== $resolved && ( $file['blob_sha256'] ?? null ) === $resolved['blob_sha256'] && self::attachment_allows( $resolved['url'], $attachment_permissions ) ) {
 								$aliases[] = $resolved['url'];
 							}
 						}
 						$documents[ $document_id ] = array(
 							'document_id'      => $document_id,
-							'blob_sha256'      => $file['blob_sha256'],
+							'blob_sha256'      => $file['blob_sha256'] ?? null,
 							'url'              => $file['url'],
 							'aliases'          => array_values( array_unique( $aliases ) ),
 							'product_ids'      => array(),
@@ -347,9 +374,6 @@ final class Publication {
 			$document['product_ids'] = array_values( array_unique( $document['product_ids'] ) );
 			sort( $document['product_ids'] );
 			sort( $document['aliases'] );
-			$content = $document;
-			unset( $content['product_ids'] );
-			$document['document_revision'] = self::revision( $content );
 		}
 		unset( $document );
 		ksort( $products );
@@ -357,6 +381,21 @@ final class Publication {
 			$product['documents'] = array_values( array_unique( $product['documents'] ) );
 			sort( $product['documents'] );
 			sort( $product['published_locale_ids'] );
+		}
+		unset( $product );
+		if ( $library ) {
+			return array(
+				'products'  => array_values( $products ),
+				'documents' => array_values( $documents ),
+			);
+		}
+		foreach ( $documents as &$document ) {
+			$content = $document;
+			unset( $content['product_ids'] );
+			$document['document_revision'] = self::revision( $content );
+		}
+		unset( $document );
+		foreach ( $products as &$product ) {
 			$versions = array();
 			foreach ( $product['documents'] as $document_id ) {
 				$versions[ $document_id ] = $documents[ $document_id ]['document_revision'];
@@ -377,6 +416,50 @@ final class Publication {
 		}
 		unset( $product );
 		return $manifest;
+	}
+
+	/**
+	 * A primary or declared alias may be an FAQ source anywhere in this read.
+	 *
+	 * @param array<string,mixed> $row Current maintained association.
+	 * @param array<string,true>  $citation_ids Potential citation paths.
+	 */
+	private static function row_is_cited( array $row, array $citation_ids ): bool {
+		foreach ( array_merge( array( $row['url'] ?? '' ), (array) ( $row['aliases'] ?? array() ) ) as $url ) {
+			if ( is_string( $url ) && isset( $citation_ids[ DocumentFiles::id( $url ) ] ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Conservative byte-read scope; stored FAQ bindings still decide release.
+	 *
+	 * All published source products are considered before the first shared
+	 * document row. A later product's citation may depend on that earlier row.
+	 * Path identity can over-select a file, but cannot authorize an answer.
+	 *
+	 * @param int[] $ids Native locale candidates.
+	 * @return array<string,true>
+	 */
+	private static function faq_document_ids( array $ids ): array {
+		$sources   = array();
+		$documents = array();
+		foreach ( $ids as $id ) {
+			if ( ! self::published_in_current_read( $id ) ) {
+				continue;
+			}
+			$source = self::canonical_id( $id );
+			if ( isset( $sources[ $source ] ) ) {
+				continue;
+			}
+			$sources[ $source ] = true;
+			foreach ( Faqs::of( $source ) as $entry ) {
+				$documents[ DocumentFiles::id( $entry['citation']['url'] ) ] = true;
+			}
+		}
+		return $documents;
 	}
 
 	/**

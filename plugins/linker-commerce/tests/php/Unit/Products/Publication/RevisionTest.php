@@ -202,6 +202,7 @@ final class RevisionTest extends TestCase {
 			$lookups
 		);
 
+		$this->assertSame( array(), Publication::library_read()['documents'] );
 		$states   = array(
 			301 => '1',
 			302 => '1',
