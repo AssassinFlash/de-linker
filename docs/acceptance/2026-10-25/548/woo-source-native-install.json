@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "woo_package_contents",
+  "current_frontier": "private_page_indexing",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -3076,8 +3076,176 @@
     "mail_sent": false,
     "remaining_full_goal": [
       "Complete installation material design beyond documented factory contents.",
-      "Remaining manufacturer and country qualification; remaining consumers, persisted-data migration, coordinated review and production release/readback.",
-      "German report form still has English optional-logo label; keep within this same goal without reopening this data-source increment."
+      "Remaining manufacturer and country qualification; remaining consumers, persisted-data migration, coordinated review and production release/readback."
+    ]
+  },
+  "private_page_indexing": {
+    "status": "closed_locally",
+    "base_commit": "03983b96",
+    "implementation_commit": "3874b9e1",
+    "closed_at_utc": "2026-10-25T22:41:42.115877+00:00",
+    "scope": "Native public-entry/private-query indexing separation and restoration of the existing German optional-logo translation binding.",
+    "baseline": {
+      "public_and_private_meta": "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+      "private_cache_control": null,
+      "environment_x_robots": "noindex, nofollow",
+      "finding": "The local environment-wide noindex header masked absent application policy; it was not production indexing proof."
+    },
+    "initial_native_responses": [
+      {
+        "path": "/solution-configurator/",
+        "status": 200,
+        "robots_header": "noindex, nofollow",
+        "cache_control": null,
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "robots": [
+          "<meta name=\"robots\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\">"
+        ],
+        "canonical": [
+          "<link rel=\"canonical\" href=\"http://127.0.0.1:9347/solution-configurator/\">"
+        ],
+        "hreflang_count": 3
+      },
+      {
+        "path": "/solution-configurator/?project=c7795bc2c1e14e389622015c809ace45&run=002c140cd3ad4c95966e58a3ec0da563",
+        "status": 200,
+        "robots_header": "noindex, nofollow, nosnippet",
+        "cache_control": "no-store, private, max-age=0",
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "robots": [
+          "<meta name='robots' content='noindex, nofollow, nosnippet' />",
+          "<meta name=\"robots\" content=\"noindex, nofollow, nosnippet\">"
+        ],
+        "canonical": [
+          "<link rel=\"canonical\" href=\"http://127.0.0.1:9347/solution-configurator/\">"
+        ],
+        "hreflang_count": 0
+      },
+      {
+        "path": "/de/loesungskonfigurator/?run%5B%5D=invalid",
+        "status": 200,
+        "robots_header": "noindex, nofollow, nosnippet",
+        "cache_control": "no-store, private, max-age=0",
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "robots": [
+          "<meta name='robots' content='noindex, nofollow, nosnippet' />",
+          "<meta name=\"robots\" content=\"noindex, nofollow, nosnippet\">"
+        ],
+        "canonical": [
+          "<link rel=\"canonical\" href=\"http://127.0.0.1:9347/de/loesungskonfigurator/\">"
+        ],
+        "hreflang_count": 0
+      },
+      {
+        "path": "/solution-configurator/?step=roof",
+        "status": 200,
+        "robots_header": "noindex, nofollow",
+        "cache_control": null,
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "robots": [
+          "<meta name=\"robots\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\">"
+        ],
+        "canonical": [
+          "<link rel=\"canonical\" href=\"http://127.0.0.1:9347/solution-configurator/\">"
+        ],
+        "hreflang_count": 3
+      },
+      {
+        "path": "/solution-configurator/?annual_kwh=5000&plz=50667",
+        "status": 200,
+        "robots_header": "noindex, nofollow, nosnippet",
+        "cache_control": "no-store, private, max-age=0",
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "robots": [
+          "<meta name='robots' content='noindex, nofollow, nosnippet' />",
+          "<meta name=\"robots\" content=\"noindex, nofollow, nosnippet\">"
+        ],
+        "canonical": [
+          "<link rel=\"canonical\" href=\"http://127.0.0.1:9347/solution-configurator/\">"
+        ],
+        "hreflang_count": 0
+      },
+      {
+        "path": "/about/?project=unrelated",
+        "status": 200,
+        "robots_header": "noindex, nofollow",
+        "cache_control": null,
+        "referrer_policy": "strict-origin-when-cross-origin",
+        "robots": [
+          "<meta name=\"robots\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\">"
+        ],
+        "canonical": [
+          "<link rel=\"canonical\" href=\"http://127.0.0.1:9347/about/\">"
+        ],
+        "hreflang_count": 3
+      },
+      {
+        "path": "/wp-json/linker/v1/planner/rpc/unknown",
+        "status": 404,
+        "robots_header": "noindex, nofollow, nosnippet",
+        "cache_control": "no-store, private",
+        "referrer_policy": null,
+        "robots": [],
+        "canonical": [],
+        "hreflang_count": 0
+      }
+    ],
+    "final_private_readback": {
+      "robots_header": "noindex, nofollow, nosnippet",
+      "cache_control": "no-store, private, max-age=0",
+      "referrer_policy": "strict-origin-when-cross-origin",
+      "robots": [
+        "<meta name=\"robots\" content=\"noindex, nofollow, nosnippet\">"
+      ],
+      "hreflang_count": 0
+    },
+    "native_correction": "Initial native readback exposed duplicate core/SEOPress robots tags. SEOPress now owns its single tag and core remains the fallback. The existing site-wide strict-origin-when-cross-origin policy is preserved.",
+    "translation": {
+      "message": "Your logo on the PDF (optional)",
+      "approved_de": "Ihr Logo im PDF (optional)",
+      "change": "Existing PO phrase bound to build/planner/assets/planner.js and regenerated with native make-json. No new wording or application build.",
+      "native_form": "German desktop/mobile both show the approved phrase; project remains saved revision 23."
+    },
+    "visuals": [
+      "docs/acceptance/2026-10-25/548/private-workspace-report-form-de-desktop.png",
+      "docs/acceptance/2026-10-25/548/private-workspace-report-form-de-mobile.png"
+    ],
+    "validation": {
+      "changed_layer": "One request-policy boundary flow passed; scoped WPCS and PHPStan passed. Native HTTP covers canonical/private/DE malformed/carried inputs/unrelated page/RPC error.",
+      "translation": "Native make-json binding and real German report form at 1440/390; no outer document overflow. Existing English wording/layout unchanged.",
+      "reused": "Unchanged engine, calculations, source authority, original report/PDF/CSV, permissions, history and commerce evidence. No energy run, report generation or whole-site rescan."
+    },
+    "reviews": {
+      "spec": "PASS including native WP/SEOPress/Polylang hook context and readback corrections.",
+      "standards": "PASS including final robots ownership and referrer preservation delta.",
+      "copy": "Existing approved EN/DE wording reused unchanged; binding repaired."
+    },
+    "runtime": {
+      "unchanged": true,
+      "runtime_sha256": "6443f43ba88b88d9851fefc0e4823fa273b1dbc30c790d8cc5ef5326b3a0b9b9",
+      "rollback_runtime_sha256": "6386028cb5d2f9bc14d2256f295cefa63297d58c2c51ff2e8cbfc4ed0b986cfb",
+      "storage_schema": 5,
+      "new_carriers": 0,
+      "instance": "p548 reused"
+    },
+    "production_changed": false,
+    "mail_sent": false,
+    "installation_research": {
+      "file": "docs/research/2026-10-23-modern-workbench/CAPABILITY-MAP.md",
+      "section": "6",
+      "status": "research_completed_not_implemented",
+      "source_channel": "Apify for current official K2/Trace primary pages; existing Woo/local evidence reused. No runtime research dependency.",
+      "next_implementation": "Versioned physical device instances, ports, circuits and actual 3D routes; backend takeoff and frozen material demand. Manufacturer/BOS facts remain Woo-owned; domain qualification remains separate.",
+      "concrete_source_boundaries": [
+        "Component lead cross-section is not a site-extension cable design.",
+        "Maximum series fuse rating is not a selected protection device.",
+        "Unresolved connector variants and packing counts cannot authorize matching or allocation.",
+        "A single inverter product ID cannot represent commercial multi-device topology."
+      ]
+    },
+    "remaining_full_goal": [
+      "Implement installation inputs, routing/takeoff, domain design and material reconciliation with current manufacturer/country evidence.",
+      "Remaining consumer integration, persisted-data migration, coordinated review/production release and readback."
     ]
   }
 }

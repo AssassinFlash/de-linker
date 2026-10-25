@@ -912,3 +912,40 @@ Full installation design, remaining manufacturer/country qualification and
 consumers, migration and coordinated release remain in this same active goal.
 The German optional-logo input label was observed in English; it remains in
 the tool-language work of this goal and does not reopen this source increment.
+
+
+## 2026-10-26 · Private-page indexing and report translation (closed locally)
+
+Implementation `3874b9e1` closes the native public-entry/private-project SEO gap.
+The previous local environment-wide noindex header had hidden public `index,
+follow` metadata and absent private page-cache policy. The canonical public tool
+and its roof-step links retain the existing SEO/canonical/language behavior;
+project/run and carried customer inputs now have private/no-store/noindex policy.
+Empty and array values stay protected; unrelated pages keep their policy.
+RPC errors and original asset responses receive the same noindex header without
+changing access or content. Native core/SEOPress/Polylang source was checked.
+
+The first native readback exposed duplicate core/SEOPress robots output and a
+site-wide referrer policy overriding the proposed redundant header. The final
+implementation leaves one SEOPress tag, keeps core as its fallback and preserves
+the site's existing strict-origin-when-cross-origin policy. Only this affected
+private response was reread after correction; other native cases were reused.
+
+The approved German optional-logo wording was present in the legacy script
+catalog but absent from the planner's own catalog. Its PO reference is repaired
+and native make-json output is published. Desktop/mobile German form readback
+shows `Ihr Logo im PDF (optional)`. No customer copy was rewritten, project was
+saved at revision 23, and no calculation or report was generated. Scoped
+request-policy checks, type/style checks, Spec and Standards passed. Validation
+of this batch has stopped. The engine, prior material reports/exports, history
+and commerce evidence were reused; no runtime package or environment was added.
+
+Research for the next installation increment is appended to the existing
+CAPABILITY-MAP section 6. Current K2 and Trace pages were obtained through Apify;
+no new local source copies, independent product source or runtime research
+integration was introduced. The next implementation needs physical instances,
+ports/circuits and actual 3D route takeoff before material reconciliation. A
+manually filled list is not engineering design; component lead cross-section,
+maximum fuse ratings and packaging connector counts cannot become unrelated
+site design choices. Full installation and the remaining full-goal consumers,
+migration/review/production gates remain active. No production or mail write.
