@@ -15,6 +15,7 @@ use Mockery;
 use WC_Product;
 use WP_Mock;
 use WP_Post;
+use WP_Term;
 
 /**
  * Tests for ComparePage: the fragment the LC template renders, the address it
@@ -85,6 +86,20 @@ final class ComparePageTest extends TestCase {
 	private string $language = 'en';
 
 	/**
+	 * Whether the language-navigation fixture has product twins.
+	 *
+	 * @var bool
+	 */
+	private bool $product_twins = false;
+
+	/**
+	 * Whether this fixture compares accessories instead of power equipment.
+	 *
+	 * @var bool
+	 */
+	private bool $accessories = false;
+
+	/**
 	 * Translation and escaping, and the WordPress reads of the fixture products.
 	 */
 	public function setUp(): void {
@@ -146,7 +161,10 @@ final class ComparePageTest extends TestCase {
 			array(
 				// The language layer's answer as the instance's Polylang gives it:
 				// the post itself in its own language, its twin in the other.
-				'return' => static function ( int $id, string $language = '' ): int {
+				'return' => function ( int $id, string $language = '' ): int {
+					if ( $this->product_twins && in_array( $id, array( 4107, 1832 ), true ) ) {
+						return 'de' === $language ? 1832 : 4107;
+					}
 					$translations = array(
 						5385 => array(
 							'en' => 5385,
@@ -160,6 +178,31 @@ final class ComparePageTest extends TestCase {
 					return $translations[ $id ][ $language ] ?? 0;
 				},
 				'times'  => '0+',
+			)
+		);
+		WP_Mock::userFunction(
+			'get_terms',
+			array(
+				'return' => static fn ( array $args ): array => array(
+					new WP_Term(
+						(object) array(
+							'term_id' => 'inverters' === $args['slug'] ? 10 : ( 'accessories' === $args['slug'] ? 30 : 20 ),
+							'name'    => 'inverters' === $args['slug'] ? 'Inverters' : 'Home storage',
+						)
+					),
+				),
+			)
+		);
+		WP_Mock::userFunction( 'pll_get_term', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction(
+			'get_term',
+			array(
+				'return' => fn ( int $id ): WP_Term => new WP_Term(
+					(object) array(
+						'term_id' => $id,
+						'name'    => 30 === $id ? ( 'de' === $this->language ? 'Zubehör' : 'Accessories' ) : ( 10 === $id ? ( 'de' === $this->language ? 'Wechselrichter' : 'Inverters' ) : ( 'de' === $this->language ? 'Heimspeicher' : 'Home storage' ) ),
+					)
+				),
 			)
 		);
 		WP_Mock::userFunction( 'get_ancestors', array( 'return' => array() ) );
@@ -242,7 +285,12 @@ final class ComparePageTest extends TestCase {
 	 * Nothing selected: the empty state, and no table at all.
 	 */
 	public function test_an_empty_selection_shows_the_empty_state(): void {
-		$html = ( new ComparePage( $this->comparison() ) )->table();
+		$source = new \Linker\Commerce\Abilities\PublicationData(
+			static function (): array {
+				throw new \RuntimeException( 'An empty comparison must not assemble the product/document manifest.' );
+			}
+		);
+		$html   = ( new ComparePage( new \Linker\Commerce\Products\Comparison( publication: $source ) ) )->table();
 
 		$this->assertStringContainsString( 'Choose products to compare their specifications.', $html );
 		$this->assertStringNotContainsString( '<table', $html );
@@ -279,6 +327,64 @@ final class ComparePageTest extends TestCase {
 		$this->assertStringContainsString( 'Anwendung', $german );
 		$this->assertStringNotContainsString( 'Rated AC power (kW)', $german );
 		unset( $_GET['ids'] );
+	}
+
+	/** Accessory comparisons show the maintained localized taxonomy label. */
+	public function test_accessory_category_is_a_localized_name(): void {
+		$_GET['ids']       = '4107,1832';
+		$this->language    = 'de';
+		$this->accessories = true;
+		$html              = ( new ComparePage( $this->comparison() ) )->table();
+		self::assertStringContainsString( 'Zubehör', $html );
+		self::assertStringNotContainsString( '>accessories<', $html );
+		unset( $_GET['ids'] );
+	}
+
+	/** Native translated slugs retain ordered product twins and run the state script. */
+	public function test_german_page_keeps_product_twins_and_loads_selection_script(): void {
+		$this->product_twins = true;
+		$page                = new WP_Post(
+			(object) array(
+				'ID'        => 6608,
+				'post_type' => 'page',
+				'post_name' => 'produkte-vergleichen',
+			)
+		);
+		$source              = new WP_Post(
+			(object) array(
+				'ID'        => 5385,
+				'post_type' => 'page',
+				'post_name' => 'compare-products',
+			)
+		);
+		WP_Mock::userFunction( 'is_page', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => $page ) );
+		WP_Mock::userFunction(
+			'get_post',
+			array(
+				'args'   => array( 5385 ),
+				'return' => $source,
+			)
+		);
+		self::assertSame(
+			array(
+				'ids'    => '1832',
+				'capped' => '1',
+			),
+			ComparePage::language_query( array( 'ids' => '4107,4107,bad,1832,77,88,99' ), 'de' )
+		);
+		self::assertSame( array( 'ids' => '4107' ), ComparePage::language_query( array( 'ids' => '1832' ), 'en' ) );
+		WP_Mock::userFunction( 'plugins_url', array( 'return' => 'https://de-linker.test/compare-selection.js' ) );
+		WP_Mock::userFunction( 'wp_enqueue_script', array( 'times' => 1 ) );
+		( new ComparePage() )->assets();
+	}
+
+	/** An unrelated page must never inherit comparison state from arbitrary query data. */
+	public function test_language_query_is_scoped_to_the_comparison_page(): void {
+		WP_Mock::userFunction( 'is_page', array( 'return' => false ) );
+		WP_Mock::userFunction( 'get_queried_object', array( 'return' => null ) );
+		self::assertSame( array(), ComparePage::language_query( array( 'ids' => '4107' ), 'de' ) );
+		self::assertSame( array(), ComparePage::language_query( array( 'ids' => array( '4107' ) ), 'de' ) );
 	}
 
 	/**
@@ -376,6 +482,6 @@ final class ComparePageTest extends TestCase {
 				);
 			}
 		);
-		return new \Linker\Commerce\Products\Comparison( facts_reader: static fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => \Linker\Commerce\Products\SelectionFacts::for_product( $id ), publication: $source );
+		return new \Linker\Commerce\Products\Comparison( facts_reader: fn( int $id ): \Linker\Commerce\Products\SelectionFactSet => $this->accessories ? new \Linker\Commerce\Products\SelectionFactSet( 'accessories', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown', 'unknown' ) : \Linker\Commerce\Products\SelectionFacts::for_product( $id ), publication: $source );
 	}
 }

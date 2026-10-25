@@ -147,8 +147,14 @@ body #linker-products.sf-products .sf-card {
 body #linker-products.sf-products .card-media { aspect-ratio: auto; height: 210px; border-radius: 5px; background: #f2f4f5; overflow: hidden; }
 body #linker-products.sf-products .card-media [data-card-media-link] { display: grid; place-items: center; height: 100%; width: 100%; }
 body #linker-products.sf-products .card-media img { width: auto; height: auto; max-height: 175px; max-width: 80%; object-fit: contain; }
-body #linker-products.sf-products .card-compare-checkbox { width: 44px; height: 44px; background: white; border: 1px solid var(--shop-line); border-radius: 50%; color: var(--shop-ink); font-size: 20px; }
+body #linker-products.sf-products .card-compare-checkbox { position: static; display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; min-height: 44px; padding: 10px; background: white; border: 1px solid var(--shop-line); border-radius: 5px; color: var(--shop-ink); font: inherit; font-size: 11px; font-weight: 600; line-height: 1.4; cursor: pointer; }
+body #linker-products.sf-products .card-compare-checkbox:hover { border-color: var(--shop-teal); color: var(--shop-teal); }
+body #linker-products.sf-products .card-compare-checkbox:focus-visible { outline: 2px solid var(--shop-teal); outline-offset: 3px; }
+body #linker-products.sf-products .card-compare-checkbox:disabled { cursor: not-allowed; opacity: .5; }
 body #linker-products.sf-products .card-compare-checkbox[data-compare-selected="true"] { background: var(--shop-teal); border-color: var(--shop-teal); color: white; }
+[data-compare-product] .compare-selected-mark { display: none; }
+[data-compare-product][data-compare-selected="true"] > svg:first-child { display: none; }
+[data-compare-product][data-compare-selected="true"] .compare-selected-mark { display: inline-block; }
 .card-identity { min-width: 0; }
 body #linker-products.sf-products .sf-card-brand { color: var(--shop-teal); text-transform: uppercase; font-size: 10px; font-weight: 700; letter-spacing: .09em; margin-bottom: 7px; }
 body #linker-products.sf-products .sf-card-title { font-size: 19px; font-weight: 600; line-height: 1.35; letter-spacing: -.025em; overflow-wrap: anywhere; }

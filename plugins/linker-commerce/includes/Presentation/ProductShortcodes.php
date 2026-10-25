@@ -593,8 +593,6 @@ final class ProductShortcodes {
 			$html .= '<script type="application/json" data-linker-products>' . wp_json_encode( $this->family_payload( (array) $family['ids'] ) ) . '</script>';
 		}
 		$html .= '<div class="sf-card-media card-media">';
-		$html .= '<button type="button" class="card-compare-checkbox" data-compare-product="' . esc_attr( (string) $product_id ) . '" aria-pressed="false" aria-label="'
-			. esc_attr( sprintf( /* translators: %s: product name. */ __( 'Compare: %s', 'linker-commerce' ), (string) $card['title'] ) ) . '">+</button>';
 		$html .= '<a data-card-media-link href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $title ) . '">';
 		foreach ( \array_slice( (array) $card['gallery'], 0, 1 ) as $image_id ) {
 			// The live card image's own attribute set: the stylesheet sizes
@@ -646,6 +644,9 @@ final class ProductShortcodes {
 		$html     .= '<p class="sf-card-availability" data-card-availability>' . esc_html( $card['availability'] ) . '</p>';
 		$html     .= '<div class="sf-card-actions">';
 		$html     .= '<a class="sf-card-view tv-woo-card-action tv-woo-card-action--primary" data-card-view href="' . esc_url( $url ) . '">' . esc_html__( 'View product', 'linker-commerce' ) . '</a>';
+		$html     .= '<button type="button" class="card-compare-checkbox" data-compare-product="' . esc_attr( (string) $product_id ) . '" aria-pressed="false" aria-label="'
+			. esc_attr( sprintf( /* translators: %s: product name. */ __( 'Compare: %s', 'linker-commerce' ), (string) $card['title'] ) ) . '">' . self::icon( 'compare' )
+			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span><svg class="compare-selected-mark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>';
 			$html .= '<a class="sf-card-atc tv-woo-card-action tv-woo-card-action--secondary" data-card-atc href="#" hidden>' . esc_html__( 'Add to solution draft', 'linker-commerce' ) . '</a>';
 		if ( '' !== $card['price']['url'] ) {
 			$html .= '<a class="tv-woo-card-action tv-woo-card-action--secondary" data-card-gate href="' . esc_url( $card['price']['url'] ) . '">' . esc_html__( 'Log in for pricing', 'linker-commerce' ) . '</a>' . AccountLinks::create();
@@ -871,7 +872,7 @@ final class ProductShortcodes {
 			trim( (string) $view['title'] . ' (' . (string) $view['sku'] . ')' )
 		);
 		$html  = '<button type="button" class="pdp-tool" data-compare-product="' . $product_id . '" aria-pressed="false">' . self::icon( 'compare' )
-			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span></button>';
+			. '<span data-compare-label>' . esc_html__( 'Compare', 'linker-commerce' ) . '</span><svg class="compare-selected-mark" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m5 12 4 4 10-10"/></svg></button>';
 		$html .= '<button type="button" class="pdp-tool" data-pdp-ask data-ask-message="' . esc_attr( $ask_message ) . '">' . self::icon( 'ask' )
 			. esc_html__( 'Ask Genie', 'linker-commerce' ) . '</button>';
 		$html .= '<a class="pdp-tool" href="#downloads">' . self::icon( 'file' )
