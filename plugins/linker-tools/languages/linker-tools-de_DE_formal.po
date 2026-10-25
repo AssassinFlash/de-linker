@@ -1711,6 +1711,7 @@ msgstr "Richtung des Dachgefälles"
 msgid "Down-slope bearing (°)"
 msgstr "Richtung des Dachgefälles (°)"
 
+#: build/planner/assets/planner.js
 #: src/configurator/report/ReportView.tsx:118 build/configurator.js
 msgid "Download PDF"
 msgstr "PDF herunterladen"
@@ -6956,6 +6957,7 @@ msgstr "Ihre Anfrage liegt beim Linker-Team"
 msgid "Your logo"
 msgstr "Ihr Logo"
 
+#: build/planner/assets/planner.js
 #: src/configurator/report/ReportView.tsx:86 build/configurator.js
 msgid "Your logo on the PDF (optional)"
 msgstr "Ihr Logo im PDF (optional)"
