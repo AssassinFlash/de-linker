@@ -86,10 +86,11 @@ final class Visibility {
 		if ( ( ! $this->store_products && ! $front ) || $query->get( 'linker_publication_internal' ) || ! in_array( 'product', (array) $query->get( 'post_type' ), true ) || ( $query->is_preview() && current_user_can( 'manage_woocommerce' ) ) ) {
 			return;
 		}
+		$mixed   = array() !== array_diff( (array) $query->get( 'post_type' ), array( 'product' ) );
 		$ids     = get_posts(
 			array(
 				'post_type'                   => 'product',
-				'post_status'                 => 'publish',
+				'post_status'                 => $mixed ? array_values( get_post_stati() ) : 'publish',
 				'fields'                      => 'ids',
 				'posts_per_page'              => -1,
 				'suppress_filters'            => true,
@@ -100,6 +101,22 @@ final class Visibility {
 		);
 		$allowed = array_values( array_filter( Publication::published_ids( array_map( 'intval', $ids ) ), static fn ( int $id ): bool => ! EngineeringReference::is_reference( $id ) ) );
 		$include = $query->get( 'post__in' );
+		if ( $mixed ) {
+			// A product-only allow-list would erase matching pages and posts.
+			// Read every native product status so drafts and private records also
+			// remain excluded when a caller supplies its own include/status list.
+			$denied = array_values( array_diff( array_map( 'intval', $ids ), $allowed ) );
+			if ( is_array( $include ) && array() !== $include ) {
+				// Native WP_Query gives post__in precedence over post__not_in.
+				$include = array_values( array_diff( array_map( 'absint', $include ), $denied ) );
+				$query->set( 'post__in', array() === $include ? array( 0 ) : $include );
+			} else {
+				$exclude = $query->get( 'post__not_in' );
+				$exclude = is_array( $exclude ) ? array_map( 'absint', $exclude ) : array();
+				$query->set( 'post__not_in', array_values( array_unique( array_merge( $exclude, $denied ) ) ) );
+			}
+			return;
+		}
 		if ( is_array( $include ) && array() !== $include ) {
 			$allowed = array_values( array_intersect( $include, $allowed ) );
 		}
