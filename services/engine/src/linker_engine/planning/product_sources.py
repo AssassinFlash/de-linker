@@ -49,6 +49,12 @@ class ProductSources:
         self.load = load
 
     def module_basis(self) -> Object:
+        return self._module_basis(electrical=False)
+
+    def electrical_module_basis(self) -> Object:
+        return self._module_basis(electrical=True)
+
+    def _module_basis(self, *, electrical: bool) -> Object:
         """Freeze only the used reference, not unrelated sales candidates."""
         try:
             loaded = self.load()
@@ -65,6 +71,7 @@ class ProductSources:
                         "schema_version": 1,
                         "publication": view.dependencies,
                         "module": module_template(raw),
+                        **({"electrical_product": raw} if electrical else {}),
                     }
                 )
             )
@@ -138,21 +145,29 @@ class ProductSources:
         scope = basis.get("publication")
         if basis.get("schema_version") != 1 or not isinstance(scope, dict):
             raise VersionUnavailable("pinned Woo product proof is missing")
+        nested = basis.get("pv_module_inputs")
+        if isinstance(nested, dict):
+            self.confirm_basis(nested)
         if require_reference and set(basis) == {
             "schema_version",
             "publication",
             "module",
-        }:
+        } | ({"electrical_product"} if "electrical_product" in basis else set()):
             # PV preparation uses only this reference component. A sales
             # compatibility update must not invalidate unchanged module output.
             # Obtain a fresh native permission/preparation proof, then require
             # exact component, document and reference identities. Retained
             # profile bytes and their original publication proof stay intact.
-            current = self.module_basis()
+            current = (
+                self.electrical_module_basis()
+                if "electrical_product" in basis
+                else self.module_basis()
+            )
             current_scope = cast(Object, current["publication"])
             if (
                 set(scope) != set(current_scope)
                 or basis["module"] != current["module"]
+                or basis.get("electrical_product") != current.get("electrical_product")
                 or any(
                     scope.get(key) != current_scope.get(key)
                     for key in (

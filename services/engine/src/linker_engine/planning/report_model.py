@@ -8,7 +8,7 @@ from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
 from .comparison_report import comparison_sections
-from .report_copy import check_label, text
+from .report_copy import TEXT, check_label, text
 
 
 def number(value: Any, locale: str, unit: str = "") -> str:
@@ -66,6 +66,46 @@ def build_report(source: Object) -> Report:
             product["product_id"]: product
             for product in cast(list[dict[str, Any]], assessment["selected_products"])
         }
+        pv_wiring = assessment.get("pv_electrical")
+        string_numbers: dict[str, int] = {}
+        if isinstance(pv_wiring, dict):
+            wiring_rows = cast(list[dict[str, Any]], pv_wiring["strings"])
+            string_numbers = {s["id"]: i + 1 for i, s in enumerate(wiring_rows)}
+            sections.append(
+                ReportSection(
+                    id="pv-strings",
+                    title=text("pv_strings_title", locale),
+                    paragraphs=[text("pv_strings_scope", locale)],
+                    rows=[
+                        row(
+                            "pv_min_ambient",
+                            number(pv_wiring["minimum_ambient_c"], locale, "°C"),
+                        ),
+                        row("pv_temperature_source", pv_wiring["temperature_source"]),
+                    ],
+                    table=ReportTable(
+                        columns=[
+                            text("pv_string", locale),
+                            "MPPT",
+                            text("pv_input", locale),
+                            text("pv_count", locale),
+                            text("pv_stc_vmpp", locale),
+                            text("pv_cold_voc", locale),
+                        ],
+                        rows=[
+                            [
+                                str(i + 1),
+                                str(s["mppt"]),
+                                str(s["input"]),
+                                str(s["module_count"]),
+                                number(s["stc_vmpp_v"], locale, "V"),
+                                number(s["cold_voc_v"], locale, "V"),
+                            ]
+                            for i, s in enumerate(wiring_rows)
+                        ],
+                    ),
+                )
+            )
         sections.append(
             ReportSection(
                 id="equipment",
@@ -88,7 +128,7 @@ def build_report(source: Object) -> Report:
                 "pv_dc_input": "kWp",
                 "usable_energy": "kWh",
                 "continuous_battery_ac_output": "kW",
-            }.get(check["id"].split(":")[0], "")
+            }.get(check["id"].split(":")[0], check.get("unit", ""))
             rows = [row("status", text(check["status"], locale))]
             if isinstance(check["actual"], (int, float)) and not isinstance(
                 check["actual"], bool
@@ -106,7 +146,20 @@ def build_report(source: Object) -> Report:
                 check["required"], bool
             ):
                 rows.append(row("required", number(check["required"], locale, unit)))
-            paragraphs: list[str] = []
+            elif isinstance(check["required"], list) and all(
+                isinstance(n, (int, float)) and not isinstance(n, bool)
+                for n in check["required"]
+            ):
+                rows.append(
+                    row(
+                        "required",
+                        " – ".join(number(n, locale) for n in check["required"])
+                        + (f" {unit}" if unit else ""),
+                    )
+                )
+            paragraphs: list[str] = (
+                [text(check["reason"], locale)] if check["reason"] in TEXT else []
+            )
             derivation = check.get("derivation")
             if isinstance(derivation, dict):
                 factors = cast(list[float], derivation["factors"])
@@ -133,10 +186,21 @@ def build_report(source: Object) -> Report:
                             href=url,
                         )
                     )
+            check_title = check_label(check["id"], locale)
+            suffix = check["id"].partition(":")[2]
+            if suffix in string_numbers:
+                check_title = f"{text('pv_string', locale)} {string_numbers[suffix]} · {check_title}"
+            elif check["id"].split(":")[0] in {
+                "pv_stc_current",
+                "pv_stc_isc",
+                "pv_parallel_match",
+                "pv_parallel_count",
+            }:
+                check_title = f"MPPT {suffix} · {check_title}"
             sections.append(
                 ReportSection(
                     id=f"check-{index}",
-                    title=check_label(check["id"], locale),
+                    title=check_title,
                     rows=rows,
                     paragraphs=paragraphs,
                 )

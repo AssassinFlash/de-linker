@@ -691,3 +691,39 @@ environment was made. Project revision 20, the protected roof/hash and productio
 remain unchanged. Installation quantities, string/cable/mounting/protection BOM,
 manufacturer/country qualification, remaining site/Genie/commerce consumers,
 migration and review/production delivery remain within the same complete goal.
+
+### 2026-10-26 · Roof wiring reaches cited equipment checks and reports
+
+The existing equipment task now freezes actual roof-object string assignments,
+MPPT/project input labels and a separately cited Woo reference electrical proof.
+It evaluates cold Voc and explicitly scoped STC voltage/current limits; input
+connector mapping, operating MPP, design current and wiring protection retain
+separate outstanding checks. No product properties or port limits became a
+second manual source. The editor/result/report use existing site classes and
+the same saved plan. Removing the last roof module retains the plan-clear action.
+
+The native Berlin example is revision 21: 24 modules, two 12-module strings on
+MPPT1. Its -10 C temperature is explicitly labelled an unverified example condition.
+The equipment run is e9a0a8d5225846328184f3810664cf85. Both eight-page reports use
+that wiring result and the unchanged four-module energy run. EN report
+2367b28cc7b049ca87c2ec5abe27a451 and DE d1c3b57339cb447b806a7578bb43e017 have native
+downloads matching their retained PDF hashes. The new wiring pages and affected
+EN/DE desktop/mobile views were inspected; the spacing issue found in the first
+native table view was fixed with existing lp-data-table styling. One valid before
+image remains. The original energy run was not recomputed.
+
+Final Spec/Standards/copy delta reviews passed. Missing target kWp now preserves
+every wiring check; only the target comparison remains unresolved. Electrical
+reference proof is an independent report Woo base, so the existing handoff scope
+retains reference product 8349 and its documents even without an energy/PV base.
+That equipment-only aggregation was checked against actual frozen native bases.
+The native preview still has inverter4107 x1, controller2092 x1 and battery2090 x4;
+confirmation was not submitted and no inquiry/mail operation was requested.
+
+Current HTTP/worker is ec83abb0, source ee916454, one instance and current plus one
+rollback remain. The obsolete carrier and temporary PDF renders were reclaimed.
+The existing installation JSON's pv_string_plan section holds exact identities,
+bounded checks, before/after assets and remaining full-goal work. Other revision20
+inputs and the protected roof were preserved. Full installation BOM, manufacturer/
+country qualification, remaining site consumers, migration and review/production
+release remain active; this local batch does not close the complete goal.

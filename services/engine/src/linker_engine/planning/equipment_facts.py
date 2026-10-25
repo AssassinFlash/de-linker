@@ -32,6 +32,7 @@ _UNITS: dict[str, tuple[str, str, float]] = {
     "%": ("fraction", "fraction", 0.01),
     "°C": ("temperature", "°C", 1),
     "℃": ("temperature", "°C", 1),
+    "%/°C": ("temperature_coefficient", "1/°C", 0.01),
 }
 _NUMBER = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)"
 _SCALAR = re.compile(rf"^{_NUMBER}$")
@@ -40,6 +41,7 @@ _COUNTS = frozenset(
     {
         "phases",
         "n_mppt",
+        "strings_per_mppt",
         "modules_per_stack_min",
         "modules_per_stack_max",
         "stacks_parallel_max",
@@ -130,7 +132,7 @@ def _source(product: dict[str, Any], key: str, figure: dict[str, Any]) -> Object
     }
 
 
-def compile_product(product: dict[str, Any]) -> Object:
+def compile_facts(product: dict[str, Any]) -> Object:
     """One loaded/current/prepared Woo record -> inspectable typed evidence.
 
     Publication checks belong to the enclosing ProductSources operation. This
@@ -191,6 +193,12 @@ def compile_product(product: dict[str, Any]) -> Object:
             "columns": figure.get("columns", []),
             "source": source,
         }
+    return decode_object(encode(facts))
+
+
+def compile_product(product: dict[str, Any]) -> Object:
+    """Keep sales identity distinct from reference-component fact compilation."""
+    facts = compile_facts(product)
     return decode_object(
         encode(
             {

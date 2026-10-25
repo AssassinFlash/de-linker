@@ -13,6 +13,7 @@ import { useEquipmentProducts } from "../../data/equipmentProducts.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { NumberField } from "../NumberField.tsx";
 import { Notice } from "../Notice.tsx";
+import { PvStringSetup } from "./PvStringSetup.tsx";
 
 const numericFields = [
 	"modules_per_stack",
@@ -58,7 +59,7 @@ export function EquipmentSetup({
 	const callbacks = useMemo(
 		() =>
 			Object.fromEntries(
-				numericFields.map((key) => [
+				[...numericFields, "pv_string_plan"].map((key) => [
 					key,
 					(valid: boolean) =>
 						setValidity((state) =>
@@ -285,6 +286,18 @@ export function EquipmentSetup({
 				</div>
 			</fieldset>
 
+			<PvStringSetup
+				draft={draft}
+				edit={edit}
+				inverterId={
+					typeof setup.inverter_product_id === "number"
+						? setup.inverter_product_id
+						: null
+				}
+				locale={locale}
+				disabled={disabled}
+				onValidity={callbacks.pv_string_plan!}
+			/>
 			{searchEnabled && (
 				<>
 					<p>

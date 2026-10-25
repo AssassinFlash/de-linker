@@ -93,6 +93,33 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 			throw new ApiError(502, "invalid_run_result");
 	}
 	const ids = new Set<string>();
+	if (assessment.pv_electrical !== undefined) {
+		const pv = readObject(assessment.pv_electrical);
+		if (
+			pv.schema_version !== 1 ||
+			pv.method !== "woo_layout_linear_voc_stc_v1" ||
+			!Array.isArray(pv.strings)
+		)
+			throw new ApiError(502, "invalid_run_result");
+		for (const item of pv.strings) {
+			const row = readObject(item);
+			if (
+				typeof row.id !== "string" ||
+				!Array.isArray(row.module_ids) ||
+				row.module_ids.length !== row.module_count ||
+				!row.module_ids.every((id) => typeof id === "string") ||
+				![row.mppt, row.input, row.module_count].every(
+					(v) => typeof v === "number" && Number.isSafeInteger(v) && v > 0,
+				) ||
+				![row.stc_vmpp_v, row.cold_voc_v].every(
+					(v) =>
+						v === null ||
+						(typeof v === "number" && Number.isFinite(v) && v > 0),
+				)
+			)
+				throw new ApiError(502, "invalid_run_result");
+		}
+	}
 	for (const value of assessment.checks) {
 		const check = readObject(value);
 		if (

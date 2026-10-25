@@ -3,6 +3,52 @@
 from __future__ import annotations
 
 TEXT = {
+    "physical_input_map_requires_evidence": (
+        "The input number identifies the proposed connection. A cited manufacturer connector map is still required.",
+        "Die Eingangsnummer bezeichnet den geplanten Anschluss. Ein belegter Anschlussplan des Herstellers ist noch erforderlich.",
+    ),
+    "pv_strings_title": ("PV wiring plan", "PV-Verschaltungsplan"),
+    "pv_strings_scope": (
+        "The wiring plan records the assigned roof modules. Cold open-circuit voltage uses the stated ambient temperature and the module's voltage coefficient. STC operating points do not establish hot or cold MPP performance, design currents or wiring protection.",
+        "Der Verschaltungsplan enthält die zugeordneten Dachmodule. Die Leerlaufspannung bei Kälte wird mit der angegebenen Umgebungstemperatur und dem Spannungskoeffizienten des Moduls berechnet. Arbeitspunkte unter STC belegen weder das MPP-Verhalten bei Hitze oder Kälte noch die Auslegungsströme oder den Leitungsschutz.",
+    ),
+    "pv_string": ("String", "String"),
+    "pv_input": ("Input", "Eingang"),
+    "pv_count": ("Modules", "Module"),
+    "pv_stc_vmpp": ("Vmpp at STC", "Vmpp unter STC"),
+    "pv_cold_voc": ("Cold Voc", "Voc bei Kälte"),
+    "pv_min_ambient": (
+        "Lowest design ambient temperature",
+        "Niedrigste Auslegungs-Umgebungstemperatur",
+    ),
+    "pv_temperature_source": (
+        "Temperature source and location",
+        "Quelle der Temperaturangabe und Standort",
+    ),
+    "linear_cold_voc_at_declared_ambient": (
+        "Voc = modules per string × module Voc at STC × [1 + βVoc × (lowest design ambient temperature − 25 °C)]. βVoc is the relative Voc temperature coefficient in 1/°C; divide a value in %/°C by 100. The design temperature and its source are required.",
+        "Voc = Module je String × Voc des Moduls unter STC × [1 + βVoc × (niedrigste Auslegungs-Umgebungstemperatur − 25 °C)]. βVoc ist der relative Temperaturkoeffizient der Leerlaufspannung in 1/°C; Werte in %/°C werden durch 100 geteilt. Die Auslegungstemperatur und ihre Quelle müssen angegeben werden.",
+    ),
+    "stc_operating_point_only": (
+        "This comparison uses STC values: 1,000 W/m² irradiance, 25 °C cell temperature and the AM1.5 reference spectrum.",
+        "Dieser Vergleich verwendet STC-Werte: 1.000 W/m² Bestrahlungsstärke, 25 °C Zelltemperatur und das AM1,5-Referenzspektrum.",
+    ),
+    "parallel_current_at_stc_only": (
+        "Parallel-string currents are added at STC. Design irradiance, temperature and applicable rating factors require separate checks.",
+        "Die Ströme paralleler Strings werden unter STC addiert. Die für die Auslegung maßgebliche Bestrahlungsstärke, Temperatur und die geltenden Bemessungsfaktoren sind gesondert zu prüfen.",
+    ),
+    "hot_and_cold_mpp_model_required": (
+        "Hot and cold operating MPP checks require a suitable module I–V model and documented cell temperatures.",
+        "Für die MPP-Prüfung bei heißem und kaltem Betrieb sind ein geeignetes I–V-Modell des Moduls und belegte Zelltemperaturen erforderlich.",
+    ),
+    "design_irradiance_and_rating_rules_required": (
+        "Design currents require documented irradiance, temperature and applicable rating rules.",
+        "Die Auslegungsströme erfordern belegte Bestrahlungs- und Temperaturbedingungen sowie die geltenden Bemessungsregeln.",
+    ),
+    "cables_connectors_fuses_and_isolation_require_design": (
+        "Cable routes, conductor ratings, connector compatibility, fuses and isolation still require project-specific design.",
+        "Leitungswege, Leiterbemessung, Steckverbinder-Kompatibilität, Sicherungen und Trenneinrichtungen müssen noch projektspezifisch ausgelegt werden.",
+    ),
     "pv_components_title": (
         "PV modules used in the calculation",
         "PV-Module der Berechnung",
@@ -222,6 +268,32 @@ TEXT = {
 }
 
 CHECKS = {
+    "pv_parallel_count": ("Strings per MPPT", "Strings je MPPT"),
+    "pv_layout_coverage": ("Roof module assignment", "Zuordnung der Dachmodule"),
+    "pv_tracker": ("MPPT assignment", "MPPT-Zuordnung"),
+    "pv_input": ("Inverter input assignment", "Zuordnung der Wechselrichtereingänge"),
+    "pv_cold_voc": ("Cold open-circuit voltage", "Leerlaufspannung bei Kälte"),
+    "pv_module_voltage": (
+        "Module system voltage (IEC rating)",
+        "Systemspannung des Moduls (IEC-Bemessung)",
+    ),
+    "pv_stc_mppt": ("MPP voltage at STC", "MPP-Spannung unter STC"),
+    "pv_nameplate_layout": ("Wired PV nameplate power", "Verschaltete PV-Nennleistung"),
+    "pv_stc_current": ("MPPT operating current at STC", "MPPT-Betriebsstrom unter STC"),
+    "pv_stc_isc": (
+        "MPPT short-circuit current at STC",
+        "MPPT-Kurzschlussstrom unter STC",
+    ),
+    "pv_parallel_match": (
+        "Parallel string lengths and orientations",
+        "Länge und Ausrichtung paralleler Strings",
+    ),
+    "pv_operating_temperatures": (
+        "Hot and cold operating MPP",
+        "MPP bei heißem und kaltem Betrieb",
+    ),
+    "pv_design_current": ("Design current", "Auslegungsstrom"),
+    "pv_wiring_protection": ("Wiring and protection", "Leitungen und Schutz"),
     "converter_identity": ("Converter output", "Ausgang des Umrichters"),
     "grid_phase": ("Grid phases", "Netzphasen"),
     "pv_dc_input": ("PV input power", "PV-Eingangsleistung"),

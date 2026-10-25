@@ -395,3 +395,31 @@ They do not resolve an external owned planning run or keep its cross-service
 receipt; the narrow Tools/Commerce bridge provides only that missing data
 assembly. New fragments are semantic data with inherited tokens, with no new
 page template, inline style, CSS channel or production mail test.
+
+### Roof-object string wiring and cited electrical checks
+
+The equipment task accepts an optional `pv_string_plan`: selected inverter ID,
+unique string IDs, MPPT/project input labels, actual included module IDs, lowest
+design ambient temperature and its stated source. No device specification is
+entered by the customer. The task freezes a separate reference-only Woo proof
+inside its existing sales-pool proof and confirms both around worker execution.
+The reference fact compiler does not manufacture a sale SKU or device class.
+
+Checks cover complete module assignment, the assigned STC nameplate, MPPT count,
+allowed strings per MPPT, cold Voc against inverter and cited module DC/IEC limits,
+and STC MPP/current/short-circuit limits. Parallel currents add by MPPT; series
+modules affect voltage. Unequal string lengths or orientations remain unresolved.
+String allowance does not establish physical connector count: input labels retain
+an explicit outstanding manufacturer-map check. Hot/cold operating MPP, design
+irradiance/rating rules, cables/connectors/protection and country release remain
+separate obligations, never a pass inferred from STC or a typical weather year.
+
+The same frozen wiring table, temperature/source, units, checks and citations
+appear on screen and in the EN/DE report/PDF. A changed roof or string plan rejects
+an old electrical assessment at report generation; export requires the retained
+roof-source export permissions. Existing equipment tasks without a wiring plan,
+energy replay, old reports and sales handoff quantities retain their prior scope.
+The batch closes after one cited wiring representative and its failure boundaries,
+changed-file type/lint/build checks, independent delta reviews and affected native
+save → equipment task → report/PDF views. Unchanged physics/commerce evidence is
+reused; no annual energy replay or full-site matrix is added.

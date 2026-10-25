@@ -8119,3 +8119,228 @@ msgstr "Unverändert"
 #: build/planner/assets/planner.js
 msgid "Compare calculations"
 msgstr "Berechnungen vergleichen"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Assign the roof modules to strings and inverter inputs. The equipment check uses the saved wiring plan and product data."
+msgstr "Ordnen Sie die Dachmodule den Strings und Wechselrichtereingängen zu. Die Geräteprüfung verwendet den gespeicherten Verschaltungsplan und die Produktdaten."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Set up PV strings"
+msgstr "PV-Strings planen"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "These strings belong to another inverter. Select that inverter or start a new wiring plan."
+msgstr "Diese Strings gehören zu einem anderen Wechselrichter. Sie können den zugehörigen Wechselrichter wählen oder einen neuen Verschaltungsplan anlegen."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Lowest design ambient temperature"
+msgstr "Niedrigste Auslegungs-Umgebungstemperatur"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Temperature source and location"
+msgstr "Quelle der Temperaturangabe und Standort"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Use a documented local design minimum. A typical weather year's lowest temperature is not a design extreme."
+msgstr "Maßgeblich ist ein belegter örtlicher Auslegungswert. Die niedrigste Temperatur eines typischen Wetterjahres ist kein Auslegungsextrem."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "%1$d of %2$d roof modules assigned"
+msgstr "%1$d von %2$d Dachmodulen zugeordnet"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "The roof has changed. Remove strings containing missing modules and assign the current modules."
+msgstr "Das Dach wurde geändert. Strings mit entfallenen Modulen müssen entfernt und die aktuellen Module zugeordnet werden."
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "String %d"
+msgstr "String %d"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "MPPT %1$d · input %2$d · %3$d modules"
+msgstr "MPPT %1$d · Eingang %2$d · %3$d Module"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Assigned modules"
+msgstr "Zugeordnete Module"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "%1$s · row %2$d · module %3$d"
+msgstr "%1$s · Reihe %2$d · Modul %3$d"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Remove string"
+msgstr "String entfernen"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Add a string"
+msgstr "String hinzufügen"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Inverter input"
+msgstr "Wechselrichtereingang"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Row %1$d · module %2$d"
+msgstr "Reihe %1$d · Modul %2$d"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Add selected modules to string"
+msgstr "Ausgewählte Module zum String hinzufügen"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Remove wiring plan"
+msgstr "Verschaltungsplan entfernen"
+
+#: ../../apps/planner/src/components/equipment/PvStringSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Save the project, then check the equipment selection. Cold open-circuit voltage and STC checks are shown separately from outstanding design checks."
+msgstr "Nach dem Speichern des Projekts kann die Geräteauswahl geprüft werden. Leerlaufspannung bei Kälte und STC-Prüfungen werden getrennt von den noch offenen Auslegungsprüfungen angezeigt."
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "PV wiring plan"
+msgstr "PV-Verschaltungsplan"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "The wiring plan records the assigned roof modules. Cold open-circuit voltage uses the stated ambient temperature and the module's voltage coefficient. STC operating points do not establish hot or cold MPP performance, design currents or wiring protection."
+msgstr "Der Verschaltungsplan enthält die zugeordneten Dachmodule. Die Leerlaufspannung bei Kälte wird mit der angegebenen Umgebungstemperatur und dem Spannungskoeffizienten des Moduls berechnet. Arbeitspunkte unter STC belegen weder das MPP-Verhalten bei Hitze oder Kälte noch die Auslegungsströme oder den Leitungsschutz."
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "String"
+msgstr "String"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Vmpp at STC"
+msgstr "Vmpp unter STC"
+
+#: ../../apps/planner/src/components/equipment/PvStringResult.tsx
+#: build/planner/assets/planner.js
+msgid "Cold Voc"
+msgstr "Voc bei Kälte"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Strings per MPPT"
+msgstr "Strings je MPPT"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Roof module assignment"
+msgstr "Zuordnung der Dachmodule"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "MPPT assignment"
+msgstr "MPPT-Zuordnung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Inverter input assignment"
+msgstr "Zuordnung der Wechselrichtereingänge"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Cold open-circuit voltage"
+msgstr "Leerlaufspannung bei Kälte"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Module system voltage (IEC rating)"
+msgstr "Systemspannung des Moduls (IEC-Bemessung)"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "MPP voltage at STC"
+msgstr "MPP-Spannung unter STC"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Wired PV nameplate power"
+msgstr "Verschaltete PV-Nennleistung"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "MPPT operating current at STC"
+msgstr "MPPT-Betriebsstrom unter STC"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "MPPT short-circuit current at STC"
+msgstr "MPPT-Kurzschlussstrom unter STC"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Parallel string lengths and orientations"
+msgstr "Länge und Ausrichtung paralleler Strings"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Hot and cold operating MPP"
+msgstr "MPP bei heißem und kaltem Betrieb"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Design current"
+msgstr "Auslegungsstrom"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Wiring and protection"
+msgstr "Leitungen und Schutz"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The input number identifies the proposed connection. A cited manufacturer connector map is still required."
+msgstr "Die Eingangsnummer bezeichnet den geplanten Anschluss. Ein belegter Anschlussplan des Herstellers ist noch erforderlich."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Voc = modules per string × module Voc at STC × [1 + βVoc × (lowest design ambient temperature − 25 °C)]. βVoc is the relative Voc temperature coefficient in 1/°C; divide a value in %/°C by 100. The design temperature and its source are required."
+msgstr "Voc = Module je String × Voc des Moduls unter STC × [1 + βVoc × (niedrigste Auslegungs-Umgebungstemperatur − 25 °C)]. βVoc ist der relative Temperaturkoeffizient der Leerlaufspannung in 1/°C; Werte in %/°C werden durch 100 geteilt. Die Auslegungstemperatur und ihre Quelle müssen angegeben werden."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "This comparison uses STC values: 1,000 W/m² irradiance, 25 °C cell temperature and the AM1.5 reference spectrum."
+msgstr "Dieser Vergleich verwendet STC-Werte: 1.000 W/m² Bestrahlungsstärke, 25 °C Zelltemperatur und das AM1,5-Referenzspektrum."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Parallel-string currents are added at STC. Design irradiance, temperature and applicable rating factors require separate checks."
+msgstr "Die Ströme paralleler Strings werden unter STC addiert. Die für die Auslegung maßgebliche Bestrahlungsstärke, Temperatur und die geltenden Bemessungsfaktoren sind gesondert zu prüfen."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Hot and cold operating MPP checks require a suitable module I–V model and documented cell temperatures."
+msgstr "Für die MPP-Prüfung bei heißem und kaltem Betrieb sind ein geeignetes I–V-Modell des Moduls und belegte Zelltemperaturen erforderlich."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Design currents require documented irradiance, temperature and applicable rating rules."
+msgstr "Die Auslegungsströme erfordern belegte Bestrahlungs- und Temperaturbedingungen sowie die geltenden Bemessungsregeln."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Cable routes, conductor ratings, connector compatibility, fuses and isolation still require project-specific design."
+msgstr "Leitungswege, Leiterbemessung, Steckverbinder-Kompatibilität, Sicherungen und Trenneinrichtungen müssen noch projektspezifisch ausgelegt werden."

@@ -217,6 +217,7 @@ export function energyErrorText(error: unknown): string {
 			);
 		case "equipment_requirements_incomplete":
 			return __("Enter the search requirements first.", "linker-tools");
+		case "pv_string_plan_incomplete":
 		case "equipment_selection_incomplete":
 			return __(
 				"Equipment selection requires a product and valid quantities.",

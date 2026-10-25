@@ -138,6 +138,23 @@ def report_sources(
             )
         assert run.result is not None
         assessment = cast(Object, run.result["assessment"])
+        if isinstance(assessment.get("pv_electrical"), dict) and any(
+            previous.get(field) != project.inputs.get(field)
+            for field in ("geometry", "pv_string_plan")
+        ):
+            raise ReportInputsChanged(
+                "report PV strings differ from the saved roof or wiring plan"
+            )
+        if isinstance(assessment.get("pv_electrical"), dict):
+            from .geometry import read_geometry
+
+            if any(
+                s.permissions.export != "permitted"
+                for s in read_geometry(project.inputs.get("geometry")).sources
+            ):
+                raise InvalidInput(
+                    "PV wiring reports require export permission for the roof sources"
+                )
         pinned = cast(Object, run.result["pinned_assets"])
         bases["equipment"] = pinned["woo.equipment_inputs"]
 
@@ -285,6 +302,18 @@ def report_sources(
 
     if not sources:
         raise InvalidInput("select at least one completed analysis for the report")
+    if isinstance(assessment, dict) and isinstance(
+        assessment.get("pv_electrical"), dict
+    ):
+        equipment_basis = workspace.blobs.object(cast(str, bases["equipment"]))
+        electrical_proof = equipment_basis.get("pv_module_inputs")
+        if not isinstance(electrical_proof, dict):
+            raise VersionUnavailable(
+                "the wiring report has no frozen PV reference proof"
+            )
+        # Handoffs aggregate the top-level Woo bases. Keep the reference
+        # separately addressable so later withdrawal checks retain it too.
+        bases["equipment_pv"] = workspace.blobs.put_object(electrical_proof)
     historical_bases = {
         name: sha for name, sha in bases.items() if name.startswith("energy.")
     }

@@ -80,6 +80,10 @@ class ProjectInputs(Command):
             from .equipment_inputs import EquipmentSelection
 
             EquipmentSelection.model_validate(value["equipment_selection"])
+        if "pv_string_plan" in value:
+            from .pv_string_inputs import PvStringPlan
+
+            PvStringPlan.model_validate(value["pv_string_plan"])
         if "equipment_requirements" in value:
             from .equipment_requirements import EquipmentRequirements
 

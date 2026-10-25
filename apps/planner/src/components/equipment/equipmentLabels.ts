@@ -9,6 +9,35 @@ export function equipmentStatus(status: unknown): string {
 }
 export function equipmentCheckLabel(id: string): string {
 	switch (id.split(":")[0]) {
+		case "pv_parallel_count":
+			return __("Strings per MPPT", "linker-tools");
+		case "pv_layout_coverage":
+			return __("Roof module assignment", "linker-tools");
+		case "pv_tracker":
+			return __("MPPT assignment", "linker-tools");
+		case "pv_input":
+			return __("Inverter input assignment", "linker-tools");
+		case "pv_cold_voc":
+			return __("Cold open-circuit voltage", "linker-tools");
+		case "pv_module_voltage":
+			return __("Module system voltage (IEC rating)", "linker-tools");
+		case "pv_stc_mppt":
+			return __("MPP voltage at STC", "linker-tools");
+		case "pv_nameplate_layout":
+			return __("Wired PV nameplate power", "linker-tools");
+		case "pv_stc_current":
+			return __("MPPT operating current at STC", "linker-tools");
+		case "pv_stc_isc":
+			return __("MPPT short-circuit current at STC", "linker-tools");
+		case "pv_parallel_match":
+			return __("Parallel string lengths and orientations", "linker-tools");
+		case "pv_operating_temperatures":
+			return __("Hot and cold operating MPP", "linker-tools");
+		case "pv_design_current":
+			return __("Design current", "linker-tools");
+		case "pv_wiring_protection":
+			return __("Wiring and protection", "linker-tools");
+
 		case "converter_identity":
 			return __("Converter output", "linker-tools");
 		case "grid_phase":
@@ -54,6 +83,42 @@ export function equipmentCheckLabel(id: string): string {
 	}
 }
 export function equipmentReason(reason: string): string | null {
+	if (reason === "physical_input_map_requires_evidence")
+		return __(
+			"The input number identifies the proposed connection. A cited manufacturer connector map is still required.",
+			"linker-tools",
+		);
+	if (reason === "linear_cold_voc_at_declared_ambient")
+		return __(
+			"Voc = modules per string × module Voc at STC × [1 + βVoc × (lowest design ambient temperature − 25 °C)]. βVoc is the relative Voc temperature coefficient in 1/°C; divide a value in %/°C by 100. The design temperature and its source are required.",
+			"linker-tools",
+		);
+	if (reason === "stc_operating_point_only")
+		return __(
+			"This comparison uses STC values: 1,000 W/m² irradiance, 25 °C cell temperature and the AM1.5 reference spectrum.",
+			"linker-tools",
+		);
+	if (reason === "parallel_current_at_stc_only")
+		return __(
+			"Parallel-string currents are added at STC. Design irradiance, temperature and applicable rating factors require separate checks.",
+			"linker-tools",
+		);
+	if (reason === "hot_and_cold_mpp_model_required")
+		return __(
+			"Hot and cold operating MPP checks require a suitable module I–V model and documented cell temperatures.",
+			"linker-tools",
+		);
+	if (reason === "design_irradiance_and_rating_rules_required")
+		return __(
+			"Design currents require documented irradiance, temperature and applicable rating rules.",
+			"linker-tools",
+		);
+	if (reason === "cables_connectors_fuses_and_isolation_require_design")
+		return __(
+			"Cable routes, conductor ratings, connector compatibility, fuses and isolation still require project-specific design.",
+			"linker-tools",
+		);
+
 	if (reason === "outage_requires_backup_selection")
 		return __(
 			"The scenario includes an outage, but the equipment was selected for grid-connected operation.",

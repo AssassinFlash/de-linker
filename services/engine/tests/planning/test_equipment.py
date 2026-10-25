@@ -694,6 +694,12 @@ def test_pv_reference_proof_tracks_its_component_instead_of_sales_compatibility(
     proof = source.module_basis()
     proof["publication"]["compatibility_revision"] = "0" * 64
     source.confirm_basis(proof)
+    electrical = source.electrical_module_basis()
+    source.confirm_basis(electrical)
+    changed_electrical = copy.deepcopy(electrical)
+    changed_electrical["electrical_product"]["figures"]["voc_v"]["value"] = 1
+    with pytest.raises(ProductEvidenceChanged):
+        source.confirm_basis(changed_electrical)
     changed = copy.deepcopy(proof)
     changed["module"]["parameters"]["gamma_pdc_per_c"] = -0.01
     with pytest.raises(ProductEvidenceChanged):
@@ -1215,3 +1221,83 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
     assert (
         limited["completion"] == "budget_exhausted" and len(limited["candidates"]) == 1
     )
+
+
+def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
+    feed: dict, engine: Engine
+) -> None:
+    """One wiring representative: series voltage, parallel current and stale IDs."""
+    from linker_engine.planning.geometry import panel_poses, read_geometry
+    from linker_engine.planning.pv_string_assessment import assess_pv_strings
+    from linker_engine.planning.pv_string_inputs import PvStringPlan
+    from linker_engine.planning.woo_module import module_template
+
+    from .test_pv_generation import geometry
+
+    reference = feed["overlay"][0]
+    proof = {"module": module_template(reference), "electrical_product": reference}
+    layout = geometry()
+    layout["module_specs"] = [{**proof["module"]["specification"], "id": "module"}]
+    layout["arrays"][0].update(rows=2, columns=6, excluded_slots=[])
+    ids = [p.id for p in panel_poses(read_geometry(layout)) if p.included]
+    assert len(ids) == 12
+    value = inputs(feed, 3)
+    value["geometry"] = layout
+    value["equipment_selection"]["pv_dc_kw"] = 5.52
+    value["pv_string_plan"] = {
+        "schema_version": 1,
+        "inverter_product_id": 4107,
+        "minimum_ambient_c": -10,
+        "temperature_source": "Explicit synthetic design temperature; not a site extreme claim",
+        "strings": [
+            {"id": "s_a", "mppt": 1, "input": 1, "module_ids": ids[:6]},
+            {"id": "s_b", "mppt": 1, "input": 2, "module_ids": ids[6:]},
+        ],
+    }
+    basis = {
+        "products": feed["products"],
+        "compatibility": engine.compatibility.snapshot(),
+        "pv_module_inputs": proof,
+    }
+    result = assess_pv_strings(value, basis)
+    checks = {c["id"]: c for c in result["checks"]}
+    assert checks["pv_cold_voc:s_a"]["actual"] == pytest.approx(6 * 53.8 * 1.084)
+    assert checks["pv_stc_mppt:s_a"]["actual"] == pytest.approx(6 * 45.4)
+    assert checks["pv_stc_current:1"]["actual"] == pytest.approx(2 * 10.14)
+    assert checks["pv_stc_isc:1"]["actual"] == pytest.approx(2 * 10.81)
+    assert checks["pv_layout_coverage"]["status"] == "satisfied"
+    assert checks["pv_module_voltage:s_a"]["required"] == 1500
+    assert checks["pv_parallel_count:1"]["status"] == "satisfied"
+    assert checks["pv_input:s_a"]["status"] == "unresolved"
+    assert checks["pv_operating_temperatures"]["status"] == "unresolved"
+    assert checks["pv_design_current"]["status"] == "unresolved"
+    assessment = assess_equipment(value, basis)
+    assert assessment["pv_electrical"] == result
+    assert assessment["overall_status"] != "satisfied"
+    without_target = copy.deepcopy(value)
+    without_target["equipment_selection"]["pv_dc_kw"] = None
+    no_target_assessment = assess_equipment(without_target, basis)
+    assert no_target_assessment["pv_electrical"]["strings"] == result["strings"]
+    assert (
+        next(
+            c
+            for c in no_target_assessment["checks"]
+            if c["id"] == "pv_nameplate_layout"
+        )["status"]
+        == "unresolved"
+    )
+    saved = copy.deepcopy(value)
+    saved["pv_string_plan"]["minimum_ambient_c"] = None
+    unknown = assess_pv_strings(saved, basis)
+    assert (
+        next(c for c in unknown["checks"] if c["id"] == "pv_cold_voc:s_a")["status"]
+        == "unresolved"
+    )
+    saved = copy.deepcopy(value)
+    saved["pv_string_plan"]["strings"][1]["module_ids"][0] = ids[0]
+    with pytest.raises(InvalidInput):
+        PvStringPlan.read(saved["pv_string_plan"])
+    saved = copy.deepcopy(value)
+    saved["geometry"]["arrays"][0]["excluded_slots"] = ["0:0"]
+    with pytest.raises(InvalidInput, match="removed or excluded"):
+        assess_pv_strings(saved, basis)

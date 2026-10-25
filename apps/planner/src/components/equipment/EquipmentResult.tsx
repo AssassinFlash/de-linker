@@ -5,6 +5,7 @@ import type { Json, JsonObject } from "../../data/protocol.ts";
 import { readObject } from "../../data/readProtocol.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { Notice } from "../Notice.tsx";
+import { PvStringResult } from "./PvStringResult.tsx";
 import { runStateLabel, taskLabel } from "../energy/planningLabels.ts";
 import {
 	equipmentCheckLabel,
@@ -53,6 +54,12 @@ export function EquipmentResult({
 				? readObject(run.result.assessment)
 				: null;
 	const checks = assessment?.checks as JsonObject[] | undefined;
+	const pvWiring = assessment?.pv_electrical
+		? readObject(assessment.pv_electrical)
+		: null;
+	const stringNumbers = new Map(
+		((pvWiring?.strings ?? []) as JsonObject[]).map((s, i) => [s.id, i + 1]),
+	);
 	const lines = assessment?.provisional_bill_of_materials as
 		JsonObject[] | undefined;
 	const pair =
@@ -115,7 +122,17 @@ export function EquipmentResult({
 							)}
 						</p>
 					</Notice>
+					{pvWiring && <PvStringResult value={pvWiring} locale={locale} />}
 					{checks?.map((check) => {
+						const suffix = String(check.id).split(":")[1],
+							stringNumber = stringNumbers.get(suffix);
+						const prefix = stringNumber
+							? `${__("String", "linker-tools")} ${stringNumber} · `
+							: /^(pv_stc_current|pv_stc_isc|pv_parallel_match|pv_parallel_count):/.test(
+										String(check.id),
+								  )
+								? `MPPT ${suffix} · `
+								: "";
 						const explanation = equipmentReason(String(check.reason));
 						const facts = check.facts as JsonObject[];
 						const unit =
@@ -127,10 +144,12 @@ export function EquipmentResult({
 									continuous_battery_ac_charge: "kW",
 									converter_identity: "kW",
 								} as Record<string, string>
-							)[String(check.id)] ?? "";
+							)[String(check.id)] ??
+							(typeof check.unit === "string" ? check.unit : "");
 						return (
 							<details className="lp-comparison" key={String(check.id)}>
 								<summary>
+									{prefix}
 									{equipmentCheckLabel(String(check.id))} ·{" "}
 									{equipmentStatus(check.status)}
 								</summary>

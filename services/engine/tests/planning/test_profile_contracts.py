@@ -9,6 +9,7 @@ from linker_engine.planning.equipment_inputs import EquipmentSelection
 from linker_engine.planning.equipment_requirements import EquipmentRequirements
 from linker_engine.planning.http_documents import CsvImport
 from linker_engine.planning.profile_selections import ProfileSelections
+from linker_engine.planning.pv_string_inputs import PvStringPlan
 
 
 def test_profile_contracts_match_the_published_browser_schemas() -> None:
@@ -17,6 +18,7 @@ def test_profile_contracts_match_the_published_browser_schemas() -> None:
         ("profile-import", CsvImport),
         ("profile-selections", ProfileSelections),
         ("equipment-selection", EquipmentSelection),
+        ("pv-string-plan", PvStringPlan),
         ("equipment-requirements", EquipmentRequirements),
     ):
         assert (

@@ -53,6 +53,7 @@ def assess_equipment(
     typed = {key: evidence.compiled(key) for key in selected}
     fact_context = FactContext(selection, products)
     checks: list[Json] = []
+    pv_electrical: Object | None = None
 
     def add(
         identifier: str,
@@ -171,6 +172,12 @@ def assess_equipment(
             "pv_nameplate_power",
             "pv_nameplate_limit",
         )
+    if inputs.get("pv_string_plan") is not None and "pv_module_inputs" in basis:
+        from .pv_string_assessment import assess_pv_strings
+
+        pv_electrical = assess_pv_strings(inputs, basis)
+        checks.extend(cast(list[Json], pv_electrical["checks"]))
+    elif selection.pv_dc_kw is not None:
         add(
             "pv_electrical_topology",
             "unresolved",
@@ -346,7 +353,10 @@ def assess_equipment(
             )
             if not voltage_projection or voltage_projection["shape"] != "interval":
                 continue
-            if voltage_projection.get("selected_module_count") == count and count is not None:
+            if (
+                voltage_projection.get("selected_module_count") == count
+                and count is not None
+            ):
                 candidates.append(cast(dict[str, Any], voltage_projection))
             else:
                 minimum, _ = number(pid, "modules_per_stack_min", "count")
@@ -515,6 +525,11 @@ def assess_equipment(
             {
                 "equipment_status": equipment_status,
                 "checks": checks,
+                **(
+                    {"pv_electrical": pv_electrical}
+                    if pv_electrical is not None
+                    else {}
+                ),
                 "manufacturer_pair": pairing,
                 "installation_requirements": [
                     {
