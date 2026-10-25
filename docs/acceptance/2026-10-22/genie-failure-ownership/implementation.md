@@ -104,4 +104,45 @@ npm run lint:types
 
 The focused 14-file run reports **300/300 passing**. TypeScript, changed-file ESLint and formatting pass. After a lint-only rearrangement of the new case's assertions, the existing completed-request matrix was replayed alone: **10 pass**, with 61 unrelated App cases excluded by that explicit filter. The earlier fixture/typing failures and this new red case are described above; historical blocked reports and original failure evidence remain unchanged. A repository-wide cached whitespace check also reports pre-existing main whitespace in `537/phpstan.txt` and the commerce contact asset; neither belongs to this Genie delta, whose scoped diff check passes.
 
-All tools `build/` and generated JSON/MO files currently equal main and intentionally do not claim this source candidate. They require the current native build/i18n pipeline after integrated-source review; the old branch's generated outputs were not used. Independent integrated-diff Spec/Standards review, generated manifest/catalog checks, affected-state Computer Use and release/deployed readback remain parent-owned delivery gates. No full suite, browser, local instance, product model/mail request or production operation ran in this batch. No worktree, backup, dependency installation or temporary report copy was created.
+At the source-only handoff, all tools `build/` and generated JSON/MO files equalled main and did not claim this source candidate. They required the current native build/i18n pipeline; the old branch's generated outputs were not used. Independent integrated-diff Spec/Standards review, generated manifest/catalog checks, affected-state Computer Use and release/deployed readback remained parent-owned delivery gates. No full suite, browser, local instance, product model/mail request or production operation ran in that batch. No worktree, backup, dependency installation or temporary report copy was created.
+
+
+## Generated delivery from the integrated source (2026-10-25)
+
+This completes the generated-output gate after source-only commit `a9fde6e3207f3d41a59c4b5d02e8d896d95888c7`. The source-only handoff's retained-main bundle state above is superseded by this section. The same worktree and installed dependencies were reused. Product sources, tests, build configuration, package files, PHP/API code and the entire approved PO remain byte-identical to that source commit. The 19-product source aggregate remains **`28b7e7915fbae4e3871ce4778b5b801dbdfd3096b6eed90657d249f6a2f08eb2`**.
+
+Generation used only the repository's existing `npm run build` in `plugins/linker-tools` (`wp-scripts build` plus native manifest writer), then `just i18n-tools` (`wp i18n make-json --no-purge` and `msgfmt --check`). The broader build wrapper was unnecessary; Commerce was not rebuilt. Webpack completed successfully with three visible warnings: asset size, entrypoint size, and the configurator runtime-placement recommendation. These are retained warnings, not an assertion of performance acceptance.
+
+The manifest binds **109 source/input paths** to **24 built paths**. Its plugin-relative source-row aggregate is `1bb862f614fd4dea354a63b097cc491e6121e5fd824232aa73b623fd01fa6d94`, using the same sorted `SHA + two spaces + path + LF` algorithm. Its own final SHA-256 appears below. No source/asset hash was substituted by hand.
+
+Across the 33 observed build/language files, exactly **12 files change** from the source-only commit; the full generated delta and final SHA-256 are:
+
+| File under `plugins/linker-tools` | Generated SHA-256 |
+| --- | --- |
+| `build/genie.asset.php` | `61e405b1fb0a5894b076f75786363a166781fb8de0eef44b99ca30165b6cad93` |
+| `build/genie.js` | `171a8eae7d9afb38dd33037f106ac7799f98ea87e106010413ce62779a8634cc` |
+| `build/hero.asset.php` | `5c09f8b3e07a0b841bced4384c1f61be5a0973c23746087ea13aca474b41de38` |
+| `build/hero.js` | `8a3f5d2d784fd7846ce65b87a7dc52357208e9ed87285dcd54801f9113a4e495` |
+| `build/inquiry-handoff.asset.php` | `6136874ae3d6c8c436afb6c957ea829fba16d4e1acf885b3dac735c2fe04fc93` |
+| `build/inquiry-handoff.js` | `07df817b09007e2841e67e4d7cd5c1c355a5f3cc2821124977bf6b5349f812a3` |
+| `build/manifest.json` | `7e6df6670c09ce8a4ba26d851742390e48c634fc8bb17cd826a28c8d14ede0ff` |
+| `build/marketing.asset.php` | `beada248329b87fda668b70268fedd7f715d05d4e1f3c4265416ae9ee0ff0220` |
+| `build/marketing.js` | `5f3f1ab71adcbf928e110f822bb2e29808c682636d8998e793179bb4ced7f71f` |
+| `languages/linker-tools-de_DE_formal-6796211aef57736d0923df38ef696ad2.json` | `642bf2d27753f73b1ddb65fa1113a876a1ff852e215c21e16cb944c6ba969611` |
+| `languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json` | `22e284487689764209c6267fa8e63d0bb8114c24c3a1f7516b468eade3920d8b` |
+| `languages/linker-tools-de_DE_formal.mo` | `b7b8fb34aa983149442bfd73d5a6005c8fb0cbfc1ec5a53ecd3d62673defd867` |
+
+The changing entry versions are `genie=61b140c3ab75fb3e28c4`, `hero=673f67141c4ded61bcba`, `marketing=68f18e68a7657f178d47`, and `inquiry-handoff=cc18f291a92e7234af8c`. Genie/Hero carry the reviewed recovery integration. The marketing entry changes through its existing `entryDraft → durableNativeScope` dependency, and inquiry handoff changes through its existing native-ownership bridge; no marketing source or customer copy was edited during generation. All six entry dependency arrays remain byte-identical before the version field, including WordPress/React external handles.
+
+The other **21 observed files remain byte-identical**: `build/configurator.js`, `build/configurator.asset.php`, `build/preview.js`, `build/preview.asset.php`; `build/52.js` and `build/555.js`; all ten CSS/RTL files (`555`, configurator, genie, hero, preview); the configurator `ff47dbd6ce1b77b210b406f2367c7ea7` and preview `b465a58df1aa4e563112b65e45dffa1c` German JSON files; the entire German PO and both Chinese PO/MO files. Configurator and preview versions remain `ab3597bdbd34fea4385c` and `a53b0f4957ca4350342d`. The entire Commerce plugin also remains byte-identical to the source commit.
+
+The approved warning is present in both generated `build/genie.js` and `build/hero.js` German catalogs with the exact unchanged translation: “Ihre Frage konnte nicht gespeichert werden. Wenn Sie diese Seite neu laden oder verlassen, kann sie verloren gehen.” The PO was not re-extracted, reordered, retranslated or edited in this generation step.
+
+Generated verification, bounded to this plugin and its delivery artifacts:
+
+- `npm run build:check`: PASS; manifest matches the actual sources and built files.
+- `vitest run src/configurator/i18n.test.ts --maxWorkers=2` from the plugin cwd: **7/7 PASS**, covering native generated dictionary completeness, retained terms and formal address.
+- Existing `i18n-coverage.py` functions invoked for linker-tools only: zero runtime-source gaps, zero native make-json byte differences, zero live obsolete terms, zero untranslated terms, zero stale exemptions. The helper's temporary native JSON comparison directory was automatically removed.
+- Exact dictionary readback for the warning in Hero/Genie: PASS. Exact dependency-prefix comparison for all six generated asset PHP files: PASS. Source/input/PO and Commerce unchanged checks: PASS. Generated scoped `git diff --check`: PASS.
+
+The first ad-hoc dependency-display read assumed a one-line `array(...)` and failed on the native multiline PHP representation. The corrected comparison reads the complete bytes before the `version` field and passed all six entries; no build/source/config change or second generation was needed for that diagnostic. The 300 passing source cases were not rerun. No full-site checks, browser, local instance, port/symlink change, product model/mail request, production write, worktree, backup or dependency installation occurred. Incremental integrated-source/generated Spec/Standards review, CI as appropriate, affected-state Computer Use and deployment/readback remain open with the parent.
