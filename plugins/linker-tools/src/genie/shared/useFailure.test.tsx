@@ -9,13 +9,15 @@
  * External dependencies
  */
 import { act, renderHook } from '@testing-library/react';
-import { afterEach, expect, test, vi } from 'vitest';
+import { beforeEach, afterEach, expect, test, vi } from 'vitest';
 
 /**
  * Internal dependencies
  */
 import type { Upload } from '../attachments/prepare';
 import type { FailureDraft } from './failure';
+import { DraftContext } from './draftContext';
+import { failureBucketKey } from './ownedFailure';
 import { useFailure } from './useFailure';
 
 const PDF: Upload = {
@@ -31,8 +33,27 @@ const DRAFT: FailureDraft = {
 	omitted: [],
 };
 
+let context: DraftContext;
+beforeEach( async () => {
+	vi.stubGlobal(
+		'fetch',
+		vi.fn( async () => ( {
+			ok: true,
+			json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+		} ) )
+	);
+	context = new DraftContext(
+		{ restUrl: '/wp-json/', restNonce: 'native-test' },
+		() => undefined
+	);
+	await context.verify( false );
+} );
 afterEach( () => {
 	sessionStorage.clear();
+	delete ( window as unknown as Record< string, unknown > )
+		.__linkerGenieFailureJournal;
+	context.dispose();
+	vi.unstubAllGlobals();
 } );
 
 function files( uploads: Upload[] ) {
@@ -44,7 +65,9 @@ function files( uploads: Upload[] ) {
 }
 
 test( 'a truncated failure offers one retry and leaves the record on the composer', () => {
-	const { result } = renderHook( () => useFailure( files( [ PDF ] ) ) );
+	const { result } = renderHook( () =>
+		useFailure( files( [ PDF ] ), context )
+	);
 
 	act( () => {
 		result.current.commitFailure( { type: 'send', draft: DRAFT } );
@@ -56,7 +79,8 @@ test( 'a truncated failure offers one retry and leaves the record on the compose
 	const opened = result.current.openRetry( [
 		{ role: 'user', content: DRAFT.question },
 	] );
-	expect( opened ).toEqual( { draft: DRAFT, kind: 'truncated' } );
+	expect( opened ).toMatchObject( { draft: DRAFT, kind: 'truncated' } );
+	expect( opened?.draft.owner?.scope ).toBe( 'a'.repeat( 64 ) );
 	// The retry already left `failed`: a second click sends nothing.
 	expect(
 		result.current.openRetry( [
@@ -69,7 +93,7 @@ test( 'a truncated failure offers one retry and leaves the record on the compose
 } );
 
 test( 'an upstream retry with no words left puts the failure back', () => {
-	const { result } = renderHook( () => useFailure( files( [] ) ) );
+	const { result } = renderHook( () => useFailure( files( [] ), context ) );
 	const draft: FailureDraft = {
 		text: '',
 		question: 'Attached: datasheet.pdf',
@@ -103,15 +127,17 @@ test( 'an older entry completion or file edit cannot erase a newer failure owner
 		text: 'Current owner B',
 		question: 'Current owner B',
 	};
-	const older = renderHook( () => useFailure( files( [ PDF ] ) ) );
+	const older = renderHook( () => useFailure( files( [ PDF ] ), context ) );
 	act( () =>
 		older.result.current.commitFailure( { type: 'send', draft: prior } )
 	);
-	const newer = renderHook( () => useFailure( files( [] ) ) );
+	const newer = renderHook( () => useFailure( files( [] ), context ) );
 	act( () =>
 		newer.result.current.commitFailure( { type: 'send', draft: current } )
 	);
-	const raw = sessionStorage.getItem( 'linker-genie-turn-failure' );
+	const raw = sessionStorage.getItem( failureBucketKey( 'a'.repeat( 64 ) ) );
 	act( () => older.result.current.commitFailure( { type: 'answered' } ) );
-	expect( sessionStorage.getItem( 'linker-genie-turn-failure' ) ).toBe( raw );
+	expect(
+		sessionStorage.getItem( failureBucketKey( 'a'.repeat( 64 ) ) )
+	).toBe( raw );
 } );

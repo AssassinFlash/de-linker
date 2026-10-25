@@ -25,15 +25,18 @@ import {
 	omittedFileNotice,
 	pageFailureStore,
 	presentFailure,
-	readFailure,
 	reconcile,
 	refusalReason,
 	retryMessages,
 	settleTurnFailure,
-	writeFailure,
 	type FailureDraft,
+	type FailureOwner,
 } from './shared/failure';
 import { useFailure } from './shared/useFailure';
+import type { DraftLease } from './shared/draftContext';
+import type { NativeScope } from './shared/nativeScope';
+import type { FailureCursor } from './shared/ownedFailure';
+import { useDraftContext } from './shared/useDraftContext';
 import {
 	completedRequest,
 	type RequestWitness,
@@ -57,7 +60,7 @@ import {
 	type Turn,
 	type TurnMessage,
 } from './api/turn';
-import { ACCEPT, type Upload } from './attachments/prepare';
+import { ACCEPT } from './attachments/prepare';
 import { useAttachments } from './attachments/useAttachments';
 import { AttachmentCard } from './components/AttachmentCard';
 import { AttachmentChips, refusalText } from './components/AttachmentChips';
@@ -95,6 +98,8 @@ import { newEntryId } from './shared/entryDraft';
 import { useEntryInbox } from './shared/useEntryInbox';
 import { useHelperDialog } from './shared/useHelperDialog';
 import { useComposerSize } from './shared/useComposerSize';
+import { MissingFiles } from './components/MissingFiles';
+import { OwnedRecovery } from './components/OwnedRecovery';
 import { EntryInbox } from './components/EntryInbox';
 import './genie.css';
 
@@ -192,21 +197,15 @@ export function App( { config }: { config: GenieConfig } ) {
 	const [ revealingAt, setRevealingAt ] = useState< number | null >( null );
 	const finishReveal = useCallback( () => setRevealingAt( null ), [] );
 	const [ input, setInput ] = useState( '' );
+	const inputRef = useRef( input );
+	inputRef.current = input;
 	const entryOwnsComposer = useRef( false );
 	const entryRecoveryBlocksSend = useRef< () => boolean >( () => false );
-	const claimEntryComposer = useRef< ( scope: string ) => void >(
-		() => undefined
-	);
 	const blockEntryRecovery = useRef< () => void >( () => undefined );
 	const resolveEntryRecovery = useRef< () => void >( () => undefined );
-	const offerEntryRecovery = useRef<
-		(
-			scope: string,
-			candidate: { text: string; uploads: Upload[]; missing: string[] }
-		) => boolean
-	>( () => true );
 	const verifiedEntryScope = useRef( '' );
 	const resetEntryComposer = useRef< () => void >( () => undefined );
+	const detachEntryInbox = useRef< () => void >( () => undefined );
 	const authorizeEntry = useRef< ( scope?: string ) => Promise< boolean > >(
 		async () => true
 	);
@@ -246,7 +245,21 @@ export function App( { config }: { config: GenieConfig } ) {
 		( open || config.surface === 'workspace' ) && ! dockHistory
 	);
 	const dictation = useRef< DictationSession | null >( null );
-	const files = useAttachments();
+	const dictationOwner = useRef< {
+		lease: DraftLease;
+		owner: FailureOwner;
+		identity: NativeScope;
+		checkpoint: FailureCursor | null;
+		queuedText: string | null;
+		queuedInsertion: number;
+		ended: boolean;
+		pending: number;
+	} | null >( null );
+	const ownerCleanup = useRef< () => void >( () => undefined );
+	const draftContext = useDraftContext( config, () =>
+		ownerCleanup.current()
+	);
+	const files = useAttachments( draftContext );
 	const filesRef = useRef( files );
 	filesRef.current = files;
 	// Why the last turn's files were refused by the proxy, if they were.
@@ -263,6 +276,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	// picker is offered for a CSV, an Excel file or a photo of the list.
 	const [ listPrompt, setListPrompt ] = useState( false );
 	const [ dictating, setDictating ] = useState( false );
+
 	const sending = useRef( false );
 	const currentThread = useRef< TurnMessage[] >( [] );
 	// Only this mounted app's actual send can witness a retry recovery. A
@@ -272,13 +286,132 @@ export function App( { config }: { config: GenieConfig } ) {
 	>( null );
 	const {
 		failureState,
+		adoptFailure,
+		detachFailure,
+		unsaved,
+		deferredFailure,
+		deferFailure,
+		exchangeFailure,
+		returnToEditing,
+		parkFailure,
+		preserveEditor,
+		ignoreCurrentCandidate,
 		omitted,
 		setOmitted,
 		commitFailure,
 		placeChips,
 		openRetry,
 		payloadOrRestore,
-	} = useFailure( files );
+	} = useFailure( files, draftContext );
+	const stopDictation = useCallback(
+		( cancel = true ) => {
+			const voice = dictationOwner.current;
+			dictationOwner.current = null;
+			if ( cancel && voice?.checkpoint && voice.pending > 0 ) {
+				// Only this token's exact checkpoint may remove its undisplayed words.
+				// Already displayed text, files and reselection names stay editable.
+				const canceled = preserveEditor(
+					{
+						text: inputRef.current,
+						uploads: filesRef.current.uploads,
+						missing: [
+							...editingMissing.current,
+							...filesRef.current.picked
+								.filter( ( item ) => item.state !== 'ready' )
+								.map( ( item ) => item.name ),
+						],
+					},
+					{
+						owner: voice.owner,
+						identity: voice.identity,
+						cursor: voice.checkpoint,
+					}
+				);
+				if (
+					canceled?.conflict &&
+					draftContext.editor === voice.owner
+				) {
+					draftContext.releaseEditor();
+				}
+			}
+			const session = dictation.current;
+			dictation.current = null;
+			session?.stop();
+			setDictating( false );
+		},
+		[ preserveEditor, draftContext ]
+	);
+
+	ownerCleanup.current = () => {
+		requestWitness.current = null;
+		detachEntryInbox.current();
+		detachFailure();
+		setInput( '' );
+		filesRef.current.clear();
+		stopDictation( false );
+		sending.current = false;
+		setPhase( 'ask' );
+		setRefused( '' );
+		setConflict( '' );
+		currentThread.current = [];
+		setThread( [] );
+		setTurn( null );
+		setContacts( [] );
+		setInquiries( [] );
+		setHistory( [] );
+		setCurrentId( 0 );
+		setMail( 'idle' );
+		setDictating( false );
+		setVoiceError( false );
+	};
+	const editingMissing = useRef( omitted );
+	editingMissing.current = omitted;
+	useEffect(
+		() =>
+			draftContext.beforeLeave( () => {
+				const pendingVoice = dictationOwner.current;
+				if (
+					pendingVoice &&
+					draftContext.editor === pendingVoice.owner &&
+					( pendingVoice.pending > 0 ||
+						( ! pendingVoice.ended &&
+							! inputRef.current &&
+							! filesRef.current.uploads.length &&
+							! filesRef.current.picked.length &&
+							! editingMissing.current.length ) )
+				) {
+					// Native dictation has an accepted owner before its first transcript.
+					// Revalidation of that empty snapshot is not an explicit clear.
+					return;
+				}
+				preserveEditor( {
+					text: inputRef.current,
+					uploads: filesRef.current.uploads,
+					missing: [
+						...editingMissing.current,
+						...filesRef.current.picked
+							.filter( ( item ) => item.state !== 'ready' )
+							.map( ( item ) => item.name ),
+					],
+				} );
+			} ),
+		[ draftContext, preserveEditor ]
+	);
+	useEffect(
+		() =>
+			draftContext.subscribe( () => {
+				const voice = dictationOwner.current;
+				if (
+					voice &&
+					( ! draftContext.owns( voice.lease ) ||
+						draftContext.editor !== voice.owner )
+				) {
+					stopDictation( false );
+				}
+			} ),
+		[ draftContext, stopDictation ]
+	);
+
 	// The conversation on screen, for the lane jobs: a delete that clears
 	// it must empty the panel, and the state value is a render behind.
 	const shownId = useRef( 0 );
@@ -308,6 +441,7 @@ export function App( { config }: { config: GenieConfig } ) {
 
 	const refreshHistory = useCallback( () => {
 		const epoch = historyEpoch;
+		const lease = draftContext.capture();
 		return enqueue( async () => {
 			const listed = await listConversations(
 				config.conversationsUrl,
@@ -315,7 +449,10 @@ export function App( { config }: { config: GenieConfig } ) {
 			);
 			// A switch owns the rail now. Applying this list would put the
 			// conversation it left back as current.
-			if ( epoch !== historyEpoch ) {
+			if (
+				epoch !== historyEpoch ||
+				! ( await draftContext.settle( lease ) )
+			) {
 				return;
 			}
 			if ( ! listed.ok ) {
@@ -328,7 +465,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				show( listed.currentId );
 			}
 		} );
-	}, [ config.conversationsUrl, config.restNonce, show ] );
+	}, [ config.conversationsUrl, config.restNonce, show, draftContext ] );
 
 	// A request is with the team: its card stays after the shown turn's answer.
 	const sent = useCallback( ( email: string, receipt: boolean ) => {
@@ -362,50 +499,65 @@ export function App( { config }: { config: GenieConfig } ) {
 			if ( hasPendingOwner() ) {
 				return;
 			}
-			let record = readFailure( pageFailureStore() );
-			if ( record?.entryId ) {
-				const checked = await verifiedEntryFailure(
-					config,
-					pageFailureStore()
-				);
-				if ( ! checked || ! checked.unchanged() || hasPendingOwner() ) {
-					if (
-						! checked &&
-						readFailure( pageFailureStore() )?.entryId
-					) {
-						blockEntryRecovery.current();
-					} else if (
-						! checked &&
-						! hasPendingOwner() &&
-						! readFailure( pageFailureStore() )
-					) {
-						resolveEntryRecovery.current();
-					}
-					return;
+			const lease = draftContext.capture();
+			if ( ! lease ) {
+				return;
+			}
+			const checked = await verifiedEntryFailure(
+				config,
+				pageFailureStore(),
+				draftContext
+			);
+			if ( ! checked || ! checked.unchanged() || hasPendingOwner() ) {
+				if ( ! checked ) {
+					blockEntryRecovery.current();
 				}
-				record = checked.record;
+				return;
+			}
+			if (
+				! draftContext.valid( lease ) ||
+				checked.identity.scope !== lease?.scope
+			) {
+				return;
+			}
+			const record = checked.record;
+			resolveEntryRecovery.current();
+			if (
+				checked.candidate &&
+				record?.editing &&
+				draftContext.editor?.attempt === record.owner?.attempt &&
+				inputRef.current === record.text &&
+				JSON.stringify( filesRef.current.uploads ) ===
+					JSON.stringify( record.uploads ) &&
+				JSON.stringify( editingMissing.current ) ===
+					JSON.stringify( record.omitted )
+			) {
+				ignoreCurrentCandidate( checked.candidate );
+				return;
 			}
 			const reconciled = reconcile( record, messages );
+			const sameCurrent =
+				failureState.current.draft?.owner?.attempt ===
+					checked.candidate?.cursor.owner.attempt &&
+				! draftContext.editor &&
+				inputRef.current ===
+					( reconciled.kind
+						? composerFor( reconciled.kind, reconciled.draft! )
+								.field
+						: record?.text );
+			const occupied =
+				!! inputRef.current || filesRef.current.picked.length > 0;
 			if (
-				reconciled.phase === 'failed' &&
-				reconciled.draft?.entryScope &&
-				reconciled.kind
+				checked.candidate &&
+				reconciled.phase !== 'clear' &&
+				( ! record?.entryId || occupied ) &&
+				! sameCurrent
 			) {
-				const candidate = composerFor(
-					reconciled.kind,
-					reconciled.draft
-				);
-				if (
-					! offerEntryRecovery.current( reconciled.draft.entryScope, {
-						text: candidate.field || reconciled.draft.text,
-						uploads: [ ...candidate.chips ],
-						missing: candidate.omitted,
-					} )
-				) {
-					return;
-				}
+				deferFailure( checked.candidate );
+				setOpen( true );
+				return;
 			}
-			const restored = writeFailure( pageFailureStore(), reconciled );
+			const restored = adoptFailure( checked.candidate, reconciled );
 			failureState.current = restored;
 			if (
 				'failed' === restored.phase &&
@@ -413,9 +565,6 @@ export function App( { config }: { config: GenieConfig } ) {
 				restored.kind
 			) {
 				const composer = composerFor( restored.kind, restored.draft );
-				if ( restored.draft.entryScope ) {
-					claimEntryComposer.current( restored.draft.entryScope );
-				}
 				setInput( composer.field );
 				placeChips( composer.chips );
 				setOmitted( composer.omitted );
@@ -427,17 +576,134 @@ export function App( { config }: { config: GenieConfig } ) {
 			// A mount with no record must not wipe a question the visitor
 			// already started typing. A refresh, or a record the server has
 			// since answered, clears the field.
-			if ( ( resetField || record ) && ! entryOwnsComposer.current ) {
+			if (
+				( resetField || record ) &&
+				! entryOwnsComposer.current &&
+				! inputRef.current
+			) {
 				setPhase( 'ask' );
 				setInput( '' );
 			}
 		},
-		[ placeChips, failureState, setOmitted, config ]
+		[
+			placeChips,
+			failureState,
+			setOmitted,
+			config,
+			draftContext,
+			adoptFailure,
+			deferFailure,
+			ignoreCurrentCandidate,
+		]
 	);
 
+	const updateEditingMissing = useCallback(
+		( names: string[] ) => {
+			if ( ! draftContext.capture() ) {
+				return;
+			}
+			setOmitted( names );
+			if ( draftContext.editor ) {
+				preserveEditor( {
+					text: inputRef.current,
+					uploads: filesRef.current.uploads,
+					missing: names,
+				} );
+			}
+		},
+		[ draftContext, preserveEditor, setOmitted ]
+	);
+	useEffect( () => {
+		if ( phase !== 'ask' ) {
+			return;
+		}
+		const ready = new Set( files.uploads.map( ( file ) => file.name ) );
+		const names = editingMissing.current.filter(
+			( name ) => ! ready.has( name )
+		);
+		if ( names.length !== editingMissing.current.length ) {
+			updateEditingMissing( names );
+		}
+	}, [ files.uploads, phase, updateEditingMissing ] );
+
+	const restoreOwnedFailure = async () => {
+		const candidate = deferredFailure;
+		const lease = draftContext.capture();
+		const before = inputRef.current;
+		const picked = filesRef.current.picked;
+		if (
+			! candidate ||
+			! lease ||
+			sending.current ||
+			filesRef.current.busy
+		) {
+			return;
+		}
+		if (
+			! ( await draftContext.authorize( lease ) ) ||
+			inputRef.current !== before ||
+			filesRef.current.picked !== picked ||
+			sending.current ||
+			filesRef.current.busy
+		) {
+			return;
+		}
+		const displaced =
+			before || filesRef.current.uploads.length || omitted.length
+				? {
+						phase: 'editing' as const,
+						kind: null,
+						draft: {
+							...failureState.current.draft,
+							editing: true,
+							text: before,
+							question:
+								buildQuestion(
+									before,
+									filesRef.current.uploads
+								) || omitted.join( '\n' ),
+							uploads: filesRef.current.uploads,
+							omitted,
+						},
+					}
+				: null;
+		const restored = exchangeFailure(
+			candidate,
+			displaced,
+			currentThread.current
+		);
+		if ( ! restored?.draft ) {
+			return;
+		}
+		resetEntryComposer.current();
+		if ( restored.phase === 'editing' ) {
+			setInput( restored.draft.text );
+			placeChips( restored.draft.uploads );
+			setOmitted( restored.draft.omitted );
+			setPhase( 'ask' );
+			return;
+		}
+		if ( ! restored.kind ) {
+			return;
+		}
+		const composer = composerFor( restored.kind, restored.draft );
+		setInput( composer.field );
+		placeChips( composer.chips );
+		setOmitted( composer.omitted );
+		setPhase( 'error' );
+	};
+
 	const showStored = useCallback( async () => {
+		await draftContext.verify();
+		const lease = draftContext.capture();
+		if ( ! lease ) {
+			return;
+		}
 		setRevealingAt( null );
 		const stored = await loadThread();
+		if ( ! ( await draftContext.settle( lease ) ) ) {
+			return;
+		}
 		currentThread.current = stored.messages;
 		setThread( stored.messages );
 		setTurn( stored.turn );
@@ -446,38 +712,72 @@ export function App( { config }: { config: GenieConfig } ) {
 		setInquiries( stored.inquiries ?? [] );
 		await applyRecord( stored.messages, true );
 		setMail( 'idle' );
-	}, [ loadThread, applyRecord ] );
+	}, [ loadThread, applyRecord, draftContext ] );
+
+	const previousNativeScope = useRef< string | undefined >( undefined );
+	useEffect( () => {
+		const scope = draftContext.identity?.scope;
+		if (
+			scope &&
+			previousNativeScope.current &&
+			previousNativeScope.current !== scope
+		) {
+			void enqueue( showStored ).catch( () => undefined );
+		}
+		if ( scope ) {
+			previousNativeScope.current = scope;
+		}
+	}, [ draftContext, draftContext.identity?.scope, showStored ] );
 
 	const onTurnError = useCallback(
 		async (
 			error: unknown,
 			before: TurnMessage[],
-			draft: FailureDraft
+			draft: FailureDraft,
+			lease: DraftLease
 		) => {
 			const settled = settleTurnFailure( error, before, draft );
+			// A newly accepted next question is a different editor from this turn.
+			draftContext.checkpoint();
 			if ( 'resource' === settled.action ) {
-				commitFailure( { type: 'upstream' } );
-				placeChips( draft.uploads );
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: draft.uploads,
+					missing: draft.omitted,
+				} );
 				setThread( before );
 				currentThread.current = before;
-				setInput( settled.field );
-				setRefused( settled.reason );
+				if ( returned ) {
+					placeChips( draft.uploads );
+					setInput( settled.field );
+					setRefused( settled.reason );
+				}
 				setPhase( 'ask' );
 				return;
 			}
 			if ( 'refusal' === settled.action ) {
-				commitFailure( { type: 'abandon' } );
-				placeChips( [] );
+				const returned = returnToEditing( {
+					text: settled.field,
+					uploads: [],
+					missing: [],
+				} );
+				if ( returned ) {
+					placeChips( [] );
+				}
 				currentThread.current = before;
 				setThread( before );
-				setInput( settled.field );
+				if ( returned ) {
+					setInput( settled.field );
+				}
 				setRefused( refusalText( refusalReason( settled.reason ) ) );
 				setPhase( 'ask' );
 				return;
 			}
 			if ( 'conflict' === settled.action ) {
-				commitFailure( { type: 'abandon' } );
 				const latest = await loadThread();
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					return;
+				}
 				const messages =
 					latest.messages.length > 0 ? latest.messages : before;
 				currentThread.current = messages;
@@ -486,14 +786,29 @@ export function App( { config }: { config: GenieConfig } ) {
 				turnAt.current = latest.turn ? messages.length - 1 : -1;
 				setContacts( latest.contacts ?? [] );
 				setInquiries( latest.inquiries ?? [] );
-				setInput( settled.field );
+				draftContext.checkpoint();
+				if (
+					returnToEditing( {
+						text: settled.field,
+						uploads: draft.uploads,
+						missing: draft.omitted,
+					} )
+				) {
+					setInput( settled.field );
+					placeChips( draft.uploads );
+				}
 				setConflict( turnConflictText() );
 				setPhase( 'ask' );
 				void refreshHistory();
 				return;
 			}
-			const stored = commitFailure( { type: settled.kind } );
-			const draftNow = stored.draft ?? draft;
+			commitFailure( { type: settled.kind } );
+			if ( draftContext.editor ) {
+				parkFailure();
+				setPhase( 'ask' );
+				return;
+			}
+			const draftNow = failureState.current.draft ?? draft;
 			const view = presentFailure(
 				settled.kind,
 				before,
@@ -507,11 +822,45 @@ export function App( { config }: { config: GenieConfig } ) {
 			setPhase( 'error' );
 			setOpen( true );
 		},
-		[ commitFailure, loadThread, placeChips, refreshHistory ]
+		[
+			commitFailure,
+			loadThread,
+			placeChips,
+			refreshHistory,
+			draftContext,
+			returnToEditing,
+			parkFailure,
+			failureState,
+		]
+	);
+
+	const retainUnverifiedTurn = useCallback(
+		(
+			lease: DraftLease,
+			draft: FailureDraft,
+			kind: 'upstream' | 'truncated' = 'upstream'
+		) => {
+			if ( ! draftContext.owns( lease ) ) {
+				return;
+			}
+			commitFailure( { type: kind } );
+			if ( draftContext.editor ) {
+				parkFailure();
+				setPhase( 'ask' );
+				return;
+			}
+			setInput( draft.text );
+			setPhase( 'error' );
+		},
+		[ draftContext, commitFailure, parkFailure ]
 	);
 
 	const ask = useCallback(
 		async ( text: string, entryId?: string, entryScope?: string ) => {
+			const lease = draftContext.capture();
+			if ( ! lease ) {
+				return false;
+			}
 			const uploads = entryId ? [] : files.uploads;
 			const question = buildQuestion( text, uploads, listPrompt );
 			if (
@@ -519,7 +868,9 @@ export function App( { config }: { config: GenieConfig } ) {
 				entryRecoveryBlocksSend.current() ||
 				sending.current ||
 				files.busy ||
-				( ! entryId && missingEntryFiles.current )
+				( ! entryId &&
+					( missingEntryFiles.current ||
+						( phase === 'ask' && omitted.length > 0 ) ) )
 			) {
 				return false;
 			}
@@ -540,7 +891,14 @@ export function App( { config }: { config: GenieConfig } ) {
 			sending.current = true;
 			// Before the request leaves: a reload while it is in flight can
 			// still put the question back.
-			commitFailure( { type: 'send', draft } );
+			const pending = commitFailure( { type: 'send', draft } );
+			if (
+				pending.phase !== 'pending' ||
+				pending.draft?.question !== question
+			) {
+				sending.current = false;
+				return false;
+			}
 			requestWitness.current = null;
 			setOpen( true );
 			setDockHistory( false );
@@ -561,6 +919,13 @@ export function App( { config }: { config: GenieConfig } ) {
 				// route failed, and readThread swallows that) keeps the
 				// thread already on screen.
 				const stored = await loadThread();
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					retainUnverifiedTurn( lease, draft );
+					if ( draftContext.owns( lease ) ) {
+						sending.current = false;
+					}
+					return;
+				}
 				let before = currentThread.current;
 				if ( stored.messages.length > 0 ) {
 					before = stored.messages;
@@ -575,9 +940,13 @@ export function App( { config }: { config: GenieConfig } ) {
 				}
 				try {
 					if (
-						! ( await authorizeEntry.current( draft.entryScope ) )
+						! ( await draftContext.authorize( lease ) ) ||
+						! ( await authorizeEntry.current(
+							draft.entryScope
+						) ) ||
+						! draftContext.valid( lease )
 					) {
-						setPhase( 'ask' );
+						retainUnverifiedTurn( lease, draft );
 						return;
 					}
 					const next: TurnMessage[] = [
@@ -597,6 +966,9 @@ export function App( { config }: { config: GenieConfig } ) {
 						page: postedPage,
 						uploads,
 						onOperation: ( operationId ) => {
+							if ( ! draftContext.owns( lease ) ) {
+								return;
+							}
 							requestWitness.current = stored.conversationId
 								? {
 										conversationId: stored.conversationId,
@@ -610,9 +982,17 @@ export function App( { config }: { config: GenieConfig } ) {
 								: null;
 						},
 					} );
-					if ( ! entryId ) {
+					if ( ! ( await draftContext.settle( lease ) ) ) {
+						retainUnverifiedTurn( lease, draft );
+						if ( draftContext.owns( lease ) ) {
+							sending.current = false;
+						}
+						return;
+					}
+					if ( ! entryId && ! draftContext.editor ) {
 						filesRef.current.clear();
 					}
+					draftContext.checkpoint();
 					commitFailure( { type: 'answered' } );
 					requestWitness.current = null;
 					const assistant = assistantMessage( answer );
@@ -632,9 +1012,15 @@ export function App( { config }: { config: GenieConfig } ) {
 					// question was not: it goes back into the field, with
 					// its files. A cut stream keeps the question in the
 					// thread. A 502 puts it back in the field (#411).
-					await onTurnError( error, before, draft );
+					if ( await draftContext.settle( lease ) ) {
+						await onTurnError( error, before, draft, lease );
+					} else {
+						retainUnverifiedTurn( lease, draft );
+					}
 				} finally {
-					sending.current = false;
+					if ( draftContext.owns( lease ) ) {
+						sending.current = false;
+					}
 				}
 			} ).then( () => true );
 		},
@@ -643,16 +1029,21 @@ export function App( { config }: { config: GenieConfig } ) {
 			loadThread,
 			refreshHistory,
 			files,
+			draftContext,
 			listPrompt,
+			phase,
+			omitted.length,
 			commitFailure,
 			onTurnError,
+			retainUnverifiedTurn,
 		]
 	);
 
 	// One resend of the failed question. The machine leaves `failed` before
 	// this returns, so a second click does not send.
 	const retry = useCallback( () => {
-		if ( entryRecoveryBlocksSend.current() ) {
+		const lease = draftContext.capture();
+		if ( ! lease || sending.current || entryRecoveryBlocksSend.current() ) {
 			return;
 		}
 		const opened = openRetry( currentThread.current );
@@ -660,6 +1051,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			return;
 		}
 		const { draft, kind } = opened;
+		sending.current = true;
 		setOpen( true );
 		setDockHistory( false );
 		setPhase( 'waiting' );
@@ -674,8 +1066,12 @@ export function App( { config }: { config: GenieConfig } ) {
 				null;
 			try {
 				const stored = await loadThread();
-				if ( ! ( await authorizeEntry.current( draft.entryScope ) ) ) {
-					setPhase( 'ask' );
+				if (
+					! ( await draftContext.authorize( lease ) ) ||
+					! ( await authorizeEntry.current( draft.entryScope ) ) ||
+					! draftContext.valid( lease )
+				) {
+					retainUnverifiedTurn( lease, draft, kind );
 					return;
 				}
 				if ( stored.messages.length > 0 ) {
@@ -711,7 +1107,10 @@ export function App( { config }: { config: GenieConfig } ) {
 					// done. Restore that result instead of paying for a new turn.
 					currentThread.current = stored.messages;
 					setThread( stored.messages );
-					filesRef.current.clear();
+					if ( ! draftContext.editor ) {
+						filesRef.current.clear();
+					}
+					draftContext.checkpoint();
 					commitFailure( { type: 'answered' } );
 					requestWitness.current = null;
 					setPhase( 'ask' );
@@ -733,6 +1132,9 @@ export function App( { config }: { config: GenieConfig } ) {
 					page: postedPage,
 					uploads: payload.uploads,
 					onOperation: ( operationId ) => {
+						if ( ! draftContext.owns( lease ) ) {
+							return;
+						}
 						requestWitness.current = stored.conversationId
 							? {
 									conversationId: stored.conversationId,
@@ -746,7 +1148,17 @@ export function App( { config }: { config: GenieConfig } ) {
 							: null;
 					},
 				} );
-				filesRef.current.clear();
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					retainUnverifiedTurn( lease, draft );
+					if ( draftContext.owns( lease ) ) {
+						sending.current = false;
+					}
+					return;
+				}
+				if ( ! draftContext.editor ) {
+					filesRef.current.clear();
+				}
+				draftContext.checkpoint();
 				commitFailure( { type: 'answered' } );
 				requestWitness.current = null;
 				const assistant = assistantMessage( answer );
@@ -758,6 +1170,13 @@ export function App( { config }: { config: GenieConfig } ) {
 				setPhase( 'ask' );
 				void refreshHistory();
 			} catch ( error ) {
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					retainUnverifiedTurn( lease, draft );
+					if ( draftContext.owns( lease ) ) {
+						sending.current = false;
+					}
+					return;
+				}
 				await onTurnError(
 					error,
 					before,
@@ -767,10 +1186,13 @@ export function App( { config }: { config: GenieConfig } ) {
 								question: payload.question,
 								uploads: payload.uploads,
 							}
-						: draft
+						: draft,
+					lease
 				);
 			} finally {
-				sending.current = false;
+				if ( draftContext.owns( lease ) ) {
+					sending.current = false;
+				}
 			}
 		} );
 	}, [
@@ -781,6 +1203,8 @@ export function App( { config }: { config: GenieConfig } ) {
 		onTurnError,
 		openRetry,
 		payloadOrRestore,
+		draftContext,
+		retainUnverifiedTurn,
 	] );
 
 	// "Type the model": the way out of a nameplate the customer does not
@@ -788,9 +1212,12 @@ export function App( { config }: { config: GenieConfig } ) {
 	const typeModel = useCallback( () => {
 		// The model goes where the placeholder stands; the field opens with
 		// the words before it, ready for the customer to type the name.
+		if ( ! draftContext.acceptEditor() ) {
+			return;
+		}
 		setInput( typeModelPrompt() );
 		field.current?.focus();
-	}, [ field ] );
+	}, [ field, draftContext ] );
 
 	// The conversation the browser already has comes back on mount: a reload,
 	// or opening Genie on another page of the site, shows the thread instead
@@ -804,11 +1231,16 @@ export function App( { config }: { config: GenieConfig } ) {
 			inquiries?: SentInquiryCard[];
 		} >();
 		void enqueue( async () => {
+			await draftContext.initialized();
+			if ( cancelled ) {
+				return;
+			}
+			const lease = draftContext.capture();
 			const stored = await Promise.race( [
 				loadThread(),
 				pending.promise,
 			] );
-			if ( cancelled ) {
+			if ( cancelled || ! ( await draftContext.settle( lease ) ) ) {
 				return;
 			}
 			if ( stored.messages.length > 0 ) {
@@ -841,15 +1273,21 @@ export function App( { config }: { config: GenieConfig } ) {
 				inquiries: [],
 			} );
 		};
-	}, [ loadThread, refreshHistory, applyRecord ] );
+	}, [ loadThread, refreshHistory, applyRecord, draftContext ] );
 
 	const continueConversation = useCallback(
 		( id?: number ) => {
 			// Before the job, not inside it: a list already queued behind
 			// this switch captured the old epoch and must drop itself.
 			historyEpoch += 1;
+			stopDictation();
+			draftContext.invalidate();
+			setInput( '' );
+			setOmitted( [] );
+			filesRef.current.clear();
 			// A switched-to conversation is not the one the hero began.
 			setFromHome( false );
+			const lease = draftContext.capture();
 			return enqueue( async () => {
 				try {
 					const selected = await selectConversation(
@@ -857,6 +1295,9 @@ export function App( { config }: { config: GenieConfig } ) {
 						config.restNonce,
 						id
 					);
+					if ( ! ( await draftContext.settle( lease ) ) ) {
+						return;
+					}
 					// The failed turn belonged to the conversation just left.
 					commitFailure( { type: 'abandon' } );
 					setHistoryPhase( 'ready' );
@@ -871,6 +1312,9 @@ export function App( { config }: { config: GenieConfig } ) {
 					resetEntryComposer.current();
 					await showStored();
 				} catch {
+					if ( ! draftContext.valid( lease ) ) {
+						return;
+					}
 					setHistoryPhase( 'failed' );
 					setOpen( true );
 				}
@@ -882,6 +1326,9 @@ export function App( { config }: { config: GenieConfig } ) {
 			showStored,
 			show,
 			commitFailure,
+			draftContext,
+			setOmitted,
+			stopDictation,
 		]
 	);
 
@@ -891,9 +1338,17 @@ export function App( { config }: { config: GenieConfig } ) {
 	const removeConversation = useCallback(
 		( id: number ): Promise< boolean > => {
 			historyEpoch += 1;
+			if ( id === shownId.current ) {
+				stopDictation();
+				draftContext.invalidate();
+				setInput( '' );
+				setOmitted( [] );
+				filesRef.current.clear();
+			}
 			// The hero's conversation may be the one being cleared; the
 			// origin line follows the conversation, not the dock.
 			setFromHome( false );
+			const lease = draftContext.capture();
 			let removed = false;
 			return enqueue( async () => {
 				const remaining = await deleteConversation(
@@ -902,6 +1357,9 @@ export function App( { config }: { config: GenieConfig } ) {
 					id
 				);
 				removed = true;
+				if ( ! ( await draftContext.settle( lease ) ) ) {
+					return;
+				}
 				setHistoryPhase( 'ready' );
 				setHistory( remaining.conversations );
 				if ( id !== shownId.current ) {
@@ -931,6 +1389,9 @@ export function App( { config }: { config: GenieConfig } ) {
 			showStored,
 			show,
 			commitFailure,
+			draftContext,
+			setOmitted,
+			stopDictation,
 		]
 	);
 
@@ -971,37 +1432,161 @@ export function App( { config }: { config: GenieConfig } ) {
 	// has none, the button says so and stays. The recognition lives for the
 	// mount; stopping it on unmount is what a second mount must not inherit.
 	const dictate = useCallback( () => {
-		if ( dictating ) {
-			dictation.current?.stop();
+		if ( dictationOwner.current && ! dictationOwner.current.ended ) {
+			stopDictation();
 			return;
 		}
 		setVoiceError( false );
 		let insertion = field.current?.selectionStart ?? input.length;
+		const lease = draftContext.capture();
+		if ( ! lease ) {
+			return;
+		}
+		if ( dictationOwner.current ) {
+			stopDictation();
+		}
+		const owner = draftContext.acceptEditor();
+		if ( ! owner ) {
+			return;
+		}
+		const voice = {
+			lease,
+			owner,
+			identity: { ...draftContext.identity! },
+			ended: false,
+			pending: 0,
+			checkpoint: null as FailureCursor | null,
+			queuedText: null as string | null,
+			queuedInsertion: insertion,
+		};
+		dictationOwner.current = voice;
 		const session = startDictation(
 			window,
 			config.locale,
-			( heard ) =>
-				setInput( ( text ) => {
+			( heard ) => {
+				if (
+					dictationOwner.current !== voice ||
+					! draftContext.owns( lease ) ||
+					draftContext.editor !== owner
+				) {
+					return;
+				}
+				voice.pending += 1;
+				if ( ! draftContext.valid( lease ) ) {
+					const text = voice.queuedText ?? inputRef.current;
+					const at = Math.min(
+						voice.queuedText === null
+							? insertion
+							: voice.queuedInsertion,
+						text.length
+					);
+					const before = text.slice( 0, at );
+					const after = text.slice( at );
+					const added = `${ before && ! /\s$/.test( before ) ? ' ' : '' }${ heard }${ after && ! /^\s/.test( after ) ? ' ' : '' }`;
+					voice.queuedText = before + added + after;
+					voice.queuedInsertion = at + added.length;
+					// Acceptance happened at voice start. This write grants no display
+					// authority and never takes the principal returned by a later check.
+					const saved = preserveEditor(
+						{
+							text: voice.queuedText,
+							uploads: filesRef.current.uploads,
+							missing: [
+								...editingMissing.current,
+								...filesRef.current.picked
+									.filter(
+										( item ) => item.state !== 'ready'
+									)
+									.map( ( item ) => item.name ),
+							],
+						},
+						{
+							owner,
+							identity: voice.identity,
+							cursor: voice.checkpoint ?? undefined,
+						}
+					);
+					if ( saved?.conflict ) {
+						// A newer accepted revision has superseded this token. Neither
+						// its next phrase nor a later blank checkpoint may replace it.
+						stopDictation( false );
+						if ( draftContext.editor === owner ) {
+							draftContext.releaseEditor();
+						}
+						return;
+					}
+					if ( saved ) {
+						voice.checkpoint = saved.cursor;
+					}
+				}
+				const deliver = ( permitted: boolean ) => {
+					voice.pending -= 1;
+					if (
+						! permitted ||
+						dictationOwner.current !== voice ||
+						! draftContext.valid( lease ) ||
+						draftContext.editor !== owner
+					) {
+						return;
+					}
+					// Checkpoints can run before React commits this accepted transcript.
+					const text = inputRef.current;
 					const at = Math.min( insertion, text.length );
 					const before = text.slice( 0, at );
 					const after = text.slice( at );
 					const added = `${ before && ! /\s$/.test( before ) ? ' ' : '' }${ heard }${ after && ! /^\s/.test( after ) ? ' ' : '' }`;
 					insertion = at + added.length;
-					return before + added + after;
-				} ),
-			() => setDictating( false ),
-			() => setVoiceError( true )
+					inputRef.current = before + added + after;
+					setInput( inputRef.current );
+					if ( voice.pending === 0 ) {
+						voice.queuedText = null;
+						voice.checkpoint = null;
+					}
+				};
+				if ( draftContext.valid( lease ) ) {
+					deliver( true );
+				} else {
+					void draftContext.whenVerified( lease ).then( deliver );
+				}
+			},
+			() => {
+				if ( dictationOwner.current !== voice ) {
+					return;
+				}
+				// Natural end does not cancel words already awaiting native authority.
+				voice.ended = true;
+				dictation.current = null;
+				if ( draftContext.owns( lease ) ) {
+					setDictating( false );
+				}
+			},
+			() => {
+				if (
+					dictationOwner.current === voice &&
+					draftContext.valid( lease )
+				) {
+					setVoiceError( true );
+				}
+			}
 		);
-		if ( ! session ) {
+		if ( ! session || dictationOwner.current !== voice ) {
+			if ( dictationOwner.current === voice ) {
+				dictationOwner.current = null;
+			}
 			return;
 		}
-		dictation.current = session;
-		setDictating( true );
-	}, [ config.locale, dictating, input.length, field ] );
+		dictation.current = voice.ended ? null : session;
+		setDictating( ! voice.ended );
+	}, [
+		config.locale,
+		input.length,
+		field,
+		draftContext,
+		stopDictation,
+		preserveEditor,
+	] );
 
-	// The mount's own cleanup, not a reaction to a render; the ref is the
-	// one thing the deps rule treats as stable, so the list stays empty.
-	useEffect( () => () => dictation.current?.stop(), [] );
+	useEffect( () => () => stopDictation( false ), [ stopDictation ] );
 
 	const cardIds = idsOf( turn?.blocks ?? [], 'cards' );
 	const cardPrices = pricesOf( turn?.blocks ?? [] );
@@ -1009,6 +1594,7 @@ export function App( { config }: { config: GenieConfig } ) {
 	const compareIds = idsOf( turn?.blocks ?? [], 'compare' );
 
 	const entryInbox = useEntryInbox( {
+		context: draftContext,
 		config,
 		input,
 		setInput,
@@ -1023,7 +1609,7 @@ export function App( { config }: { config: GenieConfig } ) {
 			verifiedEntryScope.current = scope;
 		},
 		onInvalidated: ( scope ) => {
-			const record = readFailure( pageFailureStore() );
+			const record = failureState.current.draft;
 			if ( record?.entryScope === scope ) {
 				commitFailure( { type: 'abandon' } );
 			}
@@ -1041,24 +1627,19 @@ export function App( { config }: { config: GenieConfig } ) {
 		},
 	} );
 	entryOwnsComposer.current = entryInbox.owned.current;
-	claimEntryComposer.current = ( scope ) => {
-		entryInbox.claimComposer( scope, true );
-		entryOwnsComposer.current = true;
-	};
 	blockEntryRecovery.current = entryInbox.blockRecovery;
 	resolveEntryRecovery.current = entryInbox.resolveRecovery;
-	offerEntryRecovery.current = entryInbox.offerRecovery;
 	entryRecoveryBlocksSend.current = () => entryInbox.recoveryPending.current;
 	authorizeEntry.current = entryInbox.authorize;
 	resetEntryComposer.current = entryInbox.resetComposer;
+	detachEntryInbox.current = entryInbox.detach;
 	missingEntryFiles.current = entryInbox.missing.length > 0;
 	const receiveEntry = entryInbox.receive;
 	useEffect( () => {
 		if ( ! open ) {
-			dictation.current?.stop();
-			setDictating( false );
+			stopDictation();
 		}
-	}, [ open ] );
+	}, [ open, stopDictation ] );
 
 	const helperDialog = useHelperDialog( {
 		open,
@@ -1070,6 +1651,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					field.current?.focus( { preventScroll: true } )
 				);
 			} else {
+				draftContext.checkpoint();
 				setOpen( false );
 			}
 		},
@@ -1096,6 +1678,14 @@ export function App( { config }: { config: GenieConfig } ) {
 				} >
 			 ).detail;
 			rememberOpener( detail?.opener );
+			if (
+				! open &&
+				! detail?.entry &&
+				! detail?.message &&
+				! detail?.refresh
+			) {
+				void enqueue( showStored ).catch( () => undefined );
+			}
 			if ( detail?.entry ) {
 				receiveEntry( detail.entry );
 				return;
@@ -1143,7 +1733,14 @@ export function App( { config }: { config: GenieConfig } ) {
 		}
 		window.addEventListener( 'linker-genie-open', onOpen );
 		return () => window.removeEventListener( 'linker-genie-open', onOpen );
-	}, [ ask, showStored, handOverSolution, receiveEntry, rememberOpener ] );
+	}, [
+		ask,
+		showStored,
+		handOverSolution,
+		receiveEntry,
+		rememberOpener,
+		open,
+	] );
 
 	useEffect( () => {
 		window.dispatchEvent(
@@ -1205,6 +1802,9 @@ export function App( { config }: { config: GenieConfig } ) {
 			onSent={ inquirySent }
 		/>
 	);
+	// The rendered text and its accepted editor belong together. An old link
+	// must not bind that text to a principal verified before React commits.
+	const inquiryEditor = draftContext.editor;
 	return (
 		<section
 			ref={ helperDialog.panel }
@@ -1228,6 +1828,7 @@ export function App( { config }: { config: GenieConfig } ) {
 					aria-hidden="true"
 					onClick={ () => {
 						setDockHistory( false );
+						draftContext.checkpoint();
 						setOpen( false );
 					} }
 				>
@@ -1242,7 +1843,7 @@ export function App( { config }: { config: GenieConfig } ) {
 				<HistoryRail
 					open={ railOpen }
 					docked={ workspace }
-					items={ history }
+					items={ draftContext.phase === 'ready' ? history : [] }
 					currentId={ currentId }
 					onOpen={ () => setRailOpen( true ) }
 					onClose={ () => setRailOpen( false ) }
@@ -1363,6 +1964,7 @@ export function App( { config }: { config: GenieConfig } ) {
 										) }
 										onClick={ () => {
 											setDockHistory( false );
+											draftContext.checkpoint();
 											setOpen( false );
 										} }
 									>
@@ -1420,7 +2022,7 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * `.lia-history`: the header's clock swaps the
 						 * conversation for the list, the chevron swaps back.
 						 */ }
-						{ historyView ? (
+						{ historyView && draftContext.phase === 'ready' ? (
 							<div className="linker-genie-app__history">
 								<HistoryList
 									items={ history }
@@ -1464,6 +2066,10 @@ export function App( { config }: { config: GenieConfig } ) {
 												key={ prompt }
 												type="button"
 												className="linker-genie-app__prompt"
+												disabled={
+													draftContext.phase !==
+													'ready'
+												}
 												onClick={ () => ask( prompt ) }
 											>
 												{ prompt }
@@ -1482,7 +2088,8 @@ export function App( { config }: { config: GenieConfig } ) {
 						 * its history view stand in its place instead.
 						 */ }
 						{ ! historyView &&
-						( workspace || thread.length > 0 ) ? (
+						( workspace || thread.length > 0 ) &&
+						draftContext.phase === 'ready' ? (
 							<Transcript
 								followKey={
 									phase === 'waiting'
@@ -1629,6 +2236,7 @@ export function App( { config }: { config: GenieConfig } ) {
 												onAsk={ ask }
 												onTypeModel={ typeModel }
 												onPhoto={ () =>
+													draftContext.capture() &&
 													attachInput.current?.click()
 												}
 											/>
@@ -1752,15 +2360,102 @@ export function App( { config }: { config: GenieConfig } ) {
 							</Transcript>
 						) : null }
 						{ ! historyView ? (
-							<EntryInbox
-								inbox={ entryInbox }
-								busy={ phase === 'waiting' || files.busy }
-								composerOccupied={
-									!! input ||
-									files.picked.length > 0 ||
-									entryInbox.missing.length > 0
-								}
-							/>
+							<>
+								{ draftContext.phase !== 'ready' ? (
+									<div
+										className="linker-genie-app__error"
+										role="status"
+									>
+										<p>
+											{ draftContext.phase === 'loading'
+												? __(
+														'Opening Genie…',
+														'linker-tools'
+													)
+												: __(
+														'Genie could not load.',
+														'linker-tools'
+													) }
+										</p>
+										{ draftContext.phase ===
+										'unavailable' ? (
+											<button
+												type="button"
+												className="linker-genie-app__prompt"
+												onClick={ () => {
+													void draftContext
+														.verify()
+														.then( async () => {
+															await entryInbox.retryRecovery();
+															await showStored();
+														} )
+														.catch(
+															() => undefined
+														);
+												} }
+											>
+												{ __(
+													'Try again',
+													'linker-tools'
+												) }
+											</button>
+										) : null }
+									</div>
+								) : null }
+								{ unsaved ||
+								( draftContext.identity?.persistent === false &&
+									( input || files.picked.length > 0 ) ) ? (
+									<p
+										className="linker-genie-app__refused"
+										role="status"
+									>
+										{ __(
+											'This question could not be saved. It may be lost if you refresh or leave this page.',
+											'linker-tools'
+										) }
+									</p>
+								) : null }
+								{ phase === 'ask' &&
+								draftContext.phase === 'ready' ? (
+									<MissingFiles
+										names={ omitted }
+										remove={ ( name ) =>
+											updateEditingMissing(
+												omitted.filter(
+													( item ) => item !== name
+												)
+											)
+										}
+										choose={ () =>
+											attachInput.current?.click()
+										}
+									/>
+								) : null }
+								<OwnedRecovery
+									candidate={
+										draftContext.phase === 'ready'
+											? deferredFailure
+											: null
+									}
+									restore={ () => {
+										void restoreOwnedFailure();
+									} }
+									busy={ phase === 'waiting' || files.busy }
+								/>
+								{ draftContext.phase === 'ready' ? (
+									<EntryInbox
+										inbox={ entryInbox }
+										busy={
+											phase === 'waiting' || files.busy
+										}
+										composerOccupied={
+											!! input ||
+											files.picked.length > 0 ||
+											entryInbox.missing.length > 0
+										}
+									/>
+								) : null }
+							</>
 						) : null }
 						{ ! historyView && voiceError ? (
 							<p role="alert" className="linker-genie-app__error">
@@ -1800,7 +2495,11 @@ export function App( { config }: { config: GenieConfig } ) {
 						{ /* The picked files, over the composer (#236). */ }
 						{ ! workspace && ! historyView ? (
 							<AttachmentChips
-								picked={ files.picked }
+								picked={
+									draftContext.phase === 'ready'
+										? files.picked
+										: []
+								}
 								onRemove={ files.remove }
 							/>
 						) : null }
@@ -1815,12 +2514,24 @@ export function App( { config }: { config: GenieConfig } ) {
 										{ ' ' }
 										<a
 											href={ config.requestPageUrl }
-											onClick={ () =>
-												rememberInquiry(
-													config.requestPageUrl!,
-													input
-												)
-											}
+											onClick={ () => {
+												if (
+													inquiryEditor &&
+													draftContext.editor ===
+														inquiryEditor &&
+													draftContext.capture()
+														?.scope ===
+														inquiryEditor.scope &&
+													field.current?.value ===
+														input
+												) {
+													rememberInquiry(
+														config.requestPageUrl!,
+														input,
+														inquiryEditor.scope
+													);
+												}
+											} }
 										>
 											{ __(
 												'Send an inquiry',
@@ -1836,7 +2547,9 @@ export function App( { config }: { config: GenieConfig } ) {
 								{ conflict }
 							</p>
 						) : null }
-						{ ! historyView && 'error' === phase ? (
+						{ ! historyView &&
+						'error' === phase &&
+						draftContext.phase === 'ready' ? (
 							<>
 								<p
 									role="alert"
@@ -1882,6 +2595,7 @@ export function App( { config }: { config: GenieConfig } ) {
 									type="button"
 									className="linker-genie-app__prompt"
 									onClick={ () =>
+										draftContext.capture() &&
 										attachInput.current?.click()
 									}
 								>
@@ -1919,31 +2633,34 @@ export function App( { config }: { config: GenieConfig } ) {
 												'linker-tools'
 											) }
 											onClick={ () =>
+												draftContext.capture() &&
 												attachInput.current?.click()
 											}
 										>
 											<AttachIcon />
 										</button>
-										<input
-											ref={ attachInput }
-											type="file"
-											accept={ ACCEPT }
-											multiple
-											hidden
-											onChange={ ( event ) => {
-												const picked =
-													event.target.files;
-												if ( picked ) {
-													setRefused( '' );
-													files.add( picked );
-												}
-												// Picking the same file again must
-												// fire again.
-												event.target.value = '';
-											} }
-										/>
 									</>
 								) : null }
+								<input
+									ref={ attachInput }
+									type="file"
+									accept={ ACCEPT }
+									multiple
+									hidden
+									onChange={ ( event ) => {
+										const picked = event.target.files;
+										if (
+											picked &&
+											draftContext.acceptEditor()
+										) {
+											setRefused( '' );
+											files.add( picked );
+										}
+										// Picking the same file again must
+										// fire again.
+										event.target.value = '';
+									} }
+								/>
 								<label
 									className="screen-reader-text"
 									htmlFor="linker-genie-input"
@@ -1959,10 +2676,22 @@ export function App( { config }: { config: GenieConfig } ) {
 										'Ask Genie',
 										'linker-tools'
 									) }
-									value={ input }
-									onChange={ ( event ) =>
-										setInput( event.target.value )
+									value={
+										draftContext.phase === 'ready'
+											? input
+											: ''
 									}
+									disabled={ draftContext.phase !== 'ready' }
+									onChange={ ( event ) => {
+										if ( ! event.target.value ) {
+											stopDictation();
+										}
+										if ( draftContext.acceptEditor() ) {
+											inputRef.current =
+												event.target.value;
+											setInput( event.target.value );
+										}
+									} }
 									onKeyDown={ ( event ) => {
 										// Enter sends, Shift+Enter is a new line:
 										// a pasted parts list (#251) needs its
@@ -2004,6 +2733,8 @@ export function App( { config }: { config: GenieConfig } ) {
 									type="submit"
 									className="linker-genie-app__send"
 									disabled={
+										draftContext.phase !== 'ready' ||
+										entryInbox.recoveryPending.current ||
 										phase === 'waiting' ||
 										entryInbox.missing.length > 0 ||
 										files.busy ||
@@ -2037,6 +2768,9 @@ export function App( { config }: { config: GenieConfig } ) {
 										key={ prompt }
 										type="button"
 										className="linker-genie-app__prompt"
+										disabled={
+											draftContext.phase !== 'ready'
+										}
 										onClick={ () => ask( prompt ) }
 									>
 										{ prompt }

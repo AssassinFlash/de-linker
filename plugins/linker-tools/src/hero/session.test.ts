@@ -1,4 +1,8 @@
 // @vitest-environment jsdom
+import {
+	installNativeIdentityFixture,
+	NATIVE_SCOPE,
+} from '../genie/testing/nativeIdentity';
 
 /**
  * The hero and the dock share one conversation (ticket #232): the hero reads
@@ -72,6 +76,8 @@ function server( stored: TurnMessage[] = [] ) {
 	return { state, read, send };
 }
 
+installNativeIdentityFixture();
+
 test( 'loading reads the thread the dock stored', async () => {
 	const { read, send } = server( DOCK_THREAD );
 	const session = new HeroSession( CONFIG, read, send );
@@ -93,7 +99,11 @@ test( 'the hero sends the whole thread, so the dock history is kept', async () =
 	const { read, send } = server( DOCK_THREAD );
 	const session = new HeroSession( CONFIG, read, send );
 
-	await session.ask( 'And which batteries pair with them?' );
+	await session.ask(
+		'And which batteries pair with them?',
+		[],
+		NATIVE_SCOPE
+	);
 
 	expect( send ).toHaveBeenCalledTimes( 1 );
 	const sent = send.mock.calls[ 0 ][ 0 ].messages;
@@ -107,7 +117,7 @@ test( 'an ask loads the stored thread first, even without an explicit load', asy
 	const { read, send } = server( DOCK_THREAD );
 	const session = new HeroSession( CONFIG, read, send );
 
-	await session.ask( 'Show me the first one.' );
+	await session.ask( 'Show me the first one.', [], NATIVE_SCOPE );
 
 	expect( read ).toHaveBeenCalledTimes( 1 );
 	expect( send.mock.calls[ 0 ][ 0 ].messages ).toHaveLength( 3 );
@@ -117,7 +127,11 @@ test( 'the conversation the hero answered is what the dock reads next', async ()
 	const { state, read, send } = server( DOCK_THREAD );
 	const hero = new HeroSession( CONFIG, read, send );
 
-	const result = await hero.ask( 'Which battery pairs with it?' );
+	const result = await hero.ask(
+		'Which battery pairs with it?',
+		[],
+		NATIVE_SCOPE
+	);
 
 	const dock = new HeroSession( CONFIG, read, send );
 	const stored = await dock.load();
@@ -137,7 +151,7 @@ test( 'the files of the turn ride apart from the messages', async () => {
 		data: 'AA==',
 	};
 
-	await session.ask( 'Attached: nameplate.jpg', [ upload ] );
+	await session.ask( 'Attached: nameplate.jpg', [ upload ], NATIVE_SCOPE );
 
 	expect( send.mock.calls[ 0 ][ 0 ].uploads ).toEqual( [ upload ] );
 	expect(
@@ -152,7 +166,9 @@ test( 'a refused turn leaves the stored thread as it was', async () => {
 	} );
 	const session = new HeroSession( CONFIG, read, send );
 
-	await expect( session.ask( 'Hello' ) ).rejects.toThrow( 'turn 429' );
+	await expect( session.ask( 'Hello', [], NATIVE_SCOPE ) ).rejects.toThrow(
+		'turn 429'
+	);
 	expect( session.messages ).toEqual( DOCK_THREAD );
 } );
 
@@ -178,7 +194,7 @@ test( 'every send re-reads the thread, so a dock turn is not overwritten', async
 		{ role: 'assistant', content: 'Dock answer' },
 	] as TurnMessage[];
 
-	await session.ask( 'Hero follow-up' );
+	await session.ask( 'Hero follow-up', [], NATIVE_SCOPE );
 
 	const sent = send.mock.calls[ 0 ][ 0 ].messages.map(
 		( message ) => message.content
@@ -203,8 +219,8 @@ test( 'all hero restore boundaries carry current presentation authority', async 
 	const hero = new HeroSession( config, read, send );
 	await hero.load();
 	await hero.reload();
-	await hero.ask( 'Aktuelle Frage' );
-	await hero.retry( 'Noch einmal' );
+	await hero.ask( 'Aktuelle Frage', [], NATIVE_SCOPE );
+	await hero.retry( 'Noch einmal', [], NATIVE_SCOPE );
 	expect( read ).toHaveBeenCalledTimes( 4 );
 	for ( const call of read.mock.calls ) {
 		expect( call ).toEqual( [

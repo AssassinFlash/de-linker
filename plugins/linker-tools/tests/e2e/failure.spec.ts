@@ -60,6 +60,14 @@ function installProxy( page: Page ): {
 			const request = route.request();
 			const path = new URL( request.url() ).pathname;
 			if (
+				'POST' === request.method() &&
+				path.endsWith( '/entry-context' )
+			) {
+				// This Storybook page has no WordPress; its proxy owns one explicit principal.
+				await route.fulfill( { json: { scope: 'a'.repeat( 64 ) } } );
+				return;
+			}
+			if (
 				'GET' === request.method() &&
 				path.endsWith( '/conversations' )
 			) {
@@ -168,6 +176,7 @@ test( 'a cut stream survives a reload and retries once', async ( { page } ) => {
 	await expect( page.getByLabel( 'Ask Genie' ) ).toHaveValue( '' );
 
 	await page.reload();
+	await page.getByRole( 'button', { name: 'Restore unsent draft' } ).click();
 	await expect( alert ).toHaveText(
 		'Genie did not answer. Please try again.'
 	);
@@ -209,6 +218,7 @@ test( 'a 502 puts the question back and a reload still offers retry', async ( {
 	).toHaveCount( 0 );
 
 	await page.reload();
+	await page.getByRole( 'button', { name: 'Restore unsent draft' } ).click();
 	await expect( alert ).toHaveText(
 		'Genie did not answer. Please try again.'
 	);
@@ -229,8 +239,15 @@ test( 'a full session store drops the file, says so, and retries without it', as
 		const original = Storage.prototype.setItem;
 		Storage.prototype.setItem = function ( key, value ) {
 			if (
-				'linker-genie-turn-failure' === key &&
-				String( value ).includes( '"data":' )
+				key.startsWith( 'linker-genie-turn-failure:v2:' ) &&
+				String( value ).includes( '"data":' ) &&
+				// The old fault targeted a failed turn, rather than its accepted editor.
+				! Object.values(
+					JSON.parse( String( value ) ).records as Record<
+						string,
+						{ record: { editing?: boolean } }
+					>
+				).some( ( entry ) => entry.record.editing )
 			) {
 				throw new DOMException(
 					'The quota has been exceeded.',
@@ -264,6 +281,7 @@ test( 'a full session store drops the file, says so, and retries without it', as
 	).toHaveCount( 0 );
 
 	await page.reload();
+	await page.getByRole( 'button', { name: 'Restore unsent draft' } ).click();
 	await expect( alert ).toHaveText(
 		'Genie did not answer. Please try again. Attach nameplate.pdf again. It could not be kept for another try.'
 	);

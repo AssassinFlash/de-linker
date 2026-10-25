@@ -1,0 +1,402 @@
+{
+  "completed_at": "2026-10-22T06:55:17.422376+00:00",
+  "source_aggregate": "b472f3259aeb32e17419745942c5653ffbbe82e1332914e385929300290dfb1a",
+  "product_sources_before": {
+    "plugins/linker-tools/src/genie/App.tsx": "e287fdd29f30ea2f97599cc3a477c0c197454c2d18eb7b547a3cd42e1ef5cbf8",
+    "plugins/linker-tools/src/genie/attachments/useAttachments.ts": "74be02ac17a0c200373af6fb73950d48d1f6af269c622f578662f6f93cd6c535",
+    "plugins/linker-tools/src/genie/components/MissingFiles.tsx": "4e4d8e762847889f092364de3727bff49cb496c08f1e7d380d5cc7b0c364371f",
+    "plugins/linker-tools/src/genie/components/OwnedRecovery.tsx": "f7db83df3e5f0fbeeb31c00ed76027ffed85b7fbb0db1aec459d229707ba4aee",
+    "plugins/linker-tools/src/genie/shared/draftContext.ts": "5ef9f23b98d873e920ceccfd68f1c774626516b213b8a26ce29dfe6fc3bba1e1",
+    "plugins/linker-tools/src/genie/shared/editingDraft.ts": "cd51e791ee2177ee795f50d3646d5fa8e2c29af4fdbb97298c9d938962b49dc3",
+    "plugins/linker-tools/src/genie/shared/entryDraft.ts": "b910ad5ea9191f93a3e13e4234cf570c031a5e6e6e7162e826359d2bde57e118",
+    "plugins/linker-tools/src/genie/shared/entryFailure.ts": "133109837f7f952f3f47fcf0cb51d11daea4878e1ebc2fa73cb109b6bf069e37",
+    "plugins/linker-tools/src/genie/shared/failure.ts": "24ab6436b6d1361ef1f7d9c54677d4f5c0adf50ea2016b353af91dc54cb0239f",
+    "plugins/linker-tools/src/genie/shared/nativeScope.ts": "05015ff55511eb21eb5209854cd1b993a62d0f5c110f1ad4a3a142f5180d4975",
+    "plugins/linker-tools/src/genie/shared/ownedFailure.ts": "b77fa2274da4735490fd940b4c790cdbe33b13f6f70e284dc9b94e424aeebb17",
+    "plugins/linker-tools/src/genie/shared/useDraftContext.ts": "4d2d6b741d113e885c7d07ab75649f4ea818fa0043006d2c43fe47853e8a7a28",
+    "plugins/linker-tools/src/genie/shared/useEntryInbox.ts": "8a82679061b0bbbf2a6595a898bb9e5b1c0bd240e03a6b482ad2bab2a2db8591",
+    "plugins/linker-tools/src/genie/shared/useFailure.ts": "50d3d6e25862be5ff61e706b267cee3c21546663bf4f1ab3a9e0548951c87bb3",
+    "plugins/linker-tools/src/hero/Hero.tsx": "556aa7294dd8687f08b0ad5c812071f649fc4e113243a1a61381202d41ff3713",
+    "plugins/linker-tools/src/hero/controller.tsx": "b292667edb0ab609b18a909f9b725530a6950c1d6b7c96100a3c49c7dd1975e4",
+    "plugins/linker-tools/src/hero/session.ts": "6010e3b15e7303891cffd641582185684e2f4a921029c7aec33d8490bc25ce46",
+    "plugins/linker-tools/src/protection/inquiryHandoff.ts": "0f19094fe93b88c4009c96e26b9ac319bb0813b6f0a5709caa49fd35fe8e4398",
+    "plugins/linker-tools/src/protection/inquiryEntry.ts": "4b99ba51d5a35fa37b97491db9c95e0e0618222056b13078558862502d972441"
+  },
+  "product_sources_after": {
+    "plugins/linker-tools/src/genie/App.tsx": "e287fdd29f30ea2f97599cc3a477c0c197454c2d18eb7b547a3cd42e1ef5cbf8",
+    "plugins/linker-tools/src/genie/attachments/useAttachments.ts": "74be02ac17a0c200373af6fb73950d48d1f6af269c622f578662f6f93cd6c535",
+    "plugins/linker-tools/src/genie/components/MissingFiles.tsx": "4e4d8e762847889f092364de3727bff49cb496c08f1e7d380d5cc7b0c364371f",
+    "plugins/linker-tools/src/genie/components/OwnedRecovery.tsx": "f7db83df3e5f0fbeeb31c00ed76027ffed85b7fbb0db1aec459d229707ba4aee",
+    "plugins/linker-tools/src/genie/shared/draftContext.ts": "5ef9f23b98d873e920ceccfd68f1c774626516b213b8a26ce29dfe6fc3bba1e1",
+    "plugins/linker-tools/src/genie/shared/editingDraft.ts": "cd51e791ee2177ee795f50d3646d5fa8e2c29af4fdbb97298c9d938962b49dc3",
+    "plugins/linker-tools/src/genie/shared/entryDraft.ts": "b910ad5ea9191f93a3e13e4234cf570c031a5e6e6e7162e826359d2bde57e118",
+    "plugins/linker-tools/src/genie/shared/entryFailure.ts": "133109837f7f952f3f47fcf0cb51d11daea4878e1ebc2fa73cb109b6bf069e37",
+    "plugins/linker-tools/src/genie/shared/failure.ts": "24ab6436b6d1361ef1f7d9c54677d4f5c0adf50ea2016b353af91dc54cb0239f",
+    "plugins/linker-tools/src/genie/shared/nativeScope.ts": "05015ff55511eb21eb5209854cd1b993a62d0f5c110f1ad4a3a142f5180d4975",
+    "plugins/linker-tools/src/genie/shared/ownedFailure.ts": "b77fa2274da4735490fd940b4c790cdbe33b13f6f70e284dc9b94e424aeebb17",
+    "plugins/linker-tools/src/genie/shared/useDraftContext.ts": "4d2d6b741d113e885c7d07ab75649f4ea818fa0043006d2c43fe47853e8a7a28",
+    "plugins/linker-tools/src/genie/shared/useEntryInbox.ts": "8a82679061b0bbbf2a6595a898bb9e5b1c0bd240e03a6b482ad2bab2a2db8591",
+    "plugins/linker-tools/src/genie/shared/useFailure.ts": "50d3d6e25862be5ff61e706b267cee3c21546663bf4f1ab3a9e0548951c87bb3",
+    "plugins/linker-tools/src/hero/Hero.tsx": "556aa7294dd8687f08b0ad5c812071f649fc4e113243a1a61381202d41ff3713",
+    "plugins/linker-tools/src/hero/controller.tsx": "b292667edb0ab609b18a909f9b725530a6950c1d6b7c96100a3c49c7dd1975e4",
+    "plugins/linker-tools/src/hero/session.ts": "6010e3b15e7303891cffd641582185684e2f4a921029c7aec33d8490bc25ce46",
+    "plugins/linker-tools/src/protection/inquiryHandoff.ts": "0f19094fe93b88c4009c96e26b9ac319bb0813b6f0a5709caa49fd35fe8e4398",
+    "plugins/linker-tools/src/protection/inquiryEntry.ts": "4b99ba51d5a35fa37b97491db9c95e0e0618222056b13078558862502d972441"
+  },
+  "product_source_differences": {},
+  "test_sources_before": {
+    "plugins/linker-tools/src/genie/App.test.tsx": "2cbe480120abb1644e01dc716b6400a11630850f8bf862938308c6a38234b997",
+    "plugins/linker-tools/src/genie/CardPrice.test.tsx": "33e4af714ef664f64529dbef8134ed39a39e992654295cf61fb18ac75158606e",
+    "plugins/linker-tools/src/genie/CardStates.test.tsx": "49e8fc0999ba923d4b05a877295b1088553fcfffdd876c8b2068f1ced516abbf",
+    "plugins/linker-tools/src/genie/PartsApp.test.tsx": "3caa45a147dc1443a62010ea031e1d310ca1758c51cdb96392086dded926134f",
+    "plugins/linker-tools/src/genie/Race.test.tsx": "8d82b585e0f06ac4112c36953c5af4824be80f582dcccbdd34077797cbb0499c",
+    "plugins/linker-tools/src/genie/failureOwnership.consumer.test.tsx": "5d3c5eec75b253120e2a351b91fb0a0da11af1ed3874b5ea24eb78f446e831b4",
+    "plugins/linker-tools/src/genie/shared/draftContext.test.ts": "f05cae72db622b1652c369a77ea930137227aa278d461aec2869137cbc8b2dd1",
+    "plugins/linker-tools/src/genie/shared/entryFailure.test.ts": "5665a18bb6a296fa4feea77f165aacf91022acf202597514b1a444b99651d09a",
+    "plugins/linker-tools/src/genie/shared/nativeScope.test.ts": "d211f2e450da6bbaef73d4f8abad1814d173bcccccf32d544b9e222cbd38c212",
+    "plugins/linker-tools/src/genie/shared/ownedFailure.test.ts": "70dda43a6484ac6376a60a2179ea3f8eb49e4018b5f31331ff020b90f7122e3e",
+    "plugins/linker-tools/src/genie/shared/useFailure.test.tsx": "8b15e2581c285fe6f9ef65e0500d35c891cdd448bfc62f9ab7072ef9040de884",
+    "plugins/linker-tools/src/genie/testing/nativeIdentity.tsx": "6219143f1b87c5097338b17d2e389616508f61d1cab141e87d4d8fe2efd0c0b8",
+    "plugins/linker-tools/src/hero/Hero.test.tsx": "2ac8c671eba6b6ce7c69dca12eab4f584e84c338d43a7213916bdbe40720c173",
+    "plugins/linker-tools/src/hero/controller.test.tsx": "1432ce3faae244f203f6141b831b09b15a99f9ae5d656b3120a1d68869b602f0",
+    "plugins/linker-tools/src/hero/session.test.ts": "862750b387963d09aa4341cf0f5ba04ce9c29e9da287ae6dbc81059f83e9c19c",
+    "plugins/linker-tools/src/marketing/entries.test.tsx": "83a1600b8907462b9fa91db9a3847b2af7d9a1dc9ca6c13670cd2791c840a987",
+    "plugins/linker-tools/src/protection/inquiryHandoff.test.ts": "ee36e0c9b6c44251b92823585ac82e0d952cea154bde76849ce7583c468b7a97",
+    "plugins/linker-tools/src/protection/inquiryHandoff.ownership.test.ts": "39bac7af6fc30bf4f59641b2f2700d61bffe3a57058b5067fcf22462a4eb53be",
+    "plugins/linker-tools/src/genie/resourceOwnership.consumer.test.tsx": "ebf3b8c9c24274ba05cb24b20012b2cb5249b309c437f5f338e725867a6836f3",
+    "plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx": "8828fa93f44350893a3543f1a3206a9111f9d83bcc5c6818f5d25a85441dcbd2",
+    "plugins/linker-tools/src/genie/shared/editingAuthority.test.ts": "26d3421931f6e4c87d134dd03aadee48797bb907f4d81e01c16922aa4abf8706",
+    "plugins/linker-tools/src/protection/inquiryHandoff.consumer.test.tsx": "28cc4cea8f01a38b6f3bf0137c6087752058a7b1d9db6cc3594fc9f1ea2e8c8f"
+  },
+  "test_sources_after": {
+    "plugins/linker-tools/src/genie/App.test.tsx": "2cbe480120abb1644e01dc716b6400a11630850f8bf862938308c6a38234b997",
+    "plugins/linker-tools/src/genie/CardPrice.test.tsx": "33e4af714ef664f64529dbef8134ed39a39e992654295cf61fb18ac75158606e",
+    "plugins/linker-tools/src/genie/CardStates.test.tsx": "49e8fc0999ba923d4b05a877295b1088553fcfffdd876c8b2068f1ced516abbf",
+    "plugins/linker-tools/src/genie/PartsApp.test.tsx": "3caa45a147dc1443a62010ea031e1d310ca1758c51cdb96392086dded926134f",
+    "plugins/linker-tools/src/genie/Race.test.tsx": "8d82b585e0f06ac4112c36953c5af4824be80f582dcccbdd34077797cbb0499c",
+    "plugins/linker-tools/src/genie/failureOwnership.consumer.test.tsx": "5d3c5eec75b253120e2a351b91fb0a0da11af1ed3874b5ea24eb78f446e831b4",
+    "plugins/linker-tools/src/genie/shared/draftContext.test.ts": "f05cae72db622b1652c369a77ea930137227aa278d461aec2869137cbc8b2dd1",
+    "plugins/linker-tools/src/genie/shared/entryFailure.test.ts": "5665a18bb6a296fa4feea77f165aacf91022acf202597514b1a444b99651d09a",
+    "plugins/linker-tools/src/genie/shared/nativeScope.test.ts": "d211f2e450da6bbaef73d4f8abad1814d173bcccccf32d544b9e222cbd38c212",
+    "plugins/linker-tools/src/genie/shared/ownedFailure.test.ts": "70dda43a6484ac6376a60a2179ea3f8eb49e4018b5f31331ff020b90f7122e3e",
+    "plugins/linker-tools/src/genie/shared/useFailure.test.tsx": "8b15e2581c285fe6f9ef65e0500d35c891cdd448bfc62f9ab7072ef9040de884",
+    "plugins/linker-tools/src/genie/testing/nativeIdentity.tsx": "6219143f1b87c5097338b17d2e389616508f61d1cab141e87d4d8fe2efd0c0b8",
+    "plugins/linker-tools/src/hero/Hero.test.tsx": "2ac8c671eba6b6ce7c69dca12eab4f584e84c338d43a7213916bdbe40720c173",
+    "plugins/linker-tools/src/hero/controller.test.tsx": "1432ce3faae244f203f6141b831b09b15a99f9ae5d656b3120a1d68869b602f0",
+    "plugins/linker-tools/src/hero/session.test.ts": "862750b387963d09aa4341cf0f5ba04ce9c29e9da287ae6dbc81059f83e9c19c",
+    "plugins/linker-tools/src/marketing/entries.test.tsx": "83a1600b8907462b9fa91db9a3847b2af7d9a1dc9ca6c13670cd2791c840a987",
+    "plugins/linker-tools/src/protection/inquiryHandoff.test.ts": "ee36e0c9b6c44251b92823585ac82e0d952cea154bde76849ce7583c468b7a97",
+    "plugins/linker-tools/src/protection/inquiryHandoff.ownership.test.ts": "39bac7af6fc30bf4f59641b2f2700d61bffe3a57058b5067fcf22462a4eb53be",
+    "plugins/linker-tools/src/genie/resourceOwnership.consumer.test.tsx": "ebf3b8c9c24274ba05cb24b20012b2cb5249b309c437f5f338e725867a6836f3",
+    "plugins/linker-tools/src/genie/voiceOwnership.consumer.test.tsx": "8828fa93f44350893a3543f1a3206a9111f9d83bcc5c6818f5d25a85441dcbd2",
+    "plugins/linker-tools/src/genie/shared/editingAuthority.test.ts": "26d3421931f6e4c87d134dd03aadee48797bb907f4d81e01c16922aa4abf8706",
+    "plugins/linker-tools/src/protection/inquiryHandoff.consumer.test.tsx": "28cc4cea8f01a38b6f3bf0137c6087752058a7b1d9db6cc3594fc9f1ea2e8c8f"
+  },
+  "test_source_differences": {},
+  "generated_before": {
+    "plugins/linker-tools/build/configurator.asset.php": "585223be49d2aba888fbc0777f0db416c1f8eff43fc98cdf72125f7974a2b826",
+    "plugins/linker-tools/build/genie.asset.php": "2e9490809b85de9e9421cf3a488fd8a5fb1503a721e8ef4e2053385a460bd41b",
+    "plugins/linker-tools/build/genie.css": "22f5ffba1f26243fe3329226be50f0bbc6f10af1288d9a9b6a302e242fab1c7a",
+    "plugins/linker-tools/build/hero.asset.php": "7af79bb6bad6a528f97344afc19295bdb01843569c334cd8dd92938efbb98bf2",
+    "plugins/linker-tools/build/genie.js": "0727ed1cccd83c631037689653ae5e01681b5a4043c0417ddd085e5f55b564dc",
+    "plugins/linker-tools/build/preview.css": "02952cedb809dd4dbd9fe380aee6f2ca7dd46f8ba4495d0da4f09f968f574d0d",
+    "plugins/linker-tools/build/preview.js": "34a9f3d4559acdecb1e0b4bf216c0934f8ddf995d6ee51b4fc620e10d382c01f",
+    "plugins/linker-tools/build/hero.css": "4cc03f432566feb156c4bb1dc54ae91e3833d880a5f97126c3fccabc22bd125b",
+    "plugins/linker-tools/build/preview-rtl.css": "a7a1309f3da4a5ffaf35b3e427477ea4c6bf7ff756a368f0ed9d04188cf7e1ad",
+    "plugins/linker-tools/build/555.js": "dbef88eb53a62e180bf8b7831a95526c0e260621c490889cd7799da7b3f0c64e",
+    "plugins/linker-tools/build/marketing.js": "71bb047646185d79f8ff3e6a5098c20993aca5e528b447cb9f3461e7e5ebff1e",
+    "plugins/linker-tools/build/hero-rtl.css": "8d24cf63e2f3b2c7a3674cb6c1a0bc7709155b1209062fb35a27c463dcdc0983",
+    "plugins/linker-tools/build/marketing.asset.php": "7617ab2655e79177e99c4fbfad64fdf9eefd3ade8dea3ca1160a1d466c26b98b",
+    "plugins/linker-tools/build/configurator.js": "34b45792f66892488093aa7f3a4646b9d4268a1ef97d2065c7aa3e2ceea26436",
+    "plugins/linker-tools/build/inquiry-handoff.asset.php": "fdb4f24292ef236020236d3552b1b65ebffdf605e86fb888a0e5ac95d5864eb7",
+    "plugins/linker-tools/build/inquiry-handoff.js": "474e0ebb43381d8a764e8bb308e645b226f4910b38069daa6bb96a526deaa5a9",
+    "plugins/linker-tools/build/52.js": "ef89c3199baa0155c8d53f73af7e123d93f26a1679469f28407ada9a1c78529a",
+    "plugins/linker-tools/build/555.css": "988314077a5f2296cec2e8d3fd944056d7a6131f951ad104d5bb8ad939508e6d",
+    "plugins/linker-tools/build/manifest.json": "8cb65a89a88dd0057ea6949b0057686321345db6d8eeaccabb033487d0ff4db4",
+    "plugins/linker-tools/build/configurator-rtl.css": "f77ce44af0d1c905007cea1e9ad91df181ed75352062d890b9aa27a9f7fc0c92",
+    "plugins/linker-tools/build/preview.asset.php": "28167794428fa36d5a7283ecbf79516b729a1f4bde024ada0cab0915c76b21e4",
+    "plugins/linker-tools/build/hero.js": "430c5bc0798de690e5f08568814842cf1c7ce24eefc026e2359e531a468b4552",
+    "plugins/linker-tools/build/configurator.css": "c885dcf252de437cdbc0675a6046ce80e4ca3e04366f4a5eebe6fbb66204e891",
+    "plugins/linker-tools/build/555-rtl.css": "d405ce944d6931a916a6a305c19947d1a57061516eb3eede04ebcd541cb457f8",
+    "plugins/linker-tools/build/genie-rtl.css": "78911d2cec4be4469d3c7cdf12397d441bd571316614219d1bbe35d9c779b645",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo": "ec747615ce8c03a9f385c0e3804e56eb609cf7bb10a854b93b7489fe49edc35c",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-6796211aef57736d0923df38ef696ad2.json": "58b0390751525a164422294cc67f1e1d5dac49d5012315e1442cbdf0a0add8a0",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-b465a58df1aa4e563112b65e45dffa1c.json": "93d0450b8b284de50883f951990fe5a30d355c00b69c55ddbe8be7f10b8eaec3",
+    "plugins/linker-tools/languages/linker-tools-zh_CN.mo": "bb32605e4360db3600298a907fc7366f7acf7552e390712655aa8a10f758ce21",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po": "f72310a2be2ee19dd905eca63897964f89779c4b6433ab33f6c483040c046b2a",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json": "1ba67644bd45633bb06c209dd46ccc5c6508e6aab65e730a61394ace771be722",
+    "plugins/linker-tools/languages/linker-tools-zh_CN.po": "3d4844e4de8a79b616ab551edfb148be0c774b9620a5feacf7e801de470579aa",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-ff47dbd6ce1b77b210b406f2367c7ea7.json": "f5265fd9616b2be58790088dfbe74255e9bc5c7aefc4767f3e4418c9ca714088"
+  },
+  "generated_after": {
+    "plugins/linker-tools/build/configurator.asset.php": "585223be49d2aba888fbc0777f0db416c1f8eff43fc98cdf72125f7974a2b826",
+    "plugins/linker-tools/build/genie.asset.php": "6a3e3b7414d0a95e091580498644bbb947bf6a204c8a896b9b7701705d8edf0f",
+    "plugins/linker-tools/build/genie.css": "22f5ffba1f26243fe3329226be50f0bbc6f10af1288d9a9b6a302e242fab1c7a",
+    "plugins/linker-tools/build/hero.asset.php": "2a116f3a431cd4c63e3566840cde162f5a6905b3a7032c1684778fadfe1775f5",
+    "plugins/linker-tools/build/genie.js": "274b7b882cc9a92f2b26c1be5e3f7745cdce98767697eae20b59e067db2039dd",
+    "plugins/linker-tools/build/preview.css": "02952cedb809dd4dbd9fe380aee6f2ca7dd46f8ba4495d0da4f09f968f574d0d",
+    "plugins/linker-tools/build/preview.js": "34a9f3d4559acdecb1e0b4bf216c0934f8ddf995d6ee51b4fc620e10d382c01f",
+    "plugins/linker-tools/build/hero.css": "4cc03f432566feb156c4bb1dc54ae91e3833d880a5f97126c3fccabc22bd125b",
+    "plugins/linker-tools/build/preview-rtl.css": "a7a1309f3da4a5ffaf35b3e427477ea4c6bf7ff756a368f0ed9d04188cf7e1ad",
+    "plugins/linker-tools/build/555.js": "dbef88eb53a62e180bf8b7831a95526c0e260621c490889cd7799da7b3f0c64e",
+    "plugins/linker-tools/build/marketing.js": "5f3f1ab71adcbf928e110f822bb2e29808c682636d8998e793179bb4ced7f71f",
+    "plugins/linker-tools/build/hero-rtl.css": "8d24cf63e2f3b2c7a3674cb6c1a0bc7709155b1209062fb35a27c463dcdc0983",
+    "plugins/linker-tools/build/marketing.asset.php": "beada248329b87fda668b70268fedd7f715d05d4e1f3c4265416ae9ee0ff0220",
+    "plugins/linker-tools/build/configurator.js": "34b45792f66892488093aa7f3a4646b9d4268a1ef97d2065c7aa3e2ceea26436",
+    "plugins/linker-tools/build/inquiry-handoff.asset.php": "6136874ae3d6c8c436afb6c957ea829fba16d4e1acf885b3dac735c2fe04fc93",
+    "plugins/linker-tools/build/inquiry-handoff.js": "07df817b09007e2841e67e4d7cd5c1c355a5f3cc2821124977bf6b5349f812a3",
+    "plugins/linker-tools/build/52.js": "ef89c3199baa0155c8d53f73af7e123d93f26a1679469f28407ada9a1c78529a",
+    "plugins/linker-tools/build/555.css": "988314077a5f2296cec2e8d3fd944056d7a6131f951ad104d5bb8ad939508e6d",
+    "plugins/linker-tools/build/manifest.json": "90f757cf32028146293c120ebd739805444f2a8136e8a414d22eb42d45dcfe48",
+    "plugins/linker-tools/build/configurator-rtl.css": "f77ce44af0d1c905007cea1e9ad91df181ed75352062d890b9aa27a9f7fc0c92",
+    "plugins/linker-tools/build/preview.asset.php": "28167794428fa36d5a7283ecbf79516b729a1f4bde024ada0cab0915c76b21e4",
+    "plugins/linker-tools/build/hero.js": "068e5209310b475e21a0c830f96a9ee3b8327dfebebf468d9294ea1502902eef",
+    "plugins/linker-tools/build/configurator.css": "c885dcf252de437cdbc0675a6046ce80e4ca3e04366f4a5eebe6fbb66204e891",
+    "plugins/linker-tools/build/555-rtl.css": "d405ce944d6931a916a6a305c19947d1a57061516eb3eede04ebcd541cb457f8",
+    "plugins/linker-tools/build/genie-rtl.css": "78911d2cec4be4469d3c7cdf12397d441bd571316614219d1bbe35d9c779b645",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo": "c1a1c5ad5d2a4c749f91c2236c3adfd02f55e0dc2c3063e85869b33caf219ffd",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-6796211aef57736d0923df38ef696ad2.json": "9e51c4f6604905489def0023448061253c9d2057c109b71aa7ed0da1a447f06e",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-b465a58df1aa4e563112b65e45dffa1c.json": "93d0450b8b284de50883f951990fe5a30d355c00b69c55ddbe8be7f10b8eaec3",
+    "plugins/linker-tools/languages/linker-tools-zh_CN.mo": "bb32605e4360db3600298a907fc7366f7acf7552e390712655aa8a10f758ce21",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po": "a61dfc2ae53d46fe9e30cebdbf58bfc102a3841f430189e6116c8f00fc5f2dd5",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json": "208304568056df4f415df78ced301b0cb823354da25b780c10225bad27a8c932",
+    "plugins/linker-tools/languages/linker-tools-zh_CN.po": "3d4844e4de8a79b616ab551edfb148be0c774b9620a5feacf7e801de470579aa",
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-ff47dbd6ce1b77b210b406f2367c7ea7.json": "f5265fd9616b2be58790088dfbe74255e9bc5c7aefc4767f3e4418c9ca714088"
+  },
+  "generated_changes": {
+    "plugins/linker-tools/build/genie.asset.php": {
+      "before": "2e9490809b85de9e9421cf3a488fd8a5fb1503a721e8ef4e2053385a460bd41b",
+      "after": "6a3e3b7414d0a95e091580498644bbb947bf6a204c8a896b9b7701705d8edf0f",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/genie.js": {
+      "before": "0727ed1cccd83c631037689653ae5e01681b5a4043c0417ddd085e5f55b564dc",
+      "after": "274b7b882cc9a92f2b26c1be5e3f7745cdce98767697eae20b59e067db2039dd",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/hero.asset.php": {
+      "before": "7af79bb6bad6a528f97344afc19295bdb01843569c334cd8dd92938efbb98bf2",
+      "after": "2a116f3a431cd4c63e3566840cde162f5a6905b3a7032c1684778fadfe1775f5",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/hero.js": {
+      "before": "430c5bc0798de690e5f08568814842cf1c7ce24eefc026e2359e531a468b4552",
+      "after": "068e5209310b475e21a0c830f96a9ee3b8327dfebebf468d9294ea1502902eef",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/inquiry-handoff.asset.php": {
+      "before": "fdb4f24292ef236020236d3552b1b65ebffdf605e86fb888a0e5ac95d5864eb7",
+      "after": "6136874ae3d6c8c436afb6c957ea829fba16d4e1acf885b3dac735c2fe04fc93",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/inquiry-handoff.js": {
+      "before": "474e0ebb43381d8a764e8bb308e645b226f4910b38069daa6bb96a526deaa5a9",
+      "after": "07df817b09007e2841e67e4d7cd5c1c355a5f3cc2821124977bf6b5349f812a3",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/manifest.json": {
+      "before": "8cb65a89a88dd0057ea6949b0057686321345db6d8eeaccabb033487d0ff4db4",
+      "after": "90f757cf32028146293c120ebd739805444f2a8136e8a414d22eb42d45dcfe48",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/marketing.asset.php": {
+      "before": "7617ab2655e79177e99c4fbfad64fdf9eefd3ade8dea3ca1160a1d466c26b98b",
+      "after": "beada248329b87fda668b70268fedd7f715d05d4e1f3c4265416ae9ee0ff0220",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/build/marketing.js": {
+      "before": "71bb047646185d79f8ff3e6a5098c20993aca5e528b447cb9f3461e7e5ebff1e",
+      "after": "5f3f1ab71adcbf928e110f822bb2e29808c682636d8998e793179bb4ced7f71f",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-6796211aef57736d0923df38ef696ad2.json": {
+      "before": "58b0390751525a164422294cc67f1e1d5dac49d5012315e1442cbdf0a0add8a0",
+      "after": "9e51c4f6604905489def0023448061253c9d2057c109b71aa7ed0da1a447f06e",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal-c2be3a742ec1f5e619cd2beb8d234138.json": {
+      "before": "1ba67644bd45633bb06c209dd46ccc5c6508e6aab65e730a61394ace771be722",
+      "after": "208304568056df4f415df78ced301b0cb823354da25b780c10225bad27a8c932",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.mo": {
+      "before": "ec747615ce8c03a9f385c0e3804e56eb609cf7bb10a854b93b7489fe49edc35c",
+      "after": "c1a1c5ad5d2a4c749f91c2236c3adfd02f55e0dc2c3063e85869b33caf219ffd",
+      "kind": "changed"
+    },
+    "plugins/linker-tools/languages/linker-tools-de_DE_formal.po": {
+      "before": "f72310a2be2ee19dd905eca63897964f89779c4b6433ab33f6c483040c046b2a",
+      "after": "a61dfc2ae53d46fe9e30cebdbf58bfc102a3841f430189e6116c8f00fc5f2dd5",
+      "kind": "changed"
+    }
+  },
+  "approved_po_reference_change": {
+    "path": "plugins/linker-tools/languages/linker-tools-de_DE_formal.po",
+    "scope": "Only the approved warning source-location reference line gains build/genie.js and build/hero.js, as extracted by native WP-CLI from actual compiled entries. All non-reference PO bytes, including every msgid/msgstr, remain unchanged.",
+    "before_sha256": "f72310a2be2ee19dd905eca63897964f89779c4b6433ab33f6c483040c046b2a",
+    "after_sha256": "a61dfc2ae53d46fe9e30cebdbf58bfc102a3841f430189e6116c8f00fc5f2dd5"
+  },
+  "commands": [
+    {
+      "name": "build",
+      "command": "npm --prefix plugins/linker-tools run build",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/build.log",
+      "log_sha256": "b13c6fddcc3f15ac23b01a0fed086e20fd93b0e932978bdb7b5c9c355c995804"
+    },
+    {
+      "name": "i18n-initial",
+      "command": "just i18n-tools",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/i18n-initial.log",
+      "log_sha256": "30681e2d9751b728e0e5311a2ec5b4e5684445959dc1464b9929c2fc64bee375"
+    },
+    {
+      "name": "catalog-initial",
+      "command": "node_modules/.bin/vitest run --maxWorkers=2 src/configurator/i18n.test.ts --reporter=json",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools",
+      "cwd_note": "plugin",
+      "exit": 1,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/catalog-initial.log",
+      "log_sha256": "37ffa3c116756867c8c749779a7c22af6ac5e2226f1f1e1d506936fef5af5b96"
+    },
+    {
+      "name": "native-extraction",
+      "command": "PHP83 wp i18n make-pot <plugin> <private.pot> --domain=linker-tools --include=linker-tools.php,includes,src,build --exclude=vendor,node_modules,tests --skip-audit",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo",
+      "exit": 255,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/native-extraction.log",
+      "log_sha256": "b19456dbc3540d221c21275ca6f36d1a9d7d3c4608dae1931dc122a78a2f7e86"
+    },
+    {
+      "name": "native-entry-extraction",
+      "command": "PHP83 -d memory_limit=1G wp i18n make-pot <plugin> <private.pot> --domain=linker-tools --include=build/genie.js,build/hero.js --exclude=vendor,node_modules,tests --skip-audit",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/native-entry-extraction.log",
+      "log_sha256": "8bbeffc1916e8252c0b95a5f9a8f151e7d415faa87a14baa9744aa2ff01481cb"
+    },
+    {
+      "name": "i18n-final",
+      "command": "just i18n-tools",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/i18n-final.log",
+      "log_sha256": "30681e2d9751b728e0e5311a2ec5b4e5684445959dc1464b9929c2fc64bee375"
+    },
+    {
+      "name": "catalog-final",
+      "command": "plugins/linker-tools/node_modules/.bin/vitest run --root plugins/linker-tools --maxWorkers=2 src/configurator/i18n.test.ts --reporter=json",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo (incorrect process cwd; diagnostic only)",
+      "exit": 1,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/catalog-final.log",
+      "log_sha256": "595dfe4954c304e3122c9ccb5abd72919ff0da2dedfd3699cbca56ff04d170bc"
+    },
+    {
+      "name": "catalog-correct-cwd",
+      "command": "node_modules/.bin/vitest run --maxWorkers=2 src/configurator/i18n.test.ts --reporter=json",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools",
+      "cwd_note": "plugin",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/catalog-correct-cwd.log",
+      "log_sha256": "7c219222fb9dd20411cdd202e4c7438425c9aeb457a5bf65e7c4c0d73d14cf8a"
+    },
+    {
+      "name": "all-js",
+      "command": "node_modules/.bin/vitest run --maxWorkers=2 --reporter=json",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools",
+      "cwd_note": "plugin",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/all-js.log",
+      "log_sha256": "96183134b9f7d7ca5f9128162e57c4a4247af76a44af0cbe79d8fa8dca47d6a3"
+    },
+    {
+      "name": "lint-js",
+      "command": "npm run lint:js",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools",
+      "cwd_note": "plugin",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/lint-js.log",
+      "log_sha256": "def1175bd1bacde7c6695cb575fc2db2dfdf282c3954d73ab03eeeb7f0edb83a"
+    },
+    {
+      "name": "lint-types",
+      "command": "npm run lint:types",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools",
+      "cwd_note": "plugin",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/lint-types.log",
+      "log_sha256": "fb36b83f93594c3c0f3d29545d5f2f0b41e7273ac7e7ad5c2bfa2164cba1161a"
+    },
+    {
+      "name": "lint-format",
+      "command": "npm run lint:format",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools",
+      "cwd_note": "plugin",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/lint-format.log",
+      "log_sha256": "834948cde2112fce9b4a3cf915fae30074f4cfd1d08bd9bb8dc4c2d1a4c73176"
+    },
+    {
+      "name": "build-check",
+      "command": "npm run build:check",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker/plugins/linker-tools",
+      "cwd_note": "plugin",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/build-check.log",
+      "log_sha256": "302d759a356f086140f961416e921cecebb33d5aca2b1051a6f52b8683838743"
+    },
+    {
+      "name": "i18n-coverage",
+      "command": "just i18n-coverage",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/i18n-coverage.log",
+      "log_sha256": "2aa7819471ee8c3c45bc1e9c8e470e01d59c4061d5cee5d21258b80e56c9bed0"
+    },
+    {
+      "name": "i18n-validity",
+      "command": "just i18n-validity",
+      "cwd": "/Users/chesterjohn/.codex/worktrees/privacy-visual-audit/de-linker",
+      "cwd_note": "repo",
+      "exit": 0,
+      "raw_log": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z/i18n-validity.log",
+      "log_sha256": "53b2c4fd6249acf3015c0c6570fc5e9085e1805edf3f4fd5f436fd323127c753"
+    }
+  ],
+  "final_checks": {
+    "all_js": {
+      "passed": 642,
+      "failed": 0,
+      "pending": 0,
+      "files": 63
+    },
+    "catalog": {
+      "passed": 7,
+      "failed": 0
+    },
+    "eslint": 0,
+    "typescript": 0,
+    "format": 0,
+    "build_manifest": 0,
+    "i18n_coverage": 0,
+    "i18n_validity": 0
+  },
+  "diagnostics": {
+    "initial_catalog": "Expected original one missing approved warning; reproduced 6 pass/1 fail before the reference metadata fix.",
+    "native_extraction_128M": "Full extraction exhausted the PHP process default 128M; no output catalog was written. The successful second extraction uses only the two actual relevant build entries and the existing tooling process-local 1G bound. No global PHP/config change.",
+    "wrong_catalog_cwd": "One launch used Vitest --root from repository cwd, but this test intentionally reads relative src paths with process.cwd, yielding 5 ENOENT failures. No assertions changed; rerun from plugin cwd is 7/7 green. Both raw logs retained.",
+    "build_warnings": "wp-scripts reports three webpack performance/asset-size warnings; compilation exits 0. This batch makes no bundler/settings/performance redesign."
+  },
+  "scope": "Only tools build products and native i18n generation plus one approved-message PO reference metadata line. No product/test semantic edit; no commerce build, dependency/global setting update, runtime/9270/browser/model/mail/merge/deploy/production operation.",
+  "private_evidence": "/Users/chesterjohn/de-linker-data/privacy-visual-20261021/ordinary-generated-20261022T065019383587Z"
+}

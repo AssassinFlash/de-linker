@@ -1,4 +1,9 @@
 // @vitest-environment jsdom
+import {
+	installNativeIdentityFixture,
+	seedOwnedFailure,
+	currentOwnedRaw,
+} from '../genie/testing/nativeIdentity';
 
 /**
  * The home hero's controls (ticket #232): every one of them opens the
@@ -108,11 +113,16 @@ function session( stored: TurnMessage[] = [] ) {
 	};
 }
 
-function start( heroSession: HeroSession ) {
+async function start( heroSession: HeroSession ) {
 	const hero = document.querySelector< HTMLElement >( '.hero-cinematic' )!;
-	const stop = startHero( hero, { config: CONFIG, session: heroSession } );
+	let stop!: () => void;
+	await act( async () => {
+		stop = startHero( hero, { config: CONFIG, session: heroSession } );
+	} );
 	return { hero, stop };
 }
+
+installNativeIdentityFixture();
 
 beforeEach( () => {
 	sessionStorage.clear();
@@ -126,18 +136,22 @@ afterEach( () => {
 } );
 
 test( 'a stored failure unfolds the hero and restores the question', async () => {
-	sessionStorage.setItem(
-		FAILURE_KEY,
-		JSON.stringify( {
-			v: 1,
-			kind: 'upstream',
-			text: 'EV chargers',
-			question: 'EV chargers',
-			uploads: [],
-			base: 0,
-		} )
+	seedOwnedFailure( {
+		v: 1,
+		kind: 'upstream',
+		text: 'EV chargers',
+		question: 'EV chargers',
+		uploads: [],
+		base: 0,
+	} );
+	const { hero } = await start( session().session );
+	await act( async () =>
+		fireEvent.click(
+			await screen.findByRole( 'button', {
+				name: 'Restore unsent draft',
+			} )
+		)
 	);
-	const { hero } = start( session().session );
 
 	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
 	const prompt = hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
@@ -148,19 +162,23 @@ test( 'a stored failure unfolds the hero and restores the question', async () =>
 } );
 
 test( 'a stored truncated stream unfolds the question in the thread with an empty field', async () => {
-	sessionStorage.setItem(
-		FAILURE_KEY,
-		JSON.stringify( {
-			v: 1,
-			kind: 'truncated',
-			text: 'backup for 10 kW',
-			question: 'backup for 10 kW',
-			uploads: [],
-			omitted: [],
-		} )
-	);
-	const { hero } = start(
+	seedOwnedFailure( {
+		v: 1,
+		kind: 'truncated',
+		text: 'backup for 10 kW',
+		question: 'backup for 10 kW',
+		uploads: [],
+		omitted: [],
+	} );
+	const { hero } = await start(
 		session( [ { role: 'user', content: 'backup for 10 kW' } ] ).session
+	);
+	await act( async () =>
+		fireEvent.click(
+			await screen.findByRole( 'button', {
+				name: 'Restore unsent draft',
+			} )
+		)
 	);
 
 	expect( hero.classList.contains( OPEN_CLASS ) ).toBe( true );
@@ -176,8 +194,8 @@ test( 'a stored truncated stream unfolds the question in the thread with an empt
 	).toBeInTheDocument();
 } );
 
-test( 'the resting hero is left visually as it was; the hidden surface is ready', () => {
-	const { hero } = start( session().session );
+test( 'the resting hero is left visually as it was; the hidden surface is ready', async () => {
+	const { hero } = await start( session().session );
 
 	expect( hero.classList.contains( 'linker-genie-hero--open' ) ).toBe(
 		false
@@ -208,7 +226,7 @@ test( 'the resting hero is left visually as it was; the hidden surface is ready'
 
 test( 'typing and Enter unfolds the conversation in place', async () => {
 	const answers = session();
-	const { hero } = start( answers.session );
+	const { hero } = await start( answers.session );
 	const prompt =
 		document.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
 	prompt.value = 'saj';
@@ -243,7 +261,7 @@ test( 'typing and Enter unfolds the conversation in place', async () => {
 
 test( 'an empty Enter leaves the resting hero alone', async () => {
 	const answers = session();
-	const { hero } = start( answers.session );
+	const { hero } = await start( answers.session );
 
 	await act( async () => {
 		fireEvent.keyDown( document.querySelector( '.hero-prompt' )!, {
@@ -259,7 +277,7 @@ test( 'an empty Enter leaves the resting hero alone', async () => {
 
 test( 'the send button opens in place and never navigates', async () => {
 	const answers = session();
-	start( answers.session );
+	await start( answers.session );
 	const prompt =
 		document.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
 	prompt.value = 'Which battery pairs with the SAJ?';
@@ -280,7 +298,7 @@ test( 'the send button opens in place and never navigates', async () => {
 
 test( 'a capsule opens in place with its own question and never navigates', async () => {
 	const answers = session();
-	start( answers.session );
+	await start( answers.session );
 	const capsule =
 		document.querySelector< HTMLAnchorElement >( '.hero-capsule' )!;
 
@@ -305,7 +323,7 @@ test( 'the close button restores the resting hero and keeps the conversation', a
 		{ role: 'user', content: 'saj' },
 		{ role: 'assistant', content: 'Here are the SAJ models.' },
 	] );
-	const { hero } = start( answers.session );
+	const { hero } = await start( answers.session );
 	const capsule =
 		document.querySelector< HTMLAnchorElement >( '.hero-capsule' )!;
 	await act( async () => {
@@ -343,7 +361,7 @@ test( 'out of sight, the way back appears and hands the same conversation to the
 		{ role: 'user', content: 'saj' },
 		{ role: 'assistant', content: 'Here are the SAJ models.' },
 	] );
-	const { hero } = start( answers.session );
+	const { hero } = await start( answers.session );
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Voice' } ) );
 	} );
@@ -388,7 +406,7 @@ test( 'Continue in the side panel hands over and folds the hero', async () => {
 		{ role: 'user', content: 'saj' },
 		{ role: 'assistant', content: 'Here are the SAJ models.' },
 	] );
-	const { hero } = start( answers.session );
+	const { hero } = await start( answers.session );
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Voice' } ) );
 	} );
@@ -417,7 +435,7 @@ test( 'Continue in the side panel hands over and folds the hero', async () => {
 
 test( 'the nameplate button opens a photo picker and sends the picked photo', async () => {
 	const answers = session();
-	start( answers.session );
+	await start( answers.session );
 	const click = vi
 		.spyOn( HTMLInputElement.prototype, 'click' )
 		.mockImplementation( () => undefined );
@@ -460,7 +478,7 @@ test( 'the nameplate button opens a photo picker and sends the picked photo', as
 
 test( 'the attach button opens the file picker and a PDF is sent with the turn', async () => {
 	const answers = session();
-	start( answers.session );
+	await start( answers.session );
 	vi.spyOn( HTMLInputElement.prototype, 'click' ).mockImplementation(
 		() => undefined
 	);
@@ -494,7 +512,7 @@ test( 'the attach button opens the file picker and a PDF is sent with the turn',
 
 test( 'the voice button opens the conversation in place', async () => {
 	const answers = session();
-	const { hero } = start( answers.session );
+	const { hero } = await start( answers.session );
 
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Voice' } ) );
@@ -512,7 +530,7 @@ test( 'the dock opening hides the way back until it closes again', async () => {
 		{ role: 'user', content: 'saj' },
 		{ role: 'assistant', content: 'Here are the SAJ models.' },
 	] );
-	const { hero } = start( answers.session );
+	const { hero } = await start( answers.session );
 	await act( async () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Voice' } ) );
 	} );
@@ -570,7 +588,7 @@ test( 'actual Hero controller offers hidden scoped outage recovery and fresh ret
 		} ) )
 	);
 	const model = session();
-	const { hero, stop } = start( model.session );
+	const { hero, stop } = await start( model.session );
 	try {
 		await screen.findByRole( 'button', { name: 'Try again' } );
 		const prompt =
@@ -594,133 +612,97 @@ test( 'actual Hero controller offers hidden scoped outage recovery and fresh ret
 		vi.unstubAllGlobals();
 	}
 } );
-test( 'delayed Hero failure is parked without replacing new prompt input', async () => {
-	const releases: Array< ( value: unknown ) => void > = [];
-	vi.stubGlobal(
-		'fetch',
-		vi.fn( () => new Promise( ( resolve ) => releases.push( resolve ) ) )
-	);
-	sessionStorage.setItem(
-		FAILURE_KEY,
-		JSON.stringify( {
-			v: 1,
-			kind: 'upstream',
-			text: 'Old hero private draft',
-			question: 'Old hero private draft',
-			entryId: 'old-entry',
-			entryScope: 'a'.repeat( 64 ),
-			uploads: [],
-			omitted: [],
-		} )
-	);
+test( 'delayed Hero failure is retained without replacing a verified new prompt', async () => {
+	seedOwnedFailure( {
+		kind: 'upstream',
+		text: 'Old hero private draft',
+		question: 'Old hero private draft',
+	} );
 	const model = session();
-	const { hero, stop } = start( model.session );
+	let release!: ( value: Awaited< ReturnType< typeof model.read > > ) => void;
+	model.read.mockImplementationOnce(
+		() =>
+			new Promise( ( resolve ) => {
+				release = resolve;
+			} )
+	);
+	const { hero, stop } = await start( model.session );
 	try {
-		await act( async () =>
-			fireEvent.click( screen.getByRole( 'button', { name: 'Attach' } ) )
-		);
-		await waitFor( () =>
-			expect( releases.length ).toBeGreaterThanOrEqual( 2 )
-		);
 		const prompt =
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+		await waitFor( () => expect( prompt.disabled ).toBe( false ) );
+		await waitFor( () => expect( release ).toBeTypeOf( 'function' ) );
 		fireEvent.input( prompt, { target: { value: 'Fresh hero input' } } );
-		await act( async () =>
-			releases.forEach( ( resolve ) =>
-				resolve( {
-					ok: true,
-					json: async () => ( { scope: 'a'.repeat( 64 ) } ),
-				} )
-			)
-		);
+		await act( async () => release( { messages: [], turn: null } ) );
 		await screen.findByText( 'Old hero private draft' );
 		expect( prompt.value ).toBe( 'Fresh hero input' );
 		expect(
-			JSON.parse( sessionStorage.getItem( 'linker-genie-entry-draft' )! )
-				.parked.text
-		).toBe( 'Old hero private draft' );
+			sessionStorage.getItem(
+				'linker-genie-turn-failure:v2:' + 'a'.repeat( 64 )
+			)
+		).toContain( 'Old hero private draft' );
 		expect( model.send ).not.toHaveBeenCalled();
 	} finally {
 		stop();
-		vi.unstubAllGlobals();
 	}
 } );
 
 test( 'Hero restored pair retains missing attachments through a second swap', async () => {
-	let available = false;
 	const old = 'Original note whose PDF was not retained';
-	sessionStorage.setItem(
-		FAILURE_KEY,
-		JSON.stringify( {
-			v: 1,
-			kind: null,
-			text: old,
-			question: old,
-			uploads: [],
-			omitted: [ 'missing-schematic.pdf' ],
-			entryId: 'scope-pair',
-			entryScope: 'a'.repeat( 64 ),
-		} )
-	);
-	vi.stubGlobal(
-		'fetch',
-		vi.fn( async () => ( {
-			ok: available,
-			json: async () => ( { scope: 'a'.repeat( 64 ) } ),
-		} ) )
-	);
+	seedOwnedFailure( {
+		kind: null,
+		text: old,
+		question: old,
+		editing: true,
+		omitted: [ 'missing-schematic.pdf' ],
+	} );
 	const model = session();
-	const { hero, stop } = start( model.session );
+	const { hero, stop } = await start( model.session );
 	try {
-		await screen.findByRole( 'button', { name: 'Try again' } );
+		await screen.findByText( old );
 		const prompt =
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
+		await waitFor( () => expect( prompt.disabled ).toBe( false ) );
 		fireEvent.input( prompt, { target: { value: 'New current draft' } } );
-		available = true;
-		await act( async () =>
-			fireEvent.click(
-				screen.getByRole( 'button', { name: 'Try again' } )
-			)
-		);
-		await screen.findByText( old );
 		await act( async () =>
 			fireEvent.click(
 				screen.getByRole( 'button', { name: 'Restore unsent draft' } )
 			)
 		);
 		expect( prompt.value ).toBe( old );
+		expect(
+			screen.getByText(
+				'Select missing-schematic.pdf again before sending.'
+			)
+		).toBeTruthy();
 		await act( async () =>
 			fireEvent.click(
 				screen.getByRole( 'button', { name: 'Restore unsent draft' } )
 			)
 		);
 		expect( prompt.value ).toBe( 'New current draft' );
-		expect(
-			JSON.parse( sessionStorage.getItem( 'linker-genie-entry-draft' )! )
-				.parked.missing
-		).toContain( 'missing-schematic.pdf' );
+		expect( document.body.textContent ).toContain(
+			'missing-schematic.pdf'
+		);
 		expect( model.send ).not.toHaveBeenCalled();
 	} finally {
 		stop();
-		vi.unstubAllGlobals();
 	}
 } );
 
-test( 'Hero cannot overwrite an unresolved scoped owner by sending a newly edited prompt', async () => {
+test( 'Hero rejects unowned editing during an outage and retains the older owner after a fresh send', async () => {
 	let available = false;
-	sessionStorage.setItem(
-		FAILURE_KEY,
-		JSON.stringify( {
-			v: 1,
-			kind: null,
-			text: 'Old sole private owner',
-			question: 'Old sole private owner',
-			uploads: [],
-			omitted: [],
-			entryId: 'sole-hero-owner',
-			entryScope: 'a'.repeat( 64 ),
-		} )
-	);
+	const raw = JSON.stringify( {
+		v: 1,
+		kind: null,
+		text: 'Old sole private owner',
+		question: 'Old sole private owner',
+		uploads: [],
+		omitted: [],
+		entryId: 'sole-hero-owner',
+		entryScope: 'a'.repeat( 64 ),
+	} );
+	sessionStorage.setItem( FAILURE_KEY, raw );
 	vi.stubGlobal(
 		'fetch',
 		vi.fn( async () => ( {
@@ -729,37 +711,36 @@ test( 'Hero cannot overwrite an unresolved scoped owner by sending a newly edite
 		} ) )
 	);
 	const model = session();
-	const { hero, stop } = start( model.session );
+	const { hero, stop } = await start( model.session );
 	try {
 		await screen.findByRole( 'button', { name: 'Try again' } );
 		const prompt =
 			hero.querySelector< HTMLTextAreaElement >( '.hero-prompt' )!;
-		fireEvent.input( prompt, {
-			target: { value: 'New current requirement' },
-		} );
+		expect( prompt.disabled ).toBe( true );
+		fireEvent.input( prompt, { target: { value: 'Unowned input' } } );
 		await act( async () =>
 			fireEvent.click( hero.querySelector( '.hero-send' )! )
 		);
+		expect( prompt.value ).toBe( '' );
 		expect( model.send ).not.toHaveBeenCalled();
-		expect( prompt.value ).toBe( 'New current requirement' );
-		expect( sessionStorage.getItem( FAILURE_KEY ) ).toContain(
-			'Old sole private owner'
-		);
+		expect( sessionStorage.getItem( FAILURE_KEY ) ).toBe( raw );
 		available = true;
 		await act( async () =>
 			fireEvent.click(
 				screen.getByRole( 'button', { name: 'Try again' } )
 			)
 		);
-		await screen.findByText( 'Old sole private owner' );
+		await waitFor( () =>
+			expect( prompt.value ).toBe( 'Old sole private owner' )
+		);
+		fireEvent.input( prompt, {
+			target: { value: 'New current requirement' },
+		} );
 		await act( async () =>
 			fireEvent.click( hero.querySelector( '.hero-send' )! )
 		);
 		await waitFor( () => expect( model.send ).toHaveBeenCalledTimes( 1 ) );
-		expect(
-			JSON.parse( sessionStorage.getItem( 'linker-genie-entry-draft' )! )
-				.parked.text
-		).toBe( 'Old sole private owner' );
+		expect( currentOwnedRaw() ).toContain( 'Old sole private owner' );
 	} finally {
 		stop();
 		vi.unstubAllGlobals();
