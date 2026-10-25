@@ -860,3 +860,55 @@ installation design, remaining manufacturer/country qualification and consumers,
 persisted-data migration, private-page SEO and coordinated review/production
 release remain within the same active goal. No completed batch is a new wait
 condition for the shared Woo source owner.
+
+## 2026-10-26 · Woo-owned package quantities (closed locally)
+
+Prior delivery `78540ef4` is closed and its unchanged evidence is reused. The
+current gap is concrete: the maintained H2 requirement describes a meter,
+three CTs and one 10 m communication cable, but has no machine-readable
+quantities. The current associated Woo manual (SHA-256 `770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3`,
+absolute PDF page 36) was read locally and states those packing quantities.
+
+Package contents now belong to the Woo product itself, allowing battery and
+accessory sales units too. A native metadata/editor projection binds quantity,
+unit and bilingual names to current associated file bytes/pages. The existing
+compatibility contract is unchanged. This batch covers native source
+confirmation/withdrawal, parent sales-unit multiplication, current report and
+handoff consumption, and the affected EN/DE views/exports. Unchanged physics,
+annual replay, multi-asset publication and commerce evidence are reused. No
+new instance/environment or independent product pack is authorised or created.
+
+
+Implementation `33c1f5d1` is pushed. The native Woo product 4107 now holds the
+17 additional hardware groups with explicit quantities on its currently
+associated H2 packing page 36. One declared 10 m cable is one supplied item;
+the inverter bracket is not a roof mounting quantity. SKU and stock were
+preserved. Native preparation claim/ack loaded source `ae4a0a79` with 85 sales
+products and one reference input. Compatibility pairs/requirements are unchanged.
+
+Berlin revision 23 changes only the equipment source binding. One new equipment
+check and one report in each language use that binding; no annual calculation
+was repeated. Both native reports share material snapshot `59145c2f`, with
+three Woo sales rows, 17 included rows and the original 24 reference roof
+modules. Downloaded PDF/CSV bytes match their frozen private assets. Affected
+EN/DE desktop/mobile views and PDF material pages were inspected. The existing
+horizontal table behavior remains on mobile; no outer document overflow.
+
+Spec, Standards and copy passed. Standards found two real source-input defects:
+float rounding before validation and scientific-notation form re-rendering.
+Both were fixed and delta-reviewed; unchanged conclusions were reused.
+The code/interface was handed to the shared Woo owner immediately after push,
+without waiting for report readback. That data line need not reopen completed
+work. This batch is now closed; do not repeat its unchanged verification.
+
+Runtime `6443f43b` and rollback `6386028c` share storage schema 5 and the same
+existing environment. The obsolete 1,483,836-byte executable was removed;
+current download duplicates were removed after matching retained originals.
+Existing artifact names now show revision 23; revision 22 and failure evidence
+remain recoverable in private assets/Git history. The original roof revision
+14 hash is unchanged. No production or mail write occurred.
+
+Full installation design, remaining manufacturer/country qualification and
+consumers, migration and coordinated release remain in this same active goal.
+The German optional-logo input label was observed in English; it remains in
+the tool-language work of this goal and does not reopen this source increment.

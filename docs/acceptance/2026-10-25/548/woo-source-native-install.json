@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "unified_materials_export",
+  "current_frontier": "woo_package_contents",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2919,5 +2919,165 @@
     "implementation_commit": "71858838",
     "original_export_bytes_commit": "29dbf0f9",
     "artifact_retention": "One final original per locale/format, one view per locale/viewport and affected PDF material page; superseded runtime artifacts retained only in immutable project history"
+  },
+  "package_contents_native": {
+    "status": "closed_locally",
+    "base_commit": "78540ef4",
+    "implementation_commit": "33c1f5d1",
+    "closed_at_utc": "2026-10-25T22:12:08.010681+00:00",
+    "authority": "Canonical Woo product metadata, current associated documents, existing Publication preparation queue and derived engineering feed. No second product source.",
+    "runtime": {
+      "runtime_sha256": "6443f43ba88b88d9851fefc0e4823fa273b1dbc30c790d8cc5ef5326b3a0b9b9",
+      "rollback_runtime_sha256": "6386028cb5d2f9bc14d2256f295cefa63297d58c2c51ff2e8cbfc4ed0b986cfb",
+      "storage_schema": 5,
+      "same_environment": true,
+      "removed_carrier": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/2eb6d4aaee26dbbe5702fe3fe9137dce3e1c7c04e3222a7b69ebb4a1fa6fed43",
+      "removed_logical_bytes": 1483836,
+      "at_utc": "2026-10-25T21:55:57.540109+00:00",
+      "retention_correction": "stale top-level rollback hash was not a live directory; retired the verified owned previous rollback"
+    },
+    "source": {
+      "source_revision": "ae4a0a7920abea212908786f8b08141e4432e6631af699d79c99429c27a1257f",
+      "loaded_engine_version": "fac2368b1bef2192e0d4a3d7183a6fe1406085171f6eb92ceb3f7588c3e27d6b",
+      "prepared_products": 86,
+      "package_items": 17,
+      "native_jobs": [
+        {
+          "action": "claim",
+          "status": 200,
+          "source_revision": null,
+          "prepared_products": 0
+        },
+        {
+          "action": "ack",
+          "status": 200,
+          "source_revision": null,
+          "prepared_products": 0
+        }
+      ],
+      "at_utc": "2026-10-25T21:58:22.060049+00:00",
+      "transport_correction": "native route requires JSON request body, not form body parameters"
+    },
+    "native_product": {
+      "product_id": 4107,
+      "product_revision": "ca76e4d709a3e4f181a333a5fd0d4c7201783806f8a11d3957dc5e84c0bd0d01",
+      "sku": "DLK-SAJ-H210KT3",
+      "stock_status": "instock",
+      "stock_quantity": null,
+      "package_items": 17,
+      "document_sha256": "770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3",
+      "pdf_page": 36,
+      "source_image": "docs/acceptance/2026-10-25/548/package-contents-source.png"
+    },
+    "native_project": {
+      "project_id": "c7795bc2c1e14e389622015c809ace45",
+      "revision": 23,
+      "changed_input_sections": [
+        "equipment_selection"
+      ],
+      "equipment_run": "bca8cc093f1a47e9bf4d811bd9bb53fe",
+      "equipment_result_sha256": "02d4c97d16cf0596b6ae4b83df5b3b70849b512306428a9f0098ea306e33fa50",
+      "source_page_quantity_examples": {
+        "meter": "1 piece",
+        "current_transformer": "3 pieces",
+        "meter_cable": "1 piece of 10 m; not a site route",
+        "pv_connectors_t3": "6 pairs"
+      },
+      "roof_modules_preserved": 24,
+      "woo_material_rows": 3,
+      "included_material_rows": 17,
+      "reference_material_rows": 1
+    },
+    "native_reports": {
+      "en": {
+        "run_id": "002c140cd3ad4c95966e58a3ec0da563",
+        "revision": 23,
+        "result_sha256": "651ab59fc2595a46cdfe34110a75212bf9b0510af6384b0c3660e809e0d59c16",
+        "materials_sha256": "59145c2f2bf33efff2021cc9868310695ee35ade84a280b33378c6331a2a6edc",
+        "lines": 21,
+        "package_lines": 17,
+        "has_draft_items": true,
+        "exports": {
+          "pdf": {
+            "asset_id": "d72b0956287f4ecaa60d87ff22e6b0f5",
+            "sha256": "269d42401396eeefba37b839b52a2526149675ae79541a7ac2192daab6ad9c83",
+            "purpose": "planning_report_pdf_v1",
+            "file": "docs/acceptance/2026-10-25/548/unified-materials-report-en.pdf"
+          },
+          "csv": {
+            "asset_id": "9059fa3c84a34a15b039c553ad1af4c9",
+            "sha256": "5a8313b4ecf047e562446cc4fe2001f06ccae006610acd4be15484fd5cd2c70b",
+            "purpose": "planning_materials_csv_v2",
+            "file": "docs/acceptance/2026-10-25/548/unified-materials-report-en.csv"
+          }
+        },
+        "pdf_pages": 12
+      },
+      "de": {
+        "run_id": "9b028a986e4a4e36bb86d8e5ef8a10e2",
+        "revision": 23,
+        "result_sha256": "c28ab4f91baf6d476260817ce45d8c2078f563ac785562078a1966c90615fde6",
+        "materials_sha256": "59145c2f2bf33efff2021cc9868310695ee35ade84a280b33378c6331a2a6edc",
+        "lines": 21,
+        "package_lines": 17,
+        "has_draft_items": true,
+        "exports": {
+          "pdf": {
+            "asset_id": "3c6162e930084aa89d0eeffe00c5d28d",
+            "sha256": "d59a7ce064bb6d067536dca6b73c3369513b2006a585996ae6715180027e4188",
+            "purpose": "planning_report_pdf_v1",
+            "file": "docs/acceptance/2026-10-25/548/unified-materials-report-de.pdf"
+          },
+          "csv": {
+            "asset_id": "cb8c07c0644f45f29d381141e50d0f19",
+            "sha256": "f1c38aff49db56e34a37d177e210839f565c1d4f012c08914d707bc84521fad5",
+            "purpose": "planning_materials_csv_v2",
+            "file": "docs/acceptance/2026-10-25/548/unified-materials-report-de.csv"
+          }
+        },
+        "pdf_pages": 12
+      }
+    },
+    "validation": {
+      "native_metadata": "Explicit confirmation, stale document version/association withdrawal, unchanged save and complete-form protection passed. Original decimal validation and lossless native re-render were corrected after Standards review.",
+      "material_projection": "Existing owned report fixture extended with converter and battery per-sales-unit quantities; included parts do not become sales items; explicit units and small positive lengths survive presentation. Passed.",
+      "consumer": "CSV v1/v2 reader check and production build passed.",
+      "native": "One equipment check for current facts and one EN plus one DE report; downloads match both frozen original assets and shared material snapshot. No annual replay.",
+      "visual": "EN/DE at 1440/390; no document overflow. Mobile table retains horizontal scroll. Affected PDF material pages inspected with complete rows, repeated table headers and no clipped cells.",
+      "reused": "Prior physics, annual energy, multi-file publication rollback/history, permissions and unchanged commerce checks. No new full-site scan or parameter matrix."
+    },
+    "reviews": {
+      "spec": "PASS relative to 78540ef4; unchanged scope conclusions reused",
+      "standards": "PASS; raw decimal and native form roundtrip P2 fixes delta-reviewed",
+      "copy": "PASS; approved bilingual instructions, supplied scope, units and all native technical labels"
+    },
+    "protected_original": {
+      "project_id": "82a84c56e50c4efb8497d1bfbe106bd1",
+      "revision": 14,
+      "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+    },
+    "handoff": {
+      "thread_id": "01a1684e-e0ef-7951-9c25-64cc89eda28f",
+      "implementation_commit": "33c1f5d1",
+      "sent": true,
+      "waiting_on_report_acceptance": false,
+      "deployment_order": "Consumer support first, then enable native Woo facts; no production data changed"
+    },
+    "retention": {
+      "instance": "p548 reused",
+      "environment": "same retained .venv",
+      "executable_carriers": 2,
+      "retired_logical_bytes": 1483836,
+      "download_duplicates_removed": 4,
+      "download_duplicate_bytes": 208108,
+      "artifacts": "Existing final screenshot/PDF/CSV names replaced by revision 23. Revision 22 originals remain in private immutable assets and Git history; failed evidence retained."
+    },
+    "production_changed": false,
+    "mail_sent": false,
+    "remaining_full_goal": [
+      "Complete installation material design beyond documented factory contents.",
+      "Remaining manufacturer and country qualification; remaining consumers, persisted-data migration, coordinated review and production release/readback.",
+      "German report form still has English optional-logo label; keep within this same goal without reopening this data-source increment."
+    ]
   }
 }
