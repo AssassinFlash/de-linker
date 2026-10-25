@@ -153,3 +153,30 @@ bridge. New checks cover logo source selection, its reserved box and current
 Home rendering at1440/390 in EN/DE. No new performance samples, migration
 framework, literal attribute tests or broad matrix. The warm-cache public read
 only diagnoses sizing;81KB compressed CSS and91KB HTML do not prove speed.
+
+The next bounded polish batch fixes the existing transparent-to-white header
+transition. Actual Utility phone anchor navigation observed background alpha
+0.408 before it settled at1; the saved page declares a200ms background fade.
+In the shared WindPress chrome surface, a higher-specificity property rule
+keeps only the existing border-color transition. It must override the saved
+page shorthand without changing its cover state, geometry or inner menus.
+Verify the live transition-property and opaque scrolled state on Utility and
+Residential, EN/DE, with ordinary motion; do not hide the issue by emulating
+reduced motion. Reuse unaffected menu and header-boundary evidence.
+
+Short German Home phone intro/input/quote text uses manual hyphenation with
+emergency overflow protection, preserving words, authored hyphens and sizes.
+Reuse current before views; inspect the affected390px hero and quote blocks
+and confirm desktop computed rules remain unchanged. Keep this source/CSS
+publication separate from the content-only marketing restoration.
+
+The owner-requested copy restoration covers12English/German marketing and
+help page pairs. Recover effective advertising language from the named earlier
+content, correct stale capability claims and abstract equipment labels, and
+preserve the current page structure, links, controls, scripts, styles, media,
+authorized customer quotes and legal text. Native reviewed paired saving
+adopts the jointly reviewed German baseline without machine translation.
+SEO metadata remains a separate unfinished part of the same whole-site goal.
+Reuse existing writer, functional and performance evidence; new browser reads
+address changed wording and wrapping, and publication requires a fresh data
+backup, guarded writes and actual online readback.

@@ -169,3 +169,14 @@
 		line-height: 1.12;
 	}
 }
+
+/* Short phone introductions can wrap at spaces instead of splitting ordinary
+   German words such as Deutscher/Anforderungen across adjacent lines. Keep
+   authored hyphens and an emergency break for a genuinely overlong token. */
+@media (max-width: 640px) {
+	html[lang^="de"] #home-a :is(.hero-badge, .hero-subtitle, .hero-prompt, .home-scene-card p) {
+		-webkit-hyphens: manual;
+		hyphens: manual;
+		overflow-wrap: break-word;
+	}
+}
