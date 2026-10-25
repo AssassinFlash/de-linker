@@ -179,27 +179,119 @@ final class Publication {
 	}
 
 	/**
+	 * Authorize one original PDF without hashing unrelated technical documents.
+	 *
+	 * @param array<string,string> $file The caller's resolved hosted PDF.
+	 */
+	public static function allows_document( array $file ): bool {
+		self::refresh_runtime();
+		DocumentFiles::begin_read();
+		try {
+			return self::document_in_current_read( $file );
+		} finally {
+			DocumentFiles::end_read();
+		}
+	}
+
+	/**
+	 * Preserve manifest association order and alias permission for this PDF.
+	 *
+	 * @param array<string,string> $file The caller's resolved hosted PDF.
+	 */
+	private static function document_in_current_read( array $file ): bool {
+		$target     = DocumentFiles::id( $file['url'] );
+		$rows       = array();
+		$candidates = array();
+		$sources    = array();
+		foreach ( self::candidate_ids() as $locale_id ) {
+			if ( ! self::published_in_current_read( $locale_id ) ) {
+				continue;
+			}
+			$id = self::canonical_id( $locale_id );
+			if ( isset( $sources[ $id ] ) ) {
+				continue;
+			}
+			$sources[ $id ] = true;
+			foreach ( self::document_rows( $id ) as $row ) {
+				if ( false === ( $row['active'] ?? true ) || '0' === (string) ( $row['active'] ?? '1' ) ) {
+					continue;
+				}
+				$identity = DocumentFiles::id( (string) ( $row['url'] ?? '' ) );
+				$rows[]   = array( $identity, $row );
+				if ( $identity === $target ) {
+					$candidates[ $identity ] = true;
+				}
+				foreach ( (array) ( $row['aliases'] ?? array() ) as $url ) {
+					if ( is_string( $url ) && DocumentFiles::id( $url ) === $target ) {
+						$candidates[ $identity ] = true;
+					}
+				}
+			}
+		}
+		$seen        = array();
+		$permissions = array();
+		foreach ( $rows as [ $identity, $row ] ) {
+			if ( ! isset( $candidates[ $identity ] ) || isset( $seen[ $identity ] ) ) {
+				continue;
+			}
+			$primary = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
+			if ( null === $primary || ! self::attachment_allows( $primary['url'], $permissions ) ) {
+				continue;
+			}
+			$seen[ $identity ] = true;
+			if ( $primary['url'] === $file['url'] && $primary['blob_sha256'] === $file['blob_sha256'] ) {
+				return true;
+			}
+			foreach ( (array) ( $row['aliases'] ?? array() ) as $url ) {
+				if ( ! is_string( $url ) || DocumentFiles::id( $url ) !== $target ) {
+					continue;
+				}
+				$alias = DocumentFiles::resolve( $url );
+				if ( null !== $alias && $alias['url'] === $file['url'] && $alias['blob_sha256'] === $primary['blob_sha256'] && $alias['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $alias['url'], $permissions ) ) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Native candidate order shared by the full manifest and original PDF gate.
+	 *
+	 * @return list<int>
+	 */
+	private static function candidate_ids(): array {
+		return array_values(
+			array_map(
+				'intval',
+				get_posts(
+					array(
+						'post_type'                   => 'product',
+						'post_status'                 => 'publish',
+						'fields'                      => 'ids',
+						'posts_per_page'              => -1,
+						'orderby'                     => 'ID',
+						'order'                       => 'ASC',
+						'suppress_filters'            => true,
+						'lang'                        => '',
+						'linker_publication_internal' => true,
+						'cache_results'               => false,
+					)
+				)
+			)
+		);
+	}
+
+	/**
 	 * Assemble this authority read, hashing each real file at most once.
 	 *
 	 * @return array<string,mixed>
 	 */
 	private static function assemble(): array {
-		$ids       = get_posts(
-			array(
-				'post_type'                   => 'product',
-				'post_status'                 => 'publish',
-				'fields'                      => 'ids',
-				'posts_per_page'              => -1,
-				'orderby'                     => 'ID',
-				'order'                       => 'ASC',
-				'suppress_filters'            => true,
-				'lang'                        => '',
-				'linker_publication_internal' => true,
-				'cache_results'               => false,
-			)
-		);
-		$products  = array();
-		$documents = array();
+		$ids                    = self::candidate_ids();
+		$products               = array();
+		$documents              = array();
+		$attachment_permissions = array();
 		foreach ( $ids as $locale_id ) {
 			$locale_id = (int) $locale_id;
 			if ( ! self::published_in_current_read( $locale_id ) ) {
@@ -217,7 +309,7 @@ final class Publication {
 						continue;
 					}
 					$file = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
-					if ( null === $file || ! self::attachment_allows( $file['url'] ) ) {
+					if ( null === $file || ! self::attachment_allows( $file['url'], $attachment_permissions ) ) {
 						continue;
 					}
 					$document_id = DocumentFiles::id( $file['url'] );
@@ -225,7 +317,7 @@ final class Publication {
 						$aliases = array( $file['url'] );
 						foreach ( (array) ( $row['aliases'] ?? array() ) as $alias ) {
 							$resolved = is_string( $alias ) ? DocumentFiles::resolve( $alias ) : null;
-							if ( null !== $resolved && $resolved['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $resolved['url'] ) ) {
+							if ( null !== $resolved && $resolved['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $resolved['url'], $attachment_permissions ) ) {
 								$aliases[] = $resolved['url'];
 							}
 						}
@@ -397,11 +489,15 @@ final class Publication {
 	/**
 	 * A media-level withdrawal applies to every relation of that attachment.
 	 *
-	 * @param string $url Hosted document URL.
+	 * @param string             $url Hosted document URL.
+	 * @param array<string,bool> $permissions Decisions for this assembly only.
 	 */
-	private static function attachment_allows( string $url ): bool {
-		$id = attachment_url_to_postid( $url );
-		return 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+	private static function attachment_allows( string $url, array &$permissions ): bool {
+		if ( ! array_key_exists( $url, $permissions ) ) {
+			$id                  = attachment_url_to_postid( $url );
+			$permissions[ $url ] = 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+		}
+		return $permissions[ $url ];
 	}
 
 	/**
