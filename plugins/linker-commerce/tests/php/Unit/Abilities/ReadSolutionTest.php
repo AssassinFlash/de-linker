@@ -205,176 +205,52 @@ final class ReadSolutionTest extends TestCase {
 		$this->assertSame( 422, $error->get_error_data()['status'] );
 	}
 
-	/**
-	 * The customer's own solution: the engine runs the stored design in the turn's
-	 * language, and the answer carries the figures, the basis and the saved items.
-	 */
-	public function test_reads_the_owners_solution_from_the_stored_design(): void {
+	/** An owned historical snapshot survives withdrawal without any current read. */
+	public function test_reads_the_owners_recorded_snapshot_without_recalculating(): void {
 		$this->owner_signed_in();
-		$this->solution( 45, 5, self::DESIGN );
-		$seen_url  = '';
-		$seen_body = '';
-		$read      = new ReadSolution(
-			$this->store(),
-			static function ( string $url, string $body ) use ( &$seen_url, &$seen_body ): array {
-				$seen_url  = $url;
-				$seen_body = $body;
-				return array( 200, (string) json_encode( self::RESULT ) );
-			}
-		);
-
-		$answer = $read->execute(
+		$this->solution( 45, 5, self::DESIGN + array( 'snapshot' => self::RESULT ) );
+		WP_Mock::userFunction( 'wp_remote_post', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'wc_get_product', array( 'times' => 0 ) );
+		$answer = ( new ReadSolution( $this->store() ) )->execute(
 			array(
-				'solution_id' => '45',
+				'solution_id' => 45,
 				'lang'        => 'de',
 			)
 		);
-
 		$this->assertIsArray( $answer );
-		$this->assertSame( 'https://engine.test:8443/design/residential', $seen_url );
-		$sent = (array) json_decode( $seen_body, true );
-		$this->assertSame( self::DESIGN['input']['plz'], $sent['plz'] );
-		$this->assertSame( 'de', $sent['locale'], 'the turn language, not the stored one' );
-
-		$this->assertSame( 45, $answer['id'] );
-		$this->assertSame( 'GoodWe GW10K-ETA-G20, 80538', $answer['title'] );
-		$this->assertSame( '2026-10-21', $answer['created'] );
+		$this->assertTrue( $answer['historical'] );
 		$this->assertSame( 'solution', $answer['status'] );
-		$this->assertSame( 10034.0, $answer['yield']['kwh_year_low'] );
 		$this->assertSame( 12164.0, $answer['yield']['kwh_year_high'] );
-		$this->assertSame( 5.8, $answer['storage']['usable_kwh'] );
-		$this->assertSame( 0.6142, $answer['metrics']['autarky_low'] );
 		$this->assertSame( 'GoodWe GW10K-ETA-G20', $answer['selected']['inverter'] );
 		$this->assertSame( 'GoodWe GW6.0-BAT-D-G20', $answer['selected']['battery'] );
-		$this->assertSame( 1, $answer['selected']['battery_quantity'] );
-		$this->assertSame(
-			array(
-				'3-phase, as selected',
-				'1.00, at most 2.00 per the manufacturer',
-				'2 kWp per MWh, at least 0.5',
-				'1.5 kWh × 10 kWp = 15 kWh',
-				'The datasheet lists 12 pcs (p. 3).',
-			),
-			$answer['basis']
-		);
-		$this->assertSame(
-			array(
-				array(
-					'product_id' => 3556,
-					'quantity'   => 1,
-					'model'      => 'GoodWe GW10K-ETA-G20',
-				),
-				array(
-					'product_id' => 3611,
-					'quantity'   => 1,
-					'model'      => 'GoodWe GW6.0-BAT-D-G20',
-				),
-			),
-			$answer['items']
-		);
-		$this->assertSame( array(), $answer['warnings'] );
+		$this->assertSame( 'GoodWe GW10K-ETA-G20', $answer['items'][0]['model'] );
+		$this->assertSame( 3556, $answer['items'][0]['product_id'] );
+		$this->assertCount( 5, $answer['basis'] );
 	}
 
-	/**
-	 * No price and no amount of money rides in the answer, whatever the engine
-	 * returned: the reader copies named fields only.
-	 */
-	public function test_no_amount_of_money_reaches_the_answer(): void {
+	/** Missing legacy details remain missing; an engine cannot manufacture history. */
+	public function test_legacy_input_is_not_recalculated_or_filled_from_current_products(): void {
 		$this->owner_signed_in();
 		$this->solution( 45, 5, self::DESIGN );
+		WP_Mock::userFunction( 'wp_remote_post', array( 'times' => 0 ) );
+		WP_Mock::userFunction( 'wc_get_product', array( 'times' => 0 ) );
+		$error = ( new ReadSolution( $this->store() ) )->execute( array( 'solution_id' => 45 ) );
+		$this->assertInstanceOf( WP_Error::class, $error );
+		$this->assertSame( 'linker_solution_snapshot_missing', $error->get_error_code() );
+		$this->assertSame( 422, $error->get_error_data()['status'] );
+	}
+
+	/** Only allowed historical fields reach Genie; stored money is never copied. */
+	public function test_no_amount_of_money_reaches_the_historical_answer(): void {
+		$this->owner_signed_in();
 		$result                      = self::RESULT;
 		$result['price']             = '€ 1,680.00';
 		$result['selected']['price'] = '€ 1,680.00';
 		$result['items']             = array( array( 'price' => '€ 1,680.00' ) );
-		$read                        = new ReadSolution(
-			$this->store(),
-			static function ( string $url, string $body ) use ( $result ): array {
-				unset( $url, $body );
-				return array( 200, (string) json_encode( $result ) );
-			}
-		);
-
-		$answer = $read->execute( array( 'solution_id' => 45 ) );
-
+		$this->solution( 45, 5, self::DESIGN + array( 'snapshot' => $result ) );
+		$answer = ( new ReadSolution( $this->store() ) )->execute( array( 'solution_id' => 45 ) );
 		$this->assertIsArray( $answer );
 		$this->assertDoesNotMatchRegularExpression( self::MONEY, (string) json_encode( $answer ) );
-	}
-
-	/**
-	 * A design with no complete solution still names the yield and says so.
-	 */
-	public function test_a_design_without_a_solution_is_reported_as_such(): void {
-		$this->owner_signed_in();
-		$this->solution( 45, 5, self::DESIGN );
-		$result             = self::RESULT;
-		$result['status']   = 'no_candidate';
-		$result['metrics']  = null;
-		$result['selected'] = null;
-		$read               = new ReadSolution(
-			$this->store(),
-			static function ( string $url, string $body ) use ( $result ): array {
-				unset( $url, $body );
-				return array( 200, (string) json_encode( $result ) );
-			}
-		);
-
-		$answer = $read->execute( array( 'solution_id' => 45 ) );
-
-		$this->assertIsArray( $answer );
-		$this->assertSame( 'no_candidate', $answer['status'] );
-		$this->assertNull( $answer['metrics'] );
-		$this->assertNull( $answer['selected'] );
-		$this->assertSame( 12164.0, $answer['yield']['kwh_year_high'] );
-	}
-
-	/**
-	 * The engine's failure is a 502 the service logs, never a solution.
-	 */
-	public function test_an_engine_failure_is_an_upstream_error(): void {
-		$this->owner_signed_in();
-		$this->solution( 45, 5, self::DESIGN );
-		$cases = array(
-			array(
-				static function ( string $url, string $body ): WP_Error {
-					unset( $url, $body );
-					return new WP_Error( 'http_request_failed', 'timeout' );
-				},
-				'linker_solution_engine',
-				502,
-			),
-			array(
-				static function ( string $url, string $body ): array {
-					unset( $url, $body );
-					return array( 503, '{"detail":"yield_unavailable"}' );
-				},
-				'linker_solution_engine',
-				502,
-			),
-			array(
-				static function ( string $url, string $body ): array {
-					unset( $url, $body );
-					return array( 200, 'not json' );
-				},
-				'linker_solution_engine',
-				502,
-			),
-			array(
-				// The engine now refuses a stored design it no longer accepts:
-				// a deterministic answer, not a failed turn (the service's 4xx).
-				static function ( string $url, string $body ): array {
-					unset( $url, $body );
-					return array( 422, '{"detail":{"error":"invalid_input","field":"plz"}}' );
-				},
-				'linker_solution_unsupported',
-				422,
-			),
-		);
-		foreach ( $cases as $case ) {
-			$error = ( new ReadSolution( $this->store(), $case[0] ) )->execute( array( 'solution_id' => 45 ) );
-			$this->assertInstanceOf( WP_Error::class, $error );
-			$this->assertSame( $case[1], $error->get_error_code() );
-			$this->assertSame( $case[2], $error->get_error_data()['status'] );
-		}
 	}
 
 	/**

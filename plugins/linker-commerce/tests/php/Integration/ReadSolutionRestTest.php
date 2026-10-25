@@ -19,8 +19,7 @@ use WP_REST_Request;
  * The design report's "Ask Genie" hands Genie a saved solution's id (#496).
  * This is the route that reads it: a guest is refused (401), another customer's
  * solution is refused (403), an unknown one is 404, and the owner gets the
- * figures from the engine, re-run from the stored design in the turn's
- * language. The engine is a pre_http_request double; no outside call is made.
+ * figures from the stored historical snapshot without recalculation. The engine is a pre_http_request double; no outside call is made.
  *
  * @coversNothing
  */
@@ -138,28 +137,45 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 				}
 			}
 		);
-		add_filter(
-			'pre_http_request',
-			function ( $pre, $args, $url ) {
-				unset( $pre );
-				$this->engine[] = array(
-					'url'  => (string) $url,
-					'body' => (array) json_decode( (string) ( $args['body'] ?? '' ), true ),
-				);
-				return array(
-					'headers'  => array(),
-					'body'     => (string) wp_json_encode( $this->engine_result ),
-					'response' => array(
-						'code'    => 200,
-						'message' => 'OK',
-					),
-					'cookies'  => array(),
-					'filename' => null,
-				);
-			},
-			10,
-			3
+		$http = function ( $pre, $args, $url ) {
+			if ( false !== $pre || 'http://engine.test:8443/design/residential' !== $url ) {
+				return $pre;
+			}
+			$this->engine[] = array(
+				'url'  => (string) $url,
+				'body' => (array) json_decode( (string) ( $args['body'] ?? '' ), true ),
+			);
+			return array(
+				'headers'  => array(),
+				'body'     => (string) wp_json_encode( $this->engine_result ),
+				'response' => array(
+					'code'    => 200,
+					'message' => 'OK',
+				),
+				'cookies'  => array(),
+				'filename' => null,
+			);
+		};
+		add_filter( 'pre_http_request', $http, 10, 3 );
+		$this->later(
+			static function () use ( $http ): void {
+				remove_filter( 'pre_http_request', $http, 10 );
+			}
 		);
+	}
+
+	/** The engine fixture must preserve other requests and existing native responses. */
+	public function test_engine_double_preserves_other_requests_and_prior_responses(): void {
+		$prior = array(
+			'response' => array( 'code' => 200 ),
+			'body'     => '{"valid":true}',
+		);
+		// phpcs:disable WooCommerce.Commenting.CommentHooks, WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Drive WordPress's actual HTTP short-circuit filter without issuing any network request.
+		$this->assertFalse( apply_filters( 'pre_http_request', false, array(), 'http://127.0.0.1:9/unrelated' ) );
+		$this->assertSame( $prior, apply_filters( 'pre_http_request', $prior, array(), 'http://127.0.0.1:9/unrelated' ) );
+		$this->assertSame( $prior, apply_filters( 'pre_http_request', $prior, array(), 'http://engine.test:8443/design/residential' ) );
+		// phpcs:enable
+		$this->assertSame( array(), $this->engine );
 	}
 
 	/**
@@ -217,9 +233,8 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 		$read = $this->read( $id, 'de' );
 
 		$this->assertSame( 200, $read['status'], (string) wp_json_encode( $read['data'] ) );
-		$this->assertSame( 'http://engine.test:8443/design/residential', $this->engine[0]['url'] );
-		$this->assertSame( 'de', $this->engine[0]['body']['locale'] );
-		$this->assertSame( '80538', $this->engine[0]['body']['plz'] );
+		$this->assertSame( array(), $this->engine );
+		$this->assertTrue( $read['data']['historical'] );
 		$data = $read['data'];
 		$this->assertSame( 'solution', $data['status'] );
 		$this->assertSame( 10034.0, $data['yield']['kwh_year_low'] );
@@ -241,6 +256,9 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 		$this->engine_result['status']   = 'no_candidate';
 		$this->engine_result['metrics']  = null;
 		$this->engine_result['selected'] = null;
+		$design                          = json_decode( (string) get_post_meta( $id, SavedSolutions::DESIGN_META, true ), true );
+		$design['snapshot']              = $this->engine_result;
+		update_post_meta( $id, SavedSolutions::DESIGN_META, wp_slash( (string) wp_json_encode( $design ) ) );
 
 		$read = $this->read( $id );
 
@@ -265,6 +283,19 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 		$this->assertDoesNotMatchRegularExpression( self::MONEY, $read['raw'] );
 	}
 
+	/** Legacy records do not invoke an engine or read a withdrawn product. */
+	public function test_missing_snapshot_is_explicit_and_preserves_the_saved_record(): void {
+		$owner = $this->customer();
+		$id    = $this->saved( $owner->get_id() );
+		$this->as_user( $owner->get_id() );
+		$design = json_decode( (string) get_post_meta( $id, SavedSolutions::DESIGN_META, true ), true );
+		unset( $design['snapshot'] );
+		update_post_meta( $id, SavedSolutions::DESIGN_META, wp_slash( (string) wp_json_encode( $design ) ) );
+		$this->assertSame( 422, $this->read( $id )['status'] );
+		$this->assertSame( array(), $this->engine );
+		$this->assertNotNull( get_post( $id ) );
+	}
+
 	/**
 	 * One saved solution of $customer with the design the engine can reproduce.
 	 *
@@ -286,8 +317,9 @@ final class ReadSolutionRestTest extends IntegrationTestCase {
 				),
 			),
 			array(
-				'kind'  => 'residential',
-				'input' => array(
+				'snapshot' => self::RESULT + array( 'price' => '€ 1,680.00' ),
+				'kind'     => 'residential',
+				'input'    => array(
 					'locale'     => 'en',
 					'plz'        => '80538',
 					'annual_kwh' => 5000,

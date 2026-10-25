@@ -27,6 +27,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { publicationUnavailableText } from '../publication';
 import { EngineError, type EngineClient } from '../api/engine';
 import { formatNumber } from '../format';
 import type { RoofSelection } from '../residential/ResidentialForm';
@@ -50,6 +51,7 @@ type Status =
 	| 'refused'
 	| 'none'
 	| 'unavailable'
+	| 'publication'
 	| 'limited'
 	| 'error';
 
@@ -328,6 +330,13 @@ export function RoofStep( {
 						setStatus( 'limited' );
 						return;
 					}
+					if (
+						error instanceof EngineError &&
+						error.kind === 'publication'
+					) {
+						setStatus( 'publication' );
+						return;
+					}
 					setStatus(
 						error instanceof EngineError &&
 							error.kind === 'unavailable'
@@ -410,6 +419,13 @@ export function RoofStep( {
 			setChosen( ( current ) => new Set( [ ...current, id ] ) );
 			setStatus( 'drawn' );
 		} catch ( error ) {
+			if (
+				error instanceof EngineError &&
+				error.kind === 'publication'
+			) {
+				setStatus( 'publication' );
+				return;
+			}
 			if ( error instanceof EngineError && error.kind === 'limited' ) {
 				setStatus( 'limited' );
 				return;
@@ -460,6 +476,7 @@ export function RoofStep( {
 	}
 
 	const message: Record< Status, string > = {
+		publication: publicationUnavailableText(),
 		loading: __( 'Loading the aerial image…', 'linker-tools' ),
 		ready: __(
 			'Click the roof of the building in the aerial image.',

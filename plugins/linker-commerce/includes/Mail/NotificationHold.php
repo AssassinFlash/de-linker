@@ -54,6 +54,7 @@ final class NotificationHold {
 	 * Whether the persistent job or its source inquiry is held.
 	 *
 	 * @param int $job Original notification job.
+	 * @phpstan-impure Authoritative native metadata is refreshed on every boundary.
 	 */
 	public static function job_held( int $job ): bool {
 		wp_cache_delete( $job, 'post_meta' );

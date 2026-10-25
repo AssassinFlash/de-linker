@@ -81,7 +81,8 @@ final class InquiryAssessmentTest extends IntegrationTestCase {
 		);
 		$this->assertInstanceOf( Submission::class, $details );
 		$order = ( new Sender() )->message( $details );
-		$id    = $order->get_id();
+		$this->assertInstanceOf( WC_Order::class, $order );
+		$id = $order->get_id();
 		$this->later(
 			static function () use ( $id ): void {
 				as_unschedule_all_actions( Queue::PROCESS, array( $id ), \Linker\Commerce\Mail\Outbox::GROUP );

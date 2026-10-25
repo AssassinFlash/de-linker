@@ -58,7 +58,7 @@ final class ApprovalAdminTest extends TestCase {
 	 * The column stands first after the username.
 	 */
 	public function test_the_column_stands_after_the_username(): void {
-		$admin = new ApprovalAdmin( new Approval() );
+		$admin = new ApprovalAdmin( new Approval( static fn ( callable $work ): mixed => $work() ) );
 		$this->assertSame(
 			array(
 				'cb'                  => '<input/>',
@@ -80,7 +80,7 @@ final class ApprovalAdminTest extends TestCase {
 	 * A customer's cell names the state and carries the reason; staff rows stay empty.
 	 */
 	public function test_the_column_cell_names_the_state_and_reason(): void {
-		$admin = new ApprovalAdmin( new Approval() );
+		$admin = new ApprovalAdmin( new Approval( static fn ( callable $work ): mixed => $work() ) );
 
 		$this->assertSame( '', $admin->column_cell( '', Approval::STATUS_META, 9 ), 'A user that is not in the store is no customer' );
 
@@ -96,7 +96,7 @@ final class ApprovalAdminTest extends TestCase {
 
 	/** All states link to review, never to a state-changing URL. */
 	public function test_all_customer_states_link_to_the_review_card(): void {
-		$admin = new ApprovalAdmin( new Approval() );
+		$admin = new ApprovalAdmin( new Approval( static fn ( callable $work ): mixed => $work() ) );
 		foreach ( Approval::states() as $status ) {
 			$this->store[ Approval::STATUS_META ] = $status;
 			$user                                 = new WP_User();
@@ -115,7 +115,7 @@ final class ApprovalAdminTest extends TestCase {
 		$user                                 = new WP_User();
 		$user->ID                             = 5;
 		ob_start();
-		( new ApprovalAdmin( new Approval() ) )->profile_block( $user );
+		( new ApprovalAdmin( new Approval( static fn ( callable $work ): mixed => $work() ) ) )->profile_block( $user );
 		$html = (string) ob_get_clean();
 		$this->assertStringContainsString( 'Restricted', $html );
 		$this->assertStringContainsString( 'Please provide the company website.', $html );

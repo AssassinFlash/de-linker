@@ -9,11 +9,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from baseline.grade import Turn, answer_text, check, untraceable_numbers
 
+from linker_genie.abilities import Abilities
 from linker_genie.agent import _user_prompt, instructions
 from linker_genie.app import _answer
 from linker_genie.contact import decide
@@ -1156,7 +1157,13 @@ def test_the_scripted_sentence_does_not_touch_the_model_request() -> None:
         locale="en",
         messages=[TurnMessage(role="user", content=str(ROWS["b44-en"]["question"]))],
     )
-    result, block = _answer(body, Prepared(route=route), object(), object())  # type: ignore[arg-type]
+    result, block = _answer(
+        body,
+        Prepared(route=route),
+        object(),  # type: ignore[arg-type]
+        object(),  # type: ignore[arg-type]
+        abilities=cast(Abilities, None),
+    )
     assert block is None
     assert result.attempts == 0
     assert result.grounded is True
@@ -1187,6 +1194,7 @@ def test_the_roof_step_turn_ships_the_signed_sentence_and_size_hints_url() -> No
         Prepared(route=route, facts=facts),
         object(),  # type: ignore[arg-type]
         object(),  # type: ignore[arg-type]
+        abilities=cast(Abilities, None),
     )
     assert block is None
     assert result.attempts == 0
@@ -1235,6 +1243,7 @@ def test_a_failed_size_hint_is_a_degraded_roof_turn_in_the_question_language(
         prepared,
         object(),  # type: ignore[arg-type]
         object(),  # type: ignore[arg-type]
+        abilities=cast(Abilities, None),
     )
     assert block is None
     assert result.grounded is False

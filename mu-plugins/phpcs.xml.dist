@@ -6,6 +6,7 @@
 	<file>linker-engine-pin.php</file>
 	<file>linker-site-guards.php</file>
 	<file>linker-deploy-reset.php</file>
+	<file>linker-publication-worker-access.php</file>
 	<file>linker-inventory-access.php</file>
 	<file>tests</file>
 
@@ -18,6 +19,7 @@
 	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
 		<exclude-pattern>linker-error-recorder.php</exclude-pattern>
 		<exclude-pattern>linker-deploy-reset.php</exclude-pattern>
+		<exclude-pattern>linker-publication-worker-access.php</exclude-pattern>
 		<exclude-pattern>linker-inventory-access.php</exclude-pattern>
 	</rule>
 
@@ -27,6 +29,7 @@
 				<element value="Linker\Mu"/>
 				<element value="linker_error"/>
 				<element value="linker_site_guards"/>
+				<element value="linker_publication_fixture"/>
 				<element value="linker_inventory"/>
 			</property>
 		</properties>

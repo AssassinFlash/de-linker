@@ -23,7 +23,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any, Protocol
 
 from linker_genie import attachments, contact, knowledge, page, parts, solution, timing
-from linker_genie.abilities import AbilityClient, AbilityError
+from linker_genie.abilities import Abilities, AbilityError
 from linker_genie.conversation import customer_messages, last_customer_message
 from linker_genie.embedding import EmbeddingError
 from linker_genie.facts import TurnFacts, merge
@@ -32,6 +32,7 @@ from linker_genie.jev import JevError, Reading, page_state
 from linker_genie.language import turn_language, with_tool_lang
 from linker_genie.lexicon import Match, Vocabulary
 from linker_genie.nameplate import Identified, card, identify, with_known_brand
+from linker_genie.publication import PublicationClient
 from linker_genie.route import (
     Call,
     Route,
@@ -113,6 +114,7 @@ class Understander:
         search: knowledge.Search | None = None,
         pages: page.Reader | None = None,
         see: See | None = None,
+        publication: PublicationClient | None = None,
     ) -> None:
         self._vocabulary = vocabulary
         self._jev = jev
@@ -122,8 +124,15 @@ class Understander:
         # deepseek-flash reading an image (vision.py); None without a key, and then
         # every file of a turn is logged as not read.
         self._see = see
+        self._publication = publication
 
-    def prepare(self, request: TurnRequest, client: AbilityClient) -> Prepared:
+    def prepare(
+        self,
+        request: TurnRequest,
+        client: Abilities,
+        *,
+        get_vocabulary: Callable[[], Vocabulary] | None = None,
+    ) -> Prepared:
         messages = customer_messages(request)
         message = messages[-1] if messages else ""
         # Route calls, fact collection and attachment decimals follow the
@@ -141,8 +150,21 @@ class Understander:
             route = person([f"person phrase: {phrase}"])
             log.update(route.as_log())
             return Prepared(route=route, log=log, timing=clock)
+        if (
+            self._publication is not None
+            and "unavailable" in self._publication.identify_text(message).values()
+        ):
+            from linker_genie.publication_copy import upload_unavailable
+
+            return Prepared(
+                route=Route(
+                    "scripted", no_cards=True, answer=upload_unavailable(language)
+                ),
+                log={"publication": "supplied_model_unavailable"},
+                timing=clock,
+            )
         with timing.phase(clock, timing.VOCABULARY):
-            vocabulary = self._load_vocabulary(log)
+            vocabulary = self._load_vocabulary(log, get_vocabulary)
         matches = vocabulary.match(message) if vocabulary else []
         log["matches"] = [
             {"kind": m.kind, "value": m.value, "words": m.words} for m in matches
@@ -158,6 +180,46 @@ class Understander:
                     else []
                 )
             ]
+        if self._publication is not None:
+            # Stored attachment readings are historical too. Recheck their supplied
+            # model before adding any text or ratings to this turn's facts.
+            readings = [*request.readings, *fresh]
+            statuses = self._publication.identify(
+                [r.model for r in readings if r.model]
+            )
+            blocked = [
+                r
+                for r in readings
+                if (r.model or r.kind in {"nameplate", "document"})
+                and (not r.model or statuses.get(r.model.casefold()) != "published")
+            ]
+            if blocked:
+                from linker_genie.publication_copy import upload_unavailable
+
+                safe = [
+                    r.model_copy(
+                        update={"text": "", "ratings": [], "product_type": None}
+                    )
+                    for r in fresh
+                ]
+                route = Route(
+                    "scripted",
+                    no_cards=True,
+                    answer=upload_unavailable(
+                        language,
+                        identified=any(
+                            r.model
+                            and statuses.get(r.model.casefold()) == "unavailable"
+                            for r in blocked
+                        ),
+                    ),
+                )
+                return Prepared(
+                    route=route,
+                    readings=safe,
+                    log={"publication": "upload_identification_only"},
+                    timing=clock,
+                )
         plate = _first_nameplate(fresh, vocabulary)
         source = (
             None
@@ -245,11 +307,16 @@ class Understander:
         )
         return prepared
 
-    def _load_vocabulary(self, log: dict[str, Any]) -> Vocabulary | None:
-        if self._vocabulary is None:
+    def _load_vocabulary(
+        self,
+        log: dict[str, Any],
+        getter: Callable[[], Vocabulary] | None = None,
+    ) -> Vocabulary | None:
+        get_vocabulary = getter if getter is not None else self._vocabulary
+        if get_vocabulary is None:
             return None
         try:
-            return self._vocabulary()
+            return get_vocabulary()
         except VocabularyError as error:
             log["vocabulary_error"] = str(error)
             logger.warning("genie vocabulary unavailable: %s", error)
@@ -413,7 +480,7 @@ def no_pages(context: PageContext, question: str, logged_in: bool) -> dict[str, 
 def _run_calls(
     prepared: Prepared,
     request: TurnRequest,
-    client: AbilityClient,
+    client: Abilities,
     search: knowledge.Search = knowledge.SEARCH,
     pages: page.Reader = no_pages,
     clock: timing.Timing | None = None,

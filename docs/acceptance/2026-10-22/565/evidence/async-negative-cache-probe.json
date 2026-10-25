@@ -1,0 +1,7 @@
+{
+  "child_exit": 0,
+  "initial_missing": true,
+  "native_row_present": true,
+  "key_cache_delete_still_missing": true,
+  "negative_cache_delete_recovers": true
+}

@@ -13,9 +13,12 @@ parameters:
 		- tests/php/Doubles
 	scanDirectories:
 		- ../linker-commerce/includes/Protection
+		- ../linker-commerce/includes/Products
+		- ../linker-commerce/includes/Account
 		# Native conversation-mail fixture reads real queued messages and sending state.
 		- ../linker-commerce/includes/Mail
 		- ../linker-commerce/includes/Inquiry/Assessment
+		# Conversation confirmation native tests inspect the companion Outbox handoff.
 	scanFiles:
 		# The optional commerce digest boundary; no runtime dependency before
 		# the linker_commerce_digest_blocks filter runs.

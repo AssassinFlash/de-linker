@@ -1,0 +1,144 @@
+{
+  "captured_utc": "2026-10-22T14:39:57.158731+00:00",
+  "root_cause": "Pre-existing Woo account page had no Polylang language; EN request returned404.",
+  "single_variable_probe": [
+    {
+      "phase": "before",
+      "result": {
+        "status": 404,
+        "forms": 0
+      }
+    },
+    {
+      "phase": "only_assign_en_language",
+      "result": {
+        "status": 200,
+        "forms": 1
+      }
+    },
+    {
+      "phase": "restored_missing_language",
+      "result": {
+        "status": 404,
+        "forms": 0
+      }
+    }
+  ],
+  "rewrite_flush_changed_failure": false,
+  "native_bare_cleanup": {
+    "instance": "m565ci",
+    "original_account_language_missing": true,
+    "created_owned_account_pages": 2,
+    "forms": [
+      {
+        "language": "en",
+        "status": 200,
+        "login_form_count": 1
+      },
+      {
+        "language": "de",
+        "status": 200,
+        "login_form_count": 1
+      }
+    ],
+    "original_account_page_not_owned": true,
+    "before_after_users_pages_account_content_language_translations_options_ledger_equal": true,
+    "fixture_absent_after_cleanup": true
+  },
+  "offline_failures": [
+    {
+      "case": "initial-state-write",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "totp",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "application-password",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "page-language",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 1,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "german-language",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 1,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "user-state-write",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "page-state-write",
+      "passed": true,
+      "created_users": 0,
+      "created_pages": 1,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "late-state-write",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "unassigned-account",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 2,
+      "preexisting_preserved": true,
+      "baseline_restored": true,
+      "manual_cleanup_required_reported": false
+    },
+    {
+      "case": "failed-user-compensation",
+      "passed": true,
+      "created_users": 1,
+      "created_pages": 0,
+      "preexisting_preserved": true,
+      "baseline_restored": false,
+      "manual_cleanup_required_reported": true
+    }
+  ],
+  "private_html_sha256": {
+    "en-before.html": "70140773ffaa4548017190f059f3cd0cb7c5ae94179e36762fbdf1615598b75b",
+    "de-before.html": "c415c7275ef0870a85d4fa786004298f1db62f72502232cf5632cb6c467121af"
+  }
+}

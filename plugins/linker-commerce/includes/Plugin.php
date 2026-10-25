@@ -90,6 +90,7 @@ final class Plugin {
 		( new ProductSchema() )->register();
 		( new ArchiveSchema() )->register();
 		( new Consent\BasicMode() )->register();
+		( new Products\Publication\Module() )->register();
 		( new Monitor( $this->file, new Settings\Options() ) )->register();
 	}
 
@@ -122,10 +123,12 @@ final class Plugin {
 		}
 		\WP_CLI::add_command( 'linker-commerce', new Cli\PresentCommand() );
 		\WP_CLI::add_command( 'linker-commerce inquiry-assessments', new Inquiry\Assessment\RecoveryCommand() );
+		\WP_CLI::add_command( 'linker-commerce publication', new Cli\PublicationCommand() );
 		\WP_CLI::add_command( 'linker-commerce stock-key', new Cli\StockKeyCommand() );
 		\WP_CLI::add_command( 'linker-commerce test-mail', new Cli\TestMailCommand() );
 		\WP_CLI::add_command( 'linker-commerce mail-budget', new Cli\MailBudgetCommand() );
 		\WP_CLI::add_command( 'linker-commerce registration-blocks', new Cli\RegistrationBlocksCommand() );
+		\WP_CLI::add_command( 'linker-commerce registration-notices', new Registration\RegistrationRecoveryCommand() );
 	}
 
 	/**

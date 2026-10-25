@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Tests\Integration;
 
 use Linker\Commerce\Mail\JobStore;
+use Linker\Commerce\Mail\CapacityHealth;
 use Linker\Commerce\Mail\Outbox;
 use Linker\Commerce\Mail\Throttle;
 use Linker\Commerce\Mail\OptionBudgetLedger;
@@ -78,14 +79,20 @@ abstract class IntegrationTestCase extends TestCase {
 		$this->isolate_public_connection();
 		// In-process fixtures drive their own consumer. Do not let a separate HTTP
 		// request consume them before that test installs its simulated provider.
-		$wake = static function ( $pre, $args, $url ) {
+		$queue_runner = static fn (): bool => false;
+		add_filter( 'action_scheduler_allow_async_request_runner', $queue_runner, 999 );
+		$wake         = static function ( $pre, $args, $url ) {
+			if ( str_contains( $url, 'action=as_async_request_queue_runner' ) ) {
+				return new \WP_Error( 'fixture_native_queue_wake_blocked' );
+			}
 			return false === $pre && str_contains( $url, 'action=linker_inquiry_assessment_wake' )
 				? new \WP_Error( 'fixture_async_blocked' ) : $pre;
 		};
 		add_filter( 'pre_http_request', $wake, 999, 3 );
 		$this->later(
-			static function () use ( $wake ): void {
+			static function () use ( $wake, $queue_runner ): void {
 				remove_filter( 'pre_http_request', $wake, 999 );
+				remove_filter( 'action_scheduler_allow_async_request_runner', $queue_runner, 999 );
 			}
 		);
 	}
@@ -127,7 +134,8 @@ abstract class IntegrationTestCase extends TestCase {
 	 * setUp() calls it first, so its removal runs after the test's own.
 	 */
 	private function isolate_mail(): void {
-		$test_to = get_option( TestMode::OPTION );
+		$capacity_health = get_option( CapacityHealth::OPTION );
+		$test_to         = get_option( TestMode::OPTION );
 		( new TestMode() )->enable( self::TESTER );
 		$ledger = get_option( OptionBudgetLedger::OPTION );
 		delete_option( OptionBudgetLedger::OPTION );
@@ -135,7 +143,12 @@ abstract class IntegrationTestCase extends TestCase {
 		$marker = self::newest_mail_job();
 		delete_option( Throttle::OPTION );
 		$this->later(
-			static function () use ( $sends, $marker, $test_to, $ledger ): void {
+			static function () use ( $sends, $marker, $test_to, $ledger, $capacity_health ): void {
+				if ( false === $capacity_health ) {
+					delete_option( CapacityHealth::OPTION );
+				} else {
+					update_option( CapacityHealth::OPTION, $capacity_health, false );
+				}
 				if ( false === $ledger ) {
 					delete_option( OptionBudgetLedger::OPTION );
 				} else {

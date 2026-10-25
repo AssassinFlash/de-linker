@@ -1,0 +1,48 @@
+{
+  "withdraw": {
+    "phase": "withdraw",
+    "id": 8369,
+    "status": "draft",
+    "source_revision": "bc0486b7f88139342793a6ae3bcdd4d5f6a9fa977dd47fa670c1895cb883b059",
+    "originals_retained": 2
+  },
+  "native_roundtrip_after_operational_fix": {
+    "id": 8369,
+    "old_rule_source_revision": "04a8e966a46143279a81c6db3b30bbc1df45252a4f83aa8d1cc61c4339c41268",
+    "new_rule_source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
+    "withdrawn_source_revision": "20b5d91ec6f68f4f394d46976a4398e1bfa53938d2248d580f1d60b594e9e482",
+    "restored_source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
+    "restored_status": "publish",
+    "source_restored_exactly": true,
+    "products": 86,
+    "documents": 144,
+    "originals_retained": 2,
+    "original_sha256": [
+      "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
+      "27c79c67d17361f70b84b90af9d10cad184ddbf4e9ba4360e523a77f367d3851"
+    ],
+    "old_rule_drift_reason": "Translation retry note entered product revision; operational fields now excluded without changing stored metadata."
+  },
+  "de_desktop_repeat_after_projection_fix": {
+    "restore": {
+      "phase": "restore",
+      "id": 8369,
+      "status": "publish",
+      "source_revision": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
+      "source_restored_exactly": true,
+      "originals_retained": 2
+    },
+    "actions": [
+      "save",
+      "add all",
+      "new PDF"
+    ],
+    "refused": true,
+    "single_solution_action_notice": true,
+    "screenshots": [
+      "configurator-withdrawn-save-de-1440.jpg",
+      "configurator-withdrawn-actions-de-1440.jpg",
+      "configurator-withdrawn-actions-de-390.jpg"
+    ]
+  }
+}

@@ -1,0 +1,304 @@
+{
+  "method": {
+    "kind": "offline two-source shadow BM25, not an actual worker build or loaded release",
+    "original_index_version": "20261023T163526Z",
+    "as_built_source_revision": "04a8e966a46143279a81c6db3b30bbc1df45252a4f83aa8d1cc61c4339c41268",
+    "current_http_used": false,
+    "provider_calls": 0,
+    "dense_used": false,
+    "embedding_performed": false,
+    "tokenizer": "existing offline BAAI/bge-m3 chunk tokenizer",
+    "source_files_reparsed": 0,
+    "only_rechunked_document_sha256": [
+      "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+      "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262"
+    ],
+    "all_other_140_documents": "original actual chunks/proofs unchanged",
+    "temporary_shadow_sqlite_deleted": true,
+    "native_identity_capture_utc": "2026-10-23T14:12:39+00:00"
+  },
+  "source_rechunk_counts": {
+    "original_replaced_chunks": 209,
+    "new_chunks": 213,
+    "new_scope_proofs": 5
+  },
+  "fixed_sample_size": 12,
+  "guarded_page_hits_before": 2,
+  "guarded_page_hits_after_shadow": 3,
+  "samples": [
+    {
+      "golden_id": "00506d0f0c-en",
+      "model": "CHS2-29.9K-T4-X",
+      "before_page_hit": false,
+      "after_page_hit": true,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": true
+    },
+    {
+      "golden_id": "005ddc4c7d-en",
+      "model": "BU3-5.0-TV2-PRO",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "0065e3e240-en",
+      "model": "GW261.2-BAT-LCD-G10",
+      "before_page_hit": true,
+      "after_page_hit": true,
+      "after_current_numeric_180": true,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "009ea1c839-en",
+      "model": "HS2-10K-T2-X",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "00cc9d826a-en",
+      "model": "GW125/261-ESA-LCN-G10",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "0121878b05-en",
+      "model": "L260-OMNI",
+      "before_page_hit": true,
+      "after_page_hit": true,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "015253f935-en",
+      "model": "GW30K-STS-G10",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "015d0655fa-en",
+      "model": "GW3K-EHA-G20",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "0172d5937a-en",
+      "model": "GW80K-ETR-G10",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "01dfea3e55-en",
+      "model": "H2-30K-T3-DE",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "01f767ac23-en",
+      "model": "GW5.1-BAT-D-G20",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    },
+    {
+      "golden_id": "0212b70d6e-en",
+      "model": "GW61.4-BAT-AC-G10",
+      "before_page_hit": false,
+      "after_page_hit": false,
+      "after_current_numeric_180": null,
+      "after_original_meter_role": null
+    }
+  ],
+  "target_current_row": {
+    "chunk_id": "027415a66a00-p2-6b052231",
+    "text": "| Pack Rated Energy (kWh) |  | 52.24 |\n| Pack Configuration |  | 1P52S |\n| Pack Weight (kg) | 335 ± | 8 |\n| Number of Packs | 4 | 5 |\n| Rated Energy (kWh) | 208.9 | 261.2 |\n| Pack Nominal Voltage (V) | 166.4 |  |\n| Nominal Voltage (V) |  |  |\n|  | 665.6 | 832.0 |\n| Operating Voltage Range (System) (V) | 596.96 ~ 750.88 | 746.2 ~ 1000 |\n| Max.Charging / Discharging Current (A) *1 | 188.4 / 188.4 | - |\n| Max. Input / Output Current (A) | - | 180 / 180 |\n| Max. Charging / DisCharging power (kW) *1 | 125.3/125.3 | - |\n| Max. Input / Output Power (kW) | - | 137.5 / 137.5 |\n| Max. Charging / Discharging Rate *1 | 0.6 / 0.6P |  |\n| Charging / Discharging Operating Temperature Range (°C) | -25 ~ | +55 |\n| Cycle Life *2 |  | ≥10000 |\n| Depth of DisCharge | 100% |  |\n| Efficiency |  |  |\n| Round-trip Efficiency | 94%@100% DOD, 0.5P, 25 ± 2°C | 93%@100% DOD, 0.5P, 25 ± 2°C |\n| General Data |  |  |",
+    "source_table": "docling:p2:#/tables/0",
+    "source_rows": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "proof": {
+      "product_ids": [
+        1956,
+        1958
+      ],
+      "basis": "table_columns",
+      "source_chunk_ids": [
+        "027415a66a00-p2-d4b2736d"
+      ],
+      "document_ids": [
+        "doc-56fa939acf90470677e98c7bd9729f23a31ddd53a7c66b3d65ba440ddab13ebb"
+      ],
+      "associations": [
+        {
+          "document_id": "doc-56fa939acf90470677e98c7bd9729f23a31ddd53a7c66b3d65ba440ddab13ebb",
+          "document_revision": "8627cceb38bde44f93992f73f09743a19e54153fc66153f0c3cba769c0dd9c95",
+          "blob_sha256": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+          "product_id": 1956,
+          "product_revision": "fa350f238bbd404a3d0fedce6b94f7385b59025159ba47bb44585581a4793301"
+        },
+        {
+          "document_id": "doc-56fa939acf90470677e98c7bd9729f23a31ddd53a7c66b3d65ba440ddab13ebb",
+          "document_revision": "8627cceb38bde44f93992f73f09743a19e54153fc66153f0c3cba769c0dd9c95",
+          "blob_sha256": "027415a66a00234f03d1268e180129fa016e601aaf1ecb7cda643a24aecb7d38",
+          "product_id": 1958,
+          "product_revision": "1957e288f5c535eeb3aa9fa53bb1767c3aab0b5e52febc114b7a8feccc72638f"
+        }
+      ],
+      "table_columns": {
+        "source_table": "docling:p2:#/tables/0",
+        "header_chunk_ids": [
+          "027415a66a00-p2-d4b2736d"
+        ],
+        "product_ids": [
+          1956,
+          1958
+        ],
+        "labels": [
+          "GW208.9-BAT-LC-G10",
+          "GW261.2-BAT-LCD-G10"
+        ],
+        "heading": "Technical Data",
+        "source_rows": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "source_chunk_id": "027415a66a00-p2-6b052231",
+        "text_sha256": "bdfc40ad4523ac6559e89385a25ed52cc006e7f8cdfd0b20b4d81897f0fb78d6",
+        "excluded_role_rows": [
+          {
+            "role": "pack_model",
+            "source_chunk_id": "027415a66a00-p2-e5a98a81",
+            "source_rows": [
+              3
+            ],
+            "quote": "| Pack Type / model |  | GW52.2-PACK-LC-G10 |"
+          }
+        ]
+      }
+    }
+  },
+  "target_meter_role": {
+    "chunk_id": "92b45188a10e-p27-a38b4312",
+    "text": "The METER.485 port can connect with meter CHINT's DTSU666 to provide RS485 communication.",
+    "proof": {
+      "product_ids": [
+        1959,
+        1960,
+        1961
+      ],
+      "basis": "manual_peripheral",
+      "source_chunk_ids": [
+        "92b45188a10e-p4-07784292",
+        "92b45188a10e-p27-a38b4312"
+      ],
+      "document_ids": [
+        "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705"
+      ],
+      "associations": [
+        {
+          "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+          "document_revision": "83ce89032356b364e0677170f1526914842b9d400b11c8da04e7fe8334900803",
+          "blob_sha256": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+          "product_id": 1959,
+          "product_revision": "363a7c20a084c259d18612c6e62cbf6f58329c06cf7431cf0cda402daeff3fbe"
+        },
+        {
+          "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+          "document_revision": "83ce89032356b364e0677170f1526914842b9d400b11c8da04e7fe8334900803",
+          "blob_sha256": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+          "product_id": 1960,
+          "product_revision": "ee030f9eed94eee3b205d44cc4803f539cde5d72cdf8a6cabdf09145f3b3652e"
+        },
+        {
+          "document_id": "doc-29633b9228fd277e32dada64d0647420282373a0d6a67cbad21fd72c36f86705",
+          "document_revision": "83ce89032356b364e0677170f1526914842b9d400b11c8da04e7fe8334900803",
+          "blob_sha256": "92b45188a10eac6d72eefc0345165b3c6ade83316555ddd6fdcf6c46cd67a262",
+          "product_id": 1961,
+          "product_revision": "51291f8a1fa00a6240ec66198f1007c501ef518b826b8f80ba0d941466fd9799"
+        }
+      ],
+      "referenced_products": [
+        {
+          "product_id": 2281,
+          "product_revision": "9caf81adcac29aad4a3fd2b62b4275d9f17a78ca09425dafdf9f7ee62544234d",
+          "model": "DTSU666",
+          "role": "meter",
+          "source_chunk_id": "92b45188a10e-p27-a38b4312",
+          "quote": "meter CHINT's DTSU666"
+        }
+      ],
+      "manual_scope": {
+        "product_ids": [
+          1959,
+          1960,
+          1961
+        ],
+        "source_chunk_ids": [
+          "92b45188a10e-p4-07784292"
+        ],
+        "quote": "This User Manual describes instructions and detailed procedures for installing, operating, maintaining, and troubleshooting of the following CHS2 Energy Storage Systems (ESS):\n⚫ CHS2-29.9K-T4-X, CHS2-30K-T4-X\n⚫ CHS2-49.9K-T6-X, CHS2-50K-T6-X"
+      }
+    }
+  },
+  "unknown_pack_rows_still_denied": [
+    "027415a66a00-p2-e5a98a81"
+  ],
+  "withdrawal_checks": {
+    "withdraw_2281_denies_passage": true,
+    "withdraw_1956_denies_passage": true,
+    "meter_as_subject_cannot_borrow_host_manual": true
+  },
+  "original_index_sha256_after": "1b46bc7c164ce2ad79dad78b14006ee2917bd13d76b31978f7e8ff030e0356c2",
+  "elapsed_seconds": 3.29
+}

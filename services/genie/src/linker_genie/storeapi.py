@@ -21,6 +21,7 @@ from typing import Any
 import httpx
 
 from linker_genie.lexicon import Category, Product, Vocabulary, build
+from linker_genie.publication import PublicationClient, PublicationUnavailable, Snapshot
 
 # Store API's own page size ceiling (WooCommerce Store API, `per_page` maximum 100).
 PAGE_SIZE = 100
@@ -46,6 +47,7 @@ class StoreVocabulary:
         transport: httpx.BaseTransport | None = None,
         clock: Callable[[], float] = time.monotonic,
         ttl: float = TTL_SECONDS,
+        publication: PublicationClient | None = None,
     ) -> None:
         self._client = httpx.Client(
             base_url=base_url.rstrip("/"),
@@ -59,24 +61,50 @@ class StoreVocabulary:
         self._lock = threading.Lock()
         self._cached: Vocabulary | None = None
         self._loaded_at = 0.0
+        self._publication = publication
+        self._source_revision = ""
 
     def close(self) -> None:
         self._client.close()
 
-    def get(self) -> Vocabulary:
+    def get(self, permission: Snapshot | None = None) -> Vocabulary:
+        """Use a turn's captured permission, or freshly read it for a standalone call.
+
+        Permission stays local to this call. The cache and its revision are
+        committed together under the lock only after the native listings load.
+        """
         with self._lock:
             now = self._clock()
-            if self._cached is None or now - self._loaded_at >= self._ttl:
-                self._cached = self._load()
+            try:
+                source = (
+                    self._publication.snapshot()
+                    if permission is None and self._publication is not None
+                    else permission
+                )
+            except PublicationUnavailable as error:
+                raise VocabularyError(str(error)) from error
+            revision = source.source_revision if source is not None else ""
+            changed = self._source_revision != revision
+            if self._cached is None or changed or now - self._loaded_at >= self._ttl:
+                self._cached = self._load(source)
                 self._loaded_at = now
+                self._source_revision = revision
             return self._cached
 
-    def _load(self) -> Vocabulary:
-        english = [_product(item) for item in self._pages("/products", {})]
+    def _load(self, permit: Snapshot | None) -> Vocabulary:
+        english = [
+            _product(item)
+            for item in self._pages("/products", {})
+            if permit is None or permit.canonical(int(item.get("id", 0))) is not None
+        ]
         categories = [
             _category(item) for item in self._pages("/products/categories", {})
         ]
-        german = [_product(item) for item in self._pages("/products", {"lang": "de"})]
+        german = [
+            _product(item)
+            for item in self._pages("/products", {"lang": "de"})
+            if permit is None or permit.canonical(int(item.get("id", 0))) is not None
+        ]
         german_categories = [
             _category(item)
             for item in self._pages("/products/categories", {"lang": "de"})

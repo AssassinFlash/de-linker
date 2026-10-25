@@ -1,0 +1,47 @@
+{
+  "control": "Two-Factor stays active; enforce, canonical local verifier, unchanged native form handlers",
+  "en_1440_first_semantic_click": {
+    "user_exists": false,
+    "user_status": null,
+    "user_has_factor": false,
+    "orders": [
+      {
+        "customer_id": 0,
+        "held_for_review": false,
+        "ledger": {
+          "status": "completed",
+          "purpose": "inquiry",
+          "created_at": 1792674791,
+          "outcome": 8252,
+          "verified_parent_count": 1
+        },
+        "id": 8252,
+        "source": "proforma",
+        "status": "inquiry-received"
+      }
+    ]
+  },
+  "de_390_first_semantic_click": {
+    "user_exists": false,
+    "user_status": null,
+    "user_has_factor": false,
+    "orders": [
+      {
+        "customer_id": 0,
+        "held_for_review": false,
+        "ledger": {
+          "status": "completed",
+          "purpose": "inquiry",
+          "created_at": 1792674834,
+          "outcome": 8255,
+          "verified_parent_count": 1
+        },
+        "id": 8255,
+        "source": "proforma",
+        "status": "inquiry-received"
+      }
+    ]
+  },
+  "earlier_observation": "First EN/DE UI attempts did not navigate; no corresponding admin-post request until subsequent click. Exact cause unproven.",
+  "boundary": "Controls do not reproduce the observation. No first-click guarantee or causal MFA-regression claim. Temporary DOM event counters record names/counts only and disappear on successful navigation."
+}

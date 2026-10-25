@@ -11,6 +11,7 @@ from typing import Any, Literal, cast
 import pytest
 from fastapi import Request
 
+from linker_genie.abilities import Abilities
 from linker_genie.app import _answer
 from linker_genie.facts import Fact, TurnFacts, collect
 from linker_genie.ground import Citation, check, cites_outside_turn
@@ -398,7 +399,11 @@ def _stock(row: dict[str, Any], vocabulary: Vocabulary) -> None:
     assert all(call.ability != "linker/handoff-team" for call in route.calls)
     if row.get("failed"):
         result, block = _answer(
-            _turn(row), Prepared(route=route), _http(), cast(Lookup, None)
+            _turn(row),
+            Prepared(route=route),
+            _http(),
+            cast(Lookup, None),
+            abilities=cast(Abilities, None),
         )
         assert block is None
         assert result.grounded is False
@@ -440,6 +445,7 @@ def _stock(row: dict[str, Any], vocabulary: Vocabulary) -> None:
         Prepared(route=route, facts=facts),
         _http(),
         cast(Lookup, None),
+        abilities=cast(Abilities, None),
     )
     assert block is None
     assert result.grounded is True

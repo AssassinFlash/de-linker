@@ -61,11 +61,11 @@ final class SearchProductsTest extends TestCase {
 	 * The ability is read-only, anonymous, and OPTIONS can show both schemas.
 	 */
 	public function test_args_expose_rest_schemas(): void {
-		$args = ( new SearchProducts() )->args();
+		$args = ( new SearchProducts( $this->publication_data() ) )->args();
 
 		$this->assertTrue( $args['meta']['show_in_rest'] );
 		$this->assertTrue( $args['meta']['annotations']['readonly'] );
-		$this->assertTrue( ( new SearchProducts() )->can_execute() );
+		$this->assertTrue( ( new SearchProducts( $this->publication_data() ) )->can_execute() );
 		$this->assertSame( 'object', $args['input_schema']['type'] );
 		$this->assertSame( 'object', $args['output_schema']['type'] );
 		$this->assertContains( 'qualified', $args['output_schema']['required'] );
@@ -80,7 +80,7 @@ final class SearchProductsTest extends TestCase {
 	public function test_r1_residential_three_phase_10_kwp(): void {
 		$ids = array_keys( LiveProducts::published() );
 		$this->mock_live_products( $ids );
-		$result    = ( new SearchProducts() )->select(
+		$result    = ( new SearchProducts( $this->publication_data() ) )->select(
 			$ids,
 			array(
 				'device_class' => 'inverters',
@@ -131,7 +131,7 @@ final class SearchProductsTest extends TestCase {
 	 */
 	public function test_full_matches_sort_before_unknown(): void {
 		$this->mock_live_products( array( 4107, 6480 ) );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			array( 4107, 6480 ),
 			array(
 				'device_class' => 'inverters',
@@ -151,11 +151,11 @@ final class SearchProductsTest extends TestCase {
 	}
 
 	/**
-	 * After the #7 migration, 6480 is home three-phase and sorts with the full matches.
+	 * A migrated attribute is retained while a figure without current evidence stays unknown.
 	 */
-	public function test_migrated_ecoflow_is_a_full_match(): void {
+	public function test_migrated_product_keeps_unproven_numeric_field_unknown(): void {
 		$this->mock_live_products( array( 4107, 6480 ), true );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			array( 4107, 6480 ),
 			array(
 				'device_class' => 'inverters',
@@ -168,7 +168,7 @@ final class SearchProductsTest extends TestCase {
 			12
 		);
 
-		$this->assertSame( array(), $result['unknown_fields'] );
+		$this->assertSame( array( 'pv_input' ), $result['unknown_fields'] );
 		$this->assertSame( array( 4107, 6480 ), array_column( $result['qualified'], 'product_id' ) );
 	}
 
@@ -177,7 +177,7 @@ final class SearchProductsTest extends TestCase {
 	 */
 	public function test_sorts_by_ac_power_distance_to_pv_kwp(): void {
 		$this->mock_live_products( array( 2064, 4107 ) );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			array( 2064, 4107 ),
 			array(
 				'device_class' => 'inverters',
@@ -199,7 +199,7 @@ final class SearchProductsTest extends TestCase {
 	public function test_with_pairings_lists_documented_batteries(): void {
 		$ids = array( 4107, 1832, 2067 );
 		$this->mock_live_products( $ids );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			$ids,
 			array(
 				'device_class'  => 'inverters',
@@ -218,13 +218,12 @@ final class SearchProductsTest extends TestCase {
 	}
 
 	/**
-	 * "Smallest inverter with at least 30 kW" is GW30K-ETA-G20 (30.0 kW).
-	 * H2-30K-T3-DE is 29.999 kW and stays out. The 30 kW all-in-one is not an inverter.
+	 * Uncited stored 30 kW values do not qualify or determine the minimum.
 	 */
-	public function test_smallest_inverter_at_least_30_kw_is_gw30k_eta_g20(): void {
+	public function test_uncited_power_does_not_enter_a_30_kw_minimum(): void {
 		$ids = array_keys( LiveProducts::published() );
 		$this->mock_live_products( $ids );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			$ids,
 			array(
 				'device_class' => 'inverters',
@@ -236,26 +235,15 @@ final class SearchProductsTest extends TestCase {
 			12
 		);
 
-		$this->assertSame( array( 6518 ), array_column( $result['qualified'], 'product_id' ) );
-		$this->assertStringContainsString( 'GW30K-ETA-G20', $result['qualified'][0]['title'] );
-		$this->assertSame( 30.0, $result['qualified'][0]['facts']['ac_power_kw'] );
+		$this->assertSame( array(), $result['qualified'] );
 		$this->assertSame(
 			array(
-				'kind'       => 'smallest',
-				'applied'    => true,
-				'product_id' => 6518,
-				'field'      => 'ac_power_kw',
-				'value'      => 30.0,
-				'model'      => 'GW30K-ETA-G20',
+				'kind'    => 'smallest',
+				'applied' => false,
+				'reason'  => 'none',
 			),
 			$this->require_extreme( $result )
 		);
-		$qualified = array_column( $result['qualified'], 'product_id' );
-		$this->assertNotContains( 1181, $qualified );
-		$this->assertNotContains( 6517, $qualified );
-		$this->assertNotContains( 1960, $qualified );
-		$this->assertNotContains( 6506, $qualified );
-		$this->assertGreaterThan( 0, $result['excluded']['by_reason']['ac_power'] );
 	}
 
 	/**
@@ -264,7 +252,7 @@ final class SearchProductsTest extends TestCase {
 	public function test_smallest_inverter_at_least_20_kw_is_the_catalogue_minimum(): void {
 		$ids = array_keys( LiveProducts::published() );
 		$this->mock_live_products( $ids );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			$ids,
 			array(
 				'device_class' => 'inverters',
@@ -283,12 +271,12 @@ final class SearchProductsTest extends TestCase {
 	}
 
 	/**
-	 * Largest inverter is the maximum AC power, GW125K-ETR-G10.
+	 * The largest currently evidenced value wins; an uncited stored maximum cannot rank.
 	 */
 	public function test_largest_inverter_is_the_maximum_ac_power(): void {
 		$ids = array_keys( LiveProducts::published() );
 		$this->mock_live_products( $ids );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			$ids,
 			array(
 				'device_class' => 'inverters',
@@ -299,9 +287,9 @@ final class SearchProductsTest extends TestCase {
 		);
 
 		$extreme = $this->require_extreme( $result );
-		$this->assertSame( 3595, $extreme['product_id'] );
-		$this->assertSame( 125.0, $extreme['value'] );
-		$this->assertSame( array( 3595 ), array_column( $result['qualified'], 'product_id' ) );
+		$this->assertSame( 1181, $extreme['product_id'] );
+		$this->assertSame( 29.999, $extreme['value'] );
+		$this->assertSame( array( 1181 ), array_column( $result['qualified'], 'product_id' ) );
 	}
 
 	/**
@@ -311,7 +299,7 @@ final class SearchProductsTest extends TestCase {
 	public function test_cheapest_does_not_rank_by_a_hidden_price(): void {
 		$ids = array( 1954, 2068, 2069 );
 		$this->mock_live_products( $ids );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			$ids,
 			array(
 				'device_classes' => array( 'home-storage', 'battery-systems' ),
@@ -341,7 +329,7 @@ final class SearchProductsTest extends TestCase {
 	public function test_cheapest_battery_at_least_10_kwh_uses_the_visible_price(): void {
 		$ids = array( 1954, 2068, 2069 );
 		$this->mock_live_products( $ids, false, true );
-		$result = ( new SearchProducts() )->select(
+		$result = ( new SearchProducts( $this->publication_data() ) )->select(
 			$ids,
 			array(
 				'device_classes' => array( 'home-storage', 'battery-systems' ),

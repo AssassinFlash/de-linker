@@ -14,6 +14,7 @@ use Linker\Tools\Genie\ContactRequest;
 use Linker\Tools\Genie\InquiryRequest;
 use Linker\Tools\Genie\Conversations;
 use Linker\Tools\Genie\Proxy;
+use Linker\Tools\Genie\PublicationGuard;
 use WP_Mock;
 use WP_Mock\Tools\TestCase;
 use WP_REST_Request;
@@ -498,6 +499,86 @@ final class ProxyTest extends TestCase {
 	}
 
 	/**
+	 * A valid answer plus current-publication reads can exceed the old HTTP cutoff.
+	 * The HTTP adapter must still receive and record it within the native lease.
+	 */
+	public function test_turn_receives_a_valid_upstream_after_the_previous_http_cutoff(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Wire fixture.
+		WP_Mock::userFunction( 'sanitize_text_field', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'fixture-native-turn-budget' ) );
+		$stream = "event: meta\ndata: {}\n\nevent: done\ndata: {\"ok\":true}\n\n";
+		WP_Mock::userFunction(
+			'wp_remote_post',
+			array(
+				'return' => static function ( string $url, array $args ) use ( $stream ): array|WP_Error {
+					unset( $url );
+					// The observed public curl deadline was 60.001 s. Model the
+					// native adapter's timeout for a legitimate 65-second reply.
+					if ( $args['timeout'] <= 65 ) {
+						return new WP_Error( 'http_request_failed', 'upstream deadline elapsed' );
+					}
+					self::assertLessThanOrEqual( 90, $args['timeout'], 'The native resource operation remains bounded.' );
+					return array( 'body' => $stream );
+				},
+			)
+		);
+		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => 200 ) );
+		WP_Mock::userFunction( 'wp_remote_retrieve_body', array( 'return' => $stream ) );
+		$thread                           = new RecordingThread();
+		$previous                         = $_COOKIE;
+		$_COOKIE['linker_public_browser'] = str_repeat( 'a', 32 );
+		try {
+			$answer = $this->proxy( null, $thread )->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+		} finally {
+			$_COOKIE = $previous;
+		}
+		$this->assertInstanceOf( WP_REST_Response::class, $answer );
+		$this->assertSame( $stream, $answer->get_data()['stream'] );
+		$this->assertNotNull( $thread->recorded );
+		$this->assertSame( $stream, $thread->recorded['stream'] );
+	}
+
+	/**
+	 * Native service transport preserves current-source status instead of a 502.
+	 *
+	 * @dataProvider publication_statuses
+	 * @param int    $status Service status.
+	 * @param string $detail Safe service reason.
+	 * @param string $code Native shell reason.
+	 */
+	public function test_publication_status_survives_the_actual_http_transport( int $status, string $detail, string $code ): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		WP_Mock::userFunction( 'wp_json_encode', array( 'return' => static fn( mixed $value ): string|false => json_encode( $value ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- Wire fixture.
+		WP_Mock::userFunction( 'sanitize_text_field', array( 'return_arg' => 0 ) );
+		WP_Mock::userFunction( 'wp_salt', array( 'return' => 'fixture-native-source-status' ) );
+		WP_Mock::userFunction( 'wp_remote_post', array( 'return' => array() ) );
+		WP_Mock::userFunction( 'wp_remote_retrieve_response_code', array( 'return' => $status ) );
+		WP_Mock::userFunction( 'wp_remote_retrieve_body', array( 'return' => (string) wp_json_encode( array( 'detail' => $detail ) ) ) );
+		$previous                         = $_COOKIE;
+		$_COOKIE['linker_public_browser'] = str_repeat( 'a', 32 );
+		try {
+			$answer = $this->proxy()->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+		} finally {
+			$_COOKIE = $previous;
+		}
+		$this->assertInstanceOf( WP_Error::class, $answer );
+		$this->assertSame( $status, $answer->get_error_data()['status'] );
+		$this->assertSame( $code, $answer->get_error_code() );
+	}
+
+	/**
+	 * Safe service reason/status pairs.
+	 *
+	 * @return list<array{int,string,string}>
+	 */
+	public static function publication_statuses(): array {
+		return array( array( 409, 'publication_changed', 'linker_genie_publication_changed' ), array( 503, 'publication_unavailable', 'linker_genie_publication_unavailable' ) );
+	}
+
+	/**
 	 * What linker-commerce's price rule answers the shell
 	 * (`linker_commerce_visitor_sees_prices`, applied with false).
 	 *
@@ -518,6 +599,7 @@ final class ProxyTest extends TestCase {
 	 * @param bool $logged_in Whether a visitor is signed in.
 	 */
 	private function wp_functions( bool $logged_in = false ): void {
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
 		WP_Mock::userFunction( 'is_user_logged_in', array( 'return' => $logged_in ) );
 		WP_Mock::userFunction( 'get_current_user_id', array( 'return' => 0 ) );
 		// No plugin answers the price rule: the filter's own default comes back.
@@ -546,12 +628,13 @@ final class ProxyTest extends TestCase {
 	/**
 	 * A proxy whose conversations always answer 51.
 	 *
-	 * @param callable|null        $fetch  HTTP client.
-	 * @param RecordingThread|null $thread Conversation store; a recording one by default.
-	 * @param bool                 $uploads Whether the turn may carry files.
-	 * @param string               $token   The shared service token; '' for a site without one.
+	 * @param callable|null         $fetch  HTTP client.
+	 * @param RecordingThread|null  $thread Conversation store; a recording one by default.
+	 * @param bool                  $uploads Whether the turn may carry files.
+	 * @param string                $token   The shared service token; '' for a site without one.
+	 * @param PublicationGuard|null $publication Source permission fixture.
 	 */
-	private function proxy( ?callable $fetch = null, ?RecordingThread $thread = null, bool $uploads = false, string $token = 'token' ): Proxy {
+	private function proxy( ?callable $fetch = null, ?RecordingThread $thread = null, bool $uploads = false, string $token = 'token', ?PublicationGuard $publication = null ): Proxy {
 		$conversations = new class() extends Conversations {
 			/**
 			 * Always the same conversation.
@@ -617,7 +700,8 @@ final class ProxyTest extends TestCase {
 			null,
 			// An allowance that never runs out: the limit has its own tests.
 			$uploads ? new Attachments( static fn(): bool => true ) : null,
-			$token
+			$token,
+			$publication ?? new FixturePublication()
 		);
 	}
 
@@ -717,7 +801,8 @@ final class ProxyTest extends TestCase {
 			null,
 			null,
 			null,
-			'token'
+			'token',
+			new FixturePublication()
 		);
 
 		$thread = $proxy->conversation();
@@ -1028,5 +1113,55 @@ final class ProxyTest extends TestCase {
 			WP_Mock::userFunction( 'get_post_meta', array( 'return' => array() ) );
 			$this->assertSame( 52, $proxy->conversation()->get_data()['conversation_id'] );
 			$this->assertConditionsMet();
+	}
+	/** A current read which loses permission cannot commit its generated text. */
+	public function test_publication_change_before_commit_preserves_prior_thread(): void {
+		$this->wp_functions();
+		WP_Mock::userFunction( 'get_option', array( 'return' => 'http://127.0.0.1:8890' ) );
+		$thread = new RecordingThread();
+		$guard  = new class() extends PublicationGuard {
+			/**
+			 * Read the original current scope.
+			 *
+			 * @return array<string,mixed>
+			 */
+			public function dependencies(): array {
+				return array(
+					'products'  => array(),
+					'documents' => array(),
+				);
+			}
+			/**
+			 * The source withdrew during the HTTP call.
+			 *
+			 * @param array<string,mixed> $dependencies Initial proof.
+			 */
+			public function validate( array $dependencies ): WP_Error {
+				unset( $dependencies );
+				return new WP_Error( 'publication_changed', 'Changed', array( 'status' => 409 ) );
+			}
+		};
+		$proxy  = $this->proxy( static fn(): string => "event: done\ndata: {}\n\n", $thread, false, 'token', $guard );
+		$result = $proxy->turn( new WP_REST_Request( 'POST', '/linker-ai/v1/genie/turn' ) );
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertNull( $thread->recorded );
+	}
+
+	/** Legacy and malformed receipts cannot restore a current answer without proof. */
+	public function test_old_genie_receipt_requires_publication_dependencies(): void {
+		WP_Mock::userFunction( '__', array( 'return_arg' => 0 ) );
+		$reply = new WP_REST_Response( array( 'stream' => 'old' ) );
+		$this->assertInstanceOf( WP_Error::class, PublicationGuard::restored( $reply, array( 'data' => array( 'stream' => 'old' ) ) ) );
+		$this->assertInstanceOf(
+			WP_Error::class,
+			PublicationGuard::restored(
+				$reply,
+				array(
+					'data'        => array( 'stream' => 'old' ),
+					'publication' => array(),
+				)
+			)
+		);
+		$this->assertSame( $reply, PublicationGuard::restored( $reply, array( 'data' => array( 'inquiry_id' => 7 ) ) ) );
 	}
 }

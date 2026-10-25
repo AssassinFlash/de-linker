@@ -855,32 +855,44 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 	/** A crash after the first native save recovers the same full record. */
 	public function test_interrupted_native_save_recovers_original_without_second_debit(): void {
-		$post = $this->post( false, 'contact' );
-		$fail = static function ( WC_Order $order ) use ( $post ): void {
-			if ( $order->get_billing_email() === $post['email'] ) {
-				throw new \Error( 'fixture_interrupted_save' );
-			}
+		$post      = $this->post( false, 'contact' );
+		$armed     = false;
+		$committed = false;
+		$arm       = static function ( WC_Order $order ) use ( $post, &$armed ): void {
+			if ( $order->get_billing_email() === $post['email'] && $order->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) ) {
+				$armed = true; }
 		};
-		add_action( 'woocommerce_after_order_object_save', $fail );
+		$fail      = static function ( string $sql ) use ( &$armed, &$committed ): string {
+			if ( $armed && ! $committed && 'COMMIT' === $sql ) {
+				global $wpdb;
+				// phpcs:ignore WordPress.DB.RestrictedFunctions -- Execute the exact owned native commit before losing its application acknowledgement.
+				$wpdb->__get( 'dbh' )->query( 'COMMIT' );
+				$committed = true;
+				throw new \Error( 'fixture_interrupted_commit_ack' );
+			}
+			return $sql;
+		};
+		add_action( 'woocommerce_after_order_object_save', $arm );
+		add_filter( 'query', $fail, 999 );
 		try {
-			$result = ( new ContactHandler() )->process( $post );
-		} finally {
-			remove_action( 'woocommerce_after_order_object_save', $fail );
-		}
-		self::assertSame( 'pending', $result );
-		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
-		self::assertIsArray( $orders );
-		self::assertCount( 1, $orders );
-		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
-		self::assertSame( 'saved_review', ( new ContactHandler() )->process( $post ) );
-		$recovered = wc_get_order( $orders[0]->get_id() );
-		self::assertInstanceOf( WC_Order::class, $recovered );
-		self::assertSame( $orders[0]->get_id(), $recovered->get_id() );
-		self::assertSame( $post['message'], $recovered->get_customer_note() );
-		self::assertTrue( NotificationHold::held( $recovered ) );
-		$after = json_decode( (string) get_option( Ledger::OPTION ), true );
-		self::assertSame( $before['buckets'], $after['buckets'] );
-		self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $recovered->get_status() );
+			$result = ( new ContactHandler() )->process( $post ); } finally {
+			remove_action( 'woocommerce_after_order_object_save', $arm );
+			remove_filter( 'query', $fail, 999 ); }
+			self::assertTrue( $committed, 'The native row/status commit really occurred; only its response is unknown.' );
+			self::assertSame( 'pending', $result );
+			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+			self::assertIsArray( $orders );
+			self::assertCount( 1, $orders );
+			$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+			self::assertSame( 'saved_review', ( new ContactHandler() )->process( $post ) );
+			$recovered = wc_get_order( $orders[0]->get_id() );
+			self::assertInstanceOf( WC_Order::class, $recovered );
+			self::assertSame( $orders[0]->get_id(), $recovered->get_id() );
+			self::assertSame( $post['message'], $recovered->get_customer_note() );
+			self::assertTrue( NotificationHold::held( $recovered ) );
+			$after = json_decode( (string) get_option( Ledger::OPTION ), true );
+			self::assertSame( $before['buckets'], $after['buckets'] );
+			self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $recovered->get_status() );
 	}
 	/** Review keeps the complete native product draft for guest/pending/approved customers. */
 	public function test_review_retains_products_for_all_customer_states(): void {

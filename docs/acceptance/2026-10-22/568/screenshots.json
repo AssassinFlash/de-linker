@@ -1,0 +1,338 @@
+[
+  {
+    "file": "contact-full-de-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "363c9422076f2ae687d15d80a1272ca9872bb99cd28af054a8a9b6f121db9bcb",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "contact-full-de-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 962,
+    "sha256": "2af1e612c5e30c0235489e33f0ff814ae572f08e08cd1d031585c3aed8899928",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "contact-full-en-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "8ccf61016aadeb9442101d782777fa1af690d75f93813b2afc8e87bd6a92e18c",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "contact-full-en-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 962,
+    "sha256": "3462ee03c94f709f01d155d813ef42f9beb3eb10984f0fc5f174286ae56d7e65",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "contact-normal-de-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "6b383d0d032521cd028af903671ee65ae3999f3765e777cf8e6e42410b331c11",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "contact-normal-de-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 962,
+    "sha256": "2334f843ca60a32c8b49c7ae1e48a5efeaf65579e0c499faf40f6c5162104110",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "contact-normal-en-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "8f9f3ab202ee8c7d9df1f217ded535dafdf6bf951fb0beb9cce19686564e8645",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "contact-normal-en-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 962,
+    "sha256": "edee0a914d5edaf1423a76b0efe29c51dc72fbfa77d33377a0672a904d5a20ef",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-consent-full-de-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "1044344f932530ca1f4a7cc2e56c10ef09f9925b446a5ce639a633cbafbd9074",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-consent-full-de-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 812,
+    "sha256": "882454d757d2b94921c3e9f3defc86bcfdb69e5bf3aabb2c51e386c8ffa318df",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-consent-full-en-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "df8a02fc16c9af210fb29557bb764e06980180e1594943ab32a64e366190f555",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-consent-full-en-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 812,
+    "sha256": "eb3974bc47d084c7dc837effd21ab5a423ab4cc6dbba8efd99328f6bb4015f53",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-full-de-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "5618e7806930a57e5ef4d1f9e29b4a928663e6861b9bbce9fb31515c175217af",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-full-de-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 2721,
+    "sha256": "27cb956ce8567309281e19bb5f1a843f50c2eca4e69b5bc39d854551de9f9ff2",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-full-en-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "1257a1241acc5ca824bf2ae0d4b5f40adf07d1122403373824614eb6de89d506",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-full-en-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 2559,
+    "sha256": "c61127aed55401c8dc58089d7607cdc6b51c9e6ec1a16264833994e1e70feb2f",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-normal-de-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "0c4ce00fb41a59960bd3b3ceaa77911be5f40606bc4c4223dadc0d44071c0a03",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-normal-de-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 1885,
+    "sha256": "dcad0d8e435b4319e5e07e5faf2fb0db1a6e1f784ccbfbbd9ace55ac2fc9fadc",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-normal-en-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "771ec7fc960f33a11ebd0ad16efccfb260af054a0e71fe874ddc445c1cafffbb",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "inquiry-normal-en-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 1732,
+    "sha256": "34cab93cc288be9cf3ca4b6e855d84951d606a9f8447c30b92fba87812b80aeb",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-failure-de-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "6667f06a8c9c1b1299618e601c93b041eba15c4a9fff83207f6aa50ab7bd999e",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-failure-de-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 812,
+    "sha256": "c767893dc472dfa92a6e3b1c54565f0f852717ff2b76895656e7ab4d3fe99b77",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-failure-en-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "a8453a96bba3619d4d0240347775e279f38c5a433b8f8a271a9536b7f71e3611",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-failure-en-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 812,
+    "sha256": "10b289b959c1a0bef349965b8b48980a38603d318e8660c1fffd6793b426e598",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-normal-de-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "3e67d63ae7c335da519c54854091158f4546c06e3de298bce16cf35eb8cd56e5",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-normal-de-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 812,
+    "sha256": "3abbf933ce59bdf8f75df2c3a3ed2843efb49fc8a6c58d845486bb60c63f606c",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-normal-en-1440.jpg",
+    "mime": "image/jpeg",
+    "width": 1425,
+    "height": 990,
+    "sha256": "e1c57d250cbe306e53ca4d8a0a4ef54d277ad749a3f8b6c585d78155918d6fc2",
+    "requested_viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  },
+  {
+    "file": "reset-normal-en-390.jpg",
+    "mime": "image/jpeg",
+    "width": 375,
+    "height": 812,
+    "sha256": "93dae0750b82206b38006423811498fe33229e310722484de8b1f54ac2776d5f",
+    "requested_viewport": {
+      "width": 390,
+      "height": 844
+    },
+    "capture": "CUA native screenshot bytes unchanged; scrollbar surface capture can differ from requested viewport"
+  }
+]

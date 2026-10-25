@@ -24,6 +24,21 @@ use WP_Mock;
  * @covers \Linker\Commerce\Presentation\LibraryPage
  */
 final class LibraryPageTest extends TestCase {
+	use \Linker\Commerce\Tests\Support\PublishedDocumentView;
+	use \Linker\Commerce\Tests\Support\BoundFaqFixture;
+
+	/** One deliberately prepared answer and its cited source. */
+	private const FAQ = array(
+		array(
+			'question' => 'Is the module stackable?',
+			'answer'   => 'Yes, up to four modules.',
+			'citation' => array(
+				'url'   => 'https://de-linker.test/media/901.pdf',
+				'page'  => 12,
+				'title' => 'ESA battery manual',
+			),
+		),
+	);
 
 	/**
 	 * Post queries the fragments ran: the register's readings and the brand
@@ -47,6 +62,10 @@ final class LibraryPageTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->plain_text();
+		WP_Mock::userFunction( 'wp_cache_supports' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'wp_cache_flush_runtime' )->andReturn( true )->byDefault();
+		WP_Mock::userFunction( 'get_post_type' )->andReturn( 'product' )->byDefault();
+		WP_Mock::userFunction( 'get_post_status' )->andReturn( 'publish' )->byDefault();
 		WP_Mock::userFunction( 'wp_specialchars_decode', array( 'return' => static fn ( string $value ): string => $value ) );
 		WP_Mock::userFunction(
 			'has_filter',
@@ -132,7 +151,7 @@ final class LibraryPageTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_post_meta',
 			array(
-				'return' => static function ( int $id, string $key ): string {
+				'return' => static function ( int $id, string $key ): mixed {
 					return match ( $key ) {
 						'_tv_legacy_acf_json' => (string) json_encode(
 							array(
@@ -153,19 +172,8 @@ final class LibraryPageTest extends TestCase {
 								'faqs'      => array(),
 							)
 						),
-						'_linker_faqs'        => (string) json_encode(
-							array(
-								array(
-									'question' => 'Is the module stackable?',
-									'answer'   => 'Yes, up to four modules.',
-									'citation' => array(
-										'url'   => 'https://de-linker.test/media/901.pdf',
-										'page'  => 12,
-										'title' => 'ESA battery manual',
-									),
-								),
-							)
-						),
+						'_linker_faqs' => (string) json_encode( self::FAQ ),
+						\Linker\Commerce\Products\Publication\EvidenceBindings::FAQ_META_KEY => self::bound_faqs( self::FAQ, 'fixture-manual', hash( 'sha256', 'fixture manual bytes' ) ),
 						default               => '',
 					};
 				},
@@ -374,6 +382,24 @@ final class LibraryPageTest extends TestCase {
 	 * The register the fragments describe: one product of one brand.
 	 */
 	private function library(): DocumentLibrary {
-		return new DocumentLibrary();
+		return new DocumentLibrary(
+			$this->published_document_view(),
+			static fn (): array => array(
+				'products'  => array(
+					array(
+						'product_id'           => 6521,
+						'published_locale_ids' => array( 6521 ),
+					),
+				),
+				'documents' => array(
+					array(
+						'product_ids' => array( 6521 ),
+						'document_id' => 'fixture-manual',
+						'blob_sha256' => hash( 'sha256', 'fixture manual bytes' ),
+						'aliases'     => array( 'https://de-linker.test/media/901.pdf' ),
+					),
+				),
+			)
+		);
 	}
 }

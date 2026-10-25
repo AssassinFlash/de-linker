@@ -931,6 +931,8 @@
 #tv-storefront-pdp .pdp-stat-row dt {
 	color: var(--pdp-muted);
 	font-weight: 500;
+	overflow-wrap: anywhere;
+	hyphens: auto;
 }
 
 #tv-storefront-pdp .pdp-stat-row dd {
@@ -1415,7 +1417,13 @@
 	   the second action, the tool row, the project entry — the price and the
 	   primary action live in the action pill below. */
 	#tv-storefront-pdp {
-		padding-bottom: calc(var(--pdp-action-height, 64px) + 52px);
+		padding-bottom: 52px;
+	}
+
+	/* Reserve the measured dock after the page's final links, not before
+	   the footer. Reuse the existing phone clearance and safe-area inset. */
+	body:has(#tv-storefront-pdp) #tv-footer-v2 .tv-footer-container {
+		padding-bottom: calc(var(--pdp-action-height, 64px) + 52px + env(safe-area-inset-bottom));
 	}
 
 	#tv-storefront-pdp .pdp-crumbs {
@@ -1641,6 +1649,10 @@
 		padding-block: 40px;
 	}
 
+	#tv-storefront-pdp .pdp-section-title {
+		overflow-wrap: anywhere;
+	}
+
 	#tv-storefront-pdp .pdp-benefits {
 		grid-template-columns: minmax(0, 1fr);
 		gap: 12px;
@@ -1705,10 +1717,12 @@
 	}
 
 	#tv-storefront-pdp .pdp-stat-row {
-		gap: 12px;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 4px;
 		padding: 12px 16px;
 	}
 
+	#tv-storefront-pdp .pdp-stat-row dt,
 	#tv-storefront-pdp .pdp-stat-row dd {
 		overflow-wrap: anywhere;
 	}
@@ -1743,6 +1757,11 @@
 		padding: 16px;
 	}
 
+	#tv-storefront-pdp .pdp-doc .grow {
+		min-width: 0;
+		overflow-wrap: anywhere;
+	}
+
 	#tv-storefront-pdp .pdp-pairings {
 		grid-template-columns: minmax(0, 1fr);
 	}
@@ -1768,6 +1787,8 @@
 		z-index: 60;
 		left: 12px;
 		right: 12px;
+		/* Match both 12px insets even if a mobile layout viewport expands. */
+		max-width: calc(100vw - 24px);
 		bottom: calc(12px + env(safe-area-inset-bottom));
 		display: flex;
 		align-items: center;
@@ -1782,16 +1803,13 @@
 	}
 
 	#tv-storefront-pdp .pdp-mobile-action .pdp-price {
-		display: -webkit-box;
+		display: block;
 		flex: 1 1 auto;
 		min-width: 0;
 		margin: 0;
-		overflow: hidden;
 		font-size: 13px;
 		font-weight: 600;
 		line-height: 1.25;
-		-webkit-box-orient: vertical;
-		-webkit-line-clamp: 2;
 	}
 
 	#tv-storefront-pdp .pdp-mobile-action .pdp-price :is(a, span) {
@@ -1811,6 +1829,52 @@
 		font-size: 14px;
 		line-height: 1.15;
 		white-space: normal;
+	}
+
+	/* Account destinations must remain visible and have their own touch area;
+	   the former two-line price clamp hid the registration link. */
+	#tv-storefront-pdp .pdp-mobile-action:has(.linker-create-account) {
+		display: grid;
+		gap: 8px;
+		padding: 10px;
+		border-radius: var(--proto-radius-panel);
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action .pdp-price:has(.linker-create-account) {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 8px;
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action .pdp-price:has(.linker-create-account) > a {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 0;
+		min-height: 44px;
+		margin: 0;
+		padding: 6px 8px;
+		border: 1px solid var(--pdp-line);
+		border-radius: var(--proto-radius-lg);
+		background: var(--pdp-paper);
+		color: var(--pdp-teal-dark);
+		line-height: 1.4;
+		text-align: center;
+		overflow-wrap: anywhere;
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action .pdp-price:has(.linker-create-account) > a:is(:hover, :focus-visible) {
+		background: var(--pdp-soft);
+		color: var(--pdp-teal);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+
+	#tv-storefront-pdp .pdp-mobile-action:has(.linker-create-account) .pdp-btn-dark {
+		width: 100%;
+		max-width: none;
+		min-height: 48px;
+		border-radius: var(--proto-radius-lg);
 	}
 
 	/* The comparison chip and the assistant launcher clear the action bar. The

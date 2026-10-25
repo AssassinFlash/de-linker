@@ -1,6 +1,6 @@
 # Preserve the REST user guard after initialization
 
-Owner-authorized narrow repair, 2026-10-23. The current isolated base is deployed `97ef132f176066c25812c8093a1b5106c443b3fc`; preserve its required-proof/content guards and all existing REST behavior except the demonstrated missing anonymous user-list refusal. The previously reviewed four-file repair against `b29a979a16c39651fdbfb265413621f9d96f599f` is replayed without taking any other main changes.
+Owner-authorized narrow repair, 2026-10-23. Base is the reviewed reminder hotfix `b29a979a16c39651fdbfb265413621f9d96f599f`; preserve that change and all existing REST behavior except the demonstrated missing anonymous user-list refusal.
 
 ## Evidence and native seam
 

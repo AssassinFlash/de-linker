@@ -17,8 +17,10 @@
 #tv-blog-single-v1 :is(.reader-left,.reader-right) { position: sticky; top: calc(var(--lk-header-h) + var(--proto-space-5)); max-height: calc(100dvh - var(--lk-header-h) - var(--proto-space-7)); overflow-y: auto; }
 #tv-blog-single-v1 .reader-toc { border-top: 1px solid var(--proto-neutral-200); }
 #tv-blog-single-v1 .reader-toc summary { min-height: var(--proto-control-height); padding-block: var(--proto-space-4); font-size: .8125rem; font-weight: 600; cursor: pointer; }
-#tv-blog-single-v1 .tv-blog-single-map-nav { display: grid; gap: var(--proto-space-2); padding-block: var(--proto-space-3); }
-#tv-blog-single-v1 .tv-blog-single-map-nav a { padding: var(--proto-space-2) var(--proto-space-3); border-left: 2px solid transparent; color: var(--proto-ink-muted-deep); font-size: .75rem; line-height: 1.65; }
+#tv-blog-single-v1 .tv-blog-single-map-nav { display: grid; grid-template-columns: minmax(0,1fr); gap: var(--proto-space-2); padding-block: var(--proto-space-3); }
+/* The native 180px German rail left two letters after a hyphen. Three is
+ * the smallest fragment limit that excludes that observed orphan. */
+#tv-blog-single-v1 .tv-blog-single-map-nav a { padding: var(--proto-space-2) var(--proto-space-3); border-left: 2px solid transparent; color: var(--proto-ink-muted-deep); font-size: .75rem; line-height: 1.65; hyphens: auto; hyphenate-limit-chars: auto 3 3; overflow-wrap: break-word; }
 #tv-blog-single-v1 .tv-blog-single-map-nav a[aria-current="location"] { border-left-color: var(--proto-teal-700); color: var(--proto-teal-700); background: var(--proto-teal-50); }
 #tv-blog-single-v1 .tv-blog-single-map-nav a:hover { color: var(--proto-teal-700); text-decoration: underline; }
 #tv-blog-single-v1 .tv-blog-single-map-line { display: none; }

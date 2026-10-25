@@ -24,11 +24,13 @@ import time
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 from index import corpus, extract, inventory, mariadb, parse, store
 from index.chunking import MAX_TOKENS, Chunk, DocumentMeta, Tokenizer, chunk_document
 from index.corpus import DocumentRow
 from index.paths import INDEX_DIR, INVENTORY_PATH, PARSED_DIR, PDF_DIR
+from index.preparation import recipe_revision
 from linker_genie.embedding import (
     BGE_M3,
     MODELS,
@@ -39,6 +41,7 @@ from linker_genie.embedding import (
     gemini_from_env,
     sha256_of,
 )
+from linker_genie.preparation import serving_revision
 
 INDEX_FILE = "index.sqlite"
 # Chunk sizes are counted in XLM-RoBERTa tokens, the tokenizer of BGE-M3 and of
@@ -239,6 +242,9 @@ def chunk_all(
 ) -> Chunked:
     """Chunk every inventory document from its cached parse."""
     result = Chunked([], [], [], [], set(), 0.0)
+    # Archived bake-off corpora can contain only Docling fixtures. Current Woo
+    # publication builds always have the SHA-verified originals from inventory.
+    source_geometry = "publication_manifest" in json.loads(inventory_path.read_text())
     result.products = [
         (product.id, product.model)
         for product in inventory.load_products(inventory_path)
@@ -246,7 +252,11 @@ def chunk_all(
     ]
     for document in inventory.load(inventory_path):
         doc_dir = parsed_dir / document.sha256
-        status = parse.read_status(doc_dir)
+        status = (
+            parse.cached_status(doc_dir)
+            if source_geometry
+            else parse.complete_status(doc_dir)
+        )
         pdf_path = pdf_dir / f"{document.sha256}.pdf"
         if status is None or not (doc_dir / "docling.json").is_file():
             error = failure_reason(
@@ -263,7 +273,12 @@ def chunk_all(
             continue
         result.parse_seconds += status.seconds
         result.parsers.add(status.docling)
-        pages = extract.extract(doc_dir, status.pages, status.garbled_pages)
+        pages = extract.extract(
+            doc_dir,
+            status.pages,
+            status.garbled_pages,
+            pdf_path=pdf_path if source_geometry else None,
+        )
         chunks = chunk_document(_meta(document), pages, tokenizer, detect_lang)
         result.chunks.extend(chunks)
         with_chunks = {chunk.page for chunk in chunks}
@@ -307,7 +322,10 @@ def embed_corpus(
     finally:
         cache.close()
     embedded = time.monotonic()
-    version = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    version = (
+        time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+        + f"-{time.time_ns() % 1_000_000_000:09d}"
+    )
     build_dir = out_root / "builds" / version
     corpus_dir = build_dir / "corpus"
     new_meta = corpus.Meta(
@@ -317,6 +335,9 @@ def embed_corpus(
         meta.parser,
         meta.max_tokens,
         embedding=embedder.fingerprint,
+        publication=meta.publication,
+        recipe_revision=meta.recipe_revision,
+        serving_revision=meta.serving_revision,
     )
     products = corpus.read_products(source)
     corpus.write(corpus_dir, new_meta, documents, products, chunks, vectors)
@@ -355,13 +376,40 @@ def build(
     tokenizer: Tokenizer,
     detect_lang: Callable[[str], str],
     mariadb_prefix: str | None = None,
+    on_created: Callable[[Path], None] | None = None,
+    activation_epoch: int = 0,
 ) -> Path:
-    """Chunk, embed (unless `embedder` is None) and store; returns the build directory."""
+    """Chunk, embed and store; report the newly created generation before writing it."""
     started = time.monotonic()
+    recipe = recipe_revision()
+    serving = serving_revision()
+    source = json.loads(inventory_path.read_text(encoding="utf-8"))
     chunked = chunk_all(inventory_path, pdf_dir, parsed_dir, tokenizer, detect_lang)
     after_chunking = time.monotonic()
+    chunks = chunked.chunks
+    proof: dict[str, Any] = {}
+    if "publication_manifest" in source:
+        from index.publication import compile_publication
+        from linker_genie.publication import PublicationClient
+
+        authority = PublicationClient(str(source["source"]))
+        try:
+            chunks, scopes = compile_publication(
+                chunks, source["publication_manifest"], authority, tokenizer
+            )
+            proof = {
+                "manifest": source["publication_manifest"],
+                "chunk_products": {
+                    cid: scope["product_ids"] for cid, scope in scopes.items()
+                },
+                "chunk_scopes": scopes,
+            }
+        finally:
+            authority.close()
+    after_compilation = time.monotonic()
     print(
-        f"{len(chunked.chunks)} chunks from {len(chunked.documents)} documents",
+        f"{len(chunks)} chunks from {len(chunked.documents)} documents "
+        f"({len(chunks) - len(chunked.chunks)} model projections)",
         flush=True,
     )
     vectors: list[bytes] | None = None
@@ -372,15 +420,20 @@ def build(
         try:
             vectors = cache.embed(
                 embedder,
-                [passage(chunk, titles[chunk.doc_sha256]) for chunk in chunked.chunks],
+                [passage(chunk, titles[chunk.doc_sha256]) for chunk in chunks],
             )
         finally:
             cache.close()
     after_embedding = time.monotonic()
 
-    version = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    version = (
+        time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+        + f"-{time.time_ns() % 1_000_000_000:09d}"
+    )
     build_dir = out_root / "builds" / version
     build_dir.mkdir(parents=True)
+    if on_created is not None:
+        on_created(build_dir)
     meta = corpus.Meta(
         version=version,
         embedding_model=model_identity(embedder) if embedder else None,
@@ -388,21 +441,36 @@ def build(
         parser=", ".join(sorted(chunked.parsers)),
         max_tokens=MAX_TOKENS,
         embedding=embedder.fingerprint if embedder else None,
+        publication=proof,
+        recipe_revision=recipe,
+        serving_revision=serving,
+        activation_epoch=activation_epoch,
     )
     corpus_dir = build_dir / "corpus"
-    corpus.write(
-        corpus_dir, meta, chunked.documents, chunked.products, chunked.chunks, vectors
-    )
+    corpus.write(corpus_dir, meta, chunked.documents, chunked.products, chunks, vectors)
     index_path = build_dir / INDEX_FILE
     store.export(corpus_dir, index_path)
     if mariadb_prefix is not None:
         mariadb.export(corpus_dir, build_dir / "index-mariadb.sql", mariadb_prefix)
+    if recipe_revision() != recipe:
+        raise RuntimeError("knowledge preparation code changed during this build")
     finished = time.monotonic()
 
     coverage = chunked.coverage
     failed = [asdict(item) for item in coverage if item.status == "failed"]
     manifest = {
         "version": version,
+        "source_revision": str(
+            source.get("publication_manifest", {}).get("source_revision", "")
+        ),
+        "recipe_revision": recipe,
+        "serving_revision": serving,
+        "activation_epoch": activation_epoch,
+        "permission_coverage": {
+            "proven_chunks": len(proof.get("chunk_products", {})),
+            "total_chunks": len(chunks),
+            "projected_chunks": len(chunks) - len(chunked.chunks),
+        },
         "file": {
             "name": INDEX_FILE,
             "bytes": index_path.stat().st_size,
@@ -412,9 +480,7 @@ def build(
         "dimensions": meta.dimensions,
         "parser": meta.parser,
         "max_tokens": MAX_TOKENS,
-        "source": json.loads(inventory_path.read_text(encoding="utf-8")).get(
-            "source", ""
-        ),
+        "source": source.get("source", ""),
         "documents": {
             "total": len(chunked.documents),
             "indexed": len(chunked.documents) - len(failed),
@@ -424,11 +490,12 @@ def build(
             "total": sum(item.pages for item in coverage),
             "with_chunks": sum(item.pages_with_chunks for item in coverage),
         },
-        "chunks": len(chunked.chunks),
+        "chunks": len(chunks),
         "seconds": {
             "parse_per_document_sum": round(chunked.parse_seconds, 1),
             "chunk": round(after_chunking - started, 1),
-            "embed": round(after_embedding - after_chunking, 1),
+            "compile": round(after_compilation - after_chunking, 1),
+            "embed": round(after_embedding - after_compilation, 1),
             "store": round(finished - after_embedding, 1),
         },
         "failures": failed,

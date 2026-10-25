@@ -31,6 +31,8 @@ final class ResourcePolicy {
 			'/linker-ai/v1/genie/turn' === $route => 'genie',
 			'/linker-ai/v1/genie/contact' === $route => 'genie_contact',
 			'/linker-ai/v1/genie/inquiry' === $route => 'genie_inquiry',
+			'/linker-ai/v1/genie/draft' === $route => 'draft_write',
+			'/linker-ai/v1/genie/solution' === $route => 'solution_save',
 			self::matches( '#\A/linker-ai/v1/genie/conversations/\d+/email\z#', $route ) => 'conversation_mail',
 			self::matches( '#\A/linker-ai/v1/genie/turn/\d+/vote\z#', $route ) => 'vote',
 			'/linker-ai/v1/genie/conversations' === $route => self::conversation_action( $select ),
@@ -38,6 +40,7 @@ final class ResourcePolicy {
 			self::matches( '#\A/linker-ai/v1/engine/design/(residential|commercial)\z#', $route ) => 'design',
 			self::matches( '#\A/linker-ai/v1/engine/roof/(outline|pack)\z#', $route ) => 'roof',
 			'/linker-ai/v1/engine/report/pdf' === $route => 'report_pdf',
+			'/linker/v1/solutions/draft' === $route => 'draft_write',
 			'/linker/v1/solutions' === $route => 'solution_save',
 			default => '',
 		};

@@ -9,7 +9,6 @@ declare( strict_types = 1 );
 
 namespace Linker\Commerce\Abilities;
 
-use Linker\Commerce\Products\Compatibility;
 use Linker\Commerce\Products\SelectionFacts;
 use Linker\Commerce\Products\SelectionFactSet;
 
@@ -18,6 +17,19 @@ use Linker\Commerce\Products\SelectionFactSet;
  * A combination the contract does not mention is unknown, never inferred.
  */
 final class CheckCompatibility {
+	/**
+	 * Current operation snapshot, refreshed for every selection.
+	 *
+	 * @var array<string,mixed>
+	 */
+	private array $publication_snapshot = array();
+	/**
+	 * Use the shared current authority.
+	 *
+	 * @param PublicationData $publication Current authority reader.
+	 */
+	public function __construct( private readonly PublicationData $publication = new PublicationData() ) {}
+
 
 	/**
 	 * Ability name.
@@ -126,15 +138,20 @@ final class CheckCompatibility {
 	 * @return array{verdict: string, conditions: list<array{en: string, de: string}>, documents: list<array{url: string, page?: int}>}
 	 */
 	public function execute( $input = array() ): array {
-		$pair = $this->pair( (array) $input );
+		$this->publication_snapshot = $this->publication->manifest();
+		$pair                       = $this->pair( (array) $input );
 		if ( null === $pair ) {
 			return $this->unknown();
 		}
-		$answer = Compatibility::for_products( $pair[0], $pair[1] );
+		$dependencies = $this->publication->dependencies( array_column( $this->publication_snapshot['products'], 'product_id' ), $this->publication_snapshot );
+		$answer       = $this->publication->pairing( $pair[0], $pair[1], $this->publication_snapshot );
 		if ( null === $answer ) {
 			return $this->unknown();
 		}
 
+		if ( ! $this->publication->unchanged( $dependencies ) ) {
+			return $this->unknown();
+		}
 		return array(
 			'verdict'    => $answer['verdict'],
 			'conditions' => $answer['conditions'],
@@ -158,8 +175,11 @@ final class CheckCompatibility {
 		if ( 2 !== count( $ids ) || $ids[0] < 1 || $ids[1] < 1 ) {
 			return null;
 		}
-		$first  = SelectionFacts::for_product( $ids[0] )->device_class;
-		$second = SelectionFacts::for_product( $ids[1] )->device_class;
+		if ( count( $this->publication->published( $ids, $this->publication_snapshot ) ) !== 2 ) {
+			return null;
+		}
+		$first  = $this->publication->facts( $ids[0], $this->publication_snapshot )->device_class;
+		$second = $this->publication->facts( $ids[1], $this->publication_snapshot )->device_class;
 		if ( $this->is_inverter( $first ) && $this->is_battery( $second ) ) {
 			return array( $ids[0], $ids[1] );
 		}

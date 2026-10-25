@@ -134,3 +134,32 @@ brew services start redis
 | `verify-checksums` 失败 | 需要联网；或缓存的安装包损坏：删 `~/de-linker-local/.cache/` 里那个文件重来 |
 | 首次进后台被带到 WooCommerce 页面 | WooCommerce 新装后的一次性欢迎跳转，之后正常 |
 | 页面缺图、缺字体 | 外部资源被 CSP 挡住；干净安装没有线上内容，等 #6 的快照 |
+
+### Administrator MFA acceptance
+
+`just admin-mfa INSTANCE --prepare` installs/verifies the official free
+Two-Factor0.17.0 dependency only on a registered, isolated local instance owned
+by this checkout. It also installs the official formal German pack and merges
+the narrowly reviewed site notice using native gettext/WP-CLI; existing gettext
+commands `msgcat` and `msgfmt` are required. No third-party plugin source is
+vendored. Every run, including without `--prepare`, reads the installed version
+and status and requires exactly0.17.0, active, with official strict file checksums
+before any fixture write. `--prepare` controls installation/language writes only.
+
+The real HTTP test uses disposable administrator/customer identities, native
+TOTP/recovery providers, reset links and application passwords. It captures mail
+locally and removes its identities/factors/jobs afterwards. `--evidence PATH`
+writes sanitized JSON; `--keep-fixture` intentionally preserves only the owned
+local fixture for a following Computer Use session. Clean it explicitly with
+`just wp INSTANCE eval-file /absolute/checkout/tests/e2e/fixtures/admin-mfa.php cleanup`.
+Do not print the fixture's `read` output: it contains synthetic local credentials.
+Each newly created user/page ID is persisted and read back before any later
+provider or language action. A failed ownership write deletes and verifies only
+that just-created object; a failed compensation stops with its local ID for
+manual cleanup. The offline failure tests exercise partial setup and finally
+cleanup without loading WordPress or contacting a provider.
+
+This is separate from production enrolment. Installation does not enable a real
+administrator's MFA. Follow the [#565 deployment/device handoff](acceptance/2026-10-22/565/deployment.md)
+after coordinator review/CI, without forcing customer factors or revoking the
+existing API credential.

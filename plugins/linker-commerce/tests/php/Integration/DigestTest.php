@@ -37,6 +37,18 @@ use WC_Order;
  * @coversNothing
  */
 final class DigestTest extends IntegrationTestCase {
+	/** The fixture asserts EN subjects and needs native mail classes even in isolation. */
+	protected function setUp(): void {
+		parent::setUp();
+		WC()->mailer();
+		$locale = get_option( 'linker_commerce_team_locale' );
+		update_option( 'linker_commerce_team_locale', 'en_US', false );
+		$this->later(
+			static function () use ( $locale ): void {
+				false === $locale ? delete_option( 'linker_commerce_team_locale' ) : update_option( 'linker_commerce_team_locale', $locale, false );
+			}
+		);
+	}
 
 	/**
 	 * The window boundaries: 25 hours in, 23 out, and exactly 24 hours out;
@@ -98,6 +110,18 @@ final class DigestTest extends IntegrationTestCase {
 	 * blind copies in the headers and every block's empty sentence.
 	 */
 	public function test_empty_digest_still_sends(): void {
+		// A live snapshot contains real older inquiries. Exercise the native
+		// empty-window clock seam, without hiding/deleting those source rows.
+		$empty_windows = static fn ( array $blocks ): array => array_map(
+			static fn ( Block $block ): Block => $block instanceof InquiriesAwaitingProforma ? new InquiriesAwaitingProforma( 1 ) : ( $block instanceof ProformasAwaitingReply ? new ProformasAwaitingReply( 1 ) : $block ),
+			$blocks
+		);
+		add_filter( 'linker_commerce_digest_blocks', $empty_windows );
+		$this->later(
+			static function () use ( $empty_windows ): void {
+				remove_filter( 'linker_commerce_digest_blocks', $empty_windows );
+			}
+		);
 		$digests = array();
 		$this->capture_digests( $digests );
 		$this->with_team_recipients();
@@ -169,6 +193,11 @@ final class DigestTest extends IntegrationTestCase {
 			$mailer->clearAllRecipients();
 		};
 		add_action( 'phpmailer_init', $fail, PHP_INT_MAX );
+		$this->later(
+			static function () use ( $fail ): void {
+				remove_action( 'phpmailer_init', $fail, PHP_INT_MAX );
+			}
+		);
 
 		$this->run_digest();
 		$job_id   = $this->pending_job_id();

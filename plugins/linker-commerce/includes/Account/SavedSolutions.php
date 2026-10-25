@@ -119,8 +119,9 @@ final class SavedSolutions {
 	 * @param string                                      $title  Name of the solution.
 	 * @param list<array{product_id: int, quantity: int}> $items  Products and quantities.
 	 * @param array<string, mixed>                        $design Configurator kind and input.
+	 * @return int Slot of this newly kept record, for final-check compensation.
 	 */
-	public function keep_for_guest( string $title, array $items, array $design ): void {
+	public function keep_for_guest( string $title, array $items, array $design ): int {
 		// REST requests start without WooCommerce's session; this loads it from the guest's cookie.
 		wc_load_cart();
 		$kept   = (array) WC()->session->get( self::SESSION_KEY, array() );
@@ -134,6 +135,21 @@ final class SavedSolutions {
 		if ( $session instanceof \WC_Session_Handler ) {
 			// A guest without a solution draft has no session cookie yet.
 			$session->set_customer_session_cookie( true );
+		}
+		return (int) array_key_last( $kept );
+	}
+
+	/**
+	 * Compensate only the just-written guest record; prior history remains.
+	 *
+	 * @param int    $slot        Slot returned by keep_for_guest().
+	 * @param string $fingerprint Confirmed design identity.
+	 */
+	public function discard_guest( int $slot, string $fingerprint ): void {
+		$kept = WC()->session->get( self::SESSION_KEY, array() );
+		if ( is_array( $kept ) && ( $kept[ $slot ]['design']['selection_fingerprint'] ?? null ) === $fingerprint ) {
+			unset( $kept[ $slot ] );
+			WC()->session->set( self::SESSION_KEY, array_values( $kept ) );
 		}
 	}
 
@@ -223,6 +239,56 @@ final class SavedSolutions {
 	}
 
 	/**
+	 * Immutable engine result stored when the customer saved this design.
+	 * A legacy record without a snapshot does not re-run today's engine.
+	 *
+	 * @param int $solution_id Solution.
+	 * @return array<string, mixed>|null
+	 */
+	public function snapshot( int $solution_id ): ?array {
+		$design = json_decode( (string) get_post_meta( $solution_id, self::DESIGN_META, true ), true );
+		return is_array( $design ) && is_array( $design['snapshot'] ?? null ) ? $design['snapshot'] : null;
+	}
+
+	/**
+	 * Recorded item labels only, never current facts from a withdrawn product.
+	 *
+	 * @param int $solution_id Solution.
+	 * @return list<array{product_id:int,quantity:int,label:string}>
+	 */
+	public function historical_items( int $solution_id ): array {
+		$snapshot = $this->snapshot( $solution_id );
+		$labels   = array();
+		$selected = is_array( $snapshot['selected'] ?? null ) ? $snapshot['selected'] : array();
+		if ( array() === $selected && is_int( $snapshot['selected_system_index'] ?? null ) && is_array( $snapshot['systems'][ $snapshot['selected_system_index'] ] ?? null ) ) {
+			$selected = $snapshot['systems'][ $snapshot['selected_system_index'] ];
+		}
+		foreach ( is_array( $selected['lines'] ?? null ) ? $selected['lines'] : array() as $line ) {
+			if ( is_array( $line ) && is_array( $line['product'] ?? null ) ) {
+				$product                                 = $line['product'];
+				$labels[ (int) ( $product['id'] ?? 0 ) ] = trim( (string) ( $product['brand'] ?? '' ) . ' ' . (string) ( $product['model'] ?? '' ) );
+			}
+		}
+		$items = array();
+		foreach ( $this->items( $solution_id ) as $item ) {
+			/* translators: %d: product ID recorded in a historical solution. */
+			$item['label'] = $labels[ $item['product_id'] ] ?? sprintf( __( 'Product %d', 'linker-commerce' ), $item['product_id'] );
+			$items[]       = $item;
+		}
+		return $items;
+	}
+
+	/**
+	 * Removes only a new write rejected by its final publication check.
+	 *
+	 * @param int $solution_id Newly inserted solution.
+	 */
+	public function discard( int $solution_id ): void {
+		$this->reports->delete( (string) get_post_meta( $solution_id, self::REPORT_META, true ) );
+		wp_delete_post( $solution_id, true );
+	}
+
+	/**
 	 * Prints the "Saved solutions" page of the account; runs on its endpoint.
 	 */
 	public function render(): void {
@@ -251,13 +317,11 @@ final class SavedSolutions {
 		if ( ! wp_verify_nonce( $nonce, self::ADD_ACTION . '_' . $solution_id ) || get_current_user_id() !== $this->owner( $solution_id ) ) {
 			return;
 		}
-		$added = 0;
-		foreach ( $this->items( $solution_id ) as $item ) {
-			if ( false !== WC()->cart->add_to_cart( $item['product_id'], $item['quantity'] ) ) {
-				++$added;
-			}
-		}
-		if ( $added > 0 ) {
+		$snapshot = $this->snapshot( $solution_id );
+		$added    = null !== $snapshot ? ( new AtomicSolutionDraft() )->add( $snapshot ) : DesignProof::unavailable();
+		if ( $added instanceof \WP_Error ) {
+			wc_add_notice( $added->get_error_message(), 'error' );
+		} else {
 			wc_add_notice( __( 'The products of the saved solution are in your solution draft.', 'linker-commerce' ) );
 		}
 		wp_safe_redirect( wc_get_cart_url() );

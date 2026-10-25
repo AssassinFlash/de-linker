@@ -294,8 +294,12 @@ test( 'a hung connection becomes the upstream failure and can be retried', async
 		await page.getByRole( 'button', { name: 'Send' } ).click();
 		await expect.poll( () => proxy.posts.n ).toBe( 1 );
 
+		// The full browser request covers the existing native 90-second
+		// operation window, rather than ending at the inner 60-second budget.
 		await page.clock.runFor( 60_000 );
 		const alert = page.getByRole( 'alert' );
+		await expect( alert ).toHaveCount( 0 );
+		await page.clock.runFor( 30_000 );
 		await expect( alert ).toHaveText(
 			'Genie did not answer. Please try again.'
 		);

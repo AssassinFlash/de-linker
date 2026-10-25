@@ -1,0 +1,28 @@
+{
+  "captured_utc": "2026-10-22T14:39:30.792286+00:00",
+  "instance": "m565",
+  "dependency": {
+    "version": "0.17.0",
+    "status": "active",
+    "official_checksums": "Success: Verified 1 of 1 plugins."
+  },
+  "snapshot_retained": true,
+  "created_account_pages": 0,
+  "forms": [
+    {
+      "language": "en",
+      "status": 200,
+      "login_form_count": 1
+    },
+    {
+      "language": "de",
+      "status": 200,
+      "login_form_count": 1
+    }
+  ],
+  "synthetic_users": 4,
+  "users_with_factor": 2,
+  "ownership_readback_matches": true,
+  "before_after_users_pages_options_language_ledger_equal": true,
+  "fixture_absent_after_cleanup": true
+}

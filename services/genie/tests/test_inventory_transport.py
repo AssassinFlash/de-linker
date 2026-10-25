@@ -7,11 +7,16 @@ from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from index.inventory import RestClient
+from index.inventory import RestClient, run
 
 
 @contextmanager
-def endpoint(redirects: dict[str, str], received_auth: list[bool]) -> Iterator[str]:
+def endpoint(
+    redirects: dict[str, str],
+    received_auth: list[bool],
+    *,
+    public_manifest: dict[str, object] | None = None,
+) -> Iterator[str]:
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_: object) -> None:
             pass
@@ -24,13 +29,22 @@ def endpoint(redirects: dict[str, str], received_auth: list[bool]) -> Iterator[s
                 self.send_header("Location", redirects[path])
                 self.end_headers()
                 return
+            manifest_read = path == "/wp-json/linker/v1/publication/manifest"
+            if manifest_read and public_manifest is not None and received_auth[-1]:
+                # The selected native inventory credential cannot read other routes.
+                self.send_response(403)
+                self.end_headers()
+                return
+            body = json.dumps(
+                public_manifest if manifest_read and public_manifest is not None else []
+            ).encode()
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("X-WP-Total", "0")
             self.send_header("X-WP-TotalPages", "0")
-            self.send_header("Content-Length", "2")
+            self.send_header("Content-Length", str(len(body)))
             self.end_headers()
-            self.wfile.write(b"[]")
+            self.wfile.write(body)
 
     with ThreadingHTTPServer(("127.0.0.1", 0), Handler) as server:
         thread = threading.Thread(target=server.serve_forever, daemon=True)
@@ -83,3 +97,48 @@ def test_same_origin_redirect_preserves_the_native_authenticated_read(
     with endpoint({"/wp-json/redirect": "/wp-json/wp/v2/media"}, received) as base:
         assert client(tmp_path, base).get("/redirect", {}) == ([], 0, 0)
     assert received == [True, True]
+
+
+def test_standalone_inventory_reads_public_manifest_without_inventory_identity(
+    tmp_path: Path,
+) -> None:
+    received: list[bool] = []
+    manifest: dict[str, object] = {
+        "schema_version": 1,
+        "source_revision": "native-publication-empty",
+        "compatibility_revision": "compatibility-current",
+        "products": [],
+        "documents": [],
+    }
+    with endpoint({}, received, public_manifest=manifest) as base:
+        reader = client(tmp_path, base)
+        out = tmp_path / "inventory.json"
+        assert run(tmp_path / "rest.json", out, tmp_path / "pdf") == []
+        assert json.loads(out.read_text())["publication_manifest"] == manifest
+        assert reader.get("/wp/v2/media", {"mime_type": "application/pdf"}) == (
+            [],
+            0,
+            0,
+        )
+        assert reader.get("/wc/v3/products", {}) == ([], 0, 0)
+    assert received == [False, True, True]
+
+
+def test_public_manifest_redirect_still_cannot_leave_the_configured_origin(
+    tmp_path: Path,
+) -> None:
+    import pytest
+
+    source: list[bool] = []
+    destination: list[bool] = []
+    with (
+        endpoint({}, destination) as other,
+        endpoint(
+            {"/wp-json/linker/v1/publication/manifest": other + "/received"},
+            source,
+        ) as base,
+        pytest.raises(RuntimeError, match="origin"),
+    ):
+        client(tmp_path, base).get("/linker/v1/publication/manifest", {})
+    assert source == [False]
+    assert destination == []

@@ -14,7 +14,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { saveSolution } from '../../configurator/api/solutions';
+import { SolutionWriteError } from '../../configurator/api/solutions';
+import { saveGenieSolution, GenieSaveUnconfirmedError } from '../api/solution';
+import { additionStatusText } from '../../configurator/publication';
 import type { storeClient } from '../../configurator/api/store';
 import type { Locale } from '../../configurator/types';
 import type { PartsAddResult } from '../components/PartsCard';
@@ -68,22 +70,32 @@ export function useCardActions( {
 	);
 
 	const addToDraft = useCallback(
-		async ( productId: number ) => {
+		async ( productId: number, token = '' ) => {
 			status( productId, 'pending', __( 'Adding…', 'linker-tools' ) );
-			await store.addAll( [ { productId, quantity: 1 } ], ( id, state ) =>
-				status(
-					id,
-					state,
-					{
-						pending: __( 'Adding…', 'linker-tools' ),
-						added: __( 'In your solution draft.', 'linker-tools' ),
-						unverified: __(
-							'Sent, but the draft does not show it yet. Please check.',
-							'linker-tools'
-						),
-						retry: __( 'Not added. Try again.', 'linker-tools' ),
-					}[ state ]
-				)
+			await store.addAll(
+				[ { productId, quantity: 1 } ],
+				( id, state ) =>
+					status(
+						id,
+						state === 'stale' ? 'retry' : state,
+						{
+							pending: __( 'Adding…', 'linker-tools' ),
+							added: __(
+								'In your solution draft.',
+								'linker-tools'
+							),
+							unverified: additionStatusText(),
+							retry: __(
+								'Not added. Try again.',
+								'linker-tools'
+							),
+							stale: __(
+								'Genie needs to check this product list again before it can be saved or added.',
+								'linker-tools'
+							),
+						}[ state ]
+					),
+				{ kind: 'genie', token }
 			);
 		},
 		[ status, store ]
@@ -94,7 +106,8 @@ export function useCardActions( {
 	// (configurator/api/store.ts). The card shows the worst outcome of the lines.
 	const addPartsToDraft = useCallback(
 		async (
-			items: { product_id: number; quantity: number }[]
+			items: { product_id: number; quantity: number }[],
+			token = ''
 		): Promise< PartsAddResult > => {
 			let result: PartsAddResult = 'added';
 			const complete = await store.addAll(
@@ -103,12 +116,19 @@ export function useCardActions( {
 					quantity: item.quantity,
 				} ) ),
 				( _id, state ) => {
-					if ( state === 'retry' ) {
+					if ( state === 'stale' ) {
+						result = 'stale';
+					} else if ( state === 'retry' && result !== 'stale' ) {
 						result = 'retry';
-					} else if ( state === 'unverified' && result !== 'retry' ) {
+					} else if (
+						state === 'unverified' &&
+						result !== 'retry' &&
+						result !== 'stale'
+					) {
 						result = 'unverified';
 					}
-				}
+				},
+				{ kind: 'genie', token }
 			);
 			return complete && result === 'added' ? 'added' : result;
 		},
@@ -116,39 +136,43 @@ export function useCardActions( {
 	);
 
 	const saveCardSolution = useCallback(
-		async ( productId: number, title: string ) => {
+		async ( productId: number, _title: string, token = '' ) => {
 			status( productId, 'pending', __( 'Saving…', 'linker-tools' ) );
 			try {
-				await saveSolution(
+				const saved = await saveGenieSolution(
 					restUrl,
 					restNonce,
-					{
-						kind: 'residential',
-						title,
-						input: {
-							locale,
-							plz: '',
-							annual_kwh: 0,
-							pv_kwp: 0,
-							phase: 3,
-							backup: 'none',
-							heat_pump: false,
-							electric_vehicle: false,
-						},
-						lines: [ { productId, quantity: 1 } ],
-					},
+					token,
 					locale
 				);
 				status(
 					productId,
 					'added',
-					__( 'Saved to your account.', 'linker-tools' )
+					saved.id > 0
+						? __( 'Saved to your account.', 'linker-tools' )
+						: __( 'Saved in this browser for now.', 'linker-tools' )
 				);
-			} catch {
+			} catch ( error ) {
+				if ( error instanceof GenieSaveUnconfirmedError ) {
+					status(
+						productId,
+						'unverified',
+						__(
+							'The request status could not be confirmed. Please check before sending it again.',
+							'linker-tools'
+						)
+					);
+					return;
+				}
 				status(
 					productId,
 					'retry',
-					__( 'Not saved. Try again.', 'linker-tools' )
+					error instanceof SolutionWriteError && error.changed
+						? __(
+								'Genie needs to check this product list again before it can be saved or added.',
+								'linker-tools'
+							)
+						: __( 'Not saved. Try again.', 'linker-tools' )
 				);
 			}
 		},

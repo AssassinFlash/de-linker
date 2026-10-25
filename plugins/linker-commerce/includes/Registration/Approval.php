@@ -22,6 +22,21 @@ use WP_User;
  * shows the state. Surfaces outside this class read status(), never the meta.
  */
 final class Approval {
+	/** Native atomic write port; unit fixtures explicitly supply only their memory writer.
+	 *
+	 * @var \Closure
+	 */
+	private readonly \Closure $write;
+
+	/**
+	 * Production always owns/joins the native transaction; no runtime DB-type bypass.
+	 *
+	 * @param \Closure|null $write Explicit isolated writer for domain unit fixtures.
+	 */
+	public function __construct( ?\Closure $write = null ) {
+		$this->write = $write ?? \Linker\Commerce\Mail\NativeTransaction::run( ... );
+	}
+
 
 	/**
 	 * States.
@@ -165,30 +180,63 @@ final class Approval {
 			return true;
 		}
 		$reason_changed = $this->reason( $user_id ) !== $reason;
-		update_user_meta( $user_id, self::STATUS_META, $status );
-		update_user_meta( $user_id, self::REASON_META, $reason );
-		update_user_meta( $user_id, self::CHANGED_AT_META, time() );
-		update_user_meta( $user_id, self::CHANGED_BY_META, get_current_user_id() );
-
-		if ( $previous !== $status || ( $reason_changed && in_array( $status, array( self::RESTRICTED, self::REJECTED ), true ) ) ) {
-			if ( $previous !== $status && self::REJECTED === $status ) {
-				\WP_Session_Tokens::get_instance( $user_id )->destroy_all();
+		// Reserve the actual native template before changing approval or sessions.
+		// A complete staff reason may be large; no guessed per-message cut-off.
+		if ( $previous !== $status || $reason_changed ) {
+			foreach ( WC()->mailer()->get_emails() as $email ) {
+				if ( ! $email instanceof Emails\CustomerApprovalEmail ) {
+					continue;
+				}
+				$message = $email->preview_approval( $user_id, $previous, $status, $reason );
+				if ( null === $message ) {
+					continue;
+				}
+				$encoded  = wp_json_encode( $message->to_array() );
+				$reserved = \Linker\Commerce\Mail\Capacity::reserve_critical( 'approval:' . wp_generate_uuid4(), 1, is_string( $encoded ) ? strlen( $encoded ) : 0 );
+				if ( is_wp_error( $reserved ) ) {
+					return false;
+				}
+				$email->stage( $user_id, $message, $reserved );
 			}
-			/**
-			 * Fires when the approval state of a customer changes; the customer
-			 * emails listen on its "_notification" form.
-			 *
-			 * @since 0.2.1
-			 *
-			 * @param int    $user_id  Customer.
-			 * @param string $previous State before.
-			 * @param string $current  State now.
-			 * @param string $reason   The reason the team gave.
-			 */
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- the hook name is this class's own constant, prefixed linker_commerce_, documented above.
-			do_action( self::CHANGED_ACTION, $user_id, $previous, $status, $reason );
 		}
-		return true;
+		try {
+			return ( $this->write )(
+				function () use ( $user_id, $status, $reason, $previous, $reason_changed ): bool {
+					update_user_meta( $user_id, self::STATUS_META, $status );
+					update_user_meta( $user_id, self::REASON_META, $reason );
+					$changed_at = time();
+					update_user_meta( $user_id, self::CHANGED_AT_META, $changed_at );
+					update_user_meta( $user_id, self::CHANGED_BY_META, get_current_user_id() );
+					wp_cache_delete( $user_id, 'user_meta' );
+					if ( get_user_meta( $user_id, self::STATUS_META, true ) !== $status || get_user_meta( $user_id, self::REASON_META, true ) !== $reason || (int) get_user_meta( $user_id, self::CHANGED_AT_META, true ) !== $changed_at || get_current_user_id() !== (int) get_user_meta( $user_id, self::CHANGED_BY_META, true ) ) {
+						throw new \RuntimeException( 'approval_native_write_unconfirmed' );
+					}
+
+					if ( $previous !== $status || ( $reason_changed && in_array( $status, array( self::RESTRICTED, self::REJECTED ), true ) ) ) {
+						if ( $previous !== $status && self::REJECTED === $status ) {
+							\WP_Session_Tokens::get_instance( $user_id )->destroy_all();
+						}
+						/**
+						 * Fires when the approval state of a customer changes; the customer
+						 * emails listen on its "_notification" form.
+						 *
+						 * @since 0.2.1
+						 *
+						 * @param int    $user_id  Customer.
+						 * @param string $previous State before.
+						 * @param string $current  State now.
+						 * @param string $reason   The reason the team gave.
+						 */
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound, WooCommerce.Commenting.CommentHooks.MissingHookComment -- the hook name is this class's own constant, prefixed linker_commerce_, documented above.
+						do_action( self::CHANGED_ACTION, $user_id, $previous, $status, $reason );
+					}
+					return true;
+				}
+			);
+		} catch ( \Throwable $error ) {
+			wp_cache_delete( $user_id, 'user_meta' );
+			return false;
+		}
 	}
 
 	/**

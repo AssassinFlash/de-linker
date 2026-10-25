@@ -1,0 +1,27 @@
+{
+  "source_commit": "39f1c87f",
+  "author_commit": "8e13d58059a6acd578f7126ccd2b9a2dc5a8de94",
+  "guard_sha256": "67b45ce9bb4fb9bcbe5801d9d44be1cb5bb84da33b11b9c172dcccd8c000e497",
+  "actual_instance": "publication614",
+  "native_checks": 52,
+  "purpose_non_job_reads": 0,
+  "purpose_non_job_writes": 0,
+  "phpunit": {
+    "tests": 1,
+    "assertions": 11,
+    "seconds": 6.507,
+    "passed": true
+  },
+  "cleanup_readback": {
+    "fixture_state": null,
+    "read_canary": null,
+    "write_canary": null,
+    "fixture_users": [],
+    "loader_present": false,
+    "scope_file_present": false
+  },
+  "knowledge_source_after": "71567ab3481a9dcb25193ba185a764d441019705a764b71207a3c577ee14c4ed",
+  "knowledge_loaded_product_count": 70,
+  "knowledge_unprepared_associations": 393,
+  "method": "Actual native HTTP fixture on the owned snapshot-backed review instance, then separate native readback. No production credential, provider call, shared cache flush, original-file or customer deletion."
+}

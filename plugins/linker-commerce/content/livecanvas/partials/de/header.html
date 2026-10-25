@@ -5,7 +5,7 @@
         <nav class="lc-block tv-nav-frame" aria-label="Primäre Navigation">
             <a href="/de/" class="tv-brand" aria-label="Linker-Startseite">
         <span class="tv-brand-mark" aria-hidden="true">
-          <img class="tv-brand-logo" src="/wp-content/uploads/2026/07/de-linker-logo-1.webp" alt="Linker" loading="eager" decoding="async">
+          <img class="tv-brand-logo" src="/wp-content/uploads/2026/07/de-linker-logo-1.webp" alt="Linker" width="712" height="355" loading="eager" decoding="async" srcset="/wp-content/uploads/2026/07/de-linker-logo-1.webp 712w, /wp-content/uploads/2026/07/de-linker-logo-1-300x150.webp 300w, /wp-content/uploads/2026/07/de-linker-logo-1-600x299.webp 600w" sizes="(max-width: 1279px) 81px, 105px" >
         </span>
       </a>
 
@@ -18,10 +18,10 @@
           <div class="tv-mega-menu" role="menu">
             <div class="tv-mega-grid">
               <a href="/de/produkte/" class="tv-mega-featured" role="menuitem">
-                <img src="/wp-content/uploads/2026/09/linker-one-stand-for-solar-and-storage.webp" alt="Der Linker-Stand – Solar-Wechselrichter, Batteriespeicher und Messtechnik an einem Ort" class="tv-mega-featured-img" loading="lazy" decoding="async">
+                <img src="/wp-content/uploads/2026/10/linker-front-desk-reception.webp" alt="Empfang bei Linker" class="tv-mega-featured-img" loading="lazy" decoding="async">
                 <p class="tv-mega-featured-eyebrow">/ Produkte</p>
                 <h4 class="tv-mega-featured-title">Speicherprodukte von autorisierten Marken</h4>
-                <p class="tv-mega-featured-desc">Energiespeicher von GoodWe, SAJ, Pylontech und EcoFlow.</p>
+                <p class="tv-mega-featured-desc">[linker_supply_brands categories="home-storage,commercial-storage" prefix="Energiespeicher von " suffix="." conjunction="und"]</p>
                 <span class="tv-mega-featured-cta">Alle Produkte ansehen →</span>
               </a>
               <div class="tv-mega-links" role="none">
@@ -30,7 +30,7 @@
                     <img src="/wp-content/uploads/2026/09/linker-home-battery-storage.webp" alt="" class="tv-mega-link-thumb" loading="lazy" decoding="async">
                     <div class="tv-mega-link-text">
                       <div class="tv-mega-link-title-row"><span class="tv-mega-link-title">Heimspeicher</span><svg class="tv-mega-link-arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
-    <span class="tv-mega-link-desc">Heimspeicher-Batterien von GoodWe, SAJ und EcoFlow</span></div>
+    <span class="tv-mega-link-desc">[linker_supply_brands categories="home-storage" prefix="Heimspeicher-Batterien von " conjunction="und"]</span></div>
                   </a>
                 </div>
                 <div class="tv-mega-group" role="none">
@@ -38,7 +38,7 @@
                     <img src="/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp" alt="" class="tv-mega-link-thumb" loading="lazy" decoding="async">
                     <div class="tv-mega-link-text">
                       <div class="tv-mega-link-title-row"><span class="tv-mega-link-title">Gewerbespeicher</span><svg class="tv-mega-link-arrow" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg></div>
-    <span class="tv-mega-link-desc">All-in-One-Systeme und Batteriesysteme von GoodWe, SAJ und Pylontech</span></div>
+    <span class="tv-mega-link-desc">[linker_supply_brands categories="commercial-storage" prefix="Gewerbespeicher von " conjunction="und"]</span></div>
                   </a>
                   <div class="tv-mega-sublinks" role="none">
                     <a href="/de/produkt-kategorie/gewerbespeicher/komplettsysteme/" class="tv-mega-sublink" role="menuitem">All-in-One-Systeme</a>
@@ -199,12 +199,34 @@
             [linker_contact_link placement="header"]
 
             [linker_header_utilities part="mobile-language"]
-      <button class="tv-mobile-toggle" id="tv-mobile-toggle" aria-label="Menü öffnen" aria-expanded="false">
-        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
-    </nav>
+      <details class="tv-mobile-navigation">
+      <summary class="tv-mobile-toggle" id="tv-mobile-toggle" role="button" aria-controls="tv-mobile-panel" aria-label="Menü öffnen">
+        <svg class="tv-menu-open-icon" aria-hidden="true" focusable="false" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg class="tv-menu-close-icon" aria-hidden="true" focusable="false" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m6 6 12 12M6 18 18 6"/></svg>
+      </summary>
 
         <div class="tv-mobile-panel" id="tv-mobile-panel">
+      <details class="tv-mobile-section" data-tv-mobile-primary="products">
+        <summary class="tv-mobile-summary">
+          Produkte
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </summary>
+        <div class="tv-mobile-links">
+          <div class="tv-mobile-rail">
+            <a href="/de/produkt-kategorie/heimspeicher/" class="tv-mobile-rail-card"><img src="/wp-content/uploads/2026/09/linker-home-battery-storage.webp" alt="" loading="lazy" decoding="async"><span class="tv-mobile-rail-title">Heimspeicher</span><span class="tv-mobile-rail-desc">[linker_supply_brands categories="home-storage" prefix="Heimspeicher-Batterien von " conjunction="und"]</span></a>
+            <a href="/de/produkt-kategorie/gewerbespeicher/" class="tv-mobile-rail-card"><img src="/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp" alt="" loading="lazy" decoding="async"><span class="tv-mobile-rail-title">Gewerbespeicher</span><span class="tv-mobile-rail-desc">[linker_supply_brands categories="commercial-storage" prefix="Gewerbespeicher von " conjunction="und"]</span></a>
+          </div>
+          <a href="/de/produkt-kategorie/gewerbespeicher/komplettsysteme/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">All-in-One-Systeme</span></div></a>
+          <a href="/de/produkt-kategorie/gewerbespeicher/batteriesysteme/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Batteriesysteme</span></div></a>
+          <a href="/de/produkt-kategorie/wechselrichter/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Wechselrichter</span></div></a>
+          <a href="/de/produkt-kategorie/ems-ueberwachung/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">EMS & Monitoring</span></div></a>
+          <a href="/de/produkt-kategorie/ladestationen/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Ladestationen</span></div></a>
+          <a href="/de/produkt-kategorie/zubehoer/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Zubehör</span></div></a>
+          <a href="/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Energiezähler & Stromwandler</span></div></a>
+          <a href="/de/produkt-kategorie/zubehoer/notstrom/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Notstrom</span></div></a>
+          <a href="/de/produkte/" class="tv-mobile-link tv-mobile-link--all"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Alle Produkte ansehen →</span></div></a>
+        </div>
+      </details>
       <details class="tv-mobile-section" data-tv-mobile-primary="solutions">
         <summary class="tv-mobile-summary">
           Lösungen
@@ -217,27 +239,6 @@
             <a href="/de/loesung/grossspeicher/" class="tv-mobile-rail-card"><img src="/wp-content/uploads/2026/09/linker-utility-scale-bess.webp" alt="" loading="lazy" decoding="async"><span class="tv-mobile-rail-title">Großspeicher-BESS</span><span class="tv-mobile-rail-desc">Netzspeicher, projektbezogen angeboten</span></a>
           </div>
           <a href="/de/loesung/" class="tv-mobile-link tv-mobile-link--all"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Alle Lösungen →</span></div></a>
-        </div>
-      </details>
-      <details class="tv-mobile-section" data-tv-mobile-primary="products">
-        <summary class="tv-mobile-summary">
-          Produkte
-          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </summary>
-        <div class="tv-mobile-links">
-          <div class="tv-mobile-rail">
-            <a href="/de/produkt-kategorie/heimspeicher/" class="tv-mobile-rail-card"><img src="/wp-content/uploads/2026/09/linker-home-battery-storage.webp" alt="" loading="lazy" decoding="async"><span class="tv-mobile-rail-title">Heimspeicher</span><span class="tv-mobile-rail-desc">Heimspeicher-Batterien von GoodWe, SAJ und EcoFlow</span></a>
-            <a href="/de/produkt-kategorie/gewerbespeicher/" class="tv-mobile-rail-card"><img src="/wp-content/uploads/2026/09/linker-commercial-and-industrial-storage.webp" alt="" loading="lazy" decoding="async"><span class="tv-mobile-rail-title">Gewerbespeicher</span><span class="tv-mobile-rail-desc">All-in-One-Systeme und Batteriesysteme von GoodWe, SAJ und Pylontech</span></a>
-          </div>
-          <a href="/de/produkt-kategorie/gewerbespeicher/komplettsysteme/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">All-in-One-Systeme</span></div></a>
-          <a href="/de/produkt-kategorie/gewerbespeicher/batteriesysteme/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Batteriesysteme</span></div></a>
-          <a href="/de/produkt-kategorie/wechselrichter/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Wechselrichter</span></div></a>
-          <a href="/de/produkt-kategorie/ems-ueberwachung/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">EMS & Monitoring</span></div></a>
-          <a href="/de/produkt-kategorie/ladestationen/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Ladestationen</span></div></a>
-          <a href="/de/produkt-kategorie/zubehoer/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Zubehör</span></div></a>
-          <a href="/de/produkt-kategorie/zubehoer/energiezaehler-stromwandler/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Energiezähler & Stromwandler</span></div></a>
-          <a href="/de/produkt-kategorie/zubehoer/notstrom/" class="tv-mobile-link tv-mobile-sub"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Notstrom</span></div></a>
-          <a href="/de/produkte/" class="tv-mobile-link tv-mobile-link--all"><div class="tv-mobile-link-text"><span class="tv-mobile-link-title">Alle Produkte ansehen →</span></div></a>
         </div>
       </details>
       <details class="tv-mobile-section" data-tv-mobile-primary="ai">
@@ -280,8 +281,8 @@
       <div class="tv-mobile-utility-row">[linker_header_utilities part="mobile"]</div>
       [linker_contact_link placement="mobile"]
     </div>
-
-
+      </details>
+    </nav>
 
   </div>
 

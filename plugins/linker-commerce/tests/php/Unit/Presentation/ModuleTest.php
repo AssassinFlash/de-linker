@@ -59,7 +59,8 @@ final class ModuleTest extends TestCase {
 		// with it.
 		// 65: the union of both waves — #263's linker_language_switch and
 		// #264's linker_blog_share each added one beside their neighbours.
-		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 65 ) );
+		// The current Woo supply-name fragment adds one data-only registration.
+		WP_Mock::userFunction( 'add_shortcode', array( 'times' => 66 ) );
 		WP_Mock::expectFilterAdded( 'wc_get_template', array( $account, 'template' ), 20, 2 );
 		WP_Mock::expectFilterAdded( 'woocommerce_my_account_my_orders_query', array( $account, 'orders_query' ) );
 		WP_Mock::expectFilterAdded( 'woocommerce_checkout_redirect_empty_cart', array( $gate, 'keep_empty_checkout' ) );

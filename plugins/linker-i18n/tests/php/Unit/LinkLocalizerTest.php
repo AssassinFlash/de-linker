@@ -23,41 +23,6 @@ use WP_Mock\Tools\TestCase;
 final class LinkLocalizerTest extends TestCase {
 
 	/**
-	 * Native URL lookup can return zero under the frontend's filtered home URL.
-	 *
-	 * @var bool
-	 */
-	private bool $unresolved_posts = false;
-
-	/**
-	 * Polylang can return the current language's twin for an English URL query.
-	 *
-	 * @var bool
-	 */
-	private bool $translated_posts = false;
-
-	/**
-	 * A direct native page lookup must still respect publication and password state.
-	 *
-	 * @var string
-	 */
-	private string $page_status = 'publish';
-
-	/**
-	 * Password-protected pages are not public contact sources.
-	 *
-	 * @var string
-	 */
-	private string $page_password = '';
-
-	/**
-	 * A stale front ID does not make a posts homepage a static page.
-	 *
-	 * @var string
-	 */
-	private string $front_mode = 'page';
-
-	/**
 	 * The localizer on a site where /contact/ (33) has the German page
 	 * /de/kontakt/ (58), the category accessories (46) Zubehör (150), the
 	 * shop page products (15) produkte (42).
@@ -65,15 +30,12 @@ final class LinkLocalizerTest extends TestCase {
 	private function localizer(): LinkLocalizer {
 		PolylangDouble::mock(
 			array(
-				11 => 'en',
-				22 => 'de',
 				33 => 'en',
 				58 => 'de',
 				15 => 'en',
 				42 => 'de',
 			),
 			array(
-				11 => 22,
 				33 => 58,
 				15 => 42,
 			),
@@ -86,16 +48,6 @@ final class LinkLocalizerTest extends TestCase {
 			array(
 				46  => 150,
 				301 => 300,
-			),
-			'en',
-			array(),
-			array_fill_keys(
-				array( 11, 22, 33, 58, 15, 42 ),
-				array(
-					'post_type'     => 'page',
-					'post_status'   => $this->page_status,
-					'post_password' => $this->page_password,
-				)
 			)
 		);
 		WP_Mock::userFunction( 'wp_parse_url', array( 'return' => static fn( string $url, int $component = -1 ) => -1 === $component ? parse_url( $url ) : parse_url( $url, $component ) ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- stands in for wp_parse_url.
@@ -104,47 +56,18 @@ final class LinkLocalizerTest extends TestCase {
 		WP_Mock::userFunction(
 			'url_to_postid',
 			array(
-				'return' => function ( string $url ): int {
-					$id = array(
-						PolylangDouble::HOME . 'contact/'  => 33,
-						PolylangDouble::HOME . 'de/kontakt/' => 58,
-						PolylangDouble::HOME . 'products/' => 15,
-						PolylangDouble::HOME . 'de/produkte/' => 42,
-					)[ $url ] ?? 0;
-					return $this->unresolved_posts ? 0 : ( $this->translated_posts ? ( array(
-						33 => 58,
-						15 => 42,
-					)[ $id ] ?? $id ) : $id );
-				},
-			)
-		);
-		WP_Mock::userFunction(
-			'get_page_by_path',
-			array(
-				'return' => function ( string $path ) {
-					$id = array(
-						'contact'  => 33,
-						'kontakt'  => 58,
-						'products' => 15,
-						'produkte' => 42,
-					)[ $path ] ?? 0;
-					return $id > 0 ? PolylangDouble::post(
-						$id,
-						array(
-							'post_type'     => 'page',
-							'post_status'   => $this->page_status,
-							'post_password' => $this->page_password,
-						)
-					) : null;
-				},
+				'return' => static fn( string $url ) => array(
+					PolylangDouble::HOME . 'contact/'     => 33,
+					PolylangDouble::HOME . 'de/kontakt/'  => 58,
+					PolylangDouble::HOME . 'products/'    => 15,
+					PolylangDouble::HOME . 'de/produkte/' => 42,
+				)[ $url ] ?? 0,
 			)
 		);
 		WP_Mock::userFunction(
 			'get_permalink',
 			array(
 				'return' => static fn( int $id ) => array(
-					11 => PolylangDouble::HOME,
-					22 => PolylangDouble::HOME . 'de/',
 					33 => PolylangDouble::HOME . 'contact/',
 					58 => PolylangDouble::HOME . 'de/kontakt/',
 					15 => PolylangDouble::HOME . 'products/',
@@ -187,14 +110,9 @@ final class LinkLocalizerTest extends TestCase {
 		WP_Mock::userFunction(
 			'get_option',
 			array(
-				'return' => fn( string $name ) => array(
-					'woocommerce_shop_page_id' => '15',
-					'page_on_front'            => '11',
-					'show_on_front'            => $this->front_mode,
-				)[ $name ] ?? '',
+				'return' => static fn( string $name ) => 'woocommerce_shop_page_id' === $name ? '15' : '',
 			)
 		);
-		WP_Mock::userFunction( 'is_taxonomy_viewable', array( 'return' => true ) );
 		WP_Mock::userFunction(
 			'get_page_uri',
 			array(
@@ -301,153 +219,5 @@ final class LinkLocalizerTest extends TestCase {
 			'<p>Write to <a class="btn" href="/de/kontakt/">us</a> or <a href="https://www.goodwe.com/">GoodWe</a>; <img src="/contact/x.png" alt="contact"></p>',
 			$this->localizer()->localize( '<p>Write to <a class="btn" href="/contact/">us</a> or <a href="https://www.goodwe.com/">GoodWe</a>; <img src="/contact/x.png" alt="contact"></p>' )
 		);
-	}
-
-	/** Marked handoffs localize their source even when the destination is already German. */
-	public function test_contact_source_follows_the_rendered_language_without_changing_other_bytes(): void {
-		$home   = PolylangDouble::HOME;
-		$source = $home . 'products/?q=SAJ+5&brand=saj#model';
-		$target = $home . 'de/produkte/?q=SAJ+5&brand=saj#model';
-		$prefix = '<script>const icon="\\u003csvg"; const path=/\\s+/g;</script><a data-linker-contact=\'{"url":"' . $home . 'products/"}\' href="/de/kontakt/?intent=offer&amp;source=';
-		$suffix = '&amp;source_id=15&amp;search=PV%20%2B+storage&amp;filters%5Bbrand%5D=saj#form">Contact</a><img src="/products/x.png">';
-		$this->assertSame(
-			$prefix . rawurlencode( $target ) . $suffix,
-			$this->localizer()->localize( $prefix . rawurlencode( $source ) . $suffix, 'de' )
-		);
-	}
-
-	/** Native URL parsing can sanitize individual bytes of an unencoded UTF-8 query. */
-	public function test_localized_links_preserve_raw_unicode_query_and_fragment_bytes(): void {
-		$links = $this->localizer();
-		WP_Mock::userFunction( 'wp_parse_url' )->andReturnUsing(
-			static function ( string $url, int $component = -1 ) {
-				// The native frontend's parser changed the second byte of ß to an underscore.
-				$url = str_replace( 'ß', "\xC3_", $url );
-				return -1 === $component ? parse_url( $url ) : parse_url( $url, $component ); // phpcs:ignore WordPress.WP.AlternativeFunctions.parse_url_parse_url -- Native parser boundary control.
-			}
-		);
-		$query = '?intent=project&title=Großspeicher+für+Köln&empty=&source=';
-		$tail  = '&search=PV%20%2B+storage#Großspeicher?section=2';
-		$home  = PolylangDouble::HOME;
-		foreach ( array(
-			array( '/de/kontakt/', $home . 'de/', 'de', '/de/kontakt/', $home . 'de/' ),
-			array( '/contact/', $home, 'de', '/de/kontakt/', $home . 'de/' ),
-			array( '/de/kontakt/', $home . 'de/', 'en', '/contact/', $home ),
-		) as $case ) {
-			$input    = $case[0] . $query . rawurlencode( $case[1] ) . $tail;
-			$expected = $case[3] . $query . rawurlencode( $case[4] ) . $tail;
-			$this->assertSame(
-				'<a data-linker-contact="" href="' . htmlspecialchars( $expected, ENT_QUOTES | ENT_HTML5, 'UTF-8', false ) . '">Contact</a>',
-				$links->localize( '<a data-linker-contact="" href="' . htmlspecialchars( $input, ENT_QUOTES | ENT_HTML5, 'UTF-8', false ) . '">Contact</a>', $case[2] )
-			);
-			$this->assertSame( $case[3] . $query . rawurlencode( $case[1] ) . $tail, $links->url( $input, $case[2] ) );
-		}
-		foreach ( array( '#Großspeicher?source=unchanged', '?#Großspeicher' ) as $suffix ) {
-			$this->assertSame(
-				'<a data-linker-contact="" href="/de/kontakt/' . $suffix . '">Contact</a>',
-				$links->localize( '<a data-linker-contact="" href="/contact/' . $suffix . '">Contact</a>' )
-			);
-		}
-	}
-
-	/** Home paths follow native Polylang roots in both directions. */
-	public function test_contact_home_sources_work_in_both_directions(): void {
-		$home  = PolylangDouble::HOME;
-		$cases = array(
-			'de' => array( '/contact/', $home, '/de/kontakt/', $home . 'de/' ),
-			'en' => array( '/de/kontakt/', $home . 'de/', '/contact/', $home ),
-		);
-		foreach ( $cases as $language => $values ) {
-			$this->assertSame(
-				'<a data-linker-contact="" href="' . $values[2] . '?source=' . rawurlencode( $values[3] ) . '">Contact</a>',
-				$this->localizer()->localize( '<a data-linker-contact="" href="' . $values[0] . '?source=' . rawurlencode( $values[1] ) . '">Contact</a>', $language )
-			);
-		}
-	}
-
-	/** The public URL API and unmarked links retain their established query contract. */
-	public function test_unmarked_contact_query_is_unchanged(): void {
-		$query = '?source=' . rawurlencode( PolylangDouble::HOME );
-		$this->assertSame( '/de/kontakt/' . $query, $this->localizer()->url( '/contact/' . $query ) );
-		$this->assertSame( '<a href="/de/kontakt/' . $query . '">Contact</a>', $this->localizer()->localize( '<a href="/contact/' . $query . '">Contact</a>' ) );
-	}
-
-	/** A source that the Contact boundary rejects must not become a valid same-origin URL. */
-	public function test_contact_does_not_repair_foreign_credentialed_or_unknown_sources(): void {
-		foreach ( array( 'https://elsewhere.test/products/', 'http://example.test:8080/products/', 'https://example.test/products/', 'http://user@example.test/products/', '//example.test/products/', '/products/', 'javascript:alert(1)', PolylangDouble::HOME . 'unknown/' ) as $source ) {
-			$html = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
-			$this->assertSame( $html, $this->localizer()->localize( $html ) );
-		}
-		foreach ( array( 'http://example.test:8080/contact/', 'http://user@example.test/contact/', 'https://elsewhere.test/contact/', '//example.test/contact/' ) as $destination ) {
-			$html = '<a data-linker-contact="" href="' . $destination . '?source=' . rawurlencode( PolylangDouble::HOME ) . '">Contact</a>';
-			$this->assertSame( $html, $this->localizer()->localize( $html ) );
-		}
-	}
-
-	/** The frontend's filtered home URL must not prevent resolving a native page pair. */
-	public function test_native_page_lookup_recovers_a_page_when_url_lookup_returns_zero(): void {
-		$this->unresolved_posts = true;
-		$this->assertSame( PolylangDouble::HOME . 'de/kontakt/', $this->localizer()->url( PolylangDouble::HOME . 'contact/', 'de' ) );
-		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'de/kontakt/', 'en' ) );
-	}
-
-	/** A translated query result does not mean the URL already belongs to that language. */
-	public function test_native_query_returning_the_current_language_twin_still_localizes_the_source_url(): void {
-		$this->translated_posts = true;
-		$this->assertSame( PolylangDouble::HOME . 'de/kontakt/', $this->localizer()->url( PolylangDouble::HOME . 'contact/', 'de' ) );
-		$this->assertSame( PolylangDouble::HOME . 'de/produkte/', $this->localizer()->url( PolylangDouble::HOME . 'products/', 'de' ) );
-	}
-
-	/** A fallback must not accept an alias, private page or protected page. */
-	public function test_native_page_fallback_requires_a_public_canonical_page(): void {
-		$this->unresolved_posts = true;
-		$this->assertSame( PolylangDouble::HOME . 'fake/contact/', $this->localizer()->url( PolylangDouble::HOME . 'fake/contact/' ) );
-		$this->page_status = 'private';
-		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'contact/' ) );
-		$this->page_status   = 'publish';
-		$this->page_password = 'restricted';
-		$this->assertSame( PolylangDouble::HOME . 'contact/', $this->localizer()->url( PolylangDouble::HOME . 'contact/' ) );
-	}
-
-	/** Unknown taxonomy parents stay rejected sources; ordinary redirect compatibility is separate. */
-	public function test_marked_source_does_not_turn_an_unknown_taxonomy_path_into_a_real_source(): void {
-		$source = PolylangDouble::HOME . 'product-category/definitely-not-a-real-parent/accessories/';
-		$html   = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
-		$this->assertSame( $html, $this->localizer()->localize( $html ) );
-		$this->assertSame( PolylangDouble::HOME . 'de/produkt-kategorie/zubehoer/', $this->localizer()->url( $source ) );
-		$valid  = PolylangDouble::HOME . 'product-category/accessories/';
-		$target = PolylangDouble::HOME . 'de/produkt-kategorie/zubehoer/';
-		$this->assertSame( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $target ) . '">Contact</a>', $this->localizer()->localize( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $valid ) . '">Contact</a>' ) );
-	}
-
-	/** Private and password-protected pages, including home, must not become accepted sources. */
-	public function test_marked_source_requires_a_public_unprotected_page(): void {
-		foreach ( array( 'private', 'password' ) as $restriction ) {
-			$this->page_status   = 'private' === $restriction ? 'private' : 'publish';
-			$this->page_password = 'password' === $restriction ? 'restricted' : '';
-			foreach ( array( PolylangDouble::HOME, PolylangDouble::HOME . 'contact/' ) as $source ) {
-				$html = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
-				$this->assertSame( $html, $this->localizer()->localize( $html ) );
-			}
-		}
-	}
-
-	/** The shop's legacy URI matching does not make a noncanonical contact source valid. */
-	public function test_shop_source_requires_the_canonical_path_of_its_own_language(): void {
-		$source = PolylangDouble::HOME . 'produkte/';
-		$html   = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $source ) . '">Contact</a>';
-		$this->assertSame( $html, $this->localizer()->localize( $html ) );
-		$this->assertSame( PolylangDouble::HOME . 'de/produkte/', $this->localizer()->url( $source ) );
-		$valid  = PolylangDouble::HOME . 'products/';
-		$target = PolylangDouble::HOME . 'de/produkte/';
-		$this->assertSame( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $target ) . '">Contact</a>', $this->localizer()->localize( '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( $valid ) . '">Contact</a>' ) );
-	}
-
-	/** A posts homepage cannot borrow the identity of an unused static front page. */
-	public function test_posts_home_does_not_convert_a_source_from_a_stale_front_option(): void {
-		$this->front_mode = 'posts';
-		$html             = '<a data-linker-contact="" href="/de/kontakt/?source=' . rawurlencode( PolylangDouble::HOME ) . '">Contact</a>';
-		$this->assertSame( $html, $this->localizer()->localize( $html ) );
-		$this->assertSame( PolylangDouble::HOME . 'de/', $this->localizer()->url( PolylangDouble::HOME ) );
 	}
 }

@@ -74,7 +74,9 @@ final class Producer {
 				'producer' => $email->id,
 			);
 			try {
-				return $critical ? self::critical( static fn () => $callback( ...$args ) ) : $callback( ...$args ); } finally {
+				$send  = static fn () => $critical ? self::critical( static fn () => $callback( ...$args ) ) : $callback( ...$args );
+				$scope = $email instanceof \WC_Email_Customer_Reset_Password ? ResetNotice::scope( (int) $email->user_id ) : null;
+				return null !== $scope ? Capacity::within( $scope, $send ) : $send(); } finally {
 				self::$origin = $previous; }
 		};
 	}
@@ -83,9 +85,15 @@ final class Producer {
 	 * Remember one native WordPress reset message.
 	 *
 	 * @param  array<string, mixed> $email Native retrieve_password() notification.
+	 * @param string               $key Native generated key, retained by the core writer.
+	 * @param string               $login Native login, retained by the core writer.
+	 * @param \WP_User|null        $user Native user bound to the critical pre-reservation.
 	 * @return array<string, mixed> Unchanged notification.
 	 */
-	public function password_reset( array $email ): array {
+	public function password_reset( array $email, string $key = '', string $login = '', ?\WP_User $user = null ): array {
+		unset( $key, $login );
+		if ( $user instanceof \WP_User ) {
+			ResetNotice::bind( $email, $user ); }
 		self::$resets[ self::signature( $email ) ] = 'password_reset';
 		return $email;
 	}
@@ -137,12 +145,12 @@ final class Producer {
 	 */
 	public static function priority( array $atts ): bool {
 		if ( array() === self::$resets ) {
-			return self::$critical;
+			return self::$critical || '' !== Capacity::current();
 		}
 		$key   = self::signature( $atts );
 		$reset = isset( self::$resets[ $key ] );
 		unset( self::$resets[ $key ] );
-		return self::$critical || $reset;
+		return self::$critical || $reset || '' !== Capacity::current();
 	}
 
 	/** Exact native call.

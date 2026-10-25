@@ -16,7 +16,7 @@ from __future__ import annotations
 import base64
 import json
 from collections.abc import Iterator, Sequence
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -51,6 +51,10 @@ class Meta:
     max_tokens: int
     # The encoder's fingerprint (linker_genie.embedding.Embedder.fingerprint).
     embedding: dict[str, str] | None = None
+    publication: dict[str, Any] = field(default_factory=dict)
+    recipe_revision: str = ""
+    serving_revision: str = ""
+    activation_epoch: int = 0
 
 
 def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
@@ -62,6 +66,12 @@ def meta_values(meta: Meta, schema_version: int) -> dict[str, str]:
         "dimensions": str(meta.dimensions or 0),
         "embedding_fingerprint": json.dumps(meta.embedding or {}, sort_keys=True),
         "parser": meta.parser,
+        "recipe_revision": meta.recipe_revision,
+        "serving_revision": meta.serving_revision,
+        "activation_epoch": str(meta.activation_epoch),
+        "source_revision": str(
+            meta.publication.get("manifest", {}).get("source_revision", "")
+        ),
     }
 
 
@@ -139,4 +149,7 @@ def read_chunks(directory: Path) -> Iterator[tuple[Chunk, bytes | None]]:
     """Every chunk with its vector, or None when the corpus has no vectors."""
     for row in _read_lines(directory / "chunks.jsonl"):
         encoded = row.pop("vector", None)
+        row["preceding_text"] = tuple(row.get("preceding_text", ()))
+        row["source_rows"] = tuple(row.get("source_rows", ()))
+        row["source_headings"] = tuple(row.get("source_headings", ()))
         yield Chunk(**row), base64.b64decode(encoded) if encoded is not None else None

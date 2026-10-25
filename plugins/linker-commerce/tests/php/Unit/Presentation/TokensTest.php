@@ -31,7 +31,7 @@ final class TokensTest extends TestCase {
 	 * failure message) and re-pin it in the same diff, so the review sees a
 	 * conscious token-layer change instead of a silent transplant.
 	 */
-	private const NORMALIZED_SHA256 = 'e4a4c296558cdfd4636f7c4829b7eabe2bc1a6c2e34486c711e39d4e998ee5b7';
+	private const NORMALIZED_SHA256 = 'f580562820e4dd8560e2919155f55c0a7079397a8f78f1f22abaf801ad18f14f';
 
 	/**
 	 * The exported stylesheet names the self-hosted fonts and the live accent,
@@ -41,7 +41,7 @@ final class TokensTest extends TestCase {
 		$css = Tokens::css();
 
 		$this->assertStringContainsString( '--proto-accent: #0c7f73', $css );
-		$this->assertStringContainsString( '/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.ttf', $css );
+		$this->assertStringContainsString( '/wp-content/plugins/linker-commerce/assets/fonts/plus-jakarta-sans-400.woff2', $css );
 		$this->assertStringNotContainsString( 'terravolt-b2b-core', $css );
 
 		$stripped   = preg_replace( '/\/\*.*?\*\//s', '', $css ) ?? '';
@@ -64,10 +64,15 @@ final class TokensTest extends TestCase {
 
 		$this->assertSame(
 			array(
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-400.woff2',
 				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-400.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-500.woff2',
 				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-500.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-600.woff2',
 				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-600.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-700.woff2',
 				dirname( __DIR__, 4 ) . '/assets/fonts/plus-jakarta-sans-700.ttf',
+				dirname( __DIR__, 4 ) . '/assets/fonts/dm-serif-display-400.woff2',
 				dirname( __DIR__, 4 ) . '/assets/fonts/dm-serif-display-400.ttf',
 			),
 			$fonts

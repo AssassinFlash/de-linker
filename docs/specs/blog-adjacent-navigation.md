@@ -40,3 +40,8 @@ acceptance remain separate gates.
 Rollback restores the two LC template contents and blog stylesheet from their
 exact preimages, using the guarded writer and native WindPress compilation.
 There is no schema migration or article-data mutation.
+
+
+## Bounded current-source delivery
+
+Integrated with the accepted `a77c1be4` font/PDP/FAQ baseline. Both blog changes form one delivery: exactly two LC article templates and `blog.css`; all three runtime files remain byte-identical to the reviewed `1203363d` candidate. No article title/prose, marketing body, header or business behavior changes. Existing complete article and interaction proofs are reused under AGENTS.md section0.1; do not repeat the44-layout or41-case matrices, image CRC counts or whole-site scans. Current-source integration checks the native two-template save/metadata/pair boundary and representative EN/DE1440/390 first/middle/last adjacent cards, one long German TOC, one real keyboard/pointer consumer, official Generate and protected data readback. Production requires a current fullSQL backup, narrow two-template content transaction, exact runtime/source/volume readback and affected online consumers. Broader full-site requirements remain open.

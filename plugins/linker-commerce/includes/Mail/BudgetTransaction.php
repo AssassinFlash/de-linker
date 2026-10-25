@@ -9,7 +9,10 @@ namespace Linker\Commerce\Mail;
 
 /** MySQL and MariaDB reject SET TRANSACTION inside an active transaction. */
 final class BudgetTransaction {
-	/** Begin only a new owned transaction, without changing session defaults. */
+	/** Begin only a new owned transaction, without changing session defaults.
+	 *
+	 * @throws \mysqli_sql_exception A lost/failed native connection cannot start work.
+	 */
 	public static function begin(): bool {
 		global $wpdb;
 		$previous = $wpdb->suppress_errors( true );
@@ -20,6 +23,11 @@ final class BudgetTransaction {
 			}
 			return false !== $wpdb->query( 'START TRANSACTION' );
 			// phpcs:enable
+		} catch ( \mysqli_sql_exception $error ) {
+			if ( 1568 === $error->getCode() ) {
+				return false;
+			}
+			throw $error;
 		} finally {
 			$wpdb->suppress_errors( $previous );
 		}
