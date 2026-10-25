@@ -1,6 +1,9 @@
 # LF everywhere, so build/manifest.json hashes the same bytes on every machine.
 * text=auto eol=lf
 
+# Preserve exact generated/downloaded PDF bytes and keep them out of text diffs.
+*.pdf binary
+
 # Generated files: collapsed in pull request diffs.
 plugins/linker-tools/build/** linguist-generated=true
 **/composer.lock linguist-generated=true
