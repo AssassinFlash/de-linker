@@ -8,6 +8,7 @@
 	"additionalProperties": false,
 	"properties": {
 		"schema_version": { "const": 1 },
+		"figure_projection_version": { "const": 2 },
 		"source_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 		"compatibility_revision": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
 		"generated_at": { "type": "string", "format": "date-time" },
@@ -121,6 +122,16 @@
 			"properties": {
 				"value": { "type": ["string", "number"] },
 				"value_de": { "type": "string" },
+				"qualifier": {
+					"description": "The condition as maintained in Woo. It is evidence to interpret, never an automatically satisfied engineering predicate.",
+					"type": ["string", "object", "array", "null"]
+				},
+				"evidence_refs": { "type": "array", "items": { "type": "string" } },
+				"columns": {
+					"description": "Explicit table column labels maintained with the Woo figure. Column order or model names alone never establishes a configuration mapping.",
+					"type": "array",
+					"items": { "type": "object", "minProperties": 1, "additionalProperties": { "type": ["string", "number"] } }
+				},
 				"unit": { "type": ["string", "null"] },
 				"citation": { "$ref": "#/$defs/citation" }
 			}
