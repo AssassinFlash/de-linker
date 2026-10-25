@@ -184,7 +184,7 @@ final class Publication {
 	 * @return array<string,mixed>
 	 */
 	private static function assemble(): array {
-		$ids       = get_posts(
+		$ids                    = get_posts(
 			array(
 				'post_type'                   => 'product',
 				'post_status'                 => 'publish',
@@ -198,8 +198,9 @@ final class Publication {
 				'cache_results'               => false,
 			)
 		);
-		$products  = array();
-		$documents = array();
+		$products               = array();
+		$documents              = array();
+		$attachment_permissions = array();
 		foreach ( $ids as $locale_id ) {
 			$locale_id = (int) $locale_id;
 			if ( ! self::published_in_current_read( $locale_id ) ) {
@@ -217,7 +218,7 @@ final class Publication {
 						continue;
 					}
 					$file = DocumentFiles::resolve( (string) ( $row['url'] ?? '' ) );
-					if ( null === $file || ! self::attachment_allows( $file['url'] ) ) {
+					if ( null === $file || ! self::attachment_allows( $file['url'], $attachment_permissions ) ) {
 						continue;
 					}
 					$document_id = DocumentFiles::id( $file['url'] );
@@ -225,7 +226,7 @@ final class Publication {
 						$aliases = array( $file['url'] );
 						foreach ( (array) ( $row['aliases'] ?? array() ) as $alias ) {
 							$resolved = is_string( $alias ) ? DocumentFiles::resolve( $alias ) : null;
-							if ( null !== $resolved && $resolved['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $resolved['url'] ) ) {
+							if ( null !== $resolved && $resolved['blob_sha256'] === $file['blob_sha256'] && self::attachment_allows( $resolved['url'], $attachment_permissions ) ) {
 								$aliases[] = $resolved['url'];
 							}
 						}
@@ -397,11 +398,15 @@ final class Publication {
 	/**
 	 * A media-level withdrawal applies to every relation of that attachment.
 	 *
-	 * @param string $url Hosted document URL.
+	 * @param string             $url Hosted document URL.
+	 * @param array<string,bool> $permissions Decisions for this assembly only.
 	 */
-	private static function attachment_allows( string $url ): bool {
-		$id = attachment_url_to_postid( $url );
-		return 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+	private static function attachment_allows( string $url, array &$permissions ): bool {
+		if ( ! array_key_exists( $url, $permissions ) ) {
+			$id                  = attachment_url_to_postid( $url );
+			$permissions[ $url ] = 0 === $id || ! in_array( get_post_meta( $id, '_linker_document_public', true ), array( '0', 0, false ), true );
+		}
+		return $permissions[ $url ];
 	}
 
 	/**

@@ -114,6 +114,98 @@ final class RevisionTest extends TestCase {
 		$this->assertFalse( $this->initial_dependencies_are_valid( $before ) );
 	}
 
+	/** Shared URLs are checked once per assembly, including denied aliases, then read afresh. */
+	public function test_shared_attachment_permission_is_fresh_for_each_manifest(): void {
+		$url   = 'https://de-linker.com/wp-content/uploads/2026/manual.pdf';
+		$alias = 'https://de-linker.com/wp-content/uploads/2026/alias.pdf';
+		$this->assertTrue( copy( $this->publication_uploads . '/2026/manual.pdf', $this->publication_uploads . '/2026/alias.pdf' ) );
+		$this->current_faq_meta[ EngineeringData::DOCUMENTS_META_KEY ] = array(
+			array(
+				'url'     => $url,
+				'aliases' => array( $alias ),
+				'type'    => 'manual',
+			),
+			array(
+				'url'  => $alias,
+				'type' => 'manual',
+			),
+		);
+		WP_Mock::userFunction( 'get_posts' )->andReturn( array( 12, 13 ) );
+		WP_Mock::userFunction( 'get_post_type' )->with( 13 )->andReturn( 'product' );
+		WP_Mock::userFunction( 'get_post_status' )->with( 13 )->andReturn( 'publish' );
+		WP_Mock::userFunction( 'get_post' )->with( 13 )->andReturn(
+			new \WP_Post(
+				(object) array(
+					'ID'         => 13,
+					'post_title' => 'Second shared-document product',
+				)
+			)
+		);
+		$states  = array(
+			301 => '1',
+			302 => '0',
+		);
+		$lookups = array();
+		WP_Mock::userFunction( 'attachment_url_to_postid' )->andReturnUsing(
+			static function ( string $document_url ) use ( $url, $alias, &$lookups ): int {
+				$lookups[ $document_url ] = ( $lookups[ $document_url ] ?? 0 ) + 1;
+				return match ( $document_url ) {
+					$url => 301,
+					$alias => 302,
+					default => 0,
+				};
+			}
+		);
+		WP_Mock::userFunction( 'get_post_meta' )->andReturnUsing(
+			function ( int $id, string $key = '' ) use ( &$states ): mixed {
+				if ( isset( $states[ $id ] ) ) {
+					return '_linker_document_public' === $key ? $states[ $id ] : '';
+				}
+				return '' === $key ? $this->current_faq_meta : ( $this->current_faq_meta[ $key ] ?? '' );
+			}
+		);
+
+		$before = Publication::manifest();
+		$this->assertCount( 1, $before['documents'] );
+		$this->assertSame( array( 12, 13 ), $before['documents'][0]['product_ids'] );
+		$this->assertSame( array( $url ), $before['documents'][0]['aliases'] );
+		$this->assertSame(
+			array(
+				$url   => 1,
+				$alias => 1,
+			),
+			$lookups
+		);
+
+		$states[301] = '0';
+		$lookups     = array();
+		$withdrawn   = Publication::manifest();
+		$this->assertSame( array(), $withdrawn['documents'] );
+		$this->assertSame(
+			array(
+				$url   => 1,
+				$alias => 1,
+			),
+			$lookups
+		);
+
+		$states   = array(
+			301 => '1',
+			302 => '1',
+		);
+		$lookups  = array();
+		$restored = Publication::manifest();
+		$this->assertCount( 2, $restored['documents'] );
+		$this->assertSame(
+			array(
+				$url   => 1,
+				$alias => 1,
+			),
+			$lookups
+		);
+		$this->assertNotSame( $before['source_revision'], $restored['source_revision'] );
+	}
+
 	/**
 	 * Exercise the public dependency contract against the fixture's next read.
 	 *
