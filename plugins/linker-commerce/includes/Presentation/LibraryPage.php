@@ -621,6 +621,8 @@ final class LibraryPage {
 			);
 		}
 
+		$entries = $this->library->entries( $language );
+
 		/**
 		 * The products' answers, filed by the brand of the product that states
 		 * them.
@@ -628,7 +630,7 @@ final class LibraryPage {
 		 * @var array<string, list<array{question: string, answer: string, product: string, url: string, source: string, source_url: string}>> $answers
 		 */
 		$answers = array();
-		foreach ( $this->library->answers( $language ) as $answer ) {
+		foreach ( $entries['answers'] as $answer ) {
 			$answers[ $answer['brand'] ][] = array(
 				'question'   => $answer['question'],
 				'answer'     => $answer['answer'],
@@ -645,7 +647,7 @@ final class LibraryPage {
 		 * @var array<string, list<array{title: string, url: string, type: string, type_label: string, language: string, language_label: string, covers: string, thumb: array{src: string, width: int, height: int}|null}>> $documents
 		 */
 		$documents = array();
-		foreach ( $this->library->documents() as $document ) {
+		foreach ( $entries['documents'] as $document ) {
 			$type                              = $document['type'];
 			$documents[ $document['brand'] ][] = array(
 				'title'          => $document['title'],

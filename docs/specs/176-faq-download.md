@@ -99,8 +99,10 @@
   plugins/linker-commerce/content/livecanvas/faq_page.html` 的同名问答逐字对照。
 - `DocumentLibrary::answers()` 新增 `brand` 字段（行所属品牌 = 该产品 `pa_brand` 或名字首词），
   register 因此能把问答案按品牌归档；这是读取层的加法，不改任何既有消费方（产品页、Genie）。
-- `LibraryPage::model()` 每请求一次装配，五个片段共享（`tests/php/.../LibraryPageTest.php`
-  用计数桩断言：两次读取 + 一次品牌 logo 查询，其余片段零查询）。
+- `LibraryPage::model()` 每请求一次装配，五个片段共享。`DocumentLibrary::entries()` 为两个面板
+  共用本次新读取的发布权限、资料字节核验及产品列表；再次装配仍重新读取，独立的
+  `answers()` / `documents()` 调用也仍然各自读取当前状态。计数夹具断言一次权限装配、
+  一次产品列表查询和一次品牌 logo 查询，其余片段零查询；没有跨请求缓存。
 
 ## 6. 扫描面与锚类
 
