@@ -2915,6 +2915,9 @@
       "executable_carriers": 2,
       "retired_logical_bytes": 2944050,
       "new_environment_or_instance": false
-    }
+    },
+    "implementation_commit": "71858838",
+    "original_export_bytes_commit": "29dbf0f9",
+    "artifact_retention": "One final original per locale/format, one view per locale/viewport and affected PDF material page; superseded runtime artifacts retained only in immutable project history"
   }
 }
