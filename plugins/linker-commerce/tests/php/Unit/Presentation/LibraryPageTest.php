@@ -49,6 +49,13 @@ final class LibraryPageTest extends TestCase {
 	private int $post_queries = 0;
 
 	/**
+	 * Fresh publication assemblies used by the page's shared model.
+	 *
+	 * @var int
+	 */
+	private int $authority_reads = 0;
+
+	/**
 	 * Thumbnail-manifest fixtures this test wrote.
 	 *
 	 * @var list<string>
@@ -375,7 +382,8 @@ final class LibraryPageTest extends TestCase {
 		// answers, and one brand-logo lookup. Every fragment after them reads
 		// the same model, so the counts and the rows cannot disagree and a
 		// template is free to call the fragments in any order.
-		$this->assertSame( 3, $this->post_queries );
+		$this->assertSame( 1, $this->authority_reads );
+		$this->assertSame( 2, $this->post_queries );
 	}
 
 	/**
@@ -384,22 +392,25 @@ final class LibraryPageTest extends TestCase {
 	private function library(): DocumentLibrary {
 		return new DocumentLibrary(
 			$this->published_document_view(),
-			static fn (): array => array(
-				'products'  => array(
-					array(
-						'product_id'           => 6521,
-						'published_locale_ids' => array( 6521 ),
+			function (): array {
+				++$this->authority_reads;
+				return array(
+					'products'  => array(
+						array(
+							'product_id'           => 6521,
+							'published_locale_ids' => array( 6521 ),
+						),
 					),
-				),
-				'documents' => array(
-					array(
-						'product_ids' => array( 6521 ),
-						'document_id' => 'fixture-manual',
-						'blob_sha256' => hash( 'sha256', 'fixture manual bytes' ),
-						'aliases'     => array( 'https://de-linker.test/media/901.pdf' ),
+					'documents' => array(
+						array(
+							'product_ids' => array( 6521 ),
+							'document_id' => 'fixture-manual',
+							'blob_sha256' => hash( 'sha256', 'fixture manual bytes' ),
+							'aliases'     => array( 'https://de-linker.test/media/901.pdf' ),
+						),
 					),
-				),
-			)
+				);
+			}
 		);
 	}
 }

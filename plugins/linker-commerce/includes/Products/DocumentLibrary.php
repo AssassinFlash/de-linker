@@ -126,9 +126,39 @@ final class DocumentLibrary {
 	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>
 	 */
 	public function documents(): array {
-		$files    = array();
 		$manifest = $this->current();
-		foreach ( $this->products( $manifest ) as $id ) {
+		return $this->documents_in( $manifest, $this->products( $manifest ) );
+	}
+
+	/**
+	 * Both panels share one fresh authority assembly and product list.
+	 *
+	 * Nothing is retained on this object: another call reads Woo and document
+	 * bytes again. Independent answers()/documents() callers stay fresh too.
+	 *
+	 * @param 'en'|'de' $lang Language of the answer rows.
+	 * @return array{answers: list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>, documents: list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>}
+	 */
+	public function entries( string $lang = 'en' ): array {
+		$manifest = $this->current();
+		$products = $this->products( $manifest );
+
+		return array(
+			'answers'   => $this->answers_in( $lang, $manifest, $products ),
+			'documents' => $this->documents_in( $manifest, $products ),
+		);
+	}
+
+	/**
+	 * Assemble file rows within the caller's current read.
+	 *
+	 * @param array<string,mixed> $manifest Current authority for this assembly.
+	 * @param int[]               $products Native locale product IDs.
+	 * @return list<array{title: string, url: string, type: string, language: string, brand: string, covers: list<string>}>
+	 */
+	private function documents_in( array $manifest, array $products ): array {
+		$files = array();
+		foreach ( $products as $id ) {
 			$title = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
 			$brand = self::brand( self::source( $id ) );
 			foreach ( $this->view->downloads( self::source( $id ), $manifest ) as $document ) {
@@ -187,10 +217,22 @@ final class DocumentLibrary {
 	 * @return list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>
 	 */
 	public function answers( string $lang = 'en' ): array {
-		$german   = 'de' === ProductText::lang( $lang );
-		$answers  = array();
 		$manifest = $this->current();
-		foreach ( $this->products( $manifest ) as $id ) {
+		return $this->answers_in( $lang, $manifest, $this->products( $manifest ) );
+	}
+
+	/**
+	 * Assemble cited answers within the caller's current read.
+	 *
+	 * @param 'en'|'de'           $lang Answer language.
+	 * @param array<string,mixed> $manifest Current authority for this assembly.
+	 * @param int[]               $products Native locale product IDs.
+	 * @return list<array{question: string, answer: string, product: string, brand: string, url: string, source: string, source_url: string}>
+	 */
+	private function answers_in( string $lang, array $manifest, array $products ): array {
+		$german  = 'de' === ProductText::lang( $lang );
+		$answers = array();
+		foreach ( $products as $id ) {
 			$product = wp_specialchars_decode( get_the_title( $id ), ENT_QUOTES );
 			$url     = (string) get_permalink( $id );
 			$brand   = self::brand( self::source( $id ) );
