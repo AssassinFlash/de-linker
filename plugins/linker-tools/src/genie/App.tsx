@@ -2363,13 +2363,17 @@ export function App( { config }: { config: GenieConfig } ) {
 							<>
 								{ draftContext.phase !== 'ready' ? (
 									<div
-										className="linker-genie-app__error"
+										className={
+											draftContext.phase === 'loading'
+												? 'linker-genie-app__status'
+												: 'linker-genie-app__error'
+										}
 										role="status"
 									>
 										<p>
 											{ draftContext.phase === 'loading'
 												? __(
-														'Opening Genie…',
+														'One moment…',
 														'linker-tools'
 													)
 												: __(

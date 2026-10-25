@@ -545,6 +545,10 @@ test( 'native lookup pending accepts no ordinary input, outage Retry makes a usa
 	const attach = screen.getByRole< HTMLButtonElement >( 'button', {
 		name: 'Attach a file',
 	} );
+	const loading = screen.getByText( 'One moment…' ).closest( '[role]' );
+	expect( loading ).toHaveAttribute( 'role', 'status' );
+	expect( loading ).toHaveClass( 'linker-genie-app__status' );
+	expect( loading ).not.toHaveClass( 'linker-genie-app__error' );
 	expect( ui.field().disabled ).toBe( true );
 	expect( attach.disabled ).toBe( true );
 	fireEvent.input( ui.field(), {
@@ -553,6 +557,9 @@ test( 'native lookup pending accepts no ordinary input, outage Retry makes a usa
 	expect( ui.field().value ).toBe( '' );
 	await act( async () => release( { ok: false, status: 503 } ) );
 	await screen.findByRole( 'button', { name: 'Try again' } );
+	expect(
+		screen.getByText( 'Genie could not load.' ).closest( '[role]' )
+	).toHaveClass( 'linker-genie-app__error' );
 	expect( attach.disabled ).toBe( true );
 	expect( captures ).toHaveLength( 0 );
 	vi.stubGlobal(
@@ -570,6 +577,7 @@ test( 'native lookup pending accepts no ordinary input, outage Retry makes a usa
 		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
 	);
 	await waitFor( () => expect( ui.field().disabled ).toBe( false ) );
+	expect( screen.queryByText( 'One moment…' ) ).not.toBeInTheDocument();
 	expect( attach.disabled ).toBe( false );
 	expect( captures ).toHaveLength( 0 );
 	await askWorkspace( 'Explicit question after verification' );

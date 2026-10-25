@@ -761,6 +761,10 @@ for ( const action of [ 'send', 'retry' ] as const ) {
 
 test( 'Hero initial scoped failure outage stays hidden and retry restores through fresh verification', async () => {
 	let available = false;
+	let finishLookup!: () => void;
+	const lookup = new Promise< void >( ( resolve ) => {
+		finishLookup = resolve;
+	} );
 	const original = 'Private Hero recovery';
 	sessionStorage.setItem(
 		'linker-genie-turn-failure',
@@ -777,15 +781,34 @@ test( 'Hero initial scoped failure outage stays hidden and retry restores throug
 	);
 	vi.stubGlobal(
 		'fetch',
-		vi.fn( async () => ( {
-			ok: available,
-			json: async () => ( { scope: 'a'.repeat( 64 ) } ),
-		} ) )
+		vi.fn( async () => {
+			if ( ! available ) {
+				await lookup;
+			}
+			return {
+				ok: available,
+				json: async () => ( { scope: 'a'.repeat( 64 ) } ),
+			};
+		} )
 	);
 	try {
 		const model = session();
 		const calls = await renderHero( model.session );
+		const loading = screen.getByText( 'One moment…' ).closest( '[role]' );
+		expect( loading ).toHaveAttribute( 'role', 'status' );
+		expect( loading ).toHaveClass( 'linker-genie-app__status' );
+		expect( loading ).not.toHaveClass( 'linker-genie-app__error' );
+		expect(
+			screen.queryByRole( 'button', { name: 'Try again' } )
+		).not.toBeInTheDocument();
+		expect( calls.setPrompt ).not.toHaveBeenCalledWith( original );
+		await act( async () => finishLookup() );
 		await screen.findByRole( 'button', { name: 'Try again' } );
+		const failure = screen
+			.getByText( 'Genie could not load.' )
+			.closest( '[role]' );
+		expect( failure ).toHaveAttribute( 'role', 'alert' );
+		expect( failure ).toHaveClass( 'linker-genie-app__error' );
 		expect( calls.setPrompt ).not.toHaveBeenCalledWith( original );
 		expect(
 			sessionStorage.getItem( 'linker-genie-turn-failure' )
@@ -799,6 +822,7 @@ test( 'Hero initial scoped failure outage stays hidden and retry restores throug
 		await waitFor( () =>
 			expect( calls.setPrompt ).toHaveBeenCalledWith( original )
 		);
+		expect( screen.queryByText( 'One moment…' ) ).not.toBeInTheDocument();
 		expect( model.send ).not.toHaveBeenCalled();
 	} finally {
 		vi.unstubAllGlobals();
