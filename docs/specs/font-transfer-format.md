@@ -23,3 +23,22 @@ For each format, measure exactly three rounds of EN/DE Privacy at1440×1000 and3
 Separately prove native fallback after an isolated primary-resource failure and the installer rejection of missing font files before any presentation writes. No production submissions, registrations, mail or model calls. No production writes by this worktree.
 
 This is a local candidate. PHP static transport differs from production compression, and browser extensions remain present. Local FCP/load and resource changes are bounded results, not production Core Web Vitals or whole-site completion. Final independent review, exact-head CI, combined publication and production readback remain required. Revert the three text-file changes, remove only the five new WOFF2 files, then run native present/Generate/readback to restore original delivery; original font files and licences remain available throughout.
+
+
+## Bounded current-source delivery
+
+This prepared correction is delivered with the font, product-phone and library
+patches in one batch based on accepted source18c85c31 (production589). The
+PDP contribution carries only pdp.css and its specification; old header code
+from its original branch is excluded. Current header, authentication, legal
+and marketing content stay protected by the scoped publication readback.
+
+Under AGENTS.md section0.1, reuse the accepted original fixtures and rendered
+evidence for unchanged implementation, inputs and runtime conditions. Do not
+replay the original complete matrix, fallback experiment or repeated font
+benchmarks. Reuse exact font/glyph proofs after source/output hash checks;
+perform only current-base integration, affected real browser controls and
+public font resource/consumer readback. Record actual production compressed
+bytes separately from offline file savings; do not claim a Core Web Vitals or
+whole-site speed result from this batch. All newly found unrelated gaps stay
+in the existing full-site goal rather than expanding this release.
