@@ -375,3 +375,34 @@ Runtime is 2fef7197912d084df77dc23a3404e1f990ca4012eeb81bc3b2c92283185c89f9;
 the single executable rollback. The older executable carrier was removed after
 verifying its retained immutable source blob. No new instance, full backup,
 annual calculation or PDF render was created for this bridge.
+
+### 2026-10-25 · Native inquiry report persistence repaired and closed locally
+
+The actual store is Woo HPOS. Its metadata value is TEXT with a 65,535-byte
+native limit; the 138,128-byte full planning context was rejected without a
+database error. The first in-memory order retained it, but the native reload
+lost it. The two earlier failed inquiries remain recorded as failure evidence.
+
+An inquiry now saves a 1,166-byte checksummed reference. The immutable planning
+record retains the complete handoff; private downloads resolve that original
+handoff and require its reference and PDF hash to match. No new order table,
+product source, storage schema or frontend build was introduced. The bounded
+native fixture proved persistence and owner/inquiry-key access, refusal for a
+stranger or altered reference, and transaction rollback. Independent Spec and
+Standards reviews of this delta passed; affected PHP checks passed.
+
+Corrected native browser inquiry 8354 persists one project/report context in
+both the order and assessment. It records planned battery quantity three versus
+requested quantity two, with the difference visible. EN and DE captures at 1440
+and 390 show the project and private PDF link. The actual browser download
+matches the already approved report byte for byte; anonymous HTTP access is
+404. The duplicate download was removed and original mail isolation restored.
+Notification delivery is unchanged and is not claimed as new acceptance.
+
+This draft-to-inquiry report path is closed locally. Numerical results, existing
+PDF rendering and previously accepted draft behavior were reused. The same
+runtime, rollback and recovery points remain; no new instance or full backup
+was created. Continue the still-active engineering and site-delivery frontier,
+including equipment-coupled energy, remaining topology/electrical/country checks,
+complete BOM, comparisons, remaining consumers, migration and review/production
+delivery. Do not repeat the closed checks without a relevant change or failure.

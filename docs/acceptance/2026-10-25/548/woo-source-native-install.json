@@ -959,7 +959,7 @@
   },
   "draft_transfer": {
     "date": "2026-10-25",
-    "status": "native_draft_connected_locally_inquiry_context_open",
+    "status": "native_draft_and_inquiry_report_connected_locally",
     "runtime": "2fef7197912d084df77dc23a3404e1f990ca4012eeb81bc3b2c92283185c89f9",
     "rollback": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
     "source": "unchanged WooCommerce-maintained products and compatibility declarations; no alternative product source",
@@ -986,6 +986,36 @@
         "assessment_planning_empty": true
       },
       "current": {
+        "order_id": 8354,
+        "native_store": "Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore",
+        "bytes": 1166,
+        "contexts": 1,
+        "assessment_contexts": 1,
+        "planned_battery_quantity": 3,
+        "actual_battery_quantity": 2,
+        "quantities_changed": true,
+        "report_run_id": "7249d65c5dd844c99bae0686714a3eae",
+        "pdf_sha256": "2b0516385c076996df7899e4cee648f327a90da6071131c08831289baf259baa",
+        "notification_held": false,
+        "cart_empty": true,
+        "browser_download_matches_frozen_report": true,
+        "duplicate_download_removed": true,
+        "http_headers": {
+          "status": 200,
+          "Content-Type": "application/pdf",
+          "Cache-Control": "no-store, private",
+          "Referrer-Policy": "no-referrer",
+          "X-Content-Type-Options": "nosniff",
+          "Access-Control-Allow-Origin": null
+        },
+        "anonymous_http_status": 404
+      },
+      "accepted": true,
+      "same_ui_submission_attempts": 2,
+      "current_change": "Native Woo HPOS stores a 1,166-byte checksummed report reference; the full frozen handoff remains in the immutable planning record. Authorized downloads resolve and compare the original handoff before serving its exact PDF.",
+      "next_work": "This local draft-to-inquiry report path is closed. Continue the remaining engineering and site delivery frontier; reuse its passing checks unless the relevant implementation or conditions change.",
+      "notification_delivery": "Not revalidated or claimed. Local capture and tester-only isolation were used; the original switch was restored.",
+      "before_compact_reference": {
         "order_id": 8352,
         "raw_bytes": 0,
         "json_error": "Syntax error",
@@ -993,11 +1023,58 @@
         "decoded_contexts": 0,
         "assessment_contexts": 0
       },
-      "accepted": false,
-      "same_ui_submission_attempts": 2,
-      "current_change": "Order-line-based context assembly now runs before inquiry assessment and byte admission, but actual form submissions still omit that context. Static review and CLI preparation do not close this failure.",
-      "next_work": "Trace the concrete form/native-write path before another submission; do not repeat calculations, PDF rendering or draft acceptance.",
-      "notification_delivery": "not revalidated; local capture and tester-only switch used, original switch restored"
+      "post_diagnosis_submission_attempts": 1,
+      "storage_failure": {
+        "native_store": "Automattic\\WooCommerce\\Internal\\DataStores\\Orders\\OrdersTableDataStore",
+        "native_meta_value_type": "TEXT",
+        "native_meta_value_limit_bytes": 65535,
+        "old_full_handoff_bytes": 138128,
+        "old_native_add_meta_id": false,
+        "old_database_error": "",
+        "diagnosis": "The first in-memory order contained the full context, but native metadata rejected the oversized value and the subsequent order reload lost it.",
+        "compact_reference_bytes": 1166,
+        "native_compact_reference_fixture": {
+          "prepared_bytes": 1166,
+          "native_add": {
+            "meta_id": 3347,
+            "bytes": 1166,
+            "db_error": ""
+          },
+          "database_bytes": 1166,
+          "database_exact": true,
+          "reread_bytes": 1166,
+          "reread_contexts": 1,
+          "owner_pdf_status": 200,
+          "owner_pdf_matches": true,
+          "stranger_status": 404,
+          "inquiry_key_pdf_status": 200,
+          "inquiry_key_pdf_matches": true,
+          "changed_reference_refused": true,
+          "rolled_back": true,
+          "restored_contexts": 0
+        }
+      },
+      "visual_readback": {
+        "en": {
+          "widths": [
+            1440,
+            390
+          ],
+          "project_reference": true,
+          "quantity_difference": true,
+          "private_pdf_link": true
+        },
+        "de": {
+          "widths": [
+            1440,
+            390
+          ],
+          "project_reference": true,
+          "quantity_difference": true,
+          "private_pdf_link": true
+        }
+      },
+      "test_mail_restored": true
     },
     "copy_review": {
       "reviewer": "energy_trace_copy",
@@ -1094,22 +1171,36 @@
       ]
     },
     "reviews": {
-      "spec": "full delta and two bounded repair reviews PASS statically; actual inquiry failure remains open",
-      "standards": "full delta and bounded repair review PASS statically"
+      "spec": "Prior full candidate and bounded draft reviews reused; compact-reference delta independently passed and actual inquiry persistence/download is now accepted locally.",
+      "standards": "full delta and bounded repair review PASS statically",
+      "compact_reference_spec": {
+        "reviewer": "hpos_reference_spec",
+        "status": "PASS",
+        "scope": "Four-file compact-reference delta against 9cd8558e; native storage, authorization, original-handoff binding and private PDF integrity."
+      },
+      "compact_reference_standards": {
+        "reviewer": "hpos_reference_standards",
+        "status": "PASS",
+        "scope": "Same compact-reference delta; native APIs and bounded metadata, no alternate product authority or new schema."
+      }
     },
     "reuse": {
       "new_annual_calculations": 0,
       "new_report_render_runs": 0,
       "new_instances": 0,
       "new_full_backups": 0,
-      "scope": "Existing report/PDF, weather, annual energy, equipment and prior source checks retained; only new handoff behavior exercised"
+      "scope": "Existing numerical, equipment, report/PDF and draft acceptance evidence reused. Compact-reference storage/private access and one corrected native inquiry addressed the diagnosed HPOS failure; no unrelated reruns."
     },
     "screenshots": [
       "draft-transfer-en-1440.jpg",
       "draft-transfer-en-390.jpg",
       "draft-transfer-de-1440.jpg",
       "draft-transfer-de-390.jpg",
-      "draft-native-en-1440.jpg"
+      "draft-native-en-1440.jpg",
+      "inquiry-report-en-1440.jpg",
+      "inquiry-report-en-390.jpg",
+      "inquiry-report-de-1440.jpg",
+      "inquiry-report-de-390.jpg"
     ],
     "protected_project": {
       "revision": 14,
@@ -1133,6 +1224,12 @@
         }
       ]
     },
-    "delivery_limit": "Local candidate only; no production deployment, no whole-goal completion claim"
+    "delivery_limit": "Local candidate only; no production deployment, no whole-goal completion claim",
+    "native_checks": {
+      "commerce_phpstan": "PASS on changed files; Context checked after its final validation change",
+      "tools_phpstan": "PASS on ReportAccess; subsequent Yoda equality reversal is semantic-equivalent",
+      "wpcs": "PASS on the three changed PHP files",
+      "javascript": "unchanged; existing build result reused"
+    }
   }
 }

@@ -29,19 +29,34 @@ final class ReportAccess {
 	 * Only a context already attached to an authorised inquiry can use team read.
 	 *
 	 * @param mixed               $previous Earlier service adapter.
-	 * @param array<string,mixed> $handoff Server-stored immutable context.
+	 * @param array<string,mixed> $reference Server-stored compact context.
 	 * @param int                 $order_id Authorised inquiry.
 	 */
-	public function read( mixed $previous, array $handoff, int $order_id ): string|WP_Error {
+	public function read( mixed $previous, array $reference, int $order_id ): string|WP_Error {
 		unset( $previous );
 		$order = wc_get_order( $order_id );
 		if ( ! $order instanceof \WC_Order || ! class_exists( \Linker\Commerce\Planning\Context::class ) ) {
 			return Failure::make( 'unavailable', 503 );
 		}
 		$stored = \Linker\Commerce\Planning\Context::stored( $order );
-		$id     = $handoff['id'] ?? null;
-		if ( ! is_string( $id ) || ( $stored[ $id ]['handoff'] ?? null ) !== $handoff ) {
+		$id     = $reference['handoff_id'] ?? null;
+		if ( ! is_string( $id ) || ( $stored[ $id ]['reference'] ?? null ) !== $reference ) {
 			return Failure::make( 'identity', 403 );
+		}
+		$principal = new Principal( 'team', 'wp:' . get_current_blog_id() . ':inquiry:' . $order_id );
+		$handoff   = $this->transport->object(
+			$principal,
+			'handoffs/read',
+			array(
+				'schema_version' => 1,
+				'handoff_id'     => $id,
+			)
+		);
+		if ( is_wp_error( $handoff ) ) {
+			return $handoff;
+		}
+		if ( ! is_array( $handoff['snapshot'] ?? null ) || ! is_string( $handoff['snapshot_sha256'] ?? null ) || \Linker\Commerce\Planning\Context::reference( $handoff ) !== $reference ) {
+			return Failure::make( 'invalid_reply', 502 );
 		}
 		$snapshot = $handoff['snapshot'];
 		$body     = wp_json_encode(
@@ -54,8 +69,7 @@ final class ReportAccess {
 		if ( ! is_string( $body ) ) {
 			return Failure::make( 'input', 422 );
 		}
-		$principal = new Principal( 'team', 'wp:' . get_current_blog_id() . ':inquiry:' . $order_id );
-		$reply     = $this->transport->call( $principal, 'assets/content', $body );
+		$reply = $this->transport->call( $principal, 'assets/content', $body );
 		if ( is_wp_error( $reply ) ) {
 			return $reply;
 		}

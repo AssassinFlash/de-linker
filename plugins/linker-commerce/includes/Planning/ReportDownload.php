@@ -69,14 +69,14 @@ final class ReportDownload {
 		 *
 		 * @since 0.3.0
 		 * @param string|WP_Error $bytes Private PDF, unavailable by default.
-		 * @param array<string,mixed> $handoff Server-stored immutable context.
+		 * @param array<string,mixed> $reference Server-stored immutable context.
 		 * @param int $order_id Authorised native inquiry.
 		 */
-		$content = apply_filters( 'linker_tools_planning_report_content', new WP_Error( 'planning_report_unavailable', '', array( 'status' => 503 ) ), $entry['handoff'], $order->get_id() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared server-only Tools file-reader seam.
+		$content = apply_filters( 'linker_tools_planning_report_content', new WP_Error( 'planning_report_unavailable', '', array( 'status' => 503 ) ), $entry['reference'], $order->get_id() ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Shared server-only Tools file-reader seam.
 		if ( is_wp_error( $content ) ) {
 			return $content;
 		}
-		$pdf = $entry['handoff']['snapshot']['pdf'];
+		$pdf = $entry['reference']['pdf'];
 		if ( ! self::matches( $content, $pdf['sha256'] ) ) {
 			return new WP_Error( 'planning_report_unavailable', '', array( 'status' => 503 ) );
 		}

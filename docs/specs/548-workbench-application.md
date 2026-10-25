@@ -355,6 +355,16 @@ session before assessment/notification preparation and byte admission; missing
 context refuses the inquiry. It does not depend on the cart still containing
 those lines. Original planned quantities
 and actual inquiry quantities remain distinct, with a visible change notice.
+The native order retains a compact, checksummed reference (project/revision,
+original handoff hash, report/PDF identities and selected quantities); the full
+report and Woo evidence remain in the immutable planner record. This respects
+the native HPOS `orders_meta.meta_value` TEXT limit of 65,535 bytes. A larger
+encoded reference refuses submission before saving instead of silently losing
+it. The actual native-read diagnosis found the earlier full 138,128-byte record
+was refused with no database error. Private download resolves the original
+handoff again and requires exact equality with the saved compact reference
+before reading its PDF; a copied or changed reference cannot choose another
+asset.
 Current Woo permission is checked again before inquiry admission. Order-owner,
 staff or the native inquiry key grants only that inquiry's non-priced report;
 it does not grant project ownership/editing. The protected download selects a

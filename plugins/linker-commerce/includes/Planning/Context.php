@@ -18,6 +18,8 @@ use WP_Error;
 /** A copied cart field is only a reference to server-owned session context. */
 final class Context {
 	public const META = '_linker_planning_projects';
+	/** HPOS orders_meta.meta_value is TEXT: wpdb reports a 65,535-byte limit. */
+	private const MAX_META_BYTES = 65535;
 
 	/**
 	 * Resolve only contexts referenced by live native Woo lines.
@@ -114,20 +116,42 @@ final class Context {
 				$planned[ $item['product_id'] ] = ( $planned[ $item['product_id'] ] ?? 0 ) + $item['quantity'];
 			}
 			$contexts[ $id ] = array(
-				'handoff'            => $handoff,
+				'reference'          => self::reference( $handoff ),
 				'included_items'     => $actual,
 				'quantities_changed' => Publication::revision( $planned ) !== Publication::revision( $actual ),
 			);
 		}
 		if ( array() !== $contexts ) {
-			// A JSON string avoids Woo CPT first-add array slashing while the
-			// same unslashed context is already readable before order save.
+			// A compact reference fits HPOS TEXT. The full report/proof remains
+			// in its immutable planner record; strings also avoid CPT array slashing.
 			$encoded = wp_json_encode( $contexts, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
-			if ( ! is_string( $encoded ) ) {
+			if ( ! is_string( $encoded ) || strlen( $encoded ) > self::MAX_META_BYTES ) {
 				throw new \RuntimeException( 'planning_inquiry_context_unavailable' );
 			}
 			$order->update_meta_data( self::META, $encoded );
 		}
+	}
+
+	/**
+	 * Native orders retain an immutable pointer and commercial quantities, not
+	 * another report/product registry. Private reads resolve and match it again.
+	 *
+	 * @param array<string,mixed> $handoff Verified full planner handoff.
+	 * @return array<string,mixed>
+	 */
+	public static function reference( array $handoff ): array {
+		$snapshot  = $handoff['snapshot'];
+		$reference = array(
+			'schema_version'  => 1,
+			'kind'            => 'planning_inquiry_reference_v1',
+			'handoff_id'      => $handoff['id'],
+			'snapshot_sha256' => $handoff['snapshot_sha256'],
+		);
+		foreach ( array( 'project_id', 'title', 'revision', 'input_sha256', 'report_run_id', 'report_source_sha256', 'report_sha256', 'pdf', 'items' ) as $field ) {
+			$reference[ $field ] = $snapshot[ $field ];
+		}
+		$reference['reference_sha256'] = Publication::revision( $reference );
+		return $reference;
 	}
 
 	/**
@@ -142,7 +166,7 @@ final class Context {
 		$result = array();
 		if ( is_array( $raw ) ) {
 			foreach ( $raw as $id => $entry ) {
-				if ( is_string( $id ) && is_array( $entry ) && self::valid( $entry['handoff'] ?? null, $id ) ) {
+				if ( is_string( $id ) && is_array( $entry ) && self::valid_reference( $entry['reference'] ?? null, $id ) ) {
 					$result[ $id ] = $entry;
 				}
 			}
@@ -224,7 +248,7 @@ final class Context {
 	 */
 	private function output( WC_Order $order, bool $plain ): void {
 		foreach ( self::stored( $order ) as $id => $entry ) {
-			$label   = self::label( $entry['handoff']['snapshot'] );
+			$label   = self::label( $entry['reference'] );
 			$url     = self::report_url( $order, $id );
 			$changed = ! empty( $entry['quantities_changed'] ) ? __( 'Quantities differ from the planning report.', 'linker-commerce' ) : '';
 			if ( $plain ) {
@@ -258,5 +282,39 @@ final class Context {
 	 */
 	private static function valid( mixed $value, string $id ): bool {
 		return is_array( $value ) && ( $value['id'] ?? null ) === $id && is_array( $value['snapshot'] ?? null ) && is_string( $value['snapshot_sha256'] ?? null ) && hash_equals( $value['snapshot_sha256'], Publication::revision( $value['snapshot'] ) );
+	}
+
+	/**
+	 * Check the compact native reference before displaying or resolving it.
+	 *
+	 * @param mixed  $value Native order metadata.
+	 * @param string $id Referenced handoff identity.
+	 */
+	private static function valid_reference( mixed $value, string $id ): bool {
+		if ( ! is_array( $value ) || 1 !== ( $value['schema_version'] ?? null ) || 'planning_inquiry_reference_v1' !== ( $value['kind'] ?? null ) || ( $value['handoff_id'] ?? null ) !== $id || ! is_string( $value['title'] ?? null ) || ! is_int( $value['revision'] ?? null ) || $value['revision'] < 1 || ! is_array( $value['items'] ?? null ) || ! is_array( $value['pdf'] ?? null ) ) {
+			return false;
+		}
+		foreach ( array( 'handoff_id', 'project_id', 'report_run_id' ) as $field ) {
+			if ( ! is_string( $value[ $field ] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $value[ $field ] ) ) {
+				return false;
+			}
+		}
+		foreach ( array( 'snapshot_sha256', 'input_sha256', 'report_source_sha256', 'report_sha256', 'reference_sha256' ) as $field ) {
+			if ( ! is_string( $value[ $field ] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $value[ $field ] ) ) {
+				return false;
+			}
+		}
+		$pdf = $value['pdf'];
+		if ( ! is_string( $pdf['asset_id'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{32}\z/', $pdf['asset_id'] ) || ! is_string( $pdf['sha256'] ?? null ) || 1 !== preg_match( '/\A[a-f0-9]{64}\z/', $pdf['sha256'] ) || 'application/pdf' !== ( $pdf['media_type'] ?? null ) || ! array_is_list( $value['items'] ) || array() === $value['items'] ) {
+			return false;
+		}
+		foreach ( $value['items'] as $item ) {
+			if ( ! is_array( $item ) || ! is_int( $item['product_id'] ?? null ) || $item['product_id'] < 1 || ! is_int( $item['quantity'] ?? null ) || $item['quantity'] < 1 || ! is_string( $item['label'] ?? null ) || '' === $item['label'] ) {
+				return false;
+			}
+		}
+		$sha = $value['reference_sha256'];
+		unset( $value['reference_sha256'] );
+		return hash_equals( $sha, Publication::revision( $value ) );
 	}
 }
