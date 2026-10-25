@@ -179,4 +179,7 @@
 		hyphens: manual;
 		overflow-wrap: break-word;
 	}
+
+	/* Manual word wrapping makes the current placeholder three lines tall. */
+	html[lang^="de"] #home-a .hero-prompt { min-height: 3lh; }
 }

@@ -167,8 +167,12 @@ reduced motion. Reuse unaffected menu and header-boundary evidence.
 Short German Home phone intro/input/quote text uses manual hyphenation with
 emergency overflow protection, preserving words, authored hyphens and sizes.
 Reuse current before views; inspect the affected390px hero and quote blocks
-and confirm desktop computed rules remain unchanged. Keep this source/CSS
-publication separate from the content-only marketing restoration.
+and confirm desktop computed rules remain unchanged. Manual wrapping makes
+the current German phone placeholder three lines tall (previous two-line
+client54px versus scroll82px at27.2px line height); reserve three line heights
+for that prompt so the complete placeholder remains visible without an inner
+scrollbar. Keep this source/CSS publication separate from the content-only
+marketing restoration.
 
 The owner-requested copy restoration covers12English/German marketing and
 help page pairs. Recover effective advertising language from the named earlier
