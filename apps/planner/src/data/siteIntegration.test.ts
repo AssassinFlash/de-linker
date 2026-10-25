@@ -27,6 +27,17 @@ test("native language destinations retain the current project without inventing 
 	assert.throws(() =>
 		projectLanguageUrl("/de/", "https://site.example/", "not-a-project"),
 	);
+	const carried = new URL(
+		projectLanguageUrl(
+			"/de/",
+			"https://site.example/?pv_kwp=10&annual_kwh=4500&step=roof&nonce=private",
+			null,
+		),
+	);
+	assert.equal(carried.searchParams.get("pv_kwp"), "10");
+	assert.equal(carried.searchParams.get("annual_kwh"), "4500");
+	assert.equal(carried.searchParams.get("step"), "roof");
+	assert.equal(carried.searchParams.has("nonce"), false);
 });
 
 test("language switches keep only validated result/workspace references for the same project", () => {
@@ -34,6 +45,36 @@ test("language switches keep only validated result/workspace references for the 
 		run = "b".repeat(32),
 		target = "/de/native/";
 	const current = `https://site.example/en/?project=${project}&run=${run}&nonce=private#lp-calculations`;
+	assert.equal(
+		new URL(
+			projectLanguageUrl(
+				target,
+				`https://site.example/?project=${project}&step=roof`,
+				project,
+			),
+		).hash,
+		"#lp-design",
+	);
+	assert.equal(
+		new URL(
+			projectLanguageUrl(
+				target,
+				`https://site.example/?project=${project}&step=roof&step=roof`,
+				project,
+			),
+		).hash,
+		"",
+	);
+	assert.equal(
+		new URL(
+			projectLanguageUrl(
+				target,
+				current.replace("#lp-calculations", "#lp-equipment"),
+				project,
+			),
+		).hash,
+		"#lp-equipment",
+	);
 	assert.equal(
 		projectLanguageUrl(target, current, project),
 		`https://site.example/de/native/?project=${project}&run=${run}#lp-calculations`,

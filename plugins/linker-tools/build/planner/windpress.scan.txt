@@ -8,6 +8,7 @@ lp-button
 lp-button-secondary
 lp-canvas-caption
 lp-canvas-tools
+lp-checkbox
 lp-comparison
 lp-comparison-variants
 lp-data-table

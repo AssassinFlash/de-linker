@@ -10,6 +10,9 @@ import { emptyBrief } from "../domain/brief.ts";
 import { __ } from "../i18n.ts";
 import { Icon } from "./Icon.tsx";
 import { Notice } from "./Notice.tsx";
+import { entryInputs } from "../domain/entryHints.ts";
+import type { EntryHints } from "../domain/entryHints.ts";
+import { formatDecimal } from "../domain/decimal.ts";
 
 export function NewProject({
 	session,
@@ -20,17 +23,22 @@ export function NewProject({
 	recoveryScopes,
 	recoveryChecking = false,
 	recoveryDiscoveryFailed = false,
+	entryHints = null,
+	locale = "en",
 }: {
 	session: Session;
 	client: PlannerClient;
 	store: DraftStore;
-	created: (project: Project) => boolean;
+	created: (project: Project, destination?: "design") => boolean;
 	recheck: () => void;
 	recoveryScopes?: readonly string[] | undefined;
 	recoveryChecking?: boolean;
 	recoveryDiscoveryFailed?: boolean;
+	entryHints?: EntryHints | null;
+	locale?: string;
 }) {
-	const [open, setOpen] = useState(false);
+	const [open, setOpen] = useState(Boolean(entryHints));
+	const [useHints, setUseHints] = useState(true);
 	const [title, setTitle] = useState("");
 	const [busy, setBusy] = useState(false);
 	const [failed, setFailed] = useState(false);
@@ -102,7 +110,20 @@ export function NewProject({
 			{
 				schema_version: 1,
 				title: title.trim(),
-				inputs: { brief: emptyBrief() },
+				inputs:
+					entryHints && useHints
+						? entryInputs(
+								entryHints,
+								__(
+									"Values carried from a tool link. Review them for this project.",
+									"linker-tools",
+								),
+								__(
+									"Backup supply requested; accessories may be considered.",
+									"linker-tools",
+								),
+							)
+						: { brief: emptyBrief() },
 				key: crypto.randomUUID(),
 			},
 			session.runtime.limits.max_json_depth,
@@ -130,7 +151,12 @@ export function NewProject({
 				if (lifetime.current === instance) setRecoveryFailed(true);
 			});
 			if (lifetime.current !== instance) return;
-			if (!created(project)) {
+			if (
+				!created(
+					project,
+					!selectedRequest && entryHints?.roof ? "design" : undefined,
+				)
+			) {
 				setFailed(true);
 				return;
 			}
@@ -155,6 +181,15 @@ export function NewProject({
 		(request) =>
 			request.body === intent.current && request.scope === intentScope.current,
 	);
+	const hasCarriedValues =
+		entryHints &&
+		[
+			entryHints.annualKwh,
+			entryHints.pvKw,
+			entryHints.phase,
+			entryHints.backup,
+			entryHints.postalCode,
+		].some((v) => v !== null);
 	if (!open)
 		return (
 			<button
@@ -174,6 +209,76 @@ export function NewProject({
 				void submit();
 			}}
 		>
+			{entryHints && !selectedRequest && (
+				<Notice>
+					<p>
+						{entryHints.roof && !hasCarriedValues
+							? __("Create a project to start the roof design.", "linker-tools")
+							: __(
+									"Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment.",
+									"linker-tools",
+								)}
+					</p>
+					<dl className="lp-field-summary">
+						{entryHints.annualKwh !== null && (
+							<div>
+								<dt>{__("Annual electricity consumption", "linker-tools")}</dt>
+								<dd>{formatDecimal(entryHints.annualKwh, locale)} kWh</dd>
+							</div>
+						)}
+						{entryHints.pvKw !== null && (
+							<div>
+								<dt>{__("PV array", "linker-tools")}</dt>
+								<dd>{formatDecimal(entryHints.pvKw, locale)} kWp</dd>
+							</div>
+						)}
+						{entryHints.phase !== null && (
+							<div>
+								<dt>{__("Grid connection", "linker-tools")}</dt>
+								<dd>
+									{entryHints.phase === 3
+										? __("Three-phase", "linker-tools")
+										: __("Single-phase", "linker-tools")}
+								</dd>
+							</div>
+						)}
+						{entryHints.backup !== null && (
+							<div>
+								<dt>{__("Backup supply", "linker-tools")}</dt>
+								<dd>
+									{entryHints.backup === "none"
+										? __("Not needed", "linker-tools")
+										: __("Requested", "linker-tools")}
+								</dd>
+							</div>
+						)}
+						{entryHints.postalCode !== null && (
+							<div>
+								<dt>{__("Postal code", "linker-tools")}</dt>
+								<dd>{entryHints.postalCode}</dd>
+							</div>
+						)}
+					</dl>
+					{entryHints.invalid && (
+						<p>
+							{__(
+								"Some link values are invalid and have not been applied. Check the project inputs before calculating.",
+								"linker-tools",
+							)}
+						</p>
+					)}
+					{!intent.current && hasCarriedValues && (
+						<label className="lp-checkbox">
+							<input
+								type="checkbox"
+								checked={useHints}
+								onChange={(e) => setUseHints(e.currentTarget.checked)}
+							/>
+							{__("Use these values for the new project", "linker-tools")}
+						</label>
+					)}
+				</Notice>
+			)}
 			{requests.length > 1 && (
 				<label className="lp-field">
 					<span>{__("Unconfirmed project creations", "linker-tools")}</span>

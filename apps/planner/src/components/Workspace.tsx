@@ -18,6 +18,8 @@ import { Icon } from "./Icon.tsx";
 import { NewProject } from "./NewProject.tsx";
 import { ProjectEditor } from "./ProjectEditor.tsx";
 import { Notice } from "./Notice.tsx";
+import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
+import { replacePlannerLocation } from "../data/plannerLocation.ts";
 
 function currentProject(): string | null {
 	const value = new URL(location.href).searchParams.get("project");
@@ -37,6 +39,9 @@ export function Workspace({
 	recheck: () => void;
 }) {
 	const [selected, setSelected] = useState<string | null>(currentProject);
+	const [entryHints, setEntryHints] = useState(() =>
+		readEntryHints(new URL(location.href).searchParams),
+	);
 	const cache = useQueryClient();
 	const recovery = useQuery({
 		queryKey: [session.query_scope, "recovery-scopes", session.claim_pending],
@@ -79,14 +84,16 @@ export function Workspace({
 		}
 	}, [cache, session]);
 	const select = useCallback(
-		(id: string | null) => {
+		(id: string | null, destination = "") => {
 			if (!client.isCurrentScope(session.query_scope)) return;
 			const url = new URL(location.href);
 			if (id) url.searchParams.set("project", id);
 			else url.searchParams.delete("project");
 			url.searchParams.delete("run");
-			url.hash = "";
-			history.replaceState(null, "", url);
+			for (const key of ENTRY_QUERY_KEYS) url.searchParams.delete(key);
+			url.hash = destination;
+			replacePlannerLocation(url);
+			setEntryHints(null);
 			setSelected(id);
 		},
 		[client, session.query_scope],
@@ -133,13 +140,13 @@ export function Workspace({
 			},
 		);
 	}, [index.data]);
-	function created(project: Project) {
+	function created(project: Project, destination?: "design") {
 		if (!client.isCurrentScope(session.query_scope)) return false;
 		cache.setQueryData([session.query_scope, "project", project.id], project);
 		void cache.invalidateQueries({
 			queryKey: [session.query_scope, "projects"],
 		});
-		select(project.id);
+		select(project.id, destination === "design" ? "lp-design" : "lp-site");
 		return true;
 	}
 	if (selected)
@@ -224,6 +231,8 @@ export function Workspace({
 						</p>
 					</div>
 					<NewProject
+						entryHints={entryHints}
+						locale={config.locale}
 						session={session}
 						client={client}
 						store={store}

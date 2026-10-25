@@ -644,13 +644,18 @@ final class RedirectsTest extends TestCase {
 			// The map's own query settles the target; the request's does not
 			// replace it.
 			$this->assertSame(
-				self::HOME . '/de/loesungskonfigurator/?step=roof',
+				self::HOME . '/de/loesungskonfigurator/?step=roof&utm_source=newsletter',
 				( new Redirects() )->target( '/de/design-canvas/' )
 			);
 			// A target without a query of its own carries the request's.
 			$this->assertSame(
 				self::HOME . '/de/loesungskonfigurator/?utm_source=newsletter',
 				( new Redirects() )->target( '/de/angebots-konfigurator/' )
+			);
+			$_SERVER['QUERY_STRING'] = 'step=other&%73tep=roof&pv_kwp=10&pv_kwp=20&annual_kwh=4500';
+			$this->assertSame(
+				self::HOME . '/solution-configurator/?step=roof&pv_kwp=10&pv_kwp=20&annual_kwh=4500',
+				( new Redirects() )->target( '/design-canvas/' )
 			);
 		} finally {
 			unset( $_SERVER['QUERY_STRING'] );

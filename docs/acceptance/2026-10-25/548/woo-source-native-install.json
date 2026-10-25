@@ -43,7 +43,7 @@
     }
   },
   "production_changed": false,
-  "pending": "Declared hot/cold operating cases, source-derived compound I-V parameters, diagnostic comparisons and bilingual reports are delivered locally. Remaining manufacturer/country qualification, full installation BOM/exports, site consumers, migration and review/production delivery remain within the active complete goal; closed source/model checks are not prerequisites for unrelated work.",
+  "pending": "Canonical bilingual tool entry and retired roof links now use the unified workbench locally, including reviewed input carry/opt-out and language navigation. Remaining manufacturer/country qualification, complete installation BOM/exports, further site/Genie/commerce consequences, persisted-data migration, private-page SEO policy and review/production delivery stay in the active complete goal.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "pv_operating_conditions",
+  "current_frontier": "canonical_site_entry",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2375,7 +2375,7 @@
       "notification_sent": true,
       "shared_woo_source": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d"
     },
-    "batch_stop": "Close only the two review P2s, one native saved operating-case result and bilingual report presentation. No new annual replay, full Woo/knowledge matrix or additional source authority.",
+    "batch_stop": "Canonical route, input carry/opt-out, native language navigation and affected redirects are delivered. Closed physics/source/commerce evidence remains reused; no repeated full matrix or new annual calculation.",
     "reviews": "Existing full Spec/Standards and copy review reused; final P2 deltas both PASS."
   },
   "pv_operating_conditions": {
@@ -2610,5 +2610,162 @@
       "observed_free_delta": 495616,
       "final_pdf_originals_retained": true
     }
+  },
+  "canonical_site_entry": {
+    "status": "canonical_entry_legacy_links_native_customer_input_and_language_delivery_complete_local",
+    "base_commit": "e505772b",
+    "main_merged": "3272ca64",
+    "scope": "Canonical bilingual entry, saved shortcode alias, carried sizing demands and roof navigation; unchanged energy and source results reused",
+    "before_templates": [
+      {
+        "id": 6973,
+        "post_content": "<!--\n  The Solution Configurator's page (/solution-configurator/, /de/loesungskonfigurator/).\n  Both languages render this one file: it is a mount point, and every word in\n  it comes from the app, which localizes itself from the page's lang\n  (linker-tools src/configurator/config.ts) — there is no static copy to\n  translate. Measured 2026-10-12 on the live site: its planner page prints the\n  theme's entry title above the application, which the application's own h1\n  then duplicates; the app owns the heading here.\n-->\n<section class=\"linker-configurator-page py-0\">\n\t[linker_configurator]\n</section>",
+        "sha256": "39c5a3be20773412f5926e812021593f88f2022c00a67a1f5511209bea300e5b"
+      },
+      {
+        "id": 6974,
+        "post_content": "<!--\n  The Solution Configurator's page (/solution-configurator/, /de/loesungskonfigurator/).\n  Both languages render this one file: it is a mount point, and every word in\n  it comes from the app, which localizes itself from the page's lang\n  (linker-tools src/configurator/config.ts) — there is no static copy to\n  translate. Measured 2026-10-12 on the live site: its planner page prints the\n  theme's entry title above the application, which the application's own h1\n  then duplicates; the app owns the heading here.\n-->\n<section class=\"linker-configurator-page py-0\">\n\t[linker_configurator]\n</section>",
+        "sha256": "39c5a3be20773412f5926e812021593f88f2022c00a67a1f5511209bea300e5b"
+      }
+    ],
+    "native_presentation_recovery": "The existing PresentCommand records its scoped native template/option backup before writing. No new instance, full SQL snapshot or engine release.",
+    "started_utc": "2026-10-25T18:30:32.474457+00:00",
+    "install_environment_correction": "Snapshot has no local-admin account. Read existing native administrator ID 1 and use it for the presentation command; no account/permission created.",
+    "native_presentation_result": "Success: presentation in sync",
+    "windpress": {
+      "defect": null,
+      "mtime": 1792953464,
+      "sha256": "0406f6436fb5bc0ca9574b601338b94eab345a71a64552742295c6cdfa73f94d",
+      "bytes": 873372,
+      "native_backup_present": true
+    },
+    "local_login_cleanup": "Admin compiler session completed; a fresh customer66 native redirect was completed and ownership read back before customer acceptance. Temporary one-use-link files were removed; the initially interrupted restore and operator-only fixture are recorded separately.",
+    "native_projects": {
+      "included": {
+        "id": "9fcb23092e6a4a389cc9a7d717e0a8b2",
+        "owner": "user:wp:1:user:66",
+        "title": "Cologne · customer link example",
+        "revision": 1,
+        "input_sha256": "04f2a9cba1b7f864b9e87e75942faa5beda856e2fce5167825a2586114f5c797",
+        "inputs": {
+          "brief": {
+            "annual_load": {
+              "basis": "user_estimate",
+              "kwh": 4500,
+              "source_note": "Values carried from a tool link. Review them for this project."
+            },
+            "project_note": "Backup supply requested; accessories may be considered.",
+            "project_use": null,
+            "schema_version": 1,
+            "site": {
+              "coordinate_basis": "not_provided",
+              "country_code": null,
+              "latitude": null,
+              "location_label": "50667",
+              "longitude": null,
+              "timezone": null
+            },
+            "system_scope": null
+          },
+          "equipment_setup": {
+            "accessory_product_ids": [],
+            "battery_product_id": null,
+            "grid_phase": 3,
+            "inverter_product_id": null,
+            "modules_per_stack": null,
+            "operating_mode": "backup",
+            "parallel_stacks": null,
+            "pv_dc_kw": 10,
+            "required_discharge_ac_kw": null,
+            "required_usable_kwh": null,
+            "schema_version": 1
+          }
+        },
+        "calculations_started": 0
+      },
+      "excluded": {
+        "id": "36b61cbf618e4ebeb39dee46788285e0",
+        "owner": "user:wp:1:user:66",
+        "title": "Köln · Dachplanung ohne Linkwerte",
+        "revision": 1,
+        "input_sha256": "58023034feb9dcff2b262d759587aaf4b75898750e5aff1c8afd3c5a1a4c908e",
+        "inputs": {
+          "brief": {
+            "annual_load": {
+              "basis": null,
+              "kwh": null,
+              "source_note": ""
+            },
+            "project_note": "",
+            "project_use": null,
+            "schema_version": 1,
+            "site": {
+              "coordinate_basis": "not_provided",
+              "country_code": null,
+              "latitude": null,
+              "location_label": "",
+              "longitude": null,
+              "timezone": null
+            },
+            "system_scope": null
+          }
+        },
+        "calculations_started": 0
+      }
+    },
+    "protected_roof_unchanged": {
+      "id": "82a84c56e50c4efb8497d1bfbe106bd1",
+      "revision": 14,
+      "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+    },
+    "native_identity_readback": "Initial compiler-login restore navigation was interrupted; operator-only project e9ec28b8ca7943b98739306782b1d169 belongs to administrator1 and is not customer acceptance. Completed a fresh native one-use login redirect first; both actual acceptance projects are owner66, and their pages have no admin toolbar. No identity grant or ownership reassignment.",
+    "translation_fix": "Seven existing approved labels lacked the new planner module reference; bound only their PO references and recompiled catalogs. All literal NewProject messages were checked for an existing translated catalog entry; no new translation source or model was used.",
+    "native_route_readback": {
+      "existing_roof_language_target": "/de/loesungskonfigurator/?project=9fcb23092e6a4a389cc9a7d717e0a8b2#lp-design",
+      "canonical_mount_count": 1,
+      "retired_configurator_bundle_loaded": false,
+      "native_mobile_document_overflow": false
+    },
+    "reviews": {
+      "spec": "PASS after roof opt-out/language destination delta",
+      "standards": "PASS after the same minimal delta; merge conflicts reviewed narrowly",
+      "copy": "9 EN/DE pairs PASS after conditional-save explanation correction"
+    },
+    "updated_utc": "2026-10-25T18:53:08.530172+00:00",
+    "retired_roof_redirects": [
+      {
+        "from": "/design-canvas/",
+        "final_url": "http://127.0.0.1:9347/solution-configurator/?step=roof&pv_kwp=10&annual_kwh=4500",
+        "status": 200,
+        "native_workbench_mount": true,
+        "legacy_configurator_mount": false
+      },
+      {
+        "from": "/de/entwurfsflache/",
+        "final_url": "http://127.0.0.1:9347/de/loesungskonfigurator/?step=roof&pv_kwp=10&annual_kwh=4500",
+        "status": 200,
+        "native_workbench_mount": true,
+        "legacy_configurator_mount": false
+      }
+    ],
+    "visuals": {
+      "en_1440": "canonical-entry-en-desktop.png",
+      "de_1440": "canonical-entry-de-desktop.png",
+      "en_390": "canonical-entry-en-mobile.png",
+      "de_390": "canonical-entry-de-mobile.png",
+      "en_1440_scope": "Existing saved Berlin project on canonical route; replaces the redundant empty-roof desktop capture."
+    },
+    "validation": "Reused numerical/year/source/commerce results. Only new entry parser, existing language-navigation representatives, replaced native mount representatives and one affected redirect case executed. Native templates/styles checked once after compile. Two actual customer-owned project creations establish adopted/excluded inputs and zero calculation side effects; canonical EN/DE 1440/390 views read back.",
+    "closed_at_utc": "2026-10-25T19:01:24.639238+00:00",
+    "visual_review": "Canonical EN/DE desktop roof destinations and mobile carried-input forms inspected. Final German form shows PV-Leistung, Netzanschluss, Dreiphasig and Notstromversorgung, with no document overflow or administrator toolbar.",
+    "engine_runtime_unchanged": "2eb6d4aa; this batch installs WordPress/frontend consumers only. Newly merged backend packaging is retained for the final coordinated engine release, without re-running unchanged numerical results.",
+    "storage": "Same p548 instance/environment; no new executable carrier, full SQL backup, test harness or permanent report. One existing native presentation backup retained. Four affected route images replace transient captures; two customer project records and one explicitly non-acceptance operator record retained as scoped evidence.",
+    "test_consolidation": {
+      "file": "plugins/linker-tools/tests/php/Unit/MountTest.php",
+      "purpose": "Retired old app mounting and attribute tests replaced by three single-application alias/admin-boundary representatives. Input conversion now has one focused parser fixture; no duplicated old UI implementation test remains."
+    },
+    "handoff_view": "Canonical EN route for existing Berlin project c7795bc2c1e14e389622015c809ace45, roof section, revision22 and24 included modules displayed without edits or calculation.",
+    "static_analysis_environment": "Initial two-file PHPStan hit the default128M worker limit; repeat only those files with per-invocation512M, no global configuration change.",
+    "static_analysis_result": "Changed Mount and Redirects pass existing WPCS and PHPStan level8 with per-invocation512M; earlier128M tool failure is not treated as a product failure or a pass."
   }
 }

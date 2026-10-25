@@ -465,3 +465,28 @@ verification is one existing wiring representative extended for the new model,
 known false-success/negative-resistance rejection, domain/optional-schema checks,
 necessary changed-layer type/build checks, independent delta reviews and the
 new native operating/report views. No annual replay or full-site matrix repeats.
+
+
+## Canonical site entry and carried requests
+
+The existing `/solution-configurator/` and `/de/loesungskonfigurator/` pages
+render `[linker_planner]`. Saved `[linker_configurator]` content delegates to
+that same native application; it never enqueues a second configurator bundle.
+The independent review pages remain local acceptance routes, not the site's
+customer destinations. Existing navigation, content and Genie sizing links
+therefore reach the unified application without creating a new public URL.
+
+Historical sizing parameters are unverified customer inputs for a new project.
+The new-project form previews valid PV kWp, annual kWh, grid phase, backup and
+postal code and allows their exclusion before an explicit create action.
+Duplicate/invalid values are diagnosed and never applied. They cannot modify
+an existing project, select products, authorize compatibility or start a run.
+Annual demand is marked as an estimate with its carried-link source. Postal
+code does not imply a country, coordinates or timezone. Accessory permission
+is retained as a project note, not a manufacturer approval. Existing durable
+creation intents retain their original bytes and scope before any link input.
+
+`step=roof` opens the same project's roof section, including after a new project
+is created. A normal creation opens site inputs. Consumed parameters leave the
+project URL; language navigation carries only validated link inputs before
+creation and the owned project/result/section references afterward.

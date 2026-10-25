@@ -282,6 +282,8 @@ msgstr "Mittlere Leistung in kW"
 msgid "Back"
 msgstr "Zurück"
 
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
 #: src/configurator/commercial/CommercialPanel.tsx:304
 #: src/configurator/residential/ResidentialForm.tsx:294 build/configurator.js
 msgid "Backup supply"
@@ -324,6 +326,8 @@ msgstr "Ertrag, Speicher und freigegebenes System werden berechnet …"
 msgid "Calculating…"
 msgstr "Wird berechnet …"
 
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
 #: build/genie.js:10 build/genie.js:19 build/hero.js
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -878,6 +882,8 @@ msgstr "Ziele"
 msgid "Goes beyond Genie's remit."
 msgstr "Geht über den Aufgabenbereich von Genie hinaus."
 
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:271 build/hero.js
 #: src/configurator/utility/UtilityForm.tsx:45 build/configurator.js
 #: build/genie.js
@@ -1215,6 +1221,8 @@ msgstr "Nicht in unserem Sortiment."
 msgid "Not judged"
 msgstr "Nicht bewertet"
 
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:298 build/configurator.js
 msgid "Not needed"
 msgstr "Nicht benötigt"
@@ -1309,6 +1317,8 @@ msgstr "Außen"
 msgid "PNG or JPEG, at most 500 kB."
 msgstr "PNG oder JPEG, höchstens 500 kB."
 
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:200 build/configurator.js
 msgid "PV array"
 msgstr "PV-Leistung"
@@ -1657,6 +1667,8 @@ msgstr "%s: Unterlagen anzeigen"
 msgid "Sign in"
 msgstr "Anmelden"
 
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:289 build/configurator.js
 msgid "Single-phase"
 msgstr "Einphasig"
@@ -1992,6 +2004,8 @@ msgstr "Für den nächsten Schritt muss diese Lösung neu berechnet werden."
 msgid "Three steps. The result follows the inputs you enter."
 msgstr "Drei Schritte. Das Ergebnis folgt den Eingaben, die Sie machen."
 
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
 #: src/configurator/residential/ResidentialForm.tsx:280 build/configurator.js
 msgid "Three-phase"
 msgstr "Dreiphasig"
@@ -10508,3 +10522,48 @@ msgid ""
 msgstr ""
 "Das Anpassungsergebnis hat die physikalischen oder numerischen Prüfungen "
 "nicht bestanden. Es wird nicht für Betriebsschätzungen verwendet."
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Values carried from a tool link. Review them for this project."
+msgstr "Über einen Link übernommene Angaben. Bitte prüfen Sie diese für Ihr Projekt."
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Backup supply requested; accessories may be considered."
+msgstr "Notstromversorgung gewünscht; passendes Zubehör darf berücksichtigt werden."
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Review the values from this link. If you choose to use them, they will be saved as project inputs when you create the project. This does not run a calculation or select equipment."
+msgstr "Prüfen Sie die Angaben aus diesem Link. Wenn Sie diese übernehmen, werden sie beim Anlegen des Projekts als Eingaben gespeichert. Dabei wird weder eine Berechnung durchgeführt noch eine Geräteauswahl getroffen."
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Some link values are invalid and have not been applied. Check the project inputs before calculating."
+msgstr "Einige Angaben im Link sind ungültig und wurden nicht übernommen. Bitte prüfen Sie die Projekteingaben vor der Berechnung."
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Use these values for the new project"
+msgstr "Diese Angaben für das neue Projekt übernehmen"
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Create a project to start the roof design."
+msgstr "Legen Sie ein Projekt an, um die Dachplanung zu starten."
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Annual electricity consumption"
+msgstr "Jährlicher Stromverbrauch"
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Requested"
+msgstr "Gewünscht"
+
+#: ../../apps/planner/src/components/NewProject.tsx
+#: build/planner/assets/planner.js
+msgid "Postal code"
+msgstr "Postleitzahl"

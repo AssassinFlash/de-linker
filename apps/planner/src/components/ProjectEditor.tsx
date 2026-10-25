@@ -76,6 +76,9 @@ function workspaceFromHash(): ProjectWorkspace {
 	if (["#lp-load", "#lp-profiles"].includes(window.location.hash))
 		return "energy";
 	return window.location.hash === "#lp-design" ||
+		(!window.location.hash &&
+			new URL(window.location.href).searchParams.getAll("step").length === 1 &&
+			new URL(window.location.href).searchParams.get("step") === "roof") ||
 		mapPropertyHashes.includes(window.location.hash)
 		? "design"
 		: "overview";

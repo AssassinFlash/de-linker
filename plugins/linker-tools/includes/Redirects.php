@@ -112,12 +112,18 @@ final class Redirects {
 	 * @param string $target Root-relative page or tool target.
 	 */
 	private function carrying_query( string $target ): string {
-		if ( str_contains( $target, '?' ) ) {
+		$roof = str_ends_with( $target, '?step=roof' );
+		if ( str_contains( $target, '?' ) && ! $roof ) {
 			return $target;
 		}
 		$query = $this->request_query();
+		if ( $roof ) {
+			// The retired roof path owns its step. Keep other input bytes and
+			// duplicates intact so the application's intake can validate them.
+			$query = implode( '&', array_filter( explode( '&', $query ), static fn( string $part ): bool => 'step' !== urldecode( explode( '=', $part, 2 )[0] ) ) );
+		}
 
-		return '' === $query ? $target : $target . '?' . $query;
+		return '' === $query ? $target : $target . ( $roof ? '&' : '?' ) . $query;
 	}
 
 	/**

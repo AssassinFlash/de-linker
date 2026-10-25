@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { PLANNER_NAVIGATION } from "./plannerLocation.ts";
 import { measurePlannerChrome } from "./measurePlannerChrome.ts";
+import { ENTRY_QUERY_KEYS, readEntryHints } from "../domain/entryHints.ts";
 
 const workspaceHashes = new Set([
 	"#lp-overview",
@@ -11,6 +12,7 @@ const workspaceHashes = new Set([
 	"#lp-profiles",
 	"#lp-design",
 	"#lp-calculations",
+	"#lp-equipment",
 	"#lp-map-roof-properties",
 	"#lp-map-ring-properties",
 	"#lp-map-feature-properties",
@@ -35,6 +37,18 @@ export function projectLanguageUrl(
 	else target.searchParams.delete("project");
 	target.searchParams.delete("run");
 	target.searchParams.delete("compare");
+	for (const key of ENTRY_QUERY_KEYS) target.searchParams.delete(key);
+	const hints = id === null ? readEntryHints(page.searchParams) : null;
+	if (hints)
+		for (const [key, value] of Object.entries({
+			pv_kwp: hints.pvKw,
+			annual_kwh: hints.annualKwh,
+			phase: hints.phase,
+			backup: hints.backup,
+			plz: hints.postalCode,
+			step: hints.roof ? "roof" : null,
+		}))
+			if (value !== null) target.searchParams.set(key, String(value));
 	target.hash = "";
 	if (id && page.searchParams.get("project") === id) {
 		const run = page.searchParams.get("run");
@@ -49,6 +63,13 @@ export function projectLanguageUrl(
 			target.searchParams.set("compare", comparison);
 		}
 		if (workspaceHashes.has(page.hash)) target.hash = page.hash;
+		else if (
+			!page.hash &&
+			!(run && /^[a-f0-9]{32}$/.test(run)) &&
+			page.searchParams.getAll("step").length === 1 &&
+			page.searchParams.get("step") === "roof"
+		)
+			target.hash = "#lp-design";
 	}
 	return target.href;
 }

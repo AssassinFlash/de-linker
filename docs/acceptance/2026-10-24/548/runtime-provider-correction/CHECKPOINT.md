@@ -768,3 +768,45 @@ and closure. A direct authorized notification confirms that planner-wide testing
 is not a prerequisite for that line. Further work continues under the existing
 full goal; no local increment is presented as production or complete-system
 approval. Close the validated increment and proceed to actual remaining delivery.
+
+## 2026-10-26 · Canonical site entry and preserved roof links
+
+Main `3272ca64` was merged as `e505772b`, preserving the other sessions'
+site/Genie/product changes. The few source conflicts retain the single Woo
+publication read, Woo compatibility origin and both sets of owner rulings.
+Generated translations and builds were produced from the merged sources.
+
+The existing EN/DE Solution Configurator URLs now render the unified workbench.
+Saved legacy shortcodes delegate to the same native application, loading no
+retired configurator bundle. Carried sizing values are previewed, optional and
+saved only by explicit project creation. They are customer requirements, not
+selected products or engineering approval; a postal code infers no country or
+coordinates. Durable prior creation requests preserve their original bytes.
+Roof navigation is independent of adopting values, and old existing-project
+roof links retain their destination through EN/DE navigation. Retired canvas
+redirects keep input parameters while preserving exactly one route-owned step.
+
+Native customer66 projects `9fcb23092e6a4a389cc9a7d717e0a8b2` and
+`36b61cbf618e4ebeb39dee46788285e0` prove adopted and excluded input respectively,
+with zero calculation tasks. Both arrive in the roof workspace. The first has
+4500 kWh estimated demand, 10 kWp proposed PV and backup requirements; the
+second retains empty brief inputs. The original protected roof remains revision
+14 with its same hash; Berlin remains untouched. Actual EN/DE desktop/mobile
+views and retired EN/DE redirects were inspected on the canonical URLs.
+
+Native present wrote templates and its scoped recovery, then correctly refused
+a stale WindPress cache. Existing administrator identity was used to compile
+once through the native dashboard; read-only presentation/cache checks passed.
+The customer login redirect was then explicitly completed and owner66 verified;
+the initial operator-only setup fixture is not customer acceptance. No global
+identity/permission changes or production writes occurred. Seven reused terms
+needed the new module's catalog reference; existing approved translations were
+bound and the final German form read back. Spec/Standards/copy passed with only
+actual deltas re-reviewed. The obsolete mount tests were consolidated instead
+of keeping two UI implementations. No physics/year/source/commerce rerun, new
+instance, environment or executable carrier was introduced.
+
+This closes the canonical-entry increment locally. Full installation BOM,
+manufacturer/country qualification, remaining consumers, persisted-data
+migration, private-page SEO and coordinated review/production release remain
+under the same active goal; this is not production completion.
