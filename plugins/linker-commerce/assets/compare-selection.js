@@ -170,4 +170,19 @@
 	window.linkerComparePaint = paint;
 	syncFromPage();
 	paint();
+
+	var scroll = document.querySelector('#linker-compare .linker-compare-scroll');
+	var hint = document.querySelector('[data-compare-scroll-hint]');
+	if (scroll && hint) {
+		var measure = function () {
+			hint.hidden = scroll.scrollWidth <= scroll.clientWidth + 1;
+		};
+		measure();
+		window.addEventListener('resize', measure);
+		if (window.ResizeObserver) {
+			var observer = new window.ResizeObserver(measure);
+			observer.observe(scroll);
+			observer.observe(scroll.querySelector('table'));
+		}
+	}
 }(window, document));

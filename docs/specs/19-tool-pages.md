@@ -85,3 +85,11 @@
   - 旧对比页的行为来源：旧仓库当前交付版本的 `plugins/terravolt-b2b-core/assets/compare-selection.js` 与 `includes/compare-products.php`（只作为"线上现状"中性证据：芯片、上限、sessionStorage、地址回写四项照旧；其行数据路径不继承）。
 - 2026-10-11（同日追加）：§6 的 WindPress 修复（`render_raw`）与 §7 的三条留档，均随本票一并交付。
 - 2026-10-11（评审轮追加）：§1 的页面地址改为按请求语言解析（`ComparePage::page_url()` 经 `pll_get_post` 取页面孪生，德语访客的芯片、规范化跳转与 Remove 链接留在 `/de/` 页），模板引导句落地 §1.2 定稿（EN/DE 都不含 catalogue/Katalog）。
+
+## 2026-10-26 · 比较选择与交互修复
+
+线上实走已确认：德语比较页的英文语言链接丢掉 `ids`，且德语页面实际 slug 为 `produkte-vergleichen`，只检查英文 slug 会漏掉其规范化与选择脚本。共享页头/页脚经 Polylang 原生页面与公开商品配对保留顺序、去重、最多四项和 capped 提示；非比较页不继承任意 ids。目标页将规范化结果写回现有 sessionStorage，不改变存储协议、规格计算、价格门或库存权限。
+
+比较入口显示既有 Compare/Vergleichen 文本，选中出现勾选并保留 aria-pressed，和加入方案动作区分。WindPress 承接既有比较表设计到实际原生类名，移除/清空至少44px；水平溢出时才显示英德滚动提示，行标题固定、数据列保留可读宽度。类别文字直接读 Woo 分类及 Polylang 译名，不改事实层的 slug。空选择直接输出原有空态，跳过完整商品/文档装配。
+
+原生优先：LC 已负责页面组成；Woo/Polylang 提供维护数据与语言配对；WindPress 为唯一样式发布通道。本次只补现有短代码的数据装配、选择脚本和现有样式，未增加独立模板系统或产品权威。验收复用原有发布/资料/价格门结论，仅覆盖本次比较和入口差异。

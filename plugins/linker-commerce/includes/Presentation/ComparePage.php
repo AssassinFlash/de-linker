@@ -10,6 +10,7 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Presentation;
 
 use Linker\Commerce\Products\Comparison;
+use Linker\Commerce\Abilities\ProductText;
 
 /**
  * /compare-products/: the page a visitor builds a comparison on, and the
@@ -28,7 +29,7 @@ use Linker\Commerce\Products\Comparison;
 final class ComparePage {
 
 	/**
-	 * Page slug of the comparison page, English and German alike.
+	 * English source slug; the German page is its native Polylang twin.
 	 */
 	public const PAGE_SLUG = 'compare-products';
 
@@ -108,6 +109,51 @@ final class ComparePage {
 		return $parsed;
 	}
 
+	/** The current comparison page, including a twin with its own slug. */
+	private static function is_comparison_page(): bool {
+		if ( is_page( self::PAGE_SLUG ) ) {
+			return true;
+		}
+		$page = get_queried_object();
+		if ( ! $page instanceof \WP_Post || 'page' !== $page->post_type || ! function_exists( 'pll_get_post' ) ) {
+			return false;
+		}
+		$source_id = (int) pll_get_post( (int) $page->ID, 'en' );
+		$source    = $source_id > 0 ? get_post( $source_id ) : null;
+
+		return $source instanceof \WP_Post && self::PAGE_SLUG === $source->post_name;
+	}
+
+	/**
+	 * Retain this page's selection through the shared header/footer switcher.
+	 *
+	 * @param array<string,mixed> $query Public, unslashed request query.
+	 * @param string              $language Target language.
+	 * @return array<string,string>
+	 */
+	public static function language_query( array $query, string $language ): array {
+		if ( ! is_string( $query['ids'] ?? null ) || ! self::is_comparison_page() ) {
+			return array();
+		}
+		$parsed = Comparison::parse_ids( $query['ids'] );
+		$ids    = array();
+		foreach ( $parsed['ids'] as $id ) {
+			$translated = ProductText::translated_id( $id, ProductText::lang( $language ) );
+			if ( $translated > 0 && ! in_array( $translated, $ids, true ) ) {
+				$ids[] = $translated;
+			}
+		}
+		if ( array() === $ids ) {
+			return array();
+		}
+		$kept = array( 'ids' => implode( ',', $ids ) );
+		if ( $parsed['capped'] || '1' === ( $query['capped'] ?? null ) ) {
+			$kept['capped'] = '1';
+		}
+
+		return $kept;
+	}
+
 	/**
 	 * The comparison page keeps one address per selection: the `ids` in order,
 	 * no duplicates, no more than a comparison holds. A visitor who pastes
@@ -116,7 +162,7 @@ final class ComparePage {
 	 * match the address (the page stays refreshable and shareable).
 	 */
 	public function canonical_address(): void {
-		if ( ! is_page( self::PAGE_SLUG ) ) {
+		if ( ! self::is_comparison_page() ) {
 			return;
 		}
 		$parsed = $this->selection();
@@ -186,7 +232,11 @@ final class ComparePage {
 	public function table( $atts = array() ): string {
 		unset( $atts );
 		$parsed     = $this->selection();
-		$comparison = $this->comparison->of( $parsed['ids'], self::language() );
+		$comparison = array() === $parsed['ids'] ? array(
+			'products' => array(),
+			'rows'     => array(),
+			'specs'    => array(),
+		) : $this->comparison->of( $parsed['ids'], self::language() );
 		$columns    = $comparison['products'];
 
 		$html = '<div id="linker-compare" class="linker-compare" data-compare-ids="' . esc_attr( implode( ',', array_column( $columns, 'product_id' ) ) ) . '">';
@@ -207,6 +257,7 @@ final class ComparePage {
 		}
 
 		$html .= '<p class="linker-compare-actions mb-4 text-sm"><a class="text-(--proto-accent) underline" href="' . esc_url( $this->page_url() ) . '">' . esc_html__( 'Clear comparison', 'linker-commerce' ) . '</a></p>';
+		$html .= '<p class="linker-compare-hint" data-compare-scroll-hint hidden>' . esc_html__( 'Scroll sideways to compare products.', 'linker-commerce' ) . '</p>';
 		$html .= '<div class="linker-compare-scroll overflow-x-auto" role="region" tabindex="0" aria-label="' . esc_attr__( 'Product comparison table', 'linker-commerce' ) . '">';
 		$html .= '<table class="linker-compare-table w-full border-collapse text-sm">';
 		$html .= '<thead><tr><th scope="col" class="linker-compare-cell border-b border-neutral-200 p-3 text-left align-top font-semibold text-neutral-500">' . esc_html__( 'Products', 'linker-commerce' ) . '</th>';
@@ -227,7 +278,11 @@ final class ComparePage {
 		$html .= $this->row( __( 'Availability', 'linker-commerce' ), array_map( static fn( array $column ): string => $column['availability'], $columns ) );
 		foreach ( $comparison['rows'] as $dimension ) {
 			$values = array_map(
-				static fn( $value ): string => 'application' === $dimension['field'] ? self::application( $value ) : self::cell_value( $value ),
+				static fn( $value ): string => match ( $dimension['field'] ) {
+					'application' => self::application( $value ),
+					'device_class' => self::category( $value ),
+					default => self::cell_value( $value ),
+				},
 				array_values( $dimension['values'] )
 			);
 			$html  .= $this->row( $dimension['label'], $values );
@@ -283,7 +338,7 @@ final class ComparePage {
 	 * own address).
 	 */
 	public function assets(): void {
-		$page = is_page( self::PAGE_SLUG );
+		$page = self::is_comparison_page();
 		if ( ! $page && ! $this->is_selection_surface() ) {
 			return;
 		}
@@ -354,6 +409,39 @@ final class ComparePage {
 			'commercial' => __( 'Commercial', 'linker-commerce' ),
 			default      => self::cell_value( $value ),
 		};
+	}
+
+	/**
+	 * Use the maintained WooCommerce category name and its native translation.
+	 *
+	 * @param mixed $value Device-class slug.
+	 */
+	private static function category( $value ): string {
+		if ( ! is_string( $value ) || '' === $value || 'unknown' === $value ) {
+			return self::EM_DASH;
+		}
+		$terms = get_terms(
+			array(
+				'taxonomy'   => 'product_cat',
+				'slug'       => $value,
+				'lang'       => 'en',
+				'hide_empty' => false,
+				'number'     => 1,
+			)
+		);
+		$term  = is_array( $terms ) ? reset( $terms ) : null;
+		if ( ! $term instanceof \WP_Term ) {
+			return self::EM_DASH;
+		}
+		if ( function_exists( 'pll_get_term' ) ) {
+			$id         = (int) pll_get_term( (int) $term->term_id, self::language() );
+			$translated = $id > 0 ? get_term( $id, 'product_cat' ) : null;
+			if ( $translated instanceof \WP_Term ) {
+				$term = $translated;
+			}
+		}
+
+		return (string) $term->name;
 	}
 
 	/**
