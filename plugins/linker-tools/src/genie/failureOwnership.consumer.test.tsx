@@ -542,13 +542,18 @@ test( 'native lookup pending accepts no ordinary input, outage Retry makes a usa
 	);
 	const ui = workspace();
 	stop = ui.stop;
+	const attach = screen.getByRole< HTMLButtonElement >( 'button', {
+		name: 'Attach a file',
+	} );
 	expect( ui.field().disabled ).toBe( true );
+	expect( attach.disabled ).toBe( true );
 	fireEvent.input( ui.field(), {
 		target: { value: 'Must not be accepted while unowned' },
 	} );
 	expect( ui.field().value ).toBe( '' );
 	await act( async () => release( { ok: false, status: 503 } ) );
 	await screen.findByRole( 'button', { name: 'Try again' } );
+	expect( attach.disabled ).toBe( true );
 	expect( captures ).toHaveLength( 0 );
 	vi.stubGlobal(
 		'fetch',
@@ -565,6 +570,7 @@ test( 'native lookup pending accepts no ordinary input, outage Retry makes a usa
 		fireEvent.click( screen.getByRole( 'button', { name: 'Try again' } ) )
 	);
 	await waitFor( () => expect( ui.field().disabled ).toBe( false ) );
+	expect( attach.disabled ).toBe( false );
 	expect( captures ).toHaveLength( 0 );
 	await askWorkspace( 'Explicit question after verification' );
 	await waitFor( () => expect( captures ).toHaveLength( 1 ) );

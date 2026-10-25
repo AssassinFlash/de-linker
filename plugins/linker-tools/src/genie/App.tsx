@@ -2624,6 +2624,7 @@ export function App( { config }: { config: GenieConfig } ) {
 										'Attach a file',
 										'linker-tools'
 									) }
+									disabled={ draftContext.phase !== 'ready' }
 									onClick={ () =>
 										draftContext.capture() &&
 										attachInput.current?.click()
