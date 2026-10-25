@@ -1,3 +1,8 @@
+import {
+	REPORT_TASK,
+	readReportOptions,
+	readReportResult,
+} from "./planningReport.ts";
 import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
@@ -13,6 +18,7 @@ export const RUN_OPERATIONS = {
 	"runs/weather": "acquire_pvgis_tmy_weather_v1",
 	"runs/equipment": EQUIPMENT_TASK,
 	"runs/equipment-search": SEARCH_TASK,
+	"runs/report": REPORT_TASK,
 } as const;
 export type RunOperation = keyof typeof RUN_OPERATIONS;
 export type TaskKind = (typeof RUN_OPERATIONS)[RunOperation];
@@ -101,10 +107,12 @@ export function readPlanningOperation(
 				"project_id",
 				"expected_revision",
 				"key",
+				...(path === "runs/report" ? ["options"] : []),
 			]) ||
 			!revision(command.expected_revision)
 		)
 			throw new ApiError(422, "invalid_energy_intent");
+		if (path === "runs/report") readReportOptions(command.options);
 	} else {
 		if (
 			!exact(command, [
@@ -211,6 +219,7 @@ function readRunDocument(
 		(task === RUN_OPERATIONS["runs/energy"] && models.replay !== task) ||
 		((task === RUN_OPERATIONS["runs/equipment"] ||
 			task === SEARCH_TASK ||
+			task === REPORT_TASK ||
 			task === RUN_OPERATIONS["runs/pv"] ||
 			task === RUN_OPERATIONS["runs/weather"]) &&
 			models.task !== task)
@@ -227,6 +236,7 @@ function readRunDocument(
 			readEnergyResult(row.result, row, manifest);
 		else if (task === SEARCH_TASK)
 			readEquipmentSearchResult(row.result, row, manifest);
+		else if (task === REPORT_TASK) readReportResult(row.result, row, manifest);
 		else if (task === EQUIPMENT_TASK)
 			readEquipmentResult(row.result, row, manifest);
 		else throw new ApiError(502, "unsupported_run_model");

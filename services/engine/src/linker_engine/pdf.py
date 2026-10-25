@@ -175,7 +175,16 @@ def _section(
         ]
         table = Table(
             [header, *body],
-            colWidths=[width * 0.13, width * 0.45, width * 0.24, width * 0.18],
+            colWidths=[
+                width * share
+                for share in (
+                    [0.13, 0.45, 0.24, 0.18]
+                    if len(header) == 4
+                    else [0.13, 0.62, 0.25]
+                    if len(header) == 3
+                    else [1 / max(1, len(header))] * len(header)
+                )
+            ],
             repeatRows=1,
         )
         table.setStyle(
@@ -196,7 +205,9 @@ def _section(
     return [KeepTogether(parts[:2]), *parts[2:]]
 
 
-def render(report: Report, logo: str | None = None) -> bytes:
+def render(
+    report: Report, logo: str | None = None, *, credits: str | None = None
+) -> bytes:
     styles = _styles()
     buffer = io.BytesIO()
     margin = 18 * mm
@@ -246,7 +257,7 @@ def render(report: Report, logo: str | None = None) -> bytes:
         story += _section(section, styles, width)
 
     footer = t("pdf.footer", report.locale)
-    credits = t("pdf.credits", report.locale)
+    credits = t("pdf.credits", report.locale) if credits is None else credits
 
     def page(canvas: object, doc: object) -> None:
         canvas.saveState()  # type: ignore[attr-defined]

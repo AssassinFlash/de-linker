@@ -8,6 +8,8 @@ export function isPreMutationInputRefusal(error: unknown): boolean {
 	if (!(error instanceof ApiError)) return false;
 	const statuses: Readonly<Record<string, readonly number[]>> = {
 		invalid_input: [400, 422],
+		report_inputs_changed: [422],
+		report_logo_invalid: [422],
 		product_evidence_changed: [409],
 		body_too_large: [413],
 		request_too_large: [413],

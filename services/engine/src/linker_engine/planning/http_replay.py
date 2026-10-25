@@ -23,6 +23,7 @@ from .http_documents import (
     GeometryImportCommand,
     ProjectCreate,
     ProjectRevise,
+    ReportEvaluate,
 )
 from .http_views import asset_view, project_view, run_view
 from .pv_preparation import PvReferenceKernel
@@ -89,6 +90,28 @@ class HttpReplay:
                         actor,
                         revise.project_id,
                         revision=commands.receipt_number(receipt, "revision"),
+                    )
+                )
+            )
+        elif path == "runs/report":
+            report = ReportEvaluate.model_validate(value)
+            command_scope = f"evaluate:{report.project_id}"
+            receipt, command_sha256 = self.receipt(
+                actor,
+                command_scope,
+                report.key,
+                {
+                    "expected_revision": report.expected_revision,
+                    "intent": report.options.intent(),
+                },
+                project_id=report.project_id,
+            )
+            result = (
+                None
+                if receipt is None
+                else run_view(
+                    self.workspace.run(
+                        actor, commands.receipt_string(receipt, "run_id")
                     )
                 )
             )

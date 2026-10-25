@@ -285,3 +285,35 @@ candidate and assessment hash; project writes verify ownership, same-project
 lineage and exact selection. Changed demand instead requires a new assessment
 and is not relabelled as the old candidate. This binding is available for the
 remaining report, BOM and commerce consumers.
+
+### Frozen planning report and private PDF
+
+`runs/report` uses the existing durable command journal, executor registry and
+atomic asset publication. It accepts explicit completed energy/PV/equipment run
+references plus locale and optional PNG/JPEG branding. Source runs must belong
+to the project and match the relevant saved inputs; the adopted equipment
+candidate remains bound to its original run and assessment hash. This command
+does not recalculate weather, PV or energy and does not choose a different
+historical analysis by a latest-result heuristic.
+
+The report freezes project identity/revision, selected analysis references,
+equipment checks and source documents. Each distinct current Woo permission
+proof is checked at source capture and before/after rendering. Proofs and source
+results are referenced by their existing content hashes; this does not create
+another maintained product source or duplicate whole-product snapshots.
+Screen and PDF consume one Report model, with a shared model hash. Only the
+successful worker transaction publishes the owned PDF asset and result.
+Existing receipts and generated files remain privately readable as history.
+
+The generic Report schema and ReportLab renderer are reused; older sizing and
+report assembly are not called. The new PDF supplies its actual source wording
+instead of inheriting HTW/GeoNames credits for methods it does not use. Numeric
+display rounding does not change the frozen source result. User-provided logos
+are bounded by the existing 500 kB policy and image decoder checks.
+
+This report presents the actual coverage of its selected analyses. Explicit
+scenario energy remains distinct from selected-hardware performance; equipment
+and country gaps remain open. Its provisional equipment list is not represented
+as a complete installation BOM. Completing remaining engineering/country
+constraints, hardware-coupled energy, the full BOM/report, comparison and all
+commerce/site consumers remains part of the same full delivery goal.

@@ -25,6 +25,7 @@ from .numerical_tolerance import Tolerance
 from .product_sources import ProductSources, worker_product_provider
 from .pv_parameters import PvGenerationLimits
 from .pv_preparation import PvPreparationService, PvReferenceKernel
+from .report_kernel import ReportKernel, ReportService
 from .weather_fetch_plan import WeatherFetchLimits
 from .weather_kernel import WeatherKernel
 from .weather_service import WeatherService
@@ -78,6 +79,17 @@ class RuntimeConfig(Document):
         )
         return workspace, EnergyService(
             workspace, kernel, max_attempts=self.max_attempts
+        )
+
+    def report_service(
+        self, workspace: Workspace, *, products: ProductSources | None = None
+    ) -> ReportService:
+        return ReportService(
+            workspace,
+            ReportKernel(
+                workspace, products or ProductSources(worker_product_provider)
+            ),
+            max_attempts=self.max_attempts,
         )
 
     def http_limits(self) -> HttpLimits:

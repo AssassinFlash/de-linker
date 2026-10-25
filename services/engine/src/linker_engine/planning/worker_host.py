@@ -83,6 +83,7 @@ def serve(
             weather,
             settings.equipment_service(workspace),
             settings.equipment_search_service(workspace),
+            settings.report_service(workspace),
         )
         if (registry.runtime.sha256, registry.execution_key()) != (
             expected_runtime,
@@ -199,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
                 weather,
                 settings.equipment_service(workspace),
                 settings.equipment_search_service(workspace),
+                settings.report_service(workspace),
             )
             print(
                 encode(

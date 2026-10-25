@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from .energy_service import EnergyService
     from .equipment_service import EquipmentService
     from .pv_preparation import PvPreparationService
+    from .report_kernel import ReportService
     from .weather_service import WeatherService
 
 
@@ -27,6 +28,7 @@ def service_registry(
     weather: WeatherService | None = None,
     equipment: EquipmentService | None = None,
     equipment_search: EquipmentService | None = None,
+    reports: ReportService | None = None,
 ) -> ExecutionRegistry:
     """One executor-set authority for HTTP, worker startup and operator identity."""
     return ExecutionRegistry(
@@ -35,6 +37,7 @@ def service_registry(
         *(() if weather is None else (weather.kernel,)),
         *(() if equipment is None else (equipment.kernel,)),
         *(() if equipment_search is None else (equipment_search.kernel,)),
+        *(() if reports is None else (reports.kernel,)),
     )
 
 

@@ -122,6 +122,7 @@ lp-run-content
 lp-run-facts
 lp-run-heading
 lp-run-history
+lp-run-pagination
 lp-run-records
 lp-run-result
 lp-run-revision

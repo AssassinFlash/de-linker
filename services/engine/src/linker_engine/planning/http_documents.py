@@ -11,6 +11,7 @@ from .canonical import Object
 from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaVersion
 from .geometry_documents import GeometryDocument
 from .geometry_import_documents import GeometryImportOptions
+from .report_inputs import ReportOptions
 from .wire_numbers import check_wire_numbers
 
 # Protocol string limits, not engineering quantities; see 548-private-gateway.md.
@@ -132,6 +133,10 @@ class EnergyEvaluate(Command):
 
 class RunRead(Command):
     run_id: Id
+
+
+class ReportEvaluate(EnergyEvaluate):
+    options: ReportOptions
 
 
 class EquipmentCandidateRead(RunRead):

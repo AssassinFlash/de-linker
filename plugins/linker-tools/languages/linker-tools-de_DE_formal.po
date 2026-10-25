@@ -7574,3 +7574,63 @@ msgstr "Die Suche prüft Kombinationen aus einem Wechselrichter und einem separa
 #: build/planner/assets/planner.js
 msgid "Use this combination in the project"
 msgstr "Kombination ins Projekt übernehmen"
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Planning report"
+msgstr "Planungsbericht"
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Choose the saved results to include. Save project changes before generating the report."
+msgstr "Wählen Sie aus, welche gespeicherten Ergebnisse der Bericht enthalten soll. Speichern Sie Änderungen am Projekt, bevor Sie den Bericht erstellen."
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Not included"
+msgstr "Nicht aufnehmen"
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Input revision %s"
+msgstr "Eingabeversion %s"
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "The report includes the equipment combination selected for this project."
+msgstr "Der Bericht enthält die für dieses Projekt ausgewählte Gerätekombination."
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "PNG or JPG, up to 500 kB."
+msgstr "PNG oder JPG, höchstens 500 kB."
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "The logo could not be used. Choose a PNG or JPG of up to 500 kB."
+msgstr "Das Logo konnte nicht verwendet werden. Wählen Sie eine PNG- oder JPG-Datei mit höchstens 500 kB."
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Generate planning report"
+msgstr "Planungsbericht erstellen"
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "The PDF could not be downloaded. Try again."
+msgstr "Die PDF-Datei konnte nicht heruntergeladen werden. Bitte versuchen Sie es erneut."
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Preparing planning report…"
+msgstr "Planungsbericht wird erstellt…"
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "Report ready"
+msgstr "Bericht erstellt"
+
+#. Planning report: independent EN and formal DE copy review.
+#: build/planner/assets/planner.js
+msgid "A selected result does not match the saved project inputs. Choose a matching result."
+msgstr "Ein ausgewähltes Ergebnis passt nicht zu den gespeicherten Projekteingaben. Wählen Sie ein dazu passendes Ergebnis aus."

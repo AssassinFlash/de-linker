@@ -118,6 +118,75 @@ export class PlannerClient {
 		return this.post(new URL("rpc/" + path, this.base), serializedBody, signal);
 	}
 
+	/** Owned immutable PDF bytes; this path never requests a new calculation. */
+	async reportPdf(
+		projectId: string,
+		assetId: string,
+		expectedScope: string,
+		signal?: AbortSignal,
+	): Promise<Blob> {
+		const session = this.requireSession(),
+			generation = this.generation;
+		if (session.query_scope !== expectedScope)
+			throw new ApiError(401, "session_changed");
+		const headers: Record<string, string> = {
+			"Content-Type": "application/json; charset=utf-8",
+		};
+		if (this.restNonce) headers["X-WP-Nonce"] = this.restNonce;
+		if (session.kind === "guest")
+			headers["X-Linker-Planner-Nonce"] = session.nonce;
+		const response = await this.fetcher(
+			new URL("rpc/assets/content", this.base),
+			{
+				method: "POST",
+				headers,
+				body: wire(
+					{ schema_version: 1, project_id: projectId, asset_id: assetId },
+					session.runtime.limits.max_json_depth,
+					session.runtime.limits.max_body_bytes,
+				),
+				credentials: "same-origin",
+				cache: "no-store",
+				redirect: "error",
+				...(signal ? { signal } : {}),
+			},
+		);
+		this.checkGeneration(generation);
+		if (response.status === 401 || response.status === 403) {
+			this.invalidate();
+			throw new ApiError(response.status, "session_changed");
+		}
+		if (!response.ok || !response.body)
+			throw new ApiError(response.status, "report_download_failed");
+		const reader = response.body.getReader(),
+			parts: Uint8Array[] = [];
+		let size = 0;
+		try {
+			while (true) {
+				const chunk = await reader.read();
+				if (chunk.done) break;
+				size += chunk.value.byteLength;
+				if (size > MAX_REPLY_BYTES) {
+					await reader.cancel();
+					throw new ApiError(502, "reply_too_large");
+				}
+				parts.push(chunk.value);
+			}
+		} finally {
+			reader.releaseLock();
+		}
+		this.checkGeneration(generation);
+		const bytes = new Uint8Array(size);
+		let offset = 0;
+		for (const part of parts) {
+			bytes.set(part, offset);
+			offset += part.byteLength;
+		}
+		if (new TextDecoder().decode(bytes.subarray(0, 5)) !== "%PDF-")
+			throw new ApiError(502, "invalid_report_pdf");
+		return new Blob([bytes.buffer], { type: "application/pdf" });
+	}
+
 	invalidate(): void {
 		this.generation++;
 		this.session = null;

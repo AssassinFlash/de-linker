@@ -9,6 +9,16 @@ export function energyErrorText(error: unknown): string {
 			? error.code
 			: "";
 	switch (code) {
+		case "report_logo_invalid":
+			return __(
+				"The logo could not be used. Choose a PNG or JPG of up to 500 kB.",
+				"linker-tools",
+			);
+		case "report_inputs_changed":
+			return __(
+				"A selected result does not match the saved project inputs. Choose a matching result.",
+				"linker-tools",
+			);
 		case "incomplete_module_reference":
 		case "invalid_source_url":
 			return __(

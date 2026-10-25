@@ -1,3 +1,4 @@
+import { REPORT_TASK } from "../../data/planningReport.ts";
 import { __ } from "../../i18n.ts";
 import type { RunState } from "../../data/planningProtocol.ts";
 import { PV_TASK, WEATHER_TASK } from "../../data/readPreparationResult.ts";
@@ -5,6 +6,7 @@ import { SEARCH_TASK } from "../../data/equipmentSearch.ts";
 import { EQUIPMENT_TASK } from "../../data/readEquipmentResult.ts";
 
 export function taskLabel(kind: string | null | undefined): string {
+	if (kind === REPORT_TASK) return __("Planning report", "linker-tools");
 	if (kind === SEARCH_TASK) return __("Equipment search", "linker-tools");
 	if (kind === EQUIPMENT_TASK) return __("Equipment checks", "linker-tools");
 	if (kind === WEATHER_TASK)
@@ -20,6 +22,8 @@ export function runStateLabel(state: RunState, kind?: string | null): string {
 		case "queued":
 			return __("Queued", "linker-tools");
 		case "running":
+			if (kind === REPORT_TASK)
+				return __("Preparing planning report…", "linker-tools");
 			if (kind === SEARCH_TASK)
 				return __("Searching for equipment combinations…", "linker-tools");
 			if (kind === EQUIPMENT_TASK)
@@ -30,6 +34,7 @@ export function runStateLabel(state: RunState, kind?: string | null): string {
 		case "retry_wait":
 			return __("Waiting to retry", "linker-tools");
 		case "succeeded":
+			if (kind === REPORT_TASK) return __("Report ready", "linker-tools");
 			if (kind === SEARCH_TASK)
 				return __("Equipment search finished", "linker-tools");
 			if (kind === EQUIPMENT_TASK)

@@ -64,6 +64,7 @@ from .http_documents import (
     ProjectRead,
     ProjectRevise,
     ProjectRuns,
+    ReportEvaluate,
     RunRead,
     SessionClaim,
     TraceRead,
@@ -76,6 +77,7 @@ from .profile_preview import ProfilePreview
 from .profile_selections import check_profile_selections
 from .pv_preparation import PvPreparationService, check_pv_preparation
 from .records import Actor
+from .report_kernel import ReportService
 from .service_boundary import ServiceBoundary, verified_actor, verified_previous_guest
 from .trace_window import TraceWindow
 from .weather_service import WeatherService
@@ -113,6 +115,7 @@ def create_private_app(
     product_provider: Callable[[], ProductProvider] | None = None,
     equipment: EquipmentService | None = None,
     equipment_search: EquipmentService | None = None,
+    reports: ReportService | None = None,
 ) -> ASGIApp:
     if energy.workspace is not workspace or energy.kernel.workspace is not workspace:
         raise InvalidInput("HTTP and energy service must share the same authority")
@@ -138,7 +141,15 @@ def create_private_app(
         or product_provider is None
     ):
         raise InvalidInput("equipment search requires shared project and Woo authority")
-    registry = service_registry(energy, pv, weather, equipment, equipment_search)
+    if reports is not None and (
+        reports.workspace is not workspace
+        or reports.kernel.workspace is not workspace
+        or product_provider is None
+    ):
+        raise InvalidInput("reports require shared project and Woo authority")
+    registry = service_registry(
+        energy, pv, weather, equipment, equipment_search, reports
+    )
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
@@ -232,6 +243,7 @@ def create_private_app(
             "runtime_sha256": energy.kernel.runtime.sha256,
             "models": {
                 **energy.kernel.models,
+                **({"report": reports.kernel.kind} if reports is not None else {}),
                 **(
                     {"equipment_search": equipment_search.kernel.kind}
                     if equipment_search is not None
@@ -447,6 +459,24 @@ def create_private_app(
         return run_view(
             equipment_search.evaluate(
                 actor, body.project_id, body.expected_revision, key=body.key
+            )
+        )
+
+    @app.post("/runs/report")
+    def planning_report(body: ReportEvaluate, request: Request) -> Object:
+        actor = verified_actor(request.scope, write=True)
+        previous = previous_result(actor, "runs/report", body)
+        if previous is not None:
+            return previous
+        if reports is None:
+            raise VersionUnavailable("planning reports are unavailable")
+        return run_view(
+            reports.evaluate(
+                actor,
+                body.project_id,
+                body.expected_revision,
+                body.options,
+                key=body.key,
             )
         )
 
