@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from uuid import uuid4
 
 from .asset_validation import validate_asset
@@ -118,3 +118,4 @@ class AssetPublication:
 class AssetResult:
     result: Object
     asset: AssetPublication
+    attachments: dict[str, AssetPublication] = field(default_factory=dict)

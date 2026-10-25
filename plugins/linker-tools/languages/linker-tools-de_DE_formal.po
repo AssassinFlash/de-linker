@@ -610,6 +610,8 @@ msgid "Documents"
 msgstr "Unterlagen"
 
 #: src/configurator/report/ReportView.tsx:118 build/configurator.js
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
+#: build/planner/assets/planner.js
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
@@ -10567,3 +10569,18 @@ msgstr "Gewünscht"
 #: build/planner/assets/planner.js
 msgid "Postal code"
 msgstr "Postleitzahl"
+
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
+#: build/planner/assets/planner.js
+msgid "Download bill of materials (CSV)"
+msgstr "Stückliste herunterladen (CSV)"
+
+#: ../../apps/planner/src/components/energy/PlanningReportResult.tsx
+#: build/planner/assets/planner.js
+msgid "The file could not be downloaded. Try again."
+msgstr "Die Datei konnte nicht heruntergeladen werden. Versuchen Sie es erneut."
+
+#: ../../apps/planner/src/components/energy/EnergyWorkspace.tsx
+#: build/planner/assets/planner.js
+msgid "Recover the stored request below before starting a new calculation or report."
+msgstr "Rufen Sie zuerst das Ergebnis der unten gespeicherten Anfrage ab. Danach können Sie eine neue Berechnung oder einen neuen Bericht starten."

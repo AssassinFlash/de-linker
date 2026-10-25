@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from threading import Barrier
 
 import pytest
 
+from linker_engine.planning.asset_publication import AssetPublication
 from linker_engine.planning.errors import Conflict, LeaseLost
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.records import Actor, Context, Lease, Run
@@ -123,6 +125,56 @@ def test_cancelled_attempt_cannot_publish_or_retry(
         jobs.fail(lease, {"code": "fixture_transient"}, retry_after=1)
     assert workspace.run(owner, run.id).result is None
     assert jobs.claim("next", kinds=("evaluate",), lease_seconds=30) is None
+
+
+def test_related_report_files_publish_and_replay_atomically(
+    workspace: Workspace, owner: Actor, run: Run
+) -> None:
+    jobs, lease = Jobs(workspace), take(Jobs(workspace))
+    metadata = {
+        "retention": "permanent",
+        "provenance": {
+            "label": "Owned report",
+            "basis": "Synthetic publication fixture",
+            "rights_basis": "Owned fixture",
+        },
+    }
+    pdf, csv_asset = (
+        AssetPublication.prepare(
+            workspace.blobs, run.project_id, content, media, purpose, metadata
+        )
+        for content, media, purpose in (
+            (b"%PDF-fixture", "application/pdf", "report"),
+            (b"item,quantity\n", "text/csv", "materials"),
+        )
+    )
+    with workspace.database.transaction() as connection:
+        connection.execute(
+            "CREATE TRIGGER reject_csv BEFORE INSERT ON project_assets WHEN NEW.purpose='materials' BEGIN SELECT RAISE(ABORT,'fixture'); END"
+        )
+    with pytest.raises(sqlite3.DatabaseError):
+        jobs.complete(
+            lease, {"value": "paired"}, asset=pdf, attachments={"materials": csv_asset}
+        )
+    with workspace.database.transaction() as connection:
+        assert (
+            connection.execute("SELECT count(*) FROM project_assets").fetchone()[0] == 0
+        )
+        connection.execute("DROP TRIGGER reject_csv")
+    assert workspace.run(owner, run.id).result is None
+    sha = jobs.complete(
+        lease, {"value": "paired"}, asset=pdf, attachments={"materials": csv_asset}
+    )
+    assert (
+        jobs.complete(
+            lease, {"value": "paired"}, asset=pdf, attachments={"materials": csv_asset}
+        )
+        == sha
+    )
+    with workspace.database.read() as connection:
+        assert (
+            connection.execute("SELECT count(*) FROM project_assets").fetchone()[0] == 2
+        )
 
 
 @pytest.mark.parametrize("damage", ["missing", "invalid_hash"])

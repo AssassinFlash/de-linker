@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "canonical_site_entry",
+  "current_frontier": "unified_materials_export",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2767,5 +2767,154 @@
     "handoff_view": "Canonical EN route for existing Berlin project c7795bc2c1e14e389622015c809ace45, roof section, revision22 and24 included modules displayed without edits or calculation.",
     "static_analysis_environment": "Initial two-file PHPStan hit the default128M worker limit; repeat only those files with per-invocation512M, no global configuration change.",
     "static_analysis_result": "Changed Mount and Redirects pass existing WPCS and PHPStan level8 with per-invocation512M; earlier128M tool failure is not treated as a product failure or a pass."
+  },
+  "unified_materials_export": {
+    "status": "native-delivered-local",
+    "base_commit": "4e4352da",
+    "runtime_sha256": "6386028cb5d2f9bc14d2256f295cefa63297d58c2c51ff2e8cbfc4ed0b986cfb",
+    "scope": [
+      "one frozen Woo-derived equipment/roof/included materials projection",
+      "equipment-only checked roof counts",
+      "screen/PDF/CSV shared material snapshot",
+      "atomic private PDF and CSV publication",
+      "Woo-only handoff rows and original historical export access"
+    ],
+    "reused": [
+      "annual replay and electrical physics results",
+      "Woo source/publication acceptance",
+      "unchanged site/commerce flows",
+      "single-asset and old report contracts"
+    ],
+    "validation": {
+      "changed_source_fixture": "passed",
+      "atomic_publication_rollback_replay": "passed",
+      "owned_export_history": "passed",
+      "reader_and_byte_hash_downloads": "passed",
+      "types_build_and_changed_python_analysis": "passed"
+    },
+    "reviews": {
+      "spec": "PASS including actual source/guard display deltas",
+      "standards": "PASS including actual source/guard display deltas",
+      "copy": "PASS EN/DE; existing BOM terminology retained"
+    },
+    "native_recovery": {
+      "old_pending_request": "d7c9f76a6736479b8e560b234a53aa61",
+      "result": "original report receipt recovered; no new calculation",
+      "fix": "disable report submission and explain recovery while an unconfirmed request remains"
+    },
+    "superseded_native_report": {
+      "run_id": "db364ee184fc40259b309a54b229ecb9",
+      "reason": "native view caught internal reference key and incorrect generation-source paragraph; originals retained, display projection corrected"
+    },
+    "installation_design": "open; no inferred mounting, cable or protection quantities",
+    "production_changed": false,
+    "native_revision": 22,
+    "started_at_utc": "2026-10-25T20:15:20.801403+00:00",
+    "native_exports": {
+      "en": {
+        "run_id": "1a0ef299b24647ae852e35042e831a25",
+        "result_sha256": "2cd5588d0e8e5e1a397d4c187aa1213f24fcffecb7eaf34eae7e877aae7bf210",
+        "source_sha256": "725037dc283d1bc6ed54a027bd12e784e42d17c7f11d31b466c56ce57e81fa4d",
+        "materials_sha256": "2969e76b6baf4af3223ed4806ccdbcae6885ddc43f12154bba1e43ca4c4e5795",
+        "revision": 22,
+        "files": {
+          "pdf": {
+            "asset_id": "a83bfc9eb2954ba0b7d88b4cc502b67e",
+            "sha256": "30762ff56bcabbc651a4e58b4c40a41991160fdf28867560e50c21c92f08af78",
+            "bytes": 80862
+          },
+          "csv": {
+            "asset_id": "436d0b0a3e4341309003f08989b1c6e5",
+            "sha256": "10577c02ea59ac66d55c3961278f105aa87dba88a289e5231e762173d5de7acf",
+            "bytes": 6043
+          }
+        },
+        "pdf_pages": 11,
+        "bom_table_page": 11,
+        "material_quantities": [
+          [
+            "woo_product",
+            1
+          ],
+          [
+            "woo_product",
+            1
+          ],
+          [
+            "woo_product",
+            4
+          ],
+          [
+            "manufacturer_included",
+            null
+          ],
+          [
+            "pv_reference",
+            24
+          ]
+        ]
+      },
+      "de": {
+        "run_id": "55462ba967c242b5b8625cb4904b37c7",
+        "result_sha256": "79e175f0c056c083b667bf9a02f05d1bf78ea7f32cfca88d30e468d2ee9f8f40",
+        "source_sha256": "4a989ee012ce0f0d4f6353d00c4d98dddaa220fffd583f244e0ca16fa6eb4328",
+        "materials_sha256": "2969e76b6baf4af3223ed4806ccdbcae6885ddc43f12154bba1e43ca4c4e5795",
+        "revision": 22,
+        "files": {
+          "pdf": {
+            "asset_id": "8016ce9e38134501a954bba944b38e84",
+            "sha256": "b690d0ea4cb3025f6009764419c3df21dcb754ec02bdcb21b5b0989afe6dbcae",
+            "bytes": 83625
+          },
+          "csv": {
+            "asset_id": "0ba65ace94ad4a82a1b198bc4c1e643e",
+            "sha256": "b801ebe58ccd9217919bc4ae682b9df0ee4210d3f290216d865193c30bf09881",
+            "bytes": 6095
+          }
+        },
+        "pdf_pages": 11,
+        "bom_table_page": 11,
+        "material_quantities": [
+          [
+            "woo_product",
+            1
+          ],
+          [
+            "woo_product",
+            1
+          ],
+          [
+            "woo_product",
+            4
+          ],
+          [
+            "manufacturer_included",
+            null
+          ],
+          [
+            "pv_reference",
+            24
+          ]
+        ]
+      }
+    },
+    "closed_at_utc": "2026-10-25T20:26:11.322153+00:00",
+    "visuals": {
+      "en_desktop": "unified-materials-en-desktop.png",
+      "en_mobile": "unified-materials-en-mobile.png",
+      "de_desktop": "unified-materials-de-desktop.png",
+      "de_mobile": "unified-materials-de-mobile.png"
+    },
+    "visual_result": "EN/DE at 1440 and 390 inspected; no document horizontal overflow; materials table uses the established horizontal table container on mobile",
+    "pdf_visual_result": "Both material table pages rendered and inspected; no clipped cells; English table continues on the next report page with repeated column labels",
+    "protected_projects": "original roof revision14/input hash unchanged; Berlin revision22 unchanged",
+    "catalog_binding": "four reused/new UI strings bound to existing planner bundle catalog; approved DE retained",
+    "retention": {
+      "active_runtime": "6386028cb5d2f9bc14d2256f295cefa63297d58c2c51ff2e8cbfc4ed0b986cfb",
+      "rollback_runtime": "2eb6d4aaee26dbbe5702fe3fe9137dce3e1c7c04e3222a7b69ebb4a1fa6fed43",
+      "executable_carriers": 2,
+      "retired_logical_bytes": 2944050,
+      "new_environment_or_instance": false
+    }
   }
 }

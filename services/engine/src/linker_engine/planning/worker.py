@@ -150,6 +150,7 @@ class Worker:
                     lease,
                     output,
                     asset=prepared.asset if prepared is not None else None,
+                    attachments=prepared.attachments if prepared is not None else None,
                 )
         except LeaseLost:
             # Cancellation/another worker wins; no result or failure is written

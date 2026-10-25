@@ -8,6 +8,12 @@ from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
 from .comparison_report import comparison_sections
+from .project_materials import (
+    material_name,
+    material_reference,
+    material_scope,
+    project_materials,
+)
 from .pv_operating_report import operating_sections
 from .report_copy import TEXT, check_label, text
 
@@ -248,14 +254,11 @@ def build_report(source: Object) -> Report:
                     rows=list({(d.label, d.href): d for d in documents}.values()),
                 )
             )
-        lines = cast(list[dict[str, Any]], assessment["provisional_bill_of_materials"])
-
-        def product_detail(line: dict[str, Any], field: str) -> str:
-            value = line.get(field)
-            if value is None:
-                value = selected.get(line["product_id"], {}).get(field)
-            return str(value) if value is not None else ""
-
+    materials = source.get("materials")
+    if not isinstance(materials, dict):
+        materials = project_materials(source)
+    lines = cast(list[Object], materials["lines"])
+    if lines:
         sections.append(
             ReportSection(
                 id="bom",
@@ -266,12 +269,15 @@ def build_report(source: Object) -> Report:
                         text("quantity", locale),
                         text("product", locale),
                         text("reference", locale),
+                        text("material_handling", locale),
                     ],
+                    column_weights=[0.6, 1.7, 1, 1.7],
                     rows=[
                         [
                             number(line.get("quantity"), locale),
-                            f"{product_detail(line, 'brand')} {product_detail(line, 'model')}",
-                            product_detail(line, "sku"),
+                            material_name(line, locale),
+                            material_reference(line),
+                            material_scope(line, locale),
                         ]
                         for line in lines
                     ],
@@ -285,7 +291,14 @@ def build_report(source: Object) -> Report:
         part_table: ReportTable | None = None
         if pv_parts["status"] == "available":
             components = cast(list[Object], pv_parts["components"])
-            part_paragraphs = [text("pv_components_scope", locale)]
+            part_paragraphs = [
+                text(
+                    "pv_components_roof_scope"
+                    if pv_parts["scope"] == "saved_roof"
+                    else "pv_components_scope",
+                    locale,
+                )
+            ]
             if pv_parts["scope"] == "dc_group":
                 part_paragraphs.append(text("pv_components_dc_scope", locale))
             if pv_parts["layout_revision"] is not None:

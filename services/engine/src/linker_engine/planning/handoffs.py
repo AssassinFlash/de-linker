@@ -123,8 +123,24 @@ class Handoffs:
             product["product_id"]: product
             for product in cast(list[Object], equipment["selected_products"])
         }
+        material_lines = equipment["provisional_bill_of_materials"]
+        material_sha = report.get("materials_sha256")
+        if material_sha is not None:
+            materials = source.get("materials")
+            if (
+                not isinstance(materials, dict)
+                or digest(encode(materials)) != material_sha
+                or cast(Object, report["dependencies"]).get("materials_model")
+                != material_sha
+            ):
+                raise VersionUnavailable("the report materials cannot be verified")
+            material_lines = [
+                line
+                for line in cast(list[Object], materials["lines"])
+                if line["handling"] == "woo_product"
+            ]
         items: list[Json] = []
-        for line in cast(list[Object], equipment["provisional_bill_of_materials"]):
+        for line in cast(list[Object], material_lines):
             product_id, quantity = line.get("product_id"), line.get("quantity")
             if (
                 type(product_id) is not int
@@ -192,6 +208,8 @@ class Handoffs:
             "items": items,
             "publication": publication_scope(self.workspace, source),
         }
+        if material_sha is not None:
+            snapshot["materials_sha256"] = material_sha
         check_wire_numbers(snapshot)
         snapshot_hash = self.workspace.blobs.put_object(snapshot)
         with self.workspace.database.transaction() as connection:

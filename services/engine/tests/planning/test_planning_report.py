@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import copy
+import csv
 import io
 from dataclasses import replace
 from types import SimpleNamespace
@@ -25,6 +27,7 @@ from linker_engine.planning.handoffs import Handoffs
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
+from linker_engine.planning.project_materials import materials_csv
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
 from linker_engine.planning.report_sources import renew_module_permission
@@ -153,6 +156,31 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         assert result is not None
         assert result["report_sha256"] == digest(encode(result["report"]))
         asset = result["prepared_asset"]
+        materials = workspace.blobs.object(result["materials_sha256"])
+        assert (
+            materials
+            == workspace.blobs.object(result["pinned_assets"]["report.source"])[
+                "materials"
+            ]
+        )
+        csv_asset = result["prepared_attachments"]["bill_of_materials_csv"]
+        original_csv = Assets(workspace).content(owner, project.id, csv_asset["id"])
+        csv_rows = list(csv.reader(io.StringIO(original_csv.decode("utf-8-sig"))))
+        assert {row[2] for row in csv_rows[1:]} >= {"1", "3"}
+        assert all(row[7] == result["materials_sha256"] for row in csv_rows[1:])
+        assert {row[3] for row in csv_rows[1:]} >= {"SAJ H2-10K-T3", "SAJ BU2-5.0-HV1"}
+        unsafe = copy.deepcopy(materials)
+        unsafe["lines"][0]["brand"], unsafe["lines"][0]["model"] = "", " =1+1"
+        german_csv = list(
+            csv.reader(
+                io.StringIO(
+                    materials_csv(unsafe, result["materials_sha256"], "de").decode(
+                        "utf-8-sig"
+                    )
+                )
+            )
+        )
+        assert german_csv[0][2] == "Menge" and german_csv[1][3].startswith("'")
         pdf = Assets(workspace).content(owner, project.id, asset["id"])
         text = "\n".join(
             page.extract_text() for page in PdfReader(io.BytesIO(pdf)).pages
@@ -172,6 +200,7 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         )
         assert prepared.status_code == 200, prepared.text
         handoff = prepared.json()
+        assert handoff["snapshot"]["materials_sha256"] == result["materials_sha256"]
         assert handoff["snapshot_sha256"] == digest(encode(handoff["snapshot"]))
         assert {
             (item["product_id"], item["quantity"])
@@ -215,6 +244,10 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
         replay = client.post("/runs/report", json=command, headers=caller_headers())
         assert replay.status_code == 200 and replay.json()["id"] == run.id
         assert Assets(workspace).content(owner, project.id, asset["id"]) == pdf
+        assert (
+            Assets(workspace).content(owner, project.id, csv_asset["id"])
+            == original_csv
+        )
         offline = False
         original = __import__(
             "linker_engine.planning.report_kernel", fromlist=["render"]
@@ -247,3 +280,9 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
                 == count
             )
         assert Assets(workspace).content(owner, project.id, asset["id"]) == pdf
+        assert (
+            Assets(workspace).content(owner, project.id, csv_asset["id"])
+            == original_csv
+        )
+        with pytest.raises(NotFound):
+            Assets(workspace).content(guest, project.id, csv_asset["id"])

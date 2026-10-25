@@ -810,3 +810,53 @@ This closes the canonical-entry increment locally. Full installation BOM,
 manufacturer/country qualification, remaining consumers, persisted-data
 migration, private-page SEO and coordinated review/production release remain
 under the same active goal; this is not production completion.
+
+## 2026-10-26 · Unified materials export
+
+This batch closes the split between equipment quantities, roof component
+counts, report presentation and export. One frozen material model feeds screen,
+PDF, CSV and the Woo-only handoff. Equipment-only reports retain the checked
+roof count. Manufacturer inclusions without established counts remain unknown;
+installation material design remains an explicit open part of the full goal.
+
+Verification is bounded to changed risks: source/count agreement, PDF/CSV byte
+identity, atomic multi-file publication with rollback/replay, owner/history
+access and old-result compatibility. Existing physics, annual replay, Woo
+authority and unchanged site/commerce evidence are reused. The existing p548
+instance and environment are reused with one current/rollback executable pair.
+
+
+The final native EN report `1a0ef299b24647ae852e35042e831a25` and DE report
+`55462ba967c242b5b8625cb4904b37c7` share material snapshot
+`2969e76b6baf4af3223ed4806ccdbcae6885ddc43f12154bba1e43ca4c4e5795`.
+Their downloaded PDF/CSV bytes match the published private assets. Both lists
+contain inverter 1, controller 1, battery modules 4, manufacturer-included meter
+with unconfirmed count, and the actual 24 roof modules. They retain model, SKU,
+source citations, conditions and reference/supply boundaries; reference modules
+and included components never become extra Woo handoff items.
+
+Native acceptance exposed an unconfirmed original request that silently blocked
+a new report while leaving its button enabled. Restoring that request returned
+the existing DE report, without another energy calculation. The form now follows
+the existing admission guard and explains recovery. The same view also exposed
+an internal reference key displayed as a SKU and a generation-source paragraph
+on an equipment-only report; both presentation errors were corrected. The
+superseded original report remains historical evidence. Four catalog bindings
+were corrected using the existing approved terms and bundle catalog.
+
+Spec, Standards and EN/DE copy passed, including these actual deltas. The
+changed count/source, original-file/owner/history and atomic multi-asset
+rollback/replay checks passed; browser downloads confirmed the same frozen
+bytes. Both PDF material pages and EN/DE desktop/mobile views were inspected.
+English table pagination retains its repeated labels, with no clipped cells.
+Original roof revision 14 and Berlin revision 22 remain unchanged. No annual
+replay, full commerce matrix, new environment, production write or mail was
+performed. Failed/superseded evidence was retained; obsolete executable
+candidates were retired. Only current `6386028c` and rollback `2eb6d4aa` remain,
+sharing the same environment and storage schema 5.
+
+This closes the unified-material projection/export increment locally. Complete
+installation design, remaining manufacturer/country qualification and consumers,
+persisted-data migration, private-page SEO and coordinated review/production
+release remain within the same active goal. No completed batch is a new wait
+condition for the shared Woo source owner.

@@ -883,6 +883,14 @@ export function EnergyWorkspace({
 					open={unconfirmed.length > 0}
 				>
 					<summary>{__("Stored requests", "linker-tools")}</summary>
+					{unconfirmed.length > 0 && (
+						<p role="status">
+							{__(
+								"Recover the stored request below before starting a new calculation or report.",
+								"linker-tools",
+							)}
+						</p>
+					)}
 					<p>
 						{__(
 							"Retrying a calculation uses its original request and saved input revision. Restoring storage settings replaces those settings in your open draft.",
@@ -1264,6 +1272,7 @@ export function EnergyWorkspace({
 						operations.busy ||
 						operations.checking ||
 						operations.storageFailed ||
+						unconfirmed.length > 0 ||
 						!session.runtime.models.report
 					}
 					generate={generateReport}

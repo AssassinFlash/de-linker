@@ -82,7 +82,12 @@ export function PlanningReportResult({
 	locale: string;
 }) {
 	const report = run.result ? reportFromRun(run) : null,
-		asset = run.result ? readObject(run.result.prepared_asset) : null;
+		asset = run.result ? readObject(run.result.prepared_asset) : null,
+		csv = run.result?.prepared_attachments
+			? readObject(
+					readObject(run.result.prepared_attachments).bill_of_materials_csv,
+				)
+			: null;
 	const [busy, setBusy] = useState(false),
 		[error, setError] = useState(false);
 	const lifetime = useRef(0),
@@ -97,27 +102,38 @@ export function PlanningReportResult({
 			objectUrl.current = null;
 		};
 	}, [run.id, scope]);
-	async function download() {
-		if (busy || !report || !asset || !client.isCurrentScope(scope)) return;
+	async function download(format: "pdf" | "csv") {
+		const file = format === "pdf" ? asset : csv;
+		if (busy || !report || !file || !client.isCurrentScope(scope)) return;
 		const instance = lifetime.current,
 			controller = new AbortController();
 		flight.current = controller;
 		setBusy(true);
 		setError(false);
 		try {
-			const blob = await client.reportPdf(
-				run.project_id,
-				String(asset.id),
-				scope,
-				controller.signal,
-			);
+			const blob =
+				format === "csv"
+					? await client.reportCsv(
+							run.project_id,
+							String(file.id),
+							scope,
+							String(file.content_sha256),
+							controller.signal,
+						)
+					: await client.reportPdf(
+							run.project_id,
+							String(file.id),
+							scope,
+							controller.signal,
+							String(file.content_sha256),
+						);
 			if (instance !== lifetime.current || !client.isCurrentScope(scope))
 				return;
 			if (objectUrl.current) URL.revokeObjectURL(objectUrl.current);
 			objectUrl.current = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = objectUrl.current;
-			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}.pdf`;
+			link.download = `linker-planning-${run.project_id}-r${run.revision}-${report.locale}.${format}`;
 			link.click();
 		} catch (cause) {
 			if (instance === lifetime.current) {
@@ -169,19 +185,31 @@ export function PlanningReportResult({
 					type="button"
 					className="lp-button"
 					disabled={busy || !client.isCurrentScope(scope)}
-					onClick={() => void download()}
+					onClick={() => void download("pdf")}
 				>
 					{__("Download PDF", "linker-tools")}
 				</button>
+				{csv && (
+					<button
+						type="button"
+						className="lp-button lp-button-secondary"
+						disabled={busy || !client.isCurrentScope(scope)}
+						onClick={() => void download("csv")}
+					>
+						{__("Download bill of materials (CSV)", "linker-tools")}
+					</button>
+				)}
 			</div>
 			{error && (
 				<Notice error>
-					{__("The PDF could not be downloaded. Try again.", "linker-tools")}
+					{__("The file could not be downloaded. Try again.", "linker-tools")}
 				</Notice>
 			)}
-			{report.sections.some(
-				(section) => section.id === "bom" && section.table?.rows.length,
-			) && (
+			{(typeof run.result?.has_draft_items === "boolean"
+				? run.result.has_draft_items
+				: report.sections.some(
+						(section) => section.id === "bom" && section.table?.rows.length,
+					)) && (
 				<DraftTransferButton
 					run={run}
 					client={client}

@@ -129,7 +129,10 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     from linker_engine.planning.pv_generation import generate_pv
     from linker_engine.planning.pv_parameters import PvGenerationParameters
     from linker_engine.planning.pv_profile_preparation import PROFILE_PURPOSE
-    from linker_engine.planning.report_pv_components import pv_components
+    from linker_engine.planning.report_pv_components import (
+        pv_components,
+        saved_roof_components,
+    )
     from linker_engine.planning.series_source import SeriesSource
 
     from .test_energy_kernel import PROVENANCE
@@ -314,6 +317,11 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     }
     full_parts = pv_components(workspace.blobs, raw_hash, metadata)
     assert full_parts["components"][0]["quantity"] == 6
+    roof_parts = saved_roof_components(
+        layout, source.module_basis(), workspace.blobs, project.revision
+    )
+    assert roof_parts["components"] == full_parts["components"]
+    assert roof_parts["scope"] == "saved_roof"
     group_parts = pv_components(
         workspace.blobs, raw_hash, metadata, converter_id=parameters.converters[0].id
     )
@@ -601,7 +609,20 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         )
         bom = next(section for section in report.sections if section.id == "bom")
         assert bom.table is not None
-        assert len(bom.table.rows) == 3
+        assert (
+            len(
+                [
+                    r
+                    for r in bom.table.rows
+                    if r[-1]
+                    == (
+                        "Selected equipment" if locale == "en" else "Ausgewählte Geräte"
+                    )
+                ]
+            )
+            == 3
+        )
+        assert any(row[0] == "5" and "460" in row[1] for row in bom.table.rows)
         assert any(
             row[0] == "3" and battery["model"] in row[1] for row in bom.table.rows
         )
@@ -1302,6 +1323,7 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
             "title": "Wiring model fixture",
             "project_id": "a" * 32,
             "revision": 1,
+            "input_sha256": "b" * 64,
             "generated_at": "2026-10-26T00:00:00+00:00",
             "source_runs": [],
             "equipment": assess_equipment(operating_value, basis),

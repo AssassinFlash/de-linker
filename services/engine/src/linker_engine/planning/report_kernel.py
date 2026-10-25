@@ -13,6 +13,7 @@ from .errors import VersionUnavailable
 from .execution_identity import execution_key, request_execution_key
 from .frozen_run import frozen_manifest
 from .product_sources import ProductSources
+from .project_materials import materials_csv, project_materials
 from .records import Actor, Context, Lease, Run
 from .report_copy import text
 from .report_inputs import ReportOptions
@@ -25,7 +26,11 @@ from .workspace import Workspace
 
 class ReportKernel:
     kind = "planning_report_v1"
-    models = {"task": kind, "report": "frozen_project_report_v1"}
+    models = {
+        "task": kind,
+        "report": "frozen_project_report_v1",
+        "materials": "project_materials_v1",
+    }
 
     def __init__(self, workspace: Workspace, products: ProductSources) -> None:
         self.workspace, self.products = workspace, products
@@ -50,6 +55,10 @@ class ReportKernel:
         project = self.workspace.get(actor, project_id, revision=revision)
         logo = options.logo_bytes()
         source = report_sources(self.workspace, self.products, actor, project, options)
+        source["materials"] = project_materials(source)
+        cast(Object, source["dependencies"])["materials_model"] = (
+            self.workspace.blobs.put_object(cast(Object, source["materials"]))
+        )
         pinned = {
             "runtime_bundle": self.runtime.sha256,
             "report.source": self.workspace.blobs.put_object(source),
@@ -106,6 +115,7 @@ class ReportKernel:
         dependencies: Object = {
             "report_model": report_sha,
             "report_source": pinned["report.source"],
+            "materials_model": cast(Object, source["dependencies"])["materials_model"],
         }
         if pinned.get("report.logo") is not None:
             dependencies["branding"] = pinned["report.logo"]
@@ -127,6 +137,26 @@ class ReportKernel:
                 "locale": report.locale,
             },
         )
+        materials = cast(Object, source["materials"])
+        csv_asset = AssetPublication.prepare(
+            self.workspace.blobs,
+            cast(str, manifest["project_id"]),
+            materials_csv(
+                materials, cast(str, dependencies["materials_model"]), report.locale
+            ),
+            "text/csv",
+            "planning_materials_csv_v1",
+            {
+                "retention": "permanent",
+                "provenance": {
+                    "label": report.title,
+                    "basis": "Frozen project materials shared with the planning report",
+                    "rights_basis": "Private project output",
+                },
+                "dependencies": dependencies,
+                "locale": report.locale,
+            },
+        )
         return AssetResult(
             {
                 "schema": 1,
@@ -139,11 +169,17 @@ class ReportKernel:
                 "pinned_assets": pinned,
                 "report": report_document,
                 "report_sha256": report_sha,
+                "materials_sha256": dependencies["materials_model"],
+                "has_draft_items": any(
+                    isinstance(line, dict) and line.get("handling") == "woo_product"
+                    for line in cast(list, materials["lines"])
+                ),
                 "source_runs": source["source_runs"],
                 "equipment_candidate": source["candidate"],
                 "dependencies": dependencies,
             },
             asset,
+            {"bill_of_materials_csv": csv_asset},
         )
 
 

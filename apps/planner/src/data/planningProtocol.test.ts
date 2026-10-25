@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import runJson from "../../tests/fixtures/energy-run.json" with { type: "json" };
 import roofRunJson from "../../tests/fixtures/roof-energy-run.json" with { type: "json" };
 import { readRun, readRunPage } from "./planningProtocol.ts";
-import { readPlanningReport } from "./planningReport.ts";
+import { readPlanningReport, readReportResult } from "./planningReport.ts";
 import { readObject as objectDocument } from "./readProtocol.ts";
 import { ApiError } from "./protocol.ts";
 import type { JsonObject } from "./protocol.ts";
@@ -72,6 +72,64 @@ test("report output keeps serialized fields mandatory and old column layout opti
 		},
 	])
 		assert.throws(() => readPlanningReport({ ...report, sections: [section] }));
+	const sha = "a".repeat(64),
+		modelSha = "b".repeat(64),
+		materialsSha = "c".repeat(64),
+		run = { project_id: "project", revision: 1, manifest_sha256: sha },
+		pinned = { "report.source": sha },
+		manifest = {
+			input_sha256: sha,
+			context: { assets: pinned, code_sha256: sha },
+		},
+		dependencies = { report_source: sha, report_model: modelSha },
+		legacy = {
+			...run,
+			kind: "planning_report_v1",
+			input_sha256: sha,
+			runtime_sha256: sha,
+			pinned_assets: pinned,
+			report_sha256: modelSha,
+			report,
+			source_runs: [],
+			prepared_asset: {
+				project_id: "project",
+				media_type: "application/pdf",
+				purpose: "planning_report_pdf_v1",
+				content_sha256: sha,
+				metadata: { dependencies },
+			},
+		};
+	assert.doesNotThrow(() => readReportResult(legacy, run, manifest));
+	const pairedDependencies = { ...dependencies, materials_model: materialsSha },
+		paired = {
+			...legacy,
+			materials_sha256: materialsSha,
+			has_draft_items: true,
+			prepared_asset: {
+				...legacy.prepared_asset,
+				metadata: { dependencies: pairedDependencies },
+			},
+			prepared_attachments: {
+				bill_of_materials_csv: {
+					id: "csv",
+					project_id: "project",
+					purpose: "planning_materials_csv_v1",
+					media_type: "text/csv",
+					content_sha256: sha,
+					metadata_sha256: sha,
+					metadata: { dependencies: pairedDependencies, locale: "en" },
+				},
+			},
+			dependencies: {
+				...pairedDependencies,
+				"prepared_attachment.bill_of_materials_csv.content": sha,
+				"prepared_attachment.bill_of_materials_csv.metadata": sha,
+			},
+		};
+	assert.doesNotThrow(() => readReportResult(paired, run, manifest));
+	assert.throws(() =>
+		readReportResult({ ...paired, materials_sha256: sha }, run, manifest),
+	);
 });
 test("actual managed two-hour result retains frozen identity, source origins and analytic totals", () => {
 	const run = readRun(runJson, runJson.project_id, runJson.id);

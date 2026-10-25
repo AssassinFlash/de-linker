@@ -21,7 +21,7 @@ from .profile_assets import profile_dependencies
 from .pv_preparation import PvReferenceKernel
 from .records import Actor, Project, Run
 from .report_inputs import ReportOptions
-from .report_pv_components import pv_components
+from .report_pv_components import pv_components, saved_roof_components
 from .workspace import Workspace
 
 
@@ -314,6 +314,13 @@ def report_sources(
         # Handoffs aggregate the top-level Woo bases. Keep the reference
         # separately addressable so later withdrawal checks retain it too.
         bases["equipment_pv"] = workspace.blobs.put_object(electrical_proof)
+        if component_list is None:
+            component_list = saved_roof_components(
+                project.inputs.get("geometry"),
+                electrical_proof,
+                workspace.blobs,
+                project.revision,
+            )
     historical_bases = {
         name: sha for name, sha in bases.items() if name.startswith("energy.")
     }

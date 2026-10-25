@@ -8,6 +8,7 @@ and evidence remain part of its frozen result.
 from __future__ import annotations
 
 import math
+import re
 import sqlite3
 from typing import cast
 from uuid import uuid4
@@ -194,20 +195,36 @@ class Jobs:
             return until
 
     def complete(
-        self, lease: Lease, result: Object, *, asset: AssetPublication | None = None
+        self,
+        lease: Lease,
+        result: Object,
+        *,
+        asset: AssetPublication | None = None,
+        attachments: dict[str, AssetPublication] | None = None,
     ) -> str:
         """Publish bytes and success together; late or cancelled attempts lose."""
         workspace = self.workspace
+        attachments = attachments or {}
+        if attachments and (
+            asset is None
+            or "prepared_attachments" in result
+            or any(re.fullmatch(r"[a-z][a-z0-9_]*", key) is None for key in attachments)
+            or len({asset.id, *(item.id for item in attachments.values())})
+            != len(attachments) + 1
+        ):
+            raise InvalidInput(
+                "prepared attachments require distinct named evaluation assets"
+            )
         if asset is not None:
             if lease.kind != "evaluate":
                 raise InvalidInput("only an evaluation may publish a project source")
             if "prepared_asset" in result:
                 raise InvalidInput("prepared asset is supplied by durable publication")
             children = result.get("dependencies", {})
-            if not isinstance(children, dict) or {
-                "prepared_asset_content",
-                "prepared_asset_metadata",
-            } & set(children):
+            if not isinstance(children, dict) or any(
+                name.startswith(("prepared_asset_", "prepared_attachment."))
+                for name in children
+            ):
                 raise InvalidInput(
                     "prepared asset dependency roles are supplied by publication"
                 )
@@ -220,6 +237,22 @@ class Jobs:
                     "prepared_asset_metadata": asset.metadata_sha256,
                 },
             }
+            if attachments:
+                result["prepared_attachments"] = {
+                    name: item.document(workspace.blobs)
+                    for name, item in attachments.items()
+                }
+                result["dependencies"] = {
+                    **cast(Object, result["dependencies"]),
+                    **{
+                        f"prepared_attachment.{name}.{role}": sha
+                        for name, item in attachments.items()
+                        for role, sha in (
+                            ("content", item.content_sha256),
+                            ("metadata", item.metadata_sha256),
+                        )
+                    },
+                }
         verify_dependencies(workspace.blobs, result)
         output = workspace.blobs.put_object(result)
         with workspace.database.transaction() as connection:
@@ -237,11 +270,15 @@ class Jobs:
                     raise Conflict("completed attempt has a different result")
                 if asset is not None:
                     asset.verify_published(connection)
+                for item in attachments.values():
+                    item.verify_published(connection)
                 return output
             now = workspace.clock()
             self.require_active(connection, lease, now)
             if asset is not None:
                 asset.publish(connection, lease.run_id, now)
+            for item in attachments.values():
+                item.publish(connection, lease.run_id, now)
             if lease.kind == "evaluate":
                 changed = connection.execute(
                     "UPDATE runs SET result_sha256=? "

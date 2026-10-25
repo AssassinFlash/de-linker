@@ -12,7 +12,7 @@ from typing import cast
 from .canonical import Json, Object, digest, encode
 from .errors import InvalidInput, VersionUnavailable
 from .geometry import panel_poses, read_geometry
-from .geometry_documents import ModuleSpec
+from .geometry_documents import GeometryDocument, ModuleSpec
 from .product_sources import ProductSources
 from .pv_parameters import PvGenerationParameters
 from .pv_profile_artifacts import model_dependencies
@@ -106,12 +106,9 @@ def pv_components(
             or recorded_groups[0].get("array_ids") != groups[0].array_ids
         ):
             raise VersionUnavailable("the selected PV model group has different arrays")
-    arrays = {array.id: array for array in geometry.arrays}
-    specifications = {module.id: module for module in geometry.module_specs}
-    components: dict[str, Object] = {}
     for retained_array in retained:
         identifier = str(retained_array["id"])
-        array = arrays[identifier]
+        array = next(a for a in geometry.arrays if a.id == identifier)
         identities = included[identifier]
         if (
             retained_array.get("module_ids") != identities
@@ -120,8 +117,61 @@ def pv_components(
             or retained_array.get("module_spec_id") != array.module_spec_id
         ):
             raise VersionUnavailable("the saved PV module count or identities differ")
-        if identifier not in selected:
+    return _components(
+        geometry,
+        proof,
+        blobs,
+        metadata.get("derived_from_revision"),
+        selected=selected,
+        scope="dc_group" if converter_id is not None else "full_model",
+        converter_id=converter_id,
+        dependencies={**dependencies, "weather_raw": raw_sha256},
+    )
+
+
+def saved_roof_components(
+    geometry_json: Json, proof: Object, blobs: Blobs, revision: int
+) -> Object:
+    """Equipment-only reports use the exact roof checked by that saved result."""
+    geometry = read_geometry(geometry_json)
+    if any(s.permissions.export != "permitted" for s in geometry.sources):
+        raise InvalidInput("material exports require permission for the roof sources")
+    return _components(
+        geometry,
+        proof,
+        blobs,
+        revision,
+        selected=None,
+        scope="saved_roof",
+        converter_id=None,
+        dependencies={"geometry": blobs.put_object(cast(Object, geometry_json))},
+    )
+
+
+def _components(
+    geometry: GeometryDocument,
+    proof: Object,
+    blobs: Blobs,
+    revision: Json,
+    *,
+    selected: set[str] | None,
+    scope: str,
+    converter_id: str | None,
+    dependencies: Object,
+) -> Object:
+    included: dict[str, list[str]] = {}
+    for pose in panel_poses(geometry):
+        if pose.included:
+            included.setdefault(pose.array_id, []).append(pose.id)
+    specifications = {module.id: module for module in geometry.module_specs}
+    components: dict[str, Object] = {}
+    for array in geometry.arrays:
+        identifier = array.id
+        if identifier not in included or (
+            selected is not None and identifier not in selected
+        ):
             continue
+        identities = included[identifier]
         module: ModuleSpec = specifications[array.module_spec_id]
         if module.source.woo is None:
             return {"status": "unavailable", "reason": "no_woo_module_proof"}
@@ -145,10 +195,9 @@ def pv_components(
         line["quantity"] = cast(int, line["quantity"]) + len(identities)
         cast(list[Json], line["array_ids"]).append(identifier)
         cast(list[Json], line["module_ids"]).extend(identities)
-    revision = metadata.get("derived_from_revision")
     return {
         "status": "available",
-        "scope": "dc_group" if converter_id is not None else "full_model",
+        "scope": scope,
         "converter_id": converter_id,
         "layout_revision": revision if type(revision) is int and revision > 0 else None,
         "components": list(components.values()),
@@ -160,7 +209,6 @@ def pv_components(
         / 1000,
         "dependencies": {
             **dependencies,
-            "weather_raw": raw_sha256,
             "woo_module": blobs.put_object(proof),
         },
     }

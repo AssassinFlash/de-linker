@@ -127,6 +127,42 @@ export class PlannerClient {
 		assetId: string,
 		expectedScope: string,
 		signal?: AbortSignal,
+		expectedSha256?: string,
+	): Promise<Blob> {
+		return this.reportFile(
+			projectId,
+			assetId,
+			expectedScope,
+			"pdf",
+			signal,
+			expectedSha256,
+		);
+	}
+
+	async reportCsv(
+		projectId: string,
+		assetId: string,
+		expectedScope: string,
+		expectedSha256: string,
+		signal?: AbortSignal,
+	): Promise<Blob> {
+		return this.reportFile(
+			projectId,
+			assetId,
+			expectedScope,
+			"csv",
+			signal,
+			expectedSha256,
+		);
+	}
+
+	private async reportFile(
+		projectId: string,
+		assetId: string,
+		expectedScope: string,
+		format: "pdf" | "csv",
+		signal?: AbortSignal,
+		expectedSha256?: string,
 	): Promise<Blob> {
 		const session = this.requireSession(),
 			generation = this.generation;
@@ -185,9 +221,25 @@ export class PlannerClient {
 			bytes.set(part, offset);
 			offset += part.byteLength;
 		}
-		if (new TextDecoder().decode(bytes.subarray(0, 5)) !== "%PDF-")
+		if (
+			format === "pdf" &&
+			new TextDecoder().decode(bytes.subarray(0, 5)) !== "%PDF-"
+		)
 			throw new ApiError(502, "invalid_report_pdf");
-		return new Blob([bytes.buffer], { type: "application/pdf" });
+		if (expectedSha256 !== undefined) {
+			const digest = new Uint8Array(
+				await crypto.subtle.digest("SHA-256", bytes.buffer),
+			);
+			const actual = Array.from(digest, (byte) =>
+				byte.toString(16).padStart(2, "0"),
+			).join("");
+			this.checkGeneration(generation);
+			if (actual !== expectedSha256)
+				throw new ApiError(502, "report_download_failed");
+		}
+		return new Blob([bytes.buffer], {
+			type: format === "pdf" ? "application/pdf" : "text/csv;charset=utf-8",
+		});
 	}
 
 	invalidate(): void {

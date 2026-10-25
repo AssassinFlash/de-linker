@@ -50,6 +50,43 @@ function fixture(replies: Response[]) {
 }
 const guest = () => new Response("0", { status: 400 });
 
+test("owned report downloads verify both frozen PDF and CSV bytes", async () => {
+	for (const format of ["pdf", "csv"] as const) {
+		const content = new TextEncoder().encode(
+				format === "pdf"
+					? "%PDF-owned fixture"
+					: "\uFEFFProdukt,Menge\r\nModul,24\r\n",
+			),
+			digest = new Uint8Array(await crypto.subtle.digest("SHA-256", content)),
+			sha = Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join(""),
+			{ client, calls } = fixture([
+				guest(),
+				json(context),
+				new Response(content),
+				new Response(content),
+			]);
+		await client.bootstrap();
+		const file =
+			format === "pdf"
+				? await client.reportPdf(
+						"project",
+						"asset",
+						context.query_scope,
+						undefined,
+						sha,
+					)
+				: await client.reportCsv("project", "asset", context.query_scope, sha);
+		assert.deepEqual(new Uint8Array(await file.arrayBuffer()), content);
+		assert.equal(calls[2]!.init.credentials, "same-origin");
+		assert.equal(calls[2]!.init.cache, "no-store");
+		await assert.rejects(
+			client.reportCsv("project", "asset", context.query_scope, "0".repeat(64)),
+			(error: unknown) =>
+				error instanceof ApiError && error.code === "report_download_failed",
+		);
+	}
+});
+
 test("scope admission follows native confirmation immediately, independently of React cleanup", async () => {
 	const other = { ...context, query_scope: "c".repeat(64) };
 	const { client } = fixture([guest(), json(context), guest(), json(other)]);

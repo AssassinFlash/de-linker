@@ -490,3 +490,31 @@ creation intents retain their original bytes and scope before any link input.
 is created. A normal creation opens site inputs. Consumed parameters leave the
 project URL; language navigation carries only validated link inputs before
 creation and the owned project/result/section references afterward.
+
+## Frozen project materials and CSV
+
+`project_materials_v1` is a derived report projection of the same frozen Woo
+equipment assessment, selected project inputs, saved included roof objects and
+manufacturer inclusion statements. It is not another maintained product source.
+PV reference rows remain project quotation inputs; only Woo equipment rows
+enter Solution draft. Included components without documented counts retain an
+unknown quantity. No cable, mounting or protection quantities are inferred.
+Installation design and outstanding country/manufacturer requirements remain
+open in the report; this increment does not claim a full installation BOM.
+
+An equipment-only report may project the saved roof only when the selected
+equipment assessment checked that exact geometry/string plan and carries its
+Woo module proof. Energy/PV reports preserve their producer/group scope rather
+than substituting a whole roof. Screen and PDF use the same material projection;
+the UTF-8 CSV contains its exact quantities, source references, scope and hash.
+The locale-independent material model is pinned into the report source.
+
+PDF and CSV are prepared before one durable completion transaction publishes
+both. Cancellation, publication failure and stale attempts publish neither.
+The original owned files remain downloadable as historical snapshots after a
+product withdrawal; creating a new report or transferring current equipment
+still validates current Woo permission. Downloads verify the frozen byte hash.
+Existing single-asset tasks and historical PDF-only reports retain their
+contracts. The existing LC mount/WindPress styles and private asset transport
+already own the presentation and download boundary; neither a new endpoint nor
+an independent product or style pipeline is needed.
