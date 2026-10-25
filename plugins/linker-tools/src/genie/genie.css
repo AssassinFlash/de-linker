@@ -71,7 +71,7 @@
 }
 
 /* `.gp button:hover` */
-.linker-genie-app :where(button):hover {
+.linker-genie-app :where(button:not(:disabled)):hover {
 	background: #ededed;
 }
 
@@ -859,7 +859,8 @@ body:has(.linker-genie-workspace)
 }
 
 /* `.gp-send:disabled` */
-.linker-genie-app__send:disabled {
+.linker-genie-app__send:disabled,
+.linker-genie-app__attach:disabled {
 	background: #ededed;
 	color: #afafaf;
 	cursor: default;
@@ -1016,8 +1017,7 @@ body:has(.linker-genie-workspace)
 }
 
 /* The picked files, over the composer. */
-.linker-genie-app:not(.linker-genie-app--workspace)
-	.linker-genie-app__attachments {
+.linker-genie-app .linker-genie-app__attachments {
 	display: flex;
 	flex-wrap: wrap;
 	flex-shrink: 0;

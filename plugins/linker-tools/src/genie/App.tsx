@@ -2493,7 +2493,7 @@ export function App( { config }: { config: GenieConfig } ) {
 							</div>
 						) : null }
 						{ /* The picked files, over the composer (#236). */ }
-						{ ! workspace && ! historyView ? (
+						{ ! historyView ? (
 							<AttachmentChips
 								picked={
 									draftContext.phase === 'ready'
@@ -2617,30 +2617,21 @@ export function App( { config }: { config: GenieConfig } ) {
 									ask( input );
 								} }
 							>
-								{ ! workspace ? (
-									/*
-									 * The Advisor composer's `.lia-vision-button`:
-									 * the attach entry. A photo (HEIC too) or a PDF
-									 * is prepared as it is picked and sent with the
-									 * turn; Genie reads it (#236).
-									 */
-									<>
-										<button
-											type="button"
-											className="linker-genie-app__attach"
-											aria-label={ __(
-												'Attach a file',
-												'linker-tools'
-											) }
-											onClick={ () =>
-												draftContext.capture() &&
-												attachInput.current?.click()
-											}
-										>
-											<AttachIcon />
-										</button>
-									</>
-								) : null }
+								<button
+									type="button"
+									className="linker-genie-app__attach"
+									aria-label={ __(
+										'Attach a file',
+										'linker-tools'
+									) }
+									disabled={ draftContext.phase !== 'ready' }
+									onClick={ () =>
+										draftContext.capture() &&
+										attachInput.current?.click()
+									}
+								>
+									<AttachIcon />
+								</button>
 								<input
 									ref={ attachInput }
 									type="file"
