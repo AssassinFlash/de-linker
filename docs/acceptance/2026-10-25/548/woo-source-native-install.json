@@ -1,8 +1,8 @@
 {
   "at_utc": "2026-10-24T18:32:30.803523+00:00",
   "old_runtime": "77dbdec63a0364d9a5eeb173883c1aff617d08b9eae3aa8b074eefb5d8ccd0d5",
-  "runtime_sha256": "68bd58cd925ea08548d2bffde7ab245c9c986426922cf85f54d8f1b73271fe96",
-  "loaded_engine_version": "57176b75df4fc4a66169d431a42a8aae45152965631489b8eb83ff00a9ad6dc1",
+  "runtime_sha256": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
+  "loaded_engine_version": "643ffa198df47928d40076f4da8680fabd67e633d4041b67b2af2c2773328ecf",
   "loaded_source_revision": "c4ac9cb2287bcdfbc855e81e3544f3e72d2df2dffc71360b75117dd88e00a555",
   "products": 85,
   "reference_inputs": 1,
@@ -21,7 +21,7 @@
       "prepared_products": 86
     }
   ],
-  "worker_runtime": "68bd58cd925ea08548d2bffde7ab245c9c986426922cf85f54d8f1b73271fe96",
+  "worker_runtime": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
   "worker_pid": 94687,
   "cache_control": "no-store, private",
   "existing_rows_preserved": {
@@ -848,5 +848,113 @@
       "Complete BOM, report, PDF and commerce/site consumers",
       "Full migration, review and production delivery"
     ]
+  },
+  "planning_report": {
+    "at_utc": "2026-10-25T00:48:15.103376+00:00",
+    "source_commit": "86b82e0e0ab491316e4adbd3e8bc5c21971f34d9",
+    "runtime_sha256": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
+    "status": "local_report_batch_delivered",
+    "project_id": "c7795bc2c1e14e389622015c809ace45",
+    "project_revision": 14,
+    "project_input_sha256": "32b9f95c200fe0c286e9e7552ccaf5377bfcbc63cae14bb6114125ba4ea43f1f",
+    "protected_project": {
+      "revision": 14,
+      "input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288"
+    },
+    "source_runs_reused": [
+      "10d121ed063349d49ab076753e52be11",
+      "f43b6f9410f14363902630800d565c20",
+      "908626650f4549ddb5696cb162900a9a"
+    ],
+    "new_numerical_runs": 0,
+    "report_render_runs": 4,
+    "report_render_repeat_reason": "two presentation fixes: converter kW and frozen accessory label; earlier private receipts retained",
+    "native_wordpress_download": {
+      "de_initial": "d3fdf04351344245846d5eb1763b7ff4",
+      "en_final": "7249d65c5dd844c99bae0686714a3eae",
+      "bytes_equal_owned_assets": true
+    },
+    "outputs": {
+      "de": {
+        "run_id": "06d970963c7a4cbbbe8480f40306cdad",
+        "asset_id": "21d1555753ad491d94c4dea545353d80",
+        "sha256": "ed61e9ed79698be0cf45a74bb330205d92aba28e100f148e1190b612674efc83",
+        "pages": 4,
+        "bytes": 55186,
+        "source_runs": [
+          "10d121ed063349d49ab076753e52be11",
+          "f43b6f9410f14363902630800d565c20",
+          "908626650f4549ddb5696cb162900a9a"
+        ],
+        "report_sha256": "8a5925ebadd2a38aa1a8a9b0f556b5b5f974da3ba0e1fae269253c7b351a9b8b",
+        "runtime_sha256": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
+        "source_permission_renewal_preserves_frozen_proof": true,
+        "pdf": "output/pdf/linker-planning-report-de.pdf"
+      },
+      "en": {
+        "run_id": "7249d65c5dd844c99bae0686714a3eae",
+        "asset_id": "c29fd9ece0234c88b29c48bd0b4c1d78",
+        "sha256": "2b0516385c076996df7899e4cee648f327a90da6071131c08831289baf259baa",
+        "pages": 4,
+        "bytes": 54583,
+        "source_runs": [
+          "10d121ed063349d49ab076753e52be11",
+          "f43b6f9410f14363902630800d565c20",
+          "908626650f4549ddb5696cb162900a9a"
+        ],
+        "report_sha256": "39cb85d57c3d50e3b22dc78e43481cf0a0677a1330da2c378420f9af51f8cecc",
+        "runtime_sha256": "771a24e628d5372f7070422b1d2b8a0096e0f83b39b213613b2d4bc04d1b47d4",
+        "source_permission_renewal_preserves_frozen_proof": true,
+        "native_download_matches_owned_asset": true,
+        "pdf": "output/pdf/linker-planning-report-en.pdf"
+      }
+    },
+    "source_guards": {
+      "spec": "PASS after delta",
+      "standards": "PASS after delta",
+      "focused_fixture": "1 passed in 1.51s; historical BOM frozen-source fallback; atomic publication and retained history",
+      "source_guard_read_only_probes": [
+        {
+          "case": "pv.changed_weather_acquisition",
+          "code": "report_inputs_changed"
+        },
+        {
+          "case": "energy.changed_geometry",
+          "code": "report_inputs_changed"
+        }
+      ]
+    },
+    "copy_review": "approved EN and formal DE; shared PDF translations registered to planner bundle",
+    "source_permission": "historical and current Woo proofs both retained; permission renewed only for identical complete module facts and citations",
+    "screenshots": [
+      "planning-report-en-1440.jpg",
+      "planning-report-en-390.jpg",
+      "planning-report-de-1440.jpg",
+      "planning-report-de-390.jpg"
+    ],
+    "visual_reuse": "DE app captures precede the two PDF-only row-display repairs; unchanged UI/inputs/layout reused. EN app captures use final runtime. Full original DE pages plus changed final pages, and all final EN pages inspected.",
+    "legacy_resource_version": "643ffa198df47928d40076f4da8680fabd67e633d4041b67b2af2c2773328ecf",
+    "legacy_wordpress_constant_matches": true,
+    "counts_before": {
+      "projects": 166,
+      "runs": 13,
+      "project_assets": 48,
+      "jobs": 13
+    },
+    "counts_after": {
+      "projects": 166,
+      "runs": 17,
+      "project_assets": 52,
+      "jobs": 17
+    },
+    "retention": {
+      "executable_carriers": 2,
+      "removed_this_report_batch": 3,
+      "existing_recovery_reused": true,
+      "new_instances": 0,
+      "new_full_backups": 0
+    },
+    "production_changed": false,
+    "remaining": "equipment-coupled energy, parallel/integrated/multiport templates, remaining electrical/country checks, complete BOM/report, comparisons, draft/inquiry/Genie/site consumers, migration and review/production delivery"
   }
 }

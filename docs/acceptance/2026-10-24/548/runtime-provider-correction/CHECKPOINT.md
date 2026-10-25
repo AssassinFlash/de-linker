@@ -307,3 +307,48 @@ equipment-coupled replay/comparison, complete BOM/report/PDF, site/commerce
 consumers, migration and review/production delivery remain explicit obligations.
 This local batch is closed; do not rerun its passing checks without a changed
 risk or a real failure.
+
+
+### Frozen planning report and private PDF delivered locally (2026-10-25)
+
+Candidate `86b82e0e` is installed in the same p548 instance. HTTP and the managed
+worker share runtime `771a24e6`; schema 5 and the protected original roof project
+remain unchanged. A report freezes the selected owned calculations, equipment
+assessment, requirements, cited documents and current Woo permission proofs.
+The screen and PDF render the same report document through the existing
+private asset publication and download path; legacy report sizing is not used.
+
+The native browser selected the existing annual energy and PV results and
+included the adopted equipment candidate. Original WordPress report creation
+and downloads were exercised. Both final EN and DE reports are four pages;
+final private report IDs and SHA-256 values, the matching download, source run
+IDs, review deltas and scoped visual evidence are in the existing
+`woo-source-native-install.json` record. Final PDFs are retained at
+`output/pdf/linker-planning-report-en.pdf` and
+`output/pdf/linker-planning-report-de.pdf`.
+
+The real source integration exposed a global permission revision change while
+the frozen Woo module facts and citations were identical. The report now renews
+current permission only for identical complete module documents and retains
+both old and current proofs; changed module facts remain refused. PV weather
+choices and energy profile dependencies must match the saved project. Old
+valid BOM lines obtain missing display fields from their frozen selected
+products. PDF inspection corrected a missing converter kW unit and an accessory
+ID presented as a number. No numerical result was rewritten or rerun.
+
+Previously passing weather, annual, equipment, transport and build evidence was
+reused. The one report fixture and affected-file checks cover only changed
+risk; independent full-candidate reviews and bounded delta reviews passed.
+EN/DE report application captures cover 1440 and 390. DE unchanged application
+views and unchanged latter PDF pages were reused after the two row-display
+repairs. Temporary page renders were removed; the two final PDFs remain. Only
+current and one rollback executable carrier remain, with the existing shared
+environment and recovery point. No new instance, full backup or production
+write was added.
+
+This local report batch is closed. Its provisional BOM, generic energy
+scenario and unresolved engineering checks are stated in the report. The full
+goal remains active: equipment-coupled energy, additional topologies, remaining
+electrical and country checks, complete BOM/report, comparisons, all downstream
+site/commerce consumers, migration and review/production delivery still require
+completion. Do not reopen passing checks without a changed risk or real failure.
