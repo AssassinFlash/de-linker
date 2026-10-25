@@ -648,3 +648,46 @@ This fixes the selected-product bridge. PV/installation components and full
 engineering BOM/exports, manufacturer/country qualification, remaining site/
 Genie/commerce consumers, migration and review/production delivery remain in the
 same complete goal; the provisional product list is not a full installation BOM.
+
+
+### 2026-10-25 · Frozen PV module identities and quantities enter reports
+
+The report now includes PV module quantities from the selected producer's frozen
+input/witness and matching Woo reference-module/document proof. Canonical included
+object identities are checked against the retained result; excluded slots do not
+count. Energy-only DC uses its selected conversion group; explicitly selecting the
+complete PV result defines the complete model scope. Missing layout or Woo binding
+is unavailable, not a zero or a count inferred from area/kWp/current editable data.
+Original source revision, STC, document/page and immutable dependencies are retained.
+
+Real retained data exposed the distinction between raw declared parameter JSON and
+the producer's typed JSON. Their numeric values can match with different byte
+hashes. The new projection now follows the existing profile contract: original
+project metadata and normalized witness bindings are checked separately. The
+original bytes were preserved. The existing short fixture now retains that integer
+representation and two groups, proving complete six versus selected five modules,
+an excluded slot and rejection of an inconsistent saved count without another run.
+The old trace assertion was corrected to compare DC with its own group's AC rather
+than the expanded multi-group AC total. The affected AC representative also passed.
+
+The actual saved Berlin four-module energy run was reused without native physical
+recalculation. Native EN/DE reports contain 24 Trina TSM-460NEG9R.28 modules, 460 W
+STC each and 11.04 kWp, from layout revision 9. Both PDFs have five pages; their
+hashes match retained assets and the module/source/quantity content was inspected.
+The sales preview still contains only H2-10K-T3 ×1, BC2-HV1 ×1 and BU2-5.0-HV1 ×4;
+the reference PV module did not become a sale SKU. Confirmation was not submitted,
+the cart/inquiry were unchanged and no mail was sent. Unchanged writer evidence
+was reused. Scoped EN desktop/DE mobile content was inspected, prior unaffected
+layout/viewport coverage reused and the viewport restored.
+
+Spec/Standards and seven-pair copy reviews passed, including the bounded parameter
+identity repair. Changed-file lint/strict typing passed; checks stopped after pass.
+No new test file/runner, annual calculation, frontend build, CSS pipeline or full
+commerce matrix was added. The existing record's `pv_module_report` section holds
+exact source/run/report/handoff identities. p548 HTTP/worker is `a817b240`, Woo source
+remains `ee916454`, current plus one rollback and one instance remain. Superseded
+code and temporary PDF render images were reclaimed; no new full backup or dependency
+environment was made. Project revision 20, the protected roof/hash and production
+remain unchanged. Installation quantities, string/cable/mounting/protection BOM,
+manufacturer/country qualification, remaining site/Genie/commerce consumers,
+migration and review/production delivery remain within the same complete goal.

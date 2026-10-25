@@ -35,6 +35,7 @@ _NON_NUMERICAL = {
     "report_inputs.py",
     "report_kernel.py",
     "report_model.py",
+    "report_pv_components.py",
     "report_sources.py",
 }
 

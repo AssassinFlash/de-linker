@@ -3,6 +3,28 @@
 from __future__ import annotations
 
 TEXT = {
+    "pv_components_title": (
+        "PV modules used in the calculation",
+        "PV-Module der Berechnung",
+    ),
+    "pv_components_scope": (
+        "Module counts come from the saved layout of the selected generation result. The listed modules are design references; electrical and mounting suitability require project-specific assessment.",
+        "Die Stückzahlen stammen aus der gespeicherten Belegung des ausgewählten Ergebnisses zur PV-Erzeugung. Die aufgeführten Module dienen als Auslegungsreferenz; ihre elektrische Eignung und ihre Eignung für die Montage müssen projektspezifisch geprüft werden.",
+    ),
+    "pv_components_dc_scope": (
+        "This list includes only the PV conversion group used by the selected DC calculation.",
+        "Diese Liste enthält nur die PV-Gruppe, die für die ausgewählte DC-Berechnung verwendet wurde.",
+    ),
+    "pv_components_no_saved_layout": (
+        "The selected generation data has no saved layout from which to determine a module count.",
+        "Zu den ausgewählten Erzeugungsdaten ist keine Belegung gespeichert, aus der sich eine Modulanzahl ermitteln lässt.",
+    ),
+    "pv_components_no_woo_module_proof": (
+        "The saved module specifications could not be linked to the product record and its source document.",
+        "Die gespeicherten Modulangaben konnten dem Produktdatensatz und dem zugehörigen Quelldokument nicht eindeutig zugeordnet werden.",
+    ),
+    "pv_components_module_power": ("Module power (STC)", "Modulleistung (STC)"),
+    "pv_components_capacity": ("PV nameplate power", "PV-Nennleistung"),
     "comparison_title": (
         "Saved calculation comparison",
         "Vergleich gespeicherter Berechnungen",

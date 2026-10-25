@@ -123,11 +123,13 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     from linker_engine.planning.csv_mapping import CsvMapping
     from linker_engine.planning.dc_energy_kernel import DcEnergyKernel
     from linker_engine.planning.dc_energy_parameters import DcLossScenario
+    from linker_engine.planning.errors import VersionUnavailable
     from linker_engine.planning.interval import Interval
     from linker_engine.planning.profile_import import ProfileImport
     from linker_engine.planning.pv_generation import generate_pv
     from linker_engine.planning.pv_parameters import PvGenerationParameters
     from linker_engine.planning.pv_profile_preparation import PROFILE_PURPOSE
+    from linker_engine.planning.report_pv_components import pv_components
     from linker_engine.planning.series_source import SeriesSource
 
     from .test_energy_kernel import PROVENANCE
@@ -230,14 +232,49 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
 
     monkeypatch.setattr(Publication, "read", current)
     source = ProductSources(lambda: loaded)
-    parameters = PvGenerationParameters.read(parameter_document())
+    layout = geometry()
+    module_id = layout["module_specs"][0]["id"]
+    module_basis = source.module_basis()["module"]
+    layout["module_specs"] = [{**module_basis["specification"], "id": module_id}]
+    parameter_data = parameter_document()
+    parameter_data["modules"] = [
+        {**module_basis["parameters"], "module_spec_id": module_id}
+    ]
+    # One additional valid source group distinguishes full-layout quantities
+    # from the group actually consumed by the DC scenario, with no extra run.
+    layout["arrays"].append(
+        {
+            **layout["arrays"][0],
+            "id": "other-array",
+            "name": "Other synthetic PV group",
+            "origin_uv": [10, 10],
+            "rows": 1,
+            "columns": 1,
+            "excluded_slots": [],
+        }
+    )
+    parameter_data["arrays"].append(
+        {**parameter_data["arrays"][0], "array_id": "other-array"}
+    )
+    parameter_data["converters"].append(
+        {
+            **parameter_data["converters"][0],
+            "id": "other-group",
+            "array_ids": ["other-array"],
+        }
+    )
+    parameters = PvGenerationParameters.read(parameter_data)
+    declared_parameters = parameters.model_dump(mode="json")
+    declared_parameters["converters"][0]["reference_dc_power_w"] = int(
+        declared_parameters["converters"][0]["reference_dc_power_w"]
+    )
     project = workspace.create(
         owner,
         "Synthetic two-hour native DC fixture",
         {
             **inputs(feed, 3),
-            "geometry": geometry(),
-            "pv_generation": parameters.model_dump(mode="json"),
+            "geometry": layout,
+            "pv_generation": declared_parameters,
         },
         key="dc-project",
     )
@@ -275,6 +312,33 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
             "pv_model_witness": workspace.blobs.put(generated.witness_json),
         },
     }
+    full_parts = pv_components(workspace.blobs, raw_hash, metadata)
+    assert full_parts["components"][0]["quantity"] == 6
+    group_parts = pv_components(
+        workspace.blobs, raw_hash, metadata, converter_id=parameters.converters[0].id
+    )
+    assert group_parts["components"][0]["quantity"] == 5
+    assert "array:1:2" not in group_parts["components"][0]["module_ids"]
+    assert pv_components(workspace.blobs, raw_hash, {})["reason"] == "no_saved_layout"
+    without_proof = {k: v for k, v in metadata.items() if k != "woo_module_inputs"}
+    assert (
+        pv_components(workspace.blobs, raw_hash, without_proof)["reason"]
+        == "no_woo_module_proof"
+    )
+    corrupted = generated.witness()
+    corrupted["arrays"][0]["module_count"] += 1
+    with pytest.raises(VersionUnavailable):
+        pv_components(
+            workspace.blobs,
+            raw_hash,
+            {
+                **metadata,
+                "dependencies": {
+                    **metadata["dependencies"],
+                    "pv_model_witness": workspace.blobs.put_object(corrupted),
+                },
+            },
+        )
     pv = Assets(workspace).add(
         owner,
         project.id,
@@ -489,10 +553,13 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
     assert page["measurement_boundaries"]["pv"] == "PV_DC_bus"
     assert page["measurement_boundaries"]["charge"] == "battery_DC_terminal"
     witness = workspace.blobs.object(metadata["dependencies"]["pv_model_witness"])
-    assert (
-        page["rows"][0]["pv_kw"] == witness["converters"][0]["dc_available_w"][0] / 1000
+    selected_pv = next(
+        group
+        for group in witness["converters"]
+        if group["id"] == project.inputs["energy_replay"]["pv_converter_id"]
     )
-    assert page["rows"][0]["pv_kw"] > generated.profile.values_kw[0]
+    assert page["rows"][0]["pv_kw"] == selected_pv["dc_available_w"][0] / 1000
+    assert page["rows"][0]["pv_kw"] > selected_pv["available_ac_w"][0] / 1000
     # Reuse the saved physical model and source to check the hardware mode.
     # This does not replay physics or invent a backup rating for the fixture.
     outage_inputs = copy.deepcopy(project.inputs)
@@ -535,7 +602,13 @@ def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
         bom = next(section for section in report.sections if section.id == "bom")
         assert bom.table is not None
         assert len(bom.table.rows) == 3
-        assert any(row[0] == "3" and battery["model"] in row[1] for row in bom.table.rows)
+        assert any(
+            row[0] == "3" and battery["model"] in row[1] for row in bom.table.rows
+        )
+        part_table = next(
+            section for section in report.sections if section.id == "pv-components"
+        ).table
+        assert part_table is not None and part_table.rows[0][0] == "5"
         section = next(section for section in report.sections if section.id == "energy")
         dc_rows = [row for row in section.rows if "(DC)" in row.label]
         assert len(dc_rows) == 2 and all(row.value.endswith("kWh") for row in dc_rows)

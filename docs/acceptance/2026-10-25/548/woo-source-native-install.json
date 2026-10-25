@@ -43,7 +43,7 @@
     }
   },
   "production_changed": false,
-  "pending": "Finite Woo-backed AC/DC results, comparison and bound-energy equipment/report/native draft-preview inheritance are delivered locally. Complete installation BOM, manufacturer/engineering/country release, remaining consumers/site integration, migration and review/production delivery remain active.",
+  "pending": "Finite Woo-backed AC/DC results, comparison, bound-device handoff and frozen PV-module quantities are delivered locally. Installation engineering BOM/exports, manufacturer/country release, remaining consumers/site integration, migration and review/production delivery remain active.",
   "native_wordpress_transport": {
     "route_registered": true,
     "provider": "woocommerce",
@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "energy_report_products",
+  "current_frontier": "pv_module_report",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -2087,6 +2087,169 @@
       "Actual PV component and installation scope plus complete engineering BOM/report/exports.",
       "Manufacturer performance, converter/wiring/topology constraints, supported search/ranking and European country qualification.",
       "Affected site/Genie/commerce integration, data/link migration and review/production delivery/readback."
+    ]
+  },
+  "pv_module_report": {
+    "status": "frozen_woo_pv_module_quantities_in_native_EN_DE_reports",
+    "source_base_commit": "0283efd62c3c59de1aa888b5175b09ed61f2a49e",
+    "at_utc": "2026-10-25T14:42:27.535730+00:00",
+    "runtime_sha256": "a817b24070537c92483cfda9318ad5e9fa1f68b0985a97982bb02905596d99a3",
+    "rollback_runtime_sha256": "21ca02d6238e94d317b00ca4052fc86c566789d4d4e698af30168abd1784702c",
+    "woo_source_revision": "ee916454e451c0769097294afaf0bef0a73823b79b319c7f3f828f6408ff625d",
+    "project_id": "c7795bc2c1e14e389622015c809ace45",
+    "energy_run": {
+      "run_id": "4a89969354884bb79292f9ca000574c4",
+      "revision": 20,
+      "manifest_sha256": "bd50592121f20d3635df21dc0ebf9b03889c345918f6d357bccfca285d071218",
+      "result_sha256": "5659b713dd9ee1493d9591cb62cc02947829ee1db27d235a863e0760f8a8a4ee"
+    },
+    "new_native_physical_calculations": 0,
+    "layout_revision": 9,
+    "scope": "dc_group",
+    "converter_id": "converter",
+    "component": {
+      "model": "Trina Solar TSM-460NEG9R.28",
+      "quantity": 24,
+      "module_identity_count": 24,
+      "module_ids_sha256": "75bbb93b6468e8772d1315c4c4197d28dc77ab09ded0d1dce2ab0d05c3396688",
+      "module_stc_w": 460.0,
+      "nameplate_kwp": 11.04,
+      "source": {
+        "document_sha256": "f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22",
+        "kind": "datasheet",
+        "note": "Trina Solar TSM-460NEG9R.28",
+        "page": 2,
+        "url": "https://de-linker.com/wp-content/uploads/2026/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf",
+        "woo": {
+          "product_id": 8349,
+          "product_revision": "2c90939bf2d7d91aa017779d1c6fe3a5598c0e5231a5070add2bb1bc4f8d0b82",
+          "reference_input_id": "mat_trina_solar_tsm_460neg9r_28"
+        }
+      }
+    },
+    "frozen_dependencies": {
+      "pv_model_inputs": "7d307ace296ab8650c104adf0b489678a6ec97f1a40d0f6def48e4264fb75862",
+      "pv_model_witness": "e228d75da07d6913f43b29a5d12e266b9398fec2348d3dae48a9a34e1e475aee",
+      "weather_raw": "5406a027f131e780d2a7a79a98d1f79b9e62c6ab7fe4b2f212a1829553321110",
+      "woo_module": "04df1b79f3fbe772f8efb77a075650fcd15346cd196852a1db9f070369c6e34f"
+    },
+    "normalized_parameter_identity": {
+      "declared_project_parameters_sha256": "7f88a126e497591bc9500ee886415e0e478af0d659165faf97211d3f51fda604",
+      "typed_producer_parameters_sha256": "be1dcde1c2735a2dbe82f5045a3e8ebb842c7fa14d09f6c8466d3bf0fc8ee3e2",
+      "different_representation_is_preserved": true,
+      "current_project_metadata_and_normalized_witness_bindings_checked_separately": true,
+      "source_assets_rewritten": false
+    },
+    "reports": {
+      "en": {
+        "run_id": "9f6da98a3b7342dda79f02923d001c5c",
+        "revision": 20,
+        "manifest_sha256": "a3a0017731c680b52a9c059bbf3d19ddc0df5cc2237b4d049826d109f86fb69d",
+        "result_sha256": "9e17a894e5345cdce7ded4fb8b81facf9bceb66bb1abebab99ec3056594fd142",
+        "asset_id": "97a0bd83b5d94d04a344bc0aa07d4b3f",
+        "sha256": "d28a9e1dc19256547bf119bdcadf966cd758aedb2b65ad553464521d122fd733",
+        "file": "pv-modules-report-en.pdf",
+        "pages": 5,
+        "projection_sha256": "65db771acfe066e6edf3ee737dbb7a95e1b53da744d4e635fd8031af64068fe6",
+        "download_matches_retained_asset": true,
+        "module_title_pages": [
+          3
+        ],
+        "module_table_pages_visually_inspected": [
+          4
+        ]
+      },
+      "de": {
+        "run_id": "f8057fdf8f0f41f6b04282d42bfe3f98",
+        "revision": 20,
+        "manifest_sha256": "84a8be2178ce77c8dba0a37810e2b2255da2e3212528c183737c19ca28bab7c8",
+        "result_sha256": "a979dcc2392cd8f4a14ad1cbe84cbd469a92c8868fc861bb78b13e2556370ac3",
+        "asset_id": "9405f6a96e60496ba8f6990b71bf3b7e",
+        "sha256": "f955c94582e3acf7c7dd444d592fa89d6a4e35bbd2b87d5ecf123a32c6c45405",
+        "file": "pv-modules-report-de.pdf",
+        "pages": 5,
+        "projection_sha256": "65db771acfe066e6edf3ee737dbb7a95e1b53da744d4e635fd8031af64068fe6",
+        "download_matches_retained_asset": true,
+        "module_title_pages": [
+          3
+        ],
+        "module_table_pages_visually_inspected": [
+          4
+        ]
+      }
+    },
+    "native_sales_preview": {
+      "report_run_id": "9f6da98a3b7342dda79f02923d001c5c",
+      "handoff_id": "ef64d3c80a1a434487d114892fd22581",
+      "snapshot_sha256": "36547c3fd71370a773e5c7ce0f365ccc129ed43bf9bd5ea7a7879710a8677dc9",
+      "sale_items": [
+        {
+          "label": "SAJ H2-10K-T3",
+          "product_id": 4107,
+          "quantity": 1
+        },
+        {
+          "label": "SAJ BC2-HV1",
+          "product_id": 2092,
+          "quantity": 1
+        },
+        {
+          "label": "SAJ BU2-5.0-HV1",
+          "product_id": 2090,
+          "quantity": 4
+        }
+      ],
+      "reference_module_is_not_a_sale_line": true,
+      "confirmation_not_submitted": true,
+      "cart_or_inquiry_write": false,
+      "mail_sent": false
+    },
+    "native_ui": {
+      "checked": [
+        "EN desktop PV module section",
+        "DE mobile PV module section"
+      ],
+      "screenshots": [
+        "pv-modules-en-desktop.png",
+        "pv-modules-de-mobile.png"
+      ],
+      "unchanged_report_layout_and_existing_other_viewport_coverage_reused": true,
+      "viewport_restored": true,
+      "no_unsaved_project_changes": true
+    },
+    "reviews": {
+      "spec": "PASS full module-source/scope/report diff plus parameter identity repair",
+      "standards": "PASS original/current Woo permission, immutable dependencies, reference-only transfer and bounded identity repair",
+      "copy": "PASS seven EN/DE pairs; final wording says PV modules and PV conversion group without installation or performance claims"
+    },
+    "verification": {
+      "existing_short_DC_case": "PASS; same two-hour scenario now has two PV groups, full six versus selected five, one excluded slot, missing sources and mismatched count",
+      "affected_existing_AC_case": "PASS; no rerun after unrelated fixture-only corrections",
+      "strict_mypy_changed_source_modules": "PASS",
+      "changed_file_ruff_and_diff": "PASS",
+      "new_test_files_or_runner": false,
+      "existing_year_or_native_energy_recalculated": false,
+      "frontend_build_or_styles_changed": false,
+      "commerce_matrix_repeated": false,
+      "native_preview_scope_only": true,
+      "validation_stopped_after_pass": true
+    },
+    "retention": {
+      "retired_directory": "/Users/chesterjohn/de-linker-local/p548/planner/runtime-releases/29417d08049e40b26b54131dc9fa5820d076267478a9919bf7f73fff5a7f36b9",
+      "retired_logical_bytes": 1409859,
+      "instances": 1,
+      "runtime_carriers": 2,
+      "temporary_pdf_render_images_removed": 2,
+      "new_full_backup": false,
+      "new_environment": false
+    },
+    "protected_roof_revision": 14,
+    "protected_roof_input_sha256": "8a6394917a9a9e6b91db4bfc73c0299dcedd2c51619144a5beffa1664f010288",
+    "production_changed": false,
+    "remaining_full_goal": [
+      "Installation quantities and source-backed string/cable/mounting/protection engineering BOM plus exports.",
+      "Manufacturer performance, converter/wiring/topology constraints, supported search/ranking and European country qualification.",
+      "Remaining site/Genie/commerce consumers, data/link migration and review/production delivery/readback."
     ]
   }
 }

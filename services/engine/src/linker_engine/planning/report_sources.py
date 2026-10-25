@@ -21,6 +21,7 @@ from .profile_assets import profile_dependencies
 from .pv_preparation import PvReferenceKernel
 from .records import Actor, Project, Run
 from .report_inputs import ReportOptions
+from .report_pv_components import pv_components
 from .workspace import Workspace
 
 
@@ -140,6 +141,7 @@ def report_sources(
         pinned = cast(Object, run.result["pinned_assets"])
         bases["equipment"] = pinned["woo.equipment_inputs"]
 
+    component_list: Object | None = None
     energy: Object | None = None
     if options.energy_run_id is not None:
         scenario = EnergyInputs.from_project(project.inputs)
@@ -195,6 +197,20 @@ def report_sources(
             if name.endswith(".metadata") and isinstance(sha, str):
                 metadata = workspace.blobs.object(sha)
                 provenance(metadata)
+                if name in {"pv_available_ac.metadata", "pv_available_dc.metadata"}:
+                    raw_sha = pinned_energy.get(name.replace(".metadata", ".raw"))
+                    if not isinstance(raw_sha, str):
+                        raise VersionUnavailable(
+                            "the saved PV profile raw source is missing"
+                        )
+                    component_list = pv_components(
+                        workspace.blobs,
+                        raw_sha,
+                        metadata,
+                        converter_id=scenario.pv_converter_id
+                        if name == "pv_available_dc.metadata"
+                        else None,
+                    )
                 module_basis = metadata.get("woo_module_inputs")
                 if isinstance(module_basis, dict):
                     bases[f"energy.{name}"] = workspace.blobs.put_object(module_basis)
@@ -220,6 +236,14 @@ def report_sources(
             if name.endswith(".metadata") and isinstance(sha, str):
                 provenance(workspace.blobs.object(sha))
         bases["pv"] = workspace.blobs.put_object(products.pv_basis(project.inputs))
+        # An explicitly selected complete PV result defines the report scope.
+        # Without it, the energy profile's actual AC/DC group defines the list.
+        prepared_pv = cast(Object, pv["prepared_asset"])
+        component_list = pv_components(
+            workspace.blobs,
+            cast(str, prepared_pv["content_sha256"]),
+            cast(Object, prepared_pv["metadata"]),
+        )
 
     comparison: Object | None = None
     if options.comparison is not None:
@@ -282,6 +306,9 @@ def report_sources(
     for index, item in enumerate(cast(list[Object], sources)):
         dependencies[f"run.{index}.manifest"] = item["manifest_sha256"]
         dependencies[f"run.{index}.result"] = item["result_sha256"]
+    if component_list is not None and component_list.get("status") == "available":
+        for name, sha in cast(Object, component_list["dependencies"]).items():
+            dependencies[f"pv_components.{name}"] = sha
     source: Object = {
         "schema_version": 1,
         "project_id": project.id,
@@ -294,6 +321,7 @@ def report_sources(
         "equipment": assessment,
         "energy": energy,
         "energy_equipment": energy.get("equipment_binding") if energy else None,
+        "pv_components": component_list,
         "pv": pv,
         "source_runs": sources,
         "woo_bases": bases,

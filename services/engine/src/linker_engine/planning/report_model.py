@@ -204,6 +204,61 @@ def build_report(source: Object) -> Report:
             )
         )
 
+    pv_parts = source.get("pv_components")
+    if isinstance(pv_parts, dict):
+        part_rows: list[ReportRow] = []
+        part_table: ReportTable | None = None
+        if pv_parts["status"] == "available":
+            components = cast(list[Object], pv_parts["components"])
+            part_paragraphs = [text("pv_components_scope", locale)]
+            if pv_parts["scope"] == "dc_group":
+                part_paragraphs.append(text("pv_components_dc_scope", locale))
+            if pv_parts["layout_revision"] is not None:
+                part_rows.append(row("revision", pv_parts["layout_revision"]))
+            part_rows.append(
+                row(
+                    "pv_components_capacity",
+                    number(pv_parts["nameplate_kwp"], locale, "kWp"),
+                )
+            )
+            for component in components:
+                citation = cast(Object, component["source"])
+                part_rows.append(
+                    ReportRow(
+                        label=text("source", locale)
+                        + f" · {text('page', locale)} {citation['page']}",
+                        value=str(component["model"]),
+                        href=cast(str, citation["url"]),
+                    )
+                )
+            part_table = ReportTable(
+                columns=[
+                    text("quantity", locale),
+                    text("model", locale),
+                    text("pv_components_module_power", locale),
+                ],
+                rows=[
+                    [
+                        number(component["quantity"], locale),
+                        str(component["model"]),
+                        number(component["stc_power_w"], locale, "W"),
+                    ]
+                    for component in components
+                ],
+                column_weights=[1, 3, 2],
+            )
+        else:
+            part_paragraphs = [text("pv_components_" + str(pv_parts["reason"]), locale)]
+        sections.append(
+            ReportSection(
+                id="pv-components",
+                title=text("pv_components_title", locale),
+                paragraphs=part_paragraphs,
+                rows=part_rows,
+                table=part_table,
+            )
+        )
+
     binding = source.get("energy_equipment")
     if isinstance(binding, dict):
         linked = cast(Object, binding["assessment"])

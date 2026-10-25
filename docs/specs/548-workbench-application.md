@@ -296,6 +296,16 @@ candidate remains bound to its original run and assessment hash. This command
 does not recalculate weather, PV or energy and does not choose a different
 historical analysis by a latest-result heuristic.
 
+PV module quantities use the retained producer input/witness, its included
+layout object identities and the matching Woo module/document proof. The
+energy-only shared-DC report includes only its selected PV conversion group;
+an explicitly selected complete PV result defines the complete saved PV-model
+scope. The list preserves source revision, source document and STC rating.
+Excluded slots and unconsumed groups do not become quantities. An absent layout
+or missing Woo binding has an explicit unavailable state; counts are never
+inferred from area, kWp or an editable current layout. These design-reference
+modules stay separate from the sale-product list used by Woo draft transfer.
+
 The report freezes project identity/revision, selected analysis references,
 equipment checks and source documents. Each distinct current Woo permission
 proof is checked at source capture and before/after rendering. Proofs and source
