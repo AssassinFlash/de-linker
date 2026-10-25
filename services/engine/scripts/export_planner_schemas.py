@@ -11,6 +11,10 @@ from pathlib import Path
 from typing import Any
 
 from linker_engine.models import Report
+from linker_engine.planning.dc_energy_parameters import (
+    DcLossScenario,
+    DcPreparedParameters,
+)
 from linker_engine.planning.energy_inputs import BatteryParameters, EnergyInputs
 from linker_engine.planning.pv_parameters import PvGenerationParameters
 from linker_engine.planning.report_inputs import ReportOptions
@@ -59,6 +63,8 @@ def documents() -> dict[str, str]:
         + "\n"
         for name, model in (
             ("battery-parameters", BatteryParameters),
+            ("dc-loss-scenario", DcLossScenario),
+            ("dc-prepared-parameters", DcPreparedParameters),
             ("energy-inputs", EnergyInputs),
             ("pv-generation", PvGenerationParameters),
             ("weather-acquisition", WeatherAcquisitionInputs),

@@ -473,3 +473,32 @@ rerun. No environment, dependency, backup, runtime carrier or new evidence
 report was created. The full goal remains active; the next dependency is the
 native Woo-backed parameter/profile and command/result/report/UI connection.
 The same installation JSON now records this frontier as `shared_dc_core`.
+
+
+### 2026-10-25 · DC native service command and result projection connected
+
+The existing energy command now routes its frozen coupling to the registered AC
+or shared-DC executor. A DC parameter request supplies loss assumptions and a
+selected port; only the server reads Woo to derive device limits. Original
+prepared parameter and Woo children stay immutable across request retry and are
+checked separately from current permission before a new calculation. Unknown
+DC limits stay explicit, and rated/max operating limits are not called
+continuous performance. Per-port current consumption uses the agreed existing
+Woo keys with preserved and matched structural conditions.
+
+The focused two-hour service fixture passed HTTP preparation/retry, registered
+execution, frozen result, DC trace stages, public missing-field identities and
+EN/DE report projection. It reuses synthetic authoritative maintenance data and
+is not a real-product/p548 claim. The actual DC result's stored model was reused
+for the mode-conflict assessment; no second physical replay was added for it.
+Affected existing AC representatives passed and were reused. Server/browser
+contracts passed the same new boundary cases; strict typing and lint passed.
+Spec/Standards final incremental reviews and three-pair copy review passed.
+The existing record contains scope and outcomes; no additional report was made.
+
+The source owner has supplied the consumption agreement but has not completed
+all qualified live projections. The owner has been asked to finish actual Woo
+document association/preparation and readback, without waiting for this line's
+remaining tests. This line continues browser DC controls/result decoding and
+WordPress delivery. p548, production, runtime carriers and full backups were
+unchanged; existing annual, PV, workspace and commerce evidence remains closed.

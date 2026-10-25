@@ -153,7 +153,9 @@ class HttpReplay:
                 {
                     "expected_revision": evaluate.expected_revision,
                     "intent": {
-                        "kind": self.energy.kernel.kind
+                        "kind": self.energy.kind_for(
+                            actor, evaluate.project_id, evaluate.expected_revision
+                        )
                         if path == "runs/energy"
                         else PvReferenceKernel.kind
                         if path == "runs/pv"

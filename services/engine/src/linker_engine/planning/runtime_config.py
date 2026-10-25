@@ -13,6 +13,7 @@ from typing import Annotated, Self
 
 from pydantic import Field, model_validator
 
+from .dc_energy_kernel import DcEnergyKernel
 from .energy_inputs import Document, Nonnegative, SchemaVersion
 from .energy_kernel import EnergyKernel
 from .energy_service import EnergyService
@@ -78,7 +79,15 @@ class RuntimeConfig(Document):
             products=products or ProductSources(worker_product_provider),
         )
         return workspace, EnergyService(
-            workspace, kernel, max_attempts=self.max_attempts
+            workspace,
+            kernel,
+            max_attempts=self.max_attempts,
+            dc_kernel=DcEnergyKernel(
+                workspace,
+                Tolerance(self.absolute_kwh, self.absolute_kw, self.relative),
+                max_intervals=self.max_intervals,
+                products=products or ProductSources(worker_product_provider),
+            ),
         )
 
     def report_service(

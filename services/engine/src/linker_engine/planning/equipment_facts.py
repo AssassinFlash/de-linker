@@ -45,6 +45,9 @@ _COUNTS = frozenset(
         "stacks_parallel_max",
         "modules_per_system_max",
         "max_battery_modules",
+        "battery_port_count",
+        "number_of_battery_ports",
+        "n_battery_ports",
     }
 )
 

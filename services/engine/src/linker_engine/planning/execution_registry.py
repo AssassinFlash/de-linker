@@ -32,7 +32,7 @@ def service_registry(
 ) -> ExecutionRegistry:
     """One executor-set authority for HTTP, worker startup and operator identity."""
     return ExecutionRegistry(
-        energy.kernel,
+        *energy.kernels,
         *(() if pv is None else (pv.kernel,)),
         *(() if weather is None else (weather.kernel,)),
         *(() if equipment is None else (equipment.kernel,)),

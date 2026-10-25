@@ -69,6 +69,12 @@ TEXT = {
     "period": ("Calculation period (UTC)", "Berechnungszeitraum (UTC)"),
     "intervals": ("Calculated intervals", "Berechnete Intervalle"),
     "generation": ("PV generation", "PV-Erzeugung"),
+    "generation_dc": ("PV generation (DC)", "PV-Erzeugung (DC)"),
+    "curtailed_dc": ("PV curtailment (DC)", "PV-Abregelung (DC)"),
+    "scenario_dc_scope": (
+        "PV generation and curtailment are calculated at the DC bus; load supply and grid flows are calculated on the AC side. Storage results use the saved loss assumptions.",
+        "Die PV-Werte für Erzeugung und Abregelung beziehen sich auf den DC-Zwischenkreis. Die Versorgung der Verbraucher sowie Netzbezug und Einspeisung werden auf der AC-Seite berechnet; die Speicherwerte beruhen auf den gespeicherten Verlustannahmen.",
+    ),
     "load": ("Simulated load demand", "Simulierter Strombedarf"),
     "import": ("Grid import", "Netzbezug"),
     "export": ("PV export", "PV-Einspeisung"),

@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated, Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from .battery_model import BatteryModel
 from .canonical import Json, Object
@@ -145,6 +145,31 @@ class ScheduleSegment(Document):
 
 
 class EnergyInputs(Document):
+    model_config = ConfigDict(
+        json_schema_extra={
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {"coupling": {"const": "shared_dc"}},
+                        "required": ["coupling"],
+                    },
+                    "then": {
+                        "properties": {
+                            "pv_converter_id": {"type": "string", "minLength": 1},
+                            "aux_dc_kw": {"type": "number", "minimum": 0},
+                        },
+                        "required": ["pv_converter_id", "aux_dc_kw"],
+                    },
+                    "else": {
+                        "properties": {
+                            "pv_converter_id": {"type": "null"},
+                            "aux_dc_kw": {"type": "null"},
+                        }
+                    },
+                }
+            ]
+        }
+    )
     schema_version: SchemaVersion
     gross_load_asset_id: Identifier
     critical_load_asset_id: Identifier | None
@@ -155,6 +180,22 @@ class EnergyInputs(Document):
     schedule: Annotated[list[ScheduleSegment], Field(min_length=1)]
     controller: Literal["self_consumption_with_reserve_v1"]
     terminal_min_kwh: Nonnegative | None
+    coupling: Literal["independent_ac", "shared_dc"] = "independent_ac"
+    pv_converter_id: Identifier | None = None
+    aux_dc_kw: Nonnegative | None = None
+
+    @model_validator(mode="after")
+    def physical_boundary(self) -> Self:
+        if self.coupling == "shared_dc":
+            if self.pv_converter_id is None or self.aux_dc_kw is None:
+                raise ValueError(
+                    "shared DC requires a selected PV converter and explicit DC auxiliary demand"
+                )
+        elif self.pv_converter_id is not None or self.aux_dc_kw is not None:
+            raise ValueError(
+                "independent AC cannot consume DC converter or auxiliary inputs"
+            )
+        return self
 
     @classmethod
     def from_project(cls, inputs: Object) -> Self:
@@ -163,7 +204,9 @@ class EnergyInputs(Document):
     def profiles(self) -> dict[str, str]:
         result = {
             "gross_load": self.gross_load_asset_id,
-            "pv_available_ac": self.pv_available_asset_id,
+            "pv_available_dc"
+            if self.coupling == "shared_dc"
+            else "pv_available_ac": self.pv_available_asset_id,
             "aux_ac": self.aux_ac_asset_id,
         }
         if self.critical_load_asset_id is not None:

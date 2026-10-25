@@ -113,6 +113,46 @@
     }
   },
   "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "pv_converter_id": {
+            "type": "null"
+          },
+          "aux_dc_kw": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "coupling": {
+            "const": "shared_dc"
+          }
+        },
+        "required": [
+          "coupling"
+        ]
+      },
+      "then": {
+        "properties": {
+          "pv_converter_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "aux_dc_kw": {
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "pv_converter_id",
+          "aux_dc_kw"
+        ]
+      }
+    }
+  ],
   "properties": {
     "schema_version": {
       "$ref": "#/$defs/SchemaVersion"
@@ -164,6 +204,37 @@
           "type": "null"
         }
       ]
+    },
+    "coupling": {
+      "default": "independent_ac",
+      "enum": [
+        "independent_ac",
+        "shared_dc"
+      ],
+      "title": "Coupling",
+      "type": "string"
+    },
+    "pv_converter_id": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Identifier"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "aux_dc_kw": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Nonnegative"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [

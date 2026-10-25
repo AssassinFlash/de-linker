@@ -107,6 +107,353 @@ def inputs(feed: dict, count: int) -> Object:
     }
 
 
+def test_shared_dc_native_asset_command_worker_and_stage_bound_trace(
+    feed: dict,
+    engine: Engine,
+    workspace: Workspace,
+    owner: Actor,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """One two-hour native route, with explicit synthetic Woo maintenance facts."""
+    from datetime import timedelta
+
+    from linker_engine.planning.assets import Assets
+    from linker_engine.planning.canonical import digest, encode
+    from linker_engine.planning.csv_mapping import CsvMapping
+    from linker_engine.planning.dc_energy_kernel import DcEnergyKernel
+    from linker_engine.planning.dc_energy_parameters import DcLossScenario
+    from linker_engine.planning.interval import Interval
+    from linker_engine.planning.profile_import import ProfileImport
+    from linker_engine.planning.pv_generation import generate_pv
+    from linker_engine.planning.pv_parameters import PvGenerationParameters
+    from linker_engine.planning.pv_profile_preparation import PROFILE_PURPOSE
+    from linker_engine.planning.series_source import SeriesSource
+
+    from .test_energy_kernel import PROVENANCE
+    from .test_pv_generation import geometry, parameter_document, weather
+
+    inverter = next(row for row in feed["products"] if row["id"] == 4107)
+    battery = next(row for row in feed["products"] if row["id"] == 2090)
+
+    def figure(
+        product: dict, key: str, value: float, unit: str, citation: dict
+    ) -> None:
+        product["figures"][key] = {
+            "value": value,
+            "unit": unit,
+            "citation": copy.deepcopy(citation),
+        }
+
+    inv_citation = inverter["figures"]["battery_voltage_range_v"]["citation"]
+    battery_citation = battery["figures"]["module_energy_kwh_usable"]["citation"]
+    for key in (
+        "max_battery_charge_a",
+        "max_battery_discharge_a",
+    ):
+        figure(inverter, key, 50, "A", inv_citation)
+        inverter["figures"][key]["qualifier"] = {
+            "scope": "per_battery_port",
+            "connection": "one_stack_per_port",
+        }
+    figure(inverter, "n_battery_ports", 2, "units", inv_citation)
+    figure(inverter, "rated_ac_power_kw", 10, "kW", inv_citation)
+    for key in ("max_charge_current_a", "max_discharge_current_a"):
+        figure(battery, key, 30, "A", battery_citation)
+    feed = publication_feed(feed, feed["compatibility"])
+    feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
+    loaded = SimpleNamespace(
+        engine=replace(engine, products=Products.from_feed(feed)),
+        publication=Publication(feed),
+        version="fixture",
+    )
+
+    def current(publication: Publication) -> dict:
+        result = publication_manifest(publication.feed)
+        for row in result["products"]:
+            row["ready"]["engineering"] = True
+        return result
+
+    monkeypatch.setattr(Publication, "read", current)
+    source = ProductSources(lambda: loaded)
+    parameters = PvGenerationParameters.read(parameter_document())
+    project = workspace.create(
+        owner,
+        "Synthetic two-hour native DC fixture",
+        {
+            **inputs(feed, 3),
+            "geometry": geometry(),
+            "pv_generation": parameters.model_dump(mode="json"),
+        },
+        key="dc-project",
+    )
+    raw = encode({"fixture": "owned synthetic two-hour weather"})
+    raw_hash = workspace.blobs.put(raw)
+    meteo = weather()
+    first = meteo.points[0]
+    second = replace(
+        first,
+        interval=Interval(first.interval.end, first.interval.end + timedelta(hours=1)),
+        irradiance_at_utc=first.irradiance_at_utc + timedelta(hours=1),
+        source_label_utc=first.source_label_utc + timedelta(hours=1),
+        ghi_w_m2=0,
+        dni_w_m2=0,
+        dhi_w_m2=0,
+    )
+    meteo = replace(
+        meteo,
+        points=(first, second),
+        source=SeriesSource(raw_hash, "synthetic", "UTC", 3600, encode(PROVENANCE)),
+    )
+    generated = generate_pv(
+        project.inputs["geometry"], meteo, parameters, max_array_steps=10
+    )
+    metadata = {
+        "schema": 1,
+        "profile_type": PROFILE_PURPOSE,
+        "retention": "permanent",
+        "provenance": PROVENANCE,
+        "geometry_sha256": digest(encode(project.inputs["geometry"])),
+        "parameters_sha256": digest(encode(project.inputs["pv_generation"])),
+        "woo_module_inputs": source.module_basis(),
+        "dependencies": {
+            "pv_model_inputs": workspace.blobs.put(generated.inputs_json),
+            "pv_model_witness": workspace.blobs.put(generated.witness_json),
+        },
+    }
+    pv = Assets(workspace).add(
+        owner,
+        project.id,
+        raw,
+        "application/json",
+        PROFILE_PURPOSE,
+        metadata,
+        key="dc-pv",
+    )
+    profile_ids = {}
+    for role, power in (("gross_load", 2), ("aux_ac", 0)):
+        content = (
+            "time,power\n"
+            + "".join(
+                f"{point.interval.start.isoformat()},{power}\n"
+                for point in meteo.points
+            )
+        ).encode()
+        profile_ids[role] = (
+            ProfileImport(Assets(workspace))
+            .csv(
+                owner,
+                project.id,
+                content,
+                CsvMapping(
+                    "time",
+                    "power",
+                    role,
+                    "interval_average_kw",
+                    "start",
+                    "UTC",
+                    "synthetic",
+                    3600,
+                    ",",
+                    ".",
+                ),
+                PROVENANCE,
+                key=role,
+            )
+            .id
+        )
+    ac = EnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    dc = DcEnergyKernel(workspace, TOLERANCE, max_intervals=10, products=source)
+    service = EnergyService(workspace, ac, max_attempts=1, dc_kernel=dc)
+    app = create_private_app(
+        workspace,
+        service,
+        credential=lambda: TOKEN,
+        limits=HttpLimits(100_000, 10_000, 10, 32),
+        product_provider=lambda: loaded,
+    )
+    scenario = DcLossScenario.read(
+        {
+            "schema_version": 1,
+            "model": "constant_window_shared_dc_bus_v1",
+            "parameter_basis": "explicit_loss_scenario_with_woo_equipment",
+            "battery_port_id": "battery-1",
+            "eta_bus_to_battery": 1,
+            "eta_battery_to_bus": 1,
+            "eta_store_charge": 1,
+            "eta_store_discharge": 1,
+            "eta_inverter_forward": 1,
+            "eta_inverter_reverse": None,
+            "internal_aux_kw": 0,
+            "standing_loss_rate_per_hour": 0,
+            "source_note": "Synthetic analytic loss assumptions; not manufacturer performance",
+        }
+    )
+    with TestClient(app) as client:
+        body = {
+            "schema_version": 1,
+            "project_id": project.id,
+            "expected_revision": project.revision,
+            "parameters": scenario.model_dump(mode="json"),
+            "source_note": "Synthetic Woo-derived parameter integration",
+            "key": "dc-battery",
+        }
+        unsupported = client.post(
+            "/battery/scenario",
+            json={
+                **body,
+                "key": "dc-unsupported-port",
+                "parameters": {**body["parameters"], "battery_port_id": "battery-3"},
+            },
+            headers=headers(owner),
+        )
+        assert unsupported.status_code == 422
+        assert unsupported.json() == {
+            "error": {
+                "code": "evidence_missing",
+                "details": {
+                    "product_id": 4107,
+                    "fact_id": "battery_port_count",
+                    "constraint_id": "selected_battery_port",
+                },
+            }
+        }
+        prepared = client.post("/battery/scenario", json=body, headers=headers(owner))
+        assert prepared.status_code == 200, prepared.text
+        assert (
+            client.post("/battery/scenario", json=body, headers=headers(owner)).json()
+            == prepared.json()
+        )
+        asset = prepared.json()
+        assert workspace.blobs.object(asset["content_sha256"]) == scenario.model_dump(
+            mode="json"
+        )
+        project = workspace.revise(
+            owner,
+            project.id,
+            project.revision,
+            {
+                **project.inputs,
+                "energy_replay": {
+                    "schema_version": 1,
+                    "gross_load_asset_id": profile_ids["gross_load"],
+                    "critical_load_asset_id": None,
+                    "pv_available_asset_id": pv.id,
+                    "aux_ac_asset_id": profile_ids["aux_ac"],
+                    "battery_parameters_asset_id": asset["id"],
+                    "initial_inventory": {
+                        "pv_kwh": 0,
+                        "grid_kwh": 0,
+                        "initial_unknown_kwh": 0,
+                        "basis": "synthetic_fixture",
+                        "source_note": "Initially empty fixture",
+                    },
+                    "schedule": [
+                        {
+                            "start_utc": first.interval.start.isoformat(),
+                            "end_utc": second.interval.end.isoformat(),
+                            "mode": "connected",
+                            "reserve_kwh": 0,
+                            "import_cap_kw": None,
+                            "export_cap_kw": 0,
+                            "pv_enabled": True,
+                            "allow_grid_charge": False,
+                        }
+                    ],
+                    "controller": "self_consumption_with_reserve_v1",
+                    "terminal_min_kwh": None,
+                    "coupling": "shared_dc",
+                    "pv_converter_id": "converter",
+                    "aux_dc_kw": 0,
+                },
+            },
+            key="dc-attach",
+        )
+        evaluated = client.post(
+            "/runs/energy",
+            json={
+                "schema_version": 1,
+                "project_id": project.id,
+                "expected_revision": project.revision,
+                "key": "dc-run",
+            },
+            headers=headers(owner),
+        )
+        assert evaluated.status_code == 200, evaluated.text
+    registry = service_registry(service, None)
+    executor = Worker(
+        Jobs(workspace),
+        "dc-native",
+        {"evaluate": registry},
+        lease_seconds=30,
+        heartbeat_seconds=1,
+        retry_seconds=1,
+        routing=registry.routing(8),
+    )
+    assert executor.run_once()
+    saved = workspace.run(owner, evaluated.json()["id"])
+    assert saved.state == "succeeded", saved.error
+    assert saved.result["kind"] == dc.kind
+    assert saved.result["model"]["usable_window_kwh"] == 13.5
+    assert saved.result["model"]["charge_terminal_kw"] == pytest.approx(8.064)
+    assert saved.result["metrics"]["load_demand_kwh"] == 4
+    assert saved.result["scenario_constraint_status"] == "satisfied"
+    assert "pv_generated_ac_kwh" not in saved.result["metrics"]
+    assert (
+        saved.result["prepared_dc_parameters"]["product_revisions"]
+        == project.inputs["equipment_selection"]["product_revisions"]
+    )
+    from linker_engine.planning.dc_energy_parameters import DcPreparedParameters
+    from linker_engine.planning.energy_equipment import assess_dc_energy_equipment
+    from linker_engine.planning.trace_window import TraceWindow
+
+    page = TraceWindow(workspace).page(owner, saved.id, offset=0, page_size=2)
+    assert page["measurement_boundaries"]["pv"] == "PV_DC_bus"
+    assert page["measurement_boundaries"]["charge"] == "battery_DC_terminal"
+    witness = workspace.blobs.object(metadata["dependencies"]["pv_model_witness"])
+    assert (
+        page["rows"][0]["pv_kw"] == witness["converters"][0]["dc_available_w"][0] / 1000
+    )
+    assert page["rows"][0]["pv_kw"] > generated.profile.values_kw[0]
+    # Reuse the saved physical model and source to check the hardware mode.
+    # This does not replay physics or invent a backup rating for the fixture.
+    outage_inputs = copy.deepcopy(project.inputs)
+    outage_inputs["energy_replay"]["schedule"][0]["mode"] = "outage"
+    prepared_model = DcPreparedParameters.read(
+        saved.result["prepared_dc_parameters"]
+    ).battery_model(saved.result["pinned_assets"]["battery.dc_prepared_parameters"])
+    mismatch = assess_dc_energy_equipment(
+        outage_inputs, source.equipment_basis(), prepared_model
+    )
+    assert any(
+        check["id"] == "scenario_operating_mode" and check["status"] == "violated"
+        for check in mismatch["assessment"]["checks"]
+    )
+    for locale in ("en", "de"):
+        frozen_report = report_sources(
+            workspace,
+            source,
+            owner,
+            project,
+            ReportOptions(
+                locale=locale,
+                energy_run_id=saved.id,
+                pv_run_id=None,
+                equipment_run_id=None,
+                logo=None,
+            ),
+        )
+        report = build_report(
+            {**frozen_report, "locale": locale, "generated_at": "2026-10-25T00:00:00Z"}
+        )
+        section = next(section for section in report.sections if section.id == "energy")
+        dc_rows = [row for row in section.rows if "(DC)" in row.label]
+        assert len(dc_rows) == 2 and all(row.value.endswith("kWh") for row in dc_rows)
+        assert "DC" in section.paragraphs[0] and "AC" in section.paragraphs[0]
+    assert saved.result["prepared_dc_parameters"]["source_facts"][
+        "4107.max_battery_charge_a"
+    ]["qualifier"] == {"scope": "per_battery_port", "connection": "one_stack_per_port"}
+
+
 def test_cited_quantities_keep_apparent_power_conditions_and_table_columns(
     feed: dict,
 ) -> None:

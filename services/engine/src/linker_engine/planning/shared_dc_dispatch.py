@@ -35,7 +35,11 @@ def self_consumption(
 ) -> Command:
     bridge = model.bridge(frame.limits.mode)
     pv = (
-        min(frame.pv_available_dc_kw, model.pv_input_dc_kw)
+        (
+            frame.pv_available_dc_kw
+            if model.pv_input_dc_kw is None
+            else min(frame.pv_available_dc_kw, model.pv_input_dc_kw)
+        )
         if frame.limits.pv_enabled
         else 0.0
     )
@@ -76,9 +80,9 @@ def _reverse_dc(
     if not bridge.reverse_supported:
         return 0.0
     eta = cast(float, bridge.eta_reverse)
-    reverse_cap = min(
-        cast(float, bridge.reverse_dc_kw), cast(float, bridge.reverse_ac_kw) * eta
-    )
+    reverse_cap = cast(float, bridge.reverse_ac_kw) * eta
+    if bridge.reverse_dc_kw is not None:
+        reverse_cap = min(bridge.reverse_dc_kw, reverse_cap)
     desired_dc = min(wanted_dc, max(reverse_cap - occupied_reverse_dc, 0.0))
     desired_ac = desired_dc / eta
     grid_room = max(
@@ -103,7 +107,11 @@ def step(
         frame, model, before
     )
     potential = frame.pv_available_dc_kw if frame.limits.pv_enabled else 0.0
-    pv = min(potential, model.pv_input_dc_kw)
+    pv = (
+        potential
+        if model.pv_input_dc_kw is None
+        else min(potential, model.pv_input_dc_kw)
+    )
     pv_aux_dc = min(pv, frame.aux_dc_kw)
     pv_remaining = max(pv - pv_aux_dc, 0.0)
     dc_aux_deficit = max(frame.aux_dc_kw - pv_aux_dc, 0.0)

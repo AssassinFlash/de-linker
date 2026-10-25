@@ -3,15 +3,28 @@
 from __future__ import annotations
 
 import math
+from dataclasses import replace
+from typing import overload
 
 from .canonical import Json, digest, encode
 from .errors import InvalidInput
 from .interval import Interval, microseconds
 from .power_series import PowerSeries, check_intervals
+from .pv_dc_profile import DcPvProfile
 from .series_transform import SeriesTransform
 
 
-def regrid(source: PowerSeries, target: tuple[Interval, ...]) -> PowerSeries:
+@overload
+def regrid(source: PowerSeries, target: tuple[Interval, ...]) -> PowerSeries: ...
+
+
+@overload
+def regrid(source: DcPvProfile, target: tuple[Interval, ...]) -> DcPvProfile: ...
+
+
+def regrid(
+    source: PowerSeries | DcPvProfile, target: tuple[Interval, ...]
+) -> PowerSeries | DcPvProfile:
     check_intervals(target)
     powers: list[float] = []
     first = 0
@@ -56,12 +69,18 @@ def regrid(source: PowerSeries, target: tuple[Interval, ...]) -> PowerSeries:
         / 1_000_000,
         exact_interval_copy=exact_copy,
     )
-    return PowerSeries(
-        target,
-        tuple(powers),
-        source.measurement,
-        source.source,
-        (*source.transformations, transformation),
+    if isinstance(source, DcPvProfile):
+        return replace(
+            source,
+            intervals=target,
+            values_kw=tuple(powers),
+            transformations=(*source.transformations, transformation),
+        )
+    return replace(
+        source,
+        intervals=target,
+        values_kw=tuple(powers),
+        transformations=(*source.transformations, transformation),
     )
 
 

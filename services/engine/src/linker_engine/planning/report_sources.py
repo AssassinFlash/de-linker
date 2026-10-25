@@ -7,6 +7,7 @@ from typing import cast
 
 from .assets import Assets
 from .canonical import Json, Object
+from .dc_energy_kernel import DcEnergyKernel
 from .energy_inputs import EnergyInputs
 from .energy_kernel import EnergyKernel
 from .equipment_candidate_choice import check_equipment_candidate
@@ -132,7 +133,14 @@ def report_sources(
 
     energy: Object | None = None
     if options.energy_run_id is not None:
-        run = owned(options.energy_run_id, EnergyKernel.kind, ("energy_replay",))
+        scenario = EnergyInputs.from_project(project.inputs)
+        run = owned(
+            options.energy_run_id,
+            DcEnergyKernel.kind
+            if scenario.coupling == "shared_dc"
+            else EnergyKernel.kind,
+            ("energy_replay",),
+        )
         energy = run.result
         assert energy is not None
         binding = energy.get("equipment_binding")

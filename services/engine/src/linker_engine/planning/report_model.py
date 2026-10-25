@@ -322,14 +322,21 @@ def build_report(source: Object) -> Report:
     energy = source.get("energy")
     if isinstance(energy, dict):
         metrics = cast(Object, energy["metrics"])
+        dc = energy.get("kind") == "shared_dc_energy_replay_v1"
         energy_rows = [
             row(label, number(metrics.get(key), locale, "kWh"))
             for label, key in (
                 ("load", "load_demand_kwh"),
-                ("generation", "pv_generated_ac_kwh"),
+                (
+                    "generation_dc" if dc else "generation",
+                    "pv_generated_dc_kwh" if dc else "pv_generated_ac_kwh",
+                ),
                 ("import", "grid_import_kwh"),
-                ("export", "pv_export_kwh"),
-                ("curtailed", "pv_curtailed_kwh"),
+                ("export", "pv_export_ac_kwh" if dc else "pv_export_kwh"),
+                (
+                    "curtailed_dc" if dc else "curtailed",
+                    "pv_curtailed_dc_kwh" if dc else "pv_curtailed_kwh",
+                ),
                 ("unserved", "unserved_load_kwh"),
             )
         ]
@@ -352,7 +359,9 @@ def build_report(source: Object) -> Report:
             ReportSection(
                 id="energy",
                 title=text("energy", locale),
-                paragraphs=[text("scenario_scope", locale)],
+                paragraphs=[
+                    text("scenario_dc_scope" if dc else "scenario_scope", locale)
+                ],
                 rows=energy_rows,
             )
         )

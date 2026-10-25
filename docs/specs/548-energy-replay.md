@@ -168,3 +168,44 @@ command/result/report and customer presentation must be connected before DC
 is offered. All product facts must continue through Woo; explicit scenario
 efficiencies do not qualify a manufacturer's equipment. No PySAM dependency,
 new runtime data source or local instance was introduced for this core.
+
+
+## Native DC service connection (2026-10-25)
+
+The same `energy_replay` input now has an explicit `coupling`: absent means
+`independent_ac` for existing projects; `shared_dc` requires `pv_converter_id`
+and an explicit `aux_dc_kw`. Server and generated browser schemas enforce the
+same stage distinction. The existing `runs/energy` command selects its registered
+executor from that frozen revision; DC results identify
+`shared_dc_energy_replay_v1`.
+
+For DC, `battery/scenario` requires `expected_revision` and accepts only a
+`DcLossScenario`, not device voltage/current/power/capacity. The raw loss scenario
+is the stable command content. The server derives the device envelope through
+the existing Woo pool and stores `dc_prepared_parameters` and `dc_woo_inputs` as
+immutable child dependencies. Context and worker confirm the original child
+source and the current selected Woo basis independently. Retry returns the
+first registered children instead of recapturing current facts.
+
+Normal operating maxima and rated limits remain limits; the internal port
+fields are named `power_limit`, not continuous performance. Missing instantaneous
+PV, shared DC or DC/DC power limits remain null and unassessed; the calculation
+still respects the known current/voltage and shared AC constraints. Array Wp,
+apparent VA, peak and fault current never fill those gaps. Existing Woo
+`max_battery_charge_a` and `max_battery_discharge_a` require explicit per-port
+scope; a `one_stack_per_port` qualifier is matched only for the modeled single
+stack. Unknown additional qualifiers are refused, and the original qualifier
+and conditional status remain retained. Manufacturer performance remains
+unestablished by this fixed-loss planning scenario.
+
+Missing source data returns only canonical product/fact/constraint IDs, not
+exception text. AC and DC share the hardware operating-mode check. Trace rows
+state the DC PV-bus, DC battery-terminal and AC-grid boundaries. Report projection
+uses DC generation/curtailment and AC grid flows with reviewed EN/DE scope text.
+
+A short synthetic current-Woo fixture has exercised the private HTTP command,
+asset retry, durable worker, source binding, trace and report projection; an
+affected AC representative remains passing. This closes the service integration
+batch, not WordPress/browser/native-PDF acceptance. The owned p548 runtime is
+unchanged. Real source preparation, browser controls/readers and native result
+and report delivery still have to be completed within the same full goal.

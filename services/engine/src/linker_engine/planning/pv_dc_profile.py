@@ -18,6 +18,7 @@ from .power_series import PowerSeries, check_intervals
 from .pv_profile_artifacts import model_dependencies, prepared_profile
 from .pv_reconstruction import PvReconstruction
 from .series_source import SeriesSource
+from .series_transform import SeriesTransform
 from .storage import Blobs
 
 if TYPE_CHECKING:
@@ -29,7 +30,7 @@ class DcPvProfile:
     intervals: tuple[Interval, ...]
     values_kw: tuple[float, ...]
     source: SeriesSource
-    transformations: tuple[PvReconstruction, ...]
+    transformations: tuple[PvReconstruction | SeriesTransform, ...]
     converter_id: str
     array_ids: tuple[str, ...]
     model_inputs_sha256: str
@@ -63,6 +64,25 @@ class DcPvProfile:
         if not math.isfinite(total):
             raise NumericalFailure("integrated PV DC energy exceeds finite domain")
         return total
+
+    @property
+    def effective_max_interval_seconds(self) -> float:
+        return max(
+            [
+                self.source.native_max_interval_seconds,
+                *(
+                    max(
+                        item.input_max_interval_seconds,
+                        item.output_max_interval_seconds,
+                    )
+                    for item in self.transformations
+                ),
+            ]
+        )
+
+    @property
+    def reconstructed_means(self) -> bool:
+        return any(not item.exact_interval_copy for item in self.transformations)
 
     def document(self) -> Object:
         return {

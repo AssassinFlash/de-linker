@@ -27,7 +27,8 @@ class TraceWindow:
         trace = self.workspace.blobs.object(trace_hash)
         flows = trace.get("flows")
         if (
-            result.get("kind") != "single_ac_energy_replay_v1"
+            result.get("kind")
+            not in ("single_ac_energy_replay_v1", "shared_dc_energy_replay_v1")
             or trace.get("kind") != result["kind"]
             or trace.get("manifest_sha256") != run.manifest_sha256
             or not isinstance(flows, list)
@@ -36,6 +37,7 @@ class TraceWindow:
             raise VersionUnavailable("trace does not match its saved calculation")
         end = min(offset + page_size, len(flows))
         rows: list[Json] = []
+        dc = result["kind"] == "shared_dc_energy_replay_v1"
         for index in range(offset, end):
             flow = flows[index]
             if not isinstance(flow, dict):
@@ -57,11 +59,13 @@ class TraceWindow:
                     "start_utc": interval["start_utc"],
                     "end_utc": interval["end_utc"],
                     "load_kw": frame["load_kw"],
-                    "pv_kw": flow["pv_available_kw"],
-                    "charge_kw": flow["charge_kw"],
-                    "discharge_kw": flow["discharge_kw"],
-                    "import_kw": flow["import_kw"],
-                    "export_kw": flow["export_kw"],
+                    "pv_kw": flow["pv_available_dc_kw" if dc else "pv_available_kw"],
+                    "charge_kw": flow["charge_terminal_dc_kw" if dc else "charge_kw"],
+                    "discharge_kw": flow[
+                        "discharge_terminal_dc_kw" if dc else "discharge_kw"
+                    ],
+                    "import_kw": flow["import_ac_kw" if dc else "import_kw"],
+                    "export_kw": flow["export_ac_kw" if dc else "export_kw"],
                     "stored_kwh": math.fsum(
                         float(value)
                         for value in buckets
@@ -78,4 +82,17 @@ class TraceWindow:
             "offset": offset,
             "rows": rows,
             "next_offset": end if end < len(flows) else None,
+            **(
+                {
+                    "measurement_boundaries": {
+                        "pv": "PV_DC_bus",
+                        "charge": "battery_DC_terminal",
+                        "discharge": "battery_DC_terminal",
+                        "import": "grid_AC",
+                        "export": "grid_AC",
+                    }
+                }
+                if dc
+                else {}
+            ),
         }

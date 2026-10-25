@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .assets import Asset
 from .canonical import Object
-from .errors import InvalidInput, VersionUnavailable
+from .errors import EvidenceMissing, InvalidInput, VersionUnavailable
 from .pv_profile import PURPOSE, reference_dependencies
 from .storage import Blobs
 
@@ -12,6 +12,10 @@ from .storage import Blobs
 def profile_dependencies(
     asset: Asset, role: str, inputs: Object, blobs: Blobs
 ) -> dict[str, str]:
+    if role == "pv_available_dc" and asset.purpose != PURPOSE:
+        raise EvidenceMissing(
+            "pv_dc_stage: retained pre-conversion PV producer output required"
+        )
     result = {
         f"{role}.raw": asset.content_sha256,
         f"{role}.metadata": asset.metadata_sha256,
@@ -21,7 +25,7 @@ def profile_dependencies(
         if not isinstance(timezone_hash, str):
             raise VersionUnavailable("profile has no pinned timezone rules")
         result[f"{role}.timezone"] = timezone_hash
-    elif asset.purpose == PURPOSE and role == "pv_available_ac":
+    elif asset.purpose == PURPOSE and role in ("pv_available_ac", "pv_available_dc"):
         result.update(
             {
                 f"{role}.{name}": value

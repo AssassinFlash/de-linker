@@ -1443,7 +1443,7 @@
       "scope": "Only one two-hour owned scenario was evaluated for the new equipment-envelope boundary. It was reused for both report languages and the formatting repair. Existing annual/PV/equipment search/draft/inquiry checks were not repeated."
     }
   },
-  "current_frontier": "shared_dc_core",
+  "current_frontier": "shared_dc_native_backend",
   "shared_dc_core": {
     "status": "implemented_and_reviewed_core_not_connected_to_native_commands",
     "model": "constant_window_shared_dc_bus_v1",
@@ -1485,5 +1485,54 @@
     "dependencies_changed": false,
     "remaining_connection": "native_DC_parameter_and_profile_persistence_Woo_preparation_command_result_report_and_customer_UI",
     "release_boundary": "explicit_fixed_efficiency_scenario_core_is_not_manufacturer_performance_or_native_customer_acceptance"
+  },
+  "shared_dc_native_backend": {
+    "at_utc": "2026-10-25T07:31:57.701024+00:00",
+    "status": "service_command_worker_trace_and_report_projection_closed_not_installed",
+    "base_commit": "fa8f2c05",
+    "kind": "shared_dc_energy_replay_v1",
+    "parameter_contract": "customer_loss_scenario_only_server_derives_device_facts_from_Woo",
+    "immutable_dependencies": [
+      "raw_loss_scenario",
+      "prepared_dc_parameters",
+      "original_woo_equipment_basis",
+      "current_selected_woo_basis",
+      "typed_pre_conversion_PV_output",
+      "AC_load_profiles",
+      "runtime_bundle"
+    ],
+    "reuse_and_identity": "same_energy_command_routes_by_explicit_coupling; old_AC_kind_and_saved_inputs_preserved; logical_asset_retry_retains_first_prepared_children",
+    "source_semantics": {
+      "power_limits": "rated_and_maximum_normal_operating_limits_do_not_establish_continuous_performance",
+      "unknown_limits": "explicit_null_PV_DC_shared_DC_and_DC_DC_limits_are_unassessed; Wp_VA_peak_fault_values_are_not_substituted",
+      "per_port": "existing_max_battery_charge_a_and_max_battery_discharge_a_require_explicit_per_port_scope; one_stack_per_port_matches_single_stack_only; original_qualifier_and_status_retained",
+      "missing_evidence": "HTTP_returns_only_whitelisted_product_fact_constraint_IDs",
+      "operating_mode": "same_AC_DC_hardware_mode_check_keeps_outage_grid_selection_conflict_violated"
+    },
+    "focused_acceptance": {
+      "final_native_fixture": "1 passed in 2.16s; synthetic cited Woo maintenance, two-hour PV producer, HTTP loss-asset prepare/retry, owned command, registered worker, frozen source and result, DC trace boundaries, EN/DE report numeric DC rows, public missing-field IDs and hardware-mode assessment",
+      "unchanged_ac_representatives": "pure AC durable replay/history passed; affected existing Woo-bound AC mode/report/withdrawal representative passed and reused",
+      "schema_server": "actual exported browser schemas and shared invalid fixtures passed",
+      "schema_browser": "energyScenario.test.ts passed; DC requires converter/DCaux and AC refuses a DC-only boundary",
+      "static": "ruff passed; strict mypy passed for affected source graph; final source matcher separately passed",
+      "spec_review": "PASS including bounded public-error, mode and source-scope repairs",
+      "standards_review": "PASS including bounded repair and source-scope increment",
+      "copy_review": {
+        "scope": "three DC EN/DE report strings",
+        "result": "PASS with reviewed DE supply wording adopted"
+      }
+    },
+    "runtime_changed": false,
+    "native_instance_changed": false,
+    "production_changed": false,
+    "source_preparation_handoff": "consumer_contract_received; owner_thread_instructed_to_finish_actual_Woo_document_alias_association_and_qualified_feed_preparation_not_only_an_agreement",
+    "not_closed": [
+      "actual_current_product_field_preparation",
+      "browser_DC_command_and_result_UI",
+      "native_p548_DC_path",
+      "native_private_PDF_visual_and_download",
+      "remaining_topologies_electrical_country_BOM_comparison_site_consumers_migration_review_and_production"
+    ],
+    "storage": "existing_worktree_and_environment_reused; no_new_WordPress_instance_full_backup_or_runtime_carrier; no_new_screenshot_or_standalone_report"
   }
 }

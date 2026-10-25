@@ -12,6 +12,7 @@ from typing import cast
 
 from .battery_model import BatteryModel
 from .canonical import Json, Object, digest, encode
+from .dc_battery_model import DcBatteryModel
 from .energy_inputs import EnergyInputs
 from .equipment_assessment import assess_equipment
 from .equipment_evidence import EquipmentEvidence
@@ -67,20 +68,7 @@ def assess_energy_equipment(
             "facts": cast(list[Json], [charge_fact] if charge_fact else []),
         }
     )
-    outage = any(period.mode == "outage" for period in scenario.schedule)
-    mode_matches = not outage or selection.operating_mode == "backup"
-    checks.append(
-        {
-            "id": "scenario_operating_mode",
-            "status": "satisfied" if mode_matches else "violated",
-            "reason": "scenario_mode_matches_selection"
-            if mode_matches
-            else "outage_requires_backup_selection",
-            "actual": None,
-            "required": None,
-            "facts": [],
-        }
-    )
+    checks.append(operating_mode_check(scenario, selection))
     # None of these manufacturer properties follows from a maximum efficiency,
     # DC current, general pairing, or an AC-bus trace. Do not silently convert
     # those facts into missing continuous ports or loss/temperature curves.
@@ -108,6 +96,81 @@ def assess_energy_equipment(
     return {
         "schema_version": 1,
         "model": MODEL,
+        "selection": inputs["equipment_selection"],
+        "selection_sha256": digest(encode(inputs["equipment_selection"])),
+        "scenario_model": model.document(),
+        "assessment": assessment,
+        "performance_status": "not_established_by_scenario_envelope",
+    }
+
+
+def operating_mode_check(
+    scenario: EnergyInputs, selection: EquipmentSelection
+) -> Object:
+    outage = any(period.mode == "outage" for period in scenario.schedule)
+    mode_matches = not outage or selection.operating_mode == "backup"
+    return {
+        "id": "scenario_operating_mode",
+        "status": "satisfied" if mode_matches else "violated",
+        "reason": "scenario_mode_matches_selection"
+        if mode_matches
+        else "outage_requires_backup_selection",
+        "actual": None,
+        "required": None,
+        "facts": [],
+    }
+
+
+def assess_dc_energy_equipment(
+    inputs: Object, equipment_basis: Object, model: DcBatteryModel
+) -> Object:
+    selection = EquipmentSelection.read(inputs["equipment_selection"])
+    assessment = assess_equipment(
+        {
+            **inputs,
+            "equipment_selection": selection.model_copy(
+                update={
+                    "required_usable_kwh": model.usable_window_kwh,
+                    "required_discharge_ac_kw": min(
+                        model.connected_bridge.forward_ac_kw,
+                        model.discharge_terminal_kw
+                        * model.eta_battery_to_bus
+                        * model.connected_bridge.eta_forward,
+                    ),
+                }
+            ).model_dump(mode="json"),
+        },
+        equipment_basis,
+    )
+    checks = cast(list[Object], assessment["checks"])
+    checks.append(operating_mode_check(EnergyInputs.from_project(inputs), selection))
+    for identifier, reason in (
+        (
+            "scenario_parameter_basis",
+            "scenario_losses_not_manufacturer_performance",
+        ),
+        ("scenario_model_domain", "selected_port_topology_requires_assessment"),
+    ):
+        checks.append(
+            {
+                "id": identifier,
+                "status": "unresolved",
+                "reason": reason,
+                "actual": None,
+                "required": None,
+                "facts": [],
+            }
+        )
+    assessment["overall_status"] = (
+        "violated"
+        if any(check["status"] == "violated" for check in checks)
+        else "unresolved"
+    )
+    assessment["equipment_status"] = assessment["overall_status"]
+    assessment["bill_of_materials_status"] = "unresolved"
+    return {
+        "schema_version": 1,
+        "model": "selected_woo_dc_scenario_v1",
         "selection": inputs["equipment_selection"],
         "selection_sha256": digest(encode(inputs["equipment_selection"])),
         "scenario_model": model.document(),

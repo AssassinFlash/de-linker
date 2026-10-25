@@ -1,5 +1,7 @@
 """Typed lifecycle failures; transport adapters map them without exposing other owners."""
 
+import re
+
 
 class PlanningError(Exception):
     """A recoverable, named planning operation failure."""
@@ -65,6 +67,30 @@ class EvidenceMissing(PlanningError):
     """A requested physical path lacks explicit supporting parameters."""
 
     code = "evidence_missing"
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        product_id: int | None = None,
+        fact_id: str | None = None,
+        constraint_id: str | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.public_details: dict[str, str | int] = {}
+        if product_id is not None:
+            if type(product_id) is not int or product_id <= 0:
+                raise ValueError(
+                    "public evidence product ID must be a positive integer"
+                )
+            self.public_details["product_id"] = product_id
+        for key, value in (("fact_id", fact_id), ("constraint_id", constraint_id)):
+            if value is not None:
+                if not re.fullmatch(r"[a-z][a-z0-9_.:-]*", value):
+                    raise ValueError(
+                        "public evidence identity must be a canonical field/constraint ID"
+                    )
+                self.public_details[key] = value
 
 
 class MethodDomainExceeded(PlanningError):

@@ -93,6 +93,23 @@ def bind_energy_assets(
                         "profile dependency differs from its frozen asset"
                     )
                 expected.update(dependencies)
+            elif scenario.coupling == "shared_dc":
+                metadata = workspace.blobs.object(row["metadata_sha256"])
+                children = metadata.get("dependencies")
+                if not isinstance(children, dict) or set(children) != {
+                    "dc_prepared_parameters",
+                    "dc_woo_inputs",
+                }:
+                    raise VersionUnavailable(
+                        "frozen DC parameters have no server-prepared source dependencies"
+                    )
+                for name, sha in children.items():
+                    if not isinstance(sha, str) or pinned.get(f"battery.{name}") != sha:
+                        raise VersionUnavailable(
+                            "DC parameter dependency differs from the frozen owned asset"
+                        )
+                    workspace.blobs.read(sha)
+                    expected.add(f"battery.{name}")
     if set(pinned) != expected:
         raise VersionUnavailable(
             "energy dependency roles differ from the frozen inputs"

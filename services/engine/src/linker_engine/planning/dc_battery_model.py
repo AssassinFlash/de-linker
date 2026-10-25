@@ -28,8 +28,8 @@ class DcPort:
     id: str
     operating_min_v: float
     operating_max_v: float
-    continuous_charge_kw: float
-    continuous_discharge_kw: float
+    charge_power_limit_kw: float | None
+    discharge_power_limit_kw: float | None
     charge_current_a: float
     discharge_current_a: float
 
@@ -37,7 +37,7 @@ class DcPort:
         if not isinstance(self.id, str) or not self.id.strip():
             raise InvalidInput("an explicitly selected DC port is required")
         for name, value in asdict(self).items():
-            if name != "id":
+            if name != "id" and value is not None:
                 nonnegative(value, name)
         if not 0 < self.operating_min_v <= self.operating_max_v:
             raise InvalidInput(
@@ -48,7 +48,7 @@ class DcPort:
 @dataclass(frozen=True)
 class SharedBridge:
     forward_ac_kw: float
-    forward_dc_kw: float
+    forward_dc_kw: float | None
     eta_forward: float
     reverse_supported: bool | None
     reverse_ac_kw: float | None
@@ -57,7 +57,8 @@ class SharedBridge:
 
     def __post_init__(self) -> None:
         nonnegative(self.forward_ac_kw, "forward AC limit")
-        nonnegative(self.forward_dc_kw, "forward DC limit")
+        if self.forward_dc_kw is not None:
+            nonnegative(self.forward_dc_kw, "forward DC limit")
         efficiency(self.eta_forward, "forward efficiency")
         if (
             self.reverse_supported is not None
@@ -67,16 +68,13 @@ class SharedBridge:
                 "explicit true/false/unknown reverse capability required"
             )
         if self.reverse_supported is True:
-            if (
-                self.reverse_ac_kw is None
-                or self.reverse_dc_kw is None
-                or self.eta_reverse is None
-            ):
+            if self.reverse_ac_kw is None or self.eta_reverse is None:
                 raise InvalidInput(
                     "supported reverse conversion needs its own limits and efficiency"
                 )
             nonnegative(self.reverse_ac_kw, "reverse AC limit")
-            nonnegative(self.reverse_dc_kw, "reverse DC limit")
+            if self.reverse_dc_kw is not None:
+                nonnegative(self.reverse_dc_kw, "reverse DC limit")
             efficiency(self.eta_reverse, "reverse efficiency")
         elif any(
             value is not None
@@ -88,7 +86,12 @@ class SharedBridge:
 
     @property
     def forward_limit_dc_kw(self) -> float:
-        return min(self.forward_dc_kw, self.forward_ac_kw / self.eta_forward)
+        converted_limit = self.forward_ac_kw / self.eta_forward
+        return (
+            converted_limit
+            if self.forward_dc_kw is None
+            else min(self.forward_dc_kw, converted_limit)
+        )
 
 
 @dataclass(frozen=True)
@@ -96,9 +99,9 @@ class DcBatteryModel:
     usable_window_kwh: float
     battery: DcPort
     selected_port: DcPort
-    pv_input_dc_kw: float
-    dc_dc_charge_bus_kw: float
-    dc_dc_discharge_bus_kw: float
+    pv_input_dc_kw: float | None
+    dc_dc_charge_bus_kw: float | None
+    dc_dc_discharge_bus_kw: float | None
     eta_bus_to_battery: float
     eta_battery_to_bus: float
     eta_store_charge: float
@@ -119,7 +122,9 @@ class DcBatteryModel:
             "internal_aux_kw",
             "standing_loss_rate_per_hour",
         ):
-            nonnegative(getattr(self, name), name)
+            value = getattr(self, name)
+            if value is not None:
+                nonnegative(value, name)
         for name in (
             "eta_bus_to_battery",
             "eta_battery_to_bus",
@@ -150,27 +155,43 @@ class DcBatteryModel:
     def charge_terminal_kw(self) -> float:
         # P=VI, using the battery's voltage floor, conservatively intersects
         # one battery and ONE selected port; 1000 W per kW is an SI conversion.
-        return min(
-            self.battery.continuous_charge_kw,
-            self.selected_port.continuous_charge_kw,
+        limits = [
             self.battery.operating_min_v
             * min(self.battery.charge_current_a, self.selected_port.charge_current_a)
-            / 1000,
-            self.dc_dc_charge_bus_kw * self.eta_bus_to_battery,
+            / 1000
+        ]
+        limits.extend(
+            value
+            for value in (
+                self.battery.charge_power_limit_kw,
+                self.selected_port.charge_power_limit_kw,
+            )
+            if value is not None
         )
+        if self.dc_dc_charge_bus_kw is not None:
+            limits.append(self.dc_dc_charge_bus_kw * self.eta_bus_to_battery)
+        return min(limits)
 
     @property
     def discharge_terminal_kw(self) -> float:
-        return min(
-            self.battery.continuous_discharge_kw,
-            self.selected_port.continuous_discharge_kw,
+        limits = [
             self.battery.operating_min_v
             * min(
                 self.battery.discharge_current_a, self.selected_port.discharge_current_a
             )
-            / 1000,
-            self.dc_dc_discharge_bus_kw / self.eta_battery_to_bus,
+            / 1000
+        ]
+        limits.extend(
+            value
+            for value in (
+                self.battery.discharge_power_limit_kw,
+                self.selected_port.discharge_power_limit_kw,
+            )
+            if value is not None
         )
+        if self.dc_dc_discharge_bus_kw is not None:
+            limits.append(self.dc_dc_discharge_bus_kw / self.eta_battery_to_bus)
+        return min(limits)
 
     def bridge(self, mode: str) -> SharedBridge:
         if mode == "connected":

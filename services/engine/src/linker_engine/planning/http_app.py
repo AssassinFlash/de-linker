@@ -33,8 +33,10 @@ from .equipment_service import EquipmentService
 from .errors import (
     Conflict,
     EvaluationRevisionChanged,
+    EvidenceMissing,
     InvalidInput,
     LeaseLost,
+    MethodDomainExceeded,
     NotFound,
     NumericalFailure,
     PlanningError,
@@ -156,7 +158,9 @@ def create_private_app(
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     assets = Assets(workspace)
     claims = GuestClaims(workspace)
-    intake = HttpAssetIntake(assets, max_csv_bytes=limits.max_csv_bytes)
+    intake = HttpAssetIntake(
+        assets, max_csv_bytes=limits.max_csv_bytes, products=energy.kernel.products
+    )
     geometry_intake = GeometryImport(assets)
     previews = ProfilePreview(assets)
     replays = HttpReplay(workspace, energy, intake, geometry_intake)
@@ -181,6 +185,8 @@ def create_private_app(
             Conflict: 409,
             EvaluationRevisionChanged: 409,
             InvalidInput: 422,
+            EvidenceMissing: 422,
+            MethodDomainExceeded: 422,
             CsvIssue: 422,
             VersionUnavailable: 503,
             ServiceDraining: 503,
@@ -193,6 +199,8 @@ def create_private_app(
         )
         # Private row/file values and exception traces are not returned.
         detail: Object = {"code": error.code}
+        if isinstance(error, EvidenceMissing) and error.public_details:
+            detail["details"] = dict(error.public_details)
         if isinstance(error, CsvIssue):
             detail["profile_issue"] = error.document()
         return JSONResponse({"error": detail}, status_code=status)
@@ -246,6 +254,11 @@ def create_private_app(
             "runtime_sha256": energy.kernel.runtime.sha256,
             "models": {
                 **energy.kernel.models,
+                **(
+                    {"dc_replay": energy.dc_kernel.kind}
+                    if energy.dc_kernel is not None
+                    else {}
+                ),
                 **({"report": reports.kernel.kind} if reports is not None else {}),
                 **(
                     {"equipment_search": equipment_search.kernel.kind}

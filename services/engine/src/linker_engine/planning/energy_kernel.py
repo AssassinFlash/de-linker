@@ -8,8 +8,10 @@ current Woo permission around the replay without substituting product facts.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from .access import positive_integer
-from .assets import Assets
+from .assets import Asset, Assets
 from .battery_model import BatteryModel
 from .canonical import Json, Object, encode
 from .dispatch import replay, self_consumption_with_reserve
@@ -38,6 +40,7 @@ from .workspace import Workspace
 
 class EnergyKernel:
     kind = "single_ac_energy_replay_v1"
+    coupling = "independent_ac"
     models = {
         "replay": kind,
         "battery": BatteryModel.version,
@@ -83,7 +86,7 @@ class EnergyKernel:
         )
 
     def context(self, actor: Actor, project_id: str, inputs: Object) -> Context:
-        scenario = EnergyInputs.from_project(inputs)
+        scenario = self.scenario(inputs)
         assets = Assets(self.workspace)
         pinned: dict[str, str] = {"runtime_bundle": self.runtime.sha256}
         for role, asset_id in scenario.profiles().items():
@@ -96,7 +99,7 @@ class EnergyKernel:
         battery = assets.get(actor, project_id, scenario.battery_parameters_asset_id)
         if battery.purpose != "battery_parameters_v1":
             raise InvalidInput("explicit battery-parameter asset is required")
-        BatteryParameters.read(self.workspace.blobs.object(battery.content_sha256))
+        pinned.update(self.parameter_dependencies(battery))
         pinned["battery.raw"] = battery.content_sha256
         pinned["battery.metadata"] = battery.metadata_sha256
         if "equipment_selection" in inputs:
@@ -157,7 +160,7 @@ class EnergyKernel:
         if dependency("runtime_bundle") != self.runtime.sha256:
             raise VersionUnavailable("runtime bundle and code identity differ")
         inputs = self.workspace.pinned_inputs(manifest)
-        scenario = EnergyInputs.from_project(inputs)
+        scenario = self.scenario(inputs)
         bind_energy_assets(self.workspace, manifest, scenario, inputs, pinned)
         equipment_basis = (
             self.workspace.blobs.object(dependency("woo.equipment_inputs"))
@@ -173,6 +176,64 @@ class EnergyKernel:
                 self.products.check_profile(
                     self.workspace.blobs.object(dependency(f"{role}.metadata"))
                 )
+        physical = self.calculate(
+            inputs, pinned, manifest_hash, equipment_basis, dependency, control
+        )
+        control.checkpoint()
+        if self.products is not None:
+            for role in scenario.profiles():
+                self.products.check_profile(
+                    self.workspace.blobs.object(dependency(f"{role}.metadata"))
+                )
+            if equipment_basis is not None:
+                self.products.confirm_basis(equipment_basis, require_reference=False)
+        return {
+            "schema": 1,
+            "kind": self.kind,
+            "project_id": manifest.get("project_id"),
+            "revision": manifest.get("revision"),
+            "input_sha256": manifest.get("input_sha256"),
+            "manifest_sha256": manifest_hash,
+            "runtime_sha256": self.runtime.sha256,
+            **physical,
+            "pinned_assets": pinned,
+            "equipment_release": {
+                "status": "not_assessed",
+                "reason": "explicit_scenario_replay_is_not_equipment_release",
+            },
+            "country_assessment": {
+                "status": "not_assessed",
+                "reason": "country_rules_are_a_separate_assessment",
+            },
+        }
+
+    def scenario(self, inputs: Object) -> EnergyInputs:
+        scenario = EnergyInputs.from_project(inputs)
+        if scenario.coupling != self.coupling:
+            raise InvalidInput(
+                "energy coupling differs from the selected physical executor"
+            )
+        return scenario
+
+    def validate_parameter_document(self, value: Object) -> None:
+        BatteryParameters.read(value)
+
+    def parameter_dependencies(self, asset: Asset) -> dict[str, str]:
+        self.validate_parameter_document(
+            self.workspace.blobs.object(asset.content_sha256)
+        )
+        return {}
+
+    def calculate(
+        self,
+        inputs: Object,
+        pinned: Object,
+        manifest_hash: str,
+        equipment_basis: Object | None,
+        dependency: Callable[[str], str],
+        control: Control,
+    ) -> Object:
+        scenario = self.scenario(inputs)
         profiles = {
             role: frozen_profile(
                 self.workspace.blobs,
@@ -225,22 +286,7 @@ class EnergyKernel:
                 "flows": trace,
             }
         )
-        control.checkpoint()
-        if self.products is not None:
-            for role in scenario.profiles():
-                self.products.check_profile(
-                    self.workspace.blobs.object(dependency(f"{role}.metadata"))
-                )
-            if equipment_basis is not None:
-                self.products.confirm_basis(equipment_basis, require_reference=False)
         return {
-            "schema": 1,
-            "kind": self.kind,
-            "project_id": manifest.get("project_id"),
-            "revision": manifest.get("revision"),
-            "input_sha256": manifest.get("input_sha256"),
-            "manifest_sha256": manifest_hash,
-            "runtime_sha256": self.runtime.sha256,
             "interval_count": len(flows),
             "scenario_constraint_status": "satisfied"
             if verification.passed
@@ -250,16 +296,7 @@ class EnergyKernel:
             "model": model.document(),
             "battery_parameter_provenance": parameter_metadata,
             "profile_interpretation": prepared.profile_interpretation,
-            "pinned_assets": pinned,
             "trace_sha256": trace_hash,
             "dependencies": {"energy_trace": trace_hash},
             "equipment_binding": equipment_binding,
-            "equipment_release": {
-                "status": "not_assessed",
-                "reason": "explicit_scenario_replay_is_not_equipment_release",
-            },
-            "country_assessment": {
-                "status": "not_assessed",
-                "reason": "country_rules_are_a_separate_assessment",
-            },
         }

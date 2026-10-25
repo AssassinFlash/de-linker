@@ -8,6 +8,7 @@ from pydantic import Field, field_validator, model_validator
 
 from .brief import PlanningBrief
 from .canonical import Object
+from .dc_energy_parameters import DcLossScenario
 from .energy_inputs import BatteryParameters, Document, MappingDocument, SchemaVersion
 from .geometry_documents import GeometryDocument
 from .geometry_import_documents import GeometryImportOptions
@@ -193,6 +194,25 @@ class CsvInspect(Command):
 
 class BatteryScenario(Command):
     project_id: Id
-    parameters: BatteryParameters
+    parameters: BatteryParameters | DcLossScenario
     source_note: Note
     key: Key
+    expected_revision: Revision | None = None
+
+    @model_validator(mode="after")
+    def dc_revision(self) -> BatteryScenario:
+        if (
+            isinstance(self.parameters, DcLossScenario)
+            and self.expected_revision is None
+        ):
+            raise ValueError(
+                "Woo-derived DC parameters require the selected project revision"
+            )
+        if (
+            isinstance(self.parameters, BatteryParameters)
+            and self.expected_revision is not None
+        ):
+            raise ValueError(
+                "independent AC parameter upload does not consume a project revision"
+            )
+        return self

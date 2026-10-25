@@ -136,7 +136,11 @@ def verify(
             hard_allowance=0.0,
         )
         pv = (
-            min(frame.pv_available_dc_kw, model.pv_input_dc_kw)
+            (
+                frame.pv_available_dc_kw
+                if model.pv_input_dc_kw is None
+                else min(frame.pv_available_dc_kw, model.pv_input_dc_kw)
+            )
             if frame.limits.pv_enabled
             else 0.0
         )
@@ -294,20 +298,17 @@ def verify(
             power_scale,
             bound=True,
         )
-        record(
-            "shared_forward_dc_cap",
-            flow.inverter_forward_dc_kw - bridge.forward_dc_kw,
-            "kW",
-            index,
-            power_scale,
-            bound=True,
-        )
-        if bridge.reverse_supported:
-            assert (
-                bridge.eta_reverse is not None
-                and bridge.reverse_ac_kw is not None
-                and bridge.reverse_dc_kw is not None
+        if bridge.forward_dc_kw is not None:
+            record(
+                "shared_forward_dc_cap",
+                flow.inverter_forward_dc_kw - bridge.forward_dc_kw,
+                "kW",
+                index,
+                power_scale,
+                bound=True,
             )
+        if bridge.reverse_supported:
+            assert bridge.eta_reverse is not None and bridge.reverse_ac_kw is not None
             record(
                 "reverse_conversion",
                 flow.inverter_reverse_dc_kw
@@ -324,14 +325,15 @@ def verify(
                 power_scale,
                 bound=True,
             )
-            record(
-                "reverse_dc_cap",
-                flow.inverter_reverse_dc_kw - bridge.reverse_dc_kw,
-                "kW",
-                index,
-                power_scale,
-                bound=True,
-            )
+            if bridge.reverse_dc_kw is not None:
+                record(
+                    "reverse_dc_cap",
+                    flow.inverter_reverse_dc_kw - bridge.reverse_dc_kw,
+                    "kW",
+                    index,
+                    power_scale,
+                    bound=True,
+                )
         else:
             record(
                 "reverse_path_not_available",
