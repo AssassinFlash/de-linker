@@ -131,9 +131,15 @@ final class EngineeringFeedTest extends TestCase {
 			4107,
 			array(
 				'mppt_voltage_range_v' => array(
-					'value'    => '180~900',
-					'unit'     => 'V',
-					'citation' => array(
+					'value'         => '180~900',
+					'unit'          => 'V',
+					'qualifier'     => array(
+						'en' => 'At the stated operating conditions.',
+						'de' => 'Bei den angegebenen Betriebsbedingungen.',
+					),
+					'evidence_refs' => array( 'H2-10-30K-T2T3-datasheet-EN-BEU.pdf:p2' ),
+					'columns'       => array( array( 'phase' => 3 ) ),
+					'citation'      => array(
 						'url'  => 'https://de-linker.com/wp-content/uploads/2026/09/H2-10-30K-T2T3-datasheet-EN-BEU.pdf',
 						'page' => 2,
 					),
@@ -185,7 +191,16 @@ final class EngineeringFeedTest extends TestCase {
 			array_intersect_key( $item['documents'][0], array_flip( array( 'url', 'title', 'type', 'lang' ) ) )
 		);
 		// The figures serialize as an object, also when the set is empty ({} never []).
-		$this->assertSame( '{"mppt_voltage_range_v":{"value":"180~900","unit":"V","citation":{"url":"https:\/\/de-linker.com\/wp-content\/uploads\/2026\/09\/H2-10-30K-T2T3-datasheet-EN-BEU.pdf","page":2}}}', (string) wp_json_encode( $item['figures'] ) );
+		$encoded_figure = json_decode( (string) wp_json_encode( $item['figures'] ), true )['mppt_voltage_range_v'];
+		$this->assertSame(
+			array(
+				'en' => 'At the stated operating conditions.',
+				'de' => 'Bei den angegebenen Betriebsbedingungen.',
+			),
+			$encoded_figure['qualifier']
+		);
+		$this->assertSame( array( 'H2-10-30K-T2T3-datasheet-EN-BEU.pdf:p2' ), $encoded_figure['evidence_refs'] );
+		$this->assertSame( array( array( 'phase' => 3 ) ), $encoded_figure['columns'] );
 	}
 
 	/**
