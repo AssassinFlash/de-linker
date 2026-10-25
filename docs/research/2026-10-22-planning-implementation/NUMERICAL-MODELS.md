@@ -377,3 +377,58 @@ for frame in regular_frames:
 实际使用的新源码为`cmod_battery.cpp`、`cmod_battery_stateful.cpp`、`lib_battery_powerflow.cpp`、`lib_battery_dispatch.cpp`与`lib_shared_inverter.cpp`，固定提交均为上文`c92cbf05…`。可在上述dataset从保留的GitHub嵌入JSON提取`rawLines`复核；其中Stateful/powerflow/dispatch/shared-inverter按`"\n".join(rawLines)+"\n"`的UTF-8 SHA256依次为`6fff3319311f2846e4f25c9cd801f99ec71eedda2a241d621dabb4519d5648fa`、`e6e0b52a8eeb994be84c782588c2adbb64b3c62033582c2daace2dcc57a05c99`、`18bbdb9523b70e4b3bb614c3b01ef235e37d19b64edfae97640c42707a0093c6`、`439d1757242412fbf17301279303671d3e6a82053087ba794a99ed60a5333f64`。
 
 本节已证：官方Python入口/参数/端口单位、通用Battery拒绝DC、Stateful分工与源码时间/结构边界、SSC共享逆变器母线结构、本地既有库实际版本与默认值。尚未声称完成：本站DC执行器、Stateful适配器、真实SKU效率拟合、年度一致性、厂商EMS可执行性或线上验收。主线可直接按§12.2–12.3实现，验收仅追加能区分新DC域的代表用例，其他既有有效覆盖继续复用。
+
+## 13. 组件I–V资料与组串设计极值（2026-10-25）
+
+本节只补§4.2的电气取证。复用已托管的Trina **TSM-460NEG9R.28、1762×1134 mm、460 W**与Woo维护的SAJ **H2-10K-T3**；不改Woo、应用或运行配置。新增外部查找、页面读取与原件下载全部经Apify。**冷态Voc的厂商公式已取得；准确变体的PAN/CEC参数或明确电气串联电池片数仍未取得，不能因此把热态MPP检查写成已验证。**
+
+### 13.1 准确组件版本与尚缺的I–V输入
+
+[Trina官方2024_C原件，第2页](https://vertexsplus.trinasolar.com/wp-content/uploads/2024/09/240831_Datasheet_Vertex-S_NEG9R.28_EN_2024_C_web.pdf#page=2)与[仓库既有原件](../2026-10-24-pv-managed-intake/raw/trina-neg9r28-en-2024c.pdf)字节一致：488969 bytes，SHA256 `f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22`。460 W栏的STC值为`Voc=53.8 V、Vmpp=45.4 V、Isc=10.81 A、Impp=10.14 A`；系数为`βVoc=−0.24 %/°C、αIsc=+0.04 %/°C、γPmax=−0.29 %/°C`。STC条件是1000 W/m²、**电池片**25°C、AM1.5。NOCT栏另有该功率档的`Vmpp=42.7 V、Impp=8.25 A、Pmax=352 W`，其辐照和温度条件不同，不能用两栏差分直接生成βVmpp。
+
+该原件只写**144 cells**，没有明确每个电气支路串联数。`n_modules_in_string`与`cells_in_series_per_module`是两个字段；不能把144、144÷2或相似数据库型号填入后者。原件亦没有βVmpp、单二极管拟合参数或准确变体PAN文件。既有STC四点和三个温度系数保留原值；`βVoc`不替代`βVmpp`，`αIsc`也不等于`αImpp`，所以`γPmax−αIsc`不能冒充已核实的βVmpp。
+
+本轮查看了[当前EU产品页](https://www.trinasolar.com/eu/NEG9R.28/)、[当前EU下载中心首页及文档分类](https://www.trinasolar.com/eu/download/)、[MEA对应产品页](https://www.trinasolar.com/fr-mea/NEG9R.28/)、准确2024_C原件、现行Vertex手册，以及官方域名下准确型号/PAN查询。上述可见页面与取得文件未给出准确460 W变体的PAN/CEC或明确电气串联数。EU页现在链接2026_A版，MEA页链接2024_D版；这些版本不能仅凭同一系列名替换Woo托管的2024_C数据。本轮没有遍历下载中心全部分页，因此结论是**本次准确模型输入未取得**，并非厂商不存在此文件。
+
+后续资料补齐须进入Woo的同一维护链：准确变体的厂商参数文件及版本/hash，或厂商明确的`cells_in_series_per_module`及电路拓扑说明。若采用§4.2的CEC路线，最终有效输入仍须包括`a_ref/I_L_ref/I_o_ref/R_s/R_sh_ref/Adjust/alpha_sc`及参考条件、型号匹配和独立离STC验证；其中`alpha_sc`需要A/°C，不能把百分数直接填入。仅补到串联数并完成拟合，不构成精度已验证。若只取得有适用温度和辐照范围的βVmpp，可支持该范围内的具名线性估计，不能声称完整低照I–V检查已完成。
+
+### 13.2 冷态、运行MPP与电流分别使用自己的设计边界
+
+[Trina现行Vertex手册UM-M-0002 O（2026-03）](https://www-cdn.trinasolar.com/wwwstorage/sites/7/UM-M-0002-_O_User-Manual-1.pdf)的适用型号表包含NEG9R.28（PDF第3页）。§6.4.1（PDF第37–38页，印刷第32–33页）明确以**当地最低预期环境温度**计算阵列开路电压，同时受模块系统电压、逆变器最大输入电压与其他电器额定值约束：
+
+```text
+Voc_string_cold = n_modules_in_string × Voc_STC
+                  × [1 + beta_Voc_per_C × (Tmin_ambient_C − 25)]
+
+beta_Voc_per_C = −0.24 / 100 = −0.0024  # 此准确Trina变体
+```
+
+这是厂商明确标为参考的线性温度公式；所需输入为准确组件Voc/系数、串联片数和有来源的项目环境温度下限。它不提供热态Vmpp，也不把辐照、测量公差或当地设计规则自动处理完。手册PDF第8页另要求考虑超过STC的输出，并对非NEC安装的组件电压/电流额定选取写有`1.25×Voc/Isc`。应分别记录这一额定选取规则与温度计算的适用依据，不能漏掉该要求，也不能无依据把所有系数重复连乘成一个“IEC公式”。
+
+[PVsyst 8.1.7设计温度原文](https://www.pvsyst.com/help/project-design/grid-connected-system-definition/design-temperatures.html)及[阵列电压选型原文](https://www.pvsyst.com/help/project-design/grid-connected-system-definition/array-voltage-sizing-according-to-inverter.html)把三个温度及判断分开；下列MPP表达式是对该方法的接口化改述，`Vmp_model`仍须由准确型号模型给出：
+
+| 检查 | 设计条件、所需输入与结果边界 |
+| --- | --- |
+| 冷态绝对Voc | `Tmin_ambient_C`及其地点/历史或适用设计规则来源；检查逆变器绝对输入上限和组件/系统额定电压。PVsyst将其作为安全条件，不用热态运行电池片温度替换 |
+| 热态MPP下限 | `n_modules_in_string × Vmp_model(G_design,Tcell_hot)`对照逆变器MPPT下限；`Tcell_hot`是满日照运行的**电池片温度**，需安装/通风及辐照条件。PVsyst默认60°C是软件设计假设，不是现场事实，也不是组件最高工作温度的同义词 |
+| 冷态运行MPP上限 | `n_modules_in_string × Vmp_model(G_design,Tcell_oper_min)`对照MPPT上限。PVsyst默认20°C同样只是运行设计假设；它与绝对Voc的环境温度下限不是同一输入 |
+| 启动、输入与短路电流 | 启动电压、MPPT电压窗、可用运行电流、短路电流额定值及每MPPT/每物理输入/串数分别保留；并联支路电流相加，串联组件不能使电流按组件数相乘。STC的Impp/Isc只证明其声明条件，设计辐照、温度与适用增益/额定系数另须有来源 |
+
+PVsyst明确把MPP窗两项作为可能产生电压阈值损失的运行选型条件，将绝对Voc两项作为必须遵守的安全条件；不能将所有失败归成同一种兼容放行。其文档引用IEC 62548-1等标准，但本轮**没有取得这些标准全文，未独立验证其条款**，不把软件文档或搜索摘要称为标准核验。
+
+[PVsyst当前TMY算法说明](https://www.pvsyst.com/help/meteo-database/tmy-data-generation/tmy-generation-algorithms.html#minimum-temperature-tmin)尤其说明：其温度下限从TMY生成所用**全部原始年份**、辐照超过10 W/m²的时段计算，仅供信息展示，不自动用于组串选型。这与从拼接后典型年取`min(temp_air)`不同。PVGIS TMY的最低值、SAPM某年最大值、NOCT与手册工作温度范围都不能无记录地变成项目设计极值；已有天气仍可用于声明条件的年发电场景。
+
+### 13.3 SAJ限制的原件佐证和可实现的数据合同
+
+[SAJ当前欧洲下载页](https://www.saj-electric.com/services-support-download?search_value=&region=Europe&type=Operation%20Guide&product_type=Hybrid%20Inverter&product_model=H2_Series&country=&page=1)提供[H2-(10K–30K)-(T2,T3)英德手册](https://www.saj-electric.com/hubfs/crm-properties-file-values/H2-(10K-30K)-(T2%2cT3)_User_Manual_de_en_EU-1.pdf)。PDF第33页明确覆盖H2-10K-T3，第37页（英文印刷第9页）给出：最大DC **1000 V**、MPPT **180–900 V**、启动 **180 V**、最大DC输入电流 **40/40/40 A**、最大DC短路电流 **50/50/50 A**、**3 MPPT**、每MPPT **2/2/2 strings**。这些值与仓库既有Woo feed夹具对应字段一致；这只是原件佐证，维护权仍在Woo，也没有把夹具读回冒充线上数据读回。
+
+可用运行电流与短路电流不得混用。[SMA自己的设计指南](https://manuals.sma.de/Business-Systeme-PL/en-US/16100253323.html)明确区分`IDCmax`可用电流与`ISCPV`安全上限，并说明其部分运行电流超限是产量问题；这是SMA对自身设备的说明，**不能据此给SAJ放行超过40 A/MPPT**。本轮取得的SAJ手册没有提供这项超限许可，亦未给Trina热态I–V模型补参。
+
+实施可消费的缺项合同为：`design_min_ambient_c`及来源、`design_hot_cell_c/design_cold_operating_cell_c`及安装/辐照条件、设计最大辐照/实际双面变体增益及适用额定规则、准确模块I–V模型身份/参数/hash、各串到物理输入/MPPT的映射，以及Woo的逐口和总计限值。没有相应来源时，该项返回`EvidenceMissing/unknown`并保留已完成的其他计算。**冷Voc线性计算可独立接入；它不能使缺模型的热MPP、设计电流或整套组串取得安全放行。**
+
+### 13.4 取得文件、复用权与取证边界
+
+- 官方2024_C原件通过Apify取得并与既有PDF核成相同hash，无需再保留重复本地副本。现行Trina O手册为9843677 bytes，SHA256 `b1f566099b1e5e6e001a62d6ae417239e8b0d3e67477f3ce6bf9f160a50ff535`。SAJ英德手册为9782323 bytes，SHA256 `770ccafa080cb6f4484453c976e48a44df71d7fe63bc220506c1f3e9191a75b3`。Trina O的嵌入字体使文字提取丢失公式下标，已渲染PDF第37页核读`Voc/TCvoc/Tmin`，未用丢字文本推导新公式。
+- Trina PDF与PVsyst文档显示版权声明；本轮未取得PAN/CEC文件或文件再分发的开放授权，SAJ手册亦未见开放许可。此处只保存事实、短改述、来源和hash，没有复制专有软件，也没有把“公开可下载”写成允许任意再分发。后续参数文件的权利状态须跟文件一起记录。
+- 可重查的Apify取证身份：官网页面run `HlqA8EreR3qByZe9P` / dataset `8hcgDOE9K9RJ6pkt8`；当前下载中心与PVsyst设计/天气正文run `a8DPpylPLWFIkEtoC` / dataset `RDd7EDnTx77cO9m96`；准确2024_C原件run `uvg94qOexVbBejTtK` / dataset `keYeKHGEcb7XDxnEQ`；电压选型正文run `GZI9eTp60cZeTrrLE` / dataset `sTR78Ex9xXxcFDNn9`；Trina O原件run `MvqRIQ2KHBaQlPPUr` / dataset `vHLKYMwxPHbGJq8N1`；SAJ原件run `RmgLwGgWNTqfWdGl8` / dataset `V3zQShVine1MtngNu`。Actor固定`website-content-crawler 0.3.101`；官方域名查询使用读取过当前schema的`google-search-scraper 0.0.468`。
+- SAJ首次文件读取出现流超时及下载交接，但KV中没有原件，未记为成功取证；随后隔离到单文件、放宽声明的文件MIME范围并增加请求时限，取得200、`application/pdf`和有效PDF原字节。其他PDF亦以实际文件记录/原字节为准，不以Actor的“SUCCEEDED”或主爬虫下载交接失败计数替代核验。下载副本和提取图仅作本节临时读取，完成后回收；没有新增仓库raw目录、测试矩阵、站点或运行实例。
