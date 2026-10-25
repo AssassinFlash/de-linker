@@ -18,12 +18,14 @@ from linker_engine.planning.energy_kernel import EnergyKernel
 from linker_engine.planning.energy_service import EnergyService
 from linker_engine.planning.equipment_kernel import EquipmentKernel
 from linker_engine.planning.equipment_service import EquipmentService
+from linker_engine.planning.errors import ProductEvidenceChanged
 from linker_engine.planning.execution_registry import service_registry
 from linker_engine.planning.http_app import HttpLimits, create_private_app
 from linker_engine.planning.jobs import Jobs
 from linker_engine.planning.product_sources import ProductSources
 from linker_engine.planning.records import Actor
 from linker_engine.planning.report_kernel import ReportKernel, ReportService
+from linker_engine.planning.report_sources import renew_module_permission
 from linker_engine.planning.worker import Worker
 from linker_engine.planning.workspace import Workspace
 from linker_engine.products import Products
@@ -44,6 +46,13 @@ def test_owned_report_publishes_one_pdf_and_retains_history_after_withdrawal(
     owner: Actor,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    old_proof = {"schema_version": 1, "module": {"frozen_fact": "same"}}
+    current_proof = {**old_proof, "publication": {"revision": "renewed"}}
+    assert renew_module_permission(old_proof, current_proof) == current_proof
+    with pytest.raises(ProductEvidenceChanged):
+        renew_module_permission(
+            old_proof, {**current_proof, "module": {"frozen_fact": "changed"}}
+        )
     feed = request.getfixturevalue("equipment_feed")
     feed.update(figure_projection_version=2, compatibility_origin="woocommerce")
     shared = SimpleNamespace(

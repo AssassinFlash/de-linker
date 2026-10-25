@@ -317,3 +317,11 @@ and country gaps remain open. Its provisional equipment list is not represented
 as a complete installation BOM. Completing remaining engineering/country
 constraints, hardware-coupled energy, the full BOM/report, comparison and all
 commerce/site consumers remains part of the same full delivery goal.
+
+For reports using a historical PV-derived energy profile, unrelated feed or
+compatibility revisions may renew current permission only when the entire
+frozen Woo module document (including facts, citations and product revision)
+is identical to the current Woo module document. The old proof remains pinned
+in the report source alongside the current permission proof. Changed module
+facts or citations require a new matching result; numerical results are never
+rewritten during permission renewal.

@@ -13,7 +13,7 @@ from .equipment_candidate_choice import check_equipment_candidate
 from .equipment_candidate_store import EquipmentCandidateStore
 from .equipment_inputs import EquipmentSelection
 from .equipment_kernel import EquipmentKernel
-from .errors import InvalidInput, VersionUnavailable
+from .errors import InvalidInput, ProductEvidenceChanged, VersionUnavailable
 from .product_sources import ProductSources
 from .profile_assets import profile_dependencies
 from .pv_preparation import PvReferenceKernel
@@ -24,6 +24,17 @@ from .workspace import Workspace
 
 class ReportInputsChanged(InvalidInput):
     code = "report_inputs_changed"
+
+
+def renew_module_permission(previous: Object, current: Object) -> Object:
+    """Renew permission only when every frozen module fact and citation matches."""
+    if previous.get("schema_version") != 1 or not isinstance(
+        previous.get("module"), dict
+    ):
+        raise VersionUnavailable("frozen Woo module proof is missing")
+    if previous["module"] != current.get("module"):
+        raise ProductEvidenceChanged("the frozen Woo module facts have changed")
+    return current
 
 
 def report_sources(
@@ -174,7 +185,24 @@ def report_sources(
 
     if not sources:
         raise InvalidInput("select at least one completed analysis for the report")
+    historical_bases = {
+        name: sha for name, sha in bases.items() if name.startswith("energy.")
+    }
+    if historical_bases:
+        current_module = (
+            workspace.blobs.object(cast(str, bases["pv"]))
+            if "pv" in bases
+            else products.module_basis()
+        )
+        for name, sha in historical_bases.items():
+            current = renew_module_permission(
+                workspace.blobs.object(cast(str, sha)), current_module
+            )
+            bases[name] = workspace.blobs.put_object(current)
     dependencies: Object = {f"woo.{name}": sha for name, sha in bases.items()}
+    dependencies.update(
+        {f"historical_woo.{name}": sha for name, sha in historical_bases.items()}
+    )
     for index, item in enumerate(cast(list[Object], sources)):
         dependencies[f"run.{index}.manifest"] = item["manifest_sha256"]
         dependencies[f"run.{index}.result"] = item["result_sha256"]
@@ -192,6 +220,7 @@ def report_sources(
         "pv": pv,
         "source_runs": sources,
         "woo_bases": bases,
+        "historical_woo_bases": historical_bases,
         "generated_at": datetime.fromtimestamp(workspace.clock(), UTC).isoformat(),
         "locale": options.locale,
         "source_labels": list(dict.fromkeys(labels)),
