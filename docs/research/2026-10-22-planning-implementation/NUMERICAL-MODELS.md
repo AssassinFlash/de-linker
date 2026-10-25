@@ -432,3 +432,55 @@ PVsyst明确把MPP窗两项作为可能产生电压阈值损失的运行选型�
 - Trina PDF与PVsyst文档显示版权声明；本轮未取得PAN/CEC文件或文件再分发的开放授权，SAJ手册亦未见开放许可。此处只保存事实、短改述、来源和hash，没有复制专有软件，也没有把“公开可下载”写成允许任意再分发。后续参数文件的权利状态须跟文件一起记录。
 - 可重查的Apify取证身份：官网页面run `HlqA8EreR3qByZe9P` / dataset `8hcgDOE9K9RJ6pkt8`；当前下载中心与PVsyst设计/天气正文run `a8DPpylPLWFIkEtoC` / dataset `RDd7EDnTx77cO9m96`；准确2024_C原件run `uvg94qOexVbBejTtK` / dataset `keYeKHGEcb7XDxnEQ`；电压选型正文run `GZI9eTp60cZeTrrLE` / dataset `sTR78Ex9xXxcFDNn9`；Trina O原件run `MvqRIQ2KHBaQlPPUr` / dataset `vHLKYMwxPHbGJq8N1`；SAJ原件run `RmgLwGgWNTqfWdGl8` / dataset `V3zQShVine1MtngNu`。Actor固定`website-content-crawler 0.3.101`；官方域名查询使用读取过当前schema的`google-search-scraper 0.0.468`。
 - SAJ首次文件读取出现流超时及下载交接，但KV中没有原件，未记为成功取证；随后隔离到单文件、放宽声明的文件MIME范围并增加请求时限，取得200、`application/pdf`和有效PDF原字节。其他PDF亦以实际文件记录/原字节为准，不以Actor的“SUCCEEDED”或主爬虫下载交接失败计数替代核验。下载副本和提取图仅作本节临时读取，完成后回收；没有新增仓库raw目录、测试矩阵、站点或运行实例。
+
+## 14. 无准确电气串联数时的具名I–V拟合（2026-10-26）
+
+本节收窄§13的缺项判断：**未知电气串联数不必阻断模块端口的单二极管估计；可以拟合复合量`a_ref=n×Ns×kTref/q`，保留`Ns`与`n`各自未知。** pvlib **0.16.1**已有无需`Ns`的公开入口`pvlib.ivtools.sdm.fit_desoto_batzelis`。这解决的是具名模型/初值来源，不能把估计参数写成厂商PAN，也没有证明本Trina变体的温度/低照外推精度。热态MPP可以据此产生带条件的模型结果；其工程放行仍须下面的独立检查及§13设计边界。
+
+### 14.1 已发表方法与公开API的准确边界
+
+[固定0.16.1源码](https://pvlib-python.readthedocs.io/en/v0.16.1/_modules/pvlib/ivtools/sdm/desoto.html)、[fit_desoto文档](https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto.html)证实：`cells_in_series`只参与默认初值`a_0=1.5×k×Tref×cells_in_series`，并由此生成`Io_0/Rs_0`；随后公开的`init_guess`可覆盖全部五个初值。真正送入root的`specs`没有`Ns`，未知向量为`IL,Io,Rs,Rsh,a_ref`。五个条件是STC短路、开路、给定MPP、MPP功率导数为零，以及按`beta_voc`构造`Tref+2 K`的开路点。故能识别的量是模块复合`a_ref`，不能由它唯一反推出`Ns`或`n`；这也是本站从上述方程得出的可识别性判断。后续[calcparams_desoto](https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.pvsystem.calcparams_desoto.html)公开接口同样消费`a_ref`，无需独立`Ns`。
+
+该版`fit_desoto`实际引用Duffie/Beckman《Solar Engineering of Thermal Processes》第4版（2013，DOI `10.1002/9781118671603`）与[De Soto等2006论文](https://doi.org/10.1016/j.solener.2005.06.010)，没有引用Sera。源码还明确提醒原论文MPP导数式有符号错误，并采用修正表达式；不能仅凭论文中的旧式或函数私有helper的过时参数顺序注释复写。此处核的是实际函数体与公开接口，没有把未取得的教科书全文记为已核验。
+
+更干净的现成入口是[fit_desoto_batzelis](https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto_batzelis.html)：只需`v_mp,i_mp,v_oc,i_sc,alpha_sc,beta_voc`，返回`a_ref/I_L_ref/I_o_ref/R_s/R_sh_ref/alpha_sc`。其公开源码先将温度系数归一化，再用`T0=298.15 K`、`delta0=(1−beta_norm×T0)/(50.1−alpha_norm×T0)`和Lambert W表达式提取参数。它是解析近似方法，不等于上面五方程的精确数值根；固定STC、50.1等也属于该具名方法的假设，不能登记为Trina事实。
+
+该入口所引[Batzelis 2017，DOI 10.1109/JPHOTOV.2017.2711431](https://ieeexplore.ieee.org/document/7950901)与[Batzelis/Papathanassiou 2016，DOI 10.1109/TSTE.2015.2503435](https://ieeexplore.ieee.org/document/7355389)的出版社摘要明确说明：以数据手册和温度系数提出晶硅组件的解析表达式，并以仿真与商业组件户外测量验证。**这些论文的实例验证不能移作本Trina TOPCon变体的精度证明。** 本轮取得的是公开摘要和官方实现；IEEE全文要求登录/购买，Southampton作者存档返回401，未绕过访问限制，也未声称已逐式审阅两篇全文。另取得De Soto的[2004原始学位论文](https://minds.wisc.edu/items/d4f06898-5da6-402b-8991-312f3ddac8a5)，其模型和部分温度换算与后续实现有差异，因此不拿2004前稿替代2006期刊版的逐式证据。
+
+### 14.2 本Trina输入、可复算路径与拟合接受条件
+
+输入仍来自§13相同Woo托管`TSM_EN_2024_C`原件，SHA256 `f4d280f9a0d89475cf575fbb99906e2b091da27f08b848fc51877cc1d24e8e22`，准确型号`TSM-460NEG9R.28`；本节只重读已有文件，没有改Woo或新建产品事实源。
+
+| 输入层 | 固定数值与使用方式 |
+| --- | --- |
+| STC额定点 | `Vmp=45.4 V, Imp=10.14 A, Voc=53.8 V, Isc=10.81 A`，`Gref=1000 W/m²,Tcell_ref=25°C`；`Vmp×Imp=460.356 W`与标称460 W的舍入分别保留 |
+| 供拟合的绝对系数 | `alpha_sc=10.81×0.0004=0.004324 A/K`；`beta_voc=53.8×(−0.0024)=−0.12912 V/K`，百分数不能直接填API |
+| 保留作独立诊断 | `gamma_Pmax=−0.0029/K`；NOCT的`Pmp=352 W,Vmp=42.7 V,Imp=8.25 A,Voc=51.0 V,Isc=8.71 A`；不得先拿来校准又称其独立验证 |
+| 模型而非产品事实 | `EgRef/dEgdT`及参数随温度/辐照缩放规则须显式固定并同拟合版本保存。若选择pvlib硅默认`1.121 eV/−0.0002677 K⁻¹`，标记为De Soto模型假设，且拟合和calcparams必须使用同一组值 |
+
+直接使用公开`fit_desoto_batzelis`可避免任何假设电气串联数。若再用`fit_desoto`公开`init_guess/root_kwargs`细化，必须记录五个实际初值、求解器及尺度，并说明它是否真解到该五方程；将Batzelis输出映射为这五个初值属于本站实现选择。`fit_desoto`仍有必填`cells_in_series`参数，且在覆盖前先计算默认`Io/Rs`，所以随便塞1会有下溢/溢出风险。合成的数值种子参数不得写回`Ns`，更不能把144或144÷2登记为已核实电路结构。单独实现复合参数的约束求解也须另报其方程/尺度与验收，不能称为pvlib已有的公开无`Ns`数值root接口。
+
+pvlib明确警告数值root不约束变量，电阻可能为负。本站接受检查因此必须独立于`OptimizeResult.success`：全部输出有限，`IL>0,Io>0,a_ref>0,Rsh>0,Rs≥0`；按具名方法重新计算原始/归一化方程残差、STC开路/短路/MPP及曲线第一象限/MPP极值。解析近似应报告实际偏差；数值根应达到声明的数值容差。容差是软件验收选择，不能包装成厂商测量准确度。出现负电阻、大残差、NaN或非物理曲线时拒绝该候选；不能靠求解器成功标志或clamp把它变成可用参数。多个初值所得根不同也须暴露，不宣称唯一性或可辨识的电池片拓扑。
+
+### 14.3 用gamma与NOCT排除错误外推，不以拟合点自证
+
+`fit_desoto`与`fit_desoto_batzelis`都未消费`gamma_Pmax`或NOCT表，所以这些是已有资料内可复用的留出诊断。至少比较固定`G=1000 W/m²,Tcell≈25°C`处模型`(1/Pmp)×dPmp/dT`与`−0.0029/K`，并说明微分步长、所用参考Pmp及数据舍入；`beta_voc`只约束开路变化，不能证明MPP温度变化也正确。无需再采一组重复STC输入来替代这个检查。
+
+同一原件明确NOCT条件为`800 W/m²、环境20°C、风1 m/s`，温度额定表为**电池片NOCT43±2°C**。I–V电模型应在`G=800,Tcell=43°C`并传播`41–45°C`这一来源温度区间，比较全部NOCT端点与MPP，不能将环境20°C直接当电池片温度，亦不能无记录改为45°C。上述独立表值若与模型不符，是外推、模型假设或参数化不适用的证据；保留偏差及原因，不能先加经验修正抹平再宣称通过。
+
+手册STC脚注的测量公差`±3%`不自动等于所有NOCT点、温度系数和外推域均获±3%认证。NOCT表是厂商舍入的额定值，温度也有区间；一次与其相符只构成有限一致性检查，不能证明低照全曲线、极热/极冷MPP、局部遮挡/旁路二极管、老化或现场安装的预测误差。若gamma/NOCT不一致，仍可输出明确模型和条件下的结果及证据缺项；不得据此为热态MPPT安全/运行域盖章。冷态绝对Voc继续独立使用§13厂商公式与项目设计温度，不被拟合模型取代。
+
+### 14.4 本节取证与交接边界
+
+所有新增外部搜索/读取经Apify；未写新raw目录、未安装库、未启动实例、未跑产品/应用测试。Actor固定`website-content-crawler 0.3.101`与`google-search-scraper 0.0.468`。可复查读取为：源码/原公开API run `TsgmgJZNLuhIDWQpD` / dataset `oQJwV72AdmaykCuEK`；Batzelis公开API run `w0MvRcweZWZvvv5eu` / dataset `UHObzUXozfhgf5KPm`；IEEE2016摘要run `eblR8hTKI0cgMXIKP` / dataset `ODFW0Xoc6UuvwnQ2m`；IEEE2017摘要与De Soto2004原件run `Js5g22gDyxE8ZIahE` / dataset `5yIzHBUFVaH2s3UYQ`（PDF原字节在其KV，未留本地重复副本）。搜索run `wpvqaxBvuMEQVLEpl`、`CQ0zXC9ixaR2e1zlt`、`26y5RHVr6o9NuhjYO`、`c0XJJzgbwTDlCEuSL`只用于定位原始出处，不将摘要搜索结果当全文。
+
+| 本节实际使用的原始来源 | SHA256（HTML页为Apify markdown UTF-8正文；PDF为原字节） |
+| --- | --- |
+| pvlib0.16.1 `desoto.py`官方源码页 | `f8bda17bf61452f0e37fa79a0906d95f425c924a74236af81e79107ed097931c` |
+| pvlib0.16.1 `fit_desoto_batzelis`公开API页 | `2e89f537ce3c10a0c542799161ad68d03db956bf62e44d0f3d48bfa5d6fe59c8` |
+| pvlib0.16.1 `calcparams_desoto`公开API页 | `df9a576fcc0754c61ab4974f1143121a80e422ae2043b346cd8339a71e086208` |
+| IEEE2016出版社公开摘要页 | `5b3fdf8ad7f1219f3123cf22b877764fb31e3a24b10de9af03608fd42c5074e1` |
+| IEEE2017出版社公开摘要页 | `0f3e9dae16f86c4db18e010fa5b357feac659f5d01744abded6acebcabe3ae58` |
+| De Soto2004学位论文，235页、1858692 bytes | `516046f3a69976d7fe63fae4f505041586091b883466a205bbc627f6e27db711` |
+
+本节已解除“必须先知道`Ns`才能计算模块I–V”的方法阻塞；**没有登记新的厂商参数，没有接受任何未经检查的实际拟合，也没有把方法可用写成此型号/本站实现已验收。** 实现可立即消费同一Woo数据、具名方法及显式模型假设，完成本层数值和留出诊断后再报告实际可用域。

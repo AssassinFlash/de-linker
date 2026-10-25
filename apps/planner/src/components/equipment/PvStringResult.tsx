@@ -1,5 +1,7 @@
 import type { JsonObject } from "../../data/protocol.ts";
 import { __ } from "../../i18n.ts";
+import { readObject } from "../../data/readProtocol.ts";
+import { PvOperatingResult } from "./PvOperatingResult.tsx";
 
 export function PvStringResult({
 	value,
@@ -69,6 +71,13 @@ export function PvStringResult({
 					</tbody>
 				</table>
 			</div>
+			{value.operating && (
+				<PvOperatingResult
+					value={readObject(value.operating)}
+					strings={rows}
+					locale={locale}
+				/>
+			)}
 		</section>
 	);
 }

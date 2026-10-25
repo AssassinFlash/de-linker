@@ -8,7 +8,7 @@ dependencies = [
     "fastapi>=0.143.0",
     "jsonschema>=4.23",
     "pillow>=12.3.0",
-    "pvlib>=0.13",
+    "pvlib>=0.16.1",
     "pyproj>=3.7",
     "python-multipart>=0.0.20",
     "reportlab>=4.4",
@@ -48,8 +48,9 @@ strict = true
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-# pvlib ships neither type hints nor a py.typed marker (0.16.1).
-module = ["pvlib.*"]
+# These locked scientific imports do not ship usable typing markers/stubs.
+# Keep the exception at the third-party boundary; model values are checked.
+module = ["pvlib.*", "scipy.constants"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

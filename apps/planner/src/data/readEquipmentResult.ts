@@ -1,30 +1,15 @@
+import { readPvOperatingResult } from "./readPvOperatingResult.ts";
 import type { JsonObject } from "./protocol.ts";
 import { ApiError } from "./protocol.ts";
 import { readObject } from "./readProtocol.ts";
 import { sameJson } from "../domain/draft.ts";
+import { documentReference } from "./documentReference.ts";
+
+export { documentReference } from "./documentReference.ts";
 
 export const EQUIPMENT_TASK = "qualify_woo_equipment_v1";
 const status = (s: unknown) =>
 	["satisfied", "violated", "unresolved"].includes(String(s));
-export function documentReference(value: unknown, requirePage = false) {
-	const source = readObject(value);
-	if (
-		typeof source.url !== "string" ||
-		((requirePage || source.page != null) &&
-			(typeof source.page !== "number" ||
-				!Number.isSafeInteger(source.page) ||
-				source.page < 1))
-	)
-		throw new ApiError(502, "invalid_run_result");
-	const url = new URL(source.url);
-	if (
-		url.protocol !== "https:" ||
-		!["de-linker.com", "www.de-linker.com"].includes(url.hostname) ||
-		url.username ||
-		url.password
-	)
-		throw new ApiError(502, "invalid_run_result");
-}
 export function readEquipmentResult(
 	value: unknown,
 	run: JsonObject,
@@ -97,7 +82,9 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 		const pv = readObject(assessment.pv_electrical);
 		if (
 			pv.schema_version !== 1 ||
-			pv.method !== "woo_layout_linear_voc_stc_v1" ||
+			!["woo_layout_linear_voc_stc_v1", "woo_layout_electrical_v2"].includes(
+				String(pv.method),
+			) ||
 			!Array.isArray(pv.strings)
 		)
 			throw new ApiError(502, "invalid_run_result");
@@ -119,6 +106,8 @@ export function readEquipmentAssessment(value: unknown): JsonObject {
 			)
 				throw new ApiError(502, "invalid_run_result");
 		}
+		if (pv.operating !== undefined)
+			readPvOperatingResult(pv.operating, pv.strings as JsonObject[]);
 	}
 	for (const value of assessment.checks) {
 		const check = readObject(value);

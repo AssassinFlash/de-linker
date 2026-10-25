@@ -128,7 +128,7 @@ export function EquipmentResult({
 							stringNumber = stringNumbers.get(suffix);
 						const prefix = stringNumber
 							? `${__("String", "linker-tools")} ${stringNumber} · `
-							: /^(pv_stc_current|pv_stc_isc|pv_parallel_match|pv_parallel_count):/.test(
+							: /^(pv_stc_current|pv_stc_isc|pv_parallel_match|pv_parallel_count|pv_hot_current|pv_cold_current|pv_hot_isc|pv_cold_isc):/.test(
 										String(check.id),
 								  )
 								? `MPPT ${suffix} · `

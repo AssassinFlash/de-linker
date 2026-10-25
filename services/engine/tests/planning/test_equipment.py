@@ -1224,7 +1224,7 @@ def test_search_enumerates_documented_counts_and_keeps_budget_exhaustion_visible
 
 
 def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
-    feed: dict, engine: Engine
+    feed: dict, engine: Engine, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """One wiring representative: series voltage, parallel current and stale IDs."""
     from linker_engine.planning.geometry import panel_poses, read_geometry
@@ -1274,6 +1274,74 @@ def test_roof_string_plan_uses_cited_woo_facts_and_keeps_design_gaps(
     assessment = assess_equipment(value, basis)
     assert assessment["pv_electrical"] == result
     assert assessment["overall_status"] != "satisfied"
+    operating_value = copy.deepcopy(value)
+    operating_value["pv_string_plan"]["operating_conditions"] = {
+        "irradiance_w_m2": 1000,
+        "hot_cell_c": 60,
+        "cold_cell_c": 20,
+        "source_note": "Explicit synthetic uniform operating cases, not site extremes",
+    }
+    operating = assess_equipment(operating_value, basis)["pv_electrical"]["operating"]
+    model = operating["model"]
+    assert model["status"] == "available"
+    assert len(operating["points"]) == 4
+    assert all(
+        p["v_mp_v"] < 6 * 45.4 for p in operating["points"] if p["case"] == "hot"
+    )
+    assert all(
+        p["v_mp_v"] > 6 * 45.4 for p in operating["points"] if p["case"] == "cold"
+    )
+    assert model["diagnostics"]["stc"]["v_mp"] == pytest.approx(45.4)
+    assert model["diagnostics"]["stc"]["i_mp"] == pytest.approx(10.14)
+    assert model["diagnostics"]["noct"]["cell_c_interval"] == [41, 45]
+    assert model["diagnostics"]["noct"]["declared_p_mp_w"] == 352
+    assert "cells_in_series" not in model["parameters"]
+    presentation = build_report(
+        {
+            "locale": "en",
+            "title": "Wiring model fixture",
+            "project_id": "a" * 32,
+            "revision": 1,
+            "generated_at": "2026-10-26T00:00:00+00:00",
+            "source_runs": [],
+            "equipment": assess_equipment(operating_value, basis),
+        }
+    )
+    assert any(section.id == "pv-operating" for section in presentation.sections)
+    assert any(
+        "e-12" in row.value for section in presentation.sections for row in section.rows
+    )
+    op_checks = {c["id"]: c for c in operating["checks"]}
+    assert op_checks["pv_model_applicability"]["status"] == "unresolved"
+    assert op_checks["pv_hot_current:1"]["actual"] < op_checks["pv_hot_isc:1"]["actual"]
+    invalid_conditions = copy.deepcopy(operating_value)
+    invalid_conditions["pv_string_plan"]["operating_conditions"]["hot_cell_c"] = 100
+    outside = assess_equipment(invalid_conditions, basis)["pv_electrical"]["operating"]
+    assert outside["points"] == []
+    assert (
+        next(c for c in outside["checks"] if c["id"] == "pv_operating_conditions")[
+            "status"
+        ]
+        == "violated"
+    )
+    # Reuse the valid fitted result to guard the observed success=True /
+    # negative-resistance failure; do not rerun a root for this failure fixture.
+    from linker_engine.planning import pv_iv_model
+    from linker_engine.planning.equipment_facts import compile_facts
+
+    with monkeypatch.context() as patch:
+        patch.setattr(
+            pv_iv_model,
+            "fit_desoto",
+            lambda *args, **kwargs: (
+                {**model["parameters"], "R_s": -1},
+                SimpleNamespace(success=True, fun=[0, 0, 0, 0, 0]),
+            ),
+        )
+        assert (
+            pv_iv_model.derive_iv_model(compile_facts(reference))["status"]
+            == "unavailable"
+        )
     without_target = copy.deepcopy(value)
     without_target["equipment_selection"]["pv_dc_kw"] = None
     no_target_assessment = assess_equipment(without_target, basis)

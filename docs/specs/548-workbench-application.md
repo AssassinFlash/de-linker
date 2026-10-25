@@ -423,3 +423,45 @@ The batch closes after one cited wiring representative and its failure boundarie
 changed-file type/lint/build checks, independent delta reviews and affected native
 save → equipment task → report/PDF views. Unchanged physics/commerce evidence is
 reused; no annual energy replay or full-site matrix is added.
+
+### Cited compound I–V model and operating cases
+
+Optional `pv_string_plan.operating_conditions` retains effective irradiance,
+hot/cold cell temperatures and their project/mounting basis, with nulls allowed
+while a project is being developed. No site extreme or mounting coefficient is
+filled in. The original minimum ambient temperature remains a separate cold-Voc
+input. Module operating-temperature limits and cold≤hot are checked explicitly.
+
+The exact cited Woo STC Voc/Isc/Vmpp/Impp and Voc/Isc temperature coefficients,
+plus a cited crystalline-cell basis, feed the public pvlib Batzelis estimator.
+All five initial values then seed public De Soto refinement. The library's
+required initialization argument is a numerical surrogate only; all five seeds
+are overridden, no physical cell-series count is inferred, and the fit retains
+its numerical settings, model assumptions and runtime identity. Acceptance
+requires finite physical parameters, residual checks and STC curve readback;
+solver success alone cannot authorize estimates. Details and primary sources
+are in NUMERICAL-MODELS.md §14. The pinned API floor is pvlib0.16.1; no dependency
+environment or unrelated runtime is added.
+
+Hot/cold MPP estimates are compared with the cited MPPT window at the explicitly
+stated uniform effective irradiance and cell temperatures. Model current sums
+require equal parallel string length/orientation; short-circuit points stay
+distinct. These are named operating cases, not all-weather maxima, shading
+simulations, a protection design or manufacturer/country qualification. Fit
+precision does not become physical accuracy. Source gamma and NOCT are held-out
+diagnostics: differences, source cell-temperature interval and reference
+irradiance are visible, without a fabricated pass tolerance or factory stamp.
+
+The frozen result carries the model parameters/input facts, points, assumptions,
+numerical residual/tolerance and diagnostics. Screen and EN/DE PDF consume that
+same object; small diode currents retain scientific notation. Sources link to
+the maintained documents and versioned method references. Missing inputs,
+unadmissible fit or out-of-domain conditions retain the independent cold-Voc/STC
+results with named unresolved/violated checks. Legacy v1 saved results remain
+readable; optional operating output has an explicit v2 method tag.
+
+This batch reuses prior saved energy and handoff/source-policy evidence. Its
+verification is one existing wiring representative extended for the new model,
+known false-success/negative-resistance rejection, domain/optional-schema checks,
+necessary changed-layer type/build checks, independent delta reviews and the
+new native operating/report views. No annual replay or full-site matrix repeats.

@@ -8,6 +8,7 @@ from linker_engine.models import Report, ReportRow, ReportSection, ReportTable
 
 from .canonical import Object
 from .comparison_report import comparison_sections
+from .pv_operating_report import operating_sections
 from .report_copy import TEXT, check_label, text
 
 
@@ -106,6 +107,12 @@ def build_report(source: Object) -> Report:
                     ),
                 )
             )
+        if isinstance(pv_wiring, dict) and isinstance(pv_wiring.get("operating"), dict):
+            sections.extend(
+                operating_sections(
+                    cast(Object, pv_wiring["operating"]), wiring_rows, locale
+                )
+            )
         sections.append(
             ReportSection(
                 id="equipment",
@@ -170,7 +177,7 @@ def build_report(source: Object) -> Report:
                 )
             seen: set[tuple[str, int | None]] = set()
             for fact in check["facts"]:
-                cited = fact.get("source", {})
+                cited = fact.get("source") or {}
                 url = cited.get("url")
                 page = cited.get("page")
                 if isinstance(url, str) and (url, page) not in seen:
@@ -195,6 +202,10 @@ def build_report(source: Object) -> Report:
                 "pv_stc_isc",
                 "pv_parallel_match",
                 "pv_parallel_count",
+                "pv_hot_current",
+                "pv_cold_current",
+                "pv_hot_isc",
+                "pv_cold_isc",
             }:
                 check_title = f"MPPT {suffix} · {check_title}"
             sections.append(

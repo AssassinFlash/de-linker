@@ -727,3 +727,44 @@ bounded checks, before/after assets and remaining full-goal work. Other revision
 inputs and the protected roof were preserved. Full installation BOM, manufacturer/
 country qualification, remaining site consumers, migration and review/production
 release remain active; this local batch does not close the complete goal.
+
+## 2026-10-26 · Declared operating cases and source-derived I–V model
+
+The owned p548 HTTP/worker pair is `2eb6d4aa`, storage schema 5, with
+`ec83abb0` as its single rollback. The same Woo source `ee916454` supplies
+all module and equipment facts; no second product source or runtime research
+service was introduced. The public Batzelis initializer seeds all five inputs
+of the public De Soto fit. Numerical admissibility and STC readback gate the
+fit; no physical cell-series count is guessed. Declared uniform irradiance and
+hot/cold cell temperatures produce separate MPP/current checks, while cold Voc,
+complete design current/protection, model applicability and country release
+retain their own scope. Held-out power coefficient and NOCT power/temperature
+comparisons show discrepancies without declaring manufacturer accuracy.
+
+Berlin is revision 22. Equipment run `6d5c7169efc24bb297691f23964daf4c`
+retains the two existing 12-module strings at 1000 W/m², hot cells 60 °C and
+cold cells 20 °C. These are explicitly entered example conditions, not measured
+site extrema. Each string gives modeled Vmpp 487.173 V hot and 553.062 V cold.
+The original energy run `4a89969354884bb79292f9ca000574c4` was reused.
+EN report `ec887a951fc4449cbf66bd419edaa444` and DE report
+`d7c9f76a6736479b8e560b234a53aa61` were each generated once. Both native PDF
+downloads match the immutable assets, retain small diode current in scientific
+notation, and the affected first pages were inspected. Original PDFs and two
+new UI views are in the existing acceptance directory; temporary renders were
+removed. A prior executable carrier was retired; only current plus rollback
+remain, sharing the retained environment.
+
+Full-increment Spec/Standards/copy reviews were reused. Their two P2s were fixed:
+zero irradiance remains local and blocks save/check; displayed model citations
+use the shared source validator. Native readback then exposed a real report
+reader omission: its site-only link rule rejected fixed public-method links.
+Only three exact versioned URLs in the model-method section are now permitted;
+other source restrictions remain. The existing contract representative was
+extended and passed, then the original reports were read and downloaded without
+regeneration. No annual, Woo/knowledge or commerce matrix was repeated.
+
+The shared Woo source owner's latest conversation confirms production readback
+and closure. A direct authorized notification confirms that planner-wide testing
+is not a prerequisite for that line. Further work continues under the existing
+full goal; no local increment is presented as production or complete-system
+approval. Close the validated increment and proceed to actual remaining delivery.

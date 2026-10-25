@@ -566,7 +566,7 @@ requires-dist = [
     { name = "fastapi", specifier = ">=0.143.0" },
     { name = "jsonschema", specifier = ">=4.23" },
     { name = "pillow", specifier = ">=12.3.0" },
-    { name = "pvlib", specifier = ">=0.13" },
+    { name = "pvlib", specifier = ">=0.16.1" },
     { name = "pyproj", specifier = ">=3.7" },
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "reportlab", specifier = ">=4.4" },

@@ -248,7 +248,23 @@ def assess_pv_strings(inputs: Object, basis: Object) -> Object:
             else "unresolved",
             reason="parallel_strings_length_and_orientation",
         )
-    add("pv_operating_temperatures", reason="hot_and_cold_mpp_model_required")
+    operating: Object | None = None
+    if plan.operating_conditions is not None:
+        from .pv_operating_assessment import assess_operating_conditions
+
+        operating = assess_operating_conditions(
+            plan.operating_conditions,
+            rows,
+            mf,
+            inv,
+            {
+                tracker: len(set(strings)) == 1 and len(strings[0][1]) == 1
+                for tracker, strings in tracker_strings.items()
+            },
+        )
+        checks.extend(cast(list[Json], operating["checks"]))
+    else:
+        add("pv_operating_temperatures", reason="hot_and_cold_mpp_model_required")
     add("pv_design_current", reason="design_irradiance_and_rating_rules_required")
     add(
         "pv_wiring_protection",
@@ -256,7 +272,9 @@ def assess_pv_strings(inputs: Object, basis: Object) -> Object:
     )
     return {
         "schema_version": 1,
-        "method": "woo_layout_linear_voc_stc_v1",
+        "method": "woo_layout_electrical_v2"
+        if operating is not None
+        else "woo_layout_linear_voc_stc_v1",
         "minimum_ambient_c": plan.minimum_ambient_c,
         "temperature_source": plan.temperature_source,
         "strings": rows,
@@ -264,4 +282,5 @@ def assess_pv_strings(inputs: Object, basis: Object) -> Object:
         "assigned_modules": len(assigned),
         "included_modules": len(poses),
         "nameplate_kwp": float(total_wp / 1000),
+        **({"operating": operating} if operating is not None else {}),
     }

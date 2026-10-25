@@ -3,6 +3,151 @@
 from __future__ import annotations
 
 TEXT = {
+    "pv_fitting_method": ("Fitting method", "Anpassungsmethode"),
+    "pv_refinement_method": ("Numerical refinement", "Numerische Verfeinerung"),
+    "pv_translation_method": ("Temperature translation", "Temperaturumrechnung"),
+    "pv_numerical_tolerance": (
+        "Numerical fit tolerance",
+        "Numerische Anpassungstoleranz",
+    ),
+    "pv_noct_irradiance": (
+        "NOCT reference irradiance",
+        "NOCT-Referenzbestrahlungsstärke",
+    ),
+    "pv_noct_cell_interval": (
+        "NOCT cell-temperature interval",
+        "NOCT-Zelltemperaturintervall",
+    ),
+    "pv_operating_title": (
+        "Modeled electrical operating points",
+        "Modellierte elektrische Arbeitspunkte",
+    ),
+    "pv_operating_scope": (
+        "These estimates use a fitted single-diode model at the stated uniform module conditions. They do not include shading or establish manufacturer performance, design extremes, protection ratings or country approval.",
+        "Diese Schätzwerte beruhen auf einem angepassten Eindiodenmodell bei den angegebenen einheitlichen Modulbedingungen. Sie berücksichtigen keine Verschattung und belegen weder die Leistungsangaben des Herstellers noch Auslegungsextreme, Schutzbemessungen oder eine Länderfreigabe.",
+    ),
+    "pv_operating_incomplete": (
+        "Operating conditions and their source are incomplete.",
+        "Betriebsbedingungen und deren Quelle sind noch unvollständig.",
+    ),
+    "pv_iv_unavailable": (
+        "The maintained module data did not produce an admissible I–V model. The cold-Voc and STC checks remain available.",
+        "Aus den gepflegten Moduldaten konnte kein zulässiges I–V-Modell ermittelt werden. Die Prüfungen der Leerlaufspannung bei Kälte und unter STC bleiben verfügbar.",
+    ),
+    "pv_effective_irradiance": ("Effective irradiance", "Effektive Bestrahlungsstärke"),
+    "pv_hot_cell": (
+        "Hot operating cell temperature",
+        "Zelltemperatur bei heißem Betrieb",
+    ),
+    "pv_cold_cell": (
+        "Cold operating cell temperature",
+        "Zelltemperatur bei kaltem Betrieb",
+    ),
+    "pv_case": ("Case", "Betriebsfall"),
+    "pv_hot_case": ("Hot operating case", "Heißer Betriebsfall"),
+    "pv_cold_case": ("Cold operating case", "Kalter Betriebsfall"),
+    "pv_model_details": (
+        "Model, inputs and datasheet comparisons",
+        "Modell, Eingaben und Datenblattvergleiche",
+    ),
+    "pv_model_scope": (
+        "Batzelis initialization and De Soto fitting use the saved STC points and temperature coefficients. The fitted compound parameters do not identify the physical cell-series count. Numerical fit precision is separate from physical accuracy.",
+        "Die Initialisierung nach Batzelis und die Anpassung nach De Soto verwenden die gespeicherten STC-Punkte und Temperaturkoeffizienten. Aus den angepassten zusammengesetzten Parametern lässt sich die physische Anzahl der in Reihe geschalteten Zellen nicht bestimmen. Die numerische Anpassungsgenauigkeit ist von der physikalischen Genauigkeit zu unterscheiden.",
+    ),
+    "pv_model_identity": ("Model reference", "Modellreferenz"),
+    "pv_fitted_parameters": ("Fitted model parameters", "Angepasste Modellparameter"),
+    "pv_value": ("Value", "Wert"),
+    "pv_cell_technology": ("Cell technology", "Zelltechnologie"),
+    "pv_eg_assumption": (
+        "Silicon bandgap assumption",
+        "Annahme zur Bandlücke von Silizium",
+    ),
+    "pv_deg_assumption": (
+        "Bandgap temperature assumption",
+        "Annahme zur Temperaturabhängigkeit der Bandlücke",
+    ),
+    "pv_numerical_residual": (
+        "Relative numerical residual",
+        "Relatives numerisches Residuum",
+    ),
+    "pv_gamma_declared": (
+        "Declared power temperature coefficient",
+        "Angegebener Temperaturkoeffizient der Leistung",
+    ),
+    "pv_gamma_model": (
+        "Model power temperature coefficient",
+        "Temperaturkoeffizient der Leistung im Modell",
+    ),
+    "pv_datasheet_comparisons": ("Datasheet comparisons", "Datenblattvergleiche"),
+    "pv_diagnostics_scope": (
+        "The power coefficient and NOCT values were not fitting targets. These comparisons show differences; they do not certify extrapolation accuracy.",
+        "Der Leistungskoeffizient und die NOCT-Werte waren keine Zielgrößen der Anpassung. Die Vergleiche zeigen Abweichungen; sie bestätigen keine Extrapolationsgenauigkeit.",
+    ),
+    "pv_noct_cell": (
+        "Declared NOCT cell temperature",
+        "Angegebene NOCT-Zelltemperatur",
+    ),
+    "pv_noct_declared_power": ("Declared NOCT power", "Angegebene NOCT-Leistung"),
+    "pv_noct_model_power": (
+        "Model power at nominal NOCT",
+        "Modellleistung bei nominaler NOCT",
+    ),
+    "pv_noct_model_limits": (
+        "Model powers at the NOCT temperature limits",
+        "Modellleistungen an den NOCT-Temperaturgrenzen",
+    ),
+    "derived_iv_model_with_numerical_readback": (
+        "The fitted parameters reproduce the supplied STC points within the stated numerical tolerance. This is a numerical check, not a manufacturer performance validation.",
+        "Die angepassten Parameter reproduzieren die vorgegebenen STC-Punkte innerhalb der angegebenen numerischen Toleranz. Dies ist eine numerische Prüfung und keine Validierung der Leistungsangaben des Herstellers.",
+    ),
+    "manufacturer_iv_performance_validation_required": (
+        "The fit does not establish model accuracy for this exact module over its operating range. Validation against manufacturer performance data remains required.",
+        "Die Anpassung belegt nicht, wie genau das Modell diesen Modultyp über seinen Betriebsbereich abbildet. Eine Validierung anhand von Leistungsdaten des Herstellers ist weiterhin erforderlich.",
+    ),
+    "operating_cell_conditions_required": (
+        "Effective irradiance, hot and cold cell temperatures and their project basis are required for the operating-point calculation.",
+        "Für die Arbeitspunktberechnung sind die effektive Bestrahlungsstärke, die heißen und kalten Zelltemperaturen und deren Projektgrundlage erforderlich.",
+    ),
+    "operating_cell_conditions_outside_domain": (
+        "The cold cell temperature must not exceed the hot value, and both must lie within the cited module temperature range.",
+        "Die kalte Zelltemperatur darf den heißen Wert nicht überschreiten. Beide Werte müssen im belegten Temperaturbereich des Moduls liegen.",
+    ),
+    "declared_uniform_irradiance_and_cell_conditions": (
+        "The calculation applies the stated effective irradiance uniformly to the modules at each declared cell temperature.",
+        "Die Berechnung verwendet die angegebene effektive Bestrahlungsstärke einheitlich für die Module bei der jeweils angegebenen Zelltemperatur.",
+    ),
+    "modeled_mpp_at_declared_cell_condition": (
+        "This compares the modeled MPP voltage at the declared case with the documented MPPT window. Other irradiance, temperature and shading conditions require their own assessment.",
+        "Verglichen wird die modellierte MPP-Spannung im angegebenen Betriebsfall mit dem dokumentierten MPPT-Bereich. Andere Bestrahlungs-, Temperatur- und Verschattungsbedingungen müssen gesondert geprüft werden.",
+    ),
+    "modeled_parallel_current_at_declared_conditions": (
+        "Parallel currents are modeled at the declared uniform case. These points do not replace design-current or protection-rating checks.",
+        "Die Parallelströme werden für den angegebenen einheitlichen Betriebsfall modelliert. Diese Arbeitspunkte ersetzen keine Prüfung des Auslegungsstroms oder der Schutzbemessung.",
+    ),
+    "parallel_operating_mpp_requires_matching_strings": (
+        "Different parallel string lengths or orientations do not establish a common operating MPP. The operating-current sum is therefore unresolved.",
+        "Unterschiedliche Längen oder Ausrichtungen paralleler Strings belegen keinen gemeinsamen MPP. Die Summe der Betriebsströme bleibt deshalb ungeklärt.",
+    ),
+    "module_operating_curve_not_admissible": (
+        "The model did not produce a finite, physically admissible operating curve for these conditions.",
+        "Das Modell lieferte für diese Bedingungen keine endliche, physikalisch zulässige Betriebskennlinie.",
+    ),
+    "module_iv_inputs_missing": (
+        "The model requires STC Voc, Isc, Vmpp and Impp values, plus the Voc and Isc temperature coefficients, from the maintained module record with source references.",
+        "Das Modell benötigt Voc, Isc, Vmpp und Impp unter STC sowie die Temperaturkoeffizienten von Voc und Isc aus dem gepflegten Moduldatensatz, jeweils mit Quellenbeleg.",
+    ),
+    "crystalline_module_basis_missing": (
+        "The cited module record does not establish the crystalline-cell basis required by this model.",
+        "Der belegte Moduldatensatz bestätigt nicht die für dieses Modell erforderliche kristalline Zellgrundlage.",
+    ),
+    "module_iv_points_inconsistent": (
+        "The supplied STC current or voltage points are inconsistent with a physical single-diode curve.",
+        "Die angegebenen STC-Strom- oder Spannungspunkte sind mit einer physikalischen Eindiodenkennlinie nicht vereinbar.",
+    ),
+    "module_iv_fit_not_admissible": (
+        "The fitting result failed its physical or numerical checks. It is not used for operating estimates.",
+        "Das Anpassungsergebnis hat die physikalischen oder numerischen Prüfungen nicht bestanden. Es wird nicht für Betriebsschätzungen verwendet.",
+    ),
     "physical_input_map_requires_evidence": (
         "The input number identifies the proposed connection. A cited manufacturer connector map is still required.",
         "Die Eingangsnummer bezeichnet den geplanten Anschluss. Ein belegter Anschlussplan des Herstellers ist noch erforderlich.",
@@ -268,6 +413,40 @@ TEXT = {
 }
 
 CHECKS = {
+    "pv_iv_model": ("Single-diode model fit", "Anpassung des Eindiodenmodells"),
+    "pv_model_applicability": (
+        "Model applicability to this module",
+        "Anwendbarkeit des Modells auf dieses Modul",
+    ),
+    "pv_operating_conditions": (
+        "Operating-condition domain",
+        "Bereich der Betriebsbedingungen",
+    ),
+    "pv_operating_curve": ("Operating curve", "Betriebskennlinie"),
+    "pv_hot_mppt": (
+        "Modeled MPP voltage: hot case",
+        "Modellierte MPP-Spannung: heißer Betriebsfall",
+    ),
+    "pv_cold_mppt": (
+        "Modeled MPP voltage: cold case",
+        "Modellierte MPP-Spannung: kalter Betriebsfall",
+    ),
+    "pv_hot_current": (
+        "Modeled MPPT current: hot case",
+        "Modellierter MPPT-Strom: heißer Betriebsfall",
+    ),
+    "pv_cold_current": (
+        "Modeled MPPT current: cold case",
+        "Modellierter MPPT-Strom: kalter Betriebsfall",
+    ),
+    "pv_hot_isc": (
+        "Modeled short-circuit current: hot case",
+        "Modellierter Kurzschlussstrom: heißer Betriebsfall",
+    ),
+    "pv_cold_isc": (
+        "Modeled short-circuit current: cold case",
+        "Modellierter Kurzschlussstrom: kalter Betriebsfall",
+    ),
     "pv_parallel_count": ("Strings per MPPT", "Strings je MPPT"),
     "pv_layout_coverage": ("Roof module assignment", "Zuordnung der Dachmodule"),
     "pv_tracker": ("MPPT assignment", "MPPT-Zuordnung"),

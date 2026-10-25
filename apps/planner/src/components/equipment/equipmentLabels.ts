@@ -9,6 +9,27 @@ export function equipmentStatus(status: unknown): string {
 }
 export function equipmentCheckLabel(id: string): string {
 	switch (id.split(":")[0]) {
+		case "pv_iv_model":
+			return __("Single-diode model fit", "linker-tools");
+		case "pv_model_applicability":
+			return __("Model applicability to this module", "linker-tools");
+		case "pv_operating_conditions":
+			return __("Operating-condition domain", "linker-tools");
+		case "pv_operating_curve":
+			return __("Operating curve", "linker-tools");
+		case "pv_hot_mppt":
+			return __("Modeled MPP voltage: hot case", "linker-tools");
+		case "pv_cold_mppt":
+			return __("Modeled MPP voltage: cold case", "linker-tools");
+		case "pv_hot_current":
+			return __("Modeled MPPT current: hot case", "linker-tools");
+		case "pv_cold_current":
+			return __("Modeled MPPT current: cold case", "linker-tools");
+		case "pv_hot_isc":
+			return __("Modeled short-circuit current: hot case", "linker-tools");
+		case "pv_cold_isc":
+			return __("Modeled short-circuit current: cold case", "linker-tools");
+
 		case "pv_parallel_count":
 			return __("Strings per MPPT", "linker-tools");
 		case "pv_layout_coverage":
@@ -83,6 +104,72 @@ export function equipmentCheckLabel(id: string): string {
 	}
 }
 export function equipmentReason(reason: string): string | null {
+	if (reason === "derived_iv_model_with_numerical_readback")
+		return __(
+			"The fitted parameters reproduce the supplied STC points within the stated numerical tolerance. This is a numerical check, not a manufacturer performance validation.",
+			"linker-tools",
+		);
+	if (reason === "manufacturer_iv_performance_validation_required")
+		return __(
+			"The fit does not establish model accuracy for this exact module over its operating range. Validation against manufacturer performance data remains required.",
+			"linker-tools",
+		);
+	if (reason === "operating_cell_conditions_required")
+		return __(
+			"Effective irradiance, hot and cold cell temperatures and their project basis are required for the operating-point calculation.",
+			"linker-tools",
+		);
+	if (reason === "operating_cell_conditions_outside_domain")
+		return __(
+			"The cold cell temperature must not exceed the hot value, and both must lie within the cited module temperature range.",
+			"linker-tools",
+		);
+	if (reason === "declared_uniform_irradiance_and_cell_conditions")
+		return __(
+			"The calculation applies the stated effective irradiance uniformly to the modules at each declared cell temperature.",
+			"linker-tools",
+		);
+	if (reason === "modeled_mpp_at_declared_cell_condition")
+		return __(
+			"This compares the modeled MPP voltage at the declared case with the documented MPPT window. Other irradiance, temperature and shading conditions require their own assessment.",
+			"linker-tools",
+		);
+	if (reason === "modeled_parallel_current_at_declared_conditions")
+		return __(
+			"Parallel currents are modeled at the declared uniform case. These points do not replace design-current or protection-rating checks.",
+			"linker-tools",
+		);
+	if (reason === "parallel_operating_mpp_requires_matching_strings")
+		return __(
+			"Different parallel string lengths or orientations do not establish a common operating MPP. The operating-current sum is therefore unresolved.",
+			"linker-tools",
+		);
+	if (reason === "module_operating_curve_not_admissible")
+		return __(
+			"The model did not produce a finite, physically admissible operating curve for these conditions.",
+			"linker-tools",
+		);
+	if (reason === "module_iv_inputs_missing")
+		return __(
+			"The model requires STC Voc, Isc, Vmpp and Impp values, plus the Voc and Isc temperature coefficients, from the maintained module record with source references.",
+			"linker-tools",
+		);
+	if (reason === "crystalline_module_basis_missing")
+		return __(
+			"The cited module record does not establish the crystalline-cell basis required by this model.",
+			"linker-tools",
+		);
+	if (reason === "module_iv_points_inconsistent")
+		return __(
+			"The supplied STC current or voltage points are inconsistent with a physical single-diode curve.",
+			"linker-tools",
+		);
+	if (reason === "module_iv_fit_not_admissible")
+		return __(
+			"The fitting result failed its physical or numerical checks. It is not used for operating estimates.",
+			"linker-tools",
+		);
+
 	if (reason === "physical_input_map_requires_evidence")
 		return __(
 			"The input number identifies the proposed connection. A cited manufacturer connector map is still required.",

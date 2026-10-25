@@ -9,6 +9,7 @@ import type { PvStringPlan } from "../../domain/pvStrings.ts";
 import { __, sprintf } from "../../i18n.ts";
 import { NumberField } from "../NumberField.tsx";
 import { Notice } from "../Notice.tsx";
+import { PvOperatingSetup } from "./PvOperatingSetup.tsx";
 
 export function PvStringSetup({
 	draft,
@@ -52,7 +53,7 @@ export function PvStringSetup({
 	const validity = useMemo(
 		() =>
 			Object.fromEntries(
-				["temperature", "mppt", "port"].map((key) => [
+				["temperature", "mppt", "port", "operating"].map((key) => [
 					key,
 					(valid: boolean) =>
 						setFields((v) => (v[key] === valid ? v : { ...v, [key]: valid })),
@@ -240,6 +241,13 @@ export function PvStringSetup({
 							</button>
 						</div>
 					))}
+					<PvOperatingSetup
+						plan={plan}
+						change={change}
+						locale={locale}
+						disabled={disabled}
+						onValidity={validity.operating!}
+					/>
 					<h4>{__("Add a string", "linker-tools")}</h4>
 					<div className="lp-scenario-fields">
 						<NumberField

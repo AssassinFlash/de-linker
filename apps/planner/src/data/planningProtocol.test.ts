@@ -50,6 +50,28 @@ test("report output keeps serialized fields mandatory and old column layout opti
 		() => readPlanningReport(missing),
 		(error: unknown) => error instanceof ApiError && error.status === 502,
 	);
+	const methodSection = {
+		...report.sections[0],
+		id: "pv-iv-model",
+		rows: [
+			{
+				label: "Fitting method",
+				value: "Batzelis",
+				href: "https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto_batzelis.html",
+			},
+		],
+	};
+	assert.doesNotThrow(() =>
+		readPlanningReport({ ...report, sections: [methodSection] }),
+	);
+	for (const section of [
+		{ ...methodSection, id: "checks" },
+		{
+			...methodSection,
+			rows: [{ ...methodSection.rows[0], href: "https://example.com/method" }],
+		},
+	])
+		assert.throws(() => readPlanningReport({ ...report, sections: [section] }));
 });
 test("actual managed two-hour result retains frozen identity, source origins and analytic totals", () => {
 	const run = readRun(runJson, runJson.project_id, runJson.id);

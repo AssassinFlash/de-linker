@@ -20,6 +20,13 @@ class PvString(Document):
     ]
 
 
+class PvOperatingConditions(Document):
+    irradiance_w_m2: Annotated[float, Field(gt=0, allow_inf_nan=False)] | None
+    hot_cell_c: Annotated[float, Field(ge=-273.15, allow_inf_nan=False)] | None
+    cold_cell_c: Annotated[float, Field(ge=-273.15, allow_inf_nan=False)] | None
+    source_note: Annotated[str, Field(min_length=1, max_length=4096)] | None
+
+
 class PvStringPlan(Document):
     schema_version: SchemaVersion
     inverter_product_id: Count
@@ -27,6 +34,7 @@ class PvStringPlan(Document):
     minimum_ambient_c: Annotated[float, Field(ge=-273.15, allow_inf_nan=False)] | None
     temperature_source: Annotated[str, Field(min_length=1, max_length=4096)] | None
     strings: list[PvString]
+    operating_conditions: PvOperatingConditions | None = None
 
     @model_validator(mode="after")
     def unique_connections(self) -> Self:

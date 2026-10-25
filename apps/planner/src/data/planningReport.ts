@@ -44,6 +44,11 @@ const validateReport = ajv.compile<PlanningReport>(reportSchema);
 const validateOptions = ajv.compile<ReportOptions>(optionsSchema);
 const hash = (value: unknown): value is string =>
 	typeof value === "string" && /^[a-f0-9]{64}$/.test(value);
+const pvModelMethods = new Set([
+	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto_batzelis.html",
+	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.ivtools.sdm.fit_desoto.html",
+	"https://pvlib-python.readthedocs.io/en/v0.16.1/reference/generated/pvlib.pvsystem.calcparams_desoto.html",
+]);
 export function readReportOptions(value: unknown): ReportOptions {
 	if (!validateOptions(value))
 		throw new ApiError(422, "invalid_report_options");
@@ -77,8 +82,10 @@ export function readPlanningReport(value: unknown): PlanningReport {
 				} catch {
 					throw new ApiError(502, "invalid_planning_report");
 				}
+				const methodReference =
+					section.id === "pv-iv-model" && pvModelMethods.has(url.href);
 				if (
-					url.origin !== "https://de-linker.com" ||
+					(url.origin !== "https://de-linker.com" && !methodReference) ||
 					url.username ||
 					url.password
 				)

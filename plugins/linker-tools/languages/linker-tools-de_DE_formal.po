@@ -8344,3 +8344,323 @@ msgstr "Die Auslegungsströme erfordern belegte Bestrahlungs- und Temperaturbedi
 #: build/planner/assets/planner.js
 msgid "Cable routes, conductor ratings, connector compatibility, fuses and isolation still require project-specific design."
 msgstr "Leitungswege, Leiterbemessung, Steckverbinder-Kompatibilität, Sicherungen und Trenneinrichtungen müssen noch projektspezifisch ausgelegt werden."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Electrical operating conditions"
+msgstr "Elektrische Betriebsbedingungen"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "The single-diode model estimates operating points from the saved module data. Effective irradiance is the irradiance available to the cells for electrical generation. Enter cell temperatures for the hot and cold operating cases; these can differ from ambient air temperature."
+msgstr "Das Eindiodenmodell schätzt die Arbeitspunkte aus den gespeicherten Moduldaten. Die effektive Bestrahlungsstärke beschreibt die Strahlung, die den Zellen für die Stromerzeugung zur Verfügung steht. Geben Sie die Zelltemperaturen für den heißen und kalten Betriebsfall an; diese können von der Umgebungstemperatur abweichen."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Add operating conditions"
+msgstr "Betriebsbedingungen hinzufügen"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Effective irradiance must be greater than zero."
+msgstr "Die effektive Bestrahlungsstärke muss größer als null sein."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Effective irradiance at the modules"
+msgstr "Effektive Bestrahlungsstärke an den Modulen"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Hot operating cell temperature"
+msgstr "Zelltemperatur bei heißem Betrieb"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Cold operating cell temperature"
+msgstr "Zelltemperatur bei kaltem Betrieb"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Operating-condition source and mounting basis"
+msgstr "Quelle der Betriebsbedingungen und Montagegrundlage"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "These values need a project-specific basis, including mounting and ventilation. No local design extremes are filled in automatically. Model estimates do not establish manufacturer performance or the complete design current."
+msgstr "Diese Werte benötigen eine projektspezifische Grundlage einschließlich Montage und Hinterlüftung. Örtliche Auslegungsextreme werden nicht automatisch eingesetzt. Modellschätzungen belegen weder die Leistungsangaben des Herstellers noch den vollständigen Auslegungsstrom."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingSetup.tsx
+#: build/planner/assets/planner.js
+msgid "Remove operating conditions"
+msgstr "Betriebsbedingungen entfernen"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Modeled electrical operating points"
+msgstr "Modellierte elektrische Arbeitspunkte"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "These estimates use a fitted single-diode model at the stated uniform module conditions. They do not include shading or establish manufacturer performance, design extremes, protection ratings or country approval."
+msgstr "Diese Schätzwerte beruhen auf einem angepassten Eindiodenmodell bei den angegebenen einheitlichen Modulbedingungen. Sie berücksichtigen keine Verschattung und belegen weder die Leistungsangaben des Herstellers noch Auslegungsextreme, Schutzbemessungen oder eine Länderfreigabe."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Operating conditions and their source are incomplete."
+msgstr "Betriebsbedingungen und deren Quelle sind noch unvollständig."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "The maintained module data did not produce an admissible I–V model. The cold-Voc and STC checks remain available."
+msgstr "Aus den gepflegten Moduldaten konnte kein zulässiges I–V-Modell ermittelt werden. Die Prüfungen der Leerlaufspannung bei Kälte und unter STC bleiben verfügbar."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Operating points by string"
+msgstr "Arbeitspunkte je String"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Case"
+msgstr "Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Cell temperature"
+msgstr "Zelltemperatur"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Effective irradiance"
+msgstr "Effektive Bestrahlungsstärke"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Hot operating case"
+msgstr "Heißer Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Cold operating case"
+msgstr "Kalter Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Model, inputs and datasheet comparisons"
+msgstr "Modell, Eingaben und Datenblattvergleiche"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Batzelis initialization and De Soto fitting use the saved STC points and temperature coefficients. The fitted compound parameters do not identify the physical cell-series count. Numerical fit precision is separate from physical accuracy."
+msgstr "Die Initialisierung nach Batzelis und die Anpassung nach De Soto verwenden die gespeicherten STC-Punkte und Temperaturkoeffizienten. Aus den angepassten zusammengesetzten Parametern lässt sich die physische Anzahl der in Reihe geschalteten Zellen nicht bestimmen. Die numerische Anpassungsgenauigkeit ist von der physikalischen Genauigkeit zu unterscheiden."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Fitting method"
+msgstr "Anpassungsmethode"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Numerical refinement"
+msgstr "Numerische Verfeinerung"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Temperature translation"
+msgstr "Temperaturumrechnung"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Silicon bandgap assumption"
+msgstr "Annahme zur Bandlücke von Silizium"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Bandgap temperature assumption"
+msgstr "Annahme zur Temperaturabhängigkeit der Bandlücke"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Numerical fit tolerance"
+msgstr "Numerische Anpassungstoleranz"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Relative numerical residual"
+msgstr "Relatives numerisches Residuum"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Declared power temperature coefficient"
+msgstr "Angegebener Temperaturkoeffizient der Leistung"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Model power temperature coefficient"
+msgstr "Temperaturkoeffizient der Leistung im Modell"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "The power coefficient and NOCT values were not fitting targets. These comparisons show differences; they do not certify extrapolation accuracy."
+msgstr "Der Leistungskoeffizient und die NOCT-Werte waren keine Zielgrößen der Anpassung. Die Vergleiche zeigen Abweichungen; sie bestätigen keine Extrapolationsgenauigkeit."
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "NOCT reference irradiance"
+msgstr "NOCT-Referenzbestrahlungsstärke"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "NOCT cell-temperature interval"
+msgstr "NOCT-Zelltemperaturintervall"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Declared NOCT cell temperature"
+msgstr "Angegebene NOCT-Zelltemperatur"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Declared NOCT power"
+msgstr "Angegebene NOCT-Leistung"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Model power at nominal NOCT"
+msgstr "Modellleistung bei nominaler NOCT"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Model powers at the NOCT temperature limits"
+msgstr "Modellleistungen an den NOCT-Temperaturgrenzen"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Module facts used by the model"
+msgstr "Im Modell verwendete Moduldaten"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Value"
+msgstr "Wert"
+
+#: ../../apps/planner/src/components/equipment/PvOperatingResult.tsx
+#: build/planner/assets/planner.js
+msgid "Cell technology"
+msgstr "Zelltechnologie"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Single-diode model fit"
+msgstr "Anpassung des Eindiodenmodells"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Model applicability to this module"
+msgstr "Anwendbarkeit des Modells auf dieses Modul"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Operating-condition domain"
+msgstr "Bereich der Betriebsbedingungen"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Operating curve"
+msgstr "Betriebskennlinie"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Modeled MPP voltage: hot case"
+msgstr "Modellierte MPP-Spannung: heißer Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Modeled MPP voltage: cold case"
+msgstr "Modellierte MPP-Spannung: kalter Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Modeled MPPT current: hot case"
+msgstr "Modellierter MPPT-Strom: heißer Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Modeled MPPT current: cold case"
+msgstr "Modellierter MPPT-Strom: kalter Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Modeled short-circuit current: hot case"
+msgstr "Modellierter Kurzschlussstrom: heißer Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Modeled short-circuit current: cold case"
+msgstr "Modellierter Kurzschlussstrom: kalter Betriebsfall"
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The fitted parameters reproduce the supplied STC points within the stated numerical tolerance. This is a numerical check, not a manufacturer performance validation."
+msgstr "Die angepassten Parameter reproduzieren die vorgegebenen STC-Punkte innerhalb der angegebenen numerischen Toleranz. Dies ist eine numerische Prüfung und keine Validierung der Leistungsangaben des Herstellers."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The fit does not establish model accuracy for this exact module over its operating range. Validation against manufacturer performance data remains required."
+msgstr "Die Anpassung belegt nicht, wie genau das Modell diesen Modultyp über seinen Betriebsbereich abbildet. Eine Validierung anhand von Leistungsdaten des Herstellers ist weiterhin erforderlich."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Effective irradiance, hot and cold cell temperatures and their project basis are required for the operating-point calculation."
+msgstr "Für die Arbeitspunktberechnung sind die effektive Bestrahlungsstärke, die heißen und kalten Zelltemperaturen und deren Projektgrundlage erforderlich."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The cold cell temperature must not exceed the hot value, and both must lie within the cited module temperature range."
+msgstr "Die kalte Zelltemperatur darf den heißen Wert nicht überschreiten. Beide Werte müssen im belegten Temperaturbereich des Moduls liegen."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The calculation applies the stated effective irradiance uniformly to the modules at each declared cell temperature."
+msgstr "Die Berechnung verwendet die angegebene effektive Bestrahlungsstärke einheitlich für die Module bei der jeweils angegebenen Zelltemperatur."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "This compares the modeled MPP voltage at the declared case with the documented MPPT window. Other irradiance, temperature and shading conditions require their own assessment."
+msgstr "Verglichen wird die modellierte MPP-Spannung im angegebenen Betriebsfall mit dem dokumentierten MPPT-Bereich. Andere Bestrahlungs-, Temperatur- und Verschattungsbedingungen müssen gesondert geprüft werden."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Parallel currents are modeled at the declared uniform case. These points do not replace design-current or protection-rating checks."
+msgstr "Die Parallelströme werden für den angegebenen einheitlichen Betriebsfall modelliert. Diese Arbeitspunkte ersetzen keine Prüfung des Auslegungsstroms oder der Schutzbemessung."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "Different parallel string lengths or orientations do not establish a common operating MPP. The operating-current sum is therefore unresolved."
+msgstr "Unterschiedliche Längen oder Ausrichtungen paralleler Strings belegen keinen gemeinsamen MPP. Die Summe der Betriebsströme bleibt deshalb ungeklärt."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The model did not produce a finite, physically admissible operating curve for these conditions."
+msgstr "Das Modell lieferte für diese Bedingungen keine endliche, physikalisch zulässige Betriebskennlinie."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The model requires STC Voc, Isc, Vmpp and Impp values, plus the Voc and Isc temperature coefficients, from the maintained module record with source references."
+msgstr "Das Modell benötigt Voc, Isc, Vmpp und Impp unter STC sowie die Temperaturkoeffizienten von Voc und Isc aus dem gepflegten Moduldatensatz, jeweils mit Quellenbeleg."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The cited module record does not establish the crystalline-cell basis required by this model."
+msgstr "Der belegte Moduldatensatz bestätigt nicht die für dieses Modell erforderliche kristalline Zellgrundlage."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The supplied STC current or voltage points are inconsistent with a physical single-diode curve."
+msgstr "Die angegebenen STC-Strom- oder Spannungspunkte sind mit einer physikalischen Eindiodenkennlinie nicht vereinbar."
+
+#: ../../apps/planner/src/components/equipment/equipmentLabels.ts
+#: build/planner/assets/planner.js
+msgid "The fitting result failed its physical or numerical checks. It is not used for operating estimates."
+msgstr "Das Anpassungsergebnis hat die physikalischen oder numerischen Prüfungen nicht bestanden. Es wird nicht für Betriebsschätzungen verwendet."

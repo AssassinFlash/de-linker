@@ -9,6 +9,68 @@
 			"pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
 			"type": "string"
 		},
+		"PvOperatingConditions": {
+			"additionalProperties": false,
+			"properties": {
+				"irradiance_w_m2": {
+					"anyOf": [
+						{
+							"exclusiveMinimum": 0,
+							"type": "number"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "Irradiance W M2"
+				},
+				"hot_cell_c": {
+					"anyOf": [
+						{
+							"minimum": -273.15,
+							"type": "number"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "Hot Cell C"
+				},
+				"cold_cell_c": {
+					"anyOf": [
+						{
+							"minimum": -273.15,
+							"type": "number"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "Cold Cell C"
+				},
+				"source_note": {
+					"anyOf": [
+						{
+							"maxLength": 4096,
+							"minLength": 1,
+							"type": "string"
+						},
+						{
+							"type": "null"
+						}
+					],
+					"title": "Source Note"
+				}
+			},
+			"required": [
+				"irradiance_w_m2",
+				"hot_cell_c",
+				"cold_cell_c",
+				"source_note"
+			],
+			"title": "PvOperatingConditions",
+			"type": "object"
+		},
 		"PvString": {
 			"additionalProperties": false,
 			"properties": {
@@ -80,6 +142,17 @@
 			},
 			"title": "Strings",
 			"type": "array"
+		},
+		"operating_conditions": {
+			"anyOf": [
+				{
+					"$ref": "#/$defs/PvOperatingConditions"
+				},
+				{
+					"type": "null"
+				}
+			],
+			"default": null
 		}
 	},
 	"required": [
