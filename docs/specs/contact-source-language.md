@@ -152,8 +152,21 @@ inclusion tests. Native unsaved order rendering proves matching team/admin
 headings without creating or sending an inquiry. Browser checks use the existing
 snapshot for the distinct page/product/filter/document cases and inclusion/error
 feedback; no whole-site rerun or new test framework. Publish the two changed PHP
-files and the catalog sources/compiled German catalog in the existing Commerce
-artifact, with a staged delta of exactly those five files. Protect the current
+files plus the source-resolution repair below and the catalog sources/compiled
+German catalog in the existing Commerce artifact, with a staged delta of exactly
+those six files. Protect the current
 resolver, page objects and style cache, and read back the affected online consumers
 before archive. No WindPress volume install or Generate is needed for text-only
 semantic changes when the existing cache remains valid.
+
+Current acceptance also reproduced a functional failure locally and online:
+the published German SAJ ATS1-T63-A source disappeared from Contact. Native
+`url_to_postid` returned its English same-slug counterpart; canonical comparison
+then rejected the German path. When an otherwise public native lookup has a
+different canonical path, examine only its native Polylang translation pair.
+Accept a twin only when it has the same post type, is published and unprotected,
+and its canonical path exactly matches the requested source. Retain all existing
+origin, missing-object, private/password and static-home guards. Unknown aliases
+must not become accepted sources. No global language/filter override or slug-only
+fallback is needed. Regressions cover both lookup directions and denied twins;
+current native and real HTTP acceptance must retain the German product context.
