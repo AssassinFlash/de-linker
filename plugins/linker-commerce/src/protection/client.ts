@@ -192,6 +192,9 @@ export class ProtectionClient implements PublicProtection {
 					},
 					'error-callback': () => fail( 'verification_widget' ),
 					'expired-callback': () => {
+						if ( this.attempts.get( action ) !== attempt ) {
+							return;
+						}
 						attempt.expires = 0;
 						this.state( attempt.container, action, 'expired' );
 						fail( 'verification_expired' );
@@ -231,6 +234,21 @@ export class ProtectionClient implements PublicProtection {
 		if ( attempt.widget !== undefined ) {
 			window.turnstile?.remove( attempt.widget );
 		}
+	}
+
+	/**
+	 * Retire only the proof used by the request that actually succeeded.
+	 *
+	 * @param action Completed resource scope.
+	 * @param proof  Actual proof sent with the successful request.
+	 */
+	complete( action: string, proof: string ): boolean {
+		const attempt = this.attempts.get( action );
+		if ( ! proof || ! attempt || attempt.token !== proof ) {
+			return false;
+		}
+		this.reset( action );
+		return true;
 	}
 
 	reset( action: string ): void {

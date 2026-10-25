@@ -10,6 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Admin;
 
 use Linker\Commerce\Products\EngineeringData;
+use Linker\Commerce\Products\Publication;
+use Linker\Commerce\Products\Publication\DocumentFiles;
 
 /**
  * One row per document of the product's `_linker_documents` — the list the
@@ -65,6 +67,16 @@ final class DocumentsMetaBox {
 	public function render( int $post_id ): void {
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_FIELD );
 		$documents = $this->documents( $post_id );
+		$jobs      = get_option( \Linker\Commerce\Products\Publication\PreparationJobs::OPTION, array() );
+		foreach ( \Linker\Commerce\Products\Publication\PreparationJobs::CONSUMERS as $consumer ) {
+			$job = is_array( $jobs ) && is_array( $jobs[ $consumer ] ?? null ) ? $jobs[ $consumer ] : array();
+			printf( '<p>%s: %s — %s</p>', esc_html__( 'Automatic preparation', 'linker-commerce' ), esc_html( $consumer ), esc_html( (string) ( $job['status'] ?? 'pending' ) ) );
+			if ( ! empty( $job['error'] ) ) {
+				echo '<p>' . esc_html( (string) $job['error'] ) . '</p>';
+			}
+		}
+		$this->figure_warning( $post_id );
+
 		echo '<p>' . esc_html__( 'The documents shown on the product page and used as citations: datasheets, manuals and warranty terms of our own media library.', 'linker-commerce' ) . '</p>';
 		echo '<p>' . esc_html__( 'The file itself is uploaded to the media library; the address here is the media file\'s URL. What a document may state is decided item by item — do not change a value or a claim without that confirmation.', 'linker-commerce' ) . '</p>';
 		echo '<table class="widefat striped"><thead><tr>'
@@ -83,6 +95,38 @@ final class DocumentsMetaBox {
 			$this->row( $index + $spare, array(), true );
 		}
 		echo '</tbody></table>';
+	}
+
+	/**
+	 * Replaced or withdrawn evidence cannot leave apparently ready old numbers.
+	 *
+	 * @param int $post_id Product being edited.
+	 */
+	private function figure_warning( int $post_id ): void {
+		$id  = Publication::canonical_id( $post_id );
+		$raw = get_post_meta( $id, \Linker\Commerce\Products\SelectionFacts::FIGURES_META_KEY, true );
+		$raw = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+		if ( ! is_array( $raw ) || array() === $raw || 'publish' !== get_post_status( $id ) ) {
+			return;
+		}
+		try {
+			$missing = array_diff_key( $raw, Publication::figures_for( $id ) );
+		} catch ( \RuntimeException $error ) {
+			echo '<p>' . esc_html__( 'Current product permissions could not be checked. Automatic preparation status is unavailable.', 'linker-commerce' ) . '</p>';
+			return;
+		}
+		if ( array() !== $missing ) {
+			printf(
+				'<p>%s</p>',
+				esc_html(
+					sprintf(
+						/* translators: %s: technical field names shown only to the product editor. */
+						__( 'The current document does not yet verify these technical values: %s. The tools cannot use them.', 'linker-commerce' ),
+						implode( ', ', array_keys( $missing ) )
+					)
+				)
+			);
+		}
 	}
 
 	/**
@@ -184,11 +228,14 @@ final class DocumentsMetaBox {
 				// what clearing the address means).
 				continue;
 			}
-			$document    = array(
-				'url'   => $url,
-				'title' => $row['title'],
-				'type'  => $row['type'],
-				'lang'  => $row['lang'],
+			$document    = array_merge(
+				$previous[ $index ] ?? array(),
+				array(
+					'url'   => $url,
+					'title' => $row['title'],
+					'type'  => $row['type'],
+					'lang'  => $row['lang'],
+				)
 			);
 			$documents[] = $document;
 		}
@@ -249,11 +296,8 @@ final class DocumentsMetaBox {
 		if ( '' === $url ) {
 			return '';
 		}
-		$host = (string) wp_parse_url( $url, PHP_URL_HOST );
-		if ( '' !== $host && strtolower( $host ) !== strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) ) {
-			return '';
-		}
-		return $url;
+		$file = DocumentFiles::resolve( $url );
+		return null === $file ? '' : $file['url'];
 	}
 
 	/**
@@ -263,10 +307,6 @@ final class DocumentsMetaBox {
 	 * @return list<array<string, mixed>>
 	 */
 	private function documents( int $post_id ): array {
-		$documents = get_post_meta( $post_id, EngineeringData::DOCUMENTS_META_KEY, true );
-		if ( is_string( $documents ) ) {
-			$documents = json_decode( $documents, true );
-		}
-		return is_array( $documents ) ? array_values( $documents ) : array();
+		return Publication::document_rows( $post_id );
 	}
 }

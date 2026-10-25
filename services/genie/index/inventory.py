@@ -1,15 +1,8 @@
-"""Inventory: every hosted PDF, deduplicated by sha256, with what the products say it is.
+"""Inventory from Woo's publication manifest; no media enumeration or draft reads.
 
-Sources, read with GET only (`python -m index.inventory`):
-- the media library: every attachment with mime type application/pdf
-  (`/wp/v2/media?mime_type=application/pdf`), the bytes downloaded from our own URL;
-- the products' documents field: the ACF `downloads` rows in `_tv_legacy_acf_json`
-  (EN title, type, language, attachment ID) and `_linker_de_acf_json` (DE title), read
-  from `/wc/v3/products`. Brand and model come from the products that link a document;
-  a document no product links keeps empty brands and models and the type `other`.
-
-Credentials: a JSON file `{site_url, username, application_password}`
-(`--rest-config`, default ~/.config/terravolt-builder/rest-de.json); never printed.
+SHA caches are processing caches only. `index.publication` keeps the document and
+product permissions separate while reusing the content-addressed bytes and parses.
+Credentials: --rest-config points at the existing local WP Application Password JSON.
 """
 
 from __future__ import annotations
@@ -25,11 +18,12 @@ import urllib.request
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from index.paths import INVENTORY_PATH, PDF_DIR
+from index.rest_transport import SameOriginRedirect
 from linker_genie.embedding import sha256_of
 
 DEFAULT_REST_CONFIG = Path("~/.config/terravolt-builder/rest-de.json").expanduser()
@@ -42,21 +36,44 @@ DOWNLOAD_WORKERS = 4
 # keeps failing stops the run.
 DOWNLOAD_ATTEMPTS = 3
 
-# The documents field's own vocabulary (every `download_type` / `download_role` value
-# on the live products, 2026-10-09) mapped onto the spec's five types
-# (docs/specs/10-knowledge-index.md, Sources). Warranty, brochure and generic
-# "document" rows are `other`.
-_TYPE_BY_ROLE = {"compatibility_list": "compatibility"}
-_TYPE_BY_LABEL = {
+# Woo's EN/DE document vocabulary, matching Materials::document_kind. These are
+# labels, not inferred document contents. Role takes precedence over type.
+_DOCUMENT_KINDS = {
     "datasheet": "datasheet",
+    "datenblatt": "datasheet",
     "manual": "manual",
+    "user_manual": "manual",
+    "handbuch": "manual",
+    "anleitung": "manual",
     "installation manual": "manual",
     "certificate": "certificate",
+    "zertifikat": "certificate",
     "compatibility": "compatibility",
+    "compatibility_list": "compatibility",
+    "kompatibilität": "compatibility",
+    "kompatibilitätsliste": "compatibility",
+    "warranty": "warranty",
+    "garantie": "warranty",
+    "brochure": "brochure",
+    "broschüre": "brochure",
+    "document": "document",
+    "dokument": "document",
+    "other": "document",
 }
 # `download_language` values on the live products (2026-10-09): EN, DE, MUL, MULTI,
-# EN/DE, DE/EN, ES and empty. One language is that language; several are `multi`.
-_LANG_BY_LABEL = {"EN": "en", "DE": "de", "ES": "es"}
+# EN/DE, DE/EN, ES and empty. ISO 639 mul/und retain explicit multilingual/unstated
+# metadata; chunking detects those passages individually. Unknown tags must fail.
+_LANG_BY_LABEL = {
+    "EN": "en",
+    "DE": "de",
+    "ES": "es",
+    "MUL": "mul",
+    "MULTI": "mul",
+    "EN/DE": "mul",
+    "DE/EN": "mul",
+    "": "und",
+    "UND": "und",
+}
 
 
 @dataclass(frozen=True)
@@ -109,15 +126,22 @@ class RestClient:
         self.base = str(config["site_url"]).rstrip("/")
         token = f"{config['username']}:{config['application_password']}".encode()
         self._auth = "Basic " + base64.b64encode(token).decode()
+        self._opener = urllib.request.build_opener(SameOriginRedirect(self.base))
 
     def get(self, path: str, params: Mapping[str, str | int]) -> tuple[Any, int, int]:
         """One page: the decoded body, X-WP-Total and X-WP-TotalPages."""
         url = f"{self.base}/wp-json{path}?{urllib.parse.urlencode(params)}"
+        headers = {"User-Agent": "linker-genie-index"}
+        # Woo's publication manifest is public permission data. The existing
+        # inventory credential is scoped to the two native collections and must
+        # not turn this public read into a forbidden privileged request.
+        if path != "/linker/v1/publication/manifest":
+            headers["Authorization"] = self._auth
         request = urllib.request.Request(
             url,
-            headers={"Authorization": self._auth, "User-Agent": "linker-genie-index"},
+            headers=headers,
         )
-        with urllib.request.urlopen(request, timeout=120) as response:
+        with self._opener.open(request, timeout=120) as response:
             body = json.load(response)
             total = int(response.headers.get("X-WP-Total", "0"))
             pages = int(response.headers.get("X-WP-TotalPages", "0"))
@@ -164,21 +188,33 @@ def _downloads(product: Mapping[str, Any], key: str) -> list[dict[str, Any]]:
     return [row for row in rows or [] if isinstance(row, dict)]
 
 
+def document_kind_of(label: str, role: str) -> str:
+    """Woo's explicit purpose, preserving warranty/certificate scope semantics."""
+    for value in (role, label):
+        normalized = value.strip().casefold()
+        if normalized in _DOCUMENT_KINDS:
+            return _DOCUMENT_KINDS[normalized]
+    if not label.strip() and not role.strip():
+        return "document"
+    raise ValueError(f"unknown Woo document purpose: role={role!r}, type={label!r}")
+
+
 def doc_type_of(label: str, role: str) -> str:
-    """The spec's type for one documents-field row."""
-    if role.strip().lower() in _TYPE_BY_ROLE:
-        return _TYPE_BY_ROLE[role.strip().lower()]
-    return _TYPE_BY_LABEL.get(label.strip().lower(), "other")
+    """The index spec's five types; raw Woo purpose remains in its manifest."""
+    kind = document_kind_of(label, role)
+    return (
+        kind
+        if kind in {"datasheet", "manual", "certificate", "compatibility"}
+        else "other"
+    )
 
 
 def lang_of(label: str) -> str:
-    """`en`, `de`, another ISO code, `multi` for several, or "" when unstated."""
+    """Normalize known Woo tags; an unknown tag is not evidence of multilingualism."""
     label = label.strip().upper()
-    if not label:
-        return ""
-    if label in _LANG_BY_LABEL:
-        return _LANG_BY_LABEL[label]
-    return "multi"
+    if label not in _LANG_BY_LABEL:
+        raise ValueError(f"unknown Woo document language: {label!r}")
+    return _LANG_BY_LABEL[label]
 
 
 def product_of(product: Mapping[str, Any]) -> Product:
@@ -353,30 +389,9 @@ def _iter_args(argv: Sequence[str] | None) -> argparse.Namespace:
 
 def run(rest_config: Path, out: Path, pdf_dir: Path) -> list[Document]:
     """Read the live lists, download the bytes and write the inventory JSON."""
-    client = RestClient(rest_config)
-    media = client.get_all(
-        "/wp/v2/media",
-        {
-            "mime_type": "application/pdf",
-            "_fields": "id,source_url,title,modified_gmt,media_details",
-        },
-    )
-    products = client.get_all("/wc/v3/products", {"status": "any"})
-    print(f"{len(media)} PDF attachments, {len(products)} products", flush=True)
-    documents = build_documents(
-        media, download_all(media, pdf_dir), product_links(products)
-    )
-    out.parent.mkdir(parents=True, exist_ok=True)
-    payload = {
-        "source": client.base,
-        "read_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "attachments": len(media),
-        "products": [asdict(product_of(product)) for product in products],
-        "documents": [asdict(document) for document in documents],
-    }
-    out.write_text(json.dumps(payload, indent=1, ensure_ascii=False), encoding="utf-8")
-    print(f"{len(documents)} unique documents -> {out}", flush=True)
-    return documents
+    from index.publication import inventory
+
+    return inventory(RestClient(rest_config), out, pdf_dir)
 
 
 def load(path: Path = INVENTORY_PATH) -> list[Document]:

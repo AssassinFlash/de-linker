@@ -10,10 +10,8 @@ declare( strict_types = 1 );
 namespace Linker\Commerce\Products;
 
 /**
- * The shipped engineering data files: data/compatibility.json and
- * data/engineering-overlay.json (docs/specs/8-engineering-data.md). One
- * reader for both, with the content version the feed reports so its readers
- * can tell a data change from a product change.
+ * The compatibility contract and the retained one-time reference migration
+ * input. Runtime reference facts and document permissions are maintained in Woo.
  */
 final class EngineeringData {
 
@@ -23,7 +21,7 @@ final class EngineeringData {
 	public const COMPATIBILITY_FILE = 'data/compatibility.json';
 
 	/**
-	 * The engineering overlay: components that are not products.
+	 * One-time migration input only; runtime reference facts live in Woo.
 	 */
 	public const OVERLAY_FILE = 'data/engineering-overlay.json';
 

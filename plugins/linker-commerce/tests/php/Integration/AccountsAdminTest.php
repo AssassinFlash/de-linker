@@ -418,7 +418,9 @@ final class AccountsAdminTest extends IntegrationTestCase {
 			}
 		);
 		foreach ( array( 'en_US', 'de_DE_formal' ) as $locale ) {
-			update_option( 'WPLANG', $locale );
+			// WordPress stores English as the empty locale; en_US is rejected by sanitize_option.
+			update_option( 'WPLANG', 'en_US' === $locale ? '' : $locale );
+			update_option( 'linker_commerce_team_locale', $locale );
 			// Each locale represents a separate site request. Woo caches the first
 			// default subject in memory, so reload its native settings between them.
 			$new_customer->init_settings();
@@ -428,6 +430,19 @@ final class AccountsAdminTest extends IntegrationTestCase {
 			update_user_meta( $customer->get_id(), 'locale', 'en_US' === $locale ? 'de_DE_formal' : 'en_US' );
 			$marker = self::newest_mail_job();
 			$new_customer->trigger( $customer->get_id() );
+			update_user_meta( $customer->get_id(), VatProfile::STATUS_META, VatProfile::UNVERIFIED );
+			$notices = new \Linker\Commerce\Registration\VatNotice();
+			$source  = $notices->persist(
+				$customer->get_id(),
+				'DE123456789',
+				array(
+					'status' => VatProfile::INVALID,
+					'detail' => 'Synthetic native VIES verdict',
+				),
+				true,
+				$notices->version( $customer->get_id() )
+			);
+			$this->assertIsArray( $source );
 			$vat_review->trigger( $customer->get_id(), VatProfile::UNVERIFIED, VatProfile::INVALID );
 			$ids = self::mail_jobs_after( $marker );
 			$this->assertCount( 2, $ids );
@@ -481,7 +496,9 @@ final class AccountsAdminTest extends IntegrationTestCase {
 		$pending_rows = array_filter( $block->entries(), static fn ( array $entry ): bool => str_contains( $entry['url'], '&focus=' ) );
 		$this->assertCount( $baseline + 2, $pending_rows, 'Cron does not need employee capabilities to count pending customers.' );
 		foreach ( array( 'en_US', 'de_DE_formal' ) as $locale ) {
-			update_option( 'WPLANG', $locale );
+			// WordPress stores English as the empty locale; en_US is rejected by sanitize_option.
+			update_option( 'WPLANG', 'en_US' === $locale ? '' : $locale );
+			update_option( 'linker_commerce_team_locale', $locale );
 			$marker = self::newest_mail_job();
 			( new DigestEmail( WP_PLUGIN_DIR . '/linker-commerce/linker-commerce.php', new Options() ) )->send_report( ( new Blocks( new JobStore() ) )->all() );
 			$ids = self::mail_jobs_after( $marker );
@@ -528,7 +545,7 @@ final class AccountsAdminTest extends IntegrationTestCase {
 	/** Settings used by queued internal mail, restored even after a failed assertion. */
 	private function internal_mail_options(): void {
 		$saved = array();
-		foreach ( array( 'WPLANG', Options::NOTIFY_TO, Options::NOTIFY_BCC ) as $name ) {
+		foreach ( array( 'WPLANG', 'linker_commerce_team_locale', Options::NOTIFY_TO, Options::NOTIFY_BCC ) as $name ) {
 			$saved[ $name ] = get_option( $name );
 		}
 		$this->later(

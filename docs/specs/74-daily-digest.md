@@ -9,9 +9,11 @@
 | 块 | 内容 | 窗口 | 起算点 |
 |---|---|---|---|
 | ① 待审批新账号 | 标题数量 + 公司名 + 注册时间 + 审核卡片深链 | pending 的纯 customer，注册时间从早到晚，无时间窗 | 注册时间仅作展示；无条目时显示 No account is waiting for approval. / Kein Konto wartet auf die Freigabe. |
-| ② 未处理询盘 | 单号列表（编号、公司、创建时间、后台链接） | 创建时刻早于 发送时刻 − 86400 秒，且状态仍为 `wc-inquiry-received` | 询盘创建时刻（订单 `date_created`，进状态前的时间不算） |
+| ② 未处理询盘 | 单号列表（编号、公司、创建时间、后台链接） | 创建时刻早于 发送时刻 − 86400 秒，且状态仍为 `wc-inquiry-received`，排除 `Protection\BusinessDisposition::processed()` 已验证的员工处置记录 | 询盘创建时刻（订单 `date_created`，进状态前的时间不算） |
 | ③ PI 未响应 | 单号列表（编号、公司、签发时间、后台链接） | PI 签发时刻早于 发送时刻 − 259200 秒（3 天 = 72 小时，固定时长，非自然日），且状态仍为 `wc-proforma-issued` | PI 签发时刻（订单 meta `_linker_proforma_issued`，`Proforma/Issuer` 签发时写入的 Unix 秒）。处于 `wc-proforma-issued` 但没有该 meta 的（后台手工改状态绕过签发流程的）不计入：签发时刻未知 |
 | ④ 邮件队列失败 | 封数 + 每封的收件人（Outbox 重试耗尽的消息） | 无时间窗：当前所有 `linker_mail_job` 草稿（`JobStore::FAILED_STATUS`）都算，直到有人处理 | 最近一次重试耗尽的时刻（消息保持草稿状态即视为未解决） |
+
+待审账号的主题摘要、区块标题和正文数字统一读取 `PendingApprovals::pending_count()`；空提示和受限账号汇总仍显示，但不计入待审数。待开 PI 的处置排除必须通过现有原生读取器验证员工权限、私有订单审计、HMAC、订单归属和原始正文；标记存在本身、模型分类、未知或损坏证据均不足以排除，读取失败继续显示。原询盘状态、正文、审计、队列和容量不因摘要读取而改变。
 
 发送时刻 = 本次 cron 触发的时刻。同一条数据在边界附近的两封摘要之间移动是预期行为。
 

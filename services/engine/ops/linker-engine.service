@@ -5,7 +5,9 @@ After=network.target
 
 [Service]
 WorkingDirectory=/opt/linker-engine/current
+Environment=LINKER_ENGINE_CACHE=/opt/linker-engine/state/cache
 EnvironmentFile=/etc/linker-engine.env
+# Verify cache writes in the worker namespace before deployment (ops/PUBLICATION.md).
 ExecStart=/opt/linker-engine/current/.venv/bin/python -m uvicorn linker_engine.app:app --host 127.0.0.1 --port 8901
 Restart=always
 RestartSec=2

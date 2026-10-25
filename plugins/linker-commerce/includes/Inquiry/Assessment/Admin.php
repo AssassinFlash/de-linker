@@ -43,14 +43,15 @@ final class Admin {
 		NotificationHoldView::render( $order );
 		EvidenceView::render( $order );
 		$data = Queue::data( $order );
-		if ( array() === $data ) {
+		if ( array() === $data || ! empty( $data['notification_only'] ) ) {
 			echo '<p>' . esc_html__( 'No assessment was requested.', 'linker-commerce' ) . '</p>';
 			return;
 		}
 		$result = is_array( $data['result'] ?? null ) ? $data['result'] : Result::unknown( 'pending' );
 		echo '<h3>' . esc_html__( 'Jev initial assessment', 'linker-commerce' ) . '</h3>';
 		echo '<p><strong>' . esc_html( Result::label( (string) $result['label'] ) ) . '</strong><br />' . esc_html( Result::explanation( $result ) ) . '</p>';
-		echo '<p>' . esc_html__( 'Model labels do not reject inquiries or stop team notifications.', 'linker-commerce' ) . '</p>';
+		$authorization = AuthorizationStore::read( $order->get_id() );
+		echo '<p><strong>' . esc_html__( 'Diagnostic', 'linker-commerce' ) . '</strong>: ' . esc_html( is_array( $authorization ) ? (string) ( $authorization['status'] ?? 'pending' ) : 'authorization_storage_unavailable' ) . '</p>';
 		echo '<dl><dt>' . esc_html__( 'Diagnostic', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['reason'] ) . '</dd><dt>' . esc_html__( 'Elapsed time', 'linker-commerce' ) . '</dt><dd>' . esc_html( number_format_i18n( (float) ( $data['elapsed'] ?? 0 ), 2 ) ) . ' s</dd><dt>' . esc_html__( 'Model / rubric', 'linker-commerce' ) . '</dt><dd>' . esc_html( (string) $result['model'] . ' / ' . (string) $result['rubric'] ) . '</dd></dl>';
 		echo '<details><summary>' . esc_html__( 'Original model result', 'linker-commerce' ) . '</summary><textarea readonly class="large-text code" rows="10" aria-label="' . esc_attr__( 'Original model result', 'linker-commerce' ) . '">' . esc_textarea( (string) wp_json_encode( $result['raw'] ?? array(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) ) . '</textarea></details>';
 		ReviewView::render( $order );

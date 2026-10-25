@@ -54,6 +54,8 @@ test( 'reads never create proof/model work; selecting history uses a write scope
 } );
 
 test( 'an ambiguous retry retains UUID; a successful explicit action gets a new UUID', async () => {
+	const complete = vi.fn( () => true );
+	window.linkerPublicProtection!.complete = complete;
 	const seen: string[] = [];
 	let calls = 0;
 	const fetcher = vi.fn< typeof fetch >( async ( input, init ) => {
@@ -76,8 +78,13 @@ test( 'an ambiguous retry retains UUID; a successful explicit action gets a new 
 	await expect( resourceFetch( fetcher, url, input ) ).rejects.toThrow(
 		'lost reply'
 	);
+	expect( complete ).not.toHaveBeenCalled();
 	await resourceFetch( fetcher, url, input );
 	await resourceFetch( fetcher, url, input );
+	expect( complete.mock.calls ).toEqual( [
+		[ 'genie', 'synthetic-proof' ],
+		[ 'genie', 'synthetic-proof' ],
+	] );
 	expect( seen[ 0 ] ).toBe( seen[ 1 ] );
 	expect( seen[ 2 ] ).not.toBe( seen[ 1 ] );
 	expect( input ).toEqual( {
@@ -85,6 +92,76 @@ test( 'an ambiguous retry retains UUID; a successful explicit action gets a new 
 		body: '{"messages":[{"role":"user","content":"synthetic retry"}]}',
 	} );
 } );
+
+test.each( [ 'design/residential', 'roof/pack', 'report/pdf' ] )(
+	'only actual successful %s completion clears its verification status',
+	async ( route ) => {
+		window.linkerPublicProtection!.proof = vi.fn(
+			async ( action, container ) => {
+				container.dispatchEvent(
+					new CustomEvent( 'linker:protection', {
+						detail: { action, state: 'expired' },
+					} )
+				);
+				return 'synthetic-proof';
+			}
+		);
+		const complete = vi.fn( () => true );
+		window.linkerPublicProtection!.complete = complete;
+		const url = `https://site.test/wp-json/linker-ai/v1/engine/${ route }`;
+		await resourceFetch(
+			vi.fn( async () => new Response( '{}' ) ),
+			url,
+			{
+				method: 'POST',
+				body: '{}',
+			}
+		);
+		expect( complete ).toHaveBeenCalledWith(
+			resourceAction( url, 'POST' ),
+			'synthetic-proof'
+		);
+		expect( document.querySelector( '[role="status"]' )?.textContent ).toBe(
+			''
+		);
+	}
+);
+
+test( 'an old response cannot clear the status of a newer proof', async () => {
+	window.linkerPublicProtection!.proof = vi.fn(
+		async ( action, container ) => {
+			container.dispatchEvent(
+				new CustomEvent( 'linker:protection', {
+					detail: { action, state: 'checking' },
+				} )
+			);
+			return 'old-proof';
+		}
+	);
+	window.linkerPublicProtection!.complete = vi.fn( () => false );
+	await resourceFetch(
+		vi.fn( async () => new Response( '{}' ) ),
+		'https://site.test/wp-json/linker-ai/v1/engine/report/pdf',
+		{ method: 'POST', body: '{}' }
+	);
+	expect( document.querySelector( '[role="status"]' )?.textContent ).toBe(
+		'Checking verification…'
+	);
+} );
+
+test.each( [ 400, 409, 429, 502, 503 ] )(
+	'HTTP %i refusal never completes a proof',
+	async ( status ) => {
+		const complete = vi.fn( () => true );
+		window.linkerPublicProtection!.complete = complete;
+		await resourceFetch(
+			vi.fn( async () => new Response( '{}', { status } ) ),
+			'https://site.test/wp-json/linker-ai/v1/engine/design/residential',
+			{ method: 'POST', body: JSON.stringify( { status } ) }
+		);
+		expect( complete ).not.toHaveBeenCalled();
+	}
+);
 
 test( 'a failed proof performs no resource request and leaves the composer untouched', async () => {
 	window.linkerPublicProtection!.proof = vi.fn( async () => {
@@ -257,4 +334,19 @@ test( 'failed verification never creates a live send witness', async () => {
 	).rejects.toThrow( 'proof unavailable' );
 	expect( sent ).not.toHaveBeenCalled();
 	expect( fetcher ).not.toHaveBeenCalled();
+} );
+
+test( 'signed Genie product-list writes retain the native draft and save admission scopes', () => {
+	expect(
+		resourceAction(
+			'https://site.test/wp-json/linker-ai/v1/genie/draft',
+			'POST'
+		)
+	).toBe( 'draft_write' );
+	expect(
+		resourceAction(
+			'https://site.test/wp-json/linker-ai/v1/genie/solution',
+			'POST'
+		)
+	).toBe( 'solution_save' );
 } );

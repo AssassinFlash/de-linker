@@ -15,10 +15,12 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Callable, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Literal, Protocol
 
 from index.extract import Block, Page
+from linker_genie.source_roles import meter_references, pack_model_row
+from linker_genie.table_projection import SourceCell
 
 # Spec (docs/specs/10-knowledge-index.md, Build 2): at most 512 tokens per chunk.
 # Evidence behind it: arXiv 2605.27444 (2026-05, RAG over technical documents) found a
@@ -67,6 +69,16 @@ class Chunk:
     text: str
     lang: str
     tokens: int
+    source_table: str = ""
+    preceding_text: tuple[str, ...] = ()
+    source_rows: tuple[int, ...] = ()
+    # One copy on a TableItem's first chunk; unchanged native cell coordinates
+    # distinguish a shared merged value from an empty, unproven neighbour.
+    source_cells: tuple[SourceCell, ...] = ()
+    # Original headings encountered since the preceding emitted chunk. Keeping
+    # even empty heading transitions prevents a generic child from erasing a
+    # narrower authored parent before the applicability compiler sees it.
+    source_headings: tuple[str, ...] = ()
 
 
 def context_header(meta: DocumentMeta, section: str, page: int) -> str:
@@ -106,12 +118,21 @@ class _Chunker:
         self.max_tokens = max_tokens
         self.chunks: list[Chunk] = []
         self._ids: set[str] = set()
+        self._preceding_text: list[str] = []
+        self._pending_headings: list[str] = []
 
     def _tokens(self, header: str, lines: Sequence[str]) -> int:
         return self.tokenizer.count(header + "\n" + "\n".join(lines))
 
     def _emit(
-        self, page: int, section: str, kind: ChunkKind, lines: Sequence[str]
+        self,
+        page: int,
+        section: str,
+        kind: ChunkKind,
+        lines: Sequence[str],
+        source_table: str = "",
+        preceding_text: tuple[str, ...] = (),
+        source_rows: tuple[int, ...] = (),
     ) -> None:
         header = context_header(self.meta, section, page)
         text = "\n".join(lines)
@@ -136,8 +157,13 @@ class _Chunker:
                 text=text,
                 lang=lang,
                 tokens=self._tokens(header, lines),
+                source_table=source_table,
+                preceding_text=preceding_text,
+                source_rows=source_rows,
+                source_headings=tuple(self._pending_headings),
             )
         )
+        self._pending_headings = []
 
     def _pieces(self, header: str, fixed: Sequence[str], line: str) -> list[str]:
         """`line` cut so that each piece fits a chunk after the header and `fixed`."""
@@ -162,42 +188,127 @@ class _Chunker:
         kind: ChunkKind,
         fixed: list[str],
         lines: list[str],
+        source_table: str = "",
+        preceding_text: tuple[str, ...] = (),
+        row_indices: tuple[int, ...] = (),
     ) -> None:
         """`lines` into as few chunks as fit; every chunk starts with the `fixed` lines."""
+        if row_indices and len(row_indices) != len(fixed) + len(lines):
+            raise ValueError("native table row provenance does not match its rows")
         header = context_header(self.meta, section, page)
         if fixed and self._tokens(header, fixed) >= self.max_tokens:
             # Header rows that fill a chunk on their own are not repeated: they are rows.
             fixed, lines = [], [*fixed, *lines]
+        fixed_rows = row_indices[: len(fixed)]
+        line_rows = row_indices[len(fixed) :]
         current: list[str] = []
-        for line in lines:
+        current_rows: list[int] = []
+        for offset, line in enumerate(lines):
+            # A component model is its own authored property row. Isolate it so
+            # its denial cannot force unrelated, independently proven rows to
+            # carry its text. All original cells/columns are retained.
+            isolated = kind == "table" and pack_model_row(line)
+            if isolated and current:
+                self._emit(
+                    page,
+                    section,
+                    kind,
+                    [*fixed, *current],
+                    source_table,
+                    preceding_text,
+                    tuple([*fixed_rows, *current_rows]),
+                )
+                current, current_rows = [], []
             for piece in self._pieces(header, fixed, line):
                 if (
                     current
                     and self._tokens(header, [*fixed, *current, piece])
                     > self.max_tokens
                 ):
-                    self._emit(page, section, kind, [*fixed, *current])
-                    current = []
+                    self._emit(
+                        page,
+                        section,
+                        kind,
+                        [*fixed, *current],
+                        source_table,
+                        preceding_text,
+                        tuple([*fixed_rows, *current_rows]),
+                    )
+                    current, current_rows = [], []
                 current.append(piece)
+                if line_rows:
+                    current_rows.append(line_rows[offset])
+            if isolated:
+                self._emit(
+                    page,
+                    section,
+                    kind,
+                    [*fixed, *current],
+                    source_table,
+                    preceding_text,
+                    tuple([*fixed_rows, *current_rows]),
+                )
+                current, current_rows = [], []
         if current or fixed:
-            self._emit(page, section, kind, [*fixed, *current])
+            self._emit(
+                page,
+                section,
+                kind,
+                [*fixed, *current],
+                source_table,
+                preceding_text,
+                tuple([*fixed_rows, *current_rows]),
+            )
+
+    def _text(self, page: int, section: str, texts: list[str]) -> None:
+        start = len(self.chunks)
+        self._pack(page, section, "text", [], texts)
+        self._preceding_text.extend(chunk.id for chunk in self.chunks[start:])
 
     def add_page(self, page: Page, section: str) -> str:
         """The chunks of one page; returns the section in force at its end."""
         texts: list[str] = []
-        for block in page.blocks:
+        for block_index, block in enumerate(page.blocks):
             if block.kind != "text" and texts:
-                self._pack(page.number, section, "text", [], texts)
+                self._text(page.number, section, texts)
                 texts = []
             if block.kind == "heading":
                 section = block.text
+                self._pending_headings.append(block.text)
+                self._preceding_text = []
             elif block.kind == "text":
-                texts.append(block.text)
+                # Keep the manufacturer's role sentence apart from following
+                # diagrams or a different model's paragraphs. Recognition here
+                # grants no permission; publication.py proves its full scope.
+                if meter_references(block.text):
+                    if texts:
+                        self._text(page.number, section, texts)
+                        texts = []
+                    self._text(page.number, section, [block.text])
+                else:
+                    texts.append(block.text)
             else:
                 header_rows, rows = table_lines(block)
-                self._pack(page.number, section, "table", header_rows, rows)
+                start = len(self.chunks)
+                self._pack(
+                    page.number,
+                    section,
+                    "table",
+                    header_rows,
+                    rows,
+                    f"{page.source}:p{page.number}:"
+                    + (block.source_id or f"block{block_index}"),
+                    tuple(self._preceding_text),
+                    block.row_indices or tuple(range(len(block.rows))),
+                )
+                if block.source_cells and len(self.chunks) > start:
+                    self.chunks[start] = replace(
+                        self.chunks[start], source_cells=block.source_cells
+                    )
+                # The next independent TableItem needs its own original header.
+                self._preceding_text = []
         if texts:
-            self._pack(page.number, section, "text", [], texts)
+            self._text(page.number, section, texts)
         return section
 
 

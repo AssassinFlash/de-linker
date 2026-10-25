@@ -311,7 +311,7 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		}
 	}
 
-	/** Missing proof saves complete data, no snapshot, mail, model or receipt budget. */
+	/** Missing proof saves complete evidence without a permit, mail, model or receipt budget. */
 	public function test_failed_verification_saves_native_record_and_idempotent_retry_without_side_effects(): void {
 		$post   = $this->post();
 		$jobs   = self::newest_mail_job();
@@ -323,7 +323,12 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		self::assertSame( $post['linker_request_id'], $order->get_meta( BusinessRecord::REQUEST ) );
 		self::assertSame( 'verification', $order->get_meta( Intake::META )['lane'] );
 		self::assertTrue( NotificationHold::held( $order ) );
-		self::assertSame( array(), Queue::data( $order ) );
+		self::assertSame( $post['message'], Queue::data( $order )['snapshot']['submission']['message'] );
+		$pending = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $pending );
+		self::assertSame( 'pending', $pending['status'] );
+		self::assertSame( 0, $pending['attempts'] );
+		self::assertSame( array(), $pending['jobs'] );
 		self::assertSame( array(), self::mail_jobs_after( $jobs ) );
 		self::assertSame( $budget, get_option( Throttle::OPTION ) );
 		$retry = ( new Handler() )->process( $post );
@@ -514,18 +519,37 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		$budget = array_fill( 0, Throttle::PER_DAY, time() );
 		update_option( Throttle::OPTION, $budget, false );
 		$marker = self::newest_mail_job();
+		$review = \Linker\Commerce\Inquiry\Assessment\Reviews::save(
+			$order->get_id(),
+			0,
+			'correct',
+			array(
+				'label' => 'normal',
+				'note'  => 'Native fixture checked the complete source.',
+				'basis' => \Linker\Commerce\Inquiry\Assessment\Reviews::reference( $order ),
+			)
+		);
+		self::assertIsArray( $review );
+		self::assertSame( array(), self::mail_jobs_after( $marker ), 'A staff correction alone does not authorize transport.' );
+		$order->read_meta_data( true );
+		$basis  = NotificationHold::reference( $order );
 		$result = NotificationHold::release( $order->get_id(), $basis );
 		self::assertIsArray( $result );
-		self::assertGreaterThan( 0, $result['job'] );
-		self::assertTrue( ( new \Linker\Commerce\Mail\JobStore() )->critical( $result['job'] ) );
+		$state = \Linker\Commerce\Inquiry\Assessment\AuthorizationStore::read( $order->get_id() );
+		self::assertIsArray( $state );
+		self::assertSame( array( 'team' ), array_keys( $state['jobs'] ) );
+		$job = $state['jobs']['team']['id'];
+		self::assertGreaterThan( 0, $job );
+		self::assertFalse( ( new \Linker\Commerce\Mail\JobStore() )->critical( $job ), 'Public content retains the ordinary quota after a native explicit staff release.' );
 		self::assertSame( $result, NotificationHold::release( $order->get_id(), $basis ) );
 		self::assertCount( 1, self::mail_jobs_after( $marker ) );
 		self::assertSame( $budget, get_option( Throttle::OPTION ) );
 		$order->read_meta_data( true );
 		self::assertFalse( NotificationHold::held( $order ) );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
-		self::assertSame( 'staff_release', Queue::data( $order )['result']['reason'] );
-		self::assertTrue( as_has_scheduled_action( Outbox::HOOK, array( $result['job'] ), Outbox::GROUP ) );
+		self::assertSame( 'human_override', $state['producer'] );
+		self::assertSame( 'staff_release_team_only', $order->get_meta( \Linker\Commerce\Inquiry\ReceiptLimit::SKIPPED_META ) );
+		self::assertTrue( as_has_scheduled_action( Outbox::HOOK, array( $job ), Outbox::GROUP ) );
 	}
 
 	/** Native PII removal includes added registry and intake metadata. */
@@ -603,9 +627,10 @@ final class SafeIntakeTest extends IntegrationTestCase {
 		);
 		self::assertInstanceOf( WP_Error::class, $released );
 		self::assertSame( array(), self::mail_jobs_after( $marker ) );
-		$order->read_meta_data( true );
-		self::assertSame( 'yes', $order->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) );
-		self::assertSame( '', $order->get_meta( Intake::META ) );
+		$persisted = \Linker\Commerce\Inquiry\Assessment\CurrentSource::order( $order->get_id() );
+		self::assertInstanceOf( WC_Order::class, $persisted );
+		self::assertSame( 'yes', $persisted->get_meta( \Linker\Commerce\Inquiry\Assessment\Reviews::ERASED ) );
+		self::assertSame( '', $persisted->get_meta( Intake::META ) );
 		wp_cache_delete( IntakeStore::OPTION, 'options' );
 		self::assertSame( array(), get_option( IntakeStore::OPTION )['entries'] );
 	}
@@ -830,32 +855,44 @@ final class SafeIntakeTest extends IntegrationTestCase {
 	}
 	/** A crash after the first native save recovers the same full record. */
 	public function test_interrupted_native_save_recovers_original_without_second_debit(): void {
-		$post = $this->post( false, 'contact' );
-		$fail = static function ( WC_Order $order ) use ( $post ): void {
-			if ( $order->get_billing_email() === $post['email'] ) {
-				throw new \Error( 'fixture_interrupted_save' );
-			}
+		$post      = $this->post( false, 'contact' );
+		$armed     = false;
+		$committed = false;
+		$arm       = static function ( WC_Order $order ) use ( $post, &$armed ): void {
+			if ( $order->get_billing_email() === $post['email'] && $order->has_status( \Linker\Commerce\Inquiry\Statuses::RECEIVED ) ) {
+				$armed = true; }
 		};
-		add_action( 'woocommerce_after_order_object_save', $fail );
+		$fail      = static function ( string $sql ) use ( &$armed, &$committed ): string {
+			if ( $armed && ! $committed && 'COMMIT' === $sql ) {
+				global $wpdb;
+				// phpcs:ignore WordPress.DB.RestrictedFunctions -- Execute the exact owned native commit before losing its application acknowledgement.
+				$wpdb->__get( 'dbh' )->query( 'COMMIT' );
+				$committed = true;
+				throw new \Error( 'fixture_interrupted_commit_ack' );
+			}
+			return $sql;
+		};
+		add_action( 'woocommerce_after_order_object_save', $arm );
+		add_filter( 'query', $fail, 999 );
 		try {
-			$result = ( new ContactHandler() )->process( $post );
-		} finally {
-			remove_action( 'woocommerce_after_order_object_save', $fail );
-		}
-		self::assertSame( 'pending', $result );
-		$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
-		self::assertIsArray( $orders );
-		self::assertCount( 1, $orders );
-		$before = json_decode( (string) get_option( Ledger::OPTION ), true );
-		self::assertSame( 'saved_review', ( new ContactHandler() )->process( $post ) );
-		$recovered = wc_get_order( $orders[0]->get_id() );
-		self::assertInstanceOf( WC_Order::class, $recovered );
-		self::assertSame( $orders[0]->get_id(), $recovered->get_id() );
-		self::assertSame( $post['message'], $recovered->get_customer_note() );
-		self::assertTrue( NotificationHold::held( $recovered ) );
-		$after = json_decode( (string) get_option( Ledger::OPTION ), true );
-		self::assertSame( $before['buckets'], $after['buckets'] );
-		self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $recovered->get_status() );
+			$result = ( new ContactHandler() )->process( $post ); } finally {
+			remove_action( 'woocommerce_after_order_object_save', $arm );
+			remove_filter( 'query', $fail, 999 ); }
+			self::assertTrue( $committed, 'The native row/status commit really occurred; only its response is unknown.' );
+			self::assertSame( 'pending', $result );
+			$orders = wc_get_orders( array( 'billing_email' => $post['email'] ) );
+			self::assertIsArray( $orders );
+			self::assertCount( 1, $orders );
+			$before = json_decode( (string) get_option( Ledger::OPTION ), true );
+			self::assertSame( 'saved_review', ( new ContactHandler() )->process( $post ) );
+			$recovered = wc_get_order( $orders[0]->get_id() );
+			self::assertInstanceOf( WC_Order::class, $recovered );
+			self::assertSame( $orders[0]->get_id(), $recovered->get_id() );
+			self::assertSame( $post['message'], $recovered->get_customer_note() );
+			self::assertTrue( NotificationHold::held( $recovered ) );
+			$after = json_decode( (string) get_option( Ledger::OPTION ), true );
+			self::assertSame( $before['buckets'], $after['buckets'] );
+			self::assertSame( \Linker\Commerce\Inquiry\Statuses::RECEIVED, $recovered->get_status() );
 	}
 	/** Review keeps the complete native product draft for guest/pending/approved customers. */
 	public function test_review_retains_products_for_all_customer_states(): void {

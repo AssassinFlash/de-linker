@@ -16,6 +16,7 @@ use Linker\Commerce\Presentation\PageUrls;
 use Linker\Commerce\Products\Materials;
 use Linker\Commerce\Products\SelectionFactSet;
 use Linker\Commerce\Products\SelectionFacts;
+use Linker\Commerce\Products\Publication;
 
 /**
  * What the product page shows, in the order the template prints it
@@ -32,11 +33,12 @@ final class ProductView {
 	/**
 	 * Sets up the view.
 	 *
-	 * @param CommerceState $state #11's price rule: whether this visitor sees
-	 *                             this product's price (the single authority;
-	 *                             this view never derives it).
+	 * @param CommerceState                                                                                   $state #11's price rule: whether this visitor sees
+	 *                                                                                                               this product's price (the single authority;
+	 *                                                                                                               this view never derives it).
+	 * @param \Closure(int):list<array{title:string,url:string,type:string,role:string,language:string}>|null $document_reader Current-document reader; presentation fixtures may supply an immutable source.
 	 */
-	public function __construct( private readonly CommerceState $state = new CommerceState() ) {}
+	public function __construct( private readonly CommerceState $state = new CommerceState(), private readonly ?\Closure $document_reader = null ) {}
 
 	/**
 	 * The fields of a product, keyed as the template prints them.
@@ -45,44 +47,62 @@ final class ProductView {
 	 * @return array<string, mixed>
 	 */
 	public function fields( int $product_id ): array {
+		$fields  = $this->card_fields( $product_id );
+		$product = wc_get_product( $product_id );
+		if ( array() === $fields || ! $product instanceof \WC_Product ) {
+			return array();
+		}
+		return array_merge(
+			$fields,
+			array(
+				'designation' => Materials::apply_terms( $this->designation( $product->get_name(), $fields['brand'], $this->term_name( $product_id, 'pa_model' ) ) ),
+				'brand_logo'  => $this->brand_logo( $product_id ),
+				'cta_label'   => $this->cta_label(),
+				'cta_url'     => $this->cta_url( $product ),
+				'ask_url'     => $this->ask_url( $product ),
+				'intro'       => Materials::apply_terms( '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ) ),
+				'body'        => Materials::apply_terms( $product->get_description() ),
+				'spec_groups' => $this->spec_groups( $product_id ),
+				'attributes'  => $this->attributes( $product ),
+				'figures'     => $this->figures( $product_id ),
+				'features'    => $this->features( $product_id ),
+				'benefits'    => $this->benefits( $product_id ),
+				'stats_claim' => $this->stats_claim( $product_id ),
+				'scenarios'   => $this->scenarios( $product_id ),
+				'downloads'   => $this->downloads( $product_id ),
+				'faqs'        => $this->faqs( $product_id ),
+				'pairings'    => $this->pairings( $product_id ),
+				'crumbs'      => $this->crumbs( $product_id ),
+			)
+		);
+	}
+
+	/**
+	 * Catalogue cards and their model pickers do not display technical documents.
+	 *
+	 * @param int $product_id The English or German product ID.
+	 * @return array<string, mixed>
+	 */
+	public function card_fields( int $product_id ): array {
 		$product = wc_get_product( $product_id );
 		if ( ! $product instanceof \WC_Product ) {
 			return array();
 		}
 		$facts = SelectionFacts::for_product( $product_id );
-		$brand = $this->term_name( $product_id, 'pa_brand' );
 		$model = $this->term_name( $product_id, 'pa_model' );
 
 		return array(
 			'id'           => $product_id,
 			'title'        => Materials::apply_terms( $product->get_name() ),
 			'model'        => '' !== $model ? $model : $product->get_name(),
-			'designation'  => Materials::apply_terms( $this->designation( $product->get_name(), $brand, $model ) ),
-			'brand'        => $brand,
+			'brand'        => $this->term_name( $product_id, 'pa_brand' ),
 			'brand_slug'   => $this->term_slug( $product_id, 'pa_brand' ),
-			'brand_logo'   => $this->brand_logo( $product_id ),
 			'sku'          => $product->get_sku(),
 			'gallery'      => $this->gallery( $product ),
 			'stats'        => $this->key_numbers( $facts ),
 			'price'        => $this->price( $product ),
 			'availability' => $product->is_in_stock() ? __( 'In stock', 'linker-commerce' ) : __( 'Currently unavailable', 'linker-commerce' ),
-			'cta_label'    => $this->cta_label(),
-			'cta_url'      => $this->cta_url( $product ),
-			'ask_url'      => $this->ask_url( $product ),
-			'intro'        => Materials::apply_terms( '' !== $product->get_short_description() ? $product->get_short_description() : $this->legacy_field( $product_id, 'product_short_intro' ) ),
-			'body'         => Materials::apply_terms( $product->get_description() ),
 			'series'       => self::series_label( $this->legacy_field( $product_id, 'product_series' ), Materials::is_de() ),
-			'spec_groups'  => $this->spec_groups( $product_id ),
-			'attributes'   => $this->attributes( $product ),
-			'figures'      => $this->figures( $product_id ),
-			'features'     => $this->features( $product_id ),
-			'benefits'     => $this->benefits( $product_id ),
-			'stats_claim'  => $this->stats_claim( $product_id ),
-			'scenarios'    => $this->scenarios( $product_id ),
-			'downloads'    => $this->downloads( $product_id ),
-			'faqs'         => $this->faqs( $product_id ),
-			'pairings'     => $this->pairings( $product_id ),
-			'crumbs'       => $this->crumbs( $product_id ),
 		);
 	}
 
@@ -569,30 +589,32 @@ final class ProductView {
 	}
 
 	/**
-	 * The downloads list: the legacy download entries as our media library
-	 * links (every file is ours and under our URL, ADR-0023), the #8/#15
-	 * document fields take them over.
+	 * Current published Woo document relations for the product template.
 	 *
-	 * @param int $product_id The product.
-	 * @return list<array{title: string, url: string|null, type: string, role: string, language: string}> The documents.
+	 * @param int                      $product_id Product ID.
+	 * @param array<string,mixed>|null $manifest Optional current assembly snapshot.
+	 * @return list<array{title:string,url:string,type:string,role:string,language:string}>
 	 */
-	public function downloads( int $product_id ): array {
-		$documents = array();
-		foreach ( $this->legacy( $product_id, 'downloads' ) as $download ) {
-			if ( ! \is_array( $download ) ) {
-				continue;
-			}
-			$attachment = (int) ( $download['download_file'] ?? 0 );
-			$url        = $attachment ? wp_get_attachment_url( $attachment ) : null;
-			if ( ! \is_string( $url ) ) {
+	public function downloads( int $product_id, ?array $manifest = null ): array {
+		if ( null !== $this->document_reader ) {
+			return ( $this->document_reader )( $product_id );
+		}
+		if ( ! Publication::is_published( $product_id ) ) {
+			return array();
+		}
+		$id         = Publication::canonical_id( $product_id );
+		$documents  = array();
+		$manifest ??= Publication::manifest();
+		foreach ( $manifest['documents'] as $document ) {
+			if ( ! in_array( $id, $document['product_ids'], true ) ) {
 				continue;
 			}
 			$documents[] = array(
-				'title'    => (string) ( $download['download_title'] ?? '' ),
-				'url'      => $url,
-				'type'     => (string) ( $download['download_type'] ?? '' ),
-				'role'     => (string) ( $download['download_role'] ?? '' ),
-				'language' => (string) ( $download['download_language'] ?? '' ),
+				'title'    => $document['title'],
+				'url'      => $document['url'],
+				'type'     => $document['type'],
+				'role'     => $document['role'] ?? '',
+				'language' => $document['lang'],
 			);
 		}
 		return $documents;

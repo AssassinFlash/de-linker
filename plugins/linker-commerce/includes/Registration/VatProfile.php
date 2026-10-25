@@ -49,8 +49,9 @@ final class VatProfile {
 	 * Sets up the profile.
 	 *
 	 * @param ViesClient $vies The VIES client.
+	 * @param VatNotice  $notices Native current-version source association.
 	 */
-	public function __construct( private readonly ViesClient $vies ) {}
+	public function __construct( private readonly ViesClient $vies, private readonly VatNotice $notices = new VatNotice() ) {}
 
 	/**
 	 * Checks the customer's VAT ID if it is new or changed, or if VIES could not
@@ -69,24 +70,15 @@ final class VatProfile {
 			return $previous;
 		}
 
-		$result = $this->verdict( $normalized );
-		update_user_meta( $user_id, self::STATUS_META, $result['status'] );
-		update_user_meta( $user_id, self::DETAIL_META, $result['detail'] );
-		update_user_meta( $user_id, self::NUMBER_META, $normalized );
-		update_user_meta( $user_id, self::CHECKED_META, time() );
-
-		if ( $notify && '' !== $previous && $previous !== $result['status'] ) {
-			/**
-			 * Fires when the VIES verdict of a customer's VAT ID changes;
-			 * WooCommerce sends the team notification on it (VatReviewEmail).
-			 *
-			 * @since 0.1.0
-			 *
-			 * @param int    $user_id  Customer.
-			 * @param string $previous Verdict before.
-			 * @param string $current  Verdict now.
-			 */
-			do_action( 'linker_commerce_vat_status_changed', $user_id, $previous, $result['status'] );
+		$witness = $this->notices->version( $user_id );
+		$result  = $this->verdict( $normalized );
+		$source  = $this->notices->persist( $user_id, $normalized, $result, $notify, $witness );
+		if ( $source instanceof \WP_Error ) {
+			return $this->status( $user_id );
+		}
+		if ( 0 === $source['job'] ) {
+			/** This action is documented in this class's native VAT status contract. */
+			do_action( 'linker_commerce_vat_status_changed', $user_id, $source['previous'], $source['current'] );
 		}
 		return $result['status'];
 	}

@@ -2098,7 +2098,7 @@ test( 'a guest gets a confirmation link at the address they type', async () => {
 	);
 	expect(
 		await screen.findByText(
-			'A confirmation link is on its way to tester@example.test. The conversation follows once the link is opened.'
+			'A confirmation link is on its way to tester@example.test.'
 		)
 	).toBeVisible();
 } );

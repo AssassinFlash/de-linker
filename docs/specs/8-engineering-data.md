@@ -1,7 +1,7 @@
 # #8 工程数据迁移
 
 ## 目标
-运行时只剩三份手工源：Woo 商品（含带引用的工程图值）、`data/compatibility.json`、`data/engineering-overlay.json`。旧仓库的注册表、组件库、投影链不进新仓库。引擎读 `linker-commerce` 生成的 feed。
+产品与参考组件的事实、图值、资料关联及公开状态只在 Woo 维护。`data/compatibility.json` 保留为兼容工程合同；`data/engineering-overlay.json` 仅是既有参考事实的一次迁移输入，不是运行时手工源。引擎只读 `linker-commerce` 生成的 feed，并在每次新动作前后消费 Woo 当前发布证明；当前合同见 [系统选型的当前发布依赖](617-publication-engine.md)。
 
 ## 来源（只读，旧仓库链尖 `git -C ~/Documents/de-linker-project show refs/landed/chain-tip:<path>`）
 - `plugins/terravolt-b2b-core/data/material-registry.json`（285 条：identity、bindings.woo_product_ids、technical.specifications{value,unit,doc,page}、documents）。
@@ -14,7 +14,7 @@
 1. **商品图值**：对每个已发布商品，把引擎需要的键写入 `_tv_b2b_figures`（已有键不覆盖，缺的补；每个值带 `citation: {url, page}`，url 必须是我们托管的文档）：`mppt_voltage_range_v`、`battery_voltage_range_v`、`n_mppt`、`strings_per_mppt`、`mppt_max_current_a`、`mppt_max_isc_a`、`ac_output_kw_nominal`、`max_pv_input_power_w`、`max_pv_input_v`、`phases`、`module_energy_kwh_nominal`、`module_energy_kwh_usable`、`system_operating_voltage_range_v`、`modules_per_stack_min`、`modules_per_stack_max`、`stacks_parallel_max`、`modules_per_system_max`、`max_battery_modules`、`battery_rated_energy`。单位原样保留，读侧按 #7 换算。
 2. **系列属性**：全局属性 `pa_series`，值来自注册表 family（如 goodwe-etr、saj-h2），每个商品一个值；配置器与 Genie 用它表达"系列"，不再有五套系列概念。
 3. **`data/compatibility.json`**：`{ "pairs": [ { "inverter": "<model pattern>", "battery": "<model pattern>", "verdict": "released|released_with_accessory|not_released", "conditions": ["…"], "documents": [{ "url": "…", "page": n }] } ] }`，由旧合同格子与 patterns 翻译而来；运行时用 pattern 匹配商品型号（`pa_model`）即时得出配对，不再有 relationships 投影。
-4. **`data/engineering-overlay.json`**：非商品元件（参考组件 `mat_trina_solar_tsm_460neg9r_28` 等约 3 条）的工程字段与引用；只供引擎用。
+4. **参考组件**：`mat_trina_solar_tsm_460neg9r_28` 保留为工程 ID；事实与资料迁入隐藏销售展示的 Woo 原生参考记录，不建光伏产品分类、不成为销售候选。feed 的 overlay 由当前记录及已绑定资料生成，携带 canonical source、产品/参考修订及文档身份/修订/SHA/关联。未准备时 overlay 为空，不阻断无关产品。原 `data/engineering-overlay.json` 只供一次迁移，运行时不读取。
 5. **feed**：`GET /wp-json/linker/v1/engineering-feed`（匿名、只读、可缓存、按 `?since=` 增量）→ 每个已发布商品 `{ id, sku, model, brand, series, device_class, application, phase, figures{key:{value,unit,citation}}, documents[{url,title,type,lang}] }` + overlay + `compatibility` 合同全量与版本号（`version` 与 `compatibility_version` 同值）。`services/engine` 只读它。
 
 ## 迁移脚本 `tools/migrate/8-engineering.py`

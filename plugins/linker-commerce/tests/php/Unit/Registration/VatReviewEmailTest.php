@@ -47,7 +47,9 @@ final class VatReviewEmailTest extends TestCase {
 		$this->allow_locale_switch( 'en_US' );
 		WP_Mock::expectAction( 'linker_test_email_sent', 'linker_vat_review', 'sales@sunriverinverter.com' );
 
-		$email = new VatReviewEmail( '/plugin/linker-commerce.php', new Options() );
+		WP_Mock::expectFilterAdded( 'pre_wp_mail', \Mockery::type( \Closure::class ), 9, 2 );
+		WP_Mock::expectFilterAdded( 'woocommerce_email_log_enabled', \Mockery::type( \Closure::class ) );
+		$email = new VatReviewEmail( '/plugin/linker-commerce.php', new Options(), new \Linker\Commerce\Tests\Fixtures\VatNoticeMemory() );
 		$email->trigger( 5, VatProfile::INVALID, VatProfile::VALID );
 
 		$this->assertSame( 'Solarbau GmbH', $email->placeholders['{company}'] );

@@ -456,6 +456,9 @@ final class ApprovalTest extends IntegrationTestCase {
 			return;
 		}
 		$this->collector = function ( $pre, array $atts ) {
+			if ( \Linker\Commerce\Mail\Prepared::is_preview() ) {
+				return $pre;
+			}
 			$to           = $atts['to'] ?? '';
 			$this->sent[] = array(
 				'to'         => ( is_string( $to ) ? $to : '' ),

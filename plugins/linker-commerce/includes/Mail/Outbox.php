@@ -116,7 +116,39 @@ final class Outbox {
 		if ( null !== $pre || $this->delivering ) {
 			return $pre;
 		}
-		$this->attempt( Message::from_wp_mail( $atts ), 0, 0 );
+		try {
+			$joined = $this->jobs->transaction_active();
+		} catch ( \Throwable $error ) {
+			CapacityHealth::failed();
+			return false;
+		}
+		$message     = Prepared::current() ?? Message::from_wp_mail( $atts );
+		$reset       = ResetNotice::take( $atts );
+		$reset_scope = '' !== $reset ? $reset : Capacity::current();
+		$job         = '' !== $reset ? Capacity::within( $reset, fn (): int => $this->jobs->create( $message ) ) : $this->jobs->create( $message );
+		if ( $job < 1 ) {
+			ResetNotice::finish( $reset_scope, false );
+			CapacityHealth::failed();
+			return false;
+		}
+		if ( $joined ) {
+			NativeTransaction::after_commit(
+				function () use ( $job ): void {
+					$this->retry( $job );
+				}
+			);
+			// Job and action join the caller's transaction. No external mail can
+			// escape before commit; rollback removes both native pending rows.
+			$this->schedule( $job, time() + 1 );
+			return ResetNotice::finish( $reset_scope, true );
+		}
+		Lock::run(
+			'mail-job-' . $job,
+			function () use ( $message, $job ): void {
+				$this->attempt( $message, 0, $job );
+			}
+		);
+		// A durable job owns the notification even when transport is deferred.
 		return true;
 	}
 
@@ -124,11 +156,32 @@ final class Outbox {
 	 * Attempts a queued message again; runs on the Action Scheduler hook.
 	 *
 	 * @param int $job_id Job id.
+	 * @throws PreTransportFailure Native preparation failed before any quota reservation or transport.
 	 */
 	public function retry( int $job_id ): void {
+		// An outer transaction cannot arm an already held original notification.
+		try {
+			if ( $this->jobs->held( $job_id ) ) {
+				return;
+			}
+			$joined = $this->jobs->transaction_active();
+		} catch ( \Throwable $error ) {
+			// This witness ends before any attempt. It must never cover SMTP,
+			// a delivered ACK, or deletion whose external outcome is unknown.
+			throw new PreTransportFailure( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Typed cause only; the public diagnostic is fixed and never outputs native errors.
+		}
+		if ( $joined ) {
+			NativeTransaction::after_commit(
+				function () use ( $job_id ): void {
+					$this->retry( $job_id );
+				}
+			);
+			$this->schedule( $job_id, time() + 1 );
+			return;
+		}
 		$inquiry = NotificationHold::inquiry( $job_id );
 		$work    = function () use ( $job_id ): void {
-			if ( NotificationHold::job_held( $job_id ) ) {
+			if ( $this->jobs->held( $job_id ) ) {
 				return;
 			}
 			$locked = Lock::run(
@@ -189,6 +242,7 @@ final class Outbox {
 	 * @param  int     $attempts Failed attempts so far.
 	 * @param  int     $job_id   Job id, 0 while the message is not queued.
 	 * @return bool Whether the message was sent in this attempt.
+	 * @throws PreTransportFailure The native witness failed before any quota or IO.
 	 */
 	private function attempt( Message $message, int $attempts, int $job_id ): bool {
 		// Owner stop policy applies before any transport selection or quota reservation.
@@ -196,11 +250,28 @@ final class Outbox {
 			$this->hold_review_reminder( $job_id );
 			return false;
 		}
+		if ( ! \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ) {
+			if ( $job_id < 1 ) {
+				$this->jobs->create( $message ); }
+			return false;
+		}
+		try {
+			$attempt_token = $job_id > 0 ? $this->jobs->begin_attempt( $job_id, $message ) : '';
+		} catch ( \Throwable $error ) {
+			throw new PreTransportFailure( $error ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Fixed phase diagnostic; the native cause is never output.
+		}
+		if ( $job_id > 0 && '' === $attempt_token ) {
+			CapacityHealth::failed();
+			return false;
+		}
 		$now       = time();
 		$critical  = $message->critical || ( $job_id > 0 && $this->jobs->critical( $job_id ) );
 		$transport = $message->is_internal() && $this->smtp->available() ? Throttle::SMTP : Throttle::PHP;
 		$slot      = $this->throttle->reserve( $now, $transport, $critical, $message->category );
 		if ( $slot > $now ) {
+			if ( $job_id > 0 ) {
+				$this->jobs->resolve_attempt( $job_id, $attempt_token );
+			}
 			$this->schedule( $job_id > 0 ? $job_id : $this->jobs->create( $message ), $slot );
 			return false;
 		}
@@ -224,7 +295,7 @@ final class Outbox {
 						array( 'source' => self::LOG_SOURCE )
 					);
 						$fallback_now = time();
-						$wait_until   = $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category );
+						$wait_until   = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::allows( $message, $job_id ) ? $this->throttle->reserve( $fallback_now, Throttle::PHP, $critical, $message->category ) : PHP_INT_MAX;
 					if ( $wait_until === $fallback_now ) {
 						$this->fallback = true;
 						$sent           = $this->deliver( $delivery );
@@ -239,6 +310,7 @@ final class Outbox {
 		}
 
 		if ( $sent ) {
+			\Linker\Commerce\Inquiry\Assessment\SendAuthorization::delivered( $message, $job_id );
 			if ( $job_id > 0 ) {
 				$this->jobs->delete( $job_id );
 			}
@@ -256,6 +328,9 @@ final class Outbox {
 		}
 
 		++$attempts;
+		if ( $job_id > 0 ) {
+			$this->jobs->resolve_attempt( $job_id, $attempt_token );
+		}
 		$job_id = $job_id > 0 ? $job_id : $this->jobs->create( $message );
 		if ( $attempts > count( self::RETRY_DELAYS ) ) {
 			$this->jobs->fail( $job_id, $attempts, $this->error );
@@ -372,7 +447,7 @@ final class Outbox {
 	 */
 	private function schedule( int $job_id, int $time ): void {
 		if ( $job_id > 0 ) {
-			as_schedule_single_action( $time, self::HOOK, array( $job_id ), self::GROUP );
+			$this->jobs->reschedule( $job_id, $time );
 		}
 	}
 

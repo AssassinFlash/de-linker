@@ -564,17 +564,14 @@ final class AccountTemplates {
 							continue;
 						}
 						$items = '';
-						foreach ( $saved->items( $solution->ID ) as $item ) {
-							$product = wc_get_product( $item['product_id'] );
-							if ( $product ) {
-								$items .= $this->fragment(
-									'product-line',
-									array(
-										'quantity' => $item['quantity'],
-										'name'     => $product->get_name(),
-									)
-								);
-							}
+						foreach ( $saved->historical_items( $solution->ID ) as $item ) {
+							$items .= $this->fragment(
+								'product-line',
+								array(
+									'quantity' => $item['quantity'],
+									'name'     => $item['label'],
+								)
+							);
 						}
 						$html .= $this->fragment(
 							'solution-card',

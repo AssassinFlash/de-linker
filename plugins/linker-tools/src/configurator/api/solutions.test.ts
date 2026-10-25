@@ -40,6 +40,7 @@ test( 'posts the design and its lines with the nonce', async () => {
 		{
 			kind: 'residential',
 			title: 'Munich home',
+			selectionFingerprint: 'a'.repeat( 64 ),
 			input,
 			lines: [
 				{ productId: 3556, quantity: 1 },
@@ -65,6 +66,7 @@ test( 'posts the design and its lines with the nonce', async () => {
 	expect( JSON.parse( String( init?.body ) ) ).toEqual( {
 		kind: 'residential',
 		title: 'Munich home',
+		selection_fingerprint: 'a'.repeat( 64 ),
 		input,
 		lines: [
 			{ product_id: 3556, quantity: 1 },
@@ -152,5 +154,36 @@ test( 'a refused save throws instead of reporting a saved solution', async () =>
 			'en',
 			fetcher
 		)
-	).rejects.toThrow( 'save 403' );
+	).rejects.toThrow( 'solution_write_failed' );
 } );
+
+test.each( [ 'network', 'server', 'malformed', 'short' ] )(
+	'a %s failure after submission does not claim that saving failed',
+	async ( failure ) => {
+		const fetcher = vi.fn< typeof fetch >( async () => {
+			if ( failure === 'network' ) {
+				throw new Error( 'response lost' );
+			}
+			if ( failure === 'server' ) {
+				return new Response( 'server error', { status: 503 } );
+			}
+			return new Response( failure === 'malformed' ? '{' : '{}', {
+				status: 201,
+			} );
+		} );
+		await expect(
+			saveSolution(
+				'/wp-json/',
+				'nonce',
+				{
+					kind: 'residential',
+					title: 'Recorded solution',
+					input,
+					lines: [],
+				},
+				'en',
+				fetcher
+			)
+		).rejects.toMatchObject( { changed: false, unconfirmed: true } );
+	}
+);

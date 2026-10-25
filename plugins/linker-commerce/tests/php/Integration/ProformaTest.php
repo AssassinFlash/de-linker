@@ -95,6 +95,41 @@ final class ProformaTest extends IntegrationTestCase {
 		$issuer->issue( $order );
 	}
 
+	/** A real Issuer interruption after issued persistence still has a durable notice source. */
+	public function test_real_issuer_crash_before_notification_recovers_from_the_issued_source(): void {
+		update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
+		$this->with_bank_account();
+		$order = $this->send_inquiry( $this->customer(), array( array( $this->product( '1000' ), 1 ) ) );
+		$this->as_user( 1 );
+		$stop = static function ( int $id ) use ( $order ): void {
+			if ( $id === $order->get_id() ) {
+				throw new \Error( 'synthetic568_after_issued_save_before_notification' ); }
+		};
+		add_action( 'woocommerce_order_status_' . Statuses::PROFORMA, $stop, 1 );
+		try {
+			$this->issuer()->issue( $order );
+			self::fail( 'The native status seam must be interrupted.' ); } catch ( \Error $error ) {
+			self::assertSame( 'synthetic568_after_issued_save_before_notification', $error->getMessage() ); } finally {
+				remove_action( 'woocommerce_order_status_' . Statuses::PROFORMA, $stop, 1 ); }
+			$fresh = wc_get_order( $order->get_id() );
+			self::assertInstanceOf( WC_Order::class, $fresh );
+			$fresh->read_meta_data( true );
+			$file = (string) $fresh->get_meta( Issuer::FILE_META );
+			$this->later( static fn () => ( new PrivateFiles( Issuer::DIRECTORY ) )->delete( $file ) );
+			self::assertNotEmpty( $fresh->get_meta( Issuer::NUMBER_META ) );
+			self::assertFileExists( ( new PrivateFiles( Issuer::DIRECTORY ) )->path( $file ) );
+			self::assertTrue( $fresh->has_status( Statuses::PROFORMA ) );
+			self::assertSame( 'yes', $fresh->get_meta( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::PENDING ) );
+			update_option( \Linker\Commerce\Mail\Throttle::OPTION, array_fill( 0, \Linker\Commerce\Mail\Throttle::PER_DAY, time() ), false );
+			$before = self::newest_mail_job();
+			\Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::recover();
+			$fresh->read_meta_data( true );
+			$job = (int) $fresh->get_meta( \Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::JOB );
+			self::assertGreaterThan( $before, $job );
+			\Linker\Commerce\Proforma\Emails\ProformaIssuedEmail::recover();
+			self::assertSame( $job, self::newest_mail_job() );
+	}
+
 	/**
 	 * Two requests issuing the same inquiry at once open exactly one Proforma:
 	 * the per-inquiry claim keeps the second out (review 2026-10-10, S1).

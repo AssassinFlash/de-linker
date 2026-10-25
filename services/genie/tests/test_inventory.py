@@ -3,9 +3,12 @@
 import json
 from typing import Any
 
+import pytest
+
 from index.inventory import (
     build_documents,
     doc_type_of,
+    document_kind_of,
     lang_of,
     product_links,
     product_of,
@@ -69,17 +72,36 @@ def test_types_follow_the_documents_field_vocabulary() -> None:
     assert doc_type_of("certificate", "certificate") == "certificate"
     assert doc_type_of("brochure", "brochure") == "other"
     assert doc_type_of("warranty", "") == "other"
+    assert doc_type_of("Handbuch", "") == "manual"
+    assert doc_type_of("Datenblatt", "") == "datasheet"
+    assert doc_type_of("Kompatibilität", "") == "compatibility"
+    assert doc_type_of("Dokument", "quick_guide") == "other"
+    assert doc_type_of("Datenblatt", "user_manual") == "manual"
+    assert document_kind_of("Garantie", "") == "warranty"
+    assert document_kind_of("Zertifikat", "") == "certificate"
 
 
 def test_languages_follow_the_documents_field_vocabulary() -> None:
-    assert [lang_of(label) for label in ("EN", "DE", "ES", "MUL", "EN/DE", "")] == [
+    assert [
+        lang_of(label)
+        for label in ("EN", "DE", "ES", "MUL", "MULTI", "EN/DE", "DE/EN", "")
+    ] == [
         "en",
         "de",
         "es",
-        "multi",
-        "multi",
-        "",
+        "mul",
+        "mul",
+        "mul",
+        "mul",
+        "und",
     ]
+
+
+def test_unknown_woo_metadata_is_explicit_instead_of_inferred() -> None:
+    with pytest.raises(ValueError, match="unknown Woo document language"):
+        lang_of("not-a-language")
+    with pytest.raises(ValueError, match="unknown Woo document purpose"):
+        doc_type_of("not-a-document-purpose", "unknown-role")
 
 
 def test_a_draft_without_attributes_takes_brand_and_model_from_its_meta() -> None:

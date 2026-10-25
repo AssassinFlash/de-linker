@@ -16,6 +16,7 @@ POSTS = {
     "/roof/outline",
     "/roof/pack",
     "/report/pdf",
+    "/selection/validate",
 }
 
 

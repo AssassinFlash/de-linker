@@ -54,6 +54,7 @@ final class NotificationHold {
 	 * Whether the persistent job or its source inquiry is held.
 	 *
 	 * @param int $job Original notification job.
+	 * @phpstan-impure Authoritative native metadata is refreshed on every boundary.
 	 */
 	public static function job_held( int $job ): bool {
 		wp_cache_delete( $job, 'post_meta' );
@@ -76,7 +77,7 @@ final class NotificationHold {
 	 */
 	public static function reference( WC_Order $order ): string {
 		$job = (int) ( Queue::data( $order )['notification_job'] ?? 0 );
-		return hash( 'sha256', (string) wp_json_encode( array( $order->get_id(), $job, $order->get_meta( self::META ), get_post_meta( $job, self::META, true ), $order->get_meta( Queue::PENDING ) ) ) );
+		return hash( 'sha256', (string) wp_json_encode( array( $order->get_id(), $job, $order->get_meta( self::META ), get_post_meta( $job, self::META, true ), $order->get_meta( Queue::PENDING ), \Linker\Commerce\Inquiry\Assessment\SendAuthorization::reference( $order ) ) ) );
 	}
 
 	/**
@@ -107,6 +108,9 @@ final class NotificationHold {
 					$result = $previous;
 					return;
 				}
+				if ( \Linker\Commerce\Inquiry\Assessment\SendAuthorization::managed( $id ) ) {
+					$result = \Linker\Commerce\Inquiry\Assessment\SendAuthorization::release( $order, $reference );
+					return; }
 				if ( $order->get_meta( \Linker\Commerce\Protection\Intake::META ) && 0 === (int) ( Queue::data( $order )['notification_job'] ?? 0 ) ) {
 					$result = \Linker\Commerce\Protection\IntakeRelease::run( $order, $reference );
 					return;

@@ -28,7 +28,7 @@ final class RestLangTest extends TestCase {
 	 * A REST request with a lang parameter.
 	 *
 	 * @param mixed $lang The parameter, null for none.
-	 * @return \WP_REST_Request<array<string, mixed>>
+	 * @return \WP_REST_Request<array<string, mixed>>&\Mockery\MockInterface
 	 */
 	private function request( $lang ) {
 		$request = Mockery::mock( 'WP_REST_Request' );
@@ -132,5 +132,37 @@ final class RestLangTest extends TestCase {
 		$all = $this->query( array( 'post_type' => 'product' ) );
 		$all->shouldNotReceive( 'set' );
 		$rest->posts( $all );
+	}
+
+	/** Internal authority queries are all-language; public parameters grant no bypass. */
+	public function test_publication_scope_is_a_server_query_marker(): void {
+		PolylangDouble::mock( array(), array(), array(), array(), 'en' );
+		WP_Mock::userFunction( 'switch_to_locale', array( 'return' => false ) );
+		WP_Mock::userFunction( 'determine_locale', array( 'return' => 'en_US' ) );
+		$rest    = new RestLang( new Languages() );
+		$request = $this->request( 'de' );
+		$request->shouldReceive( 'get_param' )->with( 'linker_publication_internal' )->never();
+		$rest->enter( null, array(), $request );
+		$internal = $this->query(
+			array(
+				'post_type'                   => 'product',
+				'lang'                        => '',
+				'linker_publication_internal' => true,
+			)
+		);
+		$internal->shouldNotReceive( 'set' );
+		$rest->posts( $internal );
+		$public = $this->query( array( 'post_type' => 'product' ) );
+		$public->shouldReceive( 'set' )->once()->with( 'lang', 'de' );
+		$rest->posts( $public );
+		$string_marker = $this->query(
+			array(
+				'post_type'                   => 'product',
+				'linker_publication_internal' => '1',
+			)
+		);
+		$string_marker->shouldReceive( 'set' )->once()->with( 'lang', 'de' );
+		$rest->posts( $string_marker );
+		$this->assertSame( PolylangDouble::language( 'de' ), PolylangDouble::$polylang->curlang );
 	}
 }

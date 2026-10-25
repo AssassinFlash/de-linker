@@ -59,6 +59,36 @@ final class SelectionViewTest extends TestCase {
 		$this->assertStringContainsString( 'This selection could not be loaded.', SelectionView::form( array(), '{invalid', true ) );
 	}
 
+	/** Selected request labels are escaped, removable and present in the team/admin view. */
+	public function test_platform_and_document_selection_is_readable_in_native_consumers(): void {
+		$platform = 'CRRC 6.X <img src=x onerror=alert(1)> \\ Rückfrage';
+		$context  = array(
+			'source'    => 'https://site/solution/utility-storage/',
+			'url'       => 'https://site/solution/utility-storage/',
+			'title'     => 'Utility storage',
+			'selection' => array(
+				'platform' => $platform,
+				'document' => 'Datasheets & certificates',
+			),
+		);
+		$html     = SelectionView::form( $context, '', true );
+		$this->assertStringContainsString( '<dt>Product</dt>', $html );
+		$this->assertStringContainsString( '<dt>Documents</dt>', $html );
+		$this->assertStringContainsString( 'Datasheets &amp; certificates', $html );
+		$this->assertStringNotContainsString( '<img', $html );
+		$this->assertStringContainsString( '&lt;img', $html );
+		$this->assertStringContainsString( '&quot;platform&quot;', $html );
+		$order = Mockery::mock( \WC_Order::class );
+		$order->shouldReceive( 'get_meta' )->with( SelectionContext::META )->andReturn( json_encode( $context ) );
+		$view = new SelectionView();
+		ob_start();
+		$view->email( $order, true, true, null );
+		$this->assertStringContainsString( 'Product: ' . $platform . "\nDocuments: Datasheets & certificates", (string) ob_get_clean() );
+		ob_start();
+		$view->admin( $order );
+		$this->assertStringContainsString( '<dt>Product</dt>', (string) ob_get_clean() );
+	}
+
 	/**
 	 * The same data reaches native admin/team consumers; customer receipt remains fixed.
 	 *

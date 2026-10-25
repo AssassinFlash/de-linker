@@ -1,0 +1,18 @@
+{
+  "queued_fixture_jobs": [
+    {
+      "job": 8250,
+      "all_original_recipients_synthetic": true,
+      "test_delivery_single_tester": true,
+      "test_delivery_no_cc_bcc": true
+    },
+    {
+      "job": 8251,
+      "all_original_recipients_synthetic": true,
+      "test_delivery_single_tester": true,
+      "test_delivery_no_cc_bcc": true
+    }
+  ],
+  "mail_capture_enabled": true,
+  "http_isolation_filter": true
+}

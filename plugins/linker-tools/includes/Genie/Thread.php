@@ -79,16 +79,12 @@ class Thread {
 	 * Seconds a commit waits for the lock when the caller is not already
 	 * inside a turn.
 	 *
-	 * The HTTP turn does not use this ceiling. It passes the seconds left
-	 * of Proxy::TURN_BUDGET (60, the same number as wp_remote_post's
-	 * timeout: at most four ability calls, each capped at twenty seconds
-	 * in the service, plus the model). The lock wait is that remainder, so
-	 * a 60 s model call and a 60 s lock wait do not stack (#373). This
-	 * constant is only the wait for a commit with no model call in front
-	 * of it (tests, mail fixtures). It is the same 60 so one slow
-	 * postmeta write cannot outlast the turn the customer is already
-	 * waiting on. The integration fixture holds the lock for 300 ms, well
-	 * under it.
+	 * The HTTP turn passes the seconds left of Proxy::TURN_BUDGET, the
+	 * native 90-second operation window. Its network wait and commit-lock
+	 * wait share that window; they never start independent full budgets.
+	 * This existing 60-second ceiling applies only to a commit with no
+	 * service call in front of it (tests and mail fixtures). The integration
+	 * fixture holds the lock for 300 ms, well under this ceiling.
 	 */
 	private const LOCK_WAIT = 60;
 

@@ -3,6 +3,7 @@ import { __ } from '@wordpress/i18n';
 
 interface PublicClient {
 	proof: ( action: string, container: HTMLElement ) => Promise< string >;
+	complete?: ( action: string, proof: string ) => boolean;
 	reset: ( action: string ) => void;
 }
 
@@ -41,6 +42,12 @@ export function resourceAction(
 		parsed.searchParams.get( 'rest_route' ) ??
 		parsed.pathname.replace( /^.*\/wp-json/i, '' )
 	).toLowerCase();
+	if ( path.endsWith( '/genie/draft' ) ) {
+		return 'draft_write';
+	}
+	if ( path.endsWith( '/genie/solution' ) ) {
+		return 'solution_save';
+	}
 	if ( path.endsWith( '/genie/turn' ) ) {
 		return 'genie';
 	}
@@ -76,6 +83,9 @@ export function resourceAction(
 	}
 	if ( path.endsWith( '/engine/report/pdf' ) ) {
 		return 'report_pdf';
+	}
+	if ( path.endsWith( '/linker/v1/solutions/draft' ) ) {
+		return 'draft_write';
 	}
 	if ( path.endsWith( '/linker/v1/solutions' ) ) {
 		return 'solution_save';
@@ -220,8 +230,9 @@ export async function resourceFetch(
 	if ( id ) {
 		headers.set( 'X-Linker-Operation', id );
 	}
+	let proof = '';
 	if ( ! observe ) {
-		const proof = await client!.proof( action, containerFor( action ) );
+		proof = await client!.proof( action, containerFor( action ) );
 		headers.set( 'X-Linker-Proof', proof );
 	}
 	init?.signal?.throwIfAborted();
@@ -235,7 +246,16 @@ export async function resourceFetch(
 	} );
 	if ( response.ok ) {
 		operations.delete( key );
-		if (
+		if ( ! observe && client?.complete ) {
+			if ( client.complete( action, proof ) ) {
+				const container = containers.get( action );
+				const status = container && statuses.get( container );
+				if ( status ) {
+					status.textContent = '';
+				}
+			}
+		} else if (
+			// Preserve the prior reset contract with an older protection bundle.
 			[ 'genie_contact', 'genie_inquiry', 'conversation_mail' ].includes(
 				action
 			)
